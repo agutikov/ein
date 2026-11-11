@@ -1,7 +1,7 @@
 # S1f.6.13 — Fixed-width numbers as a second module, `std.num9`
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: `stdlib/num9.ein`, generated, 47 rules, the five operations by wide rules, overflow as a
+**Status:** **done 2026-11-11** (`f6243365`): `stdlib/num9.ein`, generated, 47 rules, the five operations by wide rules, overflow as a
 flag, division by zero through `std.arith`'s rule, and conversions each way; held to Rust's integers, exhaustively at
 width 2; no rule joins two facts on a number, so a batch is linear where the prototype's was quadratic; seven decisions
 taken by default, Q-M1f.167 to .173, **the last the user's to confirm** (the register tripwire, § T7), and one finding,
@@ -278,6 +278,19 @@ generated and its width fixed, so that number moves only with the generator, and
 The alternatives are the question's: a chain of eight rules for the multiples takes the widest to about 92, still
 three times the tripwire, at eight firings more a division; a larger register file is an engine change; rules
 split in halves are no longer the theory that was ruled in.
+
+## After the commit, 2026-11-11: the nightly and the runner's image, for S1f.6.15 and S1f.6.13
+
+Both on `f6243365`, the tree clean.
+
+- **The nightly.** `./run_tests.sh --nightly`, green in every step (`build/nightly-s1f.6.13.log`): the slow corpus
+  cells, the round trip's slow and `heavy_dump` entries, the levers', the cores', `region`'s and
+  `obligation_rung`'s slow halves, the scratch check, the mutation census at 275 of 325, the fuzzer at both seeds
+  and the bench smoke.
+- **The runner's image.** `utils/ci_container.sh`, the whole gate in a container built like the runner: Ubuntu
+  26.04.1 with Graphviz 14.1.2 in its x86-64-v3 build, green (`build/s1f.6.13/ci-container.log`). The DOT sweep
+  took 132 s there, with the twenty new programs' views, where it takes 75 s here; the counters' step passes.
+- **Not run:** the dev-host tier, the whole review bundle among its steps.
 
 ## Acceptance re-taken, 2026-11-11
 
