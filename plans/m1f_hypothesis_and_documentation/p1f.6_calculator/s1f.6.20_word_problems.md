@@ -72,7 +72,35 @@ theory and a set of problems, each run on the release binary, every answer compu
 | *Bob has 5 apples, Alice has 3 pears. How many apples do they have together?* | two kinds of thing: a sum only over the kind asked about |
 | *12 boxes of 144 pencils, 250 go to the office, the rest shared among 31 classes* | several steps, a product, a difference, a quotient and a remainder ([`design.md`](design.md)'s word problem, with its words as facts rather than as `let` lines) |
 | a *who has more, and by how much* problem | the comparison |
+| *Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?* (the user's, 2026-11-11) | **three numbers, two steps, and the program explains the plan**: which operations, in what order, and why. *They* fill the boxes together, so the apples are summed first, 5 + 7 = 12; a box *holds* 3, so the boxes are a division, 12 ÷ 3 = 4. See [§ The plan is explained](#the-plan-is-explained) |
+| the same with *Alice has 8* (the coordinator's variant) | the division leaves a remainder, 13 ÷ 3 = 4 and 1 over: whether *need* means a fifth box is a reading of the word, and the program says which reading it took |
 | a problem with a fact it does not need | an unused fact is not an error, and the trace does not use it |
+
+### The plan is explained
+
+The user, 2026-11-11:
+
+> addition to word problemt s1f.6.20: still simplestic arithmetic problem with 3 numbers that is solved in 2
+> steps, e.g. Bob has 5, Alice has 7, box volume is 3, how many boxes do they need? We see numbers 5,7,3, what
+> operations we should use, in what order, why? - all this has to be explained by Ein program; and yes here we
+> don't cover how this program is synthesized
+
+A problem with three numbers has several computations a pupil could write down (5 + 7 then ÷ 3; 7 ÷ 3; 5 × 3 …),
+and only one of them answers the question. The Ein program is the explanation of which, and it is read off
+the run, not written beside it:
+
+- **Which operations:** each is a rule of the word-problem theory firing on the problem's facts, and its
+  `:why` says what in the problem called for it (*a box holds 3 and the question asks for boxes, so the
+  apples are divided by 3*).
+- **In what order:** the second step's request is derived from the first step's answer, so the order is the
+  derivation's, visible in `--trace`, and nothing in the problem states it.
+- **Why:** the trace of the answer, from the question back to the three stated numbers, with every step a
+  rule and its `:why`. The page shows it for this problem in full, and shows that no rule fires for the
+  computations that do not answer the question.
+
+How such a program is synthesised from the sentence is not this stage's, as the user says: the program is
+written by hand, and [M2](../../m2_nl_to_ir/README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11)
+takes it as an instance of the output it wants.
 
 **The questions the stop puts to the user**, each with a recommendation computed on the prototype:
 
@@ -105,6 +133,8 @@ holds each gap problem to its named gap.
   - every problem is a corpus entry with an `:expect`, and `ein test` holds it;
   - **the engine is unchanged by the stage**, and a test holds that the problems answer through the imported
     calculator;
+  - **the two-step problem's plan is explained by the program**: its operations, their order and the reason for
+    each are read off the run, and a test holds the trace's steps;
   - **each derived answer's trace is the reasoning**: every step is a rule of the word-problem theory or of
     the calculator, each with its `:why` rendered;
   - **each gap problem names its gap**, and no problem's answer rests on a quantity the problem did not state
