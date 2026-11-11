@@ -1,7 +1,7 @@
 # S1f.6.9 — What is left of the width: how long a number may be
 
 **Phase:** [P1f.6](README.md)
-**Status:** **measured and stated, 2026-11-12, and stopped for the user's choice:** the nesting limit re-taken on
+**Status:** **measured and stated, 2026-11-12** (`55aeaf08`)**, and stopped for the user's choice:** the nesting limit re-taken on
 the shipped theory, the cost by length measured, and both on the page; nothing is built past the statement. **The
 choice between (a), (b) and (c) is the user's,**
 [Q-M1f.185](../open_questions.md#q-m1f185--a-state-file-nested-past-the-parsers-limit), with each option's probe
@@ -272,6 +272,19 @@ gate's goldens, which digest every rendering of the module, did not move.
 
 **The gate** is green (`./run_tests.sh`, `build/gate-s1f.6.9.log`, 2026-11-12): the module's digest moved and
 no golden did.
+
+## After the commit, 2026-11-12: the nightly, for S1f.6.7, S1f.6.8 and S1f.6.9
+
+On `55aeaf08`, the tree clean.
+
+- **The nightly.** `./run_tests.sh --nightly`, green in every step (`build/nightly-s1f.6.9.log`): the slow corpus
+  entries' cells, `answer_dump`, `answer_round_trip`'s slow and `heavy_dump` entries, the levers' slow cells, the
+  cores' slow entries, `region`'s and `obligation_rung`'s slow halves, the scratch check, the mutation census at
+  361 of 411, the fuzzer at both seeds and the bench smoke.
+- **The runner's image was not run.** `utils/ci_container.sh` is part of done for a stage that changes a DOT
+  writer, the review bundle or what CI installs (Q-M1f.77), and none of the three stages did: two modules, their
+  programs and tests, and pages. The DOT sweep drew the twenty-five new programs' views in each stage's gate here.
+- **Not run:** the dev-host tier, the whole review bundle among its steps.
 
 ## Acceptance re-taken, 2026-11-12
 

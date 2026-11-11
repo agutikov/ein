@@ -1,7 +1,7 @@
 # S1f.6.8 — Extension: rational numbers, an integer numerator over a natural denominator
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-12:** `stdlib/rat.ein`, the stdlib's twelfth module, 56 rules and its closing rule:
+**Status:** **done 2026-11-12** (`f8f605a3`)**:** `stdlib/rat.ein`, the stdlib's twelfth module, 56 rules and its closing rule:
 the rational, lowest terms by Euclid's chain, negation, the four operations and comparison, a zero denominator
 as a division by zero; held to exact fractions, search-free, and under the rule of the theory on the text and on
 the counter; five decisions taken by default, Q-M1f.180 to .184, and no finding
@@ -239,7 +239,9 @@ Pages: `stdlib/README.md` (§ `std.rat`, new), `tests/README.md` (§ `stdlib/rat
 the phase README and this record.
 
 **The gate** is green (`./run_tests.sh`, `build/gate-s1f.6.8.log`, 2026-11-12). `python3 utils/stdlib_census.py
---check`, `python3 utils/nl_census.py --check` and `python3 utils/stdlib_mutants.py --check` pass on the tree.
+--check`, `python3 utils/nl_census.py --check` and `python3 utils/stdlib_mutants.py --check` pass on the tree. The
+nightly was run after the last code commit of this run, S1f.6.9's, and is recorded
+[there](s1f.6.9_width.md#after-the-commit-2026-11-12-the-nightly-for-s1f67-s1f68-and-s1f69).
 
 ## Acceptance re-taken, 2026-11-12
 

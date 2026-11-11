@@ -1,7 +1,7 @@
 # S1f.6.7 — Extension: negative numbers as a positive and a negative part, simplified until one is zero
 
 **Phase:** [P1f.6](README.md)
-**Status:** **built but for division, 2026-11-12:** `stdlib/int.ein`, the stdlib's eleventh module, 36 rules and
+**Status:** **built but for division, 2026-11-12** (`f1fe6918`)**:** `stdlib/int.ein`, the stdlib's eleventh module, 36 rules and
 its closing rule: the pair, its simplification, negation, addition, subtraction, multiplication and comparison,
 held to Rust's signed integers, search-free, and under the rule of the theory on the text and on the counter;
 five decisions taken by default, Q-M1f.174 to .178, and no finding ([§ T1 record](#t1-record-2026-11-12) onward).
@@ -277,7 +277,7 @@ the phase README and this record.
 
 **The gate** is green (`./run_tests.sh`, `build/gate-s1f.6.7.log`, 2026-11-12). `python3 utils/stdlib_census.py
 --check`, `python3 utils/nl_census.py --check` and `python3 utils/stdlib_mutants.py --check` pass on the tree.
-The nightly is run after the phase's last code commit of this run, S1f.6.8's, and recorded there.
+The nightly was run after the last code commit of this run, S1f.6.9's, and is recorded [there](s1f.6.9_width.md#after-the-commit-2026-11-12-the-nightly-for-s1f67-s1f68-and-s1f69).
 
 ## Acceptance re-taken, 2026-11-12
 
