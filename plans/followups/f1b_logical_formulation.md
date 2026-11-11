@@ -1,5 +1,13 @@
 # F1b — Logical formulation
 
+> **Promoted 2026-11-11 → [M1g — Logic in Ein](../m1g_logic/README.md)**, on the user's instruction of that
+> day. M1g is the milestone § What promotion would look like names: PFL.1 is
+> [S1g.4.1](../m1g_logic/p1g.4_first_order_logic/s1g.4.1_the_fragment.md), PFL.2
+> [S1g.3.4](../m1g_logic/p1g.3_proof_systems/s1g.3.4_soundness_and_completeness.md), PFL.3 (and the TODO
+> below) [S1g.4.2](../m1g_logic/p1g.4_first_order_logic/s1g.4.2_relation_algebra.md), PFL.4
+> [S1g.4.5](../m1g_logic/p1g.4_first_order_logic/s1g.4.5_the_boundary.md). This page is kept as the statement
+> of the question, unchanged below; M1g is planned and not started.
+
 **Theme owner:** the user (research interest).
 **Trigger:** when the kernel + rule library are stable enough that
 the question "what fragment of FOL does ein cover?" has a concrete

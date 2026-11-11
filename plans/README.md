@@ -117,6 +117,17 @@ the tree they left, and one out of that review's close:
   through a loader flag and writes the NL pages; `P1f.20`, split out of P1f.5 on 2026-11-08,
   rebuilds the doc tree. Phase numbers 1–4, 6–9 and 11–19 are deliberately
   free.
+- **M1g — Logic in Ein** ([m1g_logic/](m1g_logic/README.md)) after M1f — planned
+  2026-11-11 on the user's instruction, and it **runs after M1f is complete**:
+  from the truth tables of M1f's S1f.6.17 to propositional logic (a formula a
+  nested fact, its valuations hypotheses, so a truth table is the region R),
+  proof systems (Hilbert's axiom sets, natural deduction, a written proof
+  checked by saturation), first-order logic (the fragment Ein's own rules are,
+  which is [F1b](followups/f1b_logical_formulation.md) promoted, and formulas
+  with quantifiers as data) and Peano's numbers with induction. Its first
+  phase is a survey on real programs that stops for the user, and the engine
+  work the logic turns out to need is its sixth phase: there is no M1h (the
+  user, 2026-11-11). Not a theorem prover, and not engine arithmetic.
 - **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))
   after M2. Renumbered from M2b 2026-08-23.
 - **M10 — External benchmarks** ([m10_external_benchmarks/](m10_external_benchmarks/README.md))
@@ -198,6 +209,15 @@ plans/
 │   ├── p1f.5_the_no_owner_items/       (was P1e2.5 + p1e.5) 16 stage files + 1 proposed
 │   ├── p1f.10_hypothesis_structure/    (was p1e.1b)  8
 │   └── p1f.20_docs_refactor/           (was S1f.5.20) 7
+├── m1g_logic/                        logic in Ein — planned 2026-11-11, runs after M1f
+│   ├── README.md                     (promotes followups/f1b; the user's instruction verbatim)
+│   ├── open_questions.md             Q-M1g.1–12
+│   ├── p1g.1_survey_and_design/        4 — stops for the user
+│   ├── p1g.2_propositional_logic/      4
+│   ├── p1g.3_proof_systems/            5 (1 optional)
+│   ├── p1g.4_first_order_logic/        5
+│   ├── p1g.5_peano_and_induction/      4
+│   └── p1g.6_engine_requirements/      5, provisional until P1g.1's stop
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
 │   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
@@ -262,6 +282,7 @@ Stage files have a stable shape:
 | [M1e](../docs/history/m1e_review_processing/README.md) | *(plans removed 2026-10-14 — the record is `docs/history/m1e_review_processing/`)* | **closed** 2026-10-14; the work ran 2026-08-27 → 09-01. The 2026-08-27 review processed: all **63 findings** dispositioned and all **10 questions** answered, the gate 738 → **821 tests**. Its probes found wrong answers the review never listed; they are [M1e2](m1e2_correctness/README.md)'s | est. ~11 weeks; ran six days |
 | [M1e2](m1e2_correctness/README.md) | **full** — 7 phases, 66 stages, plans kept | **closed** 2026-11-08, no `docs/history/` record by the user's instruction: 103 rows fixed, 1 not wrong, 10 open and deferred (F21, F22, M1f S1f.10.6); the no-owner items are M1f's P1f.5. Created 2026-10-14 at M1e's close. Every known wrong answer: P1e2.1 makes each one visible (dumps, every artefact of a run rendered to markdown with graphs, a case register that is a cargo test, the user's review); P1e2.2 fixes them, one stage each — W1–W12 and C1 of [`inventory.md`](m1e2_correctness/inventory.md) | ~8 weeks |
 | [M1f](m1f_hypothesis_and_documentation/README.md) | **full** — 3 phases, 33 stage files (+1 proposed) | **running** since 2026-11-08 — the two phases M1e carried that processed no finding, moved out 2026-08-29, and since 2026-11-08 M1e2's no-owner items as P1f.5, which runs first; P1f.5 re-planned the same day on the user's ruling, the generated parser first, 87.75 days of stage estimates where it was 87.5. The language as ruled, a branch structure derived from the program rather than paid for in deaths, and the pages a released system would have | ~18 weeks |
+| [M1g](m1g_logic/README.md) | **full** — 6 phases, 27 stage files (1 optional; P1g.6's five provisional) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |

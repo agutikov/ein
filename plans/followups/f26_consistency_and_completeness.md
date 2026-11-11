@@ -20,6 +20,14 @@ incompleteness* ([P2.8](../m2_nl_to_ir/p2.8_representations/README.md)); and
 arithmetic theory can do beyond arithmetic; when M2 or M5 has to say in a paper what Ein's verdicts certify; or
 when [F5](f5_rules_as_data.md) makes rules data, which is where self-reference becomes writable.
 
+**Taken up by [M1g](../m1g_logic/README.md)** (planned 2026-11-11, not started; it runs after M1f): F1b is
+promoted there, which is this page's first trigger. Of § What promotion would look like, 1, 2 and 4 are
+[S1g.4.5](../m1g_logic/p1g.4_first_order_logic/s1g.4.5_the_boundary.md), 3 is
+[S1g.6.1](../m1g_logic/p1g.6_engine_requirements/s1g.6.1_a_saturation_that_does_not_stop.md), and 5, with
+§ Does Gödel's theorem say anything about an Ein program, is
+[S1g.5.4](../m1g_logic/p1g.5_peano_and_induction/s1g.5.4_goedel_made_concrete.md); 6 stays here, for M2. This
+page is unchanged below and stays a sketch until those stages check it.
+
 **Status of this page.** § What Ein means is the engine's, with its sources. Everything after it is **the
 coordinator's sketch**, written to mark the questions and not checked by anything: each mapping is a claim to be
 tested when the theme is taken up, and may be wrong.

@@ -17,6 +17,9 @@ stage goes one level down, to the gates the tables are made of, and asks what Ei
 - **The gates as tables of facts:** `not`'s two rows, and the four rows each of the two-input functions. The
   names are the stage's to choose with care: `and`, `or`, `not`, `eq` and `false` are the engine's own words,
   and the value rule keeps `and` and `or` from ever heading a value, so a gate is not called `and`.
+  **The user ruled the same day that any other spelling will do:** *"for "and" element, function can use
+  _and, _and_, __and, AND, And, l_and, And2 - whatever"*. So the stage picks one convention for all the
+  gates, shows it on the examples, and does not stop for it.
 - **A circuit as a program:** wires are names, a gate instance is a fact, and one rule per gate type
   propagates values. Saturation is then circuit simulation, search-free, like the calculator.
 - **The binary full adder built from gates,** and its eight outputs held equal to S1f.6.16's table: the
@@ -59,5 +62,5 @@ stage goes one level down, to the gates the tables are made of, and asks what Ei
 
 Binary logic is propositional logic's semantics: a formula is a circuit, a valuation an input assignment, a
 tautology a circuit that is 1 on every row. Formulas as objects, proof systems, first-order logic and Peano
-arithmetic are not this stage's and not this phase's; the coordinator proposed them as a milestone of their
-own on 2026-11-11, and this stage is its starting point.
+arithmetic are not this stage's and not this phase's; they are [M1g](../../m1g_logic/README.md), which the
+user approved on 2026-11-11 and which runs after M1f; this stage is its starting point.
