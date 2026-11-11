@@ -86,6 +86,7 @@ alone.
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/arith/`](stdlib/arith/) | 89 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
+| [`stdlib/num9/`](stdlib/num9/) | 47 | `std.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibnum9-wide-rules-and-a-generated-module) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -229,6 +230,46 @@ it read 167 of 217, and the bank's 50 survivors are the ones it had
 (`python3 utils/stdlib_mutants.py --check`, 2026-11-11). `03_lengths.ein` is
 written both ways round because of it: `(add ?x ?y)` with its operands
 exchanged survives any program whose requests are symmetric.
+
+### `stdlib/num9/`: wide rules, and a generated module
+
+M1f [S1f.6.13](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md).
+`std.num9` is the calculator's second module: nine digit names in one fact,
+`(num9 0 0 0 1 2 3 0 7 8)`, and rules with a premise a column, so a sum is
+one firing. What `stdlib/arith/` says of its programs holds of these: each
+claims R = {∅} on its `(solve …)` form, `arith_search_free.rs` reads the
+search-free claim off every one, and right is held from outside the language,
+by `ein-infer/tests/num9_theory.rs` against Rust's integers, **exhaustively**
+at width 2 on the generator's own output and on a sample at width 9. The
+module is written by `utils/gen_num9.py`; a rule is changed there, and
+`--check` in that test file fails on an edit to `stdlib/num9.ein` itself.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `01_add.ein` | `add9-fits`: 123078 + 4567, and 99999999 + 1, a carry through eight columns | a column read out of order; the operands exchanged in the answer |
+| `02_add_overflow.ein` | `add9-overflows`: 999999999 + 1 is a flag and no `sum9-of`; the sum beside it is answered | a truncated number; a flag that kills the program |
+| `03_sub.ein` | `sub9-fits`, `sub9-short`: a difference, a shortfall, and equal operands, where both rules conclude one fact | a request answered with the other's fact; an equal pair answered twice |
+| `04_cmp.ein` | `cmp9-columns`: `lt`, `gt`, `eq`, and a higher column overruling the units | the order of the lowest differing column |
+| `05_mul.ein` | `mul9-start`, `mul9-step`, `mul9-step-zero`, `mul9-done`: 123 × 456, the largest square that fits, a multiplier with a zero inside; and no overflow at all | a zero digit that adds a row; a flag on a product that fits |
+| `06_mul_overflow.ein` | `mul9-overflows-shift`, `-row`, `-add`, each by a product that falls off the top in that place and no other; the product beside them answered | an overflow missed, or a number stored for it |
+| `07_div.ein` | `div9-start`, `div9-step-0`, `-1`, `-5`, `div9-done`: 127645 ÷ 25 = 5105 remainder 20 | a step that reads the wrong multiple |
+| `08_div_every_digit.ein` | `div9-step-1` to `div9-step-9`, a quotient of 123456789; and a divisor of nine digits whose ninth multiple has ten | a multiple truncated to nine digits |
+| `09_div_by_zero.ein` | `div9-by-zero`, and `std.arith`'s `division-by-zero-is-false` through this module's import: `(solve :expect (false))` | a division by zero answered, or passed over in silence |
+| `10_to9.ein` | `to9-zero`, `to9-1` to `to9-9`, `to9-big`: `as9`'s and `big`'s whole extents | a number padded on the wrong side; ten digits read as nine |
+| `11_from9.ein` | `from9-zero`, `from9-1` to `from9-9`: `of9`'s whole extent, a zero inside the number kept | an answer with a high zero |
+| `12_both_modules.ein` | both modules flat in one program: one sum by each and the answers compared by `std.arith`, `eq` | a name of one module that is a name of the other |
+| `13_chain.ein` | a `div9` request a rule of the program derives from a `product9-of` | a derived request left unanswered |
+
+**No request here is another the other way round where it matters**, and
+`03_sub.ein` says why in its header: the mutation sweep's first run left
+`(sub9 X Y)` read with its operands exchanged alive in both subtractors,
+since a program that asks X − Y and Y − X gets each one's fact from the
+other's request and the two together look right. Two other mutants survived
+that run because they changed nothing: a step counter's premise in two of the
+overflow rules, which a digit that is not zero already implies. The premise
+is gone from the rules. **The sweep kills every mutant of the module**, 41 of
+41, and the bank is unmoved (`python3 utils/stdlib_mutants.py --check`,
+2026-11-11).
 
 ### Five things about how they are written
 
@@ -409,6 +450,17 @@ every one** (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.6](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)).
 **The bank is unmoved**, 50 lines: `std.arith`'s 89 rules have 67 mutants and
 no survivor.
+
+**275 of 325 on 2026-11-11: `std.num9` added 41 mutants and the suite kills
+every one** (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.13](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md)).
+Its rules write no guard, so its mutants are the exchange families: a
+request's two operands, the two arguments of a step counter's row, a
+conversion's two. Its first run read 273 of 327, four survivors: two were
+equivalent mutants of a premise two rules did not need, which the generator
+no longer writes, and two were `(sub9 X Y)` with its operands exchanged, which
+`num9/03_sub.ein` kills since it stopped asking a pair both ways round. **The
+bank is unmoved**, 50 lines.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

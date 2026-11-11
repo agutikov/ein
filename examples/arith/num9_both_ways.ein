@@ -1,0 +1,57 @@
+;;; One sum, by both modules, and the two answers compared. M1f P1f.6 (S1f.6.13).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.arith` computes on numbers of any length, `z` and `(n PREFIX
+;;; DIGIT)`; `std.num9` on nine digits in one fact. They import flat into one
+;;; program, and `std.num9` has a request each way between the two shapes:
+;;;
+;;;   (to9 X)      (as9 X W)    X as nine digits; or (big X), where X is
+;;;                             written with more than nine
+;;;   (from9 W)    (of9 W X)    W as a number of any length, in normal form
+;;;
+;;; Nothing converts a number because it exists, and neither module hands a
+;;; request to the other: the program's own rules ask.
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;;   (add 123078 4567)          std.arith: 21 firings, one a step
+;;;   (to9 …) twice              the operands in nine digits, a firing each
+;;;   sum-in-nine                asks std.num9 for the same sum: one firing
+;;;   back-again                 asks for that sum as a number of any length
+;;;   compare                    asks std.arith to compare the two answers
+;;;
+;;; The comparison answers `eq`.
+;;;
+;;; ── When to use which ──────────────────────────────────────────────────
+;;;
+;;; `std.num9` where every number fits nine digits and a sum in one firing
+;;; matters, or where a fixed width with an overflow flag is what is
+;;; modelled; `std.arith` for numbers of any length, for named constants and
+;;; for batches (`stdlib/README.md` § `std.num9` has both measured).
+
+(import std.arith :symbols (arith))
+(import std.num9 :symbols (arith9))
+
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+(to9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+(to9 (n (n (n (n z 4) 5) 6) 7))
+
+(rule sum-in-nine ()
+  :match  (and (as9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) ?a) (as9 (n (n (n (n z 4) 5) 6) 7) ?b))
+  :assert (add9 ?a ?b)
+  :why    "both operands fit nine digits: add them there too")
+
+(rule back-again ()
+  :match  (sum9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) ?s)
+  :assert (from9 ?s)
+  :why    "the sum in nine digits is {?s}: ask for it as a number of any length")
+
+(rule compare ()
+  :match  (and (of9 ?s ?t) (sum-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7) ?u))
+  :assert (cmp ?t ?u)
+  :why    "one sum by each module, {?t} and {?u}: compare them")
+
+(query :goal (cmp-of ?t ?u ?o)
+       :goal-text "{?t} against {?u}: {?o}"
+       :expect (model (cmp-of (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) eq)))

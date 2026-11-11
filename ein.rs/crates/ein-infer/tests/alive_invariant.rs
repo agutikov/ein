@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 53] = [
+const SEEDED: [(&str, &[&str]); 69] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -408,6 +408,71 @@ const SEEDED: [(&str, &[&str]); 53] = [
     (
         "tests/stdlib/algebra/22_symmetric_negative.ein",
         &["`C`, in (not (sits-with A C))"],
+    ),
+    // M1f S1f.6.13 — `std.num9`. Its numbers are nine digit names and hold no
+    // `z`; the module names it in a rule's `:match`, the conversion of zero,
+    // which every program that imports the theory holds. The two programs
+    // that import `std.arith` beside it write a nested number.
+    (
+        "examples/arith/num9.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "examples/arith/num9_both_ways.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "examples/arith/num9_overflow.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    ("stdlib/num9.ein", &["`z`, matched by rule `to9-zero`"]),
+    (
+        "tests/stdlib/num9/01_add.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/02_add_overflow.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/03_sub.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/04_cmp.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/05_mul.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/06_mul_overflow.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/07_div.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/08_div_every_digit.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/09_div_by_zero.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/11_from9.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "tests/stdlib/num9/12_both_modules.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "tests/stdlib/num9/13_chain.ein",
+        &["`z`, matched by rule `to9-zero`"],
     ),
 ];
 

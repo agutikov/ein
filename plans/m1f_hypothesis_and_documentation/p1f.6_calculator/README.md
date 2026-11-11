@@ -18,6 +18,8 @@ same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). **S1f.6
 (2026-11-11):** `(quot-of X Y Q R)` by bisection, and division by zero as a flag and `(false)` from it, 36
 rules more; the four operations and comparison are built
 ([its records](s1f.6.6_division.md#t1-record-2026-11-11)).
+**S1f.6.13, `std.num9`, is done (2026-11-11):** the user's own number as a second module, wide rules, 47 of
+them, generated ([its records](s1f.6.13_num9.md#t1-record-2026-11-11-the-generator-and-the-module)).
 **S1f.6.12's investigation is done and stopped for the user (2026-11-11):** what a theory can detect of a
 malformed number without negation, what it costs, and what a name clash does today
 ([`malformed_numbers.md`](malformed_numbers.md)).
@@ -136,7 +138,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.5](s1f.6.5_multiplication.md) | Multiplication | S1f.6.3 | **done 2026-11-11**: 16 rules more, 53; `(mul X Y)` answered by `(product-of X Y P)`, the school method from the multiplier's top digit, tagged so a later theory can call it; 123 × 456 is 72 firings; the DOT sweep runs several files at a time; Q-M1f.159 to .162 defaulted |
 | [S1f.6.6](s1f.6.6_division.md) | Division with remainder, the quotient digit by bisection; division by zero as a flag and `(false)` from it | S1f.6.4, S1f.6.5 | **done 2026-11-11**: 36 rules more, 89; `(div X Y)` answered by `(quot-of X Y Q R)`, 127645 ÷ 25 in 220 firings; a division by zero derives the flag and the flag `(false)`, every surface shown in the record; the two families of nine rules held alike by a test; Q-M1f.163 to .165 defaulted |
 | [S1f.6.12](s1f.6.12_malformed_numbers.md) | Malformed numbers, and the names the theory occupies: an investigation first, then the detection | the prototype for its first task; S1f.6.6 for the build | **T1 done 2026-11-11, stopped for the user**: [`malformed_numbers.md`](malformed_numbers.md), on the shipped theory: a digit's place, a number's end and a twice-named constant can be flagged with no negation for twenty firings a request; a name no `let` states and a foreign fact cannot; a wrong count of arguments is the loader's, and a census finds nothing that loads refused; six questions; E-27 found |
-| [S1f.6.13](s1f.6.13_num9.md) | Fixed-width numbers as a second module, `std.num9`, with overflow and conversions | S1f.6.2, S1f.6.6 | planned |
+| [S1f.6.13](s1f.6.13_num9.md) | Fixed-width numbers as a second module, `std.num9`, with overflow and conversions | S1f.6.2, S1f.6.6 | **done 2026-11-11**: `stdlib/num9.ein`, generated, 47 rules; a sum, a difference and a comparison in one firing, a product and a quotient in eleven; overflow a flag and never a number, a division by zero through `std.arith`'s rule; conversions each way; exhaustive against the integers at width 2; no rule joins two facts on a number, so 4 000 divisions take 1.24 s where the prototype took 8.1; Q-M1f.167 to .173 defaulted, **.173 for the user to confirm**: a wide rule takes up to 162 of the engine's 256 registers, and the tripwire on that bound now measures the module apart; E-28 found |
 | [S1f.6.7](s1f.6.7_negative_numbers.md) | Extension: negative numbers as a positive and a negative part, simplified until one is zero | S1f.6.6 | planned |
 | [S1f.6.8](s1f.6.8_rational_numbers.md) | Extension: rational numbers, an integer numerator over a natural denominator | S1f.6.7 | planned |
 | [S1f.6.9](s1f.6.9_width.md) | What is left of the width: how long a number may be (the nesting limit, the size of a state) | S1f.6.6 | planned; one choice **for the user** |
@@ -158,9 +160,9 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 15 t
    [what the next stages add where](s1f.6.3_addition.md#for-the-stages-that-follow) is its record's last section. S1f.6.3 writes the machinery the others
    call, and the test of the rule of the theory that each later stage extends to its own rules.
 4. **S1f.6.12's investigation** may run at any time, on the prototype, since its first task stops for the user;
-   its build follows S1f.6.6.
+   its build follows S1f.6.6. **The investigation is done (2026-11-11) and stopped for the user.**
 5. **S1f.6.13, `std.num9`,** after S1f.6.6, since its conversions name `std.arith`'s numbers. It touches no file
-   of the nested theory.
+   of the nested theory. **Done 2026-11-11.**
 6. **S1f.6.20, the word problems,** any time after S1f.6.6. It is the first program that uses the calculator
    among other relations, and where the need for nested expressions shows or does not.
 7. **S1f.6.14, expressions,** only on the user's ruling, after S1f.6.20's examples.

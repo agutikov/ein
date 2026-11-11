@@ -1,0 +1,74 @@
+;;; The user's own number: nine digits in one fact, and school arithmetic on
+;;; it by wide rules. M1f P1f.6 (S1f.6.13).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.num9` is the calculator's second module (`add.ein` beside this file
+;;; introduces the first, `std.arith`). Its number is the one the phase's
+;;; instruction wrote, `(num9 0 0 0 1 2 3 0 7 8)` for 123078: nine digit
+;;; names, the most significant first, a fixed width.
+;;;
+;;;   (add9 X Y)    (sum9-of X Y S)          123078 + 4567 = 127645
+;;;   (sub9 X Y)    (diff9-of X Y D R)       two numbers, as std.arith's
+;;;   (cmp9 X Y)    (cmp9-of X Y O)          lt, eq or gt
+;;;   (mul9 X Y)    (product9-of X Y P)      123 x 456 = 56088
+;;;   (div9 X Y)    (quot9-of X Y Q R)       127645 / 25 = 5105 remainder 20
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; A sum is ONE firing: the rule `add9-fits` has a premise for the request
+;;; and one for each of the nine columns, a row of the full adder's table,
+;;; and the carry goes from column to column in a variable. A difference and
+;;; a comparison are one firing too. A product and a quotient are eleven: a
+;;; start, a step for each of nine digits, an end.
+;;;
+;;;     ein solve examples/arith/num9.ein --trace T.md
+;;;
+;;; writes each firing as a sentence, with the nine table rows it read.
+;;;
+;;; ── The chain ──────────────────────────────────────────────────────────
+;;;
+;;; `then-divide` matches the product of 123 and 456 and asks for it to be
+;;; divided by 25: 56088 / 25 = 2243 remainder 13.
+;;;
+;;; ── What does not fit ──────────────────────────────────────────────────
+;;;
+;;; `num9_overflow.ein` beside this file: a sum or a product of ten digits
+;;; is a flag and no number. `num9_both_ways.ein` computes one sum in both
+;;; modules and compares.
+
+(import std.num9 :symbols (arith9))
+
+(add9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+(sub9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+(sub9 (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 2 3 0 7 8))
+(cmp9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+(mul9 (num9 0 0 0 0 0 0 1 2 3) (num9 0 0 0 0 0 0 4 5 6))
+(div9 (num9 0 0 0 1 2 7 6 4 5) (num9 0 0 0 0 0 0 0 2 5))
+
+(rule then-divide ()
+  :match  (product9-of (num9 0 0 0 0 0 0 1 2 3) (num9 0 0 0 0 0 0 4 5 6) ?p)
+  :assert (div9 ?p (num9 0 0 0 0 0 0 0 2 5))
+  :why    "the product is {?p}: now divide it by 25")
+
+(query :goal (sum9-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 2 7 6 4 5))))
+
+(query :goal (diff9-of ?x ?y ?d ?r)
+       :goal-text "{?x} - {?y} = {?d}, short by {?r}"
+       :expect (model (diff9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 1 8 5 1 1) (num9 0 0 0 0 0 0 0 0 0))
+                      (diff9-of (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 0 0 0 0) (num9 0 0 0 1 1 8 5 1 1))))
+
+(query :goal (cmp9-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (cmp9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) gt)))
+
+(query :goal (product9-of ?x ?y ?p)
+       :goal-text "{?x} x {?y} = {?p}"
+       :expect (model (product9-of (num9 0 0 0 0 0 0 1 2 3) (num9 0 0 0 0 0 0 4 5 6) (num9 0 0 0 0 5 6 0 8 8))))
+
+(query :goal (quot9-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}"
+       :expect (model (quot9-of (num9 0 0 0 1 2 7 6 4 5) (num9 0 0 0 0 0 0 0 2 5) (num9 0 0 0 0 0 5 1 0 5) (num9 0 0 0 0 0 0 0 2 0))
+                      (quot9-of (num9 0 0 0 0 5 6 0 8 8) (num9 0 0 0 0 0 0 0 2 5) (num9 0 0 0 0 0 2 2 4 3) (num9 0 0 0 0 0 0 0 1 3))))

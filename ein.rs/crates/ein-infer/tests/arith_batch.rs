@@ -249,3 +249,127 @@ fn a_number_operand_does_not_walk_the_lets() {
         );
     }
 }
+
+// ── std.num9 (S1f.6.13) ────────────────────────────────────────────
+
+const IMPORT9: &str = "(import std.num9 :symbols (arith9))\n";
+
+/// `std.num9`'s requests, each with its result relation and the digits of
+/// its two operands, chosen so that every request has an answer and none
+/// overflows: two numbers of eight digits have a sum of at most nine, and
+/// two of four a product of at most eight.
+const REQUESTS9: [(&str, &str, u32, u32); 5] = [
+    ("add9", "sum9-of", 8, 8),
+    ("sub9", "diff9-of", 9, 9),
+    ("cmp9", "cmp9-of", 9, 9),
+    ("mul9", "product9-of", 4, 4),
+    ("div9", "quot9-of", 9, 4),
+];
+
+/// What a request of each may cost at the smallest batch, in `candidates`:
+/// a little above the measure, as [`BOUND`] is.
+const BOUND9: [f64; 5] = [BOUND9_ADD, BOUND9_SUB, BOUND9_CMP, BOUND9_MUL, BOUND9_DIV];
+const BOUND9_ADD: f64 = 500.0;
+const BOUND9_SUB: f64 = 500.0;
+const BOUND9_CMP: f64 = 1200.0;
+const BOUND9_MUL: f64 = 14000.0;
+const BOUND9_DIV: f64 = 36000.0;
+
+/// A number of exactly `digits` digits as `std.num9` writes it, nine digit
+/// names with zeros in front.
+fn number9(rng: &mut u64, digits: u32) -> String {
+    let mut out = String::from("(num9");
+    for _ in digits..9 {
+        out.push_str(" 0");
+    }
+    for i in 0..digits {
+        *rng = rng
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
+        let r = (*rng >> 33) % if i == 0 { 9 } else { 10 };
+        let d = if i == 0 { r + 1 } else { r };
+        out.push_str(&format!(" {d}"));
+    }
+    out.push(')');
+    out
+}
+
+/// `count` distinct requests: two short operands can be drawn twice, and a
+/// request stated twice is one fact with one answer.
+fn batch9(op: &str, count: usize, first: u32, second: u32) -> String {
+    let mut rng = 0x5146_0613_u64;
+    let mut src = String::from(IMPORT9);
+    let mut seen = std::collections::BTreeSet::new();
+    while seen.len() < count {
+        let request = format!(
+            "({op} {} {})\n",
+            number9(&mut rng, first),
+            number9(&mut rng, second)
+        );
+        if seen.insert(request.clone()) {
+            src.push_str(&request);
+        }
+    }
+    src
+}
+
+/// **The second module keeps the rule of the theory, and this is what it
+/// buys.** The prototype's `num9` joined a division's state with the
+/// divisor's multiples on the divisor, a nested fact, and its batches were
+/// quadratic: 250 divisions in 193 ms and 4 000 in 8.1 s (P1f.6's
+/// `design.md` § 4). The shipped module computes the nine multiples in one
+/// firing and carries them in the state, and computes a product's rows
+/// inside its step rule, so no rule has a second premise that holds a
+/// number (`num9_theory.rs` holds that on the text). Here: a request of each
+/// operation costs the same `candidates` at 1 000 and at 4 000 requests as
+/// at 250, and the same firings.
+#[test]
+fn a_batch_of_nine_digit_requests_costs_in_proportion_to_its_count() {
+    let sizes = [250usize, 1000, 4000];
+    for ((op, result, first, second), bound) in REQUESTS9.into_iter().zip(BOUND9) {
+        let work: Vec<Work> = sizes
+            .iter()
+            .map(|&n| saturate(&batch9(op, n, first, second), result))
+            .collect();
+        for (n, w) in sizes.iter().zip(&work) {
+            assert_eq!(w.answers, *n, "{n} `{op}` requests, each answered");
+            eprintln!(
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
+                w.firings,
+                per_request(w.firings, *n),
+                w.candidates,
+                per_request(w.candidates, *n)
+            );
+        }
+        let base_firings = per_request(work[0].firings, sizes[0]);
+        let base = per_request(work[0].candidates, sizes[0]);
+        for (n, w) in sizes.iter().zip(&work).skip(1) {
+            let firings = per_request(w.firings, *n);
+            assert!(
+                firings <= base_firings * TOLERANCE,
+                "`{op}`: firings per request grew with the batch: {base_firings:.1} at {} \
+                 and {firings:.1} at {n}",
+                sizes[0]
+            );
+            if cfg!(feature = "counters") {
+                let c = per_request(w.candidates, *n);
+                assert!(
+                    c <= base * TOLERANCE,
+                    "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.num9 \
+                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     `num9_theory.rs` names the rule if it is written as two premises",
+                    sizes[0]
+                );
+            }
+        }
+        if cfg!(feature = "counters") {
+            assert!(base > 0.0, "the counters are on and counted nothing");
+            assert!(
+                base < bound,
+                "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
+                sizes[0]
+            );
+        }
+    }
+}

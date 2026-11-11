@@ -1,0 +1,31 @@
+;;; `std.num9` — a sum that does not fit: 999999999 + 1 overflows. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Overflow is a fact and no number. `add9-overflows` is `add9-fits` with the
+;;; carry out of the top column written `1` where its twin writes `0`: it
+;;; derives `(overflow (add9 X Y))`, the request as written, and no
+;;; `sum9-of`. Never a truncated number: 000000000 is not stored.
+;;;
+;;; Root stays alive, so the program's other request is answered:
+;;; 999999998 + 1 = 999999999 fits.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `overflow`'s whole extent, one flag, and `sum9-of`'s, one sum: the request
+;;; that overflowed has no answer among them.
+
+(import std.num9 :symbols (arith9))
+
+(add9 (num9 9 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1))
+(add9 (num9 9 9 9 9 9 9 9 9 8) (num9 0 0 0 0 0 0 0 0 1))
+
+(solve :expect (region (model)))
+
+(query :goal (overflow ?request)
+       :goal-text "{?request} does not fit nine digits"
+       :expect (model (overflow (add9 (num9 9 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1)))))
+
+(query :goal (sum9-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum9-of (num9 9 9 9 9 9 9 9 9 8) (num9 0 0 0 0 0 0 0 0 1) (num9 9 9 9 9 9 9 9 9 9))))

@@ -1,0 +1,44 @@
+;;; What does not fit nine digits: a flag, and no number. M1f P1f.6 (S1f.6.13).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.num9`'s numbers have nine digits (`num9.ein` beside this file).
+;;; 999999999 + 1 and 123078 x 123078 have ten and eleven. Each request
+;;; derives `(overflow REQUEST)`, the request as written, and no result
+;;; fact: never a truncated number. `std.arith`, whose numbers have any
+;;; length, answers both (`mul.ein`).
+;;;
+;;; ── What it does to the rest of the program ────────────────────────────
+;;;
+;;; Nothing. An overflow is a fact like any other: root stays alive, the sum
+;;; 2 + 2 beside the two is answered, and a rule of the program may match the
+;;; flag, as `too-big` does here. (A division by zero is the other kind of
+;;; failure, a contradiction: `div_by_zero.ein`.)
+
+(import std.num9 :symbols (arith9))
+
+(relation too-big Request
+  :why "{?1} needs more than nine digits")
+(__closed__ too-big)
+
+(add9 (num9 9 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1))
+(mul9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 1 2 3 0 7 8))
+(add9 (num9 0 0 0 0 0 0 0 0 2) (num9 0 0 0 0 0 0 0 0 2))
+
+(rule too-big ()
+  :match  (overflow ?request)
+  :assert (too-big ?request)
+  :why    "{?request} overflowed")
+
+(query :goal (too-big ?request)
+       :goal-text "{?request} needs more than nine digits"
+       :expect (model (too-big (add9 (num9 9 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1)))
+                      (too-big (mul9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 1 2 3 0 7 8)))))
+
+(query :goal (sum9-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum9-of (num9 0 0 0 0 0 0 0 0 2) (num9 0 0 0 0 0 0 0 0 2) (num9 0 0 0 0 0 0 0 0 4))))
+
+(query :goal (product9-of ?x ?y ?p)
+       :goal-text "{?x} x {?y} = {?p}"
+       :expect (model))

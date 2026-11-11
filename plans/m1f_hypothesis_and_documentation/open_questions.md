@@ -179,6 +179,13 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.164](#q-m1f164--divisions-families-of-nine-rules-by-hand-or-generated) | division's families of nine rules: by hand or generated? | **defaulted 2026-11-11 (S1f.6.6): by hand, and a test holds that the rules of a family differ by their digit alone**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.165](#q-m1f165--what-search-free-means-of-a-program-that-divides-by-zero) | what search-free means of a program that divides by zero | **defaulted 2026-11-11 (S1f.6.6): no candidate, one saturation, R empty and decided by root, the request in the core; the test holds such a program to that where it holds the others to R = {∅}**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.166](#q-m1f166--the-sizes-of-the-generated-arithmetic-examples) | the sizes of the generated arithmetic examples | **defaulted 2026-11-11 (S1f.6.15): what every per-commit surface affords, 100-digit operands, 100 requests and 25!; the plan's sizes are the script's sweep and the generator's arguments**; [S1f.6.15](p1f.6_calculator/s1f.6.15_load_against_calculation.md) |
+| [Q-M1f.167](#q-m1f167--the-names-of-stdnum9) | the names of `std.num9` | **defaulted 2026-11-11 (S1f.6.13): `std.arith`'s public names with a 9, `add9` and `sum9-of`, the entry `arith9`, the conversions `to9`/`as9` and `from9`/`of9`, and the flags `overflow` and `big`**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.168](#q-m1f168--overflow-and-division-by-zero-in-stdnum9) | overflow and division by zero in `std.num9` | **defaulted 2026-11-11 (S1f.6.13): overflow a fact naming the request, root alive, never a number; a division by zero `std.arith`'s own flag relation and its rule to `(false)`, imported**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.169](#q-m1f169--where-stdnum9s-multiples-and-rows-live) | where `std.num9`'s multiples and rows live | **defaulted 2026-11-11 (S1f.6.13): in the state and in the step rule, so no rule joins two facts on a number: one rule computes the nine multiples, ten step rules read them, and a product's step computes its own row**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.170](#q-m1f170--what-stdnum9-reads-as-an-operand) | what `std.num9` reads as an operand | **defaulted 2026-11-11 (S1f.6.13): a number written out; no named constants; a conversion reads a number as written, high zeros counted, a name not looked up**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.171](#q-m1f171--stdnum9s-step-counter-and-its-comparison) | `std.num9`'s step counter and its comparison | **defaulted 2026-11-11 (S1f.6.13): `std.digits`' `adj` and `cl`, no table of the module's own**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.172](#q-m1f172--the-harness-of-stdnum9-exhaustive-at-width-2) | the harness of `std.num9`: exhaustive at width 2 | **defaulted 2026-11-11 (S1f.6.13): the generator's `--width 2 --stdout` in front of the test's requests, every pair under five operations; no second width is shipped**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.173](#q-m1f173--max_regs-and-the-wide-rules-of-stdnum9) | `MAX_REGS` and the wide rules of `std.num9` | **defaulted 2026-11-11 (S1f.6.13), the user's to overrule: the bound stays 256; `std.num9`'s generated rules are measured apart, the widest pinned at 162 registers, and every other corpus rule is held to an eighth of the bound as before**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3264,4 +3271,113 @@ reloads at 0.3 s a megabyte. Every corpus program is solved, dumped and reloaded
 
 **Defaulted 2026-11-11: (a).** An example a reader can run under every command, and the sweep where the sizes
 are. What E-24 argues for is the user's to weigh; with it lifted the files can grow by an argument.
+
+### Q-M1f.167 — The names of `std.num9`
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T2. The plan: *its relations are its own, `add9`, `sum9-of` and so on, so that a
+program may import both modules flat; the names are the stage's to propose with examples before the module is
+written.*
+
+- **(a) `std.arith`'s public names with a 9:** `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`,
+  `mul9`/`product9-of`, `div9`/`quot9-of`; the entry `arith9`; `to9`/`as9` and `from9`/`of9`; the flags `overflow`
+  and `big`, with no digit, since `std.arith` has neither.
+- **(b) A prefix:** `n9-add`, `n9-sum-of`.
+- **(c) `std.arith`'s names,** the two modules then importable flat only one at a time.
+
+**Defaulted 2026-11-11: (a).** A reader who knows one module reads the other. The stage's record shows the eight
+target programs under the names; the user may rename before anything is built on them.
+
+### Q-M1f.168 — Overflow and division by zero in `std.num9`
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T1. The plan: overflow is a fact and no number, the design's recommendation, which
+the user did not rule; a division by zero is as in `std.arith`.
+
+- **(a) Overflow `(overflow REQUEST)`, root alive; a division by zero by `std.arith`'s relation and rule,** which
+  the module imports: one flag relation and one rule that concludes `(false)` across both modules.
+- **(b) A flag relation and a `(false)` rule of the module's own,** `division-by-zero9`: nothing imported from
+  `std.arith` for it, and two rules of the stdlib that conclude `(false)`.
+- **(c) Overflow as `(false)` too.** A program that overflows once then loses every other answer.
+
+**Defaulted 2026-11-11: (a).** An overflow is an answer about a width, which a program may want to read and go on;
+a division by zero asked for what does not exist, as ruled.
+
+### Q-M1f.169 — Where `std.num9`'s multiples and rows live
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T3, which the plan left to it: *the multiples moved into the state if that removes
+the join*. The prototype kept a divisor's multiples and a multiplier's rows as facts and joined its state with
+them on a number: 4 000 divisions in 8.1 s.
+
+- **(a) In the state, computed by one rule:** `div9-start` reads 72 rows of `md` and states the nine multiples;
+  ten step rules, one a digit of the quotient, each read their own. A product's step computes its row itself.
+- **(b) In the state, computed by a chain of eight rules,** as `std.arith` does: eight firings more a division,
+  and nine relations of growing arity.
+- **(c) No multiples: ten step rules that each compute their multiple,** nine rows of `md` a rule a step.
+- **(d) As the prototype:** quadratic.
+
+**Defaulted 2026-11-11: (a).** No rule joins two facts on a number, a division is eleven firings, and 4 000 take
+1.24 s. A rule of 73 premises is what a generator is for.
+
+### Q-M1f.170 — What `std.num9` reads as an operand
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T4. `std.arith` looks an operand up, so a request may name it; round 1's `num9` did
+not.
+
+- **(a) A number written out, and nothing else:** no `let` in the module. A conversion reads a nested number as
+  written: high zeros count, and nine digits behind a zero are `big`.
+- **(b) Named operands,** through `std.arith`'s `operand`: four firings a request where one, and the whole of
+  `std.arith`'s lookup imported.
+- **(c) A conversion by value:** `to9` strips high zeros first, a firing a zero.
+
+**Defaulted 2026-11-11: (a).** The module's point is one firing. A program that wants a name writes a rule of its
+own from the name to the request.
+
+### Q-M1f.171 — `std.num9`'s step counter and its comparison
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T1. The plan said the module adds its own step counter; round 2's `num9` compared
+by two subtractors.
+
+- **(a) `std.digits`' tables:** `adj`, the pairs k and k + 1, counts the steps, and `cl`, the comparator, compares
+  in one rule.
+- **(b) A table of the module's own** for the steps, and two subtractors and a rule for equal numbers.
+
+**Defaulted 2026-11-11: (a).** No fact is added to what every program loads. A comparison's lookup walks the
+hundred rows an order keys (E-12), 901 candidates where two subtractors would walk some 360; it is one firing
+either way.
+
+### Q-M1f.172 — The harness of `std.num9`: exhaustive at width 2
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s T5. The plan: *exhaustive at width 2 on the generator's output and sampled at
+width 9*. A width-2 theory is not a module of the stdlib.
+
+- **(a) The generator's `--width 2 --stdout`, put in front of the test's requests** as the program's own
+  declarations: 49 900 requests in one saturation.
+- **(b) A second shipped module,** `std.num2`, which the coverage gate would then ask tests for.
+
+**Defaulted 2026-11-11: (a).** The plan's *one width ships*.
+
+### Q-M1f.173 — `MAX_REGS` and the wide rules of `std.num9`
+
+**Raised** 2026-11-11 by [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md)'s gate. A rule binds its variables to a register file of 256
+(`ein_infer::MAX_REGS`, the engine's one compile-time bound, S1a.3.1; refused at load past it since S1f.5.21).
+`ein-infer/tests/compile_limits.rs` holds a tripwire on it: the widest rule of the corpus stays within an eighth of
+the bound, 32 registers, *and if a shipping rule ever approaches it the bound stops being acceptable: it needs
+re-deciding*. Until this stage the widest was 16. A wide rule of `std.num9` binds a multiple of nine variables by
+what it is: 35 for a sum, about 60 for a product's step, about 90 for a division's, and **162 for `div9-start`**,
+which computes eight multiples of nine columns in one firing (Q-M1f.169 (a)). The module the user ruled in cannot
+be written under 32 at width nine, whatever Q-M1f.169 chose: a sum alone names three numbers and eight carries.
+
+- **(a) The bound stays, and the module is measured apart:** the tripwire holds every other rule of the corpus to
+  an eighth as before, and holds `std.num9`'s widest to its number, 162, and under the bound. The module is
+  generated and its width is fixed, so the number moves only when the generator does, and then the test fails.
+- **(b) A narrower `div9-start`:** Q-M1f.169 (b), a chain of eight rules for the multiples, takes the widest to
+  the division's step, about 92, at eight firings more a division. Still three times the tripwire.
+- **(c) Raise the bound,** to 1 024 or to a file sized by the plan: an engine change, and the register file's
+  fixed size is what keeps the matcher's inner loop free of allocation (design/05 § 3).
+- **(d) Narrower rules:** a sum in two halves, two firings. It is no longer round 1's theory, and a product's and a
+  division's steps would be split three and four ways.
+
+**Defaulted 2026-11-11: (a), for the user to confirm.** No engine source moved: 162 is under 256 and nothing hits
+the bound. What the tripwire asked for is a decision, and this is the smallest one that keeps it watching
+everything else. It also says where the wide style ends: `div9-start` takes eighteen registers a digit, so a `num15` by
+this generator would not load.
 

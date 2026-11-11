@@ -30,6 +30,20 @@
 0    examples/arith/mul.ein :: solve
 0    examples/arith/mul.ein :: solve --trace {out}/trace.md
 0    examples/arith/mul.ein :: test
+0    examples/arith/num9.ein :: render rules
+0    examples/arith/num9.ein :: saturate
+0    examples/arith/num9.ein :: saturate --dump
+0    examples/arith/num9.ein :: solve
+0    examples/arith/num9.ein :: solve --trace {out}/trace.md
+0    examples/arith/num9.ein :: test
+0    examples/arith/num9_both_ways.ein :: render rules
+0    examples/arith/num9_both_ways.ein :: saturate
+0    examples/arith/num9_both_ways.ein :: solve
+0    examples/arith/num9_both_ways.ein :: test
+0    examples/arith/num9_overflow.ein :: render rules
+0    examples/arith/num9_overflow.ein :: saturate
+0    examples/arith/num9_overflow.ein :: solve
+0    examples/arith/num9_overflow.ein :: test
 0    examples/arith/sub.ein :: render rules
 0    examples/arith/sub.ein :: saturate
 0    examples/arith/sub.ein :: saturate --dump
@@ -1463,6 +1477,10 @@
 1    stdlib/macro.ein :: render rules
 0    stdlib/macro.ein :: saturate
 0    stdlib/macro.ein :: solve
+0    stdlib/num9.ein :: render constraints
+0    stdlib/num9.ein :: render rules
+0    stdlib/num9.ein :: saturate
+0    stdlib/num9.ein :: solve
 0    stdlib/slots.ein :: render constraints
 0    stdlib/slots.ein :: render rules
 0    stdlib/slots.ein :: saturate
@@ -1809,6 +1827,71 @@
 0    tests/stdlib/macro/02_unknown.ein :: saturate
 0    tests/stdlib/macro/02_unknown.ein :: solve
 0    tests/stdlib/macro/02_unknown.ein :: test
+0    tests/stdlib/num9/01_add.ein :: render constraints
+1    tests/stdlib/num9/01_add.ein :: render rules
+0    tests/stdlib/num9/01_add.ein :: saturate
+0    tests/stdlib/num9/01_add.ein :: solve
+0    tests/stdlib/num9/01_add.ein :: test
+0    tests/stdlib/num9/02_add_overflow.ein :: render constraints
+1    tests/stdlib/num9/02_add_overflow.ein :: render rules
+0    tests/stdlib/num9/02_add_overflow.ein :: saturate
+0    tests/stdlib/num9/02_add_overflow.ein :: solve
+0    tests/stdlib/num9/02_add_overflow.ein :: test
+0    tests/stdlib/num9/03_sub.ein :: render constraints
+1    tests/stdlib/num9/03_sub.ein :: render rules
+0    tests/stdlib/num9/03_sub.ein :: saturate
+0    tests/stdlib/num9/03_sub.ein :: solve
+0    tests/stdlib/num9/03_sub.ein :: test
+0    tests/stdlib/num9/04_cmp.ein :: render constraints
+1    tests/stdlib/num9/04_cmp.ein :: render rules
+0    tests/stdlib/num9/04_cmp.ein :: saturate
+0    tests/stdlib/num9/04_cmp.ein :: solve
+0    tests/stdlib/num9/04_cmp.ein :: test
+0    tests/stdlib/num9/05_mul.ein :: render constraints
+1    tests/stdlib/num9/05_mul.ein :: render rules
+0    tests/stdlib/num9/05_mul.ein :: saturate
+0    tests/stdlib/num9/05_mul.ein :: solve
+0    tests/stdlib/num9/05_mul.ein :: test
+0    tests/stdlib/num9/06_mul_overflow.ein :: render constraints
+1    tests/stdlib/num9/06_mul_overflow.ein :: render rules
+0    tests/stdlib/num9/06_mul_overflow.ein :: saturate
+0    tests/stdlib/num9/06_mul_overflow.ein :: solve
+0    tests/stdlib/num9/06_mul_overflow.ein :: test
+0    tests/stdlib/num9/07_div.ein :: render constraints
+1    tests/stdlib/num9/07_div.ein :: render rules
+0    tests/stdlib/num9/07_div.ein :: saturate
+0    tests/stdlib/num9/07_div.ein :: solve
+0    tests/stdlib/num9/07_div.ein :: test
+0    tests/stdlib/num9/08_div_every_digit.ein :: render constraints
+1    tests/stdlib/num9/08_div_every_digit.ein :: render rules
+0    tests/stdlib/num9/08_div_every_digit.ein :: saturate
+0    tests/stdlib/num9/08_div_every_digit.ein :: solve
+0    tests/stdlib/num9/08_div_every_digit.ein :: test
+0    tests/stdlib/num9/09_div_by_zero.ein :: render constraints
+1    tests/stdlib/num9/09_div_by_zero.ein :: render rules
+0    tests/stdlib/num9/09_div_by_zero.ein :: saturate
+0    tests/stdlib/num9/09_div_by_zero.ein :: solve
+0    tests/stdlib/num9/09_div_by_zero.ein :: test
+0    tests/stdlib/num9/10_to9.ein :: render constraints
+1    tests/stdlib/num9/10_to9.ein :: render rules
+0    tests/stdlib/num9/10_to9.ein :: saturate
+0    tests/stdlib/num9/10_to9.ein :: solve
+0    tests/stdlib/num9/10_to9.ein :: test
+0    tests/stdlib/num9/11_from9.ein :: render constraints
+1    tests/stdlib/num9/11_from9.ein :: render rules
+0    tests/stdlib/num9/11_from9.ein :: saturate
+0    tests/stdlib/num9/11_from9.ein :: solve
+0    tests/stdlib/num9/11_from9.ein :: test
+0    tests/stdlib/num9/12_both_modules.ein :: render constraints
+0    tests/stdlib/num9/12_both_modules.ein :: render rules
+0    tests/stdlib/num9/12_both_modules.ein :: saturate
+0    tests/stdlib/num9/12_both_modules.ein :: solve
+0    tests/stdlib/num9/12_both_modules.ein :: test
+0    tests/stdlib/num9/13_chain.ein :: render constraints
+0    tests/stdlib/num9/13_chain.ein :: render rules
+0    tests/stdlib/num9/13_chain.ein :: saturate
+0    tests/stdlib/num9/13_chain.ein :: solve
+0    tests/stdlib/num9/13_chain.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

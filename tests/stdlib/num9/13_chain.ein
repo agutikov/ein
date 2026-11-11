@@ -1,0 +1,27 @@
+;;; `std.num9` — a chain: (123 x 456) divided by 25. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request is a fact, so a rule may derive one from another answer.
+;;; `then-divide` matches the product of 123 and 456 and asks for it to be
+;;; divided by 25; the program never writes 56088. 56088 divided by 25 is
+;;; 2243, remainder 13, and the same saturation computes both.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `quot9-of`'s whole extent, the one quotient.
+
+(import std.num9 :symbols (arith9))
+
+(mul9 (num9 0 0 0 0 0 0 1 2 3) (num9 0 0 0 0 0 0 4 5 6))
+
+(rule then-divide ()
+  :match  (product9-of (num9 0 0 0 0 0 0 1 2 3) (num9 0 0 0 0 0 0 4 5 6) ?p)
+  :assert (div9 ?p (num9 0 0 0 0 0 0 0 2 5))
+  :why    "the product is {?p}: now divide it by 25")
+
+(solve :expect (region (model)))
+
+(query :goal (quot9-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}"
+       :expect (model (quot9-of (num9 0 0 0 0 5 6 0 8 8) (num9 0 0 0 0 0 0 0 2 5) (num9 0 0 0 0 0 2 2 4 3) (num9 0 0 0 0 0 0 0 1 3))))

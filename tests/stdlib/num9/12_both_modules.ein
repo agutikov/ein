@@ -1,0 +1,50 @@
+;;; `std.num9` beside `std.arith` — one sum, both ways, and the two answers
+;;; compared. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The two modules import flat into one program: no name of one is a name of
+;;; the other, but the three `std.num9` takes from `std.arith` (`n`,
+;;; `division-by-zero` and the rule from it to `(false)`). No rule of either
+;;; routes a request to the other. A program that wants both writes the rules
+;;; that ask, and this one does:
+;;;
+;;;   (add X Y)            std.arith's sum, 127645
+;;;   (to9 X), (to9 Y)     the operands in nine digits
+;;;   sum-in-nine          asks (add9 …) of the two
+;;;   back-again           asks (from9 …) of that sum
+;;;   compare              asks std.arith to compare the two answers
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The comparison's one answer is `eq`: the two theories agree on 123078 +
+;;; 4567. The program closes nothing of its own, since it declares no
+;;; relation, and R is {∅} still.
+
+(import std.arith :symbols (arith))
+(import std.num9 :symbols (arith9))
+
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+(to9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+(to9 (n (n (n (n z 4) 5) 6) 7))
+
+(rule sum-in-nine ()
+  :match  (and (as9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) ?a) (as9 (n (n (n (n z 4) 5) 6) 7) ?b))
+  :assert (add9 ?a ?b)
+  :why    "both operands fit nine digits: add them there too")
+
+(rule back-again ()
+  :match  (sum9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) ?s)
+  :assert (from9 ?s)
+  :why    "the sum in nine digits is {?s}: ask for it as a number of any length")
+
+(rule compare ()
+  :match  (and (of9 ?s ?t) (sum-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7) ?u))
+  :assert (cmp ?t ?u)
+  :why    "one sum by each module, {?t} and {?u}: compare them")
+
+(solve :expect (region (model)))
+
+(query :goal (cmp-of ?t ?u ?o)
+       :goal-text "{?t} against {?u}: {?o}"
+       :expect (model (cmp-of (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) eq)))

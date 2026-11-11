@@ -437,6 +437,150 @@ Only `n`, `z`, `let`, the requests, the results, the flag and the three orders
 are its interface. What a clash does, and what a malformed number does, is the
 phase's S1f.6.12.
 
+## `std.num9`: nine digits in one fact, and wide rules (M1f S1f.6.13)
+
+The calculator's second module, and the user's own number (the instruction of
+2026-11-08; the ruling of 2026-11-11, *"yes, ship num9 in stdlib, why not"*):
+`(num9 0 0 0 1 2 3 0 7 8)` is 123078, nine digit names, the most significant
+first, a fixed width. The theory is the same circuit over the same tables of
+`std.digits`, wired the other way: where `std.arith` walks a number one column
+a firing, a rule here has **a premise a column**, so a sum is one firing.
+Computed by saturation alone: no candidate, R {∅}, no `absent`, no `not`, no
+guard, one stratum.
+
+```lisp
+(import std.num9 :symbols (arith9))
+
+(add9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+
+(query :goal (sum9-of ?x ?y ?s))      ; ?s = (num9 0 0 0 1 2 7 6 4 5)
+```
+
+**The file is generated,** by
+[`utils/gen_num9.py`](../utils/gen_num9.py), as `std.digits` is: nine columns
+of variables twenty times over are not for typing or for reviewing by eye.
+`--check` is in the gate (`ein-infer/tests/num9_theory.rs`); `--width W
+--stdout` prints the same theory at another width, which is how the harness
+holds it exhaustively, and no other width is shipped. 47 rules and 22
+relations (`grep -c '^(rule' stdlib/num9.ein`, `grep -c '^(relation'`,
+2026-11-11). **A wide rule is wide in registers too:** a rule binds its
+variables to a file of 256 (`ein_infer::MAX_REGS`), and where the widest rule
+of every other module binds 16, a sum here binds 35 and `div9-start` 162.
+`ein-infer/tests/compile_limits.rs` holds that number, and the question it
+raises about the bound is the user's (Q-M1f.173).
+
+| | |
+|---|---|
+| **the protocol** | as `std.arith`'s, under names of its own, so the two import flat into one program: `(add9 X Y)` answered by `(sum9-of X Y S)`; `(sub9 X Y)` by `(diff9-of X Y D R)`, two numbers, one of them zero; `(cmp9 X Y)` by `(cmp9-of X Y O)`, O one of `lt`, `eq`, `gt`; `(mul9 X Y)` by `(product9-of X Y P)`; `(div9 X Y)` by `(quot9-of X Y Q R)`. An operand is a number written out: the module has no named constants |
+| **overflow** | **a fact, and no number.** A sum or a product that does not fit nine digits derives `(overflow REQUEST)`, the request as written, and no result fact: never a truncated number. Root stays alive, the program's other requests are answered, and a rule of the program may match the flag. A difference, a comparison and a quotient cannot overflow |
+| **division by zero** | a contradiction, as in `std.arith` and **by its rule**: `div9-by-zero` derives `(division-by-zero (div9 X ZERO))`, and `std.arith`'s `division-by-zero-is-false`, which this module imports, derives `(false)`. Root is dead and R is empty |
+| **conversions** | a request each way, one firing: `(to9 X)`, X a number of `std.arith`, is answered by `(as9 X W)`, or by `(big X)` where X is written with more than nine digits; `(from9 W)` by `(of9 W X)`, X in normal form. Nothing converts a number because it exists, and no rule of either module hands a request to the other: a program that wants both writes the rules that ask ([`examples/arith/num9_both_ways.ein`](../examples/arith/num9_both_ways.ein)) |
+| **the one entry** | `arith9`, the closing rule: it names every rule and closes every relation of the module, the six tables it reads, and the two relations it takes from `std.arith` |
+
+**How it computes.** `add9-fits` has a premise for the request and nine rows
+of the full adder's table, the carry handed from column to column in a
+variable, the carry out of the top written `0`; its twin `add9-overflows`
+writes `1` there. A difference is two such rules, one each way round, and the
+one that does not borrow out of the top answers, as in hardware: the borrow
+is the comparison. A comparison is one rule over the comparator's table. **A
+product is eleven firings:** a start, a step for each digit of the multiplier
+from its top, an end. A step is one rule with eighteen table premises, the
+multiplicand times the digit and that row added to the sum so far shifted one
+place; where the digit is 0 a second rule shifts and reads no table. Three
+rules derive the overflow, one for each place a digit can fall off. **A
+quotient is eleven firings:** `div9-start` computes the divisor's multiples by
+2 to 9 in one firing, 72 rows of the digit multiplier's table, and puts all
+nine into the state; then a step a digit of the dividend, by ten rules, one
+for each digit the quotient can have, each reading its own multiple from the
+state and holding two subtractors: the multiple taken from the number must not
+borrow, and the divisor taken from what is left must. Exactly one fires, and
+the tables decide which.
+
+**No rule joins two facts on a number,** `std.arith`'s rule, kept here and
+held by the same two tests (`num9_theory.rs` on the text, `arith_batch.rs` on
+the matcher's count). It is what the design's prototype did not do: its step
+rule joined a division's state with the divisor's multiples on the divisor, a
+nested fact, and 4 000 divisions took 8.1 s where 250 took 0.19
+([`design.md` § 4](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#4-the-table)).
+With the multiples in the state, and a product's rows computed inside its
+step, a batch costs in proportion to its count: 362, 362, 901, 10 409 and
+26 889 candidates a request for a sum, a difference, a comparison, a product
+and a quotient, the same at 250, 1 000 and 4 000 (`cargo test -p ein-infer
+--features counters --test arith_batch -- --nocapture`, 2026-11-11).
+
+### When to use which module
+
+The same requests asked of both, in batches, the saturator's own
+milliseconds, best of five on one P-core (`python3 build/s1f.6.13/batch.py`,
+2026-11-11; two numbers of up to nine digits for a sum that fits, a
+difference and a comparison, two of up to four digits for a product, up to
+nine digits by 1 to 999 for a quotient):
+
+| operation | requests | std.num9: firings a request | ms | std.arith: firings a request | ms |
+|---|---:|---:|---:|---:|---:|
+| add | 250 | 1.0 | 1.9 | 21.9 | 6.8 |
+| add | 1000 | 1.0 | 6.3 | 21.7 | 27.3 |
+| add | 4000 | 1.0 | 23.6 | 21.7 | 113.2 |
+| sub | 250 | 1.0 | 1.9 | 29.4 | 10.2 |
+| sub | 1000 | 1.0 | 6.4 | 29.2 | 40.9 |
+| sub | 4000 | 1.0 | 23.8 | 29.2 | 170.7 |
+| cmp | 250 | 1.0 | 2.9 | 13.5 | 5.2 |
+| cmp | 1000 | 1.0 | 10.0 | 13.4 | 20.6 |
+| cmp | 4000 | 1.0 | 38.1 | 13.4 | 82.1 |
+| mul | 250 | 10.9 | 21.3 | 53.5 | 17.6 |
+| mul | 1000 | 10.7 | 82.8 | 54.1 | 71.8 |
+| mul | 4000 | 10.2 | 331.2 | 53.4 | 300.0 |
+| div | 250 | 11.0 | 78.3 | 253.6 | 98.2 |
+| div | 1000 | 11.0 | 308.1 | 249.1 | 411.2 |
+| div | 4000 | 11.0 | 1243.3 | 247.6 | 1776.3 |
+
+- **`std.num9` where every number fits nine digits and there are many of
+  them.** One firing for a sum against 22: 4 000 sums in 24 ms against 113,
+  differences in 24 against 171, comparisons in 38 against 82, quotients in
+  1.24 s against 1.78. Products are level, 331 ms against 300: a product
+  here always takes its nine steps, and `std.arith` takes as many as the
+  multiplier has digits. A trace of a sum is one step with its nine table
+  rows, where `std.arith`'s is twenty-one.
+- **`std.num9` where a fixed width is what is modelled:** a register, a
+  counter, a field of a form, with the overflow as a fact a rule can read.
+- **`std.arith` for numbers of any length, for named constants, and for a
+  program with a request or two.** A program that imports `std.num9` pays
+  29.3 ms of `kb load` where one that imports `std.arith` pays 19.6: 14.3 for
+  `std.digits`, about ten for the module's own 46 KB of wide rules, and five
+  for the text of `std.arith`, read whole for the three names taken from it
+  (`ein saturate tests/stdlib/num9/01_add.ein`, best of five, 2026-11-11).
+  So one sum is 36 ms as a process here and 26 there.
+- **Both,** flat in one program, with a conversion request where a number
+  crosses. Round 3's design that routed between the two by itself was the
+  slowest measured, and is not shipped.
+
+**What holds it.**
+[`ein-infer/tests/num9_theory.rs`](../ein.rs/crates/ein-infer/tests/num9_theory.rs)
+holds the theory to Rust's integers: **exhaustively at width 2**, the
+generator's output over `(num2 d d)`, every pair of operands from 00 to 99
+under all five operations, 49 900 requests, each with exactly one answer or
+exactly one flag and never both; at width 9 on a sample of every pair of
+lengths with the corners; the conversions at every count of digits; a
+division by zero; and what each request costs in firings. The same file holds
+the rule of the theory, the closing rule and the absence of any guard on the
+module's text. `arith_search_free.rs` holds every program under
+[`tests/stdlib/num9/`](../tests/stdlib/num9/) and the three examples
+search-free, and `answer_round_trip.rs` reloads each one's state.
+[`examples/arith/num9.ein`](../examples/arith/num9.ein) is the program to
+read first, then [`num9_overflow.ein`](../examples/arith/num9_overflow.ein)
+and [`num9_both_ways.ein`](../examples/arith/num9_both_ways.ein).
+
+**The names it occupies:** `num9`; the requests `add9`, `sub9`, `cmp9`,
+`mul9`, `div9`, `to9` and `from9`; the results `sum9-of`, `diff9-of`,
+`cmp9-of`, `product9-of`, `quot9-of`, `as9` and `of9`; the flags `overflow`
+and `big`; the states `mul9-at` and `div9-at`, with `multiples9` and `row9`;
+`num9-rule` and the entry `arith9`. From `std.arith` it takes `n`, with `z`,
+and `division-by-zero` with the rule from it to `(false)`; from `std.digits`,
+`fa`, `fs`, `md`, `cl`, `nz` and `adj`, with the three orders. A malformed
+`num9`, a digit's place that holds something else or a count of digits that
+is not nine, is answered by silence today, as in `std.arith`: the phase's
+S1f.6.12.
+
 ## What tests these modules
 
 [**`tests/stdlib/`**](../tests/README.md) — one program per rule or tight
@@ -459,8 +603,9 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — half a second, and **166 of 166** since `std.arith`'s 89
-joined the 77 (M1f S1f.6.3 to S1f.6.6), which is a number this page may
+them activated — half a second, and **213 of 213** since `std.arith`'s 89
+(M1f S1f.6.3 to S1f.6.6) and `std.num9`'s 47 (S1f.6.13) joined the 77, which
+is a number this page may
 state exactly because `every_stdlib_rule_is_activated_by_a_program` fails
 the day it stops being true (`cat stdlib/*.ein | grep -c '^(rule '` is the
 denominator). `python3 utils/stdlib_census.py --check` is the same census with
@@ -499,6 +644,7 @@ install-relative import could not find it.
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
 | `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6 |
+| `std.num9` | [`num9.ein`](num9.ein) | school arithmetic on numbers of nine digits in one fact, `(num9 d8 … d0)`, **computed by saturation alone**, by wide rules, a premise a column: `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`, `mul9`/`product9-of`, `div9`/`quot9-of`; `(overflow REQUEST)` and no number where an answer does not fit; conversions to and from `std.arith`'s numbers, `to9`/`as9` and `from9`/`of9`. **Generated** by `utils/gen_num9.py`. One entry, `arith9` | S1f.6.13 |
 | `std.digits` | [`digits.ein`](digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.digits`](#stddigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |

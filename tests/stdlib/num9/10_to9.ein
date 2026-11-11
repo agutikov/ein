@@ -1,0 +1,52 @@
+;;; `std.num9` — from `std.arith`'s numbers to nine digits. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(to9 X)`, X a number of `std.arith`, `z` or `(n PREFIX DIGIT)`, is
+;;; answered by `(as9 X W)` in one firing: a rule for each count of written
+;;; digits, `to9-zero` and `to9-1` to `to9-9`, whose pattern is the whole
+;;; nested number. A number written with more than nine digits is answered by
+;;; `(big X)` and no `as9` (`to9-big`). A number written with high zeros is
+;;; read as written: 007 is three digits.
+;;;
+;;; Nothing converts a number because it exists: only what is asked.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `as9`'s whole extent, eleven conversions, one for each rule and 007, and
+;;; `big`'s, the one number of ten digits.
+
+(import std.num9 :symbols (arith9))
+
+(to9 z)
+(to9 (n z 7))
+(to9 (n (n z 4) 2))
+(to9 (n (n (n z 1) 2) 3))
+(to9 (n (n (n (n z 4) 5) 6) 7))
+(to9 (n (n (n (n (n z 1) 2) 3) 4) 5))
+(to9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+(to9 (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7))
+(to9 (n (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) 8))
+(to9 (n (n (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) 8) 9))
+(to9 (n (n (n z 0) 0) 7))
+(to9 (n (n (n (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) 8) 9) 0))
+
+(solve :expect (region (model)))
+
+(query :goal (as9 ?x ?w)
+       :goal-text "{?x} is {?w} in nine digits"
+       :expect (model (as9 z (num9 0 0 0 0 0 0 0 0 0))
+                      (as9 (n z 7) (num9 0 0 0 0 0 0 0 0 7))
+                      (as9 (n (n z 4) 2) (num9 0 0 0 0 0 0 0 4 2))
+                      (as9 (n (n (n z 1) 2) 3) (num9 0 0 0 0 0 0 1 2 3))
+                      (as9 (n (n (n (n z 4) 5) 6) 7) (num9 0 0 0 0 0 4 5 6 7))
+                      (as9 (n (n (n (n (n z 1) 2) 3) 4) 5) (num9 0 0 0 0 1 2 3 4 5))
+                      (as9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (num9 0 0 0 1 2 3 0 7 8))
+                      (as9 (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) (num9 0 0 1 2 3 4 5 6 7))
+                      (as9 (n (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) 8) (num9 0 1 2 3 4 5 6 7 8))
+                      (as9 (n (n (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) 8) 9) (num9 1 2 3 4 5 6 7 8 9))
+                      (as9 (n (n (n z 0) 0) 7) (num9 0 0 0 0 0 0 0 0 7))))
+
+(query :goal (big ?x)
+       :goal-text "{?x} is written with more than nine digits"
+       :expect (model (big (n (n (n (n (n (n (n (n (n (n z 1) 2) 3) 4) 5) 6) 7) 8) 9) 0))))

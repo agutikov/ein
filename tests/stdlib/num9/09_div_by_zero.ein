@@ -1,0 +1,21 @@
+;;; `std.num9` — a division by zero is a contradiction. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; As in `std.arith`, and by its rule (the user's ruling of 2026-11-11, two
+;;; steps): `div9-by-zero` derives the flag `(division-by-zero (div9 X ZERO))`,
+;;; the request as written, and `std.arith`'s `division-by-zero-is-false`
+;;; derives `(false)` from the flag. Root is dead and R is empty: the sum
+;;; beside the division loses its answer too, since the program asked for
+;;; what does not exist.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`, the one claim such a program can make.
+
+(import std.num9 :symbols (arith9))
+
+(div9 (num9 0 0 0 1 2 7 6 4 5) (num9 0 0 0 0 0 0 0 0 0))
+(add9 (num9 0 0 0 0 0 0 0 0 1) (num9 0 0 0 0 0 0 0 0 2))
+
+(solve :expect (false))

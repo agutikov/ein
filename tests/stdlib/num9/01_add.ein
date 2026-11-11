@@ -1,0 +1,36 @@
+;;; `std.num9` — addition: 123078 + 4567 = 127645, one firing. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A number is nine digit names in one fact, the most significant first:
+;;; 123078 is `(num9 0 0 0 1 2 3 0 7 8)`. A request fact `(add9 X Y)` is
+;;; answered by `(sum9-of X Y S)`, by ONE rule, `add9-fits`: a premise for the
+;;; request and one for each column, a row of the full adder's table, the
+;;; carry handed from column to column.
+;;;
+;;;   column   8   7   6   5   4   3   2   1   0
+;;;            0   0   0   1   2   3   0   7   8
+;;;          + 0   0   0   0   0   4   5   6   7
+;;;   carry    0   0   0   0   0   0   1   1   0
+;;;          = 0   0   0   1   2   7   6   4   5
+;;;
+;;; The second request carries through every column but the top:
+;;; 99999999 + 1 = 100000000.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `sum9-of`'s whole extent: two requests, two answers, the operands as
+;;; written. The `(solve …)` form claims R = {∅}: the table decides every
+;;; column and nothing is guessed.
+
+(import std.num9 :symbols (arith9))
+
+(add9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+(add9 (num9 0 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1))
+
+(solve :expect (region (model)))
+
+(query :goal (sum9-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 2 7 6 4 5))
+                      (sum9-of (num9 0 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1) (num9 1 0 0 0 0 0 0 0 0))))

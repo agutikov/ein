@@ -16,9 +16,10 @@
 //! | monotone: no `absent` read, one stratum | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
 //! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
 //!
-//! **Which programs.** Every `.ein` under [`ROOTS`]: the theory's tests and
-//! its examples. A program joins by being put there, and an operation by
-//! adding its result relation to [`RESULTS`]; nothing else here names a file.
+//! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the two
+//! theories, `std.arith` and `std.num9` (S1f.6.13), and their examples. A
+//! program joins by being put there, and an operation by adding its result
+//! relation to [`RESULTS`]; nothing else here names a file.
 //!
 //! **A program that divides by zero** (S1f.6.6) is the one kind whose R is
 //! not {∅}: it claims [`DEAD`], and [`division_by_zero`] holds what it is
@@ -33,11 +34,31 @@ use std::process::Command;
 
 use ein_corpus::{Scratch, ein_files_under, repo_root};
 
-/// Where the arithmetic programs live.
-const ROOTS: [&str; 2] = ["tests/stdlib/arith", "examples/arith"];
+/// Where the arithmetic programs live: `std.arith`'s tests, `std.num9`'s
+/// (S1f.6.13), and the examples of both.
+const ROOTS: [&str; 3] = ["tests/stdlib/arith", "tests/stdlib/num9", "examples/arith"];
 
-/// The relations an answer is a fact of.
-const RESULTS: [&str; 5] = ["sum-of", "diff-of", "cmp-of", "product-of", "quot-of"];
+/// The relations an answer is a fact of: `std.arith`'s five results, and
+/// `std.num9`'s five, its overflow flag and its conversions' answers.
+const RESULTS: [&str; 14] = [
+    "sum-of",
+    "diff-of",
+    "cmp-of",
+    "product-of",
+    "quot-of",
+    "sum9-of",
+    "diff9-of",
+    "cmp9-of",
+    "product9-of",
+    "quot9-of",
+    "overflow",
+    "as9",
+    "big",
+    "of9",
+];
+
+/// The two theories: a program under [`ROOTS`] imports one, or both.
+const THEORIES: [&str; 2] = ["(import std.arith ", "(import std.num9 "];
 
 /// What a program that divides by zero claims: root is dead and R is empty.
 const DEAD: &str = "(solve :expect (false))";
@@ -142,13 +163,16 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         .map(|f| f.as_str().expect("a fact"))
         .collect();
     assert_eq!(
-        core.iter().filter(|f| f.starts_with("(div ")).count(),
+        core.iter()
+            .filter(|f| f.starts_with("(div ") || f.starts_with("(div9 "))
+            .count(),
         1,
         "{file}: the core names the request: {core:?}"
     );
     assert!(
-        core.iter()
-            .all(|f| ["(div ", "(let ", "(md "].iter().any(|h| f.starts_with(h))),
+        core.iter().all(|f| ["(div ", "(div9 ", "(let ", "(md "]
+            .iter()
+            .any(|h| f.starts_with(h))),
         "{file}: the core is the request, a `let` and rows of `md`: {core:?}"
     );
     assert_eq!(
@@ -175,7 +199,8 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         })
     };
     assert!(
-        fact("(division-by-zero (div ", "div-by-zero"),
+        fact("(division-by-zero (div ", "div-by-zero")
+            || fact("(division-by-zero (div9 ", "div9-by-zero"),
         "{file}: the flag, by its own rule"
     );
     assert!(
@@ -186,7 +211,7 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         !saturate
             .stdout
             .lines()
-            .any(|l| l.trim().starts_with("(quot-of ")),
+            .any(|l| l.trim().starts_with("(quot-of ") || l.trim().starts_with("(quot9-of ")),
         "{file}: a division by zero is never answered with a number"
     );
 
@@ -315,8 +340,8 @@ fn every_arithmetic_program_is_search_free() {
     for path in &programs {
         let text = std::fs::read_to_string(path).expect("readable");
         assert!(
-            text.contains("(import std.arith "),
-            "{}: under an arithmetic root and does not import std.arith",
+            THEORIES.iter().any(|t| text.contains(t)),
+            "{}: under an arithmetic root and imports neither std.arith nor std.num9",
             path.display()
         );
         search_free(path, &scratch, text.contains(DEAD));
