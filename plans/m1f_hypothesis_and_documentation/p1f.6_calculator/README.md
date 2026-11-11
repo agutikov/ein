@@ -32,6 +32,10 @@ malformed number without negation, what it costs, and what a name clash does tod
 **S1f.6.8, rational numbers, is done (2026-11-12):** `std.rat`, `(rat Z D)` in lowest terms over `std.int` and
 `std.arith`, 56 rules of one premise each, a zero denominator `std.arith`'s division by zero
 ([its records](s1f.6.8_rational_numbers.md#t1-record-2026-11-12)).
+**S1f.6.9, what is left of the width, is measured and stopped for the user (2026-11-12):** the nesting limit
+re-taken on the shipped theory, a state file refused on reload from 999-digit operands, the cost by length, both
+on the page; the choice of what to do is Q-M1f.185
+([its records](s1f.6.9_width.md#t1-record-2026-11-12-the-limit-re-taken)).
 **Depends on:** [P1f.5](../p1f.5_the_no_owner_items/README.md), for the language the theory is written in.
 [S1f.5.4](../p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) makes `0` to `9` plain names, so
 `(num9 0 0 0 1 2 3 0 7 8)` is nine names and not nine ints. It lands with S1f.5.5's swap, and T1f.5.4.3 retires
@@ -147,7 +151,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.13](s1f.6.13_num9.md) | Fixed-width numbers as a second module, `std.num9`, with overflow and conversions | S1f.6.2, S1f.6.6 | **done 2026-11-11**: `stdlib/num9.ein`, generated, 47 rules; a sum, a difference and a comparison in one firing, a product and a quotient in eleven; overflow a flag and never a number, a division by zero through `std.arith`'s rule; conversions each way; exhaustive against the integers at width 2; no rule joins two facts on a number, so 4 000 divisions take 1.24 s where the prototype took 8.1; Q-M1f.167 to .173 defaulted, **.173 for the user to confirm**: a wide rule takes up to 162 of the engine's 256 registers, and the tripwire on that bound now measures the module apart; E-28 found |
 | [S1f.6.7](s1f.6.7_negative_numbers.md) | Extension: negative numbers as a positive and a negative part, simplified until one is zero | S1f.6.6 | **built but for division, 2026-11-12**: `stdlib/int.ein`, 36 rules and its closing rule, every rule one premise, a call's tag its request; simplification, negation, addition, subtraction, multiplication and comparison held to Rust's signed integers, every pair of one-digit parts exhaustively; 123078 + −4567 in 59 firings; Q-M1f.174 to .178 defaulted. **Integer division is open: Q-M1f.179, the remainder convention, for the user**, the three written as rules and compared in the record |
 | [S1f.6.8](s1f.6.8_rational_numbers.md) | Extension: rational numbers, an integer numerator over a natural denominator | S1f.6.7 | **done 2026-11-12**: `stdlib/rat.ein`, 56 rules and its closing rule, every rule one premise; `(rat-add X Y)` answered by `(rat-sum-of X Y S)` and so on, in lowest terms by Euclid's chain over `std.arith`'s division, and it needs no division of integers; a zero denominator, and a division by a rational that is zero, derive `std.arith`'s flag and `(false)`; held to exact fractions, 28 operands exhaustively; 1/2 + 1/3 is 492 firings and 1/2 against 1/3 is 76; Q-M1f.180 to .184 defaulted |
-| [S1f.6.9](s1f.6.9_width.md) | What is left of the width: how long a number may be (the nesting limit, the size of a state) | S1f.6.6 | planned; one choice **for the user** |
+| [S1f.6.9](s1f.6.9_width.md) | What is left of the width: how long a number may be (the nesting limit, the size of a state) | S1f.6.6 | **measured and stated 2026-11-12, stopped for the user**: a program writes a number of 999 digits and no longer; a state is two to seven levels deeper than its request, so the state file of a 999-digit sum is refused on reload, 998 for a product, 997 for a sum of integers, 994 for a rational's numerator; the engine itself saturates facts 396 000 deep; a derived fact of a 998-digit computation is about 40 KB of text, a 998-digit sum's state 86 MB, 998 digits by 998 five million facts and 5.9 GB; the page statement written, flagging by rule and an engine change probed and not built. **Q-M1f.185, the choice, for the user**; E-4 re-taken |
 | [S1f.6.20](s1f.6.20_word_problems.md) | An application: elementary-school word problems, the calculator imported among other relations; the words' meaning as rules, and a missing quantity detected and named | S1f.6.6 | planned 2026-11-11; its first task **stops for the user** |
 | [S1f.6.14](s1f.6.14_expressions.md) | Optional: nested expressions, `(calc E)` and `(let NAME E)` | S1f.6.6, and the user's ruling | **waits for the user**; S1f.6.20 is where the need will show |
 | [S1f.6.15](s1f.6.15_load_against_calculation.md) | Long numbers and many calculations: examples that set load time against calculation time (the user, 2026-11-11) | S1f.6.6 | **done 2026-11-11**: `long_numbers.ein`, `many_calculations.ein` and `factorial.ein`, generated, sized to what every per-commit surface affords; `utils/arith_cost.py` and its tables in `stdlib/README.md`: 20.6 ms of load a program, a `.einb` that buys none of it back, the parse ahead of the calculation past a thousand sums, and `ein solve` 30 to 90 times `ein saturate` on long numbers; Q-M1f.166 defaulted, E-24 to E-26 found |
@@ -238,7 +242,9 @@ that takes it, or says *open, shown, no owner yet*.
 - **Detection of a malformed number costs every well-formed request.** S1f.6.12's investigation measures that
   before anything is built, and the user rules on its table.
 - **The nesting limit.** The parser nests to 1 000, so a request holds at most 999 digits, a rule can derive
-  more, and such a state file does not load back (E-4). S1f.6.9 puts the choice to the user.
+  more, and such a state file does not load back (E-4). S1f.6.9 puts the choice to the user. **Re-taken
+  2026-11-12:** a state is deeper than its request, so the state file fails from 999-digit operands already, and
+  the page says so; Q-M1f.185 is the choice.
 - **The names of the theory clash with a program's.** `n`, `z` and the result relations mean what the theory
   says once it is imported flat. S1f.6.12 establishes what a clash does today and what the module's page and
   the loader should say.

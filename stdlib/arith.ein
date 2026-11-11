@@ -36,6 +36,27 @@
 ;;; high zero, so zero is `z` and never `(n z 0)`. An operand may be written
 ;;; with high zeros and is read by value; every answer is in normal form.
 ;;;
+;;; **How long a number may be.** The theory has no width; three things
+;;; outside it bound a run (P1f.6's S1f.6.9; `stdlib/README.md` § How long a
+;;; number may be has the measurements, 2026-11-12):
+;;;
+;;;   - **A program can write a number of 999 digits and no longer.** A number
+;;;     nests a level a digit and the parser nests to 1 000 parentheses. A
+;;;     rule can derive a longer one: 999 nines plus 1 is answered, and the
+;;;     engine holds a fact of any depth.
+;;;   - **A state can be written that cannot be read back.** A step of a
+;;;     circuit holds its operands inside its tag, two levels deeper than the
+;;;     request for a sum, a difference and a comparison and three for a
+;;;     product and a quotient. So the state file `ein solve --dump-answer`
+;;;     writes is refused when it is loaded again from operands of 999 digits
+;;;     for the first three, and of 998 for the last two, though every
+;;;     answer is right and printed.
+;;;   - **Each step holds its numbers whole,** so the facts of a product or a
+;;;     quotient grow as the two lengths multiplied, a kilobyte of memory a
+;;;     fact, and the state as text as that times the digits again: two
+;;;     numbers of 100 digits multiply in 73 ms under `ein saturate`, and
+;;;     `ein solve` takes 18 s to write their 354 MB of state.
+;;;
 ;;; ── The protocol: a request fact, answered by a result fact ────────────────
 ;;;
 ;;;     (add X Y)          asked: X + Y

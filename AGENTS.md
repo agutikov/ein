@@ -1302,6 +1302,33 @@ constrained-reasoning research.
   `examples/arith/rat.ein` is the example. No engine source moved and no
   existing program's answer (`python3 build/s1f.6.8/sweep.py`, 729 files,
   2026-11-12); the register is unmoved.
+  **S1f.6.9, what is left of the width, was measured and stopped for the user
+  on 2026-11-12**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.9_width.md#t1-record-2026-11-12-the-limit-re-taken)).
+  **How long a number may be is three facts, none the theory's**, stated in
+  [`stdlib/README.md` § How long a number may be](stdlib/README.md#how-long-a-number-may-be-m1f-s1f69)
+  and in `stdlib/arith.ein`'s header. A program writes a number of 999
+  digits and no longer, the parser's 1 000 parentheses; a rule can derive
+  more, and the engine saturates facts 396 000 levels deep (`python3
+  build/s1f.6.9/deeper.py`, 2026-11-12). **A state is deeper than its
+  request**, since a step holds its operands inside its tag, by 2 levels for
+  a sum, a difference and a comparison, 3 for a product and a quotient, 4 and
+  5 for the integers' and 7 for a rational's numerator: so `ein solve
+  --dump-answer` writes a state file that is refused on reload from operands
+  of 999 digits for a sum, each a request that loads and is answered rightly
+  (E-4, re-taken; `python3 build/s1f.6.9/depth.py --boundary add cmp`,
+  2026-11-12). And each step holds its numbers whole: a derived fact of a
+  998-digit computation is about 40 KB of text, a 998-digit sum's state 86 MB and
+  6.7 s under `ein solve` where it saturates in 3 ms, and the longest product
+  a program can ask, 998 digits by 998, is 4 988 896 firings, 9.8 s and
+  5.9 GB under `ein saturate` (`utils/bench_env.sh python3
+  build/s1f.6.9/cost.py` and `longest.py`, 2026-11-12). **What to do about
+  the state file is the user's choice,**
+  [Q-M1f.185](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f185--a-state-file-nested-past-the-parsers-limit):
+  (a) say it, which is done; (b) flag a number past a bound by rule, probed
+  on a prototype, which doubles the firings of every sum; (c) an engine
+  change, not built. Nothing was built past the statement: the stdlib's
+  rules did not move, only `arith.ein`'s header.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,

@@ -197,6 +197,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.182](#q-m1f182--a-zero-denominator-is-stdariths-division-by-zero) | a zero denominator is `std.arith`'s division by zero | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: the same flag relation, the request as written, on any operand of any request, and on a `rat-div` by a rational that is zero**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.183](#q-m1f183--lowest-terms-by-stdariths-division-and-what-it-costs) | lowest terms by `std.arith`'s division, and what it costs | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: Euclid's chain over `div-call`, one reduction at the end of each operation, none in a comparison; 492 firings for 1/2 + 1/3**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.184](#q-m1f184--the-harness-of-stdrat-and-the-sizes-memory-allows) | the harness of `std.rat`, and the sizes memory allows | **defaulted 2026-11-12 (S1f.6.8): 28 operands exhaustively, 250 requests a saturation, batches of 100, 400 and 1 200**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
+| [Q-M1f.185](#q-m1f185--a-state-file-nested-past-the-parsers-limit) | a state file nested past the parser's limit (E-4): say it, flag it, or change the engine | **open, the user's; not defaulted.** The stage recommends (a), say it on the page, which it has done; (b) and (c) are probed and not built; [S1f.6.9](p1f.6_calculator/s1f.6.9_width.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3576,4 +3577,31 @@ of two one-digit fractions is some 450 to 650 firings and a stored fact about a 
 
 **Defaulted 2026-11-12: (a).** The claim a batch holds is a proportion, and a join on a number multiplies the
 work by the batches' ratio, 4 and 12, which a tolerance of 15 % still catches.
+
+### Q-M1f.185 — A state file nested past the parser's limit
+
+**Raised** 2026-11-12 by [S1f.6.9](p1f.6_calculator/s1f.6.9_width.md), whose stage file put the choice to the user
+from the start. **Open: the user's, and not defaulted.** It is E-4 of the phase's
+[`findings.md`](p1f.6_calculator/findings.md), re-taken on the shipped theory.
+
+The parser refuses a program nested past 1 000 parentheses; a number nests a level a digit; and a step of a
+circuit holds its operands inside its tag. So `ein solve --dump-answer` writes a state file that is refused when
+it is loaded again, from operands of 999 digits for a sum, a difference and a comparison, 998 for a product and a
+quotient, 997 for a sum of integers and 994 for a rational's numerator, each a request that loads and is answered
+rightly. The engine itself holds a fact of any depth.
+
+- **(a) Say it on the page and leave it.** Done by the stage, since it is true whatever is ruled:
+  `stdlib/README.md` § How long a number may be, and the header of `stdlib/arith.ein`.
+- **(b) The theory flags a number longer than a stated bound,** as `std.num9` flags overflow. Probed: five rules
+  and a ruler of 990 links flag an addition, at a firing a digit of each operand and of the sum, which doubles
+  every sum, 50 firings where 28 at nine digits.
+- **(c) An engine change,** so that what a rule can derive the parser can read: the three recursive walks the
+  limit protects made iterative or given a stack, or the state file read by a path without them. Not built: the
+  stage may not change the engine.
+
+**The stage's recommendation is (a), until a program needs more.** A state past the limit is 40 MB of text at the
+least and gigabytes for a product, so the file that fails to reload is one nobody would wait for; (b) taxes every
+request for it; (c) belongs with E-24, whose fix would make such a state small enough to be worth reloading. The
+probes, with their tables, are in
+[the stage's T1 record](p1f.6_calculator/s1f.6.9_width.md#t1-record-2026-11-12-the-limit-re-taken).
 

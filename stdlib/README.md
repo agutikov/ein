@@ -427,6 +427,117 @@ The same program, the whole process. `ein solve` saturates once, as `ein saturat
   the shipped examples are the sizes they are: every corpus program is
   solved, dumped and reloaded per commit.
 
+### How long a number may be (M1f S1f.6.9)
+
+The theory has no width and no overflow: a number is as long as its digits.
+What bounds a run is outside the theory, in three places, each measured on
+the shipped modules on 2026-11-12
+([S1f.6.9](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.9_width.md)
+has the probes; E-4, E-24 and E-26 of the phase's
+[`findings.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
+are the engine's side of them).
+
+**1. A program can write a number of 999 digits, and no longer.** A written
+number nests a level a digit, and the parser refuses a program nested past
+1 000 parentheses, with a line: *this `(` nests deeper than the limit of 1000
+parentheses* (`ein_ir::grammar::NESTING_LIMIT`; `python3
+build/s1f.6.9/depth.py`). The limit is the parser's alone: a rule can derive
+a longer number, 999 nines plus 1 is answered with its thousand digits, and
+the engine saturates a program whose facts are 396 000 levels deep in half a
+second (`python3 build/s1f.6.9/deeper.py`).
+
+**2. A state can be written that cannot be read back.** `ein solve
+--dump-answer` writes a state as a program, one fact a line, and the parser
+that reads it back has the same limit. A step of a circuit holds its operands
+**inside its tag**, so its facts are deeper than the request that started it:
+
+| operation | the deepest fact of its state | the longest operand a request can hold | the longest whose state file reloads |
+|---|---|---:|---:|
+| `add`, `sub`, `cmp` | the operand's digits + 2 | 999 | 998 |
+| `mul`, `div` | digits + 3 | 999 | 997 |
+| `int-add` | digits + 4 | 998 | 996 |
+| `int-mul` | digits + 5 | 998 | 995 |
+| `rat-add`, `rat-cmp`, by a numerator's digits | digits + 7 | 997 | 993 |
+
+The third column is the parser's limit less the request's own nesting; the
+fourth is 1 000 less the first. Both ends were run for a sum, a difference, a
+comparison, a product by one digit and a sum of integers, and the rest follow
+from the depth, which was measured at 10, 20 and 40 digits (`python3
+build/s1f.6.9/depth.py --boundary add sub cmp "mul by one digit" int-add`).
+Past the fourth column every answer is still right and still printed: `ein
+solve` and `ein saturate --dump` write a deeper state without a word, and
+only the state file's reload is refused, with the line above.
+Which of three things to do about it is the user's question,
+[Q-M1f.185](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f185--a-state-file-nested-past-the-parsers-limit);
+until it is ruled, this paragraph is the answer.
+
+**3. Each step holds its numbers whole.** One request of `std.arith`, its
+operands drawn at random, on one P-core through `utils/bench_env.sh` (`python3
+build/s1f.6.9/cost.py`); *the state's own text* is the state file less the
+173 KB every program of the theory writes for the tables, and *derived* are
+the facts the request added:
+
+| request | firings | saturate ms | `ein saturate`, the process, ms | peak RSS MB | `ein solve --dump-answer`, the process | the state's own text | text a derived fact |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| add, 10 digits | 30 | 0.3 | 26 | 19 | 48 ms | 18 KB | 0.6 KB |
+| add, 100 digits | 210 | 0.5 | 26 | 19 | 97 ms | 927 KB | 4.4 KB |
+| add, 998 digits | 2 006 | 2.9 | 36 | 22 | 6.7 s | 85.5 MB | 42.6 KB |
+| add, 999 digits | 2 008 | 3.0 | 37 | 21 | 6.7 s | 85.6 MB | 42.6 KB |
+| sub, 10 digits | 41 | 0.3 | 26 | 19 | 48 ms | 26 KB | 0.6 KB |
+| sub, 100 digits | 311 | 0.7 | 26 | 19 | 118 ms | 1.4 MB | 4.6 KB |
+| sub, 998 digits | 3 005 | 4.3 | 38 | 23 | 9.8 s | 127.7 MB | 42.5 KB |
+| sub, 999 digits | 3 008 | 4.3 | 37 | 24 | 9.8 s | 127.9 MB | 42.5 KB |
+| cmp, 10 digits | 18 | 0.3 | 26 | 19 | 48 ms | 10 KB | 0.6 KB |
+| cmp, 100 digits | 108 | 0.5 | 26 | 19 | 71 ms | 457 KB | 4.2 KB |
+| cmp, 998 digits | 1 006 | 2.2 | 35 | 19 | 3.5 s | 40.4 MB | 40.2 KB |
+| cmp, 999 digits | 1 007 | 2.2 | 35 | 19 | 3.4 s | 40.5 MB | 40.2 KB |
+| mul, 10 digits by 10 | 595 | 1.1 | 26 | 19 | 71 ms | 528 KB | 0.9 KB |
+| mul, 100 digits by 100 | 50 698 | 72.7 | 111 | 75 | 18.4 s | 353.4 MB | 7.0 KB |
+| mul, 300 digits by 300 | 452 676 | 662.0 | 801 | 470 | not finished in 300 s | | |
+| mul, 998 digits by 1 | 2 013 | 3.2 | 37 | 21 | 5.9 s | 77.7 MB | 38.6 KB |
+| mul, 998 digits by 10 | 38 139 | 56.3 | 94 | 71 | 152.2 s | 1.72 GB | 45.0 KB |
+| mul, 998 digits by 100 | 408 300 | 610.2 | 753 | 430 | not run: the text is past 2 GB | | |
+| div, 10 digits by 10 | 679 | 1.4 | 27 | 19 | 103 ms | 1.1 MB | 1.7 KB |
+| div, 100 digits by 100 | 33 347 | 57.8 | 93 | 73 | 29.3 s | 544.8 MB | 16.3 KB |
+| div, 600 digits by 300 | 766 926 | 1287.6 | 1573 | 871 | not run: the text is past 2 GB | | |
+| div, 998 digits by 1 | 21 173 | 32.9 | 67 | 46 | 39.1 s | 491.0 MB | 23.2 KB |
+| div, 998 digits by 10 | 74 613 | 123.0 | 177 | 126 | 165.1 s | 1.90 GB | 25.4 KB |
+| div, 998 digits by 100 | 525 905 | 887.9 | 1089 | 759 | not run: the text is past 2 GB | | |
+
+And the longest product and quotient a program can ask, under `ein saturate`
+alone (`python3 build/s1f.6.9/longest.py`):
+
+| request | firings | facts | saturate | the process | peak RSS |
+|---|---:|---:|---:|---:|---:|
+| mul, 998 digits by 998 | 4 988 896 | 4 990 871 | 9788.63 ms | 13.6 s | 5.9 GB |
+| div, 998 digits by 499 | 2 071 748 | 2 073 723 | 3868.68 ms | 4.6 s | 2.5 GB |
+
+**Where a run stops being practical, by what stops it:**
+
+- **A sum, a difference or a comparison: nowhere a program can reach.** At
+  999 digits each is a few thousand firings and 3 or 4 ms; the number's own
+  text takes longer to parse.
+- **A product or a quotient under `ein saturate`: memory.** The facts are the
+  two lengths multiplied, and a stored fact costs about a kilobyte (E-26), so
+  the longest product a program can write, 998 digits by 998, is five
+  million facts and 5.9 GB, and saturates in ten seconds; a quotient of 998
+  digits by 499 is two million and 2.5 GB.
+- **Anything long under `ein solve`, `ein test` or `--dump-answer`: the
+  state as text.** A derived fact of a 998-digit computation is 40 KB of
+  text, since each repeats its numbers and stored they are shared (E-24).
+  A 998-digit sum's state is 86 MB and 6.7 s; a product of two 100-digit
+  numbers, 354 MB and 18 s, where it saturates in 73 ms; a 998-digit number
+  times one of 10 digits, 1.7 GB and two and a half minutes. Past a hundred
+  digits a product or a quotient is `ein saturate`'s to compute and a query's
+  to read, not a state to write out.
+
+**Words are not built.** Four-digit words, a number as a list of digits four
+at a time, were measured in the design's round 3 and lost their gain to the
+conversions on a single operation. The one case that would reopen them is a
+long multiplication or division that stays in words throughout, a chain
+whose intermediate numbers are never converted back, which is what the
+phase's S1f.6.10 would ask for if it asks for long numbers.
+
 **The names it occupies.** Imported flat, the module's names mean what the
 module says, and its header has the list: `z`, `n`, `b`, `let`; the requests
 `add`, `sub`, `cmp`, `mul` and `div`; the results `sum-of`, `diff-of`,
@@ -769,8 +880,8 @@ examples/arith/rat.ein`, `int.ein` and `add.ein`, the `kb load:` line,
 **Nothing limits the length.** Cross products are as long as their operands
 together, and nested numbers hold them: two fractions of twelve-digit terms
 are added and compared in `rat_theory.rs`. What limits a run is what limits
-`std.arith`'s division, the size of the state, which the phase's S1f.6.9
-states.
+`std.arith`'s division, the size of the state (§ [How long a number may
+be](#how-long-a-number-may-be-m1f-s1f69)).
 
 **The names it occupies** are in the module's header: `rat`, the seven
 requests and seven results, the three calls and their two hand-overs, the
