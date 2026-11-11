@@ -16,8 +16,9 @@
 //! | monotone: no `absent` read, one stratum | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
 //! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
 //!
-//! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the two
-//! theories, `std.arith` and `std.num9` (S1f.6.13), and their examples. A
+//! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
+//! theories, `std.arith`, `std.num9` (S1f.6.13) and `std.int` (S1f.6.7), and
+//! their examples. A
 //! program joins by being put there, and an operation by adding its result
 //! relation to [`RESULTS`]; nothing else here names a file.
 //!
@@ -35,12 +36,18 @@ use std::process::Command;
 use ein_corpus::{Scratch, ein_files_under, repo_root};
 
 /// Where the arithmetic programs live: `std.arith`'s tests, `std.num9`'s
-/// (S1f.6.13), and the examples of both.
-const ROOTS: [&str; 3] = ["tests/stdlib/arith", "tests/stdlib/num9", "examples/arith"];
+/// (S1f.6.13), `std.int`'s (S1f.6.7), and the examples of all.
+const ROOTS: [&str; 4] = [
+    "tests/stdlib/arith",
+    "tests/stdlib/num9",
+    "tests/stdlib/int",
+    "examples/arith",
+];
 
 /// The relations an answer is a fact of: `std.arith`'s five results, and
-/// `std.num9`'s five, its overflow flag and its conversions' answers.
-const RESULTS: [&str; 14] = [
+/// `std.num9`'s five, its overflow flag and its conversions' answers, and
+/// `std.int`'s six.
+const RESULTS: [&str; 20] = [
     "sum-of",
     "diff-of",
     "cmp-of",
@@ -55,10 +62,20 @@ const RESULTS: [&str; 14] = [
     "as9",
     "big",
     "of9",
+    "int-simple-of",
+    "int-neg-of",
+    "int-sum-of",
+    "int-diff-of",
+    "int-product-of",
+    "int-cmp-of",
 ];
 
-/// The two theories: a program under [`ROOTS`] imports one, or both.
-const THEORIES: [&str; 2] = ["(import std.arith ", "(import std.num9 "];
+/// The theories: a program under [`ROOTS`] imports one, or several.
+const THEORIES: [&str; 3] = [
+    "(import std.arith ",
+    "(import std.num9 ",
+    "(import std.int ",
+];
 
 /// What a program that divides by zero claims: root is dead and R is empty.
 const DEAD: &str = "(solve :expect (false))";
@@ -341,7 +358,7 @@ fn every_arithmetic_program_is_search_free() {
         let text = std::fs::read_to_string(path).expect("readable");
         assert!(
             THEORIES.iter().any(|t| text.contains(t)),
-            "{}: under an arithmetic root and imports neither std.arith nor std.num9",
+            "{}: under an arithmetic root and imports no theory of the calculator",
             path.display()
         );
         search_free(path, &scratch, text.contains(DEAD));

@@ -301,6 +301,12 @@ runs   = ["solve", "test", "saturate", "render rules"]
 note   = "M1f S1f.6.15, generated (`utils/gen_arith_examples.py`) — a long chain: 25!, a number of 26 digits, from two written numbers and one fact, by three rules of the program's own that derive `add`, `cmp` and `mul` requests from each factorial known; it stops by itself where the comparison answers `eq`. The parse is small and the calculation is the program's whole cost. Search-free; `factorial` is the program's relation and the program closes it."
 
 [[entry]]
+path   = "examples/arith/int.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.7 — `std.int`, negative numbers: an integer is `(int P N)`, two natural numbers of `std.arith`, its value the first less the second. -12 + 40 = 28, 4567 - 123078 = -118511 as one integer where `std.arith` answers two numbers, -123 x 456 = -56088, a simplification and a negation of 5 less 3, and three named temperatures compared with freezing by a rule of the program's own, a second rule reading the order `lt`. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
+
+[[entry]]
 path   = "examples/arith/long_numbers.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate"]
@@ -3031,6 +3037,12 @@ group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "stdlib/int.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7 (2026-11-11): integers as a positive and a negative part, `(int P N)`, over the natural numbers of `std.arith`, which the module calls and does not edit. Requests `int-simplify`, `int-neg`, `int-add`, `int-sub`, `int-mul` and `int-cmp`, answered by `int-simple-of`, `int-neg-of`, `int-sum-of`, `int-diff-of`, `int-product-of` and `int-cmp-of`, every answer in normal form, one part `z`. Every rule has one premise, and a call's tag is its request; `int-arith`, the closing rule, closes every relation, names every rule and names `arith`. Integer division is not built: its remainder convention is the user's question. `ein-infer/tests/int_theory.rs` holds the module to Rust's signed integers. The module alone states no request: its closing rules fire and nothing else."
+
+[[entry]]
 path   = "stdlib/macro.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
@@ -3404,6 +3416,54 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/elim/04_typecheck_arg1_violated.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/int/01_simplify.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: the normal form: `(int-simplify X)` answered by `(int-simple-of X S)`, nine operands, simplified and not, with high zeros, a zero written three ways."
+
+[[entry]]
+path   = "tests/stdlib/int/02_neg.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: negation, the parts exchanged and the pair simplified: seven operands."
+
+[[entry]]
+path   = "tests/stdlib/int/03_add.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: addition in every combination of signs, eleven requests, a sum of zero and a carry into a fourth digit among them; no pair asked both ways round."
+
+[[entry]]
+path   = "tests/stdlib/int/04_sub.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: subtraction, answered by one integer where `std.arith` answers two numbers: ten requests in every combination of signs."
+
+[[entry]]
+path   = "tests/stdlib/int/05_mul.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: multiplication in every combination of signs, by zero on either side, of operands not simplified, and 123 x -456 = -56088: four products of `std.arith`, two sums and a simplification, no rule looking at a sign."
+
+[[entry]]
+path   = "tests/stdlib/int/06_cmp.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: comparison by value, twelve requests: every combination of signs, zero, and two pairs of operands written differently that compare `eq`."
+
+[[entry]]
+path   = "tests/stdlib/int/07_unsimplified.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: an operand that is not simplified answers as its normal form does: 5 less 3 and 2 less 0 under each of the four operations, two result facts each with one answer."
+
+[[entry]]
+path   = "tests/stdlib/int/08_named_and_chained.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.7, `std.int`: operands by name through `std.arith`'s `let`, and two rules of the program's own that read a negative difference by its shape, one deriving an `int-neg` request of an integer the theory computed."
 
 [[entry]]
 path   = "tests/stdlib/macro/01_forall.ein"

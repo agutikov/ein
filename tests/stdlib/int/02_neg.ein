@@ -1,0 +1,42 @@
+;;; `std.int` — negation: the parts change places. M1f S1f.6.7.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(int-neg X)` is answered by `(int-neg-of X S)`: S is 0 - X, in normal
+;;; form.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; `int-neg-ask` asks what the operand stands for, `int-neg-start` simplifies
+;;; it with its parts exchanged, N less P, and `int-neg-answer` hands the
+;;; answer over.
+;;;
+;;;   7 → -7      -7 → 7      0 → 0      5 less 3 → -2      3 less 5 → 2
+;;;   4 less 4 → 0            100 less 1 → -99
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `int-neg-of`'s whole extent. An operand that is not simplified is negated
+;;; by value and answered in normal form.
+
+(import std.int :symbols (int-arith))
+
+(int-neg (int (n z 7) z))
+(int-neg (int z (n z 7)))
+(int-neg (int z z))
+(int-neg (int (n z 5) (n z 3)))
+(int-neg (int (n z 3) (n z 5)))
+(int-neg (int (n z 4) (n z 4)))
+(int-neg (int (n (n (n z 1) 0) 0) (n z 1)))
+
+(solve :expect (region (model)))
+
+(query :goal (int-neg-of ?x ?s)
+       :goal-text "{?x} negated is {?s}"
+       :expect (model (int-neg-of (int (n z 7) z) (int z (n z 7)))
+                      (int-neg-of (int z (n z 7)) (int (n z 7) z))
+                      (int-neg-of (int z z) (int z z))
+                      (int-neg-of (int (n z 5) (n z 3)) (int z (n z 2)))
+                      (int-neg-of (int (n z 3) (n z 5)) (int (n z 2) z))
+                      (int-neg-of (int (n z 4) (n z 4)) (int z z))
+                      (int-neg-of (int (n (n (n z 1) 0) 0) (n z 1)) (int z (n (n z 9) 9)))))

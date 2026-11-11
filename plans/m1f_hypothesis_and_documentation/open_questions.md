@@ -186,6 +186,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.171](#q-m1f171--stdnum9s-step-counter-and-its-comparison) | `std.num9`'s step counter and its comparison | **defaulted 2026-11-11 (S1f.6.13): `std.digits`' `adj` and `cl`, no table of the module's own**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
 | [Q-M1f.172](#q-m1f172--the-harness-of-stdnum9-exhaustive-at-width-2) | the harness of `std.num9`: exhaustive at width 2 | **defaulted 2026-11-11 (S1f.6.13): the generator's `--width 2 --stdout` in front of the test's requests, every pair under five operations; no second width is shipped**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
 | [Q-M1f.173](#q-m1f173--max_regs-and-the-wide-rules-of-stdnum9) | `MAX_REGS` and the wide rules of `std.num9` | **defaulted 2026-11-11 (S1f.6.13), the user's to overrule: the bound stays 256; `std.num9`'s generated rules are measured apart, the widest pinned at 162 registers, and every other corpus rule is held to an eighth of the bound as before**; [S1f.6.13](p1f.6_calculator/s1f.6.13_num9.md) |
+| [Q-M1f.174](#q-m1f174--the-names-of-stdint) | the names of `std.int` | **defaulted 2026-11-12 (S1f.6.7), the user's to revise: a prefix, `int-add` answered by `int-sum-of` and so on, the entry `int-arith`**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.175](#q-m1f175--what-stdint-reads-as-an-operand) | what `std.int` reads as an operand | **defaulted 2026-11-12 (S1f.6.7), the user's to revise: an integer written out or a name through `std.arith`'s `let`; a natural number is not promoted**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.176](#q-m1f176--a-product-of-integers-without-a-rule-that-looks-at-a-sign) | a product of integers without a rule that looks at a sign | **defaulted 2026-11-12 (S1f.6.7), the user's to revise: the formula on the parts, four products and no case**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.177](#q-m1f177--a-calls-tag-is-its-request-and-what-an-extension-writes-of-stdariths) | a call's tag is its request, and what an extension writes of `std.arith`'s | **defaulted 2026-11-12 (S1f.6.7), the user's to revise: the request is the tag; the module starts `std.arith`'s walks and writes `operand` and `operand-is`**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.178](#q-m1f178--the-harness-of-stdint-a-sibling-file-exhaustive-on-one-digit-parts) | the harness of `std.int` | **defaulted 2026-11-12 (S1f.6.7): a sibling file, `int_theory.rs`, exhaustive on parts of one digit**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.179](#q-m1f179--the-remainder-of-an-integer-division) | the remainder of an integer division: Euclidean, truncated or floored | **open, the user's; not defaulted.** Integer division is not built until it is ruled; the stage recommends Euclidean and shows the three as rules and computed examples; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3380,4 +3386,104 @@ be written under 32 at width nine, whatever Q-M1f.169 chose: a sum alone names t
 the bound. What the tripwire asked for is a decision, and this is the smallest one that keeps it watching
 everything else. It also says where the wide style ends: `div9-start` takes eighteen registers a digit, so a `num15` by
 this generator would not load.
+
+### Q-M1f.174 — The names of `std.int`
+
+**Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1. The stage file fixes the
+pair, `(int P N)`, and no other name. `std.num9` took `std.arith`'s names with a `9`.
+
+- **(a) A prefix, `int-`:** `int-add` answered by `int-sum-of`, `int-sub` by `int-diff-of`, `int-mul` by
+  `int-product-of`, `int-cmp` by `int-cmp-of`, `int-neg` by `int-neg-of`, `int-simplify` by `int-simple-of`; the
+  module `std.int`, its entry `int-arith`.
+- **(b) A letter,** `addz`/`sumz-of` or `iadd`/`isum-of`, as `num9`'s suffix.
+- **(c) `std.arith`'s own names,** told apart by the operand's shape: `(add (int …) (int …))`.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** The names read as what they are and none is a name of
+`std.arith` or `std.num9`, so the three import flat into one program. (c) would have this module's rules match
+`std.arith`'s request relations, and one request relation answered by two result relations of different
+arities.
+
+### Q-M1f.175 — What `std.int` reads as an operand
+
+**Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1.
+
+- **(a) An integer written out, `(int P N)` with P and N numbers, or a name** that `std.arith`'s `(let NAME (int P
+  N))` states. One rule of the module says an integer stands for itself, and `std.arith`'s `operand-name` reads
+  the `let`.
+- **(b) A natural number too,** promoted: `(int-add (n z 5) X)` read as `(int-add (int (n z 5) z) X)`, four rules
+  more and two firings an operand.
+- **(c) Names inside the pair,** `(int price z)`.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** A natural number in an integer's place is answered by
+silence, as every malformed operand of the calculator is today; whether it should be flagged is S1f.6.12's
+question, and whether it should be promoted is one the expression layer (S1f.6.14) will meet again. (b) can be
+added later with no answer of today's moving. `int_theory.rs`'s `a_natural_number_is_not_an_integer_operand`
+pins the silence.
+
+### Q-M1f.176 — A product of integers without a rule that looks at a sign
+
+**Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1. The stage file gives both:
+*(P1·P2 + N1·N2, P1·N2 + N1·P2). On simplified operands, only the sign rules remain.*
+
+- **(a) The formula on the parts as written:** four products of `std.arith`, two sums, one simplification; seven
+  rules in a chain and no case.
+- **(b) Simplify both operands first, then one product and the sign by rule:** four rules for the combinations of
+  signs and two for the answer, and one product.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** Measured (`int_theory.rs`'s `the_circuit_of_each_operation`):
+123 × −456 is 142 firings where `std.arith`'s 123 × 456 is 72, three of the four products being by zero; an
+operand that is not simplified pays four real products, 413 firings for (200 less 77) × (1000 less 1456). (b)
+would be about 100 and 150. (a) has no case to get wrong and none for a mutant to hide in; (b) is what integer
+division will need anyway (Q-M1f.179), and the product can move to it then if the cost matters.
+
+### Q-M1f.177 — A call's tag is its request, and what an extension writes of `std.arith`'s
+
+**Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T1. Two choices about how a
+module over `std.arith` is wired, which S1f.6.8 follows.
+
+- **The tag.** `std.arith` declares a tag relation for each result, `(sum X Y)` for `(add X Y)`. `std.int` uses
+  the request itself: `(int-done (int-add ?x ?y) ?s)`. A request is a fact a state holds, so it is a value by the
+  value rule, and the module declares 15 tag relations where it would declare 21.
+- **What it writes of `std.arith`'s relations.** It starts `std.arith`'s walks and calls with tags of its own
+  (`add-walk`, `sub-walk`, `cmp-walk`, `mul-call`) and reads their hand-overs (`done`, `order-is`), which is how
+  `std.arith` says a later theory calls it. It also writes `operand` and `operand-is`, with a value that is no
+  number, so that a request may name its operand through the one `let`.
+
+**Defaulted 2026-11-12: both as built, the user's to revise.** The alternative to the second is a `let` of the
+module's own, `(int-let NAME INTEGER)`, with its own lookup rules, and two kinds of named constant in one
+program.
+
+### Q-M1f.178 — The harness of `std.int`: a sibling file, exhaustive on one-digit parts
+
+**Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md)'s T3. The stage file: *every sign
+combination at the exhausting width*, written when the numbers under it had a width.
+
+- **(a) A sibling of `arith_theory.rs`,** `int_theory.rs`, with its own `OPS` against `i128`; the exhausting set
+  is every integer written with parts from 0 to 9, 100 spellings of −9 to 9, against every other.
+- **(b) Rows of `arith_theory.rs`'s `OPS`,** whose harness reads operands as `u128` and a module's text as
+  `stdlib/arith.ein`.
+
+**Defaulted 2026-11-12: (a).** The three static tests read one module's text each, and an integer operand is
+not a `u128`.
+
+### Q-M1f.179 — The remainder of an integer division
+
+**Raised** 2026-11-12 by [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md), whose stage file put it to the
+user from the start. **Open: the user's, and not defaulted.** Integer division is not built until it is ruled.
+
+For `(int-div X Y)` answered by `(int-quot-of X Y Q R)`, X = Q·Y + R:
+
+- **(a) Euclidean:** 0 ≤ R < |Y|. −7 ÷ 2 is −4 remainder 1; 7 ÷ −2 is −3 remainder 1; −7 ÷ −2 is 4 remainder 1.
+  The one convention whose remainder could be answered as a natural number.
+- **(b) Truncated:** Q toward zero, R with the dividend's sign. −7 ÷ 2 is −3 remainder −1. Four rules where the
+  others take nine.
+- **(c) Floored:** Q rounded down, R with the divisor's sign. 7 ÷ −2 is −4 remainder −1.
+- **(d) More than one,** each under a request of its own.
+
+**The stage's recommendation is (a).** Each of the three is written as rules over the shipped modules and right
+on 924 requests against Python, with the table of answers and the cost of each, in
+[the stage's T2 record](p1f.6_calculator/s1f.6.7_negative_numbers.md#t2-record-2026-11-12-the-remainder-convention-three-ways-for-the-user)
+(`python3 build/s1f.6.7/intdiv_proto.py`, 2026-11-12). With (a) there is a second question: whether R is
+answered as an integer, `(int R z)`, or as a number of `std.arith`. S1f.6.8 does not wait for this: the rationals
+never divide integers.
 

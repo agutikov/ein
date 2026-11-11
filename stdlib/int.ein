@@ -1,0 +1,441 @@
+;;; Ein stdlib — `std.int`: integers as a positive and a negative part, over
+;;; the natural numbers of `std.arith`, computed by saturation alone (M1f
+;;; P1f.6, S1f.6.7).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; This module is a theory written in Ein over `std.arith`, which it calls
+;;; and does not edit: every step is one of that theory's walks, started with
+;;; a tag of this module's, and nothing is guessed. On a program that imports
+;;; it and states requests the universe has no candidate, R is {∅}, and the
+;;; answer is root's fixpoint. No `absent`, no `not`, no guard, one stratum.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.int :symbols (int-arith))
+;;;
+;;; `int-arith` is the theory's one entry, the closing rule at the end of this
+;;; file. It names every rule and closes every relation of the module, and it
+;;; names `arith`, `std.arith`'s entry, so that one name brings both theories
+;;; and the tables. A program may import `std.arith` beside it, flat.
+;;;
+;;; ── The integer ────────────────────────────────────────────────────────────
+;;;
+;;; An integer is `(int P N)`: two natural numbers of `std.arith`, and its
+;;; value is P less N (the user's proposal of 2026-11-08: "numbers containing
+;;; 2 parts - positive and negative, that can be simplified until one of them
+;;; is zero").
+;;;
+;;;     7        (int (n z 7) z)
+;;;     -7       (int z (n z 7))
+;;;     0        (int z z)
+;;;     2        (int (n z 5) (n z 3))      not simplified: 5 less 3
+;;;
+;;; The **normal form** has one part `z`, and the other in `std.arith`'s
+;;; normal form, with no high zero; zero is `(int z z)`. Every integer has
+;;; exactly one. An operand may be written with both parts and with high
+;;; zeros, and is read by value; every answer is in normal form.
+;;;
+;;; ── The protocol: a request fact, answered by a result fact ────────────────
+;;;
+;;;     (int-simplify X)   (int-simple-of X S)      X in normal form
+;;;     (int-neg X)        (int-neg-of X S)         0 - X
+;;;     (int-add X Y)      (int-sum-of X Y S)       X + Y
+;;;     (int-sub X Y)      (int-diff-of X Y S)      X - Y: one integer, and no
+;;;                                                 second number, since a
+;;;                                                 difference is never short
+;;;     (int-mul X Y)      (int-product-of X Y S)   X x Y
+;;;     (int-cmp X Y)      (int-cmp-of X Y O)       O is `lt`, `eq` or `gt`
+;;;
+;;; The operands are repeated as written. An operand is an integer written
+;;; out, `(int P N)` with P and N numbers, or a name a `(let NAME (int P N))`
+;;; states: `let` is `std.arith`'s, and a name stands for what its `let`
+;;; says. A natural number is **not** an integer operand: `(int-add (n z 5)
+;;; X)` is never answered. Write `(int (n z 5) z)`.
+;;;
+;;; **Integer division is not built.** Which remainder a division of
+;;; integers has, truncated, floored or Euclidean, is the user's question
+;;; (P1f.6's S1f.6.7 has the three, each with its rules and examples).
+;;;
+;;; ── How it computes ────────────────────────────────────────────────────────
+;;;
+;;; Each operation works on the parts with `std.arith`'s walks, then
+;;; simplifies:
+;;;
+;;;   - **Simplifying** is subtraction both ways at once, P - N and N - P, as
+;;;     `std.arith`'s `sub` goes: the walk that ends with no borrow hands its
+;;;     number over, and that number is the part that is not zero.
+;;;   - **A sum** is (P1 + P2, N1 + N2), two addition walks. **A difference**
+;;;     is the same with the second operand's parts exchanged, and **a
+;;;     negation** is a simplification with the parts exchanged.
+;;;   - **A product** is (P1 x P2 + N1 x N2, P1 x N2 + N1 x P2): four
+;;;     products and two sums. No rule looks at a sign.
+;;;   - **A comparison** adds across, P1 + N2 against N1 + P2, and compares
+;;;     the two sums by `std.arith`'s walk. It builds no integer.
+;;;
+;;; **A call's tag is its request.** `(int-add X Y)` is the tag of its own
+;;; computation, and the rule that answers reads `(int-done (int-add ?x ?y)
+;;; ?s)`. The calls a later theory may make are `(int-norm TAG P N)`,
+;;; `(int-add-call TAG P1 N1 P2 N2)` and `(int-mul-call TAG P1 N1 P2 N2)`,
+;;; each answered by `(int-done TAG INTEGER)`, and `(int-cmp-call TAG P1 N1
+;;; P2 N2)`, answered by `std.arith`'s `(order-is TAG ORDER)`.
+;;;
+;;; **No rule joins two facts on a number,** `std.arith`'s rule, kept here:
+;;; every rule of this module has one premise. `ein-infer/tests/
+;;; int_theory.rs` holds that on this file's text, and holds the answers to
+;;; Rust's signed integers.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Its own: `int`; the requests `int-simplify`, `int-neg`, `int-add`,
+;;; `int-sub`, `int-mul` and `int-cmp`; the results `int-simple-of`,
+;;; `int-neg-of`, `int-sum-of`, `int-diff-of`, `int-product-of` and
+;;; `int-cmp-of`; the calls `int-norm`, `int-add-call`, `int-mul-call`,
+;;; `int-cmp-call` and their hand-over `int-done`; the tags `int-only`,
+;;; `int-first`, `int-second`, `int-plus`, `int-minus`, `int-add-p`,
+;;; `int-add-n`, `int-mul-pp`, `int-mul-nn`, `int-mul-pos`, `int-mul-pn`,
+;;; `int-mul-np`, `int-mul-neg`, `int-cmp-l` and `int-cmp-r`; `int-rule`,
+;;; and the entry `int-arith`. Everything of `std.arith` comes with it. The
+;;; interface is `int`, the requests, the results and the four calls; the
+;;; tags are in the state for a query or a `--trace` to see, and are not a
+;;; promise.
+
+(import std.arith :symbols (arith))
+
+;; ── The integer ─────────────────────────────────────────────────────────────
+(relation int Number Number
+  :why "the integer {?1} less {?2}")
+
+;; ── The protocol ────────────────────────────────────────────────────────────
+(relation int-simplify Operand
+  :why "asked: {?1} in normal form")
+(relation int-simple-of Operand Integer
+  :why "{?1} is {?2}")
+(relation int-neg Operand
+  :why "asked: {?1} negated")
+(relation int-neg-of Operand Integer
+  :why "{?1} negated is {?2}")
+(relation int-add Operand Operand
+  :why "asked: {?1} + {?2}")
+(relation int-sum-of Operand Operand Integer
+  :why "{?1} + {?2} = {?3}")
+(relation int-sub Operand Operand
+  :why "asked: {?1} - {?2}")
+(relation int-diff-of Operand Operand Integer
+  :why "{?1} - {?2} = {?3}")
+(relation int-mul Operand Operand
+  :why "asked: {?1} x {?2}")
+(relation int-product-of Operand Operand Integer
+  :why "{?1} x {?2} = {?3}")
+(relation int-cmp Operand Operand
+  :why "asked: {?1} compared with {?2}")
+(relation int-cmp-of Operand Operand Order
+  :why "{?1} against {?2}: {?3}")
+
+;; ── The calls, and their hand-over ──────────────────────────────────────────
+(relation int-norm Tag Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, as an integer in normal form")
+(relation int-done Tag Integer
+  :why "the answer for {?1} is {?2}")
+(relation int-add-call Tag Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, plus {?4} less {?5}")
+(relation int-mul-call Tag Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, times {?4} less {?5}")
+(relation int-cmp-call Tag Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, compared with {?4} less {?5}")
+
+;; ── The tags: what a call's answer is for ───────────────────────────────────
+(relation int-only Request
+  :why "the operand of {?1}")
+(relation int-first Request Operand
+  :why "the first operand of {?1}, whose second is {?2}")
+(relation int-second Request Number Number
+  :why "the second operand of {?1}, whose first is {?2} less {?3}")
+(relation int-plus Tag
+  :why "the positive part, for {?1}")
+(relation int-minus Tag
+  :why "the negative part, for {?1}")
+(relation int-add-p Tag Number Number
+  :why "the sum of the positive parts, for {?1}, the negative parts being {?2} and {?3}")
+(relation int-add-n Tag Number
+  :why "the sum of the negative parts, for {?1}, the positive parts' sum being {?2}")
+(relation int-mul-pp Tag Number Number Number Number
+  :why "the product of the positive parts, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}")
+(relation int-mul-nn Tag Number Number Number Number Number
+  :why "the product of the negative parts, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}; the positive parts' product is {?6}")
+(relation int-mul-pos Tag Number Number Number Number
+  :why "the positive part of the product, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}")
+(relation int-mul-pn Tag Number Number Number
+  :why "the first operand's positive part times the second's negative, for {?1}; still to multiply are {?2} and {?3}, and the positive part is {?4}")
+(relation int-mul-np Tag Number Number
+  :why "the first operand's negative part times the second's positive, for {?1}; the positive part is {?2}, and the other product {?3}")
+(relation int-mul-neg Tag Number
+  :why "the negative part of the product, for {?1}, whose positive part is {?2}")
+(relation int-cmp-l Tag Number Number
+  :why "the left side of the comparison, for {?1}; still to add are {?2} and {?3}")
+(relation int-cmp-r Tag Number
+  :why "the right side of the comparison, for {?1}, whose left side is {?2}")
+
+;; ── The operands ────────────────────────────────────────────────────────────
+;; An integer stands for itself, as a number does in `std.arith`; a name goes
+;; through `std.arith`'s `operand-name` and its `let`. The second operand is
+;; asked for when the first is found, by one rule for every request.
+(rule int-operand ()
+  :match  (operand ?k (int ?p ?n))
+  :assert (operand-is ?k (int ?p ?n))
+  :why    "an integer stands for itself")
+
+(rule int-operand-second ()
+  :match  (operand-is (int-first ?k ?y) (int ?p ?n))
+  :assert (operand (int-second ?k ?p ?n) ?y)
+  :why    "the first operand is {?p} less {?n}: now the integer {?y} stands for")
+
+;; ── The normal form ─────────────────────────────────────────────────────────
+;; `(int-norm TAG P N)`: P - N and N - P at once, by `std.arith`'s
+;; subtraction walk. The walk that ends with no borrow hands over a number in
+;; normal form; the other is short and says nothing. Where P = N both hand
+;; over zero, and the two rules below say the one fact, `(int z z)`.
+(rule int-norm-walks ()
+  :match  (int-norm ?k ?p ?n)
+  :assert (and (sub-walk (int-plus ?k) ?p ?n 0 z)
+               (sub-walk (int-minus ?k) ?n ?p 0 z))
+  :why    "take {?n} from {?p}, and {?p} from {?n}: one of the two has an answer")
+
+(rule int-norm-plus ()
+  :match  (done (int-plus ?k) ?d)
+  :assert (int-done ?k (int ?d z))
+  :why    "the positive part is {?d}, and the negative part is zero")
+
+(rule int-norm-minus ()
+  :match  (done (int-minus ?k) ?r)
+  :assert (int-done ?k (int z ?r))
+  :why    "the negative part is {?r}, and the positive part is zero")
+
+;; ── Simplification, and negation ────────────────────────────────────────────
+(rule int-simplify-ask ()
+  :match  (int-simplify ?x)
+  :assert (operand (int-only (int-simplify ?x)) ?x)
+  :why    "{?x} in normal form is asked: first, the integer {?x} stands for")
+
+(rule int-simplify-start ()
+  :match  (operand-is (int-only (int-simplify ?x)) (int ?p ?n))
+  :assert (int-norm (int-simplify ?x) ?p ?n)
+  :why    "simplify {?p} less {?n}")
+
+(rule int-simplify-answer ()
+  :match  (int-done (int-simplify ?x) ?s)
+  :assert (int-simple-of ?x ?s)
+  :why    "{?x} is {?s}")
+
+(rule int-neg-ask ()
+  :match  (int-neg ?x)
+  :assert (operand (int-only (int-neg ?x)) ?x)
+  :why    "{?x} negated is asked: first, the integer {?x} stands for")
+
+(rule int-neg-start ()
+  :match  (operand-is (int-only (int-neg ?x)) (int ?p ?n))
+  :assert (int-norm (int-neg ?x) ?n ?p)
+  :why    "the parts change places: simplify {?n} less {?p}")
+
+(rule int-neg-answer ()
+  :match  (int-done (int-neg ?x) ?s)
+  :assert (int-neg-of ?x ?s)
+  :why    "{?x} negated is {?s}")
+
+;; ── Addition, and subtraction ───────────────────────────────────────────────
+;; `(int-add-call TAG P1 N1 P2 N2)`: the positive parts added, then the
+;; negative parts, then the pair simplified.
+(rule int-add-plus ()
+  :match  (int-add-call ?k ?p ?n ?q ?m)
+  :assert (add-walk (int-add-p ?k ?n ?m) ?p ?q 0 z)
+  :why    "first the positive parts: {?p} + {?q}")
+
+(rule int-add-minus ()
+  :match  (done (int-add-p ?k ?n ?m) ?s)
+  :assert (add-walk (int-add-n ?k ?s) ?n ?m 0 z)
+  :why    "the positive parts make {?s}: now the negative parts, {?n} + {?m}")
+
+(rule int-add-norm ()
+  :match  (done (int-add-n ?k ?s) ?t)
+  :assert (int-norm ?k ?s ?t)
+  :why    "the negative parts make {?t}: simplify {?s} less {?t}")
+
+(rule int-add-ask ()
+  :match  (int-add ?x ?y)
+  :assert (operand (int-first (int-add ?x ?y) ?y) ?x)
+  :why    "{?x} + {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-add-start ()
+  :match  (operand-is (int-second (int-add ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-add-call (int-add ?x ?y) ?p ?n ?q ?m)
+  :why    "add {?p} less {?n} and {?q} less {?m}")
+
+(rule int-add-answer ()
+  :match  (int-done (int-add ?x ?y) ?s)
+  :assert (int-sum-of ?x ?y ?s)
+  :why    "{?x} + {?y} = {?s}")
+
+;; To take an integer away is to add it with its parts exchanged.
+(rule int-sub-ask ()
+  :match  (int-sub ?x ?y)
+  :assert (operand (int-first (int-sub ?x ?y) ?y) ?x)
+  :why    "{?x} - {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-sub-start ()
+  :match  (operand-is (int-second (int-sub ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-add-call (int-sub ?x ?y) ?p ?n ?m ?q)
+  :why    "to take {?q} less {?m} away, add {?m} less {?q}")
+
+(rule int-sub-answer ()
+  :match  (int-done (int-sub ?x ?y) ?s)
+  :assert (int-diff-of ?x ?y ?s)
+  :why    "{?x} - {?y} = {?s}")
+
+;; ── Multiplication ──────────────────────────────────────────────────────────
+;; `(int-mul-call TAG P1 N1 P2 N2)`: (P1 - N1) x (P2 - N2) is
+;; (P1 x P2 + N1 x N2) less (P1 x N2 + N1 x P2). Four products of
+;; `std.arith`, two sums, and the pair simplified; no rule looks at a sign.
+(rule int-mul-first ()
+  :match  (int-mul-call ?k ?p ?n ?q ?m)
+  :assert (mul-call (int-mul-pp ?k ?p ?n ?q ?m) ?p ?q)
+  :why    "first the positive parts: {?p} x {?q}")
+
+(rule int-mul-second ()
+  :match  (done (int-mul-pp ?k ?p ?n ?q ?m) ?a)
+  :assert (mul-call (int-mul-nn ?k ?p ?n ?q ?m ?a) ?n ?m)
+  :why    "the positive parts make {?a}: now the negative parts, {?n} x {?m}")
+
+(rule int-mul-plus ()
+  :match  (done (int-mul-nn ?k ?p ?n ?q ?m ?a) ?b)
+  :assert (add-walk (int-mul-pos ?k ?p ?n ?q ?m) ?a ?b 0 z)
+  :why    "the negative parts make {?b}: the product's positive part is {?a} + {?b}")
+
+(rule int-mul-third ()
+  :match  (done (int-mul-pos ?k ?p ?n ?q ?m) ?s)
+  :assert (mul-call (int-mul-pn ?k ?n ?q ?s) ?p ?m)
+  :why    "the positive part is {?s}: now across, {?p} x {?m}")
+
+(rule int-mul-fourth ()
+  :match  (done (int-mul-pn ?k ?n ?q ?s) ?c)
+  :assert (mul-call (int-mul-np ?k ?s ?c) ?n ?q)
+  :why    "that makes {?c}: and across the other way, {?n} x {?q}")
+
+(rule int-mul-minus ()
+  :match  (done (int-mul-np ?k ?s ?c) ?d)
+  :assert (add-walk (int-mul-neg ?k ?s) ?c ?d 0 z)
+  :why    "that makes {?d}: the product's negative part is {?c} + {?d}")
+
+(rule int-mul-norm ()
+  :match  (done (int-mul-neg ?k ?s) ?t)
+  :assert (int-norm ?k ?s ?t)
+  :why    "the negative part is {?t}: simplify {?s} less {?t}")
+
+(rule int-mul-ask ()
+  :match  (int-mul ?x ?y)
+  :assert (operand (int-first (int-mul ?x ?y) ?y) ?x)
+  :why    "{?x} x {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-mul-start ()
+  :match  (operand-is (int-second (int-mul ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-mul-call (int-mul ?x ?y) ?p ?n ?q ?m)
+  :why    "multiply {?p} less {?n} by {?q} less {?m}")
+
+(rule int-mul-answer ()
+  :match  (int-done (int-mul ?x ?y) ?s)
+  :assert (int-product-of ?x ?y ?s)
+  :why    "{?x} x {?y} = {?s}")
+
+;; ── Comparison ──────────────────────────────────────────────────────────────
+;; `(int-cmp-call TAG P1 N1 P2 N2)`: P1 - N1 against P2 - N2 is P1 + N2
+;; against N1 + P2, two sums and `std.arith`'s comparison walk, which hands
+;; over `(order-is TAG ORDER)`.
+(rule int-cmp-left ()
+  :match  (int-cmp-call ?k ?p ?n ?q ?m)
+  :assert (add-walk (int-cmp-l ?k ?n ?q) ?p ?m 0 z)
+  :why    "add across: the left side is {?p} + {?m}")
+
+(rule int-cmp-right ()
+  :match  (done (int-cmp-l ?k ?n ?q) ?l)
+  :assert (add-walk (int-cmp-r ?k ?l) ?n ?q 0 z)
+  :why    "the left side is {?l}: the right side is {?n} + {?q}")
+
+(rule int-cmp-sides ()
+  :match  (done (int-cmp-r ?k ?l) ?r)
+  :assert (cmp-walk ?k ?l ?r eq)
+  :why    "the right side is {?r}: compare {?l} with {?r}")
+
+(rule int-cmp-ask ()
+  :match  (int-cmp ?x ?y)
+  :assert (operand (int-first (int-cmp ?x ?y) ?y) ?x)
+  :why    "{?x} compared with {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-cmp-start ()
+  :match  (operand-is (int-second (int-cmp ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-cmp-call (int-cmp ?x ?y) ?p ?n ?q ?m)
+  :why    "compare {?p} less {?n} with {?q} less {?m}")
+
+(rule int-cmp-answer ()
+  :match  (order-is (int-cmp ?x ?y) ?o)
+  :assert (int-cmp-of ?x ?y ?o)
+  :why    "{?x} against {?y}: {?o}")
+
+;; ── The closing rule, and the theory's one entry ────────────────────────────
+;; Every relation of the module is closed, so the search has no candidate
+;; among them, and every rule is named, which is what makes `(import std.int
+;; :symbols (int-arith))` bring the whole theory. It names `arith` too,
+;; `std.arith`'s entry: a selection's closure follows the names a kept
+;; declaration writes, and without that name the lower theory's rules would
+;; stay behind, in silence (E-20 of P1f.6's `findings.md`).
+;; `ein-infer/tests/int_theory.rs` holds that nothing is missing here.
+(relation int-rule Rule
+  :why "{?1} is a rule std.int brings")
+
+;; The closing rule's own name, as a written fact: what keeps it in a program
+;; that is inlined and tree-shaken (E-11 of P1f.6's `findings.md`).
+(int-rule int-arith)
+
+(rule int-arith ()
+  :match  ()
+  :assert (and (__closed__ int)
+               (__closed__ int-simplify) (__closed__ int-simple-of)
+               (__closed__ int-neg) (__closed__ int-neg-of)
+               (__closed__ int-add) (__closed__ int-sum-of)
+               (__closed__ int-sub) (__closed__ int-diff-of)
+               (__closed__ int-mul) (__closed__ int-product-of)
+               (__closed__ int-cmp) (__closed__ int-cmp-of)
+               (__closed__ int-norm) (__closed__ int-done)
+               (__closed__ int-add-call) (__closed__ int-mul-call)
+               (__closed__ int-cmp-call)
+               (__closed__ int-only) (__closed__ int-first)
+               (__closed__ int-second)
+               (__closed__ int-plus) (__closed__ int-minus)
+               (__closed__ int-add-p) (__closed__ int-add-n)
+               (__closed__ int-mul-pp) (__closed__ int-mul-nn)
+               (__closed__ int-mul-pos) (__closed__ int-mul-pn)
+               (__closed__ int-mul-np) (__closed__ int-mul-neg)
+               (__closed__ int-cmp-l) (__closed__ int-cmp-r)
+               (__closed__ int-rule)
+               (int-rule arith)
+               (int-rule int-operand) (int-rule int-operand-second)
+               (int-rule int-norm-walks) (int-rule int-norm-plus)
+               (int-rule int-norm-minus)
+               (int-rule int-simplify-ask) (int-rule int-simplify-start)
+               (int-rule int-simplify-answer)
+               (int-rule int-neg-ask) (int-rule int-neg-start)
+               (int-rule int-neg-answer)
+               (int-rule int-add-plus) (int-rule int-add-minus)
+               (int-rule int-add-norm)
+               (int-rule int-add-ask) (int-rule int-add-start)
+               (int-rule int-add-answer)
+               (int-rule int-sub-ask) (int-rule int-sub-start)
+               (int-rule int-sub-answer)
+               (int-rule int-mul-first) (int-rule int-mul-second)
+               (int-rule int-mul-plus) (int-rule int-mul-third)
+               (int-rule int-mul-fourth) (int-rule int-mul-minus)
+               (int-rule int-mul-norm)
+               (int-rule int-mul-ask) (int-rule int-mul-start)
+               (int-rule int-mul-answer)
+               (int-rule int-cmp-left) (int-rule int-cmp-right)
+               (int-rule int-cmp-sides)
+               (int-rule int-cmp-ask) (int-rule int-cmp-start)
+               (int-rule int-cmp-answer))
+  :why    "integers are computed and never guessed: every relation of the theory is closed")

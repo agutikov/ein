@@ -47,6 +47,9 @@
 //! A later operation joins this file by adding its request to [`REQUESTS`]
 //! and its bound to [`BOUND`]. Each operation is measured in batches of its
 //! own (S1f.6.4).
+//!
+//! `std.num9` (S1f.6.13) and `std.int` (S1f.6.7) have a test of their own
+//! each, below, of the same shape.
 
 use ein_core::Terms;
 use ein_core::counters;
@@ -359,6 +362,115 @@ fn a_batch_of_nine_digit_requests_costs_in_proportion_to_its_count() {
                      candidates a request at {} and {c:.1} at {n}. A rule of std.num9 \
                      joins two facts on a number (E-3 of P1f.6's findings.md); \
                      `num9_theory.rs` names the rule if it is written as two premises",
+                    sizes[0]
+                );
+            }
+        }
+        if cfg!(feature = "counters") {
+            assert!(base > 0.0, "the counters are on and counted nothing");
+            assert!(
+                base < bound,
+                "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
+                sizes[0]
+            );
+        }
+    }
+}
+
+// ── std.int (S1f.6.7) ──────────────────────────────────────────────
+
+const IMPORT_INT: &str = "(import std.int :symbols (int-arith))\n";
+
+/// `std.int`'s requests over two integers, each with its result relation and
+/// what a request may cost at the smallest batch, in `candidates`: a little
+/// above the measure, as [`BOUND`] is; and the digits of an operand's parts,
+/// six, and four for a product, which is four of `std.arith`'s. Every third
+/// operand is written with both parts, not simplified.
+const REQUESTS_INT: [(&str, &str, f64, u32); 4] = [
+    ("int-add", "int-sum-of", BOUND_INT_ADD, 6),
+    ("int-sub", "int-diff-of", BOUND_INT_ADD, 6),
+    ("int-mul", "int-product-of", BOUND_INT_MUL, 4),
+    ("int-cmp", "int-cmp-of", BOUND_INT_CMP, 6),
+];
+const BOUND_INT_ADD: f64 = 700.0;
+const BOUND_INT_MUL: f64 = 6000.0;
+const BOUND_INT_CMP: f64 = 1300.0;
+
+/// An integer of the batch: a part of `digits` digits on one side, and on
+/// every third draw on both.
+fn integer(rng: &mut u64, digits: u32) -> String {
+    let shape = {
+        *rng = rng
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
+        (*rng >> 33) % 3
+    };
+    let a = number(rng, digits);
+    match shape {
+        0 => format!("(int {a} z)"),
+        1 => format!("(int z {a})"),
+        _ => format!("(int {a} {})", number(rng, digits)),
+    }
+}
+
+fn batch_int(op: &str, count: usize, digits: u32) -> String {
+    let mut rng = 0x5146_0607_u64;
+    let mut src = String::from(IMPORT_INT);
+    let mut seen = std::collections::BTreeSet::new();
+    while seen.len() < count {
+        let request = format!(
+            "({op} {} {})\n",
+            integer(&mut rng, digits),
+            integer(&mut rng, digits)
+        );
+        if seen.insert(request.clone()) {
+            src.push_str(&request);
+        }
+    }
+    src
+}
+
+/// **The integers keep the rule of the theory.** Every rule of `std.int` has
+/// one premise (`int_theory.rs` holds that on the text), and each step is a
+/// walk of `std.arith` under a tag of the module's. Here: a request of each
+/// operation costs the same `candidates` and the same firings at 1 000 and
+/// at 4 000 requests as at 250.
+#[test]
+fn a_batch_of_integer_requests_costs_in_proportion_to_its_count() {
+    let sizes = [250usize, 1000, 4000];
+    for (op, result, bound, digits) in REQUESTS_INT {
+        let work: Vec<Work> = sizes
+            .iter()
+            .map(|&n| saturate(&batch_int(op, n, digits), result))
+            .collect();
+        for (n, w) in sizes.iter().zip(&work) {
+            assert_eq!(w.answers, *n, "{n} `{op}` requests, each answered");
+            eprintln!(
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
+                w.firings,
+                per_request(w.firings, *n),
+                w.candidates,
+                per_request(w.candidates, *n)
+            );
+        }
+        let base_firings = per_request(work[0].firings, sizes[0]);
+        let base = per_request(work[0].candidates, sizes[0]);
+        for (n, w) in sizes.iter().zip(&work).skip(1) {
+            let firings = per_request(w.firings, *n);
+            assert!(
+                firings <= base_firings * TOLERANCE,
+                "`{op}`: firings per request grew with the batch: {base_firings:.1} at {} \
+                 and {firings:.1} at {n}",
+                sizes[0]
+            );
+            if cfg!(feature = "counters") {
+                let c = per_request(w.candidates, *n);
+                assert!(
+                    c <= base * TOLERANCE,
+                    "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.int \
+                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     `int_theory.rs` names the rule if it is written as two premises",
                     sizes[0]
                 );
             }

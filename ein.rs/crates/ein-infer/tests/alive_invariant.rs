@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 69] = [
+const SEEDED: [(&str, &[&str]); 79] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -389,6 +389,45 @@ const SEEDED: [(&str, &[&str]); 69] = [
     (
         "tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein",
         &["`z`, in (let none (n (n z 0) 0))"],
+    ),
+    // M1f S1f.6.7 — `std.int`: an integer's parts are numbers, so `z` is inside
+    // a nested fact here too, and the module holds it through `std.arith`'s rule.
+    (
+        "examples/arith/int.ein",
+        &["`z`, in (int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))"],
+    ),
+    ("stdlib/int.ein", &["`z`, matched by rule `operand-zero`"]),
+    (
+        "tests/stdlib/int/01_simplify.ein",
+        &["`z`, in (int-simplify (int (n z 5) (n z 3)))"],
+    ),
+    (
+        "tests/stdlib/int/02_neg.ein",
+        &["`z`, in (int-neg (int (n z 7) z))"],
+    ),
+    (
+        "tests/stdlib/int/03_add.ein",
+        &["`z`, in (int-add (int (n z 7) z) (int (n z 5) z))"],
+    ),
+    (
+        "tests/stdlib/int/04_sub.ein",
+        &["`z`, in (int-sub (int (n z 7) z) (int (n z 5) z))"],
+    ),
+    (
+        "tests/stdlib/int/05_mul.ein",
+        &["`z`, in (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))"],
+    ),
+    (
+        "tests/stdlib/int/06_cmp.ein",
+        &["`z`, in (int-cmp (int (n z 7) z) (int (n z 5) z))"],
+    ),
+    (
+        "tests/stdlib/int/07_unsimplified.ein",
+        &["`z`, in (int-add (int (n z 5) (n z 3)) (int z (n z 7)))"],
+    ),
+    (
+        "tests/stdlib/int/08_named_and_chained.ein",
+        &["`z`, in (let balance (int (n (n z 4) 0) z))"],
     ),
     (
         "stdlib/elim.ein",

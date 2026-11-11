@@ -1,0 +1,115 @@
+;;; Negative numbers, computed by saturation alone: -12 + 40 = 28, 4567 -
+;;; 123078 = -118511, and -123 x 456 = -56088. M1f P1f.6 (S1f.6.7).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.arith` has natural numbers only (`add.ein` beside this file is the
+;;; introduction), so its subtraction answers two numbers, a difference and
+;;; what the first operand is short by. `std.int` is a second theory over it
+;;; that makes those two numbers one: an integer is two natural numbers, a
+;;; positive part and a negative part, and its value is the first less the
+;;; second.
+;;;
+;;;   (int P N)              an integer: P less N. 7 is (int (n z 7) z),
+;;;                          -7 is (int z (n z 7)), zero is (int z z), and
+;;;                          (int (n z 5) (n z 3)) is 2, not yet simplified
+;;;   (int-add X Y)          a request fact; (int-sum-of X Y S) answers it
+;;;   (int-sub X Y)          answered by (int-diff-of X Y S): one integer
+;;;   (int-mul X Y)          answered by (int-product-of X Y S)
+;;;   (int-cmp X Y)          answered by (int-cmp-of X Y O), O lt, eq or gt
+;;;   (int-neg X)            answered by (int-neg-of X S)
+;;;   (int-simplify X)       answered by (int-simple-of X S)
+;;;   (let NAME (int P N))   a named integer; a request may name its operands
+;;;
+;;; Every answer is in normal form: one part is `z`. So a rule of a program
+;;; tells a negative answer from the others by its shape, `(int z (n ?p
+;;; ?a))`, with no negation written.
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; Nothing is guessed, and no rule of the theory looks at a sign. A sum
+;;; adds the positive parts and the negative parts, each by `std.arith`'s
+;;; walk, and then simplifies the pair by subtracting both ways at once: the
+;;; subtraction that ends with no borrow is the part that is left.
+;;;
+;;;   -12 + 40:   positive parts 0 + 40 = 40, negative parts 12 + 0 = 12;
+;;;               40 - 12 = 28 with no borrow, 12 - 40 borrows: (int 28 z)
+;;;
+;;; A product is four products of natural numbers and two sums, then the
+;;; same simplification. A comparison adds across and compares two natural
+;;; numbers.
+;;;
+;;; ── The program's own rules ────────────────────────────────────────────
+;;;
+;;; The temperatures of three mornings are named constants. `colder` asks
+;;; how each compares with the freezing point, and `frost` reads the
+;;; answers: it matches the order `lt`.
+;;;
+;;; `ein solve examples/arith/int.ein --trace T.md` writes every step as a
+;;; sentence.
+
+(import std.int :symbols (int-arith))
+
+(relation morning Name
+  :why "{?1} is a morning's temperature")
+(relation frost Name
+  :why "it froze on the morning of {?1}")
+(__closed__ morning)
+(__closed__ frost)
+
+(int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))
+(int-sub (int (n (n (n (n z 4) 5) 6) 7) z) (int (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) z))
+(int-mul (int z (n (n (n z 1) 2) 3)) (int (n (n (n z 4) 5) 6) z))
+(int-simplify (int (n z 5) (n z 3)))
+(int-neg (int (n z 5) (n z 3)))
+
+(let freezing (int z z))
+(let monday   (int z (n z 4)))
+(let tuesday  (int (n z 3) z))
+(let friday   (int z (n (n z 1) 1)))
+(morning monday)
+(morning tuesday)
+(morning friday)
+
+(rule colder ()
+  :match  (morning ?day)
+  :assert (int-cmp ?day freezing)
+  :why    "how does {?day} compare with freezing?")
+
+(rule it-froze ()
+  :match  (int-cmp-of ?day freezing lt)
+  :assert (frost ?day)
+  :why    "{?day} is below freezing")
+
+(int-sub tuesday friday)
+
+(solve :expect (region (model)))
+
+(query :goal (int-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (int-sum-of (int z (n (n z 1) 2)) (int (n (n z 4) 0) z)
+                                  (int (n (n z 2) 8) z))))
+
+(query :goal (int-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (int-diff-of (int (n (n (n (n z 4) 5) 6) 7) z)
+                                   (int (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) z)
+                                   (int z (n (n (n (n (n (n z 1) 1) 8) 5) 1) 1)))
+                      (int-diff-of tuesday friday (int (n (n z 1) 4) z))))
+
+(query :goal (int-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (int-product-of (int z (n (n (n z 1) 2) 3)) (int (n (n (n z 4) 5) 6) z)
+                                      (int z (n (n (n (n (n z 5) 6) 0) 8) 8)))))
+
+(query :goal (int-simple-of ?x ?s)
+       :goal-text "{?x} is {?s}"
+       :expect (model (int-simple-of (int (n z 5) (n z 3)) (int (n z 2) z))))
+
+(query :goal (int-neg-of ?x ?s)
+       :goal-text "{?x} negated is {?s}"
+       :expect (model (int-neg-of (int (n z 5) (n z 3)) (int z (n z 2)))))
+
+(query :goal (frost ?day)
+       :goal-text "it froze on the morning of {?day}"
+       :expect (model (frost monday) (frost friday)))

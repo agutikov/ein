@@ -301,6 +301,48 @@ request whose operand is anything else is never answered. The states of a
 product and a quotient, `mul9-at` and `div9-at`, with `multiples9` and `row9`,
 and `num9-rule`, are in the state and are not an interface.
 
+## `std.int` — integers as a positive and a negative part (requests and results)
+
+M1f P1f.6 (S1f.6.7). The calculator's first extension, written over
+`std.arith`, which it calls and does not edit: computed by saturation alone,
+with no hypothesis, no `absent`, no guard and one stratum. The module-level
+account is
+[`stdlib/README.md` § `std.int`](../../../../stdlib/README.md#stdint-integers-as-a-positive-and-a-negative-part-m1f-s1f67).
+
+```lisp
+(import std.int :symbols (int-arith))
+```
+
+`int-arith` is the closing rule, the theory's one entry; it names `arith`,
+so the one name brings `std.arith` too.
+
+**The integer.** `(int P N)`: two numbers of `std.arith`, and its value is P
+less N. −7 is `(int z (n z 7))`, zero is `(int z z)`. The normal form has one
+part `z`; an operand is read by value and every answer is in normal form.
+
+| fact | who writes it | meaning |
+|------|---------------|---------|
+| `(int-simplify X)` | the program: a **request** | X in normal form is asked |
+| `(int-simple-of X S)` | the theory: the **result** | S is X's normal form |
+| `(int-neg X)` | the program: a request | 0 − X is asked |
+| `(int-neg-of X S)` | the theory: the result | S is X negated |
+| `(int-add X Y)` | the program: a request | X + Y is asked |
+| `(int-sum-of X Y S)` | the theory: the result | X + Y = S |
+| `(int-sub X Y)` | the program: a request | X − Y is asked |
+| `(int-diff-of X Y S)` | the theory: the result | X − Y = S, one integer; nothing is ever short |
+| `(int-mul X Y)` | the program: a request | X × Y is asked |
+| `(int-product-of X Y S)` | the theory: the result | X × Y = S |
+| `(int-cmp X Y)` | the program: a request | X is compared with Y |
+| `(int-cmp-of X Y O)` | the theory: the result | O is the name `lt`, `eq` or `gt`, by value |
+
+An operand is an integer written out, `(int P N)` with P and N numbers, or a
+name that `std.arith`'s `(let NAME (int P N))` states; the answer repeats the
+operand as written. A natural number in an integer's place is never answered.
+**There is no integer division yet**: its remainder convention is open
+(Q-M1f.179). The calls `int-norm`, `int-add-call`, `int-mul-call` and
+`int-cmp-call`, with the hand-over `int-done`, are for a theory built on this
+one; the tags and `int-rule` are in the state and are not an interface.
+
 ## See also
 
 - [`stdlib/README.md`](../../../../stdlib/README.md)

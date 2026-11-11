@@ -18,6 +18,12 @@
 0    examples/arith/factorial.ein :: saturate
 0    examples/arith/factorial.ein :: solve
 0    examples/arith/factorial.ein :: test
+0    examples/arith/int.ein :: render rules
+0    examples/arith/int.ein :: saturate
+0    examples/arith/int.ein :: saturate --dump
+0    examples/arith/int.ein :: solve
+0    examples/arith/int.ein :: solve --trace {out}/trace.md
+0    examples/arith/int.ein :: test
 0    examples/arith/long_numbers.ein :: saturate
 0    examples/arith/long_numbers.ein :: solve
 0    examples/arith/long_numbers.ein :: test
@@ -1473,6 +1479,10 @@
 0    stdlib/elim.ein :: render rules
 0    stdlib/elim.ein :: saturate
 0    stdlib/elim.ein :: solve
+0    stdlib/int.ein :: render constraints
+0    stdlib/int.ein :: render rules
+0    stdlib/int.ein :: saturate
+0    stdlib/int.ein :: solve
 0    stdlib/macro.ein :: render constraints
 1    stdlib/macro.ein :: render rules
 0    stdlib/macro.ein :: saturate
@@ -1817,6 +1827,46 @@
 0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: saturate
 0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: solve
 0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: test
+0    tests/stdlib/int/01_simplify.ein :: render constraints
+1    tests/stdlib/int/01_simplify.ein :: render rules
+0    tests/stdlib/int/01_simplify.ein :: saturate
+0    tests/stdlib/int/01_simplify.ein :: solve
+0    tests/stdlib/int/01_simplify.ein :: test
+0    tests/stdlib/int/02_neg.ein :: render constraints
+1    tests/stdlib/int/02_neg.ein :: render rules
+0    tests/stdlib/int/02_neg.ein :: saturate
+0    tests/stdlib/int/02_neg.ein :: solve
+0    tests/stdlib/int/02_neg.ein :: test
+0    tests/stdlib/int/03_add.ein :: render constraints
+1    tests/stdlib/int/03_add.ein :: render rules
+0    tests/stdlib/int/03_add.ein :: saturate
+0    tests/stdlib/int/03_add.ein :: solve
+0    tests/stdlib/int/03_add.ein :: test
+0    tests/stdlib/int/04_sub.ein :: render constraints
+1    tests/stdlib/int/04_sub.ein :: render rules
+0    tests/stdlib/int/04_sub.ein :: saturate
+0    tests/stdlib/int/04_sub.ein :: solve
+0    tests/stdlib/int/04_sub.ein :: test
+0    tests/stdlib/int/05_mul.ein :: render constraints
+1    tests/stdlib/int/05_mul.ein :: render rules
+0    tests/stdlib/int/05_mul.ein :: saturate
+0    tests/stdlib/int/05_mul.ein :: solve
+0    tests/stdlib/int/05_mul.ein :: test
+0    tests/stdlib/int/06_cmp.ein :: render constraints
+1    tests/stdlib/int/06_cmp.ein :: render rules
+0    tests/stdlib/int/06_cmp.ein :: saturate
+0    tests/stdlib/int/06_cmp.ein :: solve
+0    tests/stdlib/int/06_cmp.ein :: test
+0    tests/stdlib/int/07_unsimplified.ein :: render constraints
+1    tests/stdlib/int/07_unsimplified.ein :: render rules
+0    tests/stdlib/int/07_unsimplified.ein :: saturate
+0    tests/stdlib/int/07_unsimplified.ein :: solve
+0    tests/stdlib/int/07_unsimplified.ein :: test
+0    tests/stdlib/int/08_named_and_chained.ein :: render constraints
+0    tests/stdlib/int/08_named_and_chained.ein :: render rules
+0    tests/stdlib/int/08_named_and_chained.ein :: saturate
+0    tests/stdlib/int/08_named_and_chained.ein :: solve
+0    tests/stdlib/int/08_named_and_chained.ein :: test
 0    tests/stdlib/macro/01_forall.ein :: render constraints
 0    tests/stdlib/macro/01_forall.ein :: render rules
 0    tests/stdlib/macro/01_forall.ein :: saturate

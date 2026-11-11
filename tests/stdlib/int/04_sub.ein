@@ -1,0 +1,51 @@
+;;; `std.int` — subtraction: one integer, and nothing is ever short.
+;;; M1f S1f.6.7.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(int-sub X Y)` is answered by `(int-diff-of X Y S)`. Where `std.arith`'s
+;;; `(sub X Y)` answers two numbers, a difference and what the first operand
+;;; is short by, an integer difference is one integer: the two numbers are its
+;;; two parts.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; To take an integer away is to add it with its parts exchanged
+;;; (`int-sub-ask`, `int-sub-start`, then addition's three rules and the
+;;; simplification; `int-sub-answer`).
+;;;
+;;;    7 -  5 = 2        6 -  8 = -2       7 - -5 = 12      -7 - 5 = -12
+;;;   -7 - -5 = -2      -4 - -9 = 5        9 -  9 = 0        0 - 4 = -4
+;;;    0 - -4 = 4     1000 -  1 = 999
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `int-diff-of`'s whole extent, ten requests, no pair both ways round.
+
+(import std.int :symbols (int-arith))
+
+(int-sub (int (n z 7) z) (int (n z 5) z))
+(int-sub (int (n z 6) z) (int (n z 8) z))
+(int-sub (int (n z 7) z) (int z (n z 5)))
+(int-sub (int z (n z 7)) (int (n z 5) z))
+(int-sub (int z (n z 7)) (int z (n z 5)))
+(int-sub (int z (n z 4)) (int z (n z 9)))
+(int-sub (int (n z 9) z) (int (n z 9) z))
+(int-sub (int z z) (int (n z 4) z))
+(int-sub (int z z) (int z (n z 4)))
+(int-sub (int (n (n (n (n z 1) 0) 0) 0) z) (int (n z 1) z))
+
+(solve :expect (region (model)))
+
+(query :goal (int-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (int-diff-of (int (n z 7) z) (int (n z 5) z) (int (n z 2) z))
+                      (int-diff-of (int (n z 6) z) (int (n z 8) z) (int z (n z 2)))
+                      (int-diff-of (int (n z 7) z) (int z (n z 5)) (int (n (n z 1) 2) z))
+                      (int-diff-of (int z (n z 7)) (int (n z 5) z) (int z (n (n z 1) 2)))
+                      (int-diff-of (int z (n z 7)) (int z (n z 5)) (int z (n z 2)))
+                      (int-diff-of (int z (n z 4)) (int z (n z 9)) (int (n z 5) z))
+                      (int-diff-of (int (n z 9) z) (int (n z 9) z) (int z z))
+                      (int-diff-of (int z z) (int (n z 4) z) (int z (n z 4)))
+                      (int-diff-of (int z z) (int z (n z 4)) (int (n z 4) z))
+                      (int-diff-of (int (n (n (n (n z 1) 0) 0) 0) z) (int (n z 1) z) (int (n (n (n z 9) 9) 9) z))))

@@ -87,6 +87,7 @@ alone.
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/arith/`](stdlib/arith/) | 89 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/num9/`](stdlib/num9/) | 47 | `std.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibnum9-wide-rules-and-a-generated-module) |
+| [`stdlib/int/`](stdlib/int/) | 37 | `std.int`, integers as a positive and a negative part over `std.arith` (M1f S1f.6.7): eight programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; and operands by name with two rules of the program's own. See [below](#stdlibint-a-theory-over-a-theory) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -270,6 +271,37 @@ overflow rules, which a digit that is not zero already implies. The premise
 is gone from the rules. **The sweep kills every mutant of the module**, 41 of
 41, and the bank is unmoved (`python3 utils/stdlib_mutants.py --check`,
 2026-11-11).
+
+### `stdlib/int/`: a theory over a theory
+
+M1f [S1f.6.7](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md).
+`std.int` is the calculator's first extension: an integer is `(int P N)`, two
+natural numbers of `std.arith`, and every rule of the module has one premise
+and starts one of `std.arith`'s walks. What `stdlib/arith/` says of its
+programs holds of these: each claims R = {∅} on its `(solve …)` form,
+`arith_search_free.rs` reads the search-free claim off every one, and right is
+held from outside the language, by `ein-infer/tests/int_theory.rs` against
+Rust's signed integers, every pair of integers written with one-digit parts
+under every operation. Each claim here was computed by Python's integers when
+the program was drafted.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `01_simplify.ein` | `int-operand`, `int-simplify-ask`, `-start`, `-answer`, `int-norm-walks`, `int-norm-plus`, `int-norm-minus`: nine operands, 5 less 3, 3 less 5, equal parts, high zeros | the parts exchanged; a zero that is not `(int z z)`; an answer with a high zero |
+| `02_neg.ein` | `int-neg-ask`, `-start`, `-answer`: seven operands, simplified and not | a negation that only exchanges the parts and does not simplify |
+| `03_add.ein` | `int-operand-second`, `int-add-ask`, `-start`, `-answer`, `int-add-plus`, `-minus`, `-norm`: eleven sums in every combination of signs | a part added to the wrong side; the operands exchanged in the answer |
+| `04_sub.ein` | `int-sub-ask`, `-start`, `-answer`: ten differences, each one integer | the second operand's parts not exchanged, which is a sum |
+| `05_mul.ein` | `int-mul-ask`, `-start`, `-answer`, `int-mul-first` to `-fourth`, `-plus`, `-minus`, `-norm`: every combination of signs, zero on either side, operands not simplified | a cross product on the wrong side: the sign of every mixed product |
+| `06_cmp.ein` | `int-cmp-ask`, `-start`, `-answer`, `int-cmp-left`, `-right`, `-sides`: twelve comparisons, two pairs written differently that are `eq` | the sides added straight and not across |
+| `07_unsimplified.ein` | the stage's own case: 5 less 3 and 2 less 0 under each of the four operations | an operand read by its spelling |
+| `08_named_and_chained.ein` | names through `std.arith`'s `let`; two rules of the program's own that read a negative difference by its shape, one deriving an `int-neg` request | a named integer left unanswered; a derived request left unanswered |
+
+**No request here is another the other way round,** `stdlib/num9/`'s lesson,
+kept from the first draft: `03_add.ein`'s header says why. **The mutation
+sweep kills every mutant of the module**, 42 of 42, on its first run, and the
+bank is unmoved (`python3 utils/stdlib_mutants.py --check`, 2026-11-12).
+Integer division has no program here because it is not built: its remainder
+convention is the user's question (Q-M1f.179).
 
 ### Five things about how they are written
 
@@ -461,6 +493,13 @@ equivalent mutants of a premise two rules did not need, which the generator
 no longer writes, and two were `(sub9 X Y)` with its operands exchanged, which
 `num9/03_sub.ein` kills since it stopped asking a pair both ways round. **The
 bank is unmoved**, 50 lines.
+
+**317 of 367 on 2026-11-12: `std.int` added 42 mutants and the suite kills
+every one**, on its first run (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.7](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md)).
+Every rule of the module has one premise and no guard, so its mutants are the
+exchange families: a request's two operands, a hand-over's tag and answer.
+**The bank is unmoved**, 50 lines.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the
