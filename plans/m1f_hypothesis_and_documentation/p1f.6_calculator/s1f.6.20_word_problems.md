@@ -150,6 +150,13 @@ does not say which computation answers it. The page shows, on a prototype, what 
 6. **A missing reading: both answers, or none.** Whether the two readings are written as hypotheses, so that
    the answer is a region of two states and the read-out's projection classes are the two answers, or as two
    derived answers each marked with its reading, or as a named gap and no answer. Each is tried.
+   **The user leans to the first** (2026-11-11): *"yes, readings as hypotheses - it looks like search of
+   ontology, not yes as search of theories, but already very valuable"*. So it is the one built first and
+   shown in full; the other two are shown beside it for comparison. The user's distinction is kept: what is
+   searched here is **which facts about the words hold** (an ontology: *need* is this reading or that one),
+   under rules that stay fixed. A search over the **rules** themselves, theories as hypotheses, is not this
+   stage's and has no stage yet; [F7](../../followups/f7_rule_induction.md) and
+   [M2](../../m2_nl_to_ir/README.md) are where it would be taken up.
 5. **Which readings of a word the theory holds**, where a word has two (*gave* a number of things against
    *gave* all; *together* over the people named against everyone in the problem).
 
