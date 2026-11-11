@@ -74,6 +74,69 @@ the user may change any.
   nothing and makes *all sixteen* checkable by enumeration.
 - **Of one input there are four** (identity, negation, the two constants), and of none, two.
 
+## What is known about the sixteen, as facts (the user, 2026-11-11)
+
+> Six of the sixteen don't read both inputs, The sixteen are ten up to swapping the inputs - I know, plan add
+> symmetry relations and other useful information
+
+So the module holds, beside the 64 rows, **what is true of each function and between functions**, as facts a
+program can read and a rule can use. Each is listed here with how many functions or pairs it holds of, counted
+by hand from the table and **to be re-counted by the stage's test**, which derives every one from the rows
+and does not trust this page.
+
+**Relations between two functions:**
+
+| fact | meaning | holds of |
+|---|---|---|
+| `(swap-of F G)` | G is F with its inputs exchanged: G(a, b) = F(b, a) | six pairs: `Andn`/`Randn`, `Fst`/`Snd`, `Nfst`/`Nsnd`, `Orn`/`Rorn` (as connectives `Nimp`/`Nrimp`, `Rimp`/`Imp`); the other eight are their own swap |
+| `(complement-of F G)` | G is F with its output negated | eight pairs: `Zero`/`One`, `And`/`Nand`, `Or`/`Nor`, `Xor`/`Xnor`, `Fst`/`Nfst`, `Snd`/`Nsnd`, `Andn`/`Rorn`, `Randn`/`Orn` |
+| `(dual-of F G)` | De Morgan's dual: G(a, b) = not F(not a, not b) | `And`/`Or`, `Nand`/`Nor`, `Xor`/`Xnor`, `Zero`/`One`, `Andn`/`Rorn`, `Randn`/`Orn`; the four that are their own dual are below |
+| `(left-negated F G)`, `(right-negated F G)` | G is F with one input negated: the family a gate with an inverted input belongs to | every function, twice |
+
+**Properties of one function:**
+
+| fact | meaning | holds of |
+|---|---|---|
+| `(commutative F)` | F(a, b) = F(b, a): its own swap | eight: `Zero And Xor Or Nor Xnor Nand One` |
+| `(associative F)` | F(F(a, b), c) = F(a, F(b, c)) | eight: `Zero And Xor Or Xnor One Fst Snd` |
+| `(idempotent F)` | F(a, a) = a | four: `And Or Fst Snd` |
+| `(reads-first F)`, `(reads-second F)` | the output depends on that input | ten read both; `Fst Nfst` the first only, `Snd Nsnd` the second only, `Zero One` neither |
+| `(identity-of F E)`, `(absorbing-of F E)` | E is neutral for F, or decides it: F(a, E) = a, or F(a, E) = E | e.g. 1 and 0 for `And`, 0 and 1 for `Or`, 0 for `Xor` |
+| `(preserves-zero F)`, `(preserves-one F)` | F(0, 0) = 0; F(1, 1) = 1 | eight each |
+| `(monotone F)` | raising an input never lowers the output | six: `Zero And Fst Snd Or One` |
+| `(affine F)` | F is a sum modulo 2 of inputs and a constant | eight: `Zero One Fst Snd Nfst Nsnd Xor Xnor` |
+| `(self-dual F)` | F is its own dual | four: `Fst Snd Nfst Nsnd` |
+| `(complete-alone F)` | every function can be built from F alone | two: `Nand`, `Nor` |
+
+The last five rows but one are **Post's five classes**, and the last is what they are for: a set of functions
+can build every function exactly when, for each of the five classes, it has a member outside that class
+(Post's theorem; stated here from memory, to be checked against a source by the stage). So the module can
+*derive* `(complete-alone Nand)`, and answer *is {And, Or} complete?* (no: both are monotone) or *is {Imp,
+Zero}?* by five lookups, where a program without these facts would have to search for constructions.
+
+**How they are produced.** Not written by hand. The generator writes the 64 rows, and each property is either
+- **generated beside the rows and held by a test** against the rows, as the tables of `std.digits` are, or
+- **derived in Ein from the rows by a rule,** which is the more interesting half: `(commutative F)` is *for
+  every a and b the two rows agree*, a universal statement over four rows, written with `std.macro`'s
+  `forall` or as a rule with four table premises. That is
+  [F1b](../../followups/f1b_logical_formulation.md)'s open question *"are rules able to detect properties
+  from facts?"* on the smallest possible case, and [F7](../../followups/f7_rule_induction.md) B′'s *instance
+  to type properties*. The stage tries both, and says which properties a monotone rule can derive (a property
+  that is a finite conjunction of rows) and which need `absent` (a property stated as *no row disagrees*).
+
+**What a program does with them:** a rule that simplifies a circuit or a formula reads them
+(`(commutative F)` lets an argument order be normalised; `(complement-of And Nand)` and `(dual-of And Or)` are
+De Morgan's laws as data; `(identity-of F E)` removes a constant input), which is what
+[M1g's normal forms](../../m1g_logic/p1g.2_propositional_logic/s1g.2.3_normal_forms.md) need; the synthesis
+application below searches fewer gates up to `swap-of`; and the relation properties of
+[`std.algebra`](../../../stdlib/algebra.ein) (`symmetric`, `transitive`, `functional`) are the same idea one
+level up, so the stage says whether these names should be those, applied to a gate's table read as a
+relation.
+
+**Of the three-input functions** there are 256, and the full adder's sum and carry are two of them. The
+module does not list them; the stage counts how many classes they fall into under input permutation and
+negation, as a first use of the facts above, if that is cheap, and says so if it is not.
+
 ## The applications, each tried and each answered with a program or a *no*
 
 1. **Simulation:** inputs given, outputs derived. No search.
