@@ -1,7 +1,7 @@
 # S1f.6.4 — Subtraction with its two numbers, and comparison
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: 18 rules and 15 relations added to `stdlib/arith.ein`; `(sub X Y)` answered
+**Status:** **done 2026-11-11** (`088a1f87`): 18 rules and 15 relations added to `stdlib/arith.ein`; `(sub X Y)` answered
 by the two numbers of `(diff-of X Y D R)`, `(cmp X Y)` by `(cmp-of X Y lt|eq|gt)`, both held to Rust's integers,
 search-free, and under the rule of the theory on the text and on the counter; four decisions taken by default,
 Q-M1f.155 to .158, and one finding, E-12 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08;

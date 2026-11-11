@@ -17,7 +17,7 @@
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `absent`, no `not`, no `or`: one stratum | [`the_theory_writes_no_negation`] |
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
-//! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`] |
+//! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -31,7 +31,8 @@
 //! **A later operation joins this file** by a row of [`OPS`], its request,
 //! its result and what the integers say, and by a pin of its circuit; the
 //! three static tests read the whole module and need no change to cover a new
-//! rule. Subtraction and comparison joined at S1f.6.4.
+//! rule. Subtraction and comparison joined at S1f.6.4, multiplication at
+//! S1f.6.5.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -175,7 +176,7 @@ struct Op {
 
 /// The operations, in the order the stages added them. A later operation
 /// joins the harness by a row here.
-const OPS: [Op; 3] = [
+const OPS: [Op; 4] = [
     Op {
         request: "add",
         result: "sum-of",
@@ -204,6 +205,14 @@ const OPS: [Op; 3] = [
                 .to_string(),
             ]
         },
+    },
+    // A product of two numbers of 19 digits has at most 38, which `u128`
+    // holds.
+    Op {
+        request: "mul",
+        result: "product-of",
+        max_digits: 19,
+        answer: |a, b| vec![normal(a * b)],
     },
 ];
 
@@ -511,6 +520,38 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
         circuit(&format!("(cmp {six} {four})\n")),
         (13, 13),
         "123078 against 4567: (firings, depth)"
+    );
+}
+
+/// **One multiplication, as a circuit**, and how it grows with the two
+/// lengths. The multiplier is turned round, a firing a digit; then each of
+/// its digits is a row, a walk the length of the multiplicand with its strip
+/// and turn, and, after the first, an addition walk the length of the sum so
+/// far. So the size grows as the product of the two lengths, and the circuit
+/// is still one chain: its depth is its size.
+#[test]
+fn the_circuit_of_one_multiplication() {
+    let mul = |x: &str, y: &str| circuit(&format!("(mul {} {})\n", written(x), written(y)));
+    assert_eq!(mul("123", "456"), (72, 72), "123 x 456: (firings, depth)");
+    assert_eq!(
+        mul("123078", "123078"),
+        (227, 227),
+        "123078 x 123078: (firings, depth)"
+    );
+    // The two lengths: a multiplier of one digit is one row; each digit more
+    // is a row and an addition.
+    assert_eq!(mul("999999", "9"), (28, 28), "six digits by one");
+    assert_eq!(mul("9", "999999"), (128, 128), "one digit by six");
+    assert_eq!(mul("999999", "999999"), (238, 238), "six digits by six");
+    assert_eq!(
+        mul("999999999999", "999999"),
+        (370, 370),
+        "twelve digits by six"
+    );
+    assert_eq!(
+        mul("999999", "999999999999"),
+        (556, 556),
+        "six digits by twelve"
     );
 }
 

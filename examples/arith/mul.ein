@@ -1,0 +1,59 @@
+;;; Two products, computed by saturation alone: 123 x 456 = 56088, and
+;;; 123078 x 123078 = 15148194084. M1f P1f.6 (S1f.6.5).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.arith` is school arithmetic written in Ein over the digit tables of
+;;; `std.digits` (`add.ein` beside this file is the introduction).
+;;;
+;;;   (mul X Y)             a request fact: X x Y is asked
+;;;   (product-of X Y P)    the answer, repeating the operands
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; The school method, from the multiplier's top digit. For each digit of the
+;;; multiplier the multiplicand is multiplied by it, a row, each column a row
+;;; of the digit multiplier's table; then the sum so far is multiplied by
+;;; ten, which is writing a 0 after it, and the row is added:
+;;;
+;;;   123 x 4          =   492                         the sum so far:   492
+;;;   123 x 5          =   615      4920 +  615   =                     5535
+;;;   123 x 6          =   738     55350 +  738   =                    56088
+;;;
+;;; Nothing is guessed, and a number has any length: the square of 123078 has
+;;; eleven digits, and nothing overflows. `ein solve examples/arith/mul.ein
+;;; --trace T.md` writes every step as a sentence; the first product takes 72
+;;; of them, the second 227.
+;;;
+;;; ── The program's own rule ─────────────────────────────────────────────
+;;;
+;;; A request is a fact, so a rule may derive one. `width` and `height` are
+;;; named constants; the program asks for their product, and `fence` asks for
+;;; the sum of the two, which the theory answers like a written request.
+
+(import std.arith :symbols (arith))
+
+(mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))
+(mul (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+
+(let width  (n (n z 1) 2))
+(let height (n (n z 2) 5))
+(mul width height)
+
+(rule fence ()
+  :match  (product-of width height ?area)
+  :assert (add width height)
+  :why    "the area is {?area}: now half the fence, the two sides added")
+
+(query :goal (product-of ?x ?y ?p)
+       :goal-text "{?x} x {?y} = {?p}"
+       :expect (model (product-of (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6)
+                                  (n (n (n (n (n z 5) 6) 0) 8) 8))
+                      (product-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                                  (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                                  (n (n (n (n (n (n (n (n (n (n (n z 1) 5) 1) 4) 8) 1) 9) 4) 0) 8) 4))
+                      (product-of width height (n (n (n z 3) 0) 0))))
+
+(query :goal (sum-of width height ?half)
+       :goal-text "half the fence is {?half}"
+       :expect (model (sum-of width height (n (n z 3) 7))))

@@ -233,90 +233,140 @@ fn a_view_splits_into_whole_digraphs() {
     assert_eq!(digraphs("digraph a { x; }\n").len(), 1);
 }
 
+/// What the sweep found in one corpus file.
+#[derive(Default)]
+struct FileSweep {
+    /// The views Graphviz complained of, or that errored.
+    bad: Vec<String>,
+    /// The non-empty views put to Graphviz.
+    checked: usize,
+    /// Views that only Graphviz's own cross-graph bug objected to, kept for
+    /// the summary line: the check reached a verdict on them, it just took a
+    /// second question to get there.
+    resplit: Vec<String>,
+}
+
+/// Every view of one corpus file, put to Graphviz.
+fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
+    let mut file = FileSweep::default();
+    let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return file;
+    };
+    // A file that does not parse has no view, one that does not load has
+    // no KB view, and one whose root does not saturate has no `kb-since`:
+    // the corpus's load- and compile-error fixtures.
+    let (loads, saturates) = {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
+            return file;
+        };
+        match ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) {
+            Ok(mut kb) => (
+                true,
+                ein_infer::region::root_firings(
+                    &mut kb,
+                    &mut terms,
+                    &ast,
+                    &mut ein_infer::Events::off(),
+                )
+                .is_ok(),
+            ),
+            Err(_) => (false, false),
+        }
+    };
+    for view in views.iter() {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
+        let out = match dot_shape(&mut ast, &mut terms, &forms, path.parent(), view) {
+            Ok(out) => out,
+            Err(_) if !loads && KB_VIEWS.contains(view) => continue,
+            Err(_) if !saturates && *view == "kb-since" => continue,
+            Err(e) => {
+                file.bad
+                    .push(format!("{name} [{view}]\n  the view errored: {e}"));
+                continue;
+            }
+        };
+        let dot = digraphs_only(&out);
+        // An empty view is not a broken one: a file with no rules renders
+        // no rule library, and `(config …)` renders nothing at all.
+        if dot.trim().is_empty() {
+            continue;
+        }
+        file.checked += 1;
+        let why = match graphviz(&dot) {
+            Verdict::Accepted => continue,
+            Verdict::Rejected(why) => why,
+            Verdict::Crashed(why) => {
+                // Ask again, one digraph at a time. All accepted, and more
+                // than one of them, is the answer that the stream was fine
+                // and `dot` was not.
+                let parts = digraphs(&dot);
+                let per: Vec<String> = parts
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, part)| match graphviz(part) {
+                        Verdict::Accepted => None,
+                        Verdict::Rejected(w) | Verdict::Crashed(w) => {
+                            Some(format!("digraph {i}: {w}"))
+                        }
+                    })
+                    .collect();
+                if per.is_empty() && parts.len() > 1 {
+                    file.resplit
+                        .push(format!("{name} [{view}] ({} digraphs)", parts.len()));
+                    continue;
+                }
+                format!("{why}\n  {}", per.join("\n  "))
+            }
+        };
+        file.bad.push(format!("{name} [{view}]\n  {why}"));
+    }
+    file
+}
+
+/// The sweep, **several files at a time** since M1f S1f.6.5: a program that
+/// imports `std.arith` holds the digit tables, each of its six KB views is
+/// some 9 000 edges, and the bounded layout takes two seconds on one. The
+/// files are independent, each view a `dot` process of its own, so they are
+/// shared out among the machine's cores, and what is reported is gathered in
+/// the files' order, so the report reads the same whatever ran first.
 #[test]
 fn graphviz_accepts_every_view_of_every_corpus_file() {
     require_graphviz();
     let views = all_views();
-    let (mut bad, mut checked) = (Vec::new(), 0usize);
-    // Views that only Graphviz's own cross-graph bug objected to, kept for the
-    // summary line: the check reached a verdict on them, it just took a second
-    // question to get there.
-    let mut resplit: Vec<String> = Vec::new();
-    for path in &corpus_files() {
-        let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
-        let Ok(text) = std::fs::read_to_string(path) else {
-            continue;
-        };
-        // A file that does not parse has no view, one that does not load has
-        // no KB view, and one whose root does not saturate has no `kb-since`:
-        // the corpus's load- and compile-error fixtures.
-        let (loads, saturates) = {
-            let mut ast = Ast::new();
-            let mut terms = Terms::new();
-            let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
-                continue;
-            };
-            match ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) {
-                Ok(mut kb) => (
-                    true,
-                    ein_infer::region::root_firings(
-                        &mut kb,
-                        &mut terms,
-                        &ast,
-                        &mut ein_infer::Events::off(),
-                    )
-                    .is_ok(),
-                ),
-                Err(_) => (false, false),
-            }
-        };
-        for view in &views {
-            let mut ast = Ast::new();
-            let mut terms = Terms::new();
-            let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
-            let out = match dot_shape(&mut ast, &mut terms, &forms, path.parent(), view) {
-                Ok(out) => out,
-                Err(_) if !loads && KB_VIEWS.contains(view) => continue,
-                Err(_) if !saturates && *view == "kb-since" => continue,
-                Err(e) => {
-                    bad.push(format!("{name} [{view}]\n  the view errored: {e}"));
-                    continue;
-                }
-            };
-            let dot = digraphs_only(&out);
-            // An empty view is not a broken one: a file with no rules renders
-            // no rule library, and `(config …)` renders nothing at all.
-            if dot.trim().is_empty() {
-                continue;
-            }
-            checked += 1;
-            let why = match graphviz(&dot) {
-                Verdict::Accepted => continue,
-                Verdict::Rejected(why) => why,
-                Verdict::Crashed(why) => {
-                    // Ask again, one digraph at a time. All accepted, and more
-                    // than one of them, is the answer that the stream was fine
-                    // and `dot` was not.
-                    let parts = digraphs(&dot);
-                    let per: Vec<String> = parts
-                        .iter()
-                        .enumerate()
-                        .filter_map(|(i, part)| match graphviz(part) {
-                            Verdict::Accepted => None,
-                            Verdict::Rejected(w) | Verdict::Crashed(w) => {
-                                Some(format!("digraph {i}: {w}"))
-                            }
-                        })
-                        .collect();
-                    if per.is_empty() && parts.len() > 1 {
-                        resplit.push(format!("{name} [{view}] ({} digraphs)", parts.len()));
-                        continue;
+    let files = corpus_files();
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let workers = std::thread::available_parallelism().map_or(1, |n| n.get());
+    let mut found: Vec<(usize, FileSweep)> = std::thread::scope(|scope| {
+        let handles: Vec<_> = (0..workers)
+            .map(|_| {
+                scope.spawn(|| {
+                    let mut mine = Vec::new();
+                    loop {
+                        let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        let Some(path) = files.get(i) else {
+                            return mine;
+                        };
+                        mine.push((i, sweep_file(path, &views)));
                     }
-                    format!("{why}\n  {}", per.join("\n  "))
-                }
-            };
-            bad.push(format!("{name} [{view}]\n  {why}"));
-        }
+                })
+            })
+            .collect();
+        handles
+            .into_iter()
+            .flat_map(|h| h.join().expect("a sweep thread panicked"))
+            .collect()
+    });
+    found.sort_by_key(|(i, _)| *i);
+    let (mut bad, mut checked, mut resplit) = (Vec::new(), 0usize, Vec::new());
+    for (_, file) in found {
+        bad.extend(file.bad);
+        checked += file.checked;
+        resplit.extend(file.resplit);
     }
     assert!(
         bad.is_empty(),

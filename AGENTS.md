@@ -1077,8 +1077,34 @@ constrained-reasoning research.
   theory hold more of it in `ein saturate --dump`, the two tables' rows and
   the closing rule's new facts, and nothing they held is gone (`python3
   build/s1f.6.4/sweep.py`, 681 files, the stdlib of `277cfc44` against the
-  tree's, 2026-11-11); the register is unmoved. S1f.6.5, multiplication, is
-  next.
+  tree's, 2026-11-11); the register is unmoved.
+  **S1f.6.5, multiplication, ran to its end the same day**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.5_multiplication.md#t1-record-2026-11-11),
+  Q-M1f.159 to .162 defaulted). `(mul X Y)` is answered by `(product-of X Y
+  P)`, the school method from the multiplier's top digit: the multiplier is
+  turned round once (`top-first`, a number into digits with the top one
+  first, handed over as `(top-first-is TAG DIGITS)`), each of its digits is
+  a row, a walk over `md` (`mul-walk`), and the sum so far times ten, one
+  constructor, plus the row is S1f.6.3's `add-walk`, called with a tag that
+  holds the digits still to come. It is tagged throughout, `(mul-call TAG X
+  Y)` answered by `(done TAG P)`, so a later theory can call it. 16 rules,
+  53 in the module and 130 over the stdlib. 123 × 456 is 72 firings and
+  123078 × 123078, eleven digits, 227; the size grows as the product of the
+  two lengths, and 4 000 products saturate in 1.1 s (`python3
+  build/s1f.6.4/batch.py mul`, 2026-11-11). It is a row of `OPS`, of
+  `REQUESTS` and of `RESULTS`: 9 600 candidates a request, the same at 250,
+  1 000 and 4 000. Three programs activate the rules and the mutation sweep
+  kills all 13 of their mutants, 216 of 266. **The DOT sweep runs several
+  files at a time since this stage**
+  ([Q-M1f.161](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f161--the-dot-sweep-several-files-at-a-time)):
+  every program that imports the theory holds the tables it reads, so each
+  of its six KB views is some 9 000 edges, 2.2 s under the bounded layout,
+  441 s of `dot` for eighteen programs; `dot_wellformed.rs` shares the
+  corpus files out among the cores, 28 s here, and holds what it held.
+  `examples/arith/mul.ein` is the example. No engine source moved and no
+  existing program's `ein solve` (`python3 build/s1f.6.4/sweep.py --old
+  build/s1f.6.5/old/stdlib --ref 088a1f87`, 687 files, 2026-11-11); the
+  register is unmoved. S1f.6.6, division, is next.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -1287,8 +1313,8 @@ constrained-reasoning research.
   (`ein-infer/tests/stdlib_coverage.rs`, 0.04 s then and half a second with
   the calculator's programs): every stdlib rule is
   activated by a program *here* — **77 of 77**, 96 of 96 since M1f
-  S1f.6.3's `std.arith` and 114 of 114 since S1f.6.4's subtraction and
-  comparison (`cat stdlib/*.ein | grep -c '^(rule '`,
+  S1f.6.3's `std.arith`, 114 of 114 since S1f.6.4's subtraction and
+  comparison and 130 of 130 since S1f.6.5's multiplication (`cat stdlib/*.ein | grep -c '^(rule '`,
   2026-11-11), with no `examples/` entry
   contributing — and every program here states an expectation. **Activation is
   two events since S1d.2.4**: `fire` for a saturation rule and `owe` for an

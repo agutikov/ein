@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 43] = [
+const SEEDED: [(&str, &[&str]); 46] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -308,6 +308,10 @@ const SEEDED: [(&str, &[&str]); 43] = [
         &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
     ),
     (
+        "examples/arith/mul.ein",
+        &["`z`, in (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))"],
+    ),
+    (
         "examples/arith/sub.ein",
         &["`z`, in (sub (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
     ),
@@ -347,6 +351,14 @@ const SEEDED: [(&str, &[&str]); 43] = [
     (
         "tests/stdlib/arith/11_cmp.ein",
         &["`z`, in (cmp (n (n z 2) 5) (n (n z 1) 9))"],
+    ),
+    (
+        "tests/stdlib/arith/13_mul.ein",
+        &["`z`, in (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))"],
+    ),
+    (
+        "tests/stdlib/arith/15_mul_long_and_named.ein",
+        &["`z`, in (let price (n (n (n z 2) 5) 0))"],
     ),
     (
         "stdlib/elim.ein",

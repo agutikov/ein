@@ -85,7 +85,7 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
-| [`stdlib/arith/`](stdlib/arith/) | 37 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
+| [`stdlib/arith/`](stdlib/arith/) | 53 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
@@ -204,6 +204,9 @@ through every length, and requests by name.
 | `10_sub_named.ein` | `sub` by `(let NAME NUMBER)`, and a rule of the program's own that matches the shortfall `(diff-of X Y z (n ?p ?a))` | a request answered under the numbers its names stand for; a shortfall reported for an equal pair |
 | `11_cmp.ein` | comparison's whole chain: `cmp-ask`, `cmp-ask-second`, `cmp-start`, `cmp-column`, `cmp-end`, `cmp-answer`; `lt`, `eq`, `gt`, and a higher column overruling the order below | the order of the units answered as the order of the whole, a request answered with two orders |
 | `12_cmp_lengths_and_names.ein` | `cmp-column-first`, `cmp-column-second`: different lengths, high zeros, zero, named operands | a longer spelling read as a greater number |
+| `13_mul.ein` | multiplication's whole chain, 123 × 456 and the operands exchanged: `mul-ask`, `mul-ask-second`, `mul-start`, `mul-turn`, `top-first-step`, `top-first-end`, `mul-begin`, `mul-row`, `mul-column`, `mul-carry-out`, `mul-walk-end`, `mul-first-row`, `mul-add-row`, `mul-next`, `mul-end`, `mul-answer` | a row added without the shift, the multiplier's digits taken from the wrong end, a product filed under the operands exchanged |
+| `14_mul_zeros_and_carries.ein` | zero on either side, rows of zeros inside the multiplier, high zeros, one, a carry out of every row and none | a product that is not in normal form |
+| `15_mul_long_and_named.ein` | 123078 × 123078, eleven digits; `mul` by `(let NAME NUMBER)`; `done`'s extent for the public products | an answer handed over twice, a request answered under another spelling |
 
 `arith`, the closing rule, fires once at root in each. **The mutation sweep
 kills every mutant of the module**, 21 of 21: the sweep reads 188 of 238 where
@@ -377,6 +380,14 @@ They are the exchange families again. The ones that still answer file a
 difference or an order under the operands exchanged, which `arith/08_sub.ein`
 and `11_cmp.ein` refuse, each asking an unequal pair one way round or both
 with different answers. **The bank is unmoved**, 50 lines.
+
+**216 of 266 on 2026-11-11: multiplication added 13 mutants and the suite
+kills every one** (`python3 utils/stdlib_mutants.py`, M1f
+[S1f.6.5](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.5_multiplication.md)).
+A product is symmetric in its operands, so `13_mul.ein` asks 123 × 456 both
+ways round and claims each under its own operands: `(mul ?x ?y)` read as
+`(mul ?y ?x)` files both under the wrong ones. **The bank is unmoved**, 50
+lines.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

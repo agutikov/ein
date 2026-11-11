@@ -277,6 +277,12 @@ runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "solve
 note   = "M1f S1f.6.4 — subtraction with its two numbers, and comparison: 123078 - 4567 = 118511, 4567 - 123078 short by 118511, a `sub` and a `cmp` by named constants, and a rule of the program's own that reads the shortfall. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
 
 [[entry]]
+path   = "examples/arith/mul.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.5 — multiplication: 123 x 456 = 56088, 123078 x 123078 = 15148194084, a product of two named constants, and a rule of the program's own that derives an `add` request from a product. Search-free, as every program of this directory."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
@@ -2953,7 +2959,7 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/arith.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. S1f.6.4 added `(sub X Y)`, answered by the two numbers of `(diff-of X Y D R)`, and `(cmp X Y)`, answered by `(cmp-of X Y lt|eq|gt)`. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
+note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. S1f.6.4 added `(sub X Y)`, answered by the two numbers of `(diff-of X Y D R)`, and `(cmp X Y)`, answered by `(cmp-of X Y lt|eq|gt)`. S1f.6.5 added `(mul X Y)`, answered by `(product-of X Y P)`, the school method from the multiplier's top digit. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
 
 [[entry]]
 path   = "stdlib/bijection.ein"
@@ -3211,6 +3217,24 @@ path   = "tests/stdlib/arith/12_cmp_lengths_and_names.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.4, `std.arith`: comparison by value: `cmp-column-first` and `cmp-column-second`, different lengths, high zeros, zero, and named operands."
+
+[[entry]]
+path   = "tests/stdlib/arith/13_mul.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.5, `std.arith`: multiplication's whole chain, 123 x 456 = 56088 and the operands exchanged: the multiplier turned round, a row a digit over `md`, the sum so far times ten plus the row."
+
+[[entry]]
+path   = "tests/stdlib/arith/14_mul_zeros_and_carries.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.5, `std.arith`: zero on either side, rows of zeros inside the multiplier, high zeros, one, a carry out of every row (`mul-carry-out`) and none (`mul-walk-end`); every product in normal form."
+
+[[entry]]
+path   = "tests/stdlib/arith/15_mul_long_and_named.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.5, `std.arith`: 123078 x 123078 = 15148194084, eleven digits and no overflow; `mul` by `(let NAME NUMBER)`; `done`'s extent for the public products, one hand-over a request."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"

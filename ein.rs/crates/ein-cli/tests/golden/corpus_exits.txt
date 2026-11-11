@@ -3,6 +3,12 @@
 0    examples/arith/add.ein :: solve
 0    examples/arith/add.ein :: solve --trace {out}/trace.md
 0    examples/arith/add.ein :: test
+0    examples/arith/mul.ein :: render rules
+0    examples/arith/mul.ein :: saturate
+0    examples/arith/mul.ein :: saturate --dump
+0    examples/arith/mul.ein :: solve
+0    examples/arith/mul.ein :: solve --trace {out}/trace.md
+0    examples/arith/mul.ein :: test
 0    examples/arith/sub.ein :: render rules
 0    examples/arith/sub.ein :: saturate
 0    examples/arith/sub.ein :: saturate --dump
@@ -1652,6 +1658,21 @@
 0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: saturate
 0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: solve
 0    tests/stdlib/arith/12_cmp_lengths_and_names.ein :: test
+0    tests/stdlib/arith/13_mul.ein :: render constraints
+1    tests/stdlib/arith/13_mul.ein :: render rules
+0    tests/stdlib/arith/13_mul.ein :: saturate
+0    tests/stdlib/arith/13_mul.ein :: solve
+0    tests/stdlib/arith/13_mul.ein :: test
+0    tests/stdlib/arith/14_mul_zeros_and_carries.ein :: render constraints
+1    tests/stdlib/arith/14_mul_zeros_and_carries.ein :: render rules
+0    tests/stdlib/arith/14_mul_zeros_and_carries.ein :: saturate
+0    tests/stdlib/arith/14_mul_zeros_and_carries.ein :: solve
+0    tests/stdlib/arith/14_mul_zeros_and_carries.ein :: test
+0    tests/stdlib/arith/15_mul_long_and_named.ein :: render constraints
+1    tests/stdlib/arith/15_mul_long_and_named.ein :: render rules
+0    tests/stdlib/arith/15_mul_long_and_named.ein :: saturate
+0    tests/stdlib/arith/15_mul_long_and_named.ein :: solve
+0    tests/stdlib/arith/15_mul_long_and_named.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate

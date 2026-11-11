@@ -58,13 +58,18 @@ const IMPORT: &str = "(import std.arith :symbols (arith))\n";
 /// The request relations a batch is made of, each with its result relation.
 /// A batch is measured per operation, so that one operation's proportion is
 /// not hidden in another's count.
-const REQUESTS: [(&str, &str); 3] = [("add", "sum-of"), ("sub", "diff-of"), ("cmp", "cmp-of")];
+const REQUESTS: [(&str, &str); 4] = [
+    ("add", "sum-of"),
+    ("sub", "diff-of"),
+    ("cmp", "cmp-of"),
+    ("mul", "product-of"),
+];
 
 /// What a request of each operation may cost at the smallest batch, in
 /// `candidates`: a bound a little above the measure, so that a scan of the
 /// batch, which adds the batch's size to it, fails here as well as in the
 /// proportion.
-const BOUND: [f64; 3] = [250.0, 500.0, 1000.0];
+const BOUND: [f64; 4] = [250.0, 500.0, 1000.0, 20000.0];
 
 /// Per-request work at a larger batch may exceed the smallest batch's by this
 /// factor and no more. The operands differ from batch to batch, so the counts

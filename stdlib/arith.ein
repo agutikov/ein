@@ -1,6 +1,6 @@
 ;;; Ein stdlib — `std.arith`: school arithmetic on natural numbers of any
 ;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3;
-;;; subtraction and comparison, S1f.6.4).
+;;; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5).
 ;;;
 ;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
 ;;; This module is a *theory* written in Ein over the ten digit names `0` to
@@ -51,6 +51,9 @@
 ;;;     (cmp-of X Y O)     the answer: O is `lt`, `eq` or `gt`, by value, so
 ;;;                        5 and 005 compare `eq`
 ;;;
+;;;     (mul X Y)          asked: X x Y
+;;;     (product-of X Y P) the answer; a product has no width to overflow
+;;;
 ;;; A program reads an answer with a goal that has a variable in the result's
 ;;; place, `(sum-of X Y ?s)`, and a rule of the program may match it like any
 ;;; fact. Nothing is computed that was not asked for: the theory enumerates no
@@ -88,6 +91,13 @@
 ;;; nothing is guessed: both are computed. **Comparison is one walk** over the
 ;;; comparator's table and builds no number; it hands over `(order-is TAG O)`.
 ;;;
+;;; **Multiplication is the school method, from the multiplier's top digit.**
+;;; The multiplier is turned round once, so that its top digit comes first.
+;;; For each digit, the multiplicand times that digit is a row, one walk over
+;;; the digit multiplier's table; the sum so far times ten, which is one
+;;; constructor, `(n SUM 0)`, plus the row, is the addition walk above. The
+;;; tag of each call holds the multiplier's digits still to come.
+;;;
 ;;; ── THE RULE OF THE THEORY: no rule joins two facts on a number ────────────
 ;;;
 ;;; A rule here has **one** premise that holds numbers. Its other premises are
@@ -114,18 +124,20 @@
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Imported flat, these names mean what this file says, and a program must
-;;; not use them otherwise: `z`, `n`, `b`, `let`; the requests `add`, `sub`
-;;; and `cmp`; the results `sum-of`, `diff-of` and `cmp-of`, and the orders
-;;; `lt`, `eq` and `gt`; the circuit's own `named`, `operand`, `operand-is`,
-;;; `add-walk`, `sub-walk`, `cmp-walk`, `strip`, `turn`, `done`, `short`,
-;;; `order-is`; the tags `sum`, `add-first`, `add-second`, `difference`,
-;;; `shortfall`, `sub-first`, `sub-second`, `order`, `cmp-first`,
-;;; `cmp-second`; `arith-rule`; and the tables of `std.digits` it reads, `fa`,
-;;; `fs`, `cl` and `nz`. The interface is `n`, `z`, `let`, the requests, the
-;;; results and the three orders; the rest is in the state for a query or a
-;;; `--trace` to see, and is not a promise.
+;;; not use them otherwise: `z`, `n`, `b`, `let`; the requests `add`, `sub`,
+;;; `cmp` and `mul`; the results `sum-of`, `diff-of`, `cmp-of` and
+;;; `product-of`, and the orders `lt`, `eq` and `gt`; the circuit's own
+;;; `named`, `operand`, `operand-is`, `add-walk`, `sub-walk`, `cmp-walk`,
+;;; `mul-walk`, `strip`, `turn`, `top-first`, `top-first-is`, `done`, `short`,
+;;; `order-is`, `mul-call`, `mul-step`; the tags `sum`, `add-first`,
+;;; `add-second`, `difference`, `shortfall`, `sub-first`, `sub-second`,
+;;; `order`, `cmp-first`, `cmp-second`, `product`, `mul-first`, `mul-second`,
+;;; `mul-digits`, `mul-row-of`, `mul-sum`; `arith-rule`; and the tables of
+;;; `std.digits` it reads, `fa`, `fs`, `md`, `cl` and `nz`. The interface is
+;;; `n`, `z`, `let`, the requests, the results and the three orders; the rest
+;;; is in the state for a query or a `--trace` to see, and is not a promise.
 
-(import std.digits :symbols (fa fs cl nz))
+(import std.digits :symbols (fa fs md cl nz))
 
 ;; ── The number, and the accumulator ─────────────────────────────────────────
 (relation n Number Digit
@@ -148,6 +160,10 @@
   :why "asked: {?1} compared with {?2}")
 (relation cmp-of Operand Operand Order
   :why "{?1} against {?2}: {?3}")
+(relation mul Operand Operand
+  :why "asked: {?1} x {?2}")
+(relation product-of Operand Operand Number
+  :why "{?1} x {?2} = {?3}")
 
 ;; ── The circuit's own facts: each is one step of a computation, and carries
 ;;    the whole of its state ──────────────────────────────────────────────────
@@ -173,6 +189,16 @@
   :why "comparing, for {?1}: {?2} and {?3} are still to compare, and the order of the digits below is {?4}")
 (relation order-is Tag Order
   :why "the answer for {?1} is {?2}")
+(relation top-first Tag Number Digits
+  :why "for {?1}: {?2} is still to turn round, and the digits turned are {?3}")
+(relation top-first-is Tag Digits
+  :why "for {?1}: the digits, the top one first, are {?2}")
+(relation mul-walk Tag Number Digit Digit Digits
+  :why "multiplying, for {?1}: {?2} is still to multiply by {?3}, the carry is {?4}, and the digits so far are {?5}")
+(relation mul-call Tag Number Number
+  :why "wanted, for {?1}: {?2} x {?3}")
+(relation mul-step Tag Number Digits Number
+  :why "multiplying, for {?1}: {?2} by the digits {?3} still to come, and the sum so far is {?4}")
 
 ;; ── The tags: what a call's answer is for ───────────────────────────────────
 (relation sum Operand Operand
@@ -195,6 +221,18 @@
   :why "the first operand of {?1} compared with {?2}")
 (relation cmp-second Operand Operand Number
   :why "the second operand of {?1} compared with {?2}, whose first is {?3}")
+(relation product Operand Operand
+  :why "the product of {?1} and {?2}")
+(relation mul-first Operand Operand
+  :why "the first operand of {?1} x {?2}")
+(relation mul-second Operand Operand Number
+  :why "the second operand of {?1} x {?2}, whose first is {?3}")
+(relation mul-digits Tag Number
+  :why "the digits of the multiplier, for {?1}, which multiplies {?2}")
+(relation mul-row-of Tag Number Digits Number
+  :why "a row, for {?1}: {?2} times one digit, with the digits {?3} still to come and the sum so far {?4}")
+(relation mul-sum Tag Number Digits
+  :why "the sum so far, for {?1}, which multiplies {?2}, with the digits {?3} still to come")
 
 ;; ── The operands ────────────────────────────────────────────────────────────
 ;; A number stands for itself, whatever high zeros it is written with; the
@@ -414,6 +452,100 @@
   :assert (cmp-of ?x ?y ?o)
   :why    "{?x} against {?y}: {?o}")
 
+;; ── Multiplication ──────────────────────────────────────────────────────────
+;; The school method from the multiplier's top digit: the sum so far times
+;; ten, plus the multiplicand times the next digit.
+
+;; `(top-first TAG NUMBER DIGITS)`: a number turned round, so that its most
+;; significant digit is outermost: the other turn. It hands its digits over
+;; as `(top-first-is TAG DIGITS)`.
+(rule top-first-step ()
+  :match  (top-first ?k (n ?p ?a) ?acc)
+  :assert (top-first ?k ?p (b ?a ?acc))
+  :why    "the digit {?a} goes in front of {?acc}")
+
+(rule top-first-end ()
+  :match  (top-first ?k z ?acc)
+  :assert (top-first-is ?k ?acc)
+  :why    "turned round: the digits, the top one first, are {?acc}")
+
+;; `(mul-walk TAG X DIGIT CARRY ACC)`: X times one digit, a column a firing
+;; from the units, through the digit multiplier's table.
+(rule mul-column ()
+  :match  (and (mul-walk ?k (n ?p ?a) ?m ?e ?acc)
+               (md ?a ?m ?e ?s ?f))
+  :assert (mul-walk ?k ?p ?m ?f (b ?s ?acc))
+  :why    "{?a} x {?m} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
+
+(rule mul-walk-end ()
+  :match  (mul-walk ?k z ?m 0 ?acc)
+  :assert (strip ?k ?acc)
+  :why    "no column is left and no carry: the digits are {?acc}")
+
+;; A carry out of the top column is the top digit, and it is not zero.
+(rule mul-carry-out ()
+  :match  (and (mul-walk ?k z ?m ?e ?acc) (nz ?e))
+  :assert (turn ?k (b ?e ?acc) z)
+  :why    "no column is left: the carry {?e} is the top digit, in front of {?acc}")
+
+;; `(mul-call TAG X Y)`: X times Y for whoever TAG says, answered by
+;; `(done TAG PRODUCT)`. `(mul-step TAG X DIGITS SUM)`: the multiplier's
+;; digits still to come, the top one first, and the sum so far.
+(rule mul-turn ()
+  :match  (mul-call ?k ?u ?v)
+  :assert (top-first (mul-digits ?k ?u) ?v z)
+  :why    "to multiply {?u} by {?v}: first {?v}'s digits, the top one first")
+
+(rule mul-begin ()
+  :match  (top-first-is (mul-digits ?k ?u) ?t)
+  :assert (mul-step ?k ?u ?t z)
+  :why    "nothing is summed yet")
+
+(rule mul-row ()
+  :match  (mul-step ?k ?u (b ?a ?rest) ?acc)
+  :assert (mul-walk (mul-row-of ?k ?u ?rest ?acc) ?u ?a 0 z)
+  :why    "the next digit of the multiplier is {?a}: the row {?u} x {?a}")
+
+(rule mul-first-row ()
+  :match  (done (mul-row-of ?k ?u ?rest z) ?row)
+  :assert (mul-step ?k ?u ?rest ?row)
+  :why    "nothing was summed yet: the row {?row} is the sum so far")
+
+(rule mul-add-row ()
+  :match  (done (mul-row-of ?k ?u ?rest (n ?p ?a)) ?row)
+  :assert (add-walk (mul-sum ?k ?u ?rest) (n (n ?p ?a) 0) ?row 0 z)
+  :why    "ten times the sum so far, plus the row {?row}")
+
+(rule mul-next ()
+  :match  (done (mul-sum ?k ?u ?rest) ?s)
+  :assert (mul-step ?k ?u ?rest ?s)
+  :why    "the sum so far is {?s}")
+
+(rule mul-end ()
+  :match  (mul-step ?k ?u z ?acc)
+  :assert (done ?k ?acc)
+  :why    "no digit of the multiplier is left: the product is {?acc}")
+
+(rule mul-ask ()
+  :match  (mul ?x ?y)
+  :assert (operand (mul-first ?x ?y) ?x)
+  :why    "{?x} x {?y} is asked: first, the number {?x} stands for")
+
+(rule mul-ask-second ()
+  :match  (operand-is (mul-first ?x ?y) ?u)
+  :assert (operand (mul-second ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule mul-start ()
+  :match  (operand-is (mul-second ?x ?y ?u) ?v)
+  :assert (mul-call (product ?x ?y) ?u ?v)
+  :why    "multiply {?u} by {?v}")
+
+(rule mul-answer ()
+  :match  (done (product ?x ?y) ?p)
+  :assert (product-of ?x ?y ?p)
+  :why    "{?x} x {?y} = {?p}")
+
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Arithmetic is computed and never guessed: every relation of the theory, and
 ;; each table it reads, is closed, so the search has no candidate among them.
@@ -435,20 +567,26 @@
 
 (rule arith ()
   :match  ()
-  :assert (and (__closed__ fa) (__closed__ fs) (__closed__ cl) (__closed__ nz)
+  :assert (and (__closed__ fa) (__closed__ fs) (__closed__ md) (__closed__ cl)
+               (__closed__ nz)
                (__closed__ n) (__closed__ b)
                (__closed__ let) (__closed__ add) (__closed__ sum-of)
                (__closed__ sub) (__closed__ diff-of)
                (__closed__ cmp) (__closed__ cmp-of)
+               (__closed__ mul) (__closed__ product-of)
                (__closed__ named) (__closed__ operand) (__closed__ operand-is)
                (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
                (__closed__ done)
                (__closed__ sub-walk) (__closed__ short)
                (__closed__ cmp-walk) (__closed__ order-is)
+               (__closed__ top-first) (__closed__ top-first-is)
+               (__closed__ mul-walk) (__closed__ mul-call) (__closed__ mul-step)
                (__closed__ sum) (__closed__ add-first) (__closed__ add-second)
                (__closed__ difference) (__closed__ shortfall)
                (__closed__ sub-first) (__closed__ sub-second)
                (__closed__ order) (__closed__ cmp-first) (__closed__ cmp-second)
+               (__closed__ product) (__closed__ mul-first) (__closed__ mul-second)
+               (__closed__ mul-digits) (__closed__ mul-row-of) (__closed__ mul-sum)
                (__closed__ arith-rule)
                (arith-rule operand-zero) (arith-rule operand-number)
                (arith-rule let-named) (arith-rule operand-name)
@@ -469,5 +607,14 @@
                (arith-rule cmp-column) (arith-rule cmp-column-first)
                (arith-rule cmp-column-second) (arith-rule cmp-end)
                (arith-rule cmp-ask) (arith-rule cmp-ask-second)
-               (arith-rule cmp-start) (arith-rule cmp-answer))
+               (arith-rule cmp-start) (arith-rule cmp-answer)
+               (arith-rule top-first-step) (arith-rule top-first-end)
+               (arith-rule mul-column) (arith-rule mul-walk-end)
+               (arith-rule mul-carry-out)
+               (arith-rule mul-turn) (arith-rule mul-begin)
+               (arith-rule mul-row) (arith-rule mul-first-row)
+               (arith-rule mul-add-row) (arith-rule mul-next)
+               (arith-rule mul-end)
+               (arith-rule mul-ask) (arith-rule mul-ask-second)
+               (arith-rule mul-start) (arith-rule mul-answer))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

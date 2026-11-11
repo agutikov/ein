@@ -171,6 +171,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.156](#q-m1f156--comparison-called-with-a-tag) | comparison called with a tag | **defaulted 2026-11-11 (S1f.6.4): `(cmp-walk TAG X Y ORDER)` hands over `(order-is TAG O)`, a firing more than the prototype's, so a later theory can call it**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
 | [Q-M1f.157](#q-m1f157--each-request-looks-its-operands-up-by-rules-of-its-own) | each request looks its operands up by rules of its own | **defaulted 2026-11-11 (S1f.6.4): three rules and two tags a request, as `add` has them; addition's circuit unmoved**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
 | [Q-M1f.158](#q-m1f158--cls-column-order-and-the-index) | `cl`'s column order and the index | **defaulted 2026-11-11 (S1f.6.4): the table stays as S1f.6.2 shipped it; a comparison's column costs 100 candidates, a constant; E-12**; [S1f.6.4](p1f.6_calculator/s1f.6.4_subtraction.md) |
+| [Q-M1f.159](#q-m1f159--multiplication-called-with-a-tag) | multiplication called with a tag | **defaulted 2026-11-11 (S1f.6.5): `(mul-call TAG X Y)` answered by `(done TAG P)`, a firing more than the prototype's, so a later theory can multiply**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
+| [Q-M1f.160](#q-m1f160--a-zero-digit-of-the-multiplier) | a zero digit of the multiplier | **defaulted 2026-11-11 (S1f.6.5): a row like any other, no rule tells it apart**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
+| [Q-M1f.161](#q-m1f161--the-dot-sweep-several-files-at-a-time) | the DOT sweep, several files at a time | **defaulted 2026-11-11 (S1f.6.5): the corpus files shared out among the cores, the report in the files' order; what the sweep holds unchanged. With Q-M1f.147 and .153, for the user to confirm**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
+| [Q-M1f.162](#q-m1f162--the-longest-sampled-operand-of-a-product) | the longest sampled operand of a product | **defaulted 2026-11-11 (S1f.6.5): 19 digits, so the product stays in `u128`**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3147,4 +3151,52 @@ comparison.
 - **(c) The engine picks the most selective bound slot:** an engine change, outside P1f.6's theory stages.
 
 **Defaulted 2026-11-11: (a).** The row is kept as E-12 for whoever owns the index.
+
+### Q-M1f.159 — Multiplication called with a tag
+
+**Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T1. The prototype's multiplication carried the request's operands in
+every step and wrote `product-of` when the multiplier ran out.
+
+- **(a) A tag:** `(mul-call TAG U V)` is answered by `(done TAG P)`, and the public request calls it with
+  `(product X Y)`. One firing more a request, 72 for 123 × 456.
+- **(b) As the prototype.**
+
+**Defaulted 2026-11-11: (a),** as for comparison (Q-M1f.156): S1f.6.8's rationals multiply inside their own
+circuits.
+
+### Q-M1f.160 — A zero digit of the multiplier
+
+**Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T1.
+
+- **(a) A row like any other:** the multiplicand times 0 is a walk of its length that strips to `z`, and `z` is
+  added to ten times the sum. About four firings a digit of the multiplicand, for nothing.
+- **(b) Two rules that skip it:** a zero digit multiplies the sum so far by ten and goes on. `mul-row` then
+  needs `(nz ?a)`.
+
+**Defaulted 2026-11-11: (a).** The answer is the same and the theory is two rules shorter; (b) is an
+optimisation any later stage can make with no answer moving, and the circuit's pinned sizes would say what it
+saves.
+
+### Q-M1f.161 — The DOT sweep, several files at a time
+
+**Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T4, on Q-M1f.147 and Q-M1f.153. Every program that imports `std.arith`
+holds the tables the theory reads, `md`'s 900 rows among them since this stage, so each of its six KB views is
+some 9 000 edges and takes the bounded layout 2.2 s. The suite has eighteen such programs and S1f.6.6 adds more:
+441 s of `dot` in one thread.
+
+- **(a) Several files at a time:** `dot_wellformed.rs` shares the corpus files among the cores. 28 s on sixteen
+  cores; about a quarter of the single thread's time on the runner's four. What is held is unchanged.
+- **(b) Leave it:** four minutes more a gate now, and more with every arithmetic program.
+- **(c) Draw a table as one node** (E-10's open question): a DOT writer's change, and the user's.
+
+**Defaulted 2026-11-11: (a).** It changes no claim. (c) stays E-10's.
+
+### Q-M1f.162 — The longest sampled operand of a product
+
+**Raised** 2026-11-11 by [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md)'s T2, on Q-M1f.154's oracle, `u128`, which holds 38 digits.
+
+- **(a) 19 digits:** a product of two has at most 38.
+- **(b) 30 digits, as the other operations,** against a multiplier written in the test.
+
+**Defaulted 2026-11-11: (a),** for Q-M1f.154's reason: a length is not a boundary of the theory.
 
