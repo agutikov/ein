@@ -2,7 +2,11 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
-Not started. Its first task **stops for the user** with example programs before any theory is written.
+**T1 done 2026-11-11, and stopped for the user:** the prototype and the page, [`word_problems.md`](word_problems.md),
+29 programs under `build/s1f.6.20/` on the release binary, every problem of the table answered, the three gap
+mechanisms and the three forms of a missing reading each run, twelve questions with recommendations, and E-17 to
+E-20 in [`findings.md`](findings.md). Nothing shipped; T2 onward wait for the rulings.
+Its first task **stops for the user** with example programs before any theory is written.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations. The protocol is ruled
 ([the rulings](design.md#the-rulings-2026-11-11)): request facts, result facts read by a goal with a variable in
 the result's place, and named constants. **No expression layer is in the core:** every *"together means sum"* is a
