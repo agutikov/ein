@@ -16493,7 +16493,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11), from finding 1 of P1f.6's design (design.md § G), on the user's ruling of that day. The row holds the query's `:goal-text`, a sentence per row of the goal, since R is {∅} either way and a state's `(model …)` names the candidates' relations: what the import drops is root's facts. `ein saturate --dump` lists no `is-a` fact; `(import import-facts-library :as o)` keeps both, renamed `(o.is-a …)`. Fixed by T1f.6.11.3 (2026-11-11): root holds the two facts, the first background and the second given, and the goal has two rows"
 
 [case.fixed]
-commit = "0000000"
+commit = "5b252d50"
 by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
 date   = "2026-11-11"
 
@@ -16547,7 +16547,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11), beside `W88/import-facts-flat`: the same library, with its rule listed and its relation not. The closure always brought `is-a`'s declaration, the rule naming it; it brought no fact, so the rule was kept and never fired. Fixed by T1f.6.11.3 (2026-11-11): root holds the two `is-a` facts and the two `liquid` facts the rule derives from them"
 
 [case.fixed]
-commit = "0000000"
+commit = "5b252d50"
 by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
 date   = "2026-11-11"
 
@@ -16601,7 +16601,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11): the calculator's case, finding 1 of P1f.6's design, `build/s1f.6/prototype/findings/flat-import-drops-facts.ein` with the rule alone listed. The workaround until the fix was to write each table as a rule with an empty `:match`. Fixed by T1f.6.11.3 (2026-11-11): root holds the two rows and the sum"
 
 [case.fixed]
-commit = "0000000"
+commit = "5b252d50"
 by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
 date   = "2026-11-11"
 
@@ -16655,7 +16655,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.11 (T1f.6.11.2, 2026-11-11), the second half of point (a), design.md § G's option a3: a relation needs no declaration, so a library may state facts of one it does not declare, and under a2 alone such a fact could never be listed. Its `wrong` is the record of what every command answered at 7f574423. Fixed by T1f.6.11.3 (2026-11-11): the program loads on every command, root holds `(likes Tea Milk)` and `(not (likes Milk Tea))`, and the goal's one row is `?y = Milk`"
 
 [case.fixed]
-commit = "0000000"
+commit = "5b252d50"
 by     = "S1f.6.11 (T1f.6.11.3): `ein_ir::imports`' `select` keeps, beside the declarations whose name the selection's closure holds, every top-level fact of the module whose relation the closure holds, as written and in the module's order, a stored negation with the relation it negates; a listed name may be a relation the module only states facts of; and a fact that arrives by two paths is one statement"
 date   = "2026-11-11"
 

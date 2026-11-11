@@ -1,7 +1,7 @@
 # S1f.6.11 — A flat import brings a module's facts
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11** (`0000000`): W88's four rows filed and fixed, the sweep moved the four witnesses
+**Status:** **done 2026-11-11** (`5b252d50`): W88's four rows filed and fixed, the sweep moved the four witnesses
 alone, and the six design points stand as defaults taken, Q-M1f.135 to .140, with four more the build met,
 Q-M1f.141 to .144 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-11, on the user's rulings of
 that day. **It ran first:** the theory stages write their tables as plain facts and import them flat. An engine
@@ -200,7 +200,7 @@ Pages: `01_grammar.md` (an `import` row in § 2's table, the `:symbols` keyword 
 Q-M1f.135 to .144.
 
 The register reads 305 fixed, 16 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq
--c`, 2026-11-11). `./run_tests.sh` green (`build/gate-s1f.6.11.log`).
+-c`, 2026-11-11). `./run_tests.sh` green (`build/gate-s1f.6.11.log`). The fixing commit is `5b252d50`; the commit after it wrote that hash into W88's four `[case.fixed]` rows, where the fixing commit carried the null id.
 
 ## Acceptance re-taken, 2026-11-11
 
