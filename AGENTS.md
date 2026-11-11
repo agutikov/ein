@@ -807,6 +807,8 @@ constrained-reasoning research.
   program's answer is not shown to the user**: it is fixed in place if quick,
   or a row of [F25](plans/followups/f25_roughness_found_outside_zebra.md),
   until a corpus of real Ein programs exists (P1f.6's calculator onward).
+  That rule was P1f.7's alone (the user, 2026-11-11): P1f.6 keeps what it finds in its own
+  [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) and shows it.
   **S1f.7.8 ran to its end the same day**
   ([its records](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.8_a_solve_list_naming_nothing.md#t1-record-2026-11-11),
   Q-M1f.114 to .116 defaulted): every name a `(solve …)` list holds names

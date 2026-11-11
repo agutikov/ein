@@ -111,7 +111,6 @@ holds each gap problem to its named gap.
 - **A gap needs negation as failure**, which the calculator's theory avoids on principle. The stage keeps
   the two modules apart so the calculator's *one stratum* still holds of the calculator.
 - **A transfer of more than one has** needs either a refusal or a negative number (S1f.6.7).
-- **Engine findings.** One that moves no zebra program's answer is fixed in place if quick or becomes a row
-  of [F25](../../followups/f25_roughness_found_outside_zebra.md); a wrong answer is a register row before
-  anything fixes it. This stage is the first *real Ein program* F25's trigger names, so each F25 row a
-  problem meets is named on the page.
+- **Engine findings.** Each is a row of the phase's [`findings.md`](findings.md), shown to the user with the
+  page; a wrong answer is a register row before anything fixes it. Each row there a problem meets is named on
+  the page.

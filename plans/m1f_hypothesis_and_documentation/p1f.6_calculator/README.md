@@ -110,6 +110,12 @@ No stage carries an estimate (the user's ruling of 2026-11-08).
 6. **S1f.6.20, the word problems**, added by the user on 2026-11-11, any time after S1f.6.6: it needs the four
    operations and not the extensions. Its number leaves 11 to 19 unassigned, as the user gave it.
 
+## Findings stay in the phase
+
+What a stage finds in the engine or the language outside its scope is a row of [`findings.md`](findings.md),
+not of F25 (the user's ruling of 2026-11-11: F25 was for P1f.7 alone). Each row is shown to the user and is
+fixed, ruled or given an owner before the phase closes.
+
 ## Acceptance
 
 - **Importable.** A program imports the theory and computes the user's four operations on fixed-width numbers

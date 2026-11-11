@@ -13,6 +13,11 @@ answer below is pasted from a run of `ein.rs/target/release/ein`, built from the
 [§ Round 2](#round-2-2026-11-11-the-users-answers-and-the-experiments-they-asked-for) at the end, and each
 question and finding below carries its state after it. The rest of the page is round 1, kept as written.
 
+
+> **Moved 2026-11-11.** Where this page says a finding is a row for F25, read
+> [`findings.md`](findings.md): the user ruled the same day that F25 was for P1f.7 alone, and the rows this
+> stage's two rounds filed there, R-9 to R-15, are this phase's E-1 to E-7.
+
 ## The result in one paragraph
 
 A theory of 20 rules and 21 relations (`grep -c '^(rule' programs/arith9.ein`, 2026-11-11) computes the user's
