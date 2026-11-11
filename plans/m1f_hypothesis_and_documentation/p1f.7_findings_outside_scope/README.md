@@ -1,7 +1,7 @@
 # P1f.7 — The wrong answers P1f.5's stages found outside their scope, a stage each
 
 **Milestone:** [M1f](../README.md)
-**Status:** planned 2026-11-10, on the user's instruction of that day ([§ The instruction](#the-instruction)). No
+**Status:** **closed 2026-11-11** ([§ The close](#the-close-2026-11-11)). Planned 2026-11-10, on the user's instruction of that day ([§ The instruction](#the-instruction)). No
 stage has started. It runs after [P1f.5](../p1f.5_the_no_owner_items/README.md) closes. The coordinator stops at
 that close (the user, 2026-11-10: *"stop in the end of the phase"*), so the user decides then when this phase
 starts, and whether its questions stop the stage or take a default. **P1f.5 closed on 2026-11-11**
@@ -176,6 +176,50 @@ user, 2026-11-11, *"p1f.7 runs before p1f.6, it's questions take a default"*).
 - Every refusal a stage adds reads the same on every command, in S1f.5.21's spelling.
 - No corpus answer moves except a stage's own witnesses and the fixtures it names.
 - `./run_tests.sh` green on each stage's commit.
+
+## The close (2026-11-11)
+
+Every stage is done, in the five runs § How every stage runs names, each on a green `./run_tests.sh`:
+
+| stages | what holds since | rows | commits |
+|---|---|---|---|
+| S1f.7.8 | a `(solve …)` list names a declared hrule and relations the program writes, or the program is refused | W76, 5 | `c78e6430`, `73a0c17d` |
+| S1f.7.5, S1f.7.11, S1f.7.1 | a goal is held to what a rule's `:match` is: its macro calls expanded, its relations the program's, no nested relation variable; a claim over a relation a rule derives loads | W77 to W79, 10 | `a73a5021`, `52e05fc1` |
+| S1f.7.7, S1f.7.6, S1f.7.10, S1f.7.3 | [the value rule](#the-value-rule), in the grammar and the loader: no nested `absent`, `eq` or `false` with an argument, no connective as a pattern's argument; `not` stays | W80 to W83, 19 | `63de414a`, `55aadd0b` |
+| S1f.7.4, S1f.7.2 | `(not ?x)` is refused where `?x` can be a name, and a firing builds no negation of a name; an hrule may read `not` in both builds | W84, W85, 10 | `827887a9`, `91b12be8` |
+| S1f.7.12, S1f.7.9 | a macro's call is no fact and no claim's fact; written provenance's three witnesses filed `open`, [F24](../../followups/f24_written_provenance.md)'s | W86, 8; W87, 3 open | `43587986`, `2e72b3d0` |
+
+**The acceptance, re-taken.**
+
+- Every finding was confirmed on the release binary before its fix, the evidence in each stage's T1 record.
+- Every confirmed finding is a register row: 52 filed `open` and fixed, and W87's three `open`, owned by F24 on the
+  user's ruling of 2026-11-11. The register reads 301 fixed, 16 open and 1 not wrong (`grep '^status'
+  corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11), the 16 owned by F21, F22, F24 or M1f's S1f.10.6.
+- Every refusal reads the same on every command: `solve_lists.rs`, `goal_premises.rs`, `value_rule.rs`,
+  `negated_names.rs`, `hrule_reads_not.rs` and `macro_facts.rs` in `ein-cli/tests/`, and
+  `defined_behaviour.md` § 4.20 to § 4.24.
+- No corpus answer moved but the stages' witnesses and the fixtures they name. Each run swept every tracked `.ein`
+  file, the release binary before against after, under `ein saturate --dump` and `ein solve`; every `zebra*.ein`
+  printed the same bytes each time.
+- `./run_tests.sh` was green on each of the ten commits.
+
+**The defaults**, Q-M1f.114 to .134, each recorded and none reviewed. Four depart from a stage file's wording, and
+are named here so that a reader finds them:
+
+- [Q-M1f.119](../open_questions.md#q-m1f119--which-relations-a-goal-may-ask-about): a goal over a relation only a
+  rule's `:match` reads loads and has no row, since S1f.7.8's notion of a relation of the program is reused.
+- [Q-M1f.122](../open_questions.md#q-m1f122--where-absent-still-heads-a-form-that-is-no-premise): a claim's model
+  may still write `(absent …)`, which two earlier witnesses do.
+- [Q-M1f.127](../open_questions.md#q-m1f127--what-the-loader-reads-to-see-that-a-negated-variable-can-hold-a-name):
+  a declared relation the hypotheses may be taken from counts as holding names, so `(h ?s)` → `(not ?s)` over a
+  declared `h` is refused unless `(solve :no-hypothesis (h))` holds it out.
+- [Q-M1f.130](../open_questions.md#q-m1f130--a-macros-call-as-a-conclusion-refused-or-expanded-as-it-is): a macro's
+  call in an `:assert` stays expanded, as ten corpus witnesses use it; only a fact and a claim's fact are refused.
+
+**What was found outside the stages' scope** is [F25](../../followups/f25_roughness_found_outside_zebra.md)'s R-1
+to R-8. None moves a zebra program's answer, and none was made a stage or a question (the user, 2026-11-11).
+
+**Next** is [P1f.6](../p1f.6_calculator/README.md), whose S1f.6.1 stops for the user.
 
 ## The ids
 

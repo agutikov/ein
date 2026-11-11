@@ -78,7 +78,8 @@ falls against P1f.6 is the user's call then. **P1f.5 closed on 2026-11-11**
 *"p1f.7 runs before p1f.6, it's questions take a default"*: P1f.7 runs next, then P1f.6. The same day, on the
 [analysis of its nine findings](p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11), the user put S1f.7.8
 first, moved S1f.7.9's fix to [F24](../followups/f24_written_provenance.md) and added S1f.7.10 to S1f.7.12
-([Q-M1f.112](open_questions.md#q-m1f112--p1f7-after-its-analysis-the-order-s1f79-and-three-findings-with-no-stage)). It shares no
+([Q-M1f.112](open_questions.md#q-m1f112--p1f7-after-its-analysis-the-order-s1f79-and-three-findings-with-no-stage)). **P1f.7 closed on 2026-11-11**
+([its close](p1f.7_findings_outside_scope/README.md#the-close-2026-11-11)), twelve stages done; P1f.6 is next. It shares no
 file with P1f.10 or P1f.20, except the kernel pages P1f.20 moves, which it does not edit.
 
 They also meet in one place, and it is worth naming because it is the only

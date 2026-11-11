@@ -919,6 +919,13 @@ constrained-reasoning research.
   corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11). The pin is
   `ein-cli/tests/macro_facts.rs`. Every stage of P1f.7 has run; its close is
   the coordinator's.
+  **P1f.7 closed on 2026-11-11**
+  ([its close](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-close-2026-11-11)):
+  twelve stages done, W76 to W87, 301 fixed, 16 open and 1 not wrong (`grep
+  '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-11), the 16
+  owned by F21, F22, F24 or S1f.10.6; no zebra program's output moved; the
+  defaults Q-M1f.114 to .134 stand unreviewed, and what the stages found
+  outside their scope is F25's R-1 to R-8. **P1f.6, the calculator, is next.**
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
