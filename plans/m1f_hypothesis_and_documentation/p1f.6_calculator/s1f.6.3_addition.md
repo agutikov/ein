@@ -1,7 +1,7 @@
 # S1f.6.3 — Addition, and the machinery every circuit shares
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: `stdlib/arith.ein`, 19 rules, addition over nested numbers with named
+**Status:** **done 2026-11-11** (`e9b9a9fb`): `stdlib/arith.ein`, 19 rules, addition over nested numbers with named
 constants, held to Rust's integers, search-free, and the rule of the theory held on the text and on a counter;
 six decisions taken by default, Q-M1f.149 to .154, and one finding, E-11 ([§ T1 record](#t1-record-2026-11-11)
 onward). Planned
@@ -253,6 +253,21 @@ Pages: `stdlib/README.md` (§ `std.arith`, new), `tests/README.md` (§ `stdlib/a
 `07_stdlib_api.md` (§ `std.arith`, new), `examples/README.md`, `run_tests.sh` and `per-commit.yml`,
 `AGENTS.md`, [`findings.md`](findings.md) (E-11, and the note on E-3), the questions Q-M1f.149 to .154, the phase README
 and this record.
+
+## After the commit, 2026-11-11
+
+- **The runner's image.** `utils/ci_container.sh --tests-only -p ein-render --test dot_wellformed` on
+  `e9b9a9fb`, Ubuntu 26.04 with Graphviz 14.1.2 in its x86-64-v3 build: the DOT sweep green in 136.4 s under the
+  bound of 1 000, the new step `cargo test -p ein-infer --features counters --test arith_batch` green, the
+  scratch check and the review bundle's smoke green. The whole gate was not run there.
+- **The embedded copy.** The release binary copied out of the checkout reports *stdlib … embedded* and holds
+  every claim of `examples/arith/add.ein` and `tests/stdlib/digits/01_tables.ein`, 11 of 11, with no candidate:
+  both modules resolve from the copy the binary carries (`ein --version`, `ein test`, 2026-11-11).
+- **The two censuses** pass on the tree: `python3 utils/stdlib_census.py --check`, no rule at zero over the
+  corpus, `std.arith`'s 19 among them, and `python3 utils/nl_census.py --check`, no form without a `:why`
+  (2026-11-11).
+- **Not run:** `./run_tests.sh --nightly` and `--dev-host` as wholes, the whole review bundle among their
+  steps. The stage changed no step of either tier.
 
 ## Acceptance re-taken, 2026-11-11
 

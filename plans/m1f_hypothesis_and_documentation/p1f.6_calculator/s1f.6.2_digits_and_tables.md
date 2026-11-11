@@ -1,7 +1,7 @@
 # S1f.6.2 — The digits and the hardcoded tables, as a library of facts
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11**: `stdlib/digits.ein`, 1 664 rows in seven tables, generated, held to Rust's
+**Status:** **done 2026-11-11** (`3bd448a5`): `stdlib/digits.ein`, 1 664 rows in seven tables, generated, held to Rust's
 integers, importable flat and closed; four decisions taken by default, Q-M1f.145 to .148, and two findings, E-9
 and E-10 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08; re-planned 2026-11-11 to
 [the rulings](design.md#the-rulings-2026-11-11).
@@ -149,7 +149,9 @@ under `fdp` stopped after one iteration, which reads the same grammar, renders t
 the same warnings, and takes two seconds on the largest; no view the corpus had before is past the bound, the
 largest having 361 edges. `dot`'s own layout of a table is what the check no longer asks for. On the runner
 image's Graphviz, 14.1.2 in its x86-64-v3 build, the bounded layout draws the same views in 2.1 s and 0.8 s
-with no warning (`ein-ci:ubuntu-26.04-amd64v3`, 2026-11-11). The review bundle's region gallery draws corpus
+with no warning (`ein-ci:ubuntu-26.04-amd64v3`, 2026-11-11), and the whole sweep is green there on the stage's
+commit, 126.8 s (`utils/ci_container.sh --tests-only -p ein-render --test dot_wellformed` on `3bd448a5`,
+2026-11-11). The review bundle's region gallery draws corpus
 programs' KB views with a 60 s limit and was not re-run here: it is the dev host's.
 
 **A second drawing Graphviz would not take** is E-9: the first spelling of `02`'s rule, the `column` premise
