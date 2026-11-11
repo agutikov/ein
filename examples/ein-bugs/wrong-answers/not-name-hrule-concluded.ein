@@ -1,0 +1,27 @@
+;;; An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H —
+;;; M1f **W84**, register row `W84/not-name-hrule-concluded`, filed by S1f.7.4 (T1f.7.4.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and an hrule that proposes `(not ?g)` of whoever
+;;; has paid.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `(not Ann)` is the negation of no fact, so it is no hypothesis: refused at load,
+;;; one line, on every command. Without the hrule's candidate H is empty and R is
+;;; {∅}.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: the program loads; H is the one candidate `(not Ann)`, and R is
+;;; two states, ∅ and {(not Ann)}, which differ in a fact nothing can read: the goal
+;;; answers `?g = Ann` in both, exit 0 on every command.
+;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(hrule suppose () :match (paid ?g) :assert (not ?g) :why "suppose not {?g}")
+(query :goal (paid ?g))

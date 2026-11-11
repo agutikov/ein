@@ -38,7 +38,7 @@ program before any path compiles, fires, proposes or owes the rule.
 
 | primitive | arity | refused by |
 |---|---|---|
-| `not` | 1 | the **grammar** — `Connective ::= '(' 'not' Pattern ')'` in a premise, `Conclusion ::= '(' 'not' Pattern ')'` in a conclusion: one pattern, and no keyword after it |
+| `not` | 1 | the **grammar** — `Connective ::= '(' 'not' Pattern ')'` in a premise, `Conclusion ::= '(' 'not' Pattern ')'` in a conclusion: one pattern, and no keyword after it. A conclusion `(not ?x)` of a variable that can hold a name is refused by the **loader** (M1f S1f.7.4, below) |
 | `eq` / `neq` | 2 | the **grammar** — `Guard ::= '(' 'eq' Term Term ')' \| '(' 'neq' Term Term ')'` |
 | `absent` | 1 | the **grammar** — `'(' 'absent' Premise ')'` |
 | `and` / `or` | 1+ | the **grammar** — `Premises ::= Premise \| Premises Premise`, so `(and)` and `(or)` are parse errors, each with a note naming the rule and the clause (M1f S1f.5.9), and `(and X)` is legal, if degenerate; the empty conjunction is `:match ()`, below |
@@ -103,6 +103,24 @@ name, or a fact a state could hold*, refuses at the parse a premise `(false
 ?s)`, a conclusion headed `absent`, and `(eq …)`, `(absent …)` or `(false k)`
 as a conclusion's or a guard's value (S1f.7.6, S1f.7.7, S1f.7.10;
 [`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
+**A conclusion `(not ?x)` negates a fact**, the one a variable holds: `(rule
+hypothesis-contradiction () :match (and (hypothesis ?h) (contradiction-under
+?h)) :assert (not ?h))` stores `(not (co-located Norwegian House-2))`. A name
+has no negation, so since M1f
+[S1f.7.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md)
+the loader refuses the conclusion wherever the program shows that the
+variable can hold a name: a written fact, a declaration, another rule's or an
+hrule's conclusion, the rule's activator, a declared relation the hypotheses
+are taken from, or a guard that alone binds it. Where only a run meets the
+name, through the relation of a parameter whose activator a rule derives, the
+firing stores nothing for that conclusion and an hrule proposes nothing. Until then the
+rule stored `(not k)`, which no program can write (W84;
+[`defined_behaviour.md` § 4.23](../../defined_behaviour.md#423-not-of-a-name-is-the-negation-of-no-fact-and-an-hrule-may-read-not--m1f-s1f74-s1f72)).
+**An hrule's `:match` may read `not`**, as a premise, under `(absent …)` and
+through `unknown`, and is answered as `ein oracle` answers it in every build
+since M1f
+[S1f.7.2](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md);
+until then a build with debug assertions stopped on one (W85).
 **Until S1f.5.24** the compiler refused `eq` and `absent` at another arity
 where it compiled the plan (M1e
 [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),

@@ -15612,3 +15612,407 @@ derived   = "The grammar takes a connective as a call's argument, since a macro 
 [case.now]
 run     = "saturate --dump"
 refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-macro.ein:26:19: rule 'greet': its :match writes (says (and (paid ?g))), and (and (paid ?g)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+
+# ══ W84 — a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it ══
+[[case]]
+id       = "W84/not-name-concluded"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-concluded.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads and the rule stores `(not Ann :rule deny)`, a fact no program can write: `(not Ann)` is a parse error as a fact and as a conclusion. R is {∅}, exit 0 on every command, and the state file `ein solve --dump-answer` writes holds `(not Ann)` and does not reload, *unexpected `Ann`: a name*."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "`not` is the stored negation of one fact, and a name is no fact: `(not Ann)` is the negation of nothing. The fact `(paid Ann)` shows that `(paid ?g)` binds `?g` to a name, so the rule is refused at load, one line, on every command (exit 1, `ein test`: 2). A rule that means *Ann has not paid* writes `(not (paid ?g))`."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-concluded.ein:29:45: rule 'deny': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where the fact (paid Ann) holds Ann — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W84/not-name-hrule-concluded"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads; H is the one candidate `(not Ann)`, and R is two states, ∅ and {(not Ann)}, which differ in a fact nothing can read: the goal answers `?g = Ann` in both, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "`(not Ann)` is the negation of no fact, so it is no hypothesis: refused at load, one line, on every command. Without the hrule's candidate H is empty and R is {∅}."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein:26:49: hrule 'suppose': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where the fact (paid Ann) holds Ann — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W84/not-name-parameter"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-parameter.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` its parameter, which the activator `(deny Bob)` binds to a name. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads and the rule stores `(not Bob :rule deny)`; R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "The activator binds `?g` to `Bob`, a name, which the program shows: refused at load, one line, on every command. With the activator `(deny (paid Bob))` the rule stores `(not (paid Bob))`."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-parameter.ein:26:40: rule 'deny': its :assert writes (not ?g), and ?g can be a name: ?g is its parameter, which the fact (deny Bob) binds to Bob — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W84/not-name-macro"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-macro.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)`. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads and the rule stores `(not Ann :rule deny)`; R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "The expansion is `(not ?g)`, with `?g` bound where `(paid Ann)` holds a name: refused at load, at the call's argument, one line, on every command. S1f.5.24 refuses `(neg Ann)`, the name written (W68)."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-macro.ein:26:45: rule 'deny': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where the fact (paid Ann) holds Ann — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W84/not-name-guard"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-guard.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads and the rule stores `(not Bob)`, `(not Guest)` and `(not paid)`; R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "A guard binds a variable to names: refused at load, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-guard.ein:23:48: rule 'deny': its :assert writes (not ?g), and ?g can be a name: (neq ?g Ann) binds ?g over the program's names, nothing else binding it — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W84/not-name-derived"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-derived.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads and `deny` stores `(not Ann)` and `(not Bob)`; R is {∅}, exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "`greet` writes a guest, a name, as `seen`'s argument, since `(is-a Ann Guest)` holds one where it binds `?g`; so `(seen ?g)` binds `?g` to a name in `deny`: refused at load, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-derived.ein:27:45: rule 'deny': its :assert writes (not ?g), and ?g can be a name: (seen ?g) binds ?g where rule 'greet' writes (seen ?g) — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+[[case]]
+id       = "W84/not-name-under-commitment"
+case     = "W84"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.7.4"
+question = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
+witness  = "examples/ein-bugs/wrong-answers/not-name-under-commitment.ein"
+status   = "fixed"
+look_at  = ["root"]
+note     = "Filed by S1f.7.4 (T1f.7.4.2, 2026-11-11): A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered; fixed by T1f.7.4.3 (2026-11-11)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.4 (T1f.7.4.3): `ein_ir::from_ir`'s `refuse_negated_names` reads which positions the program shows to hold a name, a written fact, a declaration, a rule's or an hrule's conclusion to a fixpoint and an activator, and refuses a conclusion `(not ?x)` whose variable one disjunct of the `:match` binds only there, or only by a guard; and `ein_infer::firing::build_fact` builds no fact for the negation of a name, so a binding the loader does not read stores nothing and proposes nothing"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 55aadd0b (2026-11-11): the program loads; H is `(seen Ann)` and `(seen Bob)` and R is four states, of which three store `(not Ann)`, `(not Bob)` or both. Their `--dump-answer` state files do not reload. Exit 0 on every command."
+answered  = true
+
+[case.right]
+refused   = true
+reading   = "The value rule (the user's ruling of 2026-11-11, Q-M1f.113): a value is a name, or a fact a state could hold, an atom of an ordinary relation or its negation, so `not` of a name is the negation of no fact. S1f.7.4's default is a refusal at load wherever the program shows that the variable can hold a name (Q-M1f.127), and a firing that stores and proposes nothing where only a run meets the name (Q-M1f.128)"
+derived   = "A commitment states `(seen Ann)` or `(seen Bob)`, a fact of a declared relation over the program's names, so `(seen ?g)` binds `?g` to a name in every state past root: refused at load, one line, on every command."
+
+[case.now]
+run     = "saturate --dump"
+refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-under-commitment.ein:27:45: rule 'deny': its :assert writes (not ?g), and ?g can be a name: (seen ?g) binds ?g where a commitment can hold a name, seen being a declared relation the hypotheses are taken from — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+
+# ══ W85 — an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers ══
+[[case]]
+id       = "W85/hrule-reads-absent-not"
+case     = "W85"
+title    = "an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
+class    = "model set"
+settings = "default"
+owner    = "S1f.7.2"
+question = ["Q-M1f.129"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.7.2 (T1f.7.2.2, 2026-11-11) and fixed in the same commit: An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build. `wrong_answers.rs` runs under a build with debug assertions, where the unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it; the row was not held open, and its `wrong` records the release answer, which is right, and the debug build's stop as `debug_panic`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.2 (T1f.7.2.3): `ein_infer::hrule`'s `Hrules::candidates` holds no `debug_assert!` that no hrule reads `not`: where one does, every hrule is matched before any candidate is emitted, so no write the hypothesis pipeline makes between two candidates is visible to the enumeration, with the lookahead's kill cache on and off, and no shipped command has it on"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 55aadd0b (2026-11-11): this R, exit 0, and the claim holds. A build with debug assertions stopped where `ein solve` took H, exit 101: *an hrule reads `not`, which hypgen's kill cache writes mid-enumeration* (`hrule.rs`'s `debug_assert!`), on every solve question, `ein oracle` and `ein test`."
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["paid"]
+models    = [[], ["(paid Ann)"]]
+debug_panic = "an hrule reads `not`, which hypgen's kill cache writes mid-enumeration — see `Hrules::candidates`"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(paid Ann)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["paid"]
+models    = [[], ["(paid Ann)"]]
+reading   = "A build's stop on a valid program is a wrong answer, and two builds of one engine give one answer (*one tool, consistent answers*, the user's ruling of 2026-10-16). The release answer is `ein oracle`'s, so it stands (S1f.7.2's T1)"
+derived   = "The hrule matches Ann alone, so H is `(paid Ann)` and R is two states, ∅ and {(paid Ann)}: the goal has no row in the first and `?g = Ann` in the second, which the `:expect` states. `ein oracle` answers the same R."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["paid"]
+models    = [
+  [],
+  ["(paid Ann)"],
+]
+
+[[case]]
+id       = "W85/hrule-reads-not"
+case     = "W85"
+title    = "an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
+class    = "model set"
+settings = "default"
+owner    = "S1f.7.2"
+question = ["Q-M1f.129"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-reads-not.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.7.2 (T1f.7.2.2, 2026-11-11) and fixed in the same commit: An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a debug build. `wrong_answers.rs` runs under a build with debug assertions, where the unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it; the row was not held open, and its `wrong` records the release answer, which is right, and the debug build's stop as `debug_panic`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.2 (T1f.7.2.3): `ein_infer::hrule`'s `Hrules::candidates` holds no `debug_assert!` that no hrule reads `not`: where one does, every hrule is matched before any candidate is emitted, so no write the hypothesis pipeline makes between two candidates is visible to the enumeration, with the lookahead's kill cache on and off, and no shipped command has it on"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 55aadd0b (2026-11-11): this R, exit 0, and the claim holds. A build with debug assertions stopped where `ein solve` took H, exit 101, on the same assertion."
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["owes"]
+models    = [[], ["(owes Bob)"]]
+debug_panic = "an hrule reads `not`, which hypgen's kill cache writes mid-enumeration — see `Hrules::candidates`"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(owes Bob)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["owes"]
+models    = [[], ["(owes Bob)"]]
+reading   = "A build's stop on a valid program is a wrong answer, and two builds of one engine give one answer (*one tool, consistent answers*, the user's ruling of 2026-10-16). The release answer is `ein oracle`'s, so it stands (S1f.7.2's T1)"
+derived   = "The hrule matches Bob alone, so H is `(owes Bob)` and R is two states, ∅ and {(owes Bob)}: the goal has no row in the first and `?g = Bob` in the second, which the `:expect` states. `ein oracle` answers the same R."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["owes"]
+models    = [
+  [],
+  ["(owes Bob)"],
+]
+
+[[case]]
+id       = "W85/hrule-reads-unknown"
+case     = "W85"
+title    = "an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
+class    = "model set"
+settings = "default"
+owner    = "S1f.7.2"
+question = ["Q-M1f.129"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.7.2 (T1f.7.2.2, 2026-11-11) and fixed in the same commit: An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. `wrong_answers.rs` runs under a build with debug assertions, where the unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it; the row was not held open, and its `wrong` records the release answer, which is right, and the debug build's stop as `debug_panic`"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.7.2 (T1f.7.2.3): `ein_infer::hrule`'s `Hrules::candidates` holds no `debug_assert!` that no hrule reads `not`: where one does, every hrule is matched before any candidate is emitted, so no write the hypothesis pipeline makes between two candidates is visible to the enumeration, with the lookahead's kill cache on and off, and no shipped command has it on"
+date   = "2026-11-11"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 55aadd0b (2026-11-11): this R, exit 0, and the claim holds. A build with debug assertions stopped where `ein solve` took H, exit 101, on the same assertion."
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["paid"]
+models    = [[], ["(paid Ann)"]]
+debug_panic = "an hrule reads `not`, which hypgen's kill cache writes mid-enumeration — see `Hrules::candidates`"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(paid Ann)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["paid"]
+models    = [[], ["(paid Ann)"]]
+reading   = "A build's stop on a valid program is a wrong answer, and two builds of one engine give one answer (*one tool, consistent answers*, the user's ruling of 2026-10-16). The release answer is `ein oracle`'s, so it stands (S1f.7.2's T1)"
+derived   = "Of Ann neither `(paid Ann)` nor its negation holds, and of Bob the negation does, so H is `(paid Ann)` and R is two states, ∅ and {(paid Ann)}, which the `:expect` states. `ein oracle` answers the same R."
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["paid"]
+models    = [
+  [],
+  ["(paid Ann)"],
+]

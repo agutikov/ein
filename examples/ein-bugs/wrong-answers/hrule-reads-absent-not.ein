@@ -1,0 +1,32 @@
+;;; An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build —
+;;; M1f **W85**, register row `W85/hrule-reads-absent-not`, filed by S1f.7.2 (T1f.7.2.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Bob is known not to have paid, `(not (paid Bob))`, and an
+;;; hrule that supposes a guest has paid unless it is known they have not: `(absent
+;;; (not (paid ?g)))`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; The hrule matches Ann alone, so H is `(paid Ann)` and R is two states, ∅ and
+;;; {(paid Ann)}: the goal has no row in the first and `?g = Ann` in the second, which
+;;; the `:expect` states. `ein oracle` answers the same R.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with debug
+;;; assertions stopped where `ein solve` took H, exit 101: *an hrule reads `not`,
+;;; which hypgen's kill cache writes mid-enumeration* (`hrule.rs`'s `debug_assert!`),
+;;; on every solve question, `ein oracle` and `ein test`.
+;;; One answer from both builds since S1f.7.2 (T1f.7.2.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(not (paid Bob))
+(hrule suppose ()
+  :match  (and (is-a ?g Guest) (absent (not (paid ?g))))
+  :assert (paid ?g)
+  :why "suppose {?g} has paid: nothing says they have not")
+(query :goal (paid ?g) :expect (or (model) (model (paid Ann))))

@@ -1,0 +1,31 @@
+;;; A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)` —
+;;; M1f **W84**, register row `W84/not-name-concluded`, filed by S1f.7.4 (T1f.7.4.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and a rule that concludes `(not ?g)` of whoever
+;;; has paid: `?g` is a guest, a name. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `not` is the stored negation of one fact, and a name is no fact: `(not Ann)` is the
+;;; negation of nothing. The fact `(paid Ann)` shows that `(paid ?g)` binds `?g` to a
+;;; name, so the rule is refused at load, one line, on every command (exit 1, `ein
+;;; test`: 2). A rule that means *Ann has not paid* writes `(not (paid ?g))`.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: the program loads and the rule stores `(not Ann :rule deny)`, a
+;;; fact no program can write: `(not Ann)` is a parse error as a fact and as a
+;;; conclusion. R is {∅}, exit 0 on every command, and the state file `ein solve
+;;; --dump-answer` writes holds `(not Ann)` and does not reload, *unexpected `Ann`: a
+;;; name*.
+;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(rule deny () :match (paid ?g) :assert (not ?g) :why "not {?g}: they have paid")
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

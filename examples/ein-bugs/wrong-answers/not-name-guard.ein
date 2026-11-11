@@ -1,0 +1,25 @@
+;;; A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name —
+;;; M1f **W84**, register row `W84/not-name-guard`, filed by S1f.7.4 (T1f.7.4.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, and a rule whose `:match` is the guard `(neq ?g
+;;; Ann)` alone, which binds `?g` over the program's names (S1f.5.7). No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; A guard binds a variable to names: refused at load, one line, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: the program loads and the rule stores `(not Bob)`, `(not Guest)`
+;;; and `(not paid)`; R is {∅}, exit 0 on every command.
+;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(rule deny () :match (neq ?g Ann) :assert (not ?g) :why "not {?g}: it is not Ann")
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

@@ -1,0 +1,28 @@
+;;; A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)` —
+;;; M1f **W84**, register row `W84/not-name-macro`, filed by S1f.7.4 (T1f.7.4.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Ann has paid, a macro `neg` whose body is `(not ?a)`, and a
+;;; rule that concludes `(neg ?g)` of whoever has paid. No candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; The expansion is `(not ?g)`, with `?g` bound where `(paid Ann)` holds a name:
+;;; refused at load, at the call's argument, one line, on every command. S1f.5.24
+;;; refuses `(neg Ann)`, the name written (W68).
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: the program loads and the rule stores `(not Ann :rule deny)`;
+;;; R is {∅}, exit 0 on every command.
+;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(paid Ann)
+(macro neg (?a) (not ?a) :why "the negation of {?a} is stored")
+(rule deny () :match (paid ?g) :assert (neg ?g) :why "not {?g}: they have paid")
+(solve :hypothesis-relations ())
+(query :goal (paid ?g))

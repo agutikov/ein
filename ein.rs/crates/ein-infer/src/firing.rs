@@ -114,13 +114,25 @@ impl From<Overflow> for FireError {
 /// The saturator builds every conclusion *before* deciding whether the firing
 /// is productive — that is what makes the redundancy check cheap — so this is
 /// deliberately separate from [`fire`].
+///
+/// **`None` is the negation of a name**, which is no fact (M1f S1f.7.4, W84,
+/// under the value rule, the user's ruling of 2026-11-11: *a value is a name,
+/// or a fact a state could hold: an atom of an ordinary relation, or its
+/// negation*). A conclusion `(not ?x)` is of a variable bound to a fact;
+/// where a binding gives it a name there is nothing to conclude, so the
+/// firing stores nothing for it and an hrule proposes nothing, as a true `eq`
+/// conclusion adds nothing ([`build_conclusion`]). The loader refuses the
+/// shape wherever the program shows the variable can hold a name
+/// (`ein_ir::from_ir`'s `refuse_negated_names`); this is what is left, a
+/// binding only a run meets (Q-M1f.128). Until S1f.7.4 it was stored, `(not
+/// k)`, a fact no program can write and no state file can reload.
 pub fn build_fact(
     terms: &mut Terms,
     ast: &Ast,
     plan: &Plan,
     env: Env<'_>,
     template: Slot,
-) -> Result<FactId, FireError> {
+) -> Result<Option<FactId>, FireError> {
     let Slot::Nested { rel, slots } = template else {
         return Err(not_a_fact(terms, ast, plan, template, None));
     };
@@ -132,9 +144,15 @@ pub fn build_fact(
         if let Slot::Opaque(_) = slot {
             return Err(not_a_fact(terms, ast, plan, slot, Some(rel)));
         }
-        args.push(resolve(terms, ast, plan, env, slot)?);
+        let Some(value) = resolve(terms, ast, plan, env, slot)? else {
+            return Ok(None);
+        };
+        args.push(value);
     }
-    Ok(terms.intern_fact(rel, &args)?)
+    if rel == terms.kernel.not && args.len() == 1 && args[0].as_fact().is_none() {
+        return Ok(None);
+    }
+    Ok(Some(terms.intern_fact(rel, &args)?))
 }
 
 /// Build one conclusion as the KB takes it: the fact it states, or for an
@@ -157,15 +175,21 @@ pub fn build_conclusion(
     template: Slot,
 ) -> Result<Option<FactId>, FireError> {
     if let Some((eq, x, y)) = computed(terms, plan, template) {
-        let x = resolve(terms, ast, plan, env, x)?;
-        let y = resolve(terms, ast, plan, env, y)?;
+        // A side that holds the negation of a name is no value, and the
+        // conclusion nothing (S1f.7.4); the grammar writes no such side.
+        let (Some(x), Some(y)) = (
+            resolve(terms, ast, plan, env, x)?,
+            resolve(terms, ast, plan, env, y)?,
+        ) else {
+            return Ok(None);
+        };
         if (x == y) == eq {
             return Ok(None);
         }
         let r#false = terms.kernel.r#false;
         return Ok(Some(terms.intern_fact(r#false, &[])?));
     }
-    build_fact(terms, ast, plan, env, template).map(Some)
+    build_fact(terms, ast, plan, env, template)
 }
 
 /// A conclusion of a relation whose facts are computed: `(eq x y)`, `(neq x
@@ -242,15 +266,17 @@ fn not_a_fact(
     })
 }
 
+/// A slot's value, or `None` where it holds the negation of a name
+/// ([`build_fact`]).
 fn resolve(
     terms: &mut Terms,
     ast: &Ast,
     plan: &Plan,
     env: Env<'_>,
     slot: Slot,
-) -> Result<Value, FireError> {
+) -> Result<Option<Value>, FireError> {
     match slot {
-        Slot::Const(v) => Ok(v),
+        Slot::Const(v) => Ok(Some(v)),
         Slot::Reg(r) => {
             let v = env.regs[r as usize];
             // No conclusion reads a register its match and its activator leave
@@ -267,9 +293,9 @@ fn resolve(
                 terms.sym(plan.reg_names[r as usize]),
                 env.dict_repr(terms, plan)
             );
-            Ok(v)
+            Ok(Some(v))
         }
-        Slot::Nested { .. } => Ok(Value::fact(build_fact(terms, ast, plan, env, slot)?)),
+        Slot::Nested { .. } => Ok(build_fact(terms, ast, plan, env, slot)?.map(Value::fact)),
         // `build_fact` refuses an opaque argument before it gets here.
         Slot::Opaque(_) => Err(not_a_fact(terms, ast, plan, slot, None)),
     }
@@ -530,7 +556,9 @@ mod tests {
             trail,
             premises: &[],
         };
-        let fact = build_fact(&mut terms, &ast, &plan, env, plan.asserts[0]).expect("a fact");
+        let fact = build_fact(&mut terms, &ast, &plan, env, plan.asserts[0])
+            .expect("a fact")
+            .expect("of no negated name");
         assert_eq!(terms.fact_text(fact), "(b thing1 (f thing2))");
     }
 

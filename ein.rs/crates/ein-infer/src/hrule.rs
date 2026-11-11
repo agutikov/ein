@@ -97,46 +97,73 @@ impl Hrules {
     ///
     /// ### Why the matches are collected before any is emitted
     ///
-    /// Hypgen's filter pipeline mutates the KB — the lookahead kill cache
-    /// writes `(not h)` — between one candidate and the next. The matcher
-    /// borrows the KB immutably for the whole walk and the callback needs it
-    /// mutably, so the walk finishes first, and no write the pipeline makes is
-    /// visible to the rest of the enumeration.
+    /// The matcher borrows the KB immutably for the whole walk and the callback
+    /// needs it mutably, so one hrule's walk finishes before its first
+    /// candidate is emitted.
     ///
-    /// Collecting first and interleaving agree exactly whenever the only relation the pipeline writes —
-    /// `not` — is not one an hrule's `:match` reads, which is the condition
-    /// `reads_negation` checks under `debug_assert`. No corpus hrule reads
-    /// it (they read `is-a` and the puzzle's own relations), and an hrule that
-    /// did would be asking the enumerator to condition on its own kill cache.
+    /// No shipped caller writes the KB between two candidates: every command
+    /// takes H config-free (`hypgen::generate_config_free`), with the
+    /// lookahead's kill cache off, since M1e2 S1e2.3.1. The config-reading
+    /// `hypgen::generate`, which the shape digest's `hyp` op and the tests
+    /// call, can have it on, and it then writes `(not h)` between one
+    /// candidate and the next. So where an hrule's `:match` reads `not`
+    /// (`reads_negation`: a stored negation, `(absent (not …))`, the
+    /// stdlib's `unknown`), **every** hrule is matched before any candidate is
+    /// emitted, and no write the pipeline makes is visible to the
+    /// enumeration: an hrule that reads `not` reads the state it was asked
+    /// about, with the cache on and off (M1f S1f.7.2, W85). Where none reads
+    /// it the two orders agree, and each hrule is matched as it is reached, so
+    /// a caller that stops early matches no hrule it does not reach.
+    ///
+    /// Until S1f.7.2 a `debug_assert!` held that no hrule read `not`, so a
+    /// debug build stopped, exit 101, on a program a release build answered,
+    /// and answered as `ein oracle` does.
     pub fn candidates(
         &self,
         s: &mut Session<'_>,
         f: &mut dyn FnMut(&mut Session<'_>, FactId) -> ControlFlow<()>,
     ) -> ControlFlow<()> {
+        type Envs = Vec<(Vec<Value>, Vec<crate::plan::Reg>)>;
         let mut matcher = Matcher::new();
-        for plan in &self.plans {
-            let Some(template) = plan.assert_template() else {
-                continue;
-            };
-            if !matches!(template, Slot::Nested { .. }) {
-                continue;
-            }
-            // An `eq` / `neq` instance is no hypothesis: a commitment states a
-            // fact a state stores, and a state stores neither, whose facts are
-            // computed (M1f S1f.5.7, Q-M1e2.26; Q-M1f.32, taken by default).
-            if crate::firing::computed(s.terms, plan, template).is_some() {
-                continue;
-            }
-            debug_assert!(
-                !reads_negation(plan, s.terms),
-                "an hrule reads `not`, which hypgen's kill cache writes \
-                 mid-enumeration — see `Hrules::candidates`"
-            );
-            let mut envs: Vec<(Vec<Value>, Vec<crate::plan::Reg>)> = Vec::new();
+        let mut matches = |s: &Session<'_>, plan: &Plan| -> Envs {
+            let mut envs: Envs = Vec::new();
             matcher.run(s.kb, s.terms, s.ast, plan, &mut |m| {
                 envs.push((m.regs().to_vec(), m.trail().to_vec()));
                 ControlFlow::Continue(())
             });
+            envs
+        };
+        // A plan that proposes: its `:assert` is a fact's template, and not an
+        // `eq` / `neq` instance, which is no hypothesis: a commitment states a
+        // fact a state stores, and a state stores neither, whose facts are
+        // computed (M1f S1f.5.7, Q-M1e2.26; Q-M1f.32, taken by default).
+        let proposes = |s: &Session<'_>, plan: &Plan| -> Option<Slot> {
+            let template = plan.assert_template()?;
+            (matches!(template, Slot::Nested { .. })
+                && crate::firing::computed(s.terms, plan, template).is_none())
+            .then_some(template)
+        };
+        let mut ahead: Option<Vec<Envs>> = self
+            .plans
+            .iter()
+            .any(|p| reads_negation(p, s.terms))
+            .then(|| {
+                self.plans
+                    .iter()
+                    .map(|plan| match proposes(s, plan) {
+                        Some(_) => matches(s, plan),
+                        None => Vec::new(),
+                    })
+                    .collect()
+            });
+        for (i, plan) in self.plans.iter().enumerate() {
+            let Some(template) = proposes(s, plan) else {
+                continue;
+            };
+            let envs = match &mut ahead {
+                Some(all) => std::mem::take(&mut all[i]),
+                None => matches(s, plan),
+            };
             for (regs, trail) in &envs {
                 let env = Env {
                     regs,
@@ -144,7 +171,11 @@ impl Hrules {
                     premises: &[],
                 };
                 match build_fact(s.terms, s.ast, plan, env, template) {
-                    Ok(fact) => f(s, fact)?,
+                    Ok(Some(fact)) => f(s, fact)?,
+                    // The negation of a name is no fact, and no hypothesis
+                    // (M1f S1f.7.4, W84): `(not ?x)` with `?x` bound to a
+                    // name the loader could not foresee.
+                    Ok(None) => continue,
                     // `NotAFact` — a malformed template yields no candidate.
                     // No template is a whole conclusion that is no fact since
                     // M1f S1f.5.24, which refuses one a macro's expansion
@@ -166,10 +197,8 @@ impl Hrules {
     }
 }
 
-/// True iff any positive premise or guard of `plan` reads the `not` relation.
-///
-/// The precondition [`Hrules::candidates`] documents, checked rather than
-/// argued.
+/// True iff any premise or guard of `plan` reads the `not` relation, under an
+/// `(absent …)` too: what [`Hrules::candidates`] matches ahead for.
 fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
     fn walk(plan: &Plan, terms: &ein_core::Terms, span: crate::plan::Span) -> bool {
         plan.steps(span).iter().any(|step| match step {

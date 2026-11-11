@@ -1528,7 +1528,10 @@ macro, called by no rule, answered by every command),
 connective as a premise pattern's argument, `(p (and (q ?x)))`, which the
 grammar takes so a macro can be called there and which reads nothing; and a
 macro called in a query's `:goal`, which is not expanded (both found by
-S1f.5.24's T2, outside its case).
+S1f.5.24's T2, outside its case). That was the state at S1f.5.24: the first is
+refused since M1f S1f.7.3 (§ 4.22), the second expanded since S1f.7.5
+(§ 4.21), and a conclusion `(not ?x)` whose variable holds a name, the third
+its T2 found, is refused since S1f.7.4 (§ 4.23).
 
 ### 4.17 `open` is written only as a rule's verdict — M1f S1f.5.23
 
@@ -1896,6 +1899,99 @@ among them; and the rule of a witness written as it was meant, answered),
 `ein-ir`'s
 `grammar_pages` table (a row per place the grammar takes the refusal, banked
 in `grammar_table.txt`) and `corpus/wrong_answers.toml`'s W80 to W83 rows.
+
+### 4.23 `not` of a name is the negation of no fact, and an hrule may read `not` — M1f S1f.7.4, S1f.7.2
+
+Two stages of M1f
+[P1f.7](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md),
+both about `not`, the one head § 4.22's rule keeps as a value's.
+
+**A conclusion `(not ?x)` is of a variable bound to a fact**
+([S1f.7.4](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md),
+Q-M1f.127 and Q-M1f.128, defaulted). The grammar takes `(not Var)` as a
+conclusion, as `(hypothesis ?h)` then `(not ?h)` writes it, and whether `?h`
+holds a fact depends on the data. A name has no negation: `(not k)` is a parse
+error as a fact and as a conclusion, and § 4.16 refuses one a macro writes.
+So the loader refuses the conclusion wherever the program shows that the
+variable can hold a name (`ein_ir::from_ir`'s `refuse_negated_names`), one
+line per conclusion, in § 4.16's spelling, at the variable, on every command
+(exit 1, `ein test`: 2):
+
+```
+kb load error: <file>:<line>:<col>: rule 'deny': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where the fact (paid Ann) holds Ann — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)
+```
+
+A position, a relation and an argument's index, *holds a name* where the
+program shows one there, and the line's middle says which:
+
+| the program shows | the line's middle |
+|---|---|
+| a written fact, at any depth and under a `(not …)` | `(paid ?g) binds ?g where the fact (paid Ann) holds Ann` |
+| a `(relation …)` declaration, matched as a fact | `(relation ?R ?T) binds ?R where a declaration names a relation or a type` |
+| a rule's or an hrule's conclusion that writes a name, or a variable that can hold one, to a fixpoint | `(seen ?g) binds ?g where rule 'greet' writes (seen ?g)` |
+| the rule's own activator, a written fact | `?g is its parameter, which the fact (deny Bob) binds to Bob` |
+| an hrule's activator in `(solve :hrules …)` | `?g is its parameter, which (solve :hrules (suppose (Bob))) binds to Bob` |
+| a declared relation the hypotheses are taken from: the program declares no hrule, the `(solve …)` lists leave the relation in, and nothing writes the closure marker | `(seen ?g) binds ?g where a commitment can hold a name, seen being a declared relation the hypotheses are taken from` |
+| nothing but a guard binds the variable | `(neq ?g Ann) binds ?g over the program's names, nothing else binding it`, `(eq ?g Ann) binds ?g to a name` |
+
+The variable *can hold a name* where, in one disjunct of the `:match`, every
+relation premise that binds it binds it at such a position. A premise under
+`(absent …)` binds nothing, and a guard beside a relation premise only
+filters. So `(and (paid ?g) (claim ?c))` with `(not ?c)` loads where `claim`
+holds facts alone, and a position that holds both, `(claim (paid Bob))` beside
+`(claim Ann)`, is refused. The three
+`examples/saturation/hypothesis-contradiction/` programs load: their
+`hypothesis` is no declared relation, and holds facts.
+
+A pattern or a conclusion whose relation is a parameter, `(?R ?g)`, is read as
+one of each relation a written activator names there: `(rule deny (?R) :match
+(?R ?g) :assert (not ?g))` beside `(deny paid)` is refused, *(?R ?g) binds ?g
+where the fact (paid Ann) holds Ann*.
+
+**What the loader does not read is the firing's.** Where the activator is
+derived through a variable, `(marks paid)` and a rule concluding `(deny ?R)`
+of what is marked, the parameter's relation is not read, and the program
+loads. Where a binding then gives `(not ?g)` a name, there is no fact to
+conclude: the firing stores nothing for that conclusion, and stores the rule's
+other conclusions; an hrule proposes nothing for it
+(`ein_infer::firing::build_fact`). No command stops, no `(false)` is
+concluded, and no state holds the negation of a name. A state file of such a
+program writes the derived activator as a fact, so the loader reads it there:
+[F25](../../plans/followups/f25_roughness_found_outside_zebra.md)'s R-1.
+
+**An hrule's `:match` may read `not`**
+([S1f.7.2](../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md),
+Q-M1f.129, defaulted): a stored negation as a premise, `(not (paid ?g))`,
+under `(absent …)`, and through `std.macro`'s `unknown`. It is matched against
+the state the hypotheses are taken at, and `ein solve` answers what `ein
+oracle` answers, in a build with debug assertions as in a release build.
+Where an hrule reads `not`, every hrule is matched before any candidate is
+emitted (`ein_infer::hrule`'s `Hrules::candidates`), so nothing the hypothesis
+pipeline writes between two candidates is visible to the enumeration. No
+command's pipeline writes there: H is taken config-free since M1e2 S1e2.3.1,
+with the lookahead's kill cache off.
+
+**Until these stages** a rule whose `(not ?g)` met a name stored `(not Ann)`,
+which no program can write, and the state file `ein solve --dump-answer` wrote
+for that state did not reload, *unexpected \`Ann\`: a name*; an hrule's put
+`(not Ann)` in H, so R held two states that differed in a fact nothing reads.
+And an hrule whose `:match` read `not` stopped a build with debug assertions,
+exit 101, *an hrule reads \`not\`, which hypgen's kill cache writes
+mid-enumeration*, on every solve question, `ein oracle` and `ein test`, where
+a release build answered. Ten register rows, W84 and W85, filed and fixed
+by the stages.
+
+Pinned by `ein-cli`'s `negated_names.rs` (eighteen refused shapes and W84's
+seven witnesses, each on twenty commands: one stderr, the same on
+each, and no container; ten programs that keep loading, and the three corpus
+programs, each storing the negation it stored; and three programs whose name
+only a run meets, each storing and proposing none, no state file holding one,
+`ein solve` and `ein oracle` counting the same states, read as text and
+through a `.einb`), `ein-cli`'s `hrule_reads_not.rs` (W85's three
+witnesses on thirteen commands under `cargo test`'s debug assertions, and two
+hrules of which one reads what the other could be asked about), `ein-ir`'s
+`from_ir` unit test `a_conclusion_negating_a_name_is_refused_at_load`, and
+`corpus/wrong_answers.toml`'s W84 and W85 rows.
 
 ## 5. The CLI surface
 

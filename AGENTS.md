@@ -873,6 +873,29 @@ constrained-reasoning research.
   1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
   2026-11-11). The pin is `ein-cli/tests/value_rule.rs`. `(false)` with no
   argument stays a value, F25's R-7.
+  **S1f.7.4 and S1f.7.2, the two about `not`, ran to their end the same
+  day**, in one subagent
+  ([S1f.7.4's records](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md#t1-record-2026-11-11)
+  and [S1f.7.2's](plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md#t1-record-2026-11-11),
+  Q-M1f.127 to .129 defaulted; `defined_behaviour.md` § 4.23). **`not` of a
+  name is the negation of no fact**: a conclusion `(not ?x)` is refused at
+  load, one line on every command, wherever the program shows that `?x` can
+  hold a name (`ein_ir::from_ir`'s `refuse_negated_names`: a written fact, a
+  declaration, a rule's or an hrule's conclusion to a fixpoint, an activator,
+  a declared relation the hypotheses are taken from, a guard alone), and
+  where only a run meets the name the firing builds no fact for it, so
+  nothing is stored and an hrule proposes nothing
+  (`ein_infer::firing::build_fact`), F25's R-1 saying what is left. The three
+  `examples/saturation/hypothesis-contradiction/` programs conclude `(not
+  ?h)` of facts and load as before (W84, seven rows). And **an hrule's
+  `:match` may read `not`**: the `debug_assert!` that stopped a debug build
+  where release answered as `ein oracle` does is gone, and where an hrule
+  reads `not` every hrule is matched before any candidate is emitted (W85,
+  three rows, filed and fixed in one commit since a debug run cannot hold an
+  `open` row). No other corpus answer moved: 293 fixed, 13 open and 1 not
+  wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+  2026-11-11). The pins are `ein-cli/tests/negated_names.rs` and
+  `hrule_reads_not.rs`.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

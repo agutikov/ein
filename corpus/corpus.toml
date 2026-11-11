@@ -2351,6 +2351,66 @@ group  = "regression"
 runs   = ["solve", "saturate"]
 note   = "M1f W83 (`W83/pattern-argument-macro`), filed by S1f.7.3's T1f.7.3.2 (2026-11-11): A macro called with a conjunction leaves `(says (and (paid ?g)))`, and the rule fires. Fixed by S1f.7.3's T1f.7.3.3 (2026-11-11): refused at load, on every command."
 
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-concluded.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-concluded`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): A rule's `:assert (not ?g)` with `?g` bound to a guest stores `(not Ann)`. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-hrule-concluded`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-parameter.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-parameter`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): A rule's `:assert (not ?g)` with `?g` its parameter, which the activator `(deny Bob)` binds to a name. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-macro.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-macro`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): A macro's `(not ?a)` called as a conclusion with a variable bound to a guest stores `(not Ann)`. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-guard.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-guard`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): A rule's `:assert (not ?g)` with `?g` bound by a guard alone stores the negation of every other name. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-derived.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-derived`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/not-name-under-commitment.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W84 (`W84/not-name-under-commitment`), filed by S1f.7.4's T1f.7.4.2 (2026-11-11): A rule's `:assert (not ?g)` with `?g` bound by a fact only a commitment states: every state past root stores the negation of a guest. Fixed by S1f.7.4's T1f.7.4.3 (2026-11-11): refused at load, on every command."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "test"]
+note   = "M1f W85 (`W85/hrule-reads-absent-not`), filed by S1f.7.2's T1f.7.2.2 (2026-11-11): An hrule whose `:match` reads `(absent (not (paid ?g)))` stops a debug build. Fixed by S1f.7.2's T1f.7.2.3 (2026-11-11): a debug build answers as a release build does."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-reads-not.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "test"]
+note   = "M1f W85 (`W85/hrule-reads-not`), filed by S1f.7.2's T1f.7.2.2 (2026-11-11): An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a debug build. Fixed by S1f.7.2's T1f.7.2.3 (2026-11-11): a debug build answers as a release build does."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "test"]
+note   = "M1f W85 (`W85/hrule-reads-unknown`), filed by S1f.7.2's T1f.7.2.2 (2026-11-11): An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build. Fixed by S1f.7.2's T1f.7.2.3 (2026-11-11): a debug build answers as a release build does."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The `CompileError` fixtures — files that parse and load and are then refused

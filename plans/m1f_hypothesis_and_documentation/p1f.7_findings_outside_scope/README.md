@@ -11,7 +11,8 @@ the user's answer of that day, *"p1f.7 runs before p1f.6, it's questions take a 
 a stage raises takes the stage's default, recorded as a Q-M1f row marked *defaulted* and shown at this phase's close
 ([§ How every stage runs](#how-every-stage-runs)). **S1f.7.8 is done** (2026-11-11, W76), and so are **S1f.7.5,
 S1f.7.11 and S1f.7.1** (2026-11-11, W77 to W79), a query's `:goal` held to what a rule's `:match` is held to, and
-**S1f.7.7, S1f.7.6, S1f.7.10 and S1f.7.3** (2026-11-11, W80 to W83), the value rule held in the grammar and the loader. **Re-planned 2026-11-11** on the user's rulings on the
+**S1f.7.7, S1f.7.6, S1f.7.10 and S1f.7.3** (2026-11-11, W80 to W83), the value rule held in the grammar and the loader,
+and **S1f.7.4 and S1f.7.2** (2026-11-11, W84 and W85), the two about `not`. **Re-planned 2026-11-11** on the user's rulings on the
 [analysis of that day](#the-analysis-of-2026-11-11): S1f.7.8 runs first, S1f.7.9's fix moved to
 [F24](../../followups/f24_written_provenance.md), and three findings of the analysis are S1f.7.10 to S1f.7.12.
 **Depends on:** P1f.5. Its stages use [S1f.5.21](../p1f.5_the_no_owner_items/s1f.5.21_a_compile_error_in_eins_words.md)'s
@@ -72,9 +73,9 @@ it, on the release binary at `4bf6da73`: with `(h (eq k j)) (h (eq k k))` and `:
 | ID | title | finding | from | state |
 |---|---|---|---|---|
 | [S1f.7.1](s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md) | A goal's nested pattern whose relation is a variable: refused, as in a rule | `(query :goal (p (?R ?x)))` loads and matches nothing, in silence | S1f.5.28 item 12; S1f.5.21's T1 record | **done 2026-11-11**: W79, two rows filed and fixed; refused at load |
-| [S1f.7.2](s1f.7.2_an_hrule_that_reads_not.md) | An hrule that reads `not`: one answer from both builds | a debug build stops (exit 101) where release answers | S1f.5.28 item 13; S1f.5.24's T2 record | new 2026-11-10 |
+| [S1f.7.2](s1f.7.2_an_hrule_that_reads_not.md) | An hrule that reads `not`: one answer from both builds | a debug build stops (exit 101) where release answers | S1f.5.28 item 13; S1f.5.24's T2 record | **done 2026-11-11**: W85, three rows filed and fixed in one commit; the stale assertion removed, every hrule matched ahead where one reads `not` |
 | [S1f.7.3](s1f.7.3_a_connective_as_a_patterns_argument.md) | A connective as a premise pattern's argument | `(q (and (p ?x)))` loads and never matches, in silence | S1f.5.28 item 14; S1f.5.24's T2 record | **done 2026-11-11**: W83, five rows filed and fixed; refused at load, after macro expansion |
-| [S1f.7.4](s1f.7.4_the_negation_of_a_name_concluded.md) | A conclusion `(not ?x)` whose variable binds a name | stores `(not k)`, which no program can write | S1f.5.28 item 15; S1f.5.24's T2 record | new 2026-11-10 |
+| [S1f.7.4](s1f.7.4_the_negation_of_a_name_concluded.md) | A conclusion `(not ?x)` whose variable binds a name | stores `(not k)`, which no program can write | S1f.5.28 item 15; S1f.5.24's T2 record | **done 2026-11-11**: W84, seven rows filed and fixed; refused at load where the program shows a name, and the firing builds no negation of one |
 | [S1f.7.5](s1f.7.5_a_macro_called_in_a_goal.md) | A macro called in a query's `:goal` | the call is never expanded, so the goal has no row, in silence | S1f.5.28 item 16; S1f.5.24's T2 record | **done 2026-11-11**: W77, four rows filed and fixed; expanded at load, the goal held to a rule's checks |
 | [S1f.7.6](s1f.7.6_a_false_fact_with_an_argument.md) | A written `(false k)`: `false` with an argument | kills root, the argument stored (the finding said dropped), where a rule's is refused | S1f.5.23's T2 record, finding 1 | **done 2026-11-11**: W81, five rows filed and fixed; `false` takes no argument anywhere |
 | [S1f.7.7](s1f.7.7_an_absent_fact.md) | A written or concluded `(absent k)` | stores a fact no premise can read | S1f.5.23's T2 record, finding 2 | **done 2026-11-11**: W80, five rows filed and fixed; refused at the parse, with a note pointing at `(not …)` |

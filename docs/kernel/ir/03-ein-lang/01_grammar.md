@@ -653,6 +653,14 @@ conclusion holds derives nothing and is no firing. An hrule's instance of either
 is no hypothesis (Q-M1f.32). Until S1f.5.7 each was stored as an ordinary fact,
 so a false one sat in the KB while a guard computed the opposite (W30).
 
+**A conclusion `(not ?x)` negates the fact `?x` holds**, and a name has no
+negation: where the program shows that `?x` can hold a name, the rule or the
+hrule is refused at load, and where only a run meets the name the firing
+concludes nothing for it (M1f
+[S1f.7.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md);
+[`defined_behaviour.md` § 4.23](../../defined_behaviour.md#423-not-of-a-name-is-the-negation-of-no-fact-and-an-hrule-may-read-not--m1f-s1f74-s1f72)).
+Until S1f.7.4 it stored `(not k)`, which no program can write (W84).
+
 **Every variable a conclusion writes is bound** on every way the `:match` can
 hold (M1f
 [S1f.5.10](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.10_a_conclusion_variable_must_be_bound.md),

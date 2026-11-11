@@ -1,0 +1,31 @@
+;;; An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`, stops a debug build —
+;;; M1f **W85**, register row `W85/hrule-reads-unknown`, filed by S1f.7.2 (T1f.7.2.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Bob is known not to have paid, and an hrule that supposes a
+;;; guest has paid where that is unknown, `std.macro`'s `(unknown (paid ?g))`: `(and
+;;; (absent (paid ?g)) (absent (not (paid ?g))))`.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; Of Ann neither `(paid Ann)` nor its negation holds, and of Bob the negation does,
+;;; so H is `(paid Ann)` and R is two states, ∅ and {(paid Ann)}, which the `:expect`
+;;; states. `ein oracle` answers the same R.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with debug
+;;; assertions stopped where `ein solve` took H, exit 101, on the same assertion.
+;;; One answer from both builds since S1f.7.2 (T1f.7.2.3).
+
+(import std.macro :symbols (unknown))
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(not (paid Bob))
+(hrule suppose ()
+  :match  (and (is-a ?g Guest) (unknown (paid ?g)))
+  :assert (paid ?g)
+  :why "suppose {?g} has paid: it is not known whether they have")
+(query :goal (paid ?g) :expect (or (model) (model (paid Ann))))

@@ -139,6 +139,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.124](#q-m1f124--where-eq-a-b-is-still-written-once-it-is-no-value) | where `(eq a b)` is still written, once it is no value | **defaulted 2026-11-11 (S1f.7.10): a fact, a premise, a conclusion and a claim of its own, and under a `(not …)` that is one of those; never under a `(not …)` that is a value, in `:using` or in a trace**; [S1f.7.10](p1f.7_findings_outside_scope/s1f.7.10_an_eq_fact_as_a_value.md) |
 | [Q-M1f.125](#q-m1f125--a-connective-as-a-patterns-argument-the-grammar-or-the-loader) | a connective as a pattern's argument: the grammar or the loader | **defaulted 2026-11-11 (S1f.7.3): the loader, after macro expansion, since `Arg` takes a connective for a macro's call; `and`, `or`, `neq`, `eq`, `absent` and `false` with an argument refused, `not` kept**; [S1f.7.3](p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md) |
 | [Q-M1f.126](#q-m1f126--a-relation-parameter-bound-to-absent-false-or-eq) | a relation parameter bound to `absent`, `false` or `eq` | **defaulted 2026-11-11 (S1f.7.7, S1f.7.6, S1f.7.10): refused at load where § 4.14's reading sees it, fixed in place**; [S1f.7.7](p1f.7_findings_outside_scope/s1f.7.7_an_absent_fact.md) |
+| [Q-M1f.127](#q-m1f127--what-the-loader-reads-to-see-that-a-negated-variable-can-hold-a-name) | what the loader reads to see that a negated variable can hold a name | **defaulted 2026-11-11 (S1f.7.4): what the program's own text shows, a written fact, a declaration, a rule's or an hrule's conclusion, an activator, a declared relation the hypotheses are taken from and a guard alone; a position that holds a name and a fact is refused; a pattern whose relation is a parameter is read through its written activators, and not through a derived one**; [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md) |
+| [Q-M1f.128](#q-m1f128--what-a-firing-does-with-the-negation-of-a-name-the-loader-did-not-foresee) | what a firing does with the negation of a name the loader did not foresee | **defaulted 2026-11-11 (S1f.7.4): it builds no fact, so the firing stores nothing for that conclusion and an hrule proposes nothing; not `(false)`, not a stop**; [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md), F25's R-1 |
+| [Q-M1f.129](#q-m1f129--the-assertion-that-no-hrule-reads-not-removed-or-kept-where-the-kill-cache-is-on) | the assertion that no hrule reads `not`: removed, or kept where the kill cache is on | **defaulted 2026-11-11 (S1f.7.2): removed, and where an hrule reads `not` every hrule is matched before any candidate is emitted, so the cache's writes are not visible with it on; the rows filed and fixed in one commit**; [S1f.7.2](p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -2637,3 +2640,64 @@ left no fact able to hold. `(not <pattern>)` stays: a stored negation is a value
 
 **Defaulted 2026-11-11: (a), fixed in place.** The check of § 4.14 runs once per word, and reads a parameter that
 heads a form where a value goes too.
+
+### Q-M1f.127 — What the loader reads to see that a negated variable can hold a name
+
+**Raised** 2026-11-11 by [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md)'s T1. The stage's default is a refusal at
+load *wherever the program shows that `?x` can bind a name*, and its condition was that the census find no program
+in which a variable binds both a name and a fact. The census found none: the corpus concludes `(not ?h)` in three
+programs, `examples/saturation/hypothesis-contradiction/`, each binding `?h` to facts through the undeclared
+`hypothesis`. What counts as *the program shows* is open.
+
+- **(a) The program's own text**: a written fact at any depth, a declaration, a rule's or an hrule's conclusion to
+  a fixpoint, an activator (a fact, or `(solve :hrules …)`), a declared relation the hypotheses are taken from, and
+  a guard that alone binds the variable. A variable can hold a name where one disjunct binds it only at such
+  positions. A position that holds a name and a fact is refused. A pattern or a conclusion whose relation is a
+  parameter, `(?R ?x)`, is read as one of each relation a written activator names there, and is not read where the
+  activator is derived through a variable.
+- **(b) Written facts and activators only**, and everything a commitment or a rule adds left to the firing.
+- **(c) Every declared relation's argument**, whatever the `(solve …)` lists say.
+
+**Defaulted 2026-11-11: (a).** (b) loads a program whose every state past root would negate a name, and a state
+file of such a state, which writes the commitment as a fact, would then be refused on reload: `(relation seen
+Guest)` with a rule `(seen ?g)` to `(not ?g)` and no fact of `seen` (T1's probe). (c) refuses a rule over a declared
+relation that holds facts and is held out of the hypotheses, which no commitment can give a name. Under (a) a
+declared relation is read where no hrule is declared, the lists leave it in and nothing writes the closure marker,
+which is where `ein_infer::hypgen::eligible_relations` has the blind enumerator propose its facts. One test's
+program moved: `value_rule.rs`'s `the-negation-of-a-bound-fact` holds its declared `h` out of the hypotheses.
+
+### Q-M1f.128 — What a firing does with the negation of a name the loader did not foresee
+
+**Raised** 2026-11-11 by [S1f.7.4](p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md)'s T1, and
+[F25](../followups/f25_roughness_found_outside_zebra.md)'s R-1 since the user's instruction of that day. Under
+Q-M1f.127 (a) a pattern whose relation is a parameter with a derived activator is not read, so `(rule deny (?R)
+:match (?R ?g) :assert (not ?g))` beside `(marks paid)` and a rule concluding `(deny ?R)` of what is marked loads,
+and its firing meets `?g = Ann`.
+
+- **(a) No fact**: the firing stores nothing for that conclusion and stores its others; an hrule proposes nothing.
+- **(b) `(false)`**, as a false `(eq …)` conclusion is (S1f.5.7).
+- **(c) A stop** with Ein's line.
+
+**Defaulted 2026-11-11: (a).** The value rule says `not` of a name is the negation of no fact, so there is nothing
+to conclude; a true `eq` conclusion adds nothing in the same way. (b) kills a state for a conclusion that states
+nothing, and the coordinator's brief for the stage ruled it out; (c) breaks *exit non-zero only on error* for a
+binding only some state meets. One place builds every conclusion, `ein_infer::firing::build_fact`, so (a) holds on
+every command and in both builds, and the sweep of T3 moved no corpus answer. R-1 records what is left.
+
+### Q-M1f.129 — The assertion that no hrule reads `not`: removed, or kept where the kill cache is on
+
+**Raised** 2026-11-11 by [S1f.7.2](p1f.7_findings_outside_scope/s1f.7.2_an_hrule_that_reads_not.md)'s T1. The premise of `Hrules::candidates`' `debug_assert!` is
+stale for every command: H is taken config-free since M1e2 S1e2.3.1, the lookahead's kill cache off. The
+config-reading `hypgen::generate` can have it on, and the shape digest's `hyp` op and one test call it.
+
+- **(a) Removed**, and the enumeration made right with the cache on: where an hrule reads `not`, every hrule is
+  matched before any candidate is emitted.
+- **(b) Kept**, scoped to a call with the kill cache on.
+- **(c) A refusal at load** of an hrule that reads `not`.
+
+**Defaulted 2026-11-11: (a).** (b) keeps a debug build stopping on the `hyp` op of a corpus program, and the
+witnesses are corpus programs whose shape digest `cargo test` takes. (c) refuses what release answers right, as
+`ein oracle` does. A second question the stage met: `wrong_answers.rs` runs with debug assertions, where the
+unchanged engine's run ends by a panic whose first line carries a thread id, so no `open` row can hold it, and the
+register reads `debug_panic` in no test since M1e2 S1e2.2.16. W85's three rows are filed `fixed` in the fixing
+commit, their `wrong` recording the release answer and the debug build's stop, and the stage's T2 record says so.

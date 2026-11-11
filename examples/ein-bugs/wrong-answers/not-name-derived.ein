@@ -1,0 +1,29 @@
+;;; A rule's `:assert (not ?g)` with `?g` bound at a position another rule writes a guest to —
+;;; M1f **W84**, register row `W84/not-name-derived`, filed by S1f.7.4 (T1f.7.4.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, a rule `greet` that derives `(seen ?g)` of each, and a rule `deny` that
+;;; concludes `(not ?g)` of whoever is seen. No fact of `seen` is written. No
+;;; candidate.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; `greet` writes a guest, a name, as `seen`'s argument, since `(is-a Ann Guest)`
+;;; holds one where it binds `?g`; so `(seen ?g)` binds `?g` to a name in `deny`:
+;;; refused at load, one line, on every command.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: the program loads and `deny` stores `(not Ann)` and `(not Bob)`;
+;;; R is {∅}, exit 0 on every command.
+;;; Refused at load since S1f.7.4 (T1f.7.4.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation seen Guest :why "{?1} was seen")
+(rule greet () :match (is-a ?g Guest) :assert (seen ?g) :why "{?g} is a guest, and was seen")
+(rule deny () :match (seen ?g) :assert (not ?g) :why "not {?g}: they were seen")
+(solve :hypothesis-relations ())
+(query :goal (seen ?g))

@@ -461,8 +461,12 @@ const ACCEPTED: [(&str, &str); 19] = [
          (rule r () :match (and (q ?v) (eq ?v (p a))) :assert (won a) :why \"w\")",
     ),
     (
+        // `h` is held out of the hypotheses: a commitment's `(h a)` would
+        // bind `?s` to a name, which is refused since M1f S1f.7.4
+        // (`negated_names.rs`).
         "the-negation-of-a-bound-fact",
-        "(h (q a))\n(rule r () :match (h ?s) :assert (not ?s) :why \"w\")",
+        "(h (q a))\n(solve :no-hypothesis (h))\n\
+         (rule r () :match (h ?s) :assert (not ?s) :why \"w\")",
     ),
     (
         "absent-in-a-claims-class",

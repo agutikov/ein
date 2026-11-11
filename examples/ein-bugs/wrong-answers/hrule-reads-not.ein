@@ -1,0 +1,30 @@
+;;; An hrule whose `:match` reads a stored negation, `(not (paid ?g))`, stops a debug build —
+;;; M1f **W85**, register row `W85/hrule-reads-not`, filed by S1f.7.2 (T1f.7.2.2,
+;;; 2026-11-11).
+;;;
+;;; ── What this program is ──────────────────────────────────────────────────
+;;;
+;;; Two guests, of whom Bob is known not to have paid, `(not (paid Bob))`, and an
+;;; hrule that supposes a guest owes where it is known they have not paid.
+;;;
+;;; ── The answer, by hand ───────────────────────────────────────────────────
+;;;
+;;; The hrule matches Bob alone, so H is `(owes Bob)` and R is two states, ∅ and
+;;; {(owes Bob)}: the goal has no row in the first and `?g = Bob` in the second, which
+;;; the `:expect` states. `ein oracle` answers the same R.
+;;;
+;;; ── What the engine answered ──────────────────────────────────────────────
+;;;
+;;; At `55aadd0b`, release: this R, exit 0, and the claim holds. A build with debug
+;;; assertions stopped where `ein solve` took H, exit 101, on the same assertion.
+;;; One answer from both builds since S1f.7.2 (T1f.7.2.3).
+
+(relation paid Guest :why "{?1} has paid")
+(is-a Ann Guest) (is-a Bob Guest)
+(relation owes Guest :why "{?1} owes")
+(not (paid Bob))
+(hrule suppose ()
+  :match  (and (is-a ?g Guest) (not (paid ?g)))
+  :assert (owes ?g)
+  :why "suppose {?g} owes: they have not paid")
+(query :goal (owes ?g) :expect (or (model) (model (owes Bob))))

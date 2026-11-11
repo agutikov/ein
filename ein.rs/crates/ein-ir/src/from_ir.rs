@@ -277,6 +277,9 @@ pub fn load_query_with(
     // Q-M1f.1 (b)).
     let relation_places =
         refuse_derived_relation_activators(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
+    // A conclusion `(not ?x)` whose variable the program shows can hold a
+    // name (M1f S1f.7.4, W84).
+    refuse_negated_names(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
 
     // Every query block, in source order — plural since M1c S1c.1.2, because a
     // second one used to load and be discarded in silence. `config` keeps
@@ -3483,6 +3486,628 @@ fn refuse_derived_relation_activators(
     }
 }
 
+/// **A conclusion `(not ?x)` whose variable can hold a name** — M1f S1f.7.4,
+/// W84, under the value rule (the user's ruling of 2026-11-11, Q-M1f.113: *a
+/// value is a name, or a fact a state could hold: an atom of an ordinary
+/// relation, or its negation*). `not` of a name is the negation of no fact.
+///
+/// The grammar takes `(not Var)` as a conclusion, for a variable bound to a
+/// fact, `(hypothesis ?h)` then `(not ?h)`; whether it is bound to one depends
+/// on the data. Until S1f.7.4 a rule whose variable held a name stored `(not
+/// k)`, which no program can write and whose `--dump-answer` state file did not
+/// reload, and an hrule proposed it, so R held two states that differed in a
+/// fact nothing can read. A written `(not k)` is a parse error, and a macro's
+/// is refused by [`Shapes::negation`] (S1f.5.24, W68).
+///
+/// **What is read** (Q-M1f.127, the stage's default). A position, a relation
+/// and an argument's index, *holds a name* where the program shows one there:
+/// a written fact, at any depth and under a `(not …)`; a `(relation …)`
+/// declaration; a rule's or an hrule's conclusion that writes a name, or a
+/// variable that can hold one, to a fixpoint; for a rule's parameter, its
+/// activator, written as a fact or in `(solve :hrules …)`; and, where the
+/// program declares no hrule, every argument of a declared relation the
+/// `(solve …)` lists leave among the hypotheses, since a commitment states a
+/// fact of one over the program's names. A conclusion
+/// variable *can hold a name* where, in one disjunct of the `:match`, every
+/// relation premise that binds it binds it at a position that holds a name,
+/// or nothing but a guard binds it, `(neq ?x k)` over the program's names and
+/// `(eq ?x k)` to the name. A premise under `(absent …)` binds nothing.
+///
+/// A pattern or a conclusion whose relation is a parameter, `(?R ?x)`, is read
+/// as one of each relation a written activator names there: a fact `(deny
+/// paid)`, a `(solve :hrules …)` entry, or a conclusion that writes the name.
+///
+/// **What is not read**: such a pattern where the activator is only derived
+/// through a variable, `:assert (deny ?R)`, and what the obligations rung
+/// proposes of a relation held out of the hypotheses. A binding that arrives
+/// that way is the firing's, which stores and proposes no negation of a name
+/// (`ein_infer::firing::build_fact`, Q-M1f.128). So the check refuses only
+/// what the program's own text shows, and a variable bound at a position that
+/// holds facts alone loads, as the three
+/// `examples/saturation/hypothesis-contradiction/` programs do, whose
+/// `hypothesis` is no declared relation.
+///
+/// A position that holds both, `(claim (paid Bob))` beside `(claim Ann)`, is
+/// refused: the rule would negate a name on some binding.
+fn refuse_negated_names(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    facts: &[NodeId],
+    solve_blocks: &[NodeId],
+    errors: &mut Vec<String>,
+) {
+    type Pos = (String, usize);
+    /// Why a position holds a name.
+    enum Holds {
+        Fact {
+            fact: String,
+            name: String,
+        },
+        Concluded {
+            who: String,
+            conclusion: String,
+        },
+        Activator {
+            solve: String,
+            name: String,
+        },
+        /// A declared relation the blind enumerator proposes facts of.
+        Commitment {
+            relation: String,
+        },
+    }
+    /// Where a disjunct binds a variable.
+    enum Occ {
+        /// An argument of a pattern: the positions it is bound at, one per
+        /// relation the pattern can be of (one, where its relation is a
+        /// name). `premise` is `None` for the rule's own parameter.
+        Arg {
+            at: Vec<Pos>,
+            premise: Option<NodeId>,
+        },
+        /// An argument of a pattern whose relation is a parameter no written
+        /// activator binds.
+        Unread,
+    }
+    /// The names the program writes at each position: what a parameter that
+    /// heads a form can name, read off the rule's written activators.
+    type Passed = BTreeMap<Pos, BTreeSet<String>>;
+    struct Site<'a> {
+        head: &'static str,
+        name: String,
+        rule: &'a Rule,
+    }
+
+    fn positive(ast: &Ast, node: NodeId) -> NodeId {
+        if matches!(ast.node(node), Node::SForm { .. })
+            && ast.head_name(node) == Some("not")
+            && ast.form_args(node).len() == 1
+        {
+            ast.form_args(node)[0]
+        } else {
+            node
+        }
+    }
+    /// The relation a form names as written, or `None` for a variable's.
+    fn relation_of(ast: &Ast, node: NodeId) -> Option<String> {
+        match ast.node(node) {
+            Node::SForm { head, .. } => match ast.node(head) {
+                Node::Var(_) => None,
+                _ => ast.head_name(node).map(str::to_string),
+            },
+            _ => None,
+        }
+    }
+    fn is_var(ast: &Ast, node: NodeId, var: &str) -> bool {
+        matches!(ast.node(node), Node::Var(s) if ast.sym(s) == var)
+    }
+    fn first_loc(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
+        if let Some(l) = ast.loc(node) {
+            return Some(l);
+        }
+        match ast.node(node) {
+            Node::SForm { head, .. } => first_loc(ast, head)
+                .or_else(|| ast.form_args(node).iter().find_map(|&a| first_loc(ast, a))),
+            _ => None,
+        }
+    }
+    /// Every name a written fact holds, by position, at any depth.
+    fn written(
+        ast: &Ast,
+        form: NodeId,
+        top: NodeId,
+        out: &mut BTreeMap<Pos, Holds>,
+        passed: &mut Passed,
+    ) {
+        let form = positive(ast, form);
+        let Some(rel) = relation_of(ast, form) else {
+            return;
+        };
+        for (i, &a) in ast.form_args(form).iter().enumerate() {
+            match ast.node(a) {
+                Node::Atom(s) if !ein_core::text::INTERNAL_NAMES.contains(&ast.sym(s)) => {
+                    passed
+                        .entry((rel.clone(), i))
+                        .or_default()
+                        .insert(ast.sym(s).to_string());
+                    out.entry((rel.clone(), i)).or_insert_with(|| Holds::Fact {
+                        fact: crate::dump::dump_compact(ast, top),
+                        name: ast.sym(s).to_string(),
+                    });
+                }
+                Node::SForm { .. } => written(ast, a, top, out, passed),
+                _ => {}
+            }
+        }
+    }
+    /// The relations the form `form` of `site`'s rule can be of: the one it
+    /// names, or, where a parameter heads it, each name a written activator
+    /// binds the parameter to. None where the parameter's activators are only
+    /// derived.
+    fn relations_of(
+        ast: &Ast,
+        terms: &Terms,
+        site: &Site<'_>,
+        passed: &Passed,
+        form: NodeId,
+    ) -> Vec<String> {
+        if let Some(rel) = relation_of(ast, form) {
+            return vec![rel];
+        }
+        let Node::SForm { head, .. } = ast.node(form) else {
+            return Vec::new();
+        };
+        let Node::Var(v) = ast.node(head) else {
+            return Vec::new();
+        };
+        let var = ast.sym(v);
+        site.rule
+            .params
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| terms.sym(**p) == var)
+            .flat_map(|(m, _)| {
+                passed
+                    .get(&(site.name.clone(), m))
+                    .into_iter()
+                    .flatten()
+                    .cloned()
+            })
+            .collect()
+    }
+    /// Where the pattern `form`, inside the premise `premise`, binds `var`:
+    /// per occurrence, the positions it is bound at, one per relation the
+    /// pattern can be of.
+    fn pattern(
+        ast: &Ast,
+        relations: &dyn Fn(NodeId) -> Vec<String>,
+        form: NodeId,
+        premise: NodeId,
+        var: &str,
+        out: &mut Vec<Occ>,
+    ) {
+        let form = positive(ast, form);
+        let rels = relations(form);
+        for (k, &a) in ast.form_args(form).iter().enumerate() {
+            match ast.node(a) {
+                Node::Var(_) if is_var(ast, a, var) => out.push(if rels.is_empty() {
+                    Occ::Unread
+                } else {
+                    Occ::Arg {
+                        at: rels.iter().map(|r| (r.clone(), k)).collect(),
+                        premise: Some(premise),
+                    }
+                }),
+                Node::SForm { .. } => pattern(ast, relations, a, premise, var, out),
+                _ => {}
+            }
+        }
+    }
+    /// Where the premise `node` binds `var`, and the guards that name it.
+    fn premise(
+        ast: &Ast,
+        relations: &dyn Fn(NodeId) -> Vec<String>,
+        node: NodeId,
+        var: &str,
+        out: &mut Vec<Occ>,
+        guards: &mut Vec<NodeId>,
+    ) {
+        if !matches!(ast.node(node), Node::SForm { .. }) {
+            return;
+        }
+        match ast.head_name(positive(ast, node)) {
+            _ if ast.head_name(node) == Some("absent") => {}
+            _ if matches!(ast.head_name(node), Some("and" | "or")) => {
+                for &a in ast.form_args(node) {
+                    premise(ast, relations, a, var, out, guards);
+                }
+            }
+            Some("eq" | "neq") => {
+                let mut vs = BTreeSet::new();
+                vars_under(ast, node, &mut vs);
+                if vs.contains(var) {
+                    guards.push(node);
+                }
+            }
+            _ => pattern(ast, relations, node, node, var, out),
+        }
+    }
+
+    let program = kb.program();
+    let registries: [(&'static str, &ein_core::entities::Registry<Rule>); 2] =
+        [("rule", &program.rules), ("hrule", &program.hrules)];
+    let mut sites: Vec<Site<'_>> = Vec::new();
+    for (head, registry) in registries {
+        for (name, rule) in registry.iter() {
+            sites.push(Site {
+                head,
+                name: terms.sym(name).to_string(),
+                rule,
+            });
+        }
+    }
+    // The conclusions `(not ?x)`, per rule: nothing to read where none is
+    // written.
+    let negated = |site: &Site<'_>| -> Vec<(NodeId, String)> {
+        let Some(assert) = site.rule.assert_.as_ref() else {
+            return Vec::new();
+        };
+        top_conjuncts(ast, NodeId(assert.expr.0))
+            .into_iter()
+            .filter(|&c| {
+                matches!(ast.node(c), Node::SForm { .. }) && ast.head_name(c) == Some("not")
+            })
+            .filter_map(|c| match ast.form_args(c) {
+                [p] => match ast.node(*p) {
+                    Node::Var(s) => Some((c, ast.sym(s).to_string())),
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect()
+    };
+    if sites.iter().all(|s| negated(s).is_empty()) {
+        return;
+    }
+
+    let mut names: BTreeMap<Pos, Holds> = BTreeMap::new();
+    let mut passed: Passed = BTreeMap::new();
+    for &f in facts {
+        written(ast, f, f, &mut names, &mut passed);
+    }
+    // An hrule's activators, `(solve :hrules (NAME (a b) …))`.
+    for &block in solve_blocks {
+        for &pair in ast.form_args(block) {
+            let Node::KwPair { key, value } = ast.node(pair) else {
+                continue;
+            };
+            if !matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "hrules") {
+                continue;
+            }
+            let Some(hrule) = relation_of(ast, value) else {
+                continue;
+            };
+            for &item in ast.form_args(value) {
+                let Node::SForm { head, .. } = ast.node(item) else {
+                    continue;
+                };
+                for (i, a) in std::iter::once(head)
+                    .chain(ast.form_args(item).iter().copied())
+                    .enumerate()
+                {
+                    if let Some(name) = ast.atom_name(a) {
+                        passed
+                            .entry((hrule.clone(), i))
+                            .or_default()
+                            .insert(name.to_string());
+                        names
+                            .entry((hrule.clone(), i))
+                            .or_insert_with(|| Holds::Activator {
+                                solve: format!(
+                                    "(solve :hrules {})",
+                                    crate::dump::dump_compact(ast, value)
+                                ),
+                                name: name.to_string(),
+                            });
+                    }
+                }
+            }
+        }
+    }
+
+    // A commitment's facts. With no hrule declared, the candidates are facts
+    // of the declared relations the `(solve …)` lists leave in
+    // (`ein_infer::hypgen::eligible_relations`), over the program's names: a
+    // state can hold a name at each of their positions. Not read where the
+    // program writes the closure marker, which takes a relation out of them.
+    let closes = |node: NodeId| {
+        let mut forms = Vec::new();
+        sforms_under(ast, node, &mut forms);
+        forms
+            .iter()
+            .any(|&f| ast.head_name(f) == Some(ein_core::terms::CLOSED))
+    };
+    let closure_written = facts.iter().any(|&f| closes(f))
+        || sites.iter().any(|s| {
+            s.rule
+                .assert_
+                .as_ref()
+                .is_some_and(|a| closes(NodeId(a.expr.0)))
+        });
+    if program.hrules.is_empty() && !closure_written {
+        let listed = |want: &str| -> Option<BTreeSet<String>> {
+            let value = solve_blocks.iter().find_map(|&block| {
+                ast.form_args(block).iter().find_map(|&pair| match ast.node(pair) {
+                    Node::KwPair { key, value }
+                        if matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == want) =>
+                    {
+                        Some(value)
+                    }
+                    _ => None,
+                })
+            })?;
+            let nodes: Vec<NodeId> = match ast.node(value) {
+                Node::SForm { head, .. } => std::iter::once(head)
+                    .chain(ast.form_args(value).iter().copied())
+                    .collect(),
+                _ => vec![value],
+            };
+            Some(
+                nodes
+                    .into_iter()
+                    .filter_map(|n| ast.atom_name(n).map(str::to_string))
+                    .collect(),
+            )
+        };
+        let allowed = listed("hypothesis-relations");
+        let excluded = listed("no-hypothesis").unwrap_or_default();
+        for (name, relation) in program.relations.iter() {
+            let name = terms.sym(name).to_string();
+            if !relation.declared
+                || excluded.contains(&name)
+                || allowed.as_ref().is_some_and(|a| !a.contains(&name))
+            {
+                continue;
+            }
+            for i in 0..relation.signature.len() {
+                names
+                    .entry((name.clone(), i))
+                    .or_insert_with(|| Holds::Commitment {
+                        relation: name.clone(),
+                    });
+            }
+        }
+    }
+
+    // How `var` can hold a name in `site`'s rule: the occurrence that shows
+    // it, or the guard, as the line says it.
+    let can_name = |names: &BTreeMap<Pos, Holds>,
+                    passed: &Passed,
+                    site: &Site<'_>,
+                    var: &str|
+     -> Option<String> {
+        let relations = |form: NodeId| relations_of(ast, terms, site, passed, form);
+        let shown = |pos: &Pos, premise: Option<NodeId>| -> Option<String> {
+            let v = format!("?{var}");
+            if pos.0 == "relation" {
+                let p = premise?;
+                return Some(format!(
+                    "{} binds {v} where a declaration names a relation or a type",
+                    crate::dump::dump_compact(ast, p)
+                ));
+            }
+            let holds = names.get(pos)?;
+            Some(match (premise, holds) {
+                (Some(p), Holds::Fact { fact, name }) => format!(
+                    "{} binds {v} where the fact {fact} holds {name}",
+                    crate::dump::dump_compact(ast, p)
+                ),
+                (Some(p), Holds::Concluded { who, conclusion }) => format!(
+                    "{} binds {v} where {who} writes {conclusion}",
+                    crate::dump::dump_compact(ast, p)
+                ),
+                (Some(p), Holds::Activator { solve, name }) => format!(
+                    "{} binds {v} where {solve} names {name}",
+                    crate::dump::dump_compact(ast, p)
+                ),
+                (Some(p), Holds::Commitment { relation }) => format!(
+                    "{} binds {v} where a commitment can hold a name, {relation} being a \
+                     declared relation the hypotheses are taken from",
+                    crate::dump::dump_compact(ast, p)
+                ),
+                (None, Holds::Commitment { relation }) => format!(
+                    "{v} is its parameter, which a commitment's fact of {relation} binds to a name"
+                ),
+                (None, Holds::Fact { fact, name }) => {
+                    format!("{v} is its parameter, which the fact {fact} binds to {name}")
+                }
+                (None, Holds::Concluded { who, conclusion }) => {
+                    format!("{v} is its parameter, which {who} binds by writing {conclusion}")
+                }
+                (None, Holds::Activator { solve, name }) => {
+                    format!("{v} is its parameter, which {solve} binds to {name}")
+                }
+            })
+        };
+        let by_param: Vec<Occ> = site
+            .rule
+            .params
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| terms.sym(**p) == var)
+            .map(|(m, _)| Occ::Arg {
+                at: vec![(site.name.clone(), m)],
+                premise: None,
+            })
+            .collect();
+        let whole = site
+            .rule
+            .match_
+            .as_ref()
+            .map(|m| NodeId(m.expr.0))
+            .filter(|&m| matches!(ast.node(m), Node::SForm { .. }));
+        let disjuncts: Vec<Option<NodeId>> = match whole {
+            Some(m) if ast.head_name(m) == Some("or") => {
+                ast.form_args(m).iter().map(|&d| Some(d)).collect()
+            }
+            other => vec![other],
+        };
+        for d in disjuncts {
+            let mut occs: Vec<Occ> = by_param
+                .iter()
+                .map(|o| match o {
+                    Occ::Arg { at, premise } => Occ::Arg {
+                        at: at.clone(),
+                        premise: *premise,
+                    },
+                    Occ::Unread => Occ::Unread,
+                })
+                .collect();
+            let mut guards: Vec<NodeId> = Vec::new();
+            if let Some(d) = d {
+                premise(ast, &relations, d, var, &mut occs, &mut guards);
+            }
+            if occs.is_empty() {
+                // Nothing but a guard binds it: `neq` over the program's
+                // names, `eq` to its other side.
+                for g in guards {
+                    let p = positive(ast, g);
+                    let negated = p != g;
+                    let is_eq = (ast.head_name(p) == Some("eq")) != negated;
+                    let other_is_name = ast
+                        .form_args(p)
+                        .iter()
+                        .any(|&a| matches!(ast.node(a), Node::Atom(_)));
+                    let text = crate::dump::dump_compact(ast, g);
+                    if !is_eq {
+                        return Some(format!(
+                            "{text} binds ?{var} over the program's names, nothing else binding it"
+                        ));
+                    }
+                    if other_is_name {
+                        return Some(format!("{text} binds ?{var} to a name"));
+                    }
+                }
+                continue;
+            }
+            let mut first: Option<String> = None;
+            let all = occs.iter().all(|o| match o {
+                Occ::Unread => false,
+                Occ::Arg { at, premise } => match at.iter().find_map(|pos| shown(pos, *premise)) {
+                    Some(how) => {
+                        first.get_or_insert(how);
+                        true
+                    }
+                    None => false,
+                },
+            });
+            if all && let Some(how) = first {
+                return Some(how);
+            }
+        }
+        None
+    };
+
+    // What each conclusion writes: a name, or a variable that can hold one,
+    // to a fixpoint.
+    fn concluded(
+        ast: &Ast,
+        relations: &dyn Fn(NodeId) -> Vec<String>,
+        form: NodeId,
+        top: NodeId,
+        who: &str,
+        can: &dyn Fn(&str) -> bool,
+        out: &mut Vec<(Pos, Holds, Option<String>)>,
+    ) {
+        let form = positive(ast, form);
+        let rels: Vec<String> = relations(form)
+            .into_iter()
+            .filter(|r| !matches!(r.as_str(), "eq" | "neq" | "open" | "false"))
+            .collect();
+        for (i, &a) in ast.form_args(form).iter().enumerate() {
+            let (names, name) = match ast.node(a) {
+                Node::Atom(s) if !ein_core::text::INTERNAL_NAMES.contains(&ast.sym(s)) => {
+                    (true, Some(ast.sym(s).to_string()))
+                }
+                Node::Var(s) => (can(ast.sym(s)), None),
+                Node::SForm { .. } => {
+                    concluded(ast, relations, a, top, who, can, out);
+                    (false, None)
+                }
+                _ => (false, None),
+            };
+            if names {
+                for rel in &rels {
+                    out.push((
+                        (rel.clone(), i),
+                        Holds::Concluded {
+                            who: who.to_string(),
+                            conclusion: crate::dump::dump_compact(ast, top),
+                        },
+                        name.clone(),
+                    ));
+                }
+            }
+        }
+    }
+    loop {
+        let mut found: Vec<(Pos, Holds, Option<String>)> = Vec::new();
+        for site in &sites {
+            let Some(assert) = site.rule.assert_.as_ref() else {
+                continue;
+            };
+            let who = format!("{} '{}'", site.head, site.name);
+            for c in top_conjuncts(ast, NodeId(assert.expr.0)) {
+                concluded(
+                    ast,
+                    &|form| relations_of(ast, terms, site, &passed, form),
+                    c,
+                    c,
+                    &who,
+                    &|var| can_name(&names, &passed, site, var).is_some(),
+                    &mut found,
+                );
+            }
+        }
+        let mut grew = false;
+        for (pos, holds, name) in found {
+            // A name a conclusion writes where an activator stands is one its
+            // rule's parameter can name.
+            if let Some(name) = name {
+                grew |= passed.entry(pos.clone()).or_default().insert(name);
+            }
+            if let std::collections::btree_map::Entry::Vacant(e) = names.entry(pos) {
+                e.insert(holds);
+                grew = true;
+            }
+        }
+        if !grew {
+            break;
+        }
+    }
+
+    for site in &sites {
+        for (node, var) in negated(site) {
+            let Some(how) = can_name(&names, &passed, site, &var) else {
+                continue;
+            };
+            let place = match first_loc(ast, node) {
+                Some(loc) => format!("{}: ", loc_repr(ast, Some(loc))),
+                None => String::new(),
+            };
+            errors.push(format!(
+                "{place}{} '{}': its :assert writes {}, and ?{var} can be a name: {how} — not takes \
+                 a pattern (relation argument …) or a variable bound to a fact: it is the stored \
+                 negation of one fact, and a name is no fact; negation as failure is (absent …)",
+                site.head,
+                site.name,
+                crate::dump::dump_compact(ast, node),
+            ));
+        }
+    }
+}
+
 /// **A written fact of `eq` at another arity** — M1f S1f.5.9, W61, on the
 /// user's ruling of 2026-11-07 that `eq` is the relation of equality between
 /// two values (Q-M1e2.26), taken by default on the user's instruction of
@@ -4616,7 +5241,10 @@ mod tests {
             "(rule r () :match (and (a ?x) (not (eq ?x k))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (p (not (q k)))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (absent (false))) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
+            // `(not ?x)` of a variable bound to a fact: `h` holds no name.
+            // With `(a ?x)`, which `(a k)` binds to a name, it is refused
+            // since M1f S1f.7.4 (`a_conclusion_negating_a_name_is_refused_at_load`).
+            "(h (p k))\n(rule r () :match (h ?x) :assert (not ?x) :why \"r\")",
             "(rule r () :match (a ?x) :assert (not (p ?x)) :why \"r\")",
             "(rule r () :match (a ?x) :assert (and (p ?x) (not (eq ?x k))) :why \"r\")",
             "(rule r () :match (a ?x) :assert (neq ?x k) :why \"r\")",
@@ -4629,7 +5257,7 @@ mod tests {
             "(rule r () :match (and (a ?x) (absent (neg (p ?x)))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (unknown (p ?x))) :assert (p ?x) :why \"r\")",
             "(rule r () :match (and (a ?x) (diff ?x k)) :assert (p ?x) :why \"r\")",
-            "(rule r () :match (a ?x) :assert (neg ?x) :why \"r\")",
+            "(h (p k))\n(rule r () :match (h ?x) :assert (neg ?x) :why \"r\")",
             "(rule r () :match (a ?x) :assert (id (p ?x)) :why \"r\")",
         ] {
             let (one, two) = (
@@ -4642,6 +5270,162 @@ mod tests {
                 .collect::<Vec<_>>()
                 .join("\n");
             ok(&format!("{pre}{one}\n{two}\n{rest}\n{text}"));
+        }
+    }
+
+    /// **A conclusion `(not ?x)` whose variable can hold a name is refused at
+    /// load** — M1f S1f.7.4, W84, under the value rule (Q-M1f.113, Q-M1f.127).
+    ///
+    /// Each way the program shows a name where the variable is bound: a
+    /// written fact, at the top and inside another fact; a declaration; a
+    /// parameter's activator, written and in `(solve :hrules …)`; another
+    /// rule's conclusion, a name and a variable that can hold one; a guard
+    /// alone; one disjunct of two; a macro's `(not ?a)`; an hrule's; a pattern
+    /// and a conclusion whose relation is a parameter, through its written
+    /// activator; and a declared relation the hypotheses are taken from. Then
+    /// what loads: a position that holds facts alone, two premises of which
+    /// one holds no name, a variable bound through the relation of a parameter
+    /// whose activator is derived, a
+    /// premise under `(absent …)` beside one that holds facts, a guard beside
+    /// a premise that holds facts, and a declared relation no commitment
+    /// states a fact of: held out by a `(solve …)` list, beside an hrule, or
+    /// closed.
+    #[test]
+    fn a_conclusion_negating_a_name_is_refused_at_load() {
+        let pre =
+            "(relation a T :why \"a holds of {?1}\") (relation p T :why \"p holds of {?1}\")\n";
+        let not = "(rule r () :match (a ?x) :assert (not ?x) :why \"r\")";
+        let not_m = "(rule r () :match (m ?x) :assert (not ?x) :why \"r\")";
+        for (text, want) in [
+            (
+                format!("(a k)\n{not}"),
+                "rule 'r': its :assert writes (not ?x), and ?x can be a name: (a ?x) binds ?x \
+                 where the fact (a k) holds k — not takes a pattern (relation argument …) or a \
+                 variable bound to a fact: it is the stored negation of one fact, and a name is \
+                 no fact; negation as failure is (absent …)",
+            ),
+            (
+                format!("(says (a k))\n{not}"),
+                "(a ?x) binds ?x where the fact (says (a k)) holds k",
+            ),
+            (
+                format!("(not (a k))\n{not}"),
+                "(a ?x) binds ?x where the fact (not (a k)) holds k",
+            ),
+            (
+                format!("(a (p k)) (a j)\n{not}"),
+                "(a ?x) binds ?x where the fact (a j) holds j",
+            ),
+            (
+                "(rule r () :match (relation ?x ?t) :assert (not ?x) :why \"r\")".to_string(),
+                "(relation ?x ?t) binds ?x where a declaration names a relation or a type",
+            ),
+            (
+                "(r k)\n(rule r (?x) :match () :assert (not ?x) :why \"r\")".to_string(),
+                "?x is its parameter, which the fact (r k) binds to k",
+            ),
+            (
+                "(hrule r (?x) :match () :assert (not ?x) :why \"r\")\n(solve :hrules (r (k)))"
+                    .to_string(),
+                "hrule 'r': its :assert writes (not ?x), and ?x can be a name: ?x is its \
+                 parameter, which (solve :hrules (r (k))) binds to k",
+            ),
+            // `m` is no declared relation: what a rule writes there shows it.
+            (
+                format!("(rule mk () :match () :assert (m k) :why \"mk\")\n{not_m}"),
+                "(m ?x) binds ?x where rule 'mk' writes (m k)",
+            ),
+            (
+                format!(
+                    "(p k)\n(rule mk () :match (p ?y) :assert (seen (m ?y)) :why \"mk\")\n{not_m}"
+                ),
+                "(m ?x) binds ?x where rule 'mk' writes (seen (m ?y))",
+            ),
+            (
+                format!("(p k)\n(hrule mk () :match (p ?y) :assert (m ?y) :why \"mk\")\n{not_m}"),
+                "(m ?x) binds ?x where hrule 'mk' writes (m ?y)",
+            ),
+            (
+                "(rule r () :match (neq ?x k) :assert (not ?x) :why \"r\")".to_string(),
+                "(neq ?x k) binds ?x over the program's names, nothing else binding it",
+            ),
+            (
+                "(rule r () :match (eq ?x k) :assert (not ?x) :why \"r\")".to_string(),
+                "(eq ?x k) binds ?x to a name",
+            ),
+            (
+                "(a k) (h (p k))\n\
+                 (rule r () :match (or (h ?x) (a ?x)) :assert (not ?x) :why \"r\")"
+                    .to_string(),
+                "(a ?x) binds ?x where the fact (a k) holds k",
+            ),
+            (
+                "(a k)\n(macro neg (?v) (not ?v) :why \"neg\")\n\
+                 (rule r () :match (a ?x) :assert (and (p ?x) (neg ?x)) :why \"r\")"
+                    .to_string(),
+                "rule 'r': its :assert writes (not ?x), and ?x can be a name",
+            ),
+            (
+                "(a k)\n(hrule r () :match (a ?x) :assert (not ?x) :why \"r\")".to_string(),
+                "hrule 'r': its :assert writes (not ?x), and ?x can be a name",
+            ),
+            // A pattern whose relation is a parameter, read as each relation
+            // a written activator names; and a name written through one.
+            (
+                "(a k) (r a)\n(rule r (?R) :match (?R ?x) :assert (not ?x) :why \"r\")".to_string(),
+                "(?R ?x) binds ?x where the fact (a k) holds k",
+            ),
+            (
+                format!(
+                    "(p k) (mk m)\n(rule mk (?R) :match (p ?y) :assert (?R ?y) :why \"mk\")\n{not_m}"
+                ),
+                "(m ?x) binds ?x where rule 'mk' writes (?R ?y)",
+            ),
+            (
+                format!(
+                    "(p k)\n(rule on () :match (p ?y) :assert (mk m) :why \"on\")\n\
+                     (rule mk (?R) :match (p ?y) :assert (?R ?y) :why \"mk\")\n{not_m}"
+                ),
+                "(m ?x) binds ?x where rule 'mk' writes (?R ?y)",
+            ),
+            // No fact of `a` is written: a commitment states one.
+            (
+                not.to_string(),
+                "(a ?x) binds ?x where a commitment can hold a name, a being a declared \
+                 relation the hypotheses are taken from",
+            ),
+            (
+                format!("{not}\n(solve :hypothesis-relations (a))"),
+                "(a ?x) binds ?x where a commitment can hold a name",
+            ),
+        ] {
+            let got = err(&format!("{pre}{text}"));
+            assert!(got.contains(want), "{text}: {got}");
+        }
+        for text in [
+            "(h (p k))\n(rule r () :match (h ?x) :assert (not ?x) :why \"r\")",
+            "(a k) (h (p k))\n(rule r () :match (and (a ?y) (h ?x)) :assert (not ?x) :why \"r\")",
+            "(a k) (h (p k))\n(rule r () :match (and (a ?x) (h ?x)) :assert (not ?x) :why \"r\")",
+            // A parameter's relation whose activator is derived through a
+            // variable is not read: the firing's (Q-M1f.128).
+            "(a k) (marks a)\n(rule on () :match (marks ?R) :assert (r ?R) :why \"on\")\n\
+             (rule r (?R) :match (?R ?x) :assert (not ?x) :why \"r\")",
+            "(a k) (h (p k))\n\
+             (rule r () :match (and (h ?x) (absent (a ?x))) :assert (not ?x) :why \"r\")",
+            "(h (p k))\n(rule r () :match (and (h ?x) (neq ?x k)) :assert (not ?x) :why \"r\")",
+            "(h (p k))\n(rule r () :match (and (h ?x) (eq ?y ?x)) :assert (not ?y) :why \"r\")",
+            "(r (p k))\n(rule r (?x) :match () :assert (not ?x) :why \"r\")",
+            "(a k)\n(rule r () :match (a ?x) :assert (not (p ?x)) :why \"r\")",
+            // A declared relation the hypotheses are not taken from.
+            "(a (p k))\n(solve :no-hypothesis (a))\n\
+             (rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
+            "(a (p k))\n(solve :hypothesis-relations (p))\n\
+             (rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
+            "(a (p k))\n(hrule g () :match (p ?y) :assert (p ?y) :why \"g\")\n\
+             (rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
+            "(a (p k)) (__closed__ a)\n(rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
+        ] {
+            ok(&format!("{pre}{text}"));
         }
     }
 
