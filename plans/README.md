@@ -126,8 +126,26 @@ the tree they left, and one out of that review's close:
   which is [F1b](followups/f1b_logical_formulation.md) promoted, and formulas
   with quantifiers as data) and Peano's numbers with induction. Its first
   phase is a survey on real programs that stops for the user, and the engine
-  work the logic turns out to need is its sixth phase: there is no M1h (the
-  user, 2026-11-11). Not a theorem prover, and not engine arithmetic.
+  work the logic turns out to need is its sixth phase, not a milestone of its
+  own (the user, 2026-11-11). Not a theorem prover, and not engine arithmetic.
+  Extended 2026-11-12 with two phases from the user's replies to the
+  calculator's questions: *unsatisfiable against owing*, and a theory of types.
+- **M1h — Beyond word problems** ([m1h_beyond_word_problems/](m1h_beyond_word_problems/README.md))
+  — planned 2026-11-12 on the user's instruction, written into the calculator
+  phase's questions. What the word problems of M1f's P1f.6 showed a need for,
+  one subject a phase: temporal and causal theories as stdlib modules,
+  slicing (what of a program an answer used), gaps, assumptions and readings,
+  and the formula against its calculation; then the user's three
+  applications, a school prose text with fifty questions in five groups and
+  the theories that answer them, requirements verification (a survey first),
+  and TRIZ. The id M1h is not the engine milestone the user declined on
+  2026-11-11; where it sits against M1g is not ruled.
+- **M1j — `nlp/` and `smt/` as one proof of concept** ([m1j_nlp_smt_poc/](m1j_nlp_smt_poc/README.md))
+  — planned 2026-11-12 on the user's note; small. The Zebra puzzle's sentences,
+  over a limited vocabulary, through link grammar and a small Lisp converter
+  to SMT code, run by a Python wrapper: adding, removing, reordering or
+  swapping sentences changes or breaks the solution. Not M3 revived: nothing
+  links a solver into Ein.
 - **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))
   after M2. Renumbered from M2b 2026-08-23.
 - **M10 — External benchmarks** ([m10_external_benchmarks/](m10_external_benchmarks/README.md))
@@ -136,6 +154,9 @@ the tree they left, and one out of that review's close:
   the clock second. M1c's P1c.2 until 2026-08-23, when it was promoted; the
   answers it establishes are checked back in as M1c's `:expect`, so the two
   are still one pipeline.
+- **M15 — An Ein MCP server** ([m15_mcp_server/](m15_mcp_server/README.md)) —
+  planned 2026-11-12 on the user's one-line note; a placeholder that lists
+  what would have to be decided and designs nothing.
 
 The followups in [`followups/`](followups/README.md) park the
 research-level threads (self-modification F2/F5/F6, formal
@@ -217,7 +238,13 @@ plans/
 │   ├── p1g.3_proof_systems/            5 (1 optional)
 │   ├── p1g.4_first_order_logic/        5
 │   ├── p1g.5_peano_and_induction/      4
-│   └── p1g.6_engine_requirements/      5, provisional until P1g.1's stop
+│   ├── p1g.6_engine_requirements/      6, provisional until P1g.1's stop
+│   ├── p1g.7_unsatisfiable_against_owing/  README (added 2026-11-12)
+│   └── p1g.8_a_theory_of_types/        README (added 2026-11-12)
+├── m1h_beyond_word_problems/         beyond word problems — planned 2026-11-12
+│   └── README.md                     (the user's TODO verbatim; seven phases as sections)
+├── m1j_nlp_smt_poc/                  nlp/ + smt/ as one proof of concept — planned 2026-11-12
+│   └── README.md                     (the user's TODO verbatim; six tasks)
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
 │   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
@@ -238,6 +265,8 @@ plans/
 │   ├── README.md                     (was m1c_external_validation/p1c.2_*)
 │   ├── open_questions.md
 │   └── s10.1_problem_corpus.md …     5 stages, no phase level
+├── m15_mcp_server/                   an Ein MCP server — planned 2026-11-12
+│   └── README.md                     (a placeholder: what would have to be decided)
 ├── m20_gui/                          the GUI — Tauri 2 + React + Monaco + Cytoscape
 │   └── README.md                     (was m1b_gui)
 ├── m3_smt_integration/               (deleted 2026-08-18 — dropped; see git history)
@@ -282,10 +311,13 @@ Stage files have a stable shape:
 | [M1e](../docs/history/m1e_review_processing/README.md) | *(plans removed 2026-10-14 — the record is `docs/history/m1e_review_processing/`)* | **closed** 2026-10-14; the work ran 2026-08-27 → 09-01. The 2026-08-27 review processed: all **63 findings** dispositioned and all **10 questions** answered, the gate 738 → **821 tests**. Its probes found wrong answers the review never listed; they are [M1e2](m1e2_correctness/README.md)'s | est. ~11 weeks; ran six days |
 | [M1e2](m1e2_correctness/README.md) | **full** — 7 phases, 66 stages, plans kept | **closed** 2026-11-08, no `docs/history/` record by the user's instruction: 103 rows fixed, 1 not wrong, 10 open and deferred (F21, F22, M1f S1f.10.6); the no-owner items are M1f's P1f.5. Created 2026-10-14 at M1e's close. Every known wrong answer: P1e2.1 makes each one visible (dumps, every artefact of a run rendered to markdown with graphs, a case register that is a cargo test, the user's review); P1e2.2 fixes them, one stage each — W1–W12 and C1 of [`inventory.md`](m1e2_correctness/inventory.md) | ~8 weeks |
 | [M1f](m1f_hypothesis_and_documentation/README.md) | **full** — 3 phases, 33 stage files (+1 proposed) | **running** since 2026-11-08 — the two phases M1e carried that processed no finding, moved out 2026-08-29, and since 2026-11-08 M1e2's no-owner items as P1f.5, which runs first; P1f.5 re-planned the same day on the user's ruling, the generated parser first, 87.75 days of stage estimates where it was 87.5. The language as ruled, a branch structure derived from the program rather than paid for in deaths, and the pages a released system would have | ~18 weeks |
-| [M1g](m1g_logic/README.md) | **full** — 6 phases, 27 stage files (1 optional; P1g.6's five provisional) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
+| [M1g](m1g_logic/README.md) | **full** — 8 phases, 28 stage files (1 optional; P1g.6's six provisional; P1g.7 and P1g.8 a README each, added 2026-11-12) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
+| [M1h](m1h_beyond_word_problems/README.md) | README only — seven phases as sections | **planned** 2026-11-12 on the user's instruction, not started. Beyond word problems: temporal and causal theories, slicing, gaps and assumptions, the formula against the calculation; then a school text with fifty questions, requirements verification, TRIZ. Its place against M1g is not ruled | — |
+| [M1j](m1j_nlp_smt_poc/README.md) | README only — six tasks | **planned** 2026-11-12 on the user's note, not started; small. Zebra sentences through link grammar and a Lisp converter to SMT code, under a Python wrapper; a proof of concept | — |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
+| [M15](m15_mcp_server/README.md)         | placeholder README only | **planned** 2026-11-12 on the user's one-line note, not started: an Ein MCP server. Nothing designed | — |
 | [M20](m20_gui/README.md)                | README + stack decision | parked — depends on M1a, blocks nothing; Tauri stack settled 2026-08-18 (was M1b) | TBD |
 | ~~M3 — SMT integration~~                | *(deleted 2026-08-18 — dropped; see git history)* | **dropped** | — |
 | [followups](followups/README.md)        | theme files only | parking lot | unscheduled |
