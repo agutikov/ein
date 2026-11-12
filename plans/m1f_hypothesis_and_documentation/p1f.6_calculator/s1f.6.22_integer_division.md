@@ -215,3 +215,9 @@ names of the three result relations, as this file had them.
   and the example.
 - `std.arith` and `std.rat` unchanged, no existing program's `ein solve` moved: the sweep above.
 - Every new rule activated under `tests/stdlib/int/`, no unexplained survivor: T4 and T5.
+
+**After the commit** (`f99732e1`): `./run_tests.sh --nightly` green in every step, run on the commit as
+committed, in a detached worktree of it (`build/nightly-s1f.6.22.log`, 2026-11-12); its mutation census, `--check`,
+379 of 429 with the bank unmoved. The gate before the commit: `build/gate-s1f.6.22.log`. `utils/ci_container.sh`
+was not run: no DOT writer, review bundle or CI install changed (Q-M1f.77).
+
