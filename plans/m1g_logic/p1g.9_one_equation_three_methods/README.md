@@ -78,6 +78,13 @@ method, which equations it can state at all: method 1, one unknown and a one-dig
 (a longer multiplier is division, which the calculator has); method 2, any equation an evaluator can
 check, over a bounded domain; method 3, the shapes its rewriting rules know.
 
+**A witness from a word problem** (added 2026-11-12): *Bob gave Alice 2 apples; now Bob has 5; how many
+before?* is *x − 2 = 5* met in a text, and the banked word theory does not answer it, since it reads *gave*
+in one direction ([M1h's P1h.1](../../m1h_beyond_word_problems/README.md#p1h1--temporal-and-causal-theories),
+its opening question; `examples/word_problems/before.ein` once
+[S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
+banks it). It joins this stage's set of equations.
+
 ### S1g.9.2 — What *no solution* is under each
 
 The user's *"open vs. false"*, shown and not decided: the dead root and its core of table rows; `Open` and

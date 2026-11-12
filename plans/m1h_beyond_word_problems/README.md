@@ -107,6 +107,35 @@ So the phase is **two theories, each a stdlib module of its own, each reusable**
   fact, a hypothesis and an obligation that Ein already has;
 - how the two theories connect: a cause is before its effect, which is one rule joining them.
 
+**Its opening question: is an event an instruction or a relation?** Added 2026-11-12, on the user's
+question of that day about the banked word problems:
+
+> what is just simply change the order: t1 Bob gave Alice 2 apples; t2 Bob has 5 apples; How many apples
+> Bob had at t0 (before t1); would the same theory infer plus from gave reverted in time? Or even reverted
+> plus directly with reverse arithmetic?
+
+On the banked theory the answer is no: the question has no row and the amount at `t0` is named as not
+stated (`ein solve` on a scratch copy of `examples/word_problems/words.ein` and `gaps.ein`, 2026-11-12).
+The rules read *gave* forwards only, *after = before − x*, and plan only from a later moment to an earlier
+one. The problem is banked as a witness by
+[S1f.6.28](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md),
+`examples/word_problems/before.ein`, with today's answer. Two ways to make it answer 7, for this phase to
+compare on programs:
+
+- **Each word written twice,** once in each direction of time: *if the amount before a giving is wanted and
+  the amount after is known, it is after + x*. It works over the calculator as shipped; the planning then
+  runs both ways along the timeline.
+- **The event stated once, as a relation between the moments on both sides of it,** *before = after + x*,
+  and whichever of the three is unknown asked for. The direction is then in no word rule. Finding the
+  unknown is either a rule that knows the inverse of a sum, which is the algebra step, or the addition table
+  read backwards, the user's *"reverted plus directly with reverse arithmetic"*: the three methods of
+  [M1g's P1g.9](../m1g_logic/p1g.9_one_equation_three_methods/README.md), met from a word problem.
+
+And what follows from either: once an event is read both ways, a problem that states an amount on both
+sides of it has two derivations of one quantity, and where they disagree the problem contradicts itself.
+Nothing checks that today. The temporal theory says what an event relates; whether that check is its rule
+or the word theory's is part of the question.
+
 **Where it stops:** not Allen's interval algebra as a decision procedure, not a planner, not the event
 calculus rebuilt whole. The literature each of those belongs to is surveyed in the phase's first stage and
 named; what is built is what the phase's problems use.

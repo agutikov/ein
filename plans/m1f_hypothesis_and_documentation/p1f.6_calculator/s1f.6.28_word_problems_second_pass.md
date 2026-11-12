@@ -124,6 +124,26 @@ where one of the problems above needs it, and the record names each.
 5. **T1f.6.28.5 — banked:** each new or changed program a corpus entry with its claim; `alive_invariant`'s
    list where a rule concludes a name; the goldens expected to move named before blessing
    (`corpus_exits.txt`, `corpus_shapes.md5`, and the changed programs' own).
+   **And one witness, banked with today's answer and no fix** (added 2026-11-12, on the user's question of
+   that day):
+
+   > what is just simply change the order: t1 Bob gave Alice 2 apples; t2 Bob has 5 apples; How many apples
+   > Bob had at t0 (before t1); would the same theory infer plus from gave reverted in time? Or even reverted
+   > plus directly with reverse arithmetic?
+
+   *Bob gave Alice 2 apples. Now Bob has 5. How many did Bob have before?* The giving is from `t0` to `t1`,
+   the `has` is at `t1`, and the question asks the amount at `t0`. On the banked theory the question has no
+   row and `gaps` names it, `not stated: (amount Bob apples t0)` (`ein solve` on a scratch copy of
+   `words.ein` and `gaps.ein` with the three facts, 2026-11-12): the word rules read *gave* in one direction
+   of time, *the amount after is the amount before less what was given*, and no rule plans from an earlier
+   moment to a later one, so no request reaches the calculator. It is banked as `before.ein`, its claim the
+   named gap, with a header that says the right answer is 7 and that the file is a witness: the theory reads
+   a word as an instruction and not as a relation between three quantities. **Nothing is built for it
+   here.** The two ways to answer it, a second set of rules for each word reverted in time, or the event
+   stated once as a relation with whichever quantity is unknown asked for, are
+   [M1h's P1h.1](../../m1h_beyond_word_problems/README.md#p1h1--temporal-and-causal-theories)'s opening
+   question, and the second meets [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md).
+   When either lands, the file's claim moves to 7 in that commit.
 6. **T1f.6.28.6 — the README and the pages:** `examples/word_problems/README.md` as in 4 above;
    [`word_problems.md`](word_problems.md) gets a closing section that records the replies and points here,
    and is otherwise left as the investigation's page; `examples/README.md`; `AGENTS.md`; E-33 closed in
@@ -140,6 +160,8 @@ where one of the problems above needs it, and the record names each.
 - With `listed_is_all` imported the apples-and-pears problem answers and names the assumption it rests on;
   without it the amount is a gap.
 - The README says the banked forms are *"not only and not final"*.
+- `before.ein` is banked, claims the named gap, and says in its header that the answer is 7 and who owns
+  it.
 
 ## What it must not do
 
