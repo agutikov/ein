@@ -16706,7 +16706,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered. A `--dump-answer` state file prints the fact's English with a place nothing fills, `(likes Bob) ; Bob likes {?2}`, which `answer_round_trip.rs` named while the row was open (`UNFILLED_TEMPLATE`); fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 
@@ -16739,7 +16739,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a nested fact, `(n 1)` as an operand of a request to `std.arith`, whose `(relation n Number Digit)` declares two arguments (E-2 of P1f.6's `findings.md`, m6 of `malformed_numbers.md`). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 
@@ -16772,7 +16772,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: the calculator's request with one operand, `(add (n z 5))`, where `std.arith`'s `(relation add Operand Operand)` declares two (m6c of `malformed_numbers.md`). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered. A `--dump-answer` state file prints the fact's English with a place nothing fills, `(add (n z 5)) ; asked: (n z 5) + {?2}`, which `answer_round_trip.rs` named while the row was open (`UNFILLED_TEMPLATE`); fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 
@@ -16805,7 +16805,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a `std.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine (the case E-2 was first met on). The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 
@@ -16838,7 +16838,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 
@@ -16871,7 +16871,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 
@@ -16904,7 +16904,7 @@ look_at  = ["root"]
 note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments. The row's `now` is `ein saturate --dump`, a command's run, which answered while the row was open; its `wrong` is the record of what every command answered; fixed by T1f.6.23.3 (2026-11-12): every command that reads the program exits 1 (`ein test`: 2), refused at load at the form, one line"
 
 [case.fixed]
-commit = "0000000"
+commit = "e4b2658d"
 by     = "S1f.6.23 (T1f.6.23.3): the loader holds every form headed by a declared relation to the count of its declaration's types (`ein_ir::from_ir`'s `wrong_counts`): a written fact and every fact it holds, a rule's and an hrule's `:match` and `:assert` as expanded, a query's `:goal` and the facts a claim lists; one line a form, placed at it, naming the relation, the count written and the declaration"
 date   = "2026-11-12"
 

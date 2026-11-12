@@ -235,6 +235,11 @@ this stage's); `examples/README.md`; `AGENTS.md`; and E-2 of [`findings.md`](fin
 count than its rule has parameters activates nothing, in silence; and E-35, a kernel marker's fact of another
 count loads, and a rule can derive a fact of a declared relation at another count through a parameter.
 
+**After the commit** (`e4b2658d`): W89's seven `[case.fixed]` rows carry the hash. `./run_tests.sh --nightly`
+green in every step, run on the commit as committed, in a detached worktree of it
+(`build/nightly-s1f.6.23.log`, 2026-11-13), the fuzzer's new property among them at the nightly's budget on
+both seeds. `utils/ci_container.sh` was not run: no DOT writer, review bundle or CI install changed (Q-M1f.77).
+
 ### Acceptance, re-taken
 
 - *A form headed by a declared relation with another count of arguments is refused at load, on every
