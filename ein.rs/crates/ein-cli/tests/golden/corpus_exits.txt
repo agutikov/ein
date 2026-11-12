@@ -62,6 +62,59 @@
 0    examples/arith/sub.ein :: solve
 0    examples/arith/sub.ein :: solve --trace {out}/trace.md
 0    examples/arith/sub.ein :: test
+0    examples/beyond_arith/casting_out_nines.ein :: saturate
+0    examples/beyond_arith/casting_out_nines.ein :: solve
+0    examples/beyond_arith/casting_out_nines.ein :: test
+0    examples/beyond_arith/collatz.ein :: saturate
+0    examples/beyond_arith/collatz.ein :: solve
+0    examples/beyond_arith/collatz.ein :: test
+0    examples/beyond_arith/column_lemma.ein :: render rules
+0    examples/beyond_arith/column_lemma.ein :: saturate
+0    examples/beyond_arith/column_lemma.ein :: solve
+0    examples/beyond_arith/column_lemma.ein :: test
+0    examples/beyond_arith/cryptarithm.ein :: solve
+0    examples/beyond_arith/cryptarithm.ein :: solve --single
+0    examples/beyond_arith/cryptarithm.ein :: solve -n 1
+0    examples/beyond_arith/cryptarithm.ein :: test
+0    examples/beyond_arith/equation_by_search.ein :: solve
+0    examples/beyond_arith/equation_by_search.ein :: solve --single
+0    examples/beyond_arith/equation_by_search.ein :: solve -n 1
+0    examples/beyond_arith/equation_by_search.ein :: test
+0    examples/beyond_arith/equation_no_solution.ein :: solve
+0    examples/beyond_arith/equation_no_solution.ein :: solve --single
+0    examples/beyond_arith/equation_no_solution.ein :: solve --trace {out}/trace.md
+0    examples/beyond_arith/equation_no_solution.ein :: test
+0    examples/beyond_arith/equation_refuted.ein :: saturate
+0    examples/beyond_arith/equation_refuted.ein :: solve
+0    examples/beyond_arith/equation_refuted.ein :: solve --trace {out}/trace.md
+0    examples/beyond_arith/equation_refuted.ein :: test
+0    examples/beyond_arith/equation_two_unknowns.ein :: solve
+0    examples/beyond_arith/equation_two_unknowns.ein :: test
+0    examples/beyond_arith/fibonacci.ein :: saturate
+0    examples/beyond_arith/fibonacci.ein :: solve
+0    examples/beyond_arith/fibonacci.ein :: test
+0    examples/beyond_arith/gcd.ein :: saturate
+0    examples/beyond_arith/gcd.ein :: solve
+0    examples/beyond_arith/gcd.ein :: test
+0    examples/beyond_arith/inverse_addition.ein :: saturate
+0    examples/beyond_arith/inverse_addition.ein :: solve
+0    examples/beyond_arith/inverse_addition.ein :: solve --trace {out}/trace.md
+0    examples/beyond_arith/inverse_addition.ein :: test
+0    examples/beyond_arith/laws.ein :: saturate
+0    examples/beyond_arith/laws.ein :: solve
+0    examples/beyond_arith/laws.ein :: test
+0    examples/beyond_arith/perfect.ein :: saturate
+0    examples/beyond_arith/perfect.ein :: solve
+0    examples/beyond_arith/perfect.ein :: test
+0    examples/beyond_arith/primes.ein :: saturate
+0    examples/beyond_arith/primes.ein :: solve
+0    examples/beyond_arith/primes.ein :: test
+0    examples/beyond_arith/pythagorean.ein :: saturate
+0    examples/beyond_arith/pythagorean.ein :: solve
+0    examples/beyond_arith/pythagorean.ein :: test
+0    examples/beyond_arith/tables_backwards.ein :: saturate
+0    examples/beyond_arith/tables_backwards.ein :: solve
+0    examples/beyond_arith/tables_backwards.ein :: test
 0    examples/branching/01_saturate_only.ein :: render constraints
 0    examples/branching/01_saturate_only.ein :: render lattice
 0    examples/branching/01_saturate_only.ein :: render rules

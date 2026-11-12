@@ -198,6 +198,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.183](#q-m1f183--lowest-terms-by-stdariths-division-and-what-it-costs) | lowest terms by `std.arith`'s division, and what it costs | **defaulted 2026-11-12 (S1f.6.8), the user's to revise: Euclid's chain over `div-call`, one reduction at the end of each operation, none in a comparison; 492 firings for 1/2 + 1/3**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.184](#q-m1f184--the-harness-of-stdrat-and-the-sizes-memory-allows) | the harness of `std.rat`, and the sizes memory allows | **defaulted 2026-11-12 (S1f.6.8): 28 operands exhaustively, 250 requests a saturation, batches of 100, 400 and 1 200**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.185](#q-m1f185--a-state-file-nested-past-the-parsers-limit) | a state file nested past the parser's limit (E-4): say it, flag it, or change the engine | **open, the user's; not defaulted.** The stage recommends (a), say it on the page, which it has done; (b) and (c) are probed and not built; [S1f.6.9](p1f.6_calculator/s1f.6.9_width.md) |
+| [Q-M1f.186](#q-m1f186--where-the-probes-of-s1f610-are-banked) | where the probes of S1f.6.10 are banked | **defaulted 2026-11-12 (S1f.6.10), the user's to revise: `examples/beyond_arith/`, beside `examples/arith/` and not under it**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
+| [Q-M1f.187](#q-m1f187--which-probes-of-s1f610-are-banked-and-at-what-size) | which probes of S1f.6.10 are banked, and at what size | **defaulted 2026-11-12 (S1f.6.10): sixteen, each sized so that a bare `ein solve` exhausts R well inside the budget and its dump is a few megabytes; SEND + MORE = MONEY stays under `build/`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
+| [Q-M1f.188](#q-m1f188--the-banked-probes-are-kept-by-hand) | the banked probes are kept by hand | **defaulted 2026-11-12 (S1f.6.10): written once by a script under `build/`, then hand-kept; no generator in `utils/` and no `--check` in the gate**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
+| [Q-M1f.189](#q-m1f189--a-users-program-calling-stdariths-tagged-calls) | a user's program calling `std.arith`'s tagged calls | **defaulted 2026-11-12 (S1f.6.10) for the banked programs, and put to the user: eight of them call `add-walk`, `mul-call`, `div-call`, `cmp-walk` and read `done`, `div-done`, `order-is`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3605,3 +3609,62 @@ request for it; (c) belongs with E-24, whose fix would make such a state small e
 probes, with their tables, are in
 [the stage's T1 record](p1f.6_calculator/s1f.6.9_width.md#t1-record-2026-11-12-the-limit-re-taken).
 
+### Q-M1f.186 — Where the probes of S1f.6.10 are banked
+
+**Raised** 2026-11-12 by [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md). Its stage file says *banked
+under `examples/arith/`*. `ein-cli/tests/arith_search_free.rs` holds every `.ein` under that directory, at any
+depth, to the search-free claims: it imports a theory of the calculator, the universe has no candidate, R is
+{∅}, one saturation, and a result fact of the calculator is in the state. Four of the banked probes search, and
+four import the tables alone.
+
+- **(a) A directory beside it,** `examples/beyond_arith/`, which that test does not walk.
+- **(b) Under `examples/arith/`,** with the test told which files search, by a list or a marker in the file.
+
+**Defaulted 2026-11-12: (a).** It moves no test, and the directory's name is the page's. It is question 8 of
+[`beyond_arithmetic.md`](p1f.6_calculator/beyond_arithmetic.md).
+
+### Q-M1f.187 — Which probes of S1f.6.10 are banked, and at what size
+
+**Raised** 2026-11-12 by S1f.6.10. Every corpus program is solved, dumped and reloaded per commit, by a bare
+`ein solve` whatever runs it declares (`answer_round_trip.rs`, `corpus_shapes.rs`), and `ein solve` writes a
+state as text (E-24).
+
+- **(a) Bank what a bare `ein solve` exhausts cheaply,** at a size whose dump is a few megabytes: the laws over
+  0 to 3, primes to 30, casting out nines to 40, perfect numbers to 12, a Collatz trajectory of 16 steps and one
+  stopped at 20, the equations at two and three digits, I + BB = ILL.
+- **(b) Bank the headline sizes** and mark them `slow`, which moves `the_slow_set_is_exactly_these_fourteen`.
+
+**Defaulted 2026-11-12: (a).** SEND + MORE = MONEY, whose description stops at the budget and whose claim `ein
+test` cannot check (E-30), stays under `build/s1f.6.10/p/` with its numbers on the page; so do the runs to 5 000
+and the scale tables.
+
+### Q-M1f.188 — The banked probes are kept by hand
+
+**Raised** 2026-11-12 by S1f.6.10. The probes were written by generators under `build/s1f.6.10/`, which is not
+tracked.
+
+- **(a) Written once, then hand-kept.** `build/s1f.6.10/bank.py` wrote each with the claim the engine printed,
+  after a Python check of that claim; the files say nothing of a generator.
+- **(b) A generator in `utils/`** with a `--check` in the gate, as `gen_arith_examples.py` has.
+
+**Defaulted 2026-11-12: (a).** They are examples to read, of some sixty lines each, and no size of theirs is a
+measurement another page quotes.
+
+### Q-M1f.189 — A user's program calling `std.arith`'s tagged calls
+
+**Raised** 2026-11-12 by S1f.6.10's probe 4. `std.arith`'s public protocol is a request fact and a result fact
+that repeats its operands. A rule that uses an answer *for a particular purpose* must then find it by its
+operands beside its own facts, a join on a number, which the engine answers by a scan (E-3): the laws of
+arithmetic over the digits took 16.8 s so written. Written with the theory's tagged calls, `(add-walk TAG X Y 0
+z)`, `(mul-call TAG X Y)`, `(div-call TAG X Y)` and `(cmp-walk TAG X Y eq)`, answered by `(done TAG A)`,
+`(div-done TAG Q R)` and `(order-is TAG O)`, they took 0.42 s. The module's header lists those relations as *the
+circuit's own*; `std.int` and `std.rat` call them from inside the stdlib.
+
+- **(a) The banked programs call them,** and the question of whether they are an interface goes to the user.
+- **(b) The banked programs use the public protocol only,** at the cost above, or at domains small enough to
+  hide it.
+
+**Defaulted 2026-11-12: (a), for the banked programs; the interface question is the user's**, question 4 of
+[`beyond_arithmetic.md`](p1f.6_calculator/beyond_arithmetic.md), with the recommendation that the module's page
+name the tagged calls as what a theory built on it calls. Eight programs under `examples/beyond_arith/` would
+move if a tagged call's shape did; `arith_theory.rs` does not hold those shapes for outside callers.

@@ -1,0 +1,92 @@
+;;; Which numbers from 2 to 30 are prime? Trial division by saturation.
+;;;
+;;; For each n the candidates k = 2, 3, 4, … are tried in turn. A division
+;;; with remainder zero says n is composite and names its smallest divisor.
+;;; A remainder that is not zero is a number written `(n PREFIX DIGIT)`, a
+;;; positive pattern, so "k does not divide n" needs no negation; then, if
+;;; the quotient is already smaller than k, no larger k can divide n either
+;;; and n is prime. Otherwise the next k is asked.
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.arith :symbols (arith))
+
+(relation count Number Number :why "counting: {?1}, on the way to {?2}")
+(relation cnt Number Number :why "is {?1} below {?2}?")
+(relation cnt-next Number :why "the number after, on the way to {?1}")
+(relation trial Number Number :why "no number from 2 to below {?2} divides {?1}")
+(relation tr-div Number Number :why "{?1} divided by {?2}")
+(relation tr-small Number Number :why "is the quotient of {?1} by {?2} below {?2}?")
+(relation tr-next Number :why "the next number to try on {?1}")
+(relation prime Number :why "{?1} is prime")
+(relation composite Number Number :why "{?1} is composite: {?2} divides it")
+(__closed__ count) (__closed__ cnt) (__closed__ cnt-next) (__closed__ trial) (__closed__ tr-div) (__closed__ tr-small)
+(__closed__ tr-next) (__closed__ prime) (__closed__ composite)
+
+(count (n z 2) (n (n z 3) 0))
+
+;; Counting: (count K M) for K from the first to M, a comparison and an addition a step.
+(rule count-ask ()
+  :match  (count ?k ?m)
+  :assert (cmp-walk (cnt ?k ?m) ?k ?m eq)
+  :why    "is {?k} below {?m}?")
+(rule count-on ()
+  :match  (order-is (cnt ?k ?m) lt)
+  :assert (add-walk (cnt-next ?m) ?k (n z 1) 0 z)
+  :why    "{?k} is below {?m}: ask {?k} + 1")
+(rule count-next ()
+  :match  (done (cnt-next ?m) ?k)
+  :assert (count ?k ?m)
+  :why    "the next number is {?k}")
+
+(rule trial-start ()
+  :match  (count ?n ?m)
+  :assert (trial ?n (n z 2))
+  :why    "try the divisors of {?n} from 2")
+(rule trial-divide ()
+  :match  (trial ?n ?k)
+  :assert (div-call (tr-div ?n ?k) ?n ?k)
+  :why    "ask {?n} divided by {?k}")
+(rule trial-divides ()
+  :match  (div-done (tr-div ?n ?k) (n (n ?p ?a) ?b) z)
+  :assert (composite ?n ?k)
+  :why    "{?n} divided by {?k} leaves nothing, and the quotient is more than one digit: {?k} divides {?n}")
+(rule trial-divides-small ()
+  :match  (and (div-done (tr-div ?n ?k) (n z ?b) z) (neq ?b 1))
+  :assert (composite ?n ?k)
+  :why    "{?n} is {?k} times {?b}")
+(rule trial-is-itself ()
+  :match  (div-done (tr-div ?n ?k) (n z 1) z)
+  :assert (prime ?n)
+  :why    "the first number that divides {?n} is {?n} itself")
+(rule trial-remainder ()
+  :match  (div-done (tr-div ?n ?k) ?q (n ?p ?a))
+  :assert (cmp-walk (tr-small ?n ?k) ?q ?k eq)
+  :why    "{?n} divided by {?k} leaves a remainder: is the quotient {?q} below {?k}?")
+(rule trial-past-root ()
+  :match  (order-is (tr-small ?n ?k) lt)
+  :assert (prime ?n)
+  :why    "the quotient is below {?k}: no larger number can divide {?n}, which is prime")
+(rule trial-on-eq ()
+  :match  (order-is (tr-small ?n ?k) eq)
+  :assert (add-walk (tr-next ?n) ?k (n z 1) 0 z)
+  :why    "the quotient is not below {?k}: try the next")
+(rule trial-on-gt ()
+  :match  (order-is (tr-small ?n ?k) gt)
+  :assert (add-walk (tr-next ?n) ?k (n z 1) 0 z)
+  :why    "the quotient is not below {?k}: try the next")
+(rule trial-next ()
+  :match  (done (tr-next ?n) ?k)
+  :assert (trial ?n ?k)
+  :why    "now try {?k} on {?n}")
+
+(query :goal (prime ?n) :goal-text "{?n} is prime"
+       :expect (model (prime (n (n z 1) 1))
+                      (prime (n (n z 1) 3))
+                      (prime (n (n z 1) 7))
+                      (prime (n (n z 1) 9))
+                      (prime (n (n z 2) 3))
+                      (prime (n (n z 2) 9))
+                      (prime (n z 2))
+                      (prime (n z 3))
+                      (prime (n z 5))
+                      (prime (n z 7))))

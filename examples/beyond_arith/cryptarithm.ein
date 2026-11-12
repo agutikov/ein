@@ -1,0 +1,99 @@
+;;; A cryptarithm: I + BB = ILL. Each letter is a digit, different letters are
+;;; different digits, and no number begins with zero.
+;;;
+;;; The letters' digits are hypotheses, 30 candidates; each column goes
+;;; through the full adder's table as soon as its letters and the carry below
+;;; it are known, and a column that does not add up is (false). One state:
+;;; 1 + 99 = 100.
+;;;
+;;; The same rules solve SEND + MORE = MONEY, 80 candidates: `ein solve
+;;; --single` finds 9567 + 1085 = 10652 and shows it is the only one. That
+;;; program is not in the corpus, because describing its R, which is what a
+;;; bare `ein solve` and `ein test` do, visits every partial assignment that
+;;; is still alive and stops at the budget.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.digits :symbols (fa nz __closed__))
+(import std.algebra :symbols (total-owed functional injective))
+
+(relation is-a Thing Type :why "{?1} is a {?2}")
+(relation val Letter Digit :why "{?1} = {?2}")
+(relation column Column Letter Letter Letter :why "column {?1}: {?2} + {?3} gives {?4}")
+(relation column1 Column Letter Letter :why "column {?1}: {?2} alone gives {?3}")
+(relation first Column :why "{?1} is the units column")
+(relation after Column Column :why "{?2} is the column to the left of {?1}")
+(relation carried Column Letter :why "the carry out of {?1} is written as {?2}")
+(relation no-carry Column :why "nothing may be carried out of {?1}")
+(relation leading Letter :why "{?1} begins a number")
+(relation col Column Digit Digit :why "column {?1} adds up to digit {?2}, carry {?3}")
+(relation carry-in Column Digit :why "the carry into {?1} is {?2}")
+(__closed__ is-a) (__closed__ column) (__closed__ column1) (__closed__ first) (__closed__ after)
+(__closed__ carried) (__closed__ no-carry) (__closed__ leading) (__closed__ col) (__closed__ carry-in)
+
+(is-a 0 Digit) (is-a 1 Digit) (is-a 2 Digit) (is-a 3 Digit) (is-a 4 Digit) (is-a 5 Digit) (is-a 6 Digit) (is-a 7 Digit) (is-a 8 Digit) (is-a 9 Digit)
+(is-a I Letter) (is-a B Letter) (is-a L Letter)
+(column c1 I B L) (column1 c2 B L) 
+(first c1) (after c1 c2)
+(carried c2 I)
+(leading I) (leading B)
+
+(total-owed val is-a)   ; every letter owes a digit
+(functional val)        ; and has one
+(injective val)         ; and no two letters share one
+
+(hrule guess ()
+  :match  (and (is-a ?l Letter) (is-a ?d Digit))
+  :assert (val ?l ?d)
+  :why    "suppose {?l} = {?d}")
+
+(solve :hrules (guess))
+
+(rule carry-first ()
+  :match  (first ?c)
+  :assert (carry-in ?c 0)
+  :why    "nothing is carried into the units")
+
+(rule carry-on ()
+  :match  (and (col ?c ?d ?k) (after ?c ?next))
+  :assert (carry-in ?next ?k)
+  :why    "column {?c} carries {?k} into {?next}")
+
+(rule add-column ()
+  :match  (and (column ?c ?x ?y ?z) (carry-in ?c ?i) (val ?x ?a) (val ?y ?b) (fa ?a ?b ?i ?d ?k))
+  :assert (col ?c ?d ?k)
+  :why    "{?x} + {?y}: {?a} + {?b} + carry {?i} is digit {?d}, carry {?k}")
+
+(rule add-column-alone ()
+  :match  (and (column1 ?c ?x ?z) (carry-in ?c ?i) (val ?x ?a) (fa ?a 0 ?i ?d ?k))
+  :assert (col ?c ?d ?k)
+  :why    "{?x} alone: {?a} + carry {?i} is digit {?d}, carry {?k}")
+
+(rule column-wrong ()
+  :match  (and (col ?c ?d ?k) (column ?c ?x ?y ?z) (val ?z ?v) (neq ?v ?d))
+  :assert (false)
+  :why    "column {?c} adds up to {?d}, and {?z} is {?v}")
+
+(rule column-alone-wrong ()
+  :match  (and (col ?c ?d ?k) (column1 ?c ?x ?z) (val ?z ?v) (neq ?v ?d))
+  :assert (false)
+  :why    "column {?c} adds up to {?d}, and {?z} is {?v}")
+
+(rule top-carry-wrong ()
+  :match  (and (carried ?c ?l) (col ?c ?d ?k) (val ?l ?v) (neq ?v ?k))
+  :assert (false)
+  :why    "the carry out of the top column is {?k}, and {?l} is {?v}")
+
+(rule top-carry-left ()
+  :match  (and (no-carry ?c) (col ?c ?d ?k) (nz ?k))
+  :assert (false)
+  :why    "a carry is left over the top column")
+
+(rule leading-zero ()
+  :match  (and (leading ?l) (val ?l 0))
+  :assert (false)
+  :why    "{?l} begins a number and may not be 0")
+
+(query :goal (and (val I ?i) (val B ?b) (val L ?l))
+       :goal-text "{?i} + {?b}{?b} = {?i}{?l}{?l}"
+       :expect (model (val B 9) (val I 1) (val L 0)))

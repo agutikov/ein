@@ -36,6 +36,10 @@ malformed number without negation, what it costs, and what a name clash does tod
 re-taken on the shipped theory, a state file refused on reload from 999-digit operands, the cost by length, both
 on the page; the choice of what to do is Q-M1f.185
 ([its records](s1f.6.9_width.md#t1-record-2026-11-12-the-limit-re-taken)).
+**S1f.6.10, the investigation, is done and shown to the user (2026-11-12):** equations by saturation and by
+search, cryptarithms, bounded theorem checking, number theory and explanations, each probed with its cost;
+sixteen probes banked under `examples/beyond_arith/`; E-29 to E-31 found; what becomes a stage is the user's
+([`beyond_arithmetic.md`](beyond_arithmetic.md), [its records](s1f.6.10_beyond_arithmetic.md#t1-record-2026-11-12)).
 **Depends on:** [P1f.5](../p1f.5_the_no_owner_items/README.md), for the language the theory is written in.
 [S1f.5.4](../p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md) makes `0` to `9` plain names, so
 `(num9 0 0 0 1 2 3 0 7 8)` is nine names and not nine ints. It lands with S1f.5.5's swap, and T1f.5.4.3 retires
@@ -157,7 +161,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.15](s1f.6.15_load_against_calculation.md) | Long numbers and many calculations: examples that set load time against calculation time (the user, 2026-11-11) | S1f.6.6 | **done 2026-11-11**: `long_numbers.ein`, `many_calculations.ein` and `factorial.ein`, generated, sized to what every per-commit surface affords; `utils/arith_cost.py` and its tables in `stdlib/README.md`: 20.6 ms of load a program, a `.einb` that buys none of it back, the parse ahead of the calculation past a thousand sums, and `ein solve` 30 to 90 times `ein saturate` on long numbers; Q-M1f.166 defaulted, E-24 to E-26 found |
 | [S1f.6.16](s1f.6.16_binary_arithmetic.md) | Arithmetic with binary numbers: whether the rules get simpler, and whether the theory is generic in its base (the user, 2026-11-11) | S1f.6.6 | planned; T1 stops for the user |
 | [S1f.6.17](s1f.6.17_binary_logic.md) | Binary logic: truth tables, gates, a circuit as a program, and six applications tried; the starting point of [M1g](../../m1g_logic/README.md) (the user, 2026-11-11) | S1f.6.16 | planned; T1 stops for the user |
-| [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | S1f.6.8, S1f.6.9 | planned; a report |
+| [S1f.6.10](s1f.6.10_beyond_arithmetic.md) | Investigation: what else the theory can do, from equations and puzzles to bounded theorem checking and number theory | S1f.6.8, S1f.6.9 | **done 2026-11-12, shown to the user**: [`beyond_arithmetic.md`](beyond_arithmetic.md). One unknown is solved by saturation alone, the tables read backwards; unknown digits as hypotheses are a search, 10n + 1 saturations under `--single` a column at a time; SEND + MORE = MONEY unique in 17 747 saturations, 0.5 s, or no answer in 600 s by the order its letters are declared; the laws hold on every instance over 0 to 9, and Ein checks the full adder's 200 rows where the induction on columns is outside it; primes to 5 000 and the rest agree with Python, memory the limit; a refuted equation's core is a three-row proof. Sixteen probes banked, `examples/beyond_arith/`; Q-M1f.186 to .189 defaulted, E-29 to E-31 found; eight questions, **what becomes a stage is the user's** |
 
 No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 15 to 19 are unassigned.
 
@@ -179,7 +183,7 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 15 t
 8. **S1f.6.7 and S1f.6.8, the two extensions.** Each is a module over the natural-number theory and does not
    edit it. Negative numbers come first, because a rational's numerator is one.
 9. **S1f.6.9, what is left of the width.** It may run beside the extensions.
-10. **S1f.6.10, the investigation, last.**
+10. **S1f.6.10, the investigation, last.** **Done 2026-11-12.**
 
 ## Findings stay in the phase
 

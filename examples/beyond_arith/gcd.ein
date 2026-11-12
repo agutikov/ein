@@ -1,0 +1,56 @@
+;;; The greatest common divisor by Euclid's chain, and the least common
+;;; multiple from it. Each step of the chain is one division of std.arith:
+;;; gcd(a, b) is gcd(b, a mod b), and gcd(a, 0) is a. Saturation alone.
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.arith :symbols (arith))
+
+(relation gcd Number Number :why "asked: the greatest common divisor of {?1} and {?2}")
+(relation euclid Tag Number Number :why "for {?1}: the divisor wanted is that of {?2} and {?3}")
+(relation eu Tag Number :why "the remainder by {?2}, for {?1}")
+(relation gcd-of Number Number Number :why "the greatest common divisor of {?1} and {?2} is {?3}")
+(relation lcm-product Number Number Number :why "{?1} times {?2}, to be divided by {?3}")
+(relation lcm-quot Number Number :why "the least common multiple of {?1} and {?2}")
+(relation lcm-of Number Number Number :why "the least common multiple of {?1} and {?2} is {?3}")
+(__closed__ gcd) (__closed__ euclid) (__closed__ eu) (__closed__ gcd-of) (__closed__ lcm-product) (__closed__ lcm-quot)
+(__closed__ lcm-of)
+
+(gcd (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))
+(gcd (n (n z 4) 8) (n (n z 1) 8))
+(gcd (n (n z 1) 7) (n z 5))
+
+(rule gcd-start ()
+  :match  (gcd ?a ?b)
+  :assert (euclid (gcd ?a ?b) ?a ?b)
+  :why    "start Euclid's chain on {?a} and {?b}")
+(rule euclid-step ()
+  :match  (euclid ?t ?a (n ?p ?d))
+  :assert (div-call (eu ?t (n ?p ?d)) ?a (n ?p ?d))
+  :why    "{?p}{?d} is not zero: divide {?a} by it and keep the remainder")
+(rule euclid-on ()
+  :match  (div-done (eu ?t ?b) ?q ?r)
+  :assert (euclid ?t ?b ?r)
+  :why    "the remainder is {?r}: go on with {?b} and {?r}")
+(rule euclid-end ()
+  :match  (euclid (gcd ?a ?b) ?g z)
+  :assert (and (gcd-of ?a ?b ?g) (mul-call (lcm-product ?a ?b ?g) ?a ?b))
+  :why    "nothing is left: the greatest common divisor of {?a} and {?b} is {?g}")
+(rule lcm-divide ()
+  :match  (done (lcm-product ?a ?b (n ?p ?d)) ?m)
+  :assert (div-call (lcm-quot ?a ?b) ?m (n ?p ?d))
+  :why    "{?a} times {?b} is {?m}: divide it by the common divisor")
+(rule lcm-end ()
+  :match  (div-done (lcm-quot ?a ?b) ?l z)
+  :assert (lcm-of ?a ?b ?l)
+  :why    "the least common multiple of {?a} and {?b} is {?l}")
+
+(query :goal (gcd-of ?a ?b ?g) :goal-text "gcd({?a}, {?b}) = {?g}"
+       :expect (model (gcd-of (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2) (n (n z 2) 1))
+                      (gcd-of (n (n z 1) 7) (n z 5) (n z 1))
+                      (gcd-of (n (n z 4) 8) (n (n z 1) 8) (n z 6))))
+(query :goal (lcm-of ?a ?b ?l) :goal-text "lcm({?a}, {?b}) = {?l}"
+       :expect (model (lcm-of (n (n (n (n z 1) 0) 7) 1)
+                              (n (n (n z 4) 6) 2)
+                              (n (n (n (n (n z 2) 3) 5) 6) 2))
+                      (lcm-of (n (n z 1) 7) (n z 5) (n (n z 8) 5))
+                      (lcm-of (n (n z 4) 8) (n (n z 1) 8) (n (n (n z 1) 4) 4))))

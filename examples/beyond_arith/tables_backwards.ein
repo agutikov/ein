@@ -1,0 +1,94 @@
+;;; Tables read backwards where a column has more than one answer.
+;;;
+;;; Which x makes x times 7 = 861? The digit multiplier's table, read by the
+;;; multiplier, the carry and the PRODUCT's digit, gives x's digit: by 7 there
+;;; is one, and the walk is a straight line, x = 123. By 4 there are two for
+;;; a column, five apart, with different carries: x times 4 = 3284 has, at
+;;; the units, 1 (carry 0) or 6 (carry 2). Nothing chooses between them.
+;;; Saturation derives both walks, and the next column ends the wrong one:
+;;; no row of the table fits it. So an inverse question is answered with no
+;;; hypothesis, and the walks alive at any column stay few.
+;;;
+;;; Six requests. x times 7 = 861: 123. x times 4 = 3284: 821. x times 4 =
+;;; 3285: no x, and no answer fact. x times 5 = 61725: 12345. x + x = 2468:
+;;; 1234. x + x = 1357: no x. An equation with no solution is answered by
+;;; silence here: "no walk ends" is an absence, which a rule cannot match.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.digits :symbols (fa md nz __closed__))
+
+(relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")
+(relation halve Number :why "asked: which x makes x + x = {?1}?")
+(relation um-walk Tag Number Digit Digits :why "for {?1}: {?2} still to read, carry {?3}, x's digits so far {?4}")
+(relation um-strip Tag Digits :why "for {?1}: x's digits, top first, are {?2}")
+(relation um-turn Tag Digits Number :why "for {?1}: {?2} still to turn, {?3} turned")
+(relation factor-of Digit Number Number :why "x times {?1} = {?2} for x = {?3}")
+(relation half-of Number Number :why "x + x = {?1} for x = {?2}")
+(__closed__ unmul) (__closed__ halve) (__closed__ um-walk) (__closed__ um-strip) (__closed__ um-turn)
+(__closed__ factor-of) (__closed__ half-of)
+
+(rule um-start ()
+  :match  (unmul ?m ?p)
+  :assert (um-walk (unmul ?m ?p) ?p 0 e)
+  :why    "start at the units with no carry")
+
+(rule um-column ()
+  :match  (and (um-walk (unmul ?m ?p) (n ?pp ?d) ?c ?acc) (md ?a ?m ?c ?d ?k))
+  :assert (um-walk (unmul ?m ?p) ?pp ?k (b ?a ?acc))
+  :why    "what times {?m} plus carry {?c} ends in {?d}? {?a} does: write {?a}, carry {?k}")
+
+(rule halve-start ()
+  :match  (halve ?s)
+  :assert (um-walk (halve ?s) ?s 0 e)
+  :why    "start at the units with no carry")
+
+(rule halve-column ()
+  :match  (and (um-walk (halve ?s) (n ?ps ?d) ?c ?acc) (fa ?a ?a ?c ?d ?k))
+  :assert (um-walk (halve ?s) ?ps ?k (b ?a ?acc))
+  :why    "what plus itself plus carry {?c} ends in {?d}? {?a} does: write {?a}, carry {?k}")
+
+(rule um-end ()
+  :match  (um-walk ?t z 0 ?acc)
+  :assert (um-strip ?t ?acc)
+  :why    "the product is read and no carry is left: x's digits are {?acc}")
+
+(rule um-strip-zero ()
+  :match  (um-strip ?t (b 0 ?rest))
+  :assert (um-strip ?t ?rest)
+  :why    "a high zero is dropped")
+
+(rule um-strip-done ()
+  :match  (and (um-strip ?t (b ?d ?rest)) (nz ?d))
+  :assert (um-turn ?t (b ?d ?rest) z)
+  :why    "the top digit {?d} is not zero: turn the digits round")
+
+(rule um-turn-step ()
+  :match  (um-turn ?t (b ?d ?rest) ?x)
+  :assert (um-turn ?t ?rest (n ?x ?d))
+  :why    "{?d} goes behind {?x}")
+
+(rule um-turn-end ()
+  :match  (um-turn (unmul ?m ?p) e ?x)
+  :assert (factor-of ?m ?p ?x)
+  :why    "x is {?x}")
+
+(rule halve-turn-end ()
+  :match  (um-turn (halve ?s) e ?x)
+  :assert (half-of ?s ?x)
+  :why    "x is {?x}")
+
+(unmul 7 (n (n (n z 8) 6) 1))
+(unmul 4 (n (n (n (n z 3) 2) 8) 4))
+(unmul 4 (n (n (n (n z 3) 2) 8) 5))
+(unmul 5 (n (n (n (n (n z 6) 1) 7) 2) 5))
+(halve (n (n (n (n z 2) 4) 6) 8))
+(halve (n (n (n (n z 1) 3) 5) 7))
+
+(query :goal (factor-of ?m ?p ?x) :goal-text "x times {?m} = {?p} for x = {?x}"
+       :expect (model (factor-of 4 (n (n (n (n z 3) 2) 8) 4) (n (n (n z 8) 2) 1))
+                      (factor-of 5 (n (n (n (n (n z 6) 1) 7) 2) 5) (n (n (n (n (n z 1) 2) 3) 4) 5))
+                      (factor-of 7 (n (n (n z 8) 6) 1) (n (n (n z 1) 2) 3))))
+
+(query :goal (half-of ?s ?x) :goal-text "x + x = {?s} for x = {?x}"
+       :expect (model (half-of (n (n (n (n z 2) 4) 6) 8) (n (n (n (n z 1) 2) 3) 4))))

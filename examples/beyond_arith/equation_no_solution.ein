@@ -1,0 +1,77 @@
+;;; An equation with no solution, asked by search: which x of two digits makes
+;;; x times 7 = 62? None.
+;;;
+;;; The program is `equation_by_search.ein`'s with another product. R is
+;;; empty, and it is empty in the way a search is: no node is dead that the
+;;; search did not kill, and what is left alive owes. The units digit must be
+;;; 6 (nine singletons are dead alone); with 6 at the units every tens digit
+;;; is dead; so the alive nodes are {units = 6} and the ten that set only the
+;;; tens digit, and each of them owes a digit it cannot be given.
+;;;
+;;; The claims say exactly that. The region claim lists the owing frontier;
+;;; the query's claim, `(false)`, holds because no state answers it.
+;;; `equation_refuted.ein` beside this file is the same kind of question
+;;; answered with no search, by a root that is dead.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.digits :symbols (md nz __closed__))
+(import std.algebra :symbols (total-owed functional))
+(relation is-a Thing Type :why "{?1} is a {?2}")
+(relation dig Place Digit :why "the digit of x at {?1} is {?2}")
+(is-a 0 Digit) (is-a 1 Digit) (is-a 2 Digit) (is-a 3 Digit) (is-a 4 Digit)
+(is-a 5 Digit) (is-a 6 Digit) (is-a 7 Digit) (is-a 8 Digit) (is-a 9 Digit)
+(total-owed dig is-a)   ; every place owes a digit: a state with a place unset is no answer
+(functional dig)        ; and none has two
+
+(hrule guess-digit ()
+  :match  (and (is-a ?p Place) (is-a ?d Digit))
+  :assert (dig ?p ?d)
+  :why    "suppose the digit of x at {?p} is {?d}")
+
+(solve :hrules (guess-digit)
+       :expect (region (owing (model (dig p0 6))
+                              (model (dig p1 0))
+                              (model (dig p1 1))
+                              (model (dig p1 2))
+                              (model (dig p1 3))
+                              (model (dig p1 4))
+                              (model (dig p1 5))
+                              (model (dig p1 6))
+                              (model (dig p1 7))
+                              (model (dig p1 8))
+                              (model (dig p1 9)))))
+
+(is-a p0 Place) (is-a p1 Place)
+(relation above Place Place :why "{?2} is the place above {?1}")
+(relation want Place Digit :why "the product's digit at {?1} is {?2}")
+(relation times Digit :why "x is multiplied by {?1}")
+(relation top Place :why "{?1} is x's top place")
+(relation col Place Digit Digit :why "the column at {?1} gives digit {?2}, carry {?3}")
+(__closed__ is-a) (__closed__ above) (__closed__ want) (__closed__ times) (__closed__ top) (__closed__ col)
+(above p0 p1)
+(top p1) (times 7)
+(want p0 2) (want p1 6)
+
+(rule col-units ()
+  :match  (and (dig p0 ?a) (times ?m) (md ?a ?m 0 ?d ?k))
+  :assert (col p0 ?d ?k)
+  :why    "{?a} times {?m} is digit {?d}, carry {?k}")
+
+(rule col-next ()
+  :match  (and (col ?p ?d0 ?c) (above ?p ?q) (dig ?q ?a) (times ?m) (md ?a ?m ?c ?d ?k))
+  :assert (col ?q ?d ?k)
+  :why    "at {?q}: {?a} times {?m} plus carry {?c} is digit {?d}, carry {?k}")
+
+(rule col-wrong ()
+  :match  (and (col ?p ?d ?k) (want ?p ?w) (neq ?d ?w))
+  :assert (false)
+  :why    "the product's digit at {?p} is {?w}, and this x gives {?d}")
+
+(rule carry-over-top ()
+  :match  (and (top ?p) (col ?p ?d ?k) (nz ?k))
+  :assert (false)
+  :why    "a carry {?k} is left over x's top place: the product would be longer")
+
+(query :goal (and (dig p1 ?p1) (dig p0 ?p0)) :goal-text "x = {?p1}{?p0}"
+       :expect (false))

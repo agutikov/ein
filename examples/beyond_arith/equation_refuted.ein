@@ -1,0 +1,47 @@
+;;; A proof that an equation has no solution, as the core of a dead root.
+;;; Which x makes x times 7 = 862? None. The digit multiplier's table is read
+;;; backwards: by 7, a column's digit and carry leave one digit for x, so
+;;; nothing is guessed. The walk writes 6, then 6, then 2, and a carry of 1
+;;; is left over the top of 862. Since every column had exactly one answer,
+;;; that carry refutes the equation: `(false)`, at root.
+;;;
+;;; `ein solve` then names what the refutation rests on: the request and the
+;;; three rows of the table it passed through. That core is the proof.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.digits :symbols (md nz __closed__))
+
+(relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")
+(relation one-answer Digit :why "by {?1}, a column has exactly one answer")
+(relation um-walk Tag Number Digit Digits :why "for {?1}: {?2} still to read, carry {?3}, x's digits so far {?4}")
+(relation factor-digits Digit Number Digits :why "x times {?1} = {?2} for the digits x = {?3}, top first")
+(__closed__ unmul) (__closed__ one-answer) (__closed__ um-walk) (__closed__ factor-digits)
+
+;; The multipliers that share no factor with ten: their rows of `md` are a
+;; one-to-one map from x's digit to the product's, for every carry.
+(one-answer 1) (one-answer 3) (one-answer 7) (one-answer 9)
+
+(unmul 7 (n (n (n z 8) 6) 2))
+
+(rule um-start ()
+  :match  (and (unmul ?m ?p) (one-answer ?m))
+  :assert (um-walk (unmul ?m ?p) ?p 0 e)
+  :why    "start at the units with no carry")
+
+(rule um-column ()
+  :match  (and (um-walk (unmul ?m ?p) (n ?pp ?d) ?c ?acc) (md ?a ?m ?c ?d ?k))
+  :assert (um-walk (unmul ?m ?p) ?pp ?k (b ?a ?acc))
+  :why    "what times {?m} plus carry {?c} ends in {?d}? only {?a}: write {?a}, carry {?k}")
+
+(rule um-end ()
+  :match  (um-walk (unmul ?m ?p) z 0 ?acc)
+  :assert (factor-digits ?m ?p ?acc)
+  :why    "the product is read and no carry is left: x's digits are {?acc}")
+
+(rule um-no-solution ()
+  :match  (and (um-walk (unmul ?m ?p) z ?k ?acc) (nz ?k))
+  :assert (false)
+  :why    "the product is read and a carry of {?k} is left: no x times {?m} is {?p}")
+
+(solve :expect (false))

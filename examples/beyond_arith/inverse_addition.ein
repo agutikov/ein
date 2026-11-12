@@ -1,0 +1,94 @@
+;;; The full adder's table read backwards: which x makes x + 4567 = 127645?
+;;;
+;;; A table is a relation, not a function. `std.arith` reads the full adder
+;;; `(fa A B CARRY-IN DIGIT CARRY-OUT)` by its two operands; the rule
+;;; `un-column` below reads it by ONE operand's digit, the carry and the SUM's
+;;; digit, and the table gives the other operand's digit and the carry out.
+;;; Each column has exactly one answer, so nothing is guessed: saturation
+;;; alone, one walk from the units, and x = 123078.
+;;;
+;;; Three requests: 127645 (x = 123078), 4570 (x = 3, high zeros dropped), and
+;;; 999, which has no natural x: the known operand is the larger, and the
+;;; walk says so with a fact, `(no-addend …)`, since it reaches the end of
+;;; the sum with digits of the operand still unread.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.digits :symbols (fa nz __closed__))
+
+(relation unadd Number Number :why "asked: which x makes x + {?1} = {?2}?")
+(relation un-walk Tag Number Number Digit Digits :why "for {?1}: {?2} and {?3} still to read, carry {?4}, x's digits so far {?5}")
+(relation un-strip Tag Digits :why "for {?1}: x's digits, top first, are {?2}")
+(relation un-turn Tag Digits Number :why "for {?1}: {?2} still to turn, {?3} turned")
+(relation addend-of Number Number Number :why "x + {?1} = {?2} for x = {?3}")
+(relation no-addend Number Number :why "no natural x makes x + {?1} = {?2}")
+(__closed__ unadd) (__closed__ un-walk) (__closed__ un-strip) (__closed__ un-turn)
+(__closed__ addend-of) (__closed__ no-addend)
+
+(unadd (n (n (n (n z 4) 5) 6) 7) (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))
+(unadd (n (n (n (n z 4) 5) 6) 7) (n (n (n (n z 4) 5) 7) 0))
+(unadd (n (n (n (n z 4) 5) 6) 7) (n (n (n z 9) 9) 9))
+
+(rule un-start ()
+  :match  (unadd ?y ?s)
+  :assert (un-walk (unadd ?y ?s) ?y ?s 0 e)
+  :why    "start at the units with no carry")
+
+(rule un-column ()
+  :match  (and (un-walk ?t (n ?py ?b) (n ?ps ?d) ?c ?acc) (fa ?a ?b ?c ?d ?k))
+  :assert (un-walk ?t ?py ?ps ?k (b ?a ?acc))
+  :why    "what plus {?b} plus carry {?c} ends in {?d}? {?a}: write {?a}, carry {?k}")
+
+(rule un-column-alone ()
+  :match  (and (un-walk ?t z (n ?ps ?d) ?c ?acc) (fa ?a 0 ?c ?d ?k))
+  :assert (un-walk ?t z ?ps ?k (b ?a ?acc))
+  :why    "the known operand has ended: what plus carry {?c} ends in {?d}? {?a}, carry {?k}")
+
+(rule un-end ()
+  :match  (un-walk ?t z z 0 ?acc)
+  :assert (un-strip ?t ?acc)
+  :why    "both are read and no carry is left: x's digits are {?acc}")
+
+(rule un-short-carry ()
+  :match  (un-walk (unadd ?y ?s) z z 1 ?acc)
+  :assert (no-addend ?y ?s)
+  :why    "a carry is left over the top of the sum: {?y} is the larger, no natural x")
+
+(rule un-short-length ()
+  :match  (un-walk (unadd ?y ?s) (n ?py ?b) z ?c ?acc)
+  :assert (no-addend ?y ?s)
+  :why    "the sum has ended and the known operand has not: no natural x")
+
+(rule un-strip-zero ()
+  :match  (un-strip ?t (b 0 ?rest))
+  :assert (un-strip ?t ?rest)
+  :why    "a high zero is dropped")
+
+(rule un-strip-done ()
+  :match  (and (un-strip ?t (b ?d ?rest)) (nz ?d))
+  :assert (un-turn ?t (b ?d ?rest) z)
+  :why    "the top digit {?d} is not zero: turn the digits round")
+
+(rule un-strip-empty ()
+  :match  (un-strip (unadd ?y ?s) e)
+  :assert (addend-of ?y ?s z)
+  :why    "every digit was zero: x is zero")
+
+(rule un-turn-step ()
+  :match  (un-turn ?t (b ?d ?rest) ?x)
+  :assert (un-turn ?t ?rest (n ?x ?d))
+  :why    "{?d} goes behind {?x}")
+
+(rule un-turn-end ()
+  :match  (un-turn (unadd ?y ?s) e ?x)
+  :assert (addend-of ?y ?s ?x)
+  :why    "x is {?x}")
+
+(query :goal (addend-of ?y ?s ?x) :goal-text "x + {?y} = {?s} for x = {?x}"
+       :expect (model (addend-of (n (n (n (n z 4) 5) 6) 7)
+                                 (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5)
+                                 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+                      (addend-of (n (n (n (n z 4) 5) 6) 7) (n (n (n (n z 4) 5) 7) 0) (n z 3))))
+
+(query :goal (no-addend ?y ?s) :goal-text "no natural x makes x + {?y} = {?s}"
+       :expect (model (no-addend (n (n (n (n z 4) 5) 6) 7) (n (n (n z 9) 9) 9))))

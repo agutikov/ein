@@ -343,6 +343,102 @@ runs   = ["solve", "test", "saturate", "render rules"]
 note   = "M1f S1f.6.13 — what does not fit nine digits: 999999999 + 1 and 123078 x 123078 each derive `(overflow REQUEST)`, the request as written, and no result fact, never a truncated number. Root stays alive: the sum beside them is answered, and a rule of the program's own matches the flag."
 
 [[entry]]
+path   = "examples/beyond_arith/casting_out_nines.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — number theory by saturation: casting out nines checked on every number from 0 to 40, a number and its digit sum leaving the same remainder by 9; the digit sum a walk of additions, then two divisions of `std.arith`, by its tagged calls. The claim is that it fails of none."
+
+[[entry]]
+path   = "examples/beyond_arith/collatz.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — the 3n + 1 trajectory under a bound on the steps, which the request carries, since whether every number reaches 1 is open and a saturation must end: 7 reaches 1 after 16 steps, 27 is stopped after 20, at 274."
+
+[[entry]]
+path   = "examples/beyond_arith/column_lemma.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render rules"]
+note   = "M1f S1f.6.10 — bounded theorem checking, the part Ein does: every one of the full adder's 200 rows agrees with addition derived a second way, by counting from `(next 0 1)` to `(next 8 9)`; a last walk derives `(every-row agrees)`, since over a complete table *for every row* is a chain and needs no negation. That an addition of any length is right is an induction on columns, made outside Ein."
+
+[[entry]]
+path   = "examples/beyond_arith/cryptarithm.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.10 — search on the tables: I + BB = ILL, letters as unknown digits, all different, each column through the full adder as soon as its letters and the carry below are known; 30 candidates, one state, 1 + 99 = 100. The same rules solve SEND + MORE = MONEY under `--single` (17 747 saturations); that one is not here, since describing its R stops at the budget."
+
+[[entry]]
+path   = "examples/beyond_arith/equation_by_search.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.10 — an equation by search: which x of three digits makes x times 7 = 861; each digit a hypothesis, `total-owed` and `functional`, the constraint the digit multiplier's table a column at a time, so a wrong units digit is dead alone. One state, x = 123: 31 saturations under `--single`, 251 to describe R."
+
+[[entry]]
+path   = "examples/beyond_arith/equation_no_solution.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "test", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.10 — an equation with no solution, by search: x times 7 = 62 over two digits. R is empty by owing, not by death: {units = 6} and the ten nodes that set only the tens digit are alive and owe, which the `(region (owing …))` claim lists; `--single` answers `Open`, and the reasons, N's cores, are in `--trace` and `--dump-answer` (E-23 of P1f.6's findings)."
+
+[[entry]]
+path   = "examples/beyond_arith/equation_refuted.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.10 — a proof of no solution as the core of a dead root: x times 7 = 862, the multiplier's table read backwards, one answer a column by 7, and a carry left over the top is `(false)`. No hypothesis; the unsat core is the request and the three rows the walk passed through. Claims `(solve :expect (false))`."
+
+[[entry]]
+path   = "examples/beyond_arith/equation_two_unknowns.ein"
+group  = "positive"
+runs   = ["solve", "test"]
+note   = "M1f S1f.6.10 — search meets the search-free theory: 3x + 5y = 47 for x below 100 and y below 10, the three digits hypotheses, and `std.arith` asked for 3x, 5y and their sum once all are set; three states, (4, 7), (9, 4) and (14, 1). Nothing is refuted before every digit is set: 997 of the 1 000 full assignments are dead, each found separately."
+
+[[entry]]
+path   = "examples/beyond_arith/fibonacci.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — a sequence by saturation: F(0) to F(30) = 832040, one addition a step and one to count."
+
+[[entry]]
+path   = "examples/beyond_arith/gcd.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — Euclid's chain, a division of `std.arith` a step, and the least common multiple from it: gcd(1071, 462) = 21 and lcm 23562, and two more pairs."
+
+[[entry]]
+path   = "examples/beyond_arith/inverse_addition.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.10 — a table is a relation: the full adder read by one operand, the carry and the SUM's digit gives the other operand's digit, so x + 4567 = 127645 is solved by saturation alone, x = 123078, one answer a column and nothing guessed; a second request with high zeros to drop, and a third with no natural x, said by a fact."
+
+[[entry]]
+path   = "examples/beyond_arith/laws.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — bounded theorem checking: commutativity and associativity of + and times, distributivity and the division identity on every instance over the numbers 0 to 3, each check a chain of `std.arith`'s tagged calls, one premise a rule; the claims are that nothing fails. A proof for that domain and no further."
+
+[[entry]]
+path   = "examples/beyond_arith/perfect.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — the sum of the proper divisors of every number from 1 to 12, a division for each smaller number, set against the number itself: 6 is perfect."
+
+[[entry]]
+path   = "examples/beyond_arith/primes.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — trial division by saturation: which of 2 to 30 are prime. A remainder that is not zero is the positive pattern `(n PREFIX DIGIT)`, so *does not divide* needs no negation, and a quotient below the divisor ends the trial."
+
+[[entry]]
+path   = "examples/beyond_arith/pythagorean.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — a question about a set, asked by an ordinary join on a number: the squares of 1 to 13, every pair of them added, and a sum that is itself a square is a triple; six ordered triples, (3, 4, 5), (6, 8, 10), (5, 12, 13) and their mirrors."
+
+[[entry]]
+path   = "examples/beyond_arith/tables_backwards.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.10 — tables read backwards where a column has more than one answer: x times 4 = 3284 has two digits for a column, five apart, and saturation derives both walks; the next column ends the wrong one, so no hypothesis is needed and the walks alive stay few. x times 7 = 861, x times 5 = 61725 and x + x = 2468 beside it, and two requests with no solution, answered by silence."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]

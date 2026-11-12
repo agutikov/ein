@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 94] = [
+const SEEDED: [(&str, &[&str]); 105] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -634,6 +634,65 @@ const SEEDED: [(&str, &[&str]); 94] = [
     (
         "tests/stdlib/num9/13_chain.ein",
         &["`z`, matched by rule `to9-zero`"],
+    ),
+    // M1f S1f.6.10 — the probes banked under `examples/beyond_arith/`. A
+    // program that writes a nested number names `z` inside it; one that
+    // imports `std.arith` and writes none holds the theory's own, matched by
+    // `operand-zero`; and the three inverse walks start their accumulator at
+    // `e`, which a rule asserts and no fact writes. `casting_out_nines.ein`
+    // writes `z` at top level, in `(count z …)`, so it is not here.
+    (
+        "examples/beyond_arith/collatz.ein",
+        &["`z`, in (collatz (n z 7) (n (n z 2) 0))"],
+    ),
+    (
+        "examples/beyond_arith/equation_refuted.ein",
+        &[
+            "`e`, asserted by rule `um-start`",
+            "`z`, in (unmul 7 (n (n (n z 8) 6) 2))",
+        ],
+    ),
+    (
+        "examples/beyond_arith/equation_two_unknowns.ein",
+        &["`z`, matched by rule `operand-zero`"],
+    ),
+    (
+        "examples/beyond_arith/fibonacci.ein",
+        &["`z`, in (fib-to (n (n z 3) 0))"],
+    ),
+    (
+        "examples/beyond_arith/gcd.ein",
+        &["`z`, in (gcd (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))"],
+    ),
+    (
+        "examples/beyond_arith/inverse_addition.ein",
+        &[
+            "`e`, asserted by rule `un-start`",
+            "`z`, in (unadd (n (n (n (n z 4) 5) 6) 7) (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))",
+        ],
+    ),
+    (
+        "examples/beyond_arith/laws.ein",
+        &["`z`, matched by rule `operand-zero`"],
+    ),
+    (
+        "examples/beyond_arith/perfect.ein",
+        &["`z`, in (count (n z 1) (n (n z 1) 2))"],
+    ),
+    (
+        "examples/beyond_arith/primes.ein",
+        &["`z`, in (count (n z 2) (n (n z 3) 0))"],
+    ),
+    (
+        "examples/beyond_arith/pythagorean.ein",
+        &["`z`, in (count (n z 1) (n (n z 1) 3))"],
+    ),
+    (
+        "examples/beyond_arith/tables_backwards.ein",
+        &[
+            "`e`, asserted by rule `um-start`",
+            "`z`, in (unmul 7 (n (n (n z 8) 6) 1))",
+        ],
     ),
 ];
 

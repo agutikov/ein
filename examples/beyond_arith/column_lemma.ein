@@ -1,0 +1,100 @@
+;;; The column lemma: every row of the full adder's table is right.
+;;;
+;;; `std.digits` writes the full adder as 200 facts, `(fa A B CARRY-IN DIGIT
+;;; CARRY-OUT)`. This program derives the same table a second way, by
+;;; counting: it is told only which digit follows which, `(next 0 1)` to
+;;; `(next 8 9)`, and that after 9 comes 0 and one more ten. From that,
+;;;
+;;;     a + 0      is a
+;;;     a + (b+1)  is (a + b) + 1
+;;;     a + b + 1  is (a + b) + 1
+;;;
+;;; and each of the 200 counted rows is set against the row that is written:
+;;; `agrees` where the digit and the carry are the same, `disagrees` where
+;;; either differs. A last walk over the rows in order derives `(every-row
+;;; agrees)` once all 200 have: over a table that is complete, "for every
+;;; row" is a chain of 200 steps and needs no negation. Saturation alone, no
+;;; hypothesis.
+;;;
+;;; What that proves: the table's 200 rows, each once. That an addition of
+;;; any length is right follows by an induction on its columns, which is an
+;;; argument made outside Ein: Ein has checked its only case analysis.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.digits :symbols (fa __closed__))
+
+(relation digit Digit :why "{?1} is a digit")
+(relation next Digit Digit :why "after {?1} comes {?2}")
+(relation counted Digit Digit Digit Digit Digit :why "counting, {?1} + {?2} + {?3} is digit {?4} and {?5} tens")
+(relation agrees Digit Digit Digit :why "the row for {?1} + {?2} + carry {?3} is what counting gives")
+(relation disagrees Digit Digit Digit :why "the row for {?1} + {?2} + carry {?3} is NOT what counting gives")
+(relation agree-up-to Digit Digit Digit :why "with carry {?3}, every row up to {?1} + {?2} agrees")
+(relation every-row Verdict :why "every row of the full adder {?1}")
+(__closed__ digit) (__closed__ next) (__closed__ counted) (__closed__ agrees) (__closed__ disagrees)
+(__closed__ agree-up-to) (__closed__ every-row)
+
+(digit 0) (digit 1) (digit 2) (digit 3) (digit 4) (digit 5) (digit 6) (digit 7) (digit 8) (digit 9)
+(next 0 1) (next 1 2) (next 2 3) (next 3 4) (next 4 5) (next 5 6) (next 6 7) (next 7 8) (next 8 9)
+
+(rule plus-nothing ()
+  :match  (digit ?a)
+  :assert (counted ?a 0 0 ?a 0)
+  :why    "{?a} + 0 is {?a}")
+(rule plus-one-more ()
+  :match  (and (counted ?a ?b 0 ?d ?k) (next ?b ?b1) (next ?d ?d1))
+  :assert (counted ?a ?b1 0 ?d1 ?k)
+  :why    "{?a} + {?b} is {?d}, so {?a} + {?b1} is one more: {?d1}")
+(rule plus-one-more-over-ten ()
+  :match  (and (counted ?a ?b 0 9 0) (next ?b ?b1))
+  :assert (counted ?a ?b1 0 0 1)
+  :why    "{?a} + {?b} is 9, so {?a} + {?b1} is ten: digit 0 and one ten")
+(rule plus-carry ()
+  :match  (and (counted ?a ?b 0 ?d ?k) (next ?d ?d1))
+  :assert (counted ?a ?b 1 ?d1 ?k)
+  :why    "{?a} + {?b} is {?d}, and the carry makes it one more: {?d1}")
+(rule plus-carry-over-ten ()
+  :match  (counted ?a ?b 0 9 0)
+  :assert (counted ?a ?b 1 0 1)
+  :why    "{?a} + {?b} is 9, and the carry makes it ten: digit 0 and one ten")
+
+(rule row-agrees ()
+  :match  (and (counted ?a ?b ?c ?d ?k) (fa ?a ?b ?c ?d ?k))
+  :assert (agrees ?a ?b ?c)
+  :why    "counting gives digit {?d}, carry {?k}, and so does the table")
+(rule row-digit-differs ()
+  :match  (and (counted ?a ?b ?c ?d ?k) (fa ?a ?b ?c ?e ?j) (neq ?d ?e))
+  :assert (disagrees ?a ?b ?c)
+  :why    "counting gives digit {?d} and the table {?e}")
+(rule row-carry-differs ()
+  :match  (and (counted ?a ?b ?c ?d ?k) (fa ?a ?b ?c ?e ?j) (neq ?k ?j))
+  :assert (disagrees ?a ?b ?c)
+  :why    "counting gives carry {?k} and the table {?j}")
+
+(rule walk-first ()
+  :match  (agrees 0 0 ?c)
+  :assert (agree-up-to 0 0 ?c)
+  :why    "the first row with carry {?c} agrees")
+(rule walk-on ()
+  :match  (and (agree-up-to ?a ?b ?c) (next ?b ?b1) (agrees ?a ?b1 ?c))
+  :assert (agree-up-to ?a ?b1 ?c)
+  :why    "and so does {?a} + {?b1}")
+(rule walk-next-line ()
+  :match  (and (agree-up-to ?a 9 ?c) (next ?a ?a1) (agrees ?a1 0 ?c))
+  :assert (agree-up-to ?a1 0 ?c)
+  :why    "the rows of {?a} all agree; on to {?a1}")
+(rule walk-end ()
+  :match  (and (agree-up-to 9 9 0) (agree-up-to 9 9 1))
+  :assert (every-row agrees)
+  :why    "all 200 rows agree with counting")
+
+;; Every row agrees, none disagrees, and the two rows the school method is taught on agree.
+(query :goal (every-row ?v)
+       :goal-text "every row of the full adder {?v} with counting"
+       :expect (model (every-row agrees)))
+(query :goal (disagrees ?a ?b ?c)
+       :goal-text "the row for {?a} + {?b} + carry {?c} is wrong"
+       :expect (model))
+(query :goal (and (agrees 8 7 ?c) (fa 8 7 ?c ?d ?k))
+       :goal-text "8 + 7 + carry {?c}: write {?d}, carry {?k}"
+       :expect (model (agrees 8 7 0) (agrees 8 7 1) (fa 8 7 0 5 1) (fa 8 7 1 6 1)))

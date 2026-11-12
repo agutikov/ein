@@ -1,0 +1,39 @@
+;;; The Fibonacci numbers F(0) to F(30), each the sum of the two before it.
+;;; Saturation alone: one addition a step, and a second to count the steps.
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.arith :symbols (arith))
+
+(relation fib-to Number :why "asked: the Fibonacci numbers up to F({?1})")
+(relation fb Number Number Number Number :why "on the way to F({?1}): F({?2}) is {?3}, and the next is {?4}")
+(relation fb-at Number Number Number Number :why "is {?2} below {?1}?")
+(relation fb-sum Number Number Number :why "the number after {?3}, at index {?2}")
+(relation fb-idx Number Number Number :why "the index after, for {?2} and {?3}")
+(relation fib-of Number Number :why "F({?1}) = {?2}")
+(__closed__ fib-to) (__closed__ fb) (__closed__ fb-at) (__closed__ fb-sum) (__closed__ fb-idx) (__closed__ fib-of)
+
+(fib-to (n (n z 3) 0))
+
+(rule fib-start ()
+  :match  (fib-to ?m)
+  :assert (fb ?m z z (n z 1))
+  :why    "F(0) is 0 and F(1) is 1")
+(rule fib-here ()
+  :match  (fb ?m ?i ?a ?b)
+  :assert (and (fib-of ?i ?a) (cmp-walk (fb-at ?m ?i ?a ?b) ?i ?m eq))
+  :why    "F({?i}) is {?a}: is {?i} below {?m}?")
+(rule fib-add ()
+  :match  (order-is (fb-at ?m ?i ?a ?b) lt)
+  :assert (add-walk (fb-sum ?m ?i ?b) ?a ?b 0 z)
+  :why    "ask {?a} + {?b}")
+(rule fib-count ()
+  :match  (done (fb-sum ?m ?i ?b) ?s)
+  :assert (add-walk (fb-idx ?m ?b ?s) ?i (n z 1) 0 z)
+  :why    "the one after {?b} is {?s}: count the step")
+(rule fib-step ()
+  :match  (done (fb-idx ?m ?b ?s) ?j)
+  :assert (fb ?m ?j ?b ?s)
+  :why    "on to F({?j})")
+
+(query :goal (fib-of (n (n z 3) 0) ?f) :goal-text "F(30) = {?f}"
+       :expect (model (fib-of (n (n z 3) 0) (n (n (n (n (n (n z 8) 3) 2) 0) 4) 0))))

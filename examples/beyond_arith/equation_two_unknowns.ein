@@ -1,0 +1,57 @@
+;;; A linear equation with two unknowns: which x below 100 and y below 10
+;;; make 3x + 5y = 47?
+;;;
+;;; x's two digits and y's one are hypotheses, 30 candidates. Here the
+;;; constraint is not a table but the calculator itself: once all three
+;;; digits are set, rules of this program ask `std.arith` for 3x, for 5y and
+;;; for their sum, and a sum that is not 47 is (false). So search and the
+;;; search-free theory meet: every guess is checked by a computation that
+;;; guesses nothing.
+;;;
+;;; R is three states: x = 4, y = 7; x = 9, y = 4; x = 14, y = 1. The price
+;;; of checking only whole numbers is that nothing is refuted before every
+;;; digit is set: of the 1 000 full assignments 997 are dead, each found
+;;; separately.
+;;;
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.arith :symbols (arith))
+(import std.algebra :symbols (total-owed functional))
+(relation is-a Thing Type :why "{?1} is a {?2}")
+(relation dig Place Digit :why "the digit at {?1} is {?2}")
+(is-a 0 Digit) (is-a 1 Digit) (is-a 2 Digit) (is-a 3 Digit) (is-a 4 Digit)
+(is-a 5 Digit) (is-a 6 Digit) (is-a 7 Digit) (is-a 8 Digit) (is-a 9 Digit)
+(is-a x1 Place) (is-a x0 Place) (is-a y0 Place)
+(__closed__ is-a)
+(total-owed dig is-a)
+(functional dig)
+
+(hrule guess-digit ()
+  :match  (and (is-a ?p Place) (is-a ?d Digit))
+  :assert (dig ?p ?d)
+  :why    "suppose the digit at {?p} is {?d}")
+
+(solve :hrules (guess-digit))
+
+(rule ask-products ()
+  :match  (and (dig x1 ?a) (dig x0 ?b) (dig y0 ?c))
+  :assert (and (mul (n (n z ?a) ?b) (n z 3)) (mul (n z ?c) (n z 5)))
+  :why    "every digit is set: ask 3x and 5y")
+
+(rule ask-sum ()
+  :match  (and (dig x1 ?a) (dig x0 ?b) (dig y0 ?c)
+               (product-of (n (n z ?a) ?b) (n z 3) ?p) (product-of (n z ?c) (n z 5) ?q))
+  :assert (add ?p ?q)
+  :why    "3x is {?p} and 5y is {?q}: add them")
+
+(rule wrong ()
+  :match  (and (dig x1 ?a) (dig x0 ?b) (dig y0 ?c)
+               (product-of (n (n z ?a) ?b) (n z 3) ?p) (product-of (n z ?c) (n z 5) ?q)
+               (sum-of ?p ?q ?s) (neq ?s (n (n z 4) 7)))
+  :assert (false)
+  :why    "3x + 5y is {?s}, not 47")
+
+(query :goal (and (dig x1 ?a) (dig x0 ?b) (dig y0 ?c)) :goal-text "x = {?a}{?b}, y = {?c}"
+       :expect (or (model (dig x0 4) (dig x1 0) (dig y0 7))
+                   (model (dig x0 4) (dig x1 1) (dig y0 1))
+                   (model (dig x0 9) (dig x1 0) (dig y0 4))))

@@ -262,8 +262,10 @@ programs under `tests/stdlib/int/`, one of them the division by zero; and the cl
   `ein saturate --dump` and `ein solve` over the 719 `.ein` files `f30fb51d` tracks: no answer moved; one file's
   error line prints the stdlib's directory, which the sweep sets (`python3 build/s1f.6.7/sweep.py`, 2026-11-12).
   No engine source moved, and `stdlib/arith.ein`, `digits.ein` and `num9.ein` are byte for byte what they were.
-- **A program that imports `std.int`** pays 24.0 ms of load where one that imports `std.arith` pays 19.8 (`ein
-  saturate examples/arith/int.ein` and `add.ein`, the `kb load:` line, 2026-11-12).
+- **A program that imports `std.int`** pays 22.4 ms of load where one that imports `std.arith` pays 19.9 (`ein
+  saturate examples/arith/int.ein` and `add.ein`, the `kb load:` line, best of five, 2026-11-12). **Re-taken:**
+  this line first read 24.0 against 19.8, a single run of each; S1f.6.8 re-took both best of five
+  ([its T4 record](s1f.6.8_rational_numbers.md)), and S1f.6.10 corrected the line to those figures.
 - **The goldens that move,** named before `EIN_BLESS=1`: `ein-cli/tests/golden/corpus_exits.txt`, 50 new cells, the
   ten new files'; `ein-render/tests/golden/corpus_shapes.md5`, 420 new lines, their 42 renderings each, and no
   other line (`git diff --numstat`, 2026-11-12).

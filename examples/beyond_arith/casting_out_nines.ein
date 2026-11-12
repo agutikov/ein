@@ -1,0 +1,70 @@
+;;; Casting out nines, checked on every number from 0 to 40: a number and
+;;; the sum of its digits leave the same remainder when divided by 9.
+;;; Saturation alone: the digit sum is a walk over the number's digits, each
+;;; an addition of std.arith; then two divisions by 9, and the remainders are
+;;; set against each other.
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.arith :symbols (arith))
+
+(relation count Number Number :why "counting: {?1}, on the way to {?2}")
+(relation cnt Number Number :why "is {?1} below {?2}?")
+(relation cnt-next Number :why "the number after, on the way to {?1}")
+(relation ds-walk Number Number Number :why "the digit sum of {?1}: {?2} still to read, {?3} so far")
+(relation ds-add Number Number :why "the digit sum of {?1} so far, {?2} still to read")
+(relation digit-sum Number Number :why "the digits of {?1} add up to {?2}")
+(relation n9-own Number Number :why "the remainder of {?1} by 9, to set against that of {?2}")
+(relation n9-sum Number Number :why "the remainder of {?1}'s digit sum by 9, to set against {?2}")
+(relation nines-hold Number Number :why "{?1} and its digit sum both leave {?2} by 9")
+(relation nines-fail Number Number Number :why "{?1} leaves {?2} by 9 and its digit sum leaves {?3}")
+(__closed__ count) (__closed__ cnt) (__closed__ cnt-next) (__closed__ ds-walk) (__closed__ ds-add) (__closed__ digit-sum)
+(__closed__ n9-own) (__closed__ n9-sum) (__closed__ nines-hold) (__closed__ nines-fail)
+
+(count z (n (n z 4) 0))
+
+;; Counting: (count K M) for K from the first to M, a comparison and an addition a step.
+(rule count-ask ()
+  :match  (count ?k ?m)
+  :assert (cmp-walk (cnt ?k ?m) ?k ?m eq)
+  :why    "is {?k} below {?m}?")
+(rule count-on ()
+  :match  (order-is (cnt ?k ?m) lt)
+  :assert (add-walk (cnt-next ?m) ?k (n z 1) 0 z)
+  :why    "{?k} is below {?m}: ask {?k} + 1")
+(rule count-next ()
+  :match  (done (cnt-next ?m) ?k)
+  :assert (count ?k ?m)
+  :why    "the next number is {?k}")
+
+(rule digit-sum-start ()
+  :match  (count ?n ?m)
+  :assert (ds-walk ?n ?n z)
+  :why    "add up the digits of {?n}")
+(rule digit-sum-step ()
+  :match  (ds-walk ?n (n ?p ?a) ?s)
+  :assert (add-walk (ds-add ?n ?p) ?s (n z ?a) 0 z)
+  :why    "add the digit {?a} to {?s}")
+(rule digit-sum-on ()
+  :match  (done (ds-add ?n ?p) ?s)
+  :assert (ds-walk ?n ?p ?s)
+  :why    "so far {?s}")
+(rule digit-sum-end ()
+  :match  (ds-walk ?n z ?s)
+  :assert (and (digit-sum ?n ?s) (div-call (n9-own ?n ?s) ?n (n z 9)))
+  :why    "the digits of {?n} add up to {?s}: now divide {?n} by 9")
+(rule nines-second ()
+  :match  (div-done (n9-own ?n ?s) ?q ?r)
+  :assert (div-call (n9-sum ?n ?r) ?s (n z 9))
+  :why    "{?n} leaves {?r}: now divide the digit sum {?s} by 9")
+(rule nines-same ()
+  :match  (div-done (n9-sum ?n ?r) ?q ?r)
+  :assert (nines-hold ?n ?r)
+  :why    "the digit sum leaves {?r} too")
+(rule nines-differ ()
+  :match  (and (div-done (n9-sum ?n ?r) ?q ?t) (neq ?r ?t))
+  :assert (nines-fail ?n ?r ?t)
+  :why    "the digit sum leaves {?t}, not {?r}")
+
+(query :goal (nines-fail ?n ?r ?t)
+       :goal-text "{?n} leaves {?r} by 9 and its digit sum leaves {?t}"
+       :expect (model))

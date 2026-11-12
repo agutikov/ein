@@ -1329,6 +1329,51 @@ constrained-reasoning research.
   on a prototype, which doubles the firings of every sum; (c) an engine
   change, not built. Nothing was built past the statement: the stdlib's
   rules did not move, only `arith.ein`'s header.
+  **S1f.6.10, the investigation of what the theory can do besides
+  arithmetic, ran on 2026-11-12 and is shown to the user**
+  ([`beyond_arithmetic.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/beyond_arithmetic.md),
+  [its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md#t1-record-2026-11-12);
+  Q-M1f.186 to .189 defaulted). No stdlib module and no engine source moved.
+  **A table is a relation, so a rule reads it in any direction**: an
+  equation with one unknown, x + 4567 = 127645 or x × 7 = 861, is solved by
+  saturation alone, and where a column has two answers saturation derives
+  both walks and the next column ends the wrong one. **With the unknown
+  digits as hypotheses it is a search**, under `total-owed` and
+  `functional`: `ein solve --single` takes 10n + 1 saturations for n digits
+  where the constraint is a column at a time, and about 10ⁿ where it is one
+  whole-number check through `std.arith`; `ein oracle` agrees at 10 and 20
+  candidates. SEND + MORE = MONEY is solved and shown unique by `--single`
+  in 17 747 saturations, 0.5 s, where `zebra.ein` takes 49 (`python3
+  build/s1f.6.10/t.py OUT ein solve build/s1f.6.10/p/p3_send.ein --single`,
+  2026-11-12). **Three findings, none a wrong answer** (the phase's
+  `findings.md`): E-29, the obligation tree branches in the order the
+  obligations are written, so the same cryptarithm with its letters declared
+  as written had no answer in 600 s; E-30, `ein test` decides a claim by
+  describing R, so a claim `--single` decides in half a second is NOT
+  CHECKED; E-31, describing R spends its time on a hypergraph transversal
+  (`ein_infer::transversal`), 94 % of 5.1 s on a five-digit equation. **An
+  equation with no solution reads three ways**: silence, an R that is empty
+  because every alive node owes (`Open`, E-23), or a dead root whose unsat
+  core is the proof, three table rows, where the table makes the unknown's
+  digit unique. **Of a theorem Ein checks the finite part**: the laws of
+  arithmetic on every instance of a domain, and the full adder's 200 rows
+  against addition by counting; *for every number* and the induction on
+  columns are outside it, [M1g](plans/m1g_logic/README.md)'s. Number theory
+  by saturation, primes to 5 000, casting out nines to 9 999, perfect
+  numbers to 250, Collatz, gcd, each agrees with Python, and memory is the
+  limit (E-26). **Sixteen probes are banked under
+  [`examples/beyond_arith/`](examples/beyond_arith/)**, beside
+  `examples/arith/` and not in it, since `arith_search_free.rs` holds every
+  file there to *no candidate* and four of these search; each has a claim
+  and a corpus entry, sized so that a bare `ein solve` exhausts R. Eight of
+  them compute through `std.arith`'s tagged calls, `add-walk`, `mul-call`,
+  `div-call` and `cmp-walk`, since a check written with ordinary joins on
+  numbers took 16.8 s where the tagged form takes 0.42 (E-3); whether those
+  calls are an interface is the user's
+  ([Q-M1f.189](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f189--a-users-program-calling-stdariths-tagged-calls)).
+  **What becomes a stage is the user's**: the page recommends inverse
+  requests in `std.arith`, `ein test` by the cheapest route that decides a
+  claim, and a small cryptarithm theory after it. The register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,

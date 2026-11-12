@@ -1,0 +1,64 @@
+;;; The Pythagorean triples up to 13: every a, b and c from 1 to 13 with
+;;; a times a + b times b = c times c. Saturation alone: the squares are
+;;; computed once, every pair of squares is added, and a sum that is itself
+;;; one of the squares is a triple. That last step is an ordinary join on a
+;;; number, which is how a question about a whole set is asked.
+;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; the probe this program was banked from, its cost and what it shows.
+(import std.arith :symbols (arith))
+
+(relation count Number Number :why "counting: {?1}, on the way to {?2}")
+(relation cnt Number Number :why "is {?1} below {?2}?")
+(relation cnt-next Number :why "the number after, on the way to {?1}")
+(relation sq Number :why "{?1} times itself")
+(relation square Number Number :why "{?1} squared is {?2}")
+(relation py Number Number :why "the squares of {?1} and {?2} added")
+(relation squares-sum Number Number Number :why "the squares of {?1} and {?2} add up to {?3}")
+(relation triple Number Number Number :why "{?1}, {?2}, {?3} is a Pythagorean triple")
+(__closed__ count) (__closed__ cnt) (__closed__ cnt-next) (__closed__ sq) (__closed__ square) (__closed__ py)
+(__closed__ squares-sum) (__closed__ triple)
+
+(count (n z 1) (n (n z 1) 3))
+
+;; Counting: (count K M) for K from the first to M, a comparison and an addition a step.
+(rule count-ask ()
+  :match  (count ?k ?m)
+  :assert (cmp-walk (cnt ?k ?m) ?k ?m eq)
+  :why    "is {?k} below {?m}?")
+(rule count-on ()
+  :match  (order-is (cnt ?k ?m) lt)
+  :assert (add-walk (cnt-next ?m) ?k (n z 1) 0 z)
+  :why    "{?k} is below {?m}: ask {?k} + 1")
+(rule count-next ()
+  :match  (done (cnt-next ?m) ?k)
+  :assert (count ?k ?m)
+  :why    "the next number is {?k}")
+
+(rule square-ask ()
+  :match  (count ?k ?m)
+  :assert (mul-call (sq ?k) ?k ?k)
+  :why    "ask {?k} times {?k}")
+(rule square-is ()
+  :match  (done (sq ?k) ?s)
+  :assert (square ?k ?s)
+  :why    "{?k} squared is {?s}")
+(rule pair-ask ()
+  :match  (and (square ?a ?s) (square ?b ?t))
+  :assert (add-walk (py ?a ?b) ?s ?t 0 z)
+  :why    "ask {?s} + {?t}, the squares of {?a} and {?b}")
+(rule pair-is ()
+  :match  (done (py ?a ?b) ?u)
+  :assert (squares-sum ?a ?b ?u)
+  :why    "the squares of {?a} and {?b} add up to {?u}")
+(rule triple-found ()
+  :match  (and (squares-sum ?a ?b ?u) (square ?c ?u))
+  :assert (triple ?a ?b ?c)
+  :why    "{?u} is the square of {?c}")
+
+(query :goal (triple ?a ?b ?c) :goal-text "{?a}, {?b}, {?c}"
+       :expect (model (triple (n (n z 1) 2) (n z 5) (n (n z 1) 3))
+                      (triple (n z 3) (n z 4) (n z 5))
+                      (triple (n z 4) (n z 3) (n z 5))
+                      (triple (n z 5) (n (n z 1) 2) (n (n z 1) 3))
+                      (triple (n z 6) (n z 8) (n (n z 1) 0))
+                      (triple (n z 8) (n z 6) (n (n z 1) 0))))
