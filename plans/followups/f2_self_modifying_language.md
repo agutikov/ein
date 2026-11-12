@@ -1,5 +1,7 @@
 # F2 — Self-modifying constraint language with LLM ↔ harness loop
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. M12 lists it as rung 1 beside F5's rung 2.
+
 **Theme owner:** the user.
 **Trigger:** M2 (LLM infra + GBNF for IR) is complete and stable.
 

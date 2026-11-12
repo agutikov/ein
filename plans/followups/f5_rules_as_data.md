@@ -1,5 +1,7 @@
 # F5 — Operate IR rules as data (graph self-rewriting)
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. M12's first phase is a census of the rules the corpus holds, [`rule_census.md`](../m12_rules_as_data/rule_census.md).
+
 **Theme owner:** the user.
 **Trigger:** P1.3 ships (rule firing engine is real) + a concrete
 self-reflection use-case in mind. *(The second half used to read "M3

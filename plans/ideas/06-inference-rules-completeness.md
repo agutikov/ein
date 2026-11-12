@@ -1,5 +1,7 @@
 # Completeness of inference rules
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. Its census counts the rule shapes the corpus holds: [`rule_census.md`](../m12_rules_as_data/rule_census.md).
+
 ## The open question
 
 The 5-year-old `Ein` defines two inference rules:

@@ -1,5 +1,7 @@
 # Generic self-modification — three rungs
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. M12 is rung 2.
+
 The user's framing of the self-modifying-system goal as **three
 rungs of a ladder**, each riding on the substrate the previous one
 established. None is on a near-term schedule; together they describe

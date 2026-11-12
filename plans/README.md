@@ -155,6 +155,14 @@ the tree they left, and one out of that review's close:
   the clock second. M1c's P1c.2 until 2026-08-23, when it was promoted; the
   answers it establishes are checked back in as M1c's `:expect`, so the two
   are still one pipeline.
+- **M12 — Rules as data** ([m12_rules_as_data/](m12_rules_as_data/README.md)) —
+  planned 2026-11-12 on the user's instruction. It pulls together what the
+  ideas and followups say about rules as data
+  ([F5](followups/f5_rules_as_data.md) first) and designs nothing; its first
+  phase, a census of the rules the corpus holds, their shapes with names
+  abstracted and the connections between them, ran the same day
+  ([`rule_census.md`](m12_rules_as_data/rule_census.md)). Later phases are
+  the user's to define once the results are read.
 - **M15 — An Ein MCP server** ([m15_mcp_server/](m15_mcp_server/README.md)) —
   planned 2026-11-12 on the user's one-line note; a placeholder that lists
   what would have to be decided and designs nothing.
@@ -267,6 +275,9 @@ plans/
 │   ├── README.md                     (was m1c_external_validation/p1c.2_*)
 │   ├── open_questions.md
 │   └── s10.1_problem_corpus.md …     5 stages, no phase level
+├── m12_rules_as_data/                rules as data — planned 2026-11-12
+│   ├── README.md                     (the user's instruction verbatim; the sources pulled together)
+│   └── rule_census.md                P12.1's results: shapes, groupings, connections
 ├── m15_mcp_server/                   an Ein MCP server — planned 2026-11-12
 │   └── README.md                     (a placeholder: what would have to be decided)
 ├── m20_gui/                          the GUI — Tauri 2 + React + Monaco + Cytoscape
@@ -319,6 +330,7 @@ Stage files have a stable shape:
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
+| [M12](m12_rules_as_data/README.md)      | README + the census's results page | **planned** 2026-11-12 on the user's instruction, not started as a milestone. Rules as data: the sources pulled together, nothing designed. Its first phase, the census of rules, ran 2026-11-12 ([`rule_census.md`](m12_rules_as_data/rule_census.md)); later phases are the user's to define | — |
 | [M15](m15_mcp_server/README.md)         | placeholder README only | **planned** 2026-11-12 on the user's one-line note, not started: an Ein MCP server. Nothing designed | — |
 | [M20](m20_gui/README.md)                | README + stack decision | parked — depends on M1a, blocks nothing; Tauri stack settled 2026-08-18 (was M1b) | TBD |
 | ~~M3 — SMT integration~~                | *(deleted 2026-08-18 — dropped; see git history)* | **dropped** | — |

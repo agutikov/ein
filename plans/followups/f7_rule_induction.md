@@ -1,5 +1,7 @@
 # F7 — Rule taxonomy + rule induction
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. Its census, [`rule_census.md`](../m12_rules_as_data/rule_census.md), measures the taxonomy below on the corpus.
+
 The hand-authored rule library is the engine's largest hardcoded
 input. Two related followups: (a) classify rules by their
 *structural shape* and use the classification to mechanically lift

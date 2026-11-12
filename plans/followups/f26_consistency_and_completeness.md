@@ -1,5 +1,7 @@
 # F26 — Consistency and completeness: Ein's two words, logic's, and common sense's
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. M12 lists the section on self-reference below.
+
 **Filed 2026-11-11**, on the user's instruction of that day:
 
 > I don't remember if followups or somewhere else mentioned consistency and completeness in Ein (open/owe,

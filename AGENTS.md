@@ -1553,6 +1553,19 @@ constrained-reasoning research.
   binary arithmetic and binary logic, are its starting point.
   [F26](plans/followups/f26_consistency_and_completeness.md) sets Ein's
   *alive*, *owes* and *exhausted* beside logic's consistency and completeness.
+  **A third plan was added on 2026-11-12, on the user's instruction of that
+  day:** [M12](plans/m12_rules_as_data/README.md), *rules as data*, which
+  gathers what the tree says of it (F5, `08_self_describing.md` § 5, ideas
+  01, 06 and 10, F7, F8's C(n), M1g's S1g.6.5, F24, F26, P1f.8's S1f.8.11)
+  and designs nothing. Its first phase, the census of rules, ran the same
+  day: **[`rule_census.md`](plans/m12_rules_as_data/rule_census.md)** is the
+  results page, shapes of rules with names abstracted, ways to group them and
+  a catalogue of connections between rules, observations and no goal (*"No
+  specific goals right now, want to see analyze results"*). Its tables are
+  written by `python3 utils/rule_census.py --page
+  plans/m12_rules_as_data/rule_census.md`: edit the script, never the tables,
+  and re-take it when the corpus has grown. Later phases are the user's to
+  define.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -1863,14 +1876,15 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **thirty-six scripts** (`ls utils/*.py utils/*.sh | wc -l`,
-  2026-11-11; the thirty-second, `nl_census.py`, is M1f S1f.5.14's: how much of
+- **`utils/`** — **thirty-seven scripts** (`ls utils/*.py utils/*.sh | wc -l`,
+  2026-11-12; the thirty-second, `nl_census.py`, is M1f S1f.5.14's: how much of
   what Ein answers reads as English, the thirty-third,
   `gen_arith_tables.py`, M1f S1f.6.2's: it writes `stdlib/digits.ein` and runs
   no engine, two M1f S1f.6.15's: `gen_arith_examples.py` writes three
   example programs, and `arith_cost.py` measures where an arithmetic
-  program's time goes, and the last M1f S1f.6.13's, `gen_num9.py`, which
-  writes `stdlib/num9.ein`), **all but four driving `ein.rs`**.
+  program's time goes, one M1f S1f.6.13's, `gen_num9.py`, which
+  writes `stdlib/num9.ein`, and the last M12's, `rule_census.py`, the census
+  of rules, which reads the corpus as text), **all but five driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
   wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,

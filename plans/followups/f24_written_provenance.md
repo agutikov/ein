@@ -1,5 +1,7 @@
 # F24 — Written provenance: what a fact's `:rule` and `:using` may claim
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is. F24 keeps its question and its rows.
+
 **Filed 2026-11-11**, on the user's ruling of that day (*"yes S1f.7.9 moves to a new F24"*), from M1f
 [S1f.7.9](../m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.9_a_facts_rule_that_names_no_rule.md)
 and the [analysis of 2026-11-11](../m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/README.md#the-analysis-of-2026-11-11).

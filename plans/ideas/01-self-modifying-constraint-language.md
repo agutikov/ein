@@ -1,5 +1,7 @@
 # Self-modifying constraint language with LLM ↔ harness loop
 
+> **Pulled into [M12](../m12_rules_as_data/README.md) (2026-11-12)**, *rules as data*, on the user's instruction of that day; this file stays where it is.
+
 ## The idea, in one paragraph
 
 Put into the LLM's system prompt:
