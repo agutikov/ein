@@ -66,7 +66,7 @@ build/s1f.6.7/intdiv_proto.py`, 2026-11-12); −7 ÷ 2 is 124 firings under (a) 
 **Recommended: (a).** The remainder is a natural number, which is what the theory below has and what number
 theory reads. If your reader is a programmer first, (b) is the cheaper and more familiar one.
 
-**Reply:**
+**Reply:** (d)
 
 <a id="q2"></a>
 
@@ -84,7 +84,7 @@ paragraph.
 **Recommended: none stated in the source.** Its reason for choosing Euclidean, *the remainder is a natural
 number*, leans to (a); the prototype answers an integer.
 
-**Reply:**
+**Reply:** (a)
 
 ---
 
@@ -114,7 +114,7 @@ Rust suites' inline programs were not scanned.
 
 **Recommended: (a).** It turns four rows of the page's table from silence into a refusal that names the place.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q4"></a>
 
@@ -141,7 +141,7 @@ costs in proportion to its count.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q5"></a>
 
@@ -157,7 +157,7 @@ flagged monotonically. A misspelt constant is a likely slip. Source: malformed_n
 
 **Recommended: (a),** unless you want the rule of the theory relaxed for this one premise.
 
-**Reply:**
+**Reply:** Why absent? Why not (false)? It's calculator semantic - used but not declared variable (constant in our case). Or that means it can be deduced, and then after declaration appears finished calculation?
 
 <a id="q6"></a>
 
@@ -177,7 +177,7 @@ is an absence, so no monotone rule can say it. Sources: malformed_numbers.md § 
 
 **Recommended: (a)** is what `malformed_numbers.md` proposes; `binary_arithmetic.md` asks without recommending.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q7"></a>
 
@@ -195,7 +195,7 @@ requests and `let`), and the loader refuses the rest. Source: malformed_numbers.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a), btw, `2 + 2 = 5` is interesting question - what happens to the program that states false facts? If it is not solved already by-product in existing theories - I expect it belongs to either p1f.8 or M1g
 
 <a id="q8"></a>
 
@@ -211,7 +211,7 @@ importing the theory flat may not declare. Source: malformed_numbers.md Q5; [Q-M
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** usage of imported theories should be convenient, and allow mixing and connecting theories, if they have common things (like digits.ein) they are already connected, potential names clash is a gap of import mechanism, plan a stage for investigation, proposals and fix
 
 <a id="q9"></a>
 
@@ -226,7 +226,7 @@ nothing else. Source: malformed_numbers.md Q6.
 
 **Recommended: none in the source,** which leaves it to the build after the rulings above.
 
-**Reply:**
+**Reply:** (b), I don't expect we will use num9 further, it is recorded as an example of alternative numbers representation
 
 ---
 
@@ -256,7 +256,7 @@ three such pairs; **no rule needed two operations at once**.
 Already settled if it is ruled in: `sub` inside an expression is strict, and division is two heads, `div` and
 `mod`.
 
-**Reply:**
+**Reply:** both go into p1f.8, where expressions naturally belong to, with check of used names, with check of recursive name usage (let a (+ a 1)) and other
 
 <a id="q11"></a>
 
@@ -272,7 +272,7 @@ You ruled named constants in. The reading built was the coordinator's default. S
 
 **Recommended: (a),** as built.
 
-**Reply:**
+**Reply:** (a) if it is already built, why asking...
 
 <a id="q12"></a>
 
@@ -289,7 +289,7 @@ is an integer where a rational goes; 5 as a rational is written `(rat (int (n z 
 **Recommended: (a) for now;** the sources note that an expression layer ([question 10](#q10)) would meet the question
 again.
 
-**Reply:**
+**Reply:** question about type system inside the theory; lets postpone it till M1g, types theory deserves it's own separate theory file in stdlib, and then we will try to use it to solve this; keep as is now
 
 ---
 
@@ -325,7 +325,7 @@ every number is 3.3 times longer. Source:
 **Recommended: (b).** The smallest and cheapest, and the only one that conversion between the bases and the
 logic gates can import plainly. (c)'s generality is the *any base* you set aside (*"skip different bases"*).
 
-**Reply:**
+**Reply:** (b)
 
 <a id="q14"></a>
 
@@ -340,7 +340,7 @@ The prototype's are placeholders: the shape `(b2 PREFIX BIT)`, the requests `add
 
 **Recommended: none stated.**
 
-**Reply:**
+**Reply:** a is ambiguous, add2 looks like add with 2 operands etc. Take (b), but ints and rats - different question. binary and decimal is numbers representation, integers, rationals, ... complex - are numbers types based on naturals of some representation. Add new stage into p1f.8 to investigate how to make compound numbers without hardcoded representation so can switch between binary and decimal, and maybe later use any new natural numbers there, or even not numbers...
 
 <a id="q15"></a>
 
@@ -354,7 +354,7 @@ base. Source: binary_arithmetic.md Q3.
 
 **Recommended: none stated;** (a) is what was built and measured.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q16"></a>
 
@@ -370,7 +370,7 @@ Under (b), 51 of the 67 rules are `std.arith`'s up to their names. Source: binar
 **Recommended: (a),** the page's recommendation for (b): the two cannot drift, and the decimal module stays a
 file a reader can follow.
 
-**Reply:**
+**Reply:** yes, extract common rules into separate file the both import, btw rename arith to decimal-arith
 
 <a id="q17"></a>
 
@@ -386,7 +386,7 @@ file a reader can follow.
 
 **Recommended: none stated.** 255 to binary is 826 firings and back is 76.
 
-**Reply:**
+**Reply:** (b)
 
 <a id="q18"></a>
 
@@ -406,7 +406,7 @@ where the shipped one is 36. Source: binary_arithmetic.md Q6.
 
 **Recommended: none stated;** the page records it and says it is not that stage's to act on.
 
-**Reply:**
+**Reply:** I expected you implement https://en.wikipedia.org/wiki/Long_division ; What is shipped now? I think there are invented many different fast division algorithms, implemented in CPUs, long numbers meth libraries, etc. Let's leave this aside for now - having one implementation now is enough
 
 ---
 
@@ -433,7 +433,7 @@ any spelling will do. Say here if one should change; `Randn` and `Rorn` are the 
 
 **Recommended: (a).** Nothing on the prototype wanted the second layout.
 
-**Reply:**
+**Reply:** (c)
 
 <a id="q20"></a>
 
@@ -448,7 +448,7 @@ the 64 rows by monotone rules, in 405 firings. Source: binary_logic.md Q3.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (b), and I think we want to have those rules in separate reusable file
 
 <a id="q21"></a>
 
@@ -463,7 +463,7 @@ binary_logic.md Q4.
 
 **Recommended: none stated.**
 
-**Reply:**
+**Reply:** (b)
 
 <a id="q22"></a>
 
@@ -483,7 +483,7 @@ binary_logic.md Q5 and § 2.
 
 **Recommended: (a);** each agrees with a Python count and with the facts Ein derives.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q23"></a>
 
@@ -500,7 +500,7 @@ Source: binary_logic.md Q8.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a) and examples/binary_logic already made
 
 <a id="q24"></a>
 
@@ -527,7 +527,8 @@ saturation, where the table makes each digit unique, it is a dead root whose cor
 **Recommended: none stated** in any of the three sources; they name the read-out row as
 [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s question and (b) as M1g's.
 
-**Reply:**
+**Reply:** solution of `x × 7 = 862` belongs yet to arithmetic or already to algebra? this question open vs. false is deep.
+What would give more benefits, I expect `open` will, but why? Can we change it quickly later? We already have core for dead state, do we have anything like this for open? What it could be used for, I remember we already use it for hypothesis generation? It is not the case here - we would not generate hypothesis like (let x <number>) for every numbers already present in KB. It looks like an entire separate phase.
 
 <a id="q25"></a>
 
@@ -549,11 +550,19 @@ one state 2ⁿ. The same truth table from written input vectors is one saturatio
 
 **Recommended: none stated.**
 
-**Reply:**
+**Reply:** Is this about SAT, binary circuits or what? I don't see how (a) and (b) conflict, are they?
 
 ---
 
 ## F. Word problems
+
+TODO: New milestone M1h - further work beyond word problems. 3 phases:
+p1h.10 - pick a prose text for like end of elementry school (3-5th grade) 50-100 sentences, very famous everybody would remember from school. Write 50 questions grouped into 5 groups by complexity from elementary (who did what) to very complex (idk maybe: feelings, motivation explanation, call of duty, moral dilemmas, what auther wanted to say, etc.)
+And then formalize the text and questions, and then write 5 theories (or one theory and 5 ontologies) that allow answering those groups of questions. I expect theories complexity would grow (measuring complexity is itself a question, but let's now just count rules, rules size, facts, objects and names).
+p1h.20 - requirements verification. How is it done in real world? e.g. in systems design, or market research, construction, renovation, hair styling, cooking, anywhere. First survey methods of requirement verification. I think there are many, different tables, analysis, answering pre-defined or template questions and other approaches. How it is done? Probably my modelling. Like threats modelling, failures modelling, and many different modellings.
+p1h.30 - TRIZ/TIPS by Genrikh Saulovich Altshuller; can we formalize it in Ein?
+
+
 
 A prototype theory of what the words of a school problem mean (*has*, *gave*, *together*, *need*), over the
 calculator, with 29 programs. **The problems were banked on 2026-11-12 under `examples/word_problems/`, in the
@@ -576,7 +585,7 @@ the recommendation changes those files. [question 10](#q10), on expressions, too
 
 **Recommended: (a);** (c) is the form to translate *from*, which is what M2 would produce first.
 
-**Reply:**
+**Reply:** Obviously there are at least 2 parts: order of events on a theoretical/virtual timeline - they can be points, they can be ranges, they can be hard, soft, unknown etc. And there is a causal tree. Both are separate theories, can be reused and deserve separate files in stdlib, right? it is a new phase, put it in the beginning of M1h. In the Bob/Alice prototype - pick the simplest that works - leave what is implemented already. This problem already did it's work - showed need of 2 theories - temporal and causal.
 
 <a id="q27"></a>
 
@@ -592,7 +601,7 @@ means a contradiction in the facts is found only if a question reaches it. Sourc
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a), another new phase in M1h, theory slicing or something like - question and inference of the answer cuts the program (which is a model of a problem) into 2 parts used/unused, required/superfluous. Ein must allow showing (print, dump) those parts.
 
 <a id="q28"></a>
 
@@ -610,7 +619,7 @@ means a contradiction in the facts is found only if a question reaches it. Sourc
 
 **Recommended: (b),** the only form that says all three things in the read-out.
 
-**Reply:**
+**Reply:** see my answer in question 24; in general - need to discuss, analyze, needs a separate stage. But I want already written word problems banked as is, so pick recommended, and note that is is not only and not final.
 
 <a id="q29"></a>
 
@@ -625,7 +634,7 @@ means a contradiction in the facts is found only if a question reaches it. Sourc
 
 **Recommended: (a) today.**
 
-**Reply:**
+**Reply:** again - for this stage (a) is OK, return back to investigations of this in M1h
 
 <a id="q30"></a>
 
@@ -642,7 +651,7 @@ Source: word_problems.md Q5.
 
 **Recommended: (a),** which is smaller and is wanted by the readings of [question 31](#q31) too.
 
-**Reply:**
+**Reply:** that simple problem couldn't have non-monotone solution, I mean the problem is too simple and too obvious, or not? or that means that simple problem, containing ambiguity, could already be non-monotone? Or that means ambiguity == non-monotone solution == required additional information? Again - those questions go into M1h. Here I don't care - so pick (a).
 
 <a id="q31"></a>
 
@@ -663,7 +672,7 @@ built), or is a reading always chosen? Say which with the letter.
 
 **Recommended: (a);** or (b) if R should hold only the readings.
 
-**Reply:**
+**Reply:** reading always chosen, it can't be not chosen: result depends on formula, formula depends on selected arith operations, selection depend on reading. The synthesized program must be able answer question about the solution, like "why you divided those numbers? why not 3/12, not 3+12, not 12-3, and so on" btw there could be the case when answer is correct, but solution is not, right? And finally the solution could be correct, but reasoning not - this case is M2 and Ein theory of itself or theory of solutions - so out of the scope here.
 
 <a id="q32"></a>
 
@@ -677,7 +686,7 @@ built), or is a reading always chosen? Say which with the letter.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** what is not listed is zero - good idea, it could be a reusable universal assumption.
 
 <a id="q33"></a>
 
@@ -692,7 +701,9 @@ word_problems.md Q8 and § 5.
 
 **Recommended: (a),** one such fact per assumption if the theory ships.
 
-**Reply:**
+**Reply:** Is this a finite set of assumptions? What is it limited by? Used names/words? Probably we don't need to say that things are not alive and don't run out of the boxes, becasue the problem doesn't contain words "alive" and "run", or do we?
+But the same time we assume things fit boxes, while problem doesn't have this word.
+Btw, if we add rules and ontology that restricts throwing things away and after that the solution will not touch those rules and facts (see my answer 27) - that means this is not required information?
 
 <a id="q34"></a>
 
@@ -708,7 +719,7 @@ Source: word_problems.md Q9 and § 8.
 **Recommended: (a);** it can move if it proves itself over P1f.8's algebra problems. It is where the files
 were banked.
 
-**Reply:**
+**Reply:** examples for now - (a)
 
 <a id="q35"></a>
 
@@ -723,7 +734,7 @@ sizes and part-filled boxes; fractions of a share. Source: word_problems.md Q10 
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** Take only needed right now. There are many words and they can have many different meaning in different contexts. We don't enumerate them all, at least now.
 
 <a id="q36"></a>
 
@@ -742,7 +753,7 @@ The same reasoning also reads *(n z 5) + (n z 7) = (n (n z 1) 2)*, which is [que
 
 **Recommended: none stated.**
 
-**Reply:**
+**Reply:** How we can divide 2 parts? inference of a formula and calculations, the second is already solved (in arithmetic at least), but only if formula is well-formed, correct as a formula itself (all operations have required arguments, numbers and names correctly used, no division by zero, etc...). Yes, this is a phase in M1h
 
 ---
 
@@ -768,7 +779,7 @@ Eleven rules were enough on the prototype; three such requests took 33 firings. 
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** Q24 already asked this, Is it possible at all to solve it by saturation without algebra rules that allows infer x*7=862 -> x=862/7 ? Again is it arithmetics or algebra?
 
 <a id="q38"></a>
 
@@ -782,9 +793,16 @@ and lcm. Source: beyond_arithmetic.md Q5.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a) but not into std.arith; it's time to make a std.math with subfolders; 
+
+
 
 <a id="q39"></a>
+
+TODO: new milestone M15 - Ein MCP server
+TODO: small milestone M1j about nlp/ and smt/ - put both into one folder, reincarnate linkgrammar script or replace with equivalent, write small not necessarily universal program in lisp that converts linkgrammar output into smt code, one direction
+combine all together with python wrapper, allow only limited set of words in NL required only for this zebra puzzle. Not a solution, just PoC, don't make it degenerate, not just output hardcoded text, but make it simple. The requirement is that I add/remove input NL lines, change order, swap things in NL (e.g. swap Norwegian and Ukrainian) - it can change the solution or break it.
+
 
 ### 39. Should `ein test` decide a claim by the cheapest route that decides it?
 
@@ -800,7 +818,7 @@ the same file, *Solution — R is one state*, 0.5 s (2026-11-12).
 
 **Recommended: (a),** before any theory of puzzles ships an example it cannot test.
 
-**Reply:**
+**Reply:** I don't understand the question, explain in more details and examples
 
 <a id="q40"></a>
 
@@ -820,7 +838,7 @@ declared as the puzzle is written, no answer in 600 s (2026-11-12).
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** Yes! Hypothesis structure phase. The concrete strategy that defines hypothesis order can be different, but it definitely will depend on the hyp structure. So first need to automate analysis/discovery of the structure itself, and then use it as input to hyp ordering strategy.
 
 <a id="q41"></a>
 
@@ -843,7 +861,7 @@ calls (`build/s1f.6.10/gen4.py` against `gen4t.py`, 2026-11-12).
 
 **Recommended: (a);** they are stable already, since two shipped modules call them.
 
-**Reply:**
+**Reply:** I don't understand the question
 
 <a id="q42"></a>
 
@@ -859,7 +877,7 @@ beyond_arithmetic.md Q7.
 
 **Recommended: (a);** say the name if not `std.crypt`.
 
-**Reply:**
+**Reply:** Yes, again not std.crypt, maybe std.math.arith.crypt
 
 <a id="q43"></a>
 
@@ -876,7 +894,7 @@ Q8; [Q-M1f.186](../open_questions.md#q-m1f186--where-the-probes-of-s1f610-are-ba
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a)
 
 ---
 
@@ -907,7 +925,7 @@ A state past the limit is at least 40 MB of text; a 998-digit sum is 6.7 s and 8
 
 **Recommended: (a), until a program needs more.**
 
-**Reply:**
+**Reply:** Who needs 100-digit numbers? Will eventually add floats, but later. pick (a)
 
 <a id="q45"></a>
 
@@ -928,7 +946,7 @@ followed. Source: [Q-M1f.147](../open_questions.md#q-m1f147--the-dot-sweep-and-a
 
 **Recommended: (a).** What a view *should* draw of a table is row E-10 of section J.
 
-**Reply:**
+**Reply:** don't test graphviz itself - that is the main point here. just skip big graphs, run tests only on small
 
 <a id="q46"></a>
 
@@ -944,7 +962,7 @@ workflow. Source: [Q-M1f.150](../open_questions.md#q-m1f150--the-counter-and-how
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (b) - we don't need this proportional gate
 
 <a id="q47"></a>
 
@@ -960,7 +978,7 @@ where a nine-digit sum offers 181. Source: [Q-M1f.158](../open_questions.md#q-m1
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** I don't understand the question
 
 <a id="q48"></a>
 
@@ -983,7 +1001,7 @@ table rows where the zero is written with digits.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** I don't understand the question: (div ?x 0) must emit division-by-zero no matter where it happens (except theories where it is allowed - like wheels, meadows, transreal arithmetic, etc...).
 
 <a id="q49"></a>
 
@@ -1000,7 +1018,7 @@ instead. Source: [Q-M1f.166](../open_questions.md#q-m1f166--the-sizes-of-the-gen
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** Let's have biggest solvable arithmetic calculation in let's say 100+-50 seconds on this host. make a generator in python that takes some size arguments and generate an example.
 
 <a id="q50"></a>
 
@@ -1019,7 +1037,7 @@ By this generator a fixed-width module stops at fourteen digits.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** 162 bindings is already amazing that it works, don't touch; pick (a)
 
 <a id="q51"></a>
 
@@ -1034,7 +1052,7 @@ number, and the program goes on; a division by zero there is a contradiction, as
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a), like in programming - you know about overflow only if check, user may add own rule overflow -> false or not
 
 <a id="q52"></a>
 
@@ -1056,7 +1074,7 @@ remainder.
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** already answered - many new modules inside std.math, rename arith to decimal-arith, may have internal structure if it make sense: std.math.decimal-arith.overflow
 
 <a id="q53"></a>
 
@@ -1073,7 +1091,7 @@ Source: [Q-M1f.146](../open_questions.md#q-m1f146--how-stddigits-closes-its-tabl
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q54"></a>
 
@@ -1088,7 +1106,7 @@ Source: [Q-M1f.146](../open_questions.md#q-m1f146--how-stddigits-closes-its-tabl
 
 **Recommended: (a).**
 
-**Reply:**
+**Reply:** gcd cost is log2? of what, of number length or value? Euclid's chain complexity? I think we don't need to reduce every rational, can ask explicitely for it?
 
 ---
 
