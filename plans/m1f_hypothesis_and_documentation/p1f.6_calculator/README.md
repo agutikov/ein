@@ -144,6 +144,8 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 
 **The investigations are closed** (the user, 2026-11-12: *"enough investigations, just write down results in documentation"*). Their results are the pages named in the table, [`malformed_numbers.md`](malformed_numbers.md), [`binary_arithmetic.md`](binary_arithmetic.md), [`binary_logic.md`](binary_logic.md), [`word_problems.md`](word_problems.md) and [`beyond_arithmetic.md`](beyond_arithmetic.md), with [`findings.md`](findings.md); no further probe is run, and what is left of each stage is a build that waits for the user's ruling on its page's questions.
 
+**The questions that wait for the user are in one file, [`questions.md`](questions.md)** (2026-11-12, on the user's instruction: *"write questions into one file in phase plans leaving places for my replies"*): every open question of the pages above, of the stage files and of the defaults taken during the phase, the blocking ones first, each with a place for the reply, and the findings that need an owner.
+
 | ID | title | depends on | status |
 |---|---|---|---|
 | [S1f.6.1](s1f.6.1_design_proposal.md) | The design proposal: representations, the protocol, and target programs computed on a prototype | S1f.5.5's swap | **done 2026-11-11**: [`design.md`](design.md), three rounds and the rulings |
