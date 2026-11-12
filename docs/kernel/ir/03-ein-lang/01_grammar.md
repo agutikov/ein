@@ -231,6 +231,21 @@ argument after the name was a type atom or a keyword pair, so the inner group
 could not pass itself off as a bare declaration (S1f.5.5's T5 deleted both
 lines, the grammar stating each).
 
+**A declaration's count is held** (M1f S1f.6.23, W89, the user's ruling of
+2026-11-12). The number of type atoms is the number of arguments a form of
+the relation has, and the loader refuses a program that writes one with
+another count: a fact, a fact inside a fact at any depth, a pattern or a
+conclusion of a rule or an hrule, a goal's pattern and a fact a claim lists,
+one line a form, `t.ein:3:2: the fact (likes Bob) gives likes 1 argument, and
+(relation likes Person Drink) declares 2 — …`
+([`defined_behaviour.md` § 4.26](../../defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
+A bare `(relation opaque)` declares none, so `(opaque)` is its one form. A
+keyword pair is no argument. A relation nothing declares has no count and is
+not held, a relation written as a variable, `(?R ?a ?b)`, is not read, and
+the type atoms themselves stay opaque: `(likes Tea Ann)` loads. Until the
+stage nothing held a form to its declaration, and one of another count was
+stored, or matched nothing, in silence.
+
 A bare declaration is **not a hypothesis target**: signature *presence* is
 the kernel's "declared domain relation" signal (the table below), and an
 empty signature deliberately fails it. Write `(relation R T)` — the

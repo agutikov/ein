@@ -38,6 +38,11 @@
 //!    (S1f.5.24's); a nested `(or …)`, a clause past the register file and a
 //!    goal's relation variable are the loader's, and the compiler's arms for
 //!    them are invariants, which a panic here would show.
+//! 8. **No accepted program holds a form of a declared relation at another
+//!    count** (M1f S1f.6.23, W89): no fact the loaded store holds, at any
+//!    depth, and no premise, nested pattern or conclusion of a plan of a rule
+//!    without parameters, gives a declared relation another count of
+//!    arguments than its declaration has types.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the CI nightly raises it to 20 000 a seed and the dev host to P1a.1's
@@ -978,6 +983,162 @@ fn the_compiler_refuses_nothing_the_loader_accepts() {
         }
     }
     eprintln!("fuzz: {loaded} programs loaded, every plan compiled");
+    assert!(
+        loaded >= iters / 20,
+        "only {loaded} of {iters} programs loaded, so the property is barely tested"
+    );
+}
+
+/// The first fact a program that loads holds, at any depth, or the first
+/// pattern or conclusion a plan of a rule without parameters reads or writes,
+/// that is of a declared relation at another count of arguments than its
+/// declaration has types. `None` where `text` does not load or holds none.
+///
+/// Read off the loaded KB and the compiled plans, not off the forms the
+/// loader's check walks: the store's facts, each argument that is a fact
+/// followed, and each plan's relation steps, nested patterns and conclusions.
+/// A rule with parameters is left out, since its plan's relations are what an
+/// activator bound and the loader does not read a relation written through a
+/// parameter (Q-M1f.202).
+fn wrong_count(text: &str) -> Option<String> {
+    use ein_core::{FactId, Kb, Symbol, Terms};
+    use ein_infer::plan::{Plan, Slot, Step};
+    fn declared(kb: &Kb, rel: Symbol) -> Option<usize> {
+        kb.program()
+            .relations
+            .get(rel)
+            .filter(|r| r.declared)
+            .map(|r| r.signature.len())
+    }
+    fn fact(kb: &Kb, terms: &Terms, id: FactId) -> Option<String> {
+        let (rel, args) = terms.fact(id);
+        if declared(kb, rel).is_some_and(|n| n != args.len()) {
+            return Some(format!("the fact {}", terms.compact(id)));
+        }
+        args.iter()
+            .filter_map(|a| a.as_fact())
+            .find_map(|inner| fact(kb, terms, inner))
+    }
+    fn slot(kb: &Kb, terms: &Terms, plan: &Plan, s: Slot) -> Option<String> {
+        let Slot::Nested { rel, slots } = s else {
+            return None;
+        };
+        let slots = plan.slots(slots);
+        if declared(kb, rel).is_some_and(|n| n != slots.len()) {
+            return Some(format!(
+                "a pattern of {} with {} slots",
+                terms.sym(rel),
+                slots.len()
+            ));
+        }
+        slots.iter().find_map(|&inner| slot(kb, terms, plan, inner))
+    }
+    fn steps(kb: &Kb, terms: &Terms, plan: &Plan, span: ein_infer::plan::Span) -> Option<String> {
+        for step in plan.steps(span) {
+            match *step {
+                Step::Rel(r) => {
+                    let slots = plan.slots(r.slots);
+                    if declared(kb, r.rel).is_some_and(|n| n != slots.len()) {
+                        return Some(format!(
+                            "a premise of {} with {} slots",
+                            terms.sym(r.rel),
+                            slots.len()
+                        ));
+                    }
+                    if let Some(why) = slots.iter().find_map(|&s| slot(kb, terms, plan, s)) {
+                        return Some(why);
+                    }
+                }
+                Step::Absent { sub } => {
+                    if let Some(why) = steps(kb, terms, plan, sub) {
+                        return Some(why);
+                    }
+                }
+                Step::Guard { .. } => {}
+            }
+        }
+        None
+    }
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, text, None).ok()?;
+    let mut terms = Terms::new();
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).ok()?;
+    if let Some(why) = kb.facts().find_map(|f| fact(&kb, &terms, f)) {
+        return Some(why);
+    }
+    let program = kb.program();
+    let rules: Vec<ein_core::Rule> = program
+        .rules
+        .values()
+        .chain(program.hrules.values())
+        .filter(|r| r.params.is_empty())
+        .cloned()
+        .collect();
+    for rule in &rules {
+        for activator in ein_infer::activators_for(&kb, &terms, rule) {
+            let Ok(plan) = ein_infer::compile_rule(&ast, &mut terms, rule, activator) else {
+                continue;
+            };
+            let found = plan
+                .disjuncts
+                .iter()
+                .find_map(|d| steps(&kb, &terms, &plan, d.steps))
+                .or_else(|| {
+                    plan.asserts
+                        .iter()
+                        .find_map(|&s| slot(&kb, &terms, &plan, s))
+                });
+            if let Some(why) = found {
+                return Some(format!("rule '{}': {why}", terms.sym(rule.name)));
+            }
+        }
+    }
+    None
+}
+
+/// **No accepted program holds a form of a declared relation at another
+/// count** (M1f S1f.6.23, W89).
+///
+/// The loader refuses a form headed by a declared relation whose arguments
+/// are not as many as the declaration's types (the user's ruling of
+/// 2026-11-12 on question 3 of P1f.6's `questions.md`, *"(a)"*). So, for
+/// every generated program the loader accepts, no fact the store holds, at
+/// any depth, and no premise, nested pattern or conclusion of a plan of a
+/// rule without parameters is one ([`wrong_count`]), read off what the loader
+/// built and the compiler compiled and not off the forms the loader's check
+/// walks. Until S1f.6.23 the loader did not check it.
+///
+/// The programs of the stream the loader refuses with the line are counted,
+/// as are those it accepts, so a stream that reached neither would say so.
+#[test]
+fn no_accepted_program_holds_a_declared_relation_at_another_count() {
+    let (iters, seed) = (stream().iters, stream().seed);
+    let (mut loaded, mut refused) = (0usize, 0usize);
+    for (i, text) in accepted_inputs() {
+        let mut ast = Ast::new();
+        let forms = reparsed(&mut ast, i, &text);
+        match ein_ir::load(&mut ast, &mut ein_core::Terms::new(), &forms, None) {
+            Ok(_) => loaded += 1,
+            Err(e)
+                if e.0
+                    .contains("as many arguments as its declaration has types") =>
+            {
+                refused += 1
+            }
+            Err(_) => continue,
+        }
+        if let Some(why) = wrong_count(&text) {
+            let small = minimise(&text, |t| wrong_count(t).is_some());
+            panic!(
+                "iteration {i} (EIN_FUZZ_SEED={seed}): {why}, of a declared relation at another \
+                 count, in a program the loader accepts; minimised:\n---\n{small}\n---"
+            );
+        }
+    }
+    eprintln!(
+        "fuzz: {loaded} programs loaded, no form of a declared relation at another count; \
+         {refused} refused for one"
+    );
     assert!(
         loaded >= iters / 20,
         "only {loaded} of {iters} programs loaded, so the property is barely tested"

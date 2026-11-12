@@ -1,9 +1,13 @@
 # S1f.6.23 — The loader holds a form to its relation's declared count of arguments
 
 **Phase:** [P1f.6](README.md)
-**Status:** started 2026-11-12, on the user's reply of that day: T1f.6.23.2 done, the register's rows filed
-`open` ([§ T2 record](#t2-record-2026-11-12-the-rows-filed-open)); the check is next. **An engine stage,** for every
-program and not the calculator alone.
+**Status:** **done 2026-11-12**, on the user's reply of that day: the loader refuses a form headed by a
+declared relation whose arguments are not as many as its declaration's types
+([§ T1 record](#t1-record-2026-11-12-the-census-and-the-edges),
+[§ T2 record](#t2-record-2026-11-12-the-rows-filed-open),
+[§ T3 to T7 record](#t3-to-t7-record-2026-11-12-the-check-the-pin-the-sweep-and-the-rows-fixed)). Q-M1f.201 to
+.204 defaulted, the user's to revise; E-34 and E-35 found. **An engine stage,** for every program and not the
+calculator alone.
 **Depends on:** nothing in the phase. It was item 3 of
 [S1f.6.12](s1f.6.12_malformed_numbers.md)'s build (*the loader's arity check on nested facts, if ruled*) and
 has a file of its own because it is the engine's and the rest of that build is the theory's.
@@ -99,6 +103,50 @@ same programs (one tool, consistent answers); a refusal is an error and exits as
 does, and nothing else changes an exit code. The gate is `./run_tests.sh`, then `./run_tests.sh --nightly`
 after the code commit; `utils/ci_container.sh` is not needed.
 
+## T1 record (2026-11-12): the census and the edges
+
+**The census, re-taken.** Of 20 809 forms headed by a declared relation in the 810 tracked `.ein` files, 12 in
+6 files have another count than declared, the six of 2026-11-11, and each is refused already for another
+reason (`python3 build/s1f.6.12/arity_census.py`, 2026-11-12, at `f9a6fd1d`, before the witnesses).
+
+**The Rust suites and the doc pages.** Two readings, since a text scan cannot follow a program a test
+assembles from parts:
+
+- *a scan*, `python3 build/s1f.6.23/inline_census.py` (2026-11-12): every string literal of the `.rs` files
+  under `ein.rs/crates` and every fenced block of the tracked `.md` files, 676 texts that declare a relation
+  and 2 332 forms headed by a name the text declares; 4 forms in 3 files have another count;
+- *the loader itself*, with the check built: `cargo test --workspace --no-fail-fast`
+  (`build/s1f.6.23/workspace-nff.log`, 2026-11-12), every inline program and every doc block a test loads.
+
+| the form | where | loads today? | what was done |
+|---|---|---|---|
+| `(oops)`, `oops` declared `(relation oops T)` | `ein-infer/tests/rule_semantics.rs`, `a_forall_whose_bound_var_is_absent_from_its_guard_still_compiles` | yes | the declaration rewritten bare, `(relation oops)`: the test is about a `forall`, and its rule concludes `(oops)` |
+| `(all-beaten ?p)`, declared `(relation all-beaten T T)` | the same file, `the_forall_bound_variable_does_not_escape_the_guard`; found by the loader's run, the scan having missed it | yes | the declaration removed: the test concludes the relation with one argument and then with two, `(all-beaten ?p ?q)`, to show an unbound `?q` refused, and an undeclared relation has no count |
+| `(x ?a)` and `(y ?a)`, each declared with two types | `ein-ir/tests/kb_semantics.rs`, `the_reserved_name_guard_is_on_declarators_and_matches_whole_names` | yes | the two declarations rewritten with one type: the test is about a rule's name |
+| `(p "a"b)`, `p` declared with one | `ein-ir/tests/grammar_pages.rs`, a row of the refusals table | no: a parse error, which the row holds | nothing |
+| `(player ?p)`, `(player ?q)`, declared `(relation player T T)` | `examples/broken/load/unimported_std_macro.ein` | no: refused for its unimported `forall` | the declaration rewritten with one type, so the fixture's refusal stays the one line its `.expected` holds |
+
+No doc page's block was refused, and no other test failed for a refused program: the three tests above were
+each a declaration miswritten beside a use that was meant, or one the test did not need, none a test of a
+wrong count. Nothing was shown to
+the user before the check landed, each being a program of a test and not of a user.
+
+**The edges**, each settled by reading `ein_ir::from_ir` and by a probe on the release binary of `f9a6fd1d`
+(`build/s1f.6.23/p/`, every one loading and exiting 0 there):
+
+| the edge | settled | by |
+|---|---|---|
+| what declares a count | a `(relation R T₁ … Tₙ)`: n. A bare `(relation R)`: none, so `(R)` is its one form | [Q-M1f.201](../open_questions.md#q-m1f201--what-a-bare-relation-r-declares-of-its-count), defaulted; `bare.ein` |
+| an imported declaration | held, flat under its name and under `:as o` as `o.name`: the loader reads the program after its imports are resolved | `calc.ein`, `asimp.ein` |
+| a rule's `:match`, `:assert` and what a guard holds; an hrule's; an obligation's | held, at any depth, under `(absent …)` and `(not …)`; a guard's argument is a name or a variable, never a form (W24) | `match.ein`, `assert.ein`, `neg.ein` |
+| a macro's body | held on its expansion, where a rule or a goal calls it; not read where nothing calls it | [Q-M1f.204](../open_questions.md#q-m1f204--which-written-places-the-declared-count-is-held-in), defaulted |
+| a query's `:goal`; a claim's facts | held; a claim's own words are its shape, and only what a `(model …)` lists is read | Q-M1f.204; `goal.ein` |
+| a fact's `:using` | held | Q-M1f.204; `kw.ein` |
+| a `(solve …)` list | not read: a list of names | Q-M1f.204 |
+| a relation written through a parameter, `(?R ?x ?y)` | not read | [Q-M1f.202](../open_questions.md#q-m1f202--a-relation-written-through-a-parameter-and-the-declared-count), defaulted; `param.ein`, `param3.ein` |
+| an activator against its rule's parameters | outside the stage, the stage file's default; **a finding, E-34** | [Q-M1f.203](../open_questions.md#q-m1f203--the-kernels-own-relations-and-an-activators-count); `activator.ein` |
+| the kernel's own relations | not held: no program declares `__closed__`, `__symmetric__` or `relation`, each reserved, and `is-a` is a relation a program declares like any other; `eq` is § 4.14's. **A finding, E-35** | Q-M1f.203; `kernel.ein`, `decl-fact.ein` |
+
 ## T2 record (2026-11-12): the rows filed open
 
 **W89, seven rows, each `open`,** owned by this stage, in
@@ -131,3 +179,67 @@ carries a `[case.region]` while open, R {∅}, which the fix removes, a refused 
 
 The register reads 305 fixed, 23 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq
 -c`, 2026-11-12).
+
+## T3 to T7 record (2026-11-12): the check, the pin, the sweep and the rows fixed
+
+**The check** is `ein_ir::from_ir`'s `wrong_counts`, beside the loader's other whole-program refusals: every
+form at or under a node whose head is the name of a declared relation and whose arguments, its keyword pairs
+aside, are not as many as the declaration's types. Its callers hand it each written fact, each rule's and
+hrule's `:match` and `:assert` after expansion, each query's `:goal` after expansion, and each fact a claim
+lists. One line a form, placed at the form, the loader's lines `; `-joined as they are:
+
+```text
+kb load error: t.ein:3:2: the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types
+kb load error: t.ein:2:7: the fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and (relation n Number Digit) declares 2 — …
+kb load error: t.ein:6:12: rule 'fans': its :match writes (likes ?who), which gives likes 1 argument, and (relation likes Person Drink) declares 2 — …
+kb load error: t.ein:4:15: query: its :goal writes (likes ?who), which gives likes 1 argument, and … declares 2 — …
+```
+
+It is the loader's, so every command that loads a program refuses the same programs, at its load-error exit
+(1; `ein test`: 2), and no flag turns it off.
+
+**The pin** is `ein-cli/tests/declared_counts.rs`: twenty-four shapes refused on twenty commands with the
+line's text and place, the same first line on each and no container written; three forms in one program,
+three lines; the seven witnesses; an imported declaration, flat and qualified, from the stdlib and from a
+file; and eleven programs that must load, a case per row of T1's table of edges. `ein-ir`'s
+`fuzz_properties.rs` holds every program the loader accepts to the rule, read off the loaded store and the
+compiled plans and not off the forms the check walks
+(`no_accepted_program_holds_a_declared_relation_at_another_count`): 418 programs loaded and 1 refused for a
+count at the per-commit budget (`cargo test -p ein-ir --test fuzz_properties no_accepted_program_holds --
+--nocapture`, 2026-11-12).
+
+**The sweep.** The release binary of the engine before the check (engine sources `5b252d50`'s) against the new one, `ein saturate --dump` and `ein solve` over every
+`.ein` file git knows, 817 files (`python3 build/s1f.6.23/sweep.py`, 2026-11-12): 7 moved, the
+seven witnesses, each answered before and refused now, and nothing else. `unimported_std_macro.ein`, refused
+before and after, had gained two lines of the check's before its declaration was rewritten (T1's table), and
+moves no more. **No program that loaded is refused.**
+
+**The goldens that moved**, each named before it was blessed: the corpus exits of the seven witnesses, 0 to 1
+under `solve` and `saturate`; their shape digests, and those of `unimported_std_macro.ein`'s rewritten
+declaration; nothing else of `corpus_shapes.md5`. The lists the open rows had needed went back:
+`answer_round_trip.rs`'s `UNFILLED_TEMPLATE` is empty, and `alive_invariant.rs`'s `SEEDED` and
+`dot_wellformed.rs`'s `SKIPPING` are as they were before T2.
+
+**The rows.** W89's seven are `fixed`, each `now` the loader's line, each `[case.region]` gone, a refused
+program having none; `[case.fixed]` carries the null id in the fixing commit and the hash in the next. The
+register reads 312 fixed, 16 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-12).
+
+**The pages**: [`defined_behaviour.md` § 4.26](../../../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623);
+`01_grammar.md` § Relation declarator, that a declaration's count is held; `stdlib/README.md`'s two sentences
+on a malformed number, `std.arith`'s and `std.num9`'s, each losing its wrong-count case to *refused at load*
+([`malformed_numbers.md`](malformed_numbers.md) is S1f.6.12's record and is not edited: its rows m6 to m6d are
+this stage's); `examples/README.md`; `AGENTS.md`; and E-2 of [`findings.md`](findings.md), closed.
+
+**Found outside the stage's scope**, each in `findings.md` with its probe: E-34, an activator of another
+count than its rule has parameters activates nothing, in silence; and E-35, a kernel marker's fact of another
+count loads, and a rule can derive a fact of a declared relation at another count through a parameter.
+
+### Acceptance, re-taken
+
+- *A form headed by a declared relation with another count of arguments is refused at load, on every
+  command, with one line that names the place, the relation and the two counts*: `declared_counts.rs`.
+- *The register's rows are fixed, and no other corpus answer moved, by the sweep*: above.
+- *No program of the corpus, the Rust suites or the doc pages that should load is refused*: T1's table; four
+  declarations rewritten and one removed, in three tests and one fixture.
+- *E-2 is closed*: its row.

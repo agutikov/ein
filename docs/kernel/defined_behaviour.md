@@ -2123,6 +2123,84 @@ Pinned by `ein-ir`'s `imports_semantics.rs`
 commands: the import answers as the selected forms written in its place, and
 its saved container as the file), and `corpus/wrong_answers.toml`'s W88 rows.
 
+### 4.26 A form of a declared relation has the declared count of arguments — M1f S1f.6.23
+
+A stage of M1f
+[P1f.6](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md),
+[S1f.6.23](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md),
+on the user's ruling of 2026-11-12 on question 3 of the phase's
+`questions.md`, *"(a)"*: *every form headed by a declared relation, at any
+depth, in a fact, a rule or a query, refused at load with one line naming the
+relation, the count declared and the count written* (Q-M1f.201 to .204,
+defaulted).
+
+**A `(relation R T₁ … Tₙ)` declares that a form of `R` has n arguments**, and
+the loader refuses a program that writes one with another count
+(`ein_ir::from_ir`'s `wrong_counts`), on every command, at each command's
+load-error exit (1; `ein test`: 2), one line a form, placed at the form:
+
+```text
+$ ein solve t.ein       # (relation likes Person Drink :why "…") (likes Ann Tea) (likes Bob)
+kb load error: t.ein:3:2: the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types
+```
+
+| where the form is written | the line, after its place |
+|---|---|
+| a fact | `the fact (likes Bob) gives likes 1 argument, and (relation likes Person Drink) declares 2 — …` |
+| a fact inside a fact, at any depth, under `(not …)`, in a fact's `:using` | `the fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and (relation n Number Digit) declares 2 — …` |
+| a rule's or an hrule's `:match` or `:assert`, at any depth, under `(absent …)` and `(not …)`, as its macros expand | `rule 'fans': its :match writes (likes ?who), which gives likes 1 argument, and … declares 2 — …` |
+| a query's `:goal`, as its macros expand | `query: its :goal writes (likes ?who), which gives likes 1 argument, and … declares 2 — …` |
+| a fact a claim lists, a query's `:expect` or `(solve … :expect …)`'s | `solve: its :expect lists (likes Ann), which gives likes 1 argument, and … declares 2 — …` |
+
+- **What declares a count** is the program's own `(relation …)` and an
+  imported one: an import is resolved before the loader reads a form, so a
+  flat import's relation is held under its name and `(import M :as o)`'s
+  under `o.name`.
+- **A bare `(relation flag)` declares none**, so `(flag)` is its one form and
+  `(flag up)` is refused
+  ([Q-M1f.201](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f201--what-a-bare-relation-r-declares-of-its-count)).
+- **A keyword pair is no argument**: `(likes Ann Tea :source "said")` has two.
+- **A macro's body is held where a rule or a goal calls it**, on its
+  expansion; a macro nothing calls is not read, as § 4.16 has it.
+- **A relation nothing declares has no count** and is not held: `(says Ann)`
+  beside `(says Ann Bob)` loads. That includes the kernel's own, which no
+  program declares: `(__closed__ r extra)` loads, and `(relation R ?A ?B)`,
+  the declaration's stored fact, is a pattern at any count
+  ([Q-M1f.203](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f203--the-kernels-own-relations-and-an-activators-count)).
+  `eq` is held to two arguments by § 4.14.
+- **A relation written as a variable is not read**, `(?R ?a ?b)`, whatever
+  the program shows its parameter holds: a rule over a parameter is generic
+  over counts, matching is by count, and `(mirror likes)` on a rule that
+  reads `(?R ?a)` matches nothing, as it did
+  ([Q-M1f.202](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f202--a-relation-written-through-a-parameter-and-the-declared-count)).
+  So a rule can still *derive* a fact of a declared relation at another
+  count through a parameter; no written form is one.
+- **An activator is not a declared relation's form**: `(functional r extra)`
+  against a rule `functional (?R)` activates nothing, in silence, as before
+  (E-34 of the phase's `findings.md`); an activator in a `(solve :hrules …)`
+  list is held to its hrule's parameters by § 4.20.
+- **It is no type check**: `(likes Tea Ann)` loads. What is written in an
+  argument's place is not held to the type declared for it.
+- **No flag turns it off.**
+
+**Until this stage** no form was held to its declaration. A fact of another
+count was stored beside the rest; matching is by count, so a premise or a
+goal of another count matched nothing and a conclusion of another count
+derived facts no premise of the declared count read; and the calculator's
+`(add (n z 5))`, one operand where `add` declares two, and a `std.num9`
+number of eight digits were answered by silence, exit 0. A `--dump-answer`
+state file printed such a fact's English with a place nothing filled, *Bob
+likes {?2}*. No program of the corpus that loaded was refused by the check
+(`python3 build/s1f.6.23/sweep.py`, 2026-11-12). Seven register rows, W89,
+filed and fixed by the stage.
+
+Pinned by `ein-cli`'s `declared_counts.rs` (a case per row of the table and
+per bullet, on twenty commands, the line's text included; W89's seven
+witnesses), `ein-ir`'s `fuzz_properties.rs`
+(`no_accepted_program_holds_a_declared_relation_at_another_count`, read off
+the loaded store and the compiled plans), and `corpus/wrong_answers.toml`'s
+W89 rows.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands

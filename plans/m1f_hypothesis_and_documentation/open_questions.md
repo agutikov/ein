@@ -213,6 +213,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.198](#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate) | the remainder variant of the word problems, and the gate | **2026-11-12:** owned by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s first task. **defaulted 2026-11-12 (S1f.6.20), the user's to revise: not banked. `region.rs`'s fact-grain sweep does not end on a program where a supposed reading leads to a `value` (E-33); the test and the engine are unmoved; three other ways are stated and one was run**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 | [Q-M1f.199](#q-m1f199--how-the-skipped-views-of-the-dot-sweep-are-pinned) | how the skipped views of the DOT sweep are pinned | **defaulted 2026-11-12 (S1f.6.21), the user's to revise: the count printed, the directories that hold a skipped view named in the test**; [S1f.6.21](p1f.6_calculator/s1f.6.21_the_gate_reduced.md) |
 | [Q-M1f.200](#q-m1f200--the-names-of-an-integer-divisions-results) | the names of an integer division's results | **defaulted 2026-11-12 (S1f.6.22), the user's to revise: `int-quot-euclid-of`, `int-quot-trunc-of` and `int-quot-floor-of`, each `(… X Y Q R)`**; [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md) |
+| [Q-M1f.201](#q-m1f201--what-a-bare-relation-r-declares-of-its-count) | what a bare `(relation R)` declares of its count | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: none, so `(R)` is its one form**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
+| [Q-M1f.202](#q-m1f202--a-relation-written-through-a-parameter-and-the-declared-count) | a relation written through a parameter, and the declared count | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: not read**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
+| [Q-M1f.203](#q-m1f203--the-kernels-own-relations-and-an-activators-count) | the kernel's own relations, and an activator's count | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: neither is held, each a finding (E-34, E-35)**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
+| [Q-M1f.204](#q-m1f204--which-written-places-the-declared-count-is-held-in) | which written places the declared count is held in | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: a fact's `:using` and a claim's facts too; a macro's body where it is called; no `(solve …)` list**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3894,3 +3898,72 @@ option's own words), and not the relations that answer them.
 
 **Defaulted 2026-11-12: (a), the user's to revise**, as the stage file has it.
 [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md) moves the modules and renames no relation.
+
+### Q-M1f.201 — What a bare `(relation R)` declares of its count
+
+**Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names it: the ruling holds a form to *the count declared*, and a
+declaration with no type atom, `(relation flag)`, is legal
+([`01_grammar.md` § Relation](../../docs/kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)): *a relation
+node with no declared arg types*.
+
+- **(a) It declares none,** so `(flag)` is its one form and `(flag up)` is refused. The count is the count of
+  types, with no special case.
+- **(b) It declares no count,** so a bare relation's forms are not held, as an undeclared relation's are not.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** Every bare declaration of the tracked `.ein` files whose
+program loads is used with no argument, `clash`, `marker`, `z` (`git ls-files '*.ein' | xargs grep -nE
+'^\(relation [^ )]+( +:why|\))'`, 2026-11-12), and so is every one in the Rust suites but `oops` of
+`rule_semantics.rs`, which was declared `(relation oops T)` and written `(oops)`. Under (b) a flag a theory declares bare would be the one kind of declared
+relation a misspelt count passes.
+
+### Q-M1f.202 — A relation written through a parameter, and the declared count
+
+**Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names it. `(rule mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))`
+writes its relation as a variable, and `(mirror likes)` binds it.
+
+- **(a) Not read.** A rule over a parameter is generic over counts: matching is by count, so `(?R ?a)` under
+  `(mirror likes)` matches nothing, which is what a generic rule means by it, and the stdlib's fan-outs pass
+  relations of several counts to one rule.
+- **(b) Read where the program shows what the parameter holds,** as S1f.5.18's check reads relation names off
+  the written activators, a rule's conclusions to a fixpoint and the `(solve …)` lists: a premise `(?R ?a)`
+  whose `?R` can hold `likes`, declared with two, is refused.
+
+**Defaulted 2026-11-12: (a), the user's to revise.** Under (b) a generic rule is refused for one activator of
+many, where today it matches nothing for that one; the probe `build/s1f.6.23/p/param.ein` loads and derives
+nothing, old binary and new. What (a) leaves is a *conclusion* through a parameter, which derives a fact of a
+declared relation at another count, `build/s1f.6.23/p/param3.ein`: E-35 of the phase's
+[`findings.md`](p1f.6_calculator/findings.md).
+
+### Q-M1f.203 — The kernel's own relations, and an activator's count
+
+**Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names both. No program declares `__closed__`, `__symmetric__` or
+`relation`, each reserved, and an activator `(functional r)` is a fact headed by a rule's name, held to the
+rule's parameters and to no declaration.
+
+- **(a) Neither is held by this stage.** The ruling says *declared relation*. `(relation R ?A ?B)` stays a
+  pattern at any count, which is how a rule reads a signature. `eq` is held to two by `defined_behaviour.md`
+  § 4.14.
+- **(b) Both are held:** the two dunders to one argument, and an activator to its rule's count of parameters,
+  as a `(solve :hrules …)` activator is since S1f.7.8.
+
+**Defaulted 2026-11-12: (a), the user's to revise**, as the stage file has it for the activator. What (a)
+leaves is E-34 and E-35 of the phase's [`findings.md`](p1f.6_calculator/findings.md), each with its probe:
+`(sym likes extra)` activates nothing in silence, and `(__closed__ likes extra)` is stored and closes nothing.
+
+### Q-M1f.204 — Which written places the declared count is held in
+
+**Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md). The ruling's *in a fact, a rule or a query* leaves four places to decide.
+
+- **A fact's `:using`,** `(seen Bob :rule r :using ((likes Bob)))`: **held.** Its premises are facts, written
+  as a nested fact is. Whether a `:using` may name a fact no state holds is
+  [F24](../followups/f24_written_provenance.md)'s, W87, and is not touched.
+- **A claim's listed fact,** a query's `:expect` and `(solve … :expect …)`'s: **held.** A claim's own words,
+  `model`, `region`, `merged`, `owing` and `or`, are its shape and no relation's form, so a program that
+  declares a relation `model` is not refused for its claim.
+- **A macro's body: held where a rule or a goal calls it,** on the expansion, and not read where nothing
+  calls it, as S1f.5.24 has it for a malformed primitive.
+- **A `(solve …)` list: not read.** `:hrules (guess (at Color House))` and `:hypothesis-relations (likes
+  fan)` are lists of names the parser builds as forms; S1f.7.8 holds an activator there to its hrule.
+
+**Defaulted 2026-11-12, each as written above, the user's to revise.** Each is a case of
+`ein-cli/tests/declared_counts.rs`.

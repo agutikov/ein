@@ -549,7 +549,10 @@ module says, and its header has the list: `z`, `n`, `b`, `let`; the requests
 hand-overs and its tags; `arith-rule`; and the seven tables of `std.digits`.
 Only `n`, `z`, `let`, the requests, the results, the flag and the three orders
 are its interface. What a clash does, and what a malformed number does, is the
-phase's S1f.6.12.
+phase's S1f.6.12; **a number or a request with the wrong count of arguments
+is refused at load** since S1f.6.23, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`,
+each a form of a relation the module declares
+([`defined_behaviour.md` § 4.26](../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
 
 ## `std.num9`: nine digits in one fact, and wide rules (M1f S1f.6.13)
 
@@ -690,10 +693,11 @@ and [`num9_both_ways.ein`](../examples/arith/num9_both_ways.ein).
 and `big`; the states `mul9-at` and `div9-at`, with `multiples9` and `row9`;
 `num9-rule` and the entry `arith9`. From `std.arith` it takes `n`, with `z`,
 and `division-by-zero` with the rule from it to `(false)`; from `std.digits`,
-`fa`, `fs`, `md`, `cl`, `nz` and `adj`, with the three orders. A malformed
-`num9`, a digit's place that holds something else or a count of digits that
-is not nine, is answered by silence today, as in `std.arith`: the phase's
-S1f.6.12.
+`fa`, `fs`, `md`, `cl`, `nz` and `adj`, with the three orders. A `num9` whose
+count of digits is not nine is **refused at load** since S1f.6.23, the
+loader holding a form to its declaration's count; one with a digit's place
+that holds something else is answered by silence today, as in `std.arith`:
+the phase's S1f.6.12.
 
 ## `std.int`: integers as a positive and a negative part (M1f S1f.6.7)
 

@@ -20,6 +20,7 @@
 ;;; At `f9a6fd1d`, release: the program loads, the goal matches no fact of
 ;;; `likes`, and its one class says *the goal has no row: undetermined here*,
 ;;; exit 0 on every command, with no word.
+;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
 (relation likes Person Drink :why "{?1} likes {?2}")
 

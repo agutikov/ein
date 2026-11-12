@@ -22,6 +22,7 @@
 ;;; At `f9a6fd1d`, release: the program loads, no rule of the theory finds the
 ;;; operand, nothing is derived, and the goal has no row, exit 0 on every
 ;;; command, with no word.
+;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
 (import std.arith :symbols (arith))
 

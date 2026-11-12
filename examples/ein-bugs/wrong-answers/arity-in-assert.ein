@@ -21,6 +21,7 @@
 ;;; `(fan Ann Tea)`, a fact of `fan` with two arguments, which the goal
 ;;; `(fan ?who)` does not match, so the goal has no row, exit 0 on every
 ;;; command, with no word.
+;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
 (relation likes Person Drink :why "{?1} likes {?2}")
 (relation fan Person :why "{?1} is a fan")

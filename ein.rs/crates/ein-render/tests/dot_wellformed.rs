@@ -118,15 +118,11 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// (`cargo test -p ein-render --test dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
 /// what it used to check is noticed.
-const SKIPPING: [&str; 12] = [
+const SKIPPING: [&str; 11] = [
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
     "examples/binary_logic",
-    // M1f S1f.6.23 — W89's three witnesses that import the calculator, which
-    // load while their rows are open; the commit that fixes W89 takes the
-    // directory off the list.
-    "examples/ein-bugs/wrong-answers",
     "examples/word_problems",
     "stdlib",
     "tests/stdlib/arith",

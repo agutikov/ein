@@ -1544,6 +1544,47 @@ constrained-reasoning research.
   imports `std.int` or `std.rat` pays about 2 ms more of load. No engine
   source moved and no existing program's `ein solve` (`python3
   build/s1f.6.22/sweep.py`, 804 files, 2026-11-12); the register is unmoved.
+  **S1f.6.23, the loader's arity check, ran to its end on 2026-11-12**
+  ([its records](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md#t1-record-2026-11-12-the-census-and-the-edges),
+  Q-M1f.201 to .204 defaulted), an engine stage, on the user's ruling of
+  that day on question 3 of the phase's `questions.md`, *"(a)"*. **A form
+  headed by a declared relation has as many arguments as its declaration has
+  types, or the program is refused at load**, on every command, one line a
+  form, at the form: `t.ein:3:2: the fact (likes Bob) gives likes 1 argument,
+  and (relation likes Person Drink) declares 2 — …` (`ein_ir::from_ir`'s
+  `wrong_counts`, `defined_behaviour.md` § 4.26). It reads a written fact
+  and every fact inside it, a fact's `:using`, a rule's and an hrule's
+  `:match` and `:assert` as their macros expand, a query's `:goal` and the
+  facts a claim lists; a declaration is the program's own or an imported
+  one, `o.name` under `:as o`; a bare `(relation flag)` declares none, so
+  `(flag)` is its one form; and a keyword pair is no argument. **It does not
+  read** a relation nothing declares, the kernel's `__closed__`,
+  `__symmetric__` and `relation` among them, a relation written as a
+  variable, `(?R ?a ?b)`, an activator against its rule's parameters, a
+  `(solve …)` list or a macro nothing calls, and **it is no type check**:
+  `(likes Tea Ann)` loads. Until the stage nothing held a form to its
+  declaration, so the calculator's `(add (n z 5))`, `(n 1)` as an operand
+  and a `std.num9` number of eight digits were answered by silence, exit 0,
+  a premise of another count matched nothing and a conclusion of another
+  count stored facts no premise of the declared count read (E-2 of the
+  phase's `findings.md`, closed). W89, seven rows, filed `open` in a commit
+  of their own and fixed by the check: 312 fixed, 16 open and 1 not wrong
+  (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-12).
+  **No program that loaded is refused**: the sweep, the release binary
+  before the check against the one after over 817 `.ein` files, moves the
+  seven witnesses alone (`python3 build/s1f.6.23/sweep.py`, 2026-11-12), and
+  the loader's own run over the Rust suites found five declarations
+  miswritten beside a use that was meant, in three tests and one
+  `examples/broken/` fixture, four rewritten and one removed. The pins are
+  `ein-cli/tests/declared_counts.rs` and `fuzz_properties.rs`'s
+  `no_accepted_program_holds_a_declared_relation_at_another_count`, which
+  reads the loaded store and the compiled plans. **A program that declares a
+  relation and then writes it at two counts no longer loads**, so a new
+  fixture that wants an undeclared, any-count relation leaves it
+  undeclared. What the stage found outside its scope is E-34, an activator
+  of another count than its rule has parameters, which activates nothing in
+  silence, and E-35, a kernel marker's fact of another count and a fact of
+  a declared relation derived at another count through a parameter.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete;
   no second milestone was made for its engine work (the id M1h has since been

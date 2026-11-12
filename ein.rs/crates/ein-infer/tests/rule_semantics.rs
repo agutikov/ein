@@ -193,14 +193,16 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
 /// variable no premise binds. A leaked binding would satisfy that head
 /// instead. **Since M1f S1f.5.10 the refusal is the loader's** (F13): until
 /// then the rule loaded and its first firing stopped the run with a message
-/// that named `?q` unbound while showing `?p` bound.
+/// that named `?q` unbound while showing `?p` bound. `all-beaten` is declared
+/// by nothing here: the fixture concludes it with one argument and with two,
+/// and a declared relation has one count (M1f S1f.6.23).
 #[test]
 fn the_forall_bound_variable_does_not_escape_the_guard() {
     let tournament = |head: &str| {
         format!(
             r#"
             (import std.macro :symbols (forall))
-            (relation player T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}") (relation all-beaten T T :why "{{?1}} has beaten every other player")
+            (relation player T :why "{{?1}} is a player") (relation beats T T :why "{{?1}} beats {{?2}}")
             (rule all-beaten ()
               :match  (and (player ?p)
                            (forall ?q (and (player ?q) (neq ?p ?q))
@@ -262,7 +264,7 @@ fn a_forall_whose_bound_var_is_absent_from_its_guard_still_compiles() {
         format!(
             r#"
             (import std.macro :symbols (forall))
-            (relation player T :why "{{?1}} is a player") (relation whatever T :why "whatever holds of {{?1}}") (relation oops T :why "oops: bad-rule's malformed forall held")
+            (relation player T :why "{{?1}} is a player") (relation whatever T :why "whatever holds of {{?1}}") (relation oops :why "oops: bad-rule's malformed forall held")
             (rule bad-rule ()
               :match  (forall ?v (player ?other) (whatever ?v))
               :assert (oops)

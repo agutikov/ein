@@ -21,6 +21,7 @@
 ;;; At `f9a6fd1d`, release: the program loads, the wide rule matches no
 ;;; request, nothing is derived, not a sum and not an overflow, and the goal
 ;;; has no row, exit 0 on every command, with no word.
+;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
 (import std.num9 :symbols (arith9))
 

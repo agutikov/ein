@@ -467,7 +467,7 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) = kb_of(
         "(rule eq-elim () :match (x ?a) :assert (y ?a) :why \"x holds of {?a}, so y holds of {?a}\")\n\
          (relation absent-of T T :why \"absent-of holds of {?1} and {?2}\")\n\
-         (relation x T T :why \"x holds of {?1} and {?2}\") (relation y T T :why \"y holds of {?1} and {?2}\")\n",
+         (relation x T :why \"x holds of {?1}\") (relation y T :why \"y holds of {?1}\")\n",
     );
     assert!(names(&terms, &kb.program().rules).contains(&"eq-elim".to_string()));
     assert!(names(&terms, &kb.program().relations).contains(&"absent-of".to_string()));

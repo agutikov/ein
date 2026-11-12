@@ -254,13 +254,20 @@ pub fn load_query_with(
     for &form in &relations {
         ingest_relation(ast, terms, &mut kb, form, opts, &mut errors)?;
     }
+    // What each declaration declares of its relation's count of arguments
+    // (M1f S1f.6.23, W89): read by the rules pass, the facts' and the
+    // queries'.
+    let declared = declared_counts(ast, &relations);
     // Pass 2 — rules. After this, rule-name resolution is possible.
     ingest_rules(
         ast,
         terms,
         &mut kb,
         &rules,
-        &declared_macros,
+        Declarations {
+            macros: &declared_macros,
+            counts: &declared,
+        },
         opts,
         &mut errors,
     )?;
@@ -268,6 +275,9 @@ pub fn load_query_with(
     for &form in &facts {
         ingest_fact(ast, terms, &mut kb, form)?;
     }
+    // A fact, or a fact it holds, of a declared relation at another count of
+    // arguments than declared (M1f S1f.6.23, W89).
+    refuse_wrong_counts_in_facts(ast, &facts, &declared, &mut errors);
     // A written fact of `eq` at another arity (M1f S1f.5.9, W61).
     refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
     // A macro's call written as a fact, which nothing expands, and a relation
@@ -343,6 +353,9 @@ pub fn load_query_with(
         .cloned()
         .collect();
     validate_queries(ast, &kb, holdable.as_ref(), &unimported, &mut errors);
+    // A goal's pattern and a claim's fact are held to a declaration's count
+    // as a rule's and a written fact are (M1f S1f.6.23, W89).
+    refuse_wrong_counts_in_queries(ast, &kb, &declared, &mut errors);
     // …and one a claim lists, which is a fact too (S1f.7.12). A claim headed
     // by the call names no relation of the program and has its own line
     // (Q-M1f.118), so this one is for a program nothing else refuses.
@@ -1269,15 +1282,28 @@ fn ingest_relation(
 
 // ── Pass 2 — rules ─────────────────────────────────────────────────
 
+/// What the rules pass reads of the passes before it: the macros it expands
+/// a rule's clauses with, and the count each `(relation …)` declares, which
+/// the expanded clauses are held to (M1f S1f.6.23).
+#[derive(Clone, Copy)]
+struct Declarations<'a> {
+    macros: &'a BTreeMap<String, IrMacro>,
+    counts: &'a Declared,
+}
+
 fn ingest_rules(
     ast: &mut Ast,
     terms: &mut Terms,
     kb: &mut Kb,
     forms: &[NodeId],
-    declared_macros: &BTreeMap<String, IrMacro>,
+    declarations: Declarations,
     opts: &LoadOptions,
     errors: &mut Vec<String>,
 ) -> Result<(), Overflow> {
+    let Declarations {
+        macros: declared_macros,
+        counts: declared,
+    } = declarations;
     for &form in forms {
         let head = ast.head_name(form).expect("bucketed by head").to_string();
         let loc = loc_repr(ast, ast.loc(form));
@@ -1356,6 +1382,19 @@ fn ingest_rules(
         // (Q-M1f.74).
         refuse_nested_disjunctions(ast, &who, ":match", match_node, errors);
         refuse_wide_matches(ast, &who, ":match", &param_vars, match_node, errors);
+        // A pattern or a conclusion of a declared relation at another count
+        // of arguments than declared (M1f S1f.6.23, W89): read here, after
+        // expansion, so a macro's body is held where a rule calls it.
+        refuse_wrong_counts(ast, &who, ":match", "writes", match_node, declared, errors);
+        refuse_wrong_counts(
+            ast,
+            &who,
+            ":assert",
+            "writes",
+            assert_node,
+            declared,
+            errors,
+        );
         if errors.len() != n_refused {
             continue;
         }
@@ -4162,6 +4201,221 @@ fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Ve
                 crate::dump::dump_compact(ast, f),
                 if n == 1 { "" } else { "s" }
             ));
+        }
+    }
+}
+
+/// What each `(relation …)` form declares: its name, and its types, whose
+/// count is the count of arguments a form of the relation has. The first
+/// declaration of a name, a second being refused as a duplicate; a reserved
+/// name, refused as a declaration, declares nothing.
+type Declared = BTreeMap<String, Vec<String>>;
+
+fn declared_counts(ast: &Ast, relations: &[NodeId]) -> Declared {
+    let mut out = Declared::new();
+    for &form in relations {
+        let args = ast.form_args(form);
+        let Some(name) = args.first().and_then(|&a| ast.atom_name(a)) else {
+            continue;
+        };
+        if is_reserved(name) {
+            continue;
+        }
+        let types: Vec<String> = args[1..]
+            .iter()
+            .filter_map(|&a| ast.atom_name(a).map(str::to_string))
+            .collect();
+        out.entry(name.to_string()).or_insert(types);
+    }
+    out
+}
+
+/// **A form headed by a declared relation has as many arguments as the
+/// declaration has types** — M1f
+/// [S1f.6.23](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md)
+/// (W89), on the user's ruling of 2026-11-12 on question 3 of P1f.6's
+/// `questions.md`, *"(a)"*: *every form headed by a declared relation, at any
+/// depth, in a fact, a rule or a query, refused at load with one line naming
+/// the relation, the count declared and the count written.*
+///
+/// Until S1f.6.23 no form was held to its relation's declaration. `(likes
+/// Bob)` beside `(relation likes Person Drink)` was stored; matching is by
+/// count, so a premise `(likes ?who)` matched no fact of the declared count
+/// and a conclusion `(fan ?who ?what)` derived facts no premise of it read;
+/// and the calculator's `(add (n z 5))`, one operand where `add` declares
+/// two, and a `std.num9` number of eight digits were answered by silence,
+/// exit 0 (E-2 of P1f.6's `findings.md`).
+///
+/// This collects every such form at or under `node`, in the order written: a
+/// form whose head is the name of a relation the program declares, its own
+/// declaration or an imported one (an import is resolved before the loader
+/// reads a form, so `(import M :as o)`'s relation is `o.likes`), and whose
+/// arguments, its keyword pairs aside (`:source`, `:rule`, `:using`), are not
+/// as many as the declaration's types. A bare `(relation flag)` declares
+/// none, so `(flag)` is its one form (Q-M1f.201). It descends into every
+/// argument and every keyword pair's value, so a fact inside a fact, under
+/// `(not …)` and `(absent …)`, and in a fact's `:using` are read.
+///
+/// **What it does not read**: a relation nothing declares, which has no count
+/// to be held to, the kernel's own among them, `__closed__`, `__symmetric__`
+/// and the `(relation R T…)` fact a declaration stores, read at any count
+/// (Q-M1f.203); a relation written as a variable, `(?R ?a ?b)`, whatever the
+/// program shows its parameter holds (Q-M1f.202); and an activator against
+/// its rule's parameters, which is no declared relation's count. It is no
+/// type check: what is written in an argument's place is not held to the
+/// type declared for it. The callers hand it a fact, a rule's expanded
+/// clause, a goal and a claim's listed fact, and never a `(solve …)` list,
+/// which is a list of names and no form.
+fn wrong_counts(ast: &Ast, node: NodeId, declared: &Declared, out: &mut Vec<NodeId>) {
+    match ast.node(node) {
+        Node::SForm { .. } => {
+            if let Some(types) = ast.head_name(node).and_then(|name| declared.get(name))
+                && written_count(ast, node) != types.len()
+            {
+                out.push(node);
+            }
+            for &a in ast.form_args(node) {
+                wrong_counts(ast, a, declared, out);
+            }
+        }
+        Node::KwPair { value, .. } => wrong_counts(ast, value, declared, out),
+        _ => {}
+    }
+}
+
+/// A form's arguments, its keyword pairs aside.
+fn written_count(ast: &Ast, form: NodeId) -> usize {
+    ast.form_args(form)
+        .iter()
+        .filter(|&&a| !matches!(ast.node(a), Node::KwPair { .. }))
+        .count()
+}
+
+/// What every line about a declared relation's count ends with.
+const DECLARED_COUNT: &str =
+    "a form headed by a declared relation has as many arguments as its declaration has types";
+
+/// `gives likes 1 argument, and (relation likes Person Drink) declares 2 — …`,
+/// of a form [`wrong_counts`] found.
+fn count_line(ast: &Ast, form: NodeId, declared: &Declared) -> String {
+    let name = ast
+        .head_name(form)
+        .expect("a form wrong_counts found is headed by a name");
+    let types = &declared[name];
+    let declaration = if types.is_empty() {
+        format!("(relation {name})")
+    } else {
+        format!("(relation {name} {})", types.join(" "))
+    };
+    format!(
+        "gives {name} {}, and {declaration} declares {} — {DECLARED_COUNT}",
+        count(written_count(ast, form), "argument"),
+        types.len()
+    )
+}
+
+/// [`wrong_counts`] over a rule's, an hrule's or a query's clause, one line a
+/// form, at the form: `<place>rule 'fans': its :match writes (likes ?who),
+/// which gives likes 1 argument, and (relation likes Person Drink) declares 2
+/// — …`. `verb` is `writes`, or `lists` for a claim's fact.
+fn refuse_wrong_counts(
+    ast: &Ast,
+    who: &str,
+    clause: &str,
+    verb: &str,
+    node: NodeId,
+    declared: &Declared,
+    errors: &mut Vec<String>,
+) {
+    let mut found = Vec::new();
+    wrong_counts(ast, node, declared, &mut found);
+    for form in found {
+        let subject = if form == node || verb == "writes" {
+            crate::dump::dump_compact(ast, form)
+        } else {
+            format!(
+                "{}, which holds {}",
+                crate::dump::dump_compact(ast, node),
+                crate::dump::dump_compact(ast, form)
+            )
+        };
+        errors.push(format!(
+            "{}{who}: its {clause} {verb} {subject}, which {}",
+            placed_form(ast, form),
+            count_line(ast, form, declared)
+        ));
+    }
+}
+
+/// [`wrong_counts`] over the program's written facts: `<place>the fact (likes
+/// Bob) gives likes 1 argument, and …`, and for a fact inside one, `<place>the
+/// fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and …`.
+fn refuse_wrong_counts_in_facts(
+    ast: &Ast,
+    facts: &[NodeId],
+    declared: &Declared,
+    errors: &mut Vec<String>,
+) {
+    for &fact in facts {
+        let mut found = Vec::new();
+        wrong_counts(ast, fact, declared, &mut found);
+        for form in found {
+            let subject = if form == fact {
+                format!("the fact {}", crate::dump::dump_compact(ast, fact))
+            } else {
+                format!(
+                    "the fact {} holds {}, which",
+                    crate::dump::dump_compact(ast, fact),
+                    crate::dump::dump_compact(ast, form)
+                )
+            };
+            errors.push(format!(
+                "{}{subject} {}",
+                placed_form(ast, form),
+                count_line(ast, form, declared)
+            ));
+        }
+    }
+}
+
+/// [`wrong_counts`] over each query's `:goal`, as expanded, and over the facts
+/// a claim lists, a query's `:expect` and the `(solve … :expect …)`: a claim's
+/// own words, `model`, `region`, `merged`, `owing` and `or`, are its shape
+/// and no relation's form, so only what a `(model …)` lists is read.
+fn refuse_wrong_counts_in_queries(
+    ast: &Ast,
+    kb: &Kb,
+    declared: &Declared,
+    errors: &mut Vec<String>,
+) {
+    for query in &kb.program().queries {
+        if let Some(goal) = query_keyword(ast, query, "goal") {
+            refuse_wrong_counts(ast, "query", ":goal", "writes", goal, declared, errors);
+        }
+        if let Some(node) = query_keyword(ast, query, "expect") {
+            for model in crate::expect::parse(ast, node).models() {
+                for &fact in &model.facts {
+                    refuse_wrong_counts(ast, "query", ":expect", "lists", fact, declared, errors);
+                }
+            }
+        }
+    }
+    let claim = kb
+        .program()
+        .solve()
+        .and_then(|solve| solve_keyword(ast, &solve.kw_pairs, "expect"))
+        .and_then(|node| crate::claim::parse(ast, node).ok());
+    if let Some(crate::claim::Claim::Region(region)) = claim {
+        let models = region
+            .models
+            .iter()
+            .chain(region.merged.iter().map(|m| &m.to))
+            .chain(region.merged.iter().flat_map(|m| m.from.iter()))
+            .chain(region.owing.iter());
+        for model in models {
+            for &fact in &model.facts {
+                refuse_wrong_counts(ast, "solve", ":expect", "lists", fact, declared, errors);
+            }
         }
     }
 }

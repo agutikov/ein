@@ -133,18 +133,17 @@ const DO_NOT_LOAD: [&str; 0] = [];
 const WRITTEN_PROVENANCE: [&str; 1] =
     ["examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"];
 
-/// **The witnesses whose state file prints an unfilled template reference
-/// today**, each the witness of an open register row (M1f S1f.6.23,
-/// 2026-11-12): W89, a fact written with fewer arguments than its relation
-/// declares, `(likes Bob)` beside `(relation likes Person Drink :why "{?1}
-/// likes {?2}")`, which is stored, and whose English is the relation's `:why`
-/// with a place nothing fills, *Bob likes {?2}*. It is the row's own wrong
-/// answer, so each file is named rather than checked, and it must still print
-/// one: the commit that fixes W89 empties the list.
-const UNFILLED_TEMPLATE: [&str; 2] = [
-    "examples/ein-bugs/wrong-answers/arity-request.ein",
-    "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein",
-];
+/// **The witnesses whose state file printed an unfilled template reference**,
+/// each the witness of an open register row (M1f S1f.6.23, 2026-11-12): W89,
+/// a fact written with fewer arguments than its relation declares, `(likes
+/// Bob)` beside `(relation likes Person Drink :why "{?1} likes {?2}")`, which
+/// was stored, and whose English was the relation's `:why` with a place
+/// nothing filled, *Bob likes {?2}*. It was the row's own wrong answer, so
+/// each file was named rather than checked, and had still to print one.
+/// `arity-request.ein` and `arity-top-level-fact.ein` left the list at
+/// S1f.6.23's T1f.6.23.3 (2026-11-12): the loader refuses a form of another
+/// count than declared, so no state holds such a fact. Empty since.
+const UNFILLED_TEMPLATE: [&str; 0] = [];
 
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {

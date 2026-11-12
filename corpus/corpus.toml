@@ -2859,43 +2859,43 @@ note   = "M1f W88's table module, the calculator's case: two rows of the full ad
 path   = "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/top-level-fact`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments, which loads and is answered in silence."
+note   = "M1f W89 (`W89/top-level-fact`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments, which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-nested-fact.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/nested-fact`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a nested fact, `(n 1)` as an operand of a request to `std.arith`, whose `(relation n Number Digit)` declares two arguments (E-2 of P1f.6's `findings.md`, m6 of `malformed_numbers.md`), which loads and is answered in silence."
+note   = "M1f W89 (`W89/nested-fact`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a nested fact, `(n 1)` as an operand of a request to `std.arith`, whose `(relation n Number Digit)` declares two arguments (E-2 of P1f.6's `findings.md`, m6 of `malformed_numbers.md`), which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-request.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/request`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): the calculator's request with one operand, `(add (n z 5))`, where `std.arith`'s `(relation add Operand Operand)` declares two (m6c of `malformed_numbers.md`), which loads and is answered in silence."
+note   = "M1f W89 (`W89/request`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): the calculator's request with one operand, `(add (n z 5))`, where `std.arith`'s `(relation add Operand Operand)` declares two (m6c of `malformed_numbers.md`), which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/num9-eight-digits`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a `std.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine (the case E-2 was first met on), which loads and is answered in silence."
+note   = "M1f W89 (`W89/num9-eight-digits`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a `std.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine (the case E-2 was first met on), which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-match.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/in-match`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments, which loads and is answered in silence."
+note   = "M1f W89 (`W89/in-match`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments, which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-assert.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/in-assert`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument, which loads and is answered in silence."
+note   = "M1f W89 (`W89/in-assert`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument, which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity-in-goal.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W89 (`W89/in-goal`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments, which loads and is answered in silence."
+note   = "M1f W89 (`W89/in-goal`), filed by S1f.6.23's T1f.6.23.2 (2026-11-12), on the user's ruling of that day (P1f.6's `questions.md` 3 (a)): a query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments, which loaded and was answered in silence. Fixed by S1f.6.23's T1f.6.23.3 (2026-11-12): refused at load, at the form, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-facts-table.ein"
