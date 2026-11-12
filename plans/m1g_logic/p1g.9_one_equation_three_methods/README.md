@@ -108,6 +108,49 @@ What of S1f.6.10's number-theory probes (divisibility, gcd, congruences, primes)
 question under the three methods, on one or two examples, and where the phase stops: a statement over
 every number is P1g.5's, by induction or by a bounded check.
 
+### S1g.9.6 — A function made to be hard to turn round: the two approaches on a hash
+
+Added 2026-11-12, on the user's note of that day:
+
+> both reversed arithmetic and search used to solve x*7=861 reminded me about reversability of functions.
+> multiplication is revertable. How those 2 approches would work with hash functions?
+
+Multiplication by a digit is turned round by method 1 because the turning is *local*: a column of the
+table read backwards leaves one digit, or a few, and the next column ends the wrong ones. A hash is built
+from steps that are each as small as a table row (xor, addition modulo a power of two, a rotation, a
+choice between bits), and each of them is a relation Ein can read in any direction too. What a hash adds
+is the arrangement: steps that lose information, so a value has many preimages, and mixing, so that every
+bit of the output depends on every bit of the input and no column closes before all of them are chosen.
+
+The stage asks what each approach does there, on programs:
+
+- **A toy hash over the banked tables**, a few bits wide and a few rounds deep, written over
+  [`examples/binary_logic/`](../../../examples/binary_logic/README.md)'s gates and
+  [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md)'s adder, with the number of
+  rounds and the width as its two sizes. Computed forwards it is a calculation, held to an independent
+  implementation.
+- **Method 1, read backwards.** Given the output, saturation derives every preimage of every step. Where a
+  step has one preimage it is the walk of `x × 7 = 861`; where it has many, saturation holds all of them
+  at once. Measured: the facts and firings as the rounds grow, and the round at which the walk stops being
+  a walk.
+- **Method 2, search.** The input's bits as hypotheses that each owe a value, the output required. Measured:
+  the saturations to one preimage and to all of them, and how much a dead partial assignment prunes, as
+  the mixing grows. This is the valuations' search of
+  [S1g.6.6](../p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md), with a witness built to
+  resist it.
+- **The same three questions as for the equation:** a preimage, every preimage (a collision is two), and
+  *no preimage*, which for a function that loses information can be true of an output; what the read-out
+  says of each, beside S1g.9.2's table.
+
+What it is for: to say on measured programs what *reversible* means for a relation in Ein. Every function
+written as tables is a relation that can be read backwards; whether reading it backwards is a walk or a
+search is a property of the arrangement, and multiplication and a hash are its two ends. Whether the
+measure that separates them can be read off the rules, before any run, is asked and not promised; it is a
+question for [M12](../../m12_rules_as_data/README.md)'s census of rule connections.
+
+What it is not: cryptanalysis, a hash of real width, or a claim about any real hash function. The sizes
+are whatever shows the growth and still finishes.
+
 ## What it is not
 
 - **Not a change to P1f.8.** That phase remains *"incomplete naive school algebra"*; nothing here asks it
@@ -125,6 +168,8 @@ every number is P1g.5's, by induction or by a bounded check.
 - The cost table carries each figure's command and date.
 - The question *arithmetic or algebra* has a page that answers it on the programs.
 - Inverse requests are proposed to the user or declined, in writing.
+- The toy hash of S1g.9.6 is a kept program, computed forwards against an independent implementation, with
+  both approaches measured backwards on it as its rounds and width grow.
 - Nothing in the engine moved; if a probe meets a wrong answer it is a register row before its fix.
 
 ## The discipline
