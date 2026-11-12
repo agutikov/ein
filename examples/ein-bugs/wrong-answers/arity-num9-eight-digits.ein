@@ -1,0 +1,29 @@
+;;; A `num9` number of eight digits loads, and the request that holds it is
+;;; answered by silence —
+;;; M1f **W89**, register row `W89/num9-eight-digits`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.6.23 (T1f.6.23.2, 2026-11-12);
+;;; the case E-2 of P1f.6's `findings.md` was first met on.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.num9` declares its number with nine arguments, a digit each. The
+;;; request's first operand has eight.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(num9 0 0 1 2 3 0 7 8)` is a form headed by a declared relation with
+;;; eight arguments where the declaration has nine types: the program is
+;;; refused at load, at the form, one line naming the relation and the two
+;;; counts, on every command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f9a6fd1d`, release: the program loads, the wide rule matches no
+;;; request, nothing is derived, not a sum and not an overflow, and the goal
+;;; has no row, exit 0 on every command, with no word.
+
+(import std.num9 :symbols (arith9))
+
+(add9 (num9 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+
+(query :goal (sum9-of ?x ?y ?s) :goal-text "{?x} + {?y} = {?s}")

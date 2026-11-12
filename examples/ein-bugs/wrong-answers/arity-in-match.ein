@@ -1,0 +1,35 @@
+;;; A rule whose `:match` writes a declared relation with another count of
+;;; arguments loads, and matches nothing —
+;;; M1f **W89**, register row `W89/in-match` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.6.23 (T1f.6.23.2, 2026-11-12).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `likes` is declared with two arguments. The rule `fans` reads it with one,
+;;; `(likes ?who)`, where `(likes ?who ?what)` was meant.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(likes ?who)` is a form headed by a declared relation with one argument
+;;; where the declaration has two types: the program is refused at load, at
+;;; the form, one line naming the rule, the relation and the two counts, on
+;;; every command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f9a6fd1d`, release: the program loads, matching is by count, so the
+;;; premise matches no fact of `likes` and the rule never fires: no `fan`
+;;; fact, the goal has no row, exit 0 on every command, with no word.
+
+(relation likes Person Drink :why "{?1} likes {?2}")
+(relation fan Person :why "{?1} is a fan")
+
+(likes Ann Tea)
+
+(rule fans ()
+  :match  (likes ?who)
+  :assert (fan ?who)
+  :why "{?who} likes something, so {?who} is a fan")
+
+(solve :hypothesis-relations ())
+(query :goal (fan ?who) :goal-text "{?who} is a fan")

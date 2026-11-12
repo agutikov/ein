@@ -1,7 +1,8 @@
 # S1f.6.23 — The loader holds a form to its relation's declared count of arguments
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. Not started. **An engine stage,** for every
+**Status:** started 2026-11-12, on the user's reply of that day: T1f.6.23.2 done, the register's rows filed
+`open` ([§ T2 record](#t2-record-2026-11-12-the-rows-filed-open)); the check is next. **An engine stage,** for every
 program and not the calculator alone.
 **Depends on:** nothing in the phase. It was item 3 of
 [S1f.6.12](s1f.6.12_malformed_numbers.md)'s build (*the loader's arity check on nested facts, if ruled*) and
@@ -97,3 +98,36 @@ questions to [`open_questions.md`](../open_questions.md) under the next free id.
 same programs (one tool, consistent answers); a refusal is an error and exits as each command's load error
 does, and nothing else changes an exit code. The gate is `./run_tests.sh`, then `./run_tests.sh --nightly`
 after the code commit; `utils/ci_container.sh` is not needed.
+
+## T2 record (2026-11-12): the rows filed open
+
+**W89, seven rows, each `open`,** owned by this stage, in
+[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml), each witness under
+`examples/ein-bugs/wrong-answers/` with a corpus entry: the six the task names and a rule's `:assert`, which
+stores facts of the wrong count where a `:match` only matches nothing.
+
+| row | witness | the form | what every command answers today |
+|---|---|---|---|
+| `W89/top-level-fact` | `arity-top-level-fact.ein` | `(likes Bob)`, `likes` declared with two | loads; root holds the fact; the goal has Ann's row alone |
+| `W89/nested-fact` | `arity-nested-fact.ein` | `(n 1)` inside `(add (n 1) (n z 5))`, `std.arith` | loads; nothing derived; the goal has no row |
+| `W89/request` | `arity-request.ein` | `(add (n z 5))`, `std.arith` | loads; nothing derived; the goal has no row |
+| `W89/num9-eight-digits` | `arity-num9-eight-digits.ein` | `(num9 0 0 1 2 3 0 7 8)`, `std.num9` | loads; neither a sum nor an overflow; the goal has no row |
+| `W89/in-match` | `arity-in-match.ein` | a rule's premise `(likes ?who)` | loads; the rule never fires |
+| `W89/in-assert` | `arity-in-assert.ein` | a rule's conclusion `(fan ?who ?what)`, `fan` declared with one | loads; root holds `(fan Ann Tea)`, which the goal `(fan ?who)` does not match |
+| `W89/in-goal` | `arity-in-goal.ein` | a goal `(likes ?who)` | loads; *the goal has no row: undetermined here* |
+
+Each exits 0 with nothing on stderr on `ein saturate --dump`, `ein solve` and `ein oracle`, release, at
+`f9a6fd1d` (2026-11-12). Each row's `now` is `ein saturate --dump`, a command's run that answers, as W76's
+were while open, and its `right` a refusal; `wrong_answers.rs` holds the seven to the unchanged engine.
+
+Two more symptoms were met on the way and are the rows' own: a `--dump-answer` state file prints the English
+of a fact that is short of arguments with a place nothing fills, `(likes Bob) ; Bob likes {?2}` and `(add (n z
+5)) ; asked: (n z 5) + {?2}`, which `answer_round_trip.rs` forbids, so the two witnesses are named in its
+`UNFILLED_TEMPLATE` while their rows are open, and must still print one; and the three witnesses that import
+the calculator join `alive_invariant.rs`'s list of programs with a name only the seed holds, and their
+directory `dot_wellformed.rs`'s `SKIPPING`, each holding the digit tables. The commit that fixes W89 empties
+the first and takes them off the other two. A row whose witness loads states its region, so each of the seven
+carries a `[case.region]` while open, R {∅}, which the fix removes, a refused program having none.
+
+The register reads 305 fixed, 23 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+-c`, 2026-11-12).

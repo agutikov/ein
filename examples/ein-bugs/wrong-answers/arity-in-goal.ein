@@ -1,0 +1,29 @@
+;;; A query whose `:goal` writes a declared relation with another count of
+;;; arguments loads, and has no row in any state —
+;;; M1f **W89**, register row `W89/in-goal` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.6.23 (T1f.6.23.2, 2026-11-12).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `likes` is declared with two arguments, and the program states one fact
+;;; of it. The goal asks `(likes ?who)`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(likes ?who)` is a form headed by a declared relation with one argument
+;;; where the declaration has two types: the program is refused at load, at
+;;; the form, one line naming the query's `:goal`, the relation and the two
+;;; counts, on every command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f9a6fd1d`, release: the program loads, the goal matches no fact of
+;;; `likes`, and its one class says *the goal has no row: undetermined here*,
+;;; exit 0 on every command, with no word.
+
+(relation likes Person Drink :why "{?1} likes {?2}")
+
+(likes Ann Tea)
+
+(solve :hypothesis-relations ())
+(query :goal (likes ?who) :goal-text "{?who} likes something")

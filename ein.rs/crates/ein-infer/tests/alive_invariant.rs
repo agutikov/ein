@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 130] = [
+const SEEDED: [(&str, &[&str]); 133] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -682,6 +682,21 @@ const SEEDED: [(&str, &[&str]); 130] = [
         &["`z`, matched by rule `to9-zero`"],
     ),
     ("stdlib/num9.ein", &["`z`, matched by rule `to9-zero`"]),
+    // M1f S1f.6.23 — W89's three witnesses that import the calculator, which
+    // load while their rows are open; the commit that fixes W89 takes them
+    // off the list, a refused program having no names.
+    (
+        "examples/ein-bugs/wrong-answers/arity-nested-fact.ein",
+        &["`z`, in (add (n 1) (n z 5))"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein",
+        &["`z`, matched by rule `to9-zero`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/arity-request.ein",
+        &["`z`, in (add (n z 5))"],
+    ),
     (
         "tests/stdlib/num9/01_add.ein",
         &["`z`, matched by rule `to9-zero`"],

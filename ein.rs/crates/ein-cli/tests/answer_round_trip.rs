@@ -133,6 +133,19 @@ const DO_NOT_LOAD: [&str; 0] = [];
 const WRITTEN_PROVENANCE: [&str; 1] =
     ["examples/ein-bugs/wrong-answers/written-rule-no-such-rule.ein"];
 
+/// **The witnesses whose state file prints an unfilled template reference
+/// today**, each the witness of an open register row (M1f S1f.6.23,
+/// 2026-11-12): W89, a fact written with fewer arguments than its relation
+/// declares, `(likes Bob)` beside `(relation likes Person Drink :why "{?1}
+/// likes {?2}")`, which is stored, and whose English is the relation's `:why`
+/// with a place nothing fills, *Bob likes {?2}*. It is the row's own wrong
+/// answer, so each file is named rather than checked, and it must still print
+/// one: the commit that fixes W89 empties the list.
+const UNFILLED_TEMPLATE: [&str; 2] = [
+    "examples/ein-bugs/wrong-answers/arity-request.ein",
+    "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein",
+];
+
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
     let lost: Vec<&String> = want.difference(got).take(3).collect();
@@ -197,9 +210,18 @@ fn check(
             files.push((format!("owing/{:0w$}.ein", i + 1), o.node.set.to_vec()));
         }
     }
-    no_placeholder_reaches_an_output(file, &dir.join("answer.txt"), bad);
+    let mut unfilled: Vec<String> = Vec::new();
+    no_placeholder_reaches_an_output(file, &dir.join("answer.txt"), &mut unfilled);
     for (path, _) in &files {
-        no_placeholder_reaches_an_output(file, &dir.join(path), bad);
+        no_placeholder_reaches_an_output(file, &dir.join(path), &mut unfilled);
+    }
+    match (UNFILLED_TEMPLATE.contains(&file), unfilled.is_empty()) {
+        (false, _) => bad.append(&mut unfilled),
+        (true, false) => {}
+        (true, true) => bad.push(format!(
+            "{file}: no output prints an unfilled template reference, and UNFILLED_TEMPLATE \
+             names it: its row (W89) is fixed, so drop it from the list in the same commit"
+        )),
     }
     members_of_n(file, dir, bad);
     *eager += eager_cores(file, dir, bad, held);

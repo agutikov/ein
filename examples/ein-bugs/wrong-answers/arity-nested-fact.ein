@@ -1,0 +1,30 @@
+;;; A nested fact written with another count of arguments than its relation
+;;; declares loads, and the request that holds it is answered by silence —
+;;; M1f **W89**, register row `W89/nested-fact` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.6.23 (T1f.6.23.2, 2026-11-12); E-2 of P1f.6's `findings.md`,
+;;; m6 of `malformed_numbers.md`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.arith` declares a number's constructor with two arguments, `(relation
+;;; n Number Digit)`: what is to the left, and a digit. The request's first
+;;; operand is `(n 1)`, where `(n z 1)` was meant.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(n 1)` is a form headed by a declared relation with one argument where
+;;; the declaration has two types: the program is refused at load, at the
+;;; form, one line naming the relation and the two counts, on every command
+;;; (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f9a6fd1d`, release: the program loads, no rule of the theory finds the
+;;; operand, nothing is derived, and the goal has no row, exit 0 on every
+;;; command, with no word.
+
+(import std.arith :symbols (arith))
+
+(add (n 1) (n z 5))
+
+(query :goal (sum-of ?x ?y ?s) :goal-text "{?x} + {?y} = {?s}")

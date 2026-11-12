@@ -1,0 +1,31 @@
+;;; A fact written with another count of arguments than its relation declares
+;;; loads, and is stored beside the facts of the declared count —
+;;; M1f **W89**, register row `W89/top-level-fact` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that
+;;; day on question 3 of P1f.6's `questions.md`, *"(a)"*.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `likes` is declared with two arguments, a person and a drink. The second
+;;; fact gives it one: the drink was left out.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `(likes Bob)` is a form headed by a declared relation with one argument
+;;; where the declaration has two types: the program is refused at load, at
+;;; the form, one line naming the relation and the two counts, on every
+;;; command (exit 1, `ein test`: 2).
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `f9a6fd1d`, release: the program loads, root holds `(likes Ann Tea)`
+;;; and `(likes Bob)`, and the goal has the one row of Ann, exit 0 on every
+;;; command, with no word about Bob.
+
+(relation likes Person Drink :why "{?1} likes {?2}")
+
+(likes Ann Tea)
+(likes Bob)
+
+(solve :hypothesis-relations ())
+(query :goal (likes ?who ?what) :goal-text "{?who} likes {?what}")

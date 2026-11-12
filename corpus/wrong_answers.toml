@@ -16690,3 +16690,263 @@ relations = []
 models    = [
   [],
 ]
+
+# ══ W89 — a form headed by a declared relation with another count of arguments than declared loads, and is answered in silence ══
+[[case]]
+id       = "W89/top-level-fact"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-top-level-fact.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a top-level fact, `(likes Bob)` where `(relation likes Person Drink)` declares two arguments. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered. A `--dump-answer` state file prints the fact's English with a place nothing fills, `(likes Bob) ; Bob likes {?2}`, which `answer_round_trip.rs` names while the row is open (`UNFILLED_TEMPLATE`)"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads; root holds `(likes Ann Tea)` and `(likes Bob)`, the goal `(likes ?who ?what)` has the one row of Ann, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "`(likes Bob)` has one argument and `likes` is declared with two types: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W89/nested-fact"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-nested-fact.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a nested fact, `(n 1)` as an operand of a request to `std.arith`, whose `(relation n Number Digit)` declares two arguments (E-2 of P1f.6's `findings.md`, m6 of `malformed_numbers.md`). The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads; no rule of the theory finds the operand, nothing is derived, the goal `(sum-of ?x ?y ?s)` has no row, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "`(n 1)`, inside the request, has one argument and `n` is declared with two types: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W89/request"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-request.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: the calculator's request with one operand, `(add (n z 5))`, where `std.arith`'s `(relation add Operand Operand)` declares two (m6c of `malformed_numbers.md`). The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered. A `--dump-answer` state file prints the fact's English with a place nothing fills, `(add (n z 5)) ; asked: (n z 5) + {?2}`, which `answer_round_trip.rs` names while the row is open (`UNFILLED_TEMPLATE`)"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads; no rule matches `add` with one argument, nothing is derived, the goal `(sum-of ?x ?y ?s)` has no row, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "`(add (n z 5))` has one argument and `add` is declared with two types: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W89/num9-eight-digits"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-num9-eight-digits.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a `std.num9` number of eight digits, `(num9 0 0 1 2 3 0 7 8)`, where the declaration has nine (the case E-2 was first met on). The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads; the wide rule matches no request, neither a sum nor an overflow is derived, the goal `(sum9-of ?x ?y ?s)` has no row, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "`(num9 0 0 1 2 3 0 7 8)`, inside the request, has eight arguments and `num9` is declared with nine types: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W89/in-match"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-in-match.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a rule's `:match`, `(likes ?who)` where `likes` is declared with two arguments. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads; matching is by count, so the premise matches no fact and the rule `fans` never fires: no `fan` fact, the goal `(fan ?who)` has no row, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "The rule's premise `(likes ?who)` has one argument and `likes` is declared with two types: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W89/in-assert"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-in-assert.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a rule's `:assert`, `(fan ?who ?what)` where `fan` is declared with one argument. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads and the rule fires; root holds `(fan Ann Tea)`, a fact of `fan` with two arguments, which the goal `(fan ?who)` does not match: no row, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "The rule's conclusion `(fan ?who ?what)` has two arguments and `fan` is declared with one type: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
+
+[[case]]
+id       = "W89/in-goal"
+case     = "W89"
+title    = "a form headed by a declared relation with another count of arguments than the declaration has types loads, and is answered in silence"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.23"
+question = ["P1f.6 questions.md 3"]
+witness  = "examples/ein-bugs/wrong-answers/arity-in-goal.ein"
+status   = "open"
+open_because = "the loader holds no form to its relation's declared count of arguments: S1f.6.23's T1f.6.23.3 builds the check"
+look_at  = ["root"]
+note     = "Filed by S1f.6.23 (T1f.6.23.2, 2026-11-12), on the user's ruling of that day on question 3 of P1f.6's `questions.md`, from E-2 of the phase's `findings.md` and Q1 of `malformed_numbers.md`: a query's `:goal`, `(likes ?who)` where `likes` is declared with two arguments. The row's `now` is `ein saturate --dump`, a command's run, which answers while the row is open; its `wrong` is the record of what every command answered"
+
+[case.wrong]
+run       = "saturate --dump"
+by        = "command"
+why       = "`ein saturate --dump`, `ein solve`, `ein oracle` and every other command on the witness, release, at f9a6fd1d (2026-11-12): the program loads; the goal matches no fact of `likes`, and its one class says *the goal has no row: undetermined here*, R is {∅}; exit 0 on every command, with nothing on stderr"
+answered  = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+refused   = true
+reading   = "the user's ruling of 2026-11-12 on question 3 of P1f.6's `questions.md`, *\"(a)\"*: every form headed by a declared relation, at any depth, in a fact, a rule or a query, is refused at load with one line naming the relation, the count declared and the count written"
+derived   = "The goal's `(likes ?who)` has one argument and `likes` is declared with two types: refused at load, at the form, one line, and every command exits 1 (`ein test`: 2)"
+
+[case.now]
+run      = "saturate --dump"
+answered = true
