@@ -6,7 +6,7 @@
 29 programs under `build/s1f.6.20/` on the release binary, every problem of the table answered, the three gap
 mechanisms and the three forms of a missing reading each run, twelve questions with recommendations, and E-17 to
 E-20 in [`findings.md`](findings.md). Nothing shipped; T2 onward wait for the rulings.
-**The prototype was banked on 2026-11-12**, on the user's instruction of that day, with the variants the page
+**The prototype was banked on 2026-11-12** (`f3fe6ff0`), on the user's instruction of that day, with the variants the page
 recommends: [`examples/word_problems/`](../../../examples/word_problems/README.md), three modules and thirteen
 problems ([§ T2 record](#t2-record-2026-11-12-the-prototype-banked)). The remainder variant is not among them: a
 test of the gate does not end on it (E-33). The twelve questions stay open, and the tests T2 lists wait for the
@@ -318,3 +318,12 @@ gains thirteen of the files, the `z` inside a nested number they write or the ca
 user's replies in progress, was not touched: its section F says the problems were banked, and Q-M1f.194 to .198
 and E-33 are not yet in its sections I and J.
 
+
+## After the commit, 2026-11-12: the nightly
+
+The banking is `f3fe6ff0`. On it, `./run_tests.sh --nightly` is green in every step
+(`build/nightly-s1f.6.20.log`, 2026-11-12): the slow corpus cells, the round trip's slow and `heavy_dump`
+entries, the levers', the cores', `region`'s and `obligation_rung`'s slow halves, the scratch check, the
+mutation census at 361 of 411, the fuzzer at both seeds and the bench smoke. `utils/ci_container.sh` was not
+run: the stage changed no DOT writer, nor the review bundle, nor what CI installs (Q-M1f.77). Not run: the
+dev-host tier.
