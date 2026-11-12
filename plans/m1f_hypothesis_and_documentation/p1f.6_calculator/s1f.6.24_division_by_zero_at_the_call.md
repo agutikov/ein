@@ -1,7 +1,8 @@
 # S1f.6.24 — Division by zero is flagged at the call, whoever made it
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day and round 2's reading of it. Not started.
+**Status:** planned 2026-11-12, on the user's reply of that day and round 2's reading of it, which the user
+agreed to in round 2. Not started.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md) (the flag as built), [S1f.6.8](s1f.6.8_rational_numbers.md)
 (`std.rat`'s own rule). It edits `stdlib/arith.ein`, so it runs after
 [S1f.6.12's build](s1f.6.12_malformed_numbers.md#the-build-as-ruled-2026-11-12). Independent of the stdlib
@@ -17,7 +18,8 @@ The user, 2026-11-12:
 > I don't understand the question: (div ?x 0) must emit division-by-zero no matter where it happens (except
 > theories where it is allowed - like wheels, meadows, transreal arithmetic, etc...).
 
-[Round 2, item 48](questions_round2.md#q48) reads it as two decisions and takes both meanwhile:
+[Round 2, item 48](questions_round2.md#q48) reads it as two decisions, to which the user replied there,
+as it stood in the working copy when this plan was written (2026-11-12, not yet committed), the stage re-reading it before it starts: *"OK, I agree"*. The two:
 
 1. **A division called from inside another theory,** `(div-call TAG X z)`, derives nothing today; by the
    reply this is wrong. *The flag moves to the division itself, so any call with a zero divisor derives

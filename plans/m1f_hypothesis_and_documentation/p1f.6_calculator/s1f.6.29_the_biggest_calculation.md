@@ -13,7 +13,7 @@ examples. The user, 2026-11-12:
 > Let's have biggest solvable arithmetic calculation in let's say 100+-50 seconds on this host. make a
 > generator in python that takes some size arguments and generate an example.
 
-[Round 2, item 49](questions_round2.md#q49) says what is done meanwhile, open there until the user replies:
+[Round 2, item 49](questions_round2.md#q49) says what is done meanwhile:
 
 > `utils/gen_arith_examples.py` takes size arguments (operation, digits, count of requests, factorial's n)
 > and writes a program to a path you give. The stage finds, for `ein saturate` and for `ein solve`
@@ -21,7 +21,14 @@ examples. The user, 2026-11-12:
 > in `stdlib/README.md`. The big file is **generated on demand and not checked in**: every file under
 > `examples/` is solved, dumped and reloaded per commit.
 
-and asks: *Say if you want it checked in and run nightly instead.*
+and asks: *Say if you want it checked in and run nightly instead.* The user's reply there, as it stood in the working copy when this plan was written (2026-11-12, not yet committed), the stage re-reading it before it starts:
+
+> Ok, then pick the one that fits into memory, say ~16GB
+
+So **memory is the bound, about 16 GB,** where round 2 had warned that memory ends a calculation before the
+window of 100 ± 50 seconds does: the biggest calculation is the largest that runs within about 16 GB of
+peak memory, and its time is reported, whatever it is. The reply does not ask for the file to be checked
+in, so it stays generated on demand.
 
 ## What is known before it starts
 
@@ -49,10 +56,10 @@ biggest that fits in memory*, well short of the window.
    file.
 2. **T1f.6.29.2 — the search for the size,** as a mode of `utils/arith_cost.py`, run through
    `utils/bench_env.sh`: for each of `ein saturate` and `ein solve`, and for each shape (one long product,
-   one long division, many short requests, the factorial chain), the largest size whose run lands in the
-   user's window of 100 ± 50 seconds on this host, **or the size at which memory ends it first**, with wall
-   time, firings, facts and peak RSS. Every run is under a memory limit (`ulimit -v` or a cgroup) set below
-   the host's, so that a run which would exhaust memory is ended and reported, not left to take the host
+   one long division, many short requests, the factorial chain), **the largest size whose run fits in about
+   16 GB of peak memory** (the user's reply in round 2), with wall time, firings, facts and peak RSS, and
+   whether the time fell inside the first reply's window of 100 ± 50 seconds. Every run is under a memory
+   limit (`ulimit -v` or a cgroup) set at that bound, so that a run which would exhaust memory is ended and reported, not left to take the host
    down. The parser's nesting limit of 999 digits bounds a single operand; the sweep says where a shape hits
    it before the window.
 3. **T1f.6.29.3 — the page.** [`stdlib/README.md`](../../../stdlib/README.md) § What a program pays gains a
@@ -65,14 +72,13 @@ biggest that fits in memory*, well short of the window.
 ## Acceptance
 
 - One command writes an arithmetic program of a stated size; the same arguments write the same file.
-- The page names, with commands and dates, the biggest calculation that runs in the window under
-  `ein saturate` and under `ein solve`, or says that memory ended it and at what size.
+- The page names, with commands and dates, the biggest calculation that fits in about 16 GB under
+  `ein saturate` and under `ein solve`, with the time each took.
 - The three shipped examples and their `--check` are unchanged; the corpus gains no file.
 
 ## What it must not do
 
-- **Not check a large program in,** unless the user replies to round 2's item 49 that it should be and run
-  nightly.
+- **Not check a large program in:** the user's reply to round 2's item 49 did not ask for it.
 - **Not change the engine or the stdlib** to make a size fit. What the sweep shows of E-24 (the read-out's
   cost) and E-26 (a kilobyte a fact) is added to those rows of [`findings.md`](findings.md), whose owner is
   M1g's [S1g.6.2](../../m1g_logic/p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md).

@@ -1452,9 +1452,35 @@ constrained-reasoning research.
   `std.arith` through a rule with an unbound operand may hang that test**;
   run it alone before a gate. No stdlib module and no engine source moved,
   and the register is unmoved.
+  **The user replied to the phase's questions on 2026-11-12**
+  ([`questions.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md);
+  what stayed open is
+  [`questions_round2.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md)),
+  and **[`replies_2026-11-12.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)
+  is the index** from each of the 73 items to what it became, with the order
+  the stages run in. Thirteen stages are planned and none started, S1f.6.21 to
+  S1f.6.33: the gate reduced (big graphs skipped, no counters step), integer
+  division under three conventions, the loader's arity check, division by zero
+  flagged at the call, five findings fixed (E-5, E-8, E-11, E-20, E-22), a
+  read-out row for what root owes, `ein test` by the cheapest route, word
+  problems second pass, the biggest calculation, name clashes between imported
+  theories (stops for the user), then **the stdlib layout, `std.math.*` and
+  `std.bool.*`, with `std.arith` becoming `std.math.decimal-arith`**, and after
+  it binary arithmetic and binary logic shipped, gcd and lcm, and `std.rat`
+  reducing only when asked. Expressions (S1f.6.14) moved to P1f.8. Each stage
+  says whether it rests on a typed reply, a reply in round 2, or round 2's
+  default. The same replies extended P1f.8 (S1f.8.10, S1f.8.11), P1f.10
+  (S1f.10.9; the order of the search takes the discovered structure as input)
+  and M1g (P1g.7, unsatisfiable against owing; P1g.8, a theory of types;
+  S1g.6.6), and created three milestones:
+  [M1h](plans/m1h_beyond_word_problems/README.md), beyond word problems;
+  [M15](plans/m15_mcp_server/README.md), an Ein MCP server;
+  [M1j](plans/m1j_nlp_smt_poc/README.md), `nlp/` and `smt/` as one proof of
+  concept.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
-  [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
-  and has no M1h beside it: propositional logic with valuations as hypotheses,
+  [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete;
+  no second milestone was made for its engine work (the id M1h has since been
+  taken by another subject, 2026-11-12): propositional logic with valuations as hypotheses,
   proof systems, first-order logic, Peano and induction, and the engine work
   they turn out to need; it promotes F1b, and P1f.6's S1f.6.16 and S1f.6.17,
   binary arithmetic and binary logic, are its starting point.
@@ -1952,6 +1978,9 @@ constrained-reasoning research.
   `CVC4/CVC4`) were deinitialised at M1a S1a.10.5 — never checked out here,
   and a cost on every recursive clone. Each README has the one
   `git submodule add` that restores it.
+  [M1j](plans/m1j_nlp_smt_poc/README.md) (planned 2026-11-12) puts the two
+  into one folder as a proof of concept, Zebra sentences through link grammar
+  to SMT code.
 
 ## Running the gate
 
