@@ -77,8 +77,10 @@ enum Verdict {
     Crashed(String),
 }
 
-/// A view with more edges than this is laid out by [`BOUNDED_LAYOUT`], not
-/// by `dot`'s own layout.
+/// A view with more edges than this is **not put to Graphviz at all**: it is
+/// counted and skipped (M1f S1f.6.21, the user's ruling of 2026-11-12, *"don't
+/// test graphviz itself - that is the main point here. just skip big graphs,
+/// run tests only on small"*).
 ///
 /// `dot`'s layered layout is superlinear in the edges, and a library of facts
 /// is where that shows. `stdlib/digits.ein` (M1f S1f.6.2) is the calculator's
@@ -92,42 +94,53 @@ enum Verdict {
 ///
 /// **The bound is under the smallest table** since M1f S1f.6.3 (it was 1 500
 /// for a stage): the KB view of a program that imports `std.arith` holds
-/// `fa`'s 200 rows, some 1 200 edges, and `dot` takes 0.55 s on each of its
-/// six KB views, where the bounded layout takes 0.1 s. One such program is
-/// affordable and a suite of them is not, and a later operation's programs
-/// hold `md`'s 900 rows. So a view that holds a table is past the bound, and
-/// what `dot` lays out is what it laid out before the tables.
+/// `fa`'s 200 rows, some 1 200 edges. So a view that holds a table is past
+/// the bound, and what `dot` lays out is what it laid out before the tables.
 ///
-/// What a view past the bound is still held to is this file's claim, that
-/// **Graphviz accepts the bytes**: the same parser reads the same grammar,
-/// and the same renderer writes the same attributes to SVG and warns of the
-/// same unknown shape, arrow, style and colour (tried on each). What it is
-/// not held to is `dot`'s own layout of it, which nobody can wait for.
-/// Not a skip: every view still goes to Graphviz, and one it complains of
-/// fails.
+/// **What is given up:** nothing checks that the DOT text of a skipped view
+/// is well-formed. From S1f.6.2 to S1f.6.21 such a view went to Graphviz
+/// under `fdp` stopped after one iteration, which checked the grammar and
+/// the attributes without `dot`'s layout and was most of this test's time.
+/// The writers are the same functions that write the small views, which is
+/// why the ruling is safe to take. The sweep prints how many views it
+/// skipped and each by name, with its edges, and holds the
+/// directories they are in to [`SKIPPING`], so a skip is visible and one in
+/// a directory that had none fails.
 const DOT_LAYOUT_BOUND: usize = 1000;
 
-/// The layout past [`DOT_LAYOUT_BOUND`]: `fdp`, the one every KB view names
-/// as its *suggested layout*, stopped after one iteration, with no overlap
-/// removal and straight edges. The layout is not the subject, and this one
-/// takes about two seconds on the largest view there is, where `osage` took
-/// seven and `twopi` five.
-const BOUNDED_LAYOUT: [&str; 4] = ["-Kfdp", "-Gmaxiter=1", "-Goverlap=true", "-Gsplines=false"];
+/// The directories that hold a corpus file with a view past
+/// [`DOT_LAYOUT_BOUND`]: the calculator's modules, the programs that import
+/// them and so hold the digit tables, and three rule libraries wide enough
+/// on their own (`stdlib/num9.ein`'s wide rules,
+/// `examples/binary_arithmetic/five_operations.ein` and
+/// `examples/binary_logic/props_rules.ein` with the program that imports
+/// it). 663 views of 111 files on 2026-11-12, the smallest of 1 025 edges
+/// (`cargo test -p ein-render --test dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
+/// directory is named here, which is where a bound that has started to skip
+/// what it used to check is noticed.
+const SKIPPING: [&str; 11] = [
+    "examples/arith",
+    "examples/beyond_arith",
+    "examples/binary_arithmetic",
+    "examples/binary_logic",
+    "examples/word_problems",
+    "stdlib",
+    "tests/stdlib/arith",
+    "tests/stdlib/digits",
+    "tests/stdlib/int",
+    "tests/stdlib/num9",
+    "tests/stdlib/rat",
+];
 
 /// The edges of a DOT text: its ` -> ` arrows.
 fn edges(dot: &str) -> usize {
     dot.matches(" -> ").count()
 }
 
-/// Feed one DOT text to Graphviz, `-Tsvg`, discarding the SVG: `dot`'s
-/// layout, or [`BOUNDED_LAYOUT`] past [`DOT_LAYOUT_BOUND`].
+/// Feed one DOT text to Graphviz, `-Tsvg`, discarding the SVG.
 fn graphviz(dot: &str) -> Verdict {
-    let mut args = vec!["-Tsvg", "-o", "/dev/null"];
-    if edges(dot) > DOT_LAYOUT_BOUND {
-        args.extend(BOUNDED_LAYOUT);
-    }
     let mut child = Command::new("dot")
-        .args(&args)
+        .args(["-Tsvg", "-o", "/dev/null"])
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
         .stderr(Stdio::piped())
@@ -240,6 +253,11 @@ struct FileSweep {
     bad: Vec<String>,
     /// The non-empty views put to Graphviz.
     checked: usize,
+    /// The non-empty views past [`DOT_LAYOUT_BOUND`], put to nothing: each
+    /// with its edges.
+    skipped: Vec<(String, usize)>,
+    /// The file's directory, from the repo's root.
+    dir: String,
     /// Views that only Graphviz's own cross-graph bug objected to, kept for
     /// the summary line: the check reached a verdict on them, it just took a
     /// second question to get there.
@@ -249,7 +267,12 @@ struct FileSweep {
 /// Every view of one corpus file, put to Graphviz.
 fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
     let mut file = FileSweep::default();
-    let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
+    let rel = path.strip_prefix(repo_root()).unwrap_or(path);
+    file.dir = rel
+        .parent()
+        .map(|d| d.display().to_string())
+        .unwrap_or_default();
+    let name = rel.display();
     let Ok(text) = std::fs::read_to_string(path) else {
         return file;
     };
@@ -296,6 +319,10 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
         if dot.trim().is_empty() {
             continue;
         }
+        if edges(&dot) > DOT_LAYOUT_BOUND {
+            file.skipped.push((format!("{name} [{view}]"), edges(&dot)));
+            continue;
+        }
         file.checked += 1;
         let why = match graphviz(&dot) {
             Verdict::Accepted => continue,
@@ -330,7 +357,8 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
 
 /// The sweep, **several files at a time** since M1f S1f.6.5: a program that
 /// imports `std.arith` holds the digit tables, each of its six KB views is
-/// some 9 000 edges, and the bounded layout takes two seconds on one. The
+/// some 9 000 edges, and the bounded layout of the time took two seconds on
+/// one. Since S1f.6.21 those views are skipped and the sharing is kept: the
 /// files are independent, each view a `dot` process of its own, so they are
 /// shared out among the machine's cores, and what is reported is gathered in
 /// the files' order, so the report reads the same whatever ran first.
@@ -363,10 +391,17 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
     });
     found.sort_by_key(|(i, _)| *i);
     let (mut bad, mut checked, mut resplit) = (Vec::new(), 0usize, Vec::new());
+    let (mut skipped, mut skipped_files) = (Vec::new(), 0usize);
+    let mut skipping = std::collections::BTreeSet::new();
     for (_, file) in found {
         bad.extend(file.bad);
         checked += file.checked;
         resplit.extend(file.resplit);
+        if !file.skipped.is_empty() {
+            skipped_files += 1;
+            skipping.insert(file.dir);
+        }
+        skipped.extend(file.skipped);
     }
     assert!(
         bad.is_empty(),
@@ -374,7 +409,14 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
         bad.len(),
         bad.join("\n\n")
     );
-    eprintln!("graphviz: {checked} non-empty views accepted");
+    eprintln!(
+        "graphviz: {checked} non-empty views accepted, {} skipped past {DOT_LAYOUT_BOUND} edges \
+         ({skipped_files} files)",
+        skipped.len()
+    );
+    for (view, edges) in &skipped {
+        eprintln!("  skipped: {view} ({edges} edges)");
+    }
     if !resplit.is_empty() {
         eprintln!(
             "  {} of them digraph by digraph, `dot` having died on the stream: {}",
@@ -383,4 +425,11 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
         );
     }
     assert!(checked >= 500, "only {checked} views reached Graphviz");
+    assert_eq!(
+        skipping.iter().map(String::as_str).collect::<Vec<_>>(),
+        SKIPPING,
+        "the directories with a view past {DOT_LAYOUT_BOUND} edges, which is \
+         skipped and not put to Graphviz, are not the ones `SKIPPING` names \
+         (`-- --nocapture` lists every skipped view)"
+    );
 }

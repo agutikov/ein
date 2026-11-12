@@ -989,9 +989,11 @@ constrained-reasoning research.
   `findings.md`), so `ein-render/tests/dot_wellformed.rs` puts a view of more
   than 1 500 edges to Graphviz under `fdp` stopped after one iteration, the
   same grammar and attribute checks without `dot`'s layout
-  ([Q-M1f.147](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f147--the-dot-sweep-and-a-view-no-layout-finishes),
-  for the user to confirm); that sweep takes 171.9 s where it took 135.9 s
-  (`cargo test -p ein-render --test dot_wellformed`, 2026-11-11). A program
+  ([Q-M1f.147](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f147--the-dot-sweep-and-a-view-no-layout-finishes));
+  that sweep took 171.9 s where it took 135.9 s
+  (`cargo test -p ein-render --test dot_wellformed`, 2026-11-11). **Since
+  S1f.6.21 such a view is skipped**, on the user's ruling, and put to
+  Graphviz under no layout. A program
   that does not import the module pays nothing, and one that does pays about
   12 ms to parse it. No engine source moved and no existing program's answer
   (`python3 build/s1f.6.2/sweep.py`, 672 files, 2026-11-11); the register is
@@ -1021,9 +1023,10 @@ constrained-reasoning research.
   a number**. Its measured half is `arith_batch.rs`: the matcher's
   `candidates` a request do not grow with the batch, 181.38 at 250, 1 000
   and 4 000 requests. The counters are compiled out of every other build,
-  so that test has **a gate step of its own**, `cargo test -p ein-infer
-  --features counters --test arith_batch`, in `run_tests.sh` and
-  `per-commit.yml`. The stage measured where E-3 bites: a premise with an
+  so that test had a gate step of its own, `cargo test -p ein-infer
+  --features counters --test arith_batch`, **until S1f.6.21 took it out of
+  the gate on the user's ruling: it is run by hand** by a stage that changes
+  a rule of the calculator, and no tier runs it. The stage measured where E-3 bites: a premise with an
   unbound slot walks its relation when asked with a number, and a premise
   with every slot bound is one lookup, which `operand-name` uses, asking
   `(named ?x)` before its `let`. `ein-cli/tests/arith_search_free.rs` holds
@@ -1098,9 +1101,11 @@ constrained-reasoning research.
   files at a time since this stage**
   ([Q-M1f.161](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f161--the-dot-sweep-several-files-at-a-time)):
   every program that imports the theory holds the tables it reads, so each
-  of its six KB views is some 9 000 edges, 2.2 s under the bounded layout,
-  441 s of `dot` for eighteen programs; `dot_wellformed.rs` shares the
-  corpus files out among the cores, 28 s here, and holds what it held.
+  of its six KB views is some 9 000 edges, 2.2 s under the bounded layout
+  of the time, 441 s of `dot` for eighteen programs; `dot_wellformed.rs`
+  shares the corpus files out among the cores, 28 s here then, and holds
+  what it held (those views are skipped since S1f.6.21, and the sharing
+  kept).
   `examples/arith/mul.ein` is the example. No engine source moved and no
   existing program's `ein solve` (`python3 build/s1f.6.4/sweep.py --old
   build/s1f.6.5/old/stdlib --ref 088a1f87`, 687 files, 2026-11-11); the
@@ -1455,7 +1460,8 @@ constrained-reasoning research.
   **The user replied to the phase's questions on 2026-11-12**
   ([`questions.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md);
   what stayed open is
-  [`questions_round2.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md)),
+  [`questions_round2.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md),
+  replied in full the same day (`dc88520b`)),
   and **[`replies_2026-11-12.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)
   is the index** from each of the 73 items to what it became, with the order
   the stages run in. Thirteen stages are planned and none started, S1f.6.21 to
@@ -1463,20 +1469,43 @@ constrained-reasoning research.
   division under three conventions, the loader's arity check, division by zero
   flagged at the call, five findings fixed (E-5, E-8, E-11, E-20, E-22), a
   read-out row for what root owes, `ein test` by the cheapest route, word
-  problems second pass, the biggest calculation, name clashes between imported
+  problems second pass, the biggest calculation (about 16 GB the bound, run by
+  no test and no CI step), name clashes between imported
   theories (stops for the user), then **the stdlib layout, `std.math.*` and
   `std.bool.*`, with `std.arith` becoming `std.math.decimal-arith`**, and after
   it binary arithmetic and binary logic shipped, gcd and lcm, and `std.rat`
   reducing only when asked. Expressions (S1f.6.14) moved to P1f.8. Each stage
-  says whether it rests on a typed reply, a reply in round 2, or round 2's
-  default. The same replies extended P1f.8 (S1f.8.10, S1f.8.11), P1f.10
+  says whether it rests on a typed reply, a reply in round 2, or a default,
+  which stands on the user's "if something remain - pick the default and
+  continue current phase". The same replies extended P1f.8 (S1f.8.10, S1f.8.11), P1f.10
   (S1f.10.9; the order of the search takes the discovered structure as input)
   and M1g (P1g.7, unsatisfiable against owing; P1g.8, a theory of types;
-  S1g.6.6), and created three milestones:
+  P1g.9, one equation by three methods, which the user moved out of P1f.8:
+  "p1f.8 remain incomplete naive school algebra"; S1g.6.6), and created three milestones:
   [M1h](plans/m1h_beyond_word_problems/README.md), beyond word problems;
   [M15](plans/m15_mcp_server/README.md), an Ein MCP server;
   [M1j](plans/m1j_nlp_smt_poc/README.md), `nlp/` and `smt/` as one proof of
   concept.
+  **S1f.6.21, the gate reduced, ran to its end on 2026-11-12**
+  ([its record](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.21_the_gate_reduced.md#record-2026-11-12),
+  Q-M1f.199 defaulted), on the user's two replies of that day. **A view of
+  more than 1 000 edges is skipped by `dot_wellformed.rs`**, counted and
+  named in the test's output and put to Graphviz under no layout (*"don't
+  test graphviz itself - that is the main point here. just skip big graphs,
+  run tests only on small"*): 6 524 views accepted and 663 skipped, of 111
+  files (`cargo test -p ein-render --test dot_wellformed -- --nocapture`,
+  2026-11-12). **Nothing checks the DOT text of a skipped view**: those are
+  the views that hold the digit tables and three rule libraries wide enough
+  on their own. The test names the directories that hold a skipped view,
+  `SKIPPING`, and **a program with a big view in a directory that had none
+  fails the sweep until the directory is named there**. **The counters step
+  left the gate** (*"we don't need this proportional gate"*): `cargo test -p
+  ein-infer --features counters --test arith_batch` is in no tier, and **a
+  stage that changes a rule of the calculator runs it by hand**; the static
+  half, the rule of the theory on each module's text, stays per commit.
+  `fdp` and its layout plugin stay installed and checked, since the review
+  bundle draws KB views with it. No DOT writer, engine source or stdlib
+  module moved; the register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete;
   no second milestone was made for its engine work (the id M1h has since been
@@ -1993,7 +2022,7 @@ constrained-reasoning research.
 ./run_tests.sh --dev-host                                    # M1f S1f.5.27: instead of the gate, the nightly at full budget and the steps that left it
 EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test fuzz_properties     # the nightly's fuzz job, once per seed (1, 987654321); the dev host runs 1000000
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
-cargo test … -p ein-infer --features counters --test arith_batch   # M1f S1f.6.3: the calculator's batch, by the matcher's count; a gate step
+cargo test … -p ein-infer --features counters --test arith_batch   # M1f S1f.6.3: the calculator's batch, by the matcher's count; by hand since S1f.6.21, in no tier
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fourteen names
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance   # the dev host's, since M1f S1f.5.27
@@ -2209,10 +2238,13 @@ whole census in 0.04 s. A file that did not load carries **no claim** —
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
 since M1c S1c.1.5 — **six** static checks (~5 s warm; `--tests-only` skips them
 and the bench smoke), then `cargo test --workspace`, then the bench smoke test.
-Since M1f S1f.6.3 one test is run a second time after the workspace's, built
-with the work counters, which every other build compiles out: `cargo test -p
-ein-infer --features counters --test arith_batch`, the calculator's batch
-held to the matcher's own count of its work.
+From M1f S1f.6.3 to S1f.6.21 one test was run a second time after the
+workspace's, built with the work counters, which every other build compiles
+out: `cargo test -p ein-infer --features counters --test arith_batch`, the
+calculator's batch held to the matcher's own count of its work. The user
+ruled it out of the gate on 2026-11-12 (*"we don't need this proportional
+gate"*): the test and the feature stay, no tier runs them, and a stage that
+changes a rule of the calculator runs the command by hand.
 Since M1e2 S1e2.3.5 the gate checks its own scratch: the tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,

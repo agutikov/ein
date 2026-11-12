@@ -97,13 +97,6 @@ jobs:
       # through the CLI and the embedded-stdlib digest.
       # gate-step
       - run: TMPDIR="${GATE_TMP}" cargo test --workspace
-      # M1f S1f.6.3 — the measured half of the rule of `std.arith`: a batch of
-      # requests costs in proportion to its count, by the matcher's own count
-      # of the facts it tried. The counters are compiled out of every other
-      # build, so this builds `ein-infer` once more with the feature, for that
-      # one test.
-      # gate-step
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --features counters --test arith_batch
       # M1e2 S1e2.3.5 — the tests left nothing in their `TMPDIR`: every entry
       # named with the file that writes it, and a failure if there is one.
       # gate-step

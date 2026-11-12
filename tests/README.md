@@ -188,7 +188,10 @@ handful of sums, written out by hand. Whether the theory adds *correctly* is
 120, every pair of lengths up to 30 digits on a fixed-seed sample, a carry
 through every length, and operands padded with high zeros. The same file
 holds the rule of the theory on the module's text, and `arith_batch.rs` holds
-it on the matcher's count of its work. Every operation is a row of that
+it on the matcher's count of its work, under `--features counters`, which no
+tier builds since M1f S1f.6.21: `cargo test -p ein-infer --features counters
+--test arith_batch` is run by hand by a stage that changes a rule of the
+calculator. Every operation is a row of that
 file's `OPS` and is asked the same cases: subtraction and comparison since
 S1f.6.4, with equal operands and operands one apart at every length, a borrow
 through every length, and requests by name.

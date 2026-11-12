@@ -27,8 +27,10 @@
 //!   weaker claim that needs none: the *firings* per request do not grow with
 //!   the batch, and every batch is answered;
 //! - under **`cargo test -p ein-infer --features counters --test
-//!   arith_batch`**, which is a step of the gate (`run_tests.sh`,
-//!   `per-commit.yml`), it holds the claim itself: `candidates` per request
+//!   arith_batch`**, which is **run by hand and by no tier** since M1f
+//!   S1f.6.21 (it was a step of the gate from S1f.6.3 until the user ruled,
+//!   on 2026-11-12, *"we don't need this proportional gate"*; a stage that
+//!   changes a rule of the calculator runs it), it holds the claim itself: `candidates` per request
 //!   at 1 000 and at 4 000 requests is what it is at 250, within
 //!   [`TOLERANCE`].
 //!

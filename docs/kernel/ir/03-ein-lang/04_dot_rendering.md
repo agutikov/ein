@@ -559,7 +559,10 @@ digraph reasoning_edge_example {
 The renderer is [`ein_render::kb_dot`](../../../../ein.rs/crates/ein-render/src/kb_dot.rs)
 (`to_dot(kb, terms, &KbDotOpts)`, with `ColourBy` and the `include_*`
 fields). It is exercised over the whole corpus by
-[`dot_wellformed.rs`](../../../../ein.rs/crates/ein-render/tests/dot_wellformed.rs)
+[`dot_wellformed.rs`](../../../../ein.rs/crates/ein-render/tests/dot_wellformed.rs),
+which puts a view to `dot` and, since M1f S1f.6.21, skips one of more than
+1 000 edges (the views that hold the calculator's digit tables, whose DOT
+nothing checks),
 and digested in six views by `shape.rs`. **Since M1e2 S1e2.1.3 it has a
 door again**, the one `ein kb dot` was until P1.11:
 

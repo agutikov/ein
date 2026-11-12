@@ -1,7 +1,7 @@
 # S1f.6.21 — The gate reduced: big graphs skipped, and no counters step
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's replies of that day. Not started.
+**Status:** **done 2026-11-12** ([§ Record](#record-2026-11-12)). Planned that day, on the user's replies.
 **Depends on:** nothing. It runs first of the stages planned on 2026-11-12
 ([`replies_2026-11-12.md` § The order](replies_2026-11-12.md#the-order)), since every later stage runs the
 gate it changes.
@@ -104,3 +104,54 @@ Findings go to the phase's [`findings.md`](findings.md) under the next free id; 
 `./run_tests.sh --nightly` after the code commit. `utils/ci_container.sh` only if T1 finds that what CI
 installs changes. No answer of the engine is touched, so no register row is expected; if one is met it is a
 row in `corpus/wrong_answers.toml`, filed `open` before any fix.
+
+## Record, 2026-11-12
+
+**T1, what uses `fdp` besides the bounded check: the review bundle does, so the install and the exit stay.**
+`git grep -n fdp -- utils .github run_tests.sh ein.rs/crates` (2026-11-12): every KB view names `fdp` as its
+suggested layout (`ein-render/src/kb_dot.rs`), and `utils/review_bundle.py` draws each view with the layout it
+suggests (its header: *"A KB view suggests `fdp`, so the Graphviz needs a layout plugin beside it"*;
+`utils/review/util.py` reports a refused DOT with Graphviz's message). The gate's review-bundle smoke and the
+nightly's bundle both draw KB views. `dot_wellformed.rs`'s bounded check was the test's only use of `fdp`, and
+not the gate's only one. So `run_tests.sh` still exits 127 where `fdp` lays out no graph, the workflows and
+`utils/ci_container.sh` still install `libgvplugin-neato-layout8`, and **what CI installs did not change**:
+`utils/ci_container.sh` is not part of done for this stage
+([Q-M1f.77](../open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)), and was not run.
+
+**T2, the skip.** `ein-render/tests/dot_wellformed.rs`: a non-empty view of more than `DOT_LAYOUT_BOUND`, 1 000,
+edges is counted and not put to Graphviz; `BOUNDED_LAYOUT` and its branch are deleted; `graphviz()` runs `dot
+-Tsvg` and nothing else. The sweep's summary line counts the skipped views and the files they are in, and every
+skipped view is printed with its edges. On the stage's commit: **6 524 views accepted, 663 skipped, of 111
+files**, the smallest skipped view of 1 025 edges (`cargo test -p ein-render --test dot_wellformed --
+--nocapture`, 2026-11-12). The sweep takes 8.1 s in that run.
+
+*Pinned* is read as
+[Q-M1f.199](../open_questions.md#q-m1f199--how-the-skipped-views-of-the-dot-sweep-are-pinned), defaulted: an
+exact count in the test would be re-banked by every later program of the calculator, so the test names the
+**directories** that hold a skipped view, `SKIPPING`, eleven of them, and fails on a skip anywhere else. That is
+where a bound that starts skipping what it used to check is noticed.
+
+What the census of the skipped views showed, and the test's comment says: not every skipped view holds a table.
+Three rule libraries are past the bound on their own, `stdlib/num9.ein`'s wide rules (2 080 and 2 100 edges),
+`examples/binary_arithmetic/five_operations.ein` (2 584) and `examples/binary_logic/props_rules.ein` with
+`props_check.ein` (1 181 and 1 157). They were under the bounded layout before this stage, so nothing that
+`dot` laid out stopped being laid out; they are now unchecked, as the tables' views are.
+
+The sharing among the cores is kept (Q-M1f.161).
+
+**T3, the step removed.** `cargo test -p ein-infer --features counters --test arith_batch` left `run_tests.sh`
+(its step, the header's two lines) and `.github/workflows/per-commit.yml`. `gate_steps.rs` reads its list from
+the two files and needed no edit; it and `nightly_steps.rs` pass. `arith_batch.rs`'s header says the command
+is run by hand and by no tier. It is in neither the nightly nor `DEV_HOST_ONLY`, unasked. Run by hand on the
+stage's tree: 5 passed (`cargo test -p ein-infer --features counters --test arith_batch`, 2026-11-12).
+
+**T4, the pages.** `AGENTS.md` (§ Running the gate's command block and paragraph; the S1f.6.2, S1f.6.3 and
+S1f.6.5 paragraphs, each keeping what it recorded and saying what S1f.6.21 changed), `stdlib/README.md` (two
+places), `tests/README.md`, `04_dot_rendering.md` (it did not describe the bounded layout; it says the sweep
+exercises the KB renderer over the whole corpus, which now carries the skip), the phase README's § Acceptance
+and its row, `open_questions.md` (Q-M1f.147, .150 and .153, index rows and sections, with the user's words).
+
+**T5.** E-10's row of `findings.md`.
+
+**Not moved:** no DOT writer (`corpus_shapes.md5` is unmoved, the gate's shape digests pass), no engine source,
+no stdlib module, no nightly step, and no register row.

@@ -217,7 +217,10 @@ Two tests hold it, and **whoever adds a rule keeps to it**:
 [`ein-infer/tests/arith_theory.rs`](../ein.rs/crates/ein-infer/tests/arith_theory.rs)
 on the module's text, and
 [`arith_batch.rs`](../ein.rs/crates/ein-infer/tests/arith_batch.rs) on the
-matcher's own count of its work, under `--features counters`, a gate step.
+matcher's own count of its work, under `--features counters`. The first is in
+the gate; the second is **run by hand** since M1f S1f.6.21 (`cargo test -p
+ein-infer --features counters --test arith_batch`), by whoever changes a rule
+of the calculator, and no tier runs it.
 The one stated exception is `operand-name`, a join with a `let` on the
 *name*, behind a `(named ?x)` check that keeps a number operand from walking
 the `let` facts.
@@ -608,8 +611,8 @@ borrow, and the divisor taken from what is left must. Exactly one fires, and
 the tables decide which.
 
 **No rule joins two facts on a number,** `std.arith`'s rule, kept here and
-held by the same two tests (`num9_theory.rs` on the text, `arith_batch.rs` on
-the matcher's count). It is what the design's prototype did not do: its step
+held by the same two tests (`num9_theory.rs` on the text, per commit, and
+`arith_batch.rs` on the matcher's count, by hand since M1f S1f.6.21). It is what the design's prototype did not do: its step
 rule joined a division's state with the divisor's multiples on the divisor, a
 nested fact, and 4 000 divisions took 8.1 s where 250 took 0.19
 ([`design.md` § 4](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#4-the-table)).
