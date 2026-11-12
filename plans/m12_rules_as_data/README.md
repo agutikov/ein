@@ -101,6 +101,12 @@ What the instruction asks, and where the page answers it:
 | *assert->match a relation connection, etc.* | kinds 3 to 6 and the digraph, its components, cycles and longest paths, with the engine's strata beside it |
 | *want to see analyze results* | § What stands out: observations, and no recommendation |
 
+**Record, 2026-11-12.** The plan, the script and the page are commit `4f7d2bbb`, made ahead of the gate
+because another stage shared the working copy; `./run_tests.sh` was then run on that commit as committed,
+in a detached worktree, and is green in every step (`build/gate-m12-census.log`, exit 0). The script was
+run twice, the second time under another hash seed, and wrote the same files. No engine source and no
+`.ein` file changed.
+
 The census is of the corpus on the day it was taken. The instruction expects a larger one by the time the
 milestone starts, and the script re-takes every number: `python3 utils/rule_census.py --page
 plans/m12_rules_as_data/rule_census.md` rewrites the page's tables.
