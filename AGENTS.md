@@ -1376,8 +1376,7 @@ constrained-reasoning research.
   claim, and a small cryptarithm theory after it. The register is unmoved.
   **Every question of P1f.6 that waits for the user is in one file,
   [`questions.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md)**
-  (2026-11-12), the blocking ones first, each with a place for the reply: read
-  a ruling there before building what it blocks, and do not answer for the user.
+  (2026-11-12).
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,
