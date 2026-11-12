@@ -1,7 +1,8 @@
 # S1f.6.14 — Optional: nested expressions, `(calc E)` and `(let NAME E)`
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-11. **Not ruled: it waits for the user,** and is not built before a ruling.
+**Status:** **moved to P1f.8 on 2026-11-12, by the user's reply of that day** ([§ Moved](#moved-to-p1f8-2026-11-12)).
+Nothing of it is built in this phase. Planned 2026-11-11; it waited for the user until then.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), and the user's ruling. [S1f.6.20](s1f.6.20_word_problems.md) is
 where the need for it will show.
 
@@ -49,3 +50,22 @@ division is two heads, `div` for the quotient and `mod` for the remainder.
 - Not started without a ruling.
 - If built: the expression programs of `design.md` answer as that page showed, and a batch of them costs in
   proportion to its count.
+
+## Moved to P1f.8 (2026-11-12)
+
+[Question 10](questions.md#q10) put this stage's three options to the user with what the word problems had
+shown (*every quantity took two rules per word*; *no rule needed two operations at once*). The user,
+2026-11-12:
+
+> both go into p1f.8, where expressions naturally belong to, with check of used names, with check of recursive
+> name usage (let a (+ a 1)) and other
+
+So `(calc E)` and `(let NAME E)` are both ruled **in**, and **in P1f.8**, not in the calculator's core: the
+stage that takes them is
+[S1f.8.2](../p1f.8_school_algebra_and_geometry/s1f.8.2_expressions_and_evaluation.md#moved-here-from-s1f614-2026-11-12),
+with the two checks the reply names. This file stays as the record of the question; its
+[§ Tasks, if ruled in](#tasks-if-ruled-in) are superseded by that stage's, and the two things already settled
+(`sub` inside an expression is strict; division is two heads, `div` and `mod`) go with it.
+
+In this phase the calculator's core stays requests and results, and `(let NAME NUMBER)` stays as built
+([reply 11](questions.md#q11): *"(a) if it is already built, why asking..."*).

@@ -7,6 +7,9 @@ with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruli
 **Way (b) banked as examples 2026-11-12** (`9612b350`), on the user's instruction of that day:
 [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the [record](#record-2026-11-12-way-b-banked-as-examples)
 is below. It is not T2: no stdlib module, no test of its own, and the questions stay open.
+**The module is ruled and planned (2026-11-12):** the user's replies to the page's questions are in
+[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces tasks 2 to 4 below. Not started; it runs
+after the stdlib layout.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
@@ -126,3 +129,124 @@ files, 2026-11-12). So the goldens here hold no line of its, and its commit re-b
 **Not done:** no stdlib module, no `--check` in a test, no per-rule test programs, no page of comparison
 beyond the plan page: those are T2 to T4, which wait for the ruling. **The page's seven questions stay
 open**; banking the recommended way is the instruction for the examples and not a ruling on them.
+
+## The build, as ruled (2026-11-12)
+
+**Status:** planned 2026-11-12, not started. It replaces tasks 2 to 4 of [§ Tasks](#tasks).
+**Depends on:** [S1f.6.31](s1f.6.31_the_stdlib_layout.md), the layout, which names the modules and moves
+`std.arith` to `std.math.decimal-arith`; and [S1f.6.24](s1f.6.24_division_by_zero_at_the_call.md), so the
+binary division is written once with the flag at the call.
+
+### The rulings
+
+The user's replies of 2026-11-12, each to the question of [`questions.md`](questions.md) named:
+
+| question | the reply, as typed | what it makes of the build |
+|---|---|---|
+| [13](questions.md#q13), which of the three ways | *"(b)"* | a theory of its own, `(b2 (b2 z 1) 0)`, beside decimal in one program; a number says its base |
+| [14](questions.md#q14), the binary theory's names | *"a is ambiguous, add2 looks like add with 2 operands etc. Take (b), but ints and rats - different question. binary and decimal is numbers representation, integers, rationals, ... complex - are numbers types based on naturals of some representation. Add new stage into p1f.8 to investigate how to make compound numbers without hardcoded representation so can switch between binary and decimal, and maybe later use any new natural numbers there, or even not numbers..."* | a word prefix: `bin-add` answered by `bin-sum-of`, and so on. The second half is [P1f.8's S1f.8.11](../p1f.8_school_algebra_and_geometry/s1f.8.11_compound_numbers_without_a_hardcoded_representation.md) |
+| [15](questions.md#q15), is zero the same `z` | *"(a)"* | one `z`; a bare `z` is of no base |
+| [16](questions.md#q16), how the equal rules are kept equal | *"yes, extract common rules into separate file the both import, btw rename arith to decimal-arith"* | neither option asked: the shared rules written once, in a file both theories import. [Round 2, item 16](questions_round2.md#q16) plans a trial first. The rename is the layout's. The user's reply in round 2 is a question back, quoted under the table |
+| [17](questions.md#q17), where the conversions live | *"(b)"* | a module of their own, so a program that only computes in binary does not load decimal's 1 664 rows |
+| [18](questions.md#q18), decimal's division by bisection or the simpler one | *"I expected you implement https://en.wikipedia.org/wiki/Long_division ; What is shipped now? I think there are invented many different fast division algorithms, implemented in CPUs, long numbers meth libraries, etc. Let's leave this aside for now - having one implementation now is enough"* | the shipped division stays; [round 2, item 18](questions_round2.md#q18) answers what is shipped (long division, the digit found by bisection) |
+
+**Round 2, item 16, the user's reply** (as it stood in the working copy when this plan was written (2026-11-12, not yet committed)):
+
+> So we potentially can import std.math.rat and std.math.binary-arith and then connect them with single fact?
+
+Not today, and the trial below is what would make the answer *yes*. `std.rat`'s and `std.int`'s rules name
+the decimal theory's calls in every rule, so a rational over binary naturals would be a second copy of both
+modules. If the trial shows that rules with parameters cost nothing for the two bases, the same mechanism
+applied to the compound types is exactly *one fact*: the activator that says *rationals over this
+representation*. That step is not this stage's; it is the first direction of
+[P1f.8's S1f.8.11](../p1f.8_school_algebra_and_geometry/s1f.8.11_compound_numbers_without_a_hardcoded_representation.md),
+and the trial's record says, for that stage, whether a parameter could stand in every place a walk needs
+it. The trial itself goes ahead as round 2 planned it, the reply raising no objection to it.
+
+The shape `(b2 PREFIX BIT)` is the prototype's and the banked examples'. Reply 14 objects to the `2` suffix on
+the *requests*; whether the shape's head should change with them (`bin`, say) is not said. **Default: `b2`
+stays,** as banked, and the question is filed under the next free id.
+
+### The modules
+
+By [the layout](s1f.6.31_the_stdlib_layout.md#the-layout): `std.math.bits`, the binary tables;
+`std.math.positional`, the rules both bases share; `std.math.binary-arith`, entry `binary-arith`;
+`std.math.convert`, entry `convert`. `std.math.decimal-arith` becomes an importer of `positional` if the trial
+succeeds.
+
+What the prototype measured (`questions.md` 13, runs of 2026-11-11 under `build/s1f.6.16/`): way (b) is 67
+rules and 28 table rows where decimal's are 88 and 1 664; 123 × 456 is 120 firings where decimal's is 72;
+parse, load and compile 5.8 ms against 26.8. Under (b), 51 of the 67 rules are `std.arith`'s up to their names
+(`questions.md` 16). The conversions are eleven rules; 255 to binary is 826 firings and back is 76
+(`questions.md` 17).
+
+### Tasks
+
+1. **T1f.6.16.5 — the trial of parameterised shared rules, first, and it may stop the stage.** Round 2, item
+   16:
+
+   > Ein has the mechanism: a rule with parameters is compiled once per activator fact, so `(rule add-column
+   > (?num ?table) …)` activated for `(n fa)` and for `(b2 fa2)` gives two specialised plans and should cost
+   > nothing at run time. […] What is not known until it is tried: whether a parameter may stand as the head
+   > of a nested number pattern in every place the walks need it, and whether the firings stay at today's
+   > count.
+
+   On a copy of the stdlib under `build/`, with the release binary: the 51 shared rules written once with
+   parameters for what differs between the bases (the constructor, the tables, the request and result
+   names), activated once for decimal and once for binary. Measured against the shipped `std.arith` and the
+   banked `bin.ein`: firings and depth of the page's targets, candidates a request in a batch (by hand, with
+   the counters), load and compile time, and whether each surface (a trace's rule names, a core, `refuted
+   by`) reads as it does today.
+   - **If the parameterised rules cost what the shipped ones do, they are the shared file.**
+   - **If they cannot be written, or cost more, the stage stops and shows the user** the measurement beside
+     the generated copy (question 16's old option (a)), which is what `examples/binary_arithmetic/` has
+     today.
+   What it has to watch: S1f.5.18's refusal of a relation parameter an activator could bind to a fact; the
+   closing rules, which name every rule; the text test of the rule of the theory, which reads rule bodies;
+   and that decimal's states do not change, or change only in rule names, shown before any golden moves.
+2. **T1f.6.16.6 — the tables,** `std.math.bits`, generated with a `--check` in the gate through a cargo
+   test, as `std.math.digits` is; every row held to Rust's integers.
+3. **T1f.6.16.7 — `std.math.binary-arith`:** `bin-add`/`bin-sum-of`, `bin-sub`/`bin-diff-of`,
+   `bin-cmp`/`bin-cmp-of`, `bin-mul`/`bin-product-of`, `bin-div`/`bin-quot-of`, on `(b2 PREFIX BIT)` and the
+   shared `z`; division by zero the calculator's flag and `(false)`; the detection of malformed numbers as
+   far as the shared rules bring it, and the page saying what stays silent.
+4. **T1f.6.16.8 — `std.math.convert`:** `(to-bin X)` and `(to-dec B)` as requests, over both theories'
+   tagged calls (the interface of [S1f.6.30](s1f.6.30_name_clashes_between_imported_theories.md)'s T1).
+5. **T1f.6.16.9 — the tests,** as every module of the calculator has: a harness against Rust's integers with
+   a row an operation; the rule of the theory on the text; search-free on the binary; a program per rule
+   under `tests/stdlib/`; the mutation census; the batch by hand. A program that imports both bases flat and
+   computes in each is among them.
+6. **T1f.6.16.10 — the examples import the stdlib.** `examples/binary_arithmetic/`'s programs import
+   `std.math.*`; its `bits.ein`, `bin.ein` and `conv.ein` and the generator `gen_binary.py` are retired if
+   the trial succeeded, or the generator moves to `utils/` with its `--check` in the gate if the copy is
+   generated. `examples/binary_logic/bits.ein`, the copy E-32 forced, goes either way. No claim of any
+   example changes; the request names in them do.
+7. **T1f.6.16.11 — the comparison page,** task 4 of the old list: [`binary_arithmetic.md`](binary_arithmetic.md)
+   gets a closing section, what shipped and what each ruling made of the page's questions;
+   [`stdlib/README.md`](../../../stdlib/README.md) a section a module; `AGENTS.md`.
+
+### Acceptance
+
+- Binary numbers add, subtract, multiply, divide and compare, search-free and right against the integers,
+  from the stdlib, under `bin-` names.
+- The rules the two bases share are written once, or the user chose the generated copy after seeing the
+  trial's measurement.
+- Decimal's answers and costs are what they were: no existing program's answer moves, and the firings of
+  the page's decimal targets are unchanged.
+- The conversions are a module of their own, and a program that imports only `std.math.binary-arith` holds
+  no decimal table row.
+
+### What it must not do
+
+- **Not replace decimal's division** (reply 18).
+- **Not build the generic theory of 13 (c),** whose every request carries its base.
+- **Not make compound numbers generic in their representation:** that is S1f.8.11's investigation.
+- **Not start before the layout has moved.**
+
+### The standing rules
+
+A wrong answer of the engine met on the way is a row in `corpus/wrong_answers.toml`, filed `open` before its
+fix. Findings go to [`findings.md`](findings.md) under the next free id; questions to
+[`open_questions.md`](../open_questions.md) under the next free id. A design change shows real computed
+examples first (the trial). Config never changes an answer. The gate is `./run_tests.sh`, then `./run_tests.sh
+--nightly` after each code commit; `utils/ci_container.sh` is not needed.

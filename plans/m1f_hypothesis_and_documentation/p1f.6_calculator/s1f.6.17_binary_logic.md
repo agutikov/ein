@@ -8,6 +8,9 @@ counts, each marked below. **The recommended variants banked as examples 2026-11
 of that day: [`examples/binary_logic/`](../../../examples/binary_logic/README.md); the
 [record](#record-2026-11-12-the-recommended-variants-banked-as-examples) is below. It is not T2: no stdlib module,
 and the questions stay open.
+**The modules are ruled and planned (2026-11-12):** the user's replies to the page's questions are in
+[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces task 2 below. Not started; it runs after
+the stdlib layout.
 **Depends on:** [S1f.6.16](s1f.6.16_binary_arithmetic.md), for the two digit names and the binary adder it
 rebuilds from gates.
 
@@ -248,3 +251,96 @@ directories.
 **Not done:** no stdlib module; the acceptance's *held by a test* is here a corpus program with a claim,
 `adder_against_table.ein`. **The page's eight questions stay open**; banking the recommended variants is the
 instruction for the examples and not a ruling on them.
+
+## The build, as ruled (2026-11-12)
+
+**Status:** planned 2026-11-12, not started. It replaces task 2 of [§ Tasks](#tasks).
+**Depends on:** [S1f.6.31](s1f.6.31_the_stdlib_layout.md), the layout; and
+[S1f.6.16's build](s1f.6.16_binary_arithmetic.md#the-build-as-ruled-2026-11-12) for `std.math.bits`, which
+the full adder built from gates is held equal to.
+
+### The rulings
+
+The user's replies of 2026-11-12, each to the question of [`questions.md`](questions.md) named:
+
+| question | the reply, as typed | what it makes of the build |
+|---|---|---|
+| [19](questions.md#q19), one table or a relation a function | *"(c)"* | both: the table `(gate2 And 1 1 1)`, and the relation-per-function layout `(And 1 1 1)` derived from it by sixteen rules |
+| [20](questions.md#q20), the property facts as rules or as generated facts | *"(b), and I think we want to have those rules in separate reusable file"* | rules, in a module of their own; a program that loads it pays the 405 firings, and one that does not pays nothing |
+| [21](questions.md#q21), the one-sided identity and absorbing facts | *"(b)"* | the left and right forms too |
+| [22](questions.md#q22), three corrections to the stage file's hand counts | *"(a)"* | confirmed: four swap pairs and eight functions their own swap; the duals `Andn`/`Orn` and `Randn`/`Rorn`; twelve functions up to the order of the inputs |
+| [23](questions.md#q23), what ships | *"(a) and examples/binary_logic already made"* | all four small modules and the six applications. [Round 2, item 23](questions_round2.md#q23) reads *ships* as *into the stdlib, with a test program per rule and the mutation census*, option (a) there. **Replied in round 2: *"std.bool"***, read as (a) under that name |
+| [25](questions.md#q25), a cheaper search for *exactly one value per object* | *"Is this about SAT, binary circuits or what? I don't see how (a) and (b) conflict, are they?"* | both hold ([round 2, item 25](questions_round2.md#q25); **replied there: *"yes, both"***): here the search form is a demonstration, and the cheaper route is [M1g's S1g.6.6](../../m1g_logic/p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md) |
+
+**The library's name.** Round 2 proposed `std.logic.*`. The user's replies in round 2, as it stood in the working copy when this plan was written (2026-11-12, not yet committed): to the
+layout (quoted in full in [S1f.6.31 § The reply](s1f.6.31_the_stdlib_layout.md#the-reply)), *"I think std.bool
+suits better here than std.logic"*, and to item 23, *"std.bool"*. So the modules are **`std.bool.gates`, `std.bool.props`, `std.bool.circuit` and
+`std.bool.inputs`,** under `stdlib/bool/`. `std.logic` is left free, which suits
+[M1g](../../m1g_logic/README.md): propositional logic, in the reply's own list, is another subject than
+Boolean algebra.
+
+The gates' names stand as proposed (`Zero And Andn Fst Randn Snd Xor Or Nor Xnor Nsnd Orn Nfst Rorn Nand One`,
+the table `gate2`); question 19 left a line for an objection and none was typed.
+
+### The modules
+
+| module | what it holds | notes |
+|---|---|---|
+| `std.bool.gates` | the table `(gate2 NAME A B OUT)`, 64 rows, generated; `column-name`, `inv`, `le`, `bit`; and **sixteen rules** that derive the relation-per-function layout from the table (reply 19 (c)) | the table is generated, the sixteen rules written by hand; the per-function relations are derived only in a program that selects them |
+| `std.bool.props` | the thirty relations known of the sixteen, **as rules** (reply 20 (b)): the 31 monotone rules of the banked `props_rules.ein`, plus the left and right forms of `identity-of` and `absorbing-of` (reply 21 (b)), which hold of eight functions each where the two-sided forms hold of four (`questions.md` 21) | 405 firings on the prototype for the thirty (`questions.md` 20); the count with the one-sided forms is measured |
+| `std.bool.circuit` | `gate`, `val`, one propagation rule | |
+| `std.bool.inputs` | an input owes exactly one value, with `require` | the obligation is `std.algebra`'s kind; proposed by the obligations rung alone |
+
+### Tasks
+
+1. **T1f.6.17.4 — the four modules,** moved from `examples/binary_logic/` into `stdlib/bool/` and
+   restated to the rulings: the sixteen layout rules; the properties as rules, with the one-sided forms; each
+   module's header with the names it occupies, its closing rule or its `__closed__` facts, a `:why` on every
+   relation and rule. Whether the per-function relation names (`And`, `Or`, …) may be relation names beside
+   the same names as values of `gate2` is checked on the release binary first: a name is both today in no
+   stdlib module.
+2. **T1f.6.17.5 — the generated facts become the check.** Today `props.ein` is generated facts and
+   `props_check.ein`'s thirty claims hold exactly when the rules derive them and no other. With the rules
+   shipping, the direction turns: `gen_gates.py` (moved to `utils/`, its `--check` in the gate through a
+   cargo test) writes the table and the *expected* property facts, and a test holds the rules to them, the
+   one-sided forms included, each count re-taken from the rows as reply 22 confirmed them.
+3. **T1f.6.17.6 — the tests a stdlib module has:** a program per rule or tight family under
+   `tests/stdlib/bool/`, each with its `:expect` (a library with no refutation rule, so the
+   idiom for a negative case is *naming a relation closes it*); `stdlib_coverage.rs`; the mutation census with no unexplained
+   survivor; a harness in Rust that computes every property by enumeration over the functions' columns and
+   holds the rules to it.
+4. **T1f.6.17.7 — the full adder from gates against `std.math.bits`' table, as a test,** which is the stage
+   file's acceptance line; today it is a corpus program with a claim, `adder_against_table.ein`.
+5. **T1f.6.17.8 — the six applications import the stdlib.** `examples/binary_logic/`'s programs keep their
+   claims and import `std.bool.*`; the theory files beside them are retired; `unsatisfiable.ein` and
+   `equivalent.ein` go on claiming the owing frontier and `(false)` for the query (E-23; question 24 is not
+   ruled, and its subject is [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md)).
+   The sizes stay the corpus's: three inputs for every search.
+6. **T1f.6.17.9 — the pages:** [`binary_logic.md`](binary_logic.md) gets a closing section, what shipped and
+   what each ruling made of its questions; [`stdlib/README.md`](../../../stdlib/README.md) a section a
+   module; `examples/binary_logic/README.md`; `AGENTS.md`; [M1g's README](../../m1g_logic/README.md) is told
+   where its starting point now lives.
+
+### Acceptance
+
+- The four modules are in the stdlib under `std.bool`, each rule activated by a program under
+  `tests/stdlib/bool/`, every property held to an enumeration written in Rust.
+- Both layouts of the sixteen functions are available, the second derived from the first.
+- The one-sided identity and absorbing facts are derived, and the three corrected counts are held by a test.
+- The gate-built full adder equals the binary adder's table, held by a test.
+- Every application's claim holds as it did.
+
+### What it must not do
+
+- **Not build a cheaper search for inputs** (reply 25: M1g).
+- **Not change what an unsatisfiable search reads as** (question 24: not ruled).
+- **Not name anything `std.logic`.**
+- **Not write formulas as objects, valuations or proof systems:** those are M1g's.
+
+### The standing rules
+
+A wrong answer of the engine met on the way is a row in `corpus/wrong_answers.toml`, filed `open` before its
+fix. Findings go to [`findings.md`](findings.md) under the next free id; questions to
+[`open_questions.md`](../open_questions.md) under the next free id. Config never changes an answer. The gate
+is `./run_tests.sh`, then `./run_tests.sh --nightly` after each code commit; `utils/ci_container.sh` is not
+needed unless a view of the new modules trips the DOT sweep, which S1f.6.21 makes skip big graphs.
