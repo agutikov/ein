@@ -4,7 +4,7 @@
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
 page shown to the user: [`binary_logic.md`](binary_logic.md).** Nothing shipped; T2 and T3 wait for the user's
 rulings on that page's questions. T1 re-counted this page's tables from the rows and corrected three hand
-counts, each marked below. **The recommended variants banked as examples 2026-11-12**, on the user's instruction
+counts, each marked below. **The recommended variants banked as examples 2026-11-12** (`9612b350`), on the user's instruction
 of that day: [`examples/binary_logic/`](../../../examples/binary_logic/README.md); the
 [record](#record-2026-11-12-the-recommended-variants-banked-as-examples) is below. It is not T2: no stdlib module,
 and the questions stay open.
@@ -241,7 +241,7 @@ rules; the enumeration of all 65 535 sets and the three-input classes, which are
 `:hypothesis-relations` truth tables, equal to the banked one; the `absent` encodings, refused or wrong
 (F21's); the name probes; and the scale runs to 24 inputs, which stop at the budget or take minutes.
 
-**The corpus and the goldens** are named in
+**The corpus and the goldens, the commit, `9612b350`, and what was checked after it** are in
 [S1f.6.16's record](s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), for both
 directories.
 

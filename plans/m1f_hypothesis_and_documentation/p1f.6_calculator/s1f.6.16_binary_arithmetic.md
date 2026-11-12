@@ -4,7 +4,7 @@
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
 page shown to the user: [`binary_arithmetic.md`](binary_arithmetic.md)**, the three ways each tried and measured,
 with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruling on that page's questions.
-**Way (b) banked as examples 2026-11-12**, on the user's instruction of that day:
+**Way (b) banked as examples 2026-11-12** (`9612b350`), on the user's instruction of that day:
 [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the [record](#record-2026-11-12-way-b-banked-as-examples)
 is below. It is not T2: no stdlib module, no test of its own, and the questions stay open.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
@@ -110,6 +110,18 @@ rule), a search-free program `solve`, `test` and `saturate`, a search `solve`, `
 other line of either; and `ein-infer/tests/alive_invariant.rs`'s list, which gains six programs: `bin.ein`,
 `both_bases.ein`, `conv.ein`, `first.ein` and `five_operations.ein` for `z`, and `binary_logic/post.ein` for
 the five class names its rules conclude (`git diff --numstat`, 2026-11-12). No program is `slow`.
+
+**Committed and checked after** (2026-11-12): `9612b350`, on master at `7deec58a`, the gate green before it
+(`build/gate-s1f.6.16-17.log`). On `9612b350`, the tree clean but for another agent's `questions.md`:
+`./run_tests.sh --nightly` green in every step (`build/nightly-s1f.6.16-17.log`), the slow corpus cells,
+`answer_dump`, the round trip's slow and `heavy_dump` entries, the levers', the cores', `region`'s and
+`obligation_rung`'s slow halves, the scratch check, the mutation census at 361 of 411, the fuzzer at both
+seeds and the bench smoke. `utils/ci_container.sh` was not run: the banking changed no DOT writer, nor the
+review bundle, nor what CI installs (Q-M1f.77). Not run: the dev-host tier. **S1f.6.20's word problems were
+not on master when this was committed**: its gate, run on a worktree, had not ended, `region.rs`'s
+`fact_grain_never_calls_a_violated_cube_monotone` not finishing with its programs in the corpus (19 s
+without them, no end in 75 s with `bob1.ein` or `boxes12.ein` alone added, on a copy of that worktree's
+files, 2026-11-12). So the goldens here hold no line of its, and its commit re-blesses on top of this one.
 
 **Not done:** no stdlib module, no `--check` in a test, no per-rule test programs, no page of comparison
 beyond the plan page: those are T2 to T4, which wait for the ruling. **The page's seven questions stay
