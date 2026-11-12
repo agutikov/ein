@@ -1963,6 +1963,91 @@
 0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: saturate
 0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: solve
 0    tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein :: test
+0    tests/stdlib/arith/22_malformed_digit.ein :: render constraints
+1    tests/stdlib/arith/22_malformed_digit.ein :: render rules
+0    tests/stdlib/arith/22_malformed_digit.ein :: saturate
+0    tests/stdlib/arith/22_malformed_digit.ein :: solve
+0    tests/stdlib/arith/22_malformed_digit.ein :: test
+0    tests/stdlib/arith/23_malformed_fact_as_digit.ein :: render constraints
+1    tests/stdlib/arith/23_malformed_fact_as_digit.ein :: render rules
+0    tests/stdlib/arith/23_malformed_fact_as_digit.ein :: saturate
+0    tests/stdlib/arith/23_malformed_fact_as_digit.ein :: solve
+0    tests/stdlib/arith/23_malformed_fact_as_digit.ein :: test
+0    tests/stdlib/arith/24_malformed_ends_in_digit.ein :: render constraints
+1    tests/stdlib/arith/24_malformed_ends_in_digit.ein :: render rules
+0    tests/stdlib/arith/24_malformed_ends_in_digit.ein :: saturate
+0    tests/stdlib/arith/24_malformed_ends_in_digit.ein :: solve
+0    tests/stdlib/arith/24_malformed_ends_in_digit.ein :: test
+0    tests/stdlib/arith/25_malformed_ends_in_zero.ein :: render constraints
+1    tests/stdlib/arith/25_malformed_ends_in_zero.ein :: render rules
+0    tests/stdlib/arith/25_malformed_ends_in_zero.ein :: saturate
+0    tests/stdlib/arith/25_malformed_ends_in_zero.ein :: solve
+0    tests/stdlib/arith/25_malformed_ends_in_zero.ein :: test
+0    tests/stdlib/arith/26_malformed_ends_in_a_name.ein :: render constraints
+1    tests/stdlib/arith/26_malformed_ends_in_a_name.ein :: render rules
+0    tests/stdlib/arith/26_malformed_ends_in_a_name.ein :: saturate
+0    tests/stdlib/arith/26_malformed_ends_in_a_name.ein :: solve
+0    tests/stdlib/arith/26_malformed_ends_in_a_name.ein :: test
+0    tests/stdlib/arith/27_malformed_digit_as_number.ein :: render constraints
+1    tests/stdlib/arith/27_malformed_digit_as_number.ein :: render rules
+0    tests/stdlib/arith/27_malformed_digit_as_number.ein :: saturate
+0    tests/stdlib/arith/27_malformed_digit_as_number.ein :: solve
+0    tests/stdlib/arith/27_malformed_digit_as_number.ein :: test
+0    tests/stdlib/arith/28_malformed_zero_digit_as_number.ein :: render constraints
+1    tests/stdlib/arith/28_malformed_zero_digit_as_number.ein :: render rules
+0    tests/stdlib/arith/28_malformed_zero_digit_as_number.ein :: saturate
+0    tests/stdlib/arith/28_malformed_zero_digit_as_number.ein :: solve
+0    tests/stdlib/arith/28_malformed_zero_digit_as_number.ein :: test
+0    tests/stdlib/arith/29_undeclared_name.ein :: render constraints
+1    tests/stdlib/arith/29_undeclared_name.ein :: render rules
+0    tests/stdlib/arith/29_undeclared_name.ein :: saturate
+0    tests/stdlib/arith/29_undeclared_name.ein :: solve
+0    tests/stdlib/arith/29_undeclared_name.ein :: test
+0    tests/stdlib/arith/30_declared_name.ein :: render constraints
+1    tests/stdlib/arith/30_declared_name.ein :: render rules
+0    tests/stdlib/arith/30_declared_name.ein :: saturate
+0    tests/stdlib/arith/30_declared_name.ein :: solve
+0    tests/stdlib/arith/30_declared_name.ein :: test
+0    tests/stdlib/arith/31_malformed_through_a_name.ein :: render constraints
+1    tests/stdlib/arith/31_malformed_through_a_name.ein :: render rules
+0    tests/stdlib/arith/31_malformed_through_a_name.ein :: saturate
+0    tests/stdlib/arith/31_malformed_through_a_name.ein :: solve
+0    tests/stdlib/arith/31_malformed_through_a_name.ein :: test
+0    tests/stdlib/arith/32_malformed_name_for_a_name.ein :: render constraints
+1    tests/stdlib/arith/32_malformed_name_for_a_name.ein :: render rules
+0    tests/stdlib/arith/32_malformed_name_for_a_name.ein :: saturate
+0    tests/stdlib/arith/32_malformed_name_for_a_name.ein :: solve
+0    tests/stdlib/arith/32_malformed_name_for_a_name.ein :: test
+0    tests/stdlib/arith/33_let_twice.ein :: render constraints
+1    tests/stdlib/arith/33_let_twice.ein :: render rules
+0    tests/stdlib/arith/33_let_twice.ein :: saturate
+0    tests/stdlib/arith/33_let_twice.ein :: solve
+0    tests/stdlib/arith/33_let_twice.ein :: test
+0    tests/stdlib/arith/34_let_twice_the_same.ein :: render constraints
+1    tests/stdlib/arith/34_let_twice_the_same.ein :: render rules
+0    tests/stdlib/arith/34_let_twice_the_same.ein :: saturate
+0    tests/stdlib/arith/34_let_twice_the_same.ein :: solve
+0    tests/stdlib/arith/34_let_twice_the_same.ein :: test
+0    tests/stdlib/arith/35_let_zero.ein :: render constraints
+1    tests/stdlib/arith/35_let_zero.ein :: render rules
+0    tests/stdlib/arith/35_let_zero.ein :: saturate
+0    tests/stdlib/arith/35_let_zero.ein :: solve
+0    tests/stdlib/arith/35_let_zero.ein :: test
+0    tests/stdlib/arith/36_let_digit.ein :: render constraints
+1    tests/stdlib/arith/36_let_digit.ein :: render rules
+0    tests/stdlib/arith/36_let_digit.ein :: saturate
+0    tests/stdlib/arith/36_let_digit.ein :: solve
+0    tests/stdlib/arith/36_let_digit.ein :: test
+0    tests/stdlib/arith/37_let_zero_digit.ein :: render constraints
+1    tests/stdlib/arith/37_let_zero_digit.ein :: render rules
+0    tests/stdlib/arith/37_let_zero_digit.ein :: saturate
+0    tests/stdlib/arith/37_let_zero_digit.ein :: solve
+0    tests/stdlib/arith/37_let_zero_digit.ein :: test
+0    tests/stdlib/arith/38_what_stays_silent.ein :: render constraints
+0    tests/stdlib/arith/38_what_stays_silent.ein :: render rules
+0    tests/stdlib/arith/38_what_stays_silent.ein :: saturate
+0    tests/stdlib/arith/38_what_stays_silent.ein :: solve
+0    tests/stdlib/arith/38_what_stays_silent.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate

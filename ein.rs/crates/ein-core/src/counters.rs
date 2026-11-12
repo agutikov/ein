@@ -291,6 +291,17 @@ pub struct Counters {
     /// that was not a symbol. It counts the *engine walk*, not the compiler:
     /// `plan_compile` is what a key that missed the memo cost.
     pub plan_key: u64,
+
+    /// One per value an `eq` / `neq` premise was decided for: a test with
+    /// both sides bound, an `eq` that binds its free side, and **one per name
+    /// of the program** where a free side ranges over
+    /// `ein_infer::predicates::domain`. [`Self::candidates`] counts the facts
+    /// offered to a *relation* premise and a guard is none, so a rule whose
+    /// guard walks the program's names reads as free there (E-27 of P1f.6's
+    /// `findings.md`); this is the count that sees it, and
+    /// `ein-infer/tests/arith_batch.rs` holds it beside the other (M1f
+    /// S1f.6.12).
+    pub predicate_value: u64,
 }
 
 #[cfg(feature = "counters")]
@@ -393,6 +404,7 @@ impl Counters {
             hypgen_complete: 0,
             lookahead_probe: 0,
             plan_key: 0,
+            predicate_value: 0,
             guard_eval: 0,
             guard_eval_monotone: 0,
             parse_call: 0,
@@ -406,7 +418,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 55] {
+    pub fn rows(&self) -> [(&'static str, u64); 56] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -455,6 +467,7 @@ impl Counters {
             ("hypgen_complete", self.hypgen_complete),
             ("lookahead_probe", self.lookahead_probe),
             ("plan_key", self.plan_key),
+            ("predicate_value", self.predicate_value),
             ("guard_eval", self.guard_eval),
             ("guard_eval_monotone", self.guard_eval_monotone),
             ("parse_call", self.parse_call),
@@ -553,6 +566,7 @@ mod tests {
             intern: 1,
             intern_miss: 1,
             plan_key: 1,
+            predicate_value: 1,
         };
         let rows = c.rows();
         assert!(

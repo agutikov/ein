@@ -339,3 +339,22 @@ a program that wants one imports the theory `:as`.
 **Q6. `std.num9`.** Its malformations are a digit's place, checked by the same ten guards on each of nine slots,
 and the count of digits, which is Q1's loader check and nothing else. Whether it gets the flag is the build's,
 after the rulings above.
+
+## 9. What became of it (2026-11-13)
+
+This page is the investigation's record and is left as taken. The user replied to its questions on
+2026-11-12 ([`questions.md`](questions.md) 3 to 9, [`questions_round2.md`](questions_round2.md) 5), and the
+build is done: [S1f.6.12 § Build record](s1f.6.12_malformed_numbers.md#build-record-2026-11-13).
+
+- **Q1, the loader's arity check:** built, [S1f.6.23](s1f.6.23_the_loaders_arity_check.md). m6 to m6d are
+  refused at load.
+- **Q2, a name no `let` states:** flagged, `(undeclared NAME REQUEST)`, through one `absent` over `let`
+  (the reply to round 2's item 5, (b)).
+- **Q3, b1:** built, as a pass at the operand, with `let-digit-zero` added. The rules' names and the
+  relations differ from the prototype's: the fault travels with the operand's tag
+  (`(bad-operand TAG FAULT)`), and the check starts in the two rules that find a number.
+- **Q4 and Q5, reserved names and a prefix:** not in this phase (reply 7 (a); question 8 is
+  [S1f.6.30](s1f.6.30_name_clashes_between_imported_theories.md)).
+- **Q6, `std.num9`:** left silent (reply 9 (b)).
+
+What stays silent is on [`stdlib/README.md`](../../../stdlib/README.md#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612).

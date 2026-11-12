@@ -7,7 +7,10 @@
 ;;; and does not edit: every step is one of that theory's walks, started with
 ;;; a tag of this module's, and nothing is guessed. On a program that imports
 ;;; it and states requests the universe has no candidate, R is {∅}, and the
-;;; answer is root's fixpoint. No `absent`, no `not`, no guard, one stratum.
+;;; answer is root's fixpoint. No `absent`, no `not` and no guard of its own;
+;;; a program that imports it holds `std.arith`'s one `absent`, the undeclared
+;;; name's, and so two strata (S1f.6.12). Nothing of an operand is flagged
+;;; here but a `let` that cannot be read: `std.arith`'s header says why.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;

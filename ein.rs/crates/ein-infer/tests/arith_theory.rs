@@ -15,11 +15,12 @@
 //! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
 //! | **every answer is in normal form**, and each request has exactly one | all five, through [`hold`] |
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
-//! | no `absent`, no `not`, no `or`: one stratum | [`the_theory_writes_no_negation`] |
+//! | no `not`, no `or`, and **exactly one `absent`, over `let`**, which no rule derives; `eq` and `neq` in the checking rules alone; three rules conclude `(false)`, each from its flag | [`the_theory_writes_one_absent_over_let`] |
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
-//! | division's two families of nine rules are alike but for the digit | [`the_rules_of_a_family_differ_by_their_digit_alone`] |
+//! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
+//! | **a malformed request has exactly one flag and no answer**, and the flag derives `(false)`; a well-formed one has no flag (S1f.6.12) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -34,7 +35,10 @@
 //! its result and what the integers say, and by a pin of its circuit; the
 //! three static tests read the whole module and need no change to cover a new
 //! rule. Subtraction and comparison joined at S1f.6.4, multiplication at
-//! S1f.6.5, division at S1f.6.6.
+//! S1f.6.5, division at S1f.6.6. S1f.6.12 added the check of what a program
+//! wrote, and restated the static tests: guards, a probe, a second join on a
+//! name, one `absent` and three rules that conclude `(false)`, each named
+//! here by a constant.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -468,6 +472,263 @@ fn a_division_by_zero_is_flagged_and_false() {
     assert!(run(fine, "false").is_empty());
 }
 
+// ── malformed requests (S1f.6.12) ──────────────────────────────────
+
+/// A well-formed operand that is not zero, to stand beside a malformed one.
+const FINE: &str = "(n z 5)";
+
+/// Every flag, answer and contradiction of one program: the facts of
+/// `malformed`, of `undeclared`, of `division-by-zero` and of `false`, and
+/// the requests that have a result fact, as `(REQUEST X Y)`.
+struct Outcome {
+    malformed: BTreeSet<String>,
+    undeclared: BTreeSet<String>,
+    division_by_zero: Vec<String>,
+    contradiction: Vec<String>,
+    answered: BTreeSet<String>,
+}
+
+fn outcome(body: &str) -> Outcome {
+    let mut answered = BTreeSet::new();
+    for op in &OPS {
+        for fact in run(body, op.result) {
+            let p = parts(&fact);
+            answered.insert(format!("({} {} {})", op.request, p[1], p[2]));
+        }
+    }
+    Outcome {
+        malformed: run(body, "malformed").into_iter().collect(),
+        undeclared: run(body, "undeclared").into_iter().collect(),
+        division_by_zero: run(body, "division-by-zero"),
+        contradiction: run(body, "false"),
+        answered,
+    }
+}
+
+/// **A malformed request is flagged once, and never answered** (S1f.6.12,
+/// the user's rulings of 2026-11-11 and 2026-11-12). Every operation, either
+/// operand, every kind of the set the investigation called b1:
+///
+/// - a digit's place holding a name that is no digit, at the units and a
+///   place up, `z` and the bound `10` among the names, or holding a fact;
+/// - a number that ends in a digit where `z` goes, or in a named constant;
+/// - a digit where a number goes;
+/// - the same through a name: a `let` whose number is malformed, and a name
+///   that stands for another name.
+///
+/// Each derives `(malformed REQUEST)`, the request as written, and nothing
+/// else flags; the flag derives `(false)`; and no malformed request has a
+/// result fact. The well-formed requests of the same program are answered
+/// and not flagged: the saturator runs root to its fixpoint whatever it
+/// derives.
+#[test]
+fn a_malformed_request_is_flagged_once_and_never_answered() {
+    let lets = "(let price (n z 5))\n(let broken (n (n z x) 1))\n(let alias price)\n";
+    let bad = [
+        "(n (n z 1) x)",
+        "(n (n z x) 1)",
+        "(n (n (n z 4) z) 2)",
+        "(n z 10)",
+        "(n z (n z 1))",
+        "(n (n z (pair 1 2)) 3)",
+        "(n 1 2)",
+        "(n 0 2)",
+        "(n (n 3 1) 2)",
+        "(n price 1)",
+        "(n (n price 0) 1)",
+        "7",
+        "0",
+        "broken",
+        "alias",
+    ];
+    for op in &OPS {
+        let mut body = String::from(lets);
+        let mut want = BTreeSet::new();
+        for b in bad {
+            for request in [
+                format!("({} {b} {FINE})", op.request),
+                format!("({} {FINE} {b})", op.request),
+                format!("({} {b} {b})", op.request),
+            ] {
+                body.push_str(&request);
+                body.push('\n');
+                want.insert(format!("(malformed {request})"));
+            }
+        }
+        // Beside them, requests the theory can read.
+        let fine = [
+            format!("({} {FINE} {FINE})", op.request),
+            format!("({} price {FINE})", op.request),
+            format!("({} (n (n z 0) 7) price)", op.request),
+        ];
+        for request in &fine {
+            body.push_str(request);
+            body.push('\n');
+        }
+        let got = outcome(&body);
+        assert_eq!(
+            got.malformed, want,
+            "{}: the flags are the malformed requests, each once",
+            op.request
+        );
+        assert!(
+            got.undeclared.is_empty() && got.division_by_zero.is_empty(),
+            "{}: no other flag: {:?} {:?}",
+            op.request,
+            got.undeclared,
+            got.division_by_zero
+        );
+        assert_eq!(
+            got.contradiction,
+            ["(false)"],
+            "{}: the flag derives (false)",
+            op.request
+        );
+        assert_eq!(
+            got.answered,
+            fine.iter().cloned().collect::<BTreeSet<_>>(),
+            "{}: the requests answered are the well-formed ones, and no malformed one",
+            op.request
+        );
+    }
+}
+
+/// **A name no `let` states is undeclared** (the user's reply of 2026-11-12
+/// to round 2's item 5, (b)): `(undeclared NAME REQUEST)`, the request as
+/// written, and `(false)` from it; one flag a request, for the operand that
+/// is looked up first; and never `(malformed …)`. **The same program with
+/// the `let`s stated is answered and has no flag**: the premise is an
+/// `absent` over `let`, which nothing derives, so the one state there is
+/// has either the `let` or the flag.
+#[test]
+fn an_undeclared_name_is_flagged_and_a_let_answers_it() {
+    for op in &OPS {
+        let r = op.request;
+        let requests = format!(
+            "({r} foo {FINE})\n({r} {FINE} foo)\n({r} foo bar)\n({r} foo foo)\n({r} known foo)\n"
+        );
+        let known = "(let known (n (n z 1) 2))\n";
+        let got = outcome(&format!("{known}{requests}({r} known {FINE})\n"));
+        let want: BTreeSet<String> = [
+            format!("(undeclared foo ({r} foo {FINE}))"),
+            format!("(undeclared foo ({r} {FINE} foo))"),
+            format!("(undeclared foo ({r} foo bar))"),
+            format!("(undeclared foo ({r} foo foo))"),
+            format!("(undeclared foo ({r} known foo))"),
+        ]
+        .into_iter()
+        .collect();
+        assert_eq!(got.undeclared, want, "{r}: one flag a request");
+        assert!(got.malformed.is_empty(), "{r}: {:?}", got.malformed);
+        assert_eq!(got.contradiction, ["(false)"], "{r}");
+        assert_eq!(
+            got.answered,
+            [format!("({r} known {FINE})")].into_iter().collect(),
+            "{r}: an undeclared request is never answered"
+        );
+
+        // The `let`s stated: every request answered, nothing flagged.
+        let stated = format!("{known}(let foo (n z 7))\n(let bar (n z 3))\n{requests}");
+        let got = outcome(&stated);
+        assert!(
+            got.undeclared.is_empty() && got.malformed.is_empty() && got.contradiction.is_empty(),
+            "{r}: a `let` removes the flag: {:?} {:?}",
+            got.undeclared,
+            got.malformed
+        );
+        assert_eq!(got.answered.len(), 5, "{r}: each request is answered");
+    }
+}
+
+/// **A `let` that cannot be read** is flagged as the `let`, whether or not a
+/// request uses the name: a name stated twice with two numbers, each of the
+/// two; and `z` or a digit as a constant's name. Until S1f.6.12 each gave
+/// two answers to one request. A name stated twice with one number is one
+/// fact, and fine.
+#[test]
+fn a_let_that_cannot_be_read_is_flagged() {
+    let body = "(let price (n z 5))\n(let price (n z 7))\n\
+                (let same (n z 4))\n(let same (n z 4))\n\
+                (let z (n z 5))\n(let 3 (n z 5))\n(let 0 (n z 5))\n\
+                (let fine (n (n z 1) 0))\n";
+    let got = outcome(body);
+    let want: BTreeSet<String> = [
+        "(malformed (let price (n z 5)))",
+        "(malformed (let price (n z 7)))",
+        "(malformed (let z (n z 5)))",
+        "(malformed (let 3 (n z 5)))",
+        "(malformed (let 0 (n z 5)))",
+    ]
+    .into_iter()
+    .map(str::to_string)
+    .collect();
+    assert_eq!(got.malformed, want);
+    assert_eq!(got.contradiction, ["(false)"]);
+    assert!(got.undeclared.is_empty());
+    // Each alone is a contradiction, and a program without one is none.
+    for (one, flags) in [
+        ("(let price (n z 5))\n(let price (n z 7))\n", 2),
+        ("(let z (n z 5))\n", 1),
+        ("(let 3 (n z 5))\n", 1),
+        ("(let 0 (n z 5))\n", 1),
+    ] {
+        let got = outcome(one);
+        assert_eq!(got.malformed.len(), flags, "{one}");
+        assert_eq!(got.contradiction, ["(false)"], "{one}");
+    }
+    let got = outcome("(let same (n z 4))\n(let same (n z 4))\n(add same same)\n");
+    assert!(got.malformed.is_empty() && got.contradiction.is_empty());
+    assert_eq!(got.answered.len(), 1);
+}
+
+/// **What stays silent** (the user's reply 6 (a) of 2026-11-12: no general
+/// report of unanswered requests; *a flag means malformed, no flag does not
+/// mean well-formed*). Each of these is neither flagged nor answered, and
+/// the module's header and `stdlib/README.md` name them:
+///
+/// - a number that ends in a name that is neither a digit nor a constant;
+/// - a fact of another relation where a number goes, as an operand or
+///   inside a number, the theory's own accumulator among them;
+/// - a name that stands for such a thing.
+///
+/// A test, so that the list on the page is the list the theory has: a rule
+/// that starts flagging one of them fails here, and the page is then wrong.
+#[test]
+fn what_stays_silent() {
+    let silent = [
+        "(n end 1)",
+        "(n (n end 1) 2)",
+        "(pair 1 2)",
+        "(n (pair 1 2) 3)",
+        "(b 1 z)",
+        "odd",
+    ];
+    for op in &OPS {
+        let mut body = String::from("(let odd (pair 1 2))\n");
+        for x in silent {
+            body.push_str(&format!("({} {x} {FINE})\n", op.request));
+            body.push_str(&format!("({} {FINE} {x})\n", op.request));
+        }
+        let got = outcome(&body);
+        assert!(
+            got.malformed.is_empty()
+                && got.undeclared.is_empty()
+                && got.division_by_zero.is_empty()
+                && got.contradiction.is_empty(),
+            "{}: flagged: {:?} {:?}",
+            op.request,
+            got.malformed,
+            got.undeclared
+        );
+        assert!(
+            got.answered.is_empty(),
+            "{}: {:?}",
+            op.request,
+            got.answered
+        );
+    }
+}
+
 // ── the circuit's measure ──────────────────────────────────────────
 
 /// What one request costs, read off its firings: how many there are, the
@@ -521,8 +782,11 @@ fn circuit(body: &str) -> (usize, usize) {
 /// **One addition, as a circuit.** 123078 + 4567: two operands looked up
 /// (5 firings with the request's own), six columns, the end of the walk, the
 /// check for a high zero, six digits turned round, the hand-over and the
-/// answer. A circuit of design K is a sequence, every call carrying its
-/// continuation, so its depth is its size.
+/// answer: 21 firings, one chain, every call carrying its continuation.
+/// **And the check of its operands** (S1f.6.12), a firing a place, six and
+/// four: 31 firings. The check runs beside the walk and hands nothing on, so
+/// the depth is the chain's, 21, as it was. Every pin of the four tests
+/// below is its chain and the digits of the operands that are found.
 ///
 /// The numbers are pinned so that a change to the wiring shows as a change
 /// to them: `cargo test -p ein-infer --test arith_theory the_circuit` is the
@@ -533,7 +797,7 @@ fn the_circuit_of_one_addition() {
     let four = written("4567");
     assert_eq!(
         circuit(&format!("(add {six} {four})\n")),
-        (21, 21),
+        (31, 21),
         "123078 + 4567: (firings, depth)"
     );
     // The carry out of the top column goes straight to the turn: nine columns,
@@ -544,14 +808,14 @@ fn the_circuit_of_one_addition() {
             written("999999999"),
             written("1")
         )),
-        (27, 27),
+        (37, 27),
         "999999999 + 1: (firings, depth)"
     );
-    // Named operands cost what numbers cost, a lookup either way, and each
-    // `let` one firing that says its name is one.
+    // Named operands cost what numbers cost, a lookup and a check either way,
+    // and each `let` one firing that says its name is one.
     assert_eq!(
         circuit(&format!("(let a {six})\n(let b {four})\n(add a b)\n")),
-        (23, 21),
+        (33, 21),
         "the same sum by name"
     );
 }
@@ -570,24 +834,24 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
     let four = written("4567");
     assert_eq!(
         circuit(&format!("(sub {six} {four})\n")),
-        (28, 21),
+        (38, 21),
         "123078 - 4567: (firings, depth)"
     );
     assert_eq!(
         circuit(&format!("(sub {four} {six})\n")),
-        (28, 21),
+        (38, 21),
         "4567 - 123078: (firings, depth)"
     );
     // Equal numbers: both walks end with no borrow, each drops its six
     // zeros and hands over zero, and the two answer rules say the one fact.
     assert_eq!(
         circuit(&format!("(sub {six} {six})\n")),
-        (35, 20),
+        (47, 20),
         "123078 - 123078: (firings, depth)"
     );
     assert_eq!(
         circuit(&format!("(cmp {six} {four})\n")),
-        (13, 13),
+        (23, 13),
         "123078 against 4567: (firings, depth)"
     );
 }
@@ -597,29 +861,30 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
 /// its digits is a row, a walk the length of the multiplicand with its strip
 /// and turn, and, after the first, an addition walk the length of the sum so
 /// far. So the size grows as the product of the two lengths, and the circuit
-/// is still one chain: its depth is its size.
+/// is still one chain: its depth is its size less the check of the two
+/// operands, a firing a digit (S1f.6.12).
 #[test]
 fn the_circuit_of_one_multiplication() {
     let mul = |x: &str, y: &str| circuit(&format!("(mul {} {})\n", written(x), written(y)));
-    assert_eq!(mul("123", "456"), (72, 72), "123 x 456: (firings, depth)");
+    assert_eq!(mul("123", "456"), (78, 72), "123 x 456: (firings, depth)");
     assert_eq!(
         mul("123078", "123078"),
-        (227, 227),
+        (239, 227),
         "123078 x 123078: (firings, depth)"
     );
     // The two lengths: a multiplier of one digit is one row; each digit more
     // is a row and an addition.
-    assert_eq!(mul("999999", "9"), (28, 28), "six digits by one");
-    assert_eq!(mul("9", "999999"), (128, 128), "one digit by six");
-    assert_eq!(mul("999999", "999999"), (238, 238), "six digits by six");
+    assert_eq!(mul("999999", "9"), (35, 28), "six digits by one");
+    assert_eq!(mul("9", "999999"), (135, 128), "one digit by six");
+    assert_eq!(mul("999999", "999999"), (250, 238), "six digits by six");
     assert_eq!(
         mul("999999999999", "999999"),
-        (370, 370),
+        (388, 370),
         "twelve digits by six"
     );
     assert_eq!(
         mul("999999", "999999999999"),
-        (556, 556),
+        (574, 556),
         "six digits by twelve"
     );
 }
@@ -628,26 +893,28 @@ fn the_circuit_of_one_multiplication() {
 /// multiples, each a row of two columns; the dividend's six digits turned
 /// round; then a step a digit, each three trials, and a trial a subtraction
 /// with its strip and turn where it fits. One chain, so its depth is its
-/// size. A divisor of one digit and a dividend of one are the two ends.
+/// size less the check of the two operands, six firings and two (S1f.6.12).
+/// A divisor of one digit and a dividend of one are the two ends.
 #[test]
 fn the_circuit_of_one_division() {
     let div = |x: &str, y: &str| circuit(&format!("(div {} {})\n", written(x), written(y)));
     assert_eq!(
         div("127645", "25"),
-        (220, 220),
+        (228, 220),
         "127645 / 25: (firings, depth)"
     );
-    assert_eq!(div("7", "3"), (84, 84), "7 / 3");
-    assert_eq!(div("999999", "7"), (229, 229), "six digits by one");
-    assert_eq!(div("999999999999", "7"), (394, 394), "twelve digits by one");
+    assert_eq!(div("7", "3"), (86, 84), "7 / 3");
+    assert_eq!(div("999999", "7"), (236, 229), "six digits by one");
+    assert_eq!(div("999999999999", "7"), (407, 394), "twelve digits by one");
     assert_eq!(
         div("999999999999", "777777"),
-        (655, 655),
+        (673, 655),
         "twelve digits by six"
     );
     // A division by zero stops at the divisor's normal form: the operands,
-    // one row, its strip, the flag and the contradiction.
-    assert_eq!(div("127645", ""), (10, 10), "127645 / 0");
+    // one row, its strip, the flag and the contradiction; and the dividend's
+    // six places are checked beside it.
+    assert_eq!(div("127645", ""), (16, 10), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────
@@ -666,8 +933,38 @@ const TABLES: [&str; 7] = ["fa", "fs", "md", "cl", "nz", "mid", "adj"];
 /// cost, not a way to make a test pass.
 const NAME_LOOKUP: (&str, [&str; 3]) = ("operand-name", ["operand", "named", "let"]);
 
-/// The one rule that concludes `(false)`.
-const FALSE_RULE: &str = "division-by-zero-is-false";
+/// The second rule that joins two facts, **on a name** as the first does
+/// (S1f.6.12): a constant named twice is two `let`s of one name, which the
+/// fact index finds by the name; the numbers are compared by a guard and
+/// looked up by nothing.
+const NAME_TWICE: (&str, [&str; 3]) = ("let-twice", ["let", "let", "neq"]);
+
+/// A premise that is **one probe**: a relation of one argument, asked with
+/// its argument bound by the premise that holds the numbers, which the
+/// engine answers by one interned lookup whatever the argument is, a number
+/// too (E-3's note). `nz` is a table and is held as one; `named` is the
+/// theory's own.
+const PROBES: [&str; 1] = ["named"];
+
+/// The computed relations: a guard compares two values and looks nothing up.
+const GUARDS: [&str; 2] = ["eq", "neq"];
+
+/// The rules that write a guard, and no other may (S1f.6.12): the ten
+/// digits in `check-digit`; *a name, not `z` and not a digit* in
+/// `operand-undeclared`; two different numbers in `let-twice`.
+const GUARDED: [&str; 3] = ["check-digit", "operand-undeclared", "let-twice"];
+
+/// The one rule that reads an `absent`, and the relation it is over, which a
+/// program writes and no rule of the module derives.
+const ABSENT: (&str, &str) = ("operand-undeclared", "let");
+
+/// The rules that conclude `(false)`, each with the one premise it has: its
+/// flag.
+const FALSE_RULES: [(&str, &str); 3] = [
+    ("division-by-zero-is-false", "division-by-zero"),
+    ("malformed-is-false", "malformed"),
+    ("undeclared-is-false", "undeclared"),
+];
 
 struct Module {
     ast: Ast,
@@ -730,6 +1027,24 @@ impl Module {
         }
     }
 
+    /// A variable's name, without its `?`.
+    fn var(&self, node: NodeId) -> Option<&str> {
+        match self.ast.node(node) {
+            Node::Var(v) => Some(self.ast.sym(v)),
+            _ => None,
+        }
+    }
+
+    /// Every variable at any depth under `node`.
+    fn vars<'a>(&'a self, node: NodeId, out: &mut Vec<&'a str>) {
+        out.extend(self.var(node));
+        if matches!(self.ast.node(node), Node::SForm { .. }) {
+            for &a in self.ast.form_args(node) {
+                self.vars(a, out);
+            }
+        }
+    }
+
     /// Every form head at any depth under `node`, `node`'s own included.
     fn heads(&self, node: NodeId, out: &mut Vec<String>) {
         if let Node::KwPair { value, .. } = self.ast.node(node) {
@@ -751,7 +1066,14 @@ impl Module {
 /// **The rule of the theory, on the text.** Every rule has at most one
 /// premise that is not a row of `std.digits`; that premise holds the numbers,
 /// and a table row holds none: its arguments are digits, names or variables,
-/// never a form. The one exception is named in [`NAME_LOOKUP`].
+/// never a form. The two exceptions join on a **name** and are named in
+/// [`NAME_LOOKUP`] and [`NAME_TWICE`].
+///
+/// Since S1f.6.12 a rule may also hold guards, which compare and look
+/// nothing up, and whose arguments are variables or names, never a form; a
+/// probe of [`PROBES`], on a variable the state premise binds; and, in the
+/// one rule [`ABSENT`] names, the `absent`, which
+/// [`the_theory_writes_one_absent_over_let`] holds.
 #[test]
 fn no_rule_joins_two_facts_on_a_number() {
     let m = module();
@@ -761,29 +1083,61 @@ fn no_rule_joins_two_facts_on_a_number() {
         "std.arith parsed to {} rules",
         rules.len()
     );
-    let mut exception_seen = false;
+    let mut exceptions_seen = 0;
     for (name, rule) in &rules {
         let mut state = Vec::new();
-        if name == NAME_LOOKUP.0 {
+        if let Some((_, want)) = [NAME_LOOKUP, NAME_TWICE].iter().find(|(n, _)| n == name) {
             let premises: Vec<String> = m
                 .conjuncts(m.clause(*rule, "match"))
                 .iter()
                 .map(|&p| m.ast.head_name(p).unwrap_or("?").to_string())
                 .collect();
             assert_eq!(
-                premises, NAME_LOOKUP.1,
+                premises, want,
                 "rule {name}: the stated exception has these premises in this order"
             );
-            exception_seen = true;
+            exceptions_seen += 1;
             continue;
         }
-        for premise in m.conjuncts(m.clause(*rule, "match")) {
+        let premises = m.conjuncts(m.clause(*rule, "match"));
+        for &premise in &premises {
             let head = m
                 .ast
                 .head_name(premise)
                 .unwrap_or_else(|| panic!("rule {name}: a premise with no relation"))
                 .to_string();
-            if TABLES.contains(&head.as_str()) {
+            if GUARDS.contains(&head.as_str()) {
+                for &arg in m.ast.form_args(premise) {
+                    assert!(
+                        !matches!(m.ast.node(arg), Node::SForm { .. }),
+                        "rule {name}: a guard compares variables and names, and this one \
+                         holds a form"
+                    );
+                }
+            } else if head == "absent" {
+                assert_eq!(
+                    name, ABSENT.0,
+                    "rule {name} reads an `absent`: {} alone does",
+                    ABSENT.0
+                );
+            } else if PROBES.contains(&head.as_str()) {
+                // One argument, a variable, and the premise that holds the
+                // numbers comes first and binds it.
+                let args = m.ast.form_args(premise);
+                let var = match args {
+                    [a] => m.var(*a),
+                    _ => None,
+                }
+                .unwrap_or_else(|| panic!("rule {name}: `{head}` is asked of one variable"));
+                let first = premises[0];
+                let mut bound = Vec::new();
+                m.vars(first, &mut bound);
+                assert!(
+                    first != premise && bound.contains(&var),
+                    "rule {name}: `({head} ?{var})` is one probe only where the first \
+                     premise binds ?{var}"
+                );
+            } else if TABLES.contains(&head.as_str()) {
                 for &arg in m.ast.form_args(premise) {
                     assert!(
                         !matches!(m.ast.node(arg), Node::SForm { .. }),
@@ -804,52 +1158,104 @@ fn no_rule_joins_two_facts_on_a_number() {
              what the rule needs in the call's tag instead"
         );
     }
-    assert!(
-        exception_seen,
-        "the exception this file names is no longer in the module: {NAME_LOOKUP:?}"
+    assert_eq!(
+        exceptions_seen, 2,
+        "an exception this file names is no longer in the module: {NAME_LOOKUP:?}, \
+         {NAME_TWICE:?}"
     );
 }
 
-/// No `absent`, no `not`, no `or` anywhere in a rule: the theory is monotone
-/// and has one stratum, since a cycle through an `absent` is the only thing
-/// that makes a second (`ein saturate --dump`'s `;; Strata` line says
-/// *stratified, 1 stratum* of any program that imports it).
+/// **One `absent`, over `let`; no `not`, no `or`** (S1f.6.12; until then the
+/// module wrote no `absent` at all). The one is `operand-undeclared`'s: an
+/// operand that is a name and that no `let` states. `let` is a relation a
+/// program writes and no rule of the module concludes, and the closing rule
+/// closes it, so no commitment can add the fact the premise found absent:
+/// the loader's *forbid* does not refuse the theory, the static check calls
+/// a program that imports it monotone, and `ein saturate --dump`'s
+/// `;; Strata` line says *stratified, 2 strata*, the rule that reads the
+/// `absent` above the rest (`arith_search_free.rs` holds all three on the
+/// binary).
+///
+/// **Guards in the checking rules alone:** `eq` and `neq` are computed and
+/// monotone, and only the rules of [`GUARDED`] write one.
+///
+/// **Three rules conclude `(false)`**, each from its flag and nothing else:
+/// a division by zero, a malformed request, an undeclared name.
 #[test]
-fn the_theory_writes_no_negation() {
+fn the_theory_writes_one_absent_over_let() {
     let m = module();
+    let mut absents = Vec::new();
     for (name, rule) in m.declared("rule") {
         let mut heads = Vec::new();
         m.heads(m.clause(rule, "match"), &mut heads);
-        m.heads(m.clause(rule, "assert"), &mut heads);
-        for banned in ["absent", "not", "or", "neq"] {
+        let mut concluded = Vec::new();
+        m.heads(m.clause(rule, "assert"), &mut concluded);
+        for banned in ["not", "or"] {
             assert!(
-                !heads.iter().any(|h| h == banned),
+                !heads.iter().chain(&concluded).any(|h| h == banned),
                 "rule {name} writes `{banned}`"
             );
         }
-        // One rule concludes `(false)`, from the flag and nothing else: a
-        // program that divides by zero is a contradiction (the user's ruling
-        // of 2026-11-11). It reads no `absent`, so the theory is monotone
-        // still, and no other rule may conclude it.
-        let concludes_false = heads.iter().any(|h| h == "false");
-        assert_eq!(
-            concludes_false,
-            name == FALSE_RULE,
-            "`(false)` is concluded by {FALSE_RULE} and by no other rule: {name}"
+        assert!(
+            !concluded
+                .iter()
+                .any(|h| h == "absent" || GUARDS.contains(&h.as_str())),
+            "rule {name} concludes a guard or an `absent`"
         );
-        if name == FALSE_RULE {
+        assert_eq!(
+            heads.iter().any(|h| GUARDS.contains(&h.as_str())),
+            GUARDED.contains(&name.as_str()),
+            "the rules that write a guard are {GUARDED:?}: {name}"
+        );
+        // The `absent`s, each with the relation it is over.
+        for premise in m.conjuncts(m.clause(rule, "match")) {
+            if m.ast.head_name(premise) == Some("absent") {
+                let inner = m.ast.form_args(premise);
+                assert_eq!(inner.len(), 1, "rule {name}: an `absent` over one pattern");
+                absents.push((
+                    name.clone(),
+                    m.ast.head_name(inner[0]).unwrap_or("?").to_string(),
+                ));
+            }
+        }
+        assert_eq!(
+            heads.iter().filter(|h| *h == "absent").count(),
+            usize::from(name == ABSENT.0),
+            "rule {name}: `absent` is read by {} alone, once, as a premise of its own",
+            ABSENT.0
+        );
+        // No rule derives the relation the `absent` is over: a conclusion's
+        // own head, not a fact it holds, as `(malformed (let …))` does.
+        assert!(
+            !m.conjuncts(m.clause(rule, "assert"))
+                .iter()
+                .any(|&c| m.ast.head_name(c) == Some(ABSENT.1)),
+            "rule {name} concludes `{}`, which the theory's `absent` is over: \
+             a program writes it and no rule derives it",
+            ABSENT.1
+        );
+        // `(false)` is concluded from a flag, by the flag's own rule.
+        let flag = FALSE_RULES.iter().find(|(r, _)| *r == name);
+        assert_eq!(
+            concluded.iter().any(|h| h == "false"),
+            flag.is_some(),
+            "`(false)` is concluded by {FALSE_RULES:?} and by no other rule: {name}"
+        );
+        if let Some((_, flag)) = flag {
             let premises: Vec<&str> = m
                 .conjuncts(m.clause(rule, "match"))
                 .iter()
                 .filter_map(|&p| m.ast.head_name(p))
                 .collect();
-            assert_eq!(
-                premises,
-                ["division-by-zero"],
-                "{FALSE_RULE} reads the flag"
-            );
+            assert_eq!(premises, [*flag], "{name} reads its flag and nothing else");
         }
     }
+    assert_eq!(
+        absents,
+        [(ABSENT.0.to_string(), ABSENT.1.to_string())],
+        "the theory reads exactly one `absent`, over `{}`",
+        ABSENT.1
+    );
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
         "std.arith guesses nothing and expands nothing"
@@ -966,6 +1372,40 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         [("arith-rule".to_string(), vec!["arith".to_string()])],
         "the module writes one fact, the closing rule's own name"
     );
+}
+
+/// **The ten rules from an operand's tag to its request are one rule
+/// written ten times** (S1f.6.12): `bad-OP-first` and `bad-OP-second` for
+/// each of the five operations, alike but for the operation's name, its
+/// sign in the sentence, and the second tag's third argument.
+#[test]
+fn the_rules_from_a_tag_to_its_request_are_alike() {
+    let path = repo_root().join("stdlib/arith.ein");
+    let text = std::fs::read_to_string(&path).expect("std.arith");
+    let rule = |name: &str| -> String {
+        let start = text
+            .find(&format!("(rule {name} ()"))
+            .unwrap_or_else(|| panic!("no rule {name}"));
+        let end = text[start..].find("\n\n").map_or(text.len(), |e| start + e);
+        text[start..end].to_string()
+    };
+    for (op, sign) in [
+        ("add", "+"),
+        ("sub", "-"),
+        ("cmp", "compared with"),
+        ("mul", "x"),
+        ("div", "divided by"),
+    ] {
+        for (place, tag) in [("first", "?x ?y"), ("second", "?x ?y ?u")] {
+            let want = format!(
+                "(rule bad-{op}-{place} ()\n  \
+                 :match  (bad-operand ({op}-{place} {tag}) ?f)\n  \
+                 :assert (bad-request ({op} ?x ?y) ?f)\n  \
+                 :why    \"the {place} operand of {{?x}} {sign} {{?y}} is at fault: {{?f}}\")"
+            );
+            assert_eq!(rule(&format!("bad-{op}-{place}")), want);
+        }
+    }
 }
 
 /// **A family of rules is one rule written nine times.** Division tries a

@@ -1,5 +1,4 @@
-;;; `std.arith` — nothing is computed that was not asked for, and a name no
-;;; `let` states is never answered. M1f S1f.6.3.
+;;; `std.arith` — nothing is computed that was not asked for. M1f S1f.6.3.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -7,19 +6,19 @@
 ;;; the circuit makes itself. Nothing enumerates the numbers, and a `let`
 ;;; alone asks for nothing.
 ;;;
-;;; This program names three numbers and asks for one sum of two of them, and
-;;; for one sum that names `rebate`, which no `let` states.
+;;; This program names three numbers and asks for one sum of two of them.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; `(done TAG ANSWER)` is how a finished call hands its answer over, and the
 ;;; tag says whose it is. The claim is `done`'s whole extent: **one** call
 ;;; finished, the sum of `a` and `b`. No sum was computed for `c`, which is
-;;; named and never used, and none for `a + rebate`: its first operand was
-;;; found and its second is still wanted, so no walk began. That request is
-;;; not refused and not answered; the second claim is `sum-of`'s whole
-;;; extent, one row. (Whether a request the theory cannot answer should be
-;;; flagged is P1f.6's S1f.6.12.)
+;;; named and never used. The second claim is `sum-of`'s whole extent, one
+;;; row.
+;;;
+;;; Until S1f.6.12 the program also asked for `a + rebate`, a name no `let`
+;;; states, which was neither refused nor answered. It is flagged since, and
+;;; is `29_undeclared_name.ein`.
 
 (import std.arith :symbols (arith))
 
@@ -28,7 +27,6 @@
 (let c (n z 7))
 
 (add a b)
-(add a rebate)
 
 (solve :expect (region (model)))
 

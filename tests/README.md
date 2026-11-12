@@ -85,7 +85,7 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
-| [`stdlib/arith/`](stdlib/arith/) | 89 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
+| [`stdlib/arith/`](stdlib/arith/) | 115 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division; S1f.6.12, malformed numbers and undeclared names): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero and the fourteen that state something the theory flags, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/num9/`](stdlib/num9/) | 47 | `std.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibnum9-wide-rules-and-a-generated-module) |
 | [`stdlib/int/`](stdlib/int/) | 71 | `std.int`, integers as a positive and a negative part over `std.arith` (M1f S1f.6.7, and S1f.6.22 for division): fourteen programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; and a division by zero under each, claiming `(false)`. See [below](#stdlibint-a-theory-over-a-theory) |
 | [`stdlib/rat/`](stdlib/rat/) | 57 | `std.rat`, rational numbers in lowest terms over `std.int` and `std.arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand. See [below](#stdlibrat-lowest-terms-and-four-ways-to-divide-by-zero) |
@@ -204,7 +204,7 @@ through every length, and requests by name.
 | `04_zero.ein` | `operand-zero`, `strip-none`: zero is `z`, asked, added and answered | a zero answered as `(n z 0)` |
 | `05_high_zeros.ein` | `strip-zero`: operands written with high zeros, read by value; a zero inside a number stays | an answer that is not in normal form |
 | `06_named.ein` | `let-named` and `operand-name`: `(let NAME NUMBER)`, a request by name, by a name and a number, and the same sum by numbers as a request of its own | a request answered under another spelling of its operands |
-| `07_only_what_is_asked.ein` | nothing fires for a `let` nobody asks about, and a request naming a name no `let` states is never answered: `done`'s whole extent is one call | a theory that computes what was not asked |
+| `07_only_what_is_asked.ein` | nothing fires for a `let` nobody asks about: `done`'s whole extent is one call. (Until S1f.6.12 it also asked for a sum naming a name no `let` states, which is flagged since: `29`) | a theory that computes what was not asked |
 | `08_sub.ein` | subtraction's whole chain, 123078 − 4567 and the reverse: `sub-ask`, `sub-ask-second`, `sub-start`, `sub-column`, `sub-column-first`, `sub-column-second`, `sub-end`, `sub-borrow-out`, `sub-answer`, `sub-answer-short`; `short`'s whole extent is claimed too | a wrong digit, the two numbers of the answer exchanged, a walk that ended with a borrow answering anyway |
 | `09_sub_borrow_and_zeros.ein` | a borrow through every column, high zeros dropped, equal numbers, operands with high zeros, zero on either side | an answer with a high zero, an equal pair answered twice |
 | `10_sub_named.ein` | `sub` by `(let NAME NUMBER)`, and a rule of the program's own that matches the shortfall `(diff-of X Y z (n ?p ?a))` | a request answered under the numbers its names stand for; a shortfall reported for an equal pair |
@@ -219,6 +219,23 @@ through every length, and requests by name.
 | `19_div_named_and_chained.ein` | `div` by `(let NAME NUMBER)`, and a `div` request a rule of the program derives from a `product-of` | a derived request left unanswered |
 | `20_div_by_zero.ein` | `div-by-zero` and `division-by-zero-is-false`, firing: the divisor `z`; `(solve :expect (false))` | a division by zero answered, or passed over in silence |
 | `21_div_by_zero_spelt_and_named.ein` | the same two, the zero written 00 and named by a `let` | a zero that is not seen because it is not written `z` |
+| `22_malformed_digit.ein` | `check-step`, `check-digit`, `bad-add-first`, `bad-request-malformed`, `malformed-is-false`: a name that is no digit in a digit's place, one place up; `(solve :expect (false))` | a malformed number passed over in silence |
+| `23_malformed_fact_as_digit.ein` | `check-digit` on a fact, and `bad-add-second` | a guard that holds of names only; the second operand's tag unread |
+| `24_malformed_ends_in_digit.ein` | `check-prefix-digit` and `bad-sub-first`: `(n 1 2)` | a number that ends in a digit read as a number |
+| `25_malformed_ends_in_zero.ein` | `check-prefix-zero` and `bad-sub-second`: `(n 0 2)` | the digit 0, which `nz` has no row for, missed |
+| `26_malformed_ends_in_a_name.ein` | `check-prefix-named` and `bad-cmp-first`: `(n price 1)` | a named constant inside a number |
+| `27_malformed_digit_as_number.ein` | `operand-digit` and `bad-cmp-second`: `(cmp X 7)` | a digit read as an operand that is merely never found |
+| `28_malformed_zero_digit_as_number.ein` | `operand-digit-zero` and `bad-mul-first`: `(mul 0 X)` | the digit 0 as an operand |
+| `29_undeclared_name.ein` | `operand-undeclared`, `bad-mul-second`, `bad-request-undeclared`, `undeclared-is-false`: a name no `let` states | an undeclared name passed over in silence |
+| `30_declared_name.ein` | the same rules loaded and not firing: `29` with the `let` stated; the product answered, and `undeclared`'s and `malformed`'s extents empty | a flag left behind once the `let` is stated; a flag on a well-formed request |
+| `31_malformed_through_a_name.ein` | `operand-name` handing what it finds to the check, and `bad-div-first`; a `let` nobody asks about is not checked | a malformed number that hides behind a name |
+| `32_malformed_name_for_a_name.ein` | `check-prefix-named` on what a `let` gave, and `bad-div-second`: `(let alias price)` | a name that stands for a name read as a number |
+| `33_let_twice.ein` | `let-twice`: a name stated twice with two numbers | two answers to one request |
+| `34_let_twice_the_same.ein` | `let-twice` loaded and not firing: the same `let` written twice is one fact | a flag on a fact stated twice |
+| `35_let_zero.ein` | `let-zero`: `(let z N)` | `z` standing for itself and for a number |
+| `36_let_digit.ein` | `let-digit`: `(let 7 N)`, with no request that uses it | a `let` flagged only when asked about |
+| `37_let_zero_digit.ein` | `let-digit-zero`: `(let 0 N)` | the digit 0, which `nz` has no row for, missed |
+| `38_what_stays_silent.ein` | no rule: what the theory does **not** flag, a number that ends in a name that is neither a digit nor a constant, a fact of another relation as an operand and inside a number, the accumulator's shape; beside an operand with high zeros, a foreign fact of `n` and `z` in a relation of the program's own, which are fine | a rule that starts flagging one of them, which makes the module's page wrong; a check that fires on a fact nobody asked about |
 
 **A division by zero gets the refutation idiom**, *one file where it fires and
 one where it is loaded and satisfied*: `20` and `21` fire the two rules, and
@@ -229,12 +246,40 @@ to an empty R decided by root alone, one saturation, the request in the core,
 and `refuted by` naming the second rule; `arith_theory.rs` holds the flag to
 the requests that divide by zero and to no other.
 
+**A malformed request gets the same idiom** (M1f
+[S1f.6.12](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md)):
+`22` to `29`, `31` to `33` and `35` to `37` each fire one fault through one
+of the ten rules from an operand's tag to its request, so that a mutant of
+any of them is seen, and claim `(false)`; `30`, `34` and `38` load the same
+rules where none fires and claim an R of one state with the flags' extents
+empty. **One fault a program, and one malformed request**, because a dead
+program's one claim cannot say which rule killed it: two faults in a file
+would let either rule be deleted unseen. `arith_search_free.rs` holds such a
+program as it holds a division by zero, with `refuted by` naming
+`malformed-is-false` or `undeclared-is-false`, and holds that the flagged
+request has no result fact; `arith_theory.rs` holds every kind of fault
+under every operation and either operand to exactly one flag, and the list
+of what stays silent.
+
 `arith`, the closing rule, fires once at root in each. **The mutation sweep
 kills every mutant of the module**, 21 of 21: the sweep reads 188 of 238 where
 it read 167 of 217, and the bank's 50 survivors are the ones it had
 (`python3 utils/stdlib_mutants.py --check`, 2026-11-11). `03_lengths.ein` is
 written both ways round because of it: `(add ?x ?y)` with its operands
 exchanged survives any program whose requests are symmetric.
+
+**S1f.6.12's rules have twelve survivors, and each is banked with its
+reason**: 58 of their 70 mutants are killed, 437 of 499 over the stdlib
+(`python3 utils/stdlib_mutants.py`, 2026-11-13). A program the theory flags
+is dead, and a dead program's one claim, `(false)`, cannot say *which* flag
+killed it or how the flag is written. So `ein test` cannot see the ten
+mutants that drop one of `operand-undeclared`'s `(neq ?x DIGIT)` guards,
+under which a digit as an operand is flagged twice, `malformed` and
+`undeclared`, and is dead either way; nor `bad-request-undeclared` with its
+flag's two arguments exchanged; and `undeclared-is-false` with its premise's
+two variables exchanged is the same rule. `arith_theory.rs` holds all of
+them from outside the language: its harness compares the flags' text, and
+asks that a digit as an operand has no `undeclared` flag.
 
 ### `stdlib/num9/`: wide rules, and a generated module
 

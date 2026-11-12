@@ -1,7 +1,7 @@
 ;;; Ein stdlib — `std.arith`: school arithmetic on natural numbers of any
 ;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3;
 ;;; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5; division,
-;;; S1f.6.6).
+;;; S1f.6.6; malformed numbers and undeclared names, S1f.6.12).
 ;;;
 ;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
 ;;; This module is a *theory* written in Ein over the ten digit names `0` to
@@ -10,8 +10,14 @@
 ;;; nothing is guessed: on a program that imports the theory and states
 ;;; requests, the universe has no candidate, R is {∅}, and the answer is
 ;;; root's fixpoint under `ein solve`, `ein saturate` and `ein test` alike.
-;;; No `absent`, no `not` premise, one stratum. One rule concludes `(false)`:
-;;; a program that divides by zero is a contradiction (below).
+;;; No `not` premise, and **one `absent`, over `let`**, a relation a program
+;;; writes and no rule derives, and which the theory closes: so the premise
+;;; is decided at root and nothing can make it stale, and a program that
+;;; imports the theory is monotone by the static check, in two strata (until
+;;; S1f.6.12 the theory read no `absent` and had one). Three rules conclude
+;;; `(false)`, each from a flag: a program that divides by zero, that states
+;;; a request the theory cannot read, or that names an operand no `let`
+;;; states, is a contradiction (below).
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -97,8 +103,60 @@
 ;;; name an operand: with `(let price …)` and `(let qty …)`, `(add price qty)`
 ;;; is answered by `(sum-of price qty S)`, the names repeated as written. The
 ;;; same sum written with the numbers is another request, with its own answer.
-;;; A name stands for a number, not for another name, and a name no `let`
-;;; states is an operand that is never answered.
+;;; A name stands for a number, not for another name, and for one number:
+;;; a name no `let` states, a name stated twice with two numbers, and `z` or
+;;; a digit as a name are each flagged (below).
+;;;
+;;; ── Malformed requests: a flag, and `(false)` from it ──────────────────────
+;;;
+;;; A request the theory cannot read is a contradiction, in two steps, as a
+;;; division by zero is (S1f.6.12; the user's rulings of 2026-11-11 and
+;;; 2026-11-12). Root is dead, R is empty, every command exits 0, and `ein
+;;; solve` names the request, as written, in the unsat core.
+;;;
+;;;     (malformed REQUEST)         an operand of the request is not a number:
+;;;                                 - a digit's place holds anything but one of
+;;;                                   the ten digits, a name or a fact;
+;;;                                 - the number ends in a digit where `z`
+;;;                                   goes, (n 1 2), or in a named constant,
+;;;                                   (n price 1);
+;;;                                 - a digit stands where a number goes,
+;;;                                   (add 7 X): seven is (n z 7);
+;;;                                 - the operand names such a number, or
+;;;                                   names another name
+;;;     (malformed (let NAME N))    the `let` cannot be read, whether or not a
+;;;                                 request uses it: NAME is stated twice with
+;;;                                 two numbers (each `let` is flagged), or is
+;;;                                 `z` or a digit
+;;;     (undeclared NAME REQUEST)   the request names an operand that no `let`
+;;;                                 states
+;;;
+;;; **A flag means malformed; no flag does not mean well-formed.** These are
+;;; answered by silence, a request that is neither refused nor answered, as
+;;; every malformed request was until S1f.6.12:
+;;;
+;;;   - a number that ends in a name that is neither a digit nor a named
+;;;     constant, `(n end 1)`: saying *a name* costs a walk of the program's
+;;;     names at every place;
+;;;   - a fact of another relation where a number goes, as an operand or
+;;;     inside a number, `(add (pair 1 2) X)`: no rule can say *not of this
+;;;     shape*. The accumulator's shape, `(b 1 z)`, is such a fact;
+;;;   - a name that stands for either of those;
+;;;   - in the modules over this one, a natural number where `std.int`
+;;;     expects an integer, an integer where `std.rat` expects a rational,
+;;;     and a malformed number inside an integer or a rational: the check is
+;;;     at this module's operand, and their parts go straight to the walks.
+;;;     An undeclared name or a digit as an operand of theirs is seen, as
+;;;     `(bad-operand TAG FAULT)` in root's state, and not flagged: no rule
+;;;     of theirs turns the tag into a request (`stdlib/README.md`).
+;;;
+;;; A wrong count of arguments, `(add X)` or `(n 1)`, is refused when the
+;;; program is loaded (S1f.6.23), and so is not the theory's to flag.
+;;;
+;;; The check is on demand, as the computation is: it starts from an operand
+;;; that was asked for. A `let` nobody asks about is not checked for a
+;;; malformed number, and a fact of `n` that no request names is not looked
+;;; at.
 ;;;
 ;;; ── How it computes (design K of P1f.6's `design.md`, round 3) ─────────────
 ;;;
@@ -150,7 +208,8 @@
 ;;; every fact of the other, and a batch of requests would cost the square of
 ;;; its count. Written this way, a batch costs in proportion to its count.
 ;;; `ein-infer/tests/arith_theory.rs` holds the rule on this file's text, and
-;;; `arith_batch.rs` holds the proportion on a counter of the matcher's work.
+;;; `arith_batch.rs` holds the proportion on two counters, of the matcher's
+;;; work and of the guards'.
 ;;; Whoever adds a rule keeps to it: a second premise that looks a fact up by
 ;;; a number, with a slot of its own left to bind, changes no answer and
 ;;; makes every batch quadratic.
@@ -164,26 +223,47 @@
 ;;; program states. Written without `(named ?x)`, every number operand walked
 ;;; every `let` (the stage's record has both measurements).
 ;;;
+;;; Since S1f.6.12 a rule may also hold **guards**, `eq` and `neq`, which
+;;; compare two values and look nothing up, and a **probe**, `(nz ?m)` or
+;;; `(named ?m)`, a premise of one argument that the first premise binds,
+;;; which is one lookup whatever `?m` is. There is a second join on a name,
+;;; `let-twice`, two `let`s of one name. And one guard is not free:
+;;; `operand-undeclared` asks whether an operand is a name by ranging a
+;;; variable over the program's names, two comparisons a name, for every
+;;; operand of every request. That grows with the program's names and not
+;;; with its requests' numbers, and `arith_batch.rs` pins it.
+;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Imported flat, these names mean what this file says, and a program must
-;;; not use them otherwise: `z`, `n`, `b`, `let`; the requests `add`, `sub`,
-;;; `cmp`, `mul` and `div`; the results `sum-of`, `diff-of`, `cmp-of`,
-;;; `product-of` and `quot-of`, the flag `division-by-zero`, and the orders
-;;; `lt`, `eq` and `gt`; the circuit's own `named`, `operand`, `operand-is`,
-;;; `add-walk`, `sub-walk`, `cmp-walk`, `mul-walk`, `strip`, `turn`,
-;;; `top-first`, `top-first-is`, `done`, `short`, `order-is`, `mul-call`,
-;;; `mul-step`, `div-call`, `div-done`, `multiples`, `div-step`,
-;;; `div-choose`, `div-digit`; the tags `sum`, `add-first`, `add-second`,
+;;; not use them otherwise.
+;;;
+;;; **What a program states: the requests and `let`, and nothing else.**
+;;; `add`, `sub`, `cmp`, `mul` and `div`, and `let`, over numbers written
+;;; with `n`, `z` and the ten digits. A program reads the rest and writes
+;;; none of it: a written fact of a result or of the circuit is a fact like
+;;; a derived one, and the theory computes with it, so `(sum-of X Y S)`
+;;; written by hand is an answer nobody computed. Nothing refuses it (the
+;;; user's reply of 2026-11-12: a module does not reserve its names). A
+;;; second declaration of any of these names is refused at load.
+;;;
+;;; **What a program reads:** the results `sum-of`, `diff-of`, `cmp-of`,
+;;; `product-of` and `quot-of`; the flags `division-by-zero`, `malformed`
+;;; and `undeclared`; and the orders `lt`, `eq` and `gt`.
+;;;
+;;; **The circuit's own**, in the state for a query or a `--trace` to see,
+;;; and not a promise: `b`, `named`, `operand`, `operand-is`, `add-walk`,
+;;; `sub-walk`, `cmp-walk`, `mul-walk`, `strip`, `turn`, `top-first`,
+;;; `top-first-is`, `done`, `short`, `order-is`, `mul-call`, `mul-step`,
+;;; `div-call`, `div-done`, `multiples`, `div-step`, `div-choose`,
+;;; `div-digit`; the check's `check`, `bad-operand`, `bad-request`, `no-let`
+;;; and `not-a-number`; the tags `sum`, `add-first`, `add-second`,
 ;;; `difference`, `shortfall`, `sub-first`, `sub-second`, `order`,
 ;;; `cmp-first`, `cmp-second`, `product`, `mul-first`, `mul-second`,
 ;;; `mul-digits`, `mul-row-of`, `mul-sum`, `quotient`, `div-first`,
 ;;; `div-second`, `div-m1` to `div-m9`, `div-digits`, `div-trial`;
 ;;; `arith-rule`; and the seven tables of `std.digits`, `fa`, `fs`, `md`,
-;;; `cl`, `nz`, `mid` and `adj`, with the bound `10`. The interface is `n`,
-;;; `z`, `let`, the requests, the results, the flag and the three orders; the
-;;; rest is in the state for a query or a `--trace` to see, and is not a
-;;; promise.
+;;; `cl`, `nz`, `mid` and `adj`, with the bound `10`.
 
 (import std.digits :symbols (fa fs md cl nz mid adj))
 
@@ -331,7 +411,8 @@
 ;; ── The operands ────────────────────────────────────────────────────────────
 ;; A number stands for itself, whatever high zeros it is written with; the
 ;; walk reads it by value. Two rules, because "is a number" has two shapes
-;; and no negation is used to tell a number from a name.
+;; and no negation is used to tell a number from a name. An operand that is
+;; found is handed to the check as it is found (§ Malformed numbers, below).
 (rule operand-zero ()
   :match  (operand ?k z)
   :assert (operand-is ?k z)
@@ -339,8 +420,8 @@
 
 (rule operand-number ()
   :match  (operand ?k (n ?p ?a))
-  :assert (operand-is ?k (n ?p ?a))
-  :why    "a number stands for itself")
+  :assert (and (operand-is ?k (n ?p ?a)) (check ?k (n ?p ?a)))
+  :why    "a number stands for itself, and is checked a place at a time")
 
 ;; The stated exception to the rule of the theory (the header): a join on the
 ;; NAME. `(named ?x)` comes first and must: every argument of it is bound, so
@@ -353,8 +434,8 @@
 
 (rule operand-name ()
   :match  (and (operand ?k ?x) (named ?x) (let ?x ?v))
-  :assert (operand-is ?k ?v)
-  :why    "{?x} names {?v}")
+  :assert (and (operand-is ?k ?v) (check ?k ?v))
+  :why    "{?x} names {?v}, which is checked a place at a time")
 
 ;; ── The walk shared by every circuit that adds ──────────────────────────────
 ;; `(add-walk TAG X Y CARRY ACC)`: one column a firing, from the units. A
@@ -867,6 +948,201 @@
   :assert (false)
   :why    "{?request} divides by zero: no number is the answer")
 
+;; ── Malformed numbers, and names no `let` states (S1f.6.12) ─────────────────
+;; A request the theory cannot read is flagged, and the flag is a
+;; contradiction, as a division by zero is (the user's rulings of 2026-11-11
+;; and 2026-11-12). **A flag means malformed; no flag does not mean
+;; well-formed:** the header lists what stays silent.
+;;
+;; `(malformed REQUEST)`: an operand of the request holds something that is
+;; not a number, the request as written. `(malformed (let NAME NUMBER))`: the
+;; `let` cannot be read. `(undeclared NAME REQUEST)`: the request names an
+;; operand that no `let` states.
+(relation malformed Request
+  :why "{?1} holds something that is not a number")
+(relation undeclared Name Request
+  :why "{?2} uses the name {?1}, which no let states")
+
+;; The circuit's own. `(check TAG NUMBER)`: NUMBER is what is left to check
+;; of the operand looked up for TAG. `(bad-operand TAG FAULT)` and
+;; `(bad-request REQUEST FAULT)`: what is wrong, first by the operand's tag
+;; and then by the request; FAULT is `(not-a-number THING)`, what stands
+;; where a digit or a number goes, or `(no-let NAME)`.
+(relation check Tag Number
+  :why "checking, for {?1}: {?2} is still to check")
+(relation bad-operand Tag Fault
+  :why "the operand looked up for {?1} is at fault: {?2}")
+(relation bad-request Request Fault
+  :why "{?1} is at fault: {?2}")
+(relation not-a-number Thing
+  :why "{?1} stands where a digit or a number goes, and is none")
+(relation no-let Name
+  :why "no let states the name {?1}")
+
+;; **The check is a pass of its own, at the operand**: one firing a place of
+;; each operand that is found, whatever the operation, and nothing inside a
+;; walk. `operand-number` and `operand-name` start it. It keeps the rule of
+;; the theory: one premise holds a number, and the others are guards, which
+;; compare and look nothing up, or a lookup with every argument bound,
+;; `(nz ?m)` and `(named ?m)`, which is one probe whatever `?m` is.
+(rule check-step ()
+  :match  (check ?k (n ?p ?a))
+  :assert (check ?k ?p)
+  :why    "one place down: {?p} is still to check")
+
+;; None of the ten digits: `neq` holds of every other name, and of a fact.
+(rule check-digit ()
+  :match  (and (check ?k (n ?p ?a))
+               (neq ?a 0) (neq ?a 1) (neq ?a 2) (neq ?a 3) (neq ?a 4)
+               (neq ?a 5) (neq ?a 6) (neq ?a 7) (neq ?a 8) (neq ?a 9))
+  :assert (bad-operand ?k (not-a-number ?a))
+  :why    "{?a} stands where a digit goes and is none of the ten")
+
+;; A number ends in `z`. One that ends in a digit, `(n 1 2)`, or in a named
+;; constant, `(n price 1)`, is flagged; one that ends in any other name is
+;; not, since saying *a name* costs a walk of the program's names.
+(rule check-prefix-digit ()
+  :match  (and (check ?k ?m) (nz ?m))
+  :assert (bad-operand ?k (not-a-number ?m))
+  :why    "the digit {?m} stands where a number goes: a number ends in z")
+
+(rule check-prefix-zero ()
+  :match  (check ?k 0)
+  :assert (bad-operand ?k (not-a-number 0))
+  :why    "the digit 0 stands where a number goes: a number ends in z")
+
+(rule check-prefix-named ()
+  :match  (and (check ?k ?m) (named ?m))
+  :assert (bad-operand ?k (not-a-number ?m))
+  :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
+
+;; A digit where a number goes: 7 is `(n z 7)`.
+(rule operand-digit ()
+  :match  (and (operand ?k ?x) (nz ?x))
+  :assert (bad-operand ?k (not-a-number ?x))
+  :why    "the digit {?x} is not a number: the number is (n z {?x})")
+
+(rule operand-digit-zero ()
+  :match  (operand ?k 0)
+  :assert (bad-operand ?k (not-a-number 0))
+  :why    "the digit 0 is not a number: zero is z")
+
+;; **The theory's one `absent`**, over `let`, which a program writes and no
+;; rule derives, and which the theory closes: so nothing can add the fact
+;; later, and the premise is decided at root. An operand that is a name, not
+;; `z` and not a digit, and that no `let` states. *A name* is said by the
+;; two guards on `?v`, in this order: `(neq ?v z)` ranges `?v` over the
+;; program's names, and `(eq ?v ?x)` keeps the one that is the operand, so
+;; a number, which is a fact, never passes. It costs a comparison a name of
+;; the program for each operand (`stdlib/README.md` has the measurement).
+(rule operand-undeclared ()
+  :match  (and (operand ?k ?x)
+               (neq ?v z) (eq ?v ?x)
+               (neq ?x 0) (neq ?x 1) (neq ?x 2) (neq ?x 3) (neq ?x 4)
+               (neq ?x 5) (neq ?x 6) (neq ?x 7) (neq ?x 8) (neq ?x 9)
+               (absent (let ?x ?w)))
+  :assert (bad-operand ?k (no-let ?x))
+  :why    "{?x} is a name, and no let states it")
+
+;; A `let` that cannot be read. Each is a second meaning for a name, and gave
+;; two answers to one request: a name stated twice with two numbers, and `z`
+;; or a digit as a constant's name. `let-twice` joins two `let`s **on the
+;; name**, which the fact index keys, as `operand-name` does.
+(rule let-twice ()
+  :match  (and (let ?x ?v) (let ?x ?w) (neq ?v ?w))
+  :assert (malformed (let ?x ?v))
+  :why    "{?x} is named twice: {?v}, and {?w}")
+
+(rule let-zero ()
+  :match  (let z ?v)
+  :assert (malformed (let z ?v))
+  :why    "z is zero, and cannot name another number")
+
+(rule let-digit ()
+  :match  (and (let ?x ?v) (nz ?x))
+  :assert (malformed (let ?x ?v))
+  :why    "{?x} is a digit, and cannot name a number")
+
+(rule let-digit-zero ()
+  :match  (let 0 ?v)
+  :assert (malformed (let 0 ?v))
+  :why    "0 is a digit, and cannot name a number")
+
+;; From the operand's tag to the request as written: ten rules, one a tag,
+;; alike but for the operation.
+(rule bad-add-first ()
+  :match  (bad-operand (add-first ?x ?y) ?f)
+  :assert (bad-request (add ?x ?y) ?f)
+  :why    "the first operand of {?x} + {?y} is at fault: {?f}")
+
+(rule bad-add-second ()
+  :match  (bad-operand (add-second ?x ?y ?u) ?f)
+  :assert (bad-request (add ?x ?y) ?f)
+  :why    "the second operand of {?x} + {?y} is at fault: {?f}")
+
+(rule bad-sub-first ()
+  :match  (bad-operand (sub-first ?x ?y) ?f)
+  :assert (bad-request (sub ?x ?y) ?f)
+  :why    "the first operand of {?x} - {?y} is at fault: {?f}")
+
+(rule bad-sub-second ()
+  :match  (bad-operand (sub-second ?x ?y ?u) ?f)
+  :assert (bad-request (sub ?x ?y) ?f)
+  :why    "the second operand of {?x} - {?y} is at fault: {?f}")
+
+(rule bad-cmp-first ()
+  :match  (bad-operand (cmp-first ?x ?y) ?f)
+  :assert (bad-request (cmp ?x ?y) ?f)
+  :why    "the first operand of {?x} compared with {?y} is at fault: {?f}")
+
+(rule bad-cmp-second ()
+  :match  (bad-operand (cmp-second ?x ?y ?u) ?f)
+  :assert (bad-request (cmp ?x ?y) ?f)
+  :why    "the second operand of {?x} compared with {?y} is at fault: {?f}")
+
+(rule bad-mul-first ()
+  :match  (bad-operand (mul-first ?x ?y) ?f)
+  :assert (bad-request (mul ?x ?y) ?f)
+  :why    "the first operand of {?x} x {?y} is at fault: {?f}")
+
+(rule bad-mul-second ()
+  :match  (bad-operand (mul-second ?x ?y ?u) ?f)
+  :assert (bad-request (mul ?x ?y) ?f)
+  :why    "the second operand of {?x} x {?y} is at fault: {?f}")
+
+(rule bad-div-first ()
+  :match  (bad-operand (div-first ?x ?y) ?f)
+  :assert (bad-request (div ?x ?y) ?f)
+  :why    "the first operand of {?x} divided by {?y} is at fault: {?f}")
+
+(rule bad-div-second ()
+  :match  (bad-operand (div-second ?x ?y ?u) ?f)
+  :assert (bad-request (div ?x ?y) ?f)
+  :why    "the second operand of {?x} divided by {?y} is at fault: {?f}")
+
+;; The two flags, each from its fault, and each a contradiction by a rule of
+;; its own, so that a trace shows the flag as one step and `(false)` as the
+;; next.
+(rule bad-request-malformed ()
+  :match  (bad-request ?request (not-a-number ?thing))
+  :assert (malformed ?request)
+  :why    "an operand of {?request} is not a number: it holds {?thing}")
+
+(rule bad-request-undeclared ()
+  :match  (bad-request ?request (no-let ?x))
+  :assert (undeclared ?x ?request)
+  :why    "{?request} uses the name {?x}, and no let states it")
+
+(rule malformed-is-false ()
+  :match  (malformed ?request)
+  :assert (false)
+  :why    "{?request} holds something that is not a number: the theory cannot read it")
+
+(rule undeclared-is-false ()
+  :match  (undeclared ?x ?request)
+  :assert (false)
+  :why    "{?request} uses the name {?x}, which names no number")
+
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Arithmetic is computed and never guessed: every relation of the theory, and
 ;; each table it reads, is closed, so the search has no candidate among them.
@@ -897,6 +1173,10 @@
                (__closed__ mul) (__closed__ product-of)
                (__closed__ div) (__closed__ quot-of)
                (__closed__ division-by-zero)
+               (__closed__ malformed) (__closed__ undeclared)
+               (__closed__ check) (__closed__ bad-operand)
+               (__closed__ bad-request) (__closed__ not-a-number)
+               (__closed__ no-let)
                (__closed__ named) (__closed__ operand) (__closed__ operand-is)
                (__closed__ add-walk) (__closed__ strip) (__closed__ turn)
                (__closed__ done)
@@ -966,5 +1246,20 @@
                (arith-rule div-next-none) (arith-rule div-end)
                (arith-rule div-ask) (arith-rule div-ask-second)
                (arith-rule div-start) (arith-rule div-answer)
-               (arith-rule div-by-zero) (arith-rule division-by-zero-is-false))
+               (arith-rule div-by-zero) (arith-rule division-by-zero-is-false)
+               (arith-rule check-step) (arith-rule check-digit)
+               (arith-rule check-prefix-digit) (arith-rule check-prefix-zero)
+               (arith-rule check-prefix-named)
+               (arith-rule operand-digit) (arith-rule operand-digit-zero)
+               (arith-rule operand-undeclared)
+               (arith-rule let-twice) (arith-rule let-zero)
+               (arith-rule let-digit) (arith-rule let-digit-zero)
+               (arith-rule bad-add-first) (arith-rule bad-add-second)
+               (arith-rule bad-sub-first) (arith-rule bad-sub-second)
+               (arith-rule bad-cmp-first) (arith-rule bad-cmp-second)
+               (arith-rule bad-mul-first) (arith-rule bad-mul-second)
+               (arith-rule bad-div-first) (arith-rule bad-div-second)
+               (arith-rule bad-request-malformed)
+               (arith-rule bad-request-undeclared)
+               (arith-rule malformed-is-false) (arith-rule undeclared-is-false))
   :why    "arithmetic is computed and never guessed: every relation of the theory is closed")

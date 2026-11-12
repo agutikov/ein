@@ -21,6 +21,10 @@ What it does to `std.arith`:
   - drops the digit multiplier, `md` and its walk: a row of a binary product is
     nothing or the multiplicand, so a step is one of four rules;
   - drops `nz`: the digit that is not zero is `1`, written in the rule;
+  - drops the check of malformed numbers and of undeclared names (S1f.6.12):
+    its rules name the ten digits and `nz`, so they are decimal's, and the
+    binary theory answers a malformed request by silence, as `std.arith` did
+    until that stage. Whether it gets a check of its own is the plan page's;
   - renames every relation, every rule and the tables with a `2`, the number
     shape `n` to `b2` and the accumulator `b` to `a2`; the entry is `bin`.
 
@@ -228,6 +232,12 @@ DIV_REL_GONE = {"multiples", "div-choose", "div-digit", "div-digits", "div-step"
 MUL_RULES_GONE = {"mul-column", "mul-walk-end", "mul-carry-out", "mul-row", "mul-first-row", "mul-add-row"}
 MUL_REL_GONE = {"mul-walk", "mul-row-of"}
 TABLES = ["fa", "fs", "cl"]
+# S1f.6.12's check: the rules that flag a malformed number or an undeclared name, by the start of their names,
+# their relations, and the two rules of the operands as they were before they handed a number to the check.
+CHECK_RULES_GONE = ("check-", "bad-", "let-twice", "let-zero", "let-digit", "operand-digit", "operand-undeclared",
+                    "malformed-is-false", "undeclared-is-false")
+CHECK_REL_GONE = {"malformed", "undeclared", "check", "bad-operand", "bad-request", "not-a-number", "no-let"}
+UNCHECKED = {"operand-number": '"a number stands for itself"', "operand-name": '"{?x} names {?v}"'}
 
 
 def core(shipped):
@@ -246,7 +256,18 @@ def core(shipped):
             continue
         if is_rel(f) and name(f) in MUL_REL_GONE:
             continue
-        out.append(copy.deepcopy(f))
+        if is_rule(f) and name(f).startswith(CHECK_RULES_GONE):
+            continue
+        if is_rel(f) and name(f) in CHECK_REL_GONE:
+            continue
+        f = copy.deepcopy(f)
+        if is_rule(f) and name(f) in UNCHECKED:
+            # `(and (operand-is …) (check …))` back to the one conclusion, and the sentence with it.
+            i = f.index(":assert") + 1
+            assert f[i][0] == "and" and len(f[i]) == 3 and f[i][2][0] == "check", f
+            f[i] = f[i][1]
+            f[f.index(":why") + 1] = Str(UNCHECKED[name(f)])
+        out.append(f)
     return out
 
 

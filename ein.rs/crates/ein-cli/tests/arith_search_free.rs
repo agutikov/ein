@@ -13,7 +13,7 @@
 //! | H is empty: the universe has no candidate, and nothing is left outside it | `--json-summary`'s `region.universe` and `root.hypgen` |
 //! | k_s is 1 and R is {∅}: one state, root itself, alive and owing nothing | `region.k_s`, `k_c`, `root`, `states` |
 //! | one saturation, no fork | `work.saturations` |
-//! | monotone: no `absent` read, one stratum | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
+//! | monotone: **one `absent` read where the program imports `std.arith`**, statically, over `let`, which nothing derives, and none dynamically; two strata there, and none and one elsewhere (S1f.6.12) | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
 //! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
 //!
 //! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
@@ -22,10 +22,13 @@
 //! program joins by being put there, and an operation by adding its result
 //! relation to [`RESULTS`]; nothing else here names a file.
 //!
-//! **A program that divides by zero** (S1f.6.6) is the one kind whose R is
-//! not {∅}: it claims [`DEAD`], and [`division_by_zero`] holds what it is
-//! held to instead, an empty R decided by root alone. A rational with a
-//! denominator of zero is such a division (S1f.6.8).
+//! **A program that divides by zero** (S1f.6.6) is one kind whose R is not
+//! {∅}: it claims [`DEAD`], and [`dead`] holds what it is held to instead,
+//! an empty R decided by root alone. A rational with a denominator of zero
+//! is such a division (S1f.6.8). **A malformed program is the other kind**
+//! (S1f.6.12): a request the theory cannot read, a `let` it cannot read, or
+//! a name no `let` states, each a flag and `(false)` from it, held as a
+//! division by zero is ([`FLAGS`]).
 //!
 //! What this file does not ask is whether the answers are *right*: that is
 //! `ein-infer/tests/arith_theory.rs`, against Rust's integers.
@@ -102,6 +105,28 @@ const DIVIDES: [&str; 4] = ["(div ", "(div9 ", "(rat-", "(int-div-"];
 /// divisor's numerator, or both operands of a division of integers, and `nz`
 /// where that simplification drops no high zero.
 const RESTS_ON: [&str; 5] = ["(let ", "(md ", "(cl ", "(fs ", "(nz "];
+
+/// The requests and the `let` a malformed program's flag can name, by the
+/// start of their text (S1f.6.12): `std.arith`'s five requests.
+const READS: [&str; 6] = ["(add ", "(sub ", "(cmp ", "(mul ", "(div ", "(let "];
+
+/// The three ways an arithmetic program is dead, by the rule that concludes
+/// `(false)`: the start of its flag's text, and what the flag names.
+const FLAGS: [(&str, &str, &[&str]); 3] = [
+    ("division-by-zero-is-false", "(division-by-zero ", &DIVIDES),
+    ("malformed-is-false", "(malformed ", &READS),
+    ("undeclared-is-false", "(undeclared ", &READS),
+];
+
+/// The rules that derive a malformed program's flag.
+const MALFORMED_BY: [&str; 6] = [
+    "bad-request-malformed",
+    "bad-request-undeclared",
+    "let-twice",
+    "let-zero",
+    "let-digit",
+    "let-digit-zero",
+];
 
 /// The rules that derive the flag, each with the start of the flag it
 /// derives.
@@ -206,7 +231,12 @@ fn balanced(text: &str) -> String {
 /// (the user's ruling of 2026-11-11: two steps), `ein saturate` shows the
 /// flag and `(false)` in root's state, each by its own rule, and `ein test`
 /// holds the one claim such a program can make.
-fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
+///
+/// **A malformed program is held the same way** (S1f.6.12): `refuted by`
+/// names `malformed-is-false` or `undeclared-is-false`; the core names what
+/// the flag names, a request or a `let`, and beside it only `let`s and
+/// table rows; and the request the flag names is never answered.
+fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
     let region = &json["region"];
     assert_eq!(region["k_s"], 0, "{file}: k_s");
     assert_eq!(region["k_c"], 0, "{file}: k_c");
@@ -219,6 +249,18 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
     );
     assert_eq!(json["work"]["saturations"], 1, "{file}: one saturation");
     assert_eq!(json["monotonicity"]["monotone"], true, "{file}");
+    let refuted_by = region["refuted_by"]
+        .as_array()
+        .and_then(|r| match r.as_slice() {
+            [one] => one.as_str(),
+            _ => None,
+        })
+        .unwrap_or_else(|| panic!("{file}: refuted by one rule: {}", region["refuted_by"]));
+    let (_, flag, names) = FLAGS
+        .iter()
+        .find(|(rule, _, _)| *rule == refuted_by)
+        .unwrap_or_else(|| panic!("{file}: refuted by {refuted_by}, which concludes no flag"));
+    let division = *flag == "(division-by-zero ";
     // The core is the request, and what its divisor's zero rests on: nothing
     // where the divisor is written `z`; the `let` where it is a name; and the
     // rows of `md` that put a zero written with digits into normal form, since
@@ -229,22 +271,26 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         .iter()
         .map(|f| f.as_str().expect("a fact"))
         .collect();
-    assert_eq!(
-        core.iter()
-            .filter(|f| DIVIDES.iter().any(|h| f.starts_with(h)))
-            .count(),
-        1,
-        "{file}: the core names the request: {core:?}"
-    );
+    if division {
+        assert_eq!(
+            core.iter()
+                .filter(|f| DIVIDES.iter().any(|h| f.starts_with(h)))
+                .count(),
+            1,
+            "{file}: the core names the request: {core:?}"
+        );
+    } else {
+        // A malformed program's core: the request or the `let` its flag
+        // names, and it names at least one.
+        assert!(
+            core.iter().any(|f| names.iter().any(|h| f.starts_with(h))),
+            "{file}: the core names what the flag names: {core:?}"
+        );
+    }
     assert!(
         core.iter()
-            .all(|f| DIVIDES.iter().chain(&RESTS_ON).any(|h| f.starts_with(h))),
+            .all(|f| names.iter().chain(&RESTS_ON).any(|h| f.starts_with(h))),
         "{file}: the core is the request, a `let` and table rows: {core:?}"
-    );
-    assert_eq!(
-        region["refuted_by"],
-        serde_json::json!(["division-by-zero-is-false"]),
-        "{file}"
     );
     assert!(
         !dump.join("models").exists()
@@ -265,20 +311,63 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
         })
     };
     assert!(
-        FLAGGERS.iter().any(|(start, rule)| fact(start, rule)),
-        "{file}: the flag, by its own rule"
-    );
-    assert!(
-        fact("(false", "division-by-zero-is-false"),
+        fact("(false", refuted_by),
         "{file}: (false), by the second rule"
     );
-    assert!(
-        !saturate
+    if division {
+        assert!(
+            FLAGGERS.iter().any(|(start, rule)| fact(start, rule)),
+            "{file}: the flag, by its own rule"
+        );
+        assert!(
+            !saturate
+                .stdout
+                .lines()
+                .any(|l| QUOTIENTS.iter().any(|q| l.trim().starts_with(q))),
+            "{file}: a division by zero is never answered with a number"
+        );
+    } else {
+        // The flags, each by one of the rules that derive one, and the
+        // request each names: `(malformed (add X Y) :rule …)` names
+        // `(add X Y)`, and `(undeclared NAME (add X Y) :rule …)` the same.
+        let flags: Vec<&str> = saturate
             .stdout
             .lines()
-            .any(|l| QUOTIENTS.iter().any(|q| l.trim().starts_with(q))),
-        "{file}: a division by zero is never answered with a number"
-    );
+            .map(str::trim)
+            .filter(|l| l.starts_with(flag))
+            .collect();
+        assert!(!flags.is_empty(), "{file}: no flag in root's state");
+        for line in &flags {
+            assert!(
+                MALFORMED_BY
+                    .iter()
+                    .any(|rule| line.ends_with(&format!(":rule {rule})"))),
+                "{file}: the flag, by its own rule: {line}"
+            );
+            let inner = &line[flag.len()..];
+            let named = READS
+                .iter()
+                .filter_map(|h| inner.find(h))
+                .min()
+                .map(|i| balanced(&inner[i..]))
+                .unwrap_or_else(|| panic!("{file}: the flag names a request or a `let`: {line}"));
+            // A flagged request is never answered: no result fact repeats
+            // its operands.
+            if let Some(operands) = named
+                .strip_suffix(')')
+                .and_then(|r| r.split_once(' '))
+                .map(|(_, o)| o)
+                .filter(|_| !named.starts_with("(let "))
+            {
+                assert!(
+                    !saturate.stdout.lines().map(str::trim).any(|l| RESULTS
+                        .iter()
+                        .any(|r| l.starts_with(&format!("({r} {operands} ")))),
+                    "{file}: {named} is flagged and answered"
+                );
+            }
+        }
+    }
 
     let test = ein(&["test", file]);
     assert_eq!(
@@ -293,7 +382,7 @@ fn division_by_zero(file: &str, json: &serde_json::Value, dump: &Path) {
     );
 }
 
-fn search_free(path: &Path, scratch: &Scratch, dead: bool) {
+fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
     let root = repo_root();
     let file = path
         .strip_prefix(&root)
@@ -329,7 +418,7 @@ fn search_free(path: &Path, scratch: &Scratch, dead: bool) {
     );
     assert_eq!(json["root"]["hypgen"]["emitted"], 0, "{file}");
     if dead {
-        division_by_zero(file, &json, &dump);
+        self::dead(file, &json, &dump);
         return;
     }
     assert_eq!(region["k_s"], 1, "{file}: k_s");
@@ -350,12 +439,26 @@ fn search_free(path: &Path, scratch: &Scratch, dead: bool) {
         json["work"]["saturations"], 1,
         "{file}: one saturation, no fork"
     );
+    // One `absent` where the program holds `std.arith`'s rules, which is
+    // where it imports `std.arith`, `std.int` or `std.rat`: the undeclared
+    // name's, over `let` (S1f.6.12). It is read statically, a premise of one
+    // plan, and never at a node: the theory closes `let` and no rule derives
+    // it, so the static check calls the program monotone all the same.
     let mono = &json["monotonicity"];
     assert_eq!(mono["monotone"], true, "{file}");
-    for kind in ["static", "dynamic_monotone", "dynamic_non_monotone"] {
+    let absents = mono["absent_reads"]["static"].as_u64().expect("a count");
+    assert_eq!(
+        absents,
+        u64::from(
+            text.contains(THEORIES[0]) || text.contains(THEORIES[2]) || text.contains(THEORIES[3])
+        ),
+        "{file}: the theory reads one `absent`, the undeclared name's, and a program \
+         of `std.num9` alone none"
+    );
+    for kind in ["dynamic_monotone", "dynamic_non_monotone"] {
         assert_eq!(
             mono["absent_reads"][kind], 0,
-            "{file}: the theory reads an `absent` ({kind})"
+            "{file}: an `absent` is read at a node ({kind})"
         );
     }
 
@@ -366,12 +469,15 @@ fn search_free(path: &Path, scratch: &Scratch, dead: bool) {
         "{file}: ein saturate\n{}",
         saturate.stderr
     );
+    // The rule that reads the `absent` is a stratum above the rest.
+    let strata = if absents == 0 {
+        ";; Strata — stratified, 1 stratum"
+    } else {
+        ";; Strata — stratified, 2 strata"
+    };
     assert!(
-        saturate
-            .stdout
-            .lines()
-            .any(|l| l.trim() == ";; Strata — stratified, 1 stratum"),
-        "{file}: not one stratum"
+        saturate.stdout.lines().any(|l| l.trim() == strata),
+        "{file}: not `{strata}`"
     );
 
     // ── the same answer ──
@@ -409,7 +515,7 @@ fn every_arithmetic_program_is_search_free() {
             "{}: under an arithmetic root and imports no theory of the calculator",
             path.display()
         );
-        search_free(path, &scratch, text.contains(DEAD));
+        search_free(path, &text, &scratch, text.contains(DEAD));
     }
 }
 

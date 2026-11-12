@@ -1,0 +1,22 @@
+;;; `std.arith` — `z` as a constant's name. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A `let` the theory cannot read is flagged as the `let`, `(malformed (let
+;;; NAME NUMBER))`, whether or not a request uses the name, and `malformed-
+;;; is-false` derives `(false)`. `let-zero`: `z` is zero. Until S1f.6.12
+;;; `(add z (n z 5))` beside this `let` had two answers, 5 and 10: `z` stood
+;;; for itself and for 5. The program asks nothing: with `z` a named constant
+;;; every number ends in one, so a request beside this `let` is flagged too,
+;;; and answered.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty; the unsat core is
+;;; the `let`.
+
+(import std.arith :symbols (arith))
+
+(let z (n z 5))
+
+(solve :expect (false))

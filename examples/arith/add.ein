@@ -29,7 +29,8 @@
 ;;;     1 2 7 6 4 5
 ;;;
 ;;; `ein solve examples/arith/add.ein --trace T.md` writes every step as a
-;;; sentence; the first request takes 21 of them.
+;;; sentence; the first request takes 31 of them, ten of
+;;; them the check of its two operands, a place a step.
 ;;;
 ;;; The second request names its operands. Its answer repeats the names, so
 ;;; the goal `(sum-of apples pears ?fruit)` reads it.

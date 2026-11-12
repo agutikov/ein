@@ -878,6 +878,9 @@ impl Matcher {
             }
         };
         let eq = pred == Pred::Eq;
+        // One per value the guard is decided for; a free side ranged over
+        // the program's names adds one per name, below.
+        ein_core::counters::bump(|c| c.predicate_value += 1);
         match (side(self, &args[0]), side(self, &args[1])) {
             (Ok(x), Ok(y)) => {
                 if (x == y) == eq {
@@ -891,6 +894,7 @@ impl Matcher {
                     return self.bind_and_walk(c, next, &[r], v, f);
                 }
                 let domain = crate::predicates::domain(c.kb, c.terms, c.ast);
+                ein_core::counters::bump(|c| c.predicate_value += domain.len() as u64);
                 for &d in domain {
                     if d != v {
                         self.bind_and_walk(c, next, &[r], d, f)?;
@@ -900,6 +904,7 @@ impl Matcher {
             }
             (Err(r), Err(q)) => {
                 let domain = crate::predicates::domain(c.kb, c.terms, c.ast);
+                ein_core::counters::bump(|c| c.predicate_value += domain.len() as u64);
                 if eq || r == q {
                     // `(neq ?x ?x)` holds of no value.
                     if !eq {

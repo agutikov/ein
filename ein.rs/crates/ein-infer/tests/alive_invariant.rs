@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 130] = [
+const SEEDED: [(&str, &[&str]); 146] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -389,6 +389,80 @@ const SEEDED: [(&str, &[&str]); 130] = [
     (
         "tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein",
         &["`z`, in (let none (n (n z 0) 0))"],
+    ),
+    // M1f S1f.6.12 — the programs of malformed numbers: `z` inside a number
+    // as everywhere, and the names that stand in a digit's place or at a
+    // number's end, which are what each program is about.
+    (
+        "tests/stdlib/arith/22_malformed_digit.ein",
+        &[
+            "`x`, in (add (n (n (n z 1) x) 7) (n z 5))",
+            "`z`, in (add (n z 2) (n z 2))",
+        ],
+    ),
+    (
+        "tests/stdlib/arith/23_malformed_fact_as_digit.ein",
+        &["`z`, in (add (n z 2) (n z 2))"],
+    ),
+    (
+        "tests/stdlib/arith/24_malformed_ends_in_digit.ein",
+        &["`z`, in (add (n z 2) (n z 2))"],
+    ),
+    (
+        "tests/stdlib/arith/25_malformed_ends_in_zero.ein",
+        &["`z`, in (add (n z 2) (n z 2))"],
+    ),
+    (
+        "tests/stdlib/arith/26_malformed_ends_in_a_name.ein",
+        &["`z`, in (let price (n z 5))"],
+    ),
+    (
+        "tests/stdlib/arith/27_malformed_digit_as_number.ein",
+        &["`z`, in (add (n z 2) (n z 2))"],
+    ),
+    (
+        "tests/stdlib/arith/28_malformed_zero_digit_as_number.ein",
+        &["`z`, in (add (n z 2) (n z 2))"],
+    ),
+    (
+        "tests/stdlib/arith/29_undeclared_name.ein",
+        &["`z`, in (let price (n (n z 1) 9))"],
+    ),
+    (
+        "tests/stdlib/arith/30_declared_name.ein",
+        &["`z`, in (let price (n (n z 1) 9))"],
+    ),
+    (
+        "tests/stdlib/arith/31_malformed_through_a_name.ein",
+        &[
+            "`x`, in (let broken (n (n z x) 1))",
+            "`y`, in (let unused (n z y))",
+            "`z`, in (let broken (n (n z x) 1))",
+        ],
+    ),
+    (
+        "tests/stdlib/arith/32_malformed_name_for_a_name.ein",
+        &["`z`, in (let price (n z 5))"],
+    ),
+    (
+        "tests/stdlib/arith/33_let_twice.ein",
+        &["`z`, in (let price (n z 5))"],
+    ),
+    (
+        "tests/stdlib/arith/34_let_twice_the_same.ein",
+        &["`z`, in (let price (n z 5))"],
+    ),
+    (
+        "tests/stdlib/arith/36_let_digit.ein",
+        &["`z`, in (let 7 (n z 5))"],
+    ),
+    (
+        "tests/stdlib/arith/37_let_zero_digit.ein",
+        &["`z`, in (let 0 (n z 5))"],
+    ),
+    (
+        "tests/stdlib/arith/38_what_stays_silent.ein",
+        &["`end`, in (add (n end 1) (n z 5))"],
     ),
     // M1f S1f.6.7 — `std.int`: an integer's parts are numbers, so `z` is inside
     // a nested fact here too, and the module holds it through `std.arith`'s rule.

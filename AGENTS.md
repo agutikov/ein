@@ -654,7 +654,10 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   (or to a module over it) goes into its closing rule's two lists
   (`arith_theory.rs`); a new operation is a row of `OPS`, and joins
   `arith_search_free.rs` by its lists. **No rule of the calculator joins two
-  facts on a number.**
+  facts on a number.** `std.arith` reads **one `absent`, over `let`**, which
+  no rule may derive, and writes guards in three named rules
+  (`arith_theory.rs`); a program it flags, `(malformed …)` or
+  `(undeclared …)`, is dead and claims only `(solve :expect (false))`.
 - **A stage that changes a rule of the calculator runs the batch by hand**:
   `cargo test -p ein-infer --features counters --test arith_batch`. No tier
   runs it.

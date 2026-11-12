@@ -217,6 +217,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.202](#q-m1f202--a-relation-written-through-a-parameter-and-the-declared-count) | a relation written through a parameter, and the declared count | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: not read**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
 | [Q-M1f.203](#q-m1f203--the-kernels-own-relations-and-an-activators-count) | the kernel's own relations, and an activator's count | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: neither is held, each a finding (E-34, E-35)**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
 | [Q-M1f.204](#q-m1f204--which-written-places-the-declared-count-is-held-in) | which written places the declared count is held in | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: a fact's `:using` and a claim's facts too; a macro's body where it is called; no `(solve …)` list**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
+| [Q-M1f.205](#q-m1f205--where-the-check-of-a-malformed-number-runs) | where the check of a malformed number runs | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: a pass of its own at the operand, started by the two rules that find a number; the mixed placement measured and not built**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.206](#q-m1f206--how-a-fault-reaches-its-request) | how a fault reaches its request | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: one relation at the operand's tag that carries the fault, `(bad-operand TAG FAULT)`, ten rules from a tag to its request, and one rule a flag**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.207](#q-m1f207--what-a-let-that-cannot-be-read-flags) | what a `let` that cannot be read flags | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: the `let`, `(malformed (let NAME NUMBER))`, whether or not a request uses it; each of the two where a name is stated twice; and the digit 0 as a name, which the investigation's set left out**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.208](#q-m1f208--how-the-theory-says-that-an-operand-is-a-name) | how the theory says that an operand is a name | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: two guards on a variable nothing else binds, `(neq ?v z) (eq ?v ?x)`, in that order; `z` and the digits left out so that a request has one flag; its cost, a comparison a name of the program, stated and pinned**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.209](#q-m1f209--the-binary-example-theory-and-the-check) | the binary example theory and the check | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: `gen_binary.py` leaves the check out, so `bin.ein` is unchanged and answers a malformed request by silence**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.210](#q-m1f210--stdint-and-stdrat-and-the-flags) | `std.int` and `std.rat`, and the flags | **open, shown**: neither module is changed, as the stage file has it; three rules in each would turn their tags into requests, and the table is in the record; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3967,3 +3973,97 @@ leaves is E-34 and E-35 of the phase's [`findings.md`](p1f.6_calculator/findings
 
 **Defaulted 2026-11-12, each as written above, the user's to revise.** Each is a case of
 `ein-cli/tests/declared_counts.rs`.
+
+### Q-M1f.205 — Where the check of a malformed number runs
+
+**Raised** 2026-11-13 by [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13)'s
+build, T1f.6.12.4. The user's reply 4 (a) of 2026-11-12 was to build the investigation's set *as a checking
+pass of its own at the operand, the cheaper placement measured by the build before it is chosen*.
+
+Measured on two prototypes of the whole set (`utils/bench_env.sh python3 build/s1f.6.12/build/cost2.py`,
+2026-11-13; the record has the table): **the pass** costs a firing a digit of each operand, whatever the
+operation; **the mixed placement**, guards on the walks of a sum, a difference and a comparison and the pass
+for a product and a quotient, costs no firing for the first three and is dearer than the pass for the last
+two, 4 913 ms where 4 406 for 4 000 products, since every internal walk of a product then carries the
+guards. Neither is cheaper for every operation. The mixed one is 58 rules where the pass is 26, flags an
+internal tag and not the request where a walk is a module's own (`std.int`'s, `std.rat`'s), and leaves an
+operand that no walk reads unchecked, `(mul X z)`.
+
+**Defaulted 2026-11-13, the user's to revise: the pass.** One mechanism for five operations; the stage
+file's cost table and acceptance are the pass's. `operand-number` and `operand-name` conclude the `check`
+fact beside `operand-is`, which is a firing an operand less than a rule of its own and leaves the operands
+of `std.int` and `std.rat`, which those modules find themselves, without an inert fact.
+
+### Q-M1f.206 — How a fault reaches its request
+
+**Raised** 2026-11-13 by S1f.6.12's build. A fault is found at an operand's tag, `(add-first X Y)`, and the
+flag names the request, `(add X Y)`. With two kinds of flag, `malformed` and `undeclared`, the
+investigation's ten rules from a tag to a request would be twenty.
+
+**Defaulted 2026-11-13, the user's to revise:** the fault travels with the tag,
+`(bad-operand TAG (not-a-number THING))`, THING what stands where a digit or a number goes, or `(bad-operand TAG (no-let NAME))`; ten rules, alike but for the
+operation, conclude `(bad-request REQUEST FAULT)`; `bad-request-malformed` and `bad-request-undeclared`
+conclude the two flags. Twelve rules where twenty, at one firing more on a flagged request and none on a
+well-formed one. It adds three relations of the circuit's own, `bad-request`, `not-a-number` and `no-let`.
+The fault is a fact and not a bare name, so no rule concludes a constant: a name a rule asserts is a name
+of every program that imports the theory, and `alive_invariant.rs` lists each.
+
+### Q-M1f.207 — What a `let` that cannot be read flags
+
+**Raised** 2026-11-13 by S1f.6.12's build. The stage file says a detected *request* derives
+`(malformed REQUEST)`; a name stated twice and `z` or a digit as a name are faults of a `let`.
+
+**Defaulted 2026-11-13, the user's to revise: the flag names the `let`,** `(malformed (let NAME NUMBER))`,
+as the investigation's prototype did, and is derived whether or not a request uses the name, since the
+rules read `let` and no operand. A name stated twice flags each of its two `let`s. A request that uses such
+a name is still answered in root's state, twice for a name stated twice, and root is dead, so no query reads
+either. **`(let 0 N)` is flagged too** (`let-digit-zero`): the investigation's `let-digit` probes `nz`,
+which has no row for 0. One consequence, stated in `35_let_zero.ein`: with `(let z N)` in a program `z` is a
+named constant, so every number of every request ends in one and is flagged as well.
+
+### Q-M1f.208 — How the theory says that an operand is a name
+
+**Raised** 2026-11-13 by S1f.6.12's build, on round 2's item 5 (b). The premise `(absent (let ?x ?w))`
+holds of a number too, which is a fact no `let` names, so the rule must also say that `?x` is a *name*, and
+no pattern says *not of the shape `(n P D)`*.
+
+**Defaulted 2026-11-13, the user's to revise:** `(neq ?v z) (eq ?v ?x)`, `?v` bound by nothing else: the
+first guard ranges `?v` over the program's names but `z`, the second keeps the one that is the operand
+(`01_grammar.md`: a variable nothing binds *is bound by the guard, where it is written*). The two guards
+mean something else in the other order, which is E-37 of the phase's `findings.md`, shown. Ten more guards
+leave the digits out, so a digit as an operand has one flag, `malformed`. **The cost is a comparison a name
+of the program, twice, for each operand of each request**, a number too, since the guards run before the
+`absent` whatever order they are written in: 1 000 sums take 69.7 ms beside no named constant and 140.7 ms
+beside 4 000, where the theory before the stage took 36.6 and 41.3 (E-36). It is flat in the batch and grows
+with the program's names; `arith_batch.rs` pins it. The alternative found, one fact a name of the program
+derived once, makes the test one probe and puts some three hundred facts into every arithmetic state.
+
+### Q-M1f.209 — The binary example theory and the check
+
+**Raised** 2026-11-13 by S1f.6.12's build. `examples/binary_arithmetic/bin.ein` is generated from
+`stdlib/arith.ein`, and the generator carried the new rules over by name: ten `neq` guards on the decimal
+digits and probes of `nz`, a table the binary theory does not have.
+
+**Defaulted 2026-11-13, the user's to revise: `gen_binary.py` leaves the check out,** rules and relations,
+and takes the two rules of the operands as they were, so `bin.ein` is byte for byte what it was and the
+binary theory answers a malformed request by silence. A check of base two is two guards where ten and is
+[`binary_arithmetic.md`](p1f.6_calculator/binary_arithmetic.md)'s to ask, with the page's other questions.
+
+### Q-M1f.210 — `std.int` and `std.rat`, and the flags
+
+**Raised** 2026-11-13 by S1f.6.12's build, T1f.6.12.9, whose task was to check the two modules and not to
+change them. **Open, shown; nothing built.**
+
+What fires there, on 26 probes (`build/s1f.6.12/build/t9/`, the record has the table): a `let` that cannot
+be read is flagged and is `(false)`, as in `std.arith`, since those rules read `let` alone. An undeclared
+name and a digit as an operand are *seen*: both modules look a named operand up through `std.arith`'s
+`operand`, so its rules derive `(bad-operand (int-first REQUEST Y) (no-let foo))`; but no rule turns a tag
+of theirs into a request, so there is no flag and no `(false)`. A malformed number inside an integer or a
+rational is not seen at all: the parts go to `std.arith`'s walks and never through its operand.
+
+- **(a) As it is:** silent, named on the pages. *The stage file's default.*
+- **(b) Three rules in each module,** from its tags to `(bad-request REQUEST FAULT)`: an undeclared name
+  and a digit as an operand are then flagged, and `(false)`. Cheap, and it leaves a malformed part silent.
+- **(c) (b), and each part of an integer and a rational handed to `std.arith`'s check,** a firing a digit
+  of each part, as a natural number's operand costs.
+

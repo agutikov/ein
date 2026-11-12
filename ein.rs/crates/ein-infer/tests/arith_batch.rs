@@ -91,6 +91,14 @@ const BOUND: [f64; 5] = [250.0, 500.0, 1000.0, 20000.0, 40000.0];
 /// 4 and 16.
 const TOLERANCE: f64 = 1.05;
 
+/// What a request may cost in guard values at the smallest batch: a little
+/// above the measure, 992 for two nine-digit operands (2026-11-13). Ten for
+/// each digit, `check-digit`'s; and for each operand twice the program's
+/// names, some two hundred in a program of the theory and numbers alone,
+/// which is `operand-undeclared` asking whether the operand is a name
+/// ([`a_number_operand_does_not_walk_the_lets`] holds how that grows).
+const GUARD_BOUND: f64 = 1200.0;
+
 /// A number of exactly `digits` digits in the theory's spelling.
 fn number(rng: &mut u64, digits: u32) -> String {
     let mut out = String::from("z");
@@ -126,6 +134,9 @@ struct Work {
     firings: u64,
     /// `candidates` over the saturation alone; 0 without the feature.
     candidates: u64,
+    /// `predicate_value` over the saturation alone, the values its `eq` and
+    /// `neq` premises were decided for; 0 without the feature.
+    guards: u64,
     /// The answers stored.
     answers: usize,
 }
@@ -137,7 +148,7 @@ fn saturate(src: &str, result: &str) -> Work {
     let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the batch loads");
     let mut events = Events::off();
     let mut firings = 0u64;
-    let candidates;
+    let (candidates, guards);
     {
         let mut s = Session {
             kb: &mut kb,
@@ -150,7 +161,9 @@ fn saturate(src: &str, result: &str) -> Work {
         counters::reset();
         sat.saturate(&mut s, None, &mut |_| firings += 1)
             .expect("the batch reaches its fixpoint");
-        candidates = counters::snapshot().candidates;
+        let counted = counters::snapshot();
+        candidates = counted.candidates;
+        guards = counted.predicate_value;
     }
     let answers = terms
         .syms
@@ -159,6 +172,7 @@ fn saturate(src: &str, result: &str) -> Work {
     Work {
         firings,
         candidates,
+        guards,
         answers,
     }
 }
@@ -183,13 +197,17 @@ fn a_batch_costs_in_proportion_to_its_count() {
         // The numbers themselves, for `-- --nocapture`: the stage records quote them.
         for (n, w) in sizes.iter().zip(&work) {
             eprintln!(
-                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request; \
+                 {} guard values, {:.2} a request",
                 w.firings,
                 per_request(w.firings, *n),
                 w.candidates,
-                per_request(w.candidates, *n)
+                per_request(w.candidates, *n),
+                w.guards,
+                per_request(w.guards, *n)
             );
         }
+        let base_guards = per_request(work[0].guards, sizes[0]);
         for (n, w) in sizes.iter().zip(&work).skip(1) {
             let firings = per_request(w.firings, *n);
             assert!(
@@ -210,6 +228,18 @@ fn a_batch_costs_in_proportion_to_its_count() {
                      it is written as two premises",
                     sizes[0]
                 );
+                // The second measure (S1f.6.12, E-27): a guard is no
+                // candidate, so a rule whose guard ranges over something
+                // that grows with the batch passes the count above.
+                let g = per_request(w.guards, *n);
+                assert!(
+                    g <= base_guards * TOLERANCE,
+                    "`{op}`: the guards' work per request grew with the batch: \
+                     {base_guards:.1} values a request at {} and {g:.1} at {n}. A guard \
+                     of std.arith ranges over something that grows with the requests; \
+                     `candidates` does not see it (E-27 of P1f.6's findings.md)",
+                    sizes[0]
+                );
             }
         }
         if cfg!(feature = "counters") {
@@ -220,6 +250,16 @@ fn a_batch_costs_in_proportion_to_its_count() {
             assert!(
                 base < bound,
                 "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
+                sizes[0]
+            );
+            assert!(
+                base_guards > 0.0,
+                "the guards are counted and counted nothing"
+            );
+            assert!(
+                base_guards < GUARD_BOUND,
+                "`{op}`: {base_guards:.1} guard values a request at {} requests, over \
+                 {GUARD_BOUND}",
                 sizes[0]
             );
         }
@@ -242,8 +282,13 @@ fn a_number_operand_does_not_walk_the_lets() {
         let alone = saturate(&batch(op, 0, lets), result);
         eprintln!(
             "{op}: {requests} requests: {} candidates beside no `let`, {} beside {lets}; \
-             the {lets} `let`s alone, {}",
-            without.candidates, with.candidates, alone.candidates
+             the {lets} `let`s alone, {}. Guard values: {}, {}, {}",
+            without.candidates,
+            with.candidates,
+            alone.candidates,
+            without.guards,
+            with.guards,
+            alone.guards
         );
         assert_eq!(
             with.candidates,
@@ -251,6 +296,22 @@ fn a_number_operand_does_not_walk_the_lets() {
             "{requests} `{op}` requests beside {lets} `let`s cost more than the requests \
              and the `let`s cost apart: a number operand is walking the `let` \
              facts. `operand-name` asks `(named ?x)` first so that it does not"
+        );
+        // **What the undeclared name costs, and it does grow with the
+        // program's names** (S1f.6.12; E-36 of P1f.6's findings.md). To say
+        // that an operand is a name, `operand-undeclared` ranges a variable
+        // over the program's names and compares each with the operand: two
+        // guard values a name, for each operand of each request, a number
+        // too. A `let` adds its name to the program's, so the same requests
+        // beside `lets` named constants cost exactly this much more, which
+        // `candidates` does not see. It is pinned so that a second guard
+        // over the names, or one inside the check's walk, a place a digit
+        // (the investigation's b2), shows here as another multiple.
+        assert_eq!(
+            with.guards,
+            without.guards + alone.guards + (2 * 2 * requests * lets) as u64,
+            "{requests} `{op}` requests beside {lets} `let`s: the guards' values are the \
+             requests' and the `let`s' apart, and two for each operand and each `let`'s name"
         );
     }
 }

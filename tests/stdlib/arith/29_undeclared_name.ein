@@ -1,0 +1,29 @@
+;;; `std.arith` — a name that no `let` states: undeclared. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request that names an operand no `let` states is flagged, `(undeclared
+;;; NAME REQUEST)`, and `undeclared-is-false` derives `(false)` from the flag
+;;; (the user's reply of 2026-11-12). `operand-undeclared` reads the theory's
+;;; one `absent`, over `let`, which a program writes and no rule derives: the
+;;; operand is a name, not `z` and not a digit, and there is no `(let rebate
+;;; …)`. It says `(bad-operand TAG (no-let rebate))`; `bad-mul-second` turns
+;;; the tag into the request, and `bad-request-undeclared` derives the flag.
+;;;
+;;; `30_declared_name.ein` is this program with the `let` stated.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim
+;;; such a program can make. The sum beside it was computed and is in root's
+;;; state, but a dead state is no answer. `ein solve` names the request and
+;;; the `let` of its first operand in the unsat core, and `--trace` shows the
+;;; flag and the contradiction as two steps.
+
+(import std.arith :symbols (arith))
+
+(let price (n (n z 1) 9))
+(add price (n z 2))
+(mul price rebate)
+
+(solve :expect (false))

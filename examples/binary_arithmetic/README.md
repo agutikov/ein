@@ -44,7 +44,11 @@ carries its base, are described on the page with their measurements and are not 
 
 The page also recommends that the binary rules be generated from `std.arith`, since 51 of the 67 differ from
 it only in their names. So `bin.ein` is generated, by [`gen_binary.py`](gen_binary.py), which reads
-`stdlib/arith.ein`. **The generator is run by hand and is not in the gate.** After an edit to
+`stdlib/arith.ein`. **It leaves `std.arith`'s check of malformed numbers and undeclared names out** (M1f
+S1f.6.12): those rules name the ten digits and the table `nz`, so they are decimal's, and `bin.ein` is
+what it was before them. A malformed binary request, `(add2 (b2 z 7) X)` or a name no `let2` states, is
+answered by silence; whether the binary theory gets a check of its own is the page's to ask.
+**The generator is run by hand and is not in the gate.** After an edit to
 `stdlib/arith.ein`:
 
 ```sh

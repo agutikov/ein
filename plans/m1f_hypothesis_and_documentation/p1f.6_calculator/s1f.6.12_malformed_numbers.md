@@ -5,7 +5,9 @@
 found, on the shipped `std.arith`, with T2's probes: the table, a recommendation a row, and six questions
 ([§ T1 record](#t1-record-2026-11-11)). Nothing is built. Planned 2026-11-11, on the user's ruling of that day.
 **The build is ruled and planned (2026-11-12):** the user's replies to the page's questions are in
-[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces *T3 onward* below. Not started.
+[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces *T3 onward* below.
+**Built 2026-11-13:** [§ Build record](#build-record-2026-11-13). Q-M1f.205 to .209 defaulted, the user's to
+revise; Q-M1f.210 open (`std.int` and `std.rat`); E-36 to E-38 found and shown.
 **Depends on:** the investigation needs only the prototype (`build/s1f.6/prototype/r3/k.ein`); the build needs
 [S1f.6.6](s1f.6.6_division.md), so every operation flags.
 
@@ -128,7 +130,7 @@ names (Q5), and `std.num9` (Q6). T3 onward waits for them.
 
 ## The build, as ruled (2026-11-12)
 
-**Status:** planned 2026-11-12, not started. It replaces [§ T3 onward](#t3-onward-the-build-after-the-users-ruling-on-t1):
+**Status:** built 2026-11-13 ([§ Build record](#build-record-2026-11-13)). It replaces [§ T3 onward](#t3-onward-the-build-after-the-users-ruling-on-t1):
 item 3 there, the loader's arity check, is a stage of its own, [S1f.6.23](s1f.6.23_the_loaders_arity_check.md),
 and item 5, `std.num9`, is ruled out.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md). It edits `stdlib/arith.ein`, so it runs one at a time with the
@@ -255,3 +257,316 @@ fix. Findings go to [`findings.md`](findings.md) under the next free id; questio
 [`open_questions.md`](../open_questions.md) under the next free id. Config never changes an answer; a
 malformed program is an answer (an empty R) and exits 0. The gate is `./run_tests.sh`, then `./run_tests.sh
 --nightly` after the code commit; `utils/ci_container.sh` is not needed.
+
+## Build record, 2026-11-13
+
+Every task of [§ The build, as ruled](#the-build-as-ruled-2026-11-12), in its order. The scripts, the
+prototypes and the logs are under `build/s1f.6.12/build/` (gitignored); each number has its command.
+
+### What the theory flags now
+
+26 rules and 7 relations more in `stdlib/arith.ein`: 114 rules and the closing rule, where 88 (`grep -c
+'^(rule ' stdlib/arith.ein`, less one, 2026-11-13). Two existing rules, `operand-number` and `operand-name`,
+conclude one fact more.
+
+| what a program wrote | the flag | the rule that finds it |
+|---|---|---|
+| a digit's place that holds a name that is no digit, or a fact | `(malformed REQUEST)` | `check-digit`, ten `neq` guards |
+| a number that ends in a digit where `z` goes | `(malformed REQUEST)` | `check-prefix-digit`, `check-prefix-zero` |
+| a number that ends in a named constant; a name that stands for a name | `(malformed REQUEST)` | `check-prefix-named` |
+| a digit where a number goes | `(malformed REQUEST)` | `operand-digit`, `operand-digit-zero` |
+| a name no `let` states | `(undeclared NAME REQUEST)` | `operand-undeclared`, the one `absent` |
+| a name stated twice with two numbers | `(malformed (let NAME NUMBER))`, each `let` | `let-twice` |
+| `z` or a digit as a constant's name | `(malformed (let NAME NUMBER))` | `let-zero`, `let-digit`, `let-digit-zero` |
+
+**How a flag is derived.** `operand-number` and `operand-name` hand each number they find to `(check TAG
+NUMBER)`; `check-step` goes one place down a firing. A fault is `(bad-operand TAG FAULT)`, FAULT being
+`(not-a-number THING)`, what was found where a digit or a number goes, or `(no-let NAME)`. Ten rules, one a
+tag and alike but for the operation, `bad-add-first` to `bad-div-second`, conclude `(bad-request REQUEST
+FAULT)`; `bad-request-malformed` and `bad-request-undeclared` conclude the flag; `malformed-is-false` and
+`undeclared-is-false` conclude `(false)`. The relations: the flags `malformed` and `undeclared`, and the
+circuit's `check`, `bad-operand`, `bad-request`, `not-a-number` and `no-let`.
+
+**What stays silent** (reply 6 (a)), on `stdlib/README.md` and in the module's header, and held by
+`arith_theory.rs`'s `what_stays_silent`: a number that ends in a name that is neither a digit nor a
+constant; a fact of another relation where a number goes, as an operand or inside a number; a name that
+stands for either; everything of an operand in `std.int` and `std.rat` but a `let` that cannot be read
+(T1f.6.12.9, below); every malformation of `std.num9`; the binary example theory.
+
+### T1f.6.12.3 — the undeclared name shown first, on the shipped theory
+
+`build/s1f.6.12/build/t3/undeclared.ein`: the shipped `std.arith` at `d038579d`, the release binary built
+from it, and the rule written in the program, with its two routes and its rule to `(false)`; one request
+`(add foo (n z 5))` and one well-formed sum. `declared.ein` is the same with `(let foo (n z 7))`.
+2026-11-13, every command exit 0:
+
+| | `undeclared.ein` | `declared.ein` |
+|---|---|---|
+| `ein solve` | `states (k_s) 0`, *every node is dead — root's own fixpoint derives (false)*, `unsat core (add foo (n z 5))`, `refuted by undeclared-is-false`, `lattice monotone (the static check)`, `universe no candidate`, 1 saturation | `states (k_s) 1`, `∅ in R`, `foo + (n z 5) = (n (n z 1) 2)` and the other sum, `lattice monotone (the static check)` |
+| `ein saturate` | 1 `unknown-operand`, 1 `undeclared`, 1 `false`, each by its rule; the other sum computed | no `undeclared`, no `false` |
+| `ein test` | `(solve :expect (false))` and the query's `(false)` held | the claimed sum held |
+| `ein oracle` | the same read-out, *the cube: 0 dead nodes with an alive superset — the static verdict holds* | one state |
+| `ein solve --minimal`, `--maximal`, `--count` | 0 states | 1 state |
+| `ein solve --single` | `Contradiction — R is empty` | `Solution` |
+
+The three things the task had to establish, each held:
+
+1. **The loader's *forbid* does not refuse the theory.** The program loads on every command.
+2. **The static check does not flag a program that imports the calculator.** `lattice monotone (the static
+   check)` on both, and on the built theory on every searching program of the corpus too: the sweep below
+   moves no `lattice` row, `examples/beyond_arith/equation_two_unknowns.ein`, 1 466 saturations, among them.
+   The summary's `monotonicity` block reads `monotone: true`, `absent_reads: {static: 1, dynamic_monotone:
+   0, dynamic_non_monotone: 0}`. **What does move: `ein saturate --dump`'s `;; Strata` line reads
+   *stratified, 2 strata* where it read 1**, for every program that holds `std.arith`'s rules.
+3. **A `let` answers the request and removes the flag, with nothing stale.** `declared.ein` above; in the
+   built theory, `tests/stdlib/arith/29_undeclared_name.ein` and `30_declared_name.ein`, and
+   `an_undeclared_name_is_flagged_and_a_let_answers_it`.
+
+**Found there, and it shapes the rule** (Q-M1f.208, E-36, E-37): `(absent (let ?x ?w))` holds of a number
+too, so the rule must say that the operand is a *name*, and the one way is two guards on a variable nothing
+else binds, `(neq ?v z) (eq ?v ?x)`, in that order. Written the other way round the pair holds of facts as
+well (`build/s1f.6.12/neq/g1.ein` against `build/s1f.6.12/build/g2.ein`). The engine does what
+`01_grammar.md` says of a guard's free variable, *bound where it is written*, so this is a finding and not
+a register row.
+
+### T1f.6.12.4 — the placement measured
+
+Two prototypes of the whole set, written from the shipped stdlib by `build/s1f.6.12/build/proto2.py`: **the
+pass**, 26 rules, and **mixed**, 58 rules: a sum, a difference and a comparison checked by guards on their
+own walks, a product and a quotient by the pass. Both flag every probe of the investigation alike
+(`build/s1f.6.12/today/`). Firings a request and the saturator's milliseconds, batches of nine-digit
+operands (a divisor of four), best of five (`utils/bench_env.sh python3 build/s1f.6.12/build/cost2.py`,
+2026-11-13, one P-core of an i9-14900HX, `powersave`):
+
+| operation | requests | shipped: firings a request | ms | pass: firings a request | ms | mixed: firings a request | ms |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| add | 250 | 27.0 | 8.7 | 45.0 | 15.7 | 27.0 | 11.8 |
+| add | 1000 | 27.0 | 33.2 | 45.0 | 62.9 | 27.0 | 45.8 |
+| add | 4000 | 27.0 | 146.1 | 45.0 | 292.9 | 27.0 | 199.0 |
+| sub | 250 | 37.0 | 12.8 | 55.0 | 19.7 | 37.0 | 17.5 |
+| sub | 1000 | 37.0 | 51.1 | 55.0 | 79.6 | 37.0 | 70.4 |
+| sub | 4000 | 37.0 | 242.8 | 55.0 | 378.7 | 37.0 | 318.1 |
+| cmp | 250 | 16.0 | 6.3 | 34.0 | 13.8 | 16.0 | 9.6 |
+| cmp | 1000 | 16.0 | 25.6 | 34.0 | 55.7 | 16.0 | 37.5 |
+| cmp | 4000 | 16.0 | 107.5 | 34.0 | 261.2 | 16.0 | 158.1 |
+| mul | 250 | 486.3 | 195.3 | 504.3 | 205.9 | 506.3 | 230.2 |
+| mul | 1000 | 486.0 | 922.6 | 504.0 | 948.4 | 506.0 | 1052.9 |
+| mul | 4000 | 486.2 | 4223.8 | 504.2 | 4406.1 | 506.2 | 4912.6 |
+| div | 250 | 448.3 | 182.4 | 461.3 | 202.1 | 463.3 | 232.2 |
+| div | 1000 | 447.3 | 853.9 | 460.3 | 936.7 | 462.3 | 1071.4 |
+| div | 4000 | 447.5 | 3902.3 | 460.5 | 4287.1 | 462.5 | 4866.6 |
+
+**Neither is cheaper for every operation.** Mixed costs no firing for a sum, a difference and a comparison
+and about two thirds of the pass's time there, and is dearer than the pass for a product and a quotient,
+since every internal walk of those then carries eight more rules. **The pass is built** (Q-M1f.205,
+defaulted): half the rules, one mechanism, the request named by ten small rules, no operand left unchecked
+(`(mul X z)` reads X in no walk), and no flag under a tag of a module that calls the walks itself. The pass
+is 18 firings a request here where the investigation's was 20: the two rules that find a number start the
+check themselves.
+
+**The built theory against the one before it**, the same batches (`utils/bench_env.sh python3
+build/s1f.6.12/build/cost3.py`, 2026-11-13):
+
+| operation | requests | before: firings a request | ms | built: firings a request | ms |
+|---|---:|---:|---:|---:|---:|
+| add | 250 | 27.0 | 9.6 | 45.0 | 17.7 |
+| add | 1000 | 27.0 | 37.7 | 45.0 | 73.6 |
+| add | 4000 | 27.0 | 163.7 | 45.0 | 318.2 |
+| sub | 250 | 37.0 | 14.2 | 55.0 | 22.1 |
+| sub | 1000 | 37.0 | 60.1 | 55.0 | 92.5 |
+| sub | 4000 | 37.0 | 260.9 | 55.0 | 403.1 |
+| cmp | 250 | 16.0 | 7.0 | 34.0 | 15.7 |
+| cmp | 1000 | 16.0 | 28.0 | 34.0 | 64.5 |
+| cmp | 4000 | 16.0 | 117.3 | 34.0 | 278.5 |
+| mul | 250 | 486.3 | 214.4 | 504.3 | 226.1 |
+| mul | 1000 | 486.0 | 935.0 | 504.0 | 977.7 |
+| mul | 4000 | 486.2 | 4208.0 | 504.2 | 4396.9 |
+| div | 250 | 448.3 | 193.9 | 461.3 | 214.8 |
+| div | 1000 | 447.3 | 859.0 | 460.3 | 952.1 |
+| div | 4000 | 447.5 | 3858.5 | 460.5 | 4245.5 |
+
+| 1 000 sums beside | before: ms | built: ms |
+|---|---:|---:|
+| 0 `let`s | 36.6 | 69.7 |
+| 1000 `let`s | 37.2 | 89.1 |
+| 4000 `let`s | 41.3 | 140.7 |
+
+| 1 000 sums of named operands, beside | before: ms | built: ms |
+|---|---:|---:|
+| 100 `let`s | 35.6 | 72.2 |
+| 1000 `let`s | 41.0 | 94.0 |
+| 4000 `let`s | 45.4 | 147.5 |
+
+At 4 000 requests a sum takes 318 ms where 164, a difference 403 where 261, a comparison 279 where 117, a
+product 4.40 s where 4.21 and a quotient 4.25 s where 3.86: twice for the three short operations, a
+twentieth to a tenth more for the two long ones. **This is more than the investigation's b1** (261, 326,
+223 ms, 3.98 and 3.84 s on its day): the difference is the undeclared name's guard, which b1 did not have.
+A batch still costs in proportion to its count. **The last two tables are the cost that grows with the
+program's names** (E-36): 1 000 sums beside 4 000 named constants take 140.7 ms where 41.3.
+
+**The guards' share, and the undeclared name's.** By the guards' own count, 992 values a request for two
+nine-digit operands: 180 are `check-digit`'s, ten a digit, and the rest `operand-undeclared`'s, two a name
+of the program for each operand. The second grows with the program's names (E-36).
+
+### T1f.6.12.5 — the rules in `stdlib/arith.ein`
+
+As above. The closing rule closes the seven relations and names the 26 rules
+(`the_closing_rule_names_every_rule_and_closes_every_relation`). The rule of the theory holds: every new
+rule has one premise that holds a number; its others are guards, a probe of one argument the first premise
+binds (`nz`, `named`), or, in `let-twice`, a second `let` of the same name. `python3
+utils/stdlib_manifest.py --write` re-banked the manifest.
+
+`examples/binary_arithmetic/gen_binary.py` was run: it carried the decimal check into the binary theory by
+name, ten decimal digits and a table that theory lacks. **It now leaves the check out** (Q-M1f.209), and
+`bin.ein` is byte for byte what it was (`python3 examples/binary_arithmetic/gen_binary.py --check`, exit 0).
+
+### T1f.6.12.6 — the tests restated and extended
+
+`ein-infer/tests/arith_theory.rs`:
+
+- `the_theory_writes_no_negation` is **`the_theory_writes_one_absent_over_let`**: no `not`, no `or`;
+  exactly one `absent`, in `operand-undeclared`, over `let`; no rule concludes `let`; `eq` and `neq` in
+  `check-digit`, `operand-undeclared` and `let-twice` alone; three rules conclude `(false)`, each from its
+  flag and nothing else.
+- `no_rule_joins_two_facts_on_a_number` reads a guard as no premise that holds a number (and holds that its
+  arguments are no form), a probe as one lookup on a variable the first premise binds, and names the second
+  join on a name, `let-twice`, beside `operand-name`.
+- **The harness of malformed requests**, four tests. `a_malformed_request_is_flagged_once_and_never_answered`:
+  fifteen malformed operands, under each of the five operations, as the first operand, the second and
+  both, 45 requests an operation: exactly the 45 flags, no other flag, `(false)`, and the requests answered
+  are the three well-formed ones beside them. `an_undeclared_name_is_flagged_and_a_let_answers_it`,
+  `a_let_that_cannot_be_read_is_flagged`, `what_stays_silent`.
+- `the_rules_from_a_tag_to_its_request_are_alike`: the ten route rules, by their text.
+- The well-formed harness is unchanged and passes: every answer right, each request answered once.
+- **The circuit's pins moved, by the check's firings and nothing else**: 123078 + 4567 is (31, 21) where
+  (21, 21), the depth unmoved; a subtraction (38, 21), a comparison (23, 13), 123 × 456 (78, 72), 127645 ÷
+  25 (228, 220), and the rest, each its old size and the digits of the operands that are found.
+
+`ein-cli/tests/arith_search_free.rs`: a dead program is a division by zero, a malformed program or an
+undeclared name, by the rule `refuted by` names; a malformed one's core names what the flag names and
+otherwise `let`s and table rows, its flag is derived by one of six rules, and the request it names has no
+result fact. A live program reads **one `absent` statically where it holds `std.arith`'s rules and none at
+a node**, and has two strata there; a program of `std.num9` alone reads none and has one.
+
+`ein-infer/tests/alive_invariant.rs` lists the seventeen new programs' names. A first draft's fault was a
+bare name, `not-a-number`, which a rule asserted: that made it a name of every program that imports the
+theory, 106 new entries of that list; the fault is a fact since.
+
+### T1f.6.12.7 — E-27's second measure
+
+`ein_core::counters` has a counter more, `predicate_value`: one per value an `eq` or `neq` premise is
+decided for, and one per name of the program where a free side ranges over them
+(`ein-infer/src/match_.rs`, `guard`). It is compiled out of every shipped build, as the others are.
+`arith_batch.rs` holds it flat in the batch beside `candidates`, and under a bound. Run by hand (`cargo
+test --manifest-path ein.rs/Cargo.toml -p ein-infer --features counters --test arith_batch -- --nocapture`,
+2026-11-13, 5 passed), a request at 250, 1 000 and 4 000 requests:
+
+| operation | firings | candidates | guard values |
+|---|---:|---:|---:|
+| add | 45.00 | 181.38, 181.38, 181.39 | 991.92, 992.65, 991.93 |
+| sub | 55.00 | 362.00 | 991.92, 992.65, 991.93 |
+| cmp | 34.00 | 901.00 | 991.92, 992.65, 991.93 |
+| mul | 504.84, 504.60, 504.36 | 9 603.87, 9 601.18, 9 598.70 | 991.92, 992.65, 991.93 |
+| div | 458.85, 459.59, 459.66 | 6 033.98, 6 030.25, 6 030.94 | 964.86, 964.96, 964.34 |
+
+**`candidates` is what it was before the stage, to the last digit**: the check's probes are lookups with
+every argument bound, which offer no candidate. `std.num9`'s, `std.int`'s and `std.rat`'s batches pass
+unchanged. `a_number_operand_does_not_walk_the_lets` still holds by `candidates`, and pins the guards'
+growth: 500 requests beside 200 `let`s cost exactly `2 × 2 × 500 × 200` guard values more than apart
+(496 462, 896 662 and 200). E-27 is closed.
+
+### T1f.6.12.8 — one program per rule
+
+Seventeen programs, `tests/stdlib/arith/22` to `38`, each with a corpus entry: fourteen that fire one fault
+through one of the ten routes and claim `(solve :expect (false))`, and three that load the rules where none
+fires, `30_declared_name`, `34_let_twice_the_same` and `38_what_stays_silent`, and claim R = {∅} with the
+flags' extents empty. `07_only_what_is_asked.ein` lost its request `(add a rebate)`, which is flagged now
+and is `29`. `stdlib_coverage.rs`: every rule activated, 367 of 367 (`cat stdlib/*.ein | grep -c '^(rule
+'`, 2026-11-13). `ein test tests/stdlib/arith`: 38 files, 72 expectations held.
+
+**The mutation sweep: 437 of 499 killed, 58 of the 70 new mutants** (`python3 utils/stdlib_mutants.py`,
+`build/s1f.6.12/build/mutants.log`, 2026-11-13; taken before the fault became a fact, which touches no
+mutated premise). **Twelve survive, each explained and banked** in `tests/mutation_survivors.txt`: a dead
+program's one claim cannot say which flag killed it. Ten drop one of `operand-undeclared`'s `(neq ?x DIGIT)`
+guards, under which a digit as an operand is flagged twice and is dead either way;
+`bad-request-undeclared` with its flag's arguments exchanged; and `undeclared-is-false` with its premise's
+two variables exchanged, which is the same rule. `arith_theory.rs`'s harness holds all twelve by the flags'
+text. The bank was edited by hand from the run's list; `--check` was not re-run after the fault became a
+fact, and the nightly runs it.
+
+### T1f.6.12.9 — `std.int` and `std.rat` checked, not changed
+
+26 programs, `build/s1f.6.12/build/t9/` (`ein saturate --dump`, 2026-11-13). No rule of either module was
+added; their headers' *one stratum* is restated.
+
+| the operand | `std.int` | `std.rat` |
+|---|---|---|
+| a malformed number inside it: a digit's place, a number's end, a named constant, a digit as a part | no flag | no flag |
+| the same behind a name, `(let a (int (n z x) z))` | no flag | no flag |
+| an undeclared name, either operand | `(bad-operand (int-first REQUEST Y) (no-let foo))` in root's state; **no flag, no `(false)`** | the same under `(rat-of …)` |
+| a digit as the operand, `(int-add 7 X)` | `(bad-operand TAG (not-a-number 7))`; no flag | the same |
+| a natural number for an integer, an integer for a rational | no flag | no flag |
+| a name stated twice with two values | `(malformed (let …))` twice, `(false)` | the same |
+| `(let z …)`, `(let 3 …)` | `(malformed (let …))`, `(false)` | the same |
+
+So of the set, the `let` rules fire there and nothing else is flagged: the two modules find their own
+operands, hand the parts straight to `std.arith`'s walks, and have no rule from their tags to a request.
+What would change it is three rules in each, or those and a check of each part: **the user's,
+[Q-M1f.210](../open_questions.md#q-m1f210--stdint-and-stdrat-and-the-flags)**, E-38.
+
+### T1f.6.12.10 — the pages
+
+`stdlib/arith.ein`'s header (the flags, what stays silent, the claim about `absent`, the names in three
+parts); `stdlib/README.md` (§ `std.arith`, a new § Malformed requests, the names, `std.num9`'s, `std.int`'s
+and `std.rat`'s sections, the module table, and § What a program pays re-taken); `stdlib/int.ein`'s and
+`rat.ein`'s headers, a sentence each; `tests/README.md`; `examples/README.md`, `examples/arith/add.ein` and
+`num9_both_ways.ein` (31 firings where 21), `examples/binary_arithmetic/README.md`; the phase's README (§
+The principle, § Acceptance, the stage's row); `malformed_numbers.md`'s closing note; `findings.md` (E-27
+closed, E-36 to E-38); `open_questions.md` (Q-M1f.205 to .210); `AGENTS.md`, one standing rule.
+
+### The sweep: no existing program's answer moved but as intended
+
+The release binary and the stdlib of `d038579d` against the tree's, `ein saturate --dump` and `ein solve`
+over the 817 `.ein` files `d038579d` tracks (`python3 build/s1f.6.12/build/sweep.py --diff`,
+`build/s1f.6.12/build/sweep.txt`, 2026-11-13). 89 files moved, every one a program that holds `std.arith`'s
+rules:
+
+- **`ein solve` moved on two.** `examples/beyond_arith/equation_two_unknowns.ein`: its `work` row, *75 423
+  facts beyond root* where 60 223, the check's facts in 1 466 saturations; R, the lattice row and every
+  query unmoved. `examples/broken/load/import_module_not_found.ein`: the path in its refusal, which is the
+  old stdlib's directory.
+- **`ein saturate --dump` moved on 87**: the counts, the two closed-relation and rule lists, the `;; Strata`
+  line, and the `check` facts with their `check-step` firings. No fact a state held is gone.
+- **One program was changed on purpose**: `tests/stdlib/arith/07_only_what_is_asked.ein` as `d038579d` had
+  it asks `(add a rebate)`, and is dead under the built theory (the first sweep, `sweep1.txt`); the request
+  moved to `29`.
+
+### The goldens re-banked, each named before it was blessed
+
+From the run without `EIN_BLESS` (`cargo test --workspace --no-fail-fast`,
+`build/s1f.6.12/build/workspace-nff.log`): four tests failed, two of them goldens.
+
+- `ein-cli/tests/golden/corpus_exits.txt`: **85 new cells**, the seventeen new programs under their five
+  runs; no existing cell moved.
+- `ein-render/tests/golden/corpus_shapes.md5`: the digests of every program that holds `std.arith`'s rules
+  (`examples/arith`, `beyond_arith`, `binary_arithmetic`, `word_problems`, `tests/stdlib/arith`, `int`,
+  `rat`, one of `num9`, the two `stdlib/` modules over it and two W89 witnesses, which import it): their
+  load, saturate, plan, IR, KB and states renderings, by the 26 rules, the seven relations and the check's
+  facts; and the new programs' rows. **Of the read-outs, only
+  `equation_two_unknowns.ein`'s five moved**, by its `work` row.
+- The other two: `alive_invariant.rs`'s list (above), and `ein-ir`'s embedded-manifest test, which failed
+  because the stdlib was edited while that run was going, and passes.
+
+### What was run
+
+- **The gate: green.** `./run_tests.sh` on the tree as committed but for this section's text
+  (`build/gate-s1f.6.12.log`, exit 0, 2026-11-13); the link check re-run after it, 0 findings.
+- `cargo test -p ein-infer --features counters --test arith_batch`, by hand: 5 passed.
+- `python3 utils/stdlib_mutants.py`: 437 of 499, as above. `python3
+  examples/binary_arithmetic/gen_binary.py --check`: exit 0.
+- `utils/ci_container.sh` was not run: no DOT writer, review bundle or CI install changed.
+- The nightly is run on the commit and recorded in the commit after it.
+
+**The register is unmoved**: no wrong answer of the engine was met (E-37 is filed as a finding, with why).
+**Engine source moved in one place**, the counter and its three increments in `match_.rs`, compiled out of
+every build without `--features counters`.

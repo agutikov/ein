@@ -15,7 +15,7 @@
 ;;;
 ;;; ── What happens ───────────────────────────────────────────────────────
 ;;;
-;;;   (add 123078 4567)          std.arith: 21 firings, one a step
+;;;   (add 123078 4567)          std.arith: 31 firings, one a step
 ;;;   (to9 …) twice              the operands in nine digits, a firing each
 ;;;   sum-in-nine                asks std.num9 for the same sum: one firing
 ;;;   back-again                 asks for that sum as a number of any length

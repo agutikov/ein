@@ -124,14 +124,20 @@ the gates and this module's rules are the wiring. Every step is a table lookup
 whose outcome the table decides, so nothing is guessed: on a program that
 imports the theory and states requests the universe has no candidate, R is
 {∅}, and the answer is root's fixpoint under `ein solve`, `ein saturate` and
-`ein test` alike. No `absent`, no `not` premise, one stratum; one rule
-concludes `(false)`, from a division by zero. Ein still has no
+`ein test` alike. No `not` premise, and **one `absent`, over `let`**, which a
+program writes and no rule derives (S1f.6.12; none until then): the theory
+closes `let`, so the premise is decided at root, the static check calls a
+program that imports the theory monotone, and it has two strata. Three rules
+conclude `(false)`, each from a flag: a division by zero, a malformed
+request, an undeclared name. Ein still has no
 numbers (the user's ruling of 2026-11-06): nothing in the engine knows what
 `7` is.
 
 **Addition** (S1f.6.3), **subtraction and comparison** (S1f.6.4),
 **multiplication** (S1f.6.5) and **division** (S1f.6.6): the four operations
-and comparison, 88 rules and the closing rule.
+and comparison; and the check of what a program wrote (S1f.6.12): 114 rules
+and the closing rule (`grep -c '^(rule ' stdlib/arith.ein`, less one,
+2026-11-13).
 
 ```lisp
 (import std.arith :symbols (arith))
@@ -150,7 +156,8 @@ and comparison, 88 rules and the closing rule.
 | **multiplication** | `(mul X Y)` is answered by `(product-of X Y P)`. A product has no width to overflow: 123078 × 123078 is the eleven digits of 15148194084 |
 | **division** | `(div X Y)` is answered by `(quot-of X Y Q R)`, the quotient and the remainder: X = Q × Y + R, and R less than Y |
 | **division by zero** | a contradiction, **in two steps** (the user's ruling of 2026-11-11): a request whose divisor is zero, however written, derives the flag `(division-by-zero (div X Y))`, and the flag derives `(false)`. Root is dead, R is empty, and no query of the program has an answer; `ein solve` names the request in the unsat core and `division-by-zero-is-false` as what refuted it. A program that must not die compares its divisor with zero first and derives its `div` request by a rule over `(cmp-of Y z gt)` |
-| **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name no `let` states is never answered |
+| **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name stands for one number: a name no `let` states, a name stated twice with two numbers, and `z` or a digit as a name are each flagged (below) |
+| **a malformed request** | a contradiction, **in two steps**, as a division by zero is (S1f.6.12, the user's rulings of 2026-11-11 and 2026-11-12). `(malformed REQUEST)`, the request as written, where an operand is not a number; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the request in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests](#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612)) |
 | **the one entry** | `arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
 
 **How it computes** (design K of the phase's
@@ -206,6 +213,14 @@ by the digit alone. 127645 ÷ 25 is 220 firings, one chain
 (`the_circuit_of_one_division`); 4 000 divisions of numbers of up to nine
 digits saturate in 2.6 s (`python3 build/s1f.6.4/batch.py div`, 2026-11-11).
 
+**The counts above are each circuit's own chain, and the times are of
+2026-11-11.** Since S1f.6.12 a request also checks its operands beside the
+chain, a firing a digit of each operand that is found: 123078 + 4567 is 31
+firings and still 21 deep, the subtraction 38, the comparison 23, 123 × 456
+is 78 and 127645 ÷ 25 is 228 (the same tests pin both numbers), and the
+batches take what [§ What a program
+pays](#what-a-program-pays-the-tables-the-parse-the-calculation) says.
+
 **The rule of the theory: no rule joins two facts on a number.** A rule has
 one premise that holds numbers; its other premises are rows of `std.digits`
 looked up by digits. The engine's fact index does not key on a nested fact
@@ -221,9 +236,14 @@ matcher's own count of its work, under `--features counters`. The first is in
 the gate; the second is **run by hand** since M1f S1f.6.21 (`cargo test -p
 ein-infer --features counters --test arith_batch`), by whoever changes a rule
 of the calculator, and no tier runs it.
-The one stated exception is `operand-name`, a join with a `let` on the
-*name*, behind a `(named ?x)` check that keeps a number operand from walking
-the `let` facts.
+The stated exceptions join on a *name*: `operand-name`, an operand with its
+`let`, behind a `(named ?x)` check that keeps a number operand from walking
+the `let` facts; and, since S1f.6.12, `let-twice`, two `let`s of one name.
+Since that stage a rule may also hold guards, `eq` and `neq`, which compare
+and look nothing up, in three named rules, and a probe, `(nz ?m)` or
+`(named ?m)`, one lookup whatever `?m` is; and `arith_batch.rs` holds a
+second count beside the matcher's, **the values the guards were decided
+for**, which the first does not see (E-27 of the phase's `findings.md`).
 
 **What holds the answers.** `arith_theory.rs` holds every operation to Rust's
 integers, a row of its `OPS` each: all pairs up to 120, a sample of every
@@ -251,9 +271,11 @@ Three generated examples make a program long in three ways,
 [`many_calculations.ein`](../examples/arith/many_calculations.ein) and
 [`factorial.ein`](../examples/arith/factorial.ein), and one script measures
 them and a sweep of sizes past them. Everything below the next line is its
-output, taken on 2026-11-11 through `utils/bench_env.sh` on one P-core of an
+output, taken on 2026-11-13 through `utils/bench_env.sh` on one P-core of an
 i9-14900HX under the `powersave` governor (`utils/bench_env.sh python3
-utils/arith_cost.py`, some ten minutes; `--quick` is the first two sections).
+utils/arith_cost.py`; `--quick` is the first two sections). It was first
+taken on 2026-11-11 and re-taken when S1f.6.12 added the check of each
+operand, which is in every number below.
 *wall* is the whole process and *rss* its peak resident memory.
 
 `ein 0.1.0`, best of 5, seed 20261111; `python3 utils/arith_cost.py`
@@ -262,10 +284,10 @@ utils/arith_cost.py`, some ten minutes; `--quick` is the first two sections).
 
 | program | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| no import: one relation | 46 B | 1.02 | 0.13 | 0.01 | 0 | 2 | 17 | 3.99 |
-| `std.digits` alone, the seven tables | 54 B | 1.05 | 14.3 | 0.01 | 0 | 1 678 | 17 | 18.9 |
-| `std.arith`, the theory and the tables | 36 B | 1.07 | 20.6 | 0.29 | 1 | 1 975 | 17 | 25.8 |
-| `std.arith` and 17 + 5 | 64 B | 1.08 | 20.6 | 0.31 | 14 | 1 989 | 17 | 25.9 |
+| no import: one relation | 46 B | 0.92 | 0.12 | 0.01 | 0 | 2 | 17 | 3.94 |
+| `std.digits` alone, the seven tables | 54 B | 0.92 | 13.9 | 0.01 | 0 | 1 678 | 18 | 18.2 |
+| `std.arith`, the theory and the tables | 36 B | 0.90 | 21.5 | 0.31 | 1 | 2 022 | 18 | 26.6 |
+| `std.arith` and 17 + 5 | 64 B | 0.91 | 21.4 | 0.46 | 17 | 2 041 | 18 | 26.9 |
 
 #### The three examples
 
@@ -273,28 +295,28 @@ utils/arith_cost.py`, some ten minutes; `--quick` is the first two sections).
 
 | example | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| `add.ein` | 3 KB | 1.32 | 20.5 | 0.34 | 37 | 2 015 | 17 | 26.2 |
-| `long_numbers.ein` | 6 KB | 3.21 | 20.8 | 4.92 | 2 604 | 4 589 | 17 | 34.1 |
-| `many_calculations.ein` | 8 KB | 5.00 | 20.9 | 13.7 | 7 409 | 9 503 | 21 | 46.7 |
-| `factorial.ein` | 4 KB | 1.45 | 20.5 | 4.71 | 2 635 | 4 639 | 17 | 31.6 |
+| `add.ein` | 3 KB | 1.13 | 21.6 | 0.52 | 50 | 2 079 | 18 | 27.1 |
+| `long_numbers.ein` | 6 KB | 2.92 | 21.2 | 5.66 | 3 254 | 5 296 | 21 | 34.6 |
+| `many_calculations.ein` | 8 KB | 4.55 | 21.2 | 14.7 | 8 120 | 10 460 | 26 | 47.6 |
+| `factorial.ein` | 4 KB | 1.27 | 21.1 | 5.49 | 3 087 | 5 286 | 22 | 33.0 |
 
 The same programs saved by `ein kb save FILE OUT.einb`, under `ein saturate OUT.einb`, which opens the container where the text is parsed and loaded:
 
 | example | .einb | open ms | saturate ms | firings | wall ms | wall ms as text |
 |---|---:|---:|---:|---:|---:|---:|
-| `add.ein` | 209 KB | 21.9 | 0.34 | 37 | 26.2 | 26.2 |
-| `long_numbers.ein` | 257 KB | 23.8 | 4.70 | 2 604 | 34.3 | 34.1 |
-| `many_calculations.ein` | 230 KB | 25.7 | 13.4 | 7 409 | 46.8 | 46.7 |
-| `factorial.ein` | 209 KB | 22.1 | 4.38 | 2 635 | 32.0 | 31.6 |
+| `add.ein` | 218 KB | 22.1 | 0.50 | 50 | 26.5 | 27.1 |
+| `long_numbers.ein` | 266 KB | 23.9 | 5.41 | 3 254 | 34.4 | 34.6 |
+| `many_calculations.ein` | 238 KB | 25.6 | 14.4 | 8 120 | 47.3 | 47.6 |
+| `factorial.ein` | 218 KB | 22.1 | 5.29 | 3 087 | 32.2 | 33.0 |
 
 The whole process, by command:
 
 | example | saturate | solve | test | saturate .einb | solve .einb |
 |---|---:|---:|---:|---:|---:|
-| `add.ein` | 26.2 | 26.9 | 26.8 | 26.2 | 26.9 |
-| `long_numbers.ein` | 34.1 | 72.9 | 72.9 | 34.3 | 73.0 |
-| `many_calculations.ein` | 46.7 | 91.6 | 92.3 | 46.8 | 91.4 |
-| `factorial.ein` | 31.6 | 49.0 | 48.7 | 32.0 | 48.8 |
+| `add.ein` | 27.1 | 27.4 | 27.3 | 26.5 | 27.4 |
+| `long_numbers.ein` | 34.6 | 83.3 | 83.0 | 34.4 | 84.0 |
+| `many_calculations.ein` | 47.6 | 96.9 | 96.3 | 47.3 | 96.3 |
+| `factorial.ein` | 33.0 | 52.4 | 52.2 | 32.2 | 52.0 |
 
 #### One request, by the length of its operands
 
@@ -302,58 +324,58 @@ A dividend has twice the digits of its divisor. A written number nests a level a
 
 | request | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| add, 9 digits | 154 B | 1.15 | 20.6 | 0.33 | 28 | 2 003 | 17 | 26.0 |
-| add, 30 digits | 406 B | 1.30 | 20.7 | 0.38 | 70 | 2 045 | 17 | 26.3 |
-| add, 100 digits | 1 KB | 1.82 | 20.6 | 0.54 | 210 | 2 185 | 17 | 27.0 |
-| add, 300 digits | 4 KB | 3.36 | 20.9 | 1.13 | 610 | 2 585 | 17 | 29.7 |
-| add, 900 digits | 11 KB | 7.89 | 20.9 | 2.68 | 1 810 | 3 785 | 17 | 35.6 |
-| sub, 9 digits | 154 B | 1.14 | 20.6 | 0.34 | 38 | 2 014 | 17 | 26.1 |
-| sub, 30 digits | 406 B | 1.31 | 20.7 | 0.43 | 101 | 2 077 | 17 | 26.4 |
-| sub, 100 digits | 1 KB | 1.82 | 20.6 | 0.70 | 311 | 2 287 | 17 | 27.2 |
-| sub, 300 digits | 4 KB | 3.31 | 20.9 | 1.56 | 911 | 2 887 | 17 | 30.1 |
-| sub, 900 digits | 11 KB | 8.03 | 21.1 | 4.40 | 2 711 | 4 687 | 17 | 38.7 |
-| cmp, 9 digits | 154 B | 1.14 | 20.6 | 0.32 | 17 | 1 992 | 17 | 26.0 |
-| cmp, 30 digits | 406 B | 1.29 | 20.4 | 0.36 | 38 | 2 013 | 17 | 25.9 |
-| cmp, 100 digits | 1 KB | 1.82 | 20.3 | 0.49 | 108 | 2 083 | 17 | 26.7 |
-| cmp, 300 digits | 4 KB | 3.38 | 21.0 | 0.91 | 308 | 2 283 | 17 | 29.6 |
-| cmp, 900 digits | 11 KB | 7.89 | 21.2 | 2.06 | 908 | 2 883 | 17 | 35.4 |
-| mul, 9 digits | 154 B | 1.14 | 20.6 | 1.01 | 490 | 2 465 | 17 | 26.9 |
-| mul, 30 digits | 406 B | 1.29 | 20.7 | 7.90 | 4 773 | 6 748 | 19 | 35.5 |
-| mul, 100 digits | 1 KB | 1.87 | 20.7 | 83.4 | 50 890 | 52 865 | 60 | 124 |
-| mul, 300 digits | 4 KB | 3.46 | 21.0 | 832 | 452 675 | 454 650 | 446 | 997 |
-| div, 18 by 9 | 208 B | 1.19 | 20.5 | 2.28 | 1 158 | 3 133 | 18 | 28.4 |
-| div, 60 by 30 | 586 B | 1.42 | 20.6 | 16.9 | 9 349 | 11 324 | 23 | 45.8 |
-| div, 200 by 100 | 2 KB | 2.25 | 20.7 | 175 | 91 659 | 93 634 | 111 | 233 |
-| div, 600 by 300 | 5 KB | 4.57 | 20.9 | 1 626 | 768 655 | 770 630 | 818 | 1 973 |
+| add, 9 digits | 154 B | 0.96 | 21.1 | 0.48 | 46 | 2 070 | 20 | 26.4 |
+| add, 30 digits | 406 B | 1.12 | 21.1 | 0.59 | 130 | 2 154 | 19 | 26.8 |
+| add, 100 digits | 1 KB | 1.62 | 21.2 | 0.92 | 410 | 2 434 | 20 | 27.7 |
+| add, 300 digits | 4 KB | 3.18 | 21.1 | 1.93 | 1 210 | 3 234 | 22 | 30.3 |
+| add, 900 digits | 11 KB | 7.49 | 21.5 | 4.90 | 3 610 | 5 634 | 23 | 38.4 |
+| sub, 9 digits | 154 B | 0.97 | 21.0 | 0.51 | 56 | 2 081 | 20 | 26.3 |
+| sub, 30 digits | 406 B | 1.12 | 21.1 | 0.64 | 161 | 2 186 | 20 | 26.8 |
+| sub, 100 digits | 1 KB | 1.64 | 21.2 | 1.08 | 511 | 2 536 | 20 | 27.7 |
+| sub, 300 digits | 4 KB | 3.18 | 21.1 | 2.37 | 1 511 | 3 536 | 20 | 30.7 |
+| sub, 900 digits | 11 KB | 7.49 | 21.4 | 6.61 | 4 511 | 6 536 | 23 | 40.5 |
+| cmp, 9 digits | 154 B | 0.99 | 21.1 | 0.49 | 35 | 2 059 | 18 | 26.3 |
+| cmp, 30 digits | 406 B | 1.14 | 21.2 | 0.56 | 98 | 2 122 | 19 | 26.8 |
+| cmp, 100 digits | 1 KB | 1.63 | 21.1 | 0.85 | 308 | 2 332 | 18 | 27.5 |
+| cmp, 300 digits | 4 KB | 3.16 | 21.2 | 1.71 | 908 | 2 932 | 20 | 30.2 |
+| cmp, 900 digits | 11 KB | 7.46 | 22.5 | 4.58 | 2 708 | 4 732 | 18 | 39.1 |
+| mul, 9 digits | 154 B | 1.11 | 21.9 | 1.27 | 508 | 2 532 | 18 | 28.5 |
+| mul, 30 digits | 406 B | 1.15 | 21.1 | 7.65 | 4 833 | 6 857 | 23 | 35.1 |
+| mul, 100 digits | 1 KB | 1.73 | 21.2 | 82.5 | 51 090 | 53 114 | 67 | 123 |
+| mul, 300 digits | 4 KB | 3.30 | 21.2 | 802 | 453 275 | 455 299 | 434 | 972 |
+| div, 18 by 9 | 208 B | 1.05 | 21.0 | 2.28 | 1 185 | 3 209 | 19 | 28.6 |
+| div, 60 by 30 | 586 B | 1.26 | 21.2 | 16.4 | 9 439 | 11 463 | 29 | 46.3 |
+| div, 200 by 100 | 2 KB | 2.18 | 21.2 | 171 | 91 959 | 93 983 | 117 | 229 |
+| div, 600 by 300 | 5 KB | 4.57 | 21.4 | 1 563 | 769 555 | 771 579 | 876 | 1 918 |
 
 #### Many requests on nine-digit operands, by their count
 
 | requests | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms | firings a request |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 100 x add | 12 KB | 8.52 | 20.9 | 3.98 | 2 701 | 4 775 | 18 | 38.7 | 27.0 |
-| 1 000 x add | 115 KB | 75.4 | 23.6 | 38.8 | 27 001 | 29 975 | 44 | 149 | 27.0 |
-| 10 000 x add | 1.1 MB | 748 | 51.9 | 502 | 270 001 | 281 975 | 358 | 1 412 | 27.0 |
-| 100 x sub | 12 KB | 8.33 | 20.7 | 5.79 | 3 701 | 5 875 | 22 | 40.2 | 37.0 |
-| 1 000 x sub | 115 KB | 75.4 | 23.6 | 61.8 | 37 001 | 40 975 | 58 | 176 | 37.0 |
-| 10 000 x sub | 1.1 MB | 741 | 52.0 | 720 | 370 001 | 391 975 | 464 | 1 648 | 37.0 |
-| 100 x cmp | 12 KB | 8.52 | 20.8 | 2.78 | 1 601 | 3 675 | 23 | 36.9 | 16.0 |
-| 1 000 x cmp | 115 KB | 75.6 | 23.5 | 28.0 | 16 001 | 18 975 | 33 | 135 | 16.0 |
-| 10 000 x cmp | 1.1 MB | 737 | 50.7 | 312 | 160 001 | 171 975 | 230 | 1 163 | 16.0 |
-| 100 x mul | 12 KB | 8.06 | 19.8 | 78.1 | 48 683 | 50 757 | 62 | 123 | 486.8 |
-| 1 000 x mul | 115 KB | 73.3 | 23.2 | 952 | 486 301 | 489 275 | 505 | 1 221 | 486.3 |
-| 4 000 x mul | 461 KB | 294 | 31.8 | 4 252 | 1 945 067 | 1 951 041 | 2131 | 5 314 | 486.3 |
-| 100 x div | 12 KB | 8.00 | 19.7 | 95.9 | 58 853 | 60 927 | 93 | 143 | 588.5 |
-| 1 000 x div | 115 KB | 71.2 | 22.6 | 1 247 | 588 598 | 591 572 | 777 | 1 643 | 588.6 |
-| 4 000 x div | 461 KB | 281 | 31.6 | 5 715 | 2 353 850 | 2 359 824 | 2790 | 7 623 | 588.5 |
+| 100 x add | 12 KB | 7.95 | 21.4 | 6.81 | 4 501 | 6 822 | 23 | 41.0 | 45.0 |
+| 1 000 x add | 115 KB | 71.9 | 25.4 | 71.4 | 45 001 | 50 022 | 64 | 184 | 45.0 |
+| 10 000 x add | 1.1 MB | 737 | 58.8 | 829 | 450 001 | 482 022 | 451 | 1 782 | 45.0 |
+| 100 x sub | 12 KB | 7.97 | 21.4 | 8.25 | 5 501 | 7 922 | 24 | 42.9 | 55.0 |
+| 1 000 x sub | 115 KB | 71.4 | 25.4 | 91.6 | 55 001 | 61 022 | 74 | 208 | 55.0 |
+| 10 000 x sub | 1.1 MB | 736 | 59.5 | 1 163 | 550 001 | 592 022 | 771 | 2 232 | 55.0 |
+| 100 x cmp | 12 KB | 8.00 | 21.5 | 5.79 | 3 401 | 5 722 | 23 | 40.0 | 34.0 |
+| 1 000 x cmp | 115 KB | 71.7 | 25.4 | 63.2 | 34 001 | 39 022 | 57 | 174 | 34.0 |
+| 10 000 x cmp | 1.1 MB | 736 | 59.0 | 702 | 340 001 | 372 022 | 419 | 1 629 | 34.0 |
+| 100 x mul | 12 KB | 8.10 | 21.5 | 81.0 | 50 483 | 52 804 | 64 | 129 | 504.8 |
+| 1 000 x mul | 115 KB | 72.6 | 25.4 | 977 | 504 301 | 509 322 | 519 | 1 255 | 504.3 |
+| 4 000 x mul | 461 KB | 294 | 36.1 | 4 397 | 2 017 067 | 2 031 088 | 1987 | 5 476 | 504.3 |
+| 100 x div | 12 KB | 8.07 | 21.6 | 114 | 60 653 | 62 974 | 83 | 167 | 606.5 |
+| 1 000 x div | 115 KB | 71.8 | 25.2 | 1 299 | 606 598 | 611 619 | 702 | 1 711 | 606.6 |
+| 4 000 x div | 461 KB | 289 | 36.3 | 5 872 | 2 425 850 | 2 439 871 | 2949 | 7 830 | 606.5 |
 
 #### The factorial chain, by its last number
 
 | chain | text | parse ms | load ms | saturate ms | firings | facts | rss MB | wall ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 25!, 26 digits | 4 KB | 1.29 | 19.6 | 4.16 | 2 635 | 4 639 | 23 | 29.9 |
-| 50!, 65 digits | 4 KB | 1.45 | 19.6 | 15.7 | 10 575 | 12 604 | 31 | 44.1 |
-| 100!, 158 digits | 5 KB | 1.96 | 19.6 | 73.7 | 46 915 | 48 994 | 70 | 114 |
-| 200!, 375 digits | 6 KB | 2.78 | 19.7 | 599 | 317 325 | 319 504 | 382 | 766 |
+| 25!, 26 digits | 4 KB | 1.29 | 21.1 | 5.38 | 3 087 | 5 286 | 24 | 32.9 |
+| 50!, 65 digits | 4 KB | 1.43 | 21.1 | 19.6 | 12 351 | 14 725 | 34 | 49.8 |
+| 100!, 158 digits | 5 KB | 1.94 | 21.3 | 93.1 | 54 723 | 57 447 | 68 | 137 |
+| 200!, 375 digits | 6 KB | 2.82 | 21.4 | 667 | 352 773 | 356 197 | 395 | 845 |
 
 #### `ein solve` beside `ein saturate`
 
@@ -361,74 +383,77 @@ The same program, the whole process. `ein solve` saturates once, as `ein saturat
 
 | program | firings | facts | saturate wall ms | solve wall ms | solve / saturate |
 |---|---:|---:|---:|---:|---:|
-| `examples/arith/add.ein` | 37 | 2 015 | 25.4 | 25.6 | 1.0 |
-| `examples/arith/long_numbers.ein` | 2 604 | 4 589 | 33.3 | 71.9 | 2.2 |
-| `examples/arith/many_calculations.ein` | 7 409 | 9 503 | 45.1 | 91.7 | 2.0 |
-| `examples/arith/factorial.ein` | 2 635 | 4 639 | 31.8 | 48.0 | 1.5 |
-| add, 100 digits | 210 | 2 185 | 25.5 | 35.8 | 1.4 |
-| add, 300 digits | 610 | 2 585 | 27.9 | 120 | 4.3 |
-| add, 900 digits | 1 810 | 3 785 | 34.5 | 1 030 | 29.8 |
-| mul, 30 digits | 4 773 | 6 748 | 34.5 | 143 | 4.2 |
-| mul, 100 digits | 50 890 | 52 865 | 125 | 4 021 | 32.3 |
-| div, 60 by 30 | 9 349 | 11 324 | 45.9 | 638 | 13.9 |
-| div, 200 by 100 | 91 659 | 93 634 | 228 | 20 817 | 91.3 |
-| 1 000 x add, nine digits | 27 001 | 29 975 | 146 | 279 | 1.9 |
-| 10 000 x add, nine digits | 270 001 | 281 975 | 1 386 | 2 772 | 2.0 |
-| 100 x div, nine digits | 58 853 | 60 927 | 166 | 1 087 | 6.6 |
-| 1 000 x div, nine digits | 588 598 | 591 572 | 1 670 | 11 189 | 6.7 |
-| 50! | 10 575 | 12 604 | 47.9 | 229 | 4.8 |
-| 100! | 46 915 | 48 994 | 124 | 2 278 | 18.4 |
+| `examples/arith/add.ein` | 50 | 2 079 | 27.0 | 27.5 | 1.0 |
+| `examples/arith/long_numbers.ein` | 3 254 | 5 296 | 34.5 | 82.0 | 2.4 |
+| `examples/arith/many_calculations.ein` | 8 120 | 10 460 | 46.0 | 94.3 | 2.1 |
+| `examples/arith/factorial.ein` | 3 087 | 5 286 | 32.7 | 52.3 | 1.6 |
+| add, 100 digits | 410 | 2 434 | 27.7 | 46.4 | 1.7 |
+| add, 300 digits | 1 210 | 3 234 | 30.2 | 208 | 6.9 |
+| add, 900 digits | 3 610 | 5 634 | 38.8 | 1 937 | 50.0 |
+| mul, 30 digits | 4 833 | 6 857 | 34.9 | 144 | 4.1 |
+| mul, 100 digits | 51 090 | 53 114 | 126 | 4 072 | 32.4 |
+| div, 60 by 30 | 9 439 | 11 463 | 45.0 | 643 | 14.3 |
+| div, 200 by 100 | 91 959 | 93 983 | 232 | 20 866 | 90.1 |
+| 1 000 x add, nine digits | 45 001 | 50 022 | 187 | 413 | 2.2 |
+| 10 000 x add, nine digits | 450 001 | 482 022 | 1 785 | 4 233 | 2.4 |
+| 100 x div, nine digits | 60 653 | 62 974 | 165 | 1 115 | 6.8 |
+| 1 000 x div, nine digits | 606 598 | 611 619 | 1 707 | 11 441 | 6.7 |
+| 50! | 12 351 | 14 725 | 49.9 | 248 | 5.0 |
+| 100! | 54 723 | 57 447 | 132 | 2 479 | 18.8 |
 
 **What it says, each with its number from the tables above.**
 
 - **Up to about a hundred requests the tables are the cost.** A program that
-  imports the theory pays 20.6 ms of `kb load` before its first request, 14.3
-  of it the 1 664 rows of `std.digits` and the rest the theory's 89 rules and
-  67 relations, where a program with no import loads in 0.13 ms and the whole
-  process takes 4.0 ms. One sum adds 0.02 ms of saturation to that.
+  imports the theory pays 21.5 ms of `kb load` before its first request, 13.9
+  of it the 1 664 rows of `std.digits` and the rest the theory's 115 rules and
+  74 relations, where a program with no import loads in 0.12 ms and the whole
+  process takes 3.9 ms. One sum adds 0.15 ms of saturation to that.
   `many_calculations.ein`, a hundred requests, is the first size where the
-  calculation, 13.7 ms, is of the load's order.
+  calculation, 14.7 ms, is of the load's order.
 - **A `.einb` does not buy the load back.** `ein kb save` caches a whole
-  program with its imports resolved, and `add.ein` saved so opens in 21.9 ms
-  where its text parses and loads in 21.8: the container holds the program's
-  1 800 facts, and opening it interns each again. It did buy it back while the theory read two
+  program with its imports resolved, and `add.ein` saved so opens in 22.1 ms
+  where its text parses and loads in 22.7: the container holds the program's
+  2 000 facts, and opening it interns each again. It did buy it back while the theory read two
   tables: on the stdlib of `277cfc44`, addition alone, a sum's `.einb` solved
   in 6.7 ms against 18.1 as text (`ein kb save`, `ein solve`, best of 20,
   2026-11-11). A library has no cache of its own (E-15 and E-25 of the
   phase's
   [`findings.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
-- **Past a thousand sums, parsing the program's numbers costs more than
-  adding them.** 10 000 nine-digit sums are 1.1 MB of text: 748 ms to parse
-  and 502 ms to saturate. A written number is one nested form a digit, the
-  parser's worst input so far (E-16). For a product or a quotient the
-  calculation leads from the start: 4 000 nine-digit products parse in 294 ms
-  and saturate in 4.3 s.
+- **For a sum, parsing the program's numbers costs about what adding them
+  does.** 10 000 nine-digit sums are 1.1 MB of text: 737 ms to parse and
+  829 ms to saturate, where the saturation was 502 ms before S1f.6.12's
+  check. A written number is one nested form a digit, the parser's worst
+  input so far (E-16). For a product or a quotient the calculation leads from
+  the start: 4 000 nine-digit products parse in 294 ms and saturate in 4.4 s.
 - **A batch costs in proportion to its count,** as the rule of the theory
-  promises: 27.0, 37.0, 16.0, 486 and 589 firings a request for a sum, a
+  promises: 45.0, 55.0, 34.0, 504 and 607 firings a request for a sum, a
   difference, a comparison, a product and a quotient of nine-digit numbers,
   the same at 100 requests and at 10 000, and about two microseconds a
-  firing.
+  firing. **Eighteen of each are the check of the two operands** (S1f.6.12),
+  a firing a digit: 27, 37, 16, 486 and 589 without it.
 - **By length:** a sum, a difference and a comparison cost a few firings a
-  digit, 1 810, 2 711 and 908 at 900 digits, under 5 ms each, where the
-  number's own text takes 7.9 ms to parse. A product costs the two lengths
-  multiplied, 452 675 firings and 0.83 s at 300 digits by 300, and a quotient
-  of 600 digits by 300 is 768 655 firings and 1.6 s.
+  digit, 3 610, 4 511 and 2 708 at 900 digits, under 7 ms each, where the
+  number's own text takes 7.5 ms to parse; 1 800 of each are the check. A
+  product costs the two lengths multiplied, 453 275 firings and 0.80 s at
+  300 digits by 300, and a quotient of 600 digits by 300 is 769 555 firings
+  and 1.6 s.
 - **A chain needs no text.** `factorial.ein`'s program for 200! is 6 KB and
-  parses in 2.8 ms; its 317 325 firings take 0.6 s and end on a number of 375
+  parses in 2.8 ms; its 352 773 firings take 0.7 s and end on a number of 375
   digits that no line of the program writes.
 - **Memory is a kilobyte a stored fact.** Every step of a circuit is a fact
   that holds its whole state, and nothing is forgotten: 4 000 products are
-  1.95 million facts and 2.1 GB resident, and 10 000 were 4.9 million and
+  2.03 million facts and 2.0 GB resident, and 10 000 were 4.9 million and
   6.0 GB (2026-11-11, the first run of the sweep, which now stops at 4 000
   for a product and a quotient; E-26).
 - **`ein solve` writes the state, and the state as text is what explodes.**
   `ein solve` saturates once, as `ein saturate` does, and then reads the state
   out; `ein test` does the same. Stored, a circuit's facts share their
-  numbers; written, each fact repeats its own. A 900-digit sum is 34.5 ms
-  under `saturate` and 1.0 s under `solve`; a 100-digit product 125 ms and
-  4.0 s; a quotient of 200 digits by 100, 228 ms and 20.8 s (E-24). It is why
-  the shipped examples are the sizes they are: every corpus program is
-  solved, dumped and reloaded per commit.
+  numbers; written, each fact repeats its own. A 900-digit sum is 38.8 ms
+  under `saturate` and 1.9 s under `solve`, where it was 1.0 s before the
+  check, whose every fact holds what is left of an operand and the request;
+  a 100-digit product 126 ms and 4.1 s; a quotient of 200 digits by 100,
+  232 ms and 20.9 s (E-24). It is why the shipped examples are the sizes they
+  are: every corpus program is solved, dumped and reloaded per commit.
 
 ### How long a number may be (M1f S1f.6.9)
 
@@ -542,17 +567,108 @@ whose intermediate numbers are never converted back, which is what the
 phase's S1f.6.10 would ask for if it asks for long numbers.
 
 **The names it occupies.** Imported flat, the module's names mean what the
-module says, and its header has the list: `z`, `n`, `b`, `let`; the requests
-`add`, `sub`, `cmp`, `mul` and `div`; the results `sum-of`, `diff-of`,
-`cmp-of`, `product-of` and `quot-of`; the flag `division-by-zero`; the orders
-`lt`, `eq` and `gt`; some sixty names of the circuit's own, its walks, its
-hand-overs and its tags; `arith-rule`; and the seven tables of `std.digits`.
-Only `n`, `z`, `let`, the requests, the results, the flag and the three orders
-are its interface. What a clash does, and what a malformed number does, is the
-phase's S1f.6.12; **a number or a request with the wrong count of arguments
+module says, and its header has the list, in three parts.
+**What a program states is the requests and `let`, and nothing else**: `add`,
+`sub`, `cmp`, `mul`, `div` and `let`, over numbers written with `n`, `z` and
+the ten digits. **What it reads**: the results `sum-of`, `diff-of`, `cmp-of`,
+`product-of` and `quot-of`; the flags `division-by-zero`, `malformed` and
+`undeclared`; the orders `lt`, `eq` and `gt`. **The circuit's own**, which is
+in the state to be seen and is no promise: `b`, some sixty-five names of its
+walks, its hand-overs, its check and its tags, `arith-rule`, and the seven
+tables of `std.digits`. A second *declaration* of any of them is refused at
+load, with the name in the message. A written *fact* of a result or of the
+circuit is not: it is a fact like a derived one and the theory computes with
+it, so a `(sum-of X Y S)` written by hand is an answer nobody computed. A
+module does not reserve its names (the user's reply of 2026-11-12); what a
+program that states false facts means is M1g's
+[S1g.10.6](../plans/m1g_logic/p1g.10_school_algebra/s1g.10.6_a_program_that_states_false_facts.md).
+**A number or a request with the wrong count of arguments
 is refused at load** since S1f.6.23, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`,
 each a form of a relation the module declares
 ([`defined_behaviour.md` § 4.26](../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
+
+### Malformed requests: what is flagged, and what stays silent (M1f S1f.6.12)
+
+The user, 2026-11-11: *"if theory can detect malformed numbers - do it"*.
+Until this stage every request the theory could not read was answered by
+silence: exit 0, one state, and a query with no row. Now the theory flags
+what it can say without a negation, and one thing it can say only with one
+(the stage's
+[record](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13);
+the investigation is
+[`malformed_numbers.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/malformed_numbers.md)).
+
+| what the program wrote | the flag | by |
+|---|---|---|
+| a digit's place that holds a name that is no digit, `(n (n z 1) x)`, `z` and `10` among such names, or a fact, `(n z (n z 1))` | `(malformed REQUEST)` | `check-digit`: ten `neq` guards, which hold of every other name and of a fact |
+| a number that ends in a digit where `z` goes, `(n 1 2)` | `(malformed REQUEST)` | `check-prefix-digit`, `check-prefix-zero` |
+| a number that ends in a named constant, `(n price 1)`; an operand that names another name, `(let alias price)` | `(malformed REQUEST)` | `check-prefix-named` |
+| a digit where a number goes, `(add 7 X)`: seven is `(n z 7)` | `(malformed REQUEST)` | `operand-digit`, `operand-digit-zero` |
+| any of those behind a name, `(let broken (n z x))`, where a request uses the name | `(malformed REQUEST)` | the same rules: `operand-name` hands what it finds to the check |
+| a name stated twice with two numbers | `(malformed (let NAME NUMBER))`, each of the two | `let-twice`, a join on the name. Until S1f.6.12: **two answers to one request** |
+| `z` or a digit as a constant's name, `(let z N)`, `(let 7 N)` | `(malformed (let NAME NUMBER))` | `let-zero`, `let-digit`, `let-digit-zero`. Until S1f.6.12: `(add z X)` had two answers |
+| an operand that is a name no `let` states, `(add foo X)` | `(undeclared foo REQUEST)` | `operand-undeclared`: the theory's one `absent`, over `let` |
+
+Each flag derives `(false)` by a rule of its own, `malformed-is-false` and
+`undeclared-is-false`, so a trace shows the flag as one step and the
+contradiction as the next:
+
+```text
+  states (k_s)      0
+  empty             every node is dead — root's own fixpoint derives (false)
+  unsat core        (add (n (n z 1) x) (n z 5))
+  refuted by        malformed-is-false
+```
+
+A request has one flag, the request as written, and no result fact; the
+well-formed requests beside it are computed in root's state, which is dead
+and so no answer. Such a program can claim only `(solve :expect (false))`.
+A `let` that is added answers an undeclared request and leaves nothing of
+the flag: root is the only state, and it has either the `let` or the flag.
+
+**A flag means malformed; no flag does not mean well-formed.** There is no
+general report of a request no rule completes (the user's reply of
+2026-11-12). These stay silent, neither refused nor answered, and
+`arith_theory.rs`'s `what_stays_silent` holds that the list is this one:
+
+- **a number that ends in a name that is neither a digit nor a named
+  constant**, `(n end 1)`. Saying *a name* costs a walk of the program's
+  names, at every place of every number;
+- **a fact of another relation where a number goes**, as an operand or
+  inside a number, `(add (pair 1 2) X)`, the accumulator's own shape `(b 1
+  z)` among them. No rule can say *not of this shape*;
+- **a name that stands for either**;
+- **in `std.int` and `std.rat`**: a natural number where an integer goes and
+  an integer where a rational goes, and a malformed number *inside* an
+  integer or a rational, whose parts go straight to `std.arith`'s walks and
+  never through its operand. An undeclared name or a digit as an operand of
+  theirs is seen by `std.arith`'s rules, `(bad-operand TAG FAULT)` in root's
+  state, and **not flagged**: no rule of those modules turns their tag into
+  a request. A `let` that cannot be read is flagged there as here;
+- **every malformation of `std.num9`** (the user's reply of 2026-11-12: that
+  module is kept as an example of another representation).
+
+**The check is a pass of its own, at the operand.** `operand-number` and
+`operand-name` hand each number they find to `check`, which goes one place
+down a firing; nothing is added to a walk. It was measured against guards
+on the walks themselves before it was chosen (the record's table): the pass
+costs a firing a digit of each operand, whatever the operation, and the
+mixed placement costs none for a sum, a difference and a comparison and
+more for a product and a quotient, with twice the rules. 123078 + 4567 is 31
+firings where it was 21, and still 21 deep, since the check runs beside the
+walk (`arith_theory.rs`'s `the_circuit_of_one_addition`).
+
+**What the undeclared name costs.** To say that an operand is a *name*, and
+not a number, which is a fact, `operand-undeclared` ranges a variable over
+the program's names and keeps the one that is the operand: two comparisons a
+name, for each operand of each request, some 800 a request in a program of
+the theory and numbers alone. It does not grow with the batch; **it grows
+with the program's names**, so the same thousand sums take 69.7 ms beside no
+named constant and 140.7 ms beside 4 000, where the theory before this stage
+took 36.6 and 41.3 (`utils/bench_env.sh python3
+build/s1f.6.12/build/cost3.py`, 2026-11-13).
+`arith_batch.rs` pins it by the guards' own count, and E-36 of the phase's
+`findings.md` says what would remove it.
 
 ## `std.num9`: nine digits in one fact, and wide rules (M1f S1f.6.13)
 
@@ -696,8 +812,10 @@ and `division-by-zero` with the rule from it to `(false)`; from `std.digits`,
 `fa`, `fs`, `md`, `cl`, `nz` and `adj`, with the three orders. A `num9` whose
 count of digits is not nine is **refused at load** since S1f.6.23, the
 loader holding a form to its declaration's count; one with a digit's place
-that holds something else is answered by silence today, as in `std.arith`:
-the phase's S1f.6.12.
+that holds something else is answered by silence, and stays so: `std.arith`
+flags such a number since S1f.6.12, and this module does not (the user's
+reply of 2026-11-12: it is kept as an example of another representation of
+a number, and is not carried further).
 
 ## `std.int`: integers as a positive and a negative part (M1f S1f.6.7)
 
@@ -706,7 +824,8 @@ The calculator's first extension, and the user's proposal of 2026-11-08:
 until one of them is zero"*. An integer is `(int P N)`, two natural numbers of
 `std.arith`, and its value is P less N. The module is written over `std.arith`,
 which it calls and does not edit, and is computed by saturation alone: no
-candidate, R {∅}, no `absent`, no `not`, no guard, one stratum.
+candidate, R {∅}, and no `absent`, no `not` and no guard of its own (a
+program that imports it holds `std.arith`'s one `absent`, and two strata).
 
 ```lisp
 (import std.int :symbols (int-arith))
@@ -720,7 +839,7 @@ candidate, R {∅}, no `absent`, no `not`, no guard, one stratum.
 |---|---|
 | **the integer** | `(int P N)`. 7 is `(int (n z 7) z)`, −7 is `(int z (n z 7))`, zero is `(int z z)`, and `(int (n z 5) (n z 3))` is 2, not simplified. The **normal form** has one part `z` and the other in `std.arith`'s normal form; every integer has exactly one. An operand is read by value, whatever its parts and their high zeros, and every answer is in normal form, so a rule of a program tells a negative answer by its shape, `(int z (n ?p ?a))`, with no negation written |
 | **the protocol** | `(int-simplify X)` answered by `(int-simple-of X S)`; `(int-neg X)` by `(int-neg-of X S)`; `(int-add X Y)` by `(int-sum-of X Y S)`; `(int-sub X Y)` by `(int-diff-of X Y S)`, **one integer**, where `std.arith`'s `diff-of` answers two numbers: they are its two parts; `(int-mul X Y)` by `(int-product-of X Y S)`; `(int-cmp X Y)` by `(int-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value |
-| **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.arith`'s. A natural number is **not** an integer operand, and such a request is never answered (Q-M1f.175) |
+| **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.arith`'s. A natural number is **not** an integer operand, and such a request is never answered (Q-M1f.175). **Nothing of an operand is flagged here** but a `let` that cannot be read: a malformed number inside an integer, an undeclared name and a digit as an operand are answered by silence ([`std.arith` § Malformed requests](#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612)) |
 | **division** | **names its convention** (M1f S1f.6.22, the user's ruling of 2026-11-12 on [Q-M1f.179](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f179--the-remainder-of-an-integer-division)); there is no bare `int-div`. Each request is answered by one fact with a quotient and a remainder, X = Q·Y + R: `(int-div-euclid X Y)` by `(int-quot-euclid-of X Y Q R)`, 0 ≤ R < \|Y\|, Q an integer and R a **natural number** of `std.arith`; `(int-div-trunc X Y)` by `(int-quot-trunc-of X Y Q R)`, Q rounded toward zero and R with the dividend's sign, both integers; `(int-div-floor X Y)` by `(int-quot-floor-of X Y Q R)`, Q rounded down and R with the divisor's sign, both integers. The three agree where neither operand is negative, and with `std.arith`'s `div` there |
 | **division by zero** | a divisor that is zero by value, however written or named, derives `std.arith`'s flag, `(division-by-zero REQUEST)`, the request as written, and `std.arith`'s rule derives `(false)`: root is dead and R is empty, as everywhere in the calculator. No rule of the module concludes `(false)` |
 | **the one entry** | `int-arith`, the closing rule: it closes every relation of the module, names every rule, and names `arith`, so the one name brings `std.arith` and the tables too |
@@ -810,7 +929,9 @@ rational numbers *"containing integer numerator and natural denominator"*. A
 rational is `(rat Z D)`, an integer of `std.int` over a natural number of
 `std.arith` that is not zero. The module is written over the two theories
 below it, which it calls and does not edit, and is computed by saturation
-alone: no candidate, R {∅}, no `absent`, no `not`, no guard, one stratum.
+alone: no candidate, R {∅}, and no `absent`, no `not` and no guard of its
+own (a program that imports it holds `std.arith`'s one `absent`, and two
+strata).
 
 ```lisp
 (import std.rat :symbols (rat-arith))
@@ -824,7 +945,7 @@ alone: no candidate, R {∅}, no `absent`, no `not`, no guard, one stratum.
 |---|---|
 | **the rational** | `(rat Z D)`. 1/2 is `(rat (int (n z 1) z) (n z 2))`, −3/4 is `(rat (int z (n z 3)) (n z 4))`. The **normal form** is in lowest terms: the numerator in `std.int`'s normal form, the denominator with no high zero, the two with no common divisor but 1, and zero written 0 over 1, `(rat (int z z) (n z 1))`. Every rational has exactly one. An operand is read by value, 2/4 as 1/2, and every answer is in normal form |
 | **the protocol** | `(rat-simplify X)` answered by `(rat-simple-of X S)`; `(rat-neg X)` by `(rat-neg-of X S)`; `(rat-add X Y)` by `(rat-sum-of X Y S)`; `(rat-sub X Y)` by `(rat-diff-of X Y S)`; `(rat-mul X Y)` by `(rat-product-of X Y S)`; `(rat-div X Y)` by `(rat-quot-of X Y S)`, **one rational, exact, and no remainder**; `(rat-cmp X Y)` by `(rat-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value |
-| **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand (Q-M1f.181) |
+| **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand (Q-M1f.181), and nothing of an operand is flagged here but a `let` that cannot be read, as in `std.int` |
 | **a zero denominator** | **a division by zero, and a contradiction**, as in `std.arith` and by its rule. A request any operand of which has a denominator of zero, however the zero is written, and a `rat-div` by a rational that is zero, derive `(division-by-zero REQUEST)`, the request as written, and `std.arith`'s `division-by-zero-is-false` derives `(false)`. Root is dead and R is empty (Q-M1f.182) |
 | **the one entry** | `rat-arith`, the closing rule: it closes every relation of the module, names every rule, and names `int-arith` and `arith`, so the one name brings all three theories and the tables |
 
@@ -983,7 +1104,7 @@ install-relative import could not find it.
 | module | file | provides | stage |
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
-| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6 |
+| `std.arith` | [`arith.ein`](arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it; a malformed request and an undeclared name a flag and `(false)` likewise, `(malformed REQUEST)` and `(undeclared NAME REQUEST)` ([§ `std.arith`](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6, S1f.6.12 |
 | `std.num9` | [`num9.ein`](num9.ein) | school arithmetic on numbers of nine digits in one fact, `(num9 d8 … d0)`, **computed by saturation alone**, by wide rules, a premise a column: `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`, `mul9`/`product9-of`, `div9`/`quot9-of`; `(overflow REQUEST)` and no number where an answer does not fit; conversions to and from `std.arith`'s numbers, `to9`/`as9` and `from9`/`of9`. **Generated** by `utils/gen_num9.py`. One entry, `arith9` | S1f.6.13 |
 | `std.int` | [`int.ein`](int.ein) | integers as a positive and a negative part, `(int P N)`, over `std.arith`'s natural numbers, **computed by saturation alone**: `int-simplify`/`int-simple-of`, `int-neg`/`int-neg-of`, `int-add`/`int-sum-of`, `int-sub`/`int-diff-of`, `int-mul`/`int-product-of`, `int-cmp`/`int-cmp-of`, every answer in normal form, one part `z`; every rule has one premise; integer division names its convention, `int-div-euclid`/`int-quot-euclid-of` (the remainder a natural number), `int-div-trunc`/`int-quot-trunc-of` and `int-div-floor`/`int-quot-floor-of`, since M1f S1f.6.22 ([§ `std.int`](#stdint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)); imported by its one entry, `(import std.int :symbols (int-arith))`, which brings `std.arith` too | M1f S1f.6.7, S1f.6.22 |
 | `std.rat` | [`rat.ein`](rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.arith`'s division; a zero denominator is a division by zero, `std.arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.rat`](#stdrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.rat :symbols (rat-arith))`, which brings `std.int` and `std.arith` too | M1f S1f.6.8 |

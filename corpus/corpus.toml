@@ -3570,7 +3570,7 @@ note   = "M1f S1f.6.3, `std.arith`: `(let NAME NUMBER)`: `let-named` and `operan
 path   = "tests/stdlib/arith/07_only_what_is_asked.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.3, `std.arith`: demand-driven: `done`'s whole extent is one finished call; a `let` nobody asks about computes nothing, and a request naming a name no `let` states is never answered."
+note   = "M1f S1f.6.3, `std.arith`: demand-driven: `done`'s whole extent is one finished call; a `let` nobody asks about computes nothing. (Until S1f.6.12 it also asked for a sum naming a name no `let` states, which is flagged since: `29_undeclared_name.ein`.)"
 
 [[entry]]
 path   = "tests/stdlib/arith/08_sub.ein"
@@ -3655,6 +3655,108 @@ path   = "tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.6, `std.arith`: division by zero, the zero written 00 and named by a `let`: root is dead, and the core names the request, the `let` and the `md` row the zero was normalised by."
+
+[[entry]]
+path   = "tests/stdlib/arith/22_malformed_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a name that is no digit in a digit's place, the first operand of a sum: `check-step`, `check-digit`, `bad-add-first`, `bad-request-malformed`, `malformed-is-false`; root is dead, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/arith/23_malformed_fact_as_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a fact in a digit's place, the second operand of a sum: `check-digit`, whose `neq` guards hold of a fact, and `bad-add-second`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/24_malformed_ends_in_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a number that ends in a digit where `z` goes, `(n 1 2)`: `check-prefix-digit` and `bad-sub-first`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/25_malformed_ends_in_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a number that ends in the digit 0, `(n 0 2)`: `check-prefix-zero` and `bad-sub-second`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/26_malformed_ends_in_a_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a number that ends in a named constant, `(n price 1)`: `check-prefix-named` and `bad-cmp-first`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/27_malformed_digit_as_number.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a digit where a number goes, `(cmp X 7)`: `operand-digit` and `bad-cmp-second`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/28_malformed_zero_digit_as_number.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: the digit 0 where a number goes, `(mul 0 X)`: `operand-digit-zero` and `bad-mul-first`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/29_undeclared_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a name no `let` states: `operand-undeclared`, the theory's one `absent`, over `let`; `bad-mul-second`, `bad-request-undeclared`, `undeclared-is-false`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/30_declared_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: 29 with the `let` stated: the product is answered, R is {∅}, and `undeclared` and `malformed` have no fact."
+
+[[entry]]
+path   = "tests/stdlib/arith/31_malformed_through_a_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a malformed number behind a `let`: `operand-name` hands what it finds to the check; `bad-div-first`; a `let` nobody asks about is not checked; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/32_malformed_name_for_a_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a name that stands for another name, `(let alias price)`: `check-prefix-named` on what the `let` gave, and `bad-div-second`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/33_let_twice.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a name stated twice with two numbers: `let-twice`, a join on the name; both `let`s flagged; root is dead where there were two answers to one request."
+
+[[entry]]
+path   = "tests/stdlib/arith/34_let_twice_the_same.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a name stated twice with one number is one fact: `let-twice` does not fire, the sum is answered, R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/arith/35_let_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: `z` as a constant's name: `let-zero`; root is dead where `(add z X)` had two answers."
+
+[[entry]]
+path   = "tests/stdlib/arith/36_let_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: a digit as a constant's name: `let-digit`, one probe of `nz`; flagged though no request uses the name; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/37_let_zero_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: the digit 0 as a constant's name: `let-digit-zero`; root is dead."
+
+[[entry]]
+path   = "tests/stdlib/arith/38_what_stays_silent.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.12, `std.arith`: what the theory does not flag: a number that ends in a name that is neither a digit nor a constant, a fact of another relation as an operand or inside a number, the accumulator's shape as an operand; each neither flagged nor answered, R is {∅}."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"
