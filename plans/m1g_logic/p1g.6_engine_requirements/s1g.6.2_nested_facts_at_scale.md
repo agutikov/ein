@@ -11,6 +11,17 @@ they have numbers.
 owner yet* there on 2026-11-11 (if P1f.6's close gave any an owner or a fix, this stage starts from that);
 [F11](../../followups/f11_deductive_layer_perf.md), the deductive layer's performance followup.
 
+**Added 2026-11-12, from the calculator's phase** (section J of its
+[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#j-findings-that-need-an-owner),
+rows 57, 63, 69 and 70, each left empty and so taking its recommendation): this stage is now the **owner**
+of E-3 and E-12 (C-2), of **E-15 and E-25** (a library has no cache of its own, and a `.einb` of the
+calculator opens no faster than its text loads: C-3's evidence), and of **E-24 and E-26**, which are new to
+it: `ein solve` writes every fact of a state as text, so a long computation's read-out costs far more than
+the computation, and a stored fact costs about a kilobyte while a computation stores every step. E-24 and
+E-26 are a fourth part of the stage, **the size of a state**, taken up in T1g.6.2.7 below. E-12's
+calculator witness, the comparison table's column order (question 47), was explained to the user in round 2
+and left as it is.
+
 ## Why the logic needs it
 
 The calculator met the engine's cost on nested values and stepped around it with a **rule of the theory**:
@@ -75,6 +86,11 @@ of producing a file that fails to load.
    cannot reload says so.
 6. **T1g.6.2.6 — the findings closed:** E-3 and E-12 marked with what was done, in the calculator's
    `findings.md` if that file is still open, or here.
+7. **T1g.6.2.7 — the size of a state (E-24, E-26), priced before anything is built:** what a read-out
+   that listed a state's facts only on request, or wrote a number shared between facts once, would save on
+   the calculator's long computations and on this milestone's proofs; and the question E-26's row says
+   nobody has asked, whether a computation's intermediate steps may be dropped once its answer is stored,
+   which changes what a state *is* and is the user's. Nothing is built without that ruling.
 
 ## Acceptance
 

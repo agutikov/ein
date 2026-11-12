@@ -7,6 +7,13 @@
 a join that is already restricted, not against the old one).
 **Blocks:** nothing.
 
+**Added 2026-11-12:** the user ruled that the order is this phase's and that it takes the discovered
+structure as its input (*"first need to automate analysis/discovery of the structure itself, and then use
+it as input to hyp ordering strategy"*), with SEND + MORE = MONEY as the witness (E-29):
+[README § Additions of 2026-11-12](README.md#additions-of-2026-11-12). The inventory below describes the
+walk, which was deleted on 2026-11-03; it is re-taken against the routes, and the order this stage adds is
+on the obligation tree's owed instances, before the stage runs.
+
 ## Context
 
 > So hypothesis selection could be ordered by the structure of hypothesis set,

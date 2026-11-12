@@ -16,6 +16,16 @@ explanation between `ein-lang` and the human reading);
 **Stops for the user:** its first task. What a formula should look like is a matter of taste and of the
 user's standing rule that anything built for review carries every artefact, raw and rendered.
 
+**Added 2026-11-12, from the calculator's phase** (section J of its
+[`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#j-findings-that-need-an-owner),
+rows 60 and 62, each left empty and so taking its recommendation): this stage is the **owner** of E-9 (a
+rule's drawing that Graphviz warns on), E-10 (no view of a library of facts can be drawn: *what should a
+view draw of a table, a row a node or a table a node?*) and E-13 (a nested fact drawn as one opaque node,
+which is C-5). Since M1f's S1f.6.21 the per-commit drawing test skips a view past its edge bound, on the
+user's *"don't test graphviz itself"*, so until this stage a library of facts is neither drawn nor checked.
+**Question 55, may a number print as a number** (E-14, C-6), was left empty by the user and has no default:
+it is asked again at this stage's first task, with the renderings side by side.
+
 ## Why the logic needs it
 
 Ein explains itself in two ways: drawings of the graph, and text rendered from each fact's justification.

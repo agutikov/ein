@@ -1,7 +1,9 @@
 # S1f.8.2 — Expressions as data, what a variable is, and evaluation under an assignment
 
 **Phase:** [P1f.8](README.md)
-**Status:** planned 2026-11-11. Not started.
+**Status:** planned 2026-11-11. Not started. **Since 2026-11-12 it also holds the calculator's expression layer,**
+`(calc E)` and `(let NAME E)`, moved here from S1f.6.14 by the user's reply of that day
+([§ Moved here from S1f.6.14](#moved-here-from-s1f614-2026-11-12)).
 **Depends on:** [S1f.8.1](s1f.8.1_survey_and_design.md)'s rulings: that expression data is accepted, its
 spelling, and how it stands to [S1f.6.14](../p1f.6_calculator/s1f.6.14_expressions.md). If the user rules there
 that the evaluator of this stage *is* S1f.6.14's answer, this stage closes that one, and says so in both files.
@@ -146,3 +148,88 @@ if the measure says so.
   `(assign x 7)` in one file are two values of one variable. The stage says what the program reports (two
   values, both derived; no contradiction unless a rule says so) and what a problem should write.
 - **Engine findings,** to [`findings.md`](findings.md).
+
+## Moved here from S1f.6.14 (2026-11-12)
+
+[S1f.6.14](../p1f.6_calculator/s1f.6.14_expressions.md) asked whether the calculator gets an expression layer,
+`(calc E)` and `(let NAME E)`, and waited. Question 10 of the calculator's
+[`questions.md`](../p1f.6_calculator/questions.md#q10) put it to the user with three options, (a) none, (b)
+`(let NAME E)` only, (c) both. The user, 2026-11-12:
+
+> both go into p1f.8, where expressions naturally belong to, with check of used names, with check of recursive
+> name usage (let a (+ a 1)) and other
+
+So **both are ruled in, and here.** That settles the second half of the README's question a (*is an evaluator
+over expression data the answer to S1f.6.14?*): the expression layer is this phase's, not the calculator's
+core, which stays requests and results. It does not settle how the two are spelt or whether they are one
+thing with `(evaluate E)`; that is still S1f.8.1's to show on programs:
+
+- **One layer or two.** This stage's `(evaluate E)`, answered by `(value-of E N)`, over expression *data*
+  with heads of its own (`Plus`, `Times`), and S1f.6.14's `(calc E)`, whose tree was made of the calculator's
+  request heads (`add`, `div`). The plan's expectation is one evaluator and one term language, with `calc`
+  the request's name if the user prefers it; S1f.8.1 shows the same three programs both ways.
+- **The spelling inside an expression.** The user's example writes `(let a (+ a 1))`. Whether `+` is a name
+  the grammar accepts as a relation's head is checked on the release binary first (the name rule is an
+  allow-list of ASCII characters); if it is, `+ − × ÷` as heads is an option beside the capitalised words,
+  and the README's question b is asked with it.
+- **`(let NAME E)` beside `(let NAME NUMBER)`.** The calculator's `let` names a number and is built
+  (reply 11: *"(a) if it is already built, why asking..."*). Naming an expression's value is the same
+  relation with an expression in the number's place, or a relation of its own; the first makes `let` a
+  relation two modules write rules for, which [S1f.6.30](../p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+  investigation of mixing theories bears on.
+
+**What was already settled goes with it** (S1f.6.14, the user's words of 2026-11-11): `sub` inside an
+expression is strict, with a value when the first is not the smaller and otherwise `(negative (sub a b))` and
+no value; division is two heads, `div` for the quotient and `mod` for the remainder. Round 2 of the
+calculator's design built the layer on a prototype
+([`design.md` § C](../p1f.6_calculator/design.md#ii-nested-expressions-evaluated-on-demand)), three rules an
+operator, and that is the starting text.
+
+### The checks the reply names
+
+**A check of used names.** An expression that uses a name no `let` and no assignment states has no value.
+The calculator's own case, `(add foo X)` with no `(let foo …)`, is ruled on in the calculator's phase
+([S1f.6.12's build](../p1f.6_calculator/s1f.6.12_malformed_numbers.md#the-build-as-ruled-2026-11-12):
+`(undeclared NAME REQUEST)` through one `absent` over `let`, then `(false)`, on round 2's default). This
+stage follows whatever stands there when it runs, at every depth of an expression, and reports the name and
+the expression that used it. This stage's own text above says *a variable with no assignment gets no value,
+and that is reported by name, as S1f.6.20 reports a missing quantity*; the two are reconciled at S1f.8.1's
+stop, since *undeclared* (a slip, dead) and *not given* (a gap, named) are different faults and an algebra
+problem has both.
+
+**A check of recursive name usage.** `(let a (+ a 1))`: a name whose value is defined through itself.
+Evaluated on demand it does not answer and does not stop being asked: the request for `a` asks for `a`.
+What it does on the release binary today is the task's first probe (a request that is its own
+sub-request is one fact, so saturation may simply reach a fixpoint with no value; or a longer cycle,
+`a` through `b` through `a`, may do otherwise). The check derives a flag that names the cycle,
+`(recursive NAME)`, by a rule that follows *uses* from name to name: a transitive closure over the names a
+`let`'s expression mentions, monotone, with no negation. Whether the flag is then `(false)`, as the
+calculator's faults are, is asked with the degenerate equations of S1f.8.4, since *a = a + 1* is also an
+equation with no solution.
+
+**"and other".** The reply leaves the list open. What the stage adds unasked, each shown before it is built:
+a name stated twice with two expressions (the calculator's twice-named constant, two answers to one request
+today); an operator with the wrong count of operands (refused at load once
+[S1f.6.23](../p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) has landed); a division by zero inside an
+expression (the calculator's flag, at the call since [S1f.6.24](../p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md));
+a name that is both a variable of a problem and a `let` constant.
+
+### Tasks added
+
+7. **The two layers on the same programs,** for S1f.8.1's page: `(calc E)` over request heads and
+   `(evaluate E)` over data, the examples of `design.md` § C respelt, with answers computed.
+8. **`(let NAME E)`,** evaluated on demand, to any depth, under the rule of the theory (an evaluation
+   carries a tag; no rule joins two facts on a number).
+9. **The check of used names,** as the calculator's phase left it.
+10. **The check of recursive use,** with the probe of today's behaviour first, direct and through a longer
+    cycle.
+11. **The other checks,** each shown first.
+12. **Tests:** every check a program that trips it and a twin that does not; the Rust evaluator of task 4
+    extended to named expressions; a batch's cost on the counters, by hand.
+
+### Acceptance added
+
+- `(calc E)` and `(let NAME E)` answer as `design.md` § C's examples showed, search-free.
+- A used name nothing states, and a name defined through itself, are each reported by name, by a rule, and
+  held by a test.
+- The calculator's core is unchanged: no rule of `std.arith` reads an expression.

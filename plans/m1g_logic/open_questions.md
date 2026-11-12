@@ -20,6 +20,9 @@ until the user says otherwise (a default is not a ruling, and any may be reopene
 | [Q-M1g.10](#q-m1g10--the-optional-proof-systems) | the optional proof systems: sequents, resolution, tableaux | S1g.3.5 | open |
 | [Q-M1g.11](#q-m1g11--how-far-induction-goes) | how far induction goes: a checked proof, or a bounded check | S1g.5.3 | open; **the user's** |
 | [Q-M1g.12](#q-m1g12--where-the-milestones-kernel-pages-go) | where the milestone's kernel pages go | S1g.4.1, S1g.4.5 | open; waits for P1f.20 |
+| [Q-M1g.13](#q-m1g13--may-a-finished-search-call-an-unpayable-debt-dead) | may a finished search call an unpayable debt dead? | P1g.7 (S1g.7.3) | open; **the user's**, deferred on 2026-11-12 |
+| [Q-M1g.14](#q-m1g14--the-types-theory-its-shape-and-its-name) | the types theory: its shape and its name | P1g.8 (S1g.8.1) | open |
+| [Q-M1g.15](#q-m1g15--where-m1h-sits-against-this-milestone) | where M1h sits against this milestone | the coordinator, before either starts | open; **the user's** |
 
 ---
 
@@ -140,3 +143,34 @@ The fragment table and the glossary of *consistent* and *complete* are kernel do
 each under `docs/kernel/`. [P1f.20](../m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md)
 rebuilds that tree as `docs/ein/` before M1g starts. Where the two pages live is decided against the tree as
 P1f.20 leaves it.
+
+## Q-M1g.13 — May a finished search call an unpayable debt dead?
+
+Added 2026-11-12, from question 24 of the calculator's
+[`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q24) and the user's reply
+(*"this question open vs. false is deep. […] It looks like an entire separate phase."*). Where every alive
+node owes and no extension pays, R is empty and `--single` says `Open`, which reads as *not yet* where the
+run has shown *never, among the candidates*.
+
+- **(a)** Keep the words; print the explanation (N, or the open state's core).
+- **(b)** A debt that provably cannot be paid within the candidates is a refutation, where the search has
+  finished: the state is called dead.
+- **(c)** Leave everything and say on the page how to read it.
+
+R is the same set under each. No default is taken: [P1g.7](p1g.7_unsatisfiable_against_owing/README.md)'s
+third stage lists what moves under (b) and the user rules with that list.
+
+## Q-M1g.14 — The types theory: its shape and its name
+
+Added 2026-11-12, from the user's reply to question 12 (*"types theory deserves it's own separate theory
+file in stdlib"*). Which relations it has (`has-type`, `subtype`, a coercion), whether a type is read off a
+value's shape on request or declared, and what the module is called and where it sits in the stdlib's
+layout. Default: [P1g.8](p1g.8_a_theory_of_types/README.md)'s first stage proposes on computed programs and
+stops for the user; nothing is named before then.
+
+## Q-M1g.15 — Where M1h sits against this milestone
+
+[M1h](../m1h_beyond_word_problems/README.md) was created on 2026-11-12. This milestone *"runs after M1f is
+complete"*; nothing says whether M1h runs before it, after it or beside it. M1h's first phases (temporal
+and causal theories, slicing) need nothing of this milestone; its gaps-and-assumptions phase reads P1g.7's
+ruling if that exists. No default is taken; it is the same question as M1h's own, asked once.

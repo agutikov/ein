@@ -4,6 +4,9 @@
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
 Not started. It carries no estimate (the user's ruling of 2026-11-08). Its first stage **stops for the user**
 with real programs computed on a prototype, before anything ships.
+**Extended 2026-11-12** by the user's replies to the calculator's questions
+([§ Additions of 2026-11-12](#additions-of-2026-11-12)): the expression layer is ruled in and moved here, and two
+stages and one comparison are added.
 **Depends on:** [P1f.6](../p1f.6_calculator/README.md), the calculator, and runs after it. Specifically:
 
 - **the four operations and comparison,** `std.arith`
@@ -16,7 +19,9 @@ with real programs computed on a prototype, before anything ships.
 - **[S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md), word problems:** its two kinds of gap, its
   readings as hypotheses and its *the problem is a model* are the pattern this phase's word problems and
   geometry computations follow;
-- **[S1f.6.14](../p1f.6_calculator/s1f.6.14_expressions.md)'s ruling,** on whether Ein gets an expression layer.
+- **[S1f.6.14](../p1f.6_calculator/s1f.6.14_expressions.md)'s ruling,** on whether Ein gets an expression layer
+  (**ruled 2026-11-12:** both `(calc E)` and `(let NAME E)`, in this phase;
+  [§ Additions of 2026-11-12](#additions-of-2026-11-12)).
   This phase cannot be written without expressions as *data*, so it is where that question's evidence comes
   from, and the ruling is taken at [S1f.8.1](s1f.8.1_survey_and_design.md)'s stop if it has not been taken
   before ([§ Expressions, and S1f.6.14](#expressions-and-s1f614));
@@ -150,6 +155,8 @@ A rule that says *like terms add* is `?`-quantified over object-level variables:
 | [S1f.8.7](s1f.8.7_theorems_as_rules.md) | Theorems as rules, proofs as saturation: a rule base, five school theorems, and the trace as a two-column proof | S1f.8.6 | no |
 | [S1f.8.8](s1f.8.8_constructions_contradiction_cases.md) | Auxiliary constructions, proof by contradiction and case splits: three uses of a hypothesis, and what each cannot do today | S1f.8.7 | **yes:** how a construction is written, and whether a refuted assumption concludes anything, with M1g's [Q-M1g.5](../../m1g_logic/open_questions.md#q-m1g5--is-a-refuted-assumption-a-fact) |
 | [S1f.8.9](s1f.8.9_computation_and_the_diagram_gap.md) | Computation problems in geometry, the diagram gap detected and named, and the phase's report: which fragment of school mathematics is a formal derivation in Ein | S1f.8.7, S1f.8.8; S1f.8.4 for problems with an unknown | no; the report is **shown** |
+| [S1f.8.10](s1f.8.10_a_program_that_states_false_facts.md) | A program that states false facts, `2 + 2 = 5`: what happens today, and whether an existing theory already answers it (the user, 2026-11-12) | the calculator as shipped | no; its page is **shown** |
+| [S1f.8.11](s1f.8.11_compound_numbers_without_a_hardcoded_representation.md) | Compound numbers without a hardcoded representation: integers and rationals over binary or decimal naturals, *"or even not numbers"* (the user, 2026-11-12) | `std.int`, `std.rat`; binary arithmetic in the stdlib, or its banked examples | **yes:** the directions on a prototype, before any shipped module moves |
 
 No stage carries an estimate. Engine findings go to [`findings.md`](findings.md).
 
@@ -266,7 +273,7 @@ it starts.
 
 | | the question | asked at | the plan's default |
 |---|---|---|---|
-| a | **Is expression data accepted, and is an evaluator over it the answer to S1f.6.14?** ([§ Expressions, and S1f.6.14](#expressions-and-s1f614)) | S1f.8.1 | data yes; `(evaluate E)` as an imported module is S1f.6.14's (b)-like answer, and no `calc` in the calculator's core |
+| a | *(its second half **ruled 2026-11-12**: the expression layer, `(calc E)` and `(let NAME E)`, is this phase's, [§ Additions](#additions-of-2026-11-12); how it is spelt and whether it is one thing with `(evaluate E)` is still asked)* **Is expression data accepted, and is an evaluator over it the answer to S1f.6.14?** ([§ Expressions, and S1f.6.14](#expressions-and-s1f614)) | S1f.8.1 | data yes; `(evaluate E)` as an imported module is S1f.6.14's (b)-like answer, and no `calc` in the calculator's core |
 | b | **The spelling of expression heads,** `Plus` `Times` …, shared with M1g's connectives | S1f.8.1 | capitalised |
 | c | **Where the theories live:** `stdlib/` (`std.algebra` is taken by the relation-algebra module, so another name), or `examples/`, as S1f.6.20 also asks | S1f.8.1 | `examples/` first; a module moves to `stdlib/` when a second program imports it |
 | d | **The normal form's order** of monomials and of variables | S1f.8.1, for S1f.8.3 | descending degree, variables in the order of the name rule's text |
@@ -276,6 +283,60 @@ it starts.
 | h | **A construction:** a hypothesis, a Skolem-style value on request, or a fact the problem writes | S1f.8.8 | on request as a value where a rule can name it (`(mid B C)`); the *choice* of construction as a hypothesis, reported as search |
 | i | **Does a refuted assumption conclude anything at root?** The same as [Q-M1g.5](../../m1g_logic/open_questions.md#q-m1g5--is-a-refuted-assumption-a-fact); asked once, there or here, whichever stage runs first | S1f.8.8 | not built here; the limit is shown and the candidate named |
 | j | **Inequalities:** in or out | S1f.8.5 | out unless asked |
+
+## Additions of 2026-11-12
+
+The user replied to the calculator's questions on 2026-11-12
+([`questions.md`](../p1f.6_calculator/questions.md), with what stayed open in
+[`questions_round2.md`](../p1f.6_calculator/questions_round2.md); the index of every reply is
+[`replies_2026-11-12.md`](../p1f.6_calculator/replies_2026-11-12.md)). Four of the replies send work here.
+
+**1. Expressions, `(calc E)` and `(let NAME E)`, moved here from S1f.6.14.** Reply 10:
+
+> both go into p1f.8, where expressions naturally belong to, with check of used names, with check of recursive
+> name usage (let a (+ a 1)) and other
+
+Both are ruled in, in this phase and not in the calculator's core. They are
+[S1f.8.2](s1f.8.2_expressions_and_evaluation.md#moved-here-from-s1f614-2026-11-12)'s, with the two checks the
+reply names, a used name nothing states and a name defined through itself, and the *"and other"* the stage
+proposes and shows first. [§ Expressions, and S1f.6.14](#expressions-and-s1f614) above was written while the
+question waited; of its two parts, *whether a program may compute by writing a tree* is now answered yes, and
+what is left for S1f.8.1's stop is the spelling and whether `calc` and `evaluate` are one layer.
+
+**2. A program that states false facts.** Reply 7:
+
+> (a), btw, `2 + 2 = 5` is interesting question - what happens to the program that states false facts? If it
+> is not solved already by-product in existing theories - I expect it belongs to either p1f.8 or M1g
+
+[S1f.8.10](s1f.8.10_a_program_that_states_false_facts.md): seven ways of writing *2 + 2 = 5*, each computed,
+and the answer to the reply's *if*. What it finds that is a proof system's (a false axiom, *ex falso*) it
+hands to [M1g](../../m1g_logic/README.md).
+
+**3. Compound numbers without a hardcoded representation.** Reply 14, in full:
+
+> a is ambiguous, add2 looks like add with 2 operands etc. Take (b), but ints and rats - different question.
+> binary and decimal is numbers representation, integers, rationals, ... complex - are numbers types based on
+> naturals of some representation. Add new stage into p1f.8 to investigate how to make compound numbers
+> without hardcoded representation so can switch between binary and decimal, and maybe later use any new
+> natural numbers there, or even not numbers...
+
+[S1f.8.11](s1f.8.11_compound_numbers_without_a_hardcoded_representation.md), an investigation that stops for
+the user. It runs once binary arithmetic is in the stdlib, or on its banked examples.
+
+**4. Three methods for `x × 7 = 862`.** Replies 24 and 37 asked whether solving it is *"arithmetics or
+algebra"*. Round 2 (items 24, 28 and 37) sets out three methods, arithmetic read backwards, search, and
+algebraic rewriting, and gives the comparison to this phase:
+[S1f.8.4 § Three methods for one equation](s1f.8.4_linear_equations.md#three-methods-for-one-equation-2026-11-12).
+Inverse requests are **not** added to the stdlib now. What an unpayable debt is called, *"open vs. false"*,
+is not decided here: it is [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md).
+
+**The order, with the additions.** S1f.8.10 is independent and may run at any time. S1f.8.11 runs after the
+calculator's binary build, beside the algebra. The comparison is part of S1f.8.4 and stops with it.
+
+**Names.** The calculator's modules move under `std.math` before this phase starts
+([S1f.6.31](../p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)): where this plan says `std.arith`,
+`std.int` and `std.rat`, read `std.math.decimal-arith`, `std.math.int` and `std.math.rat`. The relations
+keep their names.
 
 ## What is left to M1g
 

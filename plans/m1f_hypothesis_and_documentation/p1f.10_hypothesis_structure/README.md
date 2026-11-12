@@ -122,6 +122,7 @@ Five stages, and each one is a strictly larger claim about the same object.
 | **soundness** | `excludes` is a property of the program only if no `(false)` in it rests on an `absent` over a relation the search can still extend | [S1f.10.8](s1f.10.8_refutation_under_absent.md) |
 | **domain** | the four rungs above are valid over a *stated* class of programs, and a derived obligation is what can put a program outside it | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) |
 | **calibration** | the tree traversal already gets **200 053×** on the phase's hardest instance by branching on structure; how much of that is this ladder's to recover | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) |
+| [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | What the blind enumerator takes for an object: `__closed__`, and relation names a rule asserts as values (added 2026-11-12) | — | E-1 and E-7 of the calculator's findings re-taken, the census of who is affected, and a question for the user before anything moves: removing a candidate changes H, and this phase may not change an answer |
 
 ### The one distinction the whole phase rests on
 
@@ -212,6 +213,73 @@ Named here and used by every stage.
 | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
 | [S1f.10.8](s1f.10.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
 | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1f.10.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
+
+## Additions of 2026-11-12
+
+Two things came to this phase from the user's replies of 2026-11-12 to the calculator's questions
+([`questions.md`](../p1f.6_calculator/questions.md); the index of every reply is
+[`replies_2026-11-12.md`](../p1f.6_calculator/replies_2026-11-12.md)). No estimate is attached to either
+(the user's ruling of 2026-11-08).
+
+### The order of the search is this phase's, and the structure comes first
+
+[Question 40](../p1f.6_calculator/questions.md#q40) asked: *Should the search choose which owed thing to
+branch on by the state?*, with (a) *yes, and it is P1f.10's, with this witness: fewest alive alternatives
+first*. The user, 2026-11-12:
+
+> Yes! Hypothesis structure phase. The concrete strategy that defines hypothesis order can be different, but
+> it definitely will depend on the hyp structure. So first need to automate analysis/discovery of the
+> structure itself, and then use it as input to hyp ordering strategy.
+
+That is this phase's ladder in the user's words, and it fixes two things the plan had left loose:
+
+- **The order is a consumer of the structure, not a heuristic beside it.** [S1f.10.5](s1f.10.5_ordering.md)
+  is *ordering by structure*; by this reply it takes the structure S1f.10.1 to S1f.10.4 discover **as its
+  input**, and a strategy is then one function of that input among several possible. *Fewest alive
+  alternatives first*, the option the question offered, is one such strategy and is not ruled as *the* one:
+  *"the concrete strategy … can be different"*.
+- **Discovery is automated.** *"first need to automate analysis/discovery of the structure itself"*: the
+  exclusion relation, the groups and the bounded groups are computed from the program, which is what
+  S1f.10.1, S1f.10.2 and S1f.10.4 plan; none is to be declared by the program's author to get an order.
+
+**The witness, E-29** of the calculator's [`findings.md`](../p1f.6_calculator/findings.md): the obligation
+tree branches in the order the obligations are written, and that order decides whether a search ends.
+SEND + MORE = MONEY, 80 candidates, under `ein solve --single`: with its letters declared by column, D E Y N
+R O S M, *Solution — R is one state* in 17 747 saturations, 0.50 s; the same program with the letters
+declared as the puzzle is written, S E N D M O R Y, no answer in 600 s (2026-11-12). With propagation rules
+the two orders are 639 saturations against 5 267. Nothing in the read-out says the order mattered. The two
+programs are `build/s1f.6.10/p/p3_send.ein` and `p3_send_written.ein`; the first is banked in the corpus by
+the calculator's [S1f.6.27](../p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md), and **this
+phase banks the second,** as the instance on which an order derived from structure has to end where the
+written order does not. It joins [§ The instances](#the-instances) as **I-SEND** when S1f.10.5 runs.
+
+**What the witness changes in the plan.** The stage files were written on 2026-08-28 against the walk, the
+lattice of commitment sets and its `lattice-order`, which M1e2 deleted (S1e2.1c.5, 2026-11-03). The order
+point E-29 names is another one: the order in which `--single` and `-n` take the **owed instances** of the
+obligation tree, row 5 of S1f.10.5's inventory, whose lever `EIN_OBLIGATION_CHOICE` was retired on
+2026-11-03. So before S1f.10.5 runs its inventory is re-taken against the routes as they are, and the
+order it adds is on the obligation tree. The phase's rule is unchanged and is what makes this safe: **an
+order may not change an answer,** only the work; `--single`'s verdict, R, N and H are the same under every
+order, held as the phase's acceptance holds everything else, and an order is not a `(config …)` flag a
+program sets.
+
+The cryptarithm theory the user ruled in (question 42, `std.math.crypt`) waits for this: its example's cost
+hangs on declaration order until an order is derived.
+
+### What the blind enumerator takes for an object
+
+Row 56 of the calculator's [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner),
+**E-1 and E-7**, was left empty by the user and so took its suggestion: *(b) P1f.10, which plans how the
+candidates are built*.
+
+- **E-1.** Where the blind enumerator builds H for a declared relation and the program writes a
+  `(__closed__ …)` fact of another, the dunder is among the candidate objects: `(total __closed__)` is a
+  candidate beside `(total 0)` to `(total 9)`.
+- **E-7.** The blind enumerator proposes as objects the relation names a rule asserts as values.
+
+They are [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md). The user ruled the case
+behind them, a program's own open relations beside an imported theory, *left as it is*; the rows are the
+roughness and not that.
 
 ## Acceptance
 

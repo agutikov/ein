@@ -2,6 +2,8 @@
 
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
 Not started. It carries no estimate (the user's ruling of 2026-11-08).
+**Extended 2026-11-12** by the user's replies to the calculator's questions: two phases, P1g.7 and P1g.8, and
+one stage of P1g.6, S1g.6.6 ([§ Additions of 2026-11-12](#additions-of-2026-11-12)).
 **Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md), complete (the user, 2026-11-11: *"first
 we will complete M1f"*). Specifically:
 [S1f.6.16](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md), binary
@@ -39,7 +41,12 @@ an engine milestone. The user, the same day:
 So:
 
 - **M1g is one milestone and holds everything asked for,** the engine work the logic turns out to need
-  included. There is no M1h. The engine work is a phase of its own, [P1g.6](p1g.6_engine_requirements/README.md).
+  included: no second milestone was made for that engine work, which is a phase of its own,
+  [P1g.6](p1g.6_engine_requirements/README.md). (The id M1h, which the proposal of 2026-11-11 would have given
+  such an engine milestone and the user declined, has been taken since for another subject: on 2026-11-12 the
+  user created [M1h, *further work beyond word problems*](../m1h_beyond_word_problems/README.md). It is not an
+  engine milestone for the logic, and the ruling above stands. Where M1h sits against this milestone in the
+  order is not ruled; it is that README's open question.)
 - **It runs after M1f is complete.**
 - **Binary arithmetic and binary logic stay stages of M1f's P1f.6,** S1f.6.16 and S1f.6.17, and are where M1g
   starts from.
@@ -97,7 +104,9 @@ It works at **two levels**, and keeping them apart is half of what it has to say
 | [P1g.3](p1g.3_proof_systems/README.md) | Proof systems: Hilbert's axioms, natural deduction, and what a proof is in Ein | 5 (1 optional) | a written proof checked by saturation; two Hilbert axiom sets compared; natural deduction with assumptions and discharge; soundness and completeness checked against P1g.2's truth tables up to a bound; and a plain statement of what a hypothesis is in each |
 | [P1g.4](p1g.4_first_order_logic/README.md) | First-order logic: the fragment Ein is, relation algebra, and formulas with quantifiers as data | 5 | F1b's PFL.1 to PFL.4: the fragment as a table with a program per row, the relation algebra inventory, object-level quantifiers over a finite structure, the quantifier rules, and the boundary of what Ein cannot decide |
 | [P1g.5](p1g.5_peano_and_induction/README.md) | Natural numbers: Peano's axioms, recursion, induction, and Gödel made concrete | 4 | unary numbers and the axioms as rules; addition and multiplication by recursion, held to `std.arith`; induction as a schema against bounded checking; and what of F26's Gödel section a program can show |
-| [P1g.6](p1g.6_engine_requirements/README.md) | The engine requirements the logic turns out to have | 5, provisional | each requirement P1g.1 lists, scheduled, ruled or given an owner; seeded today with the candidates already known |
+| [P1g.6](p1g.6_engine_requirements/README.md) | The engine requirements the logic turns out to have | 6, provisional | each requirement P1g.1 lists, scheduled, ruled or given an owner; seeded today with the candidates already known |
+| [P1g.7](p1g.7_unsatisfiable_against_owing/README.md) | Unsatisfiable against owing: the open state's explanation, and what a finished search may call an unpayable debt (added 2026-11-12) | 4, in the README | the witnesses on one page; the open state's core; the user's ruling on whether a finished search may call an unpayable debt dead; R unmoved on every program either way |
+| [P1g.8](p1g.8_a_theory_of_types/README.md) | A theory of types as a stdlib module of its own, and a smaller kind of number where a larger is expected (added 2026-11-12) | 4, in the README | the design on programs, **stopping for the user**; the module; promotion between the calculator's number kinds as its first use, in a module the core does not import |
 
 ## The order
 
@@ -113,6 +122,12 @@ It works at **two levels**, and keeping them apart is half of what it has to say
 6. **P1g.6 is not last.** Each of its stages runs when the phase that needs it reaches the need, and its
    stage list is settled at P1g.1's stop. A requirement no later phase needs is ruled or given an owner at the
    close, and is not built for its own sake.
+
+7. **P1g.7** is read with P1g.2: [S1g.2.2](p1g.2_propositional_logic/s1g.2.2_valuations_as_hypotheses.md)
+   reads *unsatisfiable* off R, and P1g.7's first stage banks the witnesses that stage meets. Its ruling,
+   S1g.7.3, may come at any time after, since R is the same set whichever way it goes.
+8. **P1g.8** is independent of the logic phases and may run beside them after P1g.1's stop; its own first
+   stage stops for the user.
 
 ## The user's questions, answered in outline
 
@@ -166,6 +181,50 @@ written relation ([S1g.4.2](p1g.4_first_order_logic/s1g.4.2_relation_algebra.md)
 numbers killed root at its witness ([S1g.5.4](p1g.5_peano_and_induction/s1g.5.4_goedel_made_concrete.md)).
 Each stage file says what its sketch did and did not compute. The same caution applies: one run each, nothing
 banked.
+
+## Additions of 2026-11-12
+
+The user replied to the calculator's questions on 2026-11-12
+([`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md); what stayed open is
+[`questions_round2.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md); the index
+of every reply is
+[`replies_2026-11-12.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)). Three
+replies send work here.
+
+**A types theory, and promotion of a smaller number kind** (reply 12):
+
+> question about type system inside the theory; lets postpone it till M1g, types theory deserves it's own
+> separate theory file in stdlib, and then we will try to use it to solve this; keep as is now
+
+[P1g.8](p1g.8_a_theory_of_types/README.md): the types theory as a stdlib module of its own, and the question
+it was postponed from, a natural number where an integer is expected and an integer where a rational is, as
+its first use.
+
+**Unsatisfiable against owing** (replies 24 and 28): *"this question open vs. false is deep. […] It looks
+like an entire separate phase."* [P1g.7](p1g.7_unsatisfiable_against_owing/README.md): the open state's
+core, the read-out row for N, and whether a finished search may call an unpayable debt dead. Probe 1b of
+[§ First probes](#first-probes-2026-11-11) met it on the day this milestone was planned. R is the same set
+either way, which is why it could wait and why it can be decided here.
+
+**A cheaper search where each object takes exactly one value** (reply 25, and round 2's item 25: *both
+hold*): [S1g.6.6](p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md), candidate C-12 of
+P1g.6, with the table of question 25 as its witness.
+
+**Findings the calculator's phase gave this milestone** (section J of `questions.md`, each line left empty
+and so taking its recommendation): E-3, E-12, E-15, E-24, E-25 and E-26 to
+[S1g.6.2](p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md); E-9, E-10 and E-13 to
+[S1g.6.3](p1g.6_engine_requirements/s1g.6.3_seeing_nested_facts.md). Whether a number may print as a number
+(question 55, E-14) was left empty and has no default: S1g.6.3's first task, which already stops for the
+user, is where it is asked again.
+
+**Where the starting point lives.** S1f.6.16 and S1f.6.17 ship as `std.math.binary-arith` and, by the
+user's reply to the layout question, **`std.bool.*`**, not `std.logic.*`
+([S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-reply)).
+`std.logic` is free, and [Q-M1g.2](open_questions.md#q-m1g2--where-the-logic-ships) is asked knowing it.
+
+**[M1h](../m1h_beyond_word_problems/README.md)** was created the same day for the work beyond word
+problems. Two of its early phases touch this milestone's subject from the side of natural-language
+problems, slicing and *gaps, assumptions and readings*, and P1g.7's ruling is one both will read.
 
 ## What it pulls in
 
@@ -291,4 +350,7 @@ The instruction's last question, and how this plan answered it, under the schema
 - **[`docs/lib/03`](../../docs/lib/03-theorem-proving-formal-methods.md)** and
   **[`docs/lib/02`](../../docs/lib/02-solvers-csp-sat-smt.md):** the external systems each phase compares
   itself with.
-- **[`open_questions.md`](open_questions.md):** Q-M1g.1 to .12.
+- **[M1h](../m1h_beyond_word_problems/README.md)** (planned 2026-11-12): temporal and causal theories,
+  slicing, gaps and assumptions, and three applications. Its place in the order against this milestone is
+  not ruled.
+- **[`open_questions.md`](open_questions.md):** Q-M1g.1 to .15.
