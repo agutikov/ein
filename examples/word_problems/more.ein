@@ -1,0 +1,13 @@
+;;; Bob has 5 apples. Alice has 12 apples. Who has more apples, and by how many?
+;;; A comparison, then the larger less the smaller: Alice, by 7.
+(import words :symbols (words))
+
+(has Bob apples (n z 5) now            :source "Bob has 5 apples.")
+(has Alice apples (n (n z 1) 2) now    :source "Alice has 12 apples.")
+(asked (apart Bob Alice apples now)    :source "Who has more apples, and by how many?")
+
+(query :goal (and (asked (apart ?p ?q ?k ?t)) (has-more ?w ?l ?k ?t) (value (apart ?p ?q ?k ?t) ?n))
+       :goal-text "{?w} has {?n} more {?k} than {?l}"
+       :expect (model (asked (apart Bob Alice apples now))
+                      (has-more Alice Bob apples now)
+                      (value (apart Bob Alice apples now) (n z 7))))

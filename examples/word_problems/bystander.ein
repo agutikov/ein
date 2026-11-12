@@ -1,0 +1,14 @@
+;;; Bob has 5 apples. Carol has 9 apples. Bob gave 2 apples to Alice.
+;;; How many apples does Carol have?
+;;; The event did not touch Carol: what she has is unchanged, 9.
+(import words :symbols (words))
+
+(has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
+(has Carol apples (n z 9) t0          :source "Carol has 9 apples.")
+(gave Bob Alice apples (n z 2) t0 t1  :source "Bob gave 2 apples to Alice.")
+(asked (amount Carol apples t1)       :source "How many apples does Carol have?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (amount Carol apples t1))
+                      (value (amount Carol apples t1) (n z 9))))

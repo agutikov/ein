@@ -16,7 +16,29 @@ parallel, snmalloc`), copied to `build/s1f.6.20/tools/ein`, with the stdlib of H
 HEAD's `examples/arith/div.ein` answers 5105, remainder 20. Every program on this page ran as
 `EIN_STDLIB=build/s1f.6.20/tools/stdlib build/s1f.6.20/tools/ein …`.
 
-**Where it is.** `build/s1f.6.20/` is gitignored, so this page carries the theory in full
+**Where it is banked (2026-11-12).** On the user's instruction of that day, *"bank word problems into
+examples/word_problems with recommended variants"*, the theory and most of the problems are in the tree, under
+[`examples/word_problems/`](../../../examples/word_problems/README.md): the modules
+[`words.ein`](../../../examples/word_problems/words.ein), [`gaps.ein`](../../../examples/word_problems/gaps.ein)
+and [`readings.ein`](../../../examples/word_problems/readings.ein), which is this page's `readings_plain`, and
+thirteen problems, each a corpus entry with its claim. The banked name of each file of this page:
+
+| on this page | banked as |
+|---|---|
+| `p/words.ein`, `p/gaps.ein` | `words.ein`, `gaps.ein` |
+| `p/readings_plain.ein` | `readings.ein` |
+| `p/bob1`, `contra`, `kinds`, `kinds_assume`, `kinds_full`, `pencils`, `more`, `unused`, `bystander`, `gap_fact`, `gap_assume` | the same names |
+| `p/gap_b.ein` | `gap.ein` |
+| `p/boxes12.ein` and `p/boxes12_plain.ein` | `boxes12.ein`, one file: `readings` imported, and the model's query |
+| `p/boxes13_plain.ein`, `p/boxes13_stated.ein` | **not banked, though recommended**: a test of the gate does not end on a program where a reading is supposed and an answer follows from it ([E-33](findings.md), [Q-M1f.198](../open_questions.md#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate)). Both answer as § 4 reports on the banking commit's binary |
+| `gap_a`, `gap_c`, `gap_assume_h`, `_ha`, `_hb`, `boxes12_readings`, `boxes12_always`, `boxes13` (owed), `boxes13_always`, `boxes13_both`, `boxes13_gap`, `readings`, `readings_always`, `readings_both`, `readings_gap`, `q1/form_events`, `q1/form_chain`, every `witness/` file | not banked: the variants this page does not recommend, and the witnesses. They are on this page and under `build/s1f.6.20/` |
+
+**Banking is not a ruling.** The twelve questions of [§ 11](#11-the-questions-for-the-user) are open; the banked
+files take the recommendation of each as an example to read and run. Every banked answer was re-taken on the
+release binary and stdlib of the banking commit and is the one this page reports
+([the stage's record](s1f.6.20_word_problems.md#t2-record-2026-11-12-the-prototype-banked)).
+
+**Where the prototype is.** `build/s1f.6.20/` is gitignored, so this page carries the theory in full
 ([§ 12](#12-the-prototype-in-full)) and each problem's facts. There: `p/` holds the modules and the problems,
 `q1/` the two other forms of § 1, `witness/` the programs that failed or were refused, and `out/<name>/` every
 artefact of a run: `solve.txt` (the read-out in full, and the exit code), `solve_H.txt` (with `-H`), `saturate.txt`

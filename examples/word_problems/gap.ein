@@ -1,0 +1,20 @@
+;;; Bob has 5 apples. He gave 2 to Alice. How many apples do they have together?
+;;; How many apples Alice had before is not stated. The program answers what
+;;; it can, Bob's 3, gives no answer to *together*, and names the gap.
+(import words :symbols (words))
+(import gaps :symbols (gaps))
+
+(has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
+(gave Bob Alice apples (n z 2) t0 t1  :source "He gave 2 to Alice.")
+(asked (together Bob Alice apples t1) :source "How many apples do they have together?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model))
+(query :goal (value ?q ?n)
+       :goal-text "known: {?q}: {?n}"
+       :expect (model (value (amount Bob apples t0) (n z 5))
+                      (value (amount Bob apples t1) (n z 3))))
+(query :goal (unanswered ?q ?g)
+       :goal-text "no answer to [{?q}]: the problem does not state [{?g}]"
+       :expect (model (unanswered (together Bob Alice apples t1) (amount Alice apples t0))))

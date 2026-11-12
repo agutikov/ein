@@ -1,0 +1,20 @@
+;;; Bob has 5 apples, Alice has 3 pears. How many apples do they have together?
+;;; The sum is over apples alone, and how many apples Alice has is not stated:
+;;; no answer, and the gap named. That she has none is an assumption
+;;; (kinds_assume.ein).
+(import words :symbols (words))
+(import gaps :symbols (gaps))
+
+(has Bob apples (n z 5) now    :source "Bob has 5 apples,")
+(has Alice pears (n z 3) now   :source "Alice has 3 pears.")
+(asked (together Bob Alice apples now) :source "How many apples do they have together?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model))
+(query :goal (value ?q ?n)
+       :goal-text "known: {?q}: {?n}"
+       :expect (model (value (amount Bob apples now) (n z 5))))
+(query :goal (unanswered ?q ?g)
+       :goal-text "no answer to [{?q}]: the problem does not state [{?g}]"
+       :expect (model (unanswered (together Bob Alice apples now) (amount Alice apples now))))

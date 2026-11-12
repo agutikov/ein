@@ -1,0 +1,17 @@
+;;; Bob has 5 apples and 2 pears. Alice has 3 apples and 4 pears.
+;;; How many apples do they have together?
+;;; Both kinds stated for both: 5 + 3 = 8, and the pears are never wanted.
+(import words :symbols (words))
+
+(has Bob apples (n z 5) now    :source "Bob has 5 apples")
+(has Bob pears (n z 2) now     :source "and 2 pears.")
+(has Alice apples (n z 3) now  :source "Alice has 3 apples")
+(has Alice pears (n z 4) now   :source "and 4 pears.")
+(asked (together Bob Alice apples now) :source "How many apples do they have together?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (together Bob Alice apples now))
+                      (value (together Bob Alice apples now) (n z 8))))
+(query :goal (value ?q ?n)
+       :goal-text "{?q}: {?n}")

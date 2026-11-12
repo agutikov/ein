@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 111] = [
+const SEEDED: [(&str, &[&str]); 124] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -733,6 +733,73 @@ const SEEDED: [(&str, &[&str]); 111] = [
             "`self-dual-class`, asserted by rule `inside-self-dual`",
             "`zero-preserving`, asserted by rule `inside-zero`",
         ],
+    ),
+    // M1f S1f.6.20 — the word problems banked under `examples/word_problems/`.
+    // A problem writes its numbers nested, `(has Bob apples (n z 5) t0)`, so
+    // it names `z` inside one; `words.ein` alone holds the calculator's own,
+    // matched by `operand-zero`. `readings.ein`'s closing rule names its
+    // hrule, `read-need`, in a conclusion, and its `need-pack-all-plan`
+    // asserts `(add ?f (n z 1))`. `gap_assume.ein` and `kinds_assume.ein`
+    // write `z` at top level, in `(assumed … z)`, and `gaps.ein` imports no
+    // number, so they are not here.
+    (
+        "examples/word_problems/bob1.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/boxes12.ein",
+        &[
+            "`read-need`, asserted by rule `readings`",
+            "`z`, in (has Bob apples (n z 5) now)",
+        ],
+    ),
+    (
+        "examples/word_problems/bystander.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/contra.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/gap.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/gap_fact.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/kinds.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/kinds_full.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/more.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/pencils.ein",
+        &["`z`, in (has School cartons (n (n z 1) 2) t0)"],
+    ),
+    (
+        "examples/word_problems/readings.ein",
+        &[
+            "`1`, asserted by rule `need-pack-all-plan`",
+            "`read-need`, asserted by rule `readings`",
+            "`z`, asserted by rule `need-pack-all-plan`",
+        ],
+    ),
+    (
+        "examples/word_problems/unused.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/words.ein",
+        &["`z`, matched by rule `operand-zero`"],
     ),
 ];
 

@@ -1,0 +1,20 @@
+;;; Bob has 5 apples. Alice has 7 apples. Carol has 9 apples and a box that
+;;; holds 3. Bob gave 2 apples to Alice. How many apples does Bob have?
+;;; Alice's 7, Carol's 9 and the box are stated and never wanted: an unused
+;;; fact is not an error, and the second query, every value the run knows,
+;;; lists none of them.
+(import words :symbols (words))
+
+(has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
+(has Alice apples (n z 7) t0          :source "Alice has 7 apples.")
+(has Carol apples (n z 9) t0          :source "Carol has 9 apples")
+(holds boxes apples (n z 3)             :source "and a box that holds 3.")
+(gave Bob Alice apples (n z 2) t0 t1  :source "Bob gave 2 apples to Alice.")
+(asked (amount Bob apples t1)         :source "How many apples does Bob have?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (amount Bob apples t1))
+                      (value (amount Bob apples t1) (n z 3))))
+(query :goal (value ?q ?n)
+       :goal-text "{?q}: {?n}")

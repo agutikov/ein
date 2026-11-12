@@ -206,6 +206,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.191](#q-m1f191--the-generators-of-the-binary-examples-are-run-by-hand) | the generators of the binary examples are run by hand | **defaulted 2026-11-12, the user's to revise: `gen_binary.py` and `gen_gates.py` live in the example directories, each with a `--check`, neither in the gate; the properties' check is a corpus program's claims, which is in the gate**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
 | [Q-M1f.192](#q-m1f192--one-table-file-in-two-example-directories) | one table file in two example directories | **defaulted 2026-11-12, the user's to revise: `examples/binary_logic/bits.ein` is a copy of `examples/binary_arithmetic/bits.ein`, written by `gen_binary.py`, whose `--check` holds the two equal**; [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
 | [Q-M1f.193](#q-m1f193--the-sizes-of-the-banked-binary-programs) | the sizes of the banked binary programs | **defaulted 2026-11-12, the user's to revise: three inputs for every search, operands to seventeen bits, conversions to 255 and from 1000, none `slow`; the batches, the scale runs and the enumeration of all 65 535 sets stay under `build/`**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
+| [Q-M1f.194](#q-m1f194--which-of-the-word-problem-prototypes-programs-are-banked-and-under-what-names) | which of the word-problem prototype's programs are banked, and under what names | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: the recommended variant of each choice; `readings_plain` banked as `readings.ein`, `gap_b` as `gap.ein`; the other forms, mechanisms and witnesses stay on the page**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
+| [Q-M1f.195](#q-m1f195--one-file-for-the-two-step-problem) | one file for the two-step problem | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: `boxes12.ein` is the page's `boxes12` and `boxes12_plain` together, `readings` imported and the model's query kept**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
+| [Q-M1f.196](#q-m1f196--the-word-problem-modules-as-corpus-entries) | the word-problem modules as corpus entries | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: each module is a `positive` entry with runs of its own, as the stdlib's modules are; `gaps.ein` declares no `solve`; `readings.ein` imports only what it reads (E-11)**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
+| [Q-M1f.197](#q-m1f197--what-holds-the-banked-word-problems) | what holds the banked word problems | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: each file's `:expect` through its `test` cell, and the sweeps every corpus file is under; no test of their own until the rulings**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
+| [Q-M1f.198](#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate) | the remainder variant of the word problems, and the gate | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: not banked. `region.rs`'s fact-grain sweep does not end on a program where a supposed reading leads to a `value` (E-33); the test and the engine are unmoved; three other ways are stated and one was run**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3743,3 +3748,97 @@ hypotheses is 3ⁿ + n saturations and stops at the default budget near twelve i
 **Defaulted 2026-11-12, the user's to revise: (a).** No banked program is `slow`. The batches of 250 requests,
 the conversion of 2^40 + 1, the scale runs to 24 inputs, Post's criterion over all 65 535 sets and the
 three-input classes stay under `build/s1f.6.16/` and `build/s1f.6.17/`, with their numbers on the pages.
+
+### Q-M1f.194 — Which of the word-problem prototype's programs are banked, and under what names
+
+**Raised** 2026-11-12 by [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md), on the user's instruction of that day: *"bank word problems into
+examples/word_problems with recommended variants"*. The prototype is 29 programs and nine modules, most of them
+one problem written under several variants ([`word_problems.md`](p1f.6_calculator/word_problems.md) § 0).
+
+- **(a) One file per distinct problem, under the variant the page recommends for each choice**, and the modules
+  under the names the page proposes (§ 8): `words.ein`, `gaps.ein`, and `readings.ein`, which is the page's
+  `readings_plain`; `gap.ein` is its `gap_b`. Not banked: forms 2 and 3 of § 1; the gap as an obligation and as a
+  candidate from a list; the assumption as a hypothesis, alone and with either gap mechanism; `readings` (owed),
+  `readings_always`, `readings_both`, `readings_gap` and their problems; the witnesses of § 9.
+- **(b) Every program of the page**, the rejected variants in a directory of their own.
+
+**Defaulted 2026-11-12: (a)**, which is what the instruction says. The page keeps every variant with its run,
+and `build/s1f.6.20/` the files. **This is not a ruling on the page's twelve questions**, which stay open: a
+ruling that differs from a recommendation moves the banked files. Two recommended programs are not banked,
+[Q-M1f.198](#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate).
+
+### Q-M1f.195 — One file for the two-step problem
+
+**Raised** 2026-11-12 by S1f.6.20. The page runs *Bob has 5 apples, Alice has 7, a box holds 3* twice under the
+recommended variants: `boxes12`, with `words` alone and the model's query, and `boxes12_plain`, with
+`readings_plain` imported, to show that nothing is proposed where nothing is left over.
+
+- **(a) One file**, `boxes12.ein`: `readings` imported, `(solve :hrules (read-need))`, and three queries, the
+  answer, `(reads-as need ?m)` with no row, and the model's. It fires 140 rules at root, the page's
+  `boxes12_plain`; the page's `boxes12` fires 139, without the entry rule of `readings` (`ein saturate
+  examples/word_problems/boxes12.ein`, 2026-11-12).
+- **(b) Two files**, as on the page.
+
+**Defaulted 2026-11-12: (a)**: one file a problem, and a *need* problem imports the readings of *need* whether or
+not its division leaves a remainder, since the author does not know that before the run.
+
+### Q-M1f.196 — The word-problem modules as corpus entries
+
+**Raised** 2026-11-12 by S1f.6.20. The completeness check wants an entry for every `.ein` under `examples/`, and
+the three modules are imported and are not problems.
+
+- **(a) Each a `positive` entry with runs of its own**, as the stdlib's modules and W88's `import-facts-library`
+  are: `words.ein` and `readings.ein` under `solve`, `saturate` and `render rules`, each R {∅} alone; `gaps.ein`
+  under `saturate` and `render rules` only, since it imports the declarations of `words` and not its closing
+  rule, so alone `asked` and `wanted` are open and a solve describes `(asked __closed__)` (E-1).
+- **(b) The modules in a sub-directory the corpus does not walk.** There is none: every `.ein` under the three
+  roots is walked.
+
+**Defaulted 2026-11-12: (a).** One line of a module moved for it: the prototype's `readings_plain` imported
+`wanted` from `words` and read it nowhere, and the state file `ein solve readings.ein --dump-answer` writes
+dropped the declaration, which `answer_round_trip.rs` refuses, *2 facts lost* (E-11's cause, a relation in place
+of a rule). The banked `readings.ein` imports what it reads, `value`, `left-over`, `needed` and `over`.
+
+### Q-M1f.197 — What holds the banked word problems
+
+**Raised** 2026-11-12 by S1f.6.20. The stage's T2 lists tests of its own, the answers held to the harness's
+integers, the two-step problem's trace steps, each gap problem held to its named gap; they are written *after
+the rulings*.
+
+- **(a) The corpus holds them**: every problem declares `test`, so its `:expect` is a banked exit code;
+  `boxes12.ein` declares a `--trace` cell; and every file is under the sweeps all corpus files are under, the
+  shapes, the dump's round trip, the cores and the levers.
+- **(b) A test of their own now**, `ein-cli/tests/word_problems.rs`.
+
+**Defaulted 2026-11-12: (a).** The claims state every answer the page reports for the banked problems, the gap
+problems' `unanswered` and `rests-on` facts among them. What no claim can state is the order of the two requests
+and the steps of the trace, which is T2's test and waits for the rulings with it.
+
+### Q-M1f.198 — The remainder variant of the word problems, and the gate
+
+**Raised** 2026-11-12 by S1f.6.20. The page's recommended form of a missing reading is `readings_plain`:
+readings as hypotheses, nothing owed, and under a supposed reading the answer is a `value`, so that a later
+quantity follows from it by the same rules. Its two problems, 13 apples in boxes of 3 and the same with the
+reading stated, answer on today's engine as the page reports. `ein-infer/tests/region.rs`'s
+`fact_grain_never_calls_a_violated_cube_monotone` does not end with either in the corpus: it ran 13 263 s on one
+thread before it was stopped, where it takes 20 s without them
+([E-33](p1f.6_calculator/findings.md), `cargo test -p ein-infer --test region fact_grain_never`, 2026-11-12).
+The corpus has no field that keeps a file out of that sweep, which walks the files and not the manifest.
+
+- **(a) Not banked.** The module `readings.ein` is, and `boxes12.ein` imports it; the 13-apple program is shown
+  in the directory's README and runs beside the banked files. The test and the engine are unmoved.
+- **(b) The answer under a reading as a fact of its own, not a `value`.** Run: with the two reading rules
+  concluding `(answer-under Q N OVER)`, R is the same three states and the test passes in 20 s. It is a cross of
+  the page's `readings_plain` and `readings_both`, and it gives up what the page chose hypotheses for: nothing
+  later is computed from an answer that is not a `value`.
+- **(c) `readings_both` or `readings_gap`**, the page's two search-free forms, which it does not recommend.
+- **(d) The prototype analysis bounded**, by a cap on its shapes or a list of files it skips. That changes what
+  a test of M1e2 claims, and is not this stage's to do.
+- Asking the calculator for the fifth box at root, whatever the reading, was tried and does not help: the
+  `value` a reading concludes is what the word rules turn into a request.
+
+**Defaulted 2026-11-12: (a), the user's to revise**, on the coordinator's instruction for this case: bank what
+the gate can hold, and report what was left out. Every program in which a hypothesis leads to a `value` of the
+word theory meets it, so it bears on question 6 of the page, and on the hypothesis form of an assumption
+(question 4), whichever is ruled.
+

@@ -1,0 +1,14 @@
+;;; Bob has 5 apples. He gave 7 to Alice. How many apples does Bob have?
+;;; The problem contradicts itself: 5 - 7 is short by 2, a flag is derived,
+;;; `(gave-more-than-had Bob apples (n z 5) (n z 7))`, and `(false)` from the
+;;; flag. Root is dead and R is empty; the unsat core names the two sentences,
+;;; the question and the model's assumption.
+(import words :symbols (words))
+
+(has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
+(gave Bob Alice apples (n z 7) t0 t1  :source "He gave 7 to Alice.")
+(asked (amount Bob apples t1)         :source "How many apples does Bob have?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}")
+(solve :expect (false))

@@ -1,0 +1,18 @@
+;;; Bob has 5 apples, Alice has 3 pears. How many apples do they have together?
+;;; Assume that the problem lists everything each has: Alice has no apples.
+(import words :symbols (words))
+(import gaps :symbols (gaps))
+
+(has Bob apples (n z 5) now    :source "Bob has 5 apples,")
+(has Alice pears (n z 3) now   :source "Alice has 3 pears.")
+(asked (together Bob Alice apples now) :source "How many apples do they have together?")
+(assumed (amount Alice apples now) z
+  :source "ASSUMPTION, not in the problem: the problem lists everything each has, so Alice has no apples.")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (together Bob Alice apples now))
+                      (value (together Bob Alice apples now) (n z 5))))
+(query :goal (rests-on ?q ?g ?v)
+       :goal-text "the answer to [{?q}] rests on the assumption that [{?g}] is {?v}"
+       :expect (model (rests-on (together Bob Alice apples now) (amount Alice apples now) z)))

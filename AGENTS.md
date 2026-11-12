@@ -1419,6 +1419,39 @@ constrained-reasoning research.
   import cannot reach a sibling directory, so `examples/binary_logic/bits.ein`
   is a copy that `gen_binary.py --check` holds equal. No engine source and no
   stdlib module moved; the register is unmoved.
+  **S1f.6.20's prototype was banked on 2026-11-12**, on the user's *"bank word
+  problems into examples/word_problems with recommended variants"*
+  ([its record](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md#t2-record-2026-11-12-the-prototype-banked);
+  Q-M1f.194 to .198 defaulted). **[`examples/word_problems/`](examples/word_problems/README.md)
+  is elementary-school word problems with the calculator a library among
+  other relations**: examples, not a stdlib module, three theory modules
+  beside thirteen problems that import them by file name. `words.ein` is
+  what the words mean, as rules: a plan backwards from the question,
+  `(wanted Q)` and `(needs Q Q')`, then for each word a request to
+  `std.arith` and its answer read back as `(value Q N)`, so nothing is
+  computed that no question needs and the order of the operations is the
+  derivation's. `gaps.ein` names a quantity the problem does not state, by
+  `absent`, apart from `words`, which has none; `readings.ein` holds the two
+  readings of *need* as hypotheses with nothing owed. The user's two-step
+  problem, Bob 5, Alice 7, a box holds 3, answers 4 search-free
+  (`boxes12.ein`); *how many together* after Bob gave 2 answers Bob's 3,
+  gives *together* no row and names the gap, Alice's apples before
+  (`gap.ein`); giving 7 of 5 is a flag and `(false)` (`contra.ein`). Every
+  banked answer was re-taken on the banking commit's binary and stdlib and
+  is the one [`word_problems.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md)
+  reports; each is the file's `:expect`, held by its `test` cell. **The
+  banked variants are the page's recommendations and not rulings**: its
+  twelve questions stay open. **The remainder variant, 13 apples, is not
+  banked**, though the engine answers it as the page says: `region.rs`'s
+  `fact_grain_never_calls_a_violated_cube_monotone`, a prototype analysis
+  run over every corpus file, does not end on a program where a supposed
+  reading leads to a `value`, which the word rules turn into a calculator
+  request (E-33 of the phase's `findings.md`;
+  [Q-M1f.198](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate)).
+  **A corpus program in which a hypothesis leads to a request to
+  `std.arith` through a rule with an unbound operand may hang that test**;
+  run it alone before a gate. No stdlib module and no engine source moved,
+  and the register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,

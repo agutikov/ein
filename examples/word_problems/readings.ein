@@ -1,0 +1,69 @@
+;;; `readings` — a word with two readings, as hypotheses (M1f P1f.6,
+;;; S1f.6.20). The theory holds the readings of *need* as facts; which one a
+;;; problem means is a fact the search may commit to, `(reads-as need R)`,
+;;; proposed by the hrule `read-need` only where a division leaves something
+;;; over, and each reading is a rule that answers under it. Nothing is owed:
+;;; the state with no reading is in R, has no answer to the question, and
+;;; holds `(reading-matters need Q FILLED OVER)`, which names the gap.
+;;; A problem imports it beside `words`, `(import readings :symbols
+;;; (readings))`, and names the hrule, `(solve :hrules (read-need))`.
+(import words :symbols (value left-over needed over))
+
+(relation reading-of Word Reading
+  :why "{?2} is a reading of the word {?1} that the theory holds")
+(relation reads-as Word Reading
+  :why "the word {?1} is read as {?2}")
+(relation whole-only
+  :why "need, read as whole-only: count the containers that are filled, and leave the rest unpacked")
+(relation pack-all
+  :why "need, read as pack-all: everything is packed, and the last container may be part full")
+
+(reading-of need whole-only
+  :source "need = how many containers can be filled; what does not fill one is left out")
+(reading-of need pack-all
+  :source "need = the least number of containers that hold everything; the last may be part full")
+
+(hrule read-need ()
+  :match  (and (left-over (needed ?c ?k ?q) ?f ?r) (reading-of need ?m))
+  :assert (reads-as need ?m)
+  :why    "suppose need is read as {?m}")
+
+(rule one-reading ()
+  :match  (and (reads-as ?w ?a) (reads-as ?w ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "a word is read one way in one problem: {?w} cannot be both {?a} and {?b}")
+
+(rule need-whole-only ()
+  :match  (and (left-over (needed ?c ?k ?q) ?f ?r) (reads-as need whole-only))
+  :assert (and (value (needed ?c ?k ?q) ?f) (value (over (needed ?c ?k ?q)) ?r))
+  :why    "need read as whole-only: {?f} {?c} are filled, and {?r} {?k} stay unpacked")
+
+(rule need-pack-all-plan ()
+  :match  (and (left-over (needed ?c ?k ?q) ?f ?r) (reads-as need pack-all))
+  :assert (add ?f (n z 1))
+  :why    "need read as pack-all: {?f} {?c} do not hold everything, since {?r} {?k} are left over; one more does, and need asks for the least number, so add 1 to {?f}")
+
+(rule need-pack-all ()
+  :match  (and (left-over (needed ?c ?k ?q) ?f ?r) (reads-as need pack-all)
+               (sum-of ?f (n z 1) ?s))
+  :assert (and (value (needed ?c ?k ?q) ?s) (value (over (needed ?c ?k ?q)) z))
+  :why    "{?f} + (n z 1) = {?s}: {?s} {?c} hold everything, the last one part full, and no fewer do")
+
+(relation reading-matters Word Quantity Number Number
+  :why "what {?1} means decides the answer to [{?2}]: {?3} are filled and {?4} are left over")
+(rule need-matters ()
+  :match  (left-over (needed ?c ?k ?q) ?f ?r)
+  :assert (reading-matters need (needed ?c ?k ?q) ?f ?r)
+  :why    "{?f} {?c} are filled and {?r} {?k} are left over: whether they need another one is what need means, and the problem does not say")
+
+(relation readings-rule Rule
+  :why "{?1} is a rule of readings")
+(readings-rule readings)
+(rule readings ()
+  :match  ()
+  :assert (and (__closed__ reading-of) (__closed__ whole-only) (__closed__ pack-all)
+               (__closed__ readings-rule) (__closed__ reading-matters) (readings-rule need-matters)
+               (readings-rule read-need) (readings-rule one-reading)
+               (readings-rule need-whole-only) (readings-rule need-pack-all-plan)
+               (readings-rule need-pack-all))
+  :why    "the readings a word has are the theory's and are not guessed; which one a problem means, reads-as, is left open")

@@ -4141,3 +4141,99 @@ runs   = ["render rules", "saturate"]
 path   = "examples/syntax/wrappers.ein"
 group  = "positive"
 runs   = ["render rules", "saturate"]
+
+[[entry]]
+path   = "examples/word_problems/bob1.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — a transfer read as a subtraction: *Bob has 5 apples. He gave 2 to Alice. How many apples does Bob have?* 3, search-free."
+
+[[entry]]
+path   = "examples/word_problems/boxes12.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.20 — the two-step problem, the user's: *Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?* 5 + 7 = 12, 12 / 3 = 4, the two requests derived in that order and nothing else asked of the calculator; `readings` is imported and proposes nothing, since nothing is left over, so the universe has no candidate; the trace cell writes the plan as sentences."
+
+[[entry]]
+path   = "examples/word_problems/bystander.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — asked about someone the event did not touch: Carol still has 9."
+
+[[entry]]
+path   = "examples/word_problems/contra.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — a problem that contradicts itself, *Bob has 5 apples. He gave 7 to Alice.*: a flag, then `(false)`, root dead and R empty, the unsat core the two sentences, the question, the model's assumption and two table rows; its claim is `(solve :expect (false))`."
+
+[[entry]]
+path   = "examples/word_problems/gap.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — the user's missing quantity: *Bob has 5 apples. He gave 2 to Alice. How many apples do they have together?* Bob's 3 is answered, *together* has no row, and `(unanswered (together …) (amount Alice apples t0))` names the gap; search-free and monotone, by `gaps`' `absent`."
+
+[[entry]]
+path   = "examples/word_problems/gap_assume.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — the gap closed by an assumption, `(assumed (amount Alice apples t0) z)`: 5, and `rests-on` says what the answer rests on."
+
+[[entry]]
+path   = "examples/word_problems/gap_fact.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — the gap closed by a sentence, *Alice has 4 apples*: 3, 6 and 9."
+
+[[entry]]
+path   = "examples/word_problems/gaps.ein"
+group  = "positive"
+runs   = ["saturate", "render rules"]
+note   = "M1f S1f.6.20 — a theory module, imported by the gap and kinds problems: a wanted quantity with no value and nothing to compute it from is `not-stated`, by `absent`. No solve: it imports the declarations of `words` and not its closing rule, so alone `asked` and `wanted` are open and a solve describes the blind enumerator's `(asked __closed__)` (E-1 of the phase's findings), not the module."
+
+[[entry]]
+path   = "examples/word_problems/kinds.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — two kinds of thing: Bob's apples and Alice's pears, *how many apples together?* No answer, and Alice's apples named as not stated."
+
+[[entry]]
+path   = "examples/word_problems/kinds_assume.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — kinds with the assumption written, Alice has no apples: 5, resting on it."
+
+[[entry]]
+path   = "examples/word_problems/kinds_full.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — both kinds stated for both: 8 apples, and the pears are never wanted."
+
+[[entry]]
+path   = "examples/word_problems/more.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — who has more, and by how many: a comparison, then the larger less the smaller; Alice, by 7."
+
+[[entry]]
+path   = "examples/word_problems/pencils.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — three operations chained: 12 cartons of 144 pencils, 250 to the office, the rest among 31 classes; 47 each and 21 left over."
+
+[[entry]]
+path   = "examples/word_problems/readings.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.20 — a theory module, imported by boxes12: the two readings of *need* as facts, `reads-as` left open for the hrule `read-need`, nothing owed (the page's `readings_plain`). Alone it holds no division, so nothing is proposed: R {∅}. The 13-apple problems that make it propose are not corpus entries: `region.rs`'s fact-grain sweep does not end on them (E-33 of the phase's findings, Q-M1f.198)."
+
+[[entry]]
+path   = "examples/word_problems/unused.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.20 — three sentences the question does not need: the answer is 3 and the run never wants Alice's 7, Carol's 9 or the box."
+
+[[entry]]
+path   = "examples/word_problems/words.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.20 — the theory module every problem here imports: what *has*, *gave*, *together*, *more*, *holds*, *of*, *shared* and *need* mean, as plan rules backwards from the question and request rules to `std.arith`. Alone it has no question, so nothing is wanted or computed: R {∅}."

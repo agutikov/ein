@@ -1,0 +1,60 @@
+;;; `gaps` — a missing quantity, named (M1f P1f.6, S1f.6.20). A quantity the
+;;; plan of `words` wants, that no sentence states and nothing lets be
+;;; computed, is a derived fact, `(not-stated Q)`, by `absent`; a question
+;;; that rests on it is `(unanswered QUESTION Q)`. An assumption the problem
+;;; file writes, `(assumed Q N)`, gives the value, and every question computed
+;;; from it is marked, `(rests-on QUESTION Q N)`. Kept apart from `words`,
+;;; which has no `absent`. Import it beside `words`:
+;;; `(import gaps :symbols (gaps))`.
+(import words :symbols (asked wanted needs value assumed))
+
+(relation not-stated Quantity
+  :why "the problem does not state [{?1}]")
+(relation depends Quantity Quantity
+  :why "[{?1}] rests on [{?2}]")
+(relation unanswered Quantity Quantity
+  :why "the question [{?1}] has no answer: the problem does not state [{?2}]")
+
+(relation rests-on Quantity Quantity Number
+  :why "the answer to [{?1}] rests on an assumption: [{?2}] is {?3}")
+
+(rule answer-rests-on-assumption ()
+  :match  (and (asked ?q) (depends ?q ?g) (assumed ?g ?v))
+  :assert (rests-on ?q ?g ?v)
+  :why    "[{?q}] is computed from [{?g}], which the problem does not state and which is assumed to be {?v}")
+
+(rule gap-not-stated ()
+  :match  (and (wanted ?q) (absent (value ?q ?v)) (absent (needs ?q ?r)))
+  :assert (not-stated ?q)
+  :why    "[{?q}] is wanted, no sentence states it, and nothing in the problem lets it be computed from something else")
+
+(rule depends-step ()
+  :match  (needs ?q ?r)
+  :assert (depends ?q ?r)
+  :why    "[{?q}] is computed from [{?r}]")
+
+(rule depends-chain ()
+  :match  (and (depends ?q ?r) (needs ?r ?s))
+  :assert (depends ?q ?s)
+  :why    "[{?q}] is computed from [{?r}], which is computed from [{?s}]")
+
+(rule gap-blocks-question ()
+  :match  (and (asked ?q) (depends ?q ?g) (not-stated ?g))
+  :assert (unanswered ?q ?g)
+  :why    "the question needs [{?g}], which the problem does not state")
+
+(rule gap-is-the-question ()
+  :match  (and (asked ?q) (not-stated ?q))
+  :assert (unanswered ?q ?q)
+  :why    "the question asks for [{?q}], which the problem does not state")
+
+(relation gaps-rule Rule
+  :why "{?1} is a rule of gaps")
+(gaps-rule gaps)
+(rule gaps ()
+  :match  ()
+  :assert (and (__closed__ not-stated) (__closed__ depends) (__closed__ unanswered) (__closed__ rests-on)
+               (__closed__ gaps-rule)
+               (gaps-rule gap-not-stated) (gaps-rule answer-rests-on-assumption) (gaps-rule depends-step) (gaps-rule depends-chain)
+               (gaps-rule gap-blocks-question) (gaps-rule gap-is-the-question))
+  :why    "the gap theory guesses nothing")

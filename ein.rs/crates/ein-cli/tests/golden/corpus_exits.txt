@@ -1553,6 +1553,54 @@
 0    examples/syntax/unary-and-nary.ein :: saturate
 1    examples/syntax/wrappers.ein :: render rules
 0    examples/syntax/wrappers.ein :: saturate
+0    examples/word_problems/bob1.ein :: saturate
+0    examples/word_problems/bob1.ein :: solve
+0    examples/word_problems/bob1.ein :: test
+0    examples/word_problems/boxes12.ein :: saturate
+0    examples/word_problems/boxes12.ein :: solve
+0    examples/word_problems/boxes12.ein :: solve --trace {out}/trace.md
+0    examples/word_problems/boxes12.ein :: test
+0    examples/word_problems/bystander.ein :: saturate
+0    examples/word_problems/bystander.ein :: solve
+0    examples/word_problems/bystander.ein :: test
+0    examples/word_problems/contra.ein :: saturate
+0    examples/word_problems/contra.ein :: solve
+0    examples/word_problems/contra.ein :: test
+0    examples/word_problems/gap.ein :: saturate
+0    examples/word_problems/gap.ein :: solve
+0    examples/word_problems/gap.ein :: test
+0    examples/word_problems/gap_assume.ein :: saturate
+0    examples/word_problems/gap_assume.ein :: solve
+0    examples/word_problems/gap_assume.ein :: test
+0    examples/word_problems/gap_fact.ein :: saturate
+0    examples/word_problems/gap_fact.ein :: solve
+0    examples/word_problems/gap_fact.ein :: test
+0    examples/word_problems/gaps.ein :: render rules
+0    examples/word_problems/gaps.ein :: saturate
+0    examples/word_problems/kinds.ein :: saturate
+0    examples/word_problems/kinds.ein :: solve
+0    examples/word_problems/kinds.ein :: test
+0    examples/word_problems/kinds_assume.ein :: saturate
+0    examples/word_problems/kinds_assume.ein :: solve
+0    examples/word_problems/kinds_assume.ein :: test
+0    examples/word_problems/kinds_full.ein :: saturate
+0    examples/word_problems/kinds_full.ein :: solve
+0    examples/word_problems/kinds_full.ein :: test
+0    examples/word_problems/more.ein :: saturate
+0    examples/word_problems/more.ein :: solve
+0    examples/word_problems/more.ein :: test
+0    examples/word_problems/pencils.ein :: saturate
+0    examples/word_problems/pencils.ein :: solve
+0    examples/word_problems/pencils.ein :: test
+0    examples/word_problems/readings.ein :: render rules
+0    examples/word_problems/readings.ein :: saturate
+0    examples/word_problems/readings.ein :: solve
+0    examples/word_problems/unused.ein :: saturate
+0    examples/word_problems/unused.ein :: solve
+0    examples/word_problems/unused.ein :: test
+0    examples/word_problems/words.ein :: render rules
+0    examples/word_problems/words.ein :: saturate
+0    examples/word_problems/words.ein :: solve
 0    examples/zebra.ein :: render constraints
 0    examples/zebra.ein :: render lattice
 0    examples/zebra.ein :: render rules

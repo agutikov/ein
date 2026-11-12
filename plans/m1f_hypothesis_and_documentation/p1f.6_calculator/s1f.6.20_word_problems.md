@@ -6,6 +6,11 @@
 29 programs under `build/s1f.6.20/` on the release binary, every problem of the table answered, the three gap
 mechanisms and the three forms of a missing reading each run, twelve questions with recommendations, and E-17 to
 E-20 in [`findings.md`](findings.md). Nothing shipped; T2 onward wait for the rulings.
+**The prototype was banked on 2026-11-12**, on the user's instruction of that day, with the variants the page
+recommends: [`examples/word_problems/`](../../../examples/word_problems/README.md), three modules and thirteen
+problems ([§ T2 record](#t2-record-2026-11-12-the-prototype-banked)). The remainder variant is not among them: a
+test of the gate does not end on it (E-33). The twelve questions stay open, and the tests T2 lists wait for the
+rulings.
 Its first task **stops for the user** with example programs before any theory is written.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations. The protocol is ruled
 ([the rulings](design.md#the-rulings-2026-11-11)): request facts, result facts read by a goal with a variable in
@@ -193,3 +198,123 @@ holds each gap problem to its named gap.
 - **Engine findings.** Each is a row of the phase's [`findings.md`](findings.md), shown to the user with the
   page; a wrong answer is a register row before anything fixes it. Each row there a problem meets is named on
   the page.
+
+## T2 record, 2026-11-12: the prototype banked
+
+**The instruction.** The user, 2026-11-12: *"bank word problems into examples/word_problems with recommended
+variants"*. It is an instruction for the examples. **It is not a ruling on the twelve questions of
+[`word_problems.md` § 11](word_problems.md#11-the-questions-for-the-user), which stay open**; a ruling that
+differs from a recommendation moves the banked files. No stdlib module and no engine source moved.
+
+**What is banked**, under [`examples/word_problems/`](../../../examples/word_problems/README.md): sixteen
+`.ein` files and a README.
+
+| the page's question | the variant banked | the files |
+|---|---|---|
+| 1, how a problem is written | form 1, named moments | every problem |
+| 2, the direction of the theory | backwards from the question, then forwards | `words.ein` |
+| 3, a missing quantity | (b), a derived fact by `absent`, in a module of its own | `gaps.ein`; `gap.ein`, `kinds.ein` |
+| 4, an assumption | a marked fact, `assumed`, with `rests-on` beside the answer | `gap_assume.ein`, `kinds_assume.ein` |
+| 5, a named gap with a supposition | nothing: neither combination is banked | — |
+| 6, a missing reading | readings as hypotheses with nothing owed, the page's `readings_plain`; `need-exact` answers with no reading where nothing is left over | `readings.ein`; `boxes12.ein`. **Its 13-apple problems are not banked** (below) |
+| 7, two kinds | *has 3 pears* does not say *no apples*: a gap | `kinds.ein`, `kinds_assume.ein`, `kinds_full.ein` |
+| 8, the model's boundary | a fact with a `:source`, a premise of the rules that depend on it | `words.ein`'s `(model-counts-only)` |
+| 9, where and what it is called | `examples/word_problems/`, `words`, `gaps`, `readings` | the directory |
+| 10, more readings of a word | none added | — |
+| 11, the trace as the pupil's page | nothing built; `boxes12.ein` declares a `--trace` cell | — |
+| 12, the evidence for an expression layer | the rules as the prototype has them, two a word | `words.ein` |
+
+The other problems of the stage's table: `bob1.ein`, `gap_fact.ein`, `contra.ein`, `pencils.ein`, `more.ein`,
+`unused.ein`, `bystander.ein`.
+
+**Every answer re-taken**, on the release binary and the stdlib of the banking commit (the prototype ran on the
+stdlib of `a621dc75`, before `std.int`, `std.rat` and `std.num9`): `ein test examples/word_problems/` holds 21
+claims in 13 files, none failed and none not checked, and each read-out was set beside the page's (`ein solve`
+on each file, 2026-11-12).
+
+| file | the answer | universe | k_s |
+|---|---|---|---:|
+| `bob1` | 3 | no candidate | 1 |
+| `gap` | Bob's 3 and 5 known; *together* no row; `(unanswered (together Bob Alice apples t1) (amount Alice apples t0))` | no candidate | 1 |
+| `gap_fact` | 3, 6 and 9 | no candidate | 1 |
+| `gap_assume` | 5, and `(rests-on (together Bob Alice apples t1) (amount Alice apples t0) z)` | no candidate | 1 |
+| `contra` | root dead, R empty; the core: the two sentences, the question, `(model-counts-only)`, `(fs 7 5 0 2 0)` and `(nz 2)`; refuted by `gave-more-than-had-is-false` | no candidate | 0 |
+| `kinds` | Bob's 5 known; no answer; Alice's apples not stated | no candidate | 1 |
+| `kinds_assume` | 5, resting on the assumption | no candidate | 1 |
+| `kinds_full` | 8 | no candidate | 1 |
+| `pencils` | 47 each, 21 left over; 1728 and 1478 on the way | no candidate | 1 |
+| `more` | Alice has 7 more | no candidate | 1 |
+| `boxes12` | 4; no reading proposed | no candidate | 1 |
+| `unused` | 3; the values known are Bob's two | no candidate | 1 |
+| `bystander` | 9 | no candidate | 1 |
+
+**No answer differs from the page's.** Root's firings are the page's too: 20 for `bob1`, 140 for `boxes12` (the
+page's `boxes12_plain`), 298 for `pencils`, 21 for `contra` (`ein saturate` on each, 2026-11-12).
+
+**The two programs left out, and the test that did not end.** The page's `boxes13_plain` and `boxes13_stated`
+answer on the banking commit's binary as § 4 reports: three states, *undetermined here*, 4 and 5, with
+`reading-matters` in each, 2 candidates and 4 saturations; and one state, 5 boxes under `pack-all`, 1 candidate
+dead alone (`ein solve` on each, with the banked `readings.ein`, 2026-11-12; the second's `lattice` row reads
+*monotone*, where the page's file imported the owed `readings` and was flagged for its obligation). They were
+banked first, and the gate's workspace run stayed inside `ein-infer/tests/region.rs`'s
+`fact_grain_never_calls_a_violated_cube_monotone` for 13 263 s on one thread until it was stopped. The test runs
+a prototype static analysis (`ein-infer/examples/shared/fact_grain.rs`, read by no route) over every corpus
+file. It closes the candidates under the rules over shapes with unbound arguments as *any*: a supposed reading
+concludes a `value` of any quantity, the word rules read a `value` of any quantity and conclude a request to the
+calculator with any operands, and the closure then follows every shape of every circuit. The stack was in
+`Shape::subsumes` under `classify`. What was tried:
+
+| the corpus | the test |
+|---|---|
+| without the two programs | passes, 20 s |
+| with them | not ended in 300 s, and not in 13 263 s |
+| with them, and the request for the fifth box made at root whatever the reading | not ended in 300 s: the `value` under a reading is the cause, not the request under it |
+| with them, the reading rules concluding `(answer-under Q N OVER)` in place of a `value` | passes, 20 s |
+
+(`cargo test -p ein-infer --test region fact_grain_never`, 2026-11-12.) The corpus has no way to keep a file out
+of that sweep, which walks the files. The test's meaning and the engine were not touched; the two programs are
+not banked; the engine does not loop and gives no wrong answer. It is **E-33** of [`findings.md`](findings.md),
+and what to do is [Q-M1f.198](../open_questions.md#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate),
+defaulted to *not banked* and the user's. `readings.ein` stays, since `boxes12.ein` imports it and it proposes
+nothing there; the directory's README shows the 13-apple program for a reader to run.
+
+**What moved in the files**, beside header comments: `readings.ein` is `readings_plain.ein` under the page's
+proposed name, and its import of `words` lost `wanted`, which it read nowhere (below); `boxes12.ein` is two of
+the page's files in one ([Q-M1f.195](../open_questions.md#q-m1f195--one-file-for-the-two-step-problem)). No rule,
+relation or claim of the prototype was otherwise edited.
+
+**A note on a row that exists**, [`findings.md`](findings.md): E-11 with a relation in place of a rule.
+`readings.ein` as first banked listed `wanted` in its import and read it nowhere; the gate's first run failed in
+`answer_round_trip.rs`, *examples/word_problems/readings.ein: models/01.ein: 2 facts lost*, the declaration the
+re-written program dropped (`build/gate-s1f.6.20-first.log`). The module imports what it reads. `gaps.ein` alone
+meets E-1, `(asked __closed__)`. **No wrong answer of the engine was found** and no row of
+`corpus/wrong_answers.toml` was filed: 305 fixed, 16 open and 1 not wrong (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-12).
+
+**The decisions taken by default**, each the user's to revise:
+[Q-M1f.194](../open_questions.md#q-m1f194--which-of-the-word-problem-prototypes-programs-are-banked-and-under-what-names),
+which programs and under what names;
+[Q-M1f.195](../open_questions.md#q-m1f195--one-file-for-the-two-step-problem), one file for the two-step
+problem; [Q-M1f.196](../open_questions.md#q-m1f196--the-word-problem-modules-as-corpus-entries), the modules as
+corpus entries; [Q-M1f.197](../open_questions.md#q-m1f197--what-holds-the-banked-word-problems), the corpus
+holds them and no test of their own is written before the rulings;
+[Q-M1f.198](../open_questions.md#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate), the
+remainder variant not banked.
+
+**The corpus:** sixteen entries, none `slow`. Thirteen problems under `solve`, `test` and `saturate`,
+`boxes12.ein` under `solve --trace` too; `words.ein` and `readings.ein` under `solve`, `saturate` and `render
+rules`; `gaps.ein` under `saturate` and `render rules`.
+
+**The goldens that move,** named before `EIN_BLESS=1`: `ein-cli/tests/golden/corpus_exits.txt`, 48 new cells,
+the sixteen new files'; `ein-render/tests/golden/corpus_shapes.md5`, 672 new lines, their 42 renderings each;
+and no other line of either (`git diff` on each, every added line naming `examples/word_problems/`, none
+removed). One test's list was edited by hand, as S1f.6.10's was: `ein-infer/tests/alive_invariant.rs`'s `SEEDED`
+gains thirteen of the files, the `z` inside a nested number they write or the calculator's own, and for
+`readings.ein` and `boxes12.ein` the hrule's name its closing rule concludes. No engine source moved.
+
+**Pages:** `examples/word_problems/README.md`, new; `examples/README.md`, a row for the directory;
+[`word_problems.md`](word_problems.md), *Where it is banked* and the table of names; `findings.md`;
+`open_questions.md`; the phase README's row; `corpus/corpus.toml`; `AGENTS.md`. `questions.md`, which holds the
+user's replies in progress, was not touched: its section F says the problems were banked, and Q-M1f.194 to .198
+and E-33 are not yet in its sections I and J.
+

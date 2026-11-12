@@ -1,0 +1,12 @@
+;;; Bob has 5 apples. He gave 2 to Alice. How many apples does Bob have?
+;;; A transfer read as a subtraction: 5 - 2 = 3.
+(import words :symbols (words))
+
+(has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
+(gave Bob Alice apples (n z 2) t0 t1  :source "He gave 2 to Alice.")
+(asked (amount Bob apples t1)         :source "How many apples does Bob have?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (amount Bob apples t1))
+                      (value (amount Bob apples t1) (n z 3))))

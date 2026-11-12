@@ -1,0 +1,345 @@
+;;; `words` — what the words of an elementary-school word problem mean, as
+;;; rules (M1f P1f.6, S1f.6.20). An example theory, not a stdlib module: it
+;;; imports the calculator, `std.arith`, and is imported by the problems
+;;; beside it, `(import words :symbols (words))`. README.md has the
+;;; vocabulary. A problem states what its sentences say as facts
+;;; (`has`, `gave`, `holds`, `packed-in`, `there-are`, `asked`); the rules
+;;; below say what those words mean.
+;;;
+;;; The theory works backwards from the question and then forwards from the
+;;; stated numbers:
+;;;   - the PLAN: `(asked Q)` makes Q wanted; a wanted quantity makes the
+;;;     quantities it is computed from wanted, each step a `(needs Q Q')`;
+;;;   - the COMPUTATION: where the quantities a step needs have a value, the
+;;;     rule for the word asks the calculator (`add`, `sub`, `mul`, `div`,
+;;;     `cmp`) and reads its answer back as the value of the quantity.
+;;; So nothing is computed that no question needs.
+;;;
+;;; A quantity is a nested fact: `(amount Bob apples t0)`, how many apples Bob
+;;; has at the moment t0. A number is the calculator's, `(n z 5)`.
+
+(import std.arith :symbols (arith))
+
+;; ── What the model leaves out, stated once ──────────────────────────────────
+(relation model-counts-only
+  :why "in this model things are counted by number alone: a thing has no size, weight, shape or price, any thing of a kind fits any container that holds that kind, and a person can give away only what they have")
+(model-counts-only
+  :source "the model of the theory `words`: things are counted by number alone (no size, weight, shape or price), any thing of a kind fits any container that holds that kind, and nobody gives away what they do not have")
+
+;; ── The problem's sentences ─────────────────────────────────────────────────
+(relation has Who Kind Number Moment
+  :why "{?1} has {?3} {?2} at {?4}")
+(relation gave Who Who Kind Number Moment Moment
+  :why "{?1} gave {?4} {?3} to {?2}, between {?5} and {?6}")
+(relation holds Container Kind Number
+  :why "one of the {?1} holds {?3} {?2}")
+(relation packed-in Who Kind Container Moment
+  :why "the {?2} of {?1} are all in {?3} at {?4}, each one full")
+(relation there-are Kind Number
+  :why "there are {?2} {?1}")
+(relation asked Quantity
+  :why "the question: {?1}")
+(relation assumed Quantity Number
+  :why "an assumption, not a sentence of the problem: [{?1}] is {?2}")
+
+;; ── Quantities ──────────────────────────────────────────────────────────────
+(relation amount Who Kind Moment
+  :why "how many {?2} {?1} has at {?3}")
+(relation together Who Who Kind Moment
+  :why "how many {?3} {?1} and {?2} have together at {?4}")
+(relation apart Who Who Kind Moment
+  :why "by how many {?3} {?1} and {?2} differ at {?4}")
+(relation capacity Container Kind
+  :why "how many {?2} one of the {?1} holds")
+(relation needed Container Kind Quantity
+  :why "how many {?1} are needed for [{?3}]")
+(relation over Quantity
+  :why "how many are left unpacked, of [{?1}]")
+(relation number-of Kind
+  :why "how many {?1} there are")
+(relation each-of Quantity Kind
+  :why "how many each of the {?2} gets when [{?1}] is shared equally")
+(relation rest-of Quantity Kind
+  :why "how many are left when [{?1}] is shared equally among the {?2}")
+
+;; ── The plan and the values ─────────────────────────────────────────────────
+(relation wanted Quantity
+  :why "wanted: {?1}")
+(relation needs Quantity Quantity
+  :why "to know [{?1}] one must know [{?2}]")
+(relation value Quantity Number
+  :why "{?1}: {?2}")
+(relation has-more Who Who Kind Moment
+  :why "{?1} has more {?3} than {?2} at {?4}")
+(relation same-amount Who Who Kind Moment
+  :why "{?1} and {?2} have equally many {?3} at {?4}")
+(relation left-over Quantity Number Number
+  :why "[{?1}]: {?2} are filled, and {?3} are left over")
+(relation gave-more-than-had Who Kind Number Number
+  :why "{?1} gave {?4} {?2} and had only {?3}")
+
+(rule asked-is-wanted ()
+  :match  (asked ?q)
+  :assert (wanted ?q)
+  :why    "the question asks [{?q}]")
+
+;; ── has ─────────────────────────────────────────────────────────────────────
+(rule has-states ()
+  :match  (and (wanted (amount ?p ?k ?t)) (has ?p ?k ?v ?t))
+  :assert (value (amount ?p ?k ?t) ?v)
+  :why    "the problem states it: {?p} has {?v} {?k} at {?t}")
+
+(rule assumed-gives-value ()
+  :match  (and (wanted ?q) (assumed ?q ?v))
+  :assert (value ?q ?v)
+  :why    "the problem does not state [{?q}]; it is ASSUMED to be {?v}")
+
+;; ── gave ────────────────────────────────────────────────────────────────────
+(rule gave-plan-giver ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?p ?r ?k ?x ?t ?u))
+  :assert (and (wanted (amount ?p ?k ?t))
+               (needs (amount ?p ?k ?u) (amount ?p ?k ?t)))
+  :why    "{?p} gave {?k} away between {?t} and {?u}: what {?p} has at {?u} comes from what {?p} had at {?t}")
+
+(rule gave-means-less ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?p ?r ?k ?x ?t ?u)
+               (value (amount ?p ?k ?t) ?a))
+  :assert (sub ?a ?x)
+  :why    "gave away means less: {?p} had {?a} and gave {?x}, so take {?x} from {?a}")
+
+(rule giver-has-the-difference ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?p ?r ?k ?x ?t ?u)
+               (value (amount ?p ?k ?t) ?a) (diff-of ?a ?x ?d z))
+  :assert (value (amount ?p ?k ?u) ?d)
+  :why    "{?a} - {?x} = {?d}: {?p} has {?d} {?k} at {?u}")
+
+(rule giver-gave-too-many ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?p ?r ?k ?x ?t ?u)
+               (value (amount ?p ?k ?t) ?a) (diff-of ?a ?x z ?w) (neq ?w z))
+  :assert (gave-more-than-had ?p ?k ?a ?x)
+  :why    "{?p} had {?a} {?k} and gave {?x}: {?a} is short of {?x} by {?w}")
+
+(rule gave-more-than-had-is-false ()
+  :match  (and (gave-more-than-had ?p ?k ?a ?x) (model-counts-only))
+  :assert (false)
+  :why    "nobody gives away what they do not have: {?p} cannot give {?x} {?k} out of {?a}")
+
+(rule gave-plan-receiver ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?g ?p ?k ?x ?t ?u))
+  :assert (and (wanted (amount ?p ?k ?t))
+               (needs (amount ?p ?k ?u) (amount ?p ?k ?t)))
+  :why    "{?p} was given {?k} between {?t} and {?u}: what {?p} has at {?u} comes from what {?p} had at {?t}")
+
+(rule was-given-means-more ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?g ?p ?k ?x ?t ?u)
+               (value (amount ?p ?k ?t) ?a))
+  :assert (add ?a ?x)
+  :why    "was given means more: {?p} had {?a} and got {?x}, so add {?x} to {?a}")
+
+(rule receiver-has-the-sum ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?g ?p ?k ?x ?t ?u)
+               (value (amount ?p ?k ?t) ?a) (sum-of ?a ?x ?s))
+  :assert (value (amount ?p ?k ?u) ?s)
+  :why    "{?a} + {?x} = {?s}: {?p} has {?s} {?k} at {?u}")
+
+(rule bystander-plan ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?g ?r ?k ?x ?t ?u)
+               (neq ?p ?g) (neq ?p ?r))
+  :assert (and (wanted (amount ?p ?k ?t))
+               (needs (amount ?p ?k ?u) (amount ?p ?k ?t)))
+  :why    "{?p} neither gave nor got {?k} between {?t} and {?u}: what {?p} has is unchanged")
+
+(rule bystander-keeps ()
+  :match  (and (wanted (amount ?p ?k ?u)) (gave ?g ?r ?k ?x ?t ?u)
+               (neq ?p ?g) (neq ?p ?r) (value (amount ?p ?k ?t) ?a))
+  :assert (value (amount ?p ?k ?u) ?a)
+  :why    "nothing changed for {?p} between {?t} and {?u}: still {?a} {?k}")
+
+;; ── together ────────────────────────────────────────────────────────────────
+(rule together-plan ()
+  :match  (wanted (together ?p ?q ?k ?t))
+  :assert (and (wanted (amount ?p ?k ?t)) (wanted (amount ?q ?k ?t))
+               (needs (together ?p ?q ?k ?t) (amount ?p ?k ?t))
+               (needs (together ?p ?q ?k ?t) (amount ?q ?k ?t)))
+  :why    "together means a sum: first what {?p} has and what {?q} has, of {?k} alone, at {?t}")
+
+(rule together-means-sum ()
+  :match  (and (wanted (together ?p ?q ?k ?t))
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b))
+  :assert (add ?a ?b)
+  :why    "together means a sum: {?p} has {?a} and {?q} has {?b}, so add them")
+
+(rule together-is-the-sum ()
+  :match  (and (wanted (together ?p ?q ?k ?t))
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b)
+               (sum-of ?a ?b ?s))
+  :assert (value (together ?p ?q ?k ?t) ?s)
+  :why    "{?a} + {?b} = {?s}: together {?p} and {?q} have {?s} {?k}")
+
+;; ── more than, and by how much ──────────────────────────────────────────────
+(rule apart-plan ()
+  :match  (wanted (apart ?p ?q ?k ?t))
+  :assert (and (wanted (amount ?p ?k ?t)) (wanted (amount ?q ?k ?t))
+               (needs (apart ?p ?q ?k ?t) (amount ?p ?k ?t))
+               (needs (apart ?p ?q ?k ?t) (amount ?q ?k ?t)))
+  :why    "who has more means a comparison: first what {?p} has and what {?q} has")
+
+(rule more-means-compare ()
+  :match  (and (wanted (apart ?p ?q ?k ?t))
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b))
+  :assert (cmp ?a ?b)
+  :why    "who has more: compare {?a} with {?b}")
+
+(rule first-has-more ()
+  :match  (and (wanted (apart ?p ?q ?k ?t))
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b)
+               (cmp-of ?a ?b gt))
+  :assert (and (has-more ?p ?q ?k ?t) (sub ?a ?b))
+  :why    "{?a} is more than {?b}: {?p} has more; by how much means take {?b} from {?a}")
+
+(rule second-has-more ()
+  :match  (and (wanted (apart ?p ?q ?k ?t))
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b)
+               (cmp-of ?a ?b lt))
+  :assert (and (has-more ?q ?p ?k ?t) (sub ?b ?a))
+  :why    "{?a} is less than {?b}: {?q} has more; by how much means take {?a} from {?b}")
+
+(rule neither-has-more ()
+  :match  (and (wanted (apart ?p ?q ?k ?t))
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b)
+               (cmp-of ?a ?b eq))
+  :assert (and (same-amount ?p ?q ?k ?t) (value (apart ?p ?q ?k ?t) z))
+  :why    "{?a} and {?b} are equal: neither has more")
+
+(rule more-by-first ()
+  :match  (and (has-more ?p ?q ?k ?t)
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b)
+               (diff-of ?a ?b ?d z) (wanted (apart ?p ?q ?k ?t)))
+  :assert (value (apart ?p ?q ?k ?t) ?d)
+  :why    "{?a} - {?b} = {?d}: {?p} has {?d} more {?k} than {?q}")
+
+(rule more-by-second ()
+  :match  (and (has-more ?q ?p ?k ?t)
+               (value (amount ?p ?k ?t) ?a) (value (amount ?q ?k ?t) ?b)
+               (diff-of ?b ?a ?d z) (wanted (apart ?p ?q ?k ?t)))
+  :assert (value (apart ?p ?q ?k ?t) ?d)
+  :why    "{?b} - {?a} = {?d}: {?q} has {?d} more {?k} than {?p}")
+
+;; ── holds, and N containers of M ────────────────────────────────────────────
+(rule holds-states ()
+  :match  (and (wanted (capacity ?c ?k)) (holds ?c ?k ?m))
+  :assert (value (capacity ?c ?k) ?m)
+  :why    "the problem states it: one of the {?c} holds {?m} {?k}")
+
+(rule packed-plan ()
+  :match  (and (wanted (amount ?p ?k ?t)) (packed-in ?p ?k ?c ?t))
+  :assert (and (wanted (amount ?p ?c ?t)) (wanted (capacity ?c ?k))
+               (needs (amount ?p ?k ?t) (amount ?p ?c ?t))
+               (needs (amount ?p ?k ?t) (capacity ?c ?k)))
+  :why    "the {?k} of {?p} are in {?c}: first how many {?c}, and how many {?k} one holds")
+
+(rule of-means-times ()
+  :match  (and (wanted (amount ?p ?k ?t)) (packed-in ?p ?k ?c ?t)
+               (value (amount ?p ?c ?t) ?a) (value (capacity ?c ?k) ?m))
+  :assert (mul ?a ?m)
+  :why    "{?a} {?c} of {?m} {?k} each means a product: multiply {?a} by {?m}")
+
+(rule packed-is-the-product ()
+  :match  (and (wanted (amount ?p ?k ?t)) (packed-in ?p ?k ?c ?t)
+               (value (amount ?p ?c ?t) ?a) (value (capacity ?c ?k) ?m)
+               (product-of ?a ?m ?w))
+  :assert (value (amount ?p ?k ?t) ?w)
+  :why    "{?a} x {?m} = {?w}: {?p} has {?w} {?k} at {?t}")
+
+;; ── there are, shared among ─────────────────────────────────────────────────
+(rule there-are-states ()
+  :match  (and (wanted (number-of ?g)) (there-are ?g ?m))
+  :assert (value (number-of ?g) ?m)
+  :why    "the problem states it: there are {?m} {?g}")
+
+(rule rest-plan ()
+  :match  (wanted (rest-of ?q ?g))
+  :assert (and (wanted (each-of ?q ?g)) (needs (rest-of ?q ?g) (each-of ?q ?g)))
+  :why    "what is left over is known once the sharing is done")
+
+(rule share-plan ()
+  :match  (wanted (each-of ?q ?g))
+  :assert (and (wanted ?q) (wanted (number-of ?g))
+               (needs (each-of ?q ?g) ?q) (needs (each-of ?q ?g) (number-of ?g)))
+  :why    "shared equally means a division: first how many there are to share, and among how many {?g}")
+
+(rule shared-means-divide ()
+  :match  (and (wanted (each-of ?q ?g)) (value ?q ?a) (value (number-of ?g) ?m))
+  :assert (div ?a ?m)
+  :why    "shared equally means a division: {?a} among {?m} {?g}")
+
+(rule each-gets-the-quotient ()
+  :match  (and (wanted (each-of ?q ?g)) (value ?q ?a) (value (number-of ?g) ?m)
+               (quot-of ?a ?m ?f ?r))
+  :assert (and (value (each-of ?q ?g) ?f) (value (rest-of ?q ?g) ?r))
+  :why    "{?a} divided by {?m} = {?f}, remainder {?r}: each of the {?g} gets {?f}, and {?r} are left")
+
+;; ── need: how many containers ───────────────────────────────────────────────
+(rule need-plan ()
+  :match  (wanted (needed ?c ?k ?q))
+  :assert (and (wanted ?q) (wanted (capacity ?c ?k))
+               (needs (needed ?c ?k ?q) ?q) (needs (needed ?c ?k ?q) (capacity ?c ?k)))
+  :why    "how many {?c} means a division: first how many {?k} there are to pack, and how many one of the {?c} holds")
+
+(rule holds-means-divide ()
+  :match  (and (wanted (needed ?c ?k ?q)) (value ?q ?a) (value (capacity ?c ?k) ?m))
+  :assert (div ?a ?m)
+  :why    "one of the {?c} holds {?m}, so the number of {?c} is a division: {?a} divided by {?m}")
+
+(rule need-exact ()
+  :match  (and (wanted (needed ?c ?k ?q)) (value ?q ?a) (value (capacity ?c ?k) ?m)
+               (quot-of ?a ?m ?f z) (model-counts-only))
+  :assert (value (needed ?c ?k ?q) ?f)
+  :why    "{?a} divided by {?m} = {?f} and nothing is left over: {?f} {?c}, each full, whatever need means")
+
+(rule need-left-over ()
+  :match  (and (wanted (needed ?c ?k ?q)) (value ?q ?a) (value (capacity ?c ?k) ?m)
+               (quot-of ?a ?m ?f ?r) (neq ?r z))
+  :assert (left-over (needed ?c ?k ?q) ?f ?r)
+  :why    "{?a} divided by {?m} = {?f}, remainder {?r}: {?f} {?c} are filled and {?r} {?k} are left over, so the answer depends on what need means")
+
+;; ── The theory's one entry: closes its relations and names its rules ────────
+(relation words-rule Rule
+  :why "{?1} is a rule of words")
+(relation words-uses Theory
+  :why "words computes with the theory {?1}")
+(words-rule words)
+
+(rule words ()
+  :match  ()
+  :assert (and (__closed__ model-counts-only)
+               (__closed__ has) (__closed__ gave) (__closed__ holds)
+               (__closed__ assumed) (__closed__ packed-in) (__closed__ there-are) (__closed__ asked)
+               (__closed__ amount) (__closed__ together) (__closed__ apart)
+               (__closed__ capacity) (__closed__ needed) (__closed__ over) (__closed__ left-over) (__closed__ number-of)
+               (__closed__ each-of) (__closed__ rest-of)
+               (__closed__ wanted) (__closed__ needs) (__closed__ value)
+               (__closed__ has-more) (__closed__ same-amount)
+               (__closed__ gave-more-than-had) (__closed__ words-rule)
+               (__closed__ words-uses) (words-uses arith)
+               (words-rule asked-is-wanted) (words-rule assumed-gives-value) (words-rule has-states)
+               (words-rule gave-plan-giver) (words-rule gave-means-less)
+               (words-rule giver-has-the-difference) (words-rule giver-gave-too-many)
+               (words-rule gave-more-than-had-is-false)
+               (words-rule gave-plan-receiver) (words-rule was-given-means-more)
+               (words-rule receiver-has-the-sum)
+               (words-rule bystander-plan) (words-rule bystander-keeps)
+               (words-rule together-plan) (words-rule together-means-sum)
+               (words-rule together-is-the-sum)
+               (words-rule apart-plan) (words-rule more-means-compare)
+               (words-rule first-has-more) (words-rule second-has-more)
+               (words-rule neither-has-more) (words-rule more-by-first)
+               (words-rule more-by-second)
+               (words-rule holds-states) (words-rule packed-plan)
+               (words-rule of-means-times) (words-rule packed-is-the-product)
+               (words-rule there-are-states) (words-rule rest-plan)
+               (words-rule share-plan) (words-rule shared-means-divide)
+               (words-rule each-gets-the-quotient)
+               (words-rule need-plan) (words-rule holds-means-divide)
+               (words-rule need-exact) (words-rule need-left-over))
+  :why    "the word theory guesses nothing: every relation of it is closed")

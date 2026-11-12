@@ -1,0 +1,23 @@
+;;; A school has 12 boxes of pencils, 144 pencils in each. 250 pencils go to
+;;; the office. The rest is shared equally among 31 classes. How many pencils
+;;; does each class get, and how many are left over?
+;;; Three operations, each derived from the one before:
+;;; 12 x 144 = 1728, 1728 - 250 = 1478, 1478 / 31 = 47, remainder 21.
+(import words :symbols (words))
+
+(has School cartons (n (n z 1) 2) t0   :source "A school has 12 boxes of pencils,")
+(holds cartons pencils (n (n (n z 1) 4) 4) :source "144 pencils in each.")
+(packed-in School pencils cartons t0    :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(gave School Office pencils (n (n (n z 2) 5) 0) t0 t1 :source "250 pencils go to the office.")
+(there-are classes (n (n z 3) 1)        :source "The rest is shared equally among 31 classes.")
+(asked (each-of (amount School pencils t1) classes) :source "How many pencils does each class get,")
+(asked (rest-of (amount School pencils t1) classes) :source "and how many are left over?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (each-of (amount School pencils t1) classes))
+                      (asked (rest-of (amount School pencils t1) classes))
+                      (value (each-of (amount School pencils t1) classes) (n (n z 4) 7))
+                      (value (rest-of (amount School pencils t1) classes) (n (n z 2) 1))))
+(query :goal (value ?q ?n)
+       :goal-text "{?q}: {?n}")

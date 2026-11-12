@@ -1,0 +1,22 @@
+;;; Bob has 5 apples. He gave 2 to Alice. How many apples do they have together?
+;;; Assume that Alice had none.
+;;; The gap of gap.ein closed by an assumption, a fact with a marker of its
+;;; own, `assumed`: the answer is 5, and a second fact says what it rests on.
+(import words :symbols (words))
+(import gaps :symbols (gaps))
+
+(has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
+(gave Bob Alice apples (n z 2) t0 t1  :source "He gave 2 to Alice.")
+(asked (together Bob Alice apples t1) :source "How many apples do they have together?")
+(assumed (amount Alice apples t0) z   :source "ASSUMPTION, not in the problem: Alice had no apples.")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (together Bob Alice apples t1))
+                      (value (together Bob Alice apples t1) (n z 5))))
+(query :goal (rests-on ?q ?g ?v)
+       :goal-text "the answer to [{?q}] rests on the assumption that [{?g}] is {?v}"
+       :expect (model (rests-on (together Bob Alice apples t1) (amount Alice apples t0) z)))
+(query :goal (unanswered ?q ?g)
+       :goal-text "no answer to [{?q}]: the problem does not state [{?g}]"
+       :expect (model))
