@@ -166,7 +166,7 @@ where one of the problems above needs it, and the record names each.
 ## What it must not do
 
 - **Not move the theory into the stdlib** ([reply 34](questions.md#q34): *"examples for now - (a)"*).
-- **Not add an expression layer** (reply 10: P1f.8).
+- **Not add an expression layer** (reply 10: P1f.8, now M1g's P1g.10).
 - **Not redesign the gap or the assumption** (replies 28 and 29: M1h), nor the order of events (reply 26:
   M1h's first phase).
 - **Not change what the fact-grain test means.**

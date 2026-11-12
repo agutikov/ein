@@ -15,7 +15,9 @@ The user, 2026-11-11, on whether the engine work should be a milestone of its ow
 contains everything I request"*. So the engine work the logic needs is here, beside the programs that show
 why it is needed. (An M1h exists since 2026-11-12, [*beyond word problems*](../../m1h_beyond_word_problems/README.md);
 it is another subject and not an engine milestone for the logic.) A requirement is built **because a stage of P1g.2 to P1g.5 cannot be done, or can only be
-done by a detour, without it**, and each stage file names those stages. A requirement no stage needs is
+done by a detour, without it**, and each stage file names those stages. (Since 2026-11-13 the same holds of
+[P1g.11](../p1g.11_school_geometry/README.md), school geometry, whose candidates are
+[S1g.6.7](s1g.6.7_what_theorems_as_rules_needs.md)'s.) A requirement no stage needs is
 ruled or given an owner at the milestone's close and is not built for its own sake.
 
 ## The discipline
@@ -60,6 +62,15 @@ one phase of M1g that touches them:
 | C-11 | **A refutation is reported and never concluded; no rule reads another state.** A dead assumption is in N with its core, and root holds nothing of it; `Imp` introduction, reductio and proof by cases each conclude from what holds in *other* states | M1g's probe 4 (2026-11-11); [S1g.3.3](../p1g.3_proof_systems/s1g.3.3_natural_deduction.md) | new behaviour; **the user's** ([Q-M1g.5](../open_questions.md#q-m1g5--is-a-refuted-assumption-a-fact)) | [S1g.6.5](s1g.6.5_rules_as_data_and_refutations.md) |
 | C-12 | **A search that knows *exactly one value per object*.** With each of n objects a hypothesis that owes one of k values, describing R visits the partial assignments too: 3ⁿ saturations for n two-valued inputs where the complete assignments are 2ⁿ, and no answer in 150 s at 16 inputs | question 25 of the calculator's [`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q25) and its table (2026-11-11); the user's reply of 2026-11-12 and round 2's item 25 | performance; no answer may move | [S1g.6.6](s1g.6.6_exactly_one_value_per_object.md) |
 
+**School geometry's candidates (added 2026-11-13)** are not rows of this table. The user said of
+[S1g.11.2](../p1g.11_school_geometry/s1g.11.2_theorems_as_rules.md), *theorems as rules*, that it *"probably
+will require new features in the engine"*, and [S1g.6.7](s1g.6.7_what_theorems_as_rules_needs.md) lists what
+that stage and its neighbours already say they may lack, as T-1 to T-10: six are C-1, C-2, C-6, C-8, C-9 and
+C-11 above, met on a figure where the logic meets them on a formula, and four have no C-id (figure names that
+do not depend on the order of their points, a proof read off a run, equality classes of segments and angles,
+and a check that a reading over the maximal line is sound). A T-row gets a C-id here only when a computed
+program of P1g.11 has shown it and the user has ruled it taken up.
+
 Not candidates, though they will be met: the read-out's wording for an unsatisfiable requirement (probe 1b;
 it is right, and S1g.2.2 teaches it); a schema's unbound variable refused at load (§ 4.13; rightly); W39 on
 `or` (F22's); cores made canonical (F22's); non-monotone programs decided (F21's). Each stays with its owner.
@@ -74,8 +85,9 @@ it is right, and S1g.2.2 teaches it); a schema's unbound variable refused at loa
 | [S1g.6.4](s1g.6.4_witnesses_and_fresh_names.md) | Witnesses and fresh names: Skolem terms, hypotheses about nested facts, and what H holds of them | C-8, C-9 | S1g.3.3, S1g.3.5, S1g.4.4 | planned; two questions **for the user** |
 | [S1g.6.5](s1g.6.5_rules_as_data_and_refutations.md) | Rules as data, and a refutation a rule can read: priced first | C-10, C-11 | S1g.3.3, S1g.5.3, S1g.5.4 | planned; a design and a price, **for the user**; a build only on their word |
 | [S1g.6.6](s1g.6.6_exactly_one_value_per_object.md) | A cheaper search where each object takes exactly one value (added 2026-11-12) | C-12 | S1g.2.2, S1g.2.4 | planned |
+| [S1g.6.7](s1g.6.7_what_theorems_as_rules_needs.md) | What *theorems as rules* needs of the engine: the candidates, each a question with its witness (added 2026-11-13, on the user's note of that day) | T-1 to T-10; of this table, C-1, C-2, C-6, C-8, C-9, C-11 | S1g.11.2 first; S1g.11.1, S1g.11.3 | planned; **candidates only**, found by S1g.11.1's and S1g.11.2's computed programs first; what they show is **for the user** |
 
-The numbers S1g.6.7 onward are free for what the survey adds.
+The numbers S1g.6.8 onward are free for what the survey adds.
 
 ## Acceptance
 

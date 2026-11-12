@@ -1,14 +1,15 @@
-# S1f.8.4 — Linear equations in one unknown: the pupil's derivation, no solution and every number, derivation against search, and word problems that need an unknown
+# S1g.10.4 — Linear equations in one unknown: the pupil's derivation, no solution and every number, derivation against search, and word problems that need an unknown
 
-**Phase:** [P1f.8](README.md)
+**Phase:** [P1g.10](README.md) of [M1g](../README.md). Until 2026-11-13 this stage was **S1f.8.4** of M1f's P1f.8
+([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-11. Not started. **Stops for the user once,** before the degenerate cases are built:
 what an equation with no solution, or with every number as one, *is*.
-**Depends on:** [S1f.8.3](s1f.8.3_simplification_and_identities.md), the normal form each side is brought to;
-[S1f.6.7](../p1f.6_calculator/s1f.6.7_negative_numbers.md) and
-[S1f.6.8](../p1f.6_calculator/s1f.6.8_rational_numbers.md) for roots that are not natural numbers;
-[S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md) for the word problems, whose theory this stage
+**Depends on:** [S1g.10.3](s1g.10.3_simplification_and_identities.md), the normal form each side is brought to;
+[S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md) and
+[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md) for roots that are not natural numbers;
+[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) for the word problems, whose theory this stage
 extends and does not rewrite. It takes over the equations of
-[S1f.6.10](../p1f.6_calculator/s1f.6.10_beyond_arithmetic.md), items 1 and 2.
+[S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md), items 1 and 2.
 
 ## The instruction's part
 
@@ -18,19 +19,19 @@ extends and does not rewrite. It takes over the equations of
 
 ### The derivation a pupil writes
 
-*Do the same thing to both sides.* An equation is a fact, `(equation L R)`, over S1f.8.2's expressions. Solving
+*Do the same thing to both sides.* An equation is a fact, `(equation L R)`, over S1g.10.2's expressions. Solving
 it is a chain of equations, each derived from the last by one rule with its `:why`:
 
 | the school step | the rule, in outline |
 |---|---|
-| *expand the brackets and collect like terms on each side* | S1f.8.3's normal form of L and of R |
+| *expand the brackets and collect like terms on each side* | S1g.10.3's normal form of L and of R |
 | *move the terms with x to the left and the numbers to the right* | subtract R's x-term and L's constant from both sides |
 | *divide both sides by the coefficient of x* | the calculator's division, or S1f.6.8's fraction |
-| *check: put the root back* | S1f.8.2's evaluation of both sides at the root, compared |
+| *check: put the root back* | S1g.10.2's evaluation of both sides at the root, compared |
 
 The trace of the run is then the solution as a textbook prints it, **if the trace can be read at the problem
 theory's level**: probe A-1's trace is 123 steps of which 3 are these ([`findings.md`](findings.md) F-2). The
-stage shows the three ways S1f.8.1 proposed and builds the one the user rules; until then its test holds the
+stage shows the three ways S1g.10.1 proposed and builds the one the user rules; until then its test holds the
 three steps *among* the trace's.
 
 It is **search-free** (A-1: no candidate, k_s 1, one saturation), and that is the point to make on the page: a
@@ -39,7 +40,7 @@ linear equation is not a puzzle. Every step is forced.
 **The check is part of the solution, and it is a different thing.** The derivation shows that *if* x is a root
 then x is 5. The check shows that 5 *is* a root. School teaches both and so does the program: the root is
 substituted, both sides evaluated, and `(checked x)` derived. For a linear equation the steps are reversible
-and the check never fails; S1f.8.5's quadratics and an equation with x in a denominator are where it does.
+and the check never fails; S1g.10.5's quadratics and an equation with x in a denominator are where it does.
 
 ### No solution, and every number
 
@@ -79,13 +80,13 @@ program says the unknown *has* a value. The stage builds it properly and compare
 
 The page says plainly which problems want which: a linear equation is derivation; *find a digit d such that …*,
 a cryptarithm and S1f.6.10's unknown digits are search; a quadratic over a small range could be either, and
-S1f.8.5 compares them. **An obligation that the unknown has a value** (the M1d mechanism, as `std.slots` uses
+S1g.10.5 compares them. **An obligation that the unknown has a value** (the M1d mechanism, as `std.slots` uses
 it) is what makes *no solution* show as an empty R under search; the stage writes it and shows the read-out
 with and without.
 
 ### Word problems that need an unknown
 
-[S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md) reads *gave* as a subtraction from a known quantity.
+[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) reads *gave* as a subtraction from a known quantity.
 *Bob has some apples. He gave 2 away and has 3. How many had he?* has the same words and the unknown at the
 start. Two ways, both tried:
 
@@ -106,7 +107,7 @@ between the unknowns that *is* known, `before = now + given`. A missing reading:
 ## Sketch
 
 **Sketch only, to be replaced by programs whose answers are computed.** Probe A-1's program is in
-[S1f.8.1](s1f.8.1_survey_and_design.md#sketch). This is probe A-4, the same equation by search, as the planning
+[S1g.10.1](s1g.10.1_survey_and_design.md#sketch). This is probe A-4, the same equation by search, as the planning
 agent ran it once on 2026-11-11: 10 candidates, 9 dead alone, N 9, k_s 2, R is ∅ and
 `{(value x (n z 5))}`, 11 saturations; `:over maximal` reads `?v = (n z 5)`.
 
@@ -157,12 +158,12 @@ comparison request, `(cmp ?s …)`, should stand in its place (two spellings of 
 
 ## Tasks
 
-1. **The derivation:** the equation as a fact, the four steps as rules over S1f.8.3's normal form, the check.
+1. **The derivation:** the equation as a fact, the four steps as rules over S1g.10.3's normal form, the check.
 2. **The stop:** the four degenerate programs under the three options, every surface shown; the user's ruling
    recorded in the user's words.
 3. **The degenerate cases,** as ruled.
 4. **The search version,** with the obligation, and the comparison table filled with measurements.
-5. **The trace as the school solution** (F-2): what is built is what the user ruled at S1f.8.1 or here.
+5. **The trace as the school solution** (F-2): what is built is what the user ruled at S1g.10.1 or here.
 6. **The word problems with an unknown,** both ways, over S1f.6.20's theory, with the gap problems.
 7. **The tests:** every root against a Rust solver over exact fractions on every equation up to a bound of
    coefficients; every degenerate case; the search-free test for the derivation; the search version held to
@@ -187,12 +188,13 @@ comparison request, `(cmp ?s …)`, should stand in its place (two spellings of 
   module is non-monotone where the calculator is not, and *forbid* may refuse a refutation resting on it. Said
   on the page either way.
 - **That the equation and its unknowns want a problem's name,** so that two equations in one program do not
-  share an `x` (S1f.8.2's finding, met in earnest here and needed by S1f.8.5).
+  share an `x` (S1g.10.2's finding, met in earnest here and needed by S1g.10.5).
 - **Engine findings,** to [`findings.md`](findings.md).
 
 ## The comparison of three methods is M1g's (2026-11-12)
 
 The comparison of arithmetic read backwards, search and algebra on `x × 7 = 862`, planned here for a day
-(`d24e2656`), is [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md), by the user's
-reply of 2026-11-12 (`dc88520b`): *"p1f.8 remain incomplete naive school algebra."* This stage is unchanged
+(`d24e2656`), is [M1g's P1g.9](../p1g.9_one_equation_three_methods/README.md), by the user's
+reply of 2026-11-12 (`dc88520b`): *"p1f.8 remain incomplete naive school algebra."* (The phase those words name is this one, P1g.10 since
+2026-11-13.) This stage is unchanged
 by it: [§ Where search belongs](#where-search-belongs) stands as written.

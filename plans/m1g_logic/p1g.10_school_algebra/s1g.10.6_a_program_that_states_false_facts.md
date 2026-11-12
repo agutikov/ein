@@ -1,15 +1,16 @@
-# S1f.8.10 — A program that states false facts: `2 + 2 = 5`
+# S1g.10.6 — A program that states false facts: `2 + 2 = 5`
 
-**Phase:** [P1f.8](README.md)
+**Phase:** [P1g.10](README.md) of [M1g](../README.md). Until 2026-11-13 this stage was **S1f.8.10** of M1f's P1f.8
+([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-12, on the user's reply of that day. Not started. **An investigation that ends in
 a page shown to the user;** it builds nothing in the engine or the stdlib without a ruling.
 **Depends on:** the calculator as shipped. It is independent of the phase's other stages and may run before
-[S1f.8.1](s1f.8.1_survey_and_design.md)'s stop, since it writes nothing outside `plans/` and `build/` until
+[S1g.10.1](s1g.10.1_survey_and_design.md)'s stop, since it writes nothing outside `plans/` and `build/` until
 its page has been read.
 
 ## The reply
 
-Question 7 of the calculator's [`questions.md`](../p1f.6_calculator/questions.md#q7) asked whether a module
+Question 7 of the calculator's [`questions.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md#q7) asked whether a module
 may reserve its names, so that a program's written facts of them are refused. Its witness: a program that
 writes `(done (sum (n z 2) (n z 2)) (n z 5))` gets `2 + 2 = 5`, *an answer nobody computed*. The user,
 2026-11-12:
@@ -17,7 +18,8 @@ writes `(done (sum (n z 2) (n z 2)) (n z 5))` gets `2 + 2 = 5`, *an answer nobod
 > (a), btw, `2 + 2 = 5` is interesting question - what happens to the program that states false facts? If it
 > is not solved already by-product in existing theories - I expect it belongs to either p1f.8 or M1g
 
-(a) there was *not in this phase*: the calculator's page lists the names and says only requests and `let`
+(The reply's *p1f.8* is this phase, P1g.10 of M1g since 2026-11-13, so its *either … or* now names one
+milestone.) (a) there was *not in this phase*, the calculator's: the calculator's page lists the names and says only requests and `let`
 are a program's to state. The *btw* is this stage.
 
 ## The question
@@ -32,9 +34,9 @@ The cases, each a different thing though all read *2 + 2 = 5*:
 | a false result with **no** request | `(sum-of 2 2 5)` alone | one fact, never checked: nothing asks |
 | a false **internal** fact | `(done (sum 2 2) 5)`, the witness of question 7 | the circuit takes it as its own hand-over, and the public answer is 5 |
 | a false **table row** | `(fa 2 2 0 5 0)` beside `std.digits` | a second row for one column; where a table is closed, what closure says of a written extra row |
-| a false statement in a **problem's own vocabulary** | *Bob has 5 apples* and *Bob has 7 apples* at one moment | the word theory's question, [S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md)'s `contra.ein` is its neighbour |
-| a false **equation as data** | `(equation (Plus (num 2) (num 2)) (num 5))` | not a false fact at all: a statement the program *talks about*, which [S1f.8.4](s1f.8.4_linear_equations.md) answers *no solution* |
-| an **identity** that is false | *prove (a+b)² = a² + b²* | [S1f.8.3](s1f.8.3_simplification_and_identities.md): two normal forms that differ |
+| a false statement in a **problem's own vocabulary** | *Bob has 5 apples* and *Bob has 7 apples* at one moment | the word theory's question, [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s `contra.ein` is its neighbour |
+| a false **equation as data** | `(equation (Plus (num 2) (num 2)) (num 5))` | not a false fact at all: a statement the program *talks about*, which [S1g.10.4](s1g.10.4_linear_equations.md) answers *no solution* |
+| an **identity** that is false | *prove (a+b)² = a² + b²* | [S1g.10.3](s1g.10.3_simplification_and_identities.md): two normal forms that differ |
 
 The last two rows are why the question belongs here: algebra is where *false* stops being a property of a
 fact and becomes an answer about a statement. The first four are about what a theory can say of facts written
@@ -50,7 +52,7 @@ Three mechanisms exist, and the stage tries each on the first four rows before p
   numbers) is measured on a batch.
 - **A checking rule,** monotone: a written result that differs from the derived one in some digit, read by
   the tables, as the calculator's detection rules read a malformed digit
-  ([S1f.6.12's build](../p1f.6_calculator/s1f.6.12_malformed_numbers.md#the-build-as-ruled-2026-11-12)).
+  ([S1f.6.12's build](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md#the-build-as-ruled-2026-11-12)).
   It can only fire where the request was made.
 - **Provenance:** a written fact and a derived one differ in where they came from. What a written fact may
   claim is [F24](../../followups/f24_written_provenance.md)'s question (written provenance), and name
@@ -65,8 +67,8 @@ Three mechanisms exist, and the stage tries each on the first four rows before p
    what each costs a well-formed batch, what each cannot see.
 3. **The page,** with the answer to the reply's *if*: which rows are already answered by an existing theory,
    which by a mechanism that exists and is not applied, and which by nothing. A recommendation a row, and
-   **where each belongs**: this phase (rows 6 and 7 are S1f.8.3's and S1f.8.4's subjects already), F24, or
-   [M1g](../../m1g_logic/README.md) (a false axiom in a proof system, and *ex falso*, are P1g.3's).
+   **where each belongs**: this phase (rows 6 and 7 are S1g.10.3's and S1g.10.4's subjects already), F24, or
+   M1g's logic phases (a false axiom in a proof system, and *ex falso*, are [P1g.3](../p1g.3_proof_systems/README.md)'s).
 4. **Shown to the user.** Anything built follows the ruling, as a task of the stage it belongs to.
 
 ## Acceptance

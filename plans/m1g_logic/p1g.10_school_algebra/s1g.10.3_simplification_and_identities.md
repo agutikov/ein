@@ -1,10 +1,11 @@
-# S1f.8.3 — Simplification as rewriting to a polynomial normal form; equality of expressions; identities
+# S1g.10.3 — Simplification as rewriting to a polynomial normal form; equality of expressions; identities
 
-**Phase:** [P1f.8](README.md)
+**Phase:** [P1g.10](README.md) of [M1g](../README.md). Until 2026-11-13 this stage was **S1f.8.3** of M1f's P1f.8
+([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-11. Not started.
-**Depends on:** [S1f.8.2](s1f.8.2_expressions_and_evaluation.md), the term language and the evaluator, which is
-this stage's check; [S1f.6.7](../p1f.6_calculator/s1f.6.7_negative_numbers.md), signed coefficients;
-[S1f.6.8](../p1f.6_calculator/s1f.6.8_rational_numbers.md), fractional ones. A first cut over natural-number
+**Depends on:** [S1g.10.2](s1g.10.2_expressions_and_evaluation.md), the term language and the evaluator, which is
+this stage's check; [S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md), signed coefficients;
+[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md), fractional ones. A first cut over natural-number
 coefficients and no subtraction may run on S1f.6.6 alone, and says what it leaves out.
 
 ## The instruction's part
@@ -71,8 +72,8 @@ not the lattice, and its cost is the number of intermediate expressions, to be m
 - **An identity** is `(same E F)` answered *yes*: `(a + b)² = a² + 2ab + b²`, the difference of squares, the
   cube of a sum, the distributive law itself. It is **proved for all values**, since equal normal forms are
   equal polynomials. It is not a proof by equational steps: there are no lines. What the program gives a reader
-  is the two computations of the normal forms. A line-by-line equational proof, checked, is M1g's
-  ([README § What is left to M1g](README.md#what-is-left-to-m1g)).
+  is the two computations of the normal forms. A line-by-line equational proof, checked, is P1g.3's
+  ([README § What is left to M1g's other phases](README.md#what-is-left-to-m1gs-other-phases)).
 - **The honest caveat, stated on the page:** *equal as polynomials* and *equal at every value* agree over the
   rationals; the stage says so and cites it, and does not prove it. The Rust check compares both ways on the
   bound: normal forms equal, and values equal on enough points.
@@ -81,7 +82,7 @@ not the lattice, and its cost is the number of intermediate expressions, to be m
 
 **Sketch only, to be replaced by programs whose answers are computed.** The planning agent ran this once on
 2026-11-11 (probe A-6): the binary answered `(simpler (Plus (term (n z 2) x) (term (n z 3) x)) (term (n z 5) x))`,
-no candidate, k_s 1. It is one rewriter rule, *collect like terms*, in a spelling older than S1f.8.2's term
+no candidate, k_s 1. It is one rewriter rule, *collect like terms*, in a spelling older than S1g.10.2's term
 language (`(term C x)` for `c·x`), and it handles exactly the expression shown.
 
 ```lisp
@@ -110,7 +111,7 @@ language (`(term C x)` for `c·x`), and it handles exactly the expression shown.
 ```
 
 A normal form as planned, **not run**, for `3x² + 2x + 5`, most significant term outermost as the calculator's
-accumulator is; the spelling is S1f.8.1's to fix:
+accumulator is; the spelling is S1g.10.1's to fix:
 
 ```lisp
 (poly x (mono (n z 3) (n z 2)                 ; 3 x^2
@@ -123,7 +124,7 @@ accumulator is; the spelling is S1f.8.1's to fix:
 
 1. **The normal form,** for one variable, then for several, with its orders as ruled.
 2. **The circuit:** conversion, merge, product, negation, powers; tagged as the calculator's circuits are if
-   S1f.8.2's measurement says tags are needed.
+   S1g.10.2's measurement says tags are needed.
 3. **The rewriter:** the school steps as rules, the decreasing measure stated for each, and the comparison with
    the circuit on every expression up to the bound.
 4. **Equality and identities:** `same`, and the identities of the school course as corpus programs, each with

@@ -1,15 +1,74 @@
-# S1f.8.6 — What school geometry is, honestly, and how a figure is written
+# S1g.11.1 — What school geometry is, honestly, and how a figure is written
 
-**Phase:** [P1f.8](README.md)
-**Status:** planned 2026-11-11. Not started. **Stops for the user:** the vocabulary and the reading of the
-literature, before [S1f.8.7](s1f.8.7_theorems_as_rules.md) writes a rule base on them.
-**Depends on:** [S1f.8.1](s1f.8.1_survey_and_design.md)'s rulings. It needs no algebra;
-[S1f.6.6](../p1f.6_calculator/s1f.6.6_division.md) for the measure layer.
+**Phase:** [P1g.11](README.md) of [M1g](../README.md). Until 2026-11-13 this stage was **S1f.8.6** of M1f's P1f.8
+([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
+**Status:** planned 2026-11-11. Not started. **Stops for the user, and since 2026-11-13 it is the phase's
+stop:** the geometry's survey on a prototype, the vocabulary and the reading of the literature, before
+[S1g.11.2](s1g.11.2_theorems_as_rules.md) writes a rule base on them. Nothing outside `plans/`, `build/` and
+`docs/lib/` is written before the user has read its page.
+**Depends on:** [S1g.10.1](../p1g.10_school_algebra/s1g.10.1_survey_and_design.md)'s rulings on what the two
+phases share (where the theories live, how a program states its lattice). It needs no algebra;
+[S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md) for the measure layer.
 
 ## The instruction's part
 
 > middle school geometry contains proofs, but I'm not sure it is 100% complete formal proof system (it starts in
 > 5th grade)
+
+## The survey of the geometry, moved here from S1f.8.1 (2026-11-13)
+
+Until the split, [S1f.8.1](../p1g.10_school_algebra/s1g.10.1_survey_and_design.md) surveyed both halves of
+P1f.8 on one prototype and one page, and was the one stop before anything shipped. Its geometry half is folded
+into this stage, which already stopped for the user, so that P1g.11 has a stop of its own. What came over, as
+it was written there, with nothing added:
+
+**The page.** `p1g.11_school_geometry/design.md`, as the calculator's
+[`design.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md) is: target programs written
+for a prototype under `build/s1g.11/`, each run on the release binary, each shown with every artefact a run
+writes (`ein solve`, `ein saturate --dump`, `ein test`, `--trace`, `--dump-answer`), and after them the
+conventions proposed and the questions, each with a recommendation that a run supports. The commit at the stop
+is docs only (with the entries this stage adds to `docs/lib/`). The user's standing rule for a new subject
+(2026-10-16) is its reason: real programs first, their answers computed, before anything is implemented.
+
+**The target programs,** under the numbers they had in S1f.8.1's table. Each is a real school problem, with the
+sentence beside the facts; a problem that turns out not to be writable stays on the page with what happened.
+
+| # | the problem | what it shows | probe |
+|---|---|---|---|
+| 10 | *In a triangle ABC, AB = AC. Prove that the angles at B and C are equal.* | a proof by saturation; the trace as a two-column proof | G-1 |
+| 11 | The same, by the textbook's proof: draw the median | a construction, and where the theorem then lives | G-2 |
+| 12 | *Two lines perpendicular to a third are parallel.* | a proof by contradiction, as far as it goes | G-3 |
+| 13 | *Two angles of a triangle are 50° and 60°. Find the third.* | a computation in a figure | G-4 |
+| 14 | *D is on BC. The angle BAD is 30° and DAC is 40°. Find BAC.* with *D is on BC* stated, and then left out | the diagram gap: the sum is right only if D is between, and the program says what it was not told | — |
+
+**The probes re-taken.** Every geometry probe of [README § First probes](README.md#first-probes-2026-11-11),
+G-1 to G-5, as a kept program: those were one run each, and here each is a file under `build/s1g.11/` with the
+command that runs it.
+
+**What the page proposes, of S1f.8.1's seven items,** each on the programs above:
+
+- *how a program states its lattice* (item 3): G-1 without `(solve :hypothesis-relations ())` is a search over
+  24 candidates. The remedy is the one S1g.10.1 shows on A-1 and rules; this page shows it on G-1;
+- *the geometry's vocabulary* (item 5): S1f.8.1 showed it in outline and left it to this stage, so it is now
+  shown once, here, in full ([§ How a figure is written](#how-a-figure-is-written));
+- *where the theories live* and what they are called (item 6, question c of
+  [P1g.10's README](../p1g.10_school_algebra/README.md#the-questions-for-the-user)): ruled at S1g.10.1's stop
+  for both phases, and followed here;
+- *what is measured for each theory* (item 7): firings and depth for one problem, and the matcher's candidates
+  for a batch, as the calculator's stages record them.
+
+Items 1, 2 and 4 (expressions, the names, the trace as the school solution) are the algebra's and stayed in
+S1g.10.1. The geometry's form of item 4, the two-column proof, is
+[S1g.11.2](s1g.11.2_theorems_as_rules.md#the-two-column-proof)'s.
+
+**The findings re-taken:** F-3, F-4 and F-5 of [`findings.md`](findings.md), each confirmed as a finding with a
+kept witness, or struck.
+
+**What the programs show of the engine.** The user, 2026-11-13, on the stage that follows this one:
+*"probably will require new features in the engine"*. Problems 10 to 14 are the first computed evidence for or
+against each candidate of
+[S1g.6.7](../p1g.6_engine_requirements/s1g.6.7_what_theorems_as_rules_needs.md), and the page says, per
+candidate, what the run showed. It designs nothing.
 
 ## The user's doubt, and what is known about it
 
@@ -46,11 +105,11 @@ page it writes cites each.**
   it, of this kind, joined with algebraic reasoning over angles and ratios, and a language model that proposes
   auxiliary constructions. *To be checked against the papers.* If it is so, **Ein's saturation is that method**,
   and the division of labour there, saturation for deduction and something else for constructions, is the one
-  [S1f.8.8](s1f.8.8_constructions_contradiction_cases.md) meets.
+  [S1g.11.3](s1g.11.3_constructions_contradiction_cases.md) meets.
 
 **So the phase's question is not *is school geometry complete* but:** which steps of a school proof are formal
 derivations Ein can check or find, and at which steps does the proof lean on the picture. The answer is a table
-over real proofs, and [S1f.8.9](s1f.8.9_computation_and_the_diagram_gap.md)'s report is where it ends up.
+over real proofs, and [S1g.11.4](s1g.11.4_computation_and_the_diagram_gap.md)'s report is where it ends up.
 The senses of *complete* themselves are [F26](../../followups/f26_consistency_and_completeness.md)'s.
 
 ## How a figure is written
@@ -74,7 +133,7 @@ that are not geometry:
   - *closure rules,* as G-1 had: derive every respelling of every fact. Simple and multiplies the state: a
     `seg-eq` fact has 4 spellings, with symmetry 8; a `cong` fact 6, with symmetry 12;
   - *a canonical spelling,* the points in a fixed order. That needs an order on names, which Ein does not have
-    built in, the same want as S1f.8.3's monomial order; the order is then data, `(before A B)` for the
+    built in, the same want as S1g.10.3's monomial order; the order is then data, `(before A B)` for the
     figure's points, written by the problem or derived from one list;
   - *rules written to match every spelling.* Each theorem then has many rules or a disjunction.
 - **Equality relations are equivalences.** Symmetry and transitivity of `seg-eq` and `ang-eq`. `std.algebra`
@@ -84,7 +143,7 @@ that are not geometry:
 - **Non-degeneracy.** `(triangle A B C)` says three points are distinct and not collinear. School omits it;
   a rule without it proves things about a triangle with two vertices in one place.
 
-The stage measures the three ways on G-1's theorem and on one with more points (the parallelogram of S1f.8.7),
+The stage measures the three ways on G-1's theorem and on one with more points (the parallelogram of S1g.11.2),
 by facts in the state and by the matcher's candidates, and proposes one.
 
 **Measures.** Two levels, kept apart as the calculator and the word-problem theory are:
@@ -107,7 +166,7 @@ says of a nested value inside a template, and files the row as a request or as a
 ## Sketch
 
 **Sketch only, to be replaced by programs whose answers are computed.** The vocabulary as the planning agent's
-probe G-1 declared it (one run, 2026-11-11; the program loaded and answered, see S1f.8.7), with the figure of a
+probe G-1 declared it (one run, 2026-11-11; the program loaded and answered, see S1g.11.2), with the figure of a
 school problem: *in the triangle ABC, AB = AC*.
 
 ```lisp
@@ -141,6 +200,9 @@ school problem: *in the triangle ABC, AB = AC*.
 
 ## Tasks
 
+0. **The prototype and the survey's page** ([§ The survey of the geometry](#the-survey-of-the-geometry-moved-here-from-s1f81-2026-11-13)):
+   problems 10 to 14 as programs under `build/s1g.11/`, probes G-1 to G-5 re-taken, the measurements, F-3 to
+   F-5 re-taken, and what the runs show of S1g.6.7's candidates. (S1f.8.1's T1, the geometry's part.)
 1. **The reading of the literature,** each claim of [§ The user's doubt](#the-users-doubt-and-what-is-known-about-it)
    checked against a source and corrected, as a page of the phase, with entries added to
    [`docs/lib/03`](../../../docs/lib/03-theorem-proving-formal-methods.md) for the systems it compares with
@@ -152,23 +214,36 @@ school problem: *in the triangle ABC, AB = AC*.
 3. **The vocabulary,** with the bookkeeping measured three ways, and the proposal.
 4. **The two levels,** with the rules that join them.
 5. **F-3** established and filed.
-6. **The stop:** the page, the proposal, questions g and (with S1f.8.3) d.
+6. **The stop:** the page, the proposal, question g, and the order on names it wants, read with question d of
+   [P1g.10](../p1g.10_school_algebra/README.md#the-questions-for-the-user) (the normal form's order, S1g.10.3's;
+   it was *questions g and (with S1f.8.3) d* before the split). The user reads the page; the rulings are
+   recorded on it in the user's words. (S1f.8.1's T2, the geometry's part.)
+7. **The re-plan:** this phase's README and stage files are restated to the rulings, and its questions are
+   filed in [`open_questions.md`](../open_questions.md) with ids then free. (S1f.8.1's T3, the geometry's part.)
 
 ## Acceptance
 
+- The survey's page exists, every program on it was run by the binary, and every number on it carries its
+  command and date.
+- Every geometry probe of the README's table, G-1 to G-5, is re-taken, and each row says *confirmed* or how it
+  differed.
+- Each of F-3, F-4 and F-5 is confirmed as a finding with a kept witness, or struck.
 - The literature page exists, each claim with its source, and each *to be checked* above is resolved or still
   marked.
 - Three school proofs are tabulated step by step.
 - The vocabulary is proposed with measurements for the three bookkeeping schemes, each a program the binary ran.
-- The user has ruled on the vocabulary and the levels.
+- The user has ruled on the vocabulary and the levels, or has said which questions wait.
 - Nothing outside `plans/`, `build/` and `docs/lib/` moved.
 
 ## What it may find
 
-- **That an order on names is wanted twice** (canonical spellings here, monomial order in S1f.8.3). Two wants
+- **That an order on names is wanted twice** (canonical spellings here, monomial order in S1g.10.3). Two wants
   make a finding; it is still not asked of the engine without the user.
 - **That the stdlib's `symmetric` and `transitive` do not take nested arguments as hoped.** Then it is a row of
   [`findings.md`](findings.md), and the phase writes its own closure rules.
+- **That a prototype needs the calculator's extensions before a problem can be shown** (S1f.8.1's second
+  *may find*): problem 13 needs none; a measure problem with a sign or a fraction waits, and the page then goes
+  to the user in two rounds.
 - **That the reading of the literature changes the plan:** if a deductive database's standard rule set is
-  published in a form that can be transcribed, S1f.8.7 starts from it and says so, in place of a rule base
+  published in a form that can be transcribed, S1g.11.2 starts from it and says so, in place of a rule base
   made up from a textbook's theorem list.

@@ -7,7 +7,7 @@ The number 9 is the next free one after P1g.7 and P1g.8.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop; of M1f, the calculator's tables and
 the probes banked under `examples/beyond_arith/`
 ([S1f.6.10](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)), and
-[P1f.8's S1f.8.4](../../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/s1f.8.4_linear_equations.md),
+[P1g.10's S1g.10.4](../p1g.10_school_algebra/s1g.10.4_linear_equations.md),
 whose derivation of a linear equation is the third method as far as school algebra takes it.
 **Read with:** [P1g.7](../p1g.7_unsatisfiable_against_owing/README.md), which rules what an unpayable debt is
 called; this phase shows the same equation dead by one method and open by another, and decides nothing of
@@ -27,15 +27,15 @@ thing twice. The user, 2026-11-12:
 
 [Round 2, items 24, 28 and 37](../../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q24)
 answered in outline, *the question, "which x", is algebra's: it has an unknown. The methods differ*, set
-out three methods, and proposed that P1f.8 compare them. The user's reply there (`dc88520b`):
+out three methods, and proposed that P1f.8 (now P1g.10) compare them. The user's reply there (`dc88520b`):
 
 > This Arithmetic read backwards vs Search vs Algebra comparison is somethinig like number theory and goes
 > into separate phase in M1g. p1f.8 remain incomplete naive school algebra.
 
 So the comparison is **this phase, in M1g,** and
-[P1f.8](../../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md) stays what the
-reply calls it, *incomplete naive school algebra*: it solves a linear equation the way a pupil does and
-does not carry the comparison. The plan first put the comparison into P1f.8's S1f.8.4 (`d24e2656`); it was
+[P1g.10](../p1g.10_school_algebra/README.md), which is the phase the reply names (M1f's P1f.8 was split and
+moved to M1g on 2026-11-13, its algebra as P1g.10), stays what the reply calls it, *incomplete naive school algebra*: it solves a linear equation the way a pupil does and
+does not carry the comparison. The plan first put the comparison into that phase's linear-equation stage, then S1f.8.4 and now S1g.10.4 (`d24e2656`); it was
 moved here on this reply.
 
 ## The three methods
@@ -46,7 +46,7 @@ From round 2, with the figures of question 24 and of
 | | 1. arithmetic read backwards | 2. search | 3. algebra |
 |---|---|---|---|
 | what it is | the multiplication table is a relation, `(md A B CARRY-IN DIGIT CARRY-OUT)`, and a rule asks it *which A, with 7, gives a units digit 2*; the school multiplication run from the answer to the operand, a firing a column, with no rewriting and no search | each digit of x a hypothesis that owes one of ten values; the engine tries assignments | a rule rewrites the equation, x × 7 = 862 ⇒ x = 862 ÷ 7 with remainder zero, and the rest is arithmetic |
-| built | run on the calculator's prototype, eleven rules; banked under `examples/beyond_arith/` | banked under `examples/beyond_arith/` | nothing of it was built when the question was asked; P1f.8's S1f.8.4 builds the linear case |
+| built | run on the calculator's prototype, eleven rules; banked under `examples/beyond_arith/` | banked under `examples/beyond_arith/` | nothing of it was built when the question was asked; P1g.10's S1g.10.4 builds the linear case |
 | `x × 7 = 861` | solved by saturation alone | solved; `--single` takes 10n + 1 saturations for n digits a column at a time | to be computed |
 | `x × 7 = 862` | the last column cannot close: **a dead root** with a three-row core | **`Open`**: root is alive and owes the digits, every complete way of paying is dead, R is empty; its argument is 28 dead sets in the dump | to be computed: the division leaves a remainder |
 
@@ -62,7 +62,7 @@ such a statement, and M1g is where Ein's ways of establishing things are set sid
 against the lattice ([§ What this is](../README.md#what-this-is)), a derivation against a model. Method 1
 is a decision by computation over the tables; method 2 is a search whose failure is an argument made of
 dead sets; method 3 is a derivation in which each line follows from the last by a rule about equations,
-which is the equational proof [P1g.3](../p1g.3_proof_systems/README.md) takes from P1f.8. Divisibility,
+which is the equational proof [P1g.3](../p1g.3_proof_systems/README.md) takes from P1g.10. Divisibility,
 remainders and the congruences the columns compute are number theory's first objects, and S1f.6.10 already
 ran primes, casting out nines and gcd by saturation; [P1g.5](../p1g.5_peano_and_induction/README.md) is
 where *for every number* lives.
@@ -88,7 +88,7 @@ banks it). It joins this stage's set of equations.
 ### S1g.9.2 — What *no solution* is under each
 
 The user's *"open vs. false"*, shown and not decided: the dead root and its core of table rows; `Open` and
-its dead sets; the derivation's remainder, which P1f.8's S1f.8.4 puts to the user as a result fact, a flag
+its dead sets; the derivation's remainder, which P1g.10's S1g.10.4 puts to the user as a result fact, a flag
 or a dead root. One page, the three side by side on the same equation, with what each explanation is and
 what a reader can check of it. The word for an unpayable debt is
 [P1g.7's](../p1g.7_unsatisfiable_against_owing/README.md) ruling, and R is the same empty set under either
@@ -100,7 +100,7 @@ Saturations, firings and time for each method as the equation grows in digits, t
 `utils/bench_env.sh`. And the user's question in its own terms, answered on the programs and not by
 definition: method 1 uses no rule that mentions an unknown as such, only a table read in another
 direction; method 3 is the first that rewrites a statement *about* x. Where a problem needs the third (two
-unknowns, an unknown used twice) is measured, as S1f.8.4 measures when a word problem needs algebra.
+unknowns, an unknown used twice) is measured, as S1g.10.4 measures when a word problem needs algebra.
 
 ### S1g.9.4 — Inverse requests, proposed or not
 
@@ -160,7 +160,7 @@ are whatever shows the growth and still finishes.
 
 ## What it is not
 
-- **Not a change to P1f.8.** That phase remains *"incomplete naive school algebra"*; nothing here asks it
+- **Not a change to P1g.10** (P1f.8 when the user said it). That phase remains *"incomplete naive school algebra"*; nothing here asks it
   for more.
 - **Not the ruling on open against false.** P1g.7's.
 - **Not a solver of equations in general,** and not engine arithmetic.

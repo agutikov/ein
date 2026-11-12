@@ -1,11 +1,12 @@
-# S1f.8.5 — Systems of two linear equations; quadratics with a rational root; inequalities, optional
+# S1g.10.5 — Systems of two linear equations; quadratics with a rational root; inequalities, optional
 
-**Phase:** [P1f.8](README.md)
+**Phase:** [P1g.10](README.md) of [M1g](../README.md). Until 2026-11-13 this stage was **S1f.8.5** of M1f's P1f.8
+([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-11. Not started. The optional part runs only on the user's word.
-**Depends on:** [S1f.8.4](s1f.8.4_linear_equations.md): the equation as a fact, the solver, the ruled outcomes
-for *no solution* and *every number*; [S1f.8.2](s1f.8.2_expressions_and_evaluation.md)'s substitution;
-[S1f.6.7](../p1f.6_calculator/s1f.6.7_negative_numbers.md) and
-[S1f.6.8](../p1f.6_calculator/s1f.6.8_rational_numbers.md), without which almost no system and no quadratic has
+**Depends on:** [S1g.10.4](s1g.10.4_linear_equations.md): the equation as a fact, the solver, the ruled outcomes
+for *no solution* and *every number*; [S1g.10.2](s1g.10.2_expressions_and_evaluation.md)'s substitution;
+[S1f.6.7](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md) and
+[S1f.6.8](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md), without which almost no system and no quadratic has
 an answer the theory can write.
 
 ## The instruction's part
@@ -20,8 +21,8 @@ rational numbers reach.
 Two facts, `(equation L1 R1)` and `(equation L2 R2)`, in two unknowns, under a problem's name so that they are
 read together. Both school methods, each a chain of rules with `:why`s:
 
-- **Substitution:** solve the first for x as an expression in y (S1f.8.4's steps with a letter left on the
-  right); substitute it into the second (S1f.8.2's `substitute`); that is one linear equation in y; solve it;
+- **Substitution:** solve the first for x as an expression in y (S1g.10.4's steps with a letter left on the
+  right); substitute it into the second (S1g.10.2's `substitute`); that is one linear equation in y; solve it;
   put y back.
 - **Elimination:** bring both to `a·x + b·y = c`; multiply each by the other's coefficient of x; subtract; the
   x-terms cancel in the normal form; solve for y; put y back.
@@ -39,17 +40,17 @@ solution by every route. Three things follow and each is checked:
 Whether a program may *ask* for a method, `(solve-by elimination p1)`, so that the school solution shown is the
 method the exercise names, is written as a request and tried.
 
-**The degenerate systems** are S1f.8.4's two cases met in two dimensions: parallel lines, *no solution* (the
+**The degenerate systems** are S1g.10.4's two cases met in two dimensions: parallel lines, *no solution* (the
 elimination ends in `0 = 5`); the same line twice, *infinitely many* (it ends in `0 = 0`), where the answer is
 not *every pair* but the relation the pair satisfies, which the theory states as the equation it was left with.
-They follow S1f.8.4's ruling.
+They follow S1g.10.4's ruling.
 
 **Search, for comparison:** both unknowns as digits, 100 pairs as candidates' combinations. The stage measures
 it once and reports where it stops being reasonable; it is not built further.
 
 ## Quadratics
 
-`a·x² + b·x + c = 0`, after S1f.8.3's normal form has brought it there.
+`a·x² + b·x + c = 0`, after S1g.10.3's normal form has brought it there.
 
 **What rationals can do.** The formula needs the square root of the discriminant `D = b² − 4ac`, and Ein's
 numbers are rationals at most. So:
@@ -79,7 +80,7 @@ candidate whose content a rule derived at root is expected to work (M1g's probe 
 tried here.
 
 **Two roots are two facts, not two states.** `(root x 2)` and `(root x 3)` both hold at root: the equation has
-both. That is not `(value x 2)` and `(value x 3)`, which S1f.8.4's search version makes contradictory. The page
+both. That is not `(value x 2)` and `(value x 3)`, which S1g.10.4's search version makes contradictory. The page
 sets the two readings side by side, since a word problem that leads to a quadratic (*a rectangle's sides differ
 by 1 and its area is 6*) then needs the second step school teaches and often skips: **which root answers the
 problem**, here the positive one, by a rule of the problem's theory with its `:why`.
@@ -92,7 +93,7 @@ makes a denominator zero*.
 
 ## Inequalities (optional)
 
-`3x + 4 < 19`. Linear inequalities are S1f.8.4's derivation with one new rule, *dividing by a negative number
+`3x + 4 < 19`. Linear inequalities are S1g.10.4's derivation with one new rule, *dividing by a negative number
 turns the sign*, and an answer that is not a value but a **ray**: `x < 5`. The theory would state the ray as a
 fact, `(below x 5)`, and nothing enumerates its members. It is optional because the answer shape is new (a set,
 described) and because the number line, intervals and their intersections are a subject. If the user wants it,
@@ -101,7 +102,7 @@ it is one task: a single linear inequality, and a pair joined by *and*.
 ## Sketch
 
 **Sketch only, not run: to be replaced by programs whose answers are computed.** The shapes of a system and of a
-quadratic's answer, in S1f.8.2's term language; the spellings are S1f.8.1's to fix, and negative numbers are
+quadratic's answer, in S1g.10.2's term language; the spellings are S1g.10.1's to fix, and negative numbers are
 S1f.6.7's `(int P N)`.
 
 ```lisp
@@ -127,7 +128,7 @@ S1f.6.7's `(int P N)`.
 
 1. **Systems:** both methods, the agreement test, the degenerate pairs, the request for a method.
 2. **The square root:** the three ways on the prototype; the circuit that ships, as a module beside the
-   calculator's (its place, `std.arith` or the phase's own module, is put to the user with S1f.8.1's question c).
+   calculator's (its place, `std.arith` or the phase's own module, is put to the user with S1g.10.1's question c).
 3. **Quadratics:** the discriminant, the roots where it is a square, the stated outcome where it is not;
    factoring by divisors as a search over a derived domain.
 4. **The check,** and the equation with an extraneous root.
@@ -152,7 +153,7 @@ S1f.6.7's `(int P N)`.
 
 - **That every route costs too much.** Saturation explores all of them. If two equations are affordable and
   three are not, that is the measured edge of *derivation without a strategy*, and it is a result for
-  [P1f.10](../p1f.10_hypothesis_structure/README.md) and M1g's proof search to read, not a defect to fix here.
+  [P1f.10](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) and M1g's proof search to read, not a defect to fix here.
 - **That the hrule over a derived domain does not do what is expected.** Then it is a finding with its witness,
   and factoring is shown by derivation alone: try each divisor by rules, which is a walk.
 - **Engine findings,** to [`findings.md`](findings.md).

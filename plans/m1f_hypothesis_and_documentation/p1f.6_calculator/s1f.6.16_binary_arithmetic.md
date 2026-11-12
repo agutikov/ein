@@ -144,7 +144,7 @@ The user's replies of 2026-11-12, each to the question of [`questions.md`](quest
 | question | the reply, as typed | what it makes of the build |
 |---|---|---|
 | [13](questions.md#q13), which of the three ways | *"(b)"* | a theory of its own, `(b2 (b2 z 1) 0)`, beside decimal in one program; a number says its base |
-| [14](questions.md#q14), the binary theory's names | *"a is ambiguous, add2 looks like add with 2 operands etc. Take (b), but ints and rats - different question. binary and decimal is numbers representation, integers, rationals, ... complex - are numbers types based on naturals of some representation. Add new stage into p1f.8 to investigate how to make compound numbers without hardcoded representation so can switch between binary and decimal, and maybe later use any new natural numbers there, or even not numbers..."* | a word prefix: `bin-add` answered by `bin-sum-of`, and so on. The second half is [P1f.8's S1f.8.11](../p1f.8_school_algebra_and_geometry/s1f.8.11_compound_numbers_without_a_hardcoded_representation.md) |
+| [14](questions.md#q14), the binary theory's names | *"a is ambiguous, add2 looks like add with 2 operands etc. Take (b), but ints and rats - different question. binary and decimal is numbers representation, integers, rationals, ... complex - are numbers types based on naturals of some representation. Add new stage into p1f.8 to investigate how to make compound numbers without hardcoded representation so can switch between binary and decimal, and maybe later use any new natural numbers there, or even not numbers..."* | a word prefix: `bin-add` answered by `bin-sum-of`, and so on. The second half is [P1g.10's S1g.10.7](../../m1g_logic/p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md) |
 | [15](questions.md#q15), is zero the same `z` | *"(a)"* | one `z`; a bare `z` is of no base |
 | [16](questions.md#q16), how the equal rules are kept equal | *"yes, extract common rules into separate file the both import, btw rename arith to decimal-arith"* | neither option asked: the shared rules written once, in a file both theories import. [Round 2, item 16](questions_round2.md#q16) plans a trial first. The rename is the layout's. The user's reply in round 2 is a question back, quoted under the table |
 | [17](questions.md#q17), where the conversions live | *"(b)"* | a module of their own, so a program that only computes in binary does not load decimal's 1 664 rows |
@@ -159,7 +159,7 @@ the decimal theory's calls in every rule, so a rational over binary naturals wou
 modules. If the trial shows that rules with parameters cost nothing for the two bases, the same mechanism
 applied to the compound types is exactly *one fact*: the activator that says *rationals over this
 representation*. That step is not this stage's; it is the first direction of
-[P1f.8's S1f.8.11](../p1f.8_school_algebra_and_geometry/s1f.8.11_compound_numbers_without_a_hardcoded_representation.md),
+[P1g.10's S1g.10.7](../../m1g_logic/p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md),
 and the trial's record says, for that stage, whether a parameter could stand in every place a walk needs
 it. The trial itself goes ahead as round 2 planned it, the reply raising no objection to it.
 
@@ -240,7 +240,7 @@ parse, load and compile 5.8 ms against 26.8. Under (b), 51 of the 67 rules are `
 
 - **Not replace decimal's division** (reply 18).
 - **Not build the generic theory of 13 (c),** whose every request carries its base.
-- **Not make compound numbers generic in their representation:** that is S1f.8.11's investigation.
+- **Not make compound numbers generic in their representation:** that is S1g.10.7's investigation.
 - **Not start before the layout has moved.**
 
 ### The standing rules

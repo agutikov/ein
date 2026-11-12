@@ -1472,18 +1472,26 @@ constrained-reasoning research.
   theories (stops for the user), then **the stdlib layout, `std.math.*` and
   `std.bool.*`, with `std.arith` becoming `std.math.decimal-arith`**, and after
   it binary arithmetic and binary logic shipped, gcd and lcm, and `std.rat`
-  reducing only when asked. Expressions (S1f.6.14) moved to P1f.8. Each stage
+  reducing only when asked. Expressions (S1f.6.14) moved to P1f.8 (now P1g.10). Each stage
   says whether it rests on a typed reply, a reply in round 2, or a default,
   which stands on the user's "if something remain - pick the default and
-  continue current phase". The same replies extended P1f.8 (S1f.8.10, S1f.8.11), P1f.10
+  continue current phase". The same replies extended P1f.8 (S1f.8.10, S1f.8.11; now S1g.10.6, S1g.10.7), P1f.10
   (S1f.10.9; the order of the search takes the discovered structure as input)
   and M1g (P1g.7, unsatisfiable against owing; P1g.8, a theory of types;
-  P1g.9, one equation by three methods, which the user moved out of P1f.8:
+  P1g.9, one equation by three methods, which the user moved out of P1f.8 (now P1g.10):
   "p1f.8 remain incomplete naive school algebra"; S1g.6.6), and created three milestones:
   [M1h](plans/m1h_beyond_word_problems/README.md), beyond word problems;
   [M15](plans/m15_mcp_server/README.md), an Ein MCP server;
   [M1j](plans/m1j_nlp_smt_poc/README.md), `nlp/` and `smt/` as one proof of
   concept.
+  **On 2026-11-13 the user split P1f.8 and moved it to M1g** as
+  [P1g.10](plans/m1g_logic/p1g.10_school_algebra/README.md), school algebra
+  (S1g.10.1 to .7), and
+  [P1g.11](plans/m1g_logic/p1g.11_school_geometry/README.md), school geometry
+  (S1g.11.1 to .4), with nothing redesigned: M1f's number 8 is used and
+  vacated, and the old path keeps a stub with the table of old and new ids.
+  P1g.6 gained a provisional stage, S1g.6.7, the candidate engine features
+  *theorems as rules* (S1g.11.2) may need, candidates only.
   **S1f.6.21, the gate reduced, ran to its end on 2026-11-12**
   ([its record](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.21_the_gate_reduced.md#record-2026-11-12),
   Q-M1f.199 defaulted), on the user's two replies of that day. **A view of
@@ -1597,7 +1605,7 @@ constrained-reasoning research.
   **A third plan was added on 2026-11-12, on the user's instruction of that
   day:** [M12](plans/m12_rules_as_data/README.md), *rules as data*, which
   gathers what the tree says of it (F5, `08_self_describing.md` § 5, ideas
-  01, 06 and 10, F7, F8's C(n), M1g's S1g.6.5, F24, F26, P1f.8's S1f.8.11)
+  01, 06 and 10, F7, F8's C(n), M1g's S1g.6.5, F24, F26, P1g.10's S1g.10.7)
   and designs nothing. Its first phase, the census of rules, ran the same
   day: **[`rule_census.md`](plans/m12_rules_as_data/rule_census.md)** is the
   results page, shapes of rules with names abstracted, ways to group them and

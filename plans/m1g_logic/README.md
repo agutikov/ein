@@ -4,6 +4,9 @@
 Not started. It carries no estimate (the user's ruling of 2026-11-08).
 **Extended 2026-11-12** by the user's replies to the calculator's questions: two phases, P1g.7 and P1g.8, and
 one stage of P1g.6, S1g.6.6, and, on the user's reply in round 2, a third phase, P1g.9 ([§ Additions of 2026-11-12](#additions-of-2026-11-12)).
+**Extended 2026-11-13** on the user's instruction of that day: M1f's P1f.8, school algebra and geometry, split
+into two phases and moved here as P1g.10 and P1g.11, and one more stage of P1g.6, S1g.6.7
+([§ Additions of 2026-11-13](#additions-of-2026-11-13)).
 **Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md), complete (the user, 2026-11-11: *"first
 we will complete M1f"*). Specifically:
 [S1f.6.16](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md), binary
@@ -104,10 +107,12 @@ It works at **two levels**, and keeping them apart is half of what it has to say
 | [P1g.3](p1g.3_proof_systems/README.md) | Proof systems: Hilbert's axioms, natural deduction, and what a proof is in Ein | 5 (1 optional) | a written proof checked by saturation; two Hilbert axiom sets compared; natural deduction with assumptions and discharge; soundness and completeness checked against P1g.2's truth tables up to a bound; and a plain statement of what a hypothesis is in each |
 | [P1g.4](p1g.4_first_order_logic/README.md) | First-order logic: the fragment Ein is, relation algebra, and formulas with quantifiers as data | 5 | F1b's PFL.1 to PFL.4: the fragment as a table with a program per row, the relation algebra inventory, object-level quantifiers over a finite structure, the quantifier rules, and the boundary of what Ein cannot decide |
 | [P1g.5](p1g.5_peano_and_induction/README.md) | Natural numbers: Peano's axioms, recursion, induction, and Gödel made concrete | 4 | unary numbers and the axioms as rules; addition and multiplication by recursion, held to `std.arith`; induction as a schema against bounded checking; and what of F26's Gödel section a program can show |
-| [P1g.6](p1g.6_engine_requirements/README.md) | The engine requirements the logic turns out to have | 6, provisional | each requirement P1g.1 lists, scheduled, ruled or given an owner; seeded today with the candidates already known |
+| [P1g.6](p1g.6_engine_requirements/README.md) | The engine requirements the logic turns out to have | 7, provisional (one added 2026-11-13) | each requirement P1g.1 lists, scheduled, ruled or given an owner; seeded today with the candidates already known |
 | [P1g.7](p1g.7_unsatisfiable_against_owing/README.md) | Unsatisfiable against owing: the open state's explanation, and what a finished search may call an unpayable debt (added 2026-11-12) | 4, in the README | the witnesses on one page; the open state's core; the user's ruling on whether a finished search may call an unpayable debt dead; R unmoved on every program either way |
 | [P1g.8](p1g.8_a_theory_of_types/README.md) | A theory of types as a stdlib module of its own, and a smaller kind of number where a larger is expected (added 2026-11-12) | 4, in the README | the design on programs, **stopping for the user**; the module; promotion between the calculator's number kinds as its first use, in a module the core does not import |
 | [P1g.9](p1g.9_one_equation_three_methods/README.md) | One equation, three methods: arithmetic read backwards, search, and algebra (added 2026-11-12) | 5, in the README | `x × 7 = 862` and its neighbours by each method as kept programs; what *no solution* is under each, side by side; the cost of each; the question *arithmetic or algebra* answered on the programs; inverse requests proposed or declined |
+| [P1g.10](p1g.10_school_algebra/README.md) | School algebra: expressions, equations, and the derivation a pupil writes (moved here 2026-11-13; the algebra half of M1f's P1f.8) | 7 | expressions as data over the calculator's numbers, evaluated and brought to a polynomial normal form by saturation alone; identities proved by normal forms; a linear equation solved as the derivation a pupil writes, beside the same equation by search; systems and quadratics with a rational root; a program that states false facts; compound numbers without a hardcoded representation. Its first stage **stops for the user** |
+| [P1g.11](p1g.11_school_geometry/README.md) | School geometry: a figure as facts, theorems as rules, and the proofs a pupil writes (moved here 2026-11-13; the geometry half of M1f's P1f.8) | 4 | a figure written as facts and the literature read honestly; a rule base of theorems saturated over a figure, the trace a two-column proof; constructions, proof by contradiction and case splits as three uses of a hypothesis, each with its measured limit; the facts a pupil reads off the picture detected as gaps; and the report on which fragment of school mathematics is a formal derivation in Ein. Its first stage **stops for the user**; what it needs of the engine is found on its programs and listed as candidates in S1g.6.7 |
 
 ## The order
 
@@ -129,8 +134,30 @@ It works at **two levels**, and keeping them apart is half of what it has to say
    S1g.7.3, may come at any time after, since R is the same set whichever way it goes.
 8. **P1g.8** is independent of the logic phases and may run beside them after P1g.1's stop; its own first
    stage stops for the user.
-9. **P1g.9** needs only P1g.1's stop and P1f.8's linear equations; it is read with P1g.7 and may run
+9. **P1g.9** needs only P1g.1's stop and P1g.10's linear equations
+   ([S1g.10.4](p1g.10_school_algebra/s1g.10.4_linear_equations.md)); it is read with P1g.7 and may run
    before that phase's ruling, since it shows the two readings and decides neither.
+10. **P1g.10** after P1g.1's stop, beside P1g.2, of which it needs nothing: it imports the calculator, and its
+    own first stage stops for the user. It is placed **before P1g.3** by the user's words of 2026-11-11, when
+    it was planned, *"between calculator and proof systems"*; no stage of P1g.2 to P1g.5 waits for it. What
+    waits for it: P1g.9, for S1g.10.4; the equational proof P1g.3 takes from
+    [S1g.10.3](p1g.10_school_algebra/s1g.10.3_simplification_and_identities.md)'s normal forms, if that is
+    written; and [P1g.8](p1g.8_a_theory_of_types/README.md) and [M12](../m12_rules_as_data/README.md), which
+    read [S1g.10.7](p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md).
+11. **P1g.11** from [S1g.10.1](p1g.10_school_algebra/s1g.10.1_survey_and_design.md)'s stop on, whose rulings
+    on what the two phases share its first stage follows; its first three stages run beside the algebra, and
+    its last, S1g.11.4, after S1g.10.4, since a figure's problem with an unknown is that stage's equation and
+    its report reads both phases. Before P1g.3 for the same reason as P1g.10, and it meets that phase twice:
+    [S1g.11.2](p1g.11_school_geometry/s1g.11.2_theorems_as_rules.md)'s proofs are derivations found, where
+    P1g.3's are proofs checked, and S1g.11.3 and S1g.3.3 ask
+    [Q-M1g.5](open_questions.md#q-m1g5--is-a-refuted-assumption-a-fact) once, whichever runs first. It meets
+    **P1g.6** wherever its programs show the language short:
+    [S1g.6.7](p1g.6_engine_requirements/s1g.6.7_what_theorems_as_rules_needs.md) lists the candidates, each
+    P1g.6 stage that owns one runs when the geometry's programs have shown it and the user has ruled, and
+    the geometry takes its named detour until then.
+
+The order of items 10 and 11 was chosen in the split of 2026-11-13 from the dependencies and is not the
+user's ruling ([P1g.10 § Choices made in the split](p1g.10_school_algebra/README.md#choices-made-in-the-split)).
 
 ## The user's questions, answered in outline
 
@@ -216,7 +243,8 @@ P1g.6, with the table of question 25 as its witness.
 **One equation, three methods** (replies 24 and 37; the user's reply in round 2, `dc88520b`): *"This
 Arithmetic read backwards vs Search vs Algebra comparison is somethinig like number theory and goes into
 separate phase in M1g. p1f.8 remain incomplete naive school algebra."*
-[P1g.9](p1g.9_one_equation_three_methods/README.md).
+[P1g.9](p1g.9_one_equation_three_methods/README.md). (The phase the quote names, M1f's P1f.8, is this
+milestone's [P1g.10](p1g.10_school_algebra/README.md) since 2026-11-13.)
 
 **Findings the calculator's phase gave this milestone** (section J of `questions.md`, each line left empty
 and so taking its recommendation): E-3, E-12, E-15, E-24, E-25 and E-26 to
@@ -233,6 +261,45 @@ user's reply to the layout question (`dc88520b`), **`std.bool.*`**, not `std.log
 **[M1h](../m1h_beyond_word_problems/README.md)** was created the same day for the work beyond word
 problems. Two of its early phases touch this milestone's subject from the side of natural-language
 problems, slicing and *gaps, assumptions and readings*, and P1g.7's ruling is one both will read.
+
+## Additions of 2026-11-13
+
+The user, 2026-11-13:
+
+> plans/m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry seems too complex having both algebra
+> and geometry, let's split it into 2 phases and move into m1g;
+> plans/m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/s1f.8.7_theorems_as_rules.md  probably
+> will require new features in the engine
+
+**Two phases moved in.** M1f's P1f.8, *middle-school algebra and geometry*, planned 2026-11-11 *"between
+calculator and proof systems"* and until now a phase of M1f that ran before this milestone, is two phases
+here: [P1g.10](p1g.10_school_algebra/README.md), school algebra, seven stages, and
+[P1g.11](p1g.11_school_geometry/README.md), school geometry, four. The files were moved with `git mv` and
+nothing of the content was redesigned. The table of old and new ids, and the choices the split forced, are in
+[P1g.10 § The move](p1g.10_school_algebra/README.md#the-move-of-2026-11-13); the old path keeps a
+[stub](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md). M1f's phase number 8
+is used and vacated.
+
+**What it changes for this milestone.** The title says *logic*, and the two phases are school mathematics;
+they are here because the user put them here, and they fit where the instruction of 2026-11-11 put them,
+between the calculator and the proof systems: a pupil's derivation and a pupil's proof are the material
+P1g.3 formalises. The milestone's dependency on M1f is unchanged. The handovers that were *from P1f.8 to
+M1g* are now between sibling phases, and each phase's README lists its own
+([P1g.10](p1g.10_school_algebra/README.md#what-is-left-to-m1gs-other-phases),
+[P1g.11](p1g.11_school_geometry/README.md#what-is-left-to-m1gs-other-phases)). Their questions, which were
+to be filed as `Q-M1f.<n>`, will be filed in [`open_questions.md`](open_questions.md) as `Q-M1g.<n>`; none
+had been filed.
+
+**One stage of P1g.6,** on the instruction's second sentence:
+[S1g.6.7](p1g.6_engine_requirements/s1g.6.7_what_theorems_as_rules_needs.md), *what theorems as rules needs
+of the engine*. It lists ten candidates, each a question with the program that would show it, all taken from
+what the geometry's stage files already say: a point a construction makes, figure names that do not depend
+on the order of their points, a proof read off a run and which justification it shows, a nested value read
+as words, equality classes of segments and angles, a saturation that does not stop, a conclusion that is a
+state's, a hypothesis about a nested value, joins on nested values, and a check that a reading over the
+maximal line is sound. Six are P1g.6's existing candidates met on a figure. **It designs nothing:** what is
+needed is found by S1g.11.1's and S1g.11.2's computed programs first, and an engine or grammar change needs
+the user's ruling on them.
 
 ## What it pulls in
 
@@ -296,7 +363,11 @@ The instruction's last question, and how this plan answered it, under the schema
 - **The fragment table exists** (F1b's PFL.1), with a program per row, and the boundary page (PFL.4) names
   what Ein cannot decide, with a program that shows each limit.
 - **What a hypothesis is, in each setting, is stated on one page,** each statement with its program.
-- **Every engine requirement P1g.1 listed is built, ruled or owned.** A change to the engine follows the
+- **P1g.10 and P1g.11 meet their own READMEs' acceptance** (moved here 2026-11-13 with it): each stops for
+  the user first, and the report on which fragment of school mathematics is a formal derivation in Ein is
+  written by S1g.11.4 over both.
+- **Every engine requirement P1g.1 listed is built, ruled or owned,** and every candidate of S1g.6.7 is
+  answered by a program of P1g.11: shown needed, shown not needed, or not reached. A change to the engine follows the
   repo's discipline: a wrong answer is a register row in `corpus/wrong_answers.toml` before it is fixed; a
   change to the grammar waits for the user's ruling; config never changes the answer; nothing adds engine
   arithmetic.
@@ -326,6 +397,10 @@ The instruction's last question, and how this plan answered it, under the schema
 - **Reductio is assumed and not tested.** The mapping from an assumption to a commitment, and from a
   contradiction under it to a dead state and its core, is the plan's most attractive claim; probe 4 already
   shows its limit. S1g.3.3 tests it and stops for the user.
+- **School geometry may need the engine to change** (the user, 2026-11-13, of S1g.11.2: *"probably will
+  require new features in the engine"*). The plan assumes the language as it ships and names a detour at each
+  place it expects to be short. S1g.6.7 writes the candidates down before the programs, S1g.11.1's survey and
+  S1g.11.2's targets are the programs, and nothing is designed before they have run and the user has ruled.
 - **Scope.** Each of sequent calculus, resolution, tableaux, modal logic, intuitionistic semantics and
   Gödel numbering is a subject. The first three are one optional stage; the rest are named where they come up
   and not planned.
@@ -346,15 +421,18 @@ The instruction's last question, and how this plan answered it, under the schema
   search-free test, the harness against Rust's integers, and
   [S1f.6.10](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.10_beyond_arithmetic.md)'s bounded
   theorem checking, which P1g.5 continues.
-- **[P1f.8](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md)** (planned
-  2026-11-11, the user: *"between calculator and proof systems"*): school algebra and geometry, which runs
-  before this milestone as part of M1f. It hands over, by name
-  ([its § What is left to M1g](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md#what-is-left-to-m1g)):
+- **[P1g.10](p1g.10_school_algebra/README.md) and [P1g.11](p1g.11_school_geometry/README.md)** (planned
+  2026-11-11 as M1f's P1f.8, the user: *"between calculator and proof systems"*; split and moved here on
+  2026-11-13): school algebra and school geometry, which until the move ran before this milestone as part of
+  M1f and are now two of its phases. They hand over to the logic phases, by name
+  ([P1g.10's § What is left to M1g's other phases](p1g.10_school_algebra/README.md#what-is-left-to-m1gs-other-phases),
+  [P1g.11's](p1g.11_school_geometry/README.md#what-is-left-to-m1gs-other-phases)):
   equational proof, line by line, to P1g.3, with its polynomial normal form as the semantics to check against;
   school proofs by contradiction and by cases as non-logical material for S1g.3.3; auxiliary constructions as
   the first evidence for S1g.6.4's witnesses (C-8) from outside logic; and statements that need induction to
-  P1g.5. **No stage here depends on it:** M1g's programs are written without its theories, and Q-M1g.5 is asked
-  once, by whichever of S1g.3.3 and its S1f.8.8 runs first.
+  P1g.5. **No stage of P1g.2 to P1g.5 depends on them:** the logic's programs are written without their
+  theories, and Q-M1g.5 is asked once, by whichever of S1g.3.3 and S1g.11.3 runs first. P1g.9 does depend on
+  S1g.10.4.
 - **[`docs/lib/03`](../../docs/lib/03-theorem-proving-formal-methods.md)** and
   **[`docs/lib/02`](../../docs/lib/02-solvers-csp-sat-smt.md):** the external systems each phase compares
   itself with.

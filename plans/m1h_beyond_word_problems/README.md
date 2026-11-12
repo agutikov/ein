@@ -310,14 +310,14 @@ phase is the first part, and the line between the two.
   an importing theory's steps without the imported theory's. The two-step word problem is 139 steps, 10 of
   them the word theory's and the rest the calculator's; `-l`, the goal-relevant slice, keeps 137. Nothing
   folds a call into one line, *12 ÷ 3 = 4, remainder 0 (116 steps of `std.arith`)*. A script on the
-  prototype filters the trace. P1f.8 met the same thing on an equation (3 steps of the pupil's in 123).
+  prototype filters the trace. P1g.10 met the same thing on an equation (3 steps of the pupil's in 123).
 - **The formula as an object.** Today the formula of a word problem exists nowhere: it is the order in
-  which rules ask the calculator. P1f.8's expressions (`(calc E)`, expression data) are where a formula
-  can be a value, so the phase reads what P1f.8 built before proposing its own.
+  which rules ask the calculator. P1g.10's expressions (`(calc E)`, expression data) are where a formula
+  can be a value, so the phase reads what P1g.10 built before proposing its own.
 - **The checks of a formula** the reply lists are, each, something an earlier stage built or ruled: *all
   operations have required arguments* (the loader's arity check, S1f.6.23); *numbers and names correctly
-  used* (malformed numbers and undeclared names, S1f.6.12's build; used and recursive names, P1f.8's
-  S1f.8.2); *no division by zero* (the flag at the call, S1f.6.24). The phase states the condition *the
+  used* (malformed numbers and undeclared names, S1f.6.12's build; used and recursive names, P1g.10's
+  S1g.10.2); *no division by zero* (the flag at the call, S1f.6.24). The phase states the condition *the
   formula is well-formed* as their conjunction and shows what is still missing from it.
 - **Reply 31's questions about a solution:** *"why you divided those numbers? why not 3/12, not 3+12, not
   12-3, and so on"*, and *"there could be the case when answer is correct, but solution is not, right?"*.
@@ -464,8 +464,9 @@ acted on.
    P1h.3 reads M1g's P1g.7 (open against false) if that has been ruled; M1g's own README was written when
    *"no M1h need"* answered a different proposal, an engine milestone. The same question is
    [Q-M1g.15](../m1g_logic/open_questions.md#q-m1g15--where-m1h-sits-against-this-milestone), asked once.
-2. **Whether it follows [P1f.8](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md).**
-   P1h.4 reads P1f.8's expressions for *the formula as an object*; the others do not need it.
+2. **Whether it follows [P1g.10](../m1g_logic/p1g.10_school_algebra/README.md)** (school algebra; M1f's P1f.8
+   until 2026-11-13, when the user split it and moved it to M1g, so this is now part of question 1).
+   P1h.4 reads P1g.10's expressions for *the formula as an object*; the others do not need it.
 3. **Five theories, or one theory and five ontologies** (P1h.10): the instruction leaves it open.
 4. **The text** (P1h.10), and its language: the user is bilingual and the repo's documents are in English;
    a text *"everybody would remember from school"* depends on whose school.
@@ -480,7 +481,7 @@ acted on.
   questions and their replies ([`questions.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md),
   [`questions_round2.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md), and
   the index [`replies_2026-11-12.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)).
-- **[P1f.8](../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/README.md):** expressions
+- **[P1g.10](../m1g_logic/p1g.10_school_algebra/README.md)** (school algebra; M1f's P1f.8 until 2026-11-13): expressions
   as data; *the trace is the school solution*, its acceptance line, is P1h.4's subject on equations.
 - **[M1g](../m1g_logic/README.md):** P1g.7, unsatisfiable against owing; P1g.8, a theory of types; and
   [F26](../followups/f26_consistency_and_completeness.md)'s senses of *complete*, which a text that leaves

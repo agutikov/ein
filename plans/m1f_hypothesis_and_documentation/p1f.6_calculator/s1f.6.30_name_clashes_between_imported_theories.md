@@ -34,7 +34,7 @@ From [`malformed_numbers.md` § 6](malformed_numbers.md#6-the-names-the-theory-o
 
 - a second *declaration* of any name of the theory is refused at load, with the name in the message;
 - a written *fact* of one of the theory's relations is not, and `(done (sum 2 2) 5)` is an answer nobody
-  computed ([reply 7](questions.md#q7); the false-facts question is P1f.8's);
+  computed ([reply 7](questions.md#q7); the false-facts question is P1g.10's);
 - `z` and the digits are names and are shared harmlessly;
 - a qualified import prefixes the relations and not `z`.
 

@@ -1,7 +1,7 @@
 # S1f.6.14 — Optional: nested expressions, `(calc E)` and `(let NAME E)`
 
 **Phase:** [P1f.6](README.md)
-**Status:** **moved to P1f.8 on 2026-11-12, by the user's reply of that day** ([§ Moved](#moved-to-p1f8-2026-11-12)).
+**Status:** **moved to P1f.8 on 2026-11-12, by the user's reply of that day** ([§ Moved](#moved-to-p1f8-2026-11-12)); P1f.8's algebra is M1g's P1g.10 since 2026-11-13.
 Nothing of it is built in this phase. Planned 2026-11-11; it waited for the user until then.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), and the user's ruling. [S1f.6.20](s1f.6.20_word_problems.md) is
 where the need for it will show.
@@ -60,9 +60,9 @@ shown (*every quantity took two rules per word*; *no rule needed two operations 
 > both go into p1f.8, where expressions naturally belong to, with check of used names, with check of recursive
 > name usage (let a (+ a 1)) and other
 
-So `(calc E)` and `(let NAME E)` are both ruled **in**, and **in P1f.8**, not in the calculator's core: the
+So `(calc E)` and `(let NAME E)` are both ruled **in**, and **in P1f.8** (now M1g's P1g.10), not in the calculator's core: the
 stage that takes them is
-[S1f.8.2](../p1f.8_school_algebra_and_geometry/s1f.8.2_expressions_and_evaluation.md#moved-here-from-s1f614-2026-11-12),
+[S1g.10.2](../../m1g_logic/p1g.10_school_algebra/s1g.10.2_expressions_and_evaluation.md#moved-here-from-s1f614-2026-11-12),
 with the two checks the reply names. This file stays as the record of the question; its
 [§ Tasks, if ruled in](#tasks-if-ruled-in) are superseded by that stage's, and the two things already settled
 (`sub` inside an expression is strict; division is two heads, `div` and `mod`) go with it.

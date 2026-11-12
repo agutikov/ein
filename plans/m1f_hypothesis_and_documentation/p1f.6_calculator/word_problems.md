@@ -1449,7 +1449,7 @@ imported by relative name as the prototype does (`(import words :symbols (words)
 application of the calculator and the stage says so; a stdlib rule needs a program under `tests/stdlib/` and
 enters the mutation census, which is the wrong price for a prototype vocabulary; and imported flat it occupies
 ordinary words, `has`, `gave`, `holds`, `asked`, `wanted`, `needs`, `value`, `amount`, `together`, which a
-library should not take from every program. If it proves itself over P1f.8's algebra problems it can move.
+library should not take from every program. If it proves itself over P1g.10's algebra problems it can move.
 
 **What it is called.** The prototype's names, proposed as they are: `words` (what the words mean), `gaps` (a
 missing quantity, by `absent`, kept apart), `readings` (a word with two readings, as hypotheses). One entry rule

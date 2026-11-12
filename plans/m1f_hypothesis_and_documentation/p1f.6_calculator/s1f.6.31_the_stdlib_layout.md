@@ -122,7 +122,7 @@ Round 2's table, with the user's one change:
    layout's table first; `tests/README.md`; `examples/README.md` and the examples' own READMEs;
    `docs/install.md` if T1 touched what it says; this phase's README and stage files get **one note at the
    top of the README** that maps old names to new, and are not rewritten (they are records); `AGENTS.md`'s
-   § Where things live, `stdlib/` paragraph; `plans/` pages of P1f.8 and M1g that name `std.arith` as what
+   § Where things live, `stdlib/` paragraph; `plans/` pages of M1g, P1g.10 and P1g.11 among them, that name `std.arith` as what
    they import.
 7. **T1f.6.31.7 — the checks that keep it:** `stdlib_coverage.rs` reads every module at any depth, and a
    test fails on a `.ein` under `stdlib/` that the manifest or the coverage reader does not see.

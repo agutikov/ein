@@ -6,7 +6,7 @@ No stage file yet: the phase is this README, and its stages are sections below.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop; of M1f, the calculator's number kinds
 as shipped (`std.arith`, `std.int`, `std.rat`, under `std.math` after
 [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)), and
-[P1f.8's S1f.8.11](../../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/s1f.8.11_compound_numbers_without_a_hardcoded_representation.md),
+[P1g.10's S1g.10.7](../p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md),
 which says what the compound numbers would need of a types theory.
 
 ## Where it comes from
@@ -78,7 +78,7 @@ silent, and becomes well-formed).
 ### S1g.8.4 — What else it types
 
 Only as far as M1g's own phases need: a formula against a term in P1g.4's many-sorted reading; a proof line
-against a formula in P1g.3; S1f.8.11's compound numbers over a representation. Each a short section with a
+against a formula in P1g.3; S1g.10.7's compound numbers over a representation. Each a short section with a
 program, or a sentence saying the types theory does not reach it.
 
 ## What it is not

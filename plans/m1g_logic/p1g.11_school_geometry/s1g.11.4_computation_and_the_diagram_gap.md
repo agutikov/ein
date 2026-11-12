@@ -1,10 +1,11 @@
-# S1f.8.9 — Computation problems in geometry, the diagram gap detected and named, and the phase's report
+# S1g.11.4 — Computation problems in geometry, the diagram gap detected and named, and the report
 
-**Phase:** [P1f.8](README.md)
+**Phase:** [P1g.11](README.md) of [M1g](../README.md). Until 2026-11-13 this stage was **S1f.8.9** of M1f's P1f.8
+([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-11. Not started. Its report is **shown** to the user; it asks nothing new.
-**Depends on:** [S1f.8.7](s1f.8.7_theorems_as_rules.md), the rule base and its metric layer;
-[S1f.8.8](s1f.8.8_constructions_contradiction_cases.md), cases; [S1f.8.4](s1f.8.4_linear_equations.md) for
-problems with an unknown; [S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md), whose pattern it follows
+**Depends on:** [S1g.11.2](s1g.11.2_theorems_as_rules.md), the rule base and its metric layer;
+[S1g.11.3](s1g.11.3_constructions_contradiction_cases.md), cases; [S1g.10.4](../p1g.10_school_algebra/s1g.10.4_linear_equations.md) for
+problems with an unknown; [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md), whose pattern it follows
 and whose ruled gap mechanism it uses.
 
 ## The instruction's part
@@ -18,14 +19,14 @@ justify, because the picture shows them.
 ## 1. Computation problems
 
 A geometry computation is a word problem whose words are a figure. The pattern is
-[S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md)'s: facts of the problem; a theory that turns them
+[S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s: facts of the problem; a theory that turns them
 into the calculator's requests, a rule a reading, each with its `:why`; the calculator's answers read back as
-facts about the figure. The theory here is S1f.8.7's rule base at the metric level.
+facts about the figure. The theory here is S1g.11.2's rule base at the metric level.
 
 | problem | what it shows |
 |---|---|
 | *Two angles of a triangle are 50° and 60°. Find the third.* | the angle sum as two requests; probe G-4 |
-| *An isosceles triangle has an angle of 40° at the apex. Find the base angles.* | a theorem (equal base angles) and then an equation, `2b + 40 = 180`: the rule base hands S1f.8.4 an equation |
+| *An isosceles triangle has an angle of 40° at the apex. Find the base angles.* | a theorem (equal base angles) and then an equation, `2b + 40 = 180`: the rule base hands S1g.10.4 an equation |
 | *One angle of a triangle is twice another, and the third is 60°.* | an unknown named by the problem; a linear equation over the figure |
 | *A rectangle is 12 by 25. Find its perimeter and its area.* | [`examples/arith/mul.ein`](../../../examples/arith/mul.ein)'s program with the words as facts; a unit carried and named |
 | *Lines a and b are parallel; a transversal makes an angle of 70° with a. Find the eight angles.* | several theorems chained; each answer's trace names its theorems |
@@ -34,7 +35,7 @@ facts about the figure. The theory here is S1f.8.7's rule base at the metric lev
 
 **Units and what the model leaves out.** Degrees and a length's unit are names the problem states; an area's
 unit is a product the theory does not compute and says so. S1f.6.20's *the problem is a model*
-([its section](../p1f.6_calculator/s1f.6.20_word_problems.md#the-problem-is-a-model-and-says-where-it-ends))
+([its section](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md#the-problem-is-a-model-and-says-where-it-ends))
 applies with a new entry in the list of what the model leaves out: **the theory does not know where the points
 are.** It has no coordinates. Everything it knows of position is the facts of incidence and order it was given.
 
@@ -44,7 +45,7 @@ are.** It has no coordinates. Everything it knows of position is the facts of in
 right only if D is **between** B and C. If D is on the line beyond B, the angle is 10°; beyond C, no such figure
 exists, since 30 is less than 40. The problem's text does not say; the picture does.
 
-The gaps of this kind, as the planning agent expects them, to be confirmed on S1f.8.6's three proofs taken
+The gaps of this kind, as the planning agent expects them, to be confirmed on S1g.11.1's three proofs taken
 apart:
 
 | what the picture shows | where a rule needs it |
@@ -55,9 +56,9 @@ apart:
 | a point is **inside** a triangle or an angle | every proof that cuts a figure in two |
 | three points are **not collinear**, two points are distinct | every rule about a triangle |
 
-**The detection.** [S1f.6.20](../p1f.6_calculator/s1f.6.20_word_problems.md) detects a missing quantity: the
+**The detection.** [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) detects a missing quantity: the
 theory's own rules ask for something the problem does not give. This is the same, with a relation of position
-in place of a number. Each rule of S1f.8.7 that has a side condition is the place: where every other premise
+in place of a number. Each rule of S1g.11.2 that has a side condition is the place: where every other premise
 holds and the side condition is neither stated nor derived, the theory reports *this step needs to know whether
 D is between B and C*. The mechanism is whichever S1f.6.20's stop ruled (an obligation, so the state owes; a
 derived `needs` fact by `absent`; or the reading as a hypothesis); this stage does not choose another. It tries
@@ -68,7 +69,7 @@ the ruled one on position and reports what differs:
   B and C*, *C between B and D*, *B between D and C* are three candidates, one of which holds; R has the
   surviving positions and the query's projection classes are the answers: 70° under the first, 10° under the
   third, each named with its position, and the second dead, with a core that says why (the part would exceed
-  the whole). This is S1f.8.8's case split, arrived at from the other side;
+  the whole). This is S1g.11.3's case split, arrived at from the other side;
 - **never silently assumed.** No rule of the base has a default position.
 
 Position facts are **non-monotone to detect** (a `needs` fact rests on an `absent`), and S1f.6.20's file says
@@ -81,21 +82,25 @@ close.
 
 ## 3. The report
 
-`p1f.8_school_algebra_and_geometry/report.md`, the phase's answer to the instruction, read off the stages and
-not written from memory. Each row cites the program and the command.
+`p1g.11_school_geometry/report.md`, the answer to the instruction of 2026-11-11, read off the stages and
+not written from memory. Each row cites the program and the command. **It is one report over both phases,** as
+it was one report of P1f.8: the split of 2026-11-13 moved the stages and did not make two reports, and this
+stage is the last of the two phases to run, so it reads every stage of
+[P1g.10](../p1g.10_school_algebra/README.md) and of this phase.
 
-- **The fragment map.** For each school activity of the phase's
-  [README § What it is](README.md#what-it-is): done by saturation alone; done by the lattice, at what cost; done
+- **The fragment map.** For each school activity of the two READMEs' tables
+  ([P1g.10 § What it is](../p1g.10_school_algebra/README.md#what-it-is),
+  [P1g.11 § What it is](README.md#what-it-is)): done by saturation alone; done by the lattice, at what cost; done
   only with something written that a pupil would not write; not done, and why.
 - **The user's doubt, answered for what was tried.** Over the proofs the phase wrote: how many steps were a
   rule applied, how many a computation, how many a fact of the picture that had to be stated. Beside it, what
-  S1f.8.6 found in the literature about the systems that *are* complete. The report does not claim more than
+  S1g.11.1 found in the literature about the systems that *are* complete. The report does not claim more than
   that table: a count over a handful of proofs is not a theorem about school geometry.
 - **The trace as the school solution:** what was achieved, shown on one equation and one theorem beside the
   textbook's text.
 - **What the two halves share:** an order on names wanted twice, bookkeeping of spellings, the request
   protocol, joins on nested values, a reading of the trace at one theory's level.
-- **The handover to M1g,** by name: equational proof to P1g.3; assumption and discharge to S1g.3.3; witnesses
+- **The handover to M1g's other phases,** by name: equational proof to P1g.3; assumption and discharge to S1g.3.3; witnesses
   and fresh names to S1g.6.4 with this phase's constructions as evidence; induction to P1g.5; the senses of
   *complete* to S1g.4.5 and [F26](../../followups/f26_consistency_and_completeness.md). Each with the program of
   this phase that shows the need.
@@ -103,7 +108,10 @@ not written from memory. Each row cites the program and the command.
   programs as instances of
   [the reasoning as a program](../../m2_nl_to_ir/README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11);
   the gap problems as instances whose right answer is *the problem does not say*.
-- **[`findings.md`](findings.md), closed:** every row fixed, ruled or owned.
+- **[`findings.md`](findings.md), closed:** every row fixed, ruled or owned. (P1g.10's own
+  [`findings.md`](../p1g.10_school_algebra/findings.md) is closed at that phase's close; the report cites it.)
+- **The engine candidates,** [S1g.6.7](../p1g.6_engine_requirements/s1g.6.7_what_theorems_as_rules_needs.md)'s
+  list against what the geometry's programs showed: needed, not needed, or not reached.
 
 ## Sketch
 
@@ -144,7 +152,7 @@ k_s 1.
 ```
 
 What the sketch leaves for the stage: it knows the two angles only in the spellings and the order written (the
-bookkeeping of S1f.8.6); with angles of 100 and 90 the difference is *short by 10* and the third rule does not
+bookkeeping of S1g.11.1); with angles of 100 and 90 the difference is *short by 10* and the third rule does not
 fire, so the impossible triangle is answered by silence, which is what the stage must replace with a statement.
 
 The diagram gap, **not run**: the facts of the problem and the two readings the theory is to tell apart.
@@ -164,11 +172,11 @@ The diagram gap, **not run**: the facts of the problem and the two readings the 
    facts.
 2. **The gap table,** from the proofs and problems actually written.
 3. **The detection,** by S1f.6.20's ruled mechanism, as a module apart; the angle problem under both readings.
-4. **The negative figures** S1f.8.7 asked for, completed: for each rule with a position premise, a figure on
+4. **The negative figures** S1g.11.2 asked for, completed: for each rule with a position premise, a figure on
    which the rule without that premise would derive something false.
 5. **The tests:** every answer against the harness's integers; each gap problem held to its named gap; the
    impossible figure held to its stated outcome; search-free where no reading is searched.
-6. **The report,** and [`findings.md`](findings.md) closed.
+6. **The report,** over both phases, and this phase's [`findings.md`](findings.md) closed.
 7. **The examples** as corpus entries, each with an `:expect`.
 
 ## Acceptance
