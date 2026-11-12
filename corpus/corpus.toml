@@ -310,7 +310,7 @@ note   = "M1f S1f.6.15, generated (`utils/gen_arith_examples.py`) — a long cha
 path   = "examples/arith/int.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "solve --trace {out}/trace.md"]
-note   = "M1f S1f.6.7 — `std.int`, negative numbers: an integer is `(int P N)`, two natural numbers of `std.arith`, its value the first less the second. -12 + 40 = 28, 4567 - 123078 = -118511 as one integer where `std.arith` answers two numbers, -123 x 456 = -56088, a simplification and a negation of 5 less 3, and three named temperatures compared with freezing by a rule of the program's own, a second rule reading the order `lt`. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
+note   = "M1f S1f.6.7 — `std.int`, negative numbers: an integer is `(int P N)`, two natural numbers of `std.arith`, its value the first less the second. -12 + 40 = 28, 4567 - 123078 = -118511 as one integer where `std.arith` answers two numbers, -123 x 456 = -56088, a simplification and a negation of 5 less 3, -7 divided by 2 under the three conventions side by side (S1f.6.22: Euclidean -4 and 1, truncated -3 and -1, floored -4 and 1), and three named temperatures compared with freezing by a rule of the program's own, a second rule reading the order `lt`. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
 
 [[entry]]
 path   = "examples/arith/long_numbers.ein"
@@ -3310,7 +3310,7 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/int.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.7 (2026-11-11): integers as a positive and a negative part, `(int P N)`, over the natural numbers of `std.arith`, which the module calls and does not edit. Requests `int-simplify`, `int-neg`, `int-add`, `int-sub`, `int-mul` and `int-cmp`, answered by `int-simple-of`, `int-neg-of`, `int-sum-of`, `int-diff-of`, `int-product-of` and `int-cmp-of`, every answer in normal form, one part `z`. Every rule has one premise, and a call's tag is its request; `int-arith`, the closing rule, closes every relation, names every rule and names `arith`. Integer division is not built: its remainder convention is the user's question. `ein-infer/tests/int_theory.rs` holds the module to Rust's signed integers. The module alone states no request: its closing rules fire and nothing else."
+note   = "M1f S1f.6.7 (2026-11-11): integers as a positive and a negative part, `(int P N)`, over the natural numbers of `std.arith`, which the module calls and does not edit. Requests `int-simplify`, `int-neg`, `int-add`, `int-sub`, `int-mul` and `int-cmp`, answered by `int-simple-of`, `int-neg-of`, `int-sum-of`, `int-diff-of`, `int-product-of` and `int-cmp-of`, every answer in normal form, one part `z`. Every rule has one premise, and a call's tag is its request; `int-arith`, the closing rule, closes every relation, names every rule and names `arith`. Integer division names its convention since S1f.6.22 (2026-11-12): `int-div-euclid`, `int-div-trunc` and `int-div-floor`, answered by `int-quot-euclid-of` (the remainder a natural number), `int-quot-trunc-of` and `int-quot-floor-of`; a divisor that is zero derives `std.arith`'s flag. `ein-infer/tests/int_theory.rs` holds the module to Rust's signed integers. The module alone states no request: its closing rules fire and nothing else."
 
 [[entry]]
 path   = "stdlib/macro.ein"
@@ -3740,6 +3740,42 @@ path   = "tests/stdlib/int/08_named_and_chained.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.7, `std.int`: operands by name through `std.arith`'s `let`, and two rules of the program's own that read a negative difference by its shape, one deriving an `int-neg` request of an integer the theory computed."
+
+[[entry]]
+path   = "tests/stdlib/int/09_div_euclid.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.22, `std.int`: Euclidean division, `(int-div-euclid X Y)` answered by `(int-quot-euclid-of X Y Q R)` with 0 <= R < |Y| and R a natural number of `std.arith`: the four combinations of signs with a remainder and without, a dividend of zero, one smaller than the divisor, six digits by two, and two requests with unsimplified operands."
+
+[[entry]]
+path   = "tests/stdlib/int/10_div_trunc.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.22, `std.int`: truncated division, `(int-div-trunc X Y)` answered by `(int-quot-trunc-of X Y Q R)`, the quotient toward zero and the remainder with the dividend's sign, both integers: the same eighteen requests as the Euclidean program."
+
+[[entry]]
+path   = "tests/stdlib/int/11_div_floor.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.22, `std.int`: floored division, `(int-div-floor X Y)` answered by `(int-quot-floor-of X Y Q R)`, the quotient rounded down and the remainder with the divisor's sign, both integers: the same eighteen requests."
+
+[[entry]]
+path   = "tests/stdlib/int/12_div_euclid_by_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.22, `std.int`: a Euclidean division by `(int z z)`: the flag `(division-by-zero (int-div-euclid X Y))` by `int-div-by-zero` and `(false)` by `std.arith`'s rule; `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/int/13_div_trunc_by_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.22, `std.int`: a truncated division by 3 less 3, zero by value and not by spelling: flagged as written; `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/int/14_div_floor_by_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.22, `std.int`: a floored division by a name whose integer is zero written with digits: flagged with the name; `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/macro/01_forall.ein"

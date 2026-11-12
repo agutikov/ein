@@ -9,8 +9,8 @@ five decisions taken by default, Q-M1f.174 to .178, and no finding ([§ T1 recor
 [Q-M1f.179](../open_questions.md#q-m1f179--the-remainder-of-an-integer-division), and
 [§ T2 record](#t2-record-2026-11-12-the-remainder-convention-three-ways-for-the-user) has each of the three as
 rules and computed examples. **Ruled 2026-11-12** (replies 1 (d) and 2 (a) of [`questions.md`](questions.md#q1)): all
-three conventions, each under a request of its own, the Euclidean remainder a natural number; the build is
-[S1f.6.22](s1f.6.22_integer_division.md). Planned 2026-11-08; restated 2026-11-11 to
+three conventions, each under a request of its own, the Euclidean remainder a natural number; **built
+2026-11-12** by [S1f.6.22](s1f.6.22_integer_division.md), whose record has what the module now holds. Planned 2026-11-08; restated 2026-11-11 to
 [the rulings](design.md#the-rulings-2026-11-11): the numbers under it are nested, of any length, and its rules
 follow S1f.6.3's rule of the theory.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md).

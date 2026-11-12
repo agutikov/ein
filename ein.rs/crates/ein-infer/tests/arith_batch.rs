@@ -387,13 +387,18 @@ const IMPORT_INT: &str = "(import std.int :symbols (int-arith))\n";
 /// what a request may cost at the smallest batch, in `candidates`: a little
 /// above the measure, as [`BOUND`] is; and the digits of an operand's parts,
 /// six, and four for a product, which is four of `std.arith`'s. Every third
-/// operand is written with both parts, not simplified.
-const REQUESTS_INT: [(&str, &str, f64, u32); 4] = [
+/// operand is written with both parts, not simplified. The three divisions
+/// (S1f.6.22) are of four-digit parts, a divisor that is zero left out.
+const REQUESTS_INT: [(&str, &str, f64, u32); 7] = [
     ("int-add", "int-sum-of", BOUND_INT_ADD, 6),
     ("int-sub", "int-diff-of", BOUND_INT_ADD, 6),
     ("int-mul", "int-product-of", BOUND_INT_MUL, 4),
     ("int-cmp", "int-cmp-of", BOUND_INT_CMP, 6),
+    ("int-div-euclid", "int-quot-euclid-of", BOUND_INT_DIV, 4),
+    ("int-div-trunc", "int-quot-trunc-of", BOUND_INT_DIV, 4),
+    ("int-div-floor", "int-quot-floor-of", BOUND_INT_DIV, 4),
 ];
+const BOUND_INT_DIV: f64 = 5500.0;
 const BOUND_INT_ADD: f64 = 700.0;
 const BOUND_INT_MUL: f64 = 6000.0;
 const BOUND_INT_CMP: f64 = 1300.0;
@@ -420,11 +425,18 @@ fn batch_int(op: &str, count: usize, digits: u32) -> String {
     let mut src = String::from(IMPORT_INT);
     let mut seen = std::collections::BTreeSet::new();
     while seen.len() < count {
-        let request = format!(
-            "({op} {} {})\n",
-            integer(&mut rng, digits),
-            integer(&mut rng, digits)
-        );
+        let (x, y) = (integer(&mut rng, digits), integer(&mut rng, digits));
+        // A division by zero is not a request of the batch: a divisor
+        // written with two equal parts.
+        if op.starts_with("int-div-") {
+            let inner = y.trim_start_matches("(int ");
+            let inner = &inner[..inner.len() - 1];
+            let half = inner.len() / 2;
+            if inner.len() % 2 == 1 && inner[..half] == inner[half + 1..] {
+                continue;
+            }
+        }
+        let request = format!("({op} {x} {y})\n");
         if seen.insert(request.clone()) {
             src.push_str(&request);
         }

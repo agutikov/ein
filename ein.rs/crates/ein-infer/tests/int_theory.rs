@@ -20,14 +20,20 @@
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_each_operation`] |
 //! | **the rule of the theory**, on the module's text: every rule has one premise, so none joins two facts | [`every_rule_has_one_premise`] |
 //! | no `absent`, `not`, `or`, guard or `(false)` | [`the_theory_writes_no_negation_and_no_guard`] |
+//! | a division by zero derives `std.arith`'s flag, the request as written, and `(false)`, and no quotient | [`a_division_by_zero_is_the_flag_under_every_convention`] |
 //! | the closing rule closes every relation and names every rule, and names `std.arith`'s entry | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //!
 //! The oracle is `i128`. The *measured* half of the rule of the theory is
 //! `arith_batch.rs`; the search-free claim, on the binary, is
 //! `ein-cli/tests/arith_search_free.rs`.
 //!
-//! **Integer division is not here because it is not built**: its remainder
-//! convention is the user's question (the stage file has the three).
+//! **Integer division is three rows of [`OPS`]** since M1f
+//! [S1f.6.22](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.22_integer_division.md),
+//! one a convention, each answered by a quotient and a remainder: Euclidean
+//! against `i128`'s `div_euclid` and `rem_euclid`, its remainder a natural
+//! number; truncated against `/` and `%`; floored against the pair computed
+//! from them. A request whose divisor is zero is left out of every sample
+//! and held by [`a_division_by_zero_is_the_flag_under_every_convention`].
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -180,27 +186,77 @@ fn run(body: &str, relation: &str) -> Vec<String> {
 
 /// One operation over two integers: its request and result relations, the
 /// longest operand it is sampled at, and what the signed integers say the
-/// result's last argument is, in the theory's spelling.
+/// result's arguments after the operands are, in the theory's spelling: one
+/// for most, and a quotient and a remainder, with a space between, for a
+/// division.
 struct Op {
     request: &'static str,
     result: &'static str,
     /// The longest sampled part, in digits: the answer must stay in `i128`.
     max_digits: u32,
+    /// A division: a request whose second operand is zero has no answer,
+    /// and is left out of what [`hold`] asks.
+    divides: bool,
     answer: fn(i128, i128) -> String,
 }
 
-const OPS: [Op; 4] = [
+/// The floored quotient and remainder, from `i128`'s truncated pair: one
+/// less in the quotient where a remainder is left and the signs differ.
+fn floored(a: i128, b: i128) -> (i128, i128) {
+    let (q, r) = (a / b, a % b);
+    if r != 0 && (r < 0) != (b < 0) {
+        (q - 1, r + b)
+    } else {
+        (q, r)
+    }
+}
+
+const OPS: [Op; 7] = [
     Op {
         request: "int-add",
         result: "int-sum-of",
         max_digits: 30,
+        divides: false,
         answer: |a, b| normal(a + b),
     },
     Op {
         request: "int-sub",
         result: "int-diff-of",
         max_digits: 30,
+        divides: false,
         answer: |a, b| normal(a - b),
+    },
+    // The Euclidean remainder is a **natural number** of `std.arith`, in
+    // normal form, and never an integer (the user's ruling of 2026-11-12).
+    Op {
+        request: "int-div-euclid",
+        result: "int-quot-euclid-of",
+        max_digits: 30,
+        divides: true,
+        answer: |a, b| {
+            format!(
+                "{} {}",
+                normal(a.div_euclid(b)),
+                natural(a.rem_euclid(b).unsigned_abs())
+            )
+        },
+    },
+    Op {
+        request: "int-div-trunc",
+        result: "int-quot-trunc-of",
+        max_digits: 30,
+        divides: true,
+        answer: |a, b| format!("{} {}", normal(a / b), normal(a % b)),
+    },
+    Op {
+        request: "int-div-floor",
+        result: "int-quot-floor-of",
+        max_digits: 30,
+        divides: true,
+        answer: |a, b| {
+            let (q, r) = floored(a, b);
+            format!("{} {}", normal(q), normal(r))
+        },
     },
     // Two integers of 18 digits have a product of at most 36, which `i128`
     // holds, as it holds the two sums of products the circuit makes.
@@ -208,12 +264,14 @@ const OPS: [Op; 4] = [
         request: "int-mul",
         result: "int-product-of",
         max_digits: 18,
+        divides: false,
         answer: |a, b| normal(a * b),
     },
     Op {
         request: "int-cmp",
         result: "int-cmp-of",
         max_digits: 30,
+        divides: false,
         answer: |a, b| {
             match a.cmp(&b) {
                 std::cmp::Ordering::Less => "lt",
@@ -227,11 +285,15 @@ const OPS: [Op; 4] = [
 
 /// Ask every pair as one program of `op` requests and hold every answer:
 /// **exactly one** result fact per request, repeating the operands as
-/// written, its last argument what the integers say, in normal form.
+/// written, what follows them what the integers say, in normal form. A
+/// division by zero is not asked.
 fn hold(op: &Op, cases: &[(Operand, Operand)]) {
     let mut want: BTreeMap<(String, String), String> = BTreeMap::new();
     let mut body = String::new();
     for ((x, a), (y, b)) in cases {
+        if op.divides && *b == 0 {
+            continue;
+        }
         if want
             .insert((x.clone(), y.clone()), (op.answer)(*a, *b))
             .is_none()
@@ -242,10 +304,15 @@ fn hold(op: &Op, cases: &[(Operand, Operand)]) {
     let mut got: BTreeMap<(String, String), Vec<String>> = BTreeMap::new();
     for fact in run(&body, op.result) {
         let p = parts(&fact);
-        assert_eq!(p.len(), 4, "a {} of another arity: {fact}", op.result);
+        assert_eq!(
+            p.len(),
+            if op.divides { 5 } else { 4 },
+            "a {} of another arity: {fact}",
+            op.result
+        );
         got.entry((p[1].clone(), p[2].clone()))
             .or_default()
-            .push(p[3].clone());
+            .push(p[3..].join(" "));
     }
     for (request, answer) in &want {
         let answers = got.remove(request).unwrap_or_default();
@@ -454,6 +521,9 @@ fn named_operands_work_for_every_request() {
         let mut src = body.clone();
         for (x, a) in &names {
             for (y, b) in names.iter().step_by(7) {
+                if op.divides && *b == 0 {
+                    continue;
+                }
                 // By two names, and by a name and an integer written out.
                 src.push_str(&format!("({} {x} {y})\n", op.request));
                 want.insert((x.clone(), y.clone()), (op.answer)(*a, *b));
@@ -465,7 +535,7 @@ fn named_operands_work_for_every_request() {
         for fact in run(&src, op.result) {
             let p = parts(&fact);
             assert!(
-                got.insert((p[1].clone(), p[2].clone()), p[3].clone())
+                got.insert((p[1].clone(), p[2].clone()), p[3..].join(" "))
                     .is_none(),
                 "two answers: {fact}"
             );
@@ -506,6 +576,54 @@ fn a_natural_number_is_not_an_integer_operand() {
     assert!(run(&body, "int-neg-of").is_empty());
     assert!(run(&body, "int-product-of").is_empty());
     assert!(run(&body, "false").is_empty());
+}
+
+/// **A division by zero, under every convention**: the divisor is zero by
+/// value, written `(int z z)`, with both parts equal, with digits, or by
+/// name. `int-div-by-zero` derives `std.arith`'s flag with the request as
+/// written, `std.arith`'s rule derives `(false)`, and the request has no
+/// quotient; the request beside it is answered.
+#[test]
+fn a_division_by_zero_is_the_flag_under_every_convention() {
+    let zeros = [
+        "(int z z)".to_string(),
+        pair(3, 3),
+        format!("(int {} {})", written("00"), written("0")),
+        "nothing".to_string(),
+    ];
+    for op in OPS.iter().filter(|op| op.divides) {
+        for zero in &zeros {
+            for dividend in [normal(7), normal(-7), normal(0), pair(5, 12)] {
+                let body = format!(
+                    "(let nothing (int z z))\n({} {dividend} {zero})\n({} {} {})\n",
+                    op.request,
+                    op.request,
+                    normal(-7),
+                    normal(2)
+                );
+                assert_eq!(
+                    run(&body, "division-by-zero"),
+                    [format!(
+                        "(division-by-zero ({} {dividend} {zero}))",
+                        op.request
+                    )],
+                    "{body}"
+                );
+                assert_eq!(run(&body, "false"), ["(false)"], "{body}");
+                let answers = run(&body, op.result);
+                assert_eq!(answers.len(), 1, "{body}: {answers:?}");
+                assert!(
+                    answers[0].starts_with(&format!(
+                        "({} {} {} ",
+                        op.result,
+                        normal(-7),
+                        normal(2)
+                    )),
+                    "{body}: {answers:?}"
+                );
+            }
+        }
+    }
 }
 
 // ── the circuit's measure ──────────────────────────────────────────
@@ -560,7 +678,10 @@ fn circuit(body: &str) -> (usize, usize) {
 /// walks and the two subtraction walks of the simplification, which run side
 /// by side, so its depth is less than its size. A product is four of
 /// `std.arith`'s products, of which three have a zero operand here, two
-/// sums and the simplification.
+/// sums and the simplification. A division is two simplifications,
+/// `std.arith`'s division of the sizes and, where the convention adjusts,
+/// an addition walk and a subtraction walk: −7 by 2, and −127645 by 25,
+/// under each convention.
 ///
 /// `cargo test -p ein-infer --test int_theory the_circuit` re-takes them.
 #[test]
@@ -583,15 +704,35 @@ fn the_circuit_of_each_operation() {
             pair(123 + 77, 77),
             pair(1000, 1456)
         )),
+        circuit(&format!("(int-div-euclid {} {})\n", normal(-7), normal(2))),
+        circuit(&format!("(int-div-trunc {} {})\n", normal(-7), normal(2))),
+        circuit(&format!("(int-div-floor {} {})\n", normal(-7), normal(2))),
+        circuit(&format!(
+            "(int-div-euclid {} {})\n",
+            normal(-127_645),
+            normal(25)
+        )),
+        circuit(&format!(
+            "(int-div-trunc {} {})\n",
+            normal(-127_645),
+            normal(25)
+        )),
+        circuit(&format!(
+            "(int-div-floor {} {})\n",
+            normal(-127_645),
+            normal(25)
+        )),
     ];
     eprintln!(
-        "simplify, neg, add, sub, cmp, mul 123 x -456, mul -123078 squared, mul unsimplified: {measured:?}"
+        "simplify, neg, add, sub, cmp, mul 123 x -456, mul -123078 squared, mul unsimplified, \
+         -7 / 2 Euclidean, truncated, floored, -127645 / 25 Euclidean, truncated, floored: \
+         {measured:?}"
     );
     assert_eq!(measured, CIRCUITS, "(firings, depth) of each");
 }
 
 /// The pinned measures, in the order [`the_circuit_of_each_operation`] asks.
-const CIRCUITS: [(usize, usize); 8] = [
+const CIRCUITS: [(usize, usize); 14] = [
     (28, 21),
     (22, 17),
     (59, 52),
@@ -600,6 +741,12 @@ const CIRCUITS: [(usize, usize); 8] = [
     (142, 136),
     (342, 330),
     (413, 406),
+    (124, 120),
+    (112, 108),
+    (124, 120),
+    (279, 269),
+    (259, 249),
+    (279, 269),
 ];
 
 // ── the module's text ──────────────────────────────────────────────
@@ -706,7 +853,9 @@ fn every_rule_has_one_premise() {
 
 /// No `absent`, no `not`, no `or`, no guard, and no `(false)`: the module is
 /// monotone, has one stratum, and never refutes. A contradiction in a
-/// program of integers is `std.arith`'s, a division by zero.
+/// program of integers is `std.arith`'s, a division by zero: since S1f.6.22
+/// the module derives that theory's flag, `(division-by-zero REQUEST)`, and
+/// `std.arith`'s rule concludes `(false)` from it.
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();

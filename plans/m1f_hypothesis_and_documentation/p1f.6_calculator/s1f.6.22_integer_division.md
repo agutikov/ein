@@ -1,7 +1,7 @@
 # S1f.6.22 — Integer division, under three conventions
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's replies of that day. Not started. **It is the last task of
+**Status:** **done 2026-11-12** ([§ Record](#record-2026-11-12)). Planned that day, on the user's replies. **It is the last task of
 [S1f.6.7](s1f.6.7_negative_numbers.md),** which was built but for division and waited for this ruling; it has
 a file of its own because S1f.6.7's file is that stage's record, and because the ruling asks for more than
 the one request that record prepared.
@@ -109,3 +109,109 @@ fix. Findings go to [`findings.md`](findings.md) under the next free id; a quest
 never changes an answer; every answer exits 0. The gate is `./run_tests.sh`, then `./run_tests.sh --nightly`
 after the code commit; `utils/ci_container.sh` is not needed (no DOT writer, review bundle or CI install
 changes).
+
+## Record, 2026-11-12
+
+**T1, the rules.** `stdlib/int.ein` gained 34 rules, 70 beside its closing rule (`grep -c '^(rule '
+stdlib/int.ein` says 71, 2026-11-12), 13 relations, and the two names `pos` and `neg`. Every rule has one
+premise, none writes `absent`, `not` or a guard, and a call's tag is its request.
+
+| | rules | which |
+|---|---:|---|
+| shared by the three | 8 | `int-div-start`, `int-div-divisor`, `int-div-by-zero`, `int-div-pp`, `-pn`, `-np`, `-nn`, `int-div-rest` |
+| Euclidean | 10 | `int-div-euclid-ask`, `-pp`, `-pn`, `-np-exact`, `-nn-exact`, `-np-more`, `-nn-more`, `-neg`, `-pos`, `-answer` |
+| truncated | 6 | `int-div-trunc-ask`, `-pp`, `-pn`, `-np`, `-nn`, `-answer` |
+| floored | 10 | `int-div-floor-ask`, `-pp`, `-nn`, `-pn-exact`, `-np-exact`, `-pn-more`, `-np-more`, `-neg`, `-pos`, `-answer` |
+
+The stage file guessed about 27. The prototype's shape is kept and two things differ from it:
+
+- **The shared part is entered through one tag, `(int-div-of REQUEST)`.** A request's `-ask` rule looks its first
+  operand up under `(int-first (int-div-of REQUEST) Y)`; the module's own `int-operand-second` asks for the
+  second; and `int-div-start` matches `(operand-is (int-second (int-div-of ?k) ?p ?n) (int ?q ?m))`, so one rule
+  starts the three, where the prototype's start rule named its request. From there the request travels as `?k`
+  down to `std.arith`'s `div-call`, and the convention's own rules read it back out of the tag, `(div-done
+  (int-div-m (int-div-euclid ?x ?y) pos pos ?b) ?q ?r)`.
+- **The Euclidean remainder is a natural number**, the user's ruling: the six Euclidean rules that hand over
+  an answer conclude `(int-div-done REQUEST Q R)` with R the size itself, `?r`, `z` or `?t`, and not `(int R z)`.
+  `int-div-done`'s third argument is therefore a number under one convention and an integer under two; the three
+  result relations each hold one shape.
+
+`int-div-rest`, the adjustment's second walk, is shared by the two conventions that adjust; its sign argument is
+the quotient's sign under Euclidean and the remainder's under floored, which the module's comments say.
+
+**T2, the closing rule.** `int-arith` closes the 13 new relations and names the 34 new rules;
+`the_closing_rule_names_every_rule_and_closes_every_relation` holds it.
+
+**T3, the harness.** `int_theory.rs`'s `OPS` has seven rows. A division's row answers two arguments, a quotient
+and a remainder, against `i128`: `div_euclid` and `rem_euclid`, the remainder spelt as a natural number in
+normal form; `/` and `%`; and the floored pair computed from the truncated one. Each is asked every case the
+other rows are, a divisor of zero left out by `hold`: the 10 000 pairs of integers written with one-digit parts
+less the 1 000 whose divisor is zero, every pair of lengths to 30 digits in the four combinations of signs,
+equal operands and operands one apart, unsimplified operands and operands with high zeros, and operands by
+name. `a_division_by_zero_is_the_flag_under_every_convention` holds the flag, the request as written, `(false)`
+and no quotient, for four spellings of zero by four dividends under each convention. The circuits, pinned in
+`CIRCUITS`: −7 ÷ 2 is (124, 120), (112, 108) and (124, 120) firings and depth under Euclidean, truncated and
+floored, and −127645 ÷ 25 is (279, 269), (259, 249) and (279, 269) (`cargo test -p ein-infer --test int_theory
+the_circuit -- --nocapture`, 2026-11-12): the firings are the prototype's.
+
+**T4, the programs.** Six under `tests/stdlib/int/`, each with a corpus entry: `09_div_euclid.ein`,
+`10_div_trunc.ein` and `11_div_floor.ein` ask the same eighteen requests, the four combinations of signs with
+a remainder and without, a dividend of zero, a dividend smaller than the divisor, six digits by two and two
+requests with unsimplified operands, and claim their result relation's whole extent; `12_` to `14_` divide by a
+zero written `(int z z)`, 3 less 3, and a name for 0 less 00, and claim `(solve :expect (false))`. Every answer
+claimed was computed in Python apart from the engine. `stdlib_coverage.rs` holds every rule activated, 341 of
+341 (`cat stdlib/*.ein | grep -c '^(rule '`, 2026-11-12). `arith_search_free.rs`: `DIVIDES` took `(int-div-`,
+`FLAGGERS` the rule `int-div-by-zero`, `QUOTIENTS` and `RESULTS` the three result relations, and `RESTS_ON`
+took `(nz `: the core of a division by a named zero written with digits is the request, the `let`, two rows of
+`fs` and `(nz 7)`, the row the dividend's simplification read.
+
+`ein-infer/tests/alive_invariant.rs`'s list moved: `pos` and `neg` are names only a rule's `:assert` writes, in a
+tag, as `std.rat`'s two signs already were. Every program that imports `std.int` now holds them, 16 more
+entries of the list carry the two lines, and the rules named are `int-div-pn` and `int-div-pp`, the first to
+assert them, in `std.rat`'s programs too. H is empty on every one of them, as before.
+
+**T5, the mutation census.** 379 of 429 killed (`python3 utils/stdlib_mutants.py`, 2026-11-12), where it was
+361 of 411: the 18 mutants of the new rules are all killed, and the 50 survivors are the banked ones.
+
+**T6, the batch, by hand.** Three rows of `REQUESTS_INT`, operands with four-digit parts, a divisor of zero
+left out, and a bound of 5 500 candidates a request:
+
+| request | candidates a request at 250 | at 1 000 | at 4 000 | firings a request at 250 |
+|---|---:|---:|---:|---:|
+| `int-div-euclid` | 4 606.01 | 4 617.77 | 4 619.46 | 270.62 |
+| `int-div-trunc` | 4 557.12 | 4 568.15 | 4 568.32 | 261.95 |
+| `int-div-floor` | 4 609.68 | 4 619.64 | 4 619.55 | 271.26 |
+
+(`cargo test -p ein-infer --features counters --test arith_batch a_batch_of_integer -- --nocapture`,
+2026-11-12; the whole file under the feature, 5 passed.) Flat, within the test's tolerance.
+
+**T7, the example and the pages.** `examples/arith/int.ein` has −7 by 2 under the three conventions side by
+side, with three queries. `stdlib/README.md`'s `std.int` section and its module table, the module's header,
+`07_stdlib_api.md`'s table of requests and results, `tests/README.md`, `AGENTS.md`, the phase README, S1f.6.7's
+status line, Q-M1f.179 as built.
+
+**What moved.** No engine source. `std.arith` and `std.rat` are unchanged. The sweep, the release binary
+reading the stdlib of `8464f522` against the tree's, `ein saturate --dump` and `ein solve` over the 804 `.ein`
+files `8464f522` tracks (`python3 build/s1f.6.22/sweep.py`, 2026-11-12): **no existing program's `ein solve`
+moved** but `examples/arith/int.ein`'s, which this stage edited. `ein saturate --dump` holds more on the 23
+programs that import `std.int` or `std.rat`: the new relations closed and the new rules named, and nothing they
+held is gone. Two files differ by a line that is not an answer, a timing in `beyond_arith/primes.ein` and the
+stdlib's path in an import error. A program that imports `std.int` pays 24.4 ms of load where it paid 22.4,
+and `std.rat`'s 29.8 where it paid 27.0 (`ein saturate examples/arith/int.ein` and `rat.ein`, the `kb load:`
+line, best of five, 2026-11-12). `int_theory.rs` takes 79 s where the workspace run had it shorter, three more
+operations under the same cases (`cargo test -p ein-infer --test int_theory`, 2026-11-12). The register is
+unmoved, and no finding was met.
+
+**Defaults taken:** [Q-M1f.200](../open_questions.md#q-m1f200--the-names-of-an-integer-divisions-results), the
+names of the three result relations, as this file had them.
+
+## Acceptance re-taken, 2026-11-12
+
+- Each request answers one fact a request, in normal form, and agrees with `i128` on every case of T3: held by
+  `int_theory.rs`'s `hold`, which asks for exactly one answer.
+- The Euclidean remainder is a natural number and the other two are integers: the rows' answers, compared as
+  text.
+- Search-free, and a division by zero an empty R decided by root: `arith_search_free.rs` over the six programs
+  and the example.
+- `std.arith` and `std.rat` unchanged, no existing program's `ein solve` moved: the sweep above.
+- Every new rule activated under `tests/stdlib/int/`, no unexplained survivor: T4 and T5.

@@ -334,12 +334,20 @@ part `z`; an operand is read by value and every answer is in normal form.
 | `(int-product-of X Y S)` | the theory: the result | X × Y = S |
 | `(int-cmp X Y)` | the program: a request | X is compared with Y |
 | `(int-cmp-of X Y O)` | the theory: the result | O is the name `lt`, `eq` or `gt`, by value |
+| `(int-div-euclid X Y)` | the program: a request | X ÷ Y is asked, the remainder never negative |
+| `(int-quot-euclid-of X Y Q R)` | the theory: the result | X = Q·Y + R, 0 ≤ R < \|Y\|; Q an integer, R a **natural number** of `std.arith` |
+| `(int-div-trunc X Y)` | the program: a request | X ÷ Y is asked, rounded toward zero |
+| `(int-quot-trunc-of X Y Q R)` | the theory: the result | X = Q·Y + R, Q toward zero, R with the dividend's sign; both integers |
+| `(int-div-floor X Y)` | the program: a request | X ÷ Y is asked, rounded down |
+| `(int-quot-floor-of X Y Q R)` | the theory: the result | X = Q·Y + R, Q rounded down, R with the divisor's sign; both integers |
 
 An operand is an integer written out, `(int P N)` with P and N numbers, or a
 name that `std.arith`'s `(let NAME (int P N))` states; the answer repeats the
 operand as written. A natural number in an integer's place is never answered.
-**There is no integer division yet**: its remainder convention is open
-(Q-M1f.179). The calls `int-norm`, `int-add-call`, `int-mul-call` and
+**A division names its convention** (M1f S1f.6.22): there is no bare
+`int-div`, and a divisor that is zero by value derives `std.arith`'s
+`(division-by-zero REQUEST)`, from which that theory derives `(false)`. The
+calls `int-norm`, `int-add-call`, `int-mul-call` and
 `int-cmp-call`, with the hand-over `int-done`, are for a theory built on this
 one; the tags and `int-rule` are in the state and are not an interface.
 

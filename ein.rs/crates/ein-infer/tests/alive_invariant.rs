@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 124] = [
+const SEEDED: [(&str, &[&str]); 130] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -394,160 +394,255 @@ const SEEDED: [(&str, &[&str]); 124] = [
     // a nested fact here too, and the module holds it through `std.arith`'s rule.
     (
         "examples/arith/int.ein",
-        &["`z`, in (int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))",
+        ],
     ),
-    ("stdlib/int.ein", &["`z`, matched by rule `operand-zero`"]),
+    (
+        "stdlib/int.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, matched by rule `operand-zero`",
+        ],
+    ),
     (
         "tests/stdlib/int/01_simplify.ein",
-        &["`z`, in (int-simplify (int (n z 5) (n z 3)))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-simplify (int (n z 5) (n z 3)))",
+        ],
     ),
     (
         "tests/stdlib/int/02_neg.ein",
-        &["`z`, in (int-neg (int (n z 7) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-neg (int (n z 7) z))",
+        ],
     ),
     (
         "tests/stdlib/int/03_add.ein",
-        &["`z`, in (int-add (int (n z 7) z) (int (n z 5) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-add (int (n z 7) z) (int (n z 5) z))",
+        ],
     ),
     (
         "tests/stdlib/int/04_sub.ein",
-        &["`z`, in (int-sub (int (n z 7) z) (int (n z 5) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-sub (int (n z 7) z) (int (n z 5) z))",
+        ],
     ),
     (
         "tests/stdlib/int/05_mul.ein",
-        &["`z`, in (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))",
+        ],
     ),
     (
         "tests/stdlib/int/06_cmp.ein",
-        &["`z`, in (int-cmp (int (n z 7) z) (int (n z 5) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-cmp (int (n z 7) z) (int (n z 5) z))",
+        ],
     ),
     (
         "tests/stdlib/int/07_unsimplified.ein",
-        &["`z`, in (int-add (int (n z 5) (n z 3)) (int z (n z 7)))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-add (int (n z 5) (n z 3)) (int z (n z 7)))",
+        ],
     ),
     (
         "tests/stdlib/int/08_named_and_chained.ein",
-        &["`z`, in (let balance (int (n (n z 4) 0) z))"],
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (let balance (int (n (n z 4) 0) z))",
+        ],
+    ),
+    // M1f S1f.6.22 — the divisions of integers: `z` as above, and the signs.
+    (
+        "tests/stdlib/int/09_div_euclid.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-div-euclid (int (n z 7) z) (int (n z 2) z))",
+        ],
+    ),
+    (
+        "tests/stdlib/int/10_div_trunc.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-div-trunc (int (n z 7) z) (int (n z 2) z))",
+        ],
+    ),
+    (
+        "tests/stdlib/int/11_div_floor.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-div-floor (int (n z 7) z) (int (n z 2) z))",
+        ],
+    ),
+    (
+        "tests/stdlib/int/12_div_euclid_by_zero.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-add (int (n z 2) z) (int z (n z 5)))",
+        ],
+    ),
+    (
+        "tests/stdlib/int/13_div_trunc_by_zero.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (int-add (int (n z 2) z) (int z (n z 5)))",
+        ],
+    ),
+    (
+        "tests/stdlib/int/14_div_floor_by_zero.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, in (let nothing (int (n z 0) (n (n z 0) 0)))",
+        ],
     ),
     // M1f S1f.6.8 — `std.rat`: `z` as above, and the two signs, `pos` and `neg`,
-    // which only the module's rules write, in a tag.
+    // which only the module's rules write, in a tag. Since S1f.6.22 `std.int`'s
+    // division writes the same two names in its tags, so every program of
+    // integers holds them too, and its rules are the ones named, being the
+    // first that assert them.
     (
         "examples/arith/rat.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
         "stdlib/rat.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, matched by rule `operand-zero`",
         ],
     ),
     (
         "tests/stdlib/rat/01_simplify.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-simplify (rat (int (n z 2) z) (n z 4)))",
         ],
     ),
     (
         "tests/stdlib/rat/02_neg.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-neg (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
         "tests/stdlib/rat/03_add.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
         "tests/stdlib/rat/04_sub.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
         "tests/stdlib/rat/05_mul.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
         "tests/stdlib/rat/06_div.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
         "tests/stdlib/rat/07_cmp.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
         "tests/stdlib/rat/08_unsimplified.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))",
         ],
     ),
     (
         "tests/stdlib/rat/09_named_and_chained.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (let half (rat (int (n z 1) z) (n z 2)))",
         ],
     ),
     (
         "tests/stdlib/rat/10_div_by_zero_rational.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
         "tests/stdlib/rat/11_zero_denominator_first.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
         "tests/stdlib/rat/12_zero_denominator_second.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))",
         ],
     ),
     (
         "tests/stdlib/rat/13_zero_denominator_one_operand.ein",
         &[
-            "`neg`, asserted by rule `rat-reduce-neg`",
-            "`pos`, asserted by rule `rat-reduce-pos`",
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),

@@ -1,5 +1,6 @@
 ;;; Negative numbers, computed by saturation alone: -12 + 40 = 28, 4567 -
-;;; 123078 = -118511, and -123 x 456 = -56088. M1f P1f.6 (S1f.6.7).
+;;; 123078 = -118511, -123 x 456 = -56088, and -7 divided by 2 three ways.
+;;; M1f P1f.6 (S1f.6.7, and S1f.6.22 for the division).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -17,6 +18,9 @@
 ;;;   (int-sub X Y)          answered by (int-diff-of X Y S): one integer
 ;;;   (int-mul X Y)          answered by (int-product-of X Y S)
 ;;;   (int-cmp X Y)          answered by (int-cmp-of X Y O), O lt, eq or gt
+;;;   (int-div-euclid X Y)   answered by (int-quot-euclid-of X Y Q R)
+;;;   (int-div-trunc X Y)    answered by (int-quot-trunc-of X Y Q R)
+;;;   (int-div-floor X Y)    answered by (int-quot-floor-of X Y Q R)
 ;;;   (int-neg X)            answered by (int-neg-of X S)
 ;;;   (int-simplify X)       answered by (int-simple-of X S)
 ;;;   (let NAME (int P N))   a named integer; a request may name its operands
@@ -38,6 +42,23 @@
 ;;; A product is four products of natural numbers and two sums, then the
 ;;; same simplification. A comparison adds across and compares two natural
 ;;; numbers.
+;;;
+;;; ── Division names its convention ──────────────────────────────────────
+;;;
+;;; There is no bare `int-div`: dividing integers leaves a choice where an
+;;; operand is negative, and each request says which it makes. X = Q x Y + R
+;;; under all three. The same -7 by 2, side by side:
+;;;
+;;;   Euclidean   -4, remainder 1    the remainder is never negative, and is
+;;;                                  a natural number, (n z 1), not an integer
+;;;   truncated   -3, remainder -1   the quotient toward zero, as C and Rust
+;;;   floored     -4, remainder 1    the quotient rounded down, as Python;
+;;;                                  the remainder takes the divisor's sign
+;;;
+;;; The sizes, 7 and 2, are divided by `std.arith`; truncated only puts the
+;;; signs on, and the other two take one more in the quotient and 2 - 1 for
+;;; the remainder. Dividing by an integer that is zero is `std.arith`'s
+;;; division by zero (`div_by_zero.ein` beside this file).
 ;;;
 ;;; ── The program's own rules ────────────────────────────────────────────
 ;;;
@@ -62,6 +83,10 @@
 (int-mul (int z (n (n (n z 1) 2) 3)) (int (n (n (n z 4) 5) 6) z))
 (int-simplify (int (n z 5) (n z 3)))
 (int-neg (int (n z 5) (n z 3)))
+
+(int-div-euclid (int z (n z 7)) (int (n z 2) z))
+(int-div-trunc  (int z (n z 7)) (int (n z 2) z))
+(int-div-floor  (int z (n z 7)) (int (n z 2) z))
 
 (let freezing (int z z))
 (let monday   (int z (n z 4)))
@@ -109,6 +134,21 @@
 (query :goal (int-neg-of ?x ?s)
        :goal-text "{?x} negated is {?s}"
        :expect (model (int-neg-of (int (n z 5) (n z 3)) (int z (n z 2)))))
+
+(query :goal (int-quot-euclid-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}, the remainder never negative"
+       :expect (model (int-quot-euclid-of (int z (n z 7)) (int (n z 2) z)
+                                          (int z (n z 4)) (n z 1))))
+
+(query :goal (int-quot-trunc-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}, rounded toward zero"
+       :expect (model (int-quot-trunc-of (int z (n z 7)) (int (n z 2) z)
+                                         (int z (n z 3)) (int z (n z 1)))))
+
+(query :goal (int-quot-floor-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}, rounded down"
+       :expect (model (int-quot-floor-of (int z (n z 7)) (int (n z 2) z)
+                                         (int z (n z 4)) (int (n z 1) z))))
 
 (query :goal (frost ?day)
        :goal-text "it froze on the morning of {?day}"

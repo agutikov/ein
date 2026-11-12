@@ -2064,6 +2064,36 @@
 0    tests/stdlib/int/08_named_and_chained.ein :: saturate
 0    tests/stdlib/int/08_named_and_chained.ein :: solve
 0    tests/stdlib/int/08_named_and_chained.ein :: test
+0    tests/stdlib/int/09_div_euclid.ein :: render constraints
+1    tests/stdlib/int/09_div_euclid.ein :: render rules
+0    tests/stdlib/int/09_div_euclid.ein :: saturate
+0    tests/stdlib/int/09_div_euclid.ein :: solve
+0    tests/stdlib/int/09_div_euclid.ein :: test
+0    tests/stdlib/int/10_div_trunc.ein :: render constraints
+1    tests/stdlib/int/10_div_trunc.ein :: render rules
+0    tests/stdlib/int/10_div_trunc.ein :: saturate
+0    tests/stdlib/int/10_div_trunc.ein :: solve
+0    tests/stdlib/int/10_div_trunc.ein :: test
+0    tests/stdlib/int/11_div_floor.ein :: render constraints
+1    tests/stdlib/int/11_div_floor.ein :: render rules
+0    tests/stdlib/int/11_div_floor.ein :: saturate
+0    tests/stdlib/int/11_div_floor.ein :: solve
+0    tests/stdlib/int/11_div_floor.ein :: test
+0    tests/stdlib/int/12_div_euclid_by_zero.ein :: render constraints
+1    tests/stdlib/int/12_div_euclid_by_zero.ein :: render rules
+0    tests/stdlib/int/12_div_euclid_by_zero.ein :: saturate
+0    tests/stdlib/int/12_div_euclid_by_zero.ein :: solve
+0    tests/stdlib/int/12_div_euclid_by_zero.ein :: test
+0    tests/stdlib/int/13_div_trunc_by_zero.ein :: render constraints
+1    tests/stdlib/int/13_div_trunc_by_zero.ein :: render rules
+0    tests/stdlib/int/13_div_trunc_by_zero.ein :: saturate
+0    tests/stdlib/int/13_div_trunc_by_zero.ein :: solve
+0    tests/stdlib/int/13_div_trunc_by_zero.ein :: test
+0    tests/stdlib/int/14_div_floor_by_zero.ein :: render constraints
+1    tests/stdlib/int/14_div_floor_by_zero.ein :: render rules
+0    tests/stdlib/int/14_div_floor_by_zero.ein :: saturate
+0    tests/stdlib/int/14_div_floor_by_zero.ein :: solve
+0    tests/stdlib/int/14_div_floor_by_zero.ein :: test
 0    tests/stdlib/macro/01_forall.ein :: render constraints
 0    tests/stdlib/macro/01_forall.ein :: render rules
 0    tests/stdlib/macro/01_forall.ein :: saturate

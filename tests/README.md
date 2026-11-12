@@ -87,7 +87,7 @@ alone.
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/arith/`](stdlib/arith/) | 89 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
 | [`stdlib/num9/`](stdlib/num9/) | 47 | `std.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibnum9-wide-rules-and-a-generated-module) |
-| [`stdlib/int/`](stdlib/int/) | 37 | `std.int`, integers as a positive and a negative part over `std.arith` (M1f S1f.6.7): eight programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; and operands by name with two rules of the program's own. See [below](#stdlibint-a-theory-over-a-theory) |
+| [`stdlib/int/`](stdlib/int/) | 71 | `std.int`, integers as a positive and a negative part over `std.arith` (M1f S1f.6.7, and S1f.6.22 for division): fourteen programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; and a division by zero under each, claiming `(false)`. See [below](#stdlibint-a-theory-over-a-theory) |
 | [`stdlib/rat/`](stdlib/rat/) | 57 | `std.rat`, rational numbers in lowest terms over `std.int` and `std.arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand. See [below](#stdlibrat-lowest-terms-and-four-ways-to-divide-by-zero) |
 | [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
@@ -303,9 +303,24 @@ the program was drafted.
 **No request here is another the other way round,** `stdlib/num9/`'s lesson,
 kept from the first draft: `03_add.ein`'s header says why. **The mutation
 sweep kills every mutant of the module**, 42 of 42, on its first run, and the
-bank is unmoved (`python3 utils/stdlib_mutants.py --check`, 2026-11-12).
-Integer division has no program here because it is not built: its remainder
-convention is the user's question (Q-M1f.179).
+bank is unmoved (`python3 utils/stdlib_mutants.py --check`, 2026-11-12); 60
+of 60 with S1f.6.22's division, 379 of 429 over the stdlib (`python3
+utils/stdlib_mutants.py`, 2026-11-12).
+**Integer division, under three conventions** (M1f
+[S1f.6.22](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.22_integer_division.md)).
+The three programs ask the same eighteen requests, so the three answers to
+one request read side by side, and each claims its result relation's whole
+extent; the three that divide by zero claim `(solve :expect (false))`, the one
+claim such a program can make, and each writes its zero another way.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `09_div_euclid.ein` | the shared `int-div-start`, `-divisor`, `-pp`, `-pn`, `-np`, `-nn`, `-rest`; `int-div-euclid-ask`, `-pp`, `-pn`, `-np-exact`, `-nn-exact`, `-np-more`, `-nn-more`, `-neg`, `-pos`, `-answer` | a remainder answered as an integer; a negative dividend's quotient not taken one further; the remainder left as the sizes' and not \|Y\| less it |
+| `10_div_trunc.ein` | `int-div-trunc-ask`, `-pp`, `-pn`, `-np`, `-nn`, `-answer` | a sign put on the wrong one of the two; a quotient rounded down |
+| `11_div_floor.ein` | `int-div-floor-ask`, `-pp`, `-nn`, `-pn-exact`, `-np-exact`, `-pn-more`, `-np-more`, `-neg`, `-pos`, `-answer` | a remainder with the dividend's sign; an exact division adjusted |
+| `12_div_euclid_by_zero.ein` | `int-div-by-zero`, the divisor `(int z z)` | a division by zero answered with a number |
+| `13_div_trunc_by_zero.ein` | `int-div-by-zero`, the divisor 3 less 3 | a zero read by its spelling |
+| `14_div_floor_by_zero.ein` | `int-div-by-zero`, the divisor a name for 0 less 00 | a flag that does not repeat the request as written |
 
 ### `stdlib/rat/`: lowest terms, and four ways to divide by zero
 

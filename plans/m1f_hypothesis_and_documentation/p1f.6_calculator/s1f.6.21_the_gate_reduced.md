@@ -155,3 +155,7 @@ and its row, `open_questions.md` (Q-M1f.147, .150 and .153, index rows and secti
 
 **Not moved:** no DOT writer (`corpus_shapes.md5` is unmoved, the gate's shape digests pass), no engine source,
 no stdlib module, no nightly step, and no register row.
+
+**After the commit** (`8464f522`): `./run_tests.sh --nightly` green in every step, run on the commit as
+committed, in a detached worktree of it (`build/nightly-s1f.6.21.log`, 2026-11-12); the mutation census 361 of
+411, the bank unmoved. The gate before the commit: `build/gate-s1f.6.21.log`.

@@ -191,7 +191,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.176](#q-m1f176--a-product-of-integers-without-a-rule-that-looks-at-a-sign) | a product of integers without a rule that looks at a sign | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-12 (S1f.6.7), the user's to revise: the formula on the parts, four products and no case**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 | [Q-M1f.177](#q-m1f177--a-calls-tag-is-its-request-and-what-an-extension-writes-of-stdariths) | a call's tag is its request, and what an extension writes of `std.arith`'s | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-12 (S1f.6.7), the user's to revise: the request is the tag; the module starts `std.arith`'s walks and writes `operand` and `operand-is`**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 | [Q-M1f.178](#q-m1f178--the-harness-of-stdint-a-sibling-file-exhaustive-on-one-digit-parts) | the harness of `std.int` | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-12 (S1f.6.7): a sibling file, `int_theory.rs`, exhaustive on parts of one digit**; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
-| [Q-M1f.179](#q-m1f179--the-remainder-of-an-integer-division) | the remainder of an integer division: Euclidean, truncated or floored | **Ruled 2026-11-12** (replies 1 (d), 2 (a)): all three conventions, each its own request; the Euclidean remainder a natural number; [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md). **open, the user's; not defaulted.** Integer division is not built until it is ruled; the stage recommends Euclidean and shows the three as rules and computed examples; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
+| [Q-M1f.179](#q-m1f179--the-remainder-of-an-integer-division) | the remainder of an integer division: Euclidean, truncated or floored | **Ruled 2026-11-12** (replies 1 (d), 2 (a)): all three conventions, each its own request; the Euclidean remainder a natural number; **built 2026-11-12** by [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md). Before: **open, the user's; not defaulted.** Integer division is not built until it is ruled; the stage recommends Euclidean and shows the three as rules and computed examples; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 | [Q-M1f.180](#q-m1f180--the-names-of-stdrat) | the names of `std.rat` | **2026-11-12** (reply 52): the relation names stand; the modules move under `std.math`, [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md). **defaulted 2026-11-12 (S1f.6.8), the user's to revise: a prefix, `rat-add` answered by `rat-sum-of` and so on, `rat-div` by `rat-quot-of`, one rational; the entry `rat-arith`**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.181](#q-m1f181--what-stdrat-reads-as-an-operand) | what `std.rat` reads as an operand | **Kept as built 2026-11-12** (reply 12); promotion is [M1g's P1g.8](../m1g_logic/p1g.8_a_theory_of_types/README.md), with a types theory. **defaulted 2026-11-12 (S1f.6.8), the user's to revise: a rational written out, `(rat (int P N) D)`, or a name through `std.arith`'s `let`; an integer or a natural number is not promoted**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.182](#q-m1f182--a-zero-denominator-is-stdariths-division-by-zero) | a zero denominator is `std.arith`'s division by zero | **Confirmed** in round 2 (`dc88520b`) (item 48, point 2: *"OK, I agree"*). **defaulted 2026-11-12 (S1f.6.8), the user's to revise: the same flag relation, the request as written, on any operand of any request, and on a `rat-div` by a rational that is zero**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
@@ -212,6 +212,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.197](#q-m1f197--what-holds-the-banked-word-problems) | what holds the banked word problems | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: each file's `:expect` through its `test` cell, and the sweeps every corpus file is under; no test of their own until the rulings**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 | [Q-M1f.198](#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate) | the remainder variant of the word problems, and the gate | **2026-11-12:** owned by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s first task. **defaulted 2026-11-12 (S1f.6.20), the user's to revise: not banked. `region.rs`'s fact-grain sweep does not end on a program where a supposed reading leads to a `value` (E-33); the test and the engine are unmoved; three other ways are stated and one was run**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 | [Q-M1f.199](#q-m1f199--how-the-skipped-views-of-the-dot-sweep-are-pinned) | how the skipped views of the DOT sweep are pinned | **defaulted 2026-11-12 (S1f.6.21), the user's to revise: the count printed, the directories that hold a skipped view named in the test**; [S1f.6.21](p1f.6_calculator/s1f.6.21_the_gate_reduced.md) |
+| [Q-M1f.200](#q-m1f200--the-names-of-an-integer-divisions-results) | the names of an integer division's results | **defaulted 2026-11-12 (S1f.6.22), the user's to revise: `int-quot-euclid-of`, `int-quot-trunc-of` and `int-quot-floor-of`, each `(… X Y Q R)`**; [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3519,6 +3520,12 @@ on 924 requests against Python, with the table of answers and the cost of each, 
 answered as an integer, `(int R z)`, or as a number of `std.arith`. S1f.6.8 does not wait for this: the rationals
 never divide integers.
 
+**Ruled 2026-11-12, and built** ([S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md)). The user, on
+questions 1 and 2 of the calculator's `questions.md`: *"(d)"*, and *"(a)"*, a natural number. There is no bare
+`int-div`: `(int-div-euclid X Y)`, `(int-div-trunc X Y)` and `(int-div-floor X Y)`, answered by
+`int-quot-euclid-of`, `int-quot-trunc-of` and `int-quot-floor-of`
+([Q-M1f.200](#q-m1f200--the-names-of-an-integer-divisions-results)).
+
 ### Q-M1f.180 — The names of `std.rat`
 
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T1. The stage file fixes the pair, `(rat Z D)`, and no other name.
@@ -3870,3 +3877,20 @@ the test would be re-banked by every later stage of the phase.
 
 **Defaulted 2026-11-12: (b), the user's to revise.** The count on the stage's commit, 663 views of 111 files,
 is in the stage's record with its command.
+
+### Q-M1f.200 — The names of an integer division's results
+
+**Raised** 2026-11-12 by [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md), whose stage file names it.
+The user ruled the three requests, `int-div-euclid`, `int-div-trunc` and `int-div-floor` (reply 1 (d), the
+option's own words), and not the relations that answer them.
+
+- **(a) `int-quot-euclid-of`, `int-quot-trunc-of`, `int-quot-floor-of`,** each `(… X Y Q R)` with the operands
+  repeated as written, after `std.arith`'s `quot-of` and `std.rat`'s `rat-quot-of`.
+- **(b) One result relation with the convention as an argument,** `(int-quot-of CONVENTION X Y Q R)`. The
+  Euclidean remainder is a natural number and the other two are integers, so one relation would hold two shapes
+  in one position.
+- **(c) The request's own name with `-of`,** `int-div-euclid-of`: no other result of the calculator is named
+  after its request.
+
+**Defaulted 2026-11-12: (a), the user's to revise**, as the stage file has it.
+[S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md) moves the modules and renames no relation.

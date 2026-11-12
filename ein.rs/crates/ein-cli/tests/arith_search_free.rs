@@ -50,7 +50,7 @@ const ROOTS: [&str; 5] = [
 /// The relations an answer is a fact of: `std.arith`'s five results, and
 /// `std.num9`'s five, its overflow flag and its conversions' answers, and
 /// `std.int`'s six and `std.rat`'s seven.
-const RESULTS: [&str; 27] = [
+const RESULTS: [&str; 30] = [
     "sum-of",
     "diff-of",
     "cmp-of",
@@ -71,6 +71,9 @@ const RESULTS: [&str; 27] = [
     "int-diff-of",
     "int-product-of",
     "int-cmp-of",
+    "int-quot-euclid-of",
+    "int-quot-trunc-of",
+    "int-quot-floor-of",
     "rat-simple-of",
     "rat-neg-of",
     "rat-sum-of",
@@ -90,18 +93,20 @@ const THEORIES: [&str; 4] = [
 
 /// The requests a division by zero can be, by the start of their text: a
 /// dead program's core names exactly one.
-const DIVIDES: [&str; 3] = ["(div ", "(div9 ", "(rat-"];
+const DIVIDES: [&str; 4] = ["(div ", "(div9 ", "(rat-", "(int-div-"];
 
 /// What else such a core may hold: the `let` of a named operand, and the
 /// table rows a zero written with digits was read through, `md` where
 /// `std.arith` puts a divisor into normal form, `cl` where `std.rat`
 /// compares a denominator with zero, `fs` where `std.int` simplifies a
-/// divisor's numerator.
-const RESTS_ON: [&str; 4] = ["(let ", "(md ", "(cl ", "(fs "];
+/// divisor's numerator, or both operands of a division of integers, and `nz`
+/// where that simplification drops no high zero.
+const RESTS_ON: [&str; 5] = ["(let ", "(md ", "(cl ", "(fs ", "(nz "];
 
 /// The rules that derive the flag, each with the start of the flag it
 /// derives.
-const FLAGGERS: [(&str, &str); 6] = [
+const FLAGGERS: [(&str, &str); 7] = [
+    ("(division-by-zero (int-div-", "int-div-by-zero"),
     ("(division-by-zero (div ", "div-by-zero"),
     ("(division-by-zero (div9 ", "div9-by-zero"),
     ("(division-by-zero (rat-", "rat-div-zero"),
@@ -113,7 +118,14 @@ const FLAGGERS: [(&str, &str); 6] = [
 /// The relations a division's answer is a fact of: a dead program stores
 /// none for the request that killed it. A program of rationals is asked one
 /// other request, a sum, so that its state is seen to be computed.
-const QUOTIENTS: [&str; 3] = ["(quot-of ", "(quot9-of ", "(rat-quot-of "];
+const QUOTIENTS: [&str; 6] = [
+    "(quot-of ",
+    "(quot9-of ",
+    "(rat-quot-of ",
+    "(int-quot-euclid-of ",
+    "(int-quot-trunc-of ",
+    "(int-quot-floor-of ",
+];
 
 /// What a program that divides by zero claims: root is dead and R is empty.
 const DEAD: &str = "(solve :expect (false))";

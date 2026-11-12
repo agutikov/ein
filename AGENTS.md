@@ -1262,12 +1262,10 @@ constrained-reasoning research.
   `tests/stdlib/int/` activate the 36 rules, 250 of 250 over the stdlib; and
   the mutation sweep kills all 42 of its mutants, 317 of 367, the bank
   unmoved (`python3 utils/stdlib_mutants.py --check`, 2026-11-12).
-  `examples/arith/int.ein` is the example. **Integer division is not built:**
-  its remainder convention, Euclidean, truncated or floored, is the user's
-  question,
+  `examples/arith/int.ein` is the example. Integer division was not built
+  by that stage: its remainder convention was the user's question,
   [Q-M1f.179](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f179--the-remainder-of-an-integer-division),
-  and the stage's record has each of the three as rules over the shipped
-  modules, run and compared. No engine source moved and no existing
+  ruled on 2026-11-12 and **built by S1f.6.22**, below. No engine source moved and no existing
   program's answer (`python3 build/s1f.6.7/sweep.py`, 719 files,
   2026-11-12); the register is unmoved.
   **S1f.6.8, rational numbers, ran to its end on 2026-11-12**
@@ -1506,6 +1504,46 @@ constrained-reasoning research.
   `fdp` and its layout plugin stay installed and checked, since the review
   bundle draws KB views with it. No DOT writer, engine source or stdlib
   module moved; the register is unmoved.
+  **S1f.6.22, integer division, ran to its end on 2026-11-12**
+  ([its record](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.22_integer_division.md#record-2026-11-12),
+  Q-M1f.200 defaulted), on the user's rulings of that day on Q-M1f.179:
+  *"(d)"*, more than one convention, each under a request of its own, and
+  *"(a)"*, the Euclidean remainder a natural number. **`std.int` divides
+  under three conventions and there is no bare `int-div`**:
+  `(int-div-euclid X Y)` answered by `(int-quot-euclid-of X Y Q R)`, 0 ≤ R <
+  |Y|, Q an integer and **R a natural number of `std.arith`**;
+  `(int-div-trunc X Y)` by `(int-quot-trunc-of X Y Q R)`, Q toward zero and R
+  with the dividend's sign; `(int-div-floor X Y)` by `(int-quot-floor-of X Y
+  Q R)`, Q rounded down and R with the divisor's sign, both integers. −7 ÷ 2
+  is −4 and 1, −3 and −1, −4 and 1. 34 rules, 70 in the module beside its
+  closing rule and 341 over the stdlib (`cat stdlib/*.ein | grep -c '^(rule
+  '`, 2026-11-12), every one of one premise. What the three share is written
+  once, under the tag `(int-div-of REQUEST)`: both operands simplified, so
+  that each shows its sign by its shape, and the sizes handed to
+  `std.arith`'s `div-call` with the signs in the tag, the names `pos` and
+  `neg`; truncated then puts the signs on, and floored and Euclidean adjust
+  two of the four combinations where a remainder is left, an addition walk
+  and a subtraction walk. −7 ÷ 2 is 124 firings under Euclidean and floored
+  and 112 under truncated (`cargo test -p ein-infer --test int_theory
+  the_circuit`, 2026-11-12), the prototype's numbers. **A divisor that is
+  zero by value derives `std.arith`'s flag**, `(division-by-zero REQUEST)`,
+  the request as written, by `int-div-by-zero`, and `std.arith`'s rule
+  derives `(false)`; no rule of the module concludes `(false)`.
+  `int_theory.rs` holds the three as rows of `OPS`, against `i128`'s
+  `div_euclid` and `rem_euclid`, `/` and `%`, and the floored pair computed
+  from them, on every case the other rows are asked; six programs under
+  `tests/stdlib/int/` activate the rules, three of them claiming `(false)`;
+  `arith_search_free.rs`'s lists took the requests in; the mutation sweep
+  kills all 18 of the new mutants, 379 of 429, the bank unmoved (`python3
+  utils/stdlib_mutants.py`, 2026-11-12); and **the batch was run by hand**,
+  as S1f.6.21 left it: 4 606, 4 557 and 4 610 candidates a request at 250
+  requests and no more at 1 000 and 4 000 (`cargo test -p ein-infer
+  --features counters --test arith_batch a_batch_of_integer -- --nocapture`,
+  2026-11-12). `examples/arith/int.ein` has the three divisions of −7 by 2
+  side by side. `std.arith` and `std.rat` are unchanged; a program that
+  imports `std.int` or `std.rat` pays about 2 ms more of load. No engine
+  source moved and no existing program's `ein solve` (`python3
+  build/s1f.6.22/sweep.py`, 804 files, 2026-11-12); the register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete;
   no second milestone was made for its engine work (the id M1h has since been
@@ -1686,7 +1724,8 @@ constrained-reasoning research.
   or a rule added to `std.arith` goes into its closing rule's lists. **Since
   S1f.6.7 `std.int` extends it** (2026-11-12): integers, `(int P N)`, by
   rules of one premise each over `std.arith`'s walks, imported as `(import
-  std.int :symbols (int-arith))`; a module over a module names the lower
+  std.int :symbols (int-arith))`, its division under three conventions since
+  S1f.6.22, `int-div-euclid`, `int-div-trunc` and `int-div-floor`; a module over a module names the lower
   one's entry in its own closing rule. **Since S1f.6.8 `std.rat` extends
   that**: rationals in lowest terms, `(rat Z D)`, imported as `(import
   std.rat :symbols (rat-arith))`; a zero denominator is `std.arith`'s
@@ -1736,8 +1775,8 @@ constrained-reasoning research.
   S1f.6.3's `std.arith`, 114 of 114 since S1f.6.4's subtraction and
   comparison, 130 of 130 since S1f.6.5's multiplication, 166 of 166
   since S1f.6.6's division, 213 of 213 since S1f.6.13's `std.num9` and
-  250 of 250 since S1f.6.7's `std.int` and 307 of 307 since S1f.6.8's
-  `std.rat` (`cat stdlib/*.ein | grep -c '^(rule '`, 2026-11-12), with no `examples/`
+  250 of 250 since S1f.6.7's `std.int`, 307 of 307 since S1f.6.8's
+  `std.rat` and 341 of 341 since S1f.6.22's division of integers (`cat stdlib/*.ein | grep -c '^(rule '`, 2026-11-12), with no `examples/`
   entry contributing — and every program here states an expectation. **Activation is
   two events since S1d.2.4**: `fire` for a saturation rule and `owe` for an
   obligation one, which can never produce a `fire`. Scoping the
