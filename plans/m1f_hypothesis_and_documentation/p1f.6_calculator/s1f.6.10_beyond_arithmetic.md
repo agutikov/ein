@@ -1,7 +1,7 @@
 # S1f.6.10 — Investigation: what else the theory can do
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-12, and shown to the user**, who decides what becomes a stage: the seven groups of
+**Status:** **done 2026-11-12** (`47982ced`)**, and shown to the user**, who decides what becomes a stage: the seven groups of
 probes run, [`beyond_arithmetic.md`](beyond_arithmetic.md) written, sixteen probes banked under
 [`examples/beyond_arith/`](../../../examples/beyond_arith/), three findings filed (E-29 to E-31), four decisions
 taken by default (Q-M1f.186 to .189), eight questions put ([§ T1 record](#t1-record-2026-11-12) onward). No
@@ -130,6 +130,15 @@ inverse walks start their accumulator at. No engine source moved.
 
 **Pages:** [`beyond_arithmetic.md`](beyond_arithmetic.md), new; `findings.md`; `open_questions.md`; the phase
 README; `examples/README.md`, a row for the directory; `corpus/corpus.toml`, sixteen entries; `AGENTS.md`.
+
+## After the commit, 2026-11-12: the nightly
+
+On `47982ced`, the tree clean: `./run_tests.sh --nightly` green in every step (`build/nightly-s1f.6.10.log`,
+2026-11-12), the slow corpus cells, the round trip's slow and `heavy_dump` entries, the levers', the cores',
+`region`'s and `obligation_rung`'s slow halves, the scratch check, the mutation census at 361 of 411, unmoved,
+the fuzzer at both seeds and the bench smoke. The gate before the commit is `build/gate-s1f.6.10.log`.
+`utils/ci_container.sh` was not run: the stage changed no DOT writer, nor the review bundle, nor what CI installs
+(Q-M1f.77). Not run: the dev-host tier.
 
 ## Acceptance re-taken, 2026-11-12
 
