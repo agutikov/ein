@@ -135,7 +135,8 @@ dumped; and its complement, the part the answer did not touch.
 
 **Its two opening questions** are from
 [round 2, item 33](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q33), where the
-user's reply 33 (quoted under P1h.3) was answered and both points were sent here:
+user's reply 33 (quoted under P1h.3) was answered and both points were sent here, to which the user replied
+*"OK"* (`dc88520b`):
 
 1. **Assumptions as premises make the slice name them.** *If an assumption is a fact that the dependent
    rules take as a premise, then the slice of an answer contains exactly the assumptions that answer rests
@@ -198,7 +199,7 @@ Nothing says what Alice had):
 
 > what is not listed is zero - good idea, it could be a reusable universal assumption.
 
-and, in round 2, to the proposal that it be a module a problem imports when it adopts it (as it stood in the working copy when this plan was written (2026-11-12, not yet committed)):
+and, in round 2, to the proposal that it be a module a problem imports when it adopts it (`dc88520b`):
 
 > Yes, relation arguments are marked with some objects that can be treated as types. So can add a rule that
 > assigns zero to every unknown and deduce (has Alice apples 0). It doesn't work in zebra for example - if
@@ -218,7 +219,8 @@ a module of its own; an assumption as a marked fact with a `rests-on` fact besid
 hypotheses, always owed after the calculator's S1f.6.28; *what is not listed is zero* as a module a problem
 imports; and a read-out row for what root owes (S1f.6.26).
 
-**What round 2 answered in outline,** which the phase starts from and re-takes on programs:
+**What round 2 answered in outline,** which the user accepted there (`dc88520b`: *"OK (a)"* on item 30, *"OK"* on
+item 33) and which the phase starts from and re-takes on programs:
 
 - [Item 30](../m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q30), on the user's
   chain *ambiguity == non-monotone solution == required additional information*: *Not quite, and the

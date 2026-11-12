@@ -25,7 +25,7 @@ investigation and the proposals; the fix follows the user's choice among them.
 got *"I don't understand the question"*. [Round 2, item 41](questions_round2.md#q41) explains it and takes
 **(a), yes, they are an interface,** meanwhile: *documented as what a theory built on the calculator calls,
 and held by a test so they cannot change shape unnoticed*, and *the stage on import name clashes (your 8)
-takes their names into account.* **The user's reply there, as it stood in the working copy when this plan was written (2026-11-12, not yet committed): *"(a)"*.**
+takes their names into account.* **The user's reply there, committed as `dc88520b`: *"(a)"*.**
 
 ## What is known
 

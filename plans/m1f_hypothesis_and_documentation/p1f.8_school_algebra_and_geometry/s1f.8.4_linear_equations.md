@@ -190,56 +190,9 @@ comparison request, `(cmp ?s …)`, should stand in its place (two spellings of 
   share an `x` (S1f.8.2's finding, met in earnest here and needed by S1f.8.5).
 - **Engine findings,** to [`findings.md`](findings.md).
 
-## Three methods for one equation (2026-11-12)
+## The comparison of three methods is M1g's (2026-11-12)
 
-Added on the user's replies of 2026-11-12 to the calculator's questions 24 and 37
-([`questions.md`](../p1f.6_calculator/questions.md#q24)), which asked the same thing twice:
-
-> solution of `x × 7 = 862` belongs yet to arithmetic or already to algebra? this question open vs. false is
-> deep.
-
-> Q24 already asked this, Is it possible at all to solve it by saturation without algebra rules that allows
-> infer x*7=862 -> x=862/7 ? Again is it arithmetics or algebra?
-
-[Round 2, items 24, 28 and 37](../p1f.6_calculator/questions_round2.md#q24) answers in outline: *the
-question, "which x", is algebra's: it has an unknown. The methods differ*, and proposes that this phase
-*compares the three methods on school equations, where the choice between them is the subject*. So
-[§ Where search belongs](#where-search-belongs) above, which sets derivation against search, gains a third
-column, and the comparison becomes a part of this stage with its own page.
-
-| | 1. arithmetic read backwards | 2. search | 3. algebra |
-|---|---|---|---|
-| what it is | the multiplication table is a relation, `(md A B CARRY-IN DIGIT CARRY-OUT)`, and a rule asks it *which A, with 7, gives a units digit 2*; the school multiplication run from the answer to the operand, a firing a column | each digit of x a hypothesis that owes one of ten values; the engine tries assignments | a rule rewrites the equation, x × 7 = 862 ⇒ x = 862 ÷ 7 with remainder zero, and the rest is arithmetic |
-| built | run on the calculator's prototype, eleven rules; banked under `examples/beyond_arith/` | banked under `examples/beyond_arith/` | **nothing of it is built**; it is this stage's derivation |
-| `x × 7 = 861` | solved by saturation alone | solved; `--single` takes 10n + 1 saturations for n digits a column at a time | to be computed here |
-| `x × 7 = 862` | the last column cannot close: **a dead root** with a three-row core | **`Open`**: root is alive and owes the digits, every complete way of paying is dead, R is empty; its argument is 28 dead sets in the dump | to be computed here: the division leaves a remainder, and what that *is* (a result fact, a flag, a dead root) is this stage's question e |
-
-(The figures are round 2's and question 24's, from [`beyond_arithmetic.md`](../p1f.6_calculator/beyond_arithmetic.md).)
-
-**What the comparison has to say,** each on the same equations, computed:
-
-- which equations each method can state at all (1: one unknown, a one-digit multiplier or an addend; a
-  longer multiplier is division, which the calculator has; 2: any equation an evaluator can check, over a
-  bounded domain; 3: the shapes the rewriting rules know);
-- what *no solution* reads as under each, on every surface, side by side: the user's *"open vs. false"*.
-  This stage shows the three; **it does not decide what an unpayable debt is called.** That is
-  [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md), and R is the same empty set
-  under either word;
-- what the explanation is under each (a core of table rows; the dead sets; the pupil's derivation);
-- the cost of each, in saturations and firings, as the equation grows;
-- and the user's question in its own terms: **where arithmetic ends and algebra begins.** The page's
-  answer is given on the programs and not by definition: method 1 uses no rule that mentions an unknown as
-  such, only a table read in another direction; method 3 is the first that rewrites a statement *about* x.
-
-**Inverse requests are not added to the stdlib now.** The calculator's question 37 proposed `(solve-add Y
-S)` and `(solve-mul M P)` in `std.arith`; round 2 says they are **not** added, and the two banked examples
-stay examples. If this comparison shows method 1 earning a place, that is a proposal to the user at this
-stage's stop, with the comparison as its evidence.
-
-### Tasks added
-
-- **The three methods on one set of equations** (`x × 7 = 861`, `x × 7 = 862`, `x + 4567 = 127645`, and
-  `3x + 4 = 19` with its degenerate neighbours of the table above), each program with its answer computed
-  and every surface it prints; the page.
-- **The stop for the user is the one this stage already has** (question e), with the comparison on the same
-  page.
+The comparison of arithmetic read backwards, search and algebra on `x × 7 = 862`, planned here for a day
+(`d24e2656`), is [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md), by the user's
+reply of 2026-11-12 (`dc88520b`): *"p1f.8 remain incomplete naive school algebra."* This stage is unchanged
+by it: [§ Where search belongs](#where-search-belongs) stands as written.

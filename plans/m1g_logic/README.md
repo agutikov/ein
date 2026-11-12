@@ -3,7 +3,7 @@
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
 Not started. It carries no estimate (the user's ruling of 2026-11-08).
 **Extended 2026-11-12** by the user's replies to the calculator's questions: two phases, P1g.7 and P1g.8, and
-one stage of P1g.6, S1g.6.6 ([§ Additions of 2026-11-12](#additions-of-2026-11-12)).
+one stage of P1g.6, S1g.6.6, and, on the user's reply in round 2, a third phase, P1g.9 ([§ Additions of 2026-11-12](#additions-of-2026-11-12)).
 **Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md), complete (the user, 2026-11-11: *"first
 we will complete M1f"*). Specifically:
 [S1f.6.16](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md), binary
@@ -107,6 +107,7 @@ It works at **two levels**, and keeping them apart is half of what it has to say
 | [P1g.6](p1g.6_engine_requirements/README.md) | The engine requirements the logic turns out to have | 6, provisional | each requirement P1g.1 lists, scheduled, ruled or given an owner; seeded today with the candidates already known |
 | [P1g.7](p1g.7_unsatisfiable_against_owing/README.md) | Unsatisfiable against owing: the open state's explanation, and what a finished search may call an unpayable debt (added 2026-11-12) | 4, in the README | the witnesses on one page; the open state's core; the user's ruling on whether a finished search may call an unpayable debt dead; R unmoved on every program either way |
 | [P1g.8](p1g.8_a_theory_of_types/README.md) | A theory of types as a stdlib module of its own, and a smaller kind of number where a larger is expected (added 2026-11-12) | 4, in the README | the design on programs, **stopping for the user**; the module; promotion between the calculator's number kinds as its first use, in a module the core does not import |
+| [P1g.9](p1g.9_one_equation_three_methods/README.md) | One equation, three methods: arithmetic read backwards, search, and algebra (added 2026-11-12) | 5, in the README | `x × 7 = 862` and its neighbours by each method as kept programs; what *no solution* is under each, side by side; the cost of each; the question *arithmetic or algebra* answered on the programs; inverse requests proposed or declined |
 
 ## The order
 
@@ -128,6 +129,8 @@ It works at **two levels**, and keeping them apart is half of what it has to say
    S1g.7.3, may come at any time after, since R is the same set whichever way it goes.
 8. **P1g.8** is independent of the logic phases and may run beside them after P1g.1's stop; its own first
    stage stops for the user.
+9. **P1g.9** needs only P1g.1's stop and P1f.8's linear equations; it is read with P1g.7 and may run
+   before that phase's ruling, since it shows the two readings and decides neither.
 
 ## The user's questions, answered in outline
 
@@ -210,6 +213,11 @@ either way, which is why it could wait and why it can be decided here.
 hold*): [S1g.6.6](p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md), candidate C-12 of
 P1g.6, with the table of question 25 as its witness.
 
+**One equation, three methods** (replies 24 and 37; the user's reply in round 2, `dc88520b`): *"This
+Arithmetic read backwards vs Search vs Algebra comparison is somethinig like number theory and goes into
+separate phase in M1g. p1f.8 remain incomplete naive school algebra."*
+[P1g.9](p1g.9_one_equation_three_methods/README.md).
+
 **Findings the calculator's phase gave this milestone** (section J of `questions.md`, each line left empty
 and so taking its recommendation): E-3, E-12, E-15, E-24, E-25 and E-26 to
 [S1g.6.2](p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md); E-9, E-10 and E-13 to
@@ -218,7 +226,7 @@ and so taking its recommendation): E-3, E-12, E-15, E-24, E-25 and E-26 to
 user, is where it is asked again.
 
 **Where the starting point lives.** S1f.6.16 and S1f.6.17 ship as `std.math.binary-arith` and, by the
-user's reply to the layout question, **`std.bool.*`**, not `std.logic.*`
+user's reply to the layout question (`dc88520b`), **`std.bool.*`**, not `std.logic.*`
 ([S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-reply)).
 `std.logic` is free, and [Q-M1g.2](open_questions.md#q-m1g2--where-the-logic-ships) is asked knowing it.
 

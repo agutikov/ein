@@ -17,7 +17,8 @@ ruling on non-monotone programs. The user, 2026-11-12:
 > means ambiguity == non-monotone solution == required additional information? Again - those questions go
 > into M1h. Here I don't care - so pick (a).
 
-So (a) is built. The questions in the reply are answered in [round 2, item 30](questions_round2.md#q30) and
+So (a) is built, and the user confirmed it in round 2 (`dc88520b`: *"OK (a)"*). The questions in the reply are
+answered in [round 2, item 30](questions_round2.md#q30) and
 are [M1h's P1h.3](../../m1h_beyond_word_problems/README.md#p1h3--gaps-assumptions-and-readings); nothing of
 them is built here.
 

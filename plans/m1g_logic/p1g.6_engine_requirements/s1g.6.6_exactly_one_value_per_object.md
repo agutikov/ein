@@ -32,7 +32,7 @@ cheaper route for this shape of hypothesis is planned there*. The user, 2026-11-
 
 and, meanwhile: *P1f.6 treats the search form as a demonstration, and M1g's engine-requirements phase gets
 a stage for a cheaper route on this shape, with the table of `questions.md` 25 as its witness.* This is
-that stage. The user's reply in round 2, as it stood in the working copy when this plan was written (2026-11-12, not yet committed): *"yes, both"*.
+that stage. The user's reply in round 2, committed as `dc88520b`: *"yes, both"*.
 
 ## The witness
 

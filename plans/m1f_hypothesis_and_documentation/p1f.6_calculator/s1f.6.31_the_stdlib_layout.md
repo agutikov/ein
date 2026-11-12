@@ -30,8 +30,7 @@ binary's take `bin-`, *proposed: yes*.
 
 ### The reply
 
-As it stood in `questions_round2.md` in the working copy when this plan was written (2026-11-12; the file
-was being edited and the reply was not yet committed, so **the stage re-reads it before it starts**):
+In `questions_round2.md`, committed as `dc88520b` (2026-11-12):
 
 > There are many more suitable names, look:
 > std.logic.gates:
@@ -143,7 +142,7 @@ Round 2's table, with the user's one change:
 - **Not move the zebra modules.**
 - **Not create a module that a later stage builds** (`bits`, `positional`, `binary-arith`, `convert`, `gcd`,
   `std.bool.*`).
-- **Not start before the reply is committed and re-read.** If the user's final reply differs from the one
+- **Not depart from the reply.** If a later reply of the user's differs from the one
   quoted above, this file is restated to it first.
 - **Not edit `ein.rs/vendor/`.**
 

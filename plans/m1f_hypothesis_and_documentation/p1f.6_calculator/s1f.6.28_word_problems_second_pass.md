@@ -42,7 +42,7 @@ The user's replies of 2026-11-12 to the questions of [`questions.md`](questions.
 
 Round 2 turns 31 and 32 into builds: [item 31](questions_round2.md#q31), *the examples are rebuilt to
 "always owed"*; and [item 32](questions_round2.md#q32), *built that way, with the apples-and-pears problem
-in both forms*. The user's replies there, as it stood in the working copy when this plan was written (2026-11-12, not yet committed), the stage re-reading them before it starts:
+in both forms*. The user's replies there, committed as `dc88520b`:
 
 **Round 2, item 31:** *"yes"*.
 

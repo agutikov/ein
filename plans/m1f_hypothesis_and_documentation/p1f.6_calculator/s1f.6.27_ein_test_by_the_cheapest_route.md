@@ -13,8 +13,7 @@ it.
 The user, 2026-11-12: *"I don't understand the question, explain in more details and examples"*.
 
 [Round 2, item 39](questions_round2.md#q39) explains it and takes **(a), yes, as an engine stage,**
-meanwhile. **The user's reply there, as it stood in the working copy when this plan was written (2026-11-12, not yet committed): *"(a)"*.** The stage re-reads it
-before it starts. The explanation's proposal:
+meanwhile. **The user's reply there, committed as `dc88520b`: *"(a)"*.**  The explanation's proposal:
 
 > `ein test` reads the shape of each claim and runs the cheapest mode that decides it. A claim of one state
 > is `--single`'s question; a claim of exactly k states is `-n k+1`'s (find up to k+1: a (k+1)-th refutes

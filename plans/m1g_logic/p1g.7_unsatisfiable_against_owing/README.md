@@ -7,7 +7,7 @@ No stage file yet: the phase is this README, and its stages are sections below, 
 **Depends on:** P1g.1's stop; of M1f,
 [S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md), the read-out
 row for what root owes, which is the small part of the subject that was ruled and is built first; and
-[P1f.8's S1f.8.4](../../m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/s1f.8.4_linear_equations.md#three-methods-for-one-equation-2026-11-12),
+[P1g.9](../p1g.9_one_equation_three_methods/README.md),
 which shows the same equation dead by one method and open by another.
 **Needed by:** [S1g.2.2](../p1g.2_propositional_logic/s1g.2.2_valuations_as_hypotheses.md), where
 *unsatisfiable* is read off R, and [S1g.3.3](../p1g.3_proof_systems/s1g.3.3_natural_deduction.md), where a

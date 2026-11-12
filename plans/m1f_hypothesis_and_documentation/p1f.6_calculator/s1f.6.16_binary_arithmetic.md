@@ -150,7 +150,7 @@ The user's replies of 2026-11-12, each to the question of [`questions.md`](quest
 | [17](questions.md#q17), where the conversions live | *"(b)"* | a module of their own, so a program that only computes in binary does not load decimal's 1 664 rows |
 | [18](questions.md#q18), decimal's division by bisection or the simpler one | *"I expected you implement https://en.wikipedia.org/wiki/Long_division ; What is shipped now? I think there are invented many different fast division algorithms, implemented in CPUs, long numbers meth libraries, etc. Let's leave this aside for now - having one implementation now is enough"* | the shipped division stays; [round 2, item 18](questions_round2.md#q18) answers what is shipped (long division, the digit found by bisection) |
 
-**Round 2, item 16, the user's reply** (as it stood in the working copy when this plan was written (2026-11-12, not yet committed)):
+**Round 2, item 16, the user's reply** (`dc88520b`):
 
 > So we potentially can import std.math.rat and std.math.binary-arith and then connect them with single fact?
 

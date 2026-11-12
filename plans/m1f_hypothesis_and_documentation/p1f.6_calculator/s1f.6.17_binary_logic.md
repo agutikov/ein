@@ -272,7 +272,7 @@ The user's replies of 2026-11-12, each to the question of [`questions.md`](quest
 | [23](questions.md#q23), what ships | *"(a) and examples/binary_logic already made"* | all four small modules and the six applications. [Round 2, item 23](questions_round2.md#q23) reads *ships* as *into the stdlib, with a test program per rule and the mutation census*, option (a) there. **Replied in round 2: *"std.bool"***, read as (a) under that name |
 | [25](questions.md#q25), a cheaper search for *exactly one value per object* | *"Is this about SAT, binary circuits or what? I don't see how (a) and (b) conflict, are they?"* | both hold ([round 2, item 25](questions_round2.md#q25); **replied there: *"yes, both"***): here the search form is a demonstration, and the cheaper route is [M1g's S1g.6.6](../../m1g_logic/p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md) |
 
-**The library's name.** Round 2 proposed `std.logic.*`. The user's replies in round 2, as it stood in the working copy when this plan was written (2026-11-12, not yet committed): to the
+**The library's name.** Round 2 proposed `std.logic.*`. The user's replies in round 2, committed as `dc88520b`: to the
 layout (quoted in full in [S1f.6.31 § The reply](s1f.6.31_the_stdlib_layout.md#the-reply)), *"I think std.bool
 suits better here than std.logic"*, and to item 23, *"std.bool"*. So the modules are **`std.bool.gates`, `std.bool.props`, `std.bool.circuit` and
 `std.bool.inputs`,** under `stdlib/bool/`. `std.logic` is left free, which suits

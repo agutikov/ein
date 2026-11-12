@@ -19,8 +19,7 @@ though it is costly. The user, 2026-11-12:
 long division's nine multiples are computed again for every step) and puts three options: (a) leave it,
 every answer in lowest terms; **(b) reduce only on request:** *the operations answer unreduced,
 `rat-simplify` reduces, `rat-cmp` is the equality. The tests that hold "every answer is in lowest terms"
-are restated*; (c) both, by request name. The user's reply there, as it stood in the working copy when this
-plan was written (2026-11-12, not yet committed; **the stage re-reads it before it starts**): *"(b)"*.
+are restated*; (c) both, by request name. The user's reply there (`dc88520b`): *"(b)"*.
 
 ## What changes, in round 2's words
 
@@ -82,7 +81,6 @@ plan was written (2026-11-12, not yet committed; **the stage re-reads it before 
 
 - **Not keep a reduced family beside the raw one** (option (c) was not chosen).
 - **Not change `rat-cmp`,** nor what a zero denominator is.
-- **Not start before the reply is committed and re-read.**
 
 ## The standing rules
 

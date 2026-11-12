@@ -19,7 +19,7 @@ The user, 2026-11-12:
 > theories where it is allowed - like wheels, meadows, transreal arithmetic, etc...).
 
 [Round 2, item 48](questions_round2.md#q48) reads it as two decisions, to which the user replied there,
-as it stood in the working copy when this plan was written (2026-11-12, not yet committed), the stage re-reading it before it starts: *"OK, I agree"*. The two:
+committed as `dc88520b`: *"OK, I agree"*. The two:
 
 1. **A division called from inside another theory,** `(div-call TAG X z)`, derives nothing today; by the
    reply this is wrong. *The flag moves to the division itself, so any call with a zero divisor derives

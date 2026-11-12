@@ -24,7 +24,7 @@ its distinction is the user's: **a representation** (binary, decimal) is how a n
 **a number type** (integer, rational, later complex) is built *from* naturals, of whatever representation.
 
 **The same question, asked again in round 2.** On the trial of rules shared between the bases
-([round 2, item 16](../p1f.6_calculator/questions_round2.md#q16)) the user replied, as it stood in the working copy when this plan was written (2026-11-12, not yet committed):
+([round 2, item 16](../p1f.6_calculator/questions_round2.md#q16)) the user replied, committed as `dc88520b`:
 
 > So we potentially can import std.math.rat and std.math.binary-arith and then connect them with single fact?
 

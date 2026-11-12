@@ -6,7 +6,7 @@ Not started. It carries no estimate (the user's ruling of 2026-11-08). Its first
 with real programs computed on a prototype, before anything ships.
 **Extended 2026-11-12** by the user's replies to the calculator's questions
 ([§ Additions of 2026-11-12](#additions-of-2026-11-12)): the expression layer is ruled in and moved here, and two
-stages and one comparison are added.
+stages are added.
 **Depends on:** [P1f.6](../p1f.6_calculator/README.md), the calculator, and runs after it. Specifically:
 
 - **the four operations and comparison,** `std.arith`
@@ -323,15 +323,13 @@ hands to [M1g](../../m1g_logic/README.md).
 [S1f.8.11](s1f.8.11_compound_numbers_without_a_hardcoded_representation.md), an investigation that stops for
 the user. It runs once binary arithmetic is in the stdlib, or on its banked examples.
 
-**4. Three methods for `x × 7 = 862`.** Replies 24 and 37 asked whether solving it is *"arithmetics or
-algebra"*. Round 2 (items 24, 28 and 37) sets out three methods, arithmetic read backwards, search, and
-algebraic rewriting, and gives the comparison to this phase:
-[S1f.8.4 § Three methods for one equation](s1f.8.4_linear_equations.md#three-methods-for-one-equation-2026-11-12).
-Inverse requests are **not** added to the stdlib now. What an unpayable debt is called, *"open vs. false"*,
-is not decided here: it is [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md).
+**4. Three methods for `x × 7 = 862`: not here.** The comparison of arithmetic read backwards, search and
+algebra is [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md), by the user's reply in
+round 2 (`dc88520b`): *"This Arithmetic read backwards vs Search vs Algebra comparison is somethinig like
+number theory and goes into separate phase in M1g. p1f.8 remain incomplete naive school algebra."*
 
 **The order, with the additions.** S1f.8.10 is independent and may run at any time. S1f.8.11 runs after the
-calculator's binary build, beside the algebra. The comparison is part of S1f.8.4 and stops with it.
+calculator's binary build, beside the algebra.
 
 **Names.** The calculator's modules move under `std.math` before this phase starts
 ([S1f.6.31](../p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)): where this plan says `std.arith`,

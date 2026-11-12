@@ -21,14 +21,15 @@ examples. The user, 2026-11-12:
 > in `stdlib/README.md`. The big file is **generated on demand and not checked in**: every file under
 > `examples/` is solved, dumped and reloaded per commit.
 
-and asks: *Say if you want it checked in and run nightly instead.* The user's reply there, as it stood in the working copy when this plan was written (2026-11-12, not yet committed), the stage re-reading it before it starts:
+and asks: *Say if you want it checked in and run nightly instead.* The user's reply there, committed as `dc88520b`:
 
-> Ok, then pick the one that fits into memory, say ~16GB
+> Ok, then pick the one that fits into memory, say ~16GB; do not call it in tests and in CI, just for manual
+> solve call
 
 So **memory is the bound, about 16 GB,** where round 2 had warned that memory ends a calculation before the
 window of 100 ± 50 seconds does: the biggest calculation is the largest that runs within about 16 GB of
-peak memory, and its time is reported, whatever it is. The reply does not ask for the file to be checked
-in, so it stays generated on demand.
+peak memory, and its time is reported, whatever it is. And **no test and no CI step runs it:** not the gate, not the
+nightly, not the dev-host tier. It is generated on demand and solved by hand, *"just for manual solve call"*.
 
 ## What is known before it starts
 
@@ -74,11 +75,14 @@ biggest that fits in memory*, well short of the window.
 - One command writes an arithmetic program of a stated size; the same arguments write the same file.
 - The page names, with commands and dates, the biggest calculation that fits in about 16 GB under
   `ein saturate` and under `ein solve`, with the time each took.
-- The three shipped examples and their `--check` are unchanged; the corpus gains no file.
+- The three shipped examples and their `--check` are unchanged; the corpus gains no file, and no test or
+  CI step generates or solves a large program.
 
 ## What it must not do
 
-- **Not check a large program in:** the user's reply to round 2's item 49 did not ask for it.
+- **Not check a large program in, and not run one from any test, gate step, nightly step or dev-host
+  step** (the user's reply to round 2's item 49). The generator's own `--check` holds the three shipped
+  examples and never generates or runs a large one; the size search of T2 is a script run by hand.
 - **Not change the engine or the stdlib** to make a size fit. What the sweep shows of E-24 (the read-out's
   cost) and E-26 (a kilobyte a fact) is added to those rows of [`findings.md`](findings.md), whose owner is
   M1g's [S1g.6.2](../../m1g_logic/p1g.6_engine_requirements/s1g.6.2_nested_facts_at_scale.md).

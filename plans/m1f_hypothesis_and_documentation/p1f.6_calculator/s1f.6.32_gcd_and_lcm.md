@@ -33,7 +33,7 @@ So they ship, in a module of their own: `std.math.gcd`, `stdlib/math/gcd.ein`, e
 **`std.rat` is not touched by this stage.** It computes a greatest common divisor inside itself today.
 Under option (b) of [round 2, item 54](questions_round2.md#q54), *reduce only on request*, `rat-simplify`
 calls this module and the reason gcd lives inside `std.rat` is gone; the user replied *"(b)"* there
-(as it stood in the working copy when this plan was written (2026-11-12, not yet committed)), and that change is
+(`dc88520b`), and that change is
 [S1f.6.33](s1f.6.33_lowest_terms_on_request.md), which runs after this stage. Here the two chains are
 measured side by side, firings on the same operands, as that stage's starting figures.
 

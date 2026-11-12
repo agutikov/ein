@@ -20,8 +20,9 @@ is*, and said: *One line a row; a line left empty takes the recommendation.* The
 > row first since an answer that exits non-zero is against your rule; and a second measure for guards (71,
 > E-27), with the detection rules.
 
-and asks: *If you did not mean to take them all, name the rows to drop.* **So each task below stands on an
-empty line, not on a typed ruling,** and is dropped if the user names its row in round 2.
+and asks: *If you did not mean to take them all, name the rows to drop.* The user left that reply empty too
+(`dc88520b`), and said in chat on 2026-11-12: *"if something remain - pick the default and continue current
+phase"*. **So each task below stands on the default, by that instruction,** and all five are built.
 
 Each finding is read from its row of [`findings.md`](findings.md), which has the witness and the command.
 
