@@ -291,3 +291,7 @@ On `55aeaf08`, the tree clean.
 - **The limit and the cost by length are stated with the commands that re-take them:** T1 and T2, and the page.
 - **E-4 is ruled or owned:** neither yet. It is re-taken, stated on the page, and put to the user as Q-M1f.185
   with the three options probed; its row in [`findings.md`](findings.md) says so.
+
+## Closed (2026-11-13)
+
+The user replied (a) to [question 44](questions.md#q44) on 2026-11-12: say the limit on the page and leave it. That was done by T1, so nothing is left to build and the stage is closed. Q-M1f.185 is answered by that reply.

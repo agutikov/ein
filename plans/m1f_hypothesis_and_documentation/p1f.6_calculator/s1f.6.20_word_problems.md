@@ -327,3 +327,7 @@ entries, the levers', the cores', `region`'s and `obligation_rung`'s slow halves
 mutation census at 361 of 411, the fuzzer at both seeds and the bench smoke. `utils/ci_container.sh` was not
 run: the stage changed no DOT writer, nor the review bundle, nor what CI installs (Q-M1f.77). Not run: the
 dev-host tier.
+
+## Closed (2026-11-13)
+
+What the replies of 2026-11-12 asked for (28, 29, 31, 32, 35) is [S1f.6.28](s1f.6.28_word_problems_second_pass.md), the second pass. Nothing is left under this id and the stage is closed; the next work on word problems starts there.
