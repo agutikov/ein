@@ -65,7 +65,14 @@ Also say whether the decimal requests keep their bare names (`add`, `sub`, `sum-
 division, the arity check, the detection rules, the engine fixes of section J), written against today's
 names; the move is one mechanical stage after your reply.
 
-**Reply:**
+**Reply:** There are many more suitable names, look:
+std.logic.gates:
+  Булева алгебра (Boolean algebra) — изучает логические операции AND, OR, NOT, XOR, NAND, NOR, их свойства, тождества и преобразования выражений.
+  Логика высказываний (Propositional logic) — изучает логические формулы, их истинность, выводимость и доказательства.
+  Теория переключательных функций (Switching theory) — изучает булевы функции и их представление, преобразование и минимизацию.
+  Проектирование цифровых схем (Digital logic design) — изучает реализацию логических операций посредством электронных вентилей (logic gates).
+I think std.bool suits better here than std.logic
+Confirm others
 
 <a id="q54"></a>
 
@@ -100,7 +107,7 @@ automatic:
 
 **Meanwhile:** `std.rat` is untouched.
 
-**Reply:**
+**Reply:** (b)
 
 ---
 
@@ -132,7 +139,7 @@ negation is over a relation nothing can extend. The loader's *forbid* does not r
 calculator to refuse an undeclared name. The cost measured on the prototype was some hundreds of comparisons
 a request for asking *is this a name*; the build re-measures and reports it.
 
-**Reply:**
+**Reply:** (b)
 
 <a id="q16"></a>
 
@@ -155,7 +162,7 @@ they are the shared file. If they cannot be written or cost more, the stage stop
 measurement beside the generated copy (the old (a)), which is what `examples/binary_arithmetic/` has today.
 It runs after the layout reply.
 
-**Reply:**
+**Reply:** So we potentially can import std.math.rat and std.math.binary-arith and then connect them with single fact?
 
 <a id="q23"></a>
 
@@ -179,7 +186,7 @@ every stdlib module has. With your other replies they would be:
 
 **Meanwhile: (a),** after the layout reply, since `std.logic` is part of it.
 
-**Reply:**
+**Reply:** std.bool
 
 <a id="q25"></a>
 
@@ -199,7 +206,7 @@ hold.
 **Meanwhile: both.** P1f.6 treats the search form as a demonstration, and M1g's engine-requirements phase
 gets a stage for a cheaper route on this shape, with the table of `questions.md` 25 as its witness.
 
-**Reply:**
+**Reply:** yes, both
 
 <a id="q31"></a>
 
@@ -227,7 +234,7 @@ box holds* means division); a theory of solutions is M1h's and M2's, as you say.
 
 **Meanwhile:** the examples are rebuilt to *always owed*.
 
-**Reply:**
+**Reply:** yes
 
 <a id="q32"></a>
 
@@ -243,7 +250,7 @@ the import the amount stays a gap, as banked.
 
 **Meanwhile:** built that way, with the apples-and-pears problem in both forms.
 
-**Reply:**
+**Reply:** Yes, relation arguments are marked with some objects that can be treated as types. So can add a rule that assigns zero to every unknown and deduce (has Alice apples 0). It doesn't work in zebra for example - if nobody lives in the house means we yet don't know who lives there.
 
 <a id="q39"></a>
 
@@ -277,7 +284,7 @@ question*, applied to the runner.
 **Meanwhile: (a), planned as a stage of this phase** and run after the section J fixes; the cryptarithm
 theory (your 42) waits for it.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q41"></a>
 
@@ -319,7 +326,7 @@ and held by a test so they cannot change shape unnoticed. Today the module's hea
 **Meanwhile: (a).** They are what every theory over the calculator already uses, and your reply to 8 asks
 that theories connect conveniently. The stage on import name clashes (your 8) takes their names into account.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q47"></a>
 
@@ -336,7 +343,7 @@ comparison considers 901 candidate rows where a sum considers 181, and 4 000 com
 **Meanwhile: (a), leave it.** The general cure is the engine choosing the most selective argument, which is
 row 57 of section J and goes to M1g with it.
 
-**Reply:**
+**Reply:** (a)
 
 <a id="q48"></a>
 
@@ -362,7 +369,7 @@ import the flag's rule.
 
 **Meanwhile:** 1 is changed as said; 2 stays as built.
 
-**Reply:**
+**Reply:** OK, I agree
 
 <a id="q49"></a>
 
@@ -385,7 +392,7 @@ figures in `stdlib/README.md`. The big file is **generated on demand and not che
 
 Say if you want it checked in and run nightly instead.
 
-**Reply:**
+**Reply:** Ok, then pick the one that fits into memory, say ~16GB; do not call it in tests and in CI, just for manual solve call
 
 ---
 
@@ -455,7 +462,7 @@ are **not** added to the stdlib now. Two plans take the subject:
 - [P1f.8](../p1f.8_school_algebra_and_geometry/README.md) compares the three methods on school equations,
   where the choice between them is the subject.
 
-**Reply:**
+**Reply:** This Arithmetic read backwards vs Search vs Algebra comparison is somethinig like number theory and goes into separate phase in M1g. p1f.8 remain incomplete naive school algebra.
 
 <a id="q30"></a>
 
@@ -481,7 +488,7 @@ program wants the missing thing as a fact to reason from.
 
 **Meanwhile:** your (a) is built, a read-out row for what root owes when R is not empty. The rest is M1h's.
 
-**Reply:**
+**Reply:** OK (a)
 
 <a id="q33"></a>
 
@@ -513,7 +520,7 @@ tested, satisfied*, and only the first is superfluous information.
 
 **Meanwhile:** nothing is built; both points go into M1h's slicing phase as its opening questions.
 
-**Reply:**
+**Reply:** OK
 
 ---
 
