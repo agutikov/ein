@@ -1,0 +1,50 @@
+;;; Application 2, the truth table of a circuit, by search: the full adder's
+;;; three inputs are hypotheses, and R is every input assignment.
+;;;
+;;; `inputs.ein` says an input has exactly one value, by an obligation and
+;;; `functional`. The obligation proposes the candidates, two an input, six
+;;; here, and makes a state with an input unset no answer. So R is the eight
+;;; total assignments, and the query's eight projection classes are the rows
+;;; of the table: `ein solve` prints the truth table.
+;;;
+;;;   0 + 0 + 0: digit 0, carry 0        1 + 0 + 0: digit 1, carry 0
+;;;   0 + 0 + 1: digit 1, carry 0        1 + 0 + 1: digit 0, carry 1
+;;;   0 + 1 + 0: digit 1, carry 0        1 + 1 + 0: digit 0, carry 1
+;;;   0 + 1 + 1: digit 0, carry 1        1 + 1 + 1: digit 1, carry 1
+;;;
+;;; The candidates come from the obligations rung alone: the program has no
+;;; hrule and no `(solve …)` form. The plan page tried an hrule and
+;;; `:hypothesis-relations` too; the three give one answer at one cost.
+;;;
+;;; The cost is the reason this table has three inputs. A node of the search
+;;; is a partial assignment, so describing R is 3^n + n saturations for n
+;;; inputs, 30 here, and stops at the default budget near twelve inputs.
+;;; Where every input is to be tried, writing the inputs as test vectors is
+;;; one saturation: `adder_against_table.ein`.
+;;;
+;;; The claim was computed in Python by enumeration.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.2.
+(import inputs :symbols (inputs in is-a total-owed functional in-drives))
+(import full_adder :symbols (gate))
+
+(is-a a Input) (is-a b Input) (is-a cin Input)
+
+(relation row Bit Bit Bit Bit Bit
+  :why "{?1} + {?2} + {?3}: digit {?4}, carry {?5}")
+(__closed__ row)
+(rule row-of ()
+  :match  (and (in a ?a) (in b ?b) (in cin ?c) (val sum ?s) (val cout ?k))
+  :assert (row ?a ?b ?c ?s ?k)
+  :why    "with a = {?a}, b = {?b} and carry in = {?c} the sum bit is {?s} and the carry out {?k}")
+
+(query :goal (row ?a ?b ?c ?s ?k)
+       :goal-text "{?a} + {?b} + {?c}: digit {?s}, carry {?k}"
+       :expect (or (model (row 0 0 0 0 0))
+                   (model (row 0 0 1 1 0))
+                   (model (row 0 1 0 1 0))
+                   (model (row 0 1 1 0 1))
+                   (model (row 1 0 0 1 0))
+                   (model (row 1 0 1 0 1))
+                   (model (row 1 1 0 0 1))
+                   (model (row 1 1 1 1 1))))

@@ -1,0 +1,80 @@
+;;; What a simplifier does with the property facts: six gates and three
+;;; laws, each law a rule that reads a property and names no function.
+;;;
+;;;   x and 1  is  x              (identity-of And 1)
+;;;   y or 1   is  1              (absorbing-of Or 1)
+;;;   b xor a  is  a xor b        (commutative Xor): two gates over the same
+;;;                               wires in either order are one gate
+;;;
+;;; The properties are the generated facts of `props.ein`, three relations
+;;; of its thirty, imported flat. On the six gates below the rules derive
+;;; that p is x, that q is the constant 1, and that g3 and g4 are one gate.
+;;; The two Andn gates, a and not b and b and not a, are not merged, rightly:
+;;; Andn is not commutative, and no rule said so by name.
+;;;
+;;; This derives what is equal and stops. A simplifier that rewrites,
+;;; removing g4 and re-pointing what read s, needs retraction or a new
+;;; circuit as its output, which is M1g's normal forms' subject.
+;;;
+;;; Search-free: one saturation. The claims were computed in Python from the
+;;; functions' columns.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 6.
+(import props :symbols (identity-of absorbing-of commutative __closed__))
+
+(relation gate Instance Function Wire Wire Wire
+  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+(relation const Wire Bit
+  :why "the wire {?1} is the constant {?2}")
+(relation same-wire Wire Wire
+  :why "{?1} always carries what {?2} carries")
+(relation before Wire Wire
+  :why "{?1} is written before {?2}")
+(relation normal Instance Function Wire Wire Wire
+  :why "{?1}, its inputs in order: a {?2} gate from {?3} and {?4} to {?5}")
+(relation same-gate Instance Instance
+  :why "{?1} and {?2} compute the same thing")
+
+(const one 1)
+(gate g1 And x one p)          ; x and 1
+(gate g2 Or  y one q)          ; y or 1
+(gate g3 Xor a b r)            ; a xor b
+(gate g4 Xor b a s)            ; b xor a
+(gate g5 Andn a b t)           ; a and not b: not commutative, so g6 is another function
+(gate g6 Andn b a u)
+(before a b)
+
+(rule drop-identity-right ()
+  :match  (and (gate ?g ?f ?a ?c ?o) (const ?c ?e) (identity-of ?f ?e))
+  :assert (same-wire ?o ?a)
+  :why    "{?e} is neutral for {?f}: {?g}'s output is its other input, {?a}")
+(rule constant-by-absorbing ()
+  :match  (and (gate ?g ?f ?a ?c ?o) (const ?c ?e) (absorbing-of ?f ?e))
+  :assert (const ?o ?e)
+  :why    "{?e} decides {?f}: {?g}'s output is the constant {?e}")
+(rule normal-kept ()
+  :match  (and (gate ?g ?f ?a ?b ?o) (before ?a ?b))
+  :assert (normal ?g ?f ?a ?b ?o)
+  :why    "{?g}'s inputs are in order")
+(rule normal-swapped ()
+  :match  (and (gate ?g ?f ?b ?a ?o) (before ?a ?b) (commutative ?f))
+  :assert (normal ?g ?f ?a ?b ?o)
+  :why    "{?f} is commutative: {?g}'s inputs are put in order")
+(rule shared ()
+  :match  (and (normal ?g ?f ?a ?b ?o) (normal ?h ?f ?a ?b ?p) (neq ?g ?h))
+  :assert (and (same-gate ?g ?h) (same-wire ?o ?p))
+  :why    "{?g} and {?h} are the same {?f} of {?a} and {?b}")
+
+(__closed__ gate) (__closed__ const) (__closed__ same-wire) (__closed__ before) (__closed__ normal)
+(__closed__ same-gate)
+
+(query :goal (same-wire ?o ?w)
+       :goal-text "{?o} is {?w}"
+       :expect (model (same-wire p x) (same-wire r s) (same-wire s r)))
+
+(query :goal (const ?w ?e)
+       :goal-text "{?w} is the constant {?e}"
+       :expect (model (const one 1) (const q 1)))
+
+(query :goal (same-gate ?g ?h)
+       :expect (model (same-gate g3 g4) (same-gate g4 g3)))

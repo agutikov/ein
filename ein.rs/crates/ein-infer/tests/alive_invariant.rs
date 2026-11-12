@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 105] = [
+const SEEDED: [(&str, &[&str]); 111] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -692,6 +692,46 @@ const SEEDED: [(&str, &[&str]); 105] = [
         &[
             "`e`, asserted by rule `um-start`",
             "`z`, in (unmul 7 (n (n (n z 8) 6) 1))",
+        ],
+    ),
+    // M1f S1f.6.16 and S1f.6.17 — the prototypes banked under
+    // `examples/binary_arithmetic/` and `examples/binary_logic/`. A binary
+    // number is `(b2 PREFIX BIT)` over the same `z`, so a program that
+    // writes one names `z` inside it; the theory alone holds it in
+    // `operand-zero2`, and `conv.ein` in `std.arith`'s `operand-zero`.
+    // `conversions.ein` and `div_by_zero.ein` write `z` at top level, in
+    // `(to-bin z)` and `(div2 … z)`, so they are not here. `post.ein` names
+    // Post's five classes in its rules' conclusions and in no fact.
+    (
+        "examples/binary_arithmetic/bin.ein",
+        &["`z`, matched by rule `operand-zero2`"],
+    ),
+    (
+        "examples/binary_arithmetic/both_bases.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "examples/binary_arithmetic/conv.ein",
+        &["`z`, matched by rule `operand-zero`"],
+    ),
+    (
+        "examples/binary_arithmetic/first.ein",
+        &["`z`, in (add2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))"],
+    ),
+    (
+        "examples/binary_arithmetic/five_operations.ein",
+        &[
+            "`z`, in (add2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))",
+        ],
+    ),
+    (
+        "examples/binary_logic/post.ein",
+        &[
+            "`affine-class`, asserted by rule `inside-affine`",
+            "`monotone-class`, asserted by rule `inside-monotone`",
+            "`one-preserving`, asserted by rule `inside-one`",
+            "`self-dual-class`, asserted by rule `inside-self-dual`",
+            "`zero-preserving`, asserted by rule `inside-zero`",
         ],
     ),
 ];

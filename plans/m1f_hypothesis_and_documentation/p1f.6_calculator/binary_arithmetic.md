@@ -1,7 +1,9 @@
 # Binary arithmetic: the prototype, and three ways to have it
 
 **Stage:** [S1f.6.16](s1f.6.16_binary_arithmetic.md), task T1. **Phase:** [P1f.6](README.md).
-**Status:** prototype, 2026-11-11. Nothing here ships; it is shown to the user, who rules.
+**Status:** prototype, 2026-11-11. Nothing here ships; it is shown to the user, who rules. **Way (b) banked as
+examples 2026-11-12**, [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the
+questions stay open.
 
 The user, 2026-11-11: *"arithmetic with binary numbers, I suspect simpler rules"*.
 
@@ -17,6 +19,24 @@ Every number on this page is from a run of 2026-11-11; the command beside it re-
 under `build/s1f.6.16/` (gitignored): `python3 build.py` writes the three theories from the shipped one,
 `python3 measure.py`, `bench.py`, `counts.py` and `conv/run.py` take the measurements, and the raw results are
 `out/measure.json`, `out/bench.json`, `out/counts.json`.
+
+**Where it is now (2026-11-12).** The recommended way, (b), is banked as examples, on the user's instruction
+of that day, *"bank binary arithmetic and logic prototypes into examples too"*:
+[`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md). The tables are
+[`bits.ein`](../../../examples/binary_arithmetic/bits.ein), the theory
+[`bin.ein`](../../../examples/binary_arithmetic/bin.ein), both written from the shipped `stdlib/arith.ein` by
+[`gen_binary.py`](../../../examples/binary_arithmetic/gen_binary.py), which is this prototype's `build.py`
+cut down to (b); the conversions are [`conv.ein`](../../../examples/binary_arithmetic/conv.ein); and five
+programs carry claims, `first`, `five_operations`, `div_by_zero`, `both_bases` and `conversions`. They are
+examples and not a stdlib module, and the generator is run by hand, not in the gate. Ways (a) and (c), the
+batches and the long conversions are not banked: they stay here and under `build/s1f.6.16/`. **The banking
+is not a ruling: every question at the foot of this page stays open.** The banked files were run on the
+release binary and the stdlib of 2026-11-12, and the answers and the counts this page reports for (b) stand:
+67 rules and 28 rows (`python3 examples/binary_arithmetic/gen_binary.py --count`); 43, 61, 120, 245, 24 and 10
+firings for the six targets, 826 and 76 for 255 to binary and back, 2 317 and 202 for 123078; the 243 sampled
+requests right against Python, 243 of 243, and 60 conversions of 60 (`python3
+build/s1f.6.16-17/chk_arith.py`, 2026-11-12). `bin.ein` as banked differs from the prototype's `b/bin.ein`
+in its header comment and in one word of its closing rule's `:why`.
 
 **What was run.** The release binary as built at 19:17 on 2026-11-11, copied to `build/s1f.6.16/tools/ein`
 (sha256 `bfaa78d8855a7027…`, `ein 0.1.0`), against the stdlib of `a621dc75` (`git archive HEAD stdlib`), so

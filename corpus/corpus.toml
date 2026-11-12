@@ -439,6 +439,174 @@ runs   = ["solve", "test", "saturate"]
 note   = "M1f S1f.6.10 — tables read backwards where a column has more than one answer: x times 4 = 3284 has two digits for a column, five apart, and saturation derives both walks; the next column ends the wrong one, so no hypothesis is needed and the walks alive stay few. x times 7 = 861, x times 5 = 61725 and x + x = 2468 beside it, and two requests with no solution, answered by silence."
 
 [[entry]]
+path   = "examples/binary_arithmetic/bin.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.16 — a theory module, the plan page's way (b): binary arithmetic of its own, `(b2 PREFIX BIT)`, the five operations by saturation, 67 rules and the closing rule `bin`; generated from `stdlib/arith.ein` by `gen_binary.py` beside it, run by hand. Alone it has no request, so nothing is computed: R {∅}."
+
+[[entry]]
+path   = "examples/binary_arithmetic/bits.ein"
+group  = "positive"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.6.16 — a module of facts, imported by `bin.ein`: the binary full adder, full subtractor and comparison tables, 28 rows, generated. Alone it has no rule: R {∅}."
+
+[[entry]]
+path   = "examples/binary_arithmetic/both_bases.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.16 — `std.arith` and the binary theory imported flat into one program: 123078 + 4567 = 127645 in decimal and 101 + 111 = 1100 in binary; the number's shape says its base."
+
+[[entry]]
+path   = "examples/binary_arithmetic/conv.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.16 — a theory module: conversion between decimal and binary as requests, eleven rules over the tagged calls of `std.arith` and `bin`, its closing rule naming both theories' entries (E-20). Alone it has no request: R {∅}."
+
+[[entry]]
+path   = "examples/binary_arithmetic/conversions.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.16 — 0, 1, 2, 10 and 255 to binary by repeated halving, and seven binary numbers to 1000 back by doubling; every claim computed in Python. Short on purpose: a halving is a whole decimal division, and `ein solve` writes the state as text (E-24)."
+
+[[entry]]
+path   = "examples/binary_arithmetic/div_by_zero.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.16 — a binary division by zero: the flag `division-by-zero2`, then `(false)`; root is dead, R is empty, and the claim is `(solve :expect (false))`."
+
+[[entry]]
+path   = "examples/binary_arithmetic/first.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.16 — a first binary sum, 101 + 111 = 1100, and a subtraction of two named numbers; the directory's introduction."
+
+[[entry]]
+path   = "examples/binary_arithmetic/five_operations.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.16 — the five operations in binary at decimal's example operands: 123078 + 4567, the subtraction both ways, 123 x 456, 127645 / 25 and the comparison; five claims, each computed in Python."
+
+[[entry]]
+path   = "examples/binary_logic/adder_against_table.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.17 — the full adder built from five gates against the calculator's table `fa2`, all eight inputs as test vectors in one saturation: eight agree, none differs. The truth table with no search."
+
+[[entry]]
+path   = "examples/binary_logic/bits.ein"
+group  = "positive"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.6.17 — a module of facts: a copy of `examples/binary_arithmetic/bits.ein`, for `fa2`, since an import cannot reach a sibling directory; written by that directory's `gen_binary.py`, whose `--check` holds the two equal."
+
+[[entry]]
+path   = "examples/binary_logic/circuit.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.17 — a theory module: a circuit as a program, `gate`, `val`, one rule that propagates through the table `gate2` and one that refutes a wire with two values. Alone it has no gate: R {∅}."
+
+[[entry]]
+path   = "examples/binary_logic/equivalent.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — equivalence of two circuits by a miter: the adder's carry against the majority form. R is empty because every alive node owes (E-23), `Open` under `--single`; the claims are the owing frontier, twelve nodes, and `(false)` for the query."
+
+[[entry]]
+path   = "examples/binary_logic/full_adder.ein"
+group  = "positive"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.6.17 — a module of facts: the binary full adder as five `gate` facts, imported by the applications. Alone it has no rule: R {∅}."
+
+[[entry]]
+path   = "examples/binary_logic/gates.ein"
+group  = "positive"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.6.17 — a module of facts, the plan page's layout 1: the sixteen functions of two inputs in one table, `(gate2 NAME A B OUT)`, 64 rows, each function's column name, and `inv`, `le`, `bit`; generated by `gen_gates.py` beside it, run by hand."
+
+[[entry]]
+path   = "examples/binary_logic/inputs.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.17 — a theory module: inputs as hypotheses, `(in WIRE BIT)` owed by `total-owed` and `functional`, so an input has exactly one value and the obligations rung proposes two candidates an input. Alone it names no input: R {∅}."
+
+[[entry]]
+path   = "examples/binary_logic/knights.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — knights and knaves: a wire an islander, a statement a gate, a speaker a knight exactly when the statement is true. Two states and one projection class for C: a knave whoever of A and B lies."
+
+[[entry]]
+path   = "examples/binary_logic/not_equivalent.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — two circuits that are not equivalent, the adder's carry against a or b: R is the two inputs where they differ, each a counterexample."
+
+[[entry]]
+path   = "examples/binary_logic/post.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.17 — Post's criterion on seven written sets of functions, over the generated class facts: `complete` by one monotone rule, `inside` a class by `forall` over the members. Five complete, two inside a class; the claims computed in Python by closure under composition."
+
+[[entry]]
+path   = "examples/binary_logic/props.ein"
+group  = "positive"
+runs   = ["solve", "saturate"]
+note   = "M1f S1f.6.17 — a module of facts: what is known of the sixteen functions, thirty relations (swap, complement, dual, commutative, associative, identities, Post's classes from inside and outside, complete alone), generated from the columns by `gen_gates.py`."
+
+[[entry]]
+path   = "examples/binary_logic/props_check.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.17 — the check of `props.ein`: it imports the deriving rules and claims, relation by relation, exactly the generated facts; thirty claims, which hold only if the rules derive every listed fact and no other. This `test` cell is how that check is in the gate."
+
+[[entry]]
+path   = "examples/binary_logic/props_rules.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.17 — a theory module: the 31 monotone rules that derive the thirty relations of `props.ein` from the 64 rows of `gates.ein`, with no `absent`; generated (the generator holds the text). Alone it derives them all: R {∅}."
+
+[[entry]]
+path   = "examples/binary_logic/require.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.17 — a theory module: `(require WIRE BIT)`, a state in which the wire carries the other bit a contradiction; with `inputs` it makes a satisfiability question. Alone it requires nothing: R {∅}."
+
+[[entry]]
+path   = "examples/binary_logic/satisfiable.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — satisfiability: an input of the full adder with sum 1 and carry 1; one state, a = b = carry in = 1, and ten minimal dead sets, each a learned clause."
+
+[[entry]]
+path   = "examples/binary_logic/simplify.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.17 — a simplifier that reads the property facts: three laws as rules that name no function (`identity-of`, `absorbing-of`, `commutative`), on six gates; x and 1 is x, y or 1 is 1, two Xor gates are one, two Andn gates are not."
+
+[[entry]]
+path   = "examples/binary_logic/simulation.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.17 — simulation: the full adder at a = 1, b = 1, carry in = 0, the outputs derived by saturation, sum 0 and carry 1."
+
+[[entry]]
+path   = "examples/binary_logic/synthesis.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — synthesis of one missing gate: the adder's last gate a hole, its function the hypothesis, the eight inputs written as test vectors against the table `fa2`. Two states, `Or` and `Xor`; 16 candidates, 14 dead alone."
+
+[[entry]]
+path   = "examples/binary_logic/truth_table.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — the truth table of the full adder by search: the three inputs hypotheses, proposed by the obligations rung alone; R is the eight assignments and the query's eight projection classes are the table's rows. 30 saturations."
+
+[[entry]]
+path   = "examples/binary_logic/unsatisfiable.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "solve -n 1", "test"]
+note   = "M1f S1f.6.17 — an unsatisfiable question: sum 1, carry 1 and not both a and b. R is empty because every alive node owes (E-23), `Open` under `--single`; the claims are the owing frontier, eleven nodes, and `(false)` for the query."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]

@@ -1,0 +1,37 @@
+;;; Application 5, a puzzle of truth and lies. On the island a knight's
+;;; statements are true and a knave's false.
+;;;
+;;;   A says: "B is a knave."
+;;;   B says: "A and C are of the same kind."
+;;;   What is C?
+;;;
+;;; A wire an islander, 1 for a knight and 0 for a knave. A statement is a
+;;; gate over those wires. And a speaker is a knight exactly when what they
+;;; said is true: the speaker's wire and the statement's go into an Xnor that
+;;; is required to be 1.
+;;;
+;;; R is two states: A a knave and B a knight, or A a knight and B a knave.
+;;; C is a knave in both. So the first query has one projection class over
+;;; two states, and that is the puzzle's answer: C is a knave whoever of A
+;;; and B lies.
+;;;
+;;; Both claims were computed in Python by enumeration.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.5.
+(import require :symbols (requirements require inputs in is-a total-owed functional in-drives))
+
+(is-a A Input) (is-a B Input) (is-a C Input)
+(gate sa Nfst B B said-A)        ; "B is a knave": not B
+(gate sb Xnor A C said-B)        ; "A and C are of the same kind"
+(gate ka Xnor A said-A honest-A) ; A is a knight exactly when what A said is true
+(gate kb Xnor B said-B honest-B) ; and B likewise
+(require honest-A 1) (require honest-B 1)
+
+(query :goal (in C ?c)
+       :goal-text "C is {?c} (1 a knight, 0 a knave)"
+       :expect (model (in C 0)))
+
+(query :goal (and (in A ?a) (in B ?b) (in C ?c))
+       :goal-text "A = {?a}, B = {?b}, C = {?c}"
+       :expect (or (model (in A 0) (in B 1) (in C 0))
+                   (model (in A 1) (in B 0) (in C 0))))

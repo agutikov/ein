@@ -1,0 +1,75 @@
+;;; Application 6, synthesis of one missing gate: the adder's last gate is a
+;;; hole. Which of the sixteen functions, put there, gives the carry of the
+;;; table on all eight inputs? Two do: Or and Xor.
+;;;
+;;; The gate's type is the hypothesis, `(kind o1 F)`, owed and functional as
+;;; an input's value is in `inputs.ein`: sixteen candidates. No input is
+;;; guessed. The eight inputs are written as test vectors, every value
+;;; carries the vector it belongs to, and a state in which some vector's
+;;; carry is not the table's is a contradiction. Fourteen of the sixteen are
+;;; dead alone.
+;;;
+;;; Both answers are right. *Both inputs* and *one input and the carry* are
+;;; never 1 together, so the gate that joins them may be Or or Xor, which is
+;;; what a textbook's two drawings of the adder show.
+;;;
+;;; The table is `fa2`, the binary full adder of
+;;; `examples/binary_arithmetic/`; `bits.ein` here is a copy of that
+;;; directory's, since an import cannot reach a sibling directory.
+;;;
+;;; The claim was computed in Python by enumeration.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.6.
+(import gates :symbols (gate2 column-name __closed__))
+(import bits :symbols (fa2))
+(import std.algebra :symbols (total-owed functional))
+
+(relation is-a Thing Type
+  :why "{?1} is a {?2}")
+(relation gate Instance Function Wire Wire Wire
+  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+(relation hole Hole Wire Wire Wire
+  :why "{?1} is a missing gate from {?2} and {?3} to {?4}")
+(relation kind Hole Function
+  :why "the missing gate {?1} is a {?2}")
+(relation at Vector Wire Bit
+  :why "on test vector {?1}, {?2} carries {?3}")
+(relation vector Vector Bit Bit Bit
+  :why "test vector {?1}: a = {?2}, b = {?3}, carry in = {?4}")
+
+(gate x1 Xor a b ab) (gate x2 Xor ab cin sum) (gate a1 And a b g1) (gate a2 And ab cin g2)
+(hole o1 g1 g2 cout) (is-a o1 Hole)
+
+(vector v000 0 0 0) (vector v001 0 0 1) (vector v010 0 1 0) (vector v011 0 1 1)
+(vector v100 1 0 0) (vector v101 1 0 1) (vector v110 1 1 0) (vector v111 1 1 1)
+
+(total-owed kind is-a)   ; the hole owes a function: a state that leaves it empty is no answer
+(functional kind)        ; and it has one
+
+(rule functions ()
+  :match  (column-name ?f ?c)
+  :assert (is-a ?f Function)
+  :why    "{?f} is one of the sixteen")
+(rule drive ()
+  :match  (vector ?v ?x ?y ?c)
+  :assert (and (at ?v a ?x) (at ?v b ?y) (at ?v cin ?c))
+  :why    "the inputs of {?v}")
+(rule propagate-at ()
+  :match  (and (gate ?g ?f ?a ?b ?o) (at ?v ?a ?x) (at ?v ?b ?y) (gate2 ?f ?x ?y ?z))
+  :assert (at ?v ?o ?z)
+  :why    "{?g} on {?v}: {?f} of {?x} and {?y} is {?z}")
+(rule propagate-hole ()
+  :match  (and (hole ?g ?a ?b ?o) (kind ?g ?f) (at ?v ?a ?x) (at ?v ?b ?y) (gate2 ?f ?x ?y ?z))
+  :assert (at ?v ?o ?z)
+  :why    "{?g}, supposed a {?f}, on {?v}: {?f} of {?x} and {?y} is {?z}")
+(rule wrong-carry ()
+  :match  (and (vector ?v ?x ?y ?c) (at ?v cout ?k) (fa2 ?x ?y ?c ?s ?t) (neq ?k ?t))
+  :assert (false)
+  :why    "on {?v} the carry is {?k} and the table says {?t}")
+
+(__closed__ is-a) (__closed__ gate) (__closed__ hole) (__closed__ at) (__closed__ vector) (__closed__ fa2)
+
+(query :goal (kind o1 ?f)
+       :goal-text "the missing gate can be {?f}"
+       :expect (or (model (kind o1 Or))
+                   (model (kind o1 Xor))))

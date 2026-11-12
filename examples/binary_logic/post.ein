@@ -1,0 +1,107 @@
+;;; Post's criterion on seven sets of functions: which of them can build
+;;; every function?
+;;;
+;;; A set of functions builds every function exactly when, for each of
+;;; Post's five classes, it has a member outside that class. The classes are
+;;; the functions that keep zero, that keep one, the monotone, the affine and
+;;; the self-dual; `props.ein` has each from inside and from outside, as
+;;; facts.
+;;;
+;;;   and-or          And, Or          no: both are monotone, and keep 0 and 1
+;;;   and-or-not      And, Or, Nfst    yes
+;;;   imp-zero        Rorn, Zero       yes: implication and the constant 0
+;;;   xor-and-one     Xor, And, One    yes
+;;;   xor-xnor        Xor, Xnor        no: both are affine
+;;;   nand            Nand             yes, alone
+;;;   nor             Nor              yes, alone
+;;;
+;;; `complete` is one monotone rule of ten premises, a member and its
+;;; `escapes-` fact for each class. `inside` is where `forall` earns its
+;;; place: a set's size is not fixed, so *every member of S is monotone*
+;;; cannot be a rule of a fixed number of premises. Every set here is
+;;; complete or inside a class, never both and never neither, which is
+;;; Post's theorem on these seven.
+;;;
+;;; The claims were not read from the classes: Python computed which sets are
+;;; complete by closing the two projections under composition with the
+;;; set's members, by brute force. The plan page has the same check on all
+;;; 65 535 sets, which agrees on every one; it is not here because it is a
+;;; Python enumeration, not an Ein program.
+;;;
+;;; Search-free: every relation is closed, one saturation.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 2.
+(import props :symbols (escapes-zero escapes-one escapes-monotone escapes-affine escapes-self-dual
+                        preserves-zero preserves-one monotone affine self-dual __closed__))
+(import std.macro :symbols (forall))
+
+(relation member Set Function
+  :why "{?2} is in {?1}")
+(relation set Set
+  :why "{?1} is a set of functions")
+(relation complete Set
+  :why "every function can be built from {?1}")
+(relation inside Set Class
+  :why "every member of {?1} is in the class {?2}")
+(relation incomplete Set
+  :why "{?1} cannot build every function")
+
+(member and-or And) (member and-or Or)
+(member and-or-not And) (member and-or-not Or) (member and-or-not Nfst)
+(member imp-zero Rorn) (member imp-zero Zero)
+(member xor-and-one Xor) (member xor-and-one And) (member xor-and-one One)
+(member xor-xnor Xor) (member xor-xnor Xnor)
+(member nand Nand)
+(member nor Nor)
+
+(rule set-of ()
+  :match  (member ?s ?f)
+  :assert (set ?s)
+  :why    "{?s} has a member")
+(rule complete-r ()
+  :match  (and (member ?s ?f1) (escapes-zero ?f1) (member ?s ?f2) (escapes-one ?f2)
+               (member ?s ?f3) (escapes-monotone ?f3) (member ?s ?f4) (escapes-affine ?f4)
+               (member ?s ?f5) (escapes-self-dual ?f5))
+  :assert (complete ?s)
+  :why    "{?s} escapes each class: {?f1} zero-preserving, {?f2} one-preserving, {?f3} monotone, {?f4} affine, {?f5} self-dual")
+(rule inside-zero ()
+  :match  (and (set ?s) (forall ?g (member ?s ?g) (preserves-zero ?g)))
+  :assert (inside ?s zero-preserving)
+  :why    "every member of {?s} keeps zero")
+(rule inside-one ()
+  :match  (and (set ?s) (forall ?g (member ?s ?g) (preserves-one ?g)))
+  :assert (inside ?s one-preserving)
+  :why    "every member of {?s} keeps one")
+(rule inside-monotone ()
+  :match  (and (set ?s) (forall ?g (member ?s ?g) (monotone ?g)))
+  :assert (inside ?s monotone-class)
+  :why    "every member of {?s} is monotone")
+(rule inside-affine ()
+  :match  (and (set ?s) (forall ?g (member ?s ?g) (affine ?g)))
+  :assert (inside ?s affine-class)
+  :why    "every member of {?s} is affine")
+(rule inside-self-dual ()
+  :match  (and (set ?s) (forall ?g (member ?s ?g) (self-dual ?g)))
+  :assert (inside ?s self-dual-class)
+  :why    "every member of {?s} is self-dual")
+(rule incomplete-r ()
+  :match  (inside ?s ?c)
+  :assert (incomplete ?s)
+  :why    "{?s} is inside {?c}, which is closed under composition")
+
+(__closed__ member) (__closed__ set) (__closed__ complete) (__closed__ inside) (__closed__ incomplete)
+
+(query :goal (complete ?s)
+       :goal-text "{?s} builds every function"
+       :expect (model (complete and-or-not) (complete imp-zero) (complete nand) (complete nor) (complete xor-and-one)))
+
+(query :goal (inside ?s ?c)
+       :goal-text "{?s} stays inside {?c}"
+       :expect (model (inside and-or monotone-class)
+                      (inside and-or one-preserving)
+                      (inside and-or zero-preserving)
+                      (inside xor-xnor affine-class)))
+
+(query :goal (incomplete ?s)
+       :goal-text "{?s} cannot build every function"
+       :expect (model (incomplete and-or) (incomplete xor-xnor)))

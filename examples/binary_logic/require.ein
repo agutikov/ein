@@ -1,0 +1,25 @@
+;;; A required value: a state in which the wire carries the other bit is a
+;;; contradiction. With inputs as hypotheses this makes a satisfiability
+;;; question: R is the input assignments under which every requirement holds.
+;;;
+;;;   (require WIRE BIT)   written by a program
+;;;
+;;; One name brings it, the inputs theory and the circuit theory:
+;;; (import require :symbols (requirements require inputs in is-a total-owed
+;;; functional in-drives)).
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.3.
+(import inputs :symbols (inputs in is-a total-owed functional in-drives))
+(relation require Wire Bit
+  :why "{?1} is required to carry {?2}")
+(rule required ()
+  :match  (and (require ?w ?v) (val ?w ?u) (neq ?u ?v))
+  :assert (false)
+  :why    "{?w} is required to carry {?v} and carries {?u}")
+(relation require-rule Rule
+  :why "{?1} is a rule of the requirement theory")
+(require-rule requirements)
+(rule requirements ()
+  :match  ()
+  :assert (and (__closed__ require) (__closed__ require-rule) (require-rule required) (inputs-rule inputs))
+  :why    "what is required is written, never guessed")

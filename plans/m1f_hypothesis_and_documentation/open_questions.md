@@ -202,6 +202,10 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.187](#q-m1f187--which-probes-of-s1f610-are-banked-and-at-what-size) | which probes of S1f.6.10 are banked, and at what size | **defaulted 2026-11-12 (S1f.6.10): sixteen, each sized so that a bare `ein solve` exhausts R well inside the budget and its dump is a few megabytes; SEND + MORE = MONEY stays under `build/`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
 | [Q-M1f.188](#q-m1f188--the-banked-probes-are-kept-by-hand) | the banked probes are kept by hand | **defaulted 2026-11-12 (S1f.6.10): written once by a script under `build/`, then hand-kept; no generator in `utils/` and no `--check` in the gate**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
 | [Q-M1f.189](#q-m1f189--a-users-program-calling-stdariths-tagged-calls) | a user's program calling `std.arith`'s tagged calls | **defaulted 2026-11-12 (S1f.6.10) for the banked programs, and put to the user: eight of them call `add-walk`, `mul-call`, `div-call`, `cmp-walk` and read `done`, `div-done`, `order-is`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
+| [Q-M1f.190](#q-m1f190--which-variants-of-the-binary-prototypes-are-banked-where-the-page-recommends-none) | which variants of the binary prototypes are banked where the page recommends none | **defaulted 2026-11-12 (the banking of S1f.6.16 and S1f.6.17), the user's to revise: the simplest its results hold under: the truth table's candidates from the obligations rung alone; the conversions a module of their own; Post's criterion on seven written sets over the generated facts; the simplifier reading the generated facts**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
+| [Q-M1f.191](#q-m1f191--the-generators-of-the-binary-examples-are-run-by-hand) | the generators of the binary examples are run by hand | **defaulted 2026-11-12, the user's to revise: `gen_binary.py` and `gen_gates.py` live in the example directories, each with a `--check`, neither in the gate; the properties' check is a corpus program's claims, which is in the gate**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
+| [Q-M1f.192](#q-m1f192--one-table-file-in-two-example-directories) | one table file in two example directories | **defaulted 2026-11-12, the user's to revise: `examples/binary_logic/bits.ein` is a copy of `examples/binary_arithmetic/bits.ein`, written by `gen_binary.py`, whose `--check` holds the two equal**; [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
+| [Q-M1f.193](#q-m1f193--the-sizes-of-the-banked-binary-programs) | the sizes of the banked binary programs | **defaulted 2026-11-12, the user's to revise: three inputs for every search, operands to seventeen bits, conversions to 255 and from 1000, none `slow`; the batches, the scale runs and the enumeration of all 65 535 sets stay under `build/`**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3668,3 +3672,74 @@ circuit's own*; `std.int` and `std.rat` call them from inside the stdlib.
 [`beyond_arithmetic.md`](p1f.6_calculator/beyond_arithmetic.md), with the recommendation that the module's page
 name the tagged calls as what a theory built on it calls. Eight programs under `examples/beyond_arith/` would
 move if a tagged call's shape did; `arith_theory.rs` does not hold those shapes for outside callers.
+
+### Q-M1f.190 — Which variants of the binary prototypes are banked where the page recommends none
+
+**Raised** 2026-11-12 by the banking of [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md)'s and
+[S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md)'s prototypes as examples (the user, that day: *"bank binary
+arithmetic and logic prototypes into examples too"*). Where a page recommends a variant, that one is banked: way
+(b) and its generation from `std.arith` for arithmetic; the one table, and the properties as generated facts with
+the deriving rules as their check, for logic. On four points the pages show variants and recommend none:
+
+- **The truth table's candidates.** [`binary_logic.md`](p1f.6_calculator/binary_logic.md#2-the-truth-table-of-a-circuit) shows three ways,
+  the obligations rung alone, an hrule, and `:hypothesis-relations`, with one answer and one cost.
+- **Where the conversions live,** in the binary module or a module of their own: question 5 of
+  [`binary_arithmetic.md`](p1f.6_calculator/binary_arithmetic.md).
+- **Post's criterion as a program:** the page's has 140 written sets and reads eight `-u` relations restated by
+  `forall` and `absent`.
+- **What the simplifier reads:** the prototype's imports the deriving rules; the recommendation makes the
+  properties facts.
+
+**Defaulted 2026-11-12, the user's to revise: the simplest variant the page's results hold under.** The
+obligations rung alone, so the program has no hrule and no `(solve …)` form; `conv.ein`, a module of its own, as
+on the prototype; `post.ein` with seven written sets, `complete` by the page's monotone rule and `inside` by
+`forall` over the members, reading the generated class facts; `simplify.ein` importing three relations of
+`props.ein`. None is a ruling on the pages' questions, which stay open.
+
+### Q-M1f.191 — The generators of the binary examples are run by hand
+
+**Raised** 2026-11-12 by the same banking. `binary_arithmetic.md` recommends that the binary rules be generated
+from `std.arith` *and held there by a test*, and asks it as its fourth question; `binary_logic.md` recommends the
+properties as generated facts *with a test that holds them to the rows*, its third.
+
+- **(a) Generators in the example directories, run by hand,** each with a `--check`:
+  `examples/binary_arithmetic/gen_binary.py` and `examples/binary_logic/gen_gates.py`. No test runs them.
+- **(b) Generators in `utils/` with `--check` in a test,** as `gen_arith_tables.py` and `gen_arith_examples.py`
+  have.
+
+**Defaulted 2026-11-12, the user's to revise: (a).** These are examples, and (b) is what the pages' open
+questions would decide: a `--check` in the gate would make every edit of `stdlib/arith.ein` fail a test until an
+example is regenerated, which is the coupling question 4 asks about. What it leaves unheld: after an edit to
+`std.arith`, `bin.ein` is stale until someone runs the script, and nothing says so but `--check`. **The
+properties' check is in the gate all the same**, without the generator: `props_check.ein` is a corpus program
+whose thirty claims hold exactly when the rules derive the generated facts, and its `test` cell is banked.
+
+### Q-M1f.192 — One table file in two example directories
+
+**Raised** 2026-11-12 by the same banking. Two programs of `examples/binary_logic/` set a circuit against the
+binary full adder's table, `fa2`, which is `examples/binary_arithmetic/bits.ein`'s. A file-relative import
+resolves against the importing file's directory and below it, so the one cannot import the other's module (the
+finding is in the phase's [`findings.md`](p1f.6_calculator/findings.md)).
+
+- **(a) A copy,** `examples/binary_logic/bits.ein`, written by `gen_binary.py` with the original, whose `--check`
+  compares both.
+- **(b) One directory** for both stages' examples.
+- **(c) The eight rows written again** in each program that reads them.
+
+**Defaulted 2026-11-12, the user's to revise: (a).** The user named the two directories, and (c) would set the
+gates against rows typed beside them and not against the calculator's table.
+
+### Q-M1f.193 — The sizes of the banked binary programs
+
+**Raised** 2026-11-12 by the same banking. Every corpus program is solved, dumped and reloaded per commit by a
+bare `ein solve`, which describes all of R and writes each state as text (E-24); describing R over n inputs as
+hypotheses is 3ⁿ + n saturations and stops at the default budget near twelve inputs
+([`binary_logic.md`](p1f.6_calculator/binary_logic.md#scale-inputs-4-to-24)).
+
+- **(a) Sizes every surface affords:** three inputs for every search, 30 saturations at most; binary operands
+  to seventeen bits; five numbers to binary, the largest 255, and seven to decimal, the largest 1000.
+- **(b) The pages' headline sizes,** marked `slow`.
+
+**Defaulted 2026-11-12, the user's to revise: (a).** No banked program is `slow`. The batches of 250 requests,
+the conversion of 2^40 + 1, the scale runs to 24 inputs, Post's criterion over all 65 535 sets and the
+three-input classes stay under `build/s1f.6.16/` and `build/s1f.6.17/`, with their numbers on the pages.

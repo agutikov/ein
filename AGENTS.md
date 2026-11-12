@@ -1377,6 +1377,48 @@ constrained-reasoning research.
   **Every question of P1f.6 that waits for the user is in one file,
   [`questions.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md)**
   (2026-11-12).
+  **The prototypes of S1f.6.16 and S1f.6.17 were banked as examples on
+  2026-11-12**, on the user's *"bank binary arithmetic and logic prototypes
+  into examples too"*
+  ([S1f.6.16's record](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples)
+  and [S1f.6.17's](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples),
+  Q-M1f.190 to .193 defaulted). **They are examples and not stdlib modules**: the
+  theory modules live in the two directories and the programs import them
+  file-relative. **Banking the recommended variants is no ruling: the
+  questions of [`binary_arithmetic.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md)
+  and [`binary_logic.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md)
+  stay open.** [`examples/binary_arithmetic/`](examples/binary_arithmetic/README.md)
+  is the page's way (b), a binary theory of its own: `bits.ein`, three tables
+  of 28 rows, and `bin.ein`, a number `(b2 PREFIX BIT)`, the five operations
+  as `add2` to `div2`, 67 rules and the closing rule `bin` (`python3
+  examples/binary_arithmetic/gen_binary.py --count`, 2026-11-12); `conv.ein`,
+  decimal to binary and back, eleven rules over both theories' tagged calls;
+  and five programs with claims. **`bits.ein` and `bin.ein` are generated**,
+  from `stdlib/arith.ein`, by `gen_binary.py` in that directory: edit the
+  script, never the files. **The generator is run by hand and is not in the
+  gate**, so an edit to `stdlib/arith.ein` fails no test and makes its
+  `--check` exit 1 until it is run again.
+  [`examples/binary_logic/`](examples/binary_logic/README.md) is the one
+  table of the sixteen two-input functions, `(gate2 NAME A B OUT)` in
+  `gates.ein`; what is known of them as generated facts, `props.ein`, with the
+  31 rules that derive every one from the rows, `props_rules.ein`, and
+  **`props_check.ein`, whose thirty claims hold exactly when the two agree,
+  which is how that check is in the gate**; the theories `circuit.ein`,
+  `inputs.ein` and `require.ein`; and the six applications, each a program:
+  simulation, the truth table, satisfiability, equivalence, knights and
+  knaves, and the synthesis of one gate, with the full adder from five gates
+  against S1f.6.16's table, a simplifier and Post's criterion on seven sets.
+  Its four generated files are `gen_gates.py`'s, hand-run as the other. Every
+  claim was computed in Python apart from the engine, and no answer differs
+  from the pages'. **An unsatisfiable search reads as owing there** (E-23):
+  `unsatisfiable.ein` and `equivalent.ein` claim the owing frontier and
+  `(false)` for the query, and answer `Open` under `--single`. The programs
+  are sized for the corpus, three inputs and short operands, none `slow`;
+  the scale runs, the batches and Post's criterion over all 65 535 sets stay
+  on the pages and under `build/`. The stage found E-32: a file-relative
+  import cannot reach a sibling directory, so `examples/binary_logic/bits.ein`
+  is a copy that `gen_binary.py --check` holds equal. No engine source and no
+  stdlib module moved; the register is unmoved.
   **Two plans were added on 2026-11-11, on the user's instructions of that day.**
   [M1g](plans/m1g_logic/README.md), *logic in Ein*, runs after M1f is complete
   and has no M1h beside it: propositional logic with valuations as hypotheses,

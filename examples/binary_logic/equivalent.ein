@@ -1,0 +1,45 @@
+;;; Application 4, equivalence of two circuits: the adder's carry out,
+;;; (a and b) or ((a xor b) and cin), against the majority form,
+;;; (a and b) or (cin and (a or b)). They are equivalent.
+;;;
+;;; A miter: the two outputs go into an Xor, which is required to be 1. R is
+;;; the inputs that tell the two circuits apart, and it is empty: no input
+;;; does.
+;;;
+;;; It is empty as `unsatisfiable.ein`'s is, by owing: every total assignment
+;;; is dead, and the twelve nodes of two inputs set are alive and owe the
+;;; third. The region claim lists them; the query's claim is `(false)`.
+;;; `ein solve --single` answers `Open` (E-23 of the phase's `findings.md`).
+;;;
+;;; `adder_against_table.ein` answers a question of this kind with no search,
+;;; by running every input as a test vector.
+;;;
+;;; Both claims were computed in Python by enumeration.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.4.
+(import require :symbols (requirements require inputs in is-a total-owed functional in-drives))
+(import full_adder :symbols (gate))
+
+(is-a a Input) (is-a b Input) (is-a cin Input)
+(gate m1 Or a b ob)             ; a or b
+(gate m2 And cin ob m)          ; the carry in, and one of them
+(gate m3 Or g1 m maj)           ; the majority of a, b and cin
+(gate miter Xor cout maj diff)  ; 1 where the two carries differ
+(require diff 1)
+
+(solve :expect (region (owing (model (in a 0) (in b 0))
+                               (model (in a 0) (in b 1))
+                               (model (in a 0) (in cin 0))
+                               (model (in a 0) (in cin 1))
+                               (model (in a 1) (in b 0))
+                               (model (in a 1) (in b 1))
+                               (model (in a 1) (in cin 0))
+                               (model (in a 1) (in cin 1))
+                               (model (in b 0) (in cin 0))
+                               (model (in b 0) (in cin 1))
+                               (model (in b 1) (in cin 0))
+                               (model (in b 1) (in cin 1)))))
+
+(query :goal (and (in a ?a) (in b ?b) (in cin ?c))
+       :goal-text "they differ at a = {?a}, b = {?b}, carry in = {?c}"
+       :expect (false))

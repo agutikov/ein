@@ -115,6 +115,92 @@
 0    examples/beyond_arith/tables_backwards.ein :: saturate
 0    examples/beyond_arith/tables_backwards.ein :: solve
 0    examples/beyond_arith/tables_backwards.ein :: test
+0    examples/binary_arithmetic/bin.ein :: render rules
+0    examples/binary_arithmetic/bin.ein :: saturate
+0    examples/binary_arithmetic/bin.ein :: solve
+0    examples/binary_arithmetic/bits.ein :: saturate
+0    examples/binary_arithmetic/bits.ein :: solve
+0    examples/binary_arithmetic/both_bases.ein :: saturate
+0    examples/binary_arithmetic/both_bases.ein :: solve
+0    examples/binary_arithmetic/both_bases.ein :: test
+0    examples/binary_arithmetic/conv.ein :: render rules
+0    examples/binary_arithmetic/conv.ein :: saturate
+0    examples/binary_arithmetic/conv.ein :: solve
+0    examples/binary_arithmetic/conversions.ein :: saturate
+0    examples/binary_arithmetic/conversions.ein :: solve
+0    examples/binary_arithmetic/conversions.ein :: test
+0    examples/binary_arithmetic/div_by_zero.ein :: saturate
+0    examples/binary_arithmetic/div_by_zero.ein :: solve
+0    examples/binary_arithmetic/div_by_zero.ein :: test
+0    examples/binary_arithmetic/first.ein :: saturate
+0    examples/binary_arithmetic/first.ein :: solve
+0    examples/binary_arithmetic/first.ein :: test
+0    examples/binary_arithmetic/five_operations.ein :: saturate
+0    examples/binary_arithmetic/five_operations.ein :: solve
+0    examples/binary_arithmetic/five_operations.ein :: test
+0    examples/binary_logic/adder_against_table.ein :: saturate
+0    examples/binary_logic/adder_against_table.ein :: solve
+0    examples/binary_logic/adder_against_table.ein :: test
+0    examples/binary_logic/bits.ein :: saturate
+0    examples/binary_logic/bits.ein :: solve
+0    examples/binary_logic/circuit.ein :: render rules
+0    examples/binary_logic/circuit.ein :: saturate
+0    examples/binary_logic/circuit.ein :: solve
+0    examples/binary_logic/equivalent.ein :: solve
+0    examples/binary_logic/equivalent.ein :: solve --single
+0    examples/binary_logic/equivalent.ein :: solve -n 1
+0    examples/binary_logic/equivalent.ein :: test
+0    examples/binary_logic/full_adder.ein :: saturate
+0    examples/binary_logic/full_adder.ein :: solve
+0    examples/binary_logic/gates.ein :: saturate
+0    examples/binary_logic/gates.ein :: solve
+0    examples/binary_logic/inputs.ein :: render rules
+0    examples/binary_logic/inputs.ein :: saturate
+0    examples/binary_logic/inputs.ein :: solve
+0    examples/binary_logic/knights.ein :: solve
+0    examples/binary_logic/knights.ein :: solve --single
+0    examples/binary_logic/knights.ein :: solve -n 1
+0    examples/binary_logic/knights.ein :: test
+0    examples/binary_logic/not_equivalent.ein :: solve
+0    examples/binary_logic/not_equivalent.ein :: solve --single
+0    examples/binary_logic/not_equivalent.ein :: solve -n 1
+0    examples/binary_logic/not_equivalent.ein :: test
+0    examples/binary_logic/post.ein :: saturate
+0    examples/binary_logic/post.ein :: solve
+0    examples/binary_logic/post.ein :: test
+0    examples/binary_logic/props.ein :: saturate
+0    examples/binary_logic/props.ein :: solve
+0    examples/binary_logic/props_check.ein :: saturate
+0    examples/binary_logic/props_check.ein :: solve
+0    examples/binary_logic/props_check.ein :: test
+0    examples/binary_logic/props_rules.ein :: render rules
+0    examples/binary_logic/props_rules.ein :: saturate
+0    examples/binary_logic/props_rules.ein :: solve
+0    examples/binary_logic/require.ein :: render rules
+0    examples/binary_logic/require.ein :: saturate
+0    examples/binary_logic/require.ein :: solve
+0    examples/binary_logic/satisfiable.ein :: solve
+0    examples/binary_logic/satisfiable.ein :: solve --single
+0    examples/binary_logic/satisfiable.ein :: solve -n 1
+0    examples/binary_logic/satisfiable.ein :: test
+0    examples/binary_logic/simplify.ein :: saturate
+0    examples/binary_logic/simplify.ein :: solve
+0    examples/binary_logic/simplify.ein :: test
+0    examples/binary_logic/simulation.ein :: saturate
+0    examples/binary_logic/simulation.ein :: solve
+0    examples/binary_logic/simulation.ein :: test
+0    examples/binary_logic/synthesis.ein :: solve
+0    examples/binary_logic/synthesis.ein :: solve --single
+0    examples/binary_logic/synthesis.ein :: solve -n 1
+0    examples/binary_logic/synthesis.ein :: test
+0    examples/binary_logic/truth_table.ein :: solve
+0    examples/binary_logic/truth_table.ein :: solve --single
+0    examples/binary_logic/truth_table.ein :: solve -n 1
+0    examples/binary_logic/truth_table.ein :: test
+0    examples/binary_logic/unsatisfiable.ein :: solve
+0    examples/binary_logic/unsatisfiable.ein :: solve --single
+0    examples/binary_logic/unsatisfiable.ein :: solve -n 1
+0    examples/binary_logic/unsatisfiable.ein :: test
 0    examples/branching/01_saturate_only.ein :: render constraints
 0    examples/branching/01_saturate_only.ein :: render lattice
 0    examples/branching/01_saturate_only.ein :: render rules

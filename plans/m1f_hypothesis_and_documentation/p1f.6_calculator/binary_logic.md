@@ -1,7 +1,9 @@
 # Binary logic: the sixteen functions, gates, and six applications
 
 **Stage:** [S1f.6.17](s1f.6.17_binary_logic.md), task T1. **Phase:** [P1f.6](README.md).
-**Status:** prototype, 2026-11-11. Nothing here ships; it is shown to the user, who rules.
+**Status:** prototype, 2026-11-11. Nothing here ships; it is shown to the user, who rules. **The recommended
+variants banked as examples 2026-11-12**, [`examples/binary_logic/`](../../../examples/binary_logic/README.md);
+the questions stay open.
 
 The user, 2026-11-11: *"binary logic, truth tables, can be there any applications for it?"*, then *"there are
 16 different boolean functions of 2 arguments … I want to have them all and in 2 forms"*, then *"plan add
@@ -22,6 +24,38 @@ Every number is from a run of 2026-11-11, with the command that re-takes it. The
 is whole under `out/`. It runs the binary and the stdlib that
 [`binary_arithmetic.md`](binary_arithmetic.md) froze: the release binary as built at 19:17 that day, against
 the stdlib of `a621dc75`.
+
+**Where it is now (2026-11-12).** The recommended variants are banked as examples, on the user's instruction
+of that day, *"bank binary arithmetic and logic prototypes into examples too"*:
+[`examples/binary_logic/`](../../../examples/binary_logic/README.md).
+
+| this page | banked as |
+|---|---|
+| § 1, layout 1, the one table | [`gates.ein`](../../../examples/binary_logic/gates.ein), written by [`gen_gates.py`](../../../examples/binary_logic/gen_gates.py), which is `g.py` and `gen.py` |
+| § 2, the thirty relations, as generated facts | [`props.ein`](../../../examples/binary_logic/props.ein) |
+| § 2, the rules that derive them | [`props_rules.ein`](../../../examples/binary_logic/props_rules.ein), and [`props_check.ein`](../../../examples/binary_logic/props_check.ein), whose thirty claims hold exactly when the rules derive the generated facts and no other |
+| § 2, Post's criterion on written sets | [`post.ein`](../../../examples/binary_logic/post.ein), seven sets, over the generated facts |
+| § 3, the circuit theory; § 5.2 and § 5.3, inputs and requirements | [`circuit.ein`](../../../examples/binary_logic/circuit.ein), [`inputs.ein`](../../../examples/binary_logic/inputs.ein), [`require.ein`](../../../examples/binary_logic/require.ein) |
+| § 4, the adder from five gates, against the table | [`full_adder.ein`](../../../examples/binary_logic/full_adder.ein), [`adder_against_table.ein`](../../../examples/binary_logic/adder_against_table.ein) |
+| § 5, the six applications | `simulation`, `truth_table` (the obligations rung alone, this page's `tt_o`), `satisfiable` and `unsatisfiable`, `equivalent` and `not_equivalent`, `knights`, `synthesis` |
+| § 6, the simplifier | [`simplify.ein`](../../../examples/binary_logic/simplify.ein), reading the generated facts |
+
+They are examples and not a stdlib module, and the generator is run by hand, not in the gate; what the gate
+holds is `props_check.ein`'s claims. Not banked, and still here and under `build/s1f.6.17/`: layout 2, the
+`forall` and `absent` restatements of eight properties, the 140 written sets and the enumeration of all
+65 535, the three-input classes, the hrule and `:hypothesis-relations` forms of the truth table, the
+`absent` encoding that is refused or wrong, and the scale runs. **The banking is not a ruling: every
+question at the foot of this page stays open.**
+
+The banked programs were run on the release binary and the stdlib of 2026-11-12, and every answer this page
+reports stands: the rules derive the thirty relations in 405 firings (`ein saturate
+examples/binary_logic/props_check.ein`); simulation, sum 0 and carry 1; the truth table, 8 states and 30
+saturations; satisfiable, 1 state, 10 minimal dead sets, 30 saturations; unsatisfiable, R empty by owing,
+eleven owing nodes, 28 saturations, `Open` under `--single`; equivalent, R empty by owing, 30 saturations;
+not equivalent, 2 states; knights, 2 states and one class, 26 saturations; synthesis, `Or` and `Xor`, 14 of
+16 dead alone, 18 saturations; the simplifier's three answers (`ein solve` on each file, 2026-11-12). The
+claims in the banked files were computed apart from the engine, in Python by enumeration over the functions'
+columns (`build/s1f.6.16-17/mk_logic.py`), and `ein test examples/binary_logic` holds all of them.
 
 ## 1. The sixteen, as generated facts, in two layouts
 

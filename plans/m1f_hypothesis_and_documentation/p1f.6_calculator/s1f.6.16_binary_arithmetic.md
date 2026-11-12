@@ -4,6 +4,9 @@
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
 page shown to the user: [`binary_arithmetic.md`](binary_arithmetic.md)**, the three ways each tried and measured,
 with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruling on that page's questions.
+**Way (b) banked as examples 2026-11-12**, on the user's instruction of that day:
+[`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the [record](#record-2026-11-12-way-b-banked-as-examples)
+is below. It is not T2: no stdlib module, no test of its own, and the questions stay open.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
@@ -54,3 +57,60 @@ assumed:
 - The prototype's page, with the three options and a recommendation, and the user's ruling.
 - Binary numbers add, subtract, multiply, divide and compare, search-free and right against the integers.
 - The page says, with numbers, which rules binary made simpler and which it left as they were.
+
+## Record, 2026-11-12: way (b) banked as examples
+
+The user, 2026-11-12: *"bank binary arithmetic and logic prototypes into examples too"*. Done with
+[S1f.6.17](s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples)'s in one
+commit.
+
+**What is banked,** under [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md):
+
+| file | what | answer on the release binary of 2026-11-12 |
+|---|---|---|
+| `bits.ein`, `bin.ein` | way (b): the three tables, 28 rows, and the theory, 67 rules and its closing rule, generated from `stdlib/arith.ein` by `gen_binary.py` | modules; alone, R {∅} |
+| `conv.ein` | the conversions, eleven rules, by hand | a module; alone, R {∅} |
+| `first.ein` | 101 + 111; 110 − 11 by name | 1100; 11; 2 claims held |
+| `five_operations.ein` | the page's targets | 127645; 118511 each way; 56088; 5105 remainder 20; `gt`; 5 claims held; 555 firings |
+| `div_by_zero.ein` | 127645 ÷ 0 | root dead, R empty, `refuted by division-by-zero-is-false2`; `(solve :expect (false))` held |
+| `both_bases.ein` | `std.arith` and `bin`, flat | 127645 and 1100; 2 claims held |
+| `conversions.ein` | 0, 1, 2, 10, 255 to binary; those, 256 and 1000 to decimal | 12 conversions right; 2 claims held; 1 749 firings |
+
+(`ein test examples/binary_arithmetic`, 12 claims held, `ein solve` and `ein saturate` on each, 2026-11-12.) Every program:
+*no candidate*, k_s 1 (0 for the division by zero), one saturation, *monotone (the static check)*, exit 0.
+
+**Checked against Python,** on the banked theory and the current stdlib (`python3
+build/s1f.6.16-17/chk_arith.py`, 2026-11-12): the prototype's sample of 243 requests, 243 right; 30 numbers
+each way through `conv.ein`, 2^40 + 1 among them, 60 of 60 right and in normal form; the firings of the
+page's six targets, 43, 61, 120, 245, 24 and 10, and of the two conversions, 826 and 76 for 255 and 2 317 and
+202 for 123078, as the page has them. **No answer differs from the page.** The claims in the banked programs
+were written by a script from Python's integers (`build/s1f.6.16-17/mk_arith.py`).
+
+**Variants.** Way (b) only, as the page recommends; (a) and (c) stay on the page. The theory is generated
+from `std.arith`, as the page recommends, by `gen_binary.py`, which is the prototype's `build.py` reduced to
+(b) with its reader inlined; `bin.ein` differs from the prototype's in its header and one word of its
+closing rule's `:why`. The conversions are a module of their own, as on the prototype.
+
+**Defaults taken,** each the user's to revise ([`open_questions.md`](../open_questions.md)): the generator
+is run by hand and is not in the gate, since whether the binary rules are generated and held by a test is
+the page's fourth question; `bits.ein` is copied into `examples/binary_logic/` by the same generator, since
+an import cannot reach a sibling directory; the sizes are the corpus's, short operands and conversions to
+1000.
+
+**Not banked,** and why: ways (a) and (c), set aside by the page; the batches of 250 requests and the
+conversion of 123078 and 2^40 + 1, which are measurements and whose states as text are large (E-24); the
+witness of E-22, which exits 1.
+
+**The corpus and the goldens,** named here before blessing (`EIN_BLESS=1`), for both directories, since
+they were banked in one commit: 28 entries in `corpus/corpus.toml`, eight for this directory and twenty for
+`examples/binary_logic/`, a module declaring `solve` and `saturate` (and `render rules` where it has a
+rule), a search-free program `solve`, `test` and `saturate`, a search `solve`, `solve --single`, `solve -n
+1` and `test`; `ein-cli/tests/golden/corpus_exits.txt`, +86 lines, the new files' cells;
+`ein-render/tests/golden/corpus_shapes.md5`, +1 176 lines, 42 renderings for each of the 28 files, and no
+other line of either; and `ein-infer/tests/alive_invariant.rs`'s list, which gains six programs: `bin.ein`,
+`both_bases.ein`, `conv.ein`, `first.ein` and `five_operations.ein` for `z`, and `binary_logic/post.ein` for
+the five class names its rules conclude (`git diff --numstat`, 2026-11-12). No program is `slow`.
+
+**Not done:** no stdlib module, no `--check` in a test, no per-rule test programs, no page of comparison
+beyond the plan page: those are T2 to T4, which wait for the ruling. **The page's seven questions stay
+open**; banking the recommended way is the instruction for the examples and not a ruling on them.

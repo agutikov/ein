@@ -1,0 +1,25 @@
+;;; Application 3, satisfiability: is there an input of the full adder for
+;;; which the sum bit is 1 and the carry out is 1? Yes, one: a = 1, b = 1,
+;;; carry in = 1.
+;;;
+;;; The truth-table program with two outputs required. A state in which a
+;;; required wire carries the other bit is a contradiction, so R is the
+;;; satisfying assignments, here one state. `ein solve` also reports ten
+;;; minimal dead sets, each a clause the search learned with the gates and
+;;; table rows it rests on; `--dump-answer DIR` writes them with their cores.
+;;;
+;;;   ein solve examples/binary_logic/satisfiable.ein
+;;;   ein solve --single examples/binary_logic/satisfiable.ein   # one state, fewer saturations
+;;;
+;;; The claim was computed in Python by enumeration.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.3.
+(import require :symbols (requirements require inputs in is-a total-owed functional in-drives))
+(import full_adder :symbols (gate))
+
+(is-a a Input) (is-a b Input) (is-a cin Input)
+(require sum 1) (require cout 1)
+
+(query :goal (and (in a ?a) (in b ?b) (in cin ?c))
+       :goal-text "a = {?a}, b = {?b}, carry in = {?c}"
+       :expect (model (in a 1) (in b 1) (in cin 1)))

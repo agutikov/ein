@@ -4,7 +4,10 @@
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
 page shown to the user: [`binary_logic.md`](binary_logic.md).** Nothing shipped; T2 and T3 wait for the user's
 rulings on that page's questions. T1 re-counted this page's tables from the rows and corrected three hand
-counts, each marked below.
+counts, each marked below. **The recommended variants banked as examples 2026-11-12**, on the user's instruction
+of that day: [`examples/binary_logic/`](../../../examples/binary_logic/README.md); the
+[record](#record-2026-11-12-the-recommended-variants-banked-as-examples) is below. It is not T2: no stdlib module,
+and the questions stay open.
 **Depends on:** [S1f.6.16](s1f.6.16_binary_arithmetic.md), for the two digit names and the binary adder it
 rebuilds from gates.
 
@@ -181,3 +184,67 @@ Binary logic is propositional logic's semantics: a formula is a circuit, a valua
 tautology a circuit that is 1 on every row. Formulas as objects, proof systems, first-order logic and Peano
 arithmetic are not this stage's and not this phase's; they are [M1g](../../m1g_logic/README.md), which the
 user approved on 2026-11-11 and which runs after M1f; this stage is its starting point.
+
+## Record, 2026-11-12: the recommended variants banked as examples
+
+The user, 2026-11-12: *"bank binary arithmetic and logic prototypes into examples too"*. Done with
+[S1f.6.16](s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples)'s in one commit.
+
+**What is banked,** under [`examples/binary_logic/`](../../../examples/binary_logic/README.md):
+
+| file | what | answer on the release binary of 2026-11-12 |
+|---|---|---|
+| `gates.ein` | the one table, `(gate2 NAME A B OUT)`, 64 rows, the sixteen names as proposed, `column-name`, `inv`, `le`, `bit`; generated | a module of facts |
+| `props.ein` | the thirty relations as generated facts | a module of facts |
+| `props_rules.ein` | the 31 rules that derive them | a module |
+| `props_check.ein` | the rules against the generated facts | 30 claims held; 405 firings; search-free |
+| `circuit.ein`, `inputs.ein`, `require.ein`, `full_adder.ein`, `bits.ein` | the three theories, the adder's five gates, and a copy of S1f.6.16's tables | modules; alone, R {∅} |
+| `simulation.ein` | application 1 | sum 0, carry 1; search-free |
+| `truth_table.ein` | application 2, by search | 8 states, 8 classes, 6 candidates, 30 saturations |
+| `adder_against_table.ein` | § 4, and application 2 by vectors | 8 agree, none differs; search-free |
+| `satisfiable.ein` | application 3 | 1 state, a = b = carry in = 1; N 10; 30 saturations; `Solution` under `--single` |
+| `unsatisfiable.ein` | application 3 | R empty, *every alive node owes*, eleven owing nodes; 28 saturations; `Open` under `--single` |
+| `equivalent.ein` | application 4 | R empty by owing, twelve owing nodes; 30 saturations; `Open` under `--single` |
+| `not_equivalent.ein` | application 4 | 2 states |
+| `knights.ein` | application 5 | 2 states, one class for C: 0; 26 saturations |
+| `synthesis.ein` | application 6 | 2 states, `Or` and `Xor`; 16 candidates, 14 dead alone; 18 saturations |
+| `simplify.ein` | § 6 | p is x; q is the constant 1; g3 and g4 one gate; search-free |
+| `post.ein` | § 2, Post's criterion on seven sets | five complete, two inside a class; search-free |
+
+(`ein test examples/binary_logic`, 50 claims held, and `ein solve` on each, 2026-11-12.) Every run exits 0.
+
+**Checked apart from the engine.** Every claim of the hand-kept programs was written by a script that
+enumerates in Python over the functions' columns and reads no table of Ein's
+(`build/s1f.6.16-17/mk_logic.py`): the simulation, the eight rows, the satisfying assignment, the owing
+frontiers (the maximal partial assignments that violate no requirement), the two counterexamples, the two
+islands, the two functions that fit, the simplifier's facts, and for `post.ein` which sets are complete by
+closing the two projections under composition. `ein test` holds them all. `props_check.ein` is the same
+comparison for the thirty relations: Python's sets as claims, Ein's derivation from the rows.
+**No answer differs from the page.** One count differs and is not an answer: the truth table reports 179
+facts beyond root where the page's `tt_o` had 171, since the banked program derives a `row` fact a state, so
+that its claim lists rows.
+
+**Variants.** Layout 1, the one table, as the page recommends. The properties as generated facts with the
+deriving rules as their check, as it recommends in its third question. Inputs as two candidates each under
+an obligation. The six applications, the adder against the table, and the simplifier reading the generated
+facts. The names as the stage file proposes them.
+
+**Defaults taken,** each the user's to revise ([`open_questions.md`](../open_questions.md)): the truth
+table's candidates come from the obligations rung alone, the simplest of the three ways the page shows
+equal; `post.ein` is seven written sets over the generated facts with `forall`, and reads no `-u` relation;
+the check of the properties is a corpus program's claims, and the generator is run by hand; `bits.ein` is a
+copy; three inputs everywhere.
+
+**Not banked,** and why: layout 2 and the `sim_rel` form, not recommended; the `forall` and `absent`
+restatements of eight properties and the 140 written sets, which are the page's cross-check of the monotone
+rules; the enumeration of all 65 535 sets and the three-input classes, which are Python; the hrule and
+`:hypothesis-relations` truth tables, equal to the banked one; the `absent` encodings, refused or wrong
+(F21's); the name probes; and the scale runs to 24 inputs, which stop at the budget or take minutes.
+
+**The corpus and the goldens** are named in
+[S1f.6.16's record](s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), for both
+directories.
+
+**Not done:** no stdlib module; the acceptance's *held by a test* is here a corpus program with a claim,
+`adder_against_table.ein`. **The page's eight questions stay open**; banking the recommended variants is the
+instruction for the examples and not a ruling on them.

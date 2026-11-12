@@ -1,0 +1,26 @@
+;;; Decimal and binary in one program: 123078 + 4567 by `std.arith`, and
+;;; 101 + 111 by the binary theory, each imported flat by its one name.
+;;;
+;;; The two theories share no relation: a decimal number is (n PREFIX DIGIT)
+;;; and a binary one (b2 PREFIX BIT), so a number says which base it is in,
+;;; and `sum-of` and `sum-of2` cannot be confused. They share the names `0`,
+;;; `1` and `z`: zero is the one number whose numeral does not say its base.
+;;;
+;;; This is why the plan page recommends a theory of its own: the same shape
+;;; and names over binary tables cannot be imported flat beside decimal, and
+;;; the conversions in `conv.ein` need both bases at once.
+;;;
+;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
+;;; the prototype this program was banked from, its counts and its costs.
+(import std.arith :symbols (arith))
+(import bin :symbols (bin))
+
+(add  (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+(add2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
+
+(query :goal (sum-of ?x ?y ?s)
+       :expect (model (sum-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7)
+                              (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))))
+
+(query :goal (sum-of2 ?x ?y ?s)
+       :expect (model (sum-of2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))))

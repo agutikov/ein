@@ -1,0 +1,59 @@
+;;; The five operations on binary numbers, at the operands decimal's examples
+;;; use: 123078 + 4567, 123078 - 4567 and 4567 - 123078, 123 x 456,
+;;; 127645 / 25, and 123078 against 4567, each written in binary.
+;;;
+;;;   11110000011000110 + 1000111010111   = 11111001010011101    (127645)
+;;;   11110000011000110 - 1000111010111   = 11100111011101111    (118511)
+;;;   1000111010111 - 11110000011000110   = nothing, short by 11100111011101111
+;;;   1111011 x 111001000                 = 1101101100011000     (56088)
+;;;   11111001010011101 / 11001           = 1001111110001, remainder 10100
+;;;                                                              (5105, remainder 20)
+;;;   11110000011000110 against 1000111010111: gt
+;;;
+;;; A subtraction is answered by two numbers, the difference and what the
+;;; first operand is short by, one of them zero: the theory has no negative
+;;; number. A division is long division with one subtraction a quotient bit:
+;;; the divisor fits, and the bit is 1, or it does not, and the bit is 0.
+;;;
+;;; Every claim below was computed in Python and is checked by `ein test`.
+;;; Search-free: no candidate, one state, one saturation.
+;;;
+;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
+;;; the prototype this program was banked from, its counts and its costs.
+(import bin :symbols (bin))
+
+(add2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+      (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
+(sub2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+      (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
+(sub2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
+      (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0))
+(mul2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 0) 0) 0))
+(div2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1))
+(cmp2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+      (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
+
+(query :goal (sum-of2 ?x ?y ?s)
+       :expect (model (sum-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+                               (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
+                               (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1))))
+
+(query :goal (diff-of2 ?x ?y ?d ?short)
+       :expect (model (diff-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
+                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 1) 1) 0) 1) 1) 1) 0) 1) 1) 1) 1) z)
+                      (diff-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
+                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+                                z (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 1) 1) 0) 1) 1) 1) 0) 1) 1) 1) 1))))
+
+(query :goal (product-of2 ?x ?y ?p)
+       :expect (model (product-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 0) 0) 0)
+                                   (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 1) 1) 0) 1) 1) 0) 0) 0) 1) 1) 0) 0) 0))))
+
+(query :goal (quot-of2 ?x ?y ?q ?r)
+       :expect (model (quot-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1)
+                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 1) 1) 1) 1) 1) 1) 0) 0) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 0) 1) 0) 0))))
+
+(query :goal (cmp-of2 ?x ?y ?o)
+       :expect (model (cmp-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+                               (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1) gt)))

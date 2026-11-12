@@ -1,0 +1,16 @@
+;;; The binary full adder, from five gates: a library of facts.
+;;;
+;;;   inputs a, b and cin (the carry in); outputs sum and cout (the carry out)
+;;;
+;;;   sum  = (a xor b) xor cin
+;;;   cout = (a and b) or ((a xor b) and cin)
+;;;
+;;; A program brings the five gates with (import full_adder :symbols (gate))
+;;; beside a theory that declares `gate` (`circuit.ein`, or its own).
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
+(gate x1 Xor a b ab)        ; a xor b
+(gate x2 Xor ab cin sum)    ; the sum bit
+(gate a1 And a b g1)        ; both inputs
+(gate a2 And ab cin g2)     ; one input and the carry
+(gate o1 Or g1 g2 cout)     ; the carry out

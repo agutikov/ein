@@ -1,0 +1,86 @@
+;;; The full adder built from five gates, against the calculator's own table:
+;;; all eight inputs in one saturation, and the two agree on every one.
+;;;
+;;; This is a truth table with no search. The 2^n inputs are written as test
+;;; vectors, a value carries the vector it belongs to, `(at VECTOR WIRE
+;;; BIT)`, and one rule propagates through the gates on every vector at once.
+;;; Each vector's two outputs are then set against the row of `fa2`, the
+;;; binary full adder of `examples/binary_arithmetic/` (`bits.ein` here is a
+;;; copy of that directory's, since an import cannot reach a sibling
+;;; directory).
+;;;
+;;; Eight vectors agree and none differs: the calculator's gate, derived
+;;; from five smaller ones. The second claim, `(model)`, says that no
+;;; `differs` fact holds: a claim that names a relation closes it.
+;;;
+;;; Where every input is to be tried, this beats guessing them: n times 2^n
+;;; firings against 3^n saturations (`truth_table.ein`).
+;;;
+;;; The third claim, the table's rows, was computed in Python.
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
+(import gates :symbols (gate2 __closed__))
+(import bits :symbols (fa2))
+(import full_adder :symbols (gate))
+
+(relation gate Instance Function Wire Wire Wire
+  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+(relation at Vector Wire Bit
+  :why "on test vector {?1}, {?2} carries {?3}")
+(relation vector Vector Bit Bit Bit
+  :why "test vector {?1}: a = {?2}, b = {?3}, carry in = {?4}")
+(relation row Vector Bit Bit Bit Bit Bit
+  :why "on {?1}, {?2} + {?3} + {?4}: digit {?5}, carry {?6}")
+(relation agrees Vector
+  :why "on {?1} the gates and the table agree")
+(relation differs Vector
+  :why "on {?1} the gates and the table differ")
+
+(vector v000 0 0 0) (vector v001 0 0 1) (vector v010 0 1 0) (vector v011 0 1 1)
+(vector v100 1 0 0) (vector v101 1 0 1) (vector v110 1 1 0) (vector v111 1 1 1)
+
+(rule drive ()
+  :match  (vector ?v ?x ?y ?c)
+  :assert (and (at ?v a ?x) (at ?v b ?y) (at ?v cin ?c))
+  :why    "the inputs of {?v}")
+(rule propagate-at ()
+  :match  (and (gate ?g ?f ?a ?b ?o) (at ?v ?a ?x) (at ?v ?b ?y) (gate2 ?f ?x ?y ?z))
+  :assert (at ?v ?o ?z)
+  :why    "{?g} on {?v}: {?f} of {?x} and {?y} is {?z}")
+(rule row-of ()
+  :match  (and (vector ?v ?x ?y ?c) (at ?v sum ?s) (at ?v cout ?k))
+  :assert (row ?v ?x ?y ?c ?s ?k)
+  :why    "the gates on {?v}: sum bit {?s}, carry out {?k}")
+(rule compare ()
+  :match  (and (row ?v ?x ?y ?c ?s ?k) (fa2 ?x ?y ?c ?s ?k))
+  :assert (agrees ?v)
+  :why    "the table's row for {?x}, {?y}, {?c} is digit {?s}, carry {?k}, as the gates say")
+(rule compare-sum ()
+  :match  (and (row ?v ?x ?y ?c ?s ?k) (fa2 ?x ?y ?c ?t ?j) (neq ?s ?t))
+  :assert (differs ?v)
+  :why    "the gates' sum bit is {?s} and the table's {?t}")
+(rule compare-carry ()
+  :match  (and (row ?v ?x ?y ?c ?s ?k) (fa2 ?x ?y ?c ?t ?j) (neq ?k ?j))
+  :assert (differs ?v)
+  :why    "the gates' carry is {?k} and the table's {?j}")
+
+(__closed__ gate) (__closed__ at) (__closed__ vector) (__closed__ row) (__closed__ agrees) (__closed__ differs)
+(__closed__ fa2)
+
+(query :goal (agrees ?v)
+       :expect (model (agrees v000) (agrees v001) (agrees v010) (agrees v011)
+                      (agrees v100) (agrees v101) (agrees v110) (agrees v111)))
+
+(query :goal (differs ?v)
+       :expect (model))
+
+(query :goal (row ?v ?a ?b ?c ?s ?k)
+       :goal-text "{?a} + {?b} + {?c}: digit {?s}, carry {?k}"
+       :expect (model (row v000 0 0 0 0 0)
+                      (row v001 0 0 1 1 0)
+                      (row v010 0 1 0 1 0)
+                      (row v011 0 1 1 0 1)
+                      (row v100 1 0 0 1 0)
+                      (row v101 1 0 1 0 1)
+                      (row v110 1 1 0 0 1)
+                      (row v111 1 1 1 1 1)))

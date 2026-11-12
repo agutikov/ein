@@ -1,0 +1,17 @@
+;;; Application 1, simulation: the full adder at a = 1, b = 1, carry in = 0.
+;;;
+;;; The inputs are given as facts and the outputs derived: the sum bit is 0
+;;; and the carry out is 1. Saturation is the simulation, a firing a gate; no
+;;; search, no candidate, one state.
+;;;
+;;;   ein solve examples/binary_logic/simulation.ein
+;;;
+;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.1.
+(import circuit :symbols (circuit))
+(import full_adder :symbols (gate))
+
+(val a 1) (val b 1) (val cin 0)
+
+(query :goal (and (val sum ?s) (val cout ?c))
+       :goal-text "the sum bit is {?s} and the carry out is {?c}"
+       :expect (model (val cout 1) (val sum 0)))
