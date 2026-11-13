@@ -13,15 +13,23 @@ use crate::{EinbError, Result};
 /// aligned and the header stays castable.
 pub const MAGIC: [u8; 8] = *b"EINB\0\0\0\0";
 
-/// Bumped on any layout change. A reader **refuses** a newer major.
-pub const FORMAT_MAJOR: u16 = 1;
+/// Bumped on any layout change. A reader **refuses** any other major.
+///
+/// `2` since 2026-11-13, two things removed: `META`'s `created_unix` field,
+/// the second a file was written in, which nothing read and which made two
+/// saves of one program differ; and the `INTS` section (kind 3), the integer
+/// table, written empty since M1f S1f.5.4 retired the int kind and kept until
+/// then only so that no version moved (M1f Q-M1f.10). A 1.x file is refused
+/// with the version line, and is a cache to save again.
+pub const FORMAT_MAJOR: u16 = 2;
 
 /// Bumped when a section kind is added. A reader of the same major **ignores**
 /// section kinds it does not know, which is what makes a minor bump additive.
 ///
-/// `1` since M1e2 S1e2.2.11: [`Kind::Closure`]. `2` since M1e2 S1e2.2.21:
-/// [`Kind::Universal`].
-pub const FORMAT_MINOR: u16 = 2;
+/// `0` at 2.0, whose layout is 1.2's less those two: every other section 1.2
+/// had, [`Kind::Closure`] (1.1, M1e2 S1e2.2.11) and [`Kind::Universal`] (1.2,
+/// M1e2 S1e2.2.21) among them.
+pub const FORMAT_MINOR: u16 = 0;
 
 pub const HEADER_LEN: usize = 64;
 pub const ENTRY_LEN: usize = 32;
@@ -38,11 +46,9 @@ pub const ALIGN: usize = 8;
 pub enum Kind {
     Meta = 1,
     Symbols = 2,
-    /// The integer table: empty in every file written since M1f S1f.5.4,
-    /// which retired the int kind, and refused when it is not
-    /// ([`crate::EinbError::Int`]). It stays a section, written and required,
-    /// so the layout is the one every 1.x reader and file has.
-    Ints = 3,
+    // 3 was `INTS`, the integer table, written empty from M1f S1f.5.4, which
+    // retired the int kind, to format 1.2; gone at 2.0 and never reused, so a
+    // section of kind 3 is an unknown one and skipped.
     Facts = 4,
     Present = 5,
     Prov = 6,
@@ -68,7 +74,6 @@ impl Kind {
         Some(match n {
             1 => Kind::Meta,
             2 => Kind::Symbols,
-            3 => Kind::Ints,
             4 => Kind::Facts,
             5 => Kind::Present,
             6 => Kind::Prov,

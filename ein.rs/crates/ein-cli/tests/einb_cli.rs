@@ -535,6 +535,17 @@ fn the_two_magic_constants_agree() {
     assert!(!ein_einb::is_einb(b"EINB\0xyz"));
 }
 
+/// Sleeps past the wall clock's next whole second, so what is written after
+/// it was written in another second than what was written before.
+fn next_second() {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("the clock is past 1970");
+    std::thread::sleep(std::time::Duration::from_nanos(
+        1_000_000_000 - u64::from(now.subsec_nanos()) + 10_000_000,
+    ));
+}
+
 /// **A container saved again is the container** (M1f S1f.5.28's item 9).
 /// `ein kb save` of a `.einb` writes the bytes the first save wrote, the
 /// loaded state and the saturated one alike, however many times, and each
@@ -543,6 +554,13 @@ fn the_two_magic_constants_agree() {
 /// referenced, the loader's for each given fact: the witness's container went
 /// 1 248 → 1 288 → 1 328 bytes, and a saturated `zebra2.einb` saved once more
 /// passed design/10 §6's 64 KB, with the same answers.
+///
+/// **The second save is taken in a later second than the first.** Until format
+/// 2.0 `META` held the second a file was written in, under the header's
+/// digest, so this test failed only where two saves crossed a second, which
+/// the CI runner did and this machine seldom did (per-commit runs 43396694686
+/// and 43433241494, 2026-11-13). Waiting for the clock makes a time in the
+/// bytes fail here every run.
 #[test]
 fn a_container_saved_again_is_the_container() {
     let dir = scratch("saved-again");
@@ -561,6 +579,9 @@ fn a_container_saved_again_is_the_container() {
         let r = ein(&args);
         assert_eq!(r.code, 0, "{source}: {}", r.stderr);
         for n in 1..=2 {
+            if n == 2 {
+                next_second();
+            }
             let (from, to) = (path(n - 1), path(n));
             let r = ein(&["kb", "save", &from, &to]);
             assert_eq!(r.code, 0, "{source}, save {n}: {}", r.stderr);
