@@ -142,11 +142,12 @@ the tree they left, and one out of that review's close:
   and TRIZ. The id M1h is not the engine milestone the user declined on
   2026-11-11; where it sits against M1g is not ruled.
 - **M1j — `nlp/` and `smt/` as one proof of concept** ([m1j_nlp_smt_poc/](m1j_nlp_smt_poc/README.md))
-  — planned 2026-11-12 on the user's note; small. The Zebra puzzle's sentences,
-  over a limited vocabulary, through link grammar and a small Lisp converter
-  to SMT code, run by a Python wrapper: adding, removing, reordering or
-  swapping sentences changes or breaks the solution. Not M3 revived: nothing
-  links a solver into Ein.
+  — **done 2026-11-13** on branch `m1j`, planned 2026-11-12 on the user's
+  note; small. The Zebra puzzle's sentences, over a limited vocabulary,
+  through link grammar and a small Racket converter to SMT code, run by a
+  Python wrapper, in [`nl2smt/`](../nl2smt/README.md): adding, removing,
+  reordering or swapping sentences changes or breaks the solution. Not M3
+  revived: nothing links a solver into Ein.
 - **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))
   after M2. Renumbered from M2b 2026-08-23.
 - **M10 — External benchmarks** ([m10_external_benchmarks/](m10_external_benchmarks/README.md))
@@ -177,8 +178,8 @@ task classes F3).
 models and unsat cores back into the IR (5 phases, ~1 month, Q25–Q30).
 User decision: the *idea* is dropped, not merely the schedule — Ein
 stays a graph-native reasoner with no solver back-end. The plan folder
-is in git history. What stays: [`smt/`](../smt/) as a scratch area with
-its CVC4 submodule, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
+is in git history. What stays: [`nl2smt/smt/`](../nl2smt/README.md) (`smt/` until M1j) as a scratch area,
+its CVC4 submodule deinitialised since, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
 as external-tech catalogue and [M5](m5_presentation/README.md) Track A's
 *comparison* axis — which [M1c](../docs/history/m1c_external_validation/README.md)'s
 [M10](m10_external_benchmarks/README.md) turns
@@ -255,8 +256,8 @@ plans/
 │   └── p1g.11_school_geometry/         4 — stops for the user (moved from M1f's P1f.8, 2026-11-13)
 ├── m1h_beyond_word_problems/         beyond word problems — planned 2026-11-12
 │   └── README.md                     (the user's TODO verbatim; seven phases as sections)
-├── m1j_nlp_smt_poc/                  nlp/ + smt/ as one proof of concept — planned 2026-11-12
-│   └── README.md                     (the user's TODO verbatim; six tasks)
+├── m1j_nlp_smt_poc/                  nlp/ + smt/ as one proof of concept — done 2026-11-13
+│   └── README.md                     (the user's TODO verbatim; six tasks; the record)
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
 │   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
@@ -328,7 +329,7 @@ Stage files have a stable shape:
 | [M1f](m1f_hypothesis_and_documentation/README.md) | **full** — 3 phases, 33 stage files (+1 proposed) | **running** since 2026-11-08 — the two phases M1e carried that processed no finding, moved out 2026-08-29, and since 2026-11-08 M1e2's no-owner items as P1f.5, which runs first; P1f.5 re-planned the same day on the user's ruling, the generated parser first, 87.75 days of stage estimates where it was 87.5. The language as ruled, a branch structure derived from the program rather than paid for in deaths, and the pages a released system would have | ~18 weeks |
 | [M1g](m1g_logic/README.md) | **full** — 11 phases, 40 stage files (1 optional; P1g.6's seven provisional; P1g.7, P1g.8 and P1g.9 a README each, added 2026-11-12; P1g.10 and P1g.11, school algebra and school geometry, eleven stage files, moved in from M1f's P1f.8 on 2026-11-13) | **planned** 2026-11-11 on the user's instruction, not started; runs after M1f is complete. Logic in Ein: propositional logic, proof systems, first-order logic, Peano and induction, and the engine requirements they turn out to have; P1g.1, a survey on real programs, stops for the user first. Promotes F1b | — (no estimates, the user's ruling of 2026-11-08) |
 | [M1h](m1h_beyond_word_problems/README.md) | README only — seven phases as sections | **planned** 2026-11-12 on the user's instruction, not started. Beyond word problems: temporal and causal theories, slicing, gaps and assumptions, the formula against the calculation; then a school text with fifty questions, requirements verification, TRIZ. Its place against M1g is not ruled | — |
-| [M1j](m1j_nlp_smt_poc/README.md) | README only — six tasks | **planned** 2026-11-12 on the user's note, not started; small. Zebra sentences through link grammar and a Lisp converter to SMT code, under a Python wrapper; a proof of concept | — |
+| [M1j](m1j_nlp_smt_poc/README.md) | README only — six tasks, and the record | **done** 2026-11-13 on branch `m1j`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
