@@ -1,0 +1,56 @@
+;;; A count of commitments past what the run holds is an exit 1 with no read-out
+;;; — M1f **W92**, register row `W92/count-past-2-128` (`corpus/wrong_answers.toml`),
+;;; filed by S1f.6.25 (T1f.6.25.5, 2026-11-13) from E-22 of P1f.6's
+;;; `findings.md`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; 130 items, one open relation over them, `chosen`, and one rule: if any
+;;; item is chosen, every item is. So there are 130 candidates, `(chosen x1)`
+;;; to `(chosen x130)`, and two states: ∅, and ⊤ with all 130 chosen, which
+;;; every commitment but the empty one reaches.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Nothing is refuted and nothing is owed, so R is every commitment: two
+;;; states, ∅ and ⊤, and 2^130 commitments, 1 that reaches ∅ and 2^130 − 1
+;;; that reach ⊤, each of the 130 one-candidate sets a minimal one. The run
+;;; classifies every commitment after 131 saturations, so the description
+;;; is exhausted. A count past 2^63 − 1 is reported as *9 223 372 036 854 775
+;;; 807 or more*: that is an answer, and it exits 0.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `5e5685b7`, release: one line on stderr, *a state's commitments pass
+;;; 2^128: the state route cannot count them*, nothing on stdout, exit 1,
+;;; from a bare `ein solve`, `--count` and `--json-summary`; `--minimal` and
+;;; `--maximal` answered. No claim was refuted and the program is not in
+;;; error, and what the run had established, both states and both lines, was
+;;; lost. Here the sentence was true: ⊤ alone
+;;; is reached by 2^130 − 1 commitments, past the `u128` a state's were
+;;; counted in.
+
+(relation chosen Thing :why "{?1} is chosen")
+
+(rule all ()
+  :match  (and (chosen ?x) (item ?y))
+  :assert (chosen ?y)
+  :why    "{?x} is chosen, so {?y} is")
+
+(item x1) (item x2) (item x3) (item x4) (item x5) (item x6) (item x7) (item x8)
+(item x9) (item x10) (item x11) (item x12) (item x13) (item x14) (item x15) (item x16)
+(item x17) (item x18) (item x19) (item x20) (item x21) (item x22) (item x23) (item x24)
+(item x25) (item x26) (item x27) (item x28) (item x29) (item x30) (item x31) (item x32)
+(item x33) (item x34) (item x35) (item x36) (item x37) (item x38) (item x39) (item x40)
+(item x41) (item x42) (item x43) (item x44) (item x45) (item x46) (item x47) (item x48)
+(item x49) (item x50) (item x51) (item x52) (item x53) (item x54) (item x55) (item x56)
+(item x57) (item x58) (item x59) (item x60) (item x61) (item x62) (item x63) (item x64)
+(item x65) (item x66) (item x67) (item x68) (item x69) (item x70) (item x71) (item x72)
+(item x73) (item x74) (item x75) (item x76) (item x77) (item x78) (item x79) (item x80)
+(item x81) (item x82) (item x83) (item x84) (item x85) (item x86) (item x87) (item x88)
+(item x89) (item x90) (item x91) (item x92) (item x93) (item x94) (item x95) (item x96)
+(item x97) (item x98) (item x99) (item x100) (item x101) (item x102) (item x103) (item x104)
+(item x105) (item x106) (item x107) (item x108) (item x109) (item x110) (item x111) (item x112)
+(item x113) (item x114) (item x115) (item x116) (item x117) (item x118) (item x119) (item x120)
+(item x121) (item x122) (item x123) (item x124) (item x125) (item x126) (item x127) (item x128)
+(item x129) (item x130)

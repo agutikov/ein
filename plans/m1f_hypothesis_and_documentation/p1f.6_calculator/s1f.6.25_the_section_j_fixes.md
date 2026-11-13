@@ -425,3 +425,32 @@ refusal's path. The register is unmoved: a missing line is no wrong answer, and 
 answered moves.
 
 **Pages**: `01_grammar.md` § Import, `defined_behaviour.md` § 4.25, `tests/README.md` § `imports/`.
+
+### T1f.6.25.5 — E-22, done
+
+**What the bound was, measured first.** The sentence on stderr says 2^128. Two counts could fail: a state's
+commitments, counted in `u128`, and R's total and each component's, summed into `u64`. So the error was
+met from 2^64, with a sentence that was not true of the program (`build/s1f.6.25/p/`, the release binary
+at `5e5685b7`, 2026-11-13):
+
+| program | candidates | k_c | bare `ein solve` |
+|---|---|---|---|
+| `one63.ein`: 63 items, *if any is chosen every one is* | 63 | 2^63 | answers; the read-out prints 9 223 372 036 854 775 808, and `--json-summary` writes **`"k_c": -9223372036854775808`**, as it writes the component's size |
+| `one64.ein` | 64 | 2^64 | *a state's commitments pass 2^128: the state route cannot count them*, exit 1 |
+| `one130.ein` | 130 | 2^130 | the same line, exit 1 |
+| `cube64.ein`: 64 free candidates, R the whole cube on a partial run | 64 | 2^64 | the same line, exit 1 |
+
+`--minimal` and `--maximal` answer each of them at once. **On E-22's own witness**,
+`build/s1f.6.16/out/witness_2p128/only_conv.ein`, 792 candidates: a bare `ein solve` printed the line and
+exited 1 after 99 s, and `ein solve --count` the same after 94 s, on a machine that was also running a
+gate; `--minimal` answered in under a tenth of a second (2026-11-13). So `--count` had not printed
+*nothing*: the 20 s limit of the finding's run ended it before it reached the line.
+
+**The negative JSON count is a wrong answer with no register row.** A row's `[case.region]` is recomputed
+from the library and held field for field, and its `k_c` at 2^63 does not fit the TOML integer the
+register reads, so the open row could not be written. It is fixed by this task, pinned by
+`region_modes.rs`, and said here rather than filed.
+
+**The rows, filed `open` first**: W92, two rows, `count-past-2-64.ein` and `count-past-2-128.ein`, the
+second and third lines of the table, each `now` the error, exit 1 (schema `/7`'s `error`, so no schema
+moved).

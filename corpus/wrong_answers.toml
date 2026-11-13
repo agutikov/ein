@@ -17110,3 +17110,70 @@ printed   = [
   { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
   { file = "models/01.ein", label = "palette", line = "  palette" },
 ]
+
+# ══ W92 — a count of commitments past what the run holds is an exit 1 with no read-out, though the run classified every commitment ══
+[[case]]
+id       = "W92/count-past-2-64"
+case     = "W92"
+title    = "a count of commitments past what the run holds is an exit 1 with no read-out, though the run classified every commitment"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.25"
+question = ["P1f.6 findings.md E-22", "Q-M1f.218"]
+witness  = "examples/ein-bugs/wrong-answers/count-past-2-64.ein"
+status   = "open"
+open_because = "the state route counts a state's commitments in `u128` and sums R's into `u64`, and returns an error where either overflows: S1f.6.25's T1f.6.25.5 counts exactly and reports a count no greater than 2^63 − 1, which reads *this many or more*"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 64 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^64 commitments. The sentence on stderr is not true of this witness: its count is 2^64, past the `u64` the total was summed into, and 64 items is the smallest size that met it"
+
+[case.wrong]
+run     = "solve"
+by      = "region"
+why     = "`ein solve` on the witness, release, at 5e5685b7 (2026-11-13): one line on stderr, nothing on stdout, exit 1, after 65 saturations that classified every commitment; `ein solve --count` and `--json-summary` the same, `--minimal` and `--maximal` answer"
+exit    = 1
+error   = "a state's commitments pass 2^128: the state route cannot count them"
+
+[case.right]
+reading   = "the user's rule of 2026-10-16, every answer exits 0 and only a refuted claim exits 1; S1f.6.25's default for what the count says (the stage file, T1f.6.25.5; Q-M1f.218): a value that says *or more* at the greatest count the run reports, 2^63 − 1"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+derived   = "Nothing is refuted and nothing is owed, so R is every commitment. The closure of any non-empty commitment is all 64 candidates, so R has two states, ∅ and ⊤, both listed; ∅ is the minimal line and ⊤ the maximal. k_c is 2^64, 1 for ∅ and 2^64 − 1 for ⊤, which the read-out prints as *9 223 372 036 854 775 807 or more*. The run exits 0"
+
+[case.now]
+run     = "solve"
+line    = "all"
+error   = "a state's commitments pass 2^128: the state route cannot count them"
+
+[[case]]
+id       = "W92/count-past-2-128"
+case     = "W92"
+title    = "a count of commitments past what the run holds is an exit 1 with no read-out, though the run classified every commitment"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.25"
+question = ["P1f.6 findings.md E-22", "Q-M1f.218"]
+witness  = "examples/ein-bugs/wrong-answers/count-past-2-128.ein"
+status   = "open"
+open_because = "the state route counts a state's commitments in `u128` and sums R's into `u64`, and returns an error where either overflows: S1f.6.25's T1f.6.25.5 counts exactly and reports a count no greater than 2^63 − 1, which reads *this many or more*"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 130 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^130 commitments. Here the sentence is true: ⊤ alone is reached by 2^130 − 1 commitments, past the `u128` a state's were counted in"
+
+[case.wrong]
+run     = "solve"
+by      = "region"
+why     = "`ein solve` on the witness, release, at 5e5685b7 (2026-11-13): one line on stderr, nothing on stdout, exit 1, after 131 saturations that classified every commitment; `ein solve --count` and `--json-summary` the same, `--minimal` and `--maximal` answer"
+exit    = 1
+error   = "a state's commitments pass 2^128: the state route cannot count them"
+
+[case.right]
+reading   = "the user's rule of 2026-10-16, every answer exits 0 and only a refuted claim exits 1; S1f.6.25's default for what the count says (the stage file, T1f.6.25.5; Q-M1f.218): a value that says *or more* at the greatest count the run reports, 2^63 − 1"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+derived   = "Nothing is refuted and nothing is owed, so R is every commitment. The closure of any non-empty commitment is all 130 candidates, so R has two states, ∅ and ⊤, both listed; ∅ is the minimal line and ⊤ the maximal. k_c is 2^130, 1 for ∅ and 2^130 − 1 for ⊤, which the read-out prints as *9 223 372 036 854 775 807 or more*. The run exits 0"
+
+[case.now]
+run     = "solve"
+line    = "all"
+error   = "a state's commitments pass 2^128: the state route cannot count them"

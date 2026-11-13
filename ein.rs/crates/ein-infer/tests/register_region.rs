@@ -373,7 +373,9 @@ fn every_row_states_its_witness_s_region() {
         // binary does, at a firing, with a saturation error, or, where a rule
         // the run compiles before it saturates does not compile, with a
         // compile error (M1e2 S1e2.2.22, `W22/kw-or-in-obligation`: an
-        // obligation's guard read as a nested `(or …)`).
+        // obligation's guard read as a nested `(or …)`). Or, while W92 is open
+        // (M1f S1f.6.25), where the state route cannot hold a count, with
+        // the line the row records.
         if row.now.error.is_some() && !row.now.is_command() {
             let describe = Mode {
                 which: Which::All,
@@ -381,6 +383,8 @@ fn every_row_states_its_witness_s_region() {
             };
             match try_ask(&repo_root().join(&row.witness), describe) {
                 Err(ein_infer::SolveError::Saturate(_) | ein_infer::SolveError::Compile(_)) => {}
+                Err(ein_infer::SolveError::Unsupported(line))
+                    if row.now.error.as_deref() == Some(line.as_str()) => {}
                 other => bad.push(format!(
                     "{} ({}): [now] is an error and the library answers {:?}",
                     row.id,

@@ -230,6 +230,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.215](#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program) | a qualified import and what a module states as a program | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a wrong answer, W90; no import brings a module's `(query …)`, `(solve …)` or `(config …)`, nor its `(trace …)`**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6252--e-8-done) |
 | [Q-M1f.216](#q-m1f216--a-state-file-that-re-writes-less-than-the-program-as-loaded-and-the-register) | a state file that re-writes less than the program as loaded, and the register | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a register row, W91, under schema `/22`; the fix makes every name a top-level selection lists live, and no more**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6253--e-11-done) |
 | [Q-M1f.217](#q-m1f217--when-the-loader-says-that-a-selection-left-a-relations-rules-behind) | when the loader says that a selection left a relation's rules behind | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: condition C of the census, a relation not listed, with a deriving rule in the module, none kept and none in the resolved program; one line a form, `note:` on stderr**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6254--e-20-done) |
+| [Q-M1f.218](#q-m1f218--what-a-count-past-the-runs-reach-says) | what a count past the run's reach says | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: counted exactly and reported up to 2^63 − 1, which reads *this many or more* on every surface; no wider integer is printed**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6255--e-22-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4208,3 +4209,25 @@ Three smaller things, also defaults: the line is `note: `, the prefix the read-o
 carry; relations past the second are counted and not listed, so the line stays one line; and a
 conclusion is the head of a fact the `:assert` concludes, not a fact written inside one, so the
 calculator's `n`, which every number is built of, is not taken for a relation rules derive.
+
+### Q-M1f.218 — What a count past the run's reach says
+
+**Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6255--e-22-done)'s T5 (E-22). The stage file asks: *a value that says "more than 2¹²⁸", or the count in a wider
+integer*, the first the default, *since nothing reads a count that large as a number*. T5 found that the
+bound in the error's sentence was not the bound: a total was summed into `u64`, so a program of 64 free
+candidates met it at 2^64, and `--json-summary` wrote a count from 2^63 as a negative number, its writer
+holding a signed 64-bit integer.
+
+- **(a) Counted exactly, reported up to one bound, 2^63 − 1.** The engine counts in an exact integer of
+  any size, so nothing fails for being large; a surface carries a count no greater than 2^63 − 1,
+  9 223 372 036 854 775 807, and **a count equal to it reads *this many or more***: the read-out and
+  `--count` print *or more* and why, a state file's header and `ein test -v` the same words, and
+  `--json-summary`, `answer.json` and `ein test --json-report` write the number, which their page says
+  is a floor at that value. One bound on every surface, which JSON and the register's TOML both hold.
+- **(b) The stage file's words, *more than 2¹²⁸*.** Two bounds would stay, 2^64 for a total and 2^128 for
+  a state, and JSON would need a second form for a number between 2^63 and 2^128.
+- **(c) The exact count,** in every surface: 2^792 is 239 digits in a read-out row, and a JSON number no
+  reader's integer holds.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** What it costs: a count from 2^63 to 2^64 − 1, which
+the read-out printed exactly, now reads *9 223 372 036 854 775 807 or more*.
