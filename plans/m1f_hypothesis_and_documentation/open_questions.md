@@ -242,6 +242,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.227](#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take) | how a run of the biggest calculation is held to about 16 GB, and how long it may take | **defaulted 2026-11-13 (S1f.6.29), the user's to revise: a cgroup a run, `MemoryMax=16000000000` (16.0 GB, 14.9 GiB) and no swap, `oom_score_adj` 1000; a run past 600 s killed; the search narrowed to 3 %. The sweep stopped half-way: at the cap the host had about 1.4 GB left and Claude Code reaped the background command, which is not restarted unasked**; [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured) |
 | [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk; the operand look-up, `operand` and `operand-is`, which `std.int` and `std.rat` call and extend; and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
 | [Q-M1f.229](#q-m1f229--what-the-census-of-imported-names-reads-and-how) | what the census of imported names reads, and how | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the twelve stdlib modules and the fourteen example theories another file imports, the import mechanism's own fixtures left out; each imported by every name it declares itself; static, and held to the loader on every pair**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6303--the-census-done) |
+| [Q-M1f.230](#q-m1f230--how-the-proposals-are-prototyped-and-priced) | how the proposals are prototyped and priced | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: `std.arith` alone, as module text under `$EIN_STDLIB`; exported, the requests, `let`, results, flags, `n`, the interface, the entry and the one rule another module selects; a hidden name spelt `std.arith.X`; the convention's prefix `arith-`; the price by two sweeps of the 133 programs that bring the calculator and a bound of `corpus_shapes.md5`, not by blessing**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6304--the-proposals-each-on-real-computed-examples-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4577,4 +4578,28 @@ that cannot be imported flat together today*. Three choices the task leaves open
 **Defaulted 2026-11-13: (a) on all three, the user's to revise.** The census then names every clash of a pair,
 and the loader confirms each pair's verdict: 325 of 325 agree ([`import_clashes.md` §
 3](p1f.6_calculator/import_clashes.md#3-the-census-t3)).
+
+### Q-M1f.230 — How the proposals are prototyped and priced
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6304--the-proposals-each-on-real-computed-examples-done)'s
+T4: *each proposal is shown as the probes of T2 rewritten under it … computed on a prototype where the proposal
+can be prototyped outside the engine (by rewriting module text)*. The choices the rewriting leaves open:
+
+- **Which modules.** (a) `std.arith` alone, the module question 8 is about, with `std.int` and `std.rat` named as
+  taking the same treatment. (b) The three.
+- **What `std.arith` exports.** (a) The requests and `let`, the results, the flags, `n`, T1's eleven, the entry
+  `arith`, and `division-by-zero-is-false`, which `std.num9` selects by name: 26 relations, 2 rules. (b) Fewer:
+  the interface left out, which fails `std.int` and `std.rat`.
+- **How a hidden name is spelt.** (a) `std.arith.strip`, the module's name, as a bare qualified import already
+  writes it. (b) A name the loader makes up, `#…`, which no program can write: not writable as module text, so
+  not computed.
+- **The convention's prefix.** (a) `arith-`, as `arith-rule` already is. (b) A dotted one, `arith.strip`, which
+  reads as a qualified import's (Q-M1f.151's (c)).
+- **The price.** (a) Two sweeps of the 133 corpus programs that bring `std.arith`, `ein solve` bare and `ein
+  saturate --dump`, with the checkout's stdlib and the prototype's, and a bound of `corpus_shapes.md5`'s digests
+  (5 520 of 24 479), since that test refuses `$EIN_STDLIB`. (b) A worktree with the prototype in place, a build
+  of the workspace in it, and the test blessed there, for an exact count.
+
+**Defaulted 2026-11-13: (a) on all five, the user's to revise.** The exact count of (b) is what T6's change,
+whichever it is, takes before blessing.
 

@@ -1,7 +1,7 @@
 # S1f.6.30 — Name clashes between imported theories: investigation, proposals, and a stop
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1, T2 and T3 done
+**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1 to T4 done
 ([the record](#record-2026-11-13)). **An investigation that stops
 for the user** before any change to the grammar or to what an import means; its first task, the tagged calls
 as an interface, changes neither and is built.
@@ -254,4 +254,32 @@ the user's to revise.
 - **The corpus's names.** 24 programs that do not bring `std.arith` use one of its names, `b` and `n` eight
   each, the rule `add-column` in `cryptarithm.ein` and `send_more_money.ein`; `done` none. 222 use
   `binary_logic.inputs`' `is-a`, and 37 `word_problems.words`' names, `holds` 28 of them.
+
+### T1f.6.30.4 — the proposals, each on real computed examples, done
+
+[`import_clashes.md` § 4](import_clashes.md#4-the-proposals-t4): the five the task lists, (a) exports, (b)
+what `:as` shares, (c) a rename on import, (d) a convention, (e) nothing with how to mix theories today; (f),
+(a) to (c) as one mechanism; and (g), four ways for E-32. Each with what it changes in `ein.y` and
+`ein_ir::imports`, what moves, and what it does to E-8, E-20 and E-32. The prototypes are module text,
+written by `build/s1f.6.30/proto.py` and run on the probes by `build/s1f.6.30/proposals.sh` (the release binary
+at `2ef68530`, 2026-11-13); what moves is two sweeps of the 133 corpus programs that bring `std.arith`
+(`build/s1f.6.30/sweep.py`), and a bound of `corpus_shapes.md5`'s digests, since that test refuses
+`$EIN_STDLIB`. How they are written and priced is a default,
+[Q-M1f.230](../open_questions.md#q-m1f230--how-the-proposals-are-prototyped-and-priced), the user's to revise.
+
+**What the prototypes computed.**
+
+- **(a)** `std.arith` exporting 26 of its 74 relations and 2 of its 116 rules: P4e and P4f load, P2a and P4a
+  are still refused, on `done`, an exported answer; `ein solve` moves on 17 of 133 (14 `refuted by` lines, 3
+  claims naming a tag), R on none, `--dump` on 111. The first export list hid `operand` and `operand-is` and
+  failed sixteen claims of `tests/stdlib/int/` and `rat/`: the look-up joined the interface (T1's second
+  commit).
+- **(b)** the tables once: P5 1 978 facts where 3 656; P10 connected, `(r.rat-simple-of (r.rat (i.int (i.n z
+  3) z) (i.n z 1)) …)`, 2 021 facts where 3 943. Whole only with (a), since a module only a qualified import
+  brings needs a name of its own.
+- **(c)** P2a and P4a load; **P4a beside `std.int` is refused**, *conflicting definitions of 'strip-none'*:
+  a rename rewrites one copy, and a theory built on the renamed one brings the other.
+- **(d1)** P4f loads, P2a, P4a and P4e do not; `ein solve` moves on 3, `--dump` on 111. **(d2)** P2a and P4a
+  load; 18 files that write the interface are rewritten.
+- **(e)** six lines, each a probe of § 2.
 

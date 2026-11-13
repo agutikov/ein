@@ -523,3 +523,218 @@ those load flat only where the copy is equal, body and `:why`. **The rows that s
 the example `inputs` declares `is-a`, the corpus's most used name, so a zebra program cannot import the logic's
 inputs flat; `words` declares `holds`; and `std.arith`'s one-letter `b` and `n` are the names of its most met,
 eight programs each, where `done`, the clash the question named, is met by none.
+
+## 4. The proposals (T4)
+
+Five, as the stage file lists them, and a sixth that is three of them as one mechanism. Each is shown on the
+probes of § 2, **computed on a prototype written as module text** where one can be written (`build/s1f.6.30/
+proto.py` writes them, and `build/s1f.6.30/proposals.sh` runs the probes on them, the release binary at
+`2ef68530`, 2026-11-13), and marked *not computed* where it needs the loader. What would move is measured by
+two sweeps of the 133 corpus programs that bring `std.arith` (`build/s1f.6.30/sweep.py VARIANT`: `ein solve`
+bare, and `ein saturate --dump`, which prints every fact, each with the checkout's stdlib and with the
+prototype's under `$EIN_STDLIB`). The digests of `ein-render`'s `corpus_shapes.md5` cannot be taken under a
+prototype, since that test refuses `$EIN_STDLIB`: the 133 programs hold 5 520 of its 24 479 digests, and
+those that render the resolved program, the KB, a rule or a trace can move, the program's own parse cannot.
+
+The prototypes are of `std.arith` alone, the module the question is about; `std.int` and `std.rat` would take
+the same treatment.
+
+### (a) What a module exports
+
+**The change.** A module says which of its names a program sees: a top-level form, say `(export add sub cmp
+mul div let n sum-of … done operand-is)`. Every other name it declares, relations and rules, is its own: the
+loader renames it under the module's name, `std.arith.strip`, before the import is spliced, so no program
+meets it. A module that writes no `export` exports everything, as today.
+
+- **`ein.y`:** one top-level form, `(export NAME+)`, beside `import`; `01_grammar.md`'s form table, one row.
+- **`ein_ir::imports`:** after a module is resolved and before `select`, its declared names that its `export`
+  does not list are renamed `MODULE.NAME` by `qualify`'s own `rename_atoms`, with that mapping alone; a
+  qualified import prefixes what is left, as today.
+
+**The prototype,** `proto/exports/stdlib/arith.ein`: of `std.arith`'s 74 relations, 26 exported (the requests
+and `let`, the results, the flags, `n`, the interface's eleven) and 48 renamed `std.arith.X`; of its 116 rules,
+the entry `arith` and `division-by-zero-is-false` exported (`std.num9` selects that rule by name: an export
+list must hold what another module selects) and 114 renamed. `ein test` over `examples/arith/` and
+`tests/stdlib/{arith,int,rat}/` holds 176 of 178 expectations, where the checkout's stdlib holds 182 of 182;
+the two it does not, and the one file it cannot check, are the three claims that name the theory's own tags,
+`(done (sum a b) …)`, which would be written `(done (std.arith.sum a b) …)`. The first prototype hid
+`operand` and `operand-is` too and failed sixteen claims of `std.int` and `std.rat`, which call them: that is
+how T1 learned they are the interface.
+
+| probe | today | under (a) |
+|---|---|---|
+| P4e, the program's rule `add-column` | refused | **loads**: `(col units 2 1)` and `(sum-of (n z 7) (n z 5) (n (n z 1) 2))` |
+| P4f, the program's relation `b` | refused | **loads**: `(b one)` and the sum |
+| P2a, `chores`' `done`; P4a, the program's `done` | refused on `done` | **refused on `done`**: `done` is exported, an answer of a tagged call |
+| P4b, the program's `sum-of` | refused | refused: a result is exported |
+| P4d, `(done laundry today)` | joins the calculator's `done` | joins it: `(done (std.arith.sum (n z 2) (n z 3)) (n z 5))` beside it |
+| P4g, a malformed request | `refuted by malformed-is-false` | `refuted by std.arith.malformed-is-false` |
+
+**What moves.** On the 133 programs: `ein solve`'s read-out on 17, R on none: 14 by the `refuted by` line, the
+malformed-request and undeclared-name tests of `tests/stdlib/arith/` (22 to 29, 31 to 33, 35 to 37), and 3
+whose claims name a tag (`07_only_what_is_asked`, `08_sub`, `15_mul_long_and_named`); `ein saturate --dump`
+on 111; `corpus_shapes.md5`, up to 5 520 digests. Of the 24 corpus programs that meet a name of `std.arith`
+(§ 3), the meeting goes for 14 and stays for 10, on `n`, `add` and `sum-of`. **E-8:** no change. **E-20:** no
+change; the closure still follows names. **E-32:** no change.
+
+### (b) What `:as` shares: a module loaded once, whoever imports it
+
+**The change.** A qualified import prefixes the names its module declares itself, and not those of the
+modules it imports, which keep the names the rest of the program gives them. One module, imported by two
+paths or under two prefixes, is one copy.
+
+- **`ein.y`:** nothing.
+- **`ein_ir::imports`:** `qualify`'s mapping takes the module's own declarations, not the resolved list's; the
+  modules it imports are resolved once for the program, by their path, and spliced once.
+
+**The question it raises,** which the prototype answers by hand and the mechanism must answer by rule: what a
+module's names are called when the only import that brings it is qualified. Bare, they meet the program's
+names (P4 again, on `fa`); under the module's own name, `std.digits.fa`, they need (a)'s renaming. So (b) is
+whole only with (a).
+
+**The prototypes.** `proto/share/arith_shared.ein` is `std.arith` with its `(import std.digits …)` deleted,
+so its tables are the importer's; `rat_shared.ein` is `std.rat` with its two imports deleted and every name of
+`std.int` and `std.arith` it writes read as the program's `i.` one.
+
+| probe | today | under (b) |
+|---|---|---|
+| P3b, `succ` flat, the calculator `:as a` | `fa` and `a.fa`, `a.fs`, `a.md`, `a.cl`: 2 044 facts | `fa`, `fs`, `md`, `cl` once: 1 842 facts; `(bumped 6)` as before |
+| P5, the calculator flat and `:as a` | 3 656 facts, 232 rules | **1 978 facts**, 232 rules; `(sum-of … (n z 5))` and `(a.sum-of … (a.n z 5))` as before |
+| P10, `std.int :as i`, `std.rat :as r`, `i`'s sum handed to `r` | 3 943 facts, 432 rules; **no answer** for `(r.rat-simple-of ?x ?s)` | 2 021 facts, 245 rules; **`(r.rat-simple-of (r.rat (i.int (i.n z 3) z) (i.n z 1)) …)`: connected**, the rationals' integers being `i`'s |
+
+The P10 program under (b), `proto/share/b10_stack_shared.ein`:
+
+```lisp
+(import std.int :as i)
+(import rat_shared :as r)
+(i.int-add (i.int z (i.n z 2)) (i.int (i.n z 5) z))
+(r.rat-add (r.rat (i.int (i.n z 1) z) (i.n z 2)) (r.rat (i.int (i.n z 1) z) (i.n z 3)))
+(rule int-to-rat ()
+  :match  (i.int-sum-of ?x ?y ?s)
+  :assert (r.rat-simplify (r.rat ?s (i.n z 1)))
+  :why    "the integer sum {?s} as a rational, over one")
+(query :goal (r.rat-simple-of ?x ?s))
+```
+
+```text
+  query 3 of 3      (r.rat-simple-of ?x ?s)
+                      ?s = (r.rat (i.int (i.n z 3) z) (i.n z 1)) · ?x = (r.rat (i.int (i.n z 3) z) (i.n z 1))
+```
+
+**What moves.** No corpus program's answer: no tracked program imports, qualified, a theory that imports
+another (the corpus's qualified imports are the import mechanism's fixtures, whose modules import nothing).
+**E-8:** no change. **E-20:** no change alone. **E-32:** no change, but a module's identity becomes its path,
+which a fix of E-32 needs too.
+
+### (c) Renaming a name on import
+
+**The change.** `(import chores :symbols (chores) :rename ((done chore-done)))`: the listed names of the
+module are renamed for this import, everywhere its forms write them.
+
+- **`ein.y`:** a third key of an import's clause, `:rename`, a list of pairs of names, beside `:symbols`.
+- **`ein_ir::imports`:** `import_spec` reads it; `resolve` applies the mapping to the module's resolved forms by
+  `rename_atoms` before `select`; a left-hand name the module does not declare is refused, as a `:symbols` name
+  is.
+
+**The prototypes,** the texts such an import would make: `proto/rename/chores_renamed.ein` (`done` as
+`chore-done`) and `arith_done_renamed.ein` (`std.arith` with `done` as `arith-done`).
+
+| probe | today | under (c) |
+|---|---|---|
+| P2a, `std.arith` and `chores` flat | refused on `done` | **loads**, `chores` renamed: `(sum-of … (n z 5))` and `(to-do dishes)`, the program writing `(chore-done laundry)` |
+| P4a, the program's `done` | refused | **loads**, `std.arith`'s renamed: `(sum-of … (n z 5))` and `(done laundry)` |
+| P4a and `std.int` flat | refused | **refused**: *conflicting definitions of 'strip-none': same name, different body* |
+
+**The last row is computed and is the trap.** A rename rewrites one import's copy of a module; `std.int`
+imports `std.arith` itself, unrenamed, so the program holds two calculators whose rules differ in one name and
+are refused on the first rule that writes it. A renamed theory cannot sit beside a theory built on it. Under
+(b), one copy, a rename would be a second name for the one relation, and the trap goes: *not computed*.
+
+**What moves.** Nothing: no program writes `:rename`. **E-8, E-20, E-32:** no change.
+
+### (d) A convention only: the module renames its own
+
+**The change.** None to the language: question 8's option (b), the theory's names prefixed in its own text.
+Two depths:
+
+- **(d1)** the circuit's own relations, forty-seven, `b` as `arith-b`, `strip` as `arith-strip`, the tags as
+  `arith-sum`; rules and the interface unchanged (`proto/convention/stdlib`);
+- **(d2)** and the interface's eleven, `arith-done`, `arith-add-walk`, `std.int` and `std.rat` following,
+  fifty-eight (`proto/convention-all/stdlib`).
+
+| probe | today | (d1) | (d2) |
+|---|---|---|---|
+| P4f, the program's `b` | refused | **loads** | **loads** |
+| P2a, P4a, `done` | refused | refused: `done` is the interface's | **load** |
+| P4e, the program's rule `add-column` | refused | refused: rules keep their names | refused |
+| P4g's core | `refuted by malformed-is-false` | unchanged | unchanged |
+
+**What moves.** (d1): `ein solve` on 3 of the 133, the three claims that name a tag; `ein saturate --dump` on
+111; `corpus_shapes.md5` up to 5 520 digests; R on none. Of the 24 corpus programs meeting a name, 12 are
+spared, 12 not (`n`, `add`, `sum-of`, `add-column`). (d2): besides, every program that writes the interface,
+18 files by T1's test (eight under `examples/beyond_arith/`, `conv.ein`, `std.int`, `std.rat`, six under
+`tests/stdlib/arith/`), rewritten; until they are, `ein solve` moves on 13. And `examples/binary_arithmetic/
+bin.ein`, generated from `std.arith`, follows its generator. **E-8, E-20, E-32:** no change. It is what every
+other shipped module already does (`int-`, `rat-`, `…9`, `…2`), and it reaches only the names the module
+chooses: a program's `n`, `add` or `sum-of` still meets the calculator's.
+
+### (e) Nothing, and how to mix theories today
+
+Nothing moves. What a program does today, each line a probe of § 2:
+
+1. **Import theories flat and give your own relations names of their own**, as every shipped module does
+   (P6): the tables and the numbers are then shared, and the theories connect (P1).
+2. **Where a name is taken, import one of the two `:as`** (P3a, P3d), and write its relations, its tagged
+   calls *and its numbers* with the prefix (P7a): `(a.add-walk TAG (a.n z 7) (a.n z 3) 0 z)`. A query with no
+   row is the first sign of a missing prefix (P7b, P7c, E-49).
+3. **Do not import one theory twice, flat and `:as`** (P5): every table twice, and two kinds of number that
+   do not meet (P3c).
+4. **A theory over the calculator imports it flat, by its entry, in its own text**, as `std.int` and `std.rat`
+   do; two theories that must hand numbers to each other are imported flat into the program (P10's are not).
+5. **Two modules in sibling directories** cannot import each other (P9, E-32): a copy, as
+   `examples/binary_logic/bits.ein` is, or a program above both that imports them by dotted name.
+6. **`std.elim` and `std.bijection`** are alternatives, never one program's (E-50); nor `std.algebra`'s
+   `difference` beside the calculator.
+
+### (f) One mechanism: a module's names are its own, and an import shows what it exports
+
+(a), (b) and (c) as one design, the one most module systems have:
+
+- every name a module declares lives under the module's name, `std.arith.strip`, `std.arith.done`, and is
+  printed so where a surface shows a fact or a rule the program did not write;
+- an import shows the module's **exports**, bare for a flat import, under the alias for `:as`; a module loaded
+  by two imports is **one copy** (b), so the tables and the numbers are shared whatever the prefixes;
+- **two flat imports that export one name are refused only where the program writes that name**, with a line
+  that names both modules and the two remedies, `:as` and `:rename`; where the program does not write it, the
+  two theories each keep their own and nothing clashes (P2a loads unless the program writes `done`);
+- **`:rename` is a second name for the one relation** (c), so a renamed theory sits beside a theory built on it.
+
+**Computed:** each part on its prototype, above: P4e and P4f load under (a), P10 connects under (b), P2a loads
+under (c); its answers are theirs. **Not computed:** the refusal where an exported name is written and two
+modules export it, and the rename of the one copy, which need the loader.
+
+- **`ein.y`:** `export`, and `:rename`.
+- **`ein_ir::imports`:** the resolution keeps one copy of a module by its path and names its declarations under
+  the module's name; an import maps the exported names to the bare or aliased ones; the check of two bodies
+  becomes a check of two exporters of a name the program writes.
+- **What moves:** as (a), every surface that prints a non-exported name (`ein saturate --dump` on 111 of 133,
+  `refuted by` on 14, three claims); nothing else, since a module that writes no `export` exports everything.
+- **E-20 goes:** a module's own imports are the module's, loaded as it wrote them; an importer selects among
+  its exports and cannot leave the lower theory's rules behind. The note S1f.6.25 added would not fire.
+  *Not computed.* **E-8:** no change. **E-32:** a module named by its path is a module wherever it lies, so
+  `(import ../x/m)` costs nothing more (g).
+
+### (g) A sibling directory (E-32)
+
+Named here, ruled with the rest, not fixed as a side effect. Today a file-relative import reaches the
+importing file's directory and below (P9), so `examples/binary_logic/bits.ein` is a copy of
+`examples/binary_arithmetic/bits.ein`, and the probes of P6 reach both through symlinks.
+
+- **(g1) `..` in a module name**, `(import ../binary_arithmetic/bits …)`: `locate` resolves the path segment by
+  segment and refuses a path outside the checkout's root; the copy goes. No grammar: `ein.l`'s `NAME` takes
+  `.`, `/` and `-` already, which is why P9 is refused by the resolver and not by the parser.
+- **(g2) A root.** A dotted name resolves under the nearest directory above the importing file that holds a
+  marker (`corpus/`, or a file such as `ein.toml`): `(import examples.binary_arithmetic.bits …)`. No grammar.
+- **(g3) A search path,** `$EIN_PATH`, as `$EIN_STDLIB` is for the stdlib. No grammar; a program's meaning
+  then depends on the environment.
+- **(g4) Nothing:** the copy stays, generated by `gen_binary.py` with a `--check`.
