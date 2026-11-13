@@ -504,6 +504,82 @@ The same program, the whole process. `ein solve` saturates once, as `ein saturat
   232 ms and 20.9 s (E-24). It is why the shipped examples are the sizes they
   are: every corpus program is solved, dumped and reloaded per commit.
 
+#### The biggest calculation
+
+The user, 2026-11-12: *"Let's have biggest solvable arithmetic calculation in
+let's say 100+-50 seconds on this host. make a generator in python that takes
+some size arguments and generate an example"*; told that memory ends a
+calculation before time does, *"Ok, then pick the one that fits into memory,
+say ~16GB; do not call it in tests and in CI, just for manual solve call"*
+(M1f
+[S1f.6.29](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.29_the_biggest_calculation.md)).
+`python3 utils/gen_arith_examples.py --op …` writes such a program. It goes
+under `build/`, is never checked in, and no test, gate step, nightly step or
+dev-host step writes or runs one. `utils/bench_env.sh python3
+utils/arith_cost.py --biggest` searched the sizes on 2026-11-13, on cpu4, a
+P-core, under the `powersave` governor. Each run was one process in a cgroup
+of its own, capped at 16.0 GB with no swap (`systemd-run --user --scope -p
+MemoryMax=16000000000 -p MemorySwapMax=0`,
+[Q-M1f.227](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take))
+and killed past 600 s. The search doubled a size, then narrowed to 3 %, and
+measured each size once. The binary was the release build at `2ef68530`, with
+that commit's stdlib. Five of the sweep's smaller programs, one of each shape
+and two chains, give the same firings and facts on the stdlib of
+`63955507`. Another stage's agent worked on the machine while
+`ein solve`'s half ran. The user stopped the sweep before it ended (*"runs way
+too long than I expected - just write down generated examples and close"*), so
+the table holds what was measured, and no more.
+
+| command | shape | the program | wall | peak RSS | firings | facts | in 100 ± 50 s | what bound it |
+|---|---|---|---:|---:|---:|---:|---|---|
+| `ein saturate` | product | 999 digits by 999 | 14.9 s | 6.13 GB | 5 000 895 | 5 002 922 | no | the parser: an operand of 1 000 digits nests past its limit |
+| `ein saturate` | quotient | 998 digits by 499 | 5.8 s | 2.94 GB | 2 099 934 | 2 101 961 | no | the parser |
+| `ein saturate` | requests | 43 430 on nine-digit numbers, the five operations in turn | 60.4 s | 15.97 GB | 16 384 266 | 16 525 264 | **yes** | the cap: 44 732 killed at it |
+| `ein saturate` | chain | 1 081!, a number of 2 813 digits | 47.0 s | 15.98 GB | 16 270 571 | 16 280 163 | no | the cap: 1 113 killed at it |
+| `ein solve` | product | 547 digits by 547 | 500.8 s | 2.26 GB | not taken | not taken | no | the time limit: 563 killed at 600 s |
+| `ein solve` | quotient | 626 digits by 313 | 586.4 s | 1.37 GB | not taken | not taken | no | the time limit: 322 killed at 600 s |
+| `ein solve` | requests | 30 379, as above | 277.2 s | 15.98 GB | not taken | not taken | no | searched to here, stopped by the user: 35 075 was killed at the cap, and 32 643 was running when the user stopped the sweep |
+| `ein solve` | chain | not measured | | | | | | the user stopped the sweep before it |
+
+*Firings* and *facts* are what `ein saturate` prints. `ein solve` prints
+neither, and the saturations that would have counted its rows were not run.
+`ein saturate` prints no answer. On every `ein solve` row, the script held the
+answers it printed to Python's: the product's answer, 1 094 digits, is past
+the parser's nesting limit for a claim, so the file states none and the
+printed answer is what was checked; the other two rows' claims hold.
+*Which limit bound*: under `ein saturate`, the parser bounds a written
+operand before memory or time does, and the 16 GB cap bounds a program that
+asks for many results or derives its numbers, each in about a minute; under
+`ein solve`, which writes the state as text (E-24), the 600 s limit bounds a
+long product or quotient while it holds 2.3 GB or less, and the cap bounds the
+batch.
+
+The commands, the program's first and the run's second (the date of each is
+2026-11-13):
+
+```sh
+python3 utils/gen_arith_examples.py --op mul --digits 999 --count 1 --seed 20261111 -o build/s1f.6.29/biggest/product-999.ein
+ein saturate build/s1f.6.29/biggest/product-999.ein
+
+python3 utils/gen_arith_examples.py --op div --digits 499 --dividend 998 --count 1 --seed 20261111 -o build/s1f.6.29/biggest/quotient-499.ein
+ein saturate build/s1f.6.29/biggest/quotient-499.ein
+
+python3 utils/gen_arith_examples.py --op mix --digits 9 --dividend 18 --count 43430 --seed 20261111 -o build/s1f.6.29/biggest/requests-43430.ein
+ein saturate build/s1f.6.29/biggest/requests-43430.ein
+
+python3 utils/gen_arith_examples.py --op factorial --n 1081 -o build/s1f.6.29/biggest/chain-1081.ein
+ein saturate build/s1f.6.29/biggest/chain-1081.ein
+
+python3 utils/gen_arith_examples.py --op mul --digits 547 --count 1 --seed 20261111 -o build/s1f.6.29/biggest/product-547.ein
+ein solve build/s1f.6.29/biggest/product-547.ein
+
+python3 utils/gen_arith_examples.py --op div --digits 313 --dividend 626 --count 1 --seed 20261111 -o build/s1f.6.29/biggest/quotient-313.ein
+ein solve build/s1f.6.29/biggest/quotient-313.ein
+
+python3 utils/gen_arith_examples.py --op mix --digits 9 --dividend 18 --count 30379 --seed 20261111 -o build/s1f.6.29/biggest/requests-30379.ein
+ein solve build/s1f.6.29/biggest/requests-30379.ein
+```
+
 ### How long a number may be (M1f S1f.6.9)
 
 The theory has no width and no overflow: a number is as long as its digits.
