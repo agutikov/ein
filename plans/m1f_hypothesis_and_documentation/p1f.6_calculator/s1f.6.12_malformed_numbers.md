@@ -491,8 +491,7 @@ program's one claim cannot say which flag killed it. Ten drop one of `operand-un
 guards, under which a digit as an operand is flagged twice and is dead either way;
 `bad-request-undeclared` with its flag's arguments exchanged; and `undeclared-is-false` with its premise's
 two variables exchanged, which is the same rule. `arith_theory.rs`'s harness holds all twelve by the flags'
-text. The bank was edited by hand from the run's list; `--check` was not re-run after the fault became a
-fact, and the nightly runs it.
+text. The bank was edited by hand from the run's list, and the nightly's `--check` holds it on the commit.
 
 ### T1f.6.12.9 — `std.int` and `std.rat` checked, not changed
 
@@ -565,7 +564,11 @@ From the run without `EIN_BLESS` (`cargo test --workspace --no-fail-fast`,
 - `python3 utils/stdlib_mutants.py`: 437 of 499, as above. `python3
   examples/binary_arithmetic/gen_binary.py --check`: exit 0.
 - `utils/ci_container.sh` was not run: no DOT writer, review bundle or CI install changed.
-- The nightly is run on the commit and recorded in the commit after it.
+- **The nightly: green in every step**, on `f80e38b4`, the build's commit (`./run_tests.sh --nightly`,
+  `build/nightly-s1f.6.12.log`, exit 0, 2026-11-13): the slow corpus cells, the round trip's, the levers',
+  the cores', `region`'s and `obligation_rung`'s slow halves, the fuzzer on both seeds, the bench smoke, and
+  `utils/stdlib_mutants.py --check`, **437 of 499 on the tree as committed**, the bank as edited: the twelve
+  survivors are the same after the fault became a fact.
 
 **The register is unmoved**: no wrong answer of the engine was met (E-37 is filed as a finding, with why).
 **Engine source moved in one place**, the counter and its three increments in `match_.rs`, compiled out of
