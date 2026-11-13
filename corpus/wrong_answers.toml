@@ -16951,7 +16951,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.25 (T1f.6.25.2, 2026-11-13), from E-8 of P1f.6's `findings.md`, on the default of the stage file: the importer's R is computed under a lattice it did not state, and it answers a query it did not ask, an answer false of the program as written. The module, `import-directives-module.ein`, holds `(solve :hypothesis-relations ())`, `(config :record-alternative-justifications false)` and `(query :goal (is-a ?x Drink))`; the witness imports it `:as m` and states none of the three. `--dump-config` shows the module's flag, which no row field records; `ein-ir/tests/imports_semantics.rs` holds it. Fixed by the same task (2026-11-13): R is four states and no query is answered"
 
 [case.fixed]
-commit = "0000000"
+commit = "a4bf10f8"
 by     = "S1f.6.25 (T1f.6.25.2): `ein_ir::imports`' `resolve` drops a module's `(query …)`, `(solve …)`, `(config …)` and `(trace …)` before it qualifies the module's forms, so an import of any kind brings declarations and facts and none of the four, as a flat import never did"
 date   = "2026-11-13"
 
@@ -17008,7 +17008,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.25 (T1f.6.25.2, 2026-11-13), beside `W90/import-directives-as`: the same module imported twice, `:as m` and `:as k`. The program writes no `(solve …)` and is refused for stating its lattice twice. Fixed by the same task (2026-11-13): the program loads, R four states"
 
 [case.fixed]
-commit = "0000000"
+commit = "a4bf10f8"
 by     = "S1f.6.25 (T1f.6.25.2): `ein_ir::imports`' `resolve` drops a module's `(query …)`, `(solve …)`, `(config …)` and `(trace …)` before it qualifies the module's forms, so an import of any kind brings declarations and facts and none of the four, as a flat import never did"
 date   = "2026-11-13"
 
@@ -17062,7 +17062,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.25 (T1f.6.25.3, 2026-11-13), from E-11 of P1f.6's `findings.md`. R is right, {∅}: what is wrong is the file `--dump-answer` writes for its one state, `models/01.ein`, which says *the program as loaded, imports inlined* and holds neither `(rule palette …)` nor `(relation color …)`, so reloaded it is two facts of an undeclared relation and no rule. The row records two lines of that file, the relation's declaration and the rule's name, each absent (schema /22). `std.arith` and the modules over it meet the same defect and write their entry's name as a fact to work around it, `(arith-rule arith)`. Fixed by the same task (2026-11-13): the file holds the relation's declaration and the rule"
 
 [case.fixed]
-commit = "0000000"
+commit = "076bb20e"
 by     = "S1f.6.25 (T1f.6.25.3): `ein_ir::resolve_and_minimize` takes every name a top-level import's selection lists as live, so the tree-shake keeps a listed rule nothing else reaches, and what it names"
 date   = "2026-11-13"
 
@@ -17126,7 +17126,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 64 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^64 commitments. The sentence on stderr is not true of this witness: its count is 2^64, past the `u64` the total was summed into, and 64 items is the smallest size that met it. Fixed by the same task (2026-11-13): exit 0, both states listed, *9 223 372 036 854 775 807 or more* commitments"
 
 [case.fixed]
-commit = "0000000"
+commit = "e9d692e0"
 by     = "S1f.6.25 (T1f.6.25.5): the state route counts commitments in an exact integer of any size (`ein_infer::count::Count`), so no count fails for being large, and a run reports a count no greater than 2^63 − 1, which every surface prints or documents as *this many or more*"
 date   = "2026-11-13"
 
@@ -17177,7 +17177,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 130 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^130 commitments. Here the sentence is true: ⊤ alone is reached by 2^130 − 1 commitments, past the `u128` a state's were counted in. Fixed by the same task (2026-11-13): exit 0, both states listed, *9 223 372 036 854 775 807 or more* commitments"
 
 [case.fixed]
-commit = "0000000"
+commit = "e9d692e0"
 by     = "S1f.6.25 (T1f.6.25.5): the state route counts commitments in an exact integer of any size (`ein_infer::count::Count`), so no count fails for being large, and a run reports a count no greater than 2^63 − 1, which every surface prints or documents as *this many or more*"
 date   = "2026-11-13"
 

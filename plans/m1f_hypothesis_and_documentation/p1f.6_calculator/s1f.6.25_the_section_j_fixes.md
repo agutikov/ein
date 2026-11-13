@@ -521,3 +521,62 @@ or more. **The sweep** (`build/s1f.6.25/sweep-t5.txt`, 2026-11-13) differs on th
 
 **Pages**: `read_out.md`'s `commitments (k_c)` row, `answer_dump.md`, `AGENTS.md`'s standing rules (the
 count, and T4's line), `examples/README.md`.
+
+### The stage, closed
+
+**The commits**, in order, each fix its own so that one can be reverted without the others:
+
+| commit | what |
+|---|---|
+| `ab36658d` | T1, E-5: the *Derives* line |
+| `4faf47dc` | W90 filed `open` |
+| `a4bf10f8` | T2, E-8: no import brings a module's `(query …)`, `(solve …)` or `(config …)`; W90 fixed |
+| `1a1cbf26` | W91 filed `open`; the register's schema `/22` |
+| `076bb20e` | T3, E-11: a name a selection lists is live; W91 fixed |
+| `4b72a510` | T4, E-20: the `note:` line |
+| `b1e9abcb` | W92 filed `open` |
+| `e9d692e0` | T5, E-22: the count; W92 fixed |
+
+**The register**: five rows filed and fixed, W90 (2), W91 (1), W92 (2), from 312 fixed, 16 open and 1 not
+wrong to **317 fixed, 16 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq
+-c`, 2026-11-13). Each `[case.fixed]` carried the null id in its fixing commit and carries the hash since
+this section's commit.
+
+**Defaults taken**, each the user's to revise: Q-M1f.214 (the form of the line), .215 (E-8 is a wrong
+answer; a module's `(trace …)` goes too), .216 (E-11 is a register row; the fix stops at a top-level
+selection), .217 (the condition for the `note:` line), .218 (the count's bound and wording).
+
+**Found outside the tasks, not fixed**: E-40, the review bundle's trace index names a step by its first
+conclusion; E-41, a state file drops what a qualified import brings and nothing reaches; E-42, a load
+diagnostic reaches stderr and no JSON surface, and a `.einb` says it when saved and not when opened.
+
+**What moved of what already existed**, each intended and named in its task: the `--trace` text of 173
+programs, the zebra programs among them, by the conclusions a setup step now names (T1); the inlined
+text, and so the program part of the state files, of seven programs whose import lists a name nothing
+else reaches (T3); one unit test that pinned the old qualified import (T2); and `summary_properties.rs`'s
+two sums (T5). No existing program's `ein solve` or `ein saturate --dump` moved in any of the five sweeps.
+
+**The gate and the nightly**, each on the commit named and in a detached worktree, so that the next
+task could go on in the tree (2026-11-13; the logs are `build/s1f.6.25/gate-t<n>.log` and
+`nightly-t5.log`, each ending in its own exit line):
+
+| commit | run | outcome |
+|---|---|---|
+| `ab36658d`, T1 | `./run_tests.sh` | exit 0 |
+| `a4bf10f8`, T2 | `./run_tests.sh` | exit 0 |
+| `076bb20e`, T3 | `./run_tests.sh` | exit 0 |
+| `4b72a510`, T4 | `./run_tests.sh` | exit 0 |
+| `e9d692e0`, T5 | `./run_tests.sh` | exit 0 |
+| `e9d692e0`, T5 | `./run_tests.sh --nightly` | exit 0, every step of its three jobs; `utils/stdlib_mutants.py --check` among them, 437 of 500 killed, the bank held |
+
+The three rows' commits, `4faf47dc`, `1a1cbf26` and `b1e9abcb`, were not put through the whole gate, as
+their messages say. **The runs on T4's and T5's commits are second runs.** The first, started with the
+commits, did not finish: each log stops in the middle of a test and no process was left (kept beside the
+others as `gate-t4.interrupted.log`, `gate-t5.interrupted.log` and `nightly-t5.interrupted.log`). The three
+were run again from the start, in the same worktrees on the same commits, and the table has those
+outcomes. Which commit each of the first three logs is of is confirmed by the log itself: the review
+bundle's smoke reads 329, 331 and 332 register rows in them, the register's size at T1's, T2's and T3's
+commits, and the second holds no test of T3's and the third none of T4's.
+
+**`utils/ci_container.sh` was not run**: no DOT writer, review bundle or CI install changed (the stage
+file's condition for T1 was a change to the bundle's writer, and it was not changed).
