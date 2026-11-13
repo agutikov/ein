@@ -427,3 +427,16 @@ first two run on `b9e03aa4` in detached worktrees, their outcome written under t
 commit. No DOT writer, review bundle script or CI install changed; the bundle's pages carry the read-out
 as the binary prints it, so they carry the new rows, and its scripts read none of the rows that changed
 (`utils/review/run.py` reads `-H`'s form and the summary).
+
+**The gate and the nightly, run by the coordinator** (2026-11-13), each in a detached worktree on
+`9ac0f7ab`, this stage's last commit, whose tree is `b9e03aa4`'s with T6's three plan pages and no source
+moved (`git diff --stat b9e03aa4 9ac0f7ab`):
+
+| run | outcome |
+|---|---|
+| `./run_tests.sh` | exit 0 (`build/s1f.6.26/gate.log`) |
+| `./run_tests.sh --nightly` | exit 0, every step of its three jobs (`build/s1f.6.26/nightly.log`); `utils/stdlib_mutants.py --check` among them, 437 of 500 killed, the bank held |
+
+The merge of M1j, `3d941d81`, and S1f.6.25's records, `e4dd886c`, lie between this stage's first commit
+and its second, so both runs cover them too; the merge commit had a gate of its own, exit 0
+([M1j's record](../../m1j_nlp_smt_poc/README.md#the-merge)).
