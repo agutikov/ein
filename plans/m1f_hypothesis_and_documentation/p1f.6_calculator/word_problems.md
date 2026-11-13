@@ -2048,3 +2048,26 @@ and with:
 ```
 
 `readings_both.ein` and `readings_gap.ein` are § 4.4's, a few rules each, under `build/s1f.6.20/p/`.
+
+## 13. After the replies (2026-11-13)
+
+The user replied to the questions of § 11 on 2026-11-12, by their numbers in
+[`questions.md`](questions.md), where this page's questions 1 to 10 are 26 to 35, and the second pass,
+[S1f.6.28](s1f.6.28_word_problems_second_pass.md), built what the replies asked for. This page is otherwise left
+as the investigation's: what it reports is what the prototype did on 2026-11-11.
+
+| question here | the reply | what moved in [`examples/word_problems/`](../../../examples/word_problems/README.md) |
+|---|---|---|
+| 3, a missing quantity | 28: *"pick recommended, and note that is is not only and not final"* | nothing: the gap by `absent` stays, and the directory's README says it is the form picked to bank the problems, not the only one and not the final one |
+| 4, an assumption | 29: *"for this stage (a) is OK, return back to investigations of this in M1h"* | nothing: the marked fact, `assumed`, with `rests-on` |
+| 6, a missing reading | 31: *"reading always chosen, it can't be not chosen"*; round 2, *"yes"* | `readings.ein` is § 4.3's `readings_always`, a reading owed for every question of what is needed; `boxes12.ein` is two states and one answer, and **the 13-apple problem is banked**, `boxes13.ein`, two states and two answers. The test that did not end on it (E-33) ends since S1f.6.28's T1 |
+| 7, two kinds | 32: *"what is not listed is zero - good idea, it could be a reusable universal assumption"*; round 2, by a rule over the typed arguments | `listed_is_all.ein`, a module a problem imports to adopt the assumption for `has`, and `kinds_listed.ein`, the apples-and-pears problem with it: 5, resting on Alice's apples assumed zero; without it, `kinds.ein`, a gap |
+| 9, where the theory lives | 34: *"examples for now - (a)"* | nothing: the modules stay beside the problems, and none moved to the stdlib |
+| 10, more readings of a word | 35: *"Take only needed right now"* | no word added |
+| 1 and 2, the order of events and the plan | 26: *"leave what is implemented already"*; 27 (a) | nothing; both are M1h's first phases |
+
+A witness was banked beside them, on the user's question of 2026-11-12: `before.ein`, *Bob gave Alice 2
+apples. Now Bob has 5. How many did Bob have before?*, whose answer, 7, the theory does not give, since it reads
+*gave* in one direction of time ([M1h's P1h.1](../../m1h_beyond_word_problems/README.md#p1h1--temporal-and-causal-theories)).
+What the trace of each state says of *why divided, and not subtracted*, and what it does not, is in
+[S1f.6.28's record](s1f.6.28_word_problems_second_pass.md#t1f6283--why-divided-and-not-subtracted-written-down-done).

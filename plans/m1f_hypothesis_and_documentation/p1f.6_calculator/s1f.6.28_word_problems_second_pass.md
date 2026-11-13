@@ -1,8 +1,8 @@
 # S1f.6.28 — Word problems, second pass: a reading is always chosen, and *what is not listed is zero*
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's replies of that day. **Running 2026-11-13:** T1 to T5 done
-([the record](#record-2026-11-13)). It continues
+**Status:** planned 2026-11-12, on the user's replies of that day. **Done 2026-11-13:**
+[the record](#record-2026-11-13). It continues
 [S1f.6.20](s1f.6.20_word_problems.md), whose file is that stage's record; the examples it changes are
 [`examples/word_problems/`](../../../examples/word_problems/README.md), banked at `f3fe6ff0`.
 **Depends on:** [S1f.6.26](s1f.6.26_what_root_owes.md), the read-out row for what root owes, which an owed
@@ -494,3 +494,87 @@ the asymmetry, and is left to a stage of its own.
 
 **No wrong answer of the engine was met**, so no row of `corpus/wrong_answers.toml` was filed: `before.ein`'s
 missing 7 is the theory's, which reads *gave* one way, and not the engine's, which answers the theory it is given.
+
+### T1f.6.28.6 — the README and the pages, done
+
+- [`examples/word_problems/README.md`](../../../examples/word_problems/README.md): **§ The banked forms, not only
+  and not final** in place of *Which variants* and *What the gate could not hold*. For the gap (28's (b)), the
+  assumption (29's (a)), the order of events (26), the backwards plan (27 (a)) and a word of two readings (31), the
+  form banked, the reply that picked it, and the forms on the page, each *the one picked to bank the problems, not
+  the only one and not the final one*, the subject M1h's; with reply 28 quoted. The problems' table gains
+  `boxes13.ein`, `kinds_listed.ein` and `before.ein`, and `boxes12.ein`'s row says two states and one answer; the
+  vocabulary gains `adopted`, the modules' paragraph `reading-owed` and `listed_is_all.ein` with its Zebra sentence.
+- [`word_problems.md`](word_problems.md) § 13, *After the replies*: the replies by the page's questions and what
+  each moved in the directory, with a pointer here; the rest of the page is left as the investigation's.
+- [`examples/README.md`](../../../examples/README.md)'s line for the directory: four modules and sixteen problems,
+  the readings owed, `boxes13.ein`, `listed_is_all.ein`, `before.ein`, and *"not only and not final"*.
+- `AGENTS.md`, § Edits that go together: the E-33 rule restated in place, what holds since T1 (a flagged program
+  of that kind fails the fact-grain test, naming itself; an unflagged one costs it nothing). No line says what the
+  stage did.
+- [`findings.md`](findings.md): **E-33 closed**; E-47 and E-48 filed with T4 and T5.
+  [`open_questions.md`](../open_questions.md): **Q-M1f.198 answered**; Q-M1f.225 and Q-M1f.226 defaulted with T1
+  and T5.
+- The phase [README](README.md)'s row; M1h's [P1h.3 README](../../m1h_beyond_word_problems/p1h.3_gaps_assumptions_and_readings/README.md)'s
+  dependency line, which said the stage was not run.
+
+Not edited: M1h's stage files that cite E-33 as it stood (S1h.3.4, S1h.3.7, S1h.4.4, S1h.4.7: *run against
+`region.rs` first*, *stays out of the corpus*), which are plans of another milestone, not run; what they rest on
+is the `AGENTS.md` rule, restated.
+
+### The stage, closed
+
+**The commits**, in order:
+
+| commit | what |
+|---|---|
+| `41806bcd` | T1: E-33 resolved, the fact-grain closure where a site reads it, the safe give-up and the test's failure on it; Q-M1f.225 |
+| `b80f7d65` | T2 and T3: the table on real programs, and what the traces say of *why divided* |
+| `03177630` | T4 and T5: `listed_is_all.ein`, the two forms, the six programs banked, their entries, the goldens, `alive_invariant`'s list and R0, E-47, E-48, Q-M1f.226 |
+| this section's | T6: the pages, E-33 closed, Q-M1f.198 answered |
+
+**The acceptance.**
+
+- *Every problem with a word of two readings owes the reading: no state of R has an answer with no reading
+  chosen*: `boxes12.ein` and `boxes13.ein`, the two that ask what is *needed*, are the corpus's problems with a
+  word of two readings; each has `∅ not in R — root owes 1 instance`, and each state of R is `from {(reads-as need
+  …)}` (T2, held by their region claims).
+- *`boxes12` is two states and one projection class, held by its claim; the 13-apple problem is two states and two
+  classes, 4 and 5, held by its claim*: T5, `ein test` 3 held on each, by describe.
+- *`fact_grain_never_calls_a_violated_cube_monotone` ends on the whole corpus, with the two programs in it, and
+  says what it said*: T1 and T5, 40.60 s with `boxes13.ein` and the always-owed `readings.ein` in the corpus, every
+  verdict of T1's 743 files the same and the 437 cubes read, 441 with the four new programs.
+- *With `listed_is_all` imported the apples-and-pears problem answers and names the assumption it rests on; without
+  it the amount is a gap*: `kinds_listed.ein`, 5 and `rests-on`; `kinds.ein`, `unanswered`, as banked.
+- *The README says the banked forms are "not only and not final"*: T6.
+- *`before.ein` is banked, claims the named gap, and says in its header that the answer is 7 and who owns it*: T5.
+
+**Defaults taken**, each the user's to revise: Q-M1f.225, a give-up of the fact-grain closure fails the test;
+Q-M1f.226, `alive_invariant`'s R0 lists a seeded obligation's name and does not hold it to the objects. Within the
+stage's own latitude, recorded and not put as questions: `boxes13_stated` stays in scratch (reply 35); the
+assumption's zero is `assumed` and not `has` (a `has` concluded under an `absent` over `has` reads itself); the
+problem states `(solve :no-hypothesis (has))`, the form the stage file and *forbid*'s message name.
+
+**Found outside the tasks**: E-47, *forbid*'s first remedy does not lift a refusal where an hrule proposes the
+relation; E-48, a rule that names an obligation fails `alive_invariant`'s R0. **No wrong answer** of the engine:
+`before.ein`'s missing 7 is the theory's, and no register row was filed.
+
+**What moved of what already existed**, each intended: `readings.ein` and `boxes12.ein` (T2's rebuild, and
+`boxes12.ein`'s claims, a region claim added); the notes of their two corpus entries; `corpus_exits.txt` by 12 new
+cells; `corpus_shapes.md5` by 168 new digests and 69 moved, all `boxes12.ein`'s and `readings.ein`'s; `alive_invariant.rs`'s `SEEDED` and R0; `fact_grain.rs`,
+`site_census.rs` and `region.rs` (T1). No answer of any other corpus program moved: `ein test examples tests
+stdlib`, 747 files, 476 claims, 475 held and the one FAILED the register owns, 0 not checked (`-q --json-report
+build/s1f.6.28/report-t5.json`, 2026-11-13; S1f.6.27's T1 counted 465 claims in 742 files, and the eleven since
+are SEND + MORE's and this stage's).
+
+**Not built, as the stage file rules**: nothing in the stdlib; no expression layer; no word; the gap, the
+assumption and the order of events not redesigned; nothing for *why not subtract* beyond the record, a theory of
+solutions being M1h's P1h.4 and M2's. Not built by default: the `ein-core` change of Q-M1f.226 (b); any change to
+*forbid*'s message or to `:no-hypothesis` (E-47).
+
+**Run on the last trees** (2026-11-13): T5's list above, `-p ein-infer -p ein-corpus` whole (40 binaries, 456
+tests) and `-p ein-cli` whole (57 binaries, 353 tests, `build/s1f.6.28/t6-cli.log`), all passed; the link check over
+the gate's paths, 554 pages, 0 findings. Not run beyond T5's three: the rest of `-p ein-render`.
+
+**Not run by this stage**: `./run_tests.sh` and `./run_tests.sh --nightly`, which run on the stage's last commit
+in detached worktrees, their outcome written under this line by the records commit; `utils/ci_container.sh`,
+which the stage file does not need: no DOT writer, review bundle script or CI install changed.

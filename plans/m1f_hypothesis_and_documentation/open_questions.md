@@ -210,7 +210,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.195](#q-m1f195--one-file-for-the-two-step-problem) | one file for the two-step problem | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: `boxes12.ein` is the page's `boxes12` and `boxes12_plain` together, `readings` imported and the model's query kept**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 | [Q-M1f.196](#q-m1f196--the-word-problem-modules-as-corpus-entries) | the word-problem modules as corpus entries | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: each module is a `positive` entry with runs of its own, as the stdlib's modules are; `gaps.ein` declares no `solve`; `readings.ein` imports only what it reads (E-11)**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 | [Q-M1f.197](#q-m1f197--what-holds-the-banked-word-problems) | what holds the banked word problems | **defaulted 2026-11-12 (S1f.6.20), the user's to revise: each file's `:expect` through its `test` cell, and the sweeps every corpus file is under; no test of their own until the rulings**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
-| [Q-M1f.198](#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate) | the remainder variant of the word problems, and the gate | **2026-11-12:** owned by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s first task. **defaulted 2026-11-12 (S1f.6.20), the user's to revise: not banked. `region.rs`'s fact-grain sweep does not end on a program where a supposed reading leads to a `value` (E-33); the test and the engine are unmoved; three other ways are stated and one was run**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
+| [Q-M1f.198](#q-m1f198--the-remainder-variant-of-the-word-problems-and-the-gate) | the remainder variant of the word problems, and the gate | **answered 2026-11-13 by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done)** (round 2's item 31, the user's *"yes"*): E-33 resolved by its T1 with the test's meaning unchanged, and the 13-apple problem banked as `examples/word_problems/boxes13.ein`, with the readings always owed. Before: **2026-11-12:** owned by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)'s first task. **defaulted 2026-11-12 (S1f.6.20), the user's to revise: not banked. `region.rs`'s fact-grain sweep does not end on a program where a supposed reading leads to a `value` (E-33); the test and the engine are unmoved; three other ways are stated and one was run**; [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md) |
 | [Q-M1f.199](#q-m1f199--how-the-skipped-views-of-the-dot-sweep-are-pinned) | how the skipped views of the DOT sweep are pinned | **defaulted 2026-11-12 (S1f.6.21), the user's to revise: the count printed, the directories that hold a skipped view named in the test**; [S1f.6.21](p1f.6_calculator/s1f.6.21_the_gate_reduced.md) |
 | [Q-M1f.200](#q-m1f200--the-names-of-an-integer-divisions-results) | the names of an integer division's results | **defaulted 2026-11-12 (S1f.6.22), the user's to revise: `int-quot-euclid-of`, `int-quot-trunc-of` and `int-quot-floor-of`, each `(… X Y Q R)`**; [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md) |
 | [Q-M1f.201](#q-m1f201--what-a-bare-relation-r-declares-of-its-count) | what a bare `(relation R)` declares of its count | **defaulted 2026-11-12 (S1f.6.23), the user's to revise: none, so `(R)` is its one form**; [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md) |
@@ -3888,6 +3888,15 @@ the gate can hold, and report what was left out. Every program in which a hypoth
 word theory meets it, so it bears on question 6 of the page, and on the hypothesis form of an assumption
 (question 4), whichever is ruled.
 
+**Answered 2026-11-13** by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#record-2026-11-13),
+on the user's reply to round 2's item 31 (*"yes"*: the examples rebuilt to *always owed*, the 13-apple variant
+back once the test ends on it, its meaning unchanged). Its T1 made the fact-grain closure run only where a
+relation-grain site reads it, which no unflagged program has, and give up on the safe side on a flagged one, where
+the test fails naming the program ([Q-M1f.225](#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up)):
+every verdict of the corpus and the 437 cubes it read were the same after. Its T5 banked
+`examples/word_problems/boxes13.ein`, two states and two answers, 4 and 5, the readings owed; the test ends on it,
+`cargo test -p ein-infer --test region` 40.60 s, and reads 441 cubes. None of (b) to (d) was taken: (d)'s *list
+of files it skips* was not acceptable, and (d)'s *cap* is taken only as a failure, never as a narrower test.
 
 ### Q-M1f.199 — How the skipped views of the DOT sweep are pinned
 

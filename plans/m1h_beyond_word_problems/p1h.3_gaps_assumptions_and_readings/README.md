@@ -11,8 +11,8 @@ builds what the user rules.
 [S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md), the read-out
 row for what root owes (done 2026-11-13), and
 [S1f.6.28](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md),
-which rebuilds the readings to *always owed* and banks `listed_is_all.ein` (planned, not run on 2026-11-13; a
-stage that needs one of its files before it is banked builds its own scratch copy and says so).
+which rebuilds the readings to *always owed* and banks `listed_is_all.ein` (done 2026-11-13: the files are
+banked under `examples/word_problems/`).
 **Reads:** [P1h.2](../p1h.2_slicing/README.md)'s slice, for how an answer reports what it rests on;
 [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md), which rules open against false;
 [F21](../../followups/f21_non_monotone_programs_decided.md), which owns what a non-monotone program means.

@@ -370,9 +370,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   runs it.
 - `dot_wellformed.rs` skips a view of more than 1 000 edges; a program with
   such a view in a directory not named in its `SKIPPING` fails the sweep.
-- **A corpus program in which a hypothesis leads to a request to `std.arith`
-  through a rule with an unbound operand may hang `region.rs`'s monotonicity
-  test** (E-33); run it alone before a gate.
+- **A flagged corpus program in which a hypothesis leads to a request to
+  `std.arith` through a rule with an unbound operand fails `region.rs`'s
+  fact-grain test**: the prototype's closure gives up past 10 000 shapes and
+  the test names the program rather than read a narrower verdict (E-33,
+  Q-M1f.225). An unflagged one costs it nothing: the closure runs only where
+  a site reads it.
 - A file-relative import cannot reach a sibling directory (E-32).
 
 ## Running the gate
