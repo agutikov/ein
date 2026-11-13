@@ -110,7 +110,7 @@ add("""---
 | [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query `:over maximal`, and its claim holding |
 | [X4](#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) | `lattice/07_two_pairs_two_tables.ein` | 16 | 8 components, and 2 projection classes of 4 |
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R, and what it owes; a `(merged …)` on every state; two components |
-| [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
+| [X6](#x6--testsregion04_owingein-r-empty-alive-nodes-owe) | `tests/region/04_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe and `--maximal`; `--minimal` decided at root, ∅ being in R; `--count` |
@@ -223,18 +223,20 @@ A-side and the C-side never meet, which is the two components.
 """)
 add(block(["examples/lattice/synth/merged_states.ein"]))
 
-add("""## X6 — `tests/stdlib/closure/03_closed_and_owing.ein`: R empty, alive nodes owe
+add("""## X6 — `tests/region/04_owing.ein`: R empty, alive nodes owe
 
-No candidate, and root owes one `total-owed` instance: R is empty of the second kind. The `owing` rows are the
-frontier, the alive owing nodes with no alive node one fact up (here root itself), each with what it owes through the
-rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the printer closes the
-**candidates'** relations, which tell R's states apart, and this program has none. The query's `over` row says which
-kind of empty R is: root is alive and owes one instance.
+Root owes one `total-owed` instance, Ann's Food, and both foods are stored as ones she does not like, so the
+obligation's two candidates are refuted before they are proposed: no candidate, and R is empty of the second kind.
+The `owing` rows are the frontier, the alive owing nodes with no alive node one fact up (here root itself), each with
+what it owes through the rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the
+printer closes the **candidates'** relations, which tell R's states apart, and this program has none. The query's
+`over` row says which kind of empty R is: root is alive and owes one instance. (Until M1f S1f.6.34 the example was
+`tests/stdlib/closure/03_closed_and_owing.ein`, an obligation on a closed relation, refused at load since.)
 """)
-add(block(["tests/stdlib/closure/03_closed_and_owing.ein"]))
+add(block(["tests/region/04_owing.ein"]))
 add("""**`--single`.** Expected one state, found none of the owing kind: `Open`.
 """)
-add(block(["--single", "tests/stdlib/closure/03_closed_and_owing.ein"]))
+add(block(["--single", "tests/region/04_owing.ein"]))
 
 add("""## X7 — `tests/stdlib/algebra/09_irreflexive_violated.ein`: R empty, every node dead
 

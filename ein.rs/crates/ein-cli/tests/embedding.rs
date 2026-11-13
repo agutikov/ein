@@ -205,7 +205,7 @@ fn the_other_three_verdicts_are_reachable() {
     let hints = run(&repo_root().join("examples/zebra2-hints.ein")).expect("solve");
     assert!(hints.contains("R holds two states or more"), "{hints}");
     assert!(hints.contains("R listed whole: false"), "{hints}");
-    let owing = run(&repo_root().join("tests/stdlib/algebra/23_total_owed.ein")).expect("solve");
+    let owing = run(&repo_root().join("tests/region/04_owing.ein")).expect("solve");
     assert!(
         owing.contains("R is empty: every alive node owes"),
         "{owing}"

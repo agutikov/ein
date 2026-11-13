@@ -72,7 +72,9 @@
 ;;; these.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
-(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
+(import std.slots   :symbols (slot-spatial-setup
+                                 slot-locate slot-exclusive slot-occupied slot-negative
+                                 slot-elimination slot-fill slot-no-room slot-no-fill))
 
 (relation type     T T :why "{?1} is a subtype of {?2}")
 (relation instance T T :why "{?1} is an instance of {?2}")
@@ -80,7 +82,21 @@
 (relation above    Attribute Attribute :why "{?1}'s seat is above {?2}'s")
 
 (symmetric co-loc)
-(slot-partition co-loc instance type Attribute Seat)
+;; `slot-partition-setup`'s fan-out, written out but for its two obligations
+;; (M1f S1f.6.34): with `slot-owed-room` and `slot-owed-fill` activated, root owed
+;; and `:no-hypothesis` kept them from proposing what they owe, R empty and the
+;; claim `(owing (model …))`; a list may not filter what an obligation owes since
+;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13).
+;; This file's question is root's saturation, and with no obligation it owes
+;; nothing: R is root, the same facts. `01_partition.ein` keeps the setup.
+(slot-locate      co-loc instance Seat)
+(slot-exclusive   co-loc instance type Attribute)
+(slot-occupied    co-loc instance type Attribute)
+(slot-negative    co-loc instance Seat)
+(slot-elimination co-loc instance type Attribute Seat)
+(slot-fill        co-loc instance type Attribute Seat)
+(slot-no-room     co-loc instance type Attribute Seat)
+(slot-no-fill     co-loc instance type Attribute Seat)
 (slot-spatial   co-loc above instance Seat)
 
 (type Attribute T)
@@ -101,14 +117,14 @@
 
 (solve
   :no-hypothesis (type instance co-loc above)
-  :expect (region (owing (model (co-loc Cat S1) (co-loc S1 Cat)
-                                (co-loc Dog S4) (co-loc S4 Dog)
-                                (not (co-loc Ann S4))    ; slot-prune-fwd — S4 is no source of S1
-                                (not (co-loc Bob S1))    ; slot-prune-bwd — S1 is no target of S4
-                                (not (co-loc Cat S4))    ; slot-endpoint-fwd — S4 has no source
-                                (not (co-loc Bob S4))
-                                (not (co-loc Ann S1))    ; slot-endpoint-bwd — S1 has no target
-                                (not (co-loc Dog S1))))))
+  :expect (region (model (co-loc Cat S1) (co-loc S1 Cat)
+                         (co-loc Dog S4) (co-loc S4 Dog)
+                         (not (co-loc Ann S4))    ; slot-prune-fwd — S4 is no source of S1
+                         (not (co-loc Bob S1))    ; slot-prune-bwd — S1 is no target of S4
+                         (not (co-loc Cat S4))    ; slot-endpoint-fwd — S4 has no source
+                         (not (co-loc Bob S4))
+                         (not (co-loc Ann S1))    ; slot-endpoint-bwd — S1 has no target
+                         (not (co-loc Dog S1)))))
 
 (query
   :goal (co-loc ?a ?b))

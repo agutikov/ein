@@ -100,8 +100,11 @@
   :assert (undecided Bob Dog)
   :why    "Bob and Dog share seat S2, and the anchored closure says so neither way")
 
+;; `co-loc` is not listed (M1f S1f.6.34): `slot-partition-setup` activates
+;; `slot-owed-room` and `slot-owed-fill`, which owe it, and a list may not filter what an
+;; obligation owes. Root owes nothing, so the rung proposes nothing.
 (solve
-  :no-hypothesis (type instance co-loc undecided)
+  :no-hypothesis (type instance undecided)
   :expect (region (model (co-loc Ann Cat) (co-loc Cat Ann)
                          (co-loc Ann S1)  (co-loc S1 Ann)
                          (co-loc Cat S1)  (co-loc S1 Cat)

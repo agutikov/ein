@@ -109,7 +109,7 @@ this stage:
 | [`bijection/01_setup_and_negatives.ein`](../../../tests/stdlib/bijection/01_setup_and_negatives.ein) | 2 | 4 | `wears` |
 | [`bijection/02_domain_elimination.ein`](../../../tests/stdlib/bijection/02_domain_elimination.ein) | 2 | 4 | `wears` |
 | [`bijection/03_range_elimination.ein`](../../../tests/stdlib/bijection/03_range_elimination.ein) | 2 | 4 | `wears` |
-| [`closure/03_closed_and_owing.ein`](../../../tests/stdlib/closure/03_closed_and_owing.ein) | 1 | 1 | `r` |
+| [`closure/03_closed_and_owing.ein`](../../../examples/ein-bugs/closed-and-owing.ein) | 1 | 1 | `r` |
 | [`slots/02_negative.ein`](../../../tests/stdlib/slots/02_negative.ein) | 2 | 10 | `co-loc` |
 | [`slots/03_fill.ein`](../../../tests/stdlib/slots/03_fill.ein) | 2 | 10 | `co-loc` |
 | [`slots/04_elimination.ein`](../../../tests/stdlib/slots/04_elimination.ein) | 2 | 10 | `co-loc` |

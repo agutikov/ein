@@ -283,6 +283,20 @@ fn a_list_naming_what_the_program_has_loads() {
     // where the list's activator has `guess` propose it (M1f S1f.7.11).
     let wanted = "(query :goal (and (at Red ?h) (absent (wanted Red ?h))))\n";
     let goal = "(query :goal (and (at Red ?h) (absent (glad ?h))))\n";
+    // A list beside an hrule that proposes what it filters is a conflict
+    // since M1f S1f.6.34 (`mechanism_conflicts.rs`), and `plain`, which has
+    // no parameter, always proposes `seen`: the shapes that write a list are
+    // read beside a `plain` with a parameter and no activator, which proposes
+    // nothing and still writes `seen` in an hrule's `:assert`, so the list is
+    // dead, one `note:`, and the names it holds are what this test is about.
+    let quiet = HEAD.replace(
+        "(hrule plain ()\n  :match (is-a ?a Color)",
+        "(hrule plain (?T)\n  :match (is-a ?a ?T)",
+    );
+    assert_ne!(
+        quiet, HEAD,
+        "the quiet head is HEAD with plain parameterised"
+    );
     let mut programs: Vec<(String, String)> = ACCEPTED
         .iter()
         .map(|(shape, solve)| {
@@ -291,7 +305,13 @@ fn a_list_naming_what_the_program_has_loads() {
             } else {
                 goal
             };
-            (shape.to_string(), format!("{HEAD}{solve}\n{goal}"))
+            let head =
+                if solve.contains(":hypothesis-relations") || solve.contains(":no-hypothesis") {
+                    &quiet
+                } else {
+                    HEAD
+                };
+            (shape.to_string(), format!("{head}{solve}\n{goal}"))
         })
         .collect();
     // A relation only an imported rule concludes, and `eq` given to a

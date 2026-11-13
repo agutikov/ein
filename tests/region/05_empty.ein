@@ -2,7 +2,8 @@
 ;;;
 ;;; 04_owing.ein's program, stated with the claim that says only that R has no
 ;;; state. It holds on both kinds of empty R: here every alive node owes, and on
-;;; 06_false.ein every node is dead.
+;;; 06_false.ein every node is dead. Ann's two negatives, and `likes` out of
+;;; `:no-hypothesis`, since M1f S1f.6.34, as in 04_owing.ein.
 
 (import std.algebra :symbols (total-owed))
 (relation is-a  T T :why "{?1} is a {?2}")
@@ -11,9 +12,10 @@
 (is-a Soup Food)  (is-a Stew Food)
 (total-owed likes is-a)
 (likes Bob Stew)
+(not (likes Ann Soup)) (not (likes Ann Stew))
 
 (solve
-  :no-hypothesis (is-a likes)
+  :no-hypothesis (is-a)
   :expect (region))
 
 (query :goal (likes ?who ?what))

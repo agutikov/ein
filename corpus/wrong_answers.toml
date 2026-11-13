@@ -2184,7 +2184,7 @@ note    = "Criterion: *forbid*, the user's ruling of 2026-11-02 (Q-M1e2.5, S1e2.
 [case.now]
 run     = "solve --maximal"
 line    = "maximal"
-refused = "rule 'totality': concludes (false) from (absent …) over p, a relation a commitment can still extend — so it calls a state that has not yet decided p a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'totality': concludes (false) from (absent …) over p, a relation a commitment can still extend — so it calls a state that has not yet decided p a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose p, if no commitment is meant to extend it — hrule 'guess' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W1/d3-unsat-core"
@@ -2721,7 +2721,7 @@ note    = "Criterion: *forbid* (2026-11-02): rules `dead-3` and `dead-7` conclud
 [case.now]
 run     = "solve --maximal"
 line    = "maximal"
-refused = "rule 'dead-3': concludes (false) from (absent …) over h, a relation a commitment can still extend — so it calls a state that has not yet decided h a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (h)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'dead-3': concludes (false) from (absent …) over h, a relation a commitment can still extend — so it calls a state that has not yet decided h a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose h, if no commitment is meant to extend it — hrule 'guess' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W3/trigger-hole"
@@ -2780,7 +2780,7 @@ note    = "Criterion: *forbid* (2026-11-02): rules `dead-1` and `dead-2` conclud
 [case.now]
 run     = "solve --maximal"
 line    = "maximal"
-refused = "rule 'dead-1': concludes (false) from (absent …) over h, a relation a commitment can still extend — so it calls a state that has not yet decided h a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (h)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'dead-1': concludes (false) from (absent …) over h, a relation a commitment can still extend — so it calls a state that has not yet decided h a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose h, if no commitment is meant to extend it — hrule 'guess' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ W4 — a rule's fresh constant never becomes a hypothesis ═══════════════════
 [[case]]
@@ -5383,7 +5383,7 @@ derived   = "a refusal, as the symbol control's: `alarm` concludes (false) from 
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'alarm' [activator 1]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'alarm' [activator 1]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose checked, if no commitment is meant to extend it — hrule 'check' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W16/activator-all-nested"
@@ -5420,7 +5420,7 @@ derived   = "a refusal, as W16/activator-all-int's and the symbol control's: `al
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'alarm' [activator (box a)]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (checked)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'alarm' [activator (box a)]: concludes (false) from its activator, which rule 'watch' derives resting on (absent …) over checked, a relation a commitment can still extend — so it calls a state that has not yet decided checked a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose checked, if no commitment is meant to extend it — hrule 'check' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ W17 — *forbid* misses a refutation whose activator chain first appears at a node ══
 [[case]]
@@ -5459,7 +5459,7 @@ derived   = "a refusal: `r2` concludes (false) from its activator (r2 a), which 
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p2)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose p2, if no commitment is meant to extend it — hrule 'g2' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-2"
@@ -5497,7 +5497,7 @@ derived   = "a refusal: `r3`'s (false) rests through the activators (r3 a), (r2 
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'r3': concludes (false) from its activator, which rule 'r2' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p2)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'r3': concludes (false) from its activator, which rule 'r2' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose p2, if no commitment is meant to extend it — hrule 'g2' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-node-absent"
@@ -5535,7 +5535,7 @@ derived   = "a refusal: `r2` concludes (false) from its activator (r2 a), which 
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (p2)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'r2': concludes (false) from its activator, which rule 'q' derives resting on (absent …) over p2, a relation a commitment can still extend — so it calls a state that has not yet decided p2 a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose p2, if no commitment is meant to extend it — hrule 'g2' proposes it, and no list filters an hrule's candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-param-absent"
@@ -5573,7 +5573,7 @@ derived   = "a refusal: `bad` concludes (false) from (y a), which `watch`'s plan
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'bad': concludes (false) from y, which rule 'watch' derives resting on (absent …) over the relation its parameter ?R names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — so it calls a state that has not yet decided that relation a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (…)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'bad': concludes (false) from y, which rule 'watch' derives resting on (absent …) over the relation its parameter ?R names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — so it calls a state that has not yet decided that relation a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose what that relation is derived from, if no commitment is meant to extend it — the hrules are this program's commitments, and no list filters their candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 [[case]]
 id       = "W17/forbid-chain-node-writes"
@@ -5611,7 +5611,7 @@ derived   = "a refusal: `chk` concludes (false) from (absent (x ?y)), and `x` is
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "rule 'chk': concludes (false) from (absent …) over x, a relation a commitment can still extend — so it calls a state that has not yet decided x a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (x)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+refused = "rule 'chk': concludes (false) from (absent …) over x, a relation a commitment can still extend — so it calls a state that has not yet decided x a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: let no hrule propose what x is derived from, if no commitment is meant to extend it — the hrules are this program's commitments, and no list filters their candidates; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
 
 # ══ W18 — a string written in a rule never matches, and in an `:assert` stops the run ══
 [[case]]

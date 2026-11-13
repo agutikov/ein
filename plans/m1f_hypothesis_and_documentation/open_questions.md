@@ -254,6 +254,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.239](#q-m1f239--a-declaration-under-an-imported-modules-full-name) | a declaration under an imported module's full name | **defaulted 2026-11-13, the user's to revise**: refused at load; a `--dump-answer` state file, which imports nothing, loads as today; S1f.6.35 |
 | [Q-M1f.240](#q-m1f240--entry-rules-and-__closed__-lists-under-h) | entry rules and `__closed__` lists under (h) | **defaulted 2026-11-13, the user's to revise**: they stay in the shipped modules; S1f.6.35 |
 | [Q-M1f.241](#q-m1f241--a-declared-short-name-with-a-dot) | a declared short name with a dot | **defaulted 2026-11-13, the user's to revise**: refused at load, so a full name such as `word-theory.gaps.gaps` splits one way; S1f.6.35 |
+| [Q-M1f.242](#q-m1f242--a-dead-or-redundant-hypothesis-declaration) | a dead or redundant hypothesis declaration | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: one `note:` line on stderr, on every command, no exit code moved; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
+| [Q-M1f.243](#q-m1f243--an-obligation-read-as-declared-or-as-owed) | an obligation, read as declared or as owed | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: as declared, a plan root's activators compile, whether or not root owes it; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
+| [Q-M1f.244](#q-m1f244--o--c-beside-an-hrule) | O + C beside an hrule | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: a conflict whatever generates; O + HR and O + NH only with no hrule; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
+| [Q-M1f.245](#q-m1f245--where-the-conflict-check-runs) | where the conflict check runs | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: at load on every command, on root of a second load; `ein_infer::mechanisms::check` for a library caller, not in `region::prepare`; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
+| [Q-M1f.246](#q-m1f246--the-corpuss-twenty-four-programs-in-conflict) | the corpus's twenty-four programs in conflict | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: each corrected to say what it meant, one kept as the refusal's fixture; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4786,3 +4791,90 @@ make `word-theory.gaps.x` the full name of two declarations, its own and module 
 - **(b) Allowed,** a clash of two full names refused where it happens.
 
 **Defaulted 2026-11-13: (a), the user's to revise.**
+
+### Q-M1f.242 — A dead or redundant hypothesis declaration
+
+**Raised** 2026-11-14 by [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md), the user's simplification of 2026-11-13 on the pairs of mechanisms:
+*"no-hypothesis make no sense if there are hrules - if the conflict then it's conflict, if not - then it filters
+nothing"*. A list beside an hrule that contradicts none of its proposals filters no candidate (E-52), and a name of
+`:no-hypothesis` that `:hypothesis-relations` already leaves out, or that a closure already closes, says nothing new.
+
+- **(a) One `note:` line on stderr**, placed at the list or the name, on every command that loads the program, as the
+  loader's own notes are (S1f.6.25); no exit code, answer or stdout moves.
+- **(b) Silence.**
+- **(c) Refused**, as a conflict is.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** Two corpus programs print one:
+`examples/features/13_mixed_solution_and_open.ein` (a dead `:no-hypothesis` beside its hrule `pick`) and
+`examples/word_problems/kinds_listed.ein` (`has` named and closed by `words`).
+
+### Q-M1f.243 — An obligation, read as declared or as owed
+
+**Raised** 2026-11-14 by S1f.6.34's census. The verdicts of O + HR, O + NH and O + C name *an owed relation*. Seven
+corpus programs list a relation their obligation can owe and root does not owe (`tests/stdlib/algebra/24`, `26`,
+`tests/stdlib/slots/01`, `08`, `10`, `12`, `examples/ein-bugs/minimal-line-stated-obligation.ein`), and two more
+the relation of an obligation root discharges (`tests/stdlib/bijection/06`, `tests/stdlib/closure/02`).
+
+- **(a) As declared**: the relation of an obligation plan root's activators compile, owed at root or not, as an hrule
+  is read as active whether or not its `:match` has a row. The user: *"filtered obligations are nonsense by
+  definition"*.
+- **(b) As owed at root**: only an instance root owes; the nine above load as they did.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** The nine are corrected (Q-M1f.246); under (b) they would
+not have needed to be. An activator only a commitment derives is not seen by either reading, since the check reads
+root.
+
+### Q-M1f.244 — O + C beside an hrule
+
+**Raised** 2026-11-14 by S1f.6.34's witnesses. The table qualifies O + HR and O + NH with *with no hrule*, the two
+lists filtering only rungs 2 and 3, and writes O + C without it.
+
+- **(a) A conflict whatever generates**: a closure says no commitment extends the relation, which the obligation
+  needs one to; beside an hrule that does not propose it, a state that owes it can never be paid (`o_c_h.ein`: R
+  empty, root owing).
+- **(b) Only with no hrule**, as the lists.
+
+**Defaulted 2026-11-14: (a), the user's to revise** (*"obligated relation can't be __closed__ also"*). No corpus
+program is in O + C beside an hrule.
+
+### Q-M1f.245 — Where the conflict check runs
+
+**Raised** 2026-11-14 by S1f.6.34's T2. A derived closure and a derived activator exist only at root's fixpoint,
+and four commands never saturate root (`ein render program`, `rules`, `rule`, `constraints`, and `ein kb save`
+without `--saturate`).
+
+- **(a) At load, on every command**: `ein-cli`'s one load path loads the program a second time, saturates that
+  root, and judges, where the program could declare two mechanisms at all (`mechanisms::may_conflict`; 78 corpus
+  programs, root at most 36 ms each); the command's own tables are untouched. A library caller calls
+  `ein_infer::mechanisms::check`; `region::prepare` does not, so the library's routes answer a conflicting
+  program as before.
+- **(b) In `region::prepare` beside *forbid***, on the commands that take a universe only, as § 4.7.
+- **(c) Both.**
+
+**Defaulted 2026-11-14: (a), the user's to revise**, as § 4.20 refuses a list on every command.
+
+### Q-M1f.246 — The corpus's twenty-four programs in conflict
+
+**Raised** 2026-11-14 by S1f.6.34's T1, which showed each with its answer. Every one is a deliberate fixture that
+switched an obligation's generating role off, by `:no-hypothesis` on what it owes or by a closure of it, so that
+its question was root's saturation or root's verdict alone. None is an accident of spelling.
+
+- **(a) Each corrected to say what it meant, one kept as the refusal's fixture**: where root discharges every debt,
+  the owed relation out of the list, nothing moving (seven); where the question is the obligation's own report, the
+  obligation proposes and the claim is R's states (`algebra/23`, `25`; `slots/09`, `11`, with a negative per
+  unwanted candidate so that R is one state), or, for the region forms' examples, the debt made unpayable by the
+  program's own negatives and R left empty (`tests/region/04_owing`, `05_empty`); where the question is root's
+  saturation, `slot-partition`'s fan-out written out without its two obligations (`slots/02`, `03`, `04`, `07`,
+  `13`), or, where the fan-out is the subject, `bijective-setup`'s, an hrule that proposes only the `wears` root
+  holds, so nothing new is guessed and the obligations judge root alone (`bijection/01` to `03`: letting the
+  obligations propose instead solved the bijection, and six mutants of the negative-completion and elimination
+  rules survived it); `bijection/06`'s own obligation a bare `(open)`, declining for that reason; `closure/02`
+  without its obligation; `closure/03` moved to `examples/ein-bugs/closed-and-owing.ein`, the fixture of O + C.
+- **(b) Each kept as a fixture of the refusal**: the conformance suite then activates none of the four obligation
+  rules where they owe, and `stdlib_coverage.rs` fails.
+- **(c) An hrule that proposes nothing new beside each**, which keeps every claim; H + O is silent. Taken for the
+  three bijection fixtures within (a).
+
+**Defaulted 2026-11-14: (a), the user's to revise.** Fourteen of the twenty-four answer as before, twelve of them
+printing as before too and the bijection fixtures `02` and `03` one `outside` line more; nine answer a different R,
+by their own edit and not the engine's, each claim restated and held; one is refused.

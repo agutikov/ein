@@ -120,14 +120,25 @@ fn no_licence_is_one_line_and_the_models_still_print() {
 /// empty one. On an empty R of the owing kind the frontier is what the
 /// read-out lists, and since M1e2 S1e2.1a.5 it is what the forms draw, where
 /// the walk drew its `Open` state.
+///
+/// The program was `tests/stdlib/closure/03_closed_and_owing.ein` until M1f
+/// S1f.6.34 refused an obligation on a closed relation: `a1` owes `r` a `B`
+/// and `r` is functional, which is what makes a row of the grid; here the
+/// debt cannot be paid because both `B`s are stored false.
 #[test]
 fn an_owing_node_has_a_grid_with_its_debt_as_an_empty_cell() {
-    let r = ein(&[
-        "solve",
-        "tests/stdlib/closure/03_closed_and_owing.ein",
-        "--models",
-        "grid",
-    ]);
+    let dir = Scratch::new("ein-owing-grid");
+    let file = dir.path().join("owing.ein");
+    std::fs::write(
+        &file,
+        "(import std.algebra :symbols (functional total-owed))\n\
+         (relation r A B :why \"{?1} is assigned {?2}\")\n\
+         (is-a a1 A) (is-a b1 B) (is-a b2 B)\n\
+         (functional r)\n(total-owed r is-a)\n\
+         (not (r a1 b1)) (not (r a1 b2))\n(solve :no-hypothesis (is-a))\n",
+    )
+    .expect("written");
+    let r = ein(&["solve", file.to_str().expect("utf-8"), "--models", "grid"]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(r.out.contains("every alive node owes"), "{}", r.out);
     assert!(

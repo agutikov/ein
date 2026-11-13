@@ -63,10 +63,7 @@ const ARMS: [(&str, &[&str]); 9] = [
         "examples/branching/05_mini_zebra.ein",
         &["--region-budget", "524288"],
     ),
-    (
-        "tests/stdlib/closure/03_closed_and_owing.ein",
-        &["--region-budget", "524288"],
-    ),
+    ("tests/region/04_owing.ein", &["--region-budget", "524288"]),
     (
         "tests/stdlib/algebra/09_irreflexive_violated.ein",
         &["--region-budget", "524288"],

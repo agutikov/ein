@@ -379,7 +379,9 @@ fn verbose_reports_what_the_run_found() {
         r.out
     );
 
-    let open = ein(&["test", "tests/stdlib/slots/03_fill.ein", "-v"]);
+    // `tests/stdlib/slots/03_fill.ein` until M1f S1f.6.34 refused the
+    // `:no-hypothesis` that kept its obligations from proposing.
+    let open = ein(&["test", "tests/region/04_owing.ein", "-v"]);
     assert_eq!(open.code, 0, "{}{}", open.out, open.err);
     assert!(
         open.out
@@ -1081,7 +1083,11 @@ fn the_verbose_header_and_the_report_row_agree_field_for_field() {
         .iter()
         .filter(|x| x["expect"]["owing"].as_u64().unwrap_or(0) > 0)
         .count();
-    assert!(owing >= 10, "only {owing} owing claims in the selection");
+    // Ten or more until M1f S1f.6.34, whose check refuses a list that names a
+    // relation an obligation owes, and that list was how most of them owed:
+    // the corpus's owing claims are four since (`tests/region/04_owing.ein`,
+    // `05_empty.ein`, and two register witnesses).
+    assert!(owing >= 4, "only {owing} owing claims in the selection");
 }
 
 /// The same correspondence on the two outcomes the corpus does not contain,

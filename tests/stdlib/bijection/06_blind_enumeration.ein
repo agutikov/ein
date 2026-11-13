@@ -41,14 +41,20 @@
 ;;; check went vacuous. The claim needs the enumerator, so the file has to earn
 ;;; it back.
 ;;;
-;;; `sorted-somewhere` is what earns it. It is an obligation on `is-a` — every
-;;; Guest must be a member of some declared sort — and `is-a` is exactly the
-;;; relation `(total-owed seats is-a)`'s guard *scans*. The domain contract's
-;;; C4 says a branch is jointly exhaustive only while its candidate set cannot
-;;; grow underneath it, so an obligation whose scan relation the rung itself
-;;; proposes is **declined**, and a declined obligation takes the whole call
-;;; back to the blind enumerator. That is this file's rung: `declined`, by
+;;; `sorted-somewhere` is what earns it. It is an obligation — every Guest must
+;;; be a member of some declared sort — written as the bare `(open)`, which
+;;; counts and reports and names no relation, so there is nothing to branch on:
+;;; the rung **declines**, and a declined obligation takes the whole call back
+;;; to the blind enumerator. That is this file's rung: `declined`, by
 ;;; construction, in one `rung` event per generation call.
+;;;
+;;; Until M1f S1f.6.34 it was `(open is-a)`, declined by the domain contract's
+;;; C4 (`is-a` is what `(total-owed seats is-a)`'s guard scans, and an
+;;; obligation whose scan relation the rung itself proposes is declined), beside
+;;; a `:no-hypothesis` that names `is-a`: an obligation on a relation the program
+;;; never lets be guessed, which S1f.6.34 refuses (*"filtered obligations are
+;;; nonsense by definition"*, the user, 2026-11-13). The bare form declines for
+;;; its own reason and owes the same nothing; H, R and the claim did not move.
 ;;;
 ;;; The obligation is *satisfied* — `(is-a Ann Guest)` witnesses it through
 ;;; `(sort Guest Sortal)` — because the decline is static, per activator, and
@@ -94,13 +100,13 @@
 
 (sort Guest Sortal) (sort Chair Sortal)
 
-;; The obligation that declines the rung — see the header. It owes `is-a`, and
-;; `is-a` is what `(total-owed seats is-a)`'s guard scans, so no obligation
-;; here may be branched on and the blind enumerator runs.
+;; The obligation that declines the rung — see the header. A bare `(open)`
+;; names no relation, so no obligation here may be branched on and the blind
+;; enumerator runs.
 (rule sorted-somewhere ()
   :match  (and (is-a ?x Guest)
                (absent (and (sort ?k Sortal) (is-a ?x ?k))))
-  :assert (open is-a)
+  :assert (open)
   :why    "{?x} belongs to no declared sort.")
 
 ;; The typecheck quantifies over the transitive hierarchy; there is no

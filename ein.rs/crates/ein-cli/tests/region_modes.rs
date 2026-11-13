@@ -467,7 +467,7 @@ fn the_universe_and_the_trace() {
     // An empty R that owes is traced through its frontier.
     let o = ein(&[
         "solve",
-        "tests/stdlib/closure/03_closed_and_owing.ein",
+        "tests/region/04_owing.ein",
         "--region-budget",
         "524288",
         "--trace",
@@ -1558,12 +1558,7 @@ fn the_minimal_line_row_names_empty_and_no_clause() {
     // Where ∅ is not in R the field is false: R empty, every alive node owing.
     let json = dir.join("owing.json");
     let json = json.to_str().expect("utf-8");
-    let r = ein(&[
-        "solve",
-        "tests/stdlib/closure/03_closed_and_owing.ein",
-        "--json-summary",
-        json,
-    ]);
+    let r = ein(&["solve", "tests/region/04_owing.ein", "--json-summary", json]);
     assert_eq!(r.code, 0, "{}", r.err);
     let s: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(json).expect("a summary"))

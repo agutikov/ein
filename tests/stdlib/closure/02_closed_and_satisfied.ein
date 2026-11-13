@@ -1,12 +1,16 @@
 ;;; `std.closure/infer-closure` — closed **and** the requirement met.
 ;;;
-;;; The control half of a pair. Its twin, `03_closed_and_owing.ein`, is the
-;;; same program with one fact removed, and until M1d S1d.2.6 the two reported
-;;; the **same verdict** — which was the pair's whole point, and why it exists.
-;;; **They no longer do**: this one is `Solution` and the twin is
-;;; `Open — owes 1`, which is the corner cashing out. See the twin's header for
-;;; the argument; what matters here is that this half is the *discharged* one,
-;;; so the pair still differs by exactly one fact and now differs by a word.
+;;; The control half of a pair until M1f S1f.6.34. Its twin, then
+;;; `03_closed_and_owing.ein` and `examples/ein-bugs/closed-and-owing.ein`
+;;; since, is the same program with one fact removed: until M1d S1d.2.6 the two
+;;; reported the **same verdict**, then this one `Solution` and the twin
+;;; `Open — owes 1`. Both declared `(total-owed r is-a)` beside the closure
+;;; `infer-closure` derives, and since S1f.6.34 an obligation on a closed
+;;; relation is refused at load (*"obligated relation can't be __closed__
+;;; also"*, the user, 2026-11-13): the twin is the refusal's fixture, and this
+;;; half keeps the closure and drops the obligation. Its R and its claim did not
+;;; move; it is `Solution` by exhaustion now, `r` closed and the other two
+;;; relations scoped out, where it was by discharge.
 ;;;
 ;;; ── The shape ──────────────────────────────────────────────────────────────
 ;;;
@@ -16,22 +20,18 @@
 ;;; here by the one authored edge, so a closed `r` costs nothing: there was
 ;;; nothing left to guess.
 ;;;
-;;; ── The three declarations, and they are different facts ──────────────────
+;;; ── The two declarations, and they are different facts ────────────────────
 ;;;
-;;; `(total r)`, `(total r is-a)` and `(total-owed r is-a)` are all here and
-;;; none is redundant:
+;;; `(total r)` and `(total r is-a)` are both here and neither is redundant:
 ;;;
 ;;;   (total r)         arity 1 — the **marker** `infer-closure` reads, and
 ;;;                     the form `bijective-properties` derives
 ;;;   (total r is-a)    arity 2 — the **activator** of `std.algebra/total`,
 ;;;                     the scan that fires (false) on unreachability
-;;;   (total-owed r is-a)
-;;;                     arity 2 — the **obligation** dual of the same scan
-;;;                     (M1d S1d.2.4). It asserts `(open r)`, derives nothing,
-;;;                     and is what puts this program in the three-state
-;;;                     read-out's scope at all: a program that states no
-;;;                     obligation is judged by exhaustion, and that is what
-;;;                     left this pair reporting one word for two states
+;;;
+;;; The third, `(total-owed r is-a)`, the **obligation** dual of the same scan
+;;; (M1d S1d.2.4), was here until M1f S1f.6.34 and is refused beside a closure
+;;; of `r` since.
 ;;;
 ;;; A rule is activated by a fact whose head is the rule's name and whose
 ;;; arity matches its parameter list, so the arity-1 marker does not activate
@@ -47,7 +47,7 @@
 ;;; closure was derived, once, for `r` and nothing else" a claim rather than a
 ;;; hope.
 
-(import std.algebra :symbols (functional total total-owed))
+(import std.algebra :symbols (functional total))
 (import std.closure :symbols (infer-closure))
 
 (relation is-a        T T :why "{?1} is a {?2}")
@@ -62,10 +62,8 @@
 (total      r)
 ;; … and the activator the unreachability scan needs (arity 2).
 (total r is-a)
-;; … and the obligation dual, which is what makes the verdict read `Solution`
-;; here *by discharge* rather than by the generator having nothing to propose.
-;; It is satisfied: `(r a1 b1)` below is the witness.
-(total-owed r is-a)
+;; No `(total-owed r is-a)` since M1f S1f.6.34: `r` is closed, and an obligated
+;; relation is not.
 
 ;; `(__closed__ …)` is engine vocabulary; this lifts it into userspace so a
 ;; goal can name it.
@@ -74,7 +72,7 @@
   :assert (closed-here ?R)
   :why    "{?R}'s extension is closed")
 
-;; The witness. Delete this line and you have `03_closed_and_owing.ein`.
+;; The witness, which `total` needs: without it `a1` has no B and `r` no edge.
 (r a1 b1)
 
 (solve

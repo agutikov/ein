@@ -1,3 +1,16 @@
+;;; **Refused at load since M1f S1f.6.34**, and kept as that refusal's fixture:
+;;; an obligation on a closed relation. `(total-owed r is-a)` owes `r`, and
+;;; `infer-closure` derives `(__closed__ r)` from `(functional r)` and
+;;; `(total r)`, so the program says both that a state owes `r` a fact and that
+;;; no commitment extends `r`; the user, 2026-11-13: *"obligated relation can't
+;;; be __closed__ also"*. Every command refuses it, one line naming the
+;;; obligation, its activator, the closure and the rule that derives it, exit 1
+;;; (`ein test`: 2). Until then it was `tests/stdlib/closure/03_closed_and_owing.ein`
+;;; and answered R empty, `Open — owes 1`, the rung *stuck* (`declined 1`), its
+;;; claim held: the corner below, which the language no longer has. Its twin
+;;; `tests/stdlib/closure/02_closed_and_satisfied.ein` keeps the closure and
+;;; drops the obligation. The text below is the fixture's as it was.
+;;;
 ;;; `std.closure/infer-closure` — closed and **owing**: a state that can never
 ;;; meet its requirement, and the word for it.
 ;;;

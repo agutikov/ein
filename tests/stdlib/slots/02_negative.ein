@@ -48,7 +48,8 @@
 ;;; propagated an exclusion out of ignorance would have left a fact.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
-(import std.slots   :symbols (slot-partition-setup))
+(import std.slots   :symbols (slot-locate slot-exclusive slot-occupied slot-negative
+                                 slot-elimination slot-fill slot-no-room slot-no-fill))
 (import std.macro   :symbols (unknown))
 
 (relation type      T T :why "{?1} is a subtype of {?2}")
@@ -57,7 +58,21 @@
 (relation undecided Attribute Attribute :why "{?1} and {?2}: seat still open")
 
 (symmetric co-loc)
-(slot-partition co-loc instance type Attribute Seat)
+;; `slot-partition-setup`'s fan-out, written out but for its two obligations
+;; (M1f S1f.6.34): with `slot-owed-room` and `slot-owed-fill` activated, root owed
+;; and `:no-hypothesis` kept them from proposing what they owe, R empty and the
+;; claim `(owing (model …))`; a list may not filter what an obligation owes since
+;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13).
+;; This file's question is root's saturation, and with no obligation it owes
+;; nothing: R is root, the same facts. `01_partition.ein` keeps the setup.
+(slot-locate      co-loc instance Seat)
+(slot-exclusive   co-loc instance type Attribute)
+(slot-occupied    co-loc instance type Attribute)
+(slot-negative    co-loc instance Seat)
+(slot-elimination co-loc instance type Attribute Seat)
+(slot-fill        co-loc instance type Attribute Seat)
+(slot-no-room     co-loc instance type Attribute Seat)
+(slot-no-fill     co-loc instance type Attribute Seat)
 
 (type Attribute T)
 (type Seat Attribute) (type Who Attribute) (type Pet Attribute)
@@ -76,11 +91,11 @@
 
 (solve
   :no-hypothesis (type instance co-loc undecided)
-  :expect (region (owing (model (co-loc Ann Cat) (co-loc Cat Ann)
-                                (co-loc Dog S1)  (co-loc S1 Dog)
-                                (not (co-loc Cat S1))
-                                (not (co-loc Ann S1))
-                                (undecided Bob Rat)))))
+  :expect (region (model (co-loc Ann Cat) (co-loc Cat Ann)
+                         (co-loc Dog S1)  (co-loc S1 Dog)
+                         (not (co-loc Cat S1))
+                         (not (co-loc Ann S1))
+                         (undecided Bob Rat))))
 
 (query
   :goal (co-loc ?a ?b))

@@ -561,6 +561,9 @@
 0    examples/ein-bugs/binding-key-swapped.ein :: saturate --dump
 0    examples/ein-bugs/binding-key-swapped.ein :: solve
 0    examples/ein-bugs/binding-key-swapped.ein :: test
+1    examples/ein-bugs/closed-and-owing.ein :: render rules
+1    examples/ein-bugs/closed-and-owing.ein :: saturate
+1    examples/ein-bugs/closed-and-owing.ein :: solve
 0    examples/ein-bugs/complete-records-stale.ein :: solve
 0    examples/ein-bugs/d3-goal-row-order.ein :: saturate
 0    examples/ein-bugs/d3-goal-row-order.ein :: solve
@@ -2109,7 +2112,7 @@
 0    tests/stdlib/arith/41_div_call_not_zero.ein :: solve
 0    tests/stdlib/arith/41_div_call_not_zero.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
-1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: solve
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: test
@@ -2148,11 +2151,6 @@
 0    tests/stdlib/closure/02_closed_and_satisfied.ein :: saturate
 0    tests/stdlib/closure/02_closed_and_satisfied.ein :: solve
 0    tests/stdlib/closure/02_closed_and_satisfied.ein :: test
-0    tests/stdlib/closure/03_closed_and_owing.ein :: render constraints
-0    tests/stdlib/closure/03_closed_and_owing.ein :: render rules
-0    tests/stdlib/closure/03_closed_and_owing.ein :: saturate
-0    tests/stdlib/closure/03_closed_and_owing.ein :: solve
-0    tests/stdlib/closure/03_closed_and_owing.ein :: test
 0    tests/stdlib/digits/01_tables.ein :: render constraints
 1    tests/stdlib/digits/01_tables.ein :: render rules
 0    tests/stdlib/digits/01_tables.ein :: saturate

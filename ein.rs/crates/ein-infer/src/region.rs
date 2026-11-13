@@ -853,7 +853,22 @@ pub(crate) fn prepare_with(
     if !crate::forbid::is_studying() {
         let refused = crate::forbid::check(root, terms, ast, &plans, &monotonicity);
         if !refused.is_empty() {
-            return Err(SolveError::Refused(crate::forbid::message(&refused, terms)));
+            // The hrules that propose what a refusal rests on, which its first
+            // remedy names where the program declares any (M1f S1f.6.34).
+            let proposers = {
+                let mut silent = Events::off();
+                let mut s = Session {
+                    kb: root,
+                    terms,
+                    ast,
+                    events: &mut silent,
+                    memo: memo.clone(),
+                };
+                crate::forbid::Proposers::of(&mut s)?
+            };
+            return Err(SolveError::Refused(crate::forbid::message(
+                &refused, terms, &proposers,
+            )));
         }
     }
     if events.on() && !monotonicity.is_monotone() {

@@ -4,8 +4,10 @@
 ;;; here, beside its control, `minimal-line-stated-obligation-control.ein`).
 ;;;
 ;;; The program states `(total-owed likes is-a)`: every Person likes some Food. Root holds
-;;; `(likes Ann Soup)`, so it discharges the one instance, Ann's, and owes nothing; with
-;;; `:no-hypothesis` H is empty, so R is {∅}, root itself, and the minimal line is {∅}.
+;;; `(likes Ann Soup)`, so it discharges the one instance, Ann's, and owes nothing; the
+;;; obligations rung proposes facts only of what root owes, so H is empty, R is {∅}, root itself,
+;;; and the minimal line is {∅}. Its `:no-hypothesis` named `likes` too until M1f S1f.6.34, which
+;;; refuses a list that names a relation an obligation owes; nothing else moved.
 ;;;
 ;;; Until S1f.5.6 the row read `1 state — ∅, the trivial line: no obligation is stated`, here
 ;;; and on the control alike, since it read whether a node the run met owes and not what the
@@ -22,4 +24,4 @@
 (is-a Ann Person) (is-a Soup Food)
 (total-owed likes is-a)
 (likes Ann Soup)
-(solve :no-hypothesis (is-a likes))
+(solve :no-hypothesis (is-a))

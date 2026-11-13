@@ -160,6 +160,10 @@ pub fn load_held(
             let kb = ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load)
                 .map_err(|e| format!("kb load error: {e}"))?;
             say_notes(&kb.program().notes);
+            judge_mechanisms(ast, terms, &kb, |ast, terms| {
+                let forms = ein_ir::parse(ast, &text, path.to_str()).ok()?;
+                ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load).ok()
+            })?;
             Ok(Loaded {
                 kb,
                 forms,
@@ -195,6 +199,48 @@ fn say_notes(notes: &[String]) {
             said.push(note.clone());
         }
     }
+}
+
+/// **A conflict between the hypothesis mechanisms refuses the program** (M1f
+/// S1f.6.34, the user's ruling of 2026-11-13 on E-47), on every command, since
+/// every command that loads a program loads it here: one line per conflict,
+/// each `kb load error: …`, at the command's load-error exit. A list that
+/// filters no candidate, or a name another declaration already says, is one
+/// `note:` line, as [`say_notes`] says the loader's, and moves nothing.
+///
+/// Derived closures and derived obligation activators exist only at root's
+/// fixpoint, so the judgement reads root: [`ein_infer::mechanisms::check`]
+/// saturates a second load of the program, `again`, and leaves the
+/// command's own tables as they were. A program that cannot declare two
+/// mechanisms ([`ein_infer::mechanisms::may_conflict`]) pays nothing; one
+/// whose root does not saturate is the command's to report.
+fn judge_mechanisms(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    again: impl FnOnce(&mut Ast, &mut Terms) -> Option<Kb>,
+) -> Result<(), String> {
+    if !ein_infer::mechanisms::may_conflict(kb, terms, ast) {
+        return Ok(());
+    }
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Some(mut kb) = again(&mut ast, &mut terms) else {
+        return Ok(());
+    };
+    let Some(report) = ein_infer::mechanisms::check(&ast, &mut terms, &mut kb) else {
+        return Ok(());
+    };
+    if !report.conflicts.is_empty() {
+        return Err(report
+            .conflicts
+            .iter()
+            .map(|l| format!("kb load error: {l}"))
+            .collect::<Vec<_>>()
+            .join("\n"));
+    }
+    say_notes(&report.notes);
+    Ok(())
 }
 
 /// Parse what [`read_program`] read, without loading it: a text as written,
@@ -270,7 +316,7 @@ fn open_einb(
     load: &ein_ir::LoadOptions,
 ) -> Result<Loaded, String> {
     let t = Instant::now();
-    let opts = ein_einb::OpenOptions {
+    let opts = || ein_einb::OpenOptions {
         // The paths the file names, re-hashed where they still exist. One that
         // does not claims nothing: a container shipped without its source is
         // the normal case, not a stale one.
@@ -290,7 +336,12 @@ fn open_einb(
         ..ein_einb::OpenOptions::default()
     };
     let opened =
-        ein_einb::open_bytes(bytes, terms, &opts).map_err(|e| format!("kb load error: {e}"))?;
+        ein_einb::open_bytes(bytes, terms, &opts()).map_err(|e| format!("kb load error: {e}"))?;
+    judge_mechanisms(&opened.ast, terms, &opened.kb, |ast, terms| {
+        let again = ein_einb::open_bytes(bytes, terms, &opts()).ok()?;
+        *ast = again.ast;
+        Some(again.kb)
+    })?;
     match opened.freshness {
         ein_einb::Freshness::Fresh => {}
         why => eprintln!(

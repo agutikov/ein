@@ -251,6 +251,149 @@ fn the_probe_is_refused_and_the_message_names_the_replacements() {
     }
 }
 
+/// **Beside an hrule, the first remedy names the hrule** — M1f S1f.6.34, E-47.
+///
+/// E-47's witness (S1f.6.28's T4): *what is not listed is zero* adopted for
+/// `has`, an hrule `maybe-apples` supposing Alice has an apple, and `(solve
+/// :hrules (maybe-apples) :no-hypothesis (has))`. *Forbid* refused it with four
+/// lines whose first remedy was `(solve :no-hypothesis (has))`, the form the
+/// program already wrote, and one that does nothing where an hrule proposes
+/// the relation: no list filters an hrule's candidates. Every command refuses
+/// the program at load since, for the two conflicts it writes
+/// (`ein-cli/tests/mechanism_conflicts.rs`); the library's routes, which do
+/// not run that check, still reach *forbid*, and its lines name the hrule.
+/// Without the list the remedy is the same; the twin without `listed_is_all`
+/// reads no `absent` over `has`, and *forbid* refuses nothing of it.
+#[test]
+fn beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list() {
+    let scratch = ein_corpus::Scratch::new("ein-e47-remedy");
+    for module in ["words", "gaps", "listed_is_all"] {
+        std::fs::copy(
+            repo_root().join(format!("examples/word_problems/{module}.ein")),
+            scratch.path().join(format!("{module}.ein")),
+        )
+        .expect("a word-problem module");
+    }
+    let program = |listed: bool, list: bool| {
+        format!(
+            "(import words :symbols (words))\n(import gaps :symbols (gaps))\n{}\
+             (has Bob apples (n z 5) now)\n(has Alice pears (n z 3) now)\n\
+             (asked (together Bob Alice apples now))\n\
+             (hrule maybe-apples () :match (has ?p pears ?v ?t) :assert (has ?p apples (n z 1) ?t) \
+             :why \"suppose {{?p}} has 1 apple as well\")\n\
+             (solve :hrules (maybe-apples){})\n",
+            if listed {
+                "(import listed_is_all :symbols (listed-is-all))\n"
+            } else {
+                ""
+            },
+            if list { " :no-hypothesis (has)" } else { "" },
+        )
+    };
+    let mut bad = Vec::new();
+    for (listed, list, refused) in [
+        (true, true, true),
+        (true, false, true),
+        (false, false, false),
+    ] {
+        let path = scratch.path().join(format!("w-{listed}-{list}.ein"));
+        let text = program(listed, list);
+        std::fs::write(&path, &text).expect("written");
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &text, path.to_str()).expect("it parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
+        let out = explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(DESCRIBE));
+        match (out, refused) {
+            (Err(SolveError::Refused(m)), true) => {
+                for line in m.lines() {
+                    for want in [
+                        "over has, a relation a commitment can still extend",
+                        "let no hrule propose has, if no commitment is meant to extend it — \
+                         hrule 'maybe-apples' proposes it, and no list filters an hrule's \
+                         candidates",
+                    ] {
+                        if !line.contains(want) {
+                            bad.push(format!(
+                                "listed {listed}, list {list}: {line:?} lacks {want:?}"
+                            ));
+                        }
+                    }
+                    if line.contains(":no-hypothesis") {
+                        bad.push(format!(
+                            "listed {listed}, list {list}: names the list: {line:?}"
+                        ));
+                    }
+                }
+                if m.lines().count() != 4 {
+                    bad.push(format!(
+                        "listed {listed}, list {list}: {} lines:\n{m}",
+                        m.lines().count()
+                    ));
+                }
+            }
+            (Ok(_), false) => {}
+            (out, _) => bad.push(format!(
+                "listed {listed}, list {list}: {:?}",
+                out.map(|a| a.counts.map(|c| c.k_s))
+            )),
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
+/// **With no hrule, an obligation's relation is no list's to close either** —
+/// M1f S1f.6.34. Where an obligation owes the relation the refutation reads
+/// under `absent`, `(solve :no-hypothesis (R))` is a conflict (O + NH,
+/// `defined_behaviour.md` § 4.27), so the first remedy names the obligation;
+/// where none owes it, the list, as before.
+#[test]
+fn beside_an_obligation_the_remedy_names_the_obligation() {
+    let program = |owed: bool| {
+        let (import, activator) = if owed {
+            (
+                "(import std.algebra :symbols (total-owed))\n",
+                "(total-owed likes is-a)\n",
+            )
+        } else {
+            ("", "")
+        };
+        format!(
+            "{import}(relation likes Person Food :why \"{{?1}} likes {{?2}}\")\n\
+             (is-a Ann Person) (is-a Soup Food) (is-a Stew Food)\n{activator}\
+             (rule hungry () :match (and (is-a ?p Person) (absent (likes ?p Soup))) \
+             :assert (false) :why \"{{?p}} does not like Soup\")\n\
+             (solve :no-hypothesis (is-a))\n"
+        )
+    };
+    for (owed, want, not) in [
+        (
+            true,
+            "let no obligation owe likes, if no commitment is meant to extend it — obligation \
+             'total-owed' owes it, and no list may filter what an obligation owes",
+            ":no-hypothesis",
+        ),
+        (
+            false,
+            "close the relation, (solve :no-hypothesis (likes))",
+            "let no obligation owe",
+        ),
+    ] {
+        let text = program(owed);
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &text, Some("<owed>")).expect("it parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("it loads");
+        let Err(SolveError::Refused(m)) =
+            explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(DESCRIBE))
+        else {
+            panic!("owed {owed}: not refused");
+        };
+        assert!(m.contains(want), "owed {owed}: {m}");
+        assert!(!m.contains(not), "owed {owed}: names {not:?}: {m}");
+    }
+}
+
 /// **The refusal is the stream's end, and no warning precedes it.** Until
 /// M1e2 S1e2.2.5 the fixture's own `(config :warn-derived-naf true)` made S1e.2.3's
 /// `RefutationUnderAbsentWarning` part of its recorded output, a `warn` line

@@ -37,8 +37,10 @@
 (likes Ann Soup)             ; the line `23` does not have
 (likes Bob Stew)
 
+;; `likes` is not listed (M1f S1f.6.34): `total-owed` owes it, and a list may not
+;; filter what an obligation owes. Root owes nothing, so the rung proposes nothing.
 (solve
-  :no-hypothesis (is-a likes)
+  :no-hypothesis (is-a)
   :expect (region (model (likes Ann Soup) (likes Bob Stew))))
 
 (query

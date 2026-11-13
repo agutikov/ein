@@ -6,7 +6,7 @@
 //! keeping in front of a reader:
 //!
 //! ```text
-//! $ ein solve tests/stdlib/slots/03_fill.ein --stats
+//! $ ein solve tests/stdlib/slots/03_fill.ein --stats      # owing, until M1f S1f.6.34
 //!   solutions (k)   0        ← the table: models, and an open state is not one
 //!   ...
 //! stats
@@ -80,7 +80,7 @@ const CELLS: &[(&str, &[&str])] = &[
         &["--region-budget", "50"],
     ),
     ("examples/ein-bugs/zebra2-bad.ein", &[]),
-    ("tests/stdlib/slots/03_fill.ein", &[]),
+    ("tests/region/04_owing.ein", &[]),
     ("examples/features/13_mixed_solution_and_open.ein", &[]),
 ];
 
@@ -143,7 +143,7 @@ fn the_word_is_printed_once_and_is_the_summarys() {
         ("examples/branching/01_saturate_only.ein", "Solution"),
         ("examples/branching/04_two_levels.ein", "Ambiguity"),
         ("examples/ein-bugs/zebra2-bad.ein", "Contradiction"),
-        ("tests/stdlib/slots/03_fill.ein", "Open"),
+        ("tests/region/04_owing.ein", "Open"),
     ] {
         let run = solve(&[file, "--single"]);
         assert_eq!(run.summary["verdict"]["word"], word, "{file}");
@@ -191,7 +191,9 @@ fn an_owing_node_is_not_a_state() {
 /// 1`, under `--stats`.
 #[test]
 fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
-    let run = solve(&["tests/stdlib/slots/03_fill.ein"]);
+    // `tests/stdlib/slots/03_fill.ein` until M1f S1f.6.34, whose
+    // `:no-hypothesis` named the relation it owed, refused at load since.
+    let run = solve(&["tests/region/04_owing.ein"]);
     assert_eq!(run.summary["region"]["k_s"], 0);
     assert_eq!(run.summary["region"]["empty"], "owing");
     assert_eq!(rows(&run, "states (k_s)"), vec!["0"]);
@@ -199,7 +201,7 @@ fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
         rows(&run, "empty"),
         vec!["every alive node owes — no commitment pays every debt"]
     );
-    assert_eq!(rows(&run, "owing"), vec!["∅ — owes 10"]);
+    assert_eq!(rows(&run, "owing"), vec!["∅ — owes 1"]);
     assert!(rows(&run, "open states").is_empty() && rows(&run, "solution_nodes").is_empty());
 }
 
@@ -406,11 +408,8 @@ fn a_query_over_an_empty_r_says_which_empty() {
         format!("all of R — R is empty, root is alive and owes {n}: no state to answer from")
     };
     for (file, want) in [
-        ("tests/stdlib/slots/03_fill.ein", owing("10 instances")),
-        (
-            "tests/stdlib/closure/03_closed_and_owing.ein",
-            owing("1 instance"),
-        ),
+        ("tests/region/04_owing.ein", owing("1 instance")),
+        ("tests/region/05_empty.ein", owing("1 instance")),
         ("examples/ein-bugs/zebra2-bad.ein", DEAD.to_string()),
         (
             "tests/stdlib/algebra/09_irreflexive_violated.ein",

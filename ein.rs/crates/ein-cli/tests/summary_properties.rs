@@ -151,11 +151,7 @@ const SHAPE_COVER: [(&str, &str, u64); 8] = [
         "describe",
         1 << 19,
     ),
-    (
-        "tests/stdlib/closure/03_closed_and_owing.ein",
-        "describe",
-        1 << 19,
-    ),
+    ("tests/region/04_owing.ein", "describe", 1 << 19),
     (
         "examples/saturation/square-bwd/floors.ein",
         "describe",

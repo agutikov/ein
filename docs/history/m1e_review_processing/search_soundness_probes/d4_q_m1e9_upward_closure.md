@@ -183,7 +183,7 @@ relation the search can still extend?**
 
 And the repo has already written the distinction down, in a fixture header
 rather than in a rule —
-[`tests/stdlib/closure/03_closed_and_owing.ein`](../../../../tests/stdlib/closure/03_closed_and_owing.ein):
+[`tests/stdlib/closure/03_closed_and_owing.ein`](../../../../examples/ein-bugs/closed-and-owing.ein):
 
 > `total`'s stored-negative discipline is what stops it firing `(false)` on
 > every empty-yet state, and is the **right** way to write it — **`connex` is

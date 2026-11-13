@@ -150,8 +150,10 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         ("examples/zebra2.ein", &[]),
         // the same puzzle with the hrule deleted: rung 2.
         ("examples/zebra2-obligations.ein", &["obligations"]),
-        // owes, and `:no-hypothesis` names the relation it owes.
-        ("tests/stdlib/algebra/23_total_owed.ein", &["stuck"]),
+        // owes, and every candidate that would pay it is stored false. Until
+        // M1f S1f.6.34 this was `23_total_owed.ein`, whose `:no-hypothesis`
+        // named the relation it owes, which is refused at load since.
+        ("tests/region/04_owing.ein", &["stuck"]),
         // an obligation whose guard scans a relation the rung proposes.
         (
             "tests/stdlib/bijection/06_blind_enumeration.ein",
@@ -182,11 +184,15 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 ///
 /// The trap the ladder's second rung opens: the generator proposes nothing, so
 /// `complete()` says yes, so the node is recorded as a model — while the tally
-/// beside it says the requirement is unmet. Ten corpus programs are in exactly
-/// that state today, every one of them because `:no-hypothesis` names the
+/// beside it says the requirement is unmet. Ten corpus programs were in exactly
+/// that state at S1d.2.5, every one of them because `:no-hypothesis` names the
 /// relation they owe, and the `stuck` line is what tells them apart from a
 /// state that is finished. **That trap is closed**: since S1d.2.6 such a node
-/// is not recorded as a model by the read-out at all.
+/// is not recorded as a model by the read-out at all; and since M1f S1f.6.34 a
+/// list that names a relation an obligation owes is refused at load (*"filtered
+/// obligations are nonsense by definition"*), so a state is stuck because
+/// every candidate that would pay it is already refuted, `04_owing.ein`'s Ann,
+/// who likes neither food: owed 1, branched on 1, declined 0.
 ///
 /// **The word moved at [S1d.2.6]**, which is what this stage's evidence bought:
 /// a stuck state reports `Open`, not `Solution`. The two halves stay separate
@@ -198,12 +204,12 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn owing_and_unable_to_branch_is_stuck_and_says_so() {
-    let rel = "tests/stdlib/algebra/23_total_owed.ein";
+    let rel = "tests/region/04_owing.ein";
     let rows = rungs(rel);
     assert_eq!(
         rows,
-        [("stuck".to_string(), 1, 0, 1)],
-        "{rel} owes one and branches on none"
+        [("stuck".to_string(), 1, 1, 0)],
+        "{rel} owes one, branches on it, and nothing it proposes survives"
     );
     let a = ask_with(rel, SINGLE, &mut Events::off());
     assert_eq!(
@@ -217,7 +223,7 @@ fn owing_and_unable_to_branch_is_stuck_and_says_so() {
 /// **A discharged state proposes nothing, and that is what completes it.**
 ///
 /// The other half of the same question: `24_total_owed_satisfied.ein` is
-/// `23`'s twin with the witness present. Rung 2 runs, owes nothing, proposes
+/// `23_total_owed.ein`'s twin with the witness present. Rung 2 runs, owes nothing, proposes
 /// nothing — and *not* because anything was scoped out. The pair is what makes
 /// "complete means discharged" a distinction rather than a coincidence, since
 /// both files report `k = 1` and only one of them owes.

@@ -37,8 +37,10 @@
 (co-loc Ann S1) (co-loc Cat S1)
 (co-loc Bob S2) (co-loc Dog S2)
 
+;; `co-loc` is not listed (M1f S1f.6.34): `slot-owed-room` owes it, and a list may not filter
+;; what an obligation owes. Root owes nothing, so the rung proposes nothing.
 (solve
-  :no-hypothesis (type instance co-loc)
+  :no-hypothesis (type instance)
   :expect (region (model (co-loc Ann S1) (co-loc Cat S1)
                          (co-loc Bob S2) (co-loc Dog S2))))
 

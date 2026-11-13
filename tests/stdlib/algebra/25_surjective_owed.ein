@@ -43,9 +43,15 @@
 
 (likes Bob Stew)
 
+;; Since M1f S1f.6.34 the obligation proposes what would pay Soup's debt, a
+;; preimage from Ann or Bob, and R is the three states that do; root owes and is
+;; not in R. Until then `:no-hypothesis (is-a likes)` kept it from proposing
+;; them and the claim was `(owing (model (likes Bob Stew)))` (`23`'s note).
 (solve
-  :no-hypothesis (is-a likes)
-  :expect (region (owing (model (likes Bob Stew)))))
+  :no-hypothesis (is-a)
+  :expect (region (model (likes Ann Soup) (likes Bob Stew))
+                  (model (likes Bob Soup) (likes Bob Stew))
+                  (model (likes Ann Soup) (likes Bob Soup) (likes Bob Stew))))
 
 (query
   :goal (likes ?who ?what))

@@ -189,7 +189,7 @@ pair is checked in:
 | fixture | shape | verdict |
 |---|---|---|
 | [`tests/stdlib/closure/02_closed_and_satisfied.ein`](../../../tests/stdlib/closure/02_closed_and_satisfied.ein) | closed, one authored witness — the requirement is met | `Solution`, k = 1 |
-| [`tests/stdlib/closure/03_closed_and_owing.ein`](../../../tests/stdlib/closure/03_closed_and_owing.ein) | **the same file with the witness line deleted** | `Solution`, k = 1 |
+| [`tests/stdlib/closure/03_closed_and_owing.ein`](../../../examples/ein-bugs/closed-and-owing.ein) | **the same file with the witness line deleted** | `Solution`, k = 1 |
 
 Three mechanisms have to line up, and none of them is individually wrong:
 

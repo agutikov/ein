@@ -144,6 +144,100 @@ impl Over {
 
 const EXTENDABLE: &str = "a relation a commitment can still extend";
 
+/// What the program's hrules propose, for the first remedy — M1f
+/// [S1f.6.34](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md),
+/// E-47. No list filters an hrule's candidates, so where the program declares
+/// one, `(solve :no-hypothesis (R))` lifts nothing (and since that stage a list
+/// naming a relation an hrule proposes is refused at load): the remedy names
+/// the hrules that propose R instead.
+#[derive(Clone, Default, Debug)]
+pub struct Proposers {
+    /// Whether the program declares an hrule, active or not: the ladder's
+    /// first rung, and then the only one.
+    pub declared: bool,
+    /// Each relation an active hrule proposes, and the hrules that do, as the
+    /// line names them: `hrule 'h'`, `hrule 'h' (a b)`.
+    pub by_relation: Vec<(Symbol, Vec<String>)>,
+    /// With no hrule, each relation an obligation of root's activators owes,
+    /// and the obligations that do, `obligation 'o'`: a list may not filter
+    /// it either (M1f S1f.6.34, O + NH).
+    pub owed: Vec<(Symbol, Vec<String>)>,
+}
+
+/// `(relation, names)`, one entry a relation, each name once.
+fn add_named(to: &mut Vec<(Symbol, Vec<String>)>, rel: Symbol, named: String) {
+    match to.iter_mut().find(|(r, _)| *r == rel) {
+        Some((_, hs)) if !hs.contains(&named) => hs.push(named),
+        Some(_) => {}
+        None => to.push((rel, vec![named])),
+    }
+}
+
+impl Proposers {
+    /// Read off the program at `s`'s state: the hrules where it declares any,
+    /// and the obligations where it declares none.
+    pub fn of(
+        s: &mut crate::saturator::Session<'_>,
+    ) -> Result<Proposers, crate::compile::CompileError> {
+        if s.kb.program().hrules.is_empty() {
+            let mut owed: Vec<(Symbol, Vec<String>)> = Vec::new();
+            if !s.kb.program().obligations.is_empty() {
+                let memo = s.memo.clone();
+                for p in crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)? {
+                    if let Some(rel) = crate::obligations::open_argument(&p, s.terms) {
+                        add_named(
+                            &mut owed,
+                            rel,
+                            format!("obligation '{}'", s.terms.sym(p.rule)),
+                        );
+                    }
+                }
+            }
+            return Ok(Proposers {
+                owed,
+                ..Proposers::default()
+            });
+        }
+        let mut by_relation: Vec<(Symbol, Vec<String>)> = Vec::new();
+        for p in crate::hrule::Hrules::new(s)?.plans() {
+            let Some(rel) = crate::compile::asserted_relation(p, s.terms) else {
+                continue;
+            };
+            let h = s.terms.sym(p.rule);
+            let named = if p.activator_args.is_empty() {
+                format!("hrule '{h}'")
+            } else {
+                let a: Vec<String> = p
+                    .activator_args
+                    .iter()
+                    .map(|&v| s.terms.display(v))
+                    .collect();
+                format!("hrule '{h}' ({})", a.join(" "))
+            };
+            add_named(&mut by_relation, rel, named);
+        }
+        Ok(Proposers {
+            declared: true,
+            by_relation,
+            owed: Vec::new(),
+        })
+    }
+
+    fn proposing(&self, rel: Symbol) -> Option<&[String]> {
+        self.by_relation
+            .iter()
+            .find(|(r, _)| *r == rel)
+            .map(|(_, hs)| hs.as_slice())
+    }
+
+    fn owing(&self, rel: Symbol) -> Option<&[String]> {
+        self.owed
+            .iter()
+            .find(|(r, _)| *r == rel)
+            .map(|(_, os)| os.as_slice())
+    }
+}
+
 /// One refused refutation.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Refusal {
@@ -158,8 +252,11 @@ pub struct Refusal {
 
 impl Refusal {
     /// One line: the rule, what it rests on, and the forms that say what was
-    /// meant (F4).
-    pub fn text(&self, terms: &Terms) -> String {
+    /// meant (F4). The first form is the program's way to close the relation:
+    /// `(solve :no-hypothesis (R))` where it declares no hrule, and where it
+    /// declares one, the hrules that propose R, which no list filters (M1f
+    /// S1f.6.34, E-47).
+    pub fn text(&self, terms: &Terms, proposers: &Proposers) -> String {
         let rule = terms.sym(self.rule);
         let act = if self.activator.is_empty() {
             String::new()
@@ -193,7 +290,7 @@ impl Refusal {
             ),
         };
         // A stored negative's relation is closed by closing its positive.
-        let close = match &self.cause {
+        let over = match &self.cause {
             Cause::Direct { over, .. }
             | Cause::Via {
                 over: Over::Rel(over),
@@ -202,19 +299,47 @@ impl Refusal {
             | Cause::Activator {
                 over: Over::Rel(over),
                 ..
-            } if over.name != terms.kernel.not => {
-                format!("(solve :no-hypothesis ({}))", terms.sym(over.name))
-            }
-            _ => "(solve :no-hypothesis (…))".to_string(),
+            } if over.name != terms.kernel.not => Some(over.name),
+            _ => None,
+        };
+        let close = match (proposers.declared, over) {
+            // An obligation owes it: no list may filter it (M1f S1f.6.34).
+            (false, Some(r)) if proposers.owing(r).is_some() => format!(
+                "let no obligation owe {}, if no commitment is meant to extend it — {} owes \
+                 it, and no list may filter what an obligation owes",
+                terms.sym(r),
+                proposers.owing(r).unwrap_or_default().join(" and ")
+            ),
+            (false, Some(r)) => format!(
+                "close the relation, (solve :no-hypothesis ({})), if no commitment is meant to \
+                 extend it",
+                terms.sym(r)
+            ),
+            (false, None) => "close the relation, (solve :no-hypothesis (…)), if no commitment \
+                              is meant to extend it"
+                .to_string(),
+            // Beside an hrule no list filters a candidate (M1f S1f.6.34).
+            (true, _) => match over.and_then(|r| proposers.proposing(r).map(|hs| (r, hs))) {
+                Some((r, hs)) => format!(
+                    "let no hrule propose {}, if no commitment is meant to extend it — {} \
+                     proposes it, and no list filters an hrule's candidates",
+                    terms.sym(r),
+                    hs.join(" and ")
+                ),
+                None => format!(
+                    "let no hrule propose what {rel} is derived from, if no commitment is meant \
+                     to extend it — the hrules are this program's commitments, and no list \
+                     filters their candidates"
+                ),
+            },
         };
         format!(
             "rule '{rule}'{act}: concludes {concl} from {from} — so it calls a state that has not yet decided {rel} a \
              contradiction, and a commitment would lift it (dead is not upward-closed under \
-             absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the \
-             relation, {close}, if no commitment is meant to extend it; state a requirement \
-             as a decision or an obligation, a yes/no attribute that must be decided \
-             (functional + total-owed) or (open ?R) with hrules that propose it; or conclude \
-             from a stored negative, (not …), as std.algebra's total does"
+             absent; forbidden since M1e2 S1e2.2.5). Write what it means: {close}; state a \
+             requirement as a decision or an obligation, a yes/no attribute that must be \
+             decided (functional + total-owed) or (open ?R) with hrules that propose it; or \
+             conclude from a stored negative, (not …), as std.algebra's total does"
         )
     }
 }
@@ -525,10 +650,10 @@ fn extendable_over(
 }
 
 /// The refusals as [`crate::SolveError::Refused`]'s message: one line each.
-pub fn message(refusals: &[Refusal], terms: &Terms) -> String {
+pub fn message(refusals: &[Refusal], terms: &Terms, proposers: &Proposers) -> String {
     refusals
         .iter()
-        .map(|r| r.text(terms))
+        .map(|r| r.text(terms, proposers))
         .collect::<Vec<_>>()
         .join("\n")
 }

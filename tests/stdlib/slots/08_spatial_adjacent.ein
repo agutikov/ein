@@ -92,8 +92,11 @@
 (right-of Ann Cat) (not (co-loc Ann S2))
 (right-of Bob Dog) (not (co-loc Dog S2))
 
+;; `co-loc` is not listed (M1f S1f.6.34): `slot-partition-setup` activates
+;; `slot-owed-room` and `slot-owed-fill`, which owe it, and a list may not filter what an
+;; obligation owes. Root owes nothing, so the rung proposes nothing.
 (solve
-  :no-hypothesis (type instance co-loc right-of)
+  :no-hypothesis (type instance right-of)
   :expect (region (model (co-loc Cid S1) (co-loc S1 Cid)
                          (co-loc Dog S1) (co-loc S1 Dog)
                          (co-loc Bob S2) (co-loc S2 Bob)

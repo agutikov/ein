@@ -954,6 +954,12 @@ runs   = ["solve"]
 note   = "M1e D1, the same defect between layers, whose trigger is the singleton writeback rather than the kill cache; fixed by M1e S1e.3.1 (`CO-M1`). Under R it answered four states. **Refused since M1e2 S1e2.2.5** (*forbid*): `totality` concludes (false) from (absent (p A)) over p, which the hrule proposes, so `solve` exits 1 (`W1/alive-empty-interlayer`)."
 
 [[entry]]
+path   = "examples/ein-bugs/closed-and-owing.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1f S1f.6.34's fixture of the refusal of an obligation on a closed relation (the user, 2026-11-13: *\"obligated relation can't be __closed__ also\"*): `(total-owed r is-a)` owes `r`, which `infer-closure` closes. Every command refuses it, one line, exit 1. Until then `tests/stdlib/closure/03_closed_and_owing.ein`, its twin `02_closed_and_satisfied.ein` with the witness edge deleted: the requirement unmet and unreachable, and from M1d S1d.2.6 the read-out `Open — owes 1 (r: 1)` against the twin's `Solution`."
+
+[[entry]]
 path   = "examples/ein-bugs/naf-upward-closure.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
@@ -3866,12 +3872,6 @@ path   = "tests/stdlib/closure/02_closed_and_satisfied.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "the control half of the closed-and-owing pair (M1d S1d.2.2). Closed by infer-closure, and the totality requirement met by the one authored edge."
-
-[[entry]]
-path   = "tests/stdlib/closure/03_closed_and_owing.ein"
-group  = "stdlib"
-runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "its twin with the witness edge deleted: the requirement is unmet AND unreachable — closure forbids the hypothesis, no rule derives one, and `total`'s stored-negative discipline keeps its scan silent — and until M1d S1d.2.6 the verdict did not move: `Solution`, both. S1d.2.6 moved it. Nobody says `(false)` about a closed and owing state, and the read-out says `Open — owes 1 (r: 1)`, against the twin's `Solution`."
 
 [[entry]]
 path   = "tests/stdlib/digits/01_tables.ein"

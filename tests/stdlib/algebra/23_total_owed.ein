@@ -59,9 +59,19 @@
 
 (likes Bob Stew)
 
+;; ── Both roles, since M1f S1f.6.34 ──────────────────────────────────────────
+;;
+;; Root owes Ann a Food and is not in R; the obligation proposes what would pay
+;; it, Ann's two likings, and R is the three states that do. Until S1f.6.34
+;; `:no-hypothesis (is-a likes)` kept it from proposing them, R was empty and
+;; the claim `(owing (model (likes Bob Stew)))`; a list may not filter what an
+;; obligation owes since (*"filtered obligations are nonsense by definition"*,
+;; the user, 2026-11-13). The owe count and the report are root's, unmoved.
 (solve
-  :no-hypothesis (is-a likes)
-  :expect (region (owing (model (likes Bob Stew)))))
+  :no-hypothesis (is-a)
+  :expect (region (model (likes Ann Soup) (likes Bob Stew))
+                  (model (likes Ann Stew) (likes Bob Stew))
+                  (model (likes Ann Soup) (likes Ann Stew) (likes Bob Stew))))
 
 (query
   :goal (likes ?who ?what))

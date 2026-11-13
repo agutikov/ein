@@ -51,10 +51,20 @@
 (instance Cat Pet) (instance Dog Pet)
 
 (co-loc Ann S1)              ; Bob, Cat and Dog are still owed a seat
+(not (co-loc Bob S2)) (not (co-loc Cat S2)) (not (co-loc Dog S2))   ; S2 is no seat for them
 
+;; ── Both roles, since M1f S1f.6.34 ──────────────────────────────────────────
+;;
+;; Root owes the three seats and is not in R; the obligation proposes what would
+;; pay each, and with S2 closed to the three the one way is S1, so R is the one
+;; state that pays all three. Until S1f.6.34 `:no-hypothesis (type instance
+;; co-loc)` kept it from proposing, R was empty and the claim `(owing (model
+;; (co-loc Ann S1)))`; a list may not filter what an obligation owes since (the
+;; user, 2026-11-13). The three negatives keep R one state where it would be 27;
+;; they discharge nothing, so the count is root's three, unmoved.
 (solve
-  :no-hypothesis (type instance co-loc)
-  :expect (region (owing (model (co-loc Ann S1)))))
+  :no-hypothesis (type instance)
+  :expect (region (model (co-loc Ann S1) (co-loc Bob S1) (co-loc Cat S1) (co-loc Dog S1))))
 
 (query
   :goal (co-loc ?a ?b))

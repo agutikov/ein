@@ -64,13 +64,17 @@
 ;;; Priority 500 for the same reason the probe there has it: something that
 ;;; reads the world has to be the last thing to read it.
 ;;;
-;;; The verdict is `Open` — the seating is not determined and `co-loc` owes
-;;; sixteen placements — and that is deliberate. What is being tested is one
-;;; derivation, not a puzzle, and the claim is about the fact set the state
-;;; reached, which is what an `:expect` is about however the read-out words it.
+;;; The seating is not determined, and that is deliberate. What is being
+;;; tested is one derivation, not a puzzle, and the claim is about the fact set
+;;; root reached. Until M1f S1f.6.34 the verdict was `Open`, `co-loc` owing
+;;; sixteen placements through `slot-partition`'s obligations, which the
+;;; program's `:no-hypothesis` kept from proposing; with them written out of the
+;;; activators below, root owes nothing and is R.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
-(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
+(import std.slots   :symbols (slot-spatial-setup
+                                 slot-locate slot-exclusive slot-occupied slot-negative
+                                 slot-elimination slot-fill slot-no-room slot-no-fill))
 
 (relation type     T T :why "{?1} is a subtype of {?2}")
 (relation instance T T :why "{?1} is an instance of {?2}")
@@ -79,7 +83,21 @@
 (relation excluded Attribute Attribute :why "{?1} was ruled out of {?2}")
 
 (symmetric co-loc)
-(slot-partition co-loc instance type Attribute Seat)
+;; `slot-partition-setup`'s fan-out, written out but for its two obligations
+;; (M1f S1f.6.34): with `slot-owed-room` and `slot-owed-fill` activated, root owed
+;; and `:no-hypothesis` kept them from proposing what they owe, R empty and the
+;; claim `(owing (model …))`; a list may not filter what an obligation owes since
+;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13).
+;; This file's question is root's saturation, and with no obligation it owes
+;; nothing: R is root, the same facts. `01_partition.ein` keeps the setup.
+(slot-locate      co-loc instance Seat)
+(slot-exclusive   co-loc instance type Attribute)
+(slot-occupied    co-loc instance type Attribute)
+(slot-negative    co-loc instance Seat)
+(slot-elimination co-loc instance type Attribute Seat)
+(slot-fill        co-loc instance type Attribute Seat)
+(slot-no-room     co-loc instance type Attribute Seat)
+(slot-no-fill     co-loc instance type Attribute Seat)
 (slot-spatial   co-loc right-of instance Seat)
 
 (type Attribute T)
@@ -102,7 +120,7 @@
 
 (solve
   :no-hypothesis (type instance co-loc right-of excluded)
-  :expect (region (owing (model (excluded Ann S4)))))
+  :expect (region (model (excluded Ann S4))))
 
 (query
   :goal (excluded ?x ?y))

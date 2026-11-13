@@ -165,18 +165,17 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
             d.root.owes,
             got.join("\n  "),
         );
-        // Every fixture here is decided at root: an owing root is R's whole
-        // owing frontier, with root's own debts, and a discharged one is R's
-        // one state.
+        // An owing root is no state of R, and the obligation proposes what
+        // would pay it, so R is the states that do (since M1f S1f.6.34, which
+        // refuses the `:no-hypothesis` that kept it from proposing, and R was
+        // empty with root its owing frontier); a discharged root is R's one
+        // state.
         if want > 0 {
-            assert_eq!(d.k_s(), 0, "{rel}: a root that owes is no state of R");
-            assert_eq!(
-                d.frontier
-                    .iter()
-                    .map(|o| (o.set.len(), o.owed.clone()))
-                    .collect::<Vec<_>>(),
-                vec![(0, got.clone())],
-                "{rel}: the owing frontier is root, owing what root owes"
+            assert!(!d.root.in_r(), "{rel}: a root that owes is no state of R");
+            assert!(d.k_s() > 0, "{rel}: the obligation proposes what pays it");
+            assert!(
+                d.frontier.is_empty(),
+                "{rel}: no alive node owes with no alive node above it"
             );
         } else {
             assert!(d.root.in_r(), "{rel}: a discharged root is in R");
@@ -194,9 +193,12 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
 /// **A state that owes is not a `Solution`** — and this is the test S1d.2.4
 /// wrote to be edited here.
 ///
-/// `23_total_owed.ein` is `consistent ∧ complete` by the only completeness
-/// test the engine had — *does the generator propose anything?* — and it owes
-/// Ann a Food. S1d.2.4 asserted `Solution` and said in its own doc comment
+/// `tests/region/04_owing.ein` is `consistent ∧ complete` by the only
+/// completeness test the engine had — *does the generator propose anything?*
+/// — and it owes Ann a Food. (It was `23_total_owed.ein` until M1f S1f.6.34,
+/// whose `:no-hypothesis` kept the obligation from proposing; `04` is its
+/// program with Ann's two likings stored false, so nothing that would pay her
+/// debt survives.) S1d.2.4 asserted `Solution` and said in its own doc comment
 /// that [S1d.2.6] would have to change it. It did: `complete` in the verdict
 /// read-out now means **discharged**, so the state is reported `Open`, the
 /// word is `owes 1`, and the debt is the reason rather than a footnote beside
@@ -216,7 +218,7 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
 /// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn a_state_that_owes_is_open_and_not_a_solution() {
-    let rel = "tests/stdlib/algebra/23_total_owed.ein";
+    let rel = "tests/region/04_owing.ein";
     assert_eq!(
         single(rel),
         "Open",
@@ -246,8 +248,9 @@ fn a_state_that_owes_is_open_and_not_a_solution() {
 /// state owing something it can never pay, reported as a model — and what
 /// moved it was one declaration, not the verdict change. So the rule needs a
 /// witness on the other side: a program judged by *exhaustion* because it
-/// never said what it owed. `02_closed_and_satisfied.ein` is the discharged
-/// twin, and `01_infer_closure.ein` is the neighbour that states nothing.
+/// never said what it owed. `01_infer_closure.ein` is the neighbour that
+/// states nothing, and since M1f S1f.6.34 so is `02_closed_and_satisfied.ein`
+/// (the next test).
 #[test]
 fn a_program_that_states_no_obligation_keeps_its_word() {
     let rel = "tests/stdlib/closure/01_infer_closure.ein";
@@ -264,28 +267,37 @@ fn a_program_that_states_no_obligation_keeps_its_word() {
     );
 }
 
-/// The pair S1d.2.2 banked, cashed: one fact apart, and now one **word** apart.
+/// The pair S1d.2.2 banked, and what became of it: **the corner is a
+/// conflict**.
 ///
-/// Both declare `(total-owed r is-a)` since S1d.2.6 — which is what puts them
-/// in scope at all — and `03` is `02` with the witness edge deleted. The
-/// contract's rule holds: the word is `Open` and **not** `(false)`, because no
-/// rule derived a refutation. That the debt is unpayable is said by the rung
-/// (`mode=stuck`), not by the verdict.
+/// `02_closed_and_satisfied.ein` and `03_closed_and_owing.ein` both declared
+/// `(total-owed r is-a)` beside the closure `infer-closure` derives, one fact
+/// apart, and from S1d.2.6 one word apart: `Solution`, and `Open — owes 1` with
+/// the rung `stuck`. Since M1f S1f.6.34 an obligation on a closed relation is
+/// refused at load (*"obligated relation can't be __closed__ also"*, the user,
+/// 2026-11-13): the twin is `examples/ein-bugs/closed-and-owing.ein`, the
+/// refusal's fixture, which the mechanisms check refuses with one line naming
+/// the obligation, its activator, the closure and the rule that derives it;
+/// and `02` keeps the closure, drops the obligation, and is `Solution` by
+/// exhaustion.
 #[test]
-fn the_closed_and_owing_pair_now_differs_by_a_word() {
+fn the_closed_and_owing_corner_is_a_conflict() {
     let sat = "tests/stdlib/closure/02_closed_and_satisfied.ein";
-    assert_eq!(single(sat), "Solution", "the witness discharges it");
+    assert_eq!(single(sat), "Solution", "closed, and owing nothing");
     let (_, _, kb) = load(sat);
-    assert_eq!(kb.program().obligations.len(), 1, "and it is in scope");
+    assert!(kb.program().obligations.is_empty(), "it states none");
 
-    let owing = "tests/stdlib/closure/03_closed_and_owing.ein";
-    assert_eq!(single(owing), "Open", "the same file, one fact fewer");
-    assert_eq!(describe(owing).root.owes, 1, "a1 owes a B");
-    assert_ne!(
-        single(sat),
-        single(owing),
-        "the corner is what a pair reporting one word for two states was"
-    );
+    let owing = "examples/ein-bugs/closed-and-owing.ein";
+    let (ast, mut terms, mut kb) = load(owing);
+    let report = ein_infer::mechanisms::check(&ast, &mut terms, &mut kb).expect("root saturates");
+    assert_eq!(report.conflicts.len(), 1, "{:?}", report.conflicts);
+    let line = &report.conflicts[0];
+    for want in [
+        "obligation 'total-owed', activated by (total-owed r is-a)",
+        "owes r, and (__closed__ r), which rule 'infer-closure' derives, says r is closed",
+    ] {
+        assert!(line.contains(want), "{line:?} does not say {want:?}");
+    }
 }
 
 // ── the two numbers ────────────────────────────────────────────────

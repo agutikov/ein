@@ -306,7 +306,7 @@ and all eleven were before this stage; what is new is that they **say so**, in
 a `rung` line and in `--hyp-stats`. Ten owe because `:no-hypothesis` names the
 relation ([`23_total_owed.ein`](../../../tests/stdlib/algebra/23_total_owed.ein)
 and its nine relatives); the eleventh regime — closed *and* owing — is
-[`03_closed_and_owing.ein`](../../../tests/stdlib/closure/03_closed_and_owing.ein),
+[`03_closed_and_owing.ein`](../../../examples/ein-bugs/closed-and-owing.ein),
 whose relation is `__closed__` and which the domain contract §3 already banked.
 
 **No verdict word moves on any of them here.**

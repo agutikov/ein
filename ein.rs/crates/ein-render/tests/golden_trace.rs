@@ -70,7 +70,7 @@ const REAL_TRACES: [(&str, &str, &str); 6] = [
         "tests/stdlib/algebra/09_irreflexive_violated.ein",
         "",
     ),
-    ("owing", "tests/stdlib/closure/03_closed_and_owing.ein", ""),
+    ("owing", "tests/region/04_owing.ein", ""),
 ];
 
 /// Run `rel` under `flag` and render its trace exactly as `ein solve [flag]
