@@ -23,6 +23,28 @@ The tables it prints, each a section:
     chain      the factorial chain of `factorial.ein`, by its last number: nothing written, all derived
     solve      `ein solve` beside `ein saturate` on the same programs: the read-out writes the state
 
+`--biggest` is another mode (M1f S1f.6.29), run by hand and by nothing else: for each of `ein saturate` and
+`ein solve`, and for each shape, the largest size whose run ends within a memory cap, about 16 GB by the user's
+reply of 2026-11-12 (*"pick the one that fits into memory, say ~16GB; do not call it in tests and in CI, just
+for manual solve call"*), and within a time limit:
+
+    utils/bench_env.sh python3 utils/arith_cost.py --biggest                          # every command and shape
+    utils/bench_env.sh python3 utils/arith_cost.py --biggest --commands solve --shapes chain
+
+    product    one request, `mul`, two operands of N digits; the parser bounds N at 999
+    quotient   one request, `div`, a dividend of 2N digits by a divisor of N; the parser bounds N at 499
+    requests   N requests of nine-digit numbers, the five operations in turn (`--op mix`)
+    chain      the factorial chain to N!
+
+Each program is written by `gen_arith_examples.py`'s `on_demand`, the function behind its `--op`, under
+`--work`. **Every run is held in a cgroup of its own** (`systemd-run --user --scope -p MemoryMax=… -p
+MemorySwapMax=0`), so a run that would pass the cap is killed by the kernel inside its scope and reported
+as such, and its `oom_score_adj` is 1000, so that if the host ran out of memory first the kernel would end
+it before anything of the user's. A run past `--time-limit` is killed and reported. The search doubles a
+size until a run fails or the parser's bound is reached, then narrows between the last size that ended and
+the first that did not, to `--resolution`. *rss* is the run's peak resident memory (`wait4`), and every
+run is one process, measured once. `free`'s *available* is printed before each run.
+
 Every program past the shipped examples is written here, under `build/arith_cost/`, by the generator's own
 functions with its seed; none is a corpus entry. Each time is the best of `--best` runs (5), a run a process;
 *wall* is the whole process, and *rss* its peak resident memory (`wait4`). Numbers taken on an idle machine
@@ -33,6 +55,7 @@ The engine is `$EIN_BIN`, or `ein.rs/target/release/ein`. No dependency beyond t
 from __future__ import annotations
 
 import argparse
+import math
 import os
 import re
 import subprocess
@@ -280,6 +303,236 @@ def section_solve(best: int, seed: int) -> None:
     table(["program", "firings", "facts", "saturate wall ms", "solve wall ms", "solve / saturate"], rows)
 
 
+# ── The biggest calculation (S1f.6.29) ─────────────────────────────────────
+
+MEM_CAP = 16_000_000_000       # bytes: "say ~16GB", the user's reply of 2026-11-12
+TIME_LIMIT = 600.0             # s: a run past this is killed and reported
+WINDOW = (50.0, 150.0)         # s: the user's first reply, "100+-50 seconds on this host"
+
+# shape: (the generator's arguments for a size, the first size, the parser's bound on the size)
+SHAPES = {
+    "product": (lambda n: dict(op="mul", digits=n, dividend=2 * n, count=1, n=None), 100, 999),
+    "quotient": (lambda n: dict(op="div", digits=n, dividend=2 * n, count=1, n=None), 100, 499),
+    "requests": (lambda n: dict(op="mix", digits=9, dividend=18, count=n, n=None), 2000, None),
+    "chain": (lambda n: dict(op="factorial", digits=None, dividend=None, count=1, n=n), 100, None),
+}
+
+
+def available() -> int:
+    """`MemAvailable`, in bytes."""
+    for line in Path("/proc/meminfo").read_text().splitlines():
+        if line.startswith("MemAvailable:"):
+            return int(line.split()[1]) * 1024
+    return 0
+
+
+def capped(args: list[str], out: Path, mem: int, limit: float) -> dict:
+    """One `ein` process in a cgroup of its own, capped at `mem` bytes and `limit` seconds."""
+    def adjust() -> None:
+        with open("/proc/self/oom_score_adj", "w") as f:
+            f.write("1000")
+    cmd = ["systemd-run", "--user", "--scope", "--quiet", "-p", f"MemoryMax={mem}", "-p", "MemorySwapMax=0",
+           "-p", "OOMPolicy=continue", "--", EIN, *args]
+    avail = available()
+    with open(out, "wb") as so, open(out.with_suffix(".err"), "wb") as se:
+        start = time.perf_counter()
+        proc = subprocess.Popen(cmd, stdout=so, stderr=se, cwd=REPO, preexec_fn=adjust)
+        killed = False
+        while True:
+            pid, status, usage = os.wait4(proc.pid, os.WNOHANG)
+            if pid:
+                break
+            if time.perf_counter() - start > limit:
+                proc.kill()
+                killed = True
+                pid, status, usage = os.wait4(proc.pid, 0)
+                break
+            time.sleep(0.05)
+        wall = time.perf_counter() - start
+    proc.returncode = 0  # reaped by wait4
+    if killed:
+        # a process held at its cgroup's cap without swap is not killed at once: the kernel evicts its
+        # code pages and it crawls, so a run at the cap when the limit passed is the cap's
+        how = "memory" if usage.ru_maxrss * 1024 >= 0.95 * mem else "time"
+    elif os.WIFSIGNALED(status):
+        how = "memory" if os.WTERMSIG(status) == 9 else f"signal {os.WTERMSIG(status)}"
+    else:
+        how = "ok" if os.WEXITSTATUS(status) == 0 else f"exit {os.WEXITSTATUS(status)}"
+    return dict(how=how, wall=wall, rss=usage.ru_maxrss * 1024, available=avail)
+
+
+def counts(out: Path) -> tuple[int | None, int | None]:
+    """Firings and stored facts, as `ein saturate` prints them."""
+    text = out.read_text(errors="replace")
+    f = number(r"^saturate:\s+[0-9.]+ ms\s+\((\d+) firings", text)
+    n = number(r"^\s+facts \(total\)\s+\d+\s+(\d+)", text)
+    return (int(f) if f is not None else None, int(n) if n is not None else None)
+
+
+def expected(kw: dict, seed: int) -> list[dict[str, str]]:
+    """Python's answer to each query `on_demand` writes, in its order, as `ein solve` prints the bindings."""
+    def num(v: int) -> str:
+        return str(v)
+    if kw["op"] == "factorial":
+        return [{"?f": num(math.factorial(kw["n"]))}]
+    _, batches = gen.operands(kw["op"], kw["digits"], kw["dividend"], kw["count"], seed)
+    out = []
+    for o in gen.OPS:
+        if o not in batches:
+            continue
+        x, y = batches[o][0]
+        out.append({"add": {"?s": num(x + y)},
+                    "sub": {"?d": num(max(x - y, 0)), "?r": num(max(y - x, 0))},
+                    "cmp": {"?o": "lt" if x < y else "gt" if x > y else "eq"},
+                    "mul": {"?p": num(x * y)},
+                    "div": {"?q": num(x // y), "?r": num(x % y)}}[o])
+    return out
+
+
+def printed(text: str) -> list[dict[str, str]]:
+    """Each query's bindings as `ein solve` prints them, a number read back from `std.arith`'s spelling."""
+    def value(v: str) -> str:
+        v = v.strip()
+        if v == "z":
+            return "0"
+        if v.startswith("(n "):
+            return str(int("".join(re.findall(r" (\d)\)", v))))
+        return v
+    found = []
+    for m in re.finditer(r"^\s+class 1 of 1\s+.*\n\s+(\?.*)$", text, re.M):
+        found.append({k: value(v) for k, v in (b.split(" = ", 1) for b in m.group(1).split(" · "))})
+    return found
+
+
+def biggest_run(command: str, shape: str, size: int, work: Path, mem: int, limit: float, seed: int,
+                log: list) -> dict:
+    """Write the program of `shape` at `size`, run `ein COMMAND` on it under the cap, and log the run."""
+    kw = SHAPES[shape][0](size)
+    path = work / f"{shape}-{size}.ein"
+    if not path.exists():
+        path.write_text(gen.on_demand(seed=seed, expect=True, **kw))
+    out = work / f"{shape}-{size}.{command}.out"
+    r = capped([command, str(path)], out, mem, limit)
+    r.update(command=command, shape=shape, size=size, path=str(path.relative_to(REPO)),
+             bytes=path.stat().st_size, date=time.strftime("%Y-%m-%d"),
+             generate=gen.command(seed=seed, expect=True, **kw).replace("-o FILE", f"-o {path.relative_to(REPO)}"))
+    if command == "saturate" and r["how"] == "ok":
+        r["firings"], r["facts"] = counts(out)
+    if command == "solve" and r["how"] == "ok":
+        text = out.read_text(errors="replace")
+        r["claims_held"] = text.count(":expect           holds")
+        r["claims_failed"] = len(re.findall(r"^  :expect\s+(?!holds)", text, re.M))
+        r["answers_right"] = printed(text) == expected(kw, seed)
+        if not r["answers_right"]:
+            print(f"  !! {path}: an answer `ein solve` printed is not Python's", file=sys.stderr, flush=True)
+    log.append(r)
+    print(f"  {command} {shape} {size}: {r['how']}, {r['wall']:.1f} s, rss {r['rss'] / 1e9:.2f} GB, "
+          f"available {r['available'] / 1e9:.1f} GB", file=sys.stderr, flush=True)
+    return r
+
+
+def next_size(oks: list[dict], bad: dict | None, bound: int | None, mem: int, limit: float,
+              resolution: float) -> int:
+    """The next size to try: doubled while nothing failed, then narrowed, each step aimed by the power law
+    the two largest sizes that ended draw for the measure that binds (rss for the cap, wall for the limit)."""
+    best = oks[-1]
+    floor = best["size"] + max(1, int(best["size"] * resolution))
+    def aimed(measure: str, target: float) -> int | None:
+        if len(oks) < 2:
+            return None
+        a, b = oks[-2], oks[-1]
+        if a[measure] <= 0 or b[measure] <= a[measure]:
+            return None
+        k = math.log(b[measure] / a[measure]) / math.log(b["size"] / a["size"])
+        return int(b["size"] * (target / b[measure]) ** (1 / k)) if k > 0.1 else None
+    at_cap, at_limit = aimed("rss", 0.95 * mem), aimed("wall", 0.9 * limit)
+    if bad is None:
+        size = 2 * best["size"]
+        for guess in (at_cap, at_limit):
+            if guess is not None:
+                size = min(size, max(guess, floor))
+        return min(size, bound) if bound is not None else size
+    guess = at_cap if bad["how"] == "memory" else at_limit
+    ceiling = bad["size"] - max(1, int(bad["size"] * resolution / (1 + resolution)))
+    if guess is None:
+        guess = int(round((best["size"] * bad["size"]) ** 0.5))
+    return max(floor, min(guess, ceiling)) if floor < bad["size"] else best["size"] + 1
+
+
+def biggest_search(command: str, shape: str, work: Path, mem: int, limit: float, seed: int, resolution: float,
+                   log: list) -> dict:
+    """The largest size of `shape` whose `ein COMMAND` ends within the cap and the limit."""
+    _, first, bound = SHAPES[shape]
+    oks: list[dict] = []
+    bad: dict | None = None
+    size = first
+    while True:
+        r = biggest_run(command, shape, size, work, mem, limit, seed, log)
+        if r["how"] == "ok":
+            oks.append(r)
+            oks.sort(key=lambda o: o["size"])
+        elif bad is None or r["size"] < bad["size"]:
+            bad = r
+        if not oks:
+            return dict(command=command, shape=shape, best=None, next=bad, bound="none ended")
+        best = oks[-1]
+        if bad is None and bound is not None and best["size"] >= bound:
+            return dict(command=command, shape=shape, best=best, next=None, bound="the parser")
+        if bad is not None and bad["size"] - best["size"] <= max(1, int(best["size"] * resolution)):
+            return dict(command=command, shape=shape, best=best, next=bad, bound=bad["how"])
+        size = next_size(oks, bad, bound, mem, limit, resolution)
+
+
+def section_biggest(args: argparse.Namespace) -> None:
+    import json
+    work = args.work if args.work.is_absolute() else REPO / args.work
+    work.mkdir(parents=True, exist_ok=True)
+    print("## The biggest calculation\n")
+    print(f"Every run in a cgroup of its own, `MemoryMax={args.mem}` ({args.mem / 1e9:.1f} GB, "
+          f"{args.mem / 2**30:.1f} GiB) and no swap, and killed past {args.time_limit:.0f} s; the size doubled, "
+          f"then narrowed to {args.resolution:.0%}. *available* is `MemAvailable` before the first run: "
+          f"{available() / 1e9:.1f} GB.\n", flush=True)
+    log: list = []
+    found = []
+    for command in args.commands:
+        for shape in args.shapes:
+            print(f"{command} {shape}:", file=sys.stderr, flush=True)
+            found.append(biggest_search(command, shape, work, args.mem, args.time_limit, args.seed,
+                                        args.resolution, log))
+            (work / "biggest.json").write_text(json.dumps(dict(found=found, runs=log), indent=1))
+    rows = []
+    for f in found:
+        b, n = f["best"], f["next"]
+        if b is None:
+            rows.append([f"`ein {f['command']}`", f["shape"], "—", "—", "—", "—", "—", "—", "—", f["bound"]])
+            continue
+        if f["command"] == "solve" and "facts" not in b:
+            # the same program's saturation, for its counts: `ein solve` prints neither
+            out = work / f"{f['shape']}-{b['size']}.saturate.out"
+            sat = capped(["saturate", b["path"]], out, args.mem, args.time_limit)
+            if sat["how"] == "ok":
+                b["firings"], b["facts"] = counts(out)
+        inside = "yes" if WINDOW[0] <= b["wall"] <= WINDOW[1] else "no"
+        what = {"memory": "killed at the cap", "time": "killed at the limit"}
+        stop = ("the parser's limit" if f["bound"] == "the parser" else
+                f"{f['bound']}: {count(n['size'])} {what.get(n['how'], n['how'])}, {n['rss'] / 1e9:.1f} GB at "
+                f"{n['wall']:.0f} s")
+        answers = ("right" if b.get("answers_right") else "**wrong**") if f["command"] == "solve" else "not printed"
+        rows.append([f"`ein {f['command']}`", f["shape"], count(b["size"]), f"{b['wall']:.1f}",
+                     f"{b['rss'] / 1e9:.2f}", count(b.get("firings")), count(b.get("facts")), inside, answers, stop])
+    table(["command", "shape", "size", "wall s", "peak RSS GB", "firings", "facts", "in 100 ± 50 s",
+           "answers", "what stopped the next size"], rows)
+    print("The commands, each program written by the first and run by the second:\n")
+    for f in found:
+        if f["best"] is not None:
+            print(f"    {f['best']['generate']}\n    ein {f['command']} {f['best']['path']}\n")
+    print("Every run, in the order taken:\n")
+    table(["command", "shape", "size", "text", "ended", "wall s", "peak RSS GB", "available GB"],
+          [[f"`ein {r['command']}`", r["shape"], count(r["size"]), size(REPO / r["path"]), r["how"],
+            f"{r['wall']:.1f}", f"{r['rss'] / 1e9:.2f}", f"{r['available'] / 1e9:.1f}"] for r in log])
+    (work / "biggest.json").write_text(json.dumps(dict(found=found, runs=log), indent=1))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--quick", action="store_true", help="the split and the examples alone")
@@ -287,7 +540,20 @@ def main() -> int:
     ap.add_argument("--ops", nargs="+", choices=gen.OPS, default=list(gen.OPS))
     ap.add_argument("--best", type=int, default=5)
     ap.add_argument("--seed", type=int, default=gen.SEED)
+    big = ap.add_argument_group("the biggest calculation (S1f.6.29): run by hand, by no test")
+    big.add_argument("--biggest", action="store_true", help="the size search, and nothing else")
+    big.add_argument("--commands", nargs="+", choices=("saturate", "solve"), default=["saturate", "solve"])
+    big.add_argument("--shapes", nargs="+", choices=tuple(SHAPES), default=list(SHAPES))
+    big.add_argument("--mem", type=int, default=MEM_CAP, help="the cap, in bytes (default 16 000 000 000)")
+    big.add_argument("--time-limit", type=float, default=TIME_LIMIT, help="seconds a run may take")
+    big.add_argument("--resolution", type=float, default=0.02, help="how close the search narrows")
+    big.add_argument("--work", type=Path, default=WORK / "biggest", help="where the programs are written")
     args = ap.parse_args()
+    if args.biggest:
+        version = subprocess.run([EIN, "--version"], capture_output=True, text=True, cwd=REPO).stdout.splitlines()[0]
+        print(f"`{version}`, seed {args.seed}; `python3 utils/arith_cost.py {' '.join(sys.argv[1:])}`\n")
+        section_biggest(args)
+        return 0
     which = args.only or (["split", "examples"] if args.quick else
                           ["split", "examples", "digits", "requests", "chain", "solve"])
     version = subprocess.run([EIN, "--version"], capture_output=True, text=True, cwd=REPO).stdout.splitlines()[0]

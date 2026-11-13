@@ -387,6 +387,15 @@ def distinct(op: str, count: int, digits: int, dividend: int, rnd: random.Random
     return list(seen)
 
 
+def operands(op: str, digits: int, dividend: int, count: int, seed: int
+             ) -> tuple[dict[str, int], dict[str, list[tuple[int, int]]]]:
+    """Requests an operation, and the operand pairs of each, drawn from the seed in one order."""
+    ops = OPS if op == "mix" else (op,)
+    rnd = random.Random(seed)
+    per = {o: count // len(ops) + (1 if i < count % len(ops) else 0) for i, o in enumerate(ops)}
+    return per, {o: distinct(o, per[o], digits, dividend, rnd) for o in ops if per[o]}
+
+
 def on_demand(op: str, digits: int | None, dividend: int | None, count: int, n: int | None,
               seed: int, expect: bool) -> str:
     """One program of a stated size: the arguments and the seed name it, whatever the path."""
@@ -400,9 +409,7 @@ def on_demand(op: str, digits: int | None, dividend: int | None, count: int, n: 
         title = f"The factorial chain to {n}!"
     else:
         ops = OPS if op == "mix" else (op,)
-        rnd = random.Random(seed)
-        per = {o: count // len(ops) + (1 if i < count % len(ops) else 0) for i, o in enumerate(ops)}
-        batches = {o: distinct(o, per[o], digits, dividend, rnd) for o in ops if per[o]}
+        per, batches = operands(op, digits, dividend, count, seed)
         sizes = (f"numbers of exactly {digits} digits"
                  + (f", a dividend of {dividend}" if "div" in batches else ""))
         if count == 1:

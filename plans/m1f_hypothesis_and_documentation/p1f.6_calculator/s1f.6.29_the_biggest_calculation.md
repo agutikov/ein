@@ -1,7 +1,7 @@
 # S1f.6.29 — The biggest calculation: a generator with size arguments
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** [the record](#record-2026-11-13).
+**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13; stopped in T2 by the host's memory, the sweep half measured and not restarted unasked:** [the record](#record-2026-11-13).
 **Depends on:** [S1f.6.15](s1f.6.15_load_against_calculation.md), whose generator and cost script it
 extends. Independent of the stdlib layout; no stdlib module and no engine source moves.
 
@@ -150,3 +150,75 @@ refused with its line (`--op` without `-o`, `--n` beside an operation, `--divide
 requests, `--check` beside `--op`, `--count` without `--op`, 82 one-digit products); `cargo test --manifest-path
 ein.rs/Cargo.toml -p ein-cli --test arith_search_free`, 2 passed (`the_generated_examples_are_what_the_generator_writes`
 among them), 25.9 s.
+
+### T1f.6.29.2 — the search for the size: the instrument done, the sweep stopped by the host, half measured
+
+**The instrument.** `utils/arith_cost.py --biggest`, a mode of the script that runs nothing else, run by hand
+through `utils/bench_env.sh` and by no test, gate step, nightly step or dev-host step. For each command,
+`ein saturate` and `ein solve`, and each shape, it finds the largest size whose run ends within a memory cap and
+a time limit:
+
+| shape | the generator's arguments | the size | the parser's bound |
+|---|---|---|---:|
+| product | `--op mul --digits N` | N, both operands | 999 |
+| quotient | `--op div --digits N --dividend 2N` | N, the divisor | 499 |
+| requests | `--op mix --digits 9 --dividend 18 --count N` | N, the five operations in turn on nine-digit numbers | none |
+| chain | `--op factorial --n N` | N | none |
+
+Each program is written by the generator's `on_demand`, the function behind `--op`, under `--work`
+(`build/s1f.6.29/biggest/`). **Each run is one process in a cgroup of its own:** `systemd-run --user --scope -p
+MemoryMax=16000000000 -p MemorySwapMax=0 -p OOMPolicy=continue -- ein …`, so a run that would pass the cap is
+killed by the kernel inside its scope (SIGKILL, reported *memory*); its `oom_score_adj` is 1000, so that were the
+host to run out first the kernel would end it before anything of the user's; and a run past `--time-limit` is
+killed by the script (reported *time*, or *memory* where it sat within 5 % of the cap when killed: a process held
+at its cap without swap is not killed at once, its code pages are evicted and it crawls). Peak RSS is the
+process's own (`wait4`'s `ru_maxrss`; `/usr/bin/time` is not installed on this host), and *available* is
+`MemAvailable` before each run. The search doubles a size until a run fails or the parser's bound is reached, then
+narrows between the largest size that ended and the smallest that did not, each probe aimed by the power law the
+two largest sizes that ended draw for the measure that bound (RSS for the cap, wall for the limit), until the two
+are within `--resolution`. `ein solve`'s runs are held to Python's answers: each query's bindings as `ein solve`
+prints them, read back from `std.arith`'s spelling, against the answers `gen_arith_examples.operands` draws, so a
+wrong answer is seen where the claim is past the parser's limit and left out (checked on six small programs,
+2026-11-13, and a wrong expectation is caught). It writes three tables, the largest size by command and shape,
+the two commands of each, and every run, and `biggest.json`.
+
+The generator gains `operands()`, the draw `on_demand` now calls, so the script recomputes the operands it
+wrote; every file it writes is the same bytes (`--op mix --digits 9 --count 1000` before and after, `cmp` silent;
+`--check`, exit 0).
+
+The choices it rests on are defaulted as [Q-M1f.227](../open_questions.md#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take):
+**the cap is 16 000 000 000 bytes**, 16.0 GB, 14.9 GiB: the host had 16.2 GiB available (`MemAvailable` 16 994 396
+kB at 21:45:02, `build/s1f.6.29/free-before.txt`), so 16 GiB would have put a run's cap past what the host had
+left; **a run past 600 s is killed**, four times the window's top; **the search narrows to 3 %**.
+
+**The run, and why it stopped.** `utils/bench_env.sh python3 utils/arith_cost.py --biggest --mem 16000000000
+--time-limit 600 --resolution 0.03 --work build/s1f.6.29/biggest`, started 2026-11-13 21:45 on cpu4, a P-core,
+under the `powersave` governor (`build/s1f.6.29/biggest.log`). At 21:51, during the chain's eighth run, Claude
+Code stopped the background command because the host was critically low on memory: a run at the cap leaves the
+host about 1.4 GB of the 17.4 GB it had available, and the harness reaps a background command at that point. Its
+note: *do not start it again on your own … start it again only when asked*. So **`ein saturate`'s three shapes are
+measured, its chain to one size short of the end, and `ein solve` not at all**; the sweep is not restarted. No
+`ein` process or scope was left behind (`pgrep`, `systemctl --user list-units --type=scope`, 21:51).
+
+**What it measured, `ein saturate`**, one run each, the release binary at `2ef68530`, 2026-11-13; `ein saturate`
+prints no answer, so no answer of these is checked by the run:
+
+| shape | size | wall s | peak RSS GB | firings | facts | in 100 ± 50 s | what stopped the next size |
+|---|---:|---:|---:|---:|---:|---|---|
+| product | 999 digits by 999 | 14.9 | 6.13 | 5 000 895 | 5 002 922 | no | the parser's limit: an operand of 1 000 digits nests past it |
+| quotient | 998 digits by 499 | 5.8 | 2.94 | 2 099 934 | 2 101 961 | no | the parser's limit |
+| requests | 43 430, nine digits, the five in turn | 60.4 | 15.97 | 16 384 266 | 16 525 264 | yes | the cap: 44 732 killed at it, 15.97 GB at 53 s |
+| chain | 1 075!, a number of 2 794 digits | 48.1 | 15.98 | 16 017 805 | 16 027 355 | no | not known: 1 107, the next size the search aimed at, was at 16.8 million facts when the harness stopped the sweep |
+
+The runs, in order (wall s, peak RSS GB): product 100 (0.2, 0.08), 200 (0.5, 0.23), 400 (1.8, 0.87), 800 (8.0,
+3.42), 999 (14.9, 6.13); quotient 100 (0.3, 0.14), 200 (0.9, 0.42), 400 (3.7, 1.75), 499 (5.8, 2.94); requests
+2 000 (2.1, 0.90), 4 000 (4.4, 1.66), 8 000 (9.5, 3.22), 16 000 (20.5, 6.66), 32 000 (46.0, 11.62), 44 732 (killed
+at the cap at 52.9 s), 43 430 (60.4, 15.97); chain 100 (0.2, 0.08), 200 (0.8, 0.41), 400 (4.0, 1.68), 800 (22.6,
+8.25), 1 044 (44.5, 15.91), 1 075 (48.1, 15.98), 1 107 (stopped by the harness). The 43 430 requests are 3.39 s
+of parse, 0.23 s of load and 47.9 s of saturation; 1 075! is 39.6 s of saturation behind 1.4 ms of parse.
+
+**What it says so far.** Under `ein saturate` a written operand is bounded by the parser before memory or time:
+the longest product a program can write, 999 digits by 999, is 15 s and 6.1 GB, and the longest quotient 6 s and
+2.9 GB. A program that derives its numbers, or asks for many, reaches the cap first, in under a minute: about a
+kilobyte a stored fact (E-26), 16.5 million facts at the cap for the requests and 16.0 million for the chain.
+The batch of 43 430 requests is the one row inside the window.

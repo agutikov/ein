@@ -239,6 +239,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.224](#q-m1f224--what-a-bare-description-pays-for-n) | what a bare description pays for N | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: no change; a bare `ein solve` prints the `N` row with its count and takes the minimal transversals that count is, where a surface that prints neither `N` nor its count, `--count` and `ein test` without an artefact, takes none**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6275--e-31-measured-done) |
 | [Q-M1f.225](#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up) | what the fact-grain test does where the closure gives up | **ruled 2026-11-13, (a)** (*"Ok"*): the closure runs only where a relation-grain site reads it; on a flagged program it gives up after 10 000 shapes on the safe side, every site one; and `region.rs`'s `fact_grain_never_calls_a_violated_cube_monotone` fails on a program where it gives up, naming it, so the bound never decides a verdict the test reads**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6281--e-33-resolved-done) |
 | [Q-M1f.226](#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0) | an obligation's name in a closing rule, and `alive_invariant`'s R0 | **ruled 2026-11-13, (b)** (*"I suppose yes, what it cost?"*, then *"continue next stages till the end of the phase"*): the names index holds the obligations' names; before, defaulted (a): `every_name_of_the_program_is_a_candidate_object` lists a seeded name the program categorises as an obligation's and does not hold it to the blind enumerator's objects; no engine source moves (E-48)**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done) |
+| [Q-M1f.227](#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take) | how a run of the biggest calculation is held to about 16 GB, and how long it may take | **defaulted 2026-11-13 (S1f.6.29), the user's to revise: a cgroup a run, `MemoryMax=16000000000` (16.0 GB, 14.9 GiB) and no swap, `oom_score_adj` 1000; a run past 600 s killed; the search narrowed to 3 %. The sweep stopped half-way: at the cap the host had about 1.4 GB left and Claude Code reaped the background command, which is not restarted unasked**; [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4479,3 +4480,36 @@ after *"I suppose yes"*. Applied as measured: `kb.rs`'s two unions, `alive_invar
 its seeded list less `reading-owed`'s three rows; `corpus_shapes.md5` re-banked, 40 `::load` digests moved and
 no other (`EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes`, then the diff counted). E-48 closed.
 
+### Q-M1f.227 — How a run of the biggest calculation is held to about 16 GB, and how long it may take
+
+**Raised** 2026-11-13 by [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured)'s
+T2. The user's reply to round 2's item 49 (`dc88520b`): *"Ok, then pick the one that fits into memory, say ~16GB;
+do not call it in tests and in CI, just for manual solve call"*; the first reply: *"biggest solvable arithmetic
+calculation in let's say 100+-50 seconds on this host"*. The host has 31 GiB, and before the sweep 16.2 GiB of it
+was available (`MemAvailable` 16 994 396 kB, 2026-11-13 21:45), the rest held by the desktop, a browser and an
+editor. Under `ein solve` a product's or a chain's cost is the state's text (E-24), so time can end a run long
+before memory does, and *the largest that fits in 16 GB* may be a run of hours.
+
+- **(a) 16.0 GB, a cgroup a run, and 600 s.** `systemd-run --user --scope -p MemoryMax=16000000000 -p
+  MemorySwapMax=0`, the run's `oom_score_adj` 1000 so that it is the kernel's first choice if the host runs out
+  first; a run past 600 s, four times the window's top, killed and its size reported as bound by time; the search
+  narrowed to 3 %.
+- **(b) 16 GiB, 17.2 GB.** Past what the host had available, so a run near the cap meets the host's limit before
+  its own.
+- **(c) No time limit.** Memory alone, as the reply reads; under `ein solve` a run of hours.
+- **(d) The window's top, 150 s, as the limit.** The biggest that fits in memory *and* in the first reply's
+  window: under `ein saturate` the same rows, since none that memory bound passed 61 s; under `ein solve` smaller
+  programs.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It reads *about 16 GB* as written, stays inside what the host
+had, and lets memory bind wherever it can within ten minutes.
+
+**What the first run met.** A run at the cap leaves the host about 1.4 GB of the 17.4 GB it had, and at 21:51,
+during `ein saturate`'s chain, Claude Code stopped the background sweep because the host was critically low on
+memory, with the note *do not start it again on your own … start it again only when asked*. So `ein saturate`'s
+product, quotient and requests are measured, its chain to 1 075! with the next size unknown, and `ein solve` not at
+all ([the record](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured)).
+How to finish it is the user's: the same sweep started again by the user's word, the rest of it alone (`--commands
+saturate --shapes chain`, then `--commands solve`); with the harness's reaping turned off
+(`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` in Claude Code's environment, which only the user can set); or
+with a lower cap that leaves the host more than the harness's threshold.
