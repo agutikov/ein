@@ -408,3 +408,118 @@ Derives `a.sum-of(a.n(z, 2), a.n(z, 3), a.n(z, 5))` — (a.n z 2) + (a.n z 3) = 
 No probe met a wrong answer of the engine. Three met one finding, filed in [`findings.md`](findings.md):
 P3c, P7b and P7c, a name of a qualified theory written without its prefix, or a value of the wrong theory,
 answered by silence (E-49).
+
+## 3. The census (T3)
+
+Over the twelve stdlib modules and the fourteen example theories, the files another file imports as a theory:
+`examples/binary_arithmetic/` `bits`, `bin`, `conv`; `examples/binary_logic/` `bits`, `gates`, `props`,
+`props_rules`, `circuit`, `full_adder`, `inputs`, `require`; `examples/word_problems/` `words`, `gaps`,
+`readings`. The fixtures of the import mechanism itself, under `tests/imports/` and the `import-*` witnesses,
+are left out: they exist to break it. Taken by `build/s1f.6.30/census.py`, a reader of Ein's text and a copy
+of `ein_ir::imports`' flat selection and its check of two bodies, 2026-11-13; **held to the engine on every
+pair** below (`--engine`: a program of the two flat imports, loaded by `ein saturate`, refused exactly where the
+census finds a clash, with one of the names it finds: 325 of 325 agree).
+
+### What each module declares, by role
+
+A relation's role is read off the rules a flat import of the module brings: an **input** is read by a rule
+and derived by none, so a program states it (the requests, `let`); a **result** is derived and read by no rule
+of the module, so a program reads it; **internal** is derived and read, a step of the circuit; a **value**
+appears only nested inside another fact, a tag or a number's shape; a **table** is stated by the module.
+**Interface** is T1's: what a theory built on the module calls and reads.
+
+| module | relations | input | result | interface | internal | table | value | unused | rules, hrules, macros |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `std.algebra` | 0 | | | | | | | | 40 |
+| `std.arith` | 74 | 6 | 6 | 11 | 16 | | 35 | | 116 |
+| `std.bijection` | 0 | | | | | | | | 8 |
+| `std.closure` | 0 | | | | | | | | 1 |
+| `std.digits` | 7 | | | | | 7 | | | 0 |
+| `std.elim` | 0 | | | | | | | | 4 |
+| `std.int` | 47 | 9 | 10 | 5 | 1 | | 22 | | 71 |
+| `std.macro` | 0 | | | | | | | | 2 |
+| `std.num9` | 22 | 7 | 10 | | 2 | | 3 | | 47 |
+| `std.rat` | 48 | 7 | 8 | 5 | 5 | | 23 | | 57 |
+| `std.slots` | 0 | | | | | | | | 20 |
+| `std.typing` | 0 | | | | | | | | 4 |
+| `binary_arithmetic.bits` | 3 | | | | | 3 | | | 0 |
+| `binary_arithmetic.bin` | 54 | 6 | 6 | | 19 | | 23 | | 69 |
+| `binary_arithmetic.conv` | 11 | 2 | 3 | | 2 | | 4 | | 12 |
+| `binary_logic.bits` | 3 | | | | | 3 | | | 0 |
+| `binary_logic.gates` | 5 | | | | | 5 | | | 0 |
+| `binary_logic.props` | 30 | | | | | 30 | | | 0 |
+| `binary_logic.props_rules` | 32 | | 20 | | 12 | | | | 32 |
+| `binary_logic.circuit` | 3 | 1 | 1 | | 1 | | | | 3 |
+| `binary_logic.full_adder` | 0 | | | | | | | | 0 |
+| `binary_logic.inputs` | 3 | 1 | 1 | | | 1 | | | 2 |
+| `binary_logic.require` | 2 | 1 | 1 | | | | | | 2 |
+| `word_problems.words` | 26 | 7 | 5 | | 4 | 1 | 8 | 1 | 37 |
+| `word_problems.gaps` | 5 | | 3 | | 2 | | | | 7 |
+| `word_problems.readings` | 5 | | 1 | | 1 | 1 | | 2 | 7 |
+
+**`std.arith`'s 74, by name.** What a program states: `add`, `sub`, `cmp`, `mul`, `div`, `let`. What it reads:
+`sum-of`, `diff-of`, `cmp-of`, `product-of`, `quot-of`, and the flags `division-by-zero`, `malformed`,
+`undeclared` (internal by the roles, since each derives `(false)` by a rule of the module). The number: `n`. The
+interface, T1's eleven: `add-walk`, `sub-walk`, `cmp-walk`, `mul-call`, `div-call`, `operand`; `done`, `short`,
+`order-is`, `div-done`, `operand-is`. **The circuit's own, forty-eight:** `b`, `named`, `check`, `bad-operand`,
+`bad-request`, `no-let`, `not-a-number`, `strip`, `turn`, `top-first`, `top-first-is`, `mul-walk`, `mul-step`,
+`multiples`, `div-step`, `div-choose`, `div-digit`, the tags `sum`, `add-first`, `add-second`, `difference`,
+`shortfall`, `sub-first`, `sub-second`, `order`, `cmp-first`, `cmp-second`, `product`, `mul-first`,
+`mul-second`, `mul-digits`, `mul-row-of`, `mul-sum`, `quotient`, `div-first`, `div-second`, `div-m1` to
+`div-m9`, `div-digits`, `div-trial`, and `arith-rule`. With its 116 rules, every one a name it occupies
+flat. Question 8's *"sixty relations renamed"* is these forty-eight less `arith-rule`, forty-seven, or
+fifty-eight with the interface.
+
+**The shipped stack's other modules occupy names of their own:** `std.int`'s and `std.rat`'s begin `int` and
+`rat`, `std.num9`'s end in `9`, the binary theory's in `2`. The zebra modules declare rules only, generic over
+a relation parameter, activated by a program's facts, `(functional owns Person Pet)`.
+
+### The pairs that cannot be imported flat together
+
+**Two pairs of 325**, each by rules of one name and two bodies:
+
+- **`std.bijection` and `std.elim`**: `domain-elimination`, `typecheck-arg-0`, `typecheck-arg-1`. Two
+  formulations of one inference, positional and signature-driven; `std.elim`'s header says *"the two
+  coexist"*, in the library, and a program cannot hold both: *conflicting definitions of 'typecheck-arg-0'*.
+- **`std.algebra` and `examples/binary_logic/props_rules.ein`**: `complement` and `identity`, a generic rule
+  of the algebra and a rule of the logic's properties.
+
+**And one name a rule of one and a relation of the other:** `std.algebra`'s rule `difference`, activated by a
+fact `(difference R S T)`, and `std.arith`'s tag `difference`, a relation of two arguments, which `std.int`,
+`std.rat`, `conv` and `words` bring. No load refuses the pair, and a program that activates the rule beside the
+calculator is refused by the count: **P11**, `tests/stdlib/algebra/03_boolean.ein` with `(import std.arith
+:symbols (arith))` added,
+
+```text
+kb load error: ./p11_algebra_difference_and_arith.ein:13:2: the fact (difference owns rents owns-only) gives difference 3 arguments, and (relation difference Operand Operand) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types
+```
+
+Every other pair loads flat, and **the calculator clashes with nothing shipped** but that one name: a clash
+with it needs a name of a program's own, or of a theory written without it in mind (P2a's `chores`). Neither
+pair, nor P11, is said on a page: [E-50](findings.md), filed.
+
+### The names real programs use that a module declares
+
+Every tracked program under `examples/`, `stdlib/` and `tests/` that does not bring the module, at any depth,
+and the names it declares, states a fact of or derives that the module declares itself: each a name a flat
+import of the module would meet in that program. *Declare* is refused by the load unless the two bodies are
+one; *write* joins the module's relation, or is refused by its count.
+
+| module | programs | the names, programs each (declaring) |
+|---|---:|---|
+| `std.arith` | 24 | `b` 8 (5), `n` 8 (2), `check` 3 (0), rule `add-column` 2 (2: `cryptarithm.ein` and `send_more_money.ein`), `add` 2 (1), `difference` 2 (0: `std.algebra` and its test, the rule above), `sum-of` 1 (1) |
+| `std.algebra` | 35 | `functional` 21 (18), `symmetric` 17 (16), `transitive` 16 (16), `total` 7, `injective` 4 (4), `bijective-properties` 3 (3), `surjective` 3, and six of one each |
+| `std.bijection` | 11 | `domain-elimination` 7 (5), `typecheck-arg-0` and `-1` 6 (4), `injective-negative` 5, `functional-negative` 4, `range-elimination` 3 |
+| `std.elim` | 9 | `typecheck-arg-0` and `-1` 7 (4), `domain-elimination` 6 (5), `no-room-left` 1 |
+| `std.num9` | 4 | `big` 4 (4) |
+| `binary_logic.inputs` | 222 | **`is-a` 218 (108)**, `in` 4 (4) |
+| `word_problems.words` | 37 | **`holds` 28 (28)**, `wanted` 4 (2), `together` 3, `asked` 1 (1), `apart` 1 |
+| `binary_logic.props`, `props_rules` | 4, 6 | `column` 4 (4), and the properties' names in one program each |
+| `binary_logic.circuit` | 6 | `gate` 4 (3), `val` 2 (2) |
+
+(`std.digits`, `std.macro`, `bits` and `bin` one program each.) Most of the zebra modules' rows are programs
+that write their own copy of a generic rule, which the stdlib's README describes as the *variant copies*;
+those load flat only where the copy is equal, body and `:why`. **The rows that say the most are the theories':**
+the example `inputs` declares `is-a`, the corpus's most used name, so a zebra program cannot import the logic's
+inputs flat; `words` declares `holds`; and `std.arith`'s one-letter `b` and `n` are the names of its most met,
+eight programs each, where `done`, the clash the question named, is met by none.

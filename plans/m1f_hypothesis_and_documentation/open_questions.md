@@ -241,6 +241,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.226](#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0) | an obligation's name in a closing rule, and `alive_invariant`'s R0 | **ruled 2026-11-13, (b)** (*"I suppose yes, what it cost?"*, then *"continue next stages till the end of the phase"*): the names index holds the obligations' names; before, defaulted (a): `every_name_of_the_program_is_a_candidate_object` lists a seeded name the program categorises as an obligation's and does not hold it to the blind enumerator's objects; no engine source moves (E-48)**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done) |
 | [Q-M1f.227](#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take) | how a run of the biggest calculation is held to about 16 GB, and how long it may take | **defaulted 2026-11-13 (S1f.6.29), the user's to revise: a cgroup a run, `MemoryMax=16000000000` (16.0 GB, 14.9 GiB) and no swap, `oom_score_adj` 1000; a run past 600 s killed; the search narrowed to 3 %. The sweep stopped half-way: at the cap the host had about 1.4 GB left and Claude Code reaped the background command, which is not restarted unasked**; [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured) |
 | [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk; the operand look-up, `operand` and `operand-is`, which `std.int` and `std.rat` call and extend; and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
+| [Q-M1f.229](#q-m1f229--what-the-census-of-imported-names-reads-and-how) | what the census of imported names reads, and how | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the twelve stdlib modules and the fourteen example theories another file imports, the import mechanism's own fixtures left out; each imported by every name it declares itself; static, and held to the loader on every pair**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6303--the-census-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4556,4 +4557,24 @@ list:
 
 **Defaulted 2026-11-13: (a), the user's to revise.** It promises what two shipped callers already depend on, and
 moves no program; (b) would move `conv.ein`'s states and leave `std.int` outside its own rule.
+
+### Q-M1f.229 — What the census of imported names reads, and how
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6303--the-census-done)'s
+T3: *over every stdlib module and every example theory, the relations it declares … and every pair of modules
+that cannot be imported flat together today*. Three choices the task leaves open.
+
+- **Which modules.** (a) The twelve stdlib modules and the fourteen example files another file imports as a
+  theory (`binary_arithmetic/` three, `binary_logic/` eight, `word_problems/` three); the fixtures of the import
+  mechanism, `tests/imports/` and the `import-*` witnesses, left out, since they exist to break it. (b) Every
+  file another file imports.
+- **Imported how.** (a) By every name the module declares itself, the most a flat import brings, which for a
+  module whose entry names everything is the entry's import. (b) By the entry a program writes, which differs
+  only for the libraries of rules imported by lists.
+- **Taken how.** (a) Statically, by a reader that copies `ein_ir::imports`' selection and its check, and held
+  to the loader on every pair. (b) By the loader alone, which names only the first clash of a pair.
+
+**Defaulted 2026-11-13: (a) on all three, the user's to revise.** The census then names every clash of a pair,
+and the loader confirms each pair's verdict: 325 of 325 agree ([`import_clashes.md` §
+3](p1f.6_calculator/import_clashes.md#3-the-census-t3)).
 

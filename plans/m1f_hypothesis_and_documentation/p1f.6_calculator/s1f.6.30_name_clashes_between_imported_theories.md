@@ -1,7 +1,7 @@
 # S1f.6.30 — Name clashes between imported theories: investigation, proposals, and a stop
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1 and T2 done
+**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1, T2 and T3 done
 ([the record](#record-2026-11-13)). **An investigation that stops
 for the user** before any change to the grammar or to what an import means; its first task, the tagged calls
 as an interface, changes neither and is built.
@@ -230,4 +230,28 @@ first name and no place, and a written fact of the right count joins the theory'
 `:as` is the way out and shares nothing (P3, P5, P10): the tables arrive once per prefix, 3 656 facts where
 one calculator is 1 839, and two theories under two prefixes connect only through undeclared names, the
 digits. A mistake under `:as` is silence (P3c, P7b, P7c): **E-49**, filed. No wrong answer of the engine.
+
+### T1f.6.30.3 — the census, done
+
+[`import_clashes.md` § 3](import_clashes.md#3-the-census-t3), taken by `build/s1f.6.30/census.py`
+(2026-11-13): a reader of Ein's text and a copy of `ein_ir::imports`' flat selection and its check of two
+bodies, over the twelve stdlib modules and the fourteen example theories, each imported by every name it
+declares itself; **held to the loader on every pair** (`--engine`, a program of the two flat imports under
+`ein saturate`: 325 of 325 agree, refused exactly where the census finds a clash and on one of its names).
+The scope and the method are a default, [Q-M1f.229](../open_questions.md#q-m1f229--what-the-census-of-imported-names-reads-and-how),
+the user's to revise.
+
+- **By role.** `std.arith` declares 74 relations: six a program states, five results and three flags it
+  reads, `n`, the eleven of the interface, and forty-eight of the circuit's own; and 116 rules. Question 8's
+  *"sixty relations"* is forty-seven, or fifty-eight with the interface. `stdlib/README.md`'s *some sixty
+  names* of the circuit's own is corrected to *some forty-five* besides `b` and `arith-rule`.
+- **The pairs.** Two of 325 cannot be imported flat together, each by rules of one name and two bodies:
+  `std.bijection` and `std.elim` (`domain-elimination`, `typecheck-arg-0`, `typecheck-arg-1`), and
+  `std.algebra` and `binary_logic/props_rules.ein` (`complement`, `identity`); and one name is a rule of one
+  module and a relation of another, `std.algebra`'s `difference` against `std.arith`'s tag, so a program that
+  activates the rule beside the calculator is refused by the count (P11, run). **E-50**, filed. The calculator
+  clashes with nothing else shipped.
+- **The corpus's names.** 24 programs that do not bring `std.arith` use one of its names, `b` and `n` eight
+  each, the rule `add-column` in `cryptarithm.ein` and `send_more_money.ein`; `done` none. 222 use
+  `binary_logic.inputs`' `is-a`, and 37 `word_problems.words`' names, `holds` 28 of them.
 

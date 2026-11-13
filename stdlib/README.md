@@ -625,8 +625,8 @@ digits; **and, from a rule, the tagged calls**
 and `quot-of`; the flags `division-by-zero`, `malformed` and `undeclared`; the
 orders `lt`, `eq` and `gt`; the tagged calls' answers, `done`, `short`,
 `order-is`, `div-done` and `operand-is`. **The circuit's own**, which is in the state to be
-seen and is no promise: `b`, some sixty names of its walks, its hand-overs,
-its check and its tags, `arith-rule`, and the seven tables of `std.digits`. A second *declaration* of any of them is refused at
+seen and is no promise: `b`, some forty-five names of its walks, its check
+and its tags, `arith-rule`, and the seven tables of `std.digits`. A second *declaration* of any of them is refused at
 load, with the name in the message. A written *fact* of a result or of the
 circuit is not: it is a fact like a derived one and the theory computes with
 it, so a `(sum-of X Y S)` written by hand is an answer nobody computed. A
