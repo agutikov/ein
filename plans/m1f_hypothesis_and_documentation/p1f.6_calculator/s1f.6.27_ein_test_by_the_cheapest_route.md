@@ -1,7 +1,8 @@
 # S1f.6.27 — `ein test` decides a claim by the cheapest route that decides it
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply in round 2. Not started. **An engine stage.**
+**Status:** planned 2026-11-12, on the user's reply in round 2. **Done 2026-11-13:** [the record](#record-2026-11-13).
+**An engine stage.**
 **Depends on:** [S1f.6.25](s1f.6.25_the_section_j_fixes.md), which it runs after
 ([round 2, item 39](questions_round2.md#q39): *planned as a stage of this phase and run after the section J
 fixes*). Independent of the stdlib layout. The cryptarithm theory of [reply 42](questions.md#q42) waits for
@@ -455,4 +456,126 @@ it is not free by this task's rule. Filed as
 user's to revise; E-31's row says so.
 
 **The page:** [`read_out.md`](../../../docs/kernel/inference/read_out.md) § 2, the `--count` paragraph: it
-prints no `N` row and takes no N where it writes no artefact.
+prints no `N` row and takes no N where it writes no artefact that carries N's count.
+
+### T1f.6.27.6 — SEND + MORE banked, done
+
+**The program**, [`examples/beyond_arith/send_more_money.ein`](../../../examples/beyond_arith/send_more_money.ein):
+`build/s1f.6.27/p/send.ein`, which is S1f.6.10's `p3_send_expect.ein`, with a header. The letters are declared by
+column, units first, as E-29 requires; its claim is the one state, `(model (val D 7) (val E 5) (val M 1) (val N
+6) (val O 0) (val R 8) (val S 9) (val Y 2))`, one class over all of R.
+
+| `ein test examples/beyond_arith/send_more_money.ein -v` | the claim | saturations | wall | exit |
+|---|---|---:|---:|---:|
+| the release binary at `9ac0f7ab` (`build/s1f.6.27/ein-old`) | NOT CHECKED, *the claim is about all of R, and this run did not exhaust it* | 336 101 | 7.39 s | 1 |
+| this stage's | holds (`--single`: all of R, 1 class over 1 states) | 17 747 | 0.46 s | 0 |
+
+(`python3 build/s1f.6.27/t.py`, 2026-11-13; the saturations are `ein solve FILE` and `ein solve FILE --single`'s
+`work` rows.) A bare `ein solve` on it describes R to the budget and stops after 336 101 saturations, 7.5 s and
+529 MiB, the claim a note, *not checked*, exit 0, as before.
+
+**The corpus entry.** `runs = ["solve", "solve --single", "test"]`, as `cryptarithm.ein` declares its own: `test`
+is the stage's claim, `solve --single` the question it asks, and the bare `solve` the other half of what the file
+shows, that describing this R stops. Measured (`utils/bench_env.sh python3 utils/corpus_cost.py -k
+send_more_money --runs 3 --json build/s1f.6.27/cost-smm.json`, 2026-11-13): `solve` 7.47 s, `solve --single`
+465 ms, `test` 465 ms, 8.40 s together, so **`slow = true`, `cost_ms = 8404`**. The slow set is fifteen:
+`ein-corpus`'s pin is `the_slow_set_is_exactly_these_fifteen`, its name moving with the set as it has before,
+and `corpus/README.md`, `corpus.toml`'s header, `corpus_cli.rs`'s comment and `AGENTS.md`'s command line name it.
+Its describe dump writes four files (`ein solve FILE --dump-answer DIR`), so it is not `heavy_dump`.
+
+**The tests that read the corpus, run before relying on it** (2026-11-13; T5's tree's time in brackets, from
+`build/s1f.6.27/t5b-*.log`):
+
+- `cargo test -p ein-infer --test region`, **alone**, as `AGENTS.md` has it for E-33: 28 passed, 39.76 s
+  (40.32 s). The program requests nothing of `std.arith`: it reads `std.digits`' table `fa`.
+- `-p ein-infer --test alive_invariant --test claim_routes`: 3 and 3 passed, 19.59 s (19.91 s) and 22.25 s
+  (23.50 s). The oracle does not reach 80 candidates, so `claim_routes` does not write claims on it.
+- `-p ein-cli --test corpus_cli --test lever_invariance --test answer_round_trip --test test_cli`: 7, 4, 9 and
+  43 passed, 57.23 s (56.70 s), 55.49 s (55.35 s), 27.50 s (27.58 s), 9.49 s (8.70 s): a slow entry is out of the
+  per-commit sweep of each.
+- `EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli`, the nightly's half: 7 passed, 184.94 s, the new
+  cells' exits as banked and the `slow` flag held to the sweep.
+- `-p ein-render --test corpus_shapes --test dot_wellformed --test golden_trace`: `corpus_shapes` failed, *42 of
+  24269 renderings moved*, each `(new)`, 345.88 s (343.44 s); the other two passed.
+
+**The goldens, counted before they were blessed.** `corpus_shapes.md5`: 42 digests new, every one the new
+file's, one of each of the 42 kinds; 0 moved and 0 gone, so `cryptarithm.ein`'s header, rewritten, moved no
+rendering (`EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes`, then `python3
+build/s1f.6.27/shapes_moved.py`, the golden at HEAD against the tree's). `corpus_exits.txt`: three lines added
+by hand, the new entry's three cells, each exit 0, which the slow-tier run above holds. No other golden moved.
+
+**The pages.** `cryptarithm.ein`'s header and its corpus note said SEND + MORE was not in the corpus;
+[`examples/README.md`](../../../examples/README.md)'s line for `beyond_arith/` (seventeen programs, five that
+search); [`tests/README.md`](../../../tests/README.md) § What may be claimed here names the file;
+[`beyond_arithmetic.md`](beyond_arithmetic.md) gets its closing note on question 2.
+
+### T1f.6.27.7 — the pages, done
+
+The pages of each task are in that task's section and commit: T3's the grammar, `defined_behaviour.md`,
+`configuration.md`, `events.md`, `read_out.md`, `tests/README.md` and `AGENTS.md`; T5's `read_out.md`'s
+`--count` paragraph; T6's the examples' pages and `beyond_arithmetic.md`. This task adds the rows:
+[`findings.md`](findings.md), **E-30 closed** and E-31 as T5 left it, the free part built and the rest
+Q-M1f.224's; and the phase [README](README.md)'s row. `AGENTS.md`'s edits are the rule *`ein test` exhausts*
+restated in place, its sentence on the stdlib conformance gate, and the slow pin's name in the command list,
+each a rule or a command that changed; no line says what the stage did.
+
+### The stage, closed
+
+**The commits**, in order:
+
+| commit | what |
+|---|---|
+| `f032b026` | T1: the table, on real programs, and Q-M1f.221 to .223. No source |
+| `fad716e6` | T2: `read_out::least`, `describing`, `stands`, `explore::Options::refute`, `Mode::flags`, and `claim_routes.rs` |
+| `9116a3f3` | T3 and T4: the runner, its surfaces, the pins, `help_shape.txt`, the pages, E-46 |
+| `7748006b` | T5: E-31 measured, N taken only where it is printed, Q-M1f.224 |
+| `4d2187e7` | T6: SEND + MORE banked, its entry, the slow pin, the goldens, the examples' pages |
+| this section's | T7: the findings, the phase's row, and this record's sections for T6 and T7 |
+
+**The acceptance.**
+
+- *SEND + MORE = MONEY's claim is held by `ein test`, in the corpus*: T6, `--single`, 0.46 s, where it was NOT
+  CHECKED, exit 1, after 7.39 s.
+- *Every claim the corpus held or failed before is held or failed the same after; some NOT CHECKED became held or
+  FAILED, each listed*: the sweeps of T3 and T5, 0 of 465 claims moved. No corpus claim was NOT CHECKED, so none
+  could move; the claims that moved are the scratch witnesses' (`build/s1f.6.27/witnesses-final.txt`, `ein test
+  FILE -v` under the binary at `9ac0f7ab` and this stage's, 2026-11-13, taken while tests ran):
+
+  | `build/s1f.6.27/p/` | at `9ac0f7ab` | this stage's |
+  |---|---|---|
+  | `send.ein` | NOT CHECKED, exit 1, 8.03 s | held, `--single`, 0.49 s |
+  | `send_wrong.ein`, Y = 3 claimed | NOT CHECKED, exit 1, 7.98 s | FAILED, `--single`, 0.47 s |
+  | `mul7_6.ein` | no answer in 120 s | held, `--single`, 0.03 s |
+  | `mul7_5.ein` | held, 5.15 s | held, `--single`, 0.03 s |
+  | `two_seven.ein` | held, 33.21 s | held, `-n 8`, 0.07 s |
+  | `two_one.ein`, `two_six.ein` | FAILED, 33.25 s and 33.61 s | FAILED, `--single` and `-n 7`, 0.05 s and 0.06 s |
+  | `eq862_false.ein` | held, 0.05 s | held, `--single`, 0.03 s |
+
+- *On every corpus program the oracle reaches, each claim's outcome under the chosen route equals its outcome
+  under describe and under `ein oracle`*: `claim_routes.rs`, T2, 1 710 claims written from the oracle's classes
+  on 459 programs, no disagreement; run again on this stage's last tree.
+- *`ein test` never solves a query that carries no `:expect`*: the runner's early return is unchanged, and
+  `a_claim_is_asked_the_least_question_and_the_surfaces_say_which` holds that a row with no claim names no
+  question.
+
+**Defaults taken**, each the user's to revise: Q-M1f.221, one question a file and then the describing one;
+Q-M1f.222, a claim refuted by a state a run found, under `ein test` alone; Q-M1f.223, what `-v`,
+`--json-report`, `--events` and `--json-summary` say of the question; Q-M1f.224, a bare description keeps
+paying for N's count.
+
+**Found outside the tasks**: E-46, the kernel page named the report's schema two versions behind the binary,
+fixed with T3. **No wrong answer**: no two routes decided a claim differently, on the corpus, on the register's
+witnesses or on the claims T2 writes, so no register row was filed.
+
+**What moved of what already existed**, each intended: `ein test -v`'s claim lines in 133 files, by the question
+named; `--json-report`'s schema, `/5`, and two keys on every row; `help_shape.txt`'s four lines of `ein test`'s
+help; `corpus_exits.txt` and `corpus_shapes.md5` by the new file's cells and renderings alone; the slow set, by
+one. No claim's outcome, verdict word, exit code, state, count, core or summary moved.
+
+**Not built, as this file rules**: a flag that picks the route; an order of the obligation tree by the state
+(P1f.10); the cryptarithm theory (reply 42). Not built by default: the rule refuting from a part under `ein
+solve` (Q-M1f.222's (b)); a cheaper N for a bare description (Q-M1f.224's (b) and (c)).
+
+**Not run by this stage**: `./run_tests.sh` and `./run_tests.sh --nightly`, which run on the stage's last commit
+in detached worktrees, their outcome written under this line by the records commit; `utils/ci_container.sh`, which
+the stage file does not need: no DOT writer, review bundle script or CI install changed.
