@@ -798,6 +798,13 @@
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: saturate
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: solve
 0    examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein :: test
+0    examples/ein-bugs/wrong-answers/import-directives-as.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-directives-as.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/import-directives-as.ein :: solve
+0    examples/ein-bugs/wrong-answers/import-directives-module.ein :: saturate
+0    examples/ein-bugs/wrong-answers/import-directives-module.ein :: solve
+1    examples/ein-bugs/wrong-answers/import-directives-twice.ein :: saturate
+1    examples/ein-bugs/wrong-answers/import-directives-twice.ein :: solve
 0    examples/ein-bugs/wrong-answers/import-facts-flat.ein :: saturate
 0    examples/ein-bugs/wrong-answers/import-facts-flat.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/import-facts-flat.ein :: solve

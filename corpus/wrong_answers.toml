@@ -16922,3 +16922,85 @@ derived   = "The goal's `(likes ?who)` has one argument and `likes` is declared 
 [case.now]
 run     = "saturate --dump"
 refused = "kb load error: examples/ein-bugs/wrong-answers/arity-in-goal.ein:30:15: query: its :goal writes (likes ?who), which gives likes 1 argument, and (relation likes Person Drink) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+
+# ══ W90 — a qualified import brings the module's `(query …)`, `(solve …)` and `(config …)`, so the importer is solved under a lattice it did not state and answers a query it did not ask ══
+[[case]]
+id       = "W90/import-directives-as"
+case     = "W90"
+title    = "a qualified import brings the module's `(query …)`, `(solve …)` and `(config …)`, so the importer is solved under a lattice it did not state and answers a query it did not ask"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.25"
+question = ["P1f.6 findings.md E-8", "Q-M1f.215"]
+witness  = "examples/ein-bugs/wrong-answers/import-directives-as.ein"
+status   = "open"
+open_because = "`ein_ir::imports` qualifies every form of a module imported bare or `:as`, its `(query …)`, `(solve …)` and `(config …)` among them: S1f.6.25's T1f.6.25.2 drops the three"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.25 (T1f.6.25.2, 2026-11-13), from E-8 of P1f.6's `findings.md`, on the default of the stage file: the importer's R is computed under a lattice it did not state, and it answers a query it did not ask, an answer false of the program as written. The module, `import-directives-module.ein`, holds `(solve :hypothesis-relations ())`, `(config :record-alternative-justifications false)` and `(query :goal (is-a ?x Drink))`; the witness imports it `:as m` and states none of the three. `--dump-config` shows the module's flag, which no row field records; `ein-ir/tests/imports_semantics.rs` holds it"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 5e5685b7 (2026-11-13): no candidate, the module's `(solve :hypothesis-relations ())` having come with the import, so R is {∅}; the read-out answers the module's query, renamed `(m.is-a ?x Drink)`, one class, *Tea is a drink*; exit 0. `ein oracle`, `ein test` and `ein saturate` read the same program"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "none" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "S1f.6.25's default (the stage file, T1f.6.25.2; Q-M1f.215): what a module asks, how it is solved and how it is configured are a program's, and an import of any kind brings a module's declarations and facts and none of them, as a flat import always did"
+k         = 4
+exhausted = true
+queries   = []
+derived   = "The program states no `(solve …)`, declares `chosen` and closes `m.is-a`, so its candidates are `(chosen Drink)` and `(chosen Tea)`, its names being the module's fact's. No rule restricts them: R is the whole cube, four states, ∅ and ⊤ among them. It asks no query"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "none" }]
+
+[[case]]
+id       = "W90/import-directives-twice"
+case     = "W90"
+title    = "a qualified import brings the module's `(query …)`, `(solve …)` and `(config …)`, so the importer is solved under a lattice it did not state and answers a query it did not ask"
+class    = "refusal"
+settings = "default"
+owner    = "S1f.6.25"
+question = ["P1f.6 findings.md E-8", "Q-M1f.215"]
+witness  = "examples/ein-bugs/wrong-answers/import-directives-twice.ein"
+status   = "open"
+open_because = "each qualified import of the module brings its `(solve …)`, and the loader refuses a program with two: S1f.6.25's T1f.6.25.2 drops a module's `(solve …)` from every import"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.25 (T1f.6.25.2, 2026-11-13), beside `W90/import-directives-as`: the same module imported twice, `:as m` and `:as k`. The program writes no `(solve …)` and is refused for stating its lattice twice"
+
+[case.wrong]
+run     = "saturate --dump"
+by      = "command"
+why     = "`ein saturate --dump`, `ein solve` and every other command on the witness, release, at 5e5685b7 (2026-11-13): refused at load, exit 1 (`ein test`: 2)"
+exit    = 1
+refused = "kb load error: 2 (solve …) forms — a program states its lattice once"
+
+[case.right]
+reading   = "S1f.6.25's default (the stage file, T1f.6.25.2; Q-M1f.215): an import of any kind brings a module's declarations and facts and none of its `(query …)`, `(solve …)` and `(config …)`"
+k         = 4
+exhausted = true
+derived   = "The program loads: two copies of the module's declaration, `m.is-a` and `k.is-a`, each with its fact, both closed. Its candidates are `(chosen Drink)` and `(chosen Tea)`, nothing restricts them, and R is four states, as its sibling's"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "kb load error: 2 (solve …) forms — a program states its lattice once"

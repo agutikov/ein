@@ -1,0 +1,13 @@
+;;; A module that states what a program states: a query, a lattice and a
+;;; configuration — M1f **W90** (`corpus/wrong_answers.toml`), S1f.6.25
+;;; (2026-11-13). The `import-directives-*` witnesses import it qualified.
+;;; A program of its own as well: no candidate, R {∅}, and its query has one
+;;; row, *Tea is a drink*.
+
+(relation is-a Thing Type :why "{?1} is a {?2}")
+
+(is-a Tea Drink)
+
+(solve :hypothesis-relations ())
+(config :record-alternative-justifications false)
+(query :goal (is-a ?x Drink) :goal-text "{?x} is a drink")

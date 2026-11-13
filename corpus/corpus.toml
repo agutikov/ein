@@ -2927,6 +2927,24 @@ note   = "M1f W88 (`W88/import-facts-table`), filed by S1f.6.11's T1f.6.11.2 (20
 
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-directives-module.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W90's module: a declaration and a fact, and then what a program states, `(solve :hypothesis-relations ())`, a `(config …)` flag and a `(query …)`. `import-directives-as` and `-twice` import it qualified. A program of its own too, R {∅}, its query's one row *Tea is a drink*."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-directives-as.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W90 (`W90/import-directives-as`), filed by S1f.6.25's T1f.6.25.2 (2026-11-13) from E-8 of P1f.6's findings: `(import import-directives-module :as m)` brings the module's `(solve …)`, `(config …)` and `(query …)`, so the program has no candidate, R {∅}, and answers the module's query. Open: its own answer is four states and no query."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/import-directives-twice.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W90 (`W90/import-directives-twice`), filed by S1f.6.25's T1f.6.25.2 (2026-11-13): the same module imported `:as m` and `:as k`, refused at load, *2 (solve …) forms*, though the program writes none. Open: it loads, R four states."
+
+[[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]

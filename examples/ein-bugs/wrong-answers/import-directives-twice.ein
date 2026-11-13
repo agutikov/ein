@@ -1,0 +1,28 @@
+;;; Two qualified imports of a module that states a lattice are refused —
+;;; M1f **W90**, register row `W90/import-directives-twice`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.6.25 (T1f.6.25.2, 2026-11-13)
+;;; from E-8 of P1f.6's `findings.md`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `import-directives-as.ein` with the module imported a second time, `:as
+;;; k`: two copies of its declaration, `m.is-a` and `k.is-a`, each with its
+;;; fact. The program states no `(solve …)` of its own.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; As its sibling's: `(chosen Drink)` and `(chosen Tea)` are the candidates,
+;;; nothing restricts them, R is four states, and no query is asked.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `5e5685b7`, release: refused at load on every command, *2 (solve …)
+;;; forms — a program states its lattice once*, exit 1 (`ein test`: 2): each
+;;; import brought the module's `(solve …)`, and the program wrote neither.
+
+(import import-directives-module :as m)
+(import import-directives-module :as k)
+
+(relation chosen Thing :why "{?1} is chosen")
+(__closed__ m.is-a)
+(__closed__ k.is-a)

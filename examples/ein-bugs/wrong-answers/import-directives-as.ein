@@ -1,0 +1,32 @@
+;;; A qualified import brings the module's query, lattice and configuration
+;;; — M1f **W90**, register row `W90/import-directives-as`
+;;; (`corpus/wrong_answers.toml`), filed by S1f.6.25 (T1f.6.25.2, 2026-11-13)
+;;; from E-8 of P1f.6's `findings.md`.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `import-directives-module.ein`, beside this file, declares `is-a`, states
+;;; `(is-a Tea Drink)`, and then says what a *program* says: `(solve
+;;; :hypothesis-relations ())`, a `(config …)` flag and a `(query …)`. This
+;;; program imports it `:as m`, declares one relation of its own, `chosen`,
+;;; closes the imported one, and states no lattice, no flag and no query.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The program states no `(solve …)`, so its hypotheses are the facts of its
+;;; open declared relation over its names: `(chosen Drink)` and `(chosen
+;;; Tea)`. Nothing restricts them, so R is the whole cube, four states. It
+;;; asks no query, so the read-out answers none.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; At `5e5685b7`, release: the module's `(solve :hypothesis-relations ())`
+;;; came with the import, so there was no candidate and R was {∅}, one state;
+;;; the read-out answered the module's query, renamed, `(m.is-a ?x Drink)`,
+;;; *Tea is a drink*; and `--dump-config` showed the module's flag. A flat
+;;; import of the same module brought none of the three.
+
+(import import-directives-module :as m)
+
+(relation chosen Thing :why "{?1} is chosen")
+(__closed__ m.is-a)
