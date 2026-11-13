@@ -437,7 +437,8 @@ fn main() {
         row["fact_grain"] = json!({
             "monotone": fg.is_monotone(),
             "complete": fg.complete,
-            "shapes": fg.shapes.len(),
+            "shapes": fg.shapes.as_ref().map(Vec::len),
+            "gave_up": fg.gave_up,
         });
 
         // Root's plans, by text: what a node compiles is what is not here.
@@ -635,7 +636,9 @@ fn print_block(row: &Json) {
         } else {
             "flagged"
         },
-        if row["fact_grain"]["complete"].as_bool() == Some(false) {
+        if row["fact_grain"]["gave_up"].as_bool() == Some(true) {
+            " (the closure gave up: every site is dynamic)"
+        } else if row["fact_grain"]["complete"].as_bool() == Some(false) {
             " (incomplete: an activator is dynamic)"
         } else {
             ""

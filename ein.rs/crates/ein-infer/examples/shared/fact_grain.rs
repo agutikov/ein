@@ -65,6 +65,30 @@
 //! never had, whose conclusions `Δ̂` does not hold, so on such a program the
 //! other sites' fact-grain verdicts are not to be trusted
 //! ([`FactGrain::complete`] is false). The program stays flagged either way.
+//!
+//! ### When the closure runs, and when it gives up
+//!
+//! **`Δ̂` is read by the sites and by nothing else** (M1f
+//! [S1f.6.28](../../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)
+//! T1f.6.28.1, E-33). A program the relation-grain check does not flag has no
+//! site, so its fact-grain verdict is *monotone* and *complete* whatever
+//! `Δ̂` holds, and the closure is not computed ([`FactGrain::shapes`] is
+//! `None`). Until then it was computed on every program and thrown away on
+//! these, and on a program where a supposed fact leads to a request to
+//! `std.arith` with an operand the commitment does not bind, `(div _ (n z
+//! 3))`, it follows every shape of every circuit of the calculator: the
+//! nesting is widened past [`MAX_NESTING`], but the breadth is not, and on
+//! E-33's witness the antichain held 137 731 shapes after 1 312 s, still
+//! growing, when it was stopped.
+//!
+//! On a program that is flagged the closure runs, and it **gives up** once
+//! [`MAX_SHAPES`] shapes have been added to `Δ̂`: `Δ̂` is then taken to be
+//! every fact, which over-approximates `Δ` as the closure does, so every site
+//! is dynamic and the verdict is the safe one, *not monotone*
+//! ([`FactGrain::gave_up`]). No program of the corpus comes near the bound
+//! (the largest closure a flagged one computes is 100 shapes), and
+//! `region.rs` fails on a program where it gives up, so the bound never
+//! decides a verdict that test reads.
 
 use std::sync::Arc;
 
@@ -75,6 +99,12 @@ use rustc_hash::FxHashMap;
 
 /// Nesting past this depth is widened to *any*.
 pub const MAX_NESTING: usize = 4;
+
+/// The closure gives up once this many shapes have been added to `Δ̂`, and
+/// takes `Δ̂` to be every fact (the module docs, *When the closure runs, and
+/// when it gives up*). A hundred times the largest closure a flagged corpus
+/// program computes, 100 shapes (S1f.6.28, 2026-11-13).
+pub const MAX_SHAPES: usize = 10_000;
 
 /// One argument of a [`Shape`].
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
@@ -337,8 +367,9 @@ fn instantiate(plan: &Plan, slot: &Slot, binds: &Binds) -> Option<Shape> {
 /// The fact-grain verdict for one program.
 #[derive(Clone, Debug)]
 pub struct FactGrain {
-    /// `Δ̂`, as shapes, sorted by text.
-    pub shapes: Vec<String>,
+    /// `Δ̂`, as shapes, sorted by text. `None` where no site reads it, so the
+    /// closure was not computed, and where it gave up.
+    pub shapes: Option<Vec<String>>,
     /// Per site of the relation-grain verdict, in its order: a shape of `Δ̂`
     /// one of the site's reads can match — the site is still one at fact
     /// grain — or `None`.
@@ -346,6 +377,9 @@ pub struct FactGrain {
     /// No activator site is dynamic at fact grain, so `Δ̂` holds every plan a
     /// node can run and each site's verdict above is the prototype's claim.
     pub complete: bool,
+    /// The closure added [`MAX_SHAPES`] shapes and gave up: `Δ̂` is every
+    /// fact, and every site is one at fact grain.
+    pub gave_up: bool,
 }
 
 impl FactGrain {
@@ -365,6 +399,15 @@ pub fn classify(
     candidates: &[FactId],
     relation: &Monotonicity,
 ) -> FactGrain {
+    // No site: the verdict reads nothing of Δ̂, so it is not computed.
+    if relation.sites.is_empty() {
+        return FactGrain {
+            shapes: None,
+            sites: Vec::new(),
+            complete: true,
+            gave_up: false,
+        };
+    }
     let program = kb.program();
     let saturation: Vec<(&Plan, Vec<Read>)> = plans
         .iter()
@@ -384,13 +427,15 @@ pub fn classify(
         true
     };
     let mut work: Vec<Shape> = Vec::new();
+    let mut added = 0usize;
     for &f in candidates {
         let s = Shape::of_fact(terms, f);
         if insert(&mut delta, &s) {
+            added += 1;
             work.push(s);
         }
     }
-    while let Some(s) = work.pop() {
+    'closure: while let Some(s) = work.pop() {
         for (plan, rs) in &saturation {
             for r in rs
                 .iter()
@@ -410,11 +455,19 @@ pub fn classify(
                     };
                     let out = out.widened(MAX_NESTING);
                     if insert(&mut delta, &out) {
+                        added += 1;
+                        if added >= MAX_SHAPES {
+                            break 'closure;
+                        }
                         work.push(out);
                     }
                 }
             }
         }
+    }
+
+    if added >= MAX_SHAPES {
+        return gave_up(kb, terms, plans, relation);
     }
 
     // Can `read`'s pattern match a shape of Δ̂? The first one it can, as text.
@@ -479,8 +532,61 @@ pub fn classify(
     let mut shapes: Vec<String> = delta.values().flatten().map(|s| s.render(terms)).collect();
     shapes.sort();
     FactGrain {
-        shapes,
+        shapes: Some(shapes),
         sites,
         complete,
+        gave_up: false,
+    }
+}
+
+/// The verdict when the closure gives up: `Δ̂` is every fact, so every read
+/// of every site can match, each site's witness is the read's relation with
+/// every argument *any*, and an activator site is dynamic as above.
+fn gave_up(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], relation: &Monotonicity) -> FactGrain {
+    let any = |rel: Symbol, arity: usize| -> String {
+        Shape {
+            rel,
+            args: vec![Arg::Any; arity].into_boxed_slice(),
+        }
+        .render(terms)
+    };
+    let program = kb.program();
+    let mut complete = true;
+    let sites = relation
+        .sites
+        .iter()
+        .map(|site| match site.kind {
+            SiteKind::Activator => {
+                complete = false;
+                let arity = program
+                    .rules
+                    .get(site.rule)
+                    .or_else(|| program.obligations.get(site.rule))
+                    .map(|r| r.params.len())
+                    .expect("an activator site names a rule or an obligation");
+                Some(any(site.rule, arity))
+            }
+            SiteKind::Absent | SiteKind::ObligationTrigger => {
+                let mut hits: Vec<String> = plans
+                    .iter()
+                    .filter(|p| p.rule == site.rule && p.activator_args == site.activator)
+                    .flat_map(|p| {
+                        reads(p, terms)
+                            .into_iter()
+                            .filter(|r| r.rel == site.relation && r.depth == site.depth)
+                            .map(|r| any(r.step_rel, p.slots(r.slots).len()))
+                            .collect::<Vec<_>>()
+                    })
+                    .collect();
+                hits.sort();
+                hits.into_iter().next()
+            }
+        })
+        .collect();
+    FactGrain {
+        shapes: None,
+        sites,
+        complete,
+        gave_up: true,
     }
 }

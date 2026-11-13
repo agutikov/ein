@@ -1,7 +1,8 @@
 # S1f.6.28 — Word problems, second pass: a reading is always chosen, and *what is not listed is zero*
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's replies of that day. Not started. It continues
+**Status:** planned 2026-11-12, on the user's replies of that day. **Running 2026-11-13:** T1 done
+([the record](#record-2026-11-13)). It continues
 [S1f.6.20](s1f.6.20_word_problems.md), whose file is that stage's record; the examples it changes are
 [`examples/word_problems/`](../../../examples/word_problems/README.md), banked at `f3fe6ff0`.
 **Depends on:** [S1f.6.26](s1f.6.26_what_root_owes.md), the read-out row for what root owes, which an owed
@@ -180,3 +181,96 @@ fix. Findings go to [`findings.md`](findings.md) under the next free id; questio
 computed answers before it is banked (T2). Config never changes an answer; every answer exits 0. The gate is
 `./run_tests.sh`, then `./run_tests.sh --nightly` after the code commit (T1 changes a test's helper under
 `ein.rs/`); `utils/ci_container.sh` is not needed.
+
+## Record, 2026-11-13
+
+Every run below is on the release binary or the test profile of the commit its paragraph names, on this machine.
+The scratch programs are under `build/s1f.6.28/`: `p/` holds E-33's two witnesses and the probes of T1, `p2/` the
+programs of T2 to T5 as they were run before they were banked.
+
+### T1f.6.28.1 — E-33, resolved, done
+
+**Why the closure did not end.** `fact_grain::classify` closes the candidates under the saturation plans over
+*shapes*, a fact with some arguments *any*; a plan whose even-depth read unifies with a shape adds its conclusions,
+with the variables that read bound and *any* for the rest; a shape is kept if no shape of its relation subsumes it;
+nesting past four levels is widened to *any*. In the word theory a supposed reading concludes `(value (needed _ _
+_) _)`, since the reading rule's other premise, `left-over`, is not the read that unified; `holds-means-divide`
+reads `(value ?q ?a)` for any `?q` and concludes `(div _ _)`; and a division with an operand *any* sends the
+closure through every shape of `std.arith`'s circuits, whose steps carry their operands and their continuation as
+nested facts: `(sub-walk (div-trial (quotient _ _) (multiples (n z 0) (n (n z _) _) …) …) …)`. The widening bounds
+the nesting and not the breadth, which is the product of what each argument of a tag can be: *any*, a digit, or a
+number of up to four levels. A program of eleven lines shows it with the word theory gone, one hrule, one rule from
+the supposed fact to `(div ?v (n z 3))` with `?v` unbound (`build/s1f.6.28/p/gives_up.ein`). On E-33's witness
+(`build/s1f.6.28/p/boxes13_request_under_reading.ein`, the closure of `fact_grain.rs` at `fc92f075` with a progress
+line, release build, `build/s1f.6.28/t1-probe-long.err`): the closure had not ended when it was stopped after 1 312
+s, at 137 731 shapes and 141 743 steps, its work list still 384 long and still yielding new shapes: 9 403 shapes at
+2 s, 60 547 at 200 s, 97 656 at 603 s, 122 218 at 1 006 s. Five relations hold nearly all of it, `turn`,
+`sub-walk`, `strip`, `done` and `short`, 44 676, 27 602, 27 236, 27 234 and 9 271 of them at the stop; each
+insertion scans its relation's list twice, so a step costs more as the list grows, 12 552 steps in the first two
+seconds and about sixty a second after ten minutes.
+
+**What reads `Δ̂`.** The verdict reads it through the relation-grain sites and nothing else: `FactGrain::sites`
+is `Monotonicity::sites` mapped, `is_monotone` is *no site survives*, and `complete` is about the activator
+sites. **A program the relation-grain check does not flag has no site**, so its fact-grain verdict is *monotone*
+and *complete* whatever `Δ̂` holds, and the closure ran on it to be thrown away. E-33's two programs are such
+programs: `readings` with nothing owed has no `absent` and no obligation, so `D` holds `reads-as` and what it
+derives, and nothing reads `D` at a non-monotone polarity. So is every program this stage banks: the always-owed
+obligation of T2 reads `wanted` and `reading-of`, neither in `D`, and `reads-as` inside its `absent`, at odd
+depth, the polarity an obligation's trigger may read; `listed_is_all` of T4 reads `absent` over `has` on
+programs with no candidate; `before.ein` has none either.
+
+**The change** (`ein-infer/examples/shared/fact_grain.rs`, a test-side prototype no route reads):
+
+1. **The closure runs only where a site reads it.** With no relation-grain site `classify` returns *monotone*,
+   *complete* and `shapes: None` at once.
+2. **On a flagged program it gives up at `MAX_SHAPES`, 10 000 shapes added, on the safe side:** `Δ̂` is taken to
+   be every fact, which over-approximates `Δ` as the closure does, so every site is one, its witness the relation
+   it reads with every argument *any*, an activator site makes it incomplete, and the verdict is *not monotone*
+   (`FactGrain::gave_up`). 10 000 is a hundred times the largest closure a flagged corpus program computes.
+3. **`fact_grain_never_calls_a_violated_cube_monotone` fails on a program where the closure gives up,** naming
+   it and E-33. A give-up would otherwise turn the program into one fact grain calls not monotone, whose cube the
+   test does not read: the test would check less and say nothing. So the bound never decides a verdict the test
+   reads; it turns a run that does not end into a failure that names the program.
+
+`site_census` prints `shapes` as `null` where the closure did not run, `gave_up` beside it, and *the closure gave
+up* on its program line. A new test, `fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side`,
+holds both halves on the eleven-line program: unflagged, no `Δ̂`, and its cube read; with an `absent` over the
+quotient added, flagged, the closure gives up, the site's witness `(quot-of _ _ _ _)`, *not monotone*.
+
+**Why what the test means is unchanged.** The test says: on every corpus file and register witness, where fact
+grain calls the program monotone, the oracle's cube has no violation (and none where relation grain does), on at
+least 140 cubes. (1) moves no verdict, by construction, and measured: every file's relation-grain verdict, its
+fact-grain verdict, its completeness and every site's witness text, the closure at `fc92f075` against this tree's,
+**identical on all 743 files** of the selection (522 that load and saturate, 48 of them flagged;
+`build/s1f.6.28/t1-v-old.txt` and `t1-v-new.txt`, `diff` empty, 2026-11-13). (2) moves none on the corpus: no
+corpus closure comes near the bound, the largest a flagged program computes being 100 shapes
+(`examples/saturation/square-unique/terminus.ein`) and the largest any program computed 383
+(`examples/beyond_arith/equation_two_unknowns.ein`, unflagged, now not computed;
+`build/s1f.6.28/t1-corpus-sweep.txt`, 0.18 s for the 743 closures together at `fc92f075`); and (3) makes a
+future one fail. The cubes the test reads: **437 at `fc92f075` and 437 on this tree**, 24.13 s and 24.09 s
+(`cargo test -p ein-infer --test region fact_grain_never -- --nocapture` with a count printed for the run and
+taken out after, 2026-11-13).
+
+**On E-33's programs** (`cargo test -p ein-infer --test region fact_grain`, 2026-11-13, each with the files
+copied into `examples/word_problems/` for the run and removed after):
+
+| in the corpus's directory | at `fc92f075` | this tree |
+|---|---|---|
+| nothing added | passes, 24.13 s | 3 passed, 23.37 s |
+| E-33's witnesses, `boxes13_request_under_reading.ein` and `readings_request_under_reading.ein` (readings never owed, unflagged) | did not end in 13 263 s (E-33) | **3 passed, 23.55 s** |
+| the page's `boxes13`, readings owed where something is left over, flagged by the obligation's trigger over `left-over` | not tried: its closure is E-33's, past 26 000 shapes in 30 s on the probe | **fails in 24.67 s**: *…the fact-grain closure gave up past 10000 shapes (E-33), so its verdict is the safe one and no cube of it is read here* |
+
+**The three ways the stage file named**, as read: *the widening applied to the continuation tags sooner* changes
+`Δ̂` on every program and so can move a verdict the test reads, and the antichain would still be a product of
+what each argument can be; *the closure's work shared* is not where the time goes, the antichain's own size is;
+*a bound that makes the analysis answer not monotone where it gives up* is (2), taken with (3) so that it never
+narrows the test. (1) is none of the three: a verdict that reads nothing of `Δ̂` does not compute it.
+
+**What stays open**, the user's ([Q-M1f.225](../open_questions.md#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up),
+defaulted): a flagged program on which a supposed fact leads to a calculator request with an operand unbound
+fails the test, as the page's `boxes13` does above. No program of the corpus is one, and none this stage banks.
+
+**Run on this tree** (2026-11-13): `cargo test -p ein-infer --test region` **alone**, as `AGENTS.md` has it for
+E-33, 29 passed, 41.18 s (S1f.6.27 recorded 39.76 s with one test fewer); `cargo fmt --all --check`; `cargo
+clippy -p ein-infer --all-targets -- -D warnings`; `site_census` on three files, its new fields read back. The
+wider sweeps run with T5, which adds the programs.

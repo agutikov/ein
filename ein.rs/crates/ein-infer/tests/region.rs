@@ -437,8 +437,8 @@ fn loaded_text(name: &str, text: &str) -> (Kb, Terms, Ast) {
 }
 
 /// The fact-grain verdict on one load: `(relation grain flags it, fact grain
-/// calls it monotone, its closure is complete)`.
-fn fact_grain_of(kb: &mut Kb, terms: &mut Terms, ast: &Ast) -> Option<(bool, bool, bool)> {
+/// calls it monotone, its closure is complete, its closure gave up)`.
+fn fact_grain_of(kb: &mut Kb, terms: &mut Terms, ast: &Ast) -> Option<(bool, bool, bool, bool)> {
     let (root, ()) = census::root_of(kb, terms, ast, |_, _| Some(()))?;
     let mut cands = root.proposed.clone();
     cands.sort_by_key(|&f| ein_infer::events::sexpr(terms, f));
@@ -448,6 +448,7 @@ fn fact_grain_of(kb: &mut Kb, terms: &mut Terms, ast: &Ast) -> Option<(bool, boo
         !root.monotonicity.is_monotone(),
         fg.is_monotone(),
         fg.complete,
+        fg.gave_up,
     ))
 }
 
@@ -467,6 +468,11 @@ fn violated(r: &Region) -> bool {
 /// with an owing superset). Checked on every corpus file and register witness
 /// within the limit, and on [`FACT_GRAIN_PROGRAMS`]. No route reads the
 /// prototype; the shipped check reads at relation grain until the user rules.
+///
+/// **The closure runs only where a site reads it**, and a program on which
+/// it gives up fails here (M1f S1f.6.28, E-33): its verdict would be the safe
+/// one, *not monotone*, and this test reads no cube of such a program, so a
+/// give-up would narrow what the test checks without saying so.
 #[test]
 fn fact_grain_never_calls_a_violated_cube_monotone() {
     let oracle = Options {
@@ -479,9 +485,17 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
         let Some((mut kb, mut terms, ast)) = load() else {
             return;
         };
-        let Some((flagged, monotone, _)) = fact_grain_of(&mut kb, &mut terms, &ast) else {
+        let Some((flagged, monotone, _, gave_up)) = fact_grain_of(&mut kb, &mut terms, &ast) else {
             return;
         };
+        if gave_up {
+            failures.push(format!(
+                "{name}: the fact-grain closure gave up past {} shapes (E-33), so its verdict \
+                 is the safe one and no cube of it is read here",
+                fact_grain::MAX_SHAPES
+            ));
+            return;
+        }
         if !monotone {
             return;
         }
@@ -538,8 +552,9 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
 fn fact_grain_on_programs_written_to_test_it() {
     for &(name, text, leaves, complete, want_violated) in FACT_GRAIN_PROGRAMS {
         let (mut kb, mut terms, ast) = loaded_text(name, text);
-        let (flagged, monotone, whole) =
+        let (flagged, monotone, whole, gave_up) =
             fact_grain_of(&mut kb, &mut terms, &ast).expect("saturates");
+        assert!(!gave_up, "{name}: the closure ends");
         assert!(flagged, "{name}: relation grain flags it");
         assert_eq!(monotone, leaves, "{name}: leaves the set at fact grain");
         assert_eq!(whole, complete, "{name}: the closure is complete");
@@ -556,6 +571,71 @@ fn fact_grain_on_programs_written_to_test_it() {
             "{name}: what the cube observes"
         );
     }
+}
+
+/// **Where the closure runs, and where it gives up** (M1f S1f.6.28, E-33).
+/// Two programs on which a supposed fact concludes a request to `std.arith`
+/// whose dividend the commitment does not bind, `(div _ (n z 3))`, which sends
+/// the closure through every shape of the division's circuits. Without a site
+/// the verdict reads nothing of `Δ̂`, which is not computed, and the cube is
+/// read as on every unflagged program. With one, an `absent` over the
+/// quotient, the closure runs and gives up at [`fact_grain::MAX_SHAPES`]: every
+/// site is one, the verdict the safe *not monotone*.
+#[test]
+fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side() {
+    const READING: &str = "(import std.arith :symbols (arith))
+         (relation reading T :why \"{?1} is a reading\") (relation read-as T :why \"read as {?1}\")
+         (relation amount T T :why \"there are {?2} {?1}\") (relation answer T T :why \"the answer for {?1} is {?2}\")
+         (relation counted T :why \"{?1} is counted\")
+         (reading one) (amount apples (n (n z 1) 3))
+         (hrule suppose () :match (reading ?m) :assert (read-as ?m) :why \"suppose the reading {?m}\")
+         (rule under () :match (and (read-as ?m) (amount ?k ?v)) :assert (answer ?k ?v) :why \"under {?m}, the answer for {?k} is {?v}\")
+         (rule divide () :match (answer ?k ?v) :assert (div ?v (n z 3)) :why \"divide {?v} by 3\")";
+    const SITE: &str = "(rule site () :match (and (reading ?m) (absent (quot-of ?a ?b ?q ?r))) :assert (counted ?m)
+         :why \"{?m} is counted while nothing is divided\")";
+    let verdict = |text: &str| {
+        let (mut kb, mut terms, ast) = loaded_text("reading", text);
+        let (root, ()) =
+            census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(())).expect("saturates");
+        let mut cands = root.proposed.clone();
+        cands.sort_by_key(|&f| ein_infer::events::sexpr(&terms, f));
+        cands.dedup();
+        assert_eq!(cands.len(), 1, "one reading is supposed");
+        let fg = fact_grain::classify(&kb, &terms, &root.plans, &cands, &root.monotonicity);
+        (root.monotonicity.is_monotone(), fg)
+    };
+
+    let (unflagged, fg) = verdict(READING);
+    assert!(unflagged, "no site at relation grain");
+    assert!(
+        fg.shapes.is_none(),
+        "no site reads Δ̂, so it is not computed"
+    );
+    assert!(fg.is_monotone() && fg.complete && !fg.gave_up);
+    let (mut kb, mut terms, ast) = loaded_text("reading", READING);
+    let Outcome::Region(r) =
+        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+            .expect("computes")
+    else {
+        panic!("within the limit");
+    };
+    assert!(
+        !violated(&r),
+        "the cube of the unflagged program has no violation"
+    );
+
+    let flagged_text = format!("{READING}\n{SITE}");
+    let (unflagged, fg) = verdict(&flagged_text);
+    assert!(!unflagged, "the absent over quot-of is a site");
+    assert!(fg.gave_up, "the closure gives up");
+    assert!(fg.shapes.is_none());
+    assert_eq!(
+        fg.sites,
+        vec![Some("(quot-of _ _ _ _)".to_string())],
+        "every site is one, its witness the relation it reads"
+    );
+    assert!(!fg.is_monotone(), "the safe verdict");
+    assert!(fg.complete, "no activator site");
 }
 
 /// **`--jobs` changes nothing.** The same record with one thread and with

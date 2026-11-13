@@ -237,6 +237,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.222](#q-m1f222--a-claim-refuted-by-a-state-a-run-found) | a claim refuted by a state a run found | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: under `ein test` a run that did not exhaust what a claim is about refutes the claim where a state it found gives a class the claim does not list, and `(solve :expect (false))` where root is alive; `ein solve` under a mode keeps its note, *not checked*, and its exit 0**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
 | [Q-M1f.223](#q-m1f223--what-the-surfaces-of-ein-test-say-of-the-question) | what the surfaces of `ein test` say of the question | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: `-v` names the question before what the run found, *(--single: all of R, 1 class over 1 states)*, and *describe, after -n 3* on a fall-back; `--json-report` is `ein-test-report/5` with `route` and `fell_back_from` on every row; `--events` and `--json-summary` hold the last question asked**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
 | [Q-M1f.224](#q-m1f224--what-a-bare-description-pays-for-n) | what a bare description pays for N | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: no change; a bare `ein solve` prints the `N` row with its count and takes the minimal transversals that count is, where a surface that prints neither `N` nor its count, `--count` and `ein test` without an artefact, takes none**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6275--e-31-measured-done) |
+| [Q-M1f.225](#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up) | what the fact-grain test does where the closure gives up | **defaulted 2026-11-13 (S1f.6.28), the user's to revise: the closure runs only where a relation-grain site reads it; on a flagged program it gives up after 10 000 shapes on the safe side, every site one; and `region.rs`'s `fact_grain_never_calls_a_violated_cube_monotone` fails on a program where it gives up, naming it, so the bound never decides a verdict the test reads**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6281--e-33-resolved-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4390,3 +4391,28 @@ release binary of S1f.6.27's T5, 2026-11-13).
 **Defaulted 2026-11-13: (a), the user's to revise.** The stage's rule for E-31 was *remove the work only if
 every surface is byte-identical after*, and (b) moves a row; (c) is a stage of its own. Neither is this
 phase's to start without a reply.
+
+### Q-M1f.225 — What the fact-grain test does where the closure gives up
+
+**Raised** 2026-11-13 by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6281--e-33-resolved-done)'s
+T1 (E-33). `ein-infer/examples/shared/fact_grain.rs` closes a program's candidates under its rules over shapes,
+and on a program where a supposed fact leads to a request to `std.arith` with an operand the commitment does not
+bind the closure follows every shape of the calculator's circuits and does not end in any time a gate has. The
+stage made it run only where a relation-grain site reads it, which is the whole of the fix for every program the
+stage banks, and none of these: what remains is a **flagged** program of that kind, the page's `boxes13` with the
+reading owed only where something is left over, whose obligation reads `left-over`. The closure has to give an
+answer there or not end.
+
+- **(a) The closure gives up after 10 000 shapes, on the safe side, and the test fails on such a program, naming
+  it.** The bound never decides a verdict the test reads: the test reads the exact closure's verdict or fails.
+  Banking such a program needs a ruling first, this one's (b).
+- **(b) The closure gives up, and the test reads the safe verdict**, *not monotone*, as it reads every program
+  fact grain does not call monotone: no cube of it is checked here. The test then checks less than it did, on a
+  program chosen by the size of its closure, which is what the stage file names as not acceptable without a
+  ruling.
+- **(c) No bound.** The test does not end on such a program, as before the stage.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It is the only one of the three that keeps what the test
+means on every program and ends. No program of the corpus is one; the largest closure a flagged corpus program
+computes is 100 shapes.
+
