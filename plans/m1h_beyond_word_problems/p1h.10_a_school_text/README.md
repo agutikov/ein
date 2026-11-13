@@ -8,6 +8,9 @@ of 2026-11-08). **It stops for the user twice,** by the milestone README: after 
 short list of texts, and after its second proposes the five groups and the fifty questions. The three stages
 after the second stop are named here with what the instruction says of each, and their tasks are written at
 that stop, since every one of them depends on the text and the questions the user accepts.
+**The text, chosen by the user on 2026-11-13** at S1h.10.1's stop: *Winnie-the-Pooh* by A. A. Milne, 1926, in
+English, Project Gutenberg's eBook #67098, and of it **Chapter II**, *In which Pooh goes visiting and gets into
+a tight place* ([S1h.10.1 § The choice](s1h.10.1_the_text.md#the-choice-2026-11-13)). S1h.10.2 is next.
 **Depends on:** the language and the engine as they ship; nothing else for its first two stages. Its later
 stages use, where they exist, [P1h.1](../p1h.1_temporal_and_causal_theories/README.md)'s timeline and causes,
 [P1h.2](../p1h.2_slicing/README.md)'s slice and
@@ -87,7 +90,7 @@ no sentence states, and the theory that supplies them is the measured thing.*
 
 | ID | title | depends on | stops for the user |
 |---|---|---|---|
-| [S1h.10.1](s1h.10.1_the_text.md) | The text: a short list, with each candidate's length, language and whether it may be reproduced | nothing | **yes: the first stop.** The choice is the user's. Q-M1h.4, Q-M1h.18 |
+| [S1h.10.1](s1h.10.1_the_text.md) | The text: a short list, with each candidate's length, language and whether it may be reproduced | nothing | **yes: the first stop.** **Done 2026-11-13 by the user's choice:** *Winnie-the-Pooh*, A. A. Milne, 1926, Chapter II (Q-M1h.4, Q-M1h.21). Q-M1h.18 carried to S1h.10.3 |
 | [S1h.10.2](s1h.10.2_fifty_questions_in_five_groups.md) | Fifty questions in five groups by complexity, each with its expected answer in words | the text chosen | **yes: the second stop,** before any question is formalized. Q-M1h.19 |
 | [S1h.10.3](s1h.10.3_the_text_and_the_questions_formalized.md) | The text and the questions formalized: sentences as facts by hand, questions as queries, the expected answers written before any theory | the questions accepted; Q-M1h.18's ruling | no; **its tasks are written at S1h.10.2** |
 | [S1h.10.4](s1h.10.4_five_theories_or_one_theory_and_five_ontologies.md) | Five theories, or one theory and five ontologies: each group's questions answered | S1h.10.3 | **once,** inside it: the two shapes on the first two groups, shown, before the other three are written (Q-M1h.3). **Its tasks are written at S1h.10.2** |

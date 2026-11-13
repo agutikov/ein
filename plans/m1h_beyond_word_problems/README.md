@@ -555,8 +555,8 @@ stage past a stop has its acceptance written with its tasks.
 
 ## Open questions
 
-They are in [`open_questions.md`](open_questions.md) since 2026-11-13, as `Q-M1h.<n>`. None is ruled, and none
-has a default that is acted on. The six that were kept here keep their numbers, so *question 1* of this page
+They are in [`open_questions.md`](open_questions.md) since 2026-11-13, as `Q-M1h.<n>`. None has a default that
+is acted on; the user answered Q-M1h.4 and Q-M1h.21 on 2026-11-13, and the rest are open. The six that were kept here keep their numbers, so *question 1* of this page
 is Q-M1h.1:
 
 1. [Q-M1h.1](open_questions.md#q-m1h1--where-m1h-sits-against-m1g): where M1h sits against M1g. The same
@@ -567,12 +567,14 @@ is Q-M1h.1:
 3. [Q-M1h.3](open_questions.md#q-m1h3--five-theories-or-one-theory-and-five-ontologies): five theories, or
    one theory and five ontologies (P1h.10).
 4. [Q-M1h.4](open_questions.md#q-m1h4--the-text-and-its-language): the text (P1h.10), and its language.
+   **Answered by the user, 2026-11-13:** *Winnie-the-Pooh*, A. A. Milne, 1926, in English, Project
+   Gutenberg's edition; of it, Chapter II ([Q-M1h.21](open_questions.md#q-m1h21--which-part-of-the-book)).
 5. [Q-M1h.5](open_questions.md#q-m1h5--where-the-temporal-and-causal-modules-live-and-their-names): where
    the temporal and causal modules live in the stdlib's layout, and their names.
 6. [Q-M1h.6](open_questions.md#q-m1h6--whether-p1h20-and-p1h30-end-in-programs-at-all): whether P1h.20 and
    P1h.30 end in programs at all.
 
-Q-M1h.7 to .20 were raised by the stage files, each a thing this README leaves unsaid: each names the stage
+Q-M1h.7 to .21 were raised by the stage files, each a thing this README leaves unsaid: each names the stage
 that puts it to the user and what waits for it.
 
 ## Connections

@@ -1,8 +1,14 @@
 # S1h.10.1 — The text: a short list, with each candidate's length, language and whether it may be reproduced
 
 **Phase:** [P1h.10](README.md) of [M1h](../README.md)
-**Status:** planned 2026-11-13. Not started. **It stops for the user:** the choice of the text is the user's,
-and nothing of the phase is written past this page before it is made.
+**Status:** planned 2026-11-13; **done 2026-11-13, by the user's choice, made before the short list was
+written:** *Winnie-the-Pooh* by A. A. Milne, 1926, in English, in Project Gutenberg's edition, and of it
+**Chapter II** ([§ The choice, 2026-11-13](#the-choice-2026-11-13); Q-M1h.4 and
+[Q-M1h.21](../open_questions.md#q-m1h21--which-part-of-the-book)). Not answered at this stop, and carried to
+[S1h.10.3](s1h.10.3_the_text_and_the_questions_formalized.md), which needs it: where the text and its
+programs live and whether the repository holds the chapter's text
+([Q-M1h.18](../open_questions.md#q-m1h18--where-the-text-its-facts-and-the-theories-live)).
+[S1h.10.2](s1h.10.2_fifty_questions_in_five_groups.md) can run.
 **Depends on:** nothing.
 
 ## What it rests on
@@ -83,3 +89,90 @@ the two questions for the user. No program, and nothing outside `plans/`.
 Questions go to [`open_questions.md`](../open_questions.md) under the next free id; findings to `findings.md`
 in this directory, opened at the first. A ruling is recorded as the user gave it. The link check is run before
 the commit, which changes pages only.
+
+## The choice, 2026-11-13
+
+**The user's words**, in two messages of 2026-11-13, the second while the first was being recorded:
+
+> Winnie-the-Pooh — A. A. Milne (1926) plans/m1h_beyond_word_problems/p1h.10_a_school_text/s1h.10.1_the_text.md
+
+> https://www.gutenberg.org/cache/epub/67098/pg67098-images.html
+
+So the text is ***Winnie-the-Pooh*, by A. A. Milne, first published in 1926**, and the edition is Project
+Gutenberg's eBook #67098, released 2022-01-03, its HTML file at the address the user gave (its header:
+*Language: English*; *Original publication: Canada: McClelland & Stewart, Ltd., 1926*). That answers
+[Q-M1h.4](../open_questions.md#q-m1h4--the-text-and-its-language): the text, and its language, **English, in
+Milne's own words**. Boris Zakhoder's Russian *Винни-Пух и все-все-все* is a retelling and another text; it was
+not named and is not this phase's.
+
+**What of this stage was not done, and why.** The short list (T1h.10.1.2), what each candidate would carry
+(T1h.10.1.3) and the language as a fact about Ein for each candidate (T1h.10.1.4) were for a choice the user
+has made without them; they are not written. What the choice leaves open, and the facts it rests on, are
+below.
+
+### How long it is, by chapter
+
+The instruction asks for *"50-100 sentences"*. The book is ten chapters, each longer than that but one.
+Counted on the edition the user named (`python3 -I build/m1h/pooh/count_html.py build/m1h/pooh/pooh.html`,
+the file fetched from the user's address on 2026-11-13, sha256 beginning `0f2cd0f4e0defa4a`). **The rule:**
+a chapter's prose is every paragraph of it, its title (a heading) and its songs (the `poetry` blocks, counted
+apart in lines) and the captions of its drawings left out; a sentence ends at `.`, `!` or `?`, after any
+closing quotes or brackets, where whitespace and a capital, an opening quote or a bracket follow; *Mr.* and
+*Mrs.* end none. So direct speech that ends in `!` or `?` and goes on with a lower-case word (*"…?" said
+Pooh*) is one sentence with what follows. The rule is a script's and approximate; a hand count of the chapter
+chosen is S1h.10.3's.
+
+| chapter | title | sentences | words | lines of song |
+|---|---|---:|---:|---:|
+| I | In which we are introduced to Winnie-the-Pooh and some bees, and the stories begin | 169 | 2 075 | 16 |
+| II | In which Pooh goes visiting and gets into a tight place | 110 | 1 438 | 6 |
+| **III** | **In which Pooh and Piglet go hunting and nearly catch a Woozle** | **88** | **1 219** | **0** |
+| IV | In which Eeyore loses a tail and Pooh finds one | 102 | 1 396 | 5 |
+| V | In which Piglet meets a Heffalump | 178 | 2 624 | 8 |
+| VI | In which Eeyore has a birthday and gets two presents | 281 | 2 550 | 12 |
+| VII | In which Kanga and Baby Roo come to the forest, and Piglet has a bath | 238 | 2 566 | 18 |
+| VIII | In which Christopher Robin leads an expotition to the North Pole | 270 | 2 859 | 18 |
+| IX | In which Piglet is entirely surrounded by water | 168 | 2 639 | 0 |
+| X | In which Christopher Robin gives Pooh a party, and we say good-bye | 139 | 1 774 | 40 |
+
+The same rule on the edition's plain-text file (`pg67098.txt`, `build/m1h/pooh/count.py`) gives the same
+counts for I, II, III, V and X and differs by one to sixteen on the other five, where the two files lay
+songs and paragraphs out differently. Chapter III is the one chapter inside 50 to 100; IV and II are just past it.
+
+### Which part: Chapter II
+
+The book is longer than the instruction's 50 to 100 sentences, so the phase takes a part of it
+([Q-M1h.21](../open_questions.md#q-m1h21--which-part-of-the-book)). The user, 2026-11-13, a third message:
+
+> pick chapter 2
+
+**Chapter II, *In which Pooh goes visiting and gets into a tight place*:** 110 sentences and 1 438 words by
+the rule above, and six lines of song. It is ten sentences past the instruction's *100*, and the choice is the
+user's with it. Pooh, calling on Rabbit at eleven o'clock, is offered honey or condensed milk and says
+*"Both"*; on the way out he sticks in the door of Rabbit's house; Christopher Robin says he must stay *"About
+a week"* until he is thin enough, reads him *"a Sustaining Book, such as would help and comfort a Wedged Bear
+in Great Tightness"*, and at the end of the week they all pull him out. The phase's questions are written on
+this chapter.
+
+### Whether its text may be reproduced in the repository
+
+As far as this stage can establish it, and it is not a lawyer:
+
+- **In the United States the book is in the public domain since 1 January 2022**, a work first published in
+  1926 ([Duke's Center for the Study of the Public Domain, Public Domain Day 2022](https://web.law.duke.edu/cspd/publicdomainday/2022/bcvpd/);
+  [Smithsonian Magazine](https://www.smithsonianmag.com/smart-news/whats-entering-the-public-domain-on-january-1-winnie-pooh-ernest-hemingway-180979299/)).
+  Project Gutenberg, which publishes what is in the public domain in the United States, released it on
+  2022-01-03.
+- **Where copyright runs for the author's life and seventy years, the United Kingdom among those places,** it
+  is not yet: A. A. Milne died on 31 January 1956 (Wikipedia), so the term runs to 31 December 2026 and the
+  text is free there from 1 January 2027. That date is derived from the rule and the date of death, not taken
+  from a source that states it.
+- **E. H. Shepard's drawings are a separate work.** None of them is reproduced, whatever is ruled.
+- **Project Gutenberg's own terms** govern a copy of its file as it distributes it (its licence and its
+  name); the stage records that and decides nothing.
+
+Whether the repository holds Chapter II's text, or sentence numbers against the edition and short
+quotations, is [Q-M1h.18](../open_questions.md#q-m1h18--where-the-text-its-facts-and-the-theories-live), still
+the user's. Nothing of the text is in the repository today: the two files counted are under `build/`, which
+is not tracked.
+
