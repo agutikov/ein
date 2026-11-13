@@ -406,6 +406,7 @@ The shapes of the lines a question writes beside an answer; [`defined_behaviour.
 | `note: FILE: partial — …` | a run the budget or `--region-limit` stopped | 0 |
 | `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, and every claim under `--count` | 0 |
 | `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 |
+| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :hypothesis-relations …` | at load, on every command: a list beside an hrule, which filters no candidate, or a name another declaration already says ([`defined_behaviour.md` § 4.27](../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634), since M1f S1f.6.34) | 0 |
 | `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 |
 | `** aborted: --max-time S s reached before the question was decided **` | `-T` | 2, with nothing on stdout |
 

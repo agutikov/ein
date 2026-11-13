@@ -303,6 +303,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   line on stderr and refuses nothing (`ein-cli/tests/import_left_behind.rs`).
 - *Forbid*: a program whose refutation could rest on an `absent` over a
   relation a commitment can still extend is refused (`ein_infer::forbid`).
+- **The hypothesis mechanisms do not contradict one another**: an hrule, an
+  obligation, `:hypothesis-relations`, `:no-hypothesis` and `(__closed__ R)`,
+  read on root's fixpoint. No active hrule proposes a relation a list or a
+  closure takes out, no obligation owes one (a list only with no hrule), and no
+  relation is in both lists or listed and closed; a list an hrule leaves
+  filtering nothing, or a redundant name, is a `note:` (`ein_infer::mechanisms`).
 
 ### The answer
 

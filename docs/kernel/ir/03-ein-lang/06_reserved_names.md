@@ -235,9 +235,11 @@ a bare `(open)` contributes to the count and names no slot.
 complete` by the generator's test and still owes a witness is **`Open`** — the
 fourth verdict word, reported as *`Open — owes n (rel: n, …)`* with `k = 0`,
 where it read `Solution` before.
-[`tests/stdlib/algebra/23_total_owed.ein`](../../../../tests/stdlib/algebra/23_total_owed.ein)
-is that state with a number attached, and it is one of the twelve corpus
-entries the word moved. The distinction it draws is *no model* against *not yet
+[`tests/region/04_owing.ein`](../../../../tests/region/04_owing.ein)
+is that state with a number attached (`tests/stdlib/algebra/23_total_owed.ein`
+was until M1f S1f.6.34, which refuses the `:no-hypothesis` that kept its
+obligation from proposing; it was one of the twelve corpus entries the word
+moved). The distinction it draws is *no model* against *not yet
 a model*, so `false` outranks it and a discharged model outranks it; it exits
 **0** like the other three. It is **scoped** — only a program that *states* an
 obligation can reach it, which is why the 92 corpus entries that declare none
@@ -341,10 +343,10 @@ and `not` does, a stored negation being a fact
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 (S1.7.10). Used as a relation or a value, never bound (M1f T1f.5.5.11). | `ein-infer/closed.rs` (`CLOSED = "__closed__"`); the hypgen filter |
+| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-written, or derived by `std.closure` and by a module's closing rule; `emit_closed`, which infers it for any relation no rule produces, runs for the corpus's `hyp` shape op alone and on no command since M1e2 S1e2.3.1. Kept kernel mechanism for M1 (S1.7.10). Used as a relation or a value, never bound (M1f T1f.5.5.11). Read by the generator's rungs 2 and 3 and the read-out's `outside` row, by no matcher (M1f S1f.6.34, E-52); no hrule proposes a closed relation and no obligation owes one (below). | `ein-infer/closed.rs` (`CLOSED = "__closed__"`); the hypgen filter |
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
-| `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations; every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are (M1f S1f.7.8, `defined_behaviour.md` § 4.20) | `hypgen` (`HYPOTHESIS_RELATIONS`) |
-| `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
+| `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator and the obligations rung to the listed relations, never the hrule rung; every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are (M1f S1f.7.8, `defined_behaviour.md` § 4.20) | `hypgen` (`HYPOTHESIS_RELATIONS`) |
+| `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire); read by the blind enumerator and the obligations rung, never the hrule rung | `hypgen` (`NO_HYPOTHESIS`) |
 | `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein.y`'s `Claim` (shape, at the parse) + `ein-ir/expect.rs` (its relations, at load) + `ein-infer/expect.rs` (the comparison) |
 | `expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region (M1e2 S1e2.1a.4): R's states, `(merged …)` generators, `(owing …)`, read only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error since M1f S1f.5.5's swap, and was a load error until then; `model` stays a name | `ein.y`'s `RegionClaim` (shape, at the parse) + `ein-ir/claim.rs` (what the shape cannot say, at load) + `ein-infer/claim.rs` (against R) |
 
@@ -363,6 +365,43 @@ in [`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), which no
 program reached after the swap. The diagnostics are in
 [`defined_behaviour.md` §4.1](../../defined_behaviour.md). It was a silent
 no-op, which stopped being survivable when a keyword could carry a *test*.
+
+### The five mechanisms, and each pair — M1f S1f.6.34
+
+What a commitment may be about is steered by five declarations, and a sixth mechanism, the blind enumerator, runs
+where none of the generating ones does. `hypgen`'s ladder: the hrules if the program declares any, and then the other
+two rungs never run; otherwise the obligations while root owes something they may branch on (a loaded obligation rule
+that owes nothing at root proposes nothing, and the blind enumerator does not run); otherwise, or where the
+obligations rung declines, the blind enumerator. H is built once, at root.
+
+| | mechanism | what it does | read by |
+|---|---|---|---|
+| H | `(hrule …)`, activated by `(solve :hrules …)` (one with no parameter always) | generates, rung 1, alone where declared | itself |
+| O | an obligation rule, `:assert (open ?R)`, activated by a fact such as `(total-owed R isa)` | two roles: a state that owes is not in R, whatever generated it; and, with no hrule, rung 2 proposes facts of the owed relation | the discharge test; rung 2 |
+| B | the blind enumerator | generates, rung 3: no hrule and no obligation rule loaded, or the obligations rung declined | — |
+| HR | `(solve :hypothesis-relations …)` | a whitelist, *speculate only these*; `()` names none | rungs 2 and 3; the read-out's `outside` row |
+| NH | `(solve :no-hypothesis …)` | a blacklist, *never these* | rungs 2 and 3; the `outside` row |
+| C | `(__closed__ R)`, stated or derived | excludes R from rungs 2 and 3, and so keeps R out of `D`, which makes an `absent` over it closed-world | rungs 2 and 3; the `outside` row; no matcher |
+
+No list and no closure filters an hrule's candidates. **The pairs** (the user's table of 2026-11-13, refused or noted
+at load on every command since S1f.6.34, [`defined_behaviour.md` §
+4.27](../../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634)):
+
+| pair | verdict |
+|---|---|
+| H + O | no conflict: H generates, O judges (`zebra2.ein`) |
+| H + HR | HR is **dead**, a `note:`; a **conflict** where an active hrule proposes a relation HR leaves out |
+| H + NH | NH is **dead**, a `note:`; a **conflict** where an active hrule proposes a relation NH lists (E-47) |
+| H + C | a **conflict** where an active hrule proposes a closed relation; closing another relation stands |
+| O + HR | with no hrule, a **conflict** where an owed relation is outside HR |
+| O + NH | with no hrule, a **conflict** where an owed relation is in NH: *"filtered obligations are nonsense by definition"* |
+| O + C | a **conflict** where an owed relation is closed, whatever generates: *"obligated relation can't be __closed__ also"* |
+| HR + NH | a **conflict** where one relation is in both; with no hrule, NH naming a relation HR leaves out is **redundant**, a `note:` |
+| HR + C | a **conflict** where a listed relation is closed |
+| NH + C | with no hrule, an overlap is **redundant**, a `note:`; never a conflict |
+
+An obligation is read as declared, a plan root's activators compile, whether or not root owes it; a derived closure
+and a derived activator are read where they are derived, at root's fixpoint.
 
 ## Not reserved (removed)
 

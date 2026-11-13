@@ -1082,7 +1082,20 @@ unmoved. One line per refusing rule, sorted by rule:
 relation, `(solve :no-hypothesis (<R>))`, if no commitment is meant to extend
 it; state a requirement as a decision or an obligation (`functional` +
 `total-owed`, or `(open ?R)` with hrules); or conclude from a stored negative,
-as `std.algebra`'s `total` does. Pinned by
+as `std.algebra`'s `total` does. **Where the program declares an hrule**, no
+list filters a candidate (§ 4.27), so since M1f S1f.6.34 (E-47) the first form
+is *let no hrule propose <R>, if no commitment is meant to extend it — hrule
+'h' proposes it, and no list filters an hrule's candidates*, naming every
+active hrule that proposes `<R>`, and *let no hrule propose what <R> is
+derived from …* where none proposes it directly; until then it named
+`(solve :no-hypothesis (<R>))` there too, a form that lifted nothing and that
+§ 4.27 refuses beside such an hrule. **Where no hrule is declared and an
+obligation owes `<R>`** the first form is *let no obligation owe <R>, if no
+commitment is meant to extend it — obligation 'o' owes it, and no list may
+filter what an obligation owes*, § 4.27 refusing the list there too
+(`ein-infer/tests/refutation_under_absent.rs`'s
+`beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list` and
+`beside_an_obligation_the_remedy_names_the_obligation`). Pinned by
 `ein-infer/tests/refutation_under_absent.rs`, which holds the refused set of
 the corpus and the register exactly and the two written activator programs,
 and by `corpus/wrong_answers.toml`'s fifteen refused rows (`python3 -c
@@ -1711,8 +1724,10 @@ relation where it heads a form of the hrule, or is passed on to a position
 that holds one. A program the loader has already refused gets no line from
 this check.
 
-**What is not refused.** An activator's argument at a parameter that names no
-relation is a value, a type or an object, which no declaration lists, so
+**What is not refused here.** A list that names what the program has and
+contradicts another of its hypothesis declarations, an hrule that proposes a
+relation `:no-hypothesis` names among them, is § 4.27's. An activator's
+argument at a parameter that names no relation is a value, a type or an object, which no declaration lists, so
 `(guess (at Colour House))` loads and proposes nothing, and the read-out's
 `universe` row says *no candidate*; so does a parameterised hrule that no
 activator names. A bare name in `:hrules` selects nothing: every hrule
@@ -2241,6 +2256,77 @@ witnesses), `ein-ir`'s `fuzz_properties.rs`
 the loaded store and the compiled plans), and `corpus/wrong_answers.toml`'s
 W89 rows.
 
+### 4.27 A program's hypothesis mechanisms do not contradict one another — M1f S1f.6.34
+
+Five declarations steer what a commitment may be about: an `(hrule …)` (**H**, with its `:hrules` activators), an
+obligation rule, `:assert (open ?R)` (**O**, with its activators), `(solve :hypothesis-relations …)` (**HR**),
+`(solve :no-hypothesis …)` (**NH**) and `(__closed__ R)`, written or derived (**C**); the blind enumerator runs where
+none of the generating ones does ([`06_reserved_names.md` § Hypothesis / query
+control](ir/03-ein-lang/06_reserved_names.md#hypothesis--query-control)). The user ruled on 2026-11-13, on E-47,
+*"report conflict if any hypothesis mechanism constradicts itself"*, and gave the pairs the same day. Since M1f
+[S1f.6.34](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md)
+a program whose two declarations say opposite things of one relation is refused, one line per conflict, and a
+declaration that filters no candidate, or says what another already says, is one `note:` line on stderr:
+
+| pair | refused where | `note:` where |
+|---|---|---|
+| H + O | never: H generates, O judges (`zebra2.ein`) | — |
+| H + HR | an active hrule proposes a relation the list leaves out | the list, which filters no candidate beside an hrule |
+| H + NH | an active hrule proposes a relation the list names | the list, the same |
+| H + C | an active hrule proposes a closed relation | — |
+| O + HR | no hrule is declared, and an obligation owes a relation the list leaves out | — |
+| O + NH | no hrule is declared, and an obligation owes a relation the list names | — |
+| O + C | an obligation owes a closed relation | — |
+| HR + NH | a relation is in both | no hrule: a `:no-hypothesis` name `:hypothesis-relations` already leaves out |
+| HR + C | a listed relation is closed | — |
+| NH + C | never | no hrule: a `:no-hypothesis` name a closure already closes |
+
+**Read on root's fixpoint.** A derived closure (`std.closure`'s `infer-closure`, a module's closing rule) and a
+derived activator (`bijective-setup`'s `(total-owed R isa)`) exist only there. An hrule is **active** where the
+generator compiles a plan of it, one without parameters always and one with them once per `:hrules` activator, and
+the relation it proposes is its `:assert`'s; an obligation is a plan root's activators compile, **owed at root or
+not** (Q-M1f.243), and the relation it owes is its `(open ?R)`'s. `:hypothesis-relations ()` names none, so beside an
+active hrule or an obligation it leaves every relation out. An activator only a commitment derives is not seen.
+
+**On every command, at load** (Q-M1f.245): `ein-cli`'s one load path loads the program a second time into tables of
+its own, saturates that root and judges it (`ein_infer::mechanisms::check`), wherever the program could declare two
+mechanisms at all (two of H, O, HR and NH as written, or one beside `__closed__` written anywhere); the command's own
+tables are untouched, and a root that does not saturate is the command's to report. The views and `kb save` refuse
+as `solve` does, and no container is written. A library caller calls `check`; `ein_infer`'s routes do not.
+
+| the pair | the line, after `kb load error: ` |
+|---|---|
+| H + HR | `FILE:L:C: solve: its :hypothesis-relations leaves out at, and hrule 'guess' (at Color House) proposes facts of at — no list filters an hrule's candidates, so the program says both that at is guessed and that it is not: drop the list, which filters nothing where an hrule is declared, or the hrule's at` |
+| H + NH | `FILE:L:C: solve: its :no-hypothesis names at, and hrule 'guess' (at Color House) proposes facts of at — no list filters an hrule's candidates, …: drop at from the list, …, or the hrule's at` |
+| H + C | `FILE:L:C: hrule 'guess' (at Color House) proposes facts of at, and (__closed__ at), written at FILE:L:C, says at is closed — a closed relation is one no commitment extends, and each fact the hrule proposes is a commitment: drop the closure, or the hrule's at` |
+| O + HR | `FILE:L:C: solve: its :hypothesis-relations leaves out at, and obligation 'total-owed', activated by (total-owed at is-a), written at FILE:L:C, owes at — an obligation is paid by facts of the relation it owes, so a state that owes at and may not be given one is stuck: add at to the list` |
+| O + NH | `FILE:L:C: solve: its :no-hypothesis names at, and obligation 'total-owed', activated by …, owes at — …: drop at from the list` |
+| O + C | `[FILE:L:C: ]obligation 'total-owed', activated by (total-owed r is-a), written at FILE:L:C, owes r, and (__closed__ r), which rule 'infer-closure' derives, says r is closed — an obligated relation is not closed: …; drop the closure, or the obligation` |
+| HR + NH | `FILE:L:C: solve: its :no-hypothesis names at, and its :hypothesis-relations names at too — the one says guess it, the other never: drop at from one` |
+| HR + C | `FILE:L:C: solve: its :hypothesis-relations names at, and (__closed__ at), written at FILE:L:C, says at is closed — a listed relation is one the program guesses, and a closed one it never does: drop at from the list, or the closure` |
+
+The exit is each command's load-error exit, 1 (`ein test`: 2, the file an `ERROR` row). The position is the list's
+name, the list where it names none (`()` at its keyword), the hrule's `:assert`, or the written activator or closure
+by its form; a line about two derived declarations has none. An activator or a closure says where it comes from,
+*written at FILE:L:C* or *which rule 'r' derives*. The notes, each `note: FILE:L:C: solve: its :KEY …`, are *filters
+no candidate — the program declares hrule 'guess', and no list filters an hrule's candidates*, *names near, which its
+:hypothesis-relations already leaves out* and *names at, which (__closed__ at), written at FILE:L:C, already
+closes*, printed once a process and moving no exit, answer or stdout (Q-M1f.242).
+
+**Until S1f.6.34** each pair answered in silence: an hrule's candidates untouched by the lists and a closure (H + HR,
+H + NH, H + C), and a state owing a relation the lists or a closure took out of the obligations rung *stuck*, R
+empty (O + HR, O + NH, O + C). E-47 met H + NH on S1f.6.28's word problems, where *forbid*'s first remedy (§ 4.7)
+named the list the program already wrote. The corpus carried twenty-four programs in conflict, every one a
+deliberate fixture that switched an obligation's generating role off to ask about root alone: fourteen answer as
+before, nine state the R their edit gives, and `tests/stdlib/closure/03_closed_and_owing.ein` is
+`examples/ein-bugs/closed-and-owing.ein`, the refusal's fixture (Q-M1f.246). No program that loads with no conflict
+moved.
+
+Pinned by `ein-cli`'s `mechanism_conflicts.rs` (eleven refused shapes, each on twenty commands with one line, the
+same on each, and no container; twelve that load, six silent and six with their note, under five commands and
+reopened from a container; E-47's witness and its twin, two lines each and none of *forbid*'s; the corpus's
+fixture), and by `ein-infer`'s `obligation_reports.rs`.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands
@@ -2459,8 +2545,9 @@ Two things the fix decides rather than assumes:
 - **A cap of zero answers; it does not refuse.** A program whose root is
   already complete has no lattice to exhaust and reports its verdict exactly at
   a cap of zero — `Solution` on `examples/branching/01_saturate_only.ein`,
-  `Open — owes 1` on `tests/stdlib/algebra/23_total_owed.ein`, both
-  `exhausted = true`. The other **99** entries are that class and not one of
+  `Open — owes 1` on `tests/stdlib/algebra/23_total_owed.ein` (on
+  `tests/region/04_owing.ein` since M1f S1f.6.34, which let `23`'s obligation
+  propose), both `exhausted = true`. The other **99** entries are that class and not one of
   them moved. The alternative — the `Aborted` shape `--max-enterings 0` uses —
   would decline a question the engine answers exactly, and P1d.10's own
   reconnaissance asks it once per node.

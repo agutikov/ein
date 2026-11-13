@@ -1,7 +1,7 @@
 # S1f.6.34 — A conflict between the hypothesis mechanisms is reported
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-13, on the user's ruling of that day on E-47; started 2026-11-14, T1 done ([§ Record](#record-2026-11-14)). **An engine stage.**
+**Status:** **done 2026-11-14** ([§ Record](#record-2026-11-14)); planned 2026-11-13, on the user's ruling of that day on E-47. **An engine stage.**
 **Depends on:** nothing in the phase. Independent of the stdlib layout. It owns
 [E-47](findings.md) of the phase's findings.
 
@@ -261,3 +261,234 @@ contradiction between two mechanisms: no program declares an hrule that is inact
 `:hrules` is no mechanism of its own. The two programs that load an obligation rule no activator of root's
 compiles beside an active hrule, `examples/lattice/09_activator_hole.ein` and `12_activator_chain_hole.ein`, are
 H + O, silent.
+
+### T1f.6.34.2 — the report, done
+
+**The check.** `ein_infer::mechanisms::check` saturates a program's root and judges what `read` finds there:
+`judge` walks the pairs in the table's order and writes one line per conflict, placed where the program writes the
+declaration (the list's name, the list where it names none, `()` at its keyword, the hrule's `:assert`, a written
+activator or closure by its form), and naming both declarations and the relation: an hrule with its activator as
+`:hrules` writes it, an obligation with the activator that compiles it and where that activator comes from
+(*written at FILE:L:C*, or *which rule 'r' derives*), a closure the same way. Where nothing conflicts it writes the
+notes: a list the program declares beside an hrule, which filters no candidate (E-52), and, with no hrule, a
+`:no-hypothesis` name `:hypothesis-relations` already leaves out or a closure already closes. The verdicts, as built:
+
+| pair | conflict | note |
+|---|---|---|
+| H + O | never | — |
+| H + HR | an active hrule proposes a relation the list leaves out | the list is dead |
+| H + NH | an active hrule proposes a relation the list names | the list is dead |
+| H + C | an active hrule proposes a closed relation | — |
+| O + HR | no hrule, an obligation owes a relation the list leaves out | — |
+| O + NH | no hrule, an obligation owes a relation the list names | — |
+| O + C | an obligation owes a closed relation, whatever generates (Q-M1f.244) | — |
+| HR + NH | a relation in both | no hrule: a name HR already leaves out |
+| HR + C | a listed relation is closed | — |
+| NH + C | never | no hrule: a name a closure already closes |
+
+An obligation is its plans at root, owed or not (Q-M1f.243); `:hypothesis-relations ()` is a list that names none,
+as `hypgen` reads it, so beside an obligation or an active hrule it leaves every relation out.
+
+**Where it runs** (Q-M1f.245). `ein-cli`'s `common::load_held`, the one load path of every command, after the
+loader's notes: where `mechanisms::may_conflict` says the program could declare two mechanisms at all (two of H, O,
+HR and NH as written, or one and `__closed__` written anywhere), it loads the program a second time into its own
+tables (a text from its text, a container from its bytes), saturates that root and judges; a conflict is the load
+error, `kb load error: <line>` each, at the command's load-error exit (1; `ein test`: 2), and the notes go through
+the loader's `say_notes`, once a process. The command's own tables are untouched. A program whose root does not
+saturate is judged no further and the command reports what it reports. Not in `region::prepare`: a library caller
+calls `check`.
+
+**What prints** (`build/s1f.6.34/w/`, the release binary of this commit, 2026-11-14):
+
+```text
+$ ein solve h_nh.ein
+kb load error: h_nh.ein:9:57: solve: its :no-hypothesis names at, and hrule 'guess' (at Color House) proposes facts of at — no list filters an hrule's candidates, so the program says both that at is guessed and that it is not: drop at from the list, which filters nothing where an hrule is declared, or the hrule's at
+$ ein solve o_c_derived.ein
+kb load error: obligation 'total-owed', activated by (total-owed at is-a), owes at, and (__closed__ at), which rule 'close-at' derives, says at is closed — an obligated relation is not closed: an obligation is paid by facts of the relation it owes, so a state that owes at and may not be given one is stuck; drop the closure, or the obligation
+$ ein solve --count nh_c.ein
+note: nh_c.ein:6:24: solve: its :no-hypothesis names at, which (__closed__ at), written at nh_c.ein:5:2, already closes
+```
+
+E-47's witness is refused for two conflicts, H + NH and H + C on `has` (the second: *hrule 'maybe-apples' proposes
+facts of has, and (__closed__ has), which rule 'words' derives, says has is closed — …*), and no longer by *forbid*;
+its twin without `listed_is_all`, which answered two states, is refused for the same two. Every witness of T1 behaves
+as the table's last column says (`witnesses-after.txt`).
+
+**The corpus, corrected** (Q-M1f.246; each shown with its answer in T1). Every program that loads and has no
+conflict answers as it did: the sweep (`build/s1f.6.34/sweep.py`) ran `ein solve` and `ein test` over the 854
+tracked `.ein` files with the release binary at `ddc48e4b` and with this commit's, stdout hashed with `ein test`'s
+wall clock taken out (`sweep_diff.py`): no exit and no stdout moved outside the twenty-four, and two programs print a
+note, `examples/features/13_mixed_solution_and_open.ein` (*its :no-hypothesis filters no candidate — the program
+declares hrule 'pick'*) and `examples/word_problems/kinds_listed.ein` (*names has, which (__closed__ has), which rule
+'words' derives, already closes*). Of the twenty-four:
+
+- **Fourteen answer as before**, twelve of them printing as before too, the old text under the old binary against
+  the new text under the new, on `solve`, `solve --single`, `--json-summary` and `test`: group A, the owed relation
+  taken out of `:no-hypothesis`, root owing nothing so the rung proposed nothing either way
+  (`tests/stdlib/algebra/24`, `26`, `tests/stdlib/slots/01`, `08`, `10`, `12`,
+  `examples/ein-bugs/minimal-line-stated-obligation.ein`); `tests/region/04_owing.ein` and `05_empty.ein`, `likes`
+  out of the list and Ann's two likings stored false, so the debt is unpayable by the program's own facts and R stays
+  empty, root owing; `tests/stdlib/bijection/06`, its `sorted-somewhere` a bare `(open)`, which declines the rung for
+  its own reason; `tests/stdlib/closure/02`, its obligation dropped, `Solution` by exhaustion where it was by
+  discharge; and `tests/stdlib/bijection/01` to `03`, whose subject is root's saturation under `bijective-setup`'s
+  fan-out, the obligations among it: each declares its own generator, an hrule `as-stated` that proposes only the
+  `wears` root holds, so nothing new is guessed and the obligations judge root, which owes, R empty, the claim
+  unmoved (`01` prints as before; `02` and `03` one `outside` line more, `undecided`, which the list scoped out).
+  The bijection fixtures first let the obligations propose, R the two bijections; `utils/stdlib_mutants.py --bless`
+  then banked six new survivors, `bijective-setup`'s activators of the two negative-completion rules swapped and
+  `domain-elimination`'s and `range-elimination`'s type premises swapped, since a state holding the whole bijection
+  derives each negative two ways and each forced arrow by search too; with the hrule all six die again
+  (`stdlib_mutants.py -k` on the three rules: 8 of 8, 7 of 7, 3 of 3).
+- **Nine answer a different R, by their own edit and not the engine's**, each claim restated and held: the
+  obligation rules' own tests let the obligation propose, `tests/stdlib/algebra/23_total_owed` and `25` (R the three
+  states that pay Ann's or Soup's debt), `tests/stdlib/slots/09_owed_room` and `11_owed_fill` (three negatives each,
+  so that one candidate is left per debt and R is the one state that pays all three, where it would be 27); and
+  `slot-partition`'s fan-out is written out without its two obligations in `tests/stdlib/slots/02`, `03`, `04`,
+  `07` and `13`, R root, `(owing (model …))` restated `(region (model …))` over the same facts.
+- **One is the refusal's fixture**: `tests/stdlib/closure/03_closed_and_owing.ein`, moved to
+  `examples/ein-bugs/closed-and-owing.ein`, its corpus entry `regression`, `solve`, `saturate` and `render rules`
+  each exit 1.
+
+No register row: no program that loads with no conflict changed its R, and the nine that did changed by their own
+text.
+
+### T1f.6.34.3 — *forbid*'s remedies, done
+
+*Forbid*'s first remedy was *close the relation, `(solve :no-hypothesis (R))`, if no commitment is meant to extend
+it*, on every program. Where the program declares an hrule no list filters a candidate, so the form lifted nothing,
+and since T2 it is a conflict wherever the hrule proposes R. Since this task the remedy reads the ladder:
+`forbid::Proposers`, read at root by `region::prepare` where a refusal is about to be returned (the active hrule
+plans and the relation each proposes), and `Refusal::text` writes, where the program declares an hrule,
+
+- *let no hrule propose R, if no commitment is meant to extend it — hrule 'h' proposes it, and no list filters an
+  hrule's candidates*, naming every active hrule that proposes R (*hrule 'h' (args)* for one with parameters);
+- *let no hrule propose what R is derived from, if no commitment is meant to extend it — the hrules are this
+  program's commitments, and no list filters their candidates*, where none proposes R itself (R in `D⁺` by
+  derivation, or the relation a parameter names);
+
+- with no hrule, where an obligation of root's activators owes R, *let no obligation owe R, if no commitment is meant
+  to extend it — obligation 'o' owes it, and no list may filter what an obligation owes* (O + NH being a conflict
+  too);
+
+and `(solve :no-hypothesis (R))` as before otherwise. The other two forms are unchanged. Nothing else moves: the
+refused set is the same, and only a refusal's text where an hrule is declared or an obligation owes the relation.
+
+**On E-47's witness**, through the library, whose routes do not run T2's check: four lines, each *over has, a
+relation a commitment can still extend … let no hrule propose has, if no commitment is meant to extend it — hrule
+'maybe-apples' proposes it, and no list filters an hrule's candidates*, and none names `:no-hypothesis`; the same
+without the list; the twin without `listed_is_all` answers (`refutation_under_absent.rs`'s
+`beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list`). Beside an obligation, a program whose `hungry`
+concludes `(false)` from `(absent (likes ?p Soup))` while `(total-owed likes is-a)` owes `likes`: the remedy names
+`total-owed`, and the same program without the obligation still names the list
+(`beside_an_obligation_the_remedy_names_the_obligation`).
+
+**The register**: ten rows' recorded refusal moves to the new text, every one a witness that declares an hrule,
+`W1/alive-empty-interlayer`, `W3/three-components`, `W3/trigger-hole`, `W16/activator-all-int`,
+`W16/activator-all-nested`, `W17/forbid-chain-1`, `-2`, `-node-absent`, `-param-absent` and `-node-writes`: eight
+name the hrule that proposes the relation, and `-param-absent` and `-node-writes`, whose relation a rule derives,
+say *what … is derived from*. Restated in `corpus/wrong_answers.toml` from `wrong_answers.rs`'s report, no status
+moved.
+
+### T2 and T3, the tests and the goldens
+
+**New**: `ein-cli/tests/mechanism_conflicts.rs`, four tests: eleven refused shapes (H + HR, H + NH, H + C written and
+derived, O + HR, O + HR with `()`, O + NH, O + C, O + C derived beside an hrule, HR + NH, HR + C), each on the twenty
+commands of `solve_lists.rs` with one line, the same on each, the load-error exit, and no container; twelve that
+load, six silent (H + O, H + C on another relation, O + HR listing the owed relation, O + NH and O + C on another,
+HR + C on another) and six with their one note (H + HR and H + NH dead, an inactive hrule's dead list, O + NH beside
+an hrule, HR + NH and NH + C redundant), under five commands and reopened from the container `kb save` wrote;
+E-47's witness and its twin, two lines each and none of *forbid*'s; the corpus's fixture. `ein-infer`'s
+`refutation_under_absent.rs` gains T3's test.
+
+**Moved with the fixtures**: `obligation_reports.rs` (the owing fixture of *a state that owes is Open* is
+`tests/region/04_owing.ein`; an owing root is no state of R and the obligation proposes what pays it; the closed and
+owing pair is `the_closed_and_owing_corner_is_a_conflict`, `02` loading with no obligation and the fixture refused by
+`mechanisms::check`, one line naming `total-owed`, its activator and `infer-closure`); `obligation_rung.rs` (the
+stuck fixture is `04_owing`, owed 1, branched on 1, declined 0, where `23` was owed 1, declined 1); `read_out.rs`,
+`region_modes.rs`, `region_answer.rs`, `summary_properties.rs`, `embedding.rs`, `test_cli.rs` and `golden_trace.rs`
+read `04_owing` (and `05_empty`) where they read `03_closed_and_owing` or `slots/03_fill` as the owing example;
+`models_grid.rs` writes its own owing program with a functional relation, the grid's row; `test_cli.rs`'s floor of
+owing claims in the corpus is four, where it was ten; `solve_lists.rs` reads its four list shapes beside a `plain`
+with a parameter and no activator, so that the list it holds names is dead and not in conflict.
+
+**Goldens, counted before blessing** (`EIN_BLESS=1`, 2026-11-14): `corpus_exits.txt`, nine cells: three new
+(`examples/ein-bugs/closed-and-owing.ein`'s `solve`, `saturate`, `render rules`, each 1), five gone
+(`tests/stdlib/closure/03_closed_and_owing.ein`'s), and one moved, `tests/stdlib/bijection/01`'s `render rules`, 1
+to 0, its hrule a form the view draws where it held none; `corpus_shapes.md5`, 736 digests: 42 new and 42 gone (the
+moved fixture), 526 moved over the 23 corrected programs (their IR, their text having moved; for eleven their read-out
+too, nine of them a different R), and 168 over twelve programs *forbid* refuses that declare an hrule (14 each, the
+ops that print the refusal: T3's text), `examples/ein-bugs/activator-all-int`, `-nested`, `-symbol`,
+`alive-empty-interlayer`, `wrong-answers/forbid-chain-0`, `-1`, `-2`, `-node-absent`, `-node-writes`,
+`-param-absent`, `lattice/synth/three_components` and `trigger_hole`; `trace_owing.md`, the owing trace of
+`04_owing`, where it was `03_closed_and_owing`'s. `docs/kernel/inference/read_out_examples.md`, regenerated by
+`utils/read_out_examples.py`: X6 is `04_owing`. `tests/mutation_survivors.txt`: two lines gone, `bijective-setup`'s
+`total-owed` and `surjective-owed` activators swapped, killed since; `python3 utils/stdlib_mutants.py --check`
+(2026-11-14): 439 of 500 killed, 61 survivors, the banked set, exit 0.
+
+### T1f.6.34.4 — the pages and the records, done
+
+- **`defined_behaviour.md`**: § 4.27, new, *A program's hypothesis mechanisms do not contradict one another*: the
+  pairs, refused or noted; what is read and where (root's fixpoint, an active hrule, an obligation as declared,
+  `()`); where it runs (every command, at load, a second load's root); each conflict's line and the notes; what each
+  pair answered until the stage, E-47, and the corpus's twenty-four; the pins. § 4.7: where the program declares an
+  hrule, *forbid*'s first remedy names the hrules that propose the relation. § 4.20: a list that names what the
+  program has and contradicts another declaration is § 4.27's. § 5: the cap-of-zero example of `Open — owes 1` is
+  `04_owing` since.
+- **`01_grammar.md` § Solve**: the two lists are read by the obligations rung and the blind enumerator, never the
+  hrule rung; and the lists do not contradict the program's other hypothesis declarations, with the pairs in a
+  sentence and § 4.27's link.
+- **`06_reserved_names.md` § Hypothesis / query control**: the table of § The mechanisms, corrected by T1 (B, C and
+  what reads the lists, E-51 and E-52), made normative as *The five mechanisms, and each pair*, with the pairs'
+  verdicts; the rows of `__closed__`, `hypothesis-relations` and `no-hypothesis` say what reads them (and that
+  `emit_closed` runs on no command since M1e2 S1e2.3.1, where the row said *usually auto-inferred*); the `Open`
+  verdict's example is `tests/region/04_owing.ein`.
+- **`read_out.md`**: § 10's stderr table gains the load-time `note:` line; X6's four links follow the example.
+  **`read_out_examples.md`**, regenerated: X6 is `tests/region/04_owing.ein`, whose prose says why it owes.
+- **`AGENTS.md`**: § The language gains the rule, beside *forbid*'s.
+- **`tests/README.md`**: the closure directory's row, `bijection/06`'s decline, and how a fixture says what the
+  obligation's generating role was switched off to say. **`examples/README.md`**: `ein-bugs/closed-and-owing.ein`.
+  Four links of `docs/history/` and one of a P1f.10 stage file to the moved fixture follow it to its new path,
+  their text as it was.
+- **Records**: E-47 closed in `findings.md`; the phase README's row; this file's status and record; Q-M1f.242 to
+  .246 in `open_questions.md`.
+
+### The stage, closed
+
+**The commits**: T1's record and reader, `ddc48e4b`; T2 and T3, the check, the remedy, the corpus corrected, the
+tests and goldens, `e45c4c18` (the fixture's rename, staged with `git mv`, went into the index the coordinator's
+records commit `03365506` was made from, so that commit holds the rename and `e45c4c18` the rest); T4, the pages
+and the records (this one).
+
+**The acceptance, point by point.**
+
+- *Every row of § The pairs has a witness in the record and behaves as its verdict says*: T1's table, twenty-one
+  witnesses and E-47's two, each run before (`witnesses-before.txt`) and after (`witnesses-after.txt`); the eleven
+  refused shapes and twelve accepted ones of `mechanism_conflicts.rs` hold it on every command. H + O is silent on
+  every corpus program that carries it (30).
+- *E-47's witness is refused for the conflict, naming the hrule and the list, and no longer for forbid*: two lines,
+  H + NH (`:no-hypothesis names has, and hrule 'maybe-apples' proposes facts of has`) and H + C (`has` closed by
+  `words`), no line of *forbid*'s; its twin without `listed_is_all` the same two.
+- *No program that loads and has no conflict changes its answer, its stdout or its exit code*: the sweep over the 854
+  tracked `.ein` files, `ein solve` and `ein test` under the binary of `ddc48e4b` and of this stage, moved none but
+  the corrected twenty-three and the moved fixture; two programs print a `note:`
+  (`examples/features/13_mixed_solution_and_open.ein`, `examples/word_problems/kinds_listed.ein`), on stderr.
+- *Forbid offers no remedy the loader refuses*: beside an hrule it names the hrules, never `:no-hypothesis`; with
+  no hrule, beside an obligation that owes R, it names the obligation; and otherwise `(solve :no-hypothesis (R))`
+  is no conflict, R being no active hrule's and owed by no obligation (`refutation_under_absent.rs`'s two tests).
+  A closure of R, its first form, is a conflict only beside an hrule that proposes R or an obligation that owes it,
+  and *forbid* names neither as a closure there.
+
+**Defaults** (each the user's to revise): Q-M1f.242, a dead or redundant declaration is one `note:`; Q-M1f.243, an
+obligation read as declared; Q-M1f.244, O + C a conflict whatever generates; Q-M1f.245, the check at load on every
+command, on a second load's root, not in `region::prepare`; Q-M1f.246, the corpus's twenty-four corrected, one kept
+as the refusal's fixture.
+
+**Findings**: E-51 (the blind enumerator runs where no obligation rule is loaded) and E-52 (`__closed__` is read by
+the generator alone; under an hrule the lists are read by the `outside` row alone), neither a wrong answer; E-47
+closed. **No register row**: no program that loads with no conflict moved, and the nine whose R moved moved by their
+own text; ten rows' recorded refusal text moved with T3.
+
+**What was not done, and why.** The library's routes (`ein_infer::explore`, `region`) do not run the check
+(Q-M1f.245), so `forbid::studying`'s fixtures and the census examples read a conflicting program as before.
+F25's R-2 and R-3 are untouched: the census met neither as a contradiction of two mechanisms. The
+gate and the nightly are the coordinator's, on this commit.

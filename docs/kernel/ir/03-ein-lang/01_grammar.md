@@ -865,7 +865,18 @@ region and about specific solutions"*.
 - **`solve` lexes as a keyword**, as `query` and `config` do, so it cannot be
   a relation name ([`00_ebnf.md`](00_ebnf.md)).
 - `:hrules` is read by the hrule rung, the other two by the candidate filter
+  of the obligations rung and the blind enumerator, never by the hrule rung
   ([`06_reserved_names.md` § Hypothesis / query control](06_reserved_names.md#hypothesis--query-control)).
+- **The lists do not contradict the program's other hypothesis declarations**
+  (M1f S1f.6.34, the user's ruling of 2026-11-13 on E-47), read on root's
+  fixpoint, or the program is refused at load, one line per conflict, on every
+  command ([`defined_behaviour.md` § 4.27](../../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634)):
+  no active hrule proposes a relation `:hypothesis-relations` leaves out or
+  `:no-hypothesis` names; with no hrule, no obligation owes one; no relation is
+  in both lists; and no listed relation is closed. An hrule's candidates are no
+  closed relation's, and an obligation owes none. A list an hrule leaves
+  filtering nothing, or a `:no-hypothesis` name `:hypothesis-relations` or a
+  closure already says, is one `note:` line on stderr.
 - **Every name a list holds names something the program has** (M1f S1f.7.8,
   W76), or the program is refused at load, one line per name, on every
   command

@@ -97,7 +97,7 @@ alone.
 | [`stdlib/algebra/`](stdlib/algebra/) | 40 | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and (M1d S1d.2.4) the totality pair's **obligation** duals, each once owing and once satisfied |
 | [`stdlib/bijection/`](stdlib/bijection/) | 8 | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on** — since M1d S1d.2.5 by making the obligations rung *decline*, which is the only way to reach it from a program that declares one |
 | [`stdlib/elim/`](stdlib/elim/) | 4 | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces a value, exactly full refutes |
-| [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
+| [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus `02`, closed and satisfied; its twin `03`, closed and **owing**, the one place in the suite where one fact decided a verdict word from M1d S1d.2.6, is `examples/ein-bugs/closed-and-owing.ein` since M1f S1f.6.34, which refuses an obligation on a closed relation, and `02` dropped its obligation |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/arith/`](stdlib/arith/) | 115 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division; S1f.6.12, malformed numbers and undeclared names): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero and the fourteen that state something the theory flags, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
@@ -148,13 +148,15 @@ knowing before editing it. Hypothesis generation is a ladder now — the puzzle'
 hrules, else what the state owes, else the blind enumeration — so a program
 declaring `(bijective seats)` no longer reaches the third rung at all, and this
 file's whole check went vacuous the day the ladder landed. It gets it back with
-a second obligation, `sorted-somewhere`, which owes `is-a` — exactly the
-relation `(total-owed seats is-a)`'s guard *scans*. The domain contract's C4
-declines a branch whose candidate set could grow underneath it, and a declined
-obligation hands the whole call to the blind enumerator. So the file is also
-the corpus's one `mode=declined` fixture, and the obligation it added is
-*satisfied* on purpose: the decline is static, per activator, and must not
-depend on the KB happening to owe something.
+a second obligation, `sorted-somewhere`, a bare `(open)`, which names no
+relation to branch on, so the rung declines it, and a declined obligation hands
+the whole call to the blind enumerator. (It owed `is-a` until M1f S1f.6.34,
+declined by the domain contract's C4, since `is-a` is what `(total-owed seats
+is-a)`'s guard scans; beside a `:no-hypothesis` naming `is-a` that is an
+obligation the program never lets be guessed, which the stage refuses.) So the
+file is also the corpus's one `mode=declined` fixture, and the obligation it
+added is *satisfied* on purpose: the decline must not depend on the KB
+happening to owe something.
 
 ### A module of facts has no rule to activate
 
@@ -495,7 +497,18 @@ how much: `(solve … :expect (region (owing (model …))))` names an owing stat
 which R, the states that are alive *and discharged*, does not hold
 ([`solution_semantics.md`](../docs/kernel/inference/solution_semantics.md)).
 The owe counts are still `obligation_reports.rs`'s. Eight mutants died of that
-word (below).
+word (below). **A list may not switch an obligation's generating role off**
+since M1f S1f.6.34 (*"filtered obligations are nonsense by definition"*, the
+user, 2026-11-13): a `:no-hypothesis` naming a relation an obligation owes is
+refused at load, and so is a closure of one. A fixture whose question is root's
+saturation writes the activators of the rules it tests and none of an
+obligation's (`slots/02` to `04`, `07`, `13`), or, where a setup rule's
+fan-out is the subject and the obligations come with it, declares an hrule
+that proposes only what root holds, so that nothing new is guessed and the
+obligations judge root alone (`bijection/01` to `03`); one whose question is
+the obligation lets it propose and claims R's states (`algebra/23`, `25`,
+`slots/09`, `11`); and an owing state that R leaves empty is one whose debt
+the program's own negatives make unpayable (`region/04_owing`, `05_empty`).
 
 **157 of 217 on 2026-08-31, and it is an instrument now** —
 [`utils/stdlib_mutants.py`](../utils/stdlib_mutants.py), M1e S1e.3.6 T6, the
