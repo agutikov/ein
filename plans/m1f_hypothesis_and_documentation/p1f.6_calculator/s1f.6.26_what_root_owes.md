@@ -1,7 +1,7 @@
 # S1f.6.26 — A read-out row for what root owes
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day; **running 2026-11-13**, the record below.
+**Status:** planned 2026-11-12, on the user's reply of that day. **Done 2026-11-13:** [the record](#record-2026-11-13).
 **An engine stage,** on the read-out.
 **Depends on:** nothing in the phase. Independent of the stdlib layout.
 [S1f.6.28](s1f.6.28_word_problems_second_pass.md) reads its row.
@@ -370,3 +370,60 @@ region's `(false)` fails on it), and three tracked programs whose query claims `
 that is empty by owing, `examples/binary_logic/unsatisfiable.ein`, `equivalent.ein` and
 `examples/beyond_arith/equation_no_solution.ein`. Nothing a claim means is changed by this stage: the row
 above the claim says which empty R is, and `as :expect (false)` under it is what it was.
+
+### T1f.6.26.6 — the pages and the rows, done
+
+- [`findings.md`](findings.md): **E-19 closed**; **E-18 marked *the row built, the claim asked***; E-43, E-44
+  and E-45 filed, shown and not fixed, but for E-45's script, which the stage had to run.
+- The phase [README](README.md)'s row.
+- **`AGENTS.md` is not edited.** This file's T6 lists it; the user ruled on 2026-11-13 that it holds
+  standing rules, locations and commands and no stage's history, and none of the three changed: a new row
+  of the read-out is `read_out.md`'s.
+- [`word_problems.md`](word_problems.md) § 3.5 is not edited: its pointer is the next stage's that edits the
+  page, as the task has it.
+
+### The stage, closed
+
+**The commits**, in order:
+
+| commit | what |
+|---|---|
+| `38323f06` | T1 and T4: the rows shown first, and Q-M1f.219 and Q-M1f.220 filed. No source |
+| `b9e03aa4` | T2, T3 and T5: the printer, `region.root_owed`, the pages, the pins, the goldens |
+| this section's | T6: the findings, the phase's row, this record |
+
+**The acceptance.**
+
+- *On E-19's witnesses the read-out names what root owes and why, with R not empty*: T1's table, on
+  `p/gap_assume_ha.ein` and `p/boxes13.ein`; pinned on a program of the test's and on
+  `features/13_mixed_solution_and_open.ein`, the witnesses being scratch.
+- *A query's row over an empty R says whether root owes or is dead*: the two wordings, pinned on four
+  corpus programs under three questions.
+- *R, N, H, every claim's outcome and every exit code are the same on every corpus program*: the sweep, 849
+  files, 84 moved and each by the new rows alone.
+- *`read_out_reference.rs` holds the page to the printer*: six tests passing.
+
+**Defaults taken**, each the user's to revise: Q-M1f.219, a query's `(false)` on a program that only owes
+is not changed; Q-M1f.220, the form of the rows: the label `owed`, the block under `∅`, the cut at four
+with a line for the rest and outside the listings' 100 lines, `--count` printing none, and the two wordings
+of the query's row. **The cut departs from this file's T1**, which has the rows share the 100 lines; T1's
+record has the measurement it rests on.
+
+**Found outside the tasks**: E-43, a cut region's last line names nothing where every state was shown;
+E-44, on an R that is empty by owing root's own debts are on no row where root is not on the frontier;
+E-45, the script that writes the read-out's examples page had stopped running and nothing runs it (its
+variant fixed here, the missing check not).
+
+**What moved of what already existed**, each intended: the read-out of 36 programs by their `owed` rows,
+and of 48 by the wording of a query's row; the `--trace` headline of the 36; every summary, by one key;
+`corpus_shapes.md5`'s 2 726 digests for those; the examples page. No verdict word, claim's outcome, exit
+code, state, count or core moved.
+
+**Not built, as this file rules**: the N row of an R that is empty by owing, a core for an open state, and
+any change to what `Open` or `(false)` mean.
+
+**Not run by this stage**: `./run_tests.sh`, `./run_tests.sh --nightly` and `utils/ci_container.sh`. The
+first two run on `b9e03aa4` in detached worktrees, their outcome written under this line by the records
+commit. No DOT writer, review bundle script or CI install changed; the bundle's pages carry the read-out
+as the binary prints it, so they carry the new rows, and its scripts read none of the rows that changed
+(`utils/review/run.py` reads `-H`'s form and the summary).
