@@ -343,3 +343,9 @@ rules, 116 with the closing rule, and its timings are S1f.6.12's of the same day
 one red run on `cargo fmt` alone. `python3 utils/stdlib_mutants.py --check` exits 0 on the bank as edited
 by hand (`build/s1f.6.24/mutants-check2.txt`). `utils/ci_container.sh` was not run: no DOT writer, review
 bundle or CI install changed.
+
+### After the commit: the nightly
+
+`./run_tests.sh --nightly` on `eddff460`, the build's commit: green in every step, exit 0
+(`build/nightly-s1f.6.24.log`, 2026-11-13), `utils/stdlib_mutants.py --check` among them, 437 of 500 on
+the tree as committed, so the survivor bank edited by hand is held. `utils/ci_container.sh` was not run.
