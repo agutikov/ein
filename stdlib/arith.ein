@@ -119,6 +119,47 @@
 ;;; a name no `let` states, a name stated twice with two numbers, and `z` or
 ;;; a digit as a name are each flagged (below).
 ;;;
+;;; ── The tagged calls: what a theory built on this one calls ────────────────
+;;;
+;;; A result repeats its request's operands, so a rule that wants an answer
+;;; for a purpose of its own must find it by its operands, a join on a
+;;; number, which the engine answers by a scan (E-3 of P1f.6's
+;;; `findings.md`). Inside, the theory calls itself with a TAG, a nested fact
+;;; that names the caller, and hands the answer back under the tag, so the
+;;; rule that reads it has one premise. **These calls are an interface**
+;;; (P1f.6's question 41, round 2, the user's reply of 2026-11-12: *"(a)"*):
+;;; what `std.int`, `std.rat` and a program's own theory call, held to these
+;;; shapes by `ein-infer/tests/arith_theory.rs`'s
+;;; `the_tagged_calls_keep_their_shapes`, which reads every module of the
+;;; stdlib and every program under `examples/` and `tests/` that writes one.
+;;;
+;;;     (add-walk TAG X Y C z)    asked: X + Y + C, C a carry in of `0` or
+;;;                               `1`; answered by (done TAG S)
+;;;     (sub-walk TAG X Y 0 z)    asked: X - Y; answered by (done TAG D)
+;;;                               where X is not the smaller, and by
+;;;                               (short TAG) where it is
+;;;     (cmp-walk TAG X Y eq)     asked: X against Y; answered by
+;;;                               (order-is TAG O), O one of `lt`, `eq`, `gt`
+;;;     (mul-call TAG X Y)        asked: X x Y; answered by (done TAG P)
+;;;     (div-call TAG X Y)        asked: X divided by Y; answered by
+;;;                               (div-done TAG Q R), and flagged where Y is
+;;;                               zero by value (above)
+;;;
+;;; X and Y are numbers as `n` and `z` build them, high zeros allowed, and
+;;; never a name a `let` states: a call looks nothing up. Every answer is in
+;;; normal form. A walk starts at the units with no digits yet, `z`; a
+;;; subtraction with no borrow, `0`, and a comparison with nothing yet
+;;; decided, `eq`: those are the values a caller writes, and the test holds
+;;; every caller to them. An addition's carry in is the caller's, `0` for X +
+;;; Y, or a bit: `examples/binary_arithmetic/conv.ein` doubles a number and
+;;; adds a bit in one walk, `(add-walk TAG X X BIT z)`. The
+;;; TAG is the caller's, a fact of a relation of its own, `(cnt K M)` in
+;;; `examples/beyond_arith/casting_out_nines.ein`; one of this module's own
+;;; tags, `(sum X Y)` or `(quotient X Y)`, is read back as a request of the
+;;; theory's (E-39). A tag names one call: two calls under one tag hand their
+;;; answers back under one tag, and the rule that reads cannot tell them
+;;; apart.
+;;;
 ;;; ── Malformed requests: a flag, and `(false)` from it ──────────────────────
 ;;;
 ;;; A request the theory cannot read is a contradiction, in two steps, as a
@@ -250,26 +291,32 @@
 ;;; Imported flat, these names mean what this file says, and a program must
 ;;; not use them otherwise.
 ;;;
-;;; **What a program states: the requests and `let`, and nothing else.**
-;;; `add`, `sub`, `cmp`, `mul` and `div`, and `let`, over numbers written
-;;; with `n`, `z` and the ten digits. A program reads the rest and writes
-;;; none of it: a written fact of a result or of the circuit is a fact like
-;;; a derived one, and the theory computes with it, so `(sum-of X Y S)`
-;;; written by hand is an answer nobody computed. Nothing refuses it (the
-;;; user's reply of 2026-11-12: a module does not reserve its names). A
-;;; second declaration of any of these names is refused at load.
+;;; **What a program states: the requests and `let`,** `add`, `sub`, `cmp`,
+;;; `mul` and `div`, and `let`, over numbers written with `n`, `z` and the
+;;; ten digits; **and, from a rule, the tagged calls** (above). A program
+;;; reads the rest and writes none of it: a written fact of a result or of
+;;; the circuit is a fact like a derived one, and the theory computes with
+;;; it, so `(sum-of X Y S)` written by hand is an answer nobody computed.
+;;; Nothing refuses it (the user's reply of 2026-11-12: a module does not
+;;; reserve its names). A second declaration of any of these names is
+;;; refused at load.
 ;;;
 ;;; **What a program reads:** the results `sum-of`, `diff-of`, `cmp-of`,
 ;;; `product-of` and `quot-of`; the flags `division-by-zero`, `malformed`
-;;; and `undeclared`; and the orders `lt`, `eq` and `gt`.
+;;; and `undeclared`; the orders `lt`, `eq` and `gt`; and the tagged calls'
+;;; answers, `done`, `short`, `order-is` and `div-done`.
+;;;
+;;; **The interface** is all of those: the number's `n` and `z`, the
+;;; requests, `let`, the results, the flags, and the five tagged calls,
+;;; `add-walk`, `sub-walk`, `cmp-walk`, `mul-call` and `div-call`, with their
+;;; four answers.
 ;;;
 ;;; **The circuit's own**, in the state for a query or a `--trace` to see,
-;;; and not a promise: `b`, `named`, `operand`, `operand-is`, `add-walk`,
-;;; `sub-walk`, `cmp-walk`, `mul-walk`, `strip`, `turn`, `top-first`,
-;;; `top-first-is`, `done`, `short`, `order-is`, `mul-call`, `mul-step`,
-;;; `div-call`, `div-done`, `multiples`, `div-step`, `div-choose`,
-;;; `div-digit`; the check's `check`, `bad-operand`, `bad-request`, `no-let`
-;;; and `not-a-number`; the tags `sum`, `add-first`, `add-second`,
+;;; and not a promise: `b`, `named`, `operand`, `operand-is`, `mul-walk`,
+;;; `strip`, `turn`, `top-first`, `top-first-is`, `mul-step`, `multiples`,
+;;; `div-step`, `div-choose`, `div-digit`; the check's `check`,
+;;; `bad-operand`, `bad-request`, `no-let` and `not-a-number`; the tags
+;;; `sum`, `add-first`, `add-second`,
 ;;; `difference`, `shortfall`, `sub-first`, `sub-second`, `order`,
 ;;; `cmp-first`, `cmp-second`, `product`, `mul-first`, `mul-second`,
 ;;; `mul-digits`, `mul-row-of`, `mul-sum`, `quotient`, `div-first`,

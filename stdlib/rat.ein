@@ -89,11 +89,23 @@
 ;;;     chain: gcd(A, B) is gcd(B, A mod B) until the remainder is zero, each
 ;;;     step a division of `std.arith`. Then both are divided by it.
 ;;;
-;;; **A call's tag is its request,** as in `std.int`. The calls a later
-;;; theory may make are `(rat-norm TAG P N D)` and `(rat-mul-call TAG P1 N1
-;;; D1 P2 N2 D2)`, answered by `(rat-done TAG RATIONAL)`, and `(rat-cross
-;;; TAG P1 N1 D1 P2 N2 D2)`, answered by `(rat-cross-is TAG POSITIVE
-;;; NEGATIVE)`; their denominators must not be zero.
+;;; **A call's tag is its request,** as in `std.int`. **The tagged calls a
+;;; later theory makes are an interface,** as `std.arith`'s are (P1f.6's
+;;; question 41, round 2, the user's *"(a)"*), held to these shapes by
+;;; `ein-infer/tests/arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`:
+;;;
+;;;     (rat-norm TAG P N D)                  P less N over D, in lowest
+;;;                                           terms; answered by
+;;;                                           (rat-done TAG RATIONAL)
+;;;     (rat-mul-call TAG P1 N1 D1 P2 N2 D2)  P1 less N1 over D1, times P2
+;;;                                           less N2 over D2; answered by
+;;;                                           (rat-done TAG RATIONAL)
+;;;     (rat-cross TAG P1 N1 D1 P2 N2 D2)     P1 x D2 + P2 x D1, and
+;;;                                           N1 x D2 + N2 x D1; answered by
+;;;                                           (rat-cross-is TAG POSITIVE NEGATIVE)
+;;;
+;;; Each part is a natural number of `std.arith`, written out; a call looks
+;;; nothing up, and its denominators must not be zero.
 ;;;
 ;;; **No rule joins two facts on a number:** every rule of this module has
 ;;; one premise. `ein-infer/tests/rat_theory.rs` holds that on this file's

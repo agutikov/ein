@@ -22,6 +22,7 @@
 //! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
 //! | **a malformed request has exactly one flag and no answer**, and the flag derives `(false)`; a well-formed one has no flag (S1f.6.12) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
+//! | **the tagged calls are an interface** (S1f.6.30): `std.arith`'s, `std.int`'s and `std.rat`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -1549,4 +1550,348 @@ fn the_rules_of_a_family_differ_by_their_digit_alone() {
         );
         assert_eq!(rule(&format!("div-multiple-{j}")), want);
     }
+}
+
+// ── the tagged calls: an interface ─────────────────────────────────
+
+/// **The tagged calls,** as each module's header and `stdlib/README.md` write
+/// them (M1f S1f.6.30's T1; the user's *"(a)"* of 2026-11-12 to round 2's
+/// item 41): `(module, as written, the declaration's types)`. As written, a
+/// capital stands where a caller writes a value of its own, and a name where
+/// every caller writes that name: a walk starts at `z`, a subtraction at `0`
+/// and a comparison at `eq`; an addition's carry in is the caller's, a bit
+/// in `examples/binary_arithmetic/conv.ein`. Each module's calls come first
+/// and then the facts that answer them; `std.int`'s comparison is answered
+/// by `std.arith`'s `order-is`.
+const TAGGED: [(&str, &str, &str); 19] = [
+    (
+        "arith",
+        "(add-walk TAG X Y C z)",
+        "Tag Number Number Digit Digits",
+    ),
+    (
+        "arith",
+        "(sub-walk TAG X Y 0 z)",
+        "Tag Number Number Digit Digits",
+    ),
+    ("arith", "(cmp-walk TAG X Y eq)", "Tag Number Number Order"),
+    ("arith", "(mul-call TAG X Y)", "Tag Number Number"),
+    ("arith", "(div-call TAG X Y)", "Tag Number Number"),
+    ("arith", "(done TAG S)", "Tag Number"),
+    ("arith", "(short TAG)", "Tag"),
+    ("arith", "(order-is TAG O)", "Tag Order"),
+    ("arith", "(div-done TAG Q R)", "Tag Number Number"),
+    ("int", "(int-norm TAG P N)", "Tag Number Number"),
+    (
+        "int",
+        "(int-add-call TAG P1 N1 P2 N2)",
+        "Tag Number Number Number Number",
+    ),
+    (
+        "int",
+        "(int-mul-call TAG P1 N1 P2 N2)",
+        "Tag Number Number Number Number",
+    ),
+    (
+        "int",
+        "(int-cmp-call TAG P1 N1 P2 N2)",
+        "Tag Number Number Number Number",
+    ),
+    ("int", "(int-done TAG INTEGER)", "Tag Integer"),
+    ("rat", "(rat-norm TAG P N D)", "Tag Number Number Number"),
+    (
+        "rat",
+        "(rat-mul-call TAG P1 N1 D1 P2 N2 D2)",
+        "Tag Number Number Number Number Number Number",
+    ),
+    (
+        "rat",
+        "(rat-cross TAG P1 N1 D1 P2 N2 D2)",
+        "Tag Number Number Number Number Number Number",
+    ),
+    ("rat", "(rat-done TAG RATIONAL)", "Tag Rational"),
+    (
+        "rat",
+        "(rat-cross-is TAG POSITIVE NEGATIVE)",
+        "Tag Number Number",
+    ),
+];
+
+/// A tagged call as written: its relation, and each argument's place, `None`
+/// where a caller writes its own value and the name every caller writes.
+fn tagged_shape(written: &str) -> (&str, Vec<Option<&str>>) {
+    let inner = written.trim_start_matches('(').trim_end_matches(')');
+    let mut words = inner.split_whitespace();
+    let relation = words.next().expect("a relation");
+    let places = words
+        .map(|w| (!w.starts_with(|c: char| c.is_ascii_uppercase())).then_some(w))
+        .collect();
+    (relation, places)
+}
+
+/// Whether `text` writes `name` at the head of a form, bare or after a
+/// qualified import's prefix: `(name ` or `.name ` and the like. A cheap
+/// filter before a parse, and generous: what it lets through is parsed.
+fn mentions(text: &str, name: &str) -> bool {
+    text.match_indices(name).any(|(i, _)| {
+        let before = text[..i].chars().next_back();
+        let after = text[i + name.len()..].chars().next();
+        matches!(before, Some('(' | '.')) && after.is_some_and(|c| c.is_whitespace() || c == ')')
+    })
+}
+
+/// A relation declaration's name, and the rest of it as text: its types and
+/// its `:why`, which is what says that two declarations are one.
+fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
+    if ast.head_name(form) != Some("relation") {
+        return None;
+    }
+    let args = ast.form_args(form);
+    let name = ast.atom_name(*args.first()?)?.to_string();
+    let rest = args[1..]
+        .iter()
+        .map(|&a| ein_ir::dump_compact(ast, a))
+        .collect();
+    Some((name, rest))
+}
+
+/// **The tagged calls keep their shapes** (M1f S1f.6.30's T1). `std.arith`'s
+/// five calls and their four answers, and `std.int`'s and `std.rat`'s calls
+/// with theirs, are what a theory built on the calculator calls: an
+/// interface since the user's reply of 2026-11-12 to round 2's item 41. Held
+/// three ways:
+///
+/// - **the declarations:** each module declares each of its rows of
+///   [`TAGGED`] with the row's types, so a change of shape is a change of
+///   this table;
+/// - **the pages:** the module's header and `stdlib/README.md` write each
+///   row as [`TAGGED`] does, so the page a caller reads is the shape held;
+/// - **every caller:** every module of the stdlib and every program under
+///   `examples/` and `tests/` that brings a module's declaration of a row,
+///   flat or under a prefix, writes every form of that relation with the
+///   row's count of arguments; and where a rule's conclusion, or a written
+///   fact, *starts* a walk (a rule whose `:match` reads no fact of that walk),
+///   it writes the row's names in their places, `z`, `0` or `eq`.
+///
+/// The loader refuses a form of a declared relation with another count of
+/// arguments in a program it loads (S1f.6.23); this holds the count against
+/// the interface, by name, in every file, and the start values, which no
+/// loader sees. A file that does not parse, or whose imports do not resolve,
+/// calls nothing and is not read.
+#[test]
+fn the_tagged_calls_keep_their_shapes() {
+    let root = repo_root();
+    let readme = std::fs::read_to_string(root.join("stdlib/README.md")).expect("stdlib/README.md");
+    // ── the declarations, and the pages ──
+    let mut declared: BTreeMap<&str, Vec<String>> = BTreeMap::new();
+    for module in ["arith", "int", "rat"] {
+        let path = root.join(format!("stdlib/{module}.ein"));
+        let text = std::fs::read_to_string(&path).expect("a module");
+        let mut ast = Ast::new();
+        let forms = parse(&mut ast, &text, path.to_str()).expect("a module parses");
+        let decls: BTreeMap<String, Vec<String>> =
+            forms.iter().filter_map(|&f| declaration(&ast, f)).collect();
+        for &(m, written, types) in TAGGED.iter().filter(|t| t.0 == module) {
+            let (relation, places) = tagged_shape(written);
+            let rest = decls
+                .get(relation)
+                .unwrap_or_else(|| panic!("std.{m} declares no {relation}"));
+            let got: Vec<&str> = rest
+                .iter()
+                .filter(|r| !r.starts_with(':'))
+                .map(String::as_str)
+                .collect();
+            assert_eq!(
+                got.join(" "),
+                types,
+                "std.{m}'s {relation} is declared with other types than the interface's"
+            );
+            assert_eq!(
+                places.len(),
+                got.len(),
+                "{written}: its count against {types}"
+            );
+            assert!(
+                text.contains(written),
+                "std.{m}'s header does not write {written}"
+            );
+            assert!(
+                readme.contains(written),
+                "stdlib/README.md does not write {written}"
+            );
+            declared.insert(relation, rest.clone());
+        }
+    }
+    // ── every caller ──
+    let shape: BTreeMap<&str, (&str, Vec<Option<&str>>)> = TAGGED
+        .iter()
+        .map(|t| {
+            let (relation, places) = tagged_shape(t.1);
+            (relation, (t.1, places))
+        })
+        .collect();
+    let mut bad: Vec<String> = Vec::new();
+    let mut read: BTreeMap<String, usize> = BTreeMap::new();
+    let mut started: BTreeMap<&str, usize> = BTreeMap::new();
+    for path in ein_corpus::corpus_files() {
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            continue;
+        };
+        if !shape.keys().any(|r| mentions(&text, r)) {
+            continue;
+        }
+        let file = path
+            .strip_prefix(&root)
+            .unwrap_or(&path)
+            .display()
+            .to_string();
+        let mut ast = Ast::new();
+        let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
+            continue;
+        };
+        let Ok(resolved) = ein_ir::resolve_imports(&mut ast, &forms, path.parent()) else {
+            continue;
+        };
+        // The interface as this program holds it: a relation it declares
+        // whose name is a row's, bare or after a prefix, and whose
+        // declaration is the module's.
+        let mut ours: BTreeMap<String, &str> = BTreeMap::new();
+        for &f in &resolved {
+            let Some((name, rest)) = declaration(&ast, f) else {
+                continue;
+            };
+            let bare = name.rsplit('.').next().unwrap_or(&name);
+            if let Some((&relation, module_rest)) = declared.get_key_value(bare)
+                && *module_rest == rest
+            {
+                ours.insert(name.clone(), relation);
+            }
+        }
+        if ours.is_empty() {
+            continue;
+        }
+        let mut seen = 0usize;
+        let mut check = |ast: &Ast, node: NodeId, starts: bool, bad: &mut Vec<String>| {
+            let Some(head) = ast.head_name(node) else {
+                return;
+            };
+            let Some(&relation) = ours.get(head) else {
+                return;
+            };
+            let (written, places) = &shape[relation];
+            let args = ast.form_args(node);
+            seen += 1;
+            if args.len() != places.len() {
+                bad.push(format!(
+                    "{file}: {} has {} arguments where {written} has {}",
+                    ein_ir::dump_compact(ast, node),
+                    args.len(),
+                    places.len()
+                ));
+                return;
+            }
+            if starts && places.iter().any(Option::is_some) {
+                *started.entry(relation).or_default() += 1;
+                for (&a, place) in args.iter().zip(places) {
+                    if let Some(want) = place
+                        && ast.atom_name(a) != Some(*want)
+                    {
+                        bad.push(format!(
+                            "{file}: {} starts a walk with {} where {written} writes {want}",
+                            ein_ir::dump_compact(ast, node),
+                            ein_ir::dump_compact(ast, a)
+                        ));
+                    }
+                }
+            }
+        };
+        fn every(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
+            match ast.node(node) {
+                Node::SForm { .. } => {
+                    out.push(node);
+                    for &a in ast.form_args(node) {
+                        every(ast, a, out);
+                    }
+                }
+                Node::KwPair { value, .. } => every(ast, value, out),
+                _ => {}
+            }
+        }
+        for &f in &forms {
+            let head = ast.head_name(f).unwrap_or("");
+            if matches!(head, "import" | "relation" | "macro") {
+                continue;
+            }
+            // What starts a walk: a written fact, or a conclusion of a rule
+            // that reads no fact of the same walk.
+            let mut starts: BTreeSet<NodeId> = BTreeSet::new();
+            if matches!(head, "rule" | "hrule") {
+                let mut read_heads: Vec<String> = Vec::new();
+                for &a in ast.form_args(f) {
+                    if let Node::KwPair { key, value } = ast.node(a)
+                        && matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "match")
+                    {
+                        let mut nodes = Vec::new();
+                        every(&ast, value, &mut nodes);
+                        read_heads.extend(
+                            nodes
+                                .iter()
+                                .filter_map(|&n| ast.head_name(n).map(str::to_string)),
+                        );
+                    }
+                }
+                for &a in ast.form_args(f) {
+                    if let Node::KwPair { key, value } = ast.node(a)
+                        && matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "assert")
+                    {
+                        let conjuncts = match ast.head_name(value) {
+                            Some("and") => ast.form_args(value).to_vec(),
+                            _ => vec![value],
+                        };
+                        starts.extend(conjuncts.into_iter().filter(|&c| {
+                            ast.head_name(c)
+                                .is_some_and(|h| !read_heads.iter().any(|r| r == h))
+                        }));
+                    }
+                }
+            } else if !matches!(head, "query" | "solve" | "config" | "trace") {
+                starts.insert(f);
+            }
+            let mut nodes = Vec::new();
+            every(&ast, f, &mut nodes);
+            for n in nodes {
+                check(&ast, n, starts.contains(&n), &mut bad);
+            }
+        }
+        if seen > 0 {
+            read.insert(file, seen);
+        }
+    }
+    assert!(
+        bad.is_empty(),
+        "a tagged call out of its shape:\n{}",
+        bad.join("\n")
+    );
+    // Not vacuous: the callers the pages name are read, and every walk is
+    // started somewhere.
+    for caller in [
+        "stdlib/arith.ein",
+        "stdlib/int.ein",
+        "stdlib/rat.ein",
+        "examples/beyond_arith/casting_out_nines.ein",
+        "examples/binary_arithmetic/conv.ein",
+    ] {
+        assert!(read.contains_key(caller), "{caller} was not read: {read:?}");
+    }
+    for walk in ["add-walk", "sub-walk", "cmp-walk"] {
+        assert!(
+            started.get(walk).is_some_and(|&n| n > 0),
+            "no start of {walk} was read"
+        );
+    }
+    eprintln!(
+        "the tagged calls: {} forms in {} files; walks started: {started:?}\n{read:#?}",
+        read.values().sum::<usize>(),
+        read.len()
+    );
 }

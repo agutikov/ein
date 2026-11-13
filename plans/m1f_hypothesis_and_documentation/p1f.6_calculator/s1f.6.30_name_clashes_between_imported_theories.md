@@ -1,7 +1,8 @@
 # S1f.6.30 — Name clashes between imported theories: investigation, proposals, and a stop
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. Not started. **An investigation that stops
+**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1 done
+([the record](#record-2026-11-13)). **An investigation that stops
 for the user** before any change to the grammar or to what an import means; its first task, the tagged calls
 as an interface, changes neither and is built.
 **Depends on:** nothing in the phase. It is the last of the stages independent of the stdlib layout, and its
@@ -124,3 +125,79 @@ its fix. Findings go to [`findings.md`](findings.md) under the next free id; que
 [`open_questions.md`](../open_questions.md) under the next free id. Syntax and design changes show real
 computed examples first. Config never changes an answer; exit non-zero only on error. The gate is
 `./run_tests.sh` for T1's commit, then `./run_tests.sh --nightly`; `utils/ci_container.sh` is not needed.
+
+## Record, 2026-11-13
+
+The release binary every probe runs is `ein.rs/target/release/ein`, built at `2ef68530`, the last commit that
+moved engine source (`cargo build --release -p ein-cli` on `53645cb0` reports it current); the scratch is under
+`build/s1f.6.30/`, which is not tracked, so every program and output the page relies on is quoted on it.
+
+### T1f.6.30.1 — the tagged calls, an interface, done
+
+**What is promised.** `std.arith`'s header gains a section, *The tagged calls: what a theory built on this one
+calls*, and `stdlib/README.md`'s `std.arith` section a row and a block, each writing the five calls and their
+four answers in one shape:
+
+```text
+(add-walk TAG X Y C z)    asked: X + Y + C     answered by (done TAG S); C a carry in, 0 or 1
+(sub-walk TAG X Y 0 z)    asked: X − Y         answered by (done TAG D) where X is not the smaller,
+                                               and by (short TAG) where it is
+(cmp-walk TAG X Y eq)     asked: X against Y   answered by (order-is TAG O), O one of lt, eq, gt
+(mul-call TAG X Y)        asked: X × Y         answered by (done TAG P)
+(div-call TAG X Y)        asked: X ÷ Y         answered by (div-done TAG Q R); flagged where Y is zero
+```
+
+with what a caller writes in them (numbers as `n` and `z` build them, never a `let`'s name; a tag of its own,
+never one of the theory's, E-39; one call a tag). The header's list of the module's names now has three parts
+and an interface: the nine leave *the circuit's own*. `std.int`'s and `std.rat`'s headers and README sections
+lay their calls out the same way, `(int-norm TAG P N)`, `(int-add-call TAG P1 N1 P2 N2)`, `(int-mul-call TAG
+P1 N1 P2 N2)` answered by `(int-done TAG INTEGER)`, `(int-cmp-call TAG P1 N1 P2 N2)` answered by `std.arith`'s
+`(order-is TAG O)`; `(rat-norm TAG P N D)` and `(rat-mul-call TAG P1 N1 D1 P2 N2 D2)` answered by `(rat-done TAG
+RATIONAL)`, `(rat-cross TAG P1 N1 D1 P2 N2 D2)` answered by `(rat-cross-is TAG POSITIVE NEGATIVE)`. No rule
+moved: the three files differ in comments alone, and the manifest was written again.
+
+**What holds it.** `ein-infer/tests/arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`, from a table of
+nineteen rows, `TAGGED`, each a module, the call or answer as written, and the declaration's types:
+
+- each module declares each of its rows with those types;
+- the module's header and `stdlib/README.md` write each row verbatim;
+- every `.ein` under `stdlib/`, `examples/` and `tests/` that writes one of the names at a form's head, parses,
+  resolves its imports and holds the module's declaration of it (bare, or after a prefix, the declaration's
+  types and `:why` equal to the module's), writes every form of it with the row's count of arguments; and where
+  it *starts* a walk, a written fact or a rule's conclusion whose `:match` reads no fact of that walk, writes
+  the row's names in their places, `z`, `0` or `eq`;
+- and it is not vacuous: `stdlib/arith.ein`, `int.ein`, `rat.ein`, `casting_out_nines.ein` and `conv.ein` are
+  read, and each of the three walks is started somewhere.
+
+The loader refuses a form of a declared relation with another count of arguments in a program it loads
+(S1f.6.23); the test holds the count against the interface by name, in every file, and the start values, which
+no loader sees. On this tree it reads 363 forms in 18 files (`cargo test -p ein-infer --test arith_theory
+the_tagged_calls -- --nocapture`, 2026-11-13): the eight banked `examples/beyond_arith/` programs, `conv.ein`,
+the three modules and six programs of `tests/stdlib/arith/`; the walks are started 40 times (`add-walk`), 16
+(`cmp-walk`) and 14 (`sub-walk`). The two other files that name a call, `examples/arith/div_by_zero.ein` and
+`tests/stdlib/arith/20_div_by_zero.ein`, name it in a comment.
+
+**What the test found on its first run.** Two things round 2's list did not hold, each a default
+([Q-M1f.228](../open_questions.md#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed),
+the user's to revise):
+
+- `std.int` calls `sub-walk` (rules `int-norm-walks` and `int-div-rest`), and `tests/stdlib/arith/08_sub.ein`
+  reads `short`: the seven names were the eight examples' and none subtracts by the walk. **Taken:** `sub-walk`
+  and `short` are in the interface, nine relations.
+- `examples/binary_arithmetic/conv.ein`'s `to-dec-double` starts an addition with the bit as its carry in,
+  `(add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)`, and the test as first written, to round 2's
+  `(add-walk TAG X Y 0 z)`, failed on it: *`(add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)` starts a walk with
+  `?bit` where `(add-walk TAG X Y 0 z)` writes 0*. **Taken:** the carry is the caller's, `(add-walk TAG X Y C z)`,
+  C `0` or `1`; the test holds `z`.
+
+Q-M1f.189 is marked answered and built. No finding: no engine behaviour is in question.
+
+**Run** (2026-11-13): `python3 utils/stdlib_manifest.py --write`, then the check, *12 modules match*;
+`gen_binary.py --check`, `gen_gates.py --check` and `utils/gen_arith_examples.py --check`, each exit 0 (the
+binary theory is generated from `stdlib/arith.ein`'s rules, which did not move); `cargo test -p ein-infer --test
+arith_theory` 21 passed, `--test int_theory` 11, `--test rat_theory` 11, `--test stdlib_coverage` 2, `--test
+stdlib_semantics` 16; `cargo test -p ein-ir`, every binary green, `the_embedded_copy_matches_the_manifest` among
+them; `cargo test -p ein-cli --test arith_search_free` 2 passed; `cargo fmt --all --check`, `cargo clippy
+--workspace --all-targets -- -D warnings` and `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`,
+clean. No corpus answer, golden or printed line moves: the modules moved in comments alone.
+

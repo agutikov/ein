@@ -159,6 +159,50 @@ rule (`grep -c '^(rule ' stdlib/arith.ein`, less one, 2026-11-13).
 | **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name stands for one number: a name no `let` states, a name stated twice with two numbers, and `z` or a digit as a name are each flagged (below) |
 | **a malformed request** | a contradiction, **in two steps**, as a division by zero is (S1f.6.12, the user's rulings of 2026-11-11 and 2026-11-12). `(malformed REQUEST)`, the request as written, where an operand is not a number; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the request in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests](#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612)) |
 | **the one entry** | `arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
+| **the tagged calls** | what a theory built on the calculator calls, below: an interface, held to its shapes by a test |
+
+**The tagged calls, an interface** (M1f
+[S1f.6.30](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+T1; the user's reply *"(a)"* of 2026-11-12 to
+[round 2's item 41](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md#q41)).
+A result repeats its request's operands, so a rule of a program that wants an
+answer for a purpose of its own must find it by its operands, a join on a
+number, which the engine answers by a scan (E-3). Inside, the theory calls
+itself with a **tag**, a nested fact that names the caller, and hands the
+answer back under it, so the rule that reads has one premise. Those calls are
+what `std.int`, `std.rat`, the binary conversions and the programs under
+`examples/beyond_arith/` call:
+
+```text
+(add-walk TAG X Y C z)    asked: X + Y + C     answered by (done TAG S); C a carry in, 0 or 1
+(sub-walk TAG X Y 0 z)    asked: X − Y         answered by (done TAG D) where X is not the smaller,
+                                               and by (short TAG) where it is
+(cmp-walk TAG X Y eq)     asked: X against Y   answered by (order-is TAG O), O one of lt, eq, gt
+(mul-call TAG X Y)        asked: X × Y         answered by (done TAG P)
+(div-call TAG X Y)        asked: X ÷ Y         answered by (div-done TAG Q R); flagged where Y is zero
+```
+
+X and Y are numbers as `n` and `z` build them, high zeros allowed, never a
+name a `let` states: a call looks nothing up. A walk starts with `z`, no
+digits yet; a subtraction with `0`, no borrow, and a comparison with `eq`,
+nothing yet decided; those are the values a caller writes. An addition's
+carry in is the caller's: `0` for X + Y, or a bit, as
+[`conv.ein`](../examples/binary_arithmetic/conv.ein) doubles a number and adds
+a bit in one walk, `(add-walk TAG X X BIT z)`. The tag is a fact of the caller's own
+relation, `(cnt K M)` in
+[`casting_out_nines.ein`](../examples/beyond_arith/casting_out_nines.ein); a
+tag of the theory's own, `(sum X Y)` or `(quotient X Y)`, is read back as one
+of its requests (E-39). Checking the laws of arithmetic over the digits took
+16.8 s through requests and 0.42 s through these calls (`build/s1f.6.10/gen4.py`
+against `gen4t.py`, 2026-11-12).
+[`arith_theory.rs`](../ein.rs/crates/ein-infer/tests/arith_theory.rs)'s
+`the_tagged_calls_keep_their_shapes` holds the declarations of the nine
+relations, and of `std.int`'s and `std.rat`'s calls below, to these shapes;
+holds each module's header and this page to naming them as written here; and
+reads every module of the stdlib and every program under `examples/` and
+`tests/` that brings the theory and writes one of them, so a call written
+with another count of arguments, or a walk started from another place, fails
+per commit.
 
 **How it computes** (design K of the phase's
 [`design.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#k-an-accumulator-in-the-other-order-and-a-continuation-on-every-call)):
@@ -569,14 +613,16 @@ phase's S1f.6.10 would ask for if it asks for long numbers.
 
 **The names it occupies.** Imported flat, the module's names mean what the
 module says, and its header has the list, in three parts.
-**What a program states is the requests and `let`, and nothing else**: `add`,
-`sub`, `cmp`, `mul`, `div` and `let`, over numbers written with `n`, `z` and
-the ten digits. **What it reads**: the results `sum-of`, `diff-of`, `cmp-of`,
-`product-of` and `quot-of`; the flags `division-by-zero`, `malformed` and
-`undeclared`; the orders `lt`, `eq` and `gt`. **The circuit's own**, which is
-in the state to be seen and is no promise: `b`, some sixty-five names of its
-walks, its hand-overs, its check and its tags, `arith-rule`, and the seven
-tables of `std.digits`. A second *declaration* of any of them is refused at
+**What a program states is the requests and `let`**: `add`, `sub`, `cmp`,
+`mul`, `div` and `let`, over numbers written with `n`, `z` and the ten
+digits; **and, from a rule, the tagged calls**
+([above](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)).
+**What it reads**: the results `sum-of`, `diff-of`, `cmp-of`, `product-of`
+and `quot-of`; the flags `division-by-zero`, `malformed` and `undeclared`; the
+orders `lt`, `eq` and `gt`; the tagged calls' answers, `done`, `short`,
+`order-is` and `div-done`. **The circuit's own**, which is in the state to be
+seen and is no promise: `b`, some sixty names of its walks, its hand-overs,
+its check and its tags, `arith-rule`, and the seven tables of `std.digits`. A second *declaration* of any of them is refused at
 load, with the name in the message. A written *fact* of a result or of the
 circuit is not: it is a fact like a derived one and the theory computes with
 it, so a `(sum-of X Y S)` written by hand is an answer nobody computed. A
@@ -871,11 +917,19 @@ size less the remainder, a subtraction walk.
 −7 ÷ 2 is 124 firings under Euclidean and floored and 112 under truncated
 (`cargo test -p ein-infer --test int_theory the_circuit`, 2026-11-12).
 **A call's tag is its request**:
-`(int-add X Y)` is the tag of its own computation. The calls a later theory
-makes are `(int-norm TAG P N)`, `(int-add-call TAG P1 N1 P2 N2)` and
-`(int-mul-call TAG P1 N1 P2 N2)`, each answered by `(int-done TAG INTEGER)`,
-and `(int-cmp-call TAG P1 N1 P2 N2)`, answered by `std.arith`'s `(order-is
-TAG ORDER)`.
+`(int-add X Y)` is the tag of its own computation. **The tagged calls a later
+theory makes are an interface,** as [`std.arith`'s](#stdarith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)
+are, held to these shapes by the same test:
+
+```text
+(int-norm TAG P N)                 asked: P less N, in normal form     answered by (int-done TAG INTEGER)
+(int-add-call TAG P1 N1 P2 N2)     asked: P1 less N1, plus P2 less N2  answered by (int-done TAG INTEGER)
+(int-mul-call TAG P1 N1 P2 N2)     asked: P1 less N1, times P2 less N2 answered by (int-done TAG INTEGER)
+(int-cmp-call TAG P1 N1 P2 N2)     asked: P1 less N1, against P2 less N2
+                                   answered by std.arith's (order-is TAG O)
+```
+
+Each part is a natural number of `std.arith`, written out.
 
 **Every rule has one premise,** which is the rule of the theory in its
 strongest form: none reads a table itself and none joins two facts.
@@ -964,10 +1018,18 @@ simplified by `std.int`, the greatest common divisor of its size and the
 denominator by **Euclid's chain**, gcd(A, B) = gcd(B, A mod B) until the
 remainder is zero, each step a division of `std.arith`, and both divided by
 what it finds. **It does not need a division of integers**, so it does not
-wait for Q-M1f.179. A call's tag is its request, as in `std.int`; the calls a
-later theory makes are `(rat-norm TAG P N D)` and `(rat-mul-call TAG …)`,
-answered by `(rat-done TAG RATIONAL)`, and `(rat-cross TAG …)`, answered by
-`(rat-cross-is TAG POSITIVE NEGATIVE)`.
+wait for Q-M1f.179. A call's tag is its request, as in `std.int`. **The tagged
+calls a later theory makes are an interface,** held to these shapes by the
+same test as `std.arith`'s; the denominators must not be zero:
+
+```text
+(rat-norm TAG P N D)                  asked: P less N over D, in lowest terms
+                                      answered by (rat-done TAG RATIONAL)
+(rat-mul-call TAG P1 N1 D1 P2 N2 D2)  asked: P1 less N1 over D1, times P2 less N2 over D2
+                                      answered by (rat-done TAG RATIONAL)
+(rat-cross TAG P1 N1 D1 P2 N2 D2)     asked: P1 × D2 + P2 × D1, and N1 × D2 + N2 × D1
+                                      answered by (rat-cross-is TAG POSITIVE NEGATIVE)
+```
 
 **Every rule has one premise.** `ein-infer/tests/rat_theory.rs` holds that on
 the text, and holds the answers to exact fractions: every pair of the 28

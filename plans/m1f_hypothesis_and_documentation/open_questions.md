@@ -201,7 +201,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.186](#q-m1f186--where-the-probes-of-s1f610-are-banked) | where the probes of S1f.6.10 are banked | **Confirmed 2026-11-12** (reply 43 (a)). **defaulted 2026-11-12 (S1f.6.10), the user's to revise: `examples/beyond_arith/`, beside `examples/arith/` and not under it**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
 | [Q-M1f.187](#q-m1f187--which-probes-of-s1f610-are-banked-and-at-what-size) | which probes of S1f.6.10 are banked, and at what size | **Confirmed 2026-11-12** (reply 43 (a)). **defaulted 2026-11-12 (S1f.6.10): sixteen, each sized so that a bare `ein solve` exhausts R well inside the budget and its dump is a few megabytes; SEND + MORE = MONEY stays under `build/`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
 | [Q-M1f.188](#q-m1f188--the-banked-probes-are-kept-by-hand) | the banked probes are kept by hand | **Confirmed 2026-11-12** (reply 43 (a)). **defaulted 2026-11-12 (S1f.6.10): written once by a script under `build/`, then hand-kept; no generator in `utils/` and no `--check` in the gate**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
-| [Q-M1f.189](#q-m1f189--a-users-program-calling-stdariths-tagged-calls) | a user's program calling `std.arith`'s tagged calls | **Answered** in round 2 (`dc88520b`) (item 41, *"(a)"*): the tagged calls are an interface; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md), T1. **defaulted 2026-11-12 (S1f.6.10) for the banked programs, and put to the user: eight of them call `add-walk`, `mul-call`, `div-call`, `cmp-walk` and read `done`, `div-done`, `order-is`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
+| [Q-M1f.189](#q-m1f189--a-users-program-calling-stdariths-tagged-calls) | a user's program calling `std.arith`'s tagged calls | **Answered** in round 2 (`dc88520b`) (item 41, *"(a)"*): the tagged calls are an interface; **built 2026-11-13** by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md), T1, held by `arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`. **defaulted 2026-11-12 (S1f.6.10) for the banked programs, and put to the user: eight of them call `add-walk`, `mul-call`, `div-call`, `cmp-walk` and read `done`, `div-done`, `order-is`**; [S1f.6.10](p1f.6_calculator/s1f.6.10_beyond_arithmetic.md) |
 | [Q-M1f.190](#q-m1f190--which-variants-of-the-binary-prototypes-are-banked-where-the-page-recommends-none) | which variants of the binary prototypes are banked where the page recommends none | **defaulted 2026-11-12 (the banking of S1f.6.16 and S1f.6.17), the user's to revise: the simplest its results hold under: the truth table's candidates from the obligations rung alone; the conversions a module of their own; Post's criterion on seven written sets over the generated facts; the simplifier reading the generated facts**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
 | [Q-M1f.191](#q-m1f191--the-generators-of-the-binary-examples-are-run-by-hand) | the generators of the binary examples are run by hand | **defaulted 2026-11-12, the user's to revise: `gen_binary.py` and `gen_gates.py` live in the example directories, each with a `--check`, neither in the gate; the properties' check is a corpus program's claims, which is in the gate**; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-12-way-b-banked-as-examples), [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
 | [Q-M1f.192](#q-m1f192--one-table-file-in-two-example-directories) | one table file in two example directories | **defaulted 2026-11-12, the user's to revise: `examples/binary_logic/bits.ein` is a copy of `examples/binary_arithmetic/bits.ein`, written by `gen_binary.py`, whose `--check` holds the two equal**; [S1f.6.17](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-12-the-recommended-variants-banked-as-examples) |
@@ -240,6 +240,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.225](#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up) | what the fact-grain test does where the closure gives up | **ruled 2026-11-13, (a)** (*"Ok"*): the closure runs only where a relation-grain site reads it; on a flagged program it gives up after 10 000 shapes on the safe side, every site one; and `region.rs`'s `fact_grain_never_calls_a_violated_cube_monotone` fails on a program where it gives up, naming it, so the bound never decides a verdict the test reads**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6281--e-33-resolved-done) |
 | [Q-M1f.226](#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0) | an obligation's name in a closing rule, and `alive_invariant`'s R0 | **ruled 2026-11-13, (b)** (*"I suppose yes, what it cost?"*, then *"continue next stages till the end of the phase"*): the names index holds the obligations' names; before, defaulted (a): `every_name_of_the_program_is_a_candidate_object` lists a seeded name the program categorises as an obligation's and does not hold it to the blind enumerator's objects; no engine source moves (E-48)**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done) |
 | [Q-M1f.227](#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take) | how a run of the biggest calculation is held to about 16 GB, and how long it may take | **defaulted 2026-11-13 (S1f.6.29), the user's to revise: a cgroup a run, `MemoryMax=16000000000` (16.0 GB, 14.9 GiB) and no swap, `oom_score_adj` 1000; a run past 600 s killed; the search narrowed to 3 %. The sweep stopped half-way: at the cap the host had about 1.4 GB left and Claude Code reaped the background command, which is not restarted unasked**; [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured) |
+| [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk, and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3735,6 +3736,16 @@ circuit's own*; `std.int` and `std.rat` call them from inside the stdlib.
 name the tagged calls as what a theory built on it calls. Eight programs under `examples/beyond_arith/` would
 move if a tagged call's shape did; `arith_theory.rs` does not hold those shapes for outside callers.
 
+**Answered 2026-11-12: the tagged calls are an interface.** Question 41 of
+[`questions.md`](p1f.6_calculator/questions.md#q41) got *"I don't understand the question"*; [round 2's item
+41](p1f.6_calculator/questions_round2.md#q41) explained it, and the user's reply there, committed as `dc88520b`, is
+*"(a)"*. **Built 2026-11-13** by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md)'s
+T1: `std.arith`'s header and [`stdlib/README.md`](../../stdlib/README.md) name the five calls and their four
+answers as an interface, `std.int`'s and `std.rat`'s calls likewise, and `ein-infer/tests/arith_theory.rs`'s
+`the_tagged_calls_keep_their_shapes` holds the declarations, the pages and every caller in the stdlib,
+`examples/` and `tests/` to their shapes. What it holds beyond the seven names round 2 showed is
+[Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed).
+
 ### Q-M1f.190 — Which variants of the binary prototypes are banked where the page recommends none
 
 **Raised** 2026-11-12 by the banking of [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md)'s and
@@ -4513,3 +4524,31 @@ How to finish it is the user's: the same sweep started again by the user's word,
 saturate --shapes chain`, then `--commands solve`); with the harness's reaping turned off
 (`CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` in Claude Code's environment, which only the user can set); or
 with a lower cap that leaves the host more than the harness's threshold.
+
+### Q-M1f.228 — What the interface of the tagged calls holds beyond the seven names round 2 showed
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done)'s
+T1. [Round 2's item 41](p1f.6_calculator/questions_round2.md#q41) showed the user seven relations, `add-walk`,
+`mul-call`, `div-call` and `cmp-walk`, answered by `done`, `div-done` and `order-is`, and the starting shape
+`(add-walk TAG X Y 0 z)`; the user's *"(a)"* made them an interface. Two things the callers write are not in that
+list:
+
+- **`sub-walk`, answered by `done` or `short`.** `std.int` calls the subtraction walk three times, in its
+  simplification (`stdlib/int.ein`, rule `int-norm-walks`, both ways at once) and in a division's remainder (`int-div-rest`), and
+  `tests/stdlib/arith/08_sub.ein` reads `short`. The question's list came from the eight banked examples, which
+  never subtract by the walk.
+- **An addition's carry in.** `examples/binary_arithmetic/conv.ein`'s `to-dec-double` writes
+  `(add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)`: the number so far, plus itself, plus the bit as the carry, in
+  one walk. The rules take a carry of `0` or `1` there; the test, written to round 2's `0`, failed on that file
+  first.
+
+- **(a) The interface is what the callers write:** nine relations, `sub-walk` and `short` among them, and
+  `(add-walk TAG X Y C z)` with C a carry in of `0` or `1`; a subtraction starts at `0`, a comparison at `eq`, a
+  walk at `z`.
+- **(b) The seven names and the `0`:** `sub-walk` and `short` stay the circuit's own and `std.int` calls what is
+  not promised; `conv.ein` is rewritten to double with a carry of `0` and add the bit as a second call, one walk
+  more a bit.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It promises what two shipped callers already depend on, and
+moves no program; (b) would move `conv.ein`'s states and leave `std.int` outside its own rule.
+

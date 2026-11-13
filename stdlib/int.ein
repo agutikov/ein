@@ -108,10 +108,23 @@
 ;;;
 ;;; **A call's tag is its request.** `(int-add X Y)` is the tag of its own
 ;;; computation, and the rule that answers reads `(int-done (int-add ?x ?y)
-;;; ?s)`. The calls a later theory may make are `(int-norm TAG P N)`,
-;;; `(int-add-call TAG P1 N1 P2 N2)` and `(int-mul-call TAG P1 N1 P2 N2)`,
-;;; each answered by `(int-done TAG INTEGER)`, and `(int-cmp-call TAG P1 N1
-;;; P2 N2)`, answered by `std.arith`'s `(order-is TAG ORDER)`.
+;;; ?s)`. **The tagged calls a later theory makes are an interface,** as
+;;; `std.arith`'s are (P1f.6's question 41, round 2, the user's *"(a)"*),
+;;; held to these shapes by `ein-infer/tests/arith_theory.rs`'s
+;;; `the_tagged_calls_keep_their_shapes`:
+;;;
+;;;     (int-norm TAG P N)                 P less N, in normal form;
+;;;                                        answered by (int-done TAG INTEGER)
+;;;     (int-add-call TAG P1 N1 P2 N2)     P1 less N1, plus P2 less N2;
+;;;                                        answered by (int-done TAG INTEGER)
+;;;     (int-mul-call TAG P1 N1 P2 N2)     P1 less N1, times P2 less N2;
+;;;                                        answered by (int-done TAG INTEGER)
+;;;     (int-cmp-call TAG P1 N1 P2 N2)     P1 less N1, against P2 less N2;
+;;;                                        answered by `std.arith`'s
+;;;                                        (order-is TAG O)
+;;;
+;;; Each part is a natural number of `std.arith`, written out; a call looks
+;;; nothing up.
 ;;;
 ;;; **No rule joins two facts on a number,** `std.arith`'s rule, kept here:
 ;;; every rule of this module has one premise. `ein-infer/tests/
