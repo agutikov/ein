@@ -578,3 +578,30 @@ the gate's paths, 554 pages, 0 findings. Not run beyond T5's three: the rest of 
 **Not run by this stage**: `./run_tests.sh` and `./run_tests.sh --nightly`, which run on the stage's last commit
 in detached worktrees, their outcome written under this line by the records commit; `utils/ci_container.sh`,
 which the stage file does not need: no DOT writer, review bundle script or CI install changed.
+
+**The gate and the nightly, run by the coordinator** (2026-11-13), each in a detached worktree on `c2302ad5`: the
+merge of this stage's last commit, `d30931e8`, with the branch that made the `.einb` format 2.0 (`0f0d8c48`, on the
+user's *"remove"* and *"yes, do it"* of that day: `META` holds no time, `INTS` is gone, Q-M1f.10 re-ruled (b)),
+which touches no file of this stage's, so one run holds both:
+
+| run | outcome |
+|---|---|
+| `./run_tests.sh` | exit 0, 53 min 59 s (`build/s1f.6.28/gate.log`), 1 154 tests in 136 binaries, its link check over 554 pages with no finding; `einb_cli::a_container_saved_again_is_the_container`, the per-commit CI's red of runs 43396694686 and 43433241494, passed with its second save in a later second |
+| `./run_tests.sh --nightly` | exit 0, 38 min 38 s, every step of its three jobs (`build/s1f.6.28/nightly.log`); `utils/stdlib_mutants.py --check` among them, 437 of 500 killed, the bank held |
+
+**The nightly's slow halves.** This stage adds no slow entry; its region test reads the four new programs in the
+fast half. Each step's `finished in`, on this machine with the gate running beside the nightly, against
+S1f.6.27's nightly on `8f987963`, taken the same way:
+
+| step | `8f987963` | `c2302ad5` |
+|---|---:|---:|
+| `corpus_cli`, the slow entries | 144.0 s | 152.7 s |
+| `answer_dump` | 45.3 s | 42.9 s |
+| `answer_round_trip`, the slow and `heavy_dump` entries | 143.0 s | 139.8 s |
+| `lever_invariance`, the slow cells | 42.5 s | 46.3 s |
+| `corpus_cores`, the slow entries | 225.3 s | 216.6 s |
+| `region`, the slow half | 51.4 s | 48.8 s |
+| `obligation_rung`, the slow half | 69.2 s | 70.9 s |
+
+The runner's times are not these; the next nightly in CI is what shows them. `utils/ci_container.sh` was not run:
+no DOT writer, review bundle script or CI install changed.
