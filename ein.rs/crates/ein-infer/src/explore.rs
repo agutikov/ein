@@ -129,6 +129,31 @@ pub struct Mode {
     pub ask: Ask,
 }
 
+impl Mode {
+    /// The question as `ein solve` is asked it: its flags, and `describe` for
+    /// the bare run that has none. What `ein test` names a claim's route by
+    /// (M1f S1f.6.27).
+    pub fn flags(self) -> String {
+        let line = match self.which {
+            Which::All => "",
+            Which::Minimal => "--minimal",
+            Which::Maximal => "--maximal",
+        };
+        let ask = match self.ask {
+            Ask::Describe => String::new(),
+            Ask::Find(n) => format!("-n {n}"),
+            Ask::Single => "--single".to_string(),
+            Ask::Count => "--count".to_string(),
+        };
+        match (line.is_empty(), ask.is_empty()) {
+            (true, true) => "describe".to_string(),
+            (false, true) => line.to_string(),
+            (true, false) => ask,
+            (false, false) => format!("{line} {ask}"),
+        }
+    }
+}
+
 /// How [`run`] is asked.
 #[derive(Clone, Copy, Debug)]
 pub struct Options {
@@ -157,6 +182,18 @@ pub struct Options {
     /// question*: every core taken is the one an eager walk takes, and no
     /// answer depends on it.
     pub cores: Cores,
+    /// The run is asked to **decide the program's claims**, as `ein test`
+    /// asks (M1f S1f.6.27): a claim the answer does not decide by exhausting
+    /// what the claim is about is still **refuted** by what the run found, a
+    /// query's by a class of a state found that it does not list, and
+    /// `(solve … :expect (false))` by an alive root
+    /// ([`crate::read_out`]). Every state a run lists is certified a member
+    /// of the part it was asked, so the refutation holds whatever the run
+    /// left unvisited; a claim is **held** by an exhausted answer alone, with
+    /// this or without. Off under `ein solve`, where a claim the question
+    /// asked did not exhaust is a note and not checked, as it was. No answer
+    /// and no route reads it.
+    pub refute: bool,
 }
 
 impl Options {
@@ -169,6 +206,7 @@ impl Options {
             deadline: None,
             sanity: false,
             cores: Cores::ALL,
+            refute: false,
         }
     }
 }

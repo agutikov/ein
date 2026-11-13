@@ -13,6 +13,13 @@
 //! against a second one ([`crate::claim::check_described`]).
 //!
 //! What is printed, and how, is `ein-render`'s. Nothing here decides a word.
+//!
+//! **And which question a program's claims are** (M1f S1f.6.27): [`least`]
+//! reads the claims' shapes and names the least question that can decide
+//! them, [`describing`] the one that describes what they are about, and
+//! [`stands`] says which of the two runs a claim is read off where both were
+//! asked. `ein test` asks them in that order; `ein solve` asks what its flags
+//! say.
 
 use std::collections::BTreeMap;
 
@@ -473,9 +480,14 @@ pub fn of_answer(
                 .filter(|(i, _)| over.contains(i))
                 .collect();
             let classes = classes(ast, g.goal, g.text.as_deref(), picked);
-            let claim = g
-                .expect
-                .map(|node| query_claim(ast, node, g.over, as_asked, exact, &classes, &answer));
+            let claim = g.expect.map(|node| {
+                let over = Coverage {
+                    over: g.over,
+                    as_asked,
+                    exact,
+                };
+                query_claim(ast, node, over, &classes, &answer, opts.refute)
+            });
             Query {
                 goal: ein_ir::dump::dump_compact(ast, g.written),
                 over: g.over,
@@ -502,6 +514,158 @@ pub fn of_answer(
         claim,
         spot,
     })
+}
+
+// ── The question a program's claims are — M1f S1f.6.27 ──────────────────
+
+/// The claims a program states, by their shapes: whether its `(solve …)`
+/// states one, and for each query's the part its classes are over, how many
+/// classes it lists, and whether the query has a `:goal` for a run to answer.
+fn stated(root: &Kb, ast: &Ast) -> (bool, Vec<(Over, usize, bool)>) {
+    let program = root.program();
+    let solve = program
+        .solve()
+        .is_some_and(|s| solve_value(ast, s, "expect").is_some());
+    let queries = program
+        .queries
+        .iter()
+        .filter_map(|q| {
+            let expect = query_value(ast, q, "expect")?;
+            let over = query_value(ast, q, "over")
+                .and_then(|n| Over::parse(ast, n).ok())
+                .unwrap_or_default();
+            Some((
+                over,
+                ein_ir::expect::parse(ast, expect).models().len(),
+                query_value(ast, q, "goal").is_some(),
+            ))
+        })
+        .collect();
+    (solve, queries)
+}
+
+/// **The question that describes what a program's claims are about**: all of
+/// `R` where the `(solve …)` states a claim, a query's claim is over all of
+/// `R`, or the queries' claims are over both lines; otherwise the one line
+/// they are over. An exhausted answer to it decides every claim, so it is
+/// what [`least`] falls back to, and it was the one question `ein test` asked
+/// from M1e2 S1e2.1a.5 to M1f S1f.6.27.
+pub fn describing(root: &Kb, ast: &Ast) -> explore::Mode {
+    let (solve, queries) = stated(root, ast);
+    let asks = |o: Over| queries.iter().any(|(over, _, _)| *over == o);
+    let which = if solve
+        || queries.is_empty()
+        || asks(Over::All)
+        || (asks(Over::Minimal) && asks(Over::Maximal))
+    {
+        Which::All
+    } else if asks(Over::Maximal) {
+        Which::Maximal
+    } else {
+        Which::Minimal
+    };
+    explore::Mode {
+        which,
+        ask: Ask::Describe,
+    }
+}
+
+/// **The least question that can decide every claim a program states**, by
+/// the claims' shapes alone (M1f S1f.6.27, the user's reply (a) of
+/// 2026-11-12 on question 39, *minimum work per question* applied to the
+/// runner). No option chooses it.
+///
+/// - A `(solve … :expect …)` is about `R` as a whole, its states one to one,
+///   its merged states or its owing frontier, or says root is dead: it asks
+///   [`describing`]'s question, whose route on a dead root is root's
+///   saturation alone.
+/// - Queries' claims that are all over one part of `R`, the most classes one
+///   of them lists being `k`: that part is asked for `k + 1` states, `-n
+///   k+1`, and `--single` where `k` is at most one. A run that finds fewer
+///   has listed the whole part, so the classes are exact and every claim is
+///   decided; one that finds `k + 1` decides a claim only where a state found
+///   gives a class the claim does not list, which refutes it
+///   ([`explore::Options::refute`]): several states can fall in one class, so
+///   `k + 1` states do not refute a claim of `k` classes by their number.
+/// - Claims over more than one part, and a file whose only query claim has
+///   no `:goal`: [`describing`]'s question, as before.
+///
+/// A claim the least question leaves undecided is asked [`describing`]'s, so
+/// no claim an exhausted description decides is left unchecked
+/// ([`stands`]).
+pub fn least(root: &Kb, ast: &Ast) -> explore::Mode {
+    let describing = describing(root, ast);
+    let (solve, queries) = stated(root, ast);
+    let answerable: Vec<&(Over, usize, bool)> = queries.iter().filter(|q| q.2).collect();
+    let Some(&&(over, _, _)) = answerable.first() else {
+        return describing;
+    };
+    if solve || queries.iter().any(|q| q.0 != over) {
+        return describing;
+    }
+    let k = answerable.iter().map(|q| q.1).max().unwrap_or(0) as u64;
+    explore::Mode {
+        which: match over {
+            Over::All => Which::All,
+            Over::Minimal => Which::Minimal,
+            Over::Maximal => Which::Maximal,
+        },
+        ask: if k <= 1 {
+            Ask::Single
+        } else {
+            Ask::Find(k + 1)
+        },
+    }
+}
+
+/// Which of two runs a claim's outcome is read off, where a file's claims
+/// were asked [`least`]'s question first and [`describing`]'s after.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Stands {
+    First,
+    Fallback,
+}
+
+/// The run `first`'s and `fallback`'s reports of one claim leave standing:
+/// the describing run's wherever it decided the claim, so a claim a
+/// description decides reads as it always did; the first run's where it
+/// decided and the description stopped short; and the describing run's *not
+/// checked* where neither did. **Two questions that decide one claim
+/// differently are an engine defect**, never an outcome: no two routes may
+/// disagree, and the run is refused.
+pub fn stands(first: &Report, fallback: &Report) -> Result<Stands, SolveError> {
+    use Outcome::{Failed, Held, NotChecked};
+    match (first.outcome, fallback.outcome) {
+        (Held, Failed) | (Failed, Held) => Err(SolveError::Unsupported(
+            "two questions decide one claim differently, which no two routes may — an engine \
+             defect; run `ein oracle` on this program"
+                .to_string(),
+        )),
+        (_, Held | Failed) | (NotChecked, NotChecked) => Ok(Stands::Fallback),
+        (Held | Failed, NotChecked) => Ok(Stands::First),
+    }
+}
+
+/// Why a run that was asked a claim's least question left the claim
+/// undecided, for the line under a claim that stays *not checked*: it
+/// stopped, or the states it found all fall in classes the claim lists.
+pub fn undecided_words(answer: &Answer) -> String {
+    match &answer.stopped {
+        Some(explore::Stopped::Budget { .. }) => "stopped at --region-budget".to_string(),
+        Some(explore::Stopped::Limit { n, limit }) => format!(
+            "stopped at --region-limit, the program having {n} candidates and the limit being \
+             {limit}"
+        ),
+        Some(explore::Stopped::Deadline) => "stopped at --max-time".to_string(),
+        None => {
+            let k = answer.states.len();
+            format!(
+                "found {k} state{}, each in a class the claim lists, and did not exhaust what \
+                 the claim is about",
+                if k == 1 { "" } else { "s" }
+            )
+        }
+    }
 }
 
 /// One `(query …)` as the program writes it.
@@ -659,18 +823,33 @@ fn classes_word(n: usize) -> String {
     format!("{n} {}", if n == 1 { "class" } else { "classes" })
 }
 
-/// A query's `:expect` against its classes (`region_language.md` § 5): the
-/// classes it lists, as a set, are the query's. Checked when the classes are
-/// over the set the query asks about and complete; otherwise not checked,
-/// with why.
-fn query_claim(
-    ast: &Ast,
-    node: NodeId,
+/// What a query's classes are over, as [`Query`] says it: the part its
+/// `:over` names, whether the classes are over that part, and whether over
+/// all of it.
+#[derive(Clone, Copy)]
+struct Coverage {
     over: Over,
     as_asked: bool,
     exact: bool,
+}
+
+/// A query's `:expect` against its classes (`region_language.md` § 5): the
+/// classes it lists, as a set, are the query's. Checked when the classes are
+/// over the set the query asks about and complete; otherwise not checked,
+/// with why. With `refute` ([`explore::Options::refute`], M1f S1f.6.27),
+/// classes over a part of that set still refute a claim that does not list
+/// one of them.
+fn query_claim(
+    ast: &Ast,
+    node: NodeId,
+    Coverage {
+        over,
+        as_asked,
+        exact,
+    }: Coverage,
     classes: &[Class],
     answer: &Answer,
+    refute: bool,
 ) -> Report {
     let not_checked = |why: String| Report {
         outcome: Outcome::NotChecked,
@@ -682,19 +861,6 @@ fn query_claim(
             over.words(),
             asked_words(answer)
         ));
-    }
-    if !exact {
-        return not_checked(match answer.mode.ask {
-            Ask::Describe => format!(
-                "the claim is about {}, and this run did not exhaust it",
-                over.words()
-            ),
-            _ => format!(
-                "the claim is about {}, and this run asked {}",
-                over.words(),
-                asked_words(answer)
-            ),
-        });
     }
     // A claim's shape is the grammar's, so a loaded claim always reads.
     let e = ein_ir::expect::parse(ast, node);
@@ -720,6 +886,49 @@ fn query_claim(
             format!("(model {})", f.join(" "))
         }
     };
+    if !exact {
+        // The classes are a lower bound: every state they are over is a
+        // certified member of what the claim is about, so one the claim does
+        // not list refutes it whatever the run left unvisited, and classes
+        // that are all listed decide nothing (M1f S1f.6.27).
+        let unlisted: Vec<&Vec<String>> =
+            have.iter().copied().filter(|c| !want.contains(c)).collect();
+        if refute && let Some(first) = unlisted.first() {
+            let mut lines = vec![format!(
+                "the claim lists {}, and {} has a class it does not list: {}",
+                classes_word(want.len()),
+                over.words(),
+                model(first)
+            )];
+            lines.extend(
+                unlisted
+                    .iter()
+                    .skip(1)
+                    .map(|m| format!("{} is a class the claim does not list", model(m))),
+            );
+            lines.push(format!(
+                "the run asked {} and did not exhaust {}: what it found refutes the claim, and \
+                 is not every difference",
+                asked_words(answer),
+                over.words()
+            ));
+            return Report {
+                outcome: Outcome::Failed,
+                lines,
+            };
+        }
+        return not_checked(match answer.mode.ask {
+            Ask::Describe => format!(
+                "the claim is about {}, and this run did not exhaust it",
+                over.words()
+            ),
+            _ => format!(
+                "the claim is about {}, and this run asked {}",
+                over.words(),
+                asked_words(answer)
+            ),
+        });
+    }
     let missing: Vec<&Vec<String>> = have.iter().copied().filter(|c| !want.contains(c)).collect();
     let extra: Vec<&Vec<String>> = want.iter().filter(|w| !have.contains(w)).collect();
     if missing.is_empty() && extra.is_empty() {
@@ -783,6 +992,19 @@ fn check_claim(
         )));
     };
     if !d.exhausted {
+        // `(false)` says every node is dead, root among them: an alive root
+        // refutes it, whatever of R the run did not reach (M1f S1f.6.27).
+        if opts.refute && matches!(claim, ein_ir::claim::Claim::False) && d.root.alive {
+            return Ok(Report {
+                outcome: Outcome::Failed,
+                lines: vec![
+                    "(false) says every node is dead, and root is alive".to_string(),
+                    "the run is partial: root's fixpoint refutes the claim, and what R holds is \
+                     not described"
+                        .to_string(),
+                ],
+            });
+        }
         return Ok(not_checked(
             "the claim is about all of R, and this run is partial".to_string(),
         ));
