@@ -738,7 +738,12 @@ pub fn write(
                 ),
             ];
             if let Some(c) = s.commitments {
-                head.push(format!("reached by: {c} commitments"));
+                let more = if c >= ein_infer::count::CAP {
+                    " or more"
+                } else {
+                    ""
+                };
+                head.push(format!("reached by: {c}{more} commitments"));
             }
             if !s.generators.is_empty() {
                 head.push(format!(

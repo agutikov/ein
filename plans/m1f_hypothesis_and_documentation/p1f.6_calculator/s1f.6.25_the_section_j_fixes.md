@@ -1,7 +1,7 @@
 # S1f.6.25 — The findings fixed in this phase: E-5, E-8, E-11, E-20, E-22
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12. Not started. **An engine stage,** a task a finding.
+**Status:** **done 2026-11-13**, all five tasks ([§ Record](#record-2026-11-13)). Planned 2026-11-12. **An engine stage,** a task a finding.
 **Depends on:** nothing in the phase. Independent of the stdlib layout. E-27, the sixth finding the same
 ruling makes this phase's, is built with the detection rules
 ([S1f.6.12's build](s1f.6.12_malformed_numbers.md#the-build-as-ruled-2026-11-12), T1f.6.12.7).
@@ -282,7 +282,7 @@ under a header that says *the program as loaded, imports inlined*: no `(relation
 palette …)`. `ein saturate --dump` on that file lists no declared relation and no rule,
 where the witness loads with one of each, and the reloaded state lacks the declarations' facts, which is
 what `answer_round_trip.rs` holds for every corpus program (*facts lost*). So by the stage file's test it is
-a register row: **W91**, one row, filed `open` (the commit after `a4bf10f8`). That it is one, and how far the
+a register row: **W91**, one row, filed `open` (`1a1cbf26`). That it is one, and how far the
 fix goes, are defaults,
 [Q-M1f.216](../open_questions.md#q-m1f216--a-state-file-that-re-writes-less-than-the-program-as-loaded-and-the-register).
 
@@ -451,6 +451,73 @@ from the library and held field for field, and its `k_c` at 2^63 does not fit th
 register reads, so the open row could not be written. It is fixed by this task, pinned by
 `region_modes.rs`, and said here rather than filed.
 
-**The rows, filed `open` first**: W92, two rows, `count-past-2-64.ein` and `count-past-2-128.ein`, the
+**The rows, filed `open` first** (`b1e9abcb`): W92, two rows, `count-past-2-64.ein` and `count-past-2-128.ein`, the
 second and third lines of the table, each `now` the error, exit 1 (schema `/7`'s `error`, so no schema
 moved).
+
+**The design, shown on the witness before it was built** (the default of
+[Q-M1f.218](../open_questions.md#q-m1f218--what-a-count-past-the-runs-reach-says)): the count is exact inside
+the engine, and a surface carries it up to one bound, 2^63 − 1, at which it reads *this many or more*.
+Not *more than 2¹²⁸*, the stage file's words, since that bound was never the one that was met; and not
+the count in a wider integer on the surface, which is 239 digits for E-22's own witness. What a count
+from 2^63 to 2^64 − 1 loses: the read-out printed it exactly, and now prints the floor.
+
+**The fix.** `ein_infer::count`, new: `Count`, a natural number of any size (64-bit limbs; `pow2`, `add`,
+`checked_sub`), and `CAP`, 2^63 − 1, with `reported()`, the count as a run reports it. The state route's
+`describe` (`states.rs`) counts every state's commitments, R's total and each component's size in it, so
+`2^|S|` less the states below is exact whatever the sizes, and nothing fails for being large; its error
+is gone, and the one that stays is for a state with fewer commitments than the states below it, an engine
+defect and no count. Every reported count is a `u64` no greater than `CAP`, so no type on the way out
+moved (`Description`, `Described`, the summary), and a JSON or TOML integer holds it. The printers say *or
+more* at the cap (`ein_render::read_out::commitments`): the `commitments (k_c)` row, with why; a
+component's size; a listed state's *n commitments*; the `(merged …)` comment; a state file's `reached by`;
+`ein test -v`'s `k_c`.
+
+**Before and after** (`ein solve examples/ein-bugs/wrong-answers/count-past-2-64.ein`, the binary at
+`5e5685b7` and the tree's, 2026-11-13):
+
+```text
+before   a state's commitments pass 2^128: the state route cannot count them          (stderr; exit 1; stdout empty)
+
+after    states (k_s)      2
+         commitments (k_c) 9 223 372 036 854 775 807 or more   (2^63 − 1: the run counts no further)
+         exhausted         yes — every commitment is classified: this is all of R
+         …
+         ;; state 2 of 2 — 64 candidates · maximal · 9 223 372 036 854 775 807 or more commitments, 64 minimal
+                                                                                       (exit 0; stderr empty)
+```
+
+`--count` prints the same two count rows; `--json-summary` writes `"k_c": 9223372036854775807` and the
+component's size the same, where from 2^63 it wrote a negative number; the state file of ⊤ says *reached
+by: 9223372036854775807 or more commitments*. `read_out.md`'s row says what the number means at that
+value.
+
+**E-22's own witness, after** (`build/s1f.6.16/out/witness_2p128/only_conv.ein`, 792 candidates, the tree's
+release binary, 2026-11-13, on a machine also running a gate): a bare `ein solve` answers, exit 0, 34
+lines, in 154 s, and `ein solve --count`, exit 0, in 101 s, each *states (k_s) 314 030 (a lower bound:
+complete up to states of 1 candidate)*, *commitments (k_c) 9 223 372 036 854 775 807 or more*, *exhausted
+no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube*. Before, the same two printed the
+error after 99 s and 94 s. So `--count` is not cured of its time, which the task did not promise: it
+takes describe's route, and says what that route established. Its stderr now opens with T4's line, which
+names the cause of the witness, *(import conv :symbols (conv)) brings the declarations of done and 3 more
+relations and no rule that derives any of them*.
+
+**The register**: W92's two rows flipped to `fixed`, each with its `[case.region]`, two states, k_c
+9 223 372 036 854 775 807: 317 fixed, 16 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml |
+sort | uniq -c`, 2026-11-13). `register_region.rs` no longer accepts the recorded error line.
+
+**The pins**: `ein_infer::count`'s two unit tests (exact past every machine integer; the cap);
+`region_modes.rs`'s `a_count_past_the_cap_is_an_answer_on_every_surface`, generated programs at 2^62,
+exact, and at 2^63, 2^64 and 2^130, each on a bare solve, `--count`, `--json-summary`, a state file and
+`answer.txt`, exit 0 and stderr empty, and the whole cube of 64 candidates on a partial run;
+`lever_invariance.rs` and `wrong_answers.rs`, which hold the two witnesses as they hold every corpus
+program and row. `summary_properties.rs`'s two sums, *the components sum to k_c* and *the states'
+commitments sum to k_c*, stop at the cap as the counts do.
+
+**What moved, named before blessing**: `corpus_exits.txt`, the two witnesses' `solve` cells from exit 1
+to 0; `corpus_shapes.md5`, the two witnesses' digests under describe (`read-out`, `cores`, `states`,
+`region-lattice`, `region-trace`, five each) and no other file's: no tracked program had a count at 2^63
+or more. **The sweep** (`build/s1f.6.25/sweep-t5.txt`, 2026-11-13) differs on the refusal's path alone.
+
+**Pages**: `read_out.md`'s `commitments (k_c)` row, `answer_dump.md`, `AGENTS.md`'s standing rules (the
+count, and T4's line), `examples/README.md`.

@@ -887,8 +887,13 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         if volume == Volume::Verbose || came != Came::Held {
             lines.push(match volume {
                 Volume::Verbose => format!(
-                    "  solve · :expect {shape} — {} ({route}, k_s = {k_s}, k_c = {k_c})",
-                    came.verb()
+                    "  solve · :expect {shape} — {} ({route}, k_s = {k_s}, k_c = {})",
+                    came.verb(),
+                    if k_c >= ein_infer::count::CAP {
+                        format!("{k_c} or more")
+                    } else {
+                        k_c.to_string()
+                    }
                 ),
                 _ => format!("  solve · :expect {shape} — {}", came.verb()),
             });

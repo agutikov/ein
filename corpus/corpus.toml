@@ -2930,13 +2930,13 @@ note   = "M1f W88 (`W88/import-facts-table`), filed by S1f.6.11's T1f.6.11.2 (20
 path   = "examples/ein-bugs/wrong-answers/count-past-2-64.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W92 (`W92/count-past-2-64`), filed by S1f.6.25's T1f.6.25.5 (2026-11-13) from E-22 of P1f.6's findings: 64 items and a rule that chooses all once one is chosen, two states and 2^64 commitments, the smallest program whose count the state route could not hold: exit 1, one stderr line, no read-out. Open."
+note   = "M1f W92 (`W92/count-past-2-64`), filed by S1f.6.25's T1f.6.25.5 (2026-11-13) from E-22 of P1f.6's findings: 64 items and a rule that chooses all once one is chosen, two states and 2^64 commitments, the smallest program whose count the state route could not hold: exit 1, one stderr line, no read-out. Fixed by the same task: exit 0, two states, *9 223 372 036 854 775 807 or more* commitments."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/count-past-2-128.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W92 (`W92/count-past-2-128`), filed by S1f.6.25's T1f.6.25.5 (2026-11-13): the same program with 130 items, one state reached by 2^130 − 1 commitments, past the `u128` a state's were counted in: exit 1, one stderr line, no read-out. Open."
+note   = "M1f W92 (`W92/count-past-2-128`), filed by S1f.6.25's T1f.6.25.5 (2026-11-13): the same program with 130 items, one state reached by 2^130 − 1 commitments, past the `u128` a state's were counted in: exit 1, one stderr line, no read-out. Fixed by the same task: exit 0, as its sibling."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dump-selection-library.ein"

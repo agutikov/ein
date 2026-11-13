@@ -752,6 +752,125 @@ fn a_trace_step_names_every_conclusion_of_its_firing() {
     assert!(reorder.contains("· `one` → `seen(a)` — "), "{reorder}");
 }
 
+/// `n` items, one open relation over them, and optionally the rule *if any
+/// item is chosen every item is*: with it two states, ∅ and ⊤, and 2ⁿ
+/// commitments; without it the whole cube, 2ⁿ states.
+fn items(n: usize, all: bool) -> String {
+    let mut s = String::from("(relation chosen Thing :why \"{?1} is chosen\")\n");
+    if all {
+        s.push_str(
+            "(rule all () :match (and (chosen ?x) (item ?y)) :assert (chosen ?y)\n  \
+             :why \"{?x} is chosen, so {?y} is\")\n",
+        );
+    }
+    for i in 1..=n {
+        s.push_str(&format!("(item x{i})\n"));
+    }
+    s
+}
+
+/// **A count past what a run reports is an answer** — M1f S1f.6.25, E-22 of
+/// P1f.6's `findings.md`, W92 (Q-M1f.218).
+///
+/// Until that stage the state route counted a state's commitments in `u128`
+/// and summed R's into `u64`, and where either overflowed a bare `ein solve`,
+/// `--count` and `--json-summary` printed *a state's commitments pass 2^128:
+/// the state route cannot count them* and exited 1, with no read-out, though
+/// every commitment was classified; from 2⁶³ the summary wrote the count as a
+/// negative number. The count is exact now, and a surface carries it up to
+/// 2⁶³ − 1, which reads *this many or more*.
+#[test]
+fn a_count_past_the_cap_is_an_answer_on_every_surface() {
+    const CAP: &str = "9 223 372 036 854 775 807";
+    const CAP_JSON: u64 = 9_223_372_036_854_775_807;
+    let dir = scratch("count-cap");
+    let write = |name: &str, text: String| -> String {
+        let p = dir.join(name);
+        std::fs::write(&p, text).unwrap();
+        p.to_string_lossy().to_string()
+    };
+    // Below the cap a count is exact, as it was: 2⁶² commitments.
+    let below = write("below.ein", items(62, true));
+    let r = ein(&["solve", &below]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(
+        r.out
+            .contains("  commitments (k_c) 4 611 686 018 427 387 904\n"),
+        "{}",
+        r.out
+    );
+    // 2⁶³, which the read-out printed and the summary wrote negative; 2⁶⁴,
+    // the smallest that was an exit 1; and 2¹³⁰, one state's past `u128`.
+    for n in [63, 64, 130] {
+        let file = write(&format!("all{n}.ein"), items(n, true));
+        let summary = dir.join(format!("s{n}.json")).to_string_lossy().to_string();
+        let answer = dir.join(format!("a{n}")).to_string_lossy().to_string();
+        let r = ein(&[
+            "solve",
+            &file,
+            "--json-summary",
+            &summary,
+            "--dump-answer",
+            &answer,
+        ]);
+        assert_eq!((r.code, r.err.as_str()), (0, ""), "{n}");
+        for row in [
+            "  states (k_s)      2\n".to_string(),
+            format!("  commitments (k_c) {CAP} or more   (2^63 − 1: the run counts no further)\n"),
+            "  exhausted         yes — every commitment is classified: this is all of R\n"
+                .to_string(),
+            "  components        1\n".to_string(),
+            format!("· maximal · {CAP} or more commitments, {n} minimal"),
+        ] {
+            assert!(r.out.contains(&row), "{n}: no {row:?} in\n{}", r.out);
+        }
+        // The `(merged …)` comment, in the read-out written uncut: stdout
+        // stops at a hundred lines, which 130 candidates pass.
+        let uncut = std::fs::read_to_string(format!("{answer}/answer.txt")).unwrap();
+        let merged = format!(";; state 2 is reached by {CAP} or more commitments; its {n} minimal");
+        assert!(uncut.contains(&merged), "{n}: no {merged:?} in\n{uncut}");
+        let doc: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&summary).unwrap()).unwrap();
+        assert_eq!(doc["region"]["k_s"], 2, "{n}");
+        assert_eq!(doc["region"]["k_c"], CAP_JSON, "{n}");
+        assert_eq!(doc["region"]["exhausted"], true, "{n}");
+        assert_eq!(doc["region"]["components"][0], CAP_JSON, "{n}");
+        let state = std::fs::read_to_string(format!("{answer}/models/02.ein")).unwrap();
+        assert!(
+            state.contains(";;; reached by: 9223372036854775807 or more commitments\n"),
+            "{n}: {}",
+            &state[..state.len().min(600)]
+        );
+        // `--count` is describe's question with the listing left out.
+        let c = ein(&["solve", &file, "--count"]);
+        assert_eq!((c.code, c.err.as_str()), (0, ""), "{n}");
+        assert!(
+            c.out.contains(&format!(
+                "  commitments (k_c) {CAP} or more   (2^63 − 1: the run counts no further)\n"
+            )),
+            "{n}: {}",
+            c.out
+        );
+    }
+    // The whole cube on a partial run: R is decided by ∅ and ⊤, its count is
+    // 2⁶⁴, and the run stops at its budget, which is its own row and note.
+    let cube = write("cube64.ein", items(64, false));
+    let r = ein(&["solve", &cube, "--region-budget", "2000"]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(
+        r.out.contains(&format!(
+            "  commitments (k_c) {CAP} or more   (2^63 − 1: the run counts no further)\n"
+        )),
+        "{}",
+        r.out
+    );
+    assert!(
+        r.out.contains("  exhausted         no — R is decided"),
+        "{}",
+        r.out
+    );
+}
+
 /// `ein oracle`'s five options from `ein solve` — T1e2.1a.5.3's first step,
 /// `solve_interface.md` § 2.2.
 #[test]

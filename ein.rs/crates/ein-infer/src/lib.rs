@@ -27,6 +27,7 @@ pub mod claim;
 pub mod closed;
 pub mod compile;
 pub mod contradiction;
+pub mod count;
 pub mod described;
 pub mod detector;
 pub mod downset;

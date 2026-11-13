@@ -605,7 +605,9 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A flat import brings a module's facts**; a qualified one renames
   declarations only, so a library of facts is imported flat. **No import
   brings a module's `(query …)`, `(solve …)` or `(config …)`**: those are a
-  program's.
+  program's. Where a selection brings a relation's declaration through its
+  closure and no rule that derives it, the loader says so in one `note:`
+  line on stderr and refuses nothing (`ein-cli/tests/import_left_behind.rs`).
 - *Forbid*: a program whose refutation could rest on an `absent` over a
   relation a commitment can still extend is refused (`ein_infer::forbid`).
 
@@ -617,7 +619,9 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   needs; **`ein oracle` is the reference every mode is held to**
   (`ein-infer/tests/explore.rs`). No two commands may disagree.
 - **Every answer exits 0.** Only a refuted claim exits 1; a load error takes
-  each command's load-error exit (2 under `ein test`).
+  each command's load-error exit (2 under `ein test`). A count of commitments
+  is exact in the engine and reported up to 2^63 − 1, which every surface
+  reads as *this many or more* (`ein_infer::count`).
 - **No config option, lever or flag changes R**, held per commit by
   `ein-cli/tests/lever_invariance.rs`. The one exemption:
   `:record-alternative-justifications false` may change a dead node's core.

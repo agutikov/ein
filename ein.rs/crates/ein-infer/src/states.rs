@@ -83,6 +83,7 @@ use ein_core::{FactId, Kb, Terms};
 use ein_ir::Ast;
 use rustc_hash::FxHashMap;
 
+use crate::count::Count;
 use crate::downset::{Declined, Layer, Options};
 use crate::error::SolveError;
 use crate::events::Events;
@@ -712,12 +713,14 @@ pub struct Description {
     /// The states of `R` met, as indices into [`StateRoute::states`], in the
     /// order met.
     pub r: Vec<u32>,
-    /// `|R|` in commitments. On a partial run: every commitment of an
-    /// extended state of `R`, and those met of the rest — a lower bound,
-    /// unless [`Self::cube`].
+    /// `|R|` in commitments, as a run reports a count: no greater than
+    /// [`crate::count::CAP`], which reads *this many or more* (M1f S1f.6.25).
+    /// On a partial run: every commitment of an extended state of `R`, and
+    /// those met of the rest — a lower bound, unless [`Self::cube`].
     pub k_c: u64,
-    /// Per state, the commitments that reach it, where the run counted them
-    /// exactly: every extended state (L3).
+    /// Per state, the commitments that reach it, where the run counted them:
+    /// every extended state (L3), each as reported, [`crate::count::CAP`]
+    /// *this many or more*.
     pub commitments: Vec<Option<u64>>,
     /// Per state of `R` that was extended, its minimal generators, by size and
     /// then by candidates. Empty where the run does not know them.
@@ -735,8 +738,8 @@ pub struct Description {
     /// met and certified, each a dead set it saturated whose every one-down
     /// subset is a commitment it knows alive.
     pub nogoods_met: Vec<Box<[u32]>>,
-    /// The components' sizes in commitments, in the order of their least
-    /// minimal commitment — `None` on a partial run.
+    /// The components' sizes in commitments, each as reported, in the order
+    /// of their least minimal commitment — `None` on a partial run.
     pub components: Option<Vec<u64>>,
     /// The maximal sub-cubes `[a … b]`, `a` on the minimal line and `b` on the
     /// maximal one — `None` on a partial run.
@@ -771,14 +774,19 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
 
     // How many commitments reach each extended state: the sets under it that
     // lie under no state below it (L3).
-    let mut f: Vec<Option<u128>> = vec![None; ns];
+    let mut f: Vec<Option<Count>> = vec![None; ns];
     let mut order: Vec<u32> = (0..ns as u32)
         .filter(|&i| s.states[i as usize].extended)
         .collect();
     order.sort_by_key(|&i| s.states[i as usize].closure.len());
-    let overflow = || {
+    // A count is exact at any size ([`Count`]), so counting does not fail
+    // for being large (M1f S1f.6.25, E-22). What could fail is the identity
+    // the count below a state rests on, which would be an engine defect.
+    let defect = || {
         SolveError::Unsupported(
-            "a state's commitments pass 2^128: the state route cannot count them".to_string(),
+            "a state has fewer commitments than the states below it — an engine defect; run \
+             `ein oracle` on this program"
+                .to_string(),
         )
     };
     let r_wanted: Vec<bool> = s.states.iter().map(|st| st.extended && st.in_r()).collect();
@@ -799,18 +807,15 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
                 g = g.or(e);
             }
             let free = s.states[i].closure.len() as u32 - g.len();
-            f[i] = Some(crate::transversal::pow2(free).ok_or_else(overflow)?);
+            f[i] = Some(Count::pow2(free));
             forced[i] = Some(g);
             continue;
         }
         if f[i].is_none() {
-            f[i] = Some(count_of(s, &parents, &edges_of, &mut f, i).ok_or_else(overflow)?);
+            f[i] = Some(count_of(s, &parents, &edges_of, &mut f, i).ok_or_else(defect)?);
         }
     }
-    let commitments: Vec<Option<u64>> = f
-        .iter()
-        .map(|x| x.and_then(|v| u64::try_from(v).ok()))
-        .collect();
+    let commitments: Vec<Option<u64>> = f.iter().map(|x| x.as_ref().map(Count::reported)).collect();
 
     let r: Vec<u32> = (0..ns as u32)
         .filter(|&i| s.states[i as usize].in_r())
@@ -939,23 +944,20 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
     }
 
     let k_c: u64 = if exhausted {
-        let mut sum = 0u128;
+        let mut sum = Count::zero();
         for &i in &r {
-            sum = sum
-                .checked_add(f[i as usize].expect("counted"))
-                .ok_or_else(overflow)?;
+            sum.add(f[i as usize].as_ref().expect("counted"));
         }
-        u64::try_from(sum).map_err(|_| overflow())?
+        sum.reported()
     } else if cube {
-        u64::try_from(crate::transversal::pow2(n as u32).ok_or_else(overflow)?)
-            .map_err(|_| overflow())?
+        Count::pow2(n as u32).reported()
     } else {
         r.iter()
             .map(|&i| {
                 let st = &s.states[i as usize];
                 commitments[i as usize].unwrap_or(st.met)
             })
-            .sum()
+            .fold(0, crate::count::capped_add)
     };
 
     let (components, subcubes) = if exhausted {
@@ -984,10 +986,12 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
                 }
             }
         }
-        let mut size: FxHashMap<u32, u128> = FxHashMap::default();
+        let mut size: FxHashMap<u32, Count> = FxHashMap::default();
         for &i in &r {
             let c = find(&mut parent, i);
-            *size.entry(c).or_default() += f[i as usize].expect("counted");
+            size.entry(c)
+                .or_default()
+                .add(f[i as usize].as_ref().expect("counted"));
         }
         let mut comps: Vec<u64> = Vec::new();
         let mut seen: Vec<u32> = Vec::new();
@@ -995,7 +999,7 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
             let c = find(&mut parent, *i);
             if !seen.contains(&c) {
                 seen.push(c);
-                comps.push(u64::try_from(size[&c]).map_err(|_| overflow())?);
+                comps.push(size[&c].reported());
             }
         }
         let mut cubes: Vec<SubCube> = Vec::new();
@@ -1047,20 +1051,24 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
 /// The commitments that reach state `i`: the subsets of its closure that meet
 /// every complement against a state one edge below it, counted by branching;
 /// past [`COUNT_LIMIT`], `2^|S|` less every state below it, each counted the
-/// same way. `None` past `u128`.
+/// same way. Exact at any size: where the branching stops, for its limit or
+/// because a branch passes `u128`, the subtraction is of [`Count`]s. `None`
+/// only where a state would have fewer commitments than the states below it,
+/// which is a defect and no count.
 fn count_of(
     s: &StateRoute,
     parents: &[Vec<u32>],
     edges_of: &dyn Fn(usize) -> Vec<Bits>,
-    f: &mut [Option<u128>],
+    f: &mut [Option<Count>],
     i: usize,
-) -> Option<u128> {
-    if let Some(v) = f[i] {
-        return Some(v);
+) -> Option<Count> {
+    if let Some(v) = &f[i] {
+        return Some(v.clone());
     }
     let st = &s.states[i];
     if let Some(v) = crate::transversal::count_hitting(&st.bits, &edges_of(i), COUNT_LIMIT) {
-        f[i] = Some(v);
+        let v = Count::of(v);
+        f[i] = Some(v.clone());
         return Some(v);
     }
     // Every closed set under S is alive, extended, and reached through the
@@ -1076,11 +1084,11 @@ fn count_of(
         stack.extend(parents[t as usize].iter().copied());
     }
     below.sort_by_key(|&t| s.states[t as usize].closure.len());
-    let mut v = crate::transversal::pow2(st.closure.len() as u32)?;
+    let mut v = Count::pow2(st.closure.len() as u32);
     for t in below {
         let ft = count_of(s, parents, edges_of, f, t as usize)?;
-        v = v.checked_sub(ft)?;
+        v = v.checked_sub(&ft)?;
     }
-    f[i] = Some(v);
+    f[i] = Some(v.clone());
     Some(v)
 }

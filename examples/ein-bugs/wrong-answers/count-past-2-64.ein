@@ -29,6 +29,7 @@
 ;;; lost. The sentence was not true of this
 ;;; program either: its count is 2^64, which passed the `u64` the total was
 ;;; summed into, not 2^128. 64 items is the smallest size that met it.
+;;; The answer above by hand since S1f.6.25 (T1f.6.25.5).
 
 (relation chosen Thing :why "{?1} is chosen")
 

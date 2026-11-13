@@ -44,7 +44,11 @@ out/
   and per state file its `path`, `state` number, `lines`
   (`minimal` / `maximal`) and `listed`.
 - **A state file's header** gives its number, the commitment it was read from,
-  its lines, how many commitments reach it and its minimal generators.
+  its lines, how many commitments reach it and its minimal generators. **A
+  count of commitments, here and in `answer.json`, is reported up to 2^63 − 1**:
+  `9223372036854775807` reads *that many or more*, and a state file's header
+  says so, *reached by: 9223372036854775807 or more commitments* (M1f S1f.6.25,
+  W92; the engine counts exactly, `ein_infer::count`).
 - **`answer.txt`** reads back: its `(region …)` is the claim a `(solve …
   :expect …)` states, `(merged …)`s included
   ([`01_grammar.md` § Solve](../ir/03-ein-lang/01_grammar.md#solve)).

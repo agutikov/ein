@@ -429,6 +429,18 @@ pub fn group(n: u64) -> String {
     out
 }
 
+/// A count of commitments, as the read-out prints one: grouped, and *or more*
+/// at [`ein_infer::count::CAP`], 2⁶³ − 1, the greatest a run reports (M1f
+/// S1f.6.25, E-22). The run counted every commitment; the number is past
+/// what a surface carries.
+pub fn commitments(n: u64) -> String {
+    if n >= ein_infer::count::CAP {
+        format!("{} or more", group(n))
+    } else {
+        group(n)
+    }
+}
+
 fn plural(n: u64, one: &str, many: &str) -> String {
     format!("{} {}", group(n), if n == 1 { one } else { many })
 }
@@ -1381,7 +1393,17 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     // R itself is decided when it is the whole cube; only its states are not.
     let decided = sp.is_some_and(|p| p.cube);
     let lb_c = if decided { "" } else { lb.as_str() };
-    out.row(Row::CommitmentsKc, format!("{}{lb_c}", group(d.k_c)));
+    // Past the cap the count is a floor for another reason than a partial
+    // run's, and says which.
+    let past = if d.k_c >= ein_infer::count::CAP {
+        "   (2^63 − 1: the run counts no further)"
+    } else {
+        ""
+    };
+    out.row(
+        Row::CommitmentsKc,
+        format!("{}{past}{lb_c}", commitments(d.k_c)),
+    );
     match (&a.stopped, d.exhausted) {
         (_, true) => out.row(
             Row::Exhausted,
@@ -1500,7 +1522,10 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 } else if c.len() > 1 {
                     format!(
                         ", with {} commitments",
-                        c.iter().map(|s| group(*s)).collect::<Vec<_>>().join(" + ")
+                        c.iter()
+                            .map(|s| commitments(*s))
+                            .collect::<Vec<_>>()
+                            .join(" + ")
                     )
                 } else {
                     String::new()
@@ -1871,7 +1896,7 @@ fn state_comment(i: usize, k: usize, s: &Listed, cands: &[String]) -> String {
         Some(1) | None => format!(" · from {}", name(cands, &s.rep)),
         Some(c) => format!(
             " · {} commitments, {} minimal",
-            group(c),
+            commitments(c),
             group(s.generators.len() as u64)
         ),
     };
@@ -2004,7 +2029,7 @@ fn region(out: &mut Out, states: &[Listed], cands: &[String]) {
         let mut b = vec![format!(
             "    ;; state {} is reached by {} commitments; its {} minimal",
             i + 1,
-            group(c),
+            commitments(c),
             group(s.generators.len() as u64)
         )];
         let to = wrapped("model", &s.model, 12, 78);

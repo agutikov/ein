@@ -60,7 +60,8 @@ pub struct State {
     /// The candidates its fixpoint holds.
     pub closure: Box<[u32]>,
     /// The commitments of `R` that reach it — those the run met, on a partial
-    /// run.
+    /// run. As a run reports a count: [`crate::count::CAP`] reads *this many
+    /// or more*.
     pub commitments: u64,
     /// Its minimal commitments, in visit order: the third answer's
     /// `(merged … (or …))`. On a partial run, those met.
@@ -157,7 +158,9 @@ pub struct Described {
     /// closure's candidates in the universe's order. The order depends on
     /// no route, lever or `-j`.
     pub states: Vec<State>,
-    /// The commitments of `R` met: `k_c`, or its lower bound.
+    /// The commitments of `R` met: `k_c`, or its lower bound. As a run
+    /// reports a count: [`crate::count::CAP`] reads *this many or more* (M1f
+    /// S1f.6.25), which is not the lower bound of a partial run.
     pub k_c: u64,
     /// The minimal line as commitments, in visit order: the minimal elements
     /// of `R` — those certified, on a partial run. Its smallest is the least
@@ -557,7 +560,7 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
             Some(x) => x.maximal = true,
             None => {
                 if !d.cube {
-                    k_c += 1;
+                    k_c = crate::count::capped_add(k_c, 1);
                 }
                 states.push(State {
                     rep: all.clone(),

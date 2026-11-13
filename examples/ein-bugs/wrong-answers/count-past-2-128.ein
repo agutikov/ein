@@ -29,6 +29,7 @@
 ;;; lost. Here the sentence was true: ⊤ alone
 ;;; is reached by 2^130 − 1 commitments, past the `u128` a state's were
 ;;; counted in.
+;;; The answer above by hand since S1f.6.25 (T1f.6.25.5).
 
 (relation chosen Thing :why "{?1} is chosen")
 

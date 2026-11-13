@@ -17121,10 +17121,14 @@ settings = "default"
 owner    = "S1f.6.25"
 question = ["P1f.6 findings.md E-22", "Q-M1f.218"]
 witness  = "examples/ein-bugs/wrong-answers/count-past-2-64.ein"
-status   = "open"
-open_because = "the state route counts a state's commitments in `u128` and sums R's into `u64`, and returns an error where either overflows: S1f.6.25's T1f.6.25.5 counts exactly and reports a count no greater than 2^63 − 1, which reads *this many or more*"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 64 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^64 commitments. The sentence on stderr is not true of this witness: its count is 2^64, past the `u64` the total was summed into, and 64 items is the smallest size that met it"
+note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 64 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^64 commitments. The sentence on stderr is not true of this witness: its count is 2^64, past the `u64` the total was summed into, and 64 items is the smallest size that met it. Fixed by the same task (2026-11-13): exit 0, both states listed, *9 223 372 036 854 775 807 or more* commitments"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.25 (T1f.6.25.5): the state route counts commitments in an exact integer of any size (`ein_infer::count::Count`), so no count fails for being large, and a run reports a count no greater than 2^63 − 1, which every surface prints or documents as *this many or more*"
+date   = "2026-11-13"
 
 [case.wrong]
 run     = "solve"
@@ -17132,6 +17136,14 @@ by      = "region"
 why     = "`ein solve` on the witness, release, at 5e5685b7 (2026-11-13): one line on stderr, nothing on stdout, exit 1, after 65 saturations that classified every commitment; `ein solve --count` and `--json-summary` the same, `--minimal` and `--maximal` answer"
 exit    = 1
 error   = "a state's commitments pass 2^128: the state route cannot count them"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 9223372036854775807
+minimal  = [[]]
+maximal  = [["(chosen x1)", "(chosen x10)", "(chosen x11)", "(chosen x12)", "(chosen x13)", "(chosen x14)", "(chosen x15)", "(chosen x16)", "(chosen x17)", "(chosen x18)", "(chosen x19)", "(chosen x2)", "(chosen x20)", "(chosen x21)", "(chosen x22)", "(chosen x23)", "(chosen x24)", "(chosen x25)", "(chosen x26)", "(chosen x27)", "(chosen x28)", "(chosen x29)", "(chosen x3)", "(chosen x30)", "(chosen x31)", "(chosen x32)", "(chosen x33)", "(chosen x34)", "(chosen x35)", "(chosen x36)", "(chosen x37)", "(chosen x38)", "(chosen x39)", "(chosen x4)", "(chosen x40)", "(chosen x41)", "(chosen x42)", "(chosen x43)", "(chosen x44)", "(chosen x45)", "(chosen x46)", "(chosen x47)", "(chosen x48)", "(chosen x49)", "(chosen x5)", "(chosen x50)", "(chosen x51)", "(chosen x52)", "(chosen x53)", "(chosen x54)", "(chosen x55)", "(chosen x56)", "(chosen x57)", "(chosen x58)", "(chosen x59)", "(chosen x6)", "(chosen x60)", "(chosen x61)", "(chosen x62)", "(chosen x63)", "(chosen x64)", "(chosen x7)", "(chosen x8)", "(chosen x9)"]]
 
 [case.right]
 reading   = "the user's rule of 2026-10-16, every answer exits 0 and only a refuted claim exits 1; S1f.6.25's default for what the count says (the stage file, T1f.6.25.5; Q-M1f.218): a value that says *or more* at the greatest count the run reports, 2^63 − 1"
@@ -17141,9 +17153,15 @@ exhausted = true
 derived   = "Nothing is refuted and nothing is owed, so R is every commitment. The closure of any non-empty commitment is all 64 candidates, so R has two states, ∅ and ⊤, both listed; ∅ is the minimal line and ⊤ the maximal. k_c is 2^64, 1 for ∅ and 2^64 − 1 for ⊤, which the read-out prints as *9 223 372 036 854 775 807 or more*. The run exits 0"
 
 [case.now]
-run     = "solve"
-line    = "all"
-error   = "a state's commitments pass 2^128: the state route cannot count them"
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["chosen"]
+models    = [
+  [],
+  ["(chosen x1)", "(chosen x10)", "(chosen x11)", "(chosen x12)", "(chosen x13)", "(chosen x14)", "(chosen x15)", "(chosen x16)", "(chosen x17)", "(chosen x18)", "(chosen x19)", "(chosen x2)", "(chosen x20)", "(chosen x21)", "(chosen x22)", "(chosen x23)", "(chosen x24)", "(chosen x25)", "(chosen x26)", "(chosen x27)", "(chosen x28)", "(chosen x29)", "(chosen x3)", "(chosen x30)", "(chosen x31)", "(chosen x32)", "(chosen x33)", "(chosen x34)", "(chosen x35)", "(chosen x36)", "(chosen x37)", "(chosen x38)", "(chosen x39)", "(chosen x4)", "(chosen x40)", "(chosen x41)", "(chosen x42)", "(chosen x43)", "(chosen x44)", "(chosen x45)", "(chosen x46)", "(chosen x47)", "(chosen x48)", "(chosen x49)", "(chosen x5)", "(chosen x50)", "(chosen x51)", "(chosen x52)", "(chosen x53)", "(chosen x54)", "(chosen x55)", "(chosen x56)", "(chosen x57)", "(chosen x58)", "(chosen x59)", "(chosen x6)", "(chosen x60)", "(chosen x61)", "(chosen x62)", "(chosen x63)", "(chosen x64)", "(chosen x7)", "(chosen x8)", "(chosen x9)"],
+]
 
 [[case]]
 id       = "W92/count-past-2-128"
@@ -17154,10 +17172,14 @@ settings = "default"
 owner    = "S1f.6.25"
 question = ["P1f.6 findings.md E-22", "Q-M1f.218"]
 witness  = "examples/ein-bugs/wrong-answers/count-past-2-128.ein"
-status   = "open"
-open_because = "the state route counts a state's commitments in `u128` and sums R's into `u64`, and returns an error where either overflows: S1f.6.25's T1f.6.25.5 counts exactly and reports a count no greater than 2^63 − 1, which reads *this many or more*"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 130 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^130 commitments. Here the sentence is true: ⊤ alone is reached by 2^130 − 1 commitments, past the `u128` a state's were counted in"
+note     = "Filed by S1f.6.25 (T1f.6.25.5, 2026-11-13), from E-22 of P1f.6's `findings.md`, on the user's rule of 2026-10-16 that every answer exits 0 and a run that stops says what it established. 130 items and one rule, *if any item is chosen every item is*: two states, ∅ and ⊤, and 2^130 commitments. Here the sentence is true: ⊤ alone is reached by 2^130 − 1 commitments, past the `u128` a state's were counted in. Fixed by the same task (2026-11-13): exit 0, both states listed, *9 223 372 036 854 775 807 or more* commitments"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.25 (T1f.6.25.5): the state route counts commitments in an exact integer of any size (`ein_infer::count::Count`), so no count fails for being large, and a run reports a count no greater than 2^63 − 1, which every surface prints or documents as *this many or more*"
+date   = "2026-11-13"
 
 [case.wrong]
 run     = "solve"
@@ -17165,6 +17187,14 @@ by      = "region"
 why     = "`ein solve` on the witness, release, at 5e5685b7 (2026-11-13): one line on stderr, nothing on stdout, exit 1, after 131 saturations that classified every commitment; `ein solve --count` and `--json-summary` the same, `--minimal` and `--maximal` answer"
 exit    = 1
 error   = "a state's commitments pass 2^128: the state route cannot count them"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 9223372036854775807
+minimal  = [[]]
+maximal  = [["(chosen x1)", "(chosen x10)", "(chosen x100)", "(chosen x101)", "(chosen x102)", "(chosen x103)", "(chosen x104)", "(chosen x105)", "(chosen x106)", "(chosen x107)", "(chosen x108)", "(chosen x109)", "(chosen x11)", "(chosen x110)", "(chosen x111)", "(chosen x112)", "(chosen x113)", "(chosen x114)", "(chosen x115)", "(chosen x116)", "(chosen x117)", "(chosen x118)", "(chosen x119)", "(chosen x12)", "(chosen x120)", "(chosen x121)", "(chosen x122)", "(chosen x123)", "(chosen x124)", "(chosen x125)", "(chosen x126)", "(chosen x127)", "(chosen x128)", "(chosen x129)", "(chosen x13)", "(chosen x130)", "(chosen x14)", "(chosen x15)", "(chosen x16)", "(chosen x17)", "(chosen x18)", "(chosen x19)", "(chosen x2)", "(chosen x20)", "(chosen x21)", "(chosen x22)", "(chosen x23)", "(chosen x24)", "(chosen x25)", "(chosen x26)", "(chosen x27)", "(chosen x28)", "(chosen x29)", "(chosen x3)", "(chosen x30)", "(chosen x31)", "(chosen x32)", "(chosen x33)", "(chosen x34)", "(chosen x35)", "(chosen x36)", "(chosen x37)", "(chosen x38)", "(chosen x39)", "(chosen x4)", "(chosen x40)", "(chosen x41)", "(chosen x42)", "(chosen x43)", "(chosen x44)", "(chosen x45)", "(chosen x46)", "(chosen x47)", "(chosen x48)", "(chosen x49)", "(chosen x5)", "(chosen x50)", "(chosen x51)", "(chosen x52)", "(chosen x53)", "(chosen x54)", "(chosen x55)", "(chosen x56)", "(chosen x57)", "(chosen x58)", "(chosen x59)", "(chosen x6)", "(chosen x60)", "(chosen x61)", "(chosen x62)", "(chosen x63)", "(chosen x64)", "(chosen x65)", "(chosen x66)", "(chosen x67)", "(chosen x68)", "(chosen x69)", "(chosen x7)", "(chosen x70)", "(chosen x71)", "(chosen x72)", "(chosen x73)", "(chosen x74)", "(chosen x75)", "(chosen x76)", "(chosen x77)", "(chosen x78)", "(chosen x79)", "(chosen x8)", "(chosen x80)", "(chosen x81)", "(chosen x82)", "(chosen x83)", "(chosen x84)", "(chosen x85)", "(chosen x86)", "(chosen x87)", "(chosen x88)", "(chosen x89)", "(chosen x9)", "(chosen x90)", "(chosen x91)", "(chosen x92)", "(chosen x93)", "(chosen x94)", "(chosen x95)", "(chosen x96)", "(chosen x97)", "(chosen x98)", "(chosen x99)"]]
 
 [case.right]
 reading   = "the user's rule of 2026-10-16, every answer exits 0 and only a refuted claim exits 1; S1f.6.25's default for what the count says (the stage file, T1f.6.25.5; Q-M1f.218): a value that says *or more* at the greatest count the run reports, 2^63 − 1"
@@ -17174,6 +17204,12 @@ exhausted = true
 derived   = "Nothing is refuted and nothing is owed, so R is every commitment. The closure of any non-empty commitment is all 130 candidates, so R has two states, ∅ and ⊤, both listed; ∅ is the minimal line and ⊤ the maximal. k_c is 2^130, 1 for ∅ and 2^130 − 1 for ⊤, which the read-out prints as *9 223 372 036 854 775 807 or more*. The run exits 0"
 
 [case.now]
-run     = "solve"
-line    = "all"
-error   = "a state's commitments pass 2^128: the state route cannot count them"
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["chosen"]
+models    = [
+  [],
+  ["(chosen x1)", "(chosen x10)", "(chosen x100)", "(chosen x101)", "(chosen x102)", "(chosen x103)", "(chosen x104)", "(chosen x105)", "(chosen x106)", "(chosen x107)", "(chosen x108)", "(chosen x109)", "(chosen x11)", "(chosen x110)", "(chosen x111)", "(chosen x112)", "(chosen x113)", "(chosen x114)", "(chosen x115)", "(chosen x116)", "(chosen x117)", "(chosen x118)", "(chosen x119)", "(chosen x12)", "(chosen x120)", "(chosen x121)", "(chosen x122)", "(chosen x123)", "(chosen x124)", "(chosen x125)", "(chosen x126)", "(chosen x127)", "(chosen x128)", "(chosen x129)", "(chosen x13)", "(chosen x130)", "(chosen x14)", "(chosen x15)", "(chosen x16)", "(chosen x17)", "(chosen x18)", "(chosen x19)", "(chosen x2)", "(chosen x20)", "(chosen x21)", "(chosen x22)", "(chosen x23)", "(chosen x24)", "(chosen x25)", "(chosen x26)", "(chosen x27)", "(chosen x28)", "(chosen x29)", "(chosen x3)", "(chosen x30)", "(chosen x31)", "(chosen x32)", "(chosen x33)", "(chosen x34)", "(chosen x35)", "(chosen x36)", "(chosen x37)", "(chosen x38)", "(chosen x39)", "(chosen x4)", "(chosen x40)", "(chosen x41)", "(chosen x42)", "(chosen x43)", "(chosen x44)", "(chosen x45)", "(chosen x46)", "(chosen x47)", "(chosen x48)", "(chosen x49)", "(chosen x5)", "(chosen x50)", "(chosen x51)", "(chosen x52)", "(chosen x53)", "(chosen x54)", "(chosen x55)", "(chosen x56)", "(chosen x57)", "(chosen x58)", "(chosen x59)", "(chosen x6)", "(chosen x60)", "(chosen x61)", "(chosen x62)", "(chosen x63)", "(chosen x64)", "(chosen x65)", "(chosen x66)", "(chosen x67)", "(chosen x68)", "(chosen x69)", "(chosen x7)", "(chosen x70)", "(chosen x71)", "(chosen x72)", "(chosen x73)", "(chosen x74)", "(chosen x75)", "(chosen x76)", "(chosen x77)", "(chosen x78)", "(chosen x79)", "(chosen x8)", "(chosen x80)", "(chosen x81)", "(chosen x82)", "(chosen x83)", "(chosen x84)", "(chosen x85)", "(chosen x86)", "(chosen x87)", "(chosen x88)", "(chosen x89)", "(chosen x9)", "(chosen x90)", "(chosen x91)", "(chosen x92)", "(chosen x93)", "(chosen x94)", "(chosen x95)", "(chosen x96)", "(chosen x97)", "(chosen x98)", "(chosen x99)"],
+]

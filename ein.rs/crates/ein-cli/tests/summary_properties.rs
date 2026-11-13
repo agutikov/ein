@@ -346,10 +346,11 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                     });
                     check(
                         "the components sum to k_c",
-                        r["components"]
-                            .as_array()
-                            .map(|c| c.iter().filter_map(J::as_i64).sum::<i64>())
-                            == Some(k_c),
+                        r["components"].as_array().map(|c| {
+                            c.iter()
+                                .filter_map(J::as_i64)
+                                .fold(0i64, i64::saturating_add)
+                        }) == Some(k_c),
                     );
                     check(
                         "∅ in R makes the minimal line {∅}",
@@ -363,10 +364,12 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                         "merged counts the states reached by more than one commitment",
                         u(&s, "region.merged.states") == merged,
                     );
+                    // A count is reported up to 2^63 − 1, `i64::MAX`, which
+                    // reads *or more* (M1f S1f.6.25, W92): the sums stop there.
                     let commitments: i64 = states
                         .iter()
                         .filter_map(|x| x["commitments"].as_i64())
-                        .sum();
+                        .fold(0i64, i64::saturating_add);
                     check("the states' commitments sum to k_c", commitments == k_c);
                 }
             }
