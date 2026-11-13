@@ -1,9 +1,11 @@
 # M1h — Beyond word problems: time and cause, what an answer used, what a problem leaves out, and three applications
 
 **Status:** planned 2026-11-12, on the user's instruction of that day ([§ The instruction](#the-instruction)).
-Not started. It carries no estimate (the user's ruling of 2026-11-08). **This README is the whole plan
-today:** each phase is a section below, and gets a directory and stage files when it is next to run, after
-the user has read this page.
+**Written out as phase directories and stage files on 2026-11-13,** on the user's instruction of that day:
+*"materialize M1h phases"*. Not started. It carries no estimate (the user's ruling of 2026-11-08). Each phase
+has a directory with a README and a file a stage ([§ The phases](#the-phases)); each phase's section below is
+its source and is kept as it was written on 2026-11-12, with a pointer at its head. The questions are in
+[`open_questions.md`](open_questions.md), Q-M1h.1 to .20, none ruled.
 **Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md)'s calculator phase,
 [P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md): the word problems banked under
 [`examples/word_problems/`](../../examples/word_problems/README.md)
@@ -70,7 +72,29 @@ they give on three applications that are not arithmetic.
 - **Not decided ahead of its programs.** Each phase starts with real programs whose answers the binary
   computed, shown to the user before a module ships (the user's rule: real examples first).
 
+## The phases
+
+Written out 2026-11-13. A stage past a phase's stop is a file in outline: it says what it rests on, what it
+carries and what it must not do, and its tasks are written at the stop, to the user's rulings
+([§ Stage, phase, milestone](#stage-phase-milestone)).
+
+| ID | title | stages | stops for the user | ends with |
+|---|---|---:|---|---|
+| [P1h.1](p1h.1_temporal_and_causal_theories/README.md) | Temporal and causal theories: a timeline and a causal tree, each a stdlib module of its own | 8, three of them in outline | [S1h.1.5](p1h.1_temporal_and_causal_theories/s1h.1.5_the_design_page_and_the_stop.md), the design page: an event as an instruction or a relation, the first cut of each theory, where the modules live | two stdlib modules, or what the user rules in their place; each used by a program that is not a word problem; the opening question answered on programs |
+| [P1h.2](p1h.2_slicing/README.md) | Slicing: what of a program an answer used, shown. An engine phase where it adds a surface | 6, two in outline | [S1h.2.4](p1h.2_slicing/s1h.2.4_what_used_means_and_the_stop.md): what *used* means, whether a restriction that was tested and held is recorded, which surfaces | the cut printed and dumped, on the surfaces ruled; the page that says what *used* means; the two opening questions answered on programs; no answer moved |
+| [P1h.3](p1h.3_gaps_assumptions_and_readings/README.md) | Gaps, assumptions and readings: what a problem leaves out, and how a program says so | 7, one in outline | [S1h.3.6](p1h.3_gaps_assumptions_and_readings/s1h.3.6_the_page_and_the_stop.md): which of the banked forms change, and universal assumptions as a module | the forms of a gap, of an assumption and of a reading each compared on the same problems; the questions of replies 30 and 33 answered with programs; what the user rules, built |
+| [P1h.4](p1h.4_the_formula_and_the_calculation/README.md) | The formula and the calculation: the two parts of a solution, and the line between them. An engine phase where a view of the trace is one | 7, two in outline | [S1h.4.5](p1h.4_the_formula_and_the_calculation/s1h.4.5_the_page_and_the_stop.md): the pupil's page, and the formula as an object | a solved problem's formula an object a reader can see apart from its calculation; the page on what Ein can and cannot say about a solution |
+| [P1h.10](p1h.10_a_school_text/README.md) | A school text, fifty questions, five theories | 5, three in outline | **twice:** [S1h.10.1](p1h.10_a_school_text/s1h.10.1_the_text.md), the short list of texts, and [S1h.10.2](p1h.10_a_school_text/s1h.10.2_fifty_questions_in_five_groups.md), the five groups and the fifty questions; and once inside S1h.10.4, on the two shapes of a theory | the text, the fifty questions, their formalization, the theories, and the table of the five counts |
+| [P1h.20](p1h.20_requirements_verification/README.md) | Requirements verification: a survey first | 2: the survey, and the place of the plan that follows it | [S1h.20.1](p1h.20_requirements_verification/s1h.20.1_the_survey.md): the user reads the survey; whether the phase ends in programs | the survey, read; the plan that followed it |
+| [P1h.30](p1h.30_triz/README.md) | TRIZ: *can we formalize it in Ein?* | 2: the survey with one problem by hand, and the place of the plan that follows it | [S1h.30.1](p1h.30_triz/s1h.30.1_the_survey_and_one_problem_by_hand.md): the user reads the survey before anything is built | the survey, read; the plan that followed it |
+
+Thirty-seven stage files (`ls plans/m1h_beyond_word_problems/p1h.*/s1h.*.md | wc -l`, 2026-11-13), thirteen
+of them in outline, two of those holding a place with no content.
+
 ## P1h.1 — Temporal and causal theories
+
+**Written out 2026-11-13:** [`p1h.1_temporal_and_causal_theories/`](p1h.1_temporal_and_causal_theories/README.md),
+eight stages. This section is the phase's source and is as it was written on 2026-11-12.
 
 Question 26 of the calculator's `questions.md` asked how a problem's order of events is written: named
 moments, nested events, or a chain of sentences. The user, 2026-11-12:
@@ -145,6 +169,9 @@ already."*
 
 ## P1h.2 — Slicing
 
+**Written out 2026-11-13:** [`p1h.2_slicing/`](p1h.2_slicing/README.md), six stages. This section is the
+phase's source and is as it was written on 2026-11-12.
+
 Question 27 asked whether the word theory works backwards from the question (nothing computed that no
 question needs). The user, 2026-11-12:
 
@@ -194,6 +221,10 @@ reference page and test move with the printer; no answer moves; a slice is taken
 prints it (*minimum work per question*).
 
 ## P1h.3 — Gaps, assumptions and readings
+
+**Written out 2026-11-13:**
+[`p1h.3_gaps_assumptions_and_readings/`](p1h.3_gaps_assumptions_and_readings/README.md), seven stages. This
+section is the phase's source and is as it was written on 2026-11-12.
 
 Six replies of 2026-11-12, to the questions on what a problem leaves out, each in full.
 
@@ -290,6 +321,10 @@ item 33) and which the phase starts from and re-takes on programs:
 
 ## P1h.4 — The formula and the calculation
 
+**Written out 2026-11-13:**
+[`p1h.4_the_formula_and_the_calculation/`](p1h.4_the_formula_and_the_calculation/README.md), seven stages.
+This section is the phase's source and is as it was written on 2026-11-12.
+
 Question 36 asked whether folding an imported theory's steps in a trace (*the trace as the pupil's page*)
 is part of the word-problem stage. The user, 2026-11-12:
 
@@ -345,6 +380,9 @@ solutions', by the user's own line.
 
 ## P1h.10 — A school text, fifty questions, five theories
 
+**Written out 2026-11-13:** [`p1h.10_a_school_text/`](p1h.10_a_school_text/README.md), five stages. This
+section is the phase's source and is as it was written on 2026-11-12.
+
 The instruction:
 
 > p1h.10 - pick a prose text for like end of elementry school (3-5th grade) 50-100 sentences, very famous
@@ -382,6 +420,11 @@ needs facts no sentence states, and the theory that supplies them is the measure
 
 ## P1h.20 — Requirements verification
 
+**Written out 2026-11-13:**
+[`p1h.20_requirements_verification/`](p1h.20_requirements_verification/README.md), the survey's stage and the
+place of the plan that follows it. This section is the phase's source and is as it was written on
+2026-11-12.
+
 The instruction:
 
 > p1h.20 - requirements verification. How is it done in real world? e.g. in systems design, or market
@@ -410,6 +453,9 @@ requirements a design decision rests on*.
 
 ## P1h.30 — TRIZ
 
+**Written out 2026-11-13:** [`p1h.30_triz/`](p1h.30_triz/README.md), the survey's stage and the place of the
+plan that follows it. This section is the phase's source and is as it was written on 2026-11-12.
+
 The instruction:
 
 > p1h.30 - TRIZ/TIPS by Genrikh Saulovich Altshuller; can we formalize it in Ein?
@@ -430,10 +476,63 @@ order their replies came and lean on each other as the sections say: P1h.3 reads
 reads both. Then the user's three, by their numbers. P1h.20's and P1h.30's surveys read nothing of the
 earlier phases and may be run at any time the user wants them.
 
+Each phase's README has its own order, stage by stage, and says for every stage that reads another phase or
+another milestone which stage builds what it reads and what it does if that has not run. The order above
+stands. What the stage files add is how little of an earlier phase a later one waits for: P1h.3 and P1h.4
+read [S1h.2.1](p1h.2_slicing/s1h.2.1_what_a_slice_is_today.md)'s script and do not wait for P1h.2's
+surfaces, and P1h.10's first two stages, a list of texts and questions in words, read nothing of P1h.1 to
+P1h.4.
+
+## Stage, phase, milestone
+
+How the schema of [`plans/README.md`](../README.md) was applied when the phases were written out on
+2026-11-13. These are the plan's conventions and not rulings; each is revisable.
+
+- **A phase** is one of the seven subjects, with its own source in this README, its own stop for the user
+  and its own acceptance.
+- **A stage** is one question with one deliverable that an agent can finish from the stage file and the
+  standing rules: a page with computed programs, a prototype under `build/`, a survey, a module, an engine
+  change. Each stage file gives what it rests on, in the user's words; what it starts from; what it
+  produces; its tasks, with ids `T1h.<phase>.<stage>.<n>`; its acceptance; and what it must not do.
+- **Real examples first, and a stop.** Every phase that could ship a stdlib module, change the grammar or
+  change what a surface prints begins with stages that write real programs, run them on the binary and put
+  the computed answers on a page; then a stage **stops for the user**, and nothing outside `plans/` and
+  `build/` is written before the user has read its page (the user's rule of 2026-10-16). P1h.10 stops where
+  its section says, twice; P1h.20 and P1h.30 are a survey each, read by the user before anything else.
+- **Past a stop, an outline.** A stage that follows a stop is a file that names what it rests on, what it
+  carries whatever is ruled, and what it must not do. Its tasks are written at the stop, to the rulings. The
+  two that follow a survey ([S1h.20.2](p1h.20_requirements_verification/s1h.20.2_the_plan_after_the_survey.md),
+  [S1h.30.2](p1h.30_triz/s1h.30.2_the_plan_after_the_survey.md)) hold a place and nothing else.
+- **An engine stage says it is one,** and carries the repo's discipline: a wrong answer is an `open` row of
+  [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml) before its fix; a change to what `ein solve`
+  prints moves [`read_out.md`](../../docs/kernel/inference/read_out.md) in the same commit; no answer, exit
+  code or R moves unless the stage is about that; a slice or a core is taken only where a surface prints it;
+  config never changes an answer; the gate, then the nightly. The engine stages are S1h.2.5, S1h.2.6 and
+  S1h.4.6.
+- **A stage that reads something not yet built says who builds it and what it does meanwhile.** Across
+  phases (P1h.3 reads P1h.2's slice, and P1h.4 reads both) and across milestones (P1g.7's ruling, P1g.9's
+  three methods, P1g.10's expressions, S1f.6.28's banked files, F21). None of these dependencies is resolved
+  here: where this milestone sits against M1g is
+  [Q-M1h.1](open_questions.md#q-m1h1--where-m1h-sits-against-m1g), the user's.
+- **Findings stay in the phase.** Each phase keeps what it finds about the engine or the language, outside
+  its own scope, in a `findings.md` in its directory, opened at the first finding and shown at the phase's
+  stop (the user's ruling of 2026-11-11: a phase keeps what it finds). A row's id is the letter H, the
+  phase's number and a count: `H2-1` is P1h.2's first. No file is opened empty.
+- **Questions** that are the user's go to [`open_questions.md`](open_questions.md) under the next free
+  `Q-M1h.<n>`. No recommendation there is a default: a stage that needs an answer stops and asks.
+- **Scratch** stays under `build/s1h.<phase>.<stage>/`, which is not tracked; a page that shows a scratch
+  program carries it in full.
+- **The numbers.** No stage is numbered into the gaps this README reserves: the phase numbers 5 to 9 and
+  those between the user's three stay free. A phase's later stages are numbered on from its last (S1h.20.3,
+  S1h.30.3) when its plan past a survey is written.
+- **Names.** [S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+  moves the calculator's modules under `std.math`. Where a stage file says `std.arith`, read
+  `std.math.decimal-arith` once that stage has run; the relations keep their names.
+
 ## Acceptance
 
-Stated for the milestone as far as it can be today; each phase's own acceptance is written with its stage
-files.
+Stated for the milestone as far as it can be today; each phase's own acceptance is in its README, and a
+stage past a stop has its acceptance written with its tasks.
 
 - Every phase began with programs whose answers the binary computed, or with a survey, **shown to the user
   before a module shipped**.
@@ -456,24 +555,25 @@ files.
 
 ## Open questions
 
-Kept here until the milestone has an `open_questions.md`; none is ruled, and none has a default that is
-acted on.
+They are in [`open_questions.md`](open_questions.md) since 2026-11-13, as `Q-M1h.<n>`. None is ruled, and none
+has a default that is acted on. The six that were kept here keep their numbers, so *question 1* of this page
+is Q-M1h.1:
 
-1. **Where M1h sits against M1g.** [M1g](../m1g_logic/README.md) *runs after M1f is complete*; nothing says
-   whether this milestone runs before it, after it or beside it. P1h.1 and P1h.2 need nothing of M1g;
-   P1h.3 reads M1g's P1g.7 (open against false) if that has been ruled; M1g's own README was written when
-   *"no M1h need"* answered a different proposal, an engine milestone. The same question is
-   [Q-M1g.15](../m1g_logic/open_questions.md#q-m1g15--where-m1h-sits-against-this-milestone), asked once.
-2. **Whether it follows [P1g.10](../m1g_logic/p1g.10_school_algebra/README.md)** (school algebra; M1f's P1f.8
-   until 2026-11-13, when the user split it and moved it to M1g, so this is now part of question 1).
-   P1h.4 reads P1g.10's expressions for *the formula as an object*; the others do not need it.
-3. **Five theories, or one theory and five ontologies** (P1h.10): the instruction leaves it open.
-4. **The text** (P1h.10), and its language: the user is bilingual and the repo's documents are in English;
-   a text *"everybody would remember from school"* depends on whose school.
-5. **Where the temporal and causal modules live** in the stdlib's layout (`std.math` and `std.bool` are
-   the calculator's; these are neither), and their names.
-6. **Whether P1h.20 and P1h.30 end in programs at all.** Each is a survey first; *"can we formalize it in
-   Ein?"* may be answered *in part* or *no*, and that is a result.
+1. [Q-M1h.1](open_questions.md#q-m1h1--where-m1h-sits-against-m1g): where M1h sits against M1g. The same
+   question is [Q-M1g.15](../m1g_logic/open_questions.md#q-m1g15--where-m1h-sits-against-this-milestone),
+   asked once.
+2. [Q-M1h.2](open_questions.md#q-m1h2--whether-it-follows-p1g10): whether it follows
+   [P1g.10](../m1g_logic/p1g.10_school_algebra/README.md), school algebra; part of question 1.
+3. [Q-M1h.3](open_questions.md#q-m1h3--five-theories-or-one-theory-and-five-ontologies): five theories, or
+   one theory and five ontologies (P1h.10).
+4. [Q-M1h.4](open_questions.md#q-m1h4--the-text-and-its-language): the text (P1h.10), and its language.
+5. [Q-M1h.5](open_questions.md#q-m1h5--where-the-temporal-and-causal-modules-live-and-their-names): where
+   the temporal and causal modules live in the stdlib's layout, and their names.
+6. [Q-M1h.6](open_questions.md#q-m1h6--whether-p1h20-and-p1h30-end-in-programs-at-all): whether P1h.20 and
+   P1h.30 end in programs at all.
+
+Q-M1h.7 to .20 were raised by the stage files, each a thing this README leaves unsaid: each names the stage
+that puts it to the user and what waits for it.
 
 ## Connections
 
@@ -492,3 +592,4 @@ acted on.
 - **Ideas:** [03, three task classes](../ideas/03-three-task-classes.md);
   [08, the human-style deductive trace](../ideas/08-human-style-deductive-trace.md), which P1h.4's *pupil's
   page* is an instance of; [09, puzzles beyond Zebra](../ideas/09-puzzles-beyond-zebra.md).
+- **[`open_questions.md`](open_questions.md):** Q-M1h.1 to .20.
