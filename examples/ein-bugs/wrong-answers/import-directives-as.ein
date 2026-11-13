@@ -25,6 +25,7 @@
 ;;; the read-out answered the module's query, renamed, `(m.is-a ?x Drink)`,
 ;;; *Tea is a drink*; and `--dump-config` showed the module's flag. A flat
 ;;; import of the same module brought none of the three.
+;;; The answer above by hand since S1f.6.25 (T1f.6.25.2).
 
 (import import-directives-module :as m)
 

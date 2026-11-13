@@ -603,7 +603,9 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   declaration has types.** It is no type check. A fixture that wants a
   relation at several counts leaves it undeclared.
 - **A flat import brings a module's facts**; a qualified one renames
-  declarations only, so a library of facts is imported flat.
+  declarations only, so a library of facts is imported flat. **No import
+  brings a module's `(query …)`, `(solve …)` or `(config …)`**: those are a
+  program's.
 - *Forbid*: a program whose refutation could rest on an `absent` over a
   relation a commitment can still extend is refused (`ein_infer::forbid`).
 

@@ -215,3 +215,49 @@ copy (`build/s1f.6.25/sweep-t1.txt`, 2026-11-13). R, N, H, claims and exit codes
 programs' answers did not move, and their `--trace` files name three conclusions more a setup step.
 
 **Page**: `09_natural_language.md`'s table row for a relation's `:why`.
+
+### T1f.6.25.2 — E-8, done
+
+**The census before the fix** (`python3 build/s1f.6.25/e8_census.py`, 2026-11-13, a text scan of every tracked
+`.ein`): 837 files, 371 imports, **8 of them bare or `:as`**. Three are refusal fixtures of a module that
+does not exist (`examples/broken/load/import_bare_std`, `import_module_not_found`,
+`import_relative_not_found`); the other five import a module that holds no `(query …)`, `(solve …)`,
+`(config …)` or `(trace …)`. So no tracked program's answer could move. In the Rust suites one test pinned
+the old behaviour, `imports_semantics.rs`'s `what_each_import_form_brings_of_a_module`, whose first case
+listed the module's query, solve form and config among what a qualified import brings; it is restated. No
+other test moved (the tests named below, and the gate).
+
+**The rows, filed `open` first** (`4faf47dc`), on the release binary at `5e5685b7`: W90, two rows and the
+module they import, `examples/ein-bugs/wrong-answers/import-directives-module.ein`, which declares `is-a`,
+states `(is-a Tea Drink)`, and holds `(solve :hypothesis-relations ())`, `(config
+:record-alternative-justifications false)` and `(query :goal (is-a ?x Drink))`.
+
+| witness | before | after |
+|---|---|---|
+| `import-directives-as.ein`: `(import … :as m)`, a relation `chosen` of its own, no lattice, flag or query | R {∅}, one state, no candidate, the module's lattice; the read-out answers `(m.is-a ?x Drink)`, *Tea is a drink*; `--dump-config` shows the module's flag | R four states, the cube over `(chosen Drink)` and `(chosen Tea)`; no query; the default configuration |
+| `import-directives-twice.ein`: the same module `:as m` and `:as k` | `kb load error: 2 (solve …) forms — a program states its lattice once`, exit 1 | loads; R four states |
+
+That it is a wrong answer, and that a module's `(trace …)` goes the way of the three, are defaults,
+[Q-M1f.215](../open_questions.md#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program).
+
+**The fix** (`ein_ir::imports`' `resolve`): where a module is imported bare or `:as`, its forms headed
+`query`, `solve`, `config` and `trace` are dropped before the rest are qualified. A flat import never
+brought one (`select`). The importer's own are untouched, and a module imported through a module loses
+them at the inner import.
+
+**The pins**: `imports_semantics.rs`'s `no_import_brings_a_modules_query_solve_or_config` (the three import
+forms, the module twice under two names, a module through a module, the importer's own three kept, and the
+loaded program's queries, lattice and configuration), and the restated table test.
+
+**The register**: W90's two rows flipped to `fixed`, `[case.fixed]` the null id in the fixing commit and
+the hash in the stage's records commit: 314 fixed, 16 open and 1 not wrong (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-13).
+
+**What moved, named before blessing**: `corpus_exits.txt`, `import-directives-twice`'s two cells from exit 1
+to 0 and one new cell, its `saturate --dump`; `corpus_shapes.md5`, the two witnesses' digests and no other
+file's. **The sweep** (`build/s1f.6.25/sweep-t2.txt`, 2026-11-13) moved no answer of a file `5e5685b7` tracks: the
+refusal's path T1 names, and two `saturate:` timing lines whose column grew by a digit, which the mask
+let through and has covered since. The witnesses are new files.
+
+**Pages**: `01_grammar.md` § Import, `defined_behaviour.md` § 4.25 (the table's last row and a bullet),
+`AGENTS.md`'s standing rule on imports, `examples/README.md`, `imports.rs`'s module header.

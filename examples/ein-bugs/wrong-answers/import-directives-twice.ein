@@ -19,6 +19,7 @@
 ;;; At `5e5685b7`, release: refused at load on every command, *2 (solve …)
 ;;; forms — a program states its lattice once*, exit 1 (`ein test`: 2): each
 ;;; import brought the module's `(solve …)`, and the program wrote neither.
+;;; The answer above by hand since S1f.6.25 (T1f.6.25.2).
 
 (import import-directives-module :as m)
 (import import-directives-module :as k)

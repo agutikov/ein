@@ -699,17 +699,21 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
 /// and dropped every fact, in silence, so a library of facts arrived empty;
 /// and a relation the module only states facts of could not be listed. The
 /// user ruled on 2026-11-11 that *importing facts is mandatory*. A qualified
-/// import is unmoved (point (b)): it keeps every form and renames each
-/// declared name wherever it stands, so the module's `is-a` facts are
-/// `o.is-a` facts, and a library of facts is imported flat.
+/// import was unmoved by that stage (point (b)): it renames each declared
+/// name wherever it stands, so the module's `is-a` facts are `o.is-a` facts,
+/// and a library of facts is imported flat. Since M1f S1f.6.25 it brings the
+/// module's declarations and facts and none of its `(query …)`, `(solve …)`
+/// and `(config …)`, as a flat import never did.
 #[test]
 fn what_each_import_form_brings_of_a_module() {
     let onto = [("onto", ONTO)];
     let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    // Whole-module and aliased: every form, the declared names renamed
-    // wherever they stand, the relation heading a fact among them; an
-    // undeclared relation (`likes`, and the `thing` a rule asserts) and every
-    // constant as written. The query, the solve form and the config come too.
+    // Whole-module and aliased: every declaration and every fact, the
+    // declared names renamed wherever they stand, the relation heading a fact
+    // among them; an undeclared relation (`likes`, and the `thing` a rule
+    // asserts) and every constant as written. The query, the solve form and
+    // the config do not come: they are the module's own as a program (M1f
+    // S1f.6.25, E-8, W90; until then all three came, the query renamed).
     for (import, p) in [("(import onto)", "onto"), ("(import onto :as o)", "o")] {
         assert_eq!(
             resolved(&onto, import).expect("resolves"),
@@ -723,9 +727,6 @@ fn what_each_import_form_brings_of_a_module() {
                 &format!("(rule {p}.things () :match ({p}.is-a ?x Drink) :assert (thing ?x))"),
                 &format!("(rule {p}.liquids () :match ({p}.is-a ?x Drink) :assert (liquid ?x))"),
                 &format!("(macro {p}.both (?a ?b) (and ?a ?b))"),
-                &format!("(query :goal ({p}.is-a ?x Drink))"),
-                "(solve :hypothesis-relations ())",
-                "(config :record-alternative-justifications false)",
             ]),
             "{import}"
         );
@@ -798,6 +799,92 @@ fn what_each_import_form_brings_of_a_module() {
             "{name}"
         );
     }
+}
+
+/// **No import brings what a module states as a program** — M1f S1f.6.25,
+/// E-8 of P1f.6's `findings.md`, W90.
+///
+/// A module may be a program of its own, with a query, a lattice and a
+/// configuration. Until the stage a bare or `:as` import kept all three: the
+/// importer answered the module's query, renamed; was solved under the
+/// module's `(solve …)`, so its own hypotheses were gone; ran under the
+/// module's `(config …)` flags; and a second qualified import of the same
+/// module was refused, *2 (solve …) forms — a program states its lattice
+/// once*, of a program that wrote none. A `(trace …)` form is the fourth such
+/// form and goes the same way (Q-M1f.215).
+#[test]
+fn no_import_brings_a_modules_query_solve_or_config() {
+    let m = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n\
+         (is-a Tea Drink)\n\
+         (query :goal (is-a ?x Drink))\n\
+         (solve :hypothesis-relations ())\n\
+         (config :record-alternative-justifications false)\n\
+         (trace (step s :rule r :derives (is-a Tea Drink)))\n";
+    let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    for (import, p) in [
+        ("(import m)", "m."),
+        ("(import m :as k)", "k."),
+        ("(import m :symbols (is-a))", ""),
+    ] {
+        assert_eq!(
+            resolved(&[("m", m)], import).expect("resolves"),
+            lines(&[
+                &format!("(relation {p}is-a Thing Type)"),
+                &format!("({p}is-a Tea Drink)"),
+            ]),
+            "{import}"
+        );
+    }
+    // Twice, under two names: two copies of the declaration and the fact,
+    // and no second lattice.
+    assert_eq!(
+        resolved(&[("m", m)], "(import m :as a)\n(import m :as b)").expect("resolves"),
+        lines(&[
+            "(relation a.is-a Thing Type)",
+            "(a.is-a Tea Drink)",
+            "(relation b.is-a Thing Type)",
+            "(b.is-a Tea Drink)",
+        ])
+    );
+    // Through a module that imports it qualified: the inner module's forms
+    // were dropped where it was imported, so nothing is left to bring.
+    let outer = "(import m :as inner)\n(solve :hypothesis-relations ())\n";
+    assert_eq!(
+        resolved(&[("m", m), ("outer", outer)], "(import outer :as o)").expect("resolves"),
+        lines(&[
+            "(relation o.inner.is-a Thing Type)",
+            "(o.inner.is-a Tea Drink)"
+        ])
+    );
+    // The importer's own three are its own, and are kept where it wrote them.
+    let own = "(import m :as k)\n(solve :hypothesis-relations (k.is-a))\n\
+               (config :lattice-sanity-check true)\n(query :goal (k.is-a ?x Tea))";
+    assert_eq!(
+        resolved(&[("m", m)], own).expect("resolves"),
+        lines(&[
+            "(relation k.is-a Thing Type)",
+            "(k.is-a Tea Drink)",
+            "(solve :hypothesis-relations (k.is-a))",
+            "(config :lattice-sanity-check true)",
+            "(query :goal (k.is-a ?x Tea))",
+        ])
+    );
+    // Loaded: the importer has no query, no lattice of the module's and the
+    // default configuration.
+    let scratch = Scratch::new("ein-import-directives");
+    let untraced: String = m
+        .lines()
+        .filter(|l| !l.starts_with("(trace"))
+        .collect::<Vec<_>>()
+        .join("\n");
+    std::fs::write(scratch.path().join("m.ein"), untraced).expect("written");
+    let mut ast = Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let forms = parse(&mut ast, "(import m :as k)\n(import m)", Some("<program>")).expect("parses");
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, Some(scratch.path())).expect("loads");
+    assert!(kb.program().queries.is_empty(), "the module's query came");
+    assert!(kb.program().solve.is_none(), "the module's lattice came");
+    assert!(kb.program().config.is_none(), "the module's config came");
 }
 
 /// **The closure follows the names a kept declaration writes, and not the

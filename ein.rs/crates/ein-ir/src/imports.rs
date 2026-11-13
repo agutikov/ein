@@ -17,6 +17,15 @@
 //! (`select`). Until then a selection kept declarations alone, so a library
 //! of facts, an ontology, arrived empty.
 //!
+//! **No import brings a module's `(query …)`, `(solve …)`, `(config …)` or
+//! `(trace …)`** since M1f S1f.6.25 (E-8, W90): those are a *program's*, what
+//! it asks and how it is solved and configured, and a module is imported for
+//! its declarations and its facts. A flat import never brought one; a
+//! qualified one kept every form, so the importer was solved under the
+//! module's lattice, configured by its flags and asked its queries, and two
+//! qualified imports of a module with a `(solve …)` were refused, *2 (solve …)
+//! forms*.
+//!
 //! so "merge" is list concatenation and conflict detection is the loader's
 //! existing duplicate-name guard. Resolution is recursive, bottom-up and
 //! re-qualified under the outer namespace (D6), with cycle detection: a
@@ -302,7 +311,17 @@ impl Resolver {
                         "{}{MODULE_SEP}",
                         spec.alias.as_deref().unwrap_or(&spec.module)
                     );
-                    out.extend(qualify(ast, &resolved, &prefix));
+                    // What a module asks, how it is solved and configured and
+                    // an engine's trace are a *program's*: an import of any
+                    // kind brings declarations and facts and none of
+                    // [`DIRECTIVES`] (M1f S1f.6.25, E-8, W90). A selection
+                    // never brought one ([`select`]).
+                    let brought: Vec<NodeId> = resolved
+                        .iter()
+                        .copied()
+                        .filter(|f| !ast.head_name(*f).is_some_and(|h| DIRECTIVES.contains(&h)))
+                        .collect();
+                    out.extend(qualify(ast, &brought, &prefix));
                 }
             }
         }

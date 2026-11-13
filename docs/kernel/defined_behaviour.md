@@ -2076,8 +2076,19 @@ declaration writes, followed through the module's declarations.
 | a fact of a relation the module does not declare | kept as written | **kept as written**: the relation may be listed | dropped |
 | a stored negation, `(not (likes Milk Tea))` | kept, renamed as a fact is | kept: a fact of the relation it negates | dropped |
 | a constant in a fact | as written | as written | — |
-| `(query …)`, `(solve …)`, `(config …)` | kept | never brought | never brought |
+| `(query …)`, `(solve …)`, `(config …)`, `(trace …)` | **never brought** since M1f S1f.6.25 (W90); kept until then, the query renamed | never brought | never brought |
 
+- **No import brings what a module states as a program** (M1f
+  [S1f.6.25](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
+  E-8, W90;
+  [Q-M1f.215](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program)):
+  its queries, its `(solve …)`, its `(config …)` and a `(trace …)` are
+  dropped where the module is imported, bare, `:as` or `:symbols`
+  (`ein_ir::imports`' `resolve`). The importer's lattice, flags and queries
+  are the ones it writes. Until that stage a qualified import kept them, so
+  the importer was solved under the module's lattice, and two qualified
+  imports of a module holding a `(solve …)` were refused, *2 (solve …)
+  forms*.
 - **A listed name** is one the module declares or states a fact of. Any other
   is refused, on every command: `kb load error: (import M :symbols …) — not
   provided by the module: n at …`.

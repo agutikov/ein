@@ -227,6 +227,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.212](#q-m1f212--a-theorys-wrong-answer-and-the-register) | a theory's wrong answer and the register | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: not a register row. The register holds the engine's wrong answers, and a tagged call by zero that derived nothing was a rule of a theory, answered by the engine as written; the witness is a test program**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.213](#q-m1f213--the-binary-example-theory-and-the-flag-at-the-call) | the binary example theory and the flag at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: `gen_binary.py` carries the rule over, so `bin.ein` has 68 rules and flags `(div-call2 TAG X Y)` by zero as decimal does**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.214](#q-m1f214--the-derives-line-of-a-firing-with-several-conclusions) | the *Derives* line of a firing with several conclusions | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: one line, every conclusion in the rule's order, `; ` between two, each with its own statement**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6251--e-5-done) |
+| [Q-M1f.215](#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program) | a qualified import and what a module states as a program | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a wrong answer, W90; no import brings a module's `(query …)`, `(solve …)` or `(config …)`, nor its `(trace …)`**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6252--e-8-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4139,3 +4140,21 @@ firing stored, in the order the rule writes them*, and not how a line of several
 
 **Defaulted 2026-11-13: (a), the user's to revise.** It is the stage file's word, *the line*, and
 `--reorder`'s arrow lists the same conclusions with commas, having no statements to carry.
+
+### Q-M1f.215 — A qualified import and what a module states as a program
+
+**Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6252--e-8-done)'s T2 (E-8). Row 59 of the phase's `questions.md` asked whether a qualified
+import bringing a module's `(query …)`, `(solve …)` and `(config …)` is a wrong answer, and was left empty.
+Two things the stage file does not settle:
+
+1. **Is it a register row?** (a) Yes: the importer's R is computed under a lattice it did not state and it
+   answers a query it did not ask, both false of the program as written. (b) No: the import did what its
+   page said, *brings every form*.
+2. **A module's `(trace …)`.** The stage file names three forms. `ein_ir::imports` has four top-level heads
+   that are neither a declaration nor a fact, `trace` the fourth, and a flat import brings none of the
+   four. (a) A qualified import drops the fourth too, so the two kinds of import bring the same kinds of
+   form. (b) It keeps a module's trace, renamed, as before.
+
+**Defaulted 2026-11-13: 1 (a), as the stage file has it, and 2 (a), the user's to revise.** W90, two rows.
+No tracked program imports qualified a module that holds any of the four (`python3
+build/s1f.6.25/e8_census.py`, 2026-11-13).

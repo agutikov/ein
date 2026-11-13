@@ -1189,13 +1189,24 @@ first statement and loses the second in silence, as it does written twice in
 one file
 ([F24](../../../../plans/followups/f24_written_provenance.md)'s question).
 
-**A qualified import, bare or `:as`, brings every form** and prefixes each
-name the module *declares*, wherever it stands, the relation heading a fact
-included: the module's `(is-a Tea Drink)` is `(o.is-a Tea Drink)`, a relation
+**A qualified import, bare or `:as`, brings every declaration and every
+fact** and prefixes each name the module *declares*, wherever it stands, the
+relation heading a fact included: the module's `(is-a Tea Drink)` is `(o.is-a Tea Drink)`, a relation
 apart from the program's own `is-a`. A relation the module does not declare
 and every constant are left as written. So a library of facts, an ontology or
 a table, is imported flat, where its facts join the program's vocabulary; a
 qualified import keeps a library's theory apart under its own names.
+
+**No import brings a module's `(query …)`, `(solve …)`, `(config …)` or
+`(trace …)`** (M1f
+[S1f.6.25](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
+W90). They are what a *program* asks, how it is solved and how it is
+configured, and a module that is also a program of its own keeps them to
+itself: the importer states its own, or none. Until that stage a qualified
+import kept all of them, so the importer answered the module's queries,
+renamed, was solved under the module's lattice and configured by the module's
+flags, and two qualified imports of a module holding a `(solve …)` were
+refused, *2 (solve …) forms — a program states its lattice once*.
 
 Every cell of this is `ein-ir`'s
 [`imports_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_semantics.rs)
