@@ -314,3 +314,12 @@ Q-M1f.230 (how the proposals are prototyped and priced). **Findings:** E-49 and 
 **No register row:** no probe met a wrong answer of the engine. **Not run here:** the whole gate and the
 nightly, which the coordinator runs on the last commit.
 
+
+
+**The gate, run by the coordinator** (2026-11-14), once over the batch of code commits since `c2302ad5`
+(`2ef68530`, Q-M1f.226 (b); S1f.6.29's `d78513af` to `748d7be5`; S1f.6.30's `ffb47f3c` and `63955507`), in a
+detached worktree on `748d7be5`: `./run_tests.sh`, exit 0, 54 min 8 s, 1 155 tests in 136 binaries, its link
+check over 557 pages with no finding (`build/gate-batch1/gate.log`). **No nightly:** on the user's word of
+2026-11-13 (*"yes do this instead"*), one gate per batch of code commits, and the nightly after a large engine
+change, the next being S1f.6.35. `utils/ci_container.sh` was not run: no DOT writer, review bundle script or CI
+install changed.
