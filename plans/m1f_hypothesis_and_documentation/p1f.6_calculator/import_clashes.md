@@ -867,9 +867,20 @@ the closure's direction, below. **The model, (h):**
   file's own declaration, is refused at load. Binding one short name to one full name twice is not an error.
 - **Shadowing is the writer's** (3): a short name a file writes and no import of it lists is the file's own,
   whatever a module it imports declares under that short name; nothing is said. E-49 is accepted as this.
-- **Module identity** (ruling 1): the stdlib has one root and its names are its modules'; any other module
-  resolves against the program's own file tree, `..` stays refused, so one file has one path and one name.
-  Symlinks and hard links are out of scope.
+- **Module identity** (ruling 1, made precise the same day):
+
+> imports are "relative to the program file" - means examples/word_problems may contain subdirectory
+> word-theory with files there that would be imported with (import word-theory.gaps :as gaps) having global
+> names like word-theory.gaps.gaps
+
+  The stdlib has one root, `std.`; every other module name is a path **relative to the program file's
+  directory**, a dot for each directory, for every import in the program, those written inside a module in a
+  subdirectory included: `word-theory/gaps.ein` imports its sibling as `word-theory.words`, not `words`. (Today
+  a module's own imports resolve against its own directory, `ein_ir::imports::locate`.) A declaration's full
+  name is its module's name and its short name: `word-theory.gaps.gaps`, which `:as gaps` lets the program
+  write `gaps.gaps`. `..` stays refused, so one file has one name in a program. Symlinks and hard links are out
+  of scope. A short name a module declares holds no dot (Q-M1f.241), so a full name splits one way; no tracked
+  program declares one with a dot (2026-11-13).
 - **Before the layout move** (6): the fix lands before [S1f.6.31](s1f.6.31_the_stdlib_layout.md), so the move
   renames full names once, after them.
 
@@ -891,7 +902,7 @@ the one below flat by its entry and pass its output on by a rule of their own):
 | `(A.a-in x)` written with A imported flat | a new relation `A.a-in`, unconnected, in silence | A's own `a-in`, by its full name |
 | a program declares `(relation std.arith.mine …)` | loads: a name with dots is a name | refused where the program imports that module (default below) |
 
-**Defaults taken for what the user's words leave open,** each the user's to revise (Q-M1f.237 to .240):
+**Defaults taken for what the user's words leave open,** each the user's to revise (Q-M1f.237 to .241):
 
 - **How a name prints** (Q-M1f.233, which the user asked *"is that an issue?"* of and the coordinator answered:
   a one-time move of outputs, R unmoved): a state, a trace and a core print the **main file's short name**
@@ -902,6 +913,7 @@ the one below flat by its entry and pass its output on by a rule of their own):
   state file, which imports nothing and declares the full names it was loaded with, loads as today.
 - **Entry rules and `__closed__` lists stay** in the shipped modules: (ii) makes an entry rule unnecessary for an
   import, and keeping them moves nothing a program reads.
+- **A declared short name holds no dot,** refused at load, so a full name has one reading.
 
 **What it decides of the other questions:** Q-M1f.231, (h); Q-M1f.232, no export list, the importer chooses;
 Q-M1f.234, refused in one file; Q-M1f.235, `..` stays refused and E-32 stays as stated, the copy of `bits.ein`

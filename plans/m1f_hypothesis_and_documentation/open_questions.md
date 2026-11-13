@@ -253,6 +253,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.238](#q-m1f238--a-full-name-of-a-module-no-import-brings) | a full name of a module no import brings | **defaulted 2026-11-13, the user's to revise**: refused at load, naming the module; not an implicit import; S1f.6.35 |
 | [Q-M1f.239](#q-m1f239--a-declaration-under-an-imported-modules-full-name) | a declaration under an imported module's full name | **defaulted 2026-11-13, the user's to revise**: refused at load; a `--dump-answer` state file, which imports nothing, loads as today; S1f.6.35 |
 | [Q-M1f.240](#q-m1f240--entry-rules-and-__closed__-lists-under-h) | entry rules and `__closed__` lists under (h) | **defaulted 2026-11-13, the user's to revise**: they stay in the shipped modules; S1f.6.35 |
+| [Q-M1f.241](#q-m1f241--a-declared-short-name-with-a-dot) | a declared short name with a dot | **defaulted 2026-11-13, the user's to revise**: refused at load, so a full name such as `word-theory.gaps.gaps` splits one way; S1f.6.35 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4693,7 +4694,7 @@ proposals and ruled with them.
 
 **Recommended: (g1), after (b).** **Open, the user's.**
 
-**Ruled 2026-11-13:** *"module canonical identity should work fine, std has one defined root, other imports are relative to the program file, `..` going outside the folder is restricted so there is always one single path; ignore potential problems with symlinks and hardlinks - it is out of the scope"*. `..` stays refused; E-32 stays as stated, and `examples/binary_logic/bits.ein`'s copy goes with S1f.6.16's build, which moves the binary tables into the stdlib. Read by the coordinator as: an import resolves inside the program's file tree, as today, so a file has one path and one canonical name; the reading is put to the user with the ruling.
+**Ruled 2026-11-13:** *"module canonical identity should work fine, std has one defined root, other imports are relative to the program file, `..` going outside the folder is restricted so there is always one single path; ignore potential problems with symlinks and hardlinks - it is out of the scope"*. `..` stays refused; E-32 stays as stated, and `examples/binary_logic/bits.ein`'s copy goes with S1f.6.16's build, which moves the binary tables into the stdlib. Made precise by the user the same day: *"imports are \"relative to the program file\" - means examples/word_problems may contain subdirectory word-theory with files there that would be imported with (import word-theory.gaps :as gaps) having global names like word-theory.gaps.gaps"*: every local module name is a path relative to the **program file's** directory, for the imports a module writes too, and a full name is the module's name and the short name.
 
 ### Q-M1f.236 — E-49 and E-50
 
@@ -4754,3 +4755,15 @@ longer needed to bring them.
 
 **Defaulted 2026-11-13: (a), the user's to revise.** Keeping them moves nothing a program reads; removing them
 moves every state of every program that imports a module.
+
+### Q-M1f.241 — A declared short name with a dot
+
+**Raised** 2026-11-13 by the user's precision of Q-M1f.235: a full name is a module's name, dotted by
+directory, and the short name, `word-theory.gaps.gaps`. A module that declared `gaps.x` in `word-theory` would
+make `word-theory.gaps.x` the full name of two declarations, its own and module `word-theory.gaps`'s `x`.
+
+- **(a) A declared short name holds no dot,** refused at load. No tracked program declares one (a scan of every
+  `(relation|rule|hrule|macro NAME` of the tracked `.ein` files, 2026-11-13).
+- **(b) Allowed,** a clash of two full names refused where it happens.
+
+**Defaulted 2026-11-13: (a), the user's to revise.**

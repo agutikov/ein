@@ -23,7 +23,10 @@ The user's words are quoted in full in `import_clashes.md` § 7. In one line eac
   brings everything; the program holds the union;
 - one short name bound to two full names in one file is a load error; a short name no import lists is the
   file's own, shadowing in silence;
-- the stdlib has one root, other modules resolve inside the program's file tree, `..` stays refused.
+- the stdlib has one root, `std.`; every other module name is a path relative to **the program file's
+  directory**, a dot per directory, for the imports a module writes too: `(import word-theory.gaps :as gaps)`
+  from `examples/word_problems/` names `word-theory/gaps.ein`, whose `gaps` is `word-theory.gaps.gaps` (the
+  user, the same day); `..` stays refused; a declared short name holds no dot (Q-M1f.241, defaulted).
 
 ## Tasks
 
@@ -38,7 +41,8 @@ The user's words are quoted in full in `import_clashes.md` § 7. In one line eac
 2. **T1f.6.35.2 — the resolver.** `ein_ir::imports`: each module resolved once per program, by its canonical
    identity; every declared name rewritten to its full name inside the module's forms; a per-file table of
    short names, from the file's own declarations and its imports' lists and aliases, applied to that file's
-   forms only; the closure (ii); the union of edges, deduplicated by full name; the load errors of § 7 (one
+   forms only; every local module located against the program file's directory, a module's own imports
+   included (today they resolve against the module's directory); the closure (ii); the union of edges, deduplicated by full name; the load errors of § 7 (one
    short name to two full names; a full name of a module no import brings; a declaration under an imported
    module's full name), each a section of [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md)
    and a row of the grammar page's table where it is a shape. The grammar is unchanged: an import keeps its three
