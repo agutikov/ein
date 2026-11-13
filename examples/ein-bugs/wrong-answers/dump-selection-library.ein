@@ -1,0 +1,14 @@
+;;; A library whose entry is a rule with an empty `:match` — M1f **W91**
+;;; (`corpus/wrong_answers.toml`), S1f.6.25 (2026-11-13). `dump-selection.ein`
+;;; imports it by that entry's name. A program of its own as well: the entry
+;;; fires once at root, so root holds `(color Red)` and `(color Green)`, and
+;;; with no hypothesis R is {∅}.
+
+(relation color Thing :why "{?1} is a colour")
+
+(rule palette ()
+  :match  ()
+  :assert (and (color Red) (color Green))
+  :why    "the library states its colours")
+
+(solve :hypothesis-relations ())

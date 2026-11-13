@@ -675,6 +675,11 @@
 1    examples/ein-bugs/wrong-answers/derived-activator-never.ein :: solve
 1    examples/ein-bugs/wrong-answers/derived-activator.ein :: saturate
 1    examples/ein-bugs/wrong-answers/derived-activator.ein :: solve
+0    examples/ein-bugs/wrong-answers/dump-selection-library.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dump-selection-library.ein :: solve
+0    examples/ein-bugs/wrong-answers/dump-selection.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dump-selection.ein :: saturate --dump
+0    examples/ein-bugs/wrong-answers/dump-selection.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: saturate
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints

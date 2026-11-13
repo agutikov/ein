@@ -228,6 +228,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.213](#q-m1f213--the-binary-example-theory-and-the-flag-at-the-call) | the binary example theory and the flag at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: `gen_binary.py` carries the rule over, so `bin.ein` has 68 rules and flags `(div-call2 TAG X Y)` by zero as decimal does**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.214](#q-m1f214--the-derives-line-of-a-firing-with-several-conclusions) | the *Derives* line of a firing with several conclusions | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: one line, every conclusion in the rule's order, `; ` between two, each with its own statement**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6251--e-5-done) |
 | [Q-M1f.215](#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program) | a qualified import and what a module states as a program | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a wrong answer, W90; no import brings a module's `(query …)`, `(solve …)` or `(config …)`, nor its `(trace …)`**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6252--e-8-done) |
+| [Q-M1f.216](#q-m1f216--a-state-file-that-re-writes-less-than-the-program-as-loaded-and-the-register) | a state file that re-writes less than the program as loaded, and the register | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a register row, W91, under schema `/22`; the fix makes every name a top-level selection lists live, and no more**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6253--e-11-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4158,3 +4159,26 @@ Two things the stage file does not settle:
 **Defaulted 2026-11-13: 1 (a), as the stage file has it, and 2 (a), the user's to revise.** W90, two rows.
 No tracked program imports qualified a module that holds any of the four (`python3
 build/s1f.6.25/e8_census.py`, 2026-11-13).
+
+### Q-M1f.216 — A state file that re-writes less than the program as loaded, and the register
+
+**Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6253--e-11-done)'s T3 (E-11). The stage file leaves two things to the task.
+
+1. **Is it a register row?** The stage file's test is *a program whose reloaded dump answers differently
+   from the run that wrote it*. T3 wrote one: `dump-selection.ein`, whose state file holds the state's two
+   facts and neither the rule that derived them nor the relation's declaration, so that `ein saturate
+   --dump` on the file lists no declared relation and no rule, and `answer_round_trip.rs`, which holds
+   every corpus program's state files to their states by value, fails on it. R itself is right.
+   (a) A row, under a schema that can read a line of a state file. (b) No row: the answer is R, and the
+   file is a rendering of it.
+2. **How far the fix goes.** (a) A name a **top-level** import's selection lists is live, the stage
+   file's words; with it the tree-shake keeps everything a flat import brings, since the selection's
+   closure is what is reachable from the listed names. (b) Also every imported rule with an empty
+   `:match` and no parameter, which fires in any program that holds it, so that a qualified import of a
+   library with such an entry is written whole too.
+
+**Defaulted 2026-11-13: 1 (a) and 2 (a), the user's to revise.** 1 (a) since the file says of itself
+*the program as loaded* and a per-commit test holds that sentence for every corpus program; the schema
+moved to `/22` for it. 2 (a) since it is what the stage file specifies; 2 (b)'s case, a qualified import
+of a library whose entry is an empty-`:match` rule, is E-41 of the phase's `findings.md`, found and not
+fixed.

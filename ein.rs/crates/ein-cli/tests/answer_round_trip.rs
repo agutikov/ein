@@ -145,6 +145,16 @@ const WRITTEN_PROVENANCE: [&str; 1] =
 /// count than declared, so no state holds such a fact. Empty since.
 const UNFILLED_TEMPLATE: [&str; 0] = [];
 
+/// **The witness whose state file re-writes less than the program as
+/// loaded**, the witness of an open register row (M1f S1f.6.25, 2026-11-13):
+/// W91, a library's entry rule with an empty `:match`, imported by its name
+/// alone. The tree-shake the file is written through drops the rule, which no
+/// live name reaches and no live premise activates, and the relation only it
+/// names, so the reloaded file lacks the declarations' facts. It is the row's
+/// own wrong answer, so the file is named rather than checked, and it must
+/// still lose them: the commit that fixes W91 takes it off the list.
+const SELECTION_DROPPED: [&str; 1] = ["examples/ein-bugs/wrong-answers/dump-selection.ein"];
+
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {
     let lost: Vec<&String> = want.difference(got).take(3).collect();
@@ -241,8 +251,15 @@ fn check(
                  fixed, so drop it from the list in the same commit"
             )),
             Ok((got, not_given)) => {
-                if got != want {
+                let dropped = SELECTION_DROPPED.contains(&file);
+                if got != want && !dropped {
                     bad.push(format!("{file}: {path}: {}", diff(&want, &got)));
+                }
+                if got == want && dropped {
+                    bad.push(format!(
+                        "{file}: {path} reloads to its state, and SELECTION_DROPPED names it: \
+                         its row (W91) is fixed, so drop it from the list in the same commit"
+                    ));
                 }
                 let written = WRITTEN_PROVENANCE.contains(&file);
                 if not_given > 0 && !written {

@@ -124,8 +124,13 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// a panic, exit 101 ([`Now::panicked`], [`Answer::panicked`]), W75's: every
 /// command's first write to such a pipe panicked with *failed printing to
 /// stdout: Broken pipe*, where the user ruled that `ein` die by `SIGPIPE`, as
-/// `cat` does (Q-M1f.68 (b)).
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/21";
+/// `cat` does (Q-M1f.68 (b)). `/22` since M1f S1f.6.25 (T1f.6.25.3,
+/// 2026-11-13): a printed line can be read in a **state file**
+/// `--dump-answer` writes, `models/NN.ein` ([`printed_file`]), and a line
+/// recorded empty says that no line of the file begins with the label
+/// ([`Printed::line`]), W91's: the program a state file re-writes dropped a
+/// rule only a selection names, and the relation only that rule names.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/22";
 
 /// What a run's stdout is when it is not read in full (schema /21,
 /// [`Now::stdout`], [`Answer::stdout`]): `closed`, a pipe whose reader closed
@@ -142,18 +147,30 @@ pub const SIGPIPE: i32 = 13;
 /// read-out `--dump-answer DIR` writes uncut, `DIR/answer.txt`.
 pub const PRINTED_FILES: [&str; 2] = ["stdout", "answer.txt"];
 
+/// Whether a [`Printed`] line can be read in `file`: one of
+/// [`PRINTED_FILES`], or since schema `/22` a state file `--dump-answer DIR`
+/// writes, `models/NN.ein`.
+pub fn printed_file(file: &str) -> bool {
+    PRINTED_FILES.contains(&file)
+        || file
+            .strip_prefix("models/")
+            .and_then(|f| f.strip_suffix(".ein"))
+            .is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()))
+}
+
 /// A line a run prints — schema `/17` (M1f S1f.5.6, W42): the first line of
 /// [`Self::file`] that begins, past its indent, with [`Self::label`], as
 /// printed, its trailing spaces aside.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Printed {
-    /// One of [`PRINTED_FILES`].
+    /// One [`printed_file`] accepts.
     pub file: String,
     /// What the line begins with, past its indent: a row's label, or `-H`'s
     /// relation.
     pub label: String,
-    /// The whole line.
+    /// The whole line; or since schema `/22` empty, where no line of the
+    /// file begins with the label.
     pub line: String,
 }
 
@@ -1253,13 +1270,18 @@ impl Register {
                 ));
             }
             for p in r.now.printed.iter().chain(r.right.printed.iter()).flatten() {
-                if !PRINTED_FILES.contains(&p.file.as_str()) {
+                if !printed_file(&p.file) {
                     out.push(at(format!(
-                        "printed file {:?} is not one of {PRINTED_FILES:?}",
+                        "printed file {:?} is not one of {PRINTED_FILES:?} or a state file, \
+                         models/NN.ein",
                         p.file
                     )));
                 }
-                if p.label.is_empty() || !p.line.trim_start().starts_with(&p.label) {
+                // An empty line says the file has no line at the label
+                // (schema /22).
+                if p.label.is_empty()
+                    || (!p.line.is_empty() && !p.line.trim_start().starts_with(&p.label))
+                {
                     out.push(at(format!(
                         "printed line {:?} does not begin with its label {:?}",
                         p.line, p.label

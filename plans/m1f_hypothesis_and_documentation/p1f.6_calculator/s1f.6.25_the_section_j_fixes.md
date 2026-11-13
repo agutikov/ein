@@ -261,3 +261,33 @@ let through and has covered since. The witnesses are new files.
 
 **Pages**: `01_grammar.md` § Import, `defined_behaviour.md` § 4.25 (the table's last row and a bullet),
 `AGENTS.md`'s standing rule on imports, `examples/README.md`, `imports.rs`'s module header.
+
+### T1f.6.25.3 — E-11, done
+
+**T1, the attempt to write a program whose reloaded dump differs from its run: written.**
+`examples/ein-bugs/wrong-answers/dump-selection.ein` imports `dump-selection-library.ein` by its entry's
+name, `(import dump-selection-library :symbols (palette))`; the library is a relation `color` and a rule
+`palette` with an empty `:match` that states two colours. On the release binary at `5e5685b7`
+(`ein solve FILE --dump-answer DIR`, 2026-11-13) R is {∅}, right, and `DIR/models/01.ein` is
+
+```lisp
+(solve :hypothesis-relations ())
+;; ── the state ──────────────────────────────────────────────────────────
+
+(color Green) ; rule palette: the library states its colours — Green is a colour
+(color Red) ; rule palette: the library states its colours — Red is a colour
+```
+
+under a header that says *the program as loaded, imports inlined*: no `(relation color …)` and no `(rule
+palette …)`. `ein saturate --dump` on that file lists no declared relation and no rule,
+where the witness loads with one of each, and the reloaded state lacks the declarations' facts, which is
+what `answer_round_trip.rs` holds for every corpus program (*facts lost*). So by the stage file's test it is
+a register row: **W91**, one row, filed `open` (the commit after `a4bf10f8`). That it is one, and how far the
+fix goes, are defaults,
+[Q-M1f.216](../open_questions.md#q-m1f216--a-state-file-that-re-writes-less-than-the-program-as-loaded-and-the-register).
+
+**The schema moved first, to `/22`**, since no row could read a state file: a `printed` line may be read in
+`models/NN.ein`, and a line recorded empty says no line of the file begins with the label
+(`ein_corpus::register`'s `printed_file`, `wrong_answers.rs`). The row records two lines of
+`models/01.ein`, the relation's declaration and the rule's name, absent while it is open. While the row
+was open `answer_round_trip.rs` named the witness in `SELECTION_DROPPED`, which had still to lose facts.

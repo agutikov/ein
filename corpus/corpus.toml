@@ -2927,6 +2927,18 @@ note   = "M1f W88 (`W88/import-facts-table`), filed by S1f.6.11's T1f.6.11.2 (20
 
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/dump-selection-library.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W91's library: a relation and one rule with an empty `:match`, its entry, which states two colours at root. `dump-selection` imports it by that rule's name. A program of its own too, R {∅}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/dump-selection.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W91 (`W91/dump-selection`), filed by S1f.6.25's T1f.6.25.3 (2026-11-13) from E-11 of P1f.6's findings: `(import dump-selection-library :symbols (palette))`, R {∅}, whose `--dump-answer` state file re-writes a program with neither the rule nor the relation it names. Open."
+
+[[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-directives-module.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]

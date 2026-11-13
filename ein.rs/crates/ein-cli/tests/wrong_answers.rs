@@ -115,9 +115,10 @@ struct Got {
     summary: Option<J>,
     /// `--dump-answer`'s `nogoods.json`, where the row records `N`'s cores.
     nogoods: Option<J>,
-    /// `--dump-answer`'s `answer.txt`, where the row records a line of it
-    /// (schema /17, W42).
-    answer_txt: Option<String>,
+    /// `--dump-answer`'s directory, where the row records a line of its
+    /// `answer.txt` (schema /17, W42) or of a state file it writes (schema
+    /// /22, W91).
+    answer: std::path::PathBuf,
 }
 
 fn run(row: &Row, dir: &Path) -> Got {
@@ -155,13 +156,8 @@ fn run(row: &Row, dir: &Path) -> Got {
     // A dead node's core is the answer directory's (M1e2 S1e2.2.19, W19), and
     // so is `answer.txt` (schema /17, W42).
     let answer = dir.join("answer");
-    let reads_answer_txt = row
-        .now
-        .printed
-        .iter()
-        .flatten()
-        .any(|p| p.file == "answer.txt");
-    if row.now.nogoods.is_some() || reads_answer_txt {
+    let reads_answer = row.now.printed.iter().flatten().any(|p| p.file != "stdout");
+    if row.now.nogoods.is_some() || reads_answer {
         argv.push("--dump-answer".to_string());
         argv.push(answer.display().to_string());
     }
@@ -186,7 +182,6 @@ fn run(row: &Row, dir: &Path) -> Got {
     let nogoods = std::fs::read_to_string(answer.join("nogoods.json"))
         .ok()
         .map(|s| serde_json::from_str(&s).expect("nogoods.json parses"));
-    let answer_txt = std::fs::read_to_string(answer.join("answer.txt")).ok();
     Got {
         file,
         code: out.status.code().unwrap_or(-1),
@@ -195,7 +190,7 @@ fn run(row: &Row, dir: &Path) -> Got {
         stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
         summary,
         nogoods,
-        answer_txt,
+        answer,
     }
 }
 
@@ -538,23 +533,22 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     // /15, M1f S1f.5.5, W37): off stdout, in the order printed.
     let goal_text = row.now.goal_text.as_ref().map(|_| goal_text(&got.stdout));
     // The lines printed, where the row records them (schema /17, M1f S1f.5.6,
-    // W42): each found by its label, on stdout or in `answer.txt`.
+    // W42): each found by its label, on stdout, in `answer.txt`, or in a state
+    // file (schema /22, W91), where an empty line says none begins with it.
     let printed = match &row.now.printed {
         None => None,
         Some(want) => {
             let mut v = Vec::new();
             for p in want {
                 let text = match p.file.as_str() {
-                    "answer.txt" => got
-                        .answer_txt
-                        .as_deref()
-                        .ok_or("no answer.txt was written")?,
-                    _ => got.stdout.as_str(),
+                    "stdout" => got.stdout.clone(),
+                    file => std::fs::read_to_string(got.answer.join(file))
+                        .map_err(|_| format!("no {file} was written"))?,
                 };
                 v.push(Printed {
                     file: p.file.clone(),
                     label: p.label.clone(),
-                    line: printed_line(text, &p.label),
+                    line: printed_line(&text, &p.label),
                 });
             }
             Some(v)

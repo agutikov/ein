@@ -1174,6 +1174,15 @@
 # not-wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 # 2026-11-10).
 #
+# **W90 and W91 were filed on 2026-11-13 by S1f.6.25**, from E-8 and E-11 of
+# P1f.6's `findings.md`, each filed `open` in a commit of its own and fixed by
+# its task. W90, two rows: a qualified import brought the module's `(query …)`,
+# `(solve …)` and `(config …)`. W91, one row: the program a `--dump-answer`
+# state file re-writes dropped a rule that only an import's selection names,
+# and the relation only that rule names. **Schema /22**, W91's: a printed
+# line can be read in a state file the run writes, `models/NN.ein`, and a
+# line recorded empty says that no line of the file begins with the label.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -1197,8 +1206,9 @@
 #              /12), what `refuted by` names (schema /14), the
 #              sentences a query's `:goal-text` prints (schema /15),
 #              whether a command's run answers (schema /16), the lines
-#              it prints at a label (schema /17), and how a run whose
-#              stdout is closed ended (schema /21).
+#              it prints at a label (schema /17), in a state file too
+#              (schema /22), and how a run whose stdout is closed ended
+#              (schema /21).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
 #   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
@@ -1345,7 +1355,10 @@
 #               writes), the first line that begins past its indent with
 #               `label`, whole, its trailing spaces aside; stated exactly
 #               when `[case.right]` states `printed`, the same labels in the
-#               same files (W42's rows)
+#               same files (W42's rows). Since schema /22 (M1f S1f.6.25)
+#               `file` may be a state file `--dump-answer` writes,
+#               `models/NN.ein`, and an empty `line` says no line of the
+#               file begins with the label (W91's row)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
@@ -1477,7 +1490,7 @@
 # the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
 # states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/21"
+schema = "ein-wrong-answers/22"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -17032,4 +17045,64 @@ models    = [
   ["(chosen Drink)"],
   ["(chosen Drink)", "(chosen Tea)"],
   ["(chosen Tea)"],
+]
+
+# ══ W91 — the program a `--dump-answer` state file re-writes drops a rule that only an import's selection names, and the relation only that rule names ══
+[[case]]
+id       = "W91/dump-selection"
+case     = "W91"
+title    = "the program a `--dump-answer` state file re-writes drops a rule that only an import's selection names, and the relation only that rule names"
+class    = "read-out"
+settings = "default"
+owner    = "S1f.6.25"
+question = ["P1f.6 findings.md E-11", "Q-M1f.216"]
+witness  = "examples/ein-bugs/wrong-answers/dump-selection.ein"
+status   = "open"
+open_because = "the state file's program goes through the tree-shake, `ein_ir::resolve_and_minimize`, which keeps an imported declaration a live name reaches or a live premise activates, and a rule with an empty `:match` that only the import's list names is reached by neither: S1f.6.25's T1f.6.25.3 makes a listed name live"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.25 (T1f.6.25.3, 2026-11-13), from E-11 of P1f.6's `findings.md`. R is right, {∅}: what is wrong is the file `--dump-answer` writes for its one state, `models/01.ein`, which says *the program as loaded, imports inlined* and holds neither `(rule palette …)` nor `(relation color …)`, so reloaded it is two facts of an undeclared relation and no rule. The row records two lines of that file, the relation's declaration and the rule's name, each absent (schema /22). `std.arith` and the modules over it meet the same defect and write their entry's name as a fact to work around it, `(arith-rule arith)`"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve --dump-answer DIR` on the witness, release, at 5e5685b7 (2026-11-13): R {∅}, exit 0, and `DIR/models/01.ein` holds `(solve :hypothesis-relations ())` and the state's two facts, no declaration; `ein saturate --dump` on that file lists no declared relation and no rule, where the witness loads with one of each"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+printed   = [
+  { file = "models/01.ein", label = "(relation color", line = "" },
+  { file = "models/01.ein", label = "palette", line = "" },
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "`read_out.md` § 8.2 and the state file's own header: *the program as loaded, imports inlined, and then every fact of the state*; S1f.6.25's default (the stage file, T1f.6.25.3; Q-M1f.216): a name an import's selection lists is live"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+printed   = [
+  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
+  { file = "models/01.ein", label = "palette", line = "  palette" },
+]
+derived   = "The selection lists `palette`, whose closure is the rule and `color`, the relation it writes: the program as loaded holds both declarations, the rule fires once at root, and root holds `(color Red)` and `(color Green)`. No candidate, R {∅}. The state file writes that program and those two facts, so it holds the relation's declaration and the rule, which the canonical dump writes over several lines, its name on the second"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+printed   = [
+  { file = "models/01.ein", label = "(relation color", line = "" },
+  { file = "models/01.ein", label = "palette", line = "" },
 ]
