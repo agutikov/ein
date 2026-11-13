@@ -1,8 +1,10 @@
 # S1f.6.30 — Name clashes between imported theories: investigation, proposals, and a stop
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1 to T4 done
-([the record](#record-2026-11-13)). **An investigation that stops
+**Status:** planned 2026-11-12, on the user's reply of that day. **Stopped for the user at T5, 2026-11-13:**
+T1 to T5 done ([the record](#record-2026-11-13)); the proposals and the questions are
+[`import_clashes.md`](import_clashes.md), Q-M1f.231 to .236, open, the user's. T6 stays planned, to the
+ruling. **An investigation that stops
 for the user** before any change to the grammar or to what an import means; its first task, the tagged calls
 as an interface, changes neither and is built.
 **Depends on:** nothing in the phase. It is the last of the stages independent of the stdlib layout, and its
@@ -282,4 +284,31 @@ at `2ef68530`, 2026-11-13); what moves is two sweeps of the 133 corpus programs 
 - **(d1)** P4f loads, P2a, P4a and P4e do not; `ein solve` moves on 3, `--dump` on 111. **(d2)** P2a and P4a
   load; 18 files that write the interface are rewritten.
 - **(e)** six lines, each a probe of § 2.
+
+### T1f.6.30.5 — the page and the stop, done
+
+[`import_clashes.md`](import_clashes.md) is whole: § 0 in short, § 1 how an import works today, § 2 the probes,
+§ 3 the census, § 4 the proposals, **§ 5 the recommendation**, (f) in two steps, (a) and (b) first, then an
+exported name refused only where the program writes it and `:rename` a second name of one copy, and (g1) for
+E-32 after; and **§ 6 the questions**, filed in [`open_questions.md`](../open_questions.md) as
+[Q-M1f.231](../open_questions.md#q-m1f231--which-way-the-import-mechanism-closes-the-gap) (which way),
+[.232](../open_questions.md#q-m1f232--how-a-module-says-what-it-exports-and-what-stdarith-exports) (how a module
+says what it exports, and `std.arith`'s list), [.233](../open_questions.md#q-m1f233--how-a-name-a-module-does-not-export-is-printed)
+(how a hidden name prints), [.234](../open_questions.md#q-m1f234--two-flat-imports-that-export-one-name) (two
+exporters of one name), [.235](../open_questions.md#q-m1f235--a-module-in-a-sibling-directory-e-32) (E-32) and
+[.236](../open_questions.md#q-m1f236--e-49-and-e-50) (E-49 and E-50), **open, the user's**, none defaulted. P11
+was run under (a), (d1) and (d2) for the page: it loads under each, the algebra test's claim held.
+
+**The stage stops here.** Nothing in `ein.l`, `ein.y` or `ein_ir::imports` moved; no relation of a shipped
+module was renamed; no name is reserved in the loader; E-32 is not fixed. What moved in the tree: T1's header
+comments and README sections, its test and the manifest; `stdlib/README.md`'s count of the circuit's own names
+(T3); and records. T6 waits for the user's ruling; where today's behaviour is ruled a wrong answer, its register
+rows come first.
+
+**The stage's commits:** `ffb47f3c` (T1), `63955507` (T1 completed, the operand look-up), `da81ee14` (T2),
+`bec8b32e` (T3), `b90a3278` (T4), and this one (T5). **Defaults taken,** each the user's to revise:
+Q-M1f.228 (what the interface holds beyond round 2's seven names), Q-M1f.229 (the census's scope and method),
+Q-M1f.230 (how the proposals are prototyped and priced). **Findings:** E-49 and E-50, neither a wrong answer.
+**No register row:** no probe met a wrong answer of the engine. **Not run here:** the whole gate and the
+nightly, which the coordinator runs on the last commit.
 

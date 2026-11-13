@@ -243,6 +243,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk; the operand look-up, `operand` and `operand-is`, which `std.int` and `std.rat` call and extend; and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
 | [Q-M1f.229](#q-m1f229--what-the-census-of-imported-names-reads-and-how) | what the census of imported names reads, and how | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the twelve stdlib modules and the fourteen example theories another file imports, the import mechanism's own fixtures left out; each imported by every name it declares itself; static, and held to the loader on every pair**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6303--the-census-done) |
 | [Q-M1f.230](#q-m1f230--how-the-proposals-are-prototyped-and-priced) | how the proposals are prototyped and priced | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: `std.arith` alone, as module text under `$EIN_STDLIB`; exported, the requests, `let`, results, flags, `n`, the interface, the entry and the one rule another module selects; a hidden name spelt `std.arith.X`; the convention's prefix `arith-`; the price by two sweeps of the 133 programs that bring the calculator and a bound of `corpus_shapes.md5`, not by blessing**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6304--the-proposals-each-on-real-computed-examples-done) |
+| [Q-M1f.231](#q-m1f231--which-way-the-import-mechanism-closes-the-gap) | which way the import mechanism closes the gap | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
+| [Q-M1f.232](#q-m1f232--how-a-module-says-what-it-exports-and-what-stdarith-exports) | how a module says what it exports, and what `std.arith` exports | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
+| [Q-M1f.233](#q-m1f233--how-a-name-a-module-does-not-export-is-printed) | how a name a module does not export is printed | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
+| [Q-M1f.234](#q-m1f234--two-flat-imports-that-export-one-name) | two flat imports that export one name | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
+| [Q-M1f.235](#q-m1f235--a-module-in-a-sibling-directory-e-32) | a module in a sibling directory (E-32) | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
+| [Q-M1f.236](#q-m1f236--e-49-and-e-50) | E-49 and E-50 | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4603,3 +4609,87 @@ can be prototyped outside the engine (by rewriting module text)*. The choices th
 **Defaulted 2026-11-13: (a) on all five, the user's to revise.** The exact count of (b) is what T6's change,
 whichever it is, takes before blessing.
 
+### Q-M1f.231 — Which way the import mechanism closes the gap
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5, on the user's reply to P1f.6's question 8 (2026-11-12): *"potential
+names clash is a gap of import mechanism, plan a stage for investigation, proposals and fix"*. Today a flat
+import shares by name, which is what connects theories and what clashes; `:as` shares nothing
+([`import_clashes.md` § 2](p1f.6_calculator/import_clashes.md#2-the-probes-t2)). Each option is shown on the probes, computed where module text
+can prototype it ([§ 4](p1f.6_calculator/import_clashes.md#4-the-proposals-t4)):
+
+- **(a) A module says what it exports**, and what it does not is named under the module. P4e, P4f, P11 load;
+  P2a and P4a do not (`done` is exported). `ein solve` moves on 17 of 133 programs, R on none.
+- **(b) A module is one copy, whoever imports it,** and `:as` prefixes only the module's own names. The tables
+  once, P10 connected. No corpus program moves. Whole only with (a).
+- **(c) A rename on import,** `:rename ((done chore-done))`. P2a and P4a load; a renamed theory beside a theory
+  built on it is refused, computed.
+- **(d1) A convention:** the calculator's own 47 relations prefixed `arith-`. P4f loads; `ein solve` moves on 3.
+  **(d2)** and the interface's 11: P2a and P4a load; 18 files rewritten.
+- **(e) Nothing,** and the page's six lines on how to mix theories today.
+- **(f) (a), (b) and (c) as one mechanism,** an exported name two imports share refused only where the program
+  writes it.
+
+**Recommended: (f), in two steps, (a) and (b) first** ([§ 5](p1f.6_calculator/import_clashes.md#5-the-recommendation)). **Open, the user's.**
+
+### Q-M1f.232 — How a module says what it exports, and what `std.arith` exports
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; it matters under (a) and (f) of Q-M1f.231.
+
+- **How.** (i) A top-level form `(export NAME+)`, one row of the grammar's table. (ii) The entry rule's names
+  are the exports: no new form, but `arith` names every rule and closes every relation, so it would need a
+  second list anyway. (iii) A mark on a name, a convention the loader reads.
+- **What.** (i) The prototype's: the requests and `let`, the results, the flags, `n`, T1's eleven (`done` among
+  them), the entry `arith` and `division-by-zero-is-false`, which `std.num9` selects by name: 26 relations, 2
+  rules. (ii) The same with the interface's eleven exported under new names, `arith-done`, so that `done` is no
+  longer a calculator's name a program can meet.
+
+**Recommended: (i) and (i).** **Open, the user's.**
+
+### Q-M1f.233 — How a name a module does not export is printed
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; under (a) and (f). A state, `--trace`, a core and `ein saturate
+--dump` print facts and rules the program did not write.
+
+- **(i) `std.arith.strip`,** the module's name and a dot, as a bare qualified import prints it today:
+  `refuted by std.arith.malformed-is-false` (P4g under the prototype).
+- **(ii) Bare,** `strip`, with the module said apart; two modules' hidden `strip`s then read alike.
+- **(iii) A name the loader makes up,** `#…`, which no program can write and no reader recognises.
+
+**Recommended: (i).** **Open, the user's.**
+
+### Q-M1f.234 — Two flat imports that export one name
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; under (f). P2a, `std.arith` and `chores`, both exporting `done`.
+
+- **(i) Refused at load,** as every clash is today.
+- **(ii) Refused only where the program writes the name,** with a line that names the two modules and the two
+  remedies, `:as` and `:rename`; where it does not, each theory keeps its own.
+- **(iii) The later import wins.** One theory's rules then read the other's facts: a wrong answer waiting.
+
+**Recommended: (ii).** **Open, the user's.**
+
+### Q-M1f.235 — A module in a sibling directory (E-32)
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5 ([§ 4 (g)](p1f.6_calculator/import_clashes.md#g-a-sibling-directory-e-32)); E-32 is named in the
+proposals and ruled with them.
+
+- **(g1) `..` in a module name,** resolved by `locate` and refused outside the checkout; no grammar, since
+  `NAME` takes `.` and `/` already.
+- **(g2) A root,** dotted names under the nearest directory above that holds a marker.
+- **(g3) A search path,** `$EIN_PATH`; a program's meaning then depends on the environment.
+- **(g4) Nothing:** `examples/binary_logic/bits.ein` stays a generated copy.
+
+**Recommended: (g1), after (b).** **Open, the user's.**
+
+### Q-M1f.236 — E-49 and E-50
+
+**Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; the two findings its probes and census filed.
+
+- **E-49,** a qualified theory's name written bare answered by silence. (i) A `note:` line on every command, as
+  E-20's, where a program writes bare a name only an alias exports. (ii) Nothing; the page's line 2 of § 4 (e).
+- **E-50,** two pairs that cannot be imported flat together and `difference`. (i) `std.elim`'s and
+  `std.bijection`'s headers say they are alternatives; the logic's generator renames `complement` and
+  `identity`; `difference` cured by (a) or (d) of Q-M1f.231 (P11 loads under both). (ii) `std.elim` merged into
+  `std.bijection`.
+
+**Recommended: (i) and (i).** **Open, the user's.**
