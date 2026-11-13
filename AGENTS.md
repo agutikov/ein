@@ -634,8 +634,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A core is an explanation**: it may vary with rule order, and F22 makes it
   canonical. A node that is not dead has no core (`null`); `[]` is the empty
   core of a dead node. A core is taken only where a surface prints one.
-- `ein test` exhausts, never solves a query with no `:expect`, and reads
-  several queries of a file off one run.
+- `ein test` asks a file **the least question that can decide the claims
+  it states**, read off their shapes: `--single` or `-n k+1` for queries'
+  claims all over one part of R, describe for a `(solve … :expect …)` or
+  for claims over more than one part; what that leaves undecided it asks the
+  describing question, of the program loaded again. No option chooses the
+  question. A claim is held only by an answer that lists all of what it is
+  about, and under `ein test` alone a state found whose class the claim does
+  not list refutes it (`ein-infer/tests/claim_routes.rs` holds each question
+  to the description and to the oracle). It never solves a query with no
+  `:expect`, and reads every claim of a file off those one or two runs.
 - Every command reads a program by one path (`ein-cli`'s
   `common::read_program`), `.ein` or `.einb` alike.
 
@@ -725,8 +733,9 @@ generator the summary's `root` block called until M1e2 S1e2.3.1 retired it;
 `EIN_TRAVERSAL` went with the walk. What
 carried over: `--models list|key|grid`, now over the states a run lists;
 `EIN_LEFTOVER`'s block in `ein-summary/2`; and `ein test --json-report`, now
-`ein-test-report/4`, a query row carrying its classes and, since M1e2
-S1e2.3.10, every row what the universe leaves out. The read-out's
+`ein-test-report/5`, a query row carrying its classes, since M1e2
+S1e2.3.10 every row what the universe leaves out, and since M1f S1f.6.27
+the question its claim was read off. The read-out's
 vocabulary is, since M1f S1f.5.16, the kernel page
 [`docs/kernel/inference/read_out.md`](docs/kernel/inference/read_out.md),
 every row `ein solve` prints and what it counts, and its golden page, written
@@ -1018,9 +1027,9 @@ cargo test … -p ein-infer --test stdlib_coverage   # every rule, every program
 ein test tests/                                    # the same suite, as a status code
 ```
 
-It loads `stdlib/*.ein` for its rule heads, solves every `tests/stdlib/`
-program the way `ein test` does with `--events` on, and fails on any rule no
-program activated — so **adding a rule to the stdlib without a test fails the
+It loads `stdlib/*.ein` for its rule heads, describes R of every
+`tests/stdlib/` program that states a claim with `--events` on, and fails on
+any rule no program activated — so **adding a rule to the stdlib without a test fails the
 gate**, the way a `.ein` file with no corpus entry does. Its sibling fails on a
 program under `tests/` that states no `:expect`. It is scoped to `tests/`
 rather than to the corpus on purpose: a rule that fires only inside

@@ -307,6 +307,14 @@ all of R by default, or over the states listed where the run asked another quest
 A claim the run refutes writes one stderr line and exits 1; one it could not check writes a `note:` and exits 0
 (§ 10).
 
+**A claim under a mode.** A claim is about a whole part of R, so `ein solve` checks it where the answer lists that
+part whole: under describe when R is exhausted, under `--single` that says `Solution`, `Contradiction` or `Open`,
+and under `-n N` that found fewer than N states. Any other answer leaves it *not checked*, a note. That is what lets
+`ein test` ask a claim less than the description (M1f S1f.6.27): it reads a file's claims by their shapes, asks
+`--single` or `-n k+1` where that can decide them, and describes what is left
+([`01_grammar.md` § Query](../ir/03-ein-lang/01_grammar.md#query) has the table). `ein test` alone also refutes a
+claim from a part, by a class of a state found that the claim does not list.
+
 **A query over an empty R** (M1f S1f.6.26, the row half of E-18). The `over` row says which kind of empty R is, as
 root says it: *R is empty, root is dead*, every node being dead with it, or *R is empty, root is alive and owes n
 instances*, an alive root of an empty R always owing. Describe, `--single` and `-n` print it alike. Until that stage
@@ -495,7 +503,7 @@ They define nothing; each repeats rows defined above.
 | `--dump-answer DIR`'s `answer.json` and `index.json` | the summary byte for byte; the `region` block | `region_answer::the_answer_directory_is_the_answer` |
 | `--trace FILE.md`'s headline | the rows above the listing, from the same printer | `golden_trace::every_real_solve_reproduces_its_golden` |
 | `--events FILE`'s `region` event | `asked`, `region` without `states` and `frontier`, `verdict`, `work` | by construction: `modes::emit_region` writes the summary's own blocks |
-| `ein test -v` and `--json-report` | a solve row's `region.k_s` and `k_c`; a query row's classes | `test_cli::the_verbose_header_and_the_report_row_agree_field_for_field` (the header against the report row); none holds them to a summary |
+| `ein test -v` and `--json-report` | a solve row's `region.k_s` and `k_c`; a query row's classes, over the states of the question the claim was read off, which both name (`route`, and `fell_back_from` where the first question left the claim undecided) | `test_cli::the_verbose_header_and_the_report_row_agree_field_for_field` (the header against the report row); none holds them to a summary |
 
 ---
 

@@ -482,7 +482,12 @@ reported while deleting a redundant one or an `enqueue` is not.
 M1e2 [T1e2.1a.5.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
 [`read_out.md` § 8.6](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#86-the-rest).
 `ein solve --events FILE` narrates the run that answered — since S1e2.1a.5's
-switch every run, a bare description included, and `ein test`'s too:
+switch every run, a bare description included, and `ein test`'s too. Since M1f
+S1f.6.27 `ein test` asks a file the least question that can decide its claims
+and, of what that leaves undecided, the describing one
+([`01_grammar.md` § Query](../ir/03-ein-lang/01_grammar.md#query)); the
+stream is one run's, the last question asked, and its `region` event's `asked`
+says which:
 
 1. `run` and `load`, as above;
 2. **root**: root's saturation (`compile`,

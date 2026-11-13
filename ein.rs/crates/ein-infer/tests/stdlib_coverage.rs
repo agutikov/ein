@@ -213,8 +213,12 @@ struct Ran {
     local: BTreeSet<String>,
 }
 
-/// Load and solve one program to exhaustion — the run `ein test` makes — and
-/// record what it activated.
+/// Load one program and describe its R to exhaustion, and record what that
+/// activated. It was the run `ein test` makes until M1f S1f.6.27, since when
+/// the runner asks a file the least question that decides its claims, which
+/// can visit fewer nodes; this gate keeps the description, the run that
+/// visits every alive state, because its question is what a program *can*
+/// activate and not what a claim needs.
 ///
 /// Exhaustive rather than a bare `saturate`, though on the suite as it stood
 /// at S1c.1.5 the two reached exactly the same rules (measured, 2026-08-24).
@@ -234,8 +238,8 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
         (ast, terms, kb, forms)
     };
 
-    // `ein test`'s own shape since M1e2 S1e2.1a.5: load once to find out what
-    // the file claims, and answer every claim from **one** region run — the
+    // `ein test`'s shape from M1e2 S1e2.1a.5 to M1f S1f.6.27: load once to
+    // find out what the file claims, and run **one** region run, the
     // description, which every claim's set is part of. A file that claims
     // nothing is not run, and the one fixture in the repo that would cost most
     // to enter (`features/04_open.ein`, an unbounded enumeration) is exactly

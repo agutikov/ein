@@ -10,14 +10,27 @@
 //!
 //! ## Three things it does that `solve` does not
 //!
-//! **It runs what the claims need, and no more** (`solve_interface.md`
-//! § 2.3). Since M1e2 S1e2.1a.5 a file's claims are checked against **one**
-//! region run: a `(solve … :expect …)` and a query `:over all` (the default)
-//! are about all of R, so they ask for the description; a query `:over
-//! maximal` or `:over minimal` alone asks for that line's mode. Every claim of
-//! the file is read off that one run, the solve claim against its R and each
-//! query's against its projection classes. A claim the run could not decide
-//! — a budget, a flagged program past the cube's limit — is `NOT CHECKED`.
+//! **It asks the question the claims are, and no more** (`solve_interface.md`
+//! § 2.3; M1f S1f.6.27, the user's reply (a) of 2026-11-12 on question 39).
+//! A file's claims are read by their shapes and asked **the least question
+//! that can decide them** ([`ein_infer::read_out::least`]): a `(solve …
+//! :expect …)` asks for the description of R, whose route on a dead root is
+//! root's saturation; queries' claims that are all over one part of R, the
+//! most classes one lists being k, ask that part for k + 1 states, `-n k+1`,
+//! and `--single` where k is at most one. A run that finds fewer has listed
+//! the whole part and decides every claim; one that finds k + 1 refutes a
+//! claim where a state found gives a class the claim does not list. **What
+//! that question leaves undecided is asked the describing one**
+//! ([`ein_infer::read_out::describing`]), which was the one question from
+//! M1e2 S1e2.1a.5 until then: all of R, or the one line every claim is over.
+//! So a file is one run where one run decides it and two where it does not,
+//! and no claim a description decides is left unchecked. Each claim is read
+//! off the run that decided it ([`ein_infer::read_out::stands`]), the solve
+//! claim against its R and each query's against its projection classes, and
+//! `-v` and `--json-report` say which question that was. A claim neither
+//! question decided, a budget or a flagged program past the cube's limit, is
+//! `NOT CHECKED`, and says what was asked first and why it did not decide.
+//! No option chooses the question.
 //!
 //! **It runs only what the expectations need.** A file whose queries state
 //! nothing, and that has no region claim, is never solved — the one load that
@@ -52,7 +65,12 @@
 //! over and how many. Since M1e2 S1e2.3.10 it is `ein-test-report/4`,
 //! additively: every row carries `outside` and `types_as_objects`, what the
 //! universe leaves out beside a claim the run checked, as the summary's
-//! `root.hypgen` writes them, `null` on a row no run checked. `--json-summary`
+//! `root.hypgen` writes them, `null` on a row no run checked. Since M1f
+//! S1f.6.27 it is `ein-test-report/5`, additively: every row carries `route`,
+//! the question its claim's outcome was read off, as `ein solve`'s flags
+//! spell it and `describe` for the bare run, and `fell_back_from`, the
+//! question asked first where it left the claim undecided; both `null` on a
+//! row no run checked. `--json-summary`
 //! is a *run*'s summary — verdict, counters, config — and is refused over a
 //! selection of more than one run for the reason every artefact flag is: it
 //! names one path. A report is the other shape. It has no run to be more than
@@ -84,7 +102,8 @@ use std::time::Instant;
 use clap::ArgMatches;
 use ein_core::Terms;
 use ein_infer::expect::{Outcome, Report};
-use ein_infer::explore::{self, Ask, Mode, Which};
+use ein_infer::explore::{self, Mode};
+use ein_infer::read_out::{self, ReadOut, Stands};
 use ein_ir::Ast;
 use ein_ir::expect::Over;
 use ein_render::dump::Json;
@@ -97,7 +116,7 @@ const ONE_PATH_FLAGS: [&str; 2] = ["events", "json-summary"];
 /// `--json-report`'s version. **Not** `ein-summary/2`'s: a report is one row
 /// per query of a selection, a summary is one run, and a consumer that read
 /// the same version marker on both would be right to expect the same fields.
-const REPORT_SCHEMA: &str = "ein-test-report/4";
+const REPORT_SCHEMA: &str = "ein-test-report/5";
 
 /// What one query came to — [`Outcome`] plus the two ways a run can fail to
 /// produce one at all.
@@ -279,7 +298,7 @@ struct Scope {
     types_as_objects: Json,
 }
 
-/// What a query's claim was checked against — `ein-test-report/4`'s
+/// What a query's claim was checked against — `--json-report`'s
 /// `answer`: the set its classes are over, whether that set is complete, and
 /// how many classes and states it held.
 struct Answered {
@@ -317,6 +336,12 @@ struct Row {
     /// What H leaves out, where a run checked the row's claim (M1e2
     /// S1e2.3.10): the lines `ein test` prints beside that claim, as data.
     scope: Option<Scope>,
+    /// The question the row's claim was read off ([`Mode::flags`]), where a
+    /// run checked it (M1f S1f.6.27).
+    route: Option<String>,
+    /// The question asked first, where it left the claim undecided and the
+    /// outcome is the describing question's.
+    fell_back_from: Option<String>,
 }
 
 impl Row {
@@ -396,6 +421,9 @@ impl Row {
         });
         pairs.push(("outside", outside));
         pairs.push(("types_as_objects", types));
+        let word = |w: &Option<String>| w.as_deref().map_or(Json::Null, Json::str);
+        pairs.push(("route", word(&self.route)));
+        pairs.push(("fell_back_from", word(&self.fell_back_from)));
         Json::obj(pairs)
     }
 }
@@ -679,9 +707,11 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         place,
         region: None,
         scope: None,
+        route: None,
+        fell_back_from: None,
     };
     let load_opts = crate::common::load_options(m);
-    let Some(mut kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
+    let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
         println!("{}", status("ERROR", path));
         tally.errors += 1;
         // A file that did not load states nothing, because a claim is a
@@ -711,7 +741,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     // it. A file with no `(query …)` at all — every `stdlib/*.ein` is one —
     // still gets a row, so that the rows account for the selection file for
     // file.
-    let first = rows.len();
+    let first_row = rows.len();
     if n_queries == 0 {
         rows.push(row(0, 0, "query", "no-query"));
     }
@@ -739,65 +769,103 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         return;
     }
 
-    // The one run: the description when any claim is about all of R, or the
-    // claims ask both lines; otherwise the one line they ask.
-    let asks = |o: Over| overs.iter().any(|(_, x)| *x == o);
-    let which =
-        if solve_claim.is_some() || asks(Over::All) || (asks(Over::Minimal) && asks(Over::Maximal))
-        {
-            Which::All
-        } else if asks(Over::Maximal) {
-            Which::Maximal
-        } else {
-            Which::Minimal
-        };
-    let mut opts = explore::Options::new(Mode {
-        which,
-        ask: Ask::Describe,
-    });
-    if let Some(&b) = m.get_one::<i64>("region-budget") {
-        opts.budget = b as u64;
-    }
-    opts.deadline = m
+    // The question the claims are, and the describing one it falls back to
+    // (the module header). One deadline for the file, whatever is asked.
+    let (least, describing) = (read_out::least(&kb, &ast), read_out::describing(&kb, &ast));
+    let deadline = m
         .get_one::<f64>("max-time")
         .map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0)));
-    // A claim states no core: the run takes one only where `--events` prints
-    // it, at each node visited (M1e2 S1e2.2.21, the user's ruling of
-    // 2026-11-05; M1f S1f.5.12). `ein test` prints no `N`.
-    opts.cores = ein_infer::region::Cores {
-        visited: m.get_one::<String>("events").is_some(),
-        nogoods: false,
-    };
-    let config = kb.program().config.clone().unwrap_or_default();
-    let file = path.display().to_string();
-    let mut events = crate::solve::events_start(m, &file, &config);
-    crate::solve::events_load(&mut events, &terms, &kb);
-    let t0 = Instant::now();
     let failed = |tally: &mut Tally, why: String| {
         tally.errors += 1;
         println!("{}", status(Came::Error.label(), path));
         println!("    {why}");
     };
-    let r = match ein_infer::read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
-        Ok(r) => r,
-        Err(ein_infer::SolveError::Deadline) => {
-            // Never a pass and never a failure: the claims were neither
-            // confirmed nor refuted.
-            return failed(tally, "aborted before an answer: --max-time".to_string());
-        }
-        Err(e) => {
-            eprintln!("{e}");
-            return failed(tally, e.to_string());
-        }
+    let mut first = match ask(path, m, least, deadline, (ast, terms, kb)) {
+        Ok(run) => run,
+        Err(why) => return failed(tally, why),
     };
-    let ms = t0.elapsed().as_secs_f64() * 1000.0;
-    crate::modes::emit_region(&mut events, &r);
-    if r.answer.stopped == Some(explore::Stopped::Deadline) {
-        return failed(tally, "aborted before an answer: --max-time".to_string());
+    // The read-out answers the queries that have a :goal, in order.
+    let mut answered: Vec<Option<usize>> = Vec::with_capacity(n_queries);
+    let mut next = 0usize;
+    for q in &first.kb.program().queries {
+        if ein_infer::query_value(&first.ast, q, "goal").is_some() {
+            answered.push(Some(next));
+            next += 1;
+        } else {
+            answered.push(None);
+        }
     }
+    // A claim the least question left undecided is asked the describing one,
+    // of the program loaded again: a run saturates the root it is given.
+    let undecided = least != describing
+        && overs.iter().any(|&(qi, _)| {
+            answered[qi]
+                .and_then(|k| first.r.queries.get(k))
+                .and_then(|q| q.claim.as_ref())
+                .is_some_and(|c| c.outcome == Outcome::NotChecked)
+        });
+    let mut second = None;
+    if undecided {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
+            return failed(tally, "the program did not load a second time".to_string());
+        };
+        second = match ask(path, m, describing, deadline, (ast, terms, kb)) {
+            Ok(run) => Some(run),
+            Err(why) => return failed(tally, why),
+        };
+    }
+    // Each query claim, read off the run that decided it.
+    let no_goal = || Report {
+        outcome: Outcome::NotChecked,
+        lines: vec!["the query has no :goal to answer".to_string()],
+    };
+    let mut settled: Vec<(usize, Report, bool)> = Vec::with_capacity(overs.len());
+    for &(qi, _) in &overs {
+        let of = |run: &Asked| {
+            answered[qi]
+                .and_then(|k| run.r.queries.get(k))
+                .and_then(|q| q.claim.clone())
+                .unwrap_or_else(no_goal)
+        };
+        let one = of(&first);
+        let Some(run) = second.as_ref() else {
+            settled.push((qi, one, false));
+            continue;
+        };
+        let mut two = of(run);
+        match read_out::stands(&one, &two) {
+            Ok(Stands::First) => settled.push((qi, one, false)),
+            Ok(Stands::Fallback) => {
+                if two.outcome == Outcome::NotChecked && answered[qi].is_some() {
+                    two.lines.push(format!(
+                        "asked first: {}, which {}",
+                        least.flags(),
+                        read_out::undecided_words(&first.r.answer)
+                    ));
+                }
+                settled.push((qi, two, true));
+            }
+            Err(e) => {
+                eprintln!("{e}");
+                return failed(tally, e.to_string());
+            }
+        }
+    }
+    // The artefact of one run is the last one asked: the run every claim
+    // the first left undecided was read off.
     if let Some(out) = m.get_one::<String>("json-summary") {
-        let written = crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &config)
-            .and_then(|s| crate::summary::write(out, &s).map_err(|e| e.to_string()));
+        let run = second.as_mut().unwrap_or(&mut first);
+        let written = crate::summary::build_region(
+            &run.ast,
+            &mut run.terms,
+            &mut run.kb,
+            &run.r,
+            &run.file,
+            &run.config,
+        )
+        .and_then(|s| crate::summary::write(out, &s).map_err(|e| e.to_string()));
         if let Err(e) = written {
             crate::solve::artefact_failed("json-summary", out, e);
         }
@@ -819,34 +887,9 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     };
     let mut worst = Came::Held;
     let mut lines: Vec<String> = Vec::new();
-    // The warning, beside each claim printed on a flagged program (the
-    // proposal's § 4.3, approved 2026-11-03): under `-v`, and under a claim
-    // that FAILED or was NOT CHECKED.
-    let warning = (!r.answer.monotonicity.is_monotone()).then(|| {
-        format!(
-            "    {}",
-            ein_render::read_out::warning_line(
-                &r.answer.monotonicity,
-                r.answer.warning.as_deref(),
-                r.answer.root_dead
-            )
-        )
-    });
-    // What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)), beside
-    // each claim printed as the warning is: a claim is checked over R, and R
-    // is over H.
-    let outside = ein_render::read_out::outside_text(&r.answer.root.outside)
-        .map(|t| format!("    outside the universe: {t}"));
-    // What the untyped rung bound as an object (M1e2 S1e2.2.10, Q-M1e.12
-    // (a)), beside each claim printed as the scope is.
-    let types = ein_render::read_out::types_text(&r.answer.root.types_as_objects)
-        .map(|t| format!("    a type as an object: {t}"));
-    // The same two, as data, on the row of every claim the run checked.
-    let scope = Scope {
-        outside: ein_render::dump::region::outside_json(&r.answer.root.outside),
-        types_as_objects: ein_render::dump::region::types_json(&r.answer.root.types_as_objects),
-    };
     if let (Some(i), Some(claim)) = (solve_row, solve_claim.as_ref()) {
+        // A solve claim is asked the describing question alone.
+        let (r, beside) = (&first.r, Beside::of(&first.r));
         let report = r.claim.clone().unwrap_or_else(|| Report {
             outcome: Outcome::NotChecked,
             lines: vec!["the claim was not read".to_string()],
@@ -867,7 +910,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             monotone: r.answer.monotonicity.is_monotone(),
             k_s,
             k_c,
-            ms,
+            ms: first.ms,
             warning: r.answer.warning.as_deref().map(|w| {
                 (
                     w.status.word(),
@@ -876,7 +919,8 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 )
             }),
         });
-        rows[i].scope = Some(scope.clone());
+        rows[i].scope = Some(beside.scope.clone());
+        rows[i].route = Some(first.mode.flags());
         let shape = match claim {
             ein_ir::claim::Claim::False => "(false)",
             ein_ir::claim::Claim::Region(x) if x.models.is_empty() && x.owing.is_empty() => {
@@ -898,31 +942,19 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 _ => format!("  solve · :expect {shape} — {}", came.verb()),
             });
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
-            lines.extend(warning.clone());
-            lines.extend(outside.clone());
-            lines.extend(types.clone());
+            lines.extend(beside.lines());
         }
     }
-    // The read-out answers the queries that have a :goal, in order.
-    let mut answered: Vec<Option<usize>> = Vec::with_capacity(n_queries);
-    let mut next = 0usize;
-    for q in &kb.program().queries {
-        if ein_infer::query_value(&ast, q, "goal").is_some() {
-            answered.push(Some(next));
-            next += 1;
-        } else {
-            answered.push(None);
-        }
-    }
-    for &(qi, _) in &overs {
-        let at = answered[qi].and_then(|k| r.queries.get(k));
-        let report = at.and_then(|q| q.claim.clone()).unwrap_or_else(|| Report {
-            outcome: Outcome::NotChecked,
-            lines: vec!["the query has no :goal to answer".to_string()],
-        });
+    for (qi, report, fell_back) in settled {
+        let run = match (&second, fell_back) {
+            (Some(run), true) => run,
+            _ => &first,
+        };
+        let beside = Beside::of(&run.r);
+        let at = answered[qi].and_then(|k| run.r.queries.get(k));
         let came = came_of(&report, tally);
         worst = worst.max(came);
-        let row = &mut rows[first + qi];
+        let row = &mut rows[first_row + qi];
         row.outcome = came.key();
         row.answer = at.map(|q| Answered {
             over: if q.as_asked {
@@ -934,7 +966,12 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             classes: q.classes.len(),
             states: q.classes.iter().map(|c| c.states.len()).sum(),
         });
-        row.scope = Some(scope.clone());
+        row.scope = Some(beside.scope.clone());
+        // A claim on a query with no :goal is answered by no run.
+        if at.is_some() {
+            row.route = Some(run.mode.flags());
+            row.fell_back_from = fell_back.then(|| least.flags());
+        }
         if volume == Volume::Verbose || came != Came::Held {
             let goal = row.goal.clone().unwrap_or_else(|| "?".to_string());
             let where_ = if n_queries == 1 {
@@ -944,8 +981,14 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             };
             lines.push(match (volume, at) {
                 (Volume::Verbose, Some(q)) => format!(
-                    "  {where_} — {} ({}, {} over {} states)",
+                    "  {where_} — {} ({}{}: {}, {} over {} states)",
                     came.verb(),
+                    run.mode.flags(),
+                    if fell_back {
+                        format!(", after {}", least.flags())
+                    } else {
+                        String::new()
+                    },
                     if q.as_asked {
                         q.over.words()
                     } else {
@@ -961,9 +1004,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 _ => format!("  {where_} — {}", came.verb()),
             });
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
-            lines.extend(warning.clone());
-            lines.extend(outside.clone());
-            lines.extend(types.clone());
+            lines.extend(beside.lines());
         }
     }
 
@@ -972,5 +1013,129 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         for l in lines {
             println!("{l}");
         }
+    }
+}
+
+/// One question asked of a file: the program it was asked of, which a run
+/// saturates, what it answered, and how long it took.
+struct Asked {
+    ast: Ast,
+    terms: Terms,
+    kb: ein_core::Kb,
+    r: ReadOut,
+    ms: f64,
+    mode: Mode,
+    config: ein_core::SolverConfig,
+    file: String,
+}
+
+/// Ask `mode` of a **freshly loaded** program, deciding its claims
+/// ([`explore::Options::refute`]), within `--region-budget` and the file's
+/// deadline, narrating into `--events`. `Err` is why the run is no verdict.
+fn ask(
+    path: &Path,
+    m: &ArgMatches,
+    mode: Mode,
+    deadline: Option<Instant>,
+    (ast, mut terms, mut kb): (Ast, Terms, ein_core::Kb),
+) -> Result<Asked, String> {
+    let mut opts = explore::Options::new(mode);
+    if let Some(&b) = m.get_one::<i64>("region-budget") {
+        opts.budget = b as u64;
+    }
+    opts.deadline = deadline;
+    opts.refute = true;
+    // A claim states no core: the run takes one only where `--events` prints
+    // it, at each node visited (M1e2 S1e2.2.21, the user's ruling of
+    // 2026-11-05; M1f S1f.5.12). `ein test` prints no `N`.
+    opts.cores = ein_infer::region::Cores {
+        visited: m.get_one::<String>("events").is_some(),
+        nogoods: false,
+    };
+    let config = kb.program().config.clone().unwrap_or_default();
+    let file = path.display().to_string();
+    let mut events = crate::solve::events_start(m, &file, &config);
+    crate::solve::events_load(&mut events, &terms, &kb);
+    let t0 = Instant::now();
+    // Never a pass and never a failure: the claims were neither confirmed
+    // nor refuted.
+    let aborted = || "aborted before an answer: --max-time".to_string();
+    let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
+        Ok(r) => r,
+        Err(ein_infer::SolveError::Deadline) => return Err(aborted()),
+        Err(e) => {
+            eprintln!("{e}");
+            return Err(e.to_string());
+        }
+    };
+    let ms = t0.elapsed().as_secs_f64() * 1000.0;
+    crate::modes::emit_region(&mut events, &r);
+    if r.answer.stopped == Some(explore::Stopped::Deadline) {
+        return Err(aborted());
+    }
+    Ok(Asked {
+        ast,
+        terms,
+        kb,
+        r,
+        ms,
+        mode,
+        config,
+        file,
+    })
+}
+
+/// What is printed beside each claim read off one run, and written on its
+/// row.
+struct Beside {
+    /// The warning, beside each claim printed on a flagged program (the
+    /// proposal's § 4.3, approved 2026-11-03): under `-v`, and under a claim
+    /// that FAILED or was NOT CHECKED.
+    warning: Option<String>,
+    /// What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)), beside
+    /// each claim printed as the warning is: a claim is checked over R, and R
+    /// is over H.
+    outside: Option<String>,
+    /// What the untyped rung bound as an object (M1e2 S1e2.2.10, Q-M1e.12
+    /// (a)), beside each claim printed as the scope is.
+    types: Option<String>,
+    /// The same two, as data, on the row of every claim the run checked.
+    scope: Scope,
+}
+
+impl Beside {
+    fn of(r: &ReadOut) -> Beside {
+        Beside {
+            warning: (!r.answer.monotonicity.is_monotone()).then(|| {
+                format!(
+                    "    {}",
+                    ein_render::read_out::warning_line(
+                        &r.answer.monotonicity,
+                        r.answer.warning.as_deref(),
+                        r.answer.root_dead
+                    )
+                )
+            }),
+            outside: ein_render::read_out::outside_text(&r.answer.root.outside)
+                .map(|t| format!("    outside the universe: {t}")),
+            types: ein_render::read_out::types_text(&r.answer.root.types_as_objects)
+                .map(|t| format!("    a type as an object: {t}")),
+            scope: Scope {
+                outside: ein_render::dump::region::outside_json(&r.answer.root.outside),
+                types_as_objects: ein_render::dump::region::types_json(
+                    &r.answer.root.types_as_objects,
+                ),
+            },
+        }
+    }
+
+    fn lines(&self) -> impl Iterator<Item = String> {
+        [
+            self.warning.clone(),
+            self.outside.clone(),
+            self.types.clone(),
+        ]
+        .into_iter()
+        .flatten()
     }
 }

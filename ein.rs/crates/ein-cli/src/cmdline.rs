@@ -772,13 +772,13 @@ fn solve_command() -> Command {
 /// `ein test` — M1c
 /// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
 ///
-/// **Small on purpose.** The only engine knobs here are the three that decide
-/// whether a run *can finish* — the lattice depth cap and the two budgets —
-/// because everything else `solve` offers is a way to ask a different
-/// question, and this command asks the one the file already asked. In
-/// particular there is no `-n` and no `--exhaustive`: an expectation is a
-/// claim about the exhausted answer, so exhausting is the behaviour rather
-/// than a flag ([`crate::test`]).
+/// **Small on purpose.** The only engine knobs here are the ones that decide
+/// whether a run *can finish*, the two budgets, because everything else
+/// `solve` offers is a way to ask a different question, and this command
+/// asks the one the file already asked. In particular there is no `-n`, no
+/// `--single` and no line flag: an expectation is a claim about a whole part
+/// of R, so which question decides it is read off the claim's shape and is
+/// the runner's to ask, never a flag's ([`crate::test`], M1f S1f.6.27).
 ///
 /// The two file-only flags are here because the stage's acceptance asks for
 /// them by name: a failing expectation is exactly when someone wants the
@@ -801,8 +801,9 @@ fn test_command() -> Command {
                 .value_name("FACTS")
                 .value_parser(region_budget_spec)
                 .help(format!(
-                    "each file's budget, as `ein solve --region-budget`'s (default \
-                     {}). A claim the run could not decide within it is NOT CHECKED",
+                    "the budget of each question a file is asked, as `ein solve \
+                     --region-budget`'s (default {}). A claim no question decided \
+                     within it is NOT CHECKED",
                     default_budget()
                 )),
         )
@@ -838,7 +839,8 @@ fn test_command() -> Command {
         .arg(flag(
             'v',
             "verbose",
-            "one line per claim, held ones included, with what the run found",
+            "one line per claim, held ones included, with the question it was read off \
+             and what the run found",
         ))
         .arg(flag(
             'q',
@@ -857,9 +859,9 @@ fn test_command() -> Command {
             .value_name("FILE.json")
             .value_parser(artefact_path)
             .help(
-                "write the file's run as ein-summary/2 to FILE, as `ein solve` \
-                 does. Additive, and refused when the selection is more than \
-                 one file.",
+                "write the file's run, the last question it was asked, as \
+                 ein-summary/2 to FILE, as `ein solve` does. Additive, and \
+                 refused when the selection is more than one file.",
             ),
     )
     .arg(
@@ -870,10 +872,10 @@ fn test_command() -> Command {
             .help(
                 "write one row per claim and per (query …) of the whole \
                  selection — the claim's shape, the relations its :goal \
-                 closes, the outcome, and what the run found — to FILE as \
-                 ein-test-report/4. Additive. Unlike --json-summary it is the \
-                 report of the selection rather than of one run, so it takes \
-                 any selection.",
+                 closes, the outcome, the question it was read off, and what \
+                 the run found — to FILE as ein-test-report/5. Additive. \
+                 Unlike --json-summary it is the report of the selection \
+                 rather than of one run, so it takes any selection.",
             ),
     )
 }

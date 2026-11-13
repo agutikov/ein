@@ -8,7 +8,7 @@ and `ein test` turns the directory into a status code:
 
 ```sh
 ein test tests/                       # 0 if every claim holds, 1 if one is false
-ein test tests/stdlib/slots/ -v       # one line per query, with the verdict and k
+ein test tests/stdlib/slots/ -v       # one line per claim, with the question asked and what it found
 ```
 
 **This is not `examples/`.** That directory is a set of things to read and run
@@ -700,9 +700,15 @@ is the one the cargo test re-implements, and the two have to stay one rule.
 ## What may be claimed here — M1d S1d.4.3
 
 **A claim that cannot be checked at the runner's own budget does not go in.**
-`ein test` runs the question each claim is about, at the default
-`--region-budget` since M1e2 S1e2.1a.5 (the walk's `--max-set-size 5` before);
-where the run stops short of R there, `:expect` reports
+`ein test` asks the question a file's claims are, at the default
+`--region-budget` since M1e2 S1e2.1a.5 (the walk's `--max-set-size 5` before).
+Since M1f S1f.6.27 that is the least question that can decide them, `--single`
+or `-n k+1` for queries' claims over one part of R and the description for a
+region claim, and then the description for whatever that left undecided
+([`01_grammar.md` § Query](../docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
+So a query's claim on a search too large to describe can go in where the
+question decides it; a region claim on such a program still cannot. Where both questions stop
+short, `:expect` reports
 [`NOT CHECKED`](../docs/kernel/defined_behaviour.md) — which is honest, is not
 a pass, and **takes a failing exit code**. So the policy needs no mechanism: a
 claim that does not check cannot be added without turning the gate red. It is

@@ -177,8 +177,11 @@ fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
     );
 }
 
-/// A query claim that lists one class where the query has two says how many,
-/// and which class it did not list.
+/// A query claim that lists one class where the query has two says how many
+/// it lists, and which class it did not list. Since M1f S1f.6.27 the claim
+/// is asked `--maximal --single`, which stops at the line's second state:
+/// that state's class refutes the claim, and the lines say that the run did
+/// not exhaust the line. Until then the description said *the query has 2*.
 #[test]
 fn a_class_mismatch_names_the_class_it_did_not_list() {
     let r = ein(&["test", "examples/features/11_expect_ambiguity.ein"]);
@@ -202,13 +205,24 @@ fn a_class_mismatch_names_the_class_it_did_not_list() {
     let f = d.file("one.ein", &one);
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    for line in [
+        "the claim lists 1 class, and the maximal line has a class it does not list: \
+         (model (seat Ann S2) (seat Bob S1))",
+        "the run asked whether its maximal line is one state and did not exhaust the maximal \
+         line: what it found refutes the claim, and is not every difference",
+    ] {
+        assert!(r.out.contains(line), "{line}:\n{}", r.out);
+    }
+    // The description of the same file says every difference, as it did.
+    let described = ein(&["solve", &f, "--maximal"]);
+    assert_eq!(described.code, 1, "{}{}", described.out, described.err);
     assert!(
-        r.out.contains(
+        described.out.contains(
             "the claim lists 1 class, the query has 2: \
              (model (seat Ann S2) (seat Bob S1)) is not listed"
         ),
         "{}",
-        r.out
+        described.out
     );
 }
 
@@ -360,7 +374,7 @@ fn verbose_reports_what_the_run_found() {
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     assert!(
         r.out
-            .contains("holds (the maximal line, 2 classes over 2 states)"),
+            .contains("holds (--maximal -n 3: the maximal line, 2 classes over 2 states)"),
         "{}",
         r.out
     );
@@ -709,7 +723,7 @@ fn report(args: &[&str], out: &std::path::Path) -> serde_json::Value {
 fn every_file_of_the_selection_has_a_row() {
     let d = Dir::new("report-rows");
     let r = report(&["examples/features"], &d.0.join("r.json"));
-    assert_eq!(r["schema"], "ein-test-report/4");
+    assert_eq!(r["schema"], "ein-test-report/5");
     let rows = r["rows"].as_array().expect("rows");
     let files: std::collections::BTreeSet<&str> =
         rows.iter().map(|x| x["path"].as_str().unwrap()).collect();
@@ -953,8 +967,17 @@ fn header_for(row: &serde_json::Value) -> String {
         _ => "the states listed",
     };
     let classes = a["classes"].as_u64().expect("classes");
+    // The question the claim was read off, and the one asked first where it
+    // left the claim undecided (M1f S1f.6.27).
+    let route = row["route"]
+        .as_str()
+        .expect("an answered claim has a route");
+    let after = match row["fell_back_from"].as_str() {
+        Some(first) => format!(", after {first}"),
+        None => String::new(),
+    };
     format!(
-        "  {where_} — {verb} ({over}, {} over {} states)",
+        "  {where_} — {verb} ({route}{after}: {over}, {} over {} states)",
         if classes == 1 {
             "1 class".to_string()
         } else {
@@ -1214,7 +1237,7 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     );
     let doc: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
-    assert_eq!(doc["schema"], "ein-test-report/4");
+    assert_eq!(doc["schema"], "ein-test-report/5");
     let bad = scope_disagreements(&r.out, &doc);
     assert!(bad.is_empty(), "{}\n{}", bad.join("\n"), r.out);
 
@@ -1297,4 +1320,330 @@ fn every_corpus_claims_scope_lines_are_its_rows() {
             .any(|x| x["outside"].as_array().is_some_and(|o| !o.is_empty())),
         "no corpus claim's row names a relation outside the universe"
     );
+}
+
+// ── The question a claim is asked — M1f S1f.6.27 ───────────────────
+
+/// `tests/region/08_query_classes.ein`'s program, less its query: three
+/// candidates and R of seven states, ∅ among them, of which three hold
+/// `(a-prop X)`.
+fn seven_states() -> String {
+    let src = std::fs::read_to_string(repo_root().join("tests/region/08_query_classes.ein"))
+        .expect("the fixture");
+    let at = src.find("(query").expect("its query");
+    src[..at].to_string()
+}
+
+/// The claim rows of a report, in order.
+fn claim_rows(doc: &serde_json::Value) -> Vec<&serde_json::Value> {
+    doc["rows"]
+        .as_array()
+        .expect("rows")
+        .iter()
+        .filter(|x| !x["expect"].is_null())
+        .collect()
+}
+
+/// **A claim is asked the least question that decides it, and the surfaces
+/// say which** (T1f.6.27.3): `--single` for a claim of one class, `-n k+1`
+/// for one of k, the line's flag before it for a claim over a line, and
+/// describe for a solve claim. `-v` names the question before what the run
+/// found, and `ein-test-report/5`'s row carries it as `route`.
+#[test]
+fn a_claim_is_asked_the_least_question_and_the_surfaces_say_which() {
+    let d = Dir::new("routes");
+    let out = d.0.join("r.json");
+    let r = ein(&[
+        "test",
+        "examples/beyond_arith/cryptarithm.ein",
+        "examples/beyond_arith/equation_two_unknowns.ein",
+        "examples/features/11_expect_ambiguity.ein",
+        "examples/beyond_arith/equation_refuted.ein",
+        "examples/features/04_open.ein",
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+    for line in [
+        "— holds (--single: all of R, 1 class over 1 states)",
+        "— holds (-n 4: all of R, 3 classes over 3 states)",
+        "— holds (--maximal -n 3: the maximal line, 2 classes over 2 states)",
+        "solve · :expect (false) — holds (state route, k_s = 0, k_c = 0)",
+    ] {
+        assert!(r.out.contains(line), "{line}:\n{}", r.out);
+    }
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    assert_eq!(doc["schema"], "ein-test-report/5");
+    let routes: Vec<(&str, &serde_json::Value)> = claim_rows(&doc)
+        .iter()
+        .map(|x| (x["route"].as_str().expect("a route"), &x["fell_back_from"]))
+        .collect();
+    assert_eq!(
+        routes.iter().map(|(r, _)| *r).collect::<Vec<_>>(),
+        vec!["--single", "-n 4", "--maximal -n 3", "describe"],
+        "{}",
+        r.out
+    );
+    assert!(routes.iter().all(|(_, f)| f.is_null()), "none fell back");
+    // A row no run checked names no question, and carries both keys.
+    let silent: Vec<&serde_json::Value> = doc["rows"]
+        .as_array()
+        .expect("rows")
+        .iter()
+        .filter(|x| x["expect"].is_null())
+        .collect();
+    assert!(!silent.is_empty(), "04_open states no claim");
+    for row in silent {
+        let o = row.as_object().expect("a row");
+        assert!(
+            o["route"].is_null() && o["fell_back_from"].is_null(),
+            "{row}"
+        );
+        assert!(o.contains_key("route") && o.contains_key("fell_back_from"));
+    }
+}
+
+/// **The stage's point, on a corpus program**: a claim the least question
+/// decides is held where describing R stops at the budget. I + BB = ILL at
+/// a budget of 1 200 facts: `--single` shows the one state and no other
+/// within it, and describe, which visits every alive partial assignment,
+/// does not finish, so until S1f.6.27 the claim was NOT CHECKED, exit 1.
+#[test]
+fn a_claim_on_a_search_is_held_where_describing_r_stops() {
+    let file = "examples/beyond_arith/cryptarithm.ein";
+    let r = ein(&["test", file, "--region-budget", "1200", "-v"]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+    assert!(
+        r.out
+            .contains("— holds (--single: all of R, 1 class over 1 states)"),
+        "{}",
+        r.out
+    );
+    // The same budget does stop the description, which `ein solve` says and
+    // exits 0 on: the claim is a note there, not checked.
+    let described = ein(&["solve", file, "--region-budget", "1200"]);
+    assert_eq!(described.code, 0, "{}{}", described.out, described.err);
+    assert!(
+        described.out.contains("NOT CHECKED") && described.err.contains("note: "),
+        "{}{}",
+        described.out,
+        described.err
+    );
+}
+
+/// **What the least question leaves undecided is asked the describing one**:
+/// two classes over seven states, where `-n 3` finds three states in the two
+/// classes and decides nothing. The claim holds as it did, off the
+/// description, and both surfaces say the runner fell back.
+#[test]
+fn an_undecided_claim_falls_back_to_the_description() {
+    let d = Dir::new("fallback");
+    let out = d.0.join("r.json");
+    let summary = d.0.join("s.json");
+    let r = ein(&[
+        "test",
+        "tests/region/08_query_classes.ein",
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+        "--json-summary",
+        &summary.to_string_lossy(),
+    ]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+    assert!(
+        r.out
+            .contains("— holds (describe, after -n 3: all of R, 2 classes over 7 states)"),
+        "{}",
+        r.out
+    );
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    let row = claim_rows(&doc)[0];
+    assert_eq!(row["route"], "describe", "{row}");
+    assert_eq!(row["fell_back_from"], "-n 3", "{row}");
+    assert_eq!(row["answer"]["exact"], true, "{row}");
+    // The one-run artefact is the last question asked.
+    let s: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&summary).expect("a summary")).expect("JSON");
+    assert_eq!(s["asked"]["ask"], "describe", "{}", s["asked"]);
+
+    // And where no fall-back is asked, it is the question's own run.
+    let one = ein(&[
+        "test",
+        "examples/beyond_arith/cryptarithm.ein",
+        "--json-summary",
+        &summary.to_string_lossy(),
+    ]);
+    assert_eq!(one.code, 0, "{}{}", one.out, one.err);
+    let s: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&summary).expect("a summary")).expect("JSON");
+    assert_eq!(s["asked"]["ask"], "single", "{}", s["asked"]);
+}
+
+/// **A state found refutes a claim that does not list its class**, whatever
+/// the run left unvisited (Q-M1f.222): one class claimed where R's seven
+/// states fall in two. `--single` stops at its second state, and the first,
+/// ∅, gives `(model)`, which the claim does not list. The lines say that the
+/// run did not exhaust R, so they are what refutes and not every difference.
+#[test]
+fn a_state_found_refutes_a_claim_that_does_not_list_its_class() {
+    let d = Dir::new("refuted");
+    let f = d.file(
+        "one_of_two.ein",
+        &format!(
+            "{}(query :goal (a-prop ?x) :expect (model (a-prop X)))\n",
+            seven_states()
+        ),
+    );
+    let out = d.0.join("r.json");
+    let r = ein(&["test", &f, "-v", "--json-report", &out.to_string_lossy()]);
+    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    for line in [
+        "— FAILED (--single: all of R, 2 classes over 2 states)",
+        "the claim lists 1 class, and all of R has a class it does not list: (model)",
+        "the run asked whether it is one state (--single) and did not exhaust all of R: what it \
+         found refutes the claim, and is not every difference",
+    ] {
+        assert!(r.out.contains(line), "{line}:\n{}", r.out);
+    }
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    let row = claim_rows(&doc)[0];
+    assert_eq!(row["outcome"], "failed", "{row}");
+    assert_eq!(row["route"], "--single", "{row}");
+    assert_eq!(row["answer"]["exact"], false, "a lower bound: {row}");
+
+    // `ein solve` under the same question keeps its note and its exit 0.
+    let solved = ein(&["solve", &f, "--single"]);
+    assert_eq!(solved.code, 0, "{}{}", solved.out, solved.err);
+    assert!(
+        solved.out.contains("NOT CHECKED") && solved.err.starts_with("note: "),
+        "{}{}",
+        solved.out,
+        solved.err
+    );
+    // And the description fails the claim with every difference, as before.
+    let described = ein(&["solve", &f]);
+    assert_eq!(described.code, 1, "{}{}", described.out, described.err);
+}
+
+/// **A claim still not checked says what was asked first, and why that did
+/// not decide** (T1f.6.27.4): the describing run's line as it was, and one
+/// under it. Exit 1, as before.
+#[test]
+fn a_claim_still_not_checked_says_what_was_asked_first() {
+    // The question stopped at the budget, and so did the description.
+    let stopped = ein(&[
+        "test",
+        "examples/features/11_expect_ambiguity.ein",
+        "--region-budget",
+        "1",
+    ]);
+    assert_eq!(stopped.code, 1, "{}{}", stopped.out, stopped.err);
+    for line in [
+        "the claim is about the maximal line, and this run did not exhaust it",
+        "asked first: --maximal -n 3, which stopped at --region-budget",
+    ] {
+        assert!(stopped.out.contains(line), "{line}:\n{}", stopped.out);
+    }
+    // The question ran to its end and found only states in the classes
+    // listed; the description then stopped at the budget.
+    let d = Dir::new("asked-first");
+    let out = d.0.join("r.json");
+    let within = ein(&[
+        "test",
+        "tests/region/08_query_classes.ein",
+        "--region-budget",
+        "4",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    assert_eq!(within.code, 1, "{}{}", within.out, within.err);
+    for line in [
+        "the claim is about all of R, and this run did not exhaust it",
+        "asked first: -n 3, which found 3 states, each in a class the claim lists, and did not \
+         exhaust what the claim is about",
+    ] {
+        assert!(within.out.contains(line), "{line}:\n{}", within.out);
+    }
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    let row = claim_rows(&doc)[0];
+    assert_eq!(row["outcome"], "not-checked", "{row}");
+    assert_eq!(row["route"], "describe", "{row}");
+    assert_eq!(row["fell_back_from"], "-n 3", "{row}");
+}
+
+/// **`(solve … :expect (false))` is refuted at root**: it says every node is
+/// dead, so an alive root refutes it whether or not the description
+/// exhausts. Exhausted, the line says what R holds, as before; stopped at
+/// the budget it was NOT CHECKED until S1f.6.27 and is FAILED, at root.
+#[test]
+fn the_regions_false_is_refuted_at_an_alive_root() {
+    let d = Dir::new("false-at-root");
+    let body = seven_states();
+    let at = body.find("(solve").expect("its (solve …)");
+    // The form ends `…(c-prop Item)))`: the claim goes before its last `)`.
+    let close = at + body[at..].find(")))").expect("the form's end") + 2;
+    let f = d.file(
+        "alive.ein",
+        &format!("{} :expect (false){}", &body[..close], &body[close..]),
+    );
+    let whole = ein(&["test", &f]);
+    assert_eq!(whole.code, 1, "{}{}", whole.out, whole.err);
+    assert!(
+        whole
+            .out
+            .contains("(false) says every node is dead, and R has 7 states"),
+        "{}",
+        whole.out
+    );
+    let stopped = ein(&["test", &f, "--region-budget", "1"]);
+    assert_eq!(stopped.code, 1, "{}{}", stopped.out, stopped.err);
+    assert!(
+        stopped.summary().contains("1 FAILED, 0 not checked"),
+        "{}",
+        stopped.out
+    );
+    assert!(
+        stopped
+            .out
+            .contains("(false) says every node is dead, and root is alive"),
+        "{}",
+        stopped.out
+    );
+}
+
+/// **The pages name the schema the binary writes.** `--json-report`'s
+/// version is said on two kernel pages and in the option's help; until M1f
+/// S1f.6.27 nothing held them to the report, and `defined_behaviour.md` said
+/// `/2` while the binary wrote `/4`. Any other version one of them names is
+/// one it says came before.
+#[test]
+fn the_pages_name_the_reports_schema() {
+    let d = Dir::new("report-schema");
+    let doc = report(&["examples/features/10_expect.ein"], &d.0.join("r.json"));
+    let schema = doc["schema"].as_str().expect("a schema").to_string();
+    let (name, version) = schema.split_once('/').expect("name/version");
+    let version: u32 = version.parse().expect("a number");
+    for page in [
+        "docs/kernel/defined_behaviour.md",
+        "docs/kernel/configuration.md",
+    ] {
+        let text = std::fs::read_to_string(repo_root().join(page)).expect("the page");
+        assert!(
+            text.contains(&format!("`{schema}`")),
+            "{page} does not name {schema}"
+        );
+        for later in version + 1..version + 4 {
+            assert!(
+                !text.contains(&format!("{name}/{later}")),
+                "{page} names {name}/{later}, past the binary's {schema}"
+            );
+        }
+    }
+    let help = ein(&["test", "--help"]);
+    assert!(help.out.contains(&schema), "--help: {}", help.out);
 }

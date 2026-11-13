@@ -508,7 +508,7 @@ program to answer about.
   Since S1e2.3.3 stdout's key on `pets` is the 38 shown states', and the
   11 339 states' key is priced and declined only under `--dump-answer`.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
-  (`ein-summary/2`), `--json-report` (`ein-test-report/4`), `--trace` with its
+  (`ein-summary/2`), `--json-report` (`ein-test-report/5`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
   ([`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer`
   ([`answer_dump.md`](inference/answer_dump.md)), and `ein oracle`'s `--dump`
@@ -519,7 +519,8 @@ program to answer about.
   code ([`defined_behaviour.md` § 4.4](defined_behaviour.md)). A run answers
   every `(query …)` of its file from one solve, so no artefact flag is refused
   over several queries any more; `ein test` refuses `--events` and
-  `--json-summary` over a selection of more than one file.
+  `--json-summary` over a selection of more than one file, and where it asked
+  the file two questions (M1f S1f.6.27) they hold the last one.
 - **Loading** — `--no-require-why`, § [3.4](#34-the-option-that-decides-loading):
   without it a program missing a `:why` is a load error, and with it the
   program loads; one that carries its `:why`s answers exactly the same either

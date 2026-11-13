@@ -927,7 +927,8 @@ The words are this keyword's alone. A top-level `(region …)`, `(merged …)` o
 would load as a fact of a new relation and check nothing. `model` is not
 reserved, as before.
 
-**Who checks it.** `ein test` does, against R as `ein solve` describes it:
+**Who checks it.** `ein test` does, against R as `ein solve` describes it
+(a solve claim is asked describe's question and no other, [§ Query](#query)):
 route 1 on a monotone program, and the cube on one the static check flags,
 every node a fork of root (what a node is there is open, F21's D2, and the
 read-out's `lattice` block warns of it). The claim is never checked against the
@@ -1083,11 +1084,39 @@ ein test puzzle.ein -v               # …and say what held, with the verdict an
 Three differences from `solve`, and each is the form's semantics rather than a
 preference:
 
-- **It runs the question each claim is about.** A claim is about a set — all
-  of R, a line, a query's classes over one — so a run that asked a part of it
-  (`-n`) confirms nothing. Since M1e2 S1e2.1a.5 `ein test` runs, per file, the
-  mode the file's claims are about (all of R when any is), and has no `-n`
-  and no line flag; deciding is the behaviour.
+- **It asks the question the claims are.** A claim is about a set — all of
+  R, a line, a query's classes over one — and it is *held* only by an answer
+  that lists all of that set. `ein test` has no `-n`, no `--single` and no
+  line flag: which question decides a file's claims is read off their shapes,
+  never chosen by an option. Since M1f
+  [S1f.6.27](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md)
+  a file is asked **the least question that can decide every claim it
+  states**, and what that leaves undecided is asked the describing question,
+  which from M1e2 S1e2.1a.5 until then was the one question asked:
+
+  | the file's claims | the question, as `ein solve`'s flags | what its answer decides |
+  |---|---|---|
+  | queries' claims, all over one part of R (all of it, the minimal line, the maximal line), none listing more than one class: `(model …)`, `(false)` | `--single`, over that part | one state or none: the classes are the part's, and every claim holds or fails. Two states: a claim is refuted where one of them gives a class it does not list |
+  | queries' claims, all over one part, the most classes one lists being k ≥ 2 | `-n k+1`, over that part | fewer than k + 1 states: the run listed the whole part, and every claim holds or fails. k + 1 states: a claim is refuted where one gives a class it does not list |
+  | a `(solve … :expect …)`, alone or beside queries' claims | describe: a bare `ein solve` | all of them, when it exhausts R. Its route on a dead root is root's saturation, which is all `(false)` needs; an alive root refutes `(false)` whether it exhausts or not |
+  | queries' claims over more than one part | describe | all of them, when it exhausts R |
+
+  **A claim is about classes and a run finds states.** Several states can
+  fall in one class, so k + 1 states do not refute a claim of k classes by
+  their number: what refutes is a class the claim does not list, and every
+  state a run lists is a certified member of the part it was asked, so that
+  holds whatever the run left unvisited. Where the states found all fall in
+  listed classes and the part is not exhausted, the question has decided
+  nothing, and the file is asked the describing question of the program
+  loaded again: all of R, or the one line every claim is over. A claim the
+  description decides reads as it always did, and one neither question
+  decided is `NOT CHECKED` and says what was asked first. `-v` names the
+  question a claim was read off, *holds (--single: all of R, 1 class over 1
+  states)*, and `--json-report`'s row carries it as `route`. So a claim on a
+  search can be held where describing R cannot finish. `ein solve` itself
+  refutes nothing from a part: under a mode, a
+  claim the question did not exhaust is a note, *not checked*
+  ([Q-M1f.222](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f222--a-claim-refuted-by-a-state-a-run-found)).
 - **It runs only what the expectations need.** A query with no `:expect` states
   nothing and is never solved, so a directory of programs costs one load each
   plus a search for each claim.
@@ -1100,8 +1129,9 @@ preference:
 A claim a run did not decide has one more spelling under either command:
 **`NOT CHECKED`**, which is not a pass. Under `test` it takes the same exit
 code a false claim does, and the only thing that can still produce it is a
-budget, `--region-budget` or the cube's `--region-limit` — a partial R is a
-lower bound, not R. Under `solve` it is a `note:` on stderr and the run exits
+budget, `--region-budget` or the cube's `--region-limit`, that stopped both
+of the file's questions — a partial R is a lower bound, not R, and it
+refutes a claim only by a class the claim does not list. Under `solve` it is a `note:` on stderr and the run exits
 0, because the run answered the question it was asked (M1e2 S1e2.1a.5; until
 then the walk's `--max-set-size` was the cap, and `solve` exited 1).
 

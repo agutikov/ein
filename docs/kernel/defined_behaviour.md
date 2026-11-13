@@ -788,9 +788,17 @@ run did not decide — it asked another part of R (`-n`, a line the claim is not
 about) or stopped (`--region-budget`, `--region-limit`). Under `ein solve` it
 is a `note:` on stderr and the run exits **0**, because the run answered what
 it was asked and an answer is not an error. Under `ein test` it takes **1**,
-because `ein test` runs the question each claim is about, so a claim it could
-not decide is a claim it failed to check — and a green line for a claim nobody
-checked is what the whole form exists to prevent. The words are S1e2.1a.5's
+because `ein test` asks the question the claims are and then, of what that
+leaves undecided, the describing one (M1f S1f.6.27,
+[`01_grammar.md` § Query](ir/03-ein-lang/01_grammar.md#query)), so a claim it
+could not decide is a claim it failed to check — and a green line for a claim
+nobody checked is what the whole form exists to prevent. **Under `ein test` a
+run that did not exhaust what a claim is about still refutes it**, by a class
+of a state found that the claim does not list, or for `(solve … :expect
+(false))` by an alive root: `FAILED`, where `ein solve` under the same
+question prints the note
+([Q-M1f.222](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f222--a-claim-refuted-by-a-state-a-run-found)).
+The words are S1e2.1a.5's
 ([`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)).
 
 ### 4.2 The verdict atom's refusals — M1d S1d.2.3
@@ -2385,9 +2393,24 @@ Two things about it are contract rather than convenience:
   a *program*, so they are not in the numerator of "what fraction of the corpus
   claims a model set".
 
-The schema is `ein-test-report/2`, deliberately not `ein-summary/1`: a summary
+The schema is `ein-test-report/5`, deliberately not `ein-summary/2`: a summary
 is one run's counters, a report is one row per query, and a consumer reading
 the same version marker on both would be right to expect the same fields.
+**`/5` since M1f S1f.6.27**, additively: every row carries `route`, the
+question its claim's outcome was read off, spelled as `ein solve`'s flags
+(`--single`, `-n 4`, `--maximal -n 3`) and `describe` for the bare run, and
+`fell_back_from`, the question asked first where it left the claim undecided
+and the outcome is the describing run's; both are `null` on a row no run
+checked. `ein test -v` names the same two in a query claim's line, *holds
+(describe, after -n 3: all of R, 2 classes over 7 states)*, and
+`test_cli::the_verbose_header_and_the_report_row_agree_field_for_field` holds
+the line to the row over the corpus. Where a file was asked two questions,
+`--events` and `--json-summary`, which name one run, hold the last. `/3`
+(M1e2 S1e2.1a.5) replaced a query row's `ran`, the walk's counters, with
+`answer`: what its classes are over, whether that is exact, and how many
+classes and states; `/4` (M1e2 S1e2.3.10) added `outside` and
+`types_as_objects` to every row, what the universe leaves out beside a claim
+a run checked.
 **`/2` since M1e2 S1e2.1a.4.** A file's `(solve … :expect …)` claim has a row
 of its own, first among the file's rows, as its header is first among the
 file's lines. Every row says which kind it is in `place` (`query` or

@@ -259,3 +259,125 @@ CHECKED to FAILED, `p/mul7_6.ein` from no answer to held. T6 banks the first.
 one; Q-M1f.222, a claim is refuted by a state a run found, under `ein test` and not under `ein solve`;
 [Q-M1f.223](../open_questions.md#q-m1f223--what-the-surfaces-of-ein-test-say-of-the-question), what `-v`,
 `--json-report`, `--events` and `--json-summary` say when a file was asked two questions.
+
+### T1f.6.27.2 — the oracle's word, done
+
+**Built, in the library, before the runner asks** (`fad716e6`; `ein_infer::read_out`, `ein_infer::explore`).
+
+- `read_out::least(root, ast)`: the least question that can decide every claim a program states, read off
+  the claims' shapes and nothing else, as T1's table has it. `read_out::describing(root, ast)`: all of R, or
+  the one line every query claim is over, the one question the runner asked until now.
+- `read_out::stands(first, fallback)`: which of the two runs a claim is read off. The describing run's
+  wherever it decided; the first's where it decided and the description stopped; and where the two decide
+  one claim differently, a refusal, *two questions decide one claim differently, which no two routes may —
+  an engine defect*.
+- `explore::Options::refute`, off by default and under `ein solve`: with it a claim whose part the answer
+  did not exhaust is refuted by a class of a state found that the claim does not list, and `(solve …
+  :expect (false))` by an alive root on a partial description. No route and no answer reads it.
+- `Mode::flags()`: a question as `ein solve`'s flags, `describe` for the bare run.
+
+**The test**, `ein-infer/tests/claim_routes.rs`. The corpus states 465 claims and all but one hold, so the
+corpus's own claims cannot show that a route fails a false claim. The test writes its claims from the
+oracle. On every corpus file and register witness whose cube the oracle enumerates, for every goal the
+program asks and each of the three parts of R, the query's classes are read off the cube, and three claims
+are written from them: the one that lists them, which holds; one with a class fewer and one with `(model)`
+more, which fail. The program's own queries and its solve claim are taken out of its text first.
+
+- Each claim is asked **alone, as `ein test` reads a file that states it**: the least question, then the
+  describing one where the first left it undecided, unbudgeted and at a budget of 8 facts.
+- All the claims of a program are asked of **one describing run**.
+- **Held:** the least question's word where it decides, the fall-back's, what stands, and the
+  description's each equal the oracle's; a stopped run that decides, decides as the oracle does; unbudgeted,
+  what stands is never *not checked*.
+- `(solve … :expect (false))`, spliced into the program's `(solve …)`, holds exactly when the oracle's root
+  is dead, unbudgeted and at budget 8.
+
+Counted (`cargo test -p ein-infer --test claim_routes -- --nocapture`, 2026-11-13):
+
+| | |
+|---|---:|
+| programs the oracle reaches, and those of them that ask a query | 459, 296 |
+| claims written and asked, and those over a line | 1 710, 504 |
+| asked `--single`, asked `-n k+1` | 1 117, 593 |
+| held by an exhausted least question | 580 |
+| failed by an exhausted least question | 958 |
+| refuted by a state found, nothing exhausted | 108 |
+| fell back to the description | 64 |
+| at budget 8: decided, of which refuted by what a stopped run found; not checked | 437, 59; 305 |
+| `(false)`: decided; of which refuted at an alive root by a stopped run | 851; 67 |
+
+**No disagreement, on any claim, so no register row was filed.** A program with no candidate is asked over
+all of R alone and at one budget, since its three parts are one and no budget stops a run before root. The
+sweep runs a program a thread, 24 s on this machine; its first form, a thread and every part on every
+program, took 500 s. Two smaller tests: `the_least_question_is_read_off_the_claims_shapes`, T1's table row
+by row on one program whose claims change, and `stands` on its nine cases;
+`a_program_less_its_claims_keeps_everything_else`, the test's own text surgery.
+
+### T1f.6.27.3 and .4 — the runner, and a NOT CHECKED that says why, done
+
+**Built** (`ein-cli`'s `test.rs`). A file is loaded and its claims found as before; then it is asked
+`least`'s question with `refute` set. Where that is not the describing question and left a query's claim
+undecided, the program is loaded again and asked `describing`'s, and each claim is read off the run
+`stands` names. A solve claim is asked describe alone. The file's deadline, `-T`, is one instant for both
+runs, and `--region-budget` is each run's. Two runs that decide a claim differently make the file an ERROR,
+exit 2.
+
+- **`-v`** names the question in a query claim's line, before what the run found: *holds (--single: all
+  of R, 1 class over 1 states)*, *holds (-n 4: all of R, 3 classes over 3 states)*, *holds (--maximal -n
+  3: the maximal line, 2 classes over 2 states)*, *holds (describe: all of R, 1 class over 1 states)* and,
+  on the one corpus file that falls back, *holds (describe, after -n 3: all of R, 2 classes over 7
+  states)*. A solve claim's line is as it was.
+- **`--json-report`** is `ein-test-report/5`: every row carries `route` and `fell_back_from`, `null` on a
+  row no run checked. The option's help says so.
+- **T4.** A claim neither question decided keeps the describing run's line and gains one: *asked first:
+  --maximal -n 3, which stopped at --region-budget*, or *asked first: -n 3, which found 3 states, each in
+  a class the claim lists, and did not exhaust what the claim is about*. Exit 1, as before.
+- **A refutation from a part** reads *the claim lists 1 class, and all of R has a class it does not list:
+  (model)*, each further unlisted class on a line, and then *the run asked whether it is one state
+  (--single) and did not exhaust all of R: what it found refutes the claim, and is not every difference*.
+- **`--events` and `--json-summary`**, where a file was asked twice, are the last run's.
+
+**The sweep** (`python3 build/s1f.6.27/sweep.py --new build/s1f.6.27/ein-t3b --diff`, 2026-11-13,
+`build/s1f.6.27/sweep-t3b.txt`): the release binary at `9ac0f7ab` against the release binary of the tree
+this section was committed with, kept as `build/s1f.6.27/ein-t3b`, over the 849 `.ein` files `9ac0f7ab`
+tracks. A first sweep, on a binary built before the runner's last edits (`sweep-t3.txt`), said the same
+line for line.
+
+- **The surfaces that must not move did not:** `ein saturate --dump`, `ein solve`, `ein solve --single`,
+  `ein solve -n 2`, `ein solve --count`, stdout, stderr and exit, and the whole of `ein solve
+  --json-summary`: 0 files of 849.
+- **`ein test FILE`: 0 files moved,** no line and no exit code.
+- **No claim's outcome moved:** 0 of the 465. Every report is the old one once `route`, `fell_back_from`,
+  `region.ms` and the schema are taken out.
+- **`ein test FILE -v`: 133 files moved, each by the question named in a claim's line alone,** 269 lines:
+  144 gained `--single`, 113 `describe` (a query's claim beside a solve claim), 7 `-n 3`, 2 `--maximal -n
+  3`, 1 `-n 4`, 1 `-n 9`, and 1 `describe, after -n 3`.
+- **The question each of the 465 claims was read off:** describe 309, of which 196 are solve claims;
+  `--single` 144; `-n 3` 7; `--maximal -n 3` 2; `-n 4` 1; `-n 9` 1; describe after `-n 3` 1.
+
+**The goldens, counted before they were blessed.** `help_shape.txt`: 4 lines, the help of `ein test`'s
+`--json-report`, `--json-summary`, `--region-budget` and `-v` (`diff build/s1f.6.27/help_shape.before.txt
+ein.rs/crates/ein-cli/tests/golden/help_shape.txt | grep -c '^>'`). No other golden moved: `ein test`
+writes none, and no digest of `corpus_shapes.md5` reads it.
+
+**The pins** (`ein-cli/tests/test_cli.rs`): `a_claim_is_asked_the_least_question_and_the_surfaces_say_which`,
+four corpus files of four shapes and one that states no claim, the `-v` lines and the rows' `route`;
+`a_claim_on_a_search_is_held_where_describing_r_stops`, I + BB = ILL at a budget of 1 200 facts, held by
+`--single` where `ein solve` at the same budget stops and notes the claim;
+`an_undecided_claim_falls_back_to_the_description`, `tests/region/08_query_classes.ein`, its line, its row
+and the summary's `asked`; `a_state_found_refutes_a_claim_that_does_not_list_its_class`, the lines, the
+row's `exact: false`, and `ein solve --single` on the same file keeping its note and its exit 0;
+`a_claim_still_not_checked_says_what_was_asked_first`, both reasons;
+`the_regions_false_is_refuted_at_an_alive_root`, exhausted and at a budget of 1;
+`the_pages_name_the_reports_schema`, new: `defined_behaviour.md`, `configuration.md` and the option's help
+name the schema the binary writes. `the_verbose_header_and_the_report_row_agree_field_for_field` reads the
+question off the row, so the two surfaces are held to each other on it over the corpus.
+
+**The pages, in the same commit:** [`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query),
+the table and why a claim is held only by an exhausted answer; `defined_behaviour.md`, the *not checked*
+paragraph and the report's schema, which the page had at `/2` while the binary wrote `/4`
+([E-46](findings.md), filed and fixed here); `configuration.md`; `events.md` and `read_out.md` § 7 and § 12;
+[`tests/README.md`](../../../tests/README.md) § What may be claimed here; and `AGENTS.md`'s rule *`ein test`
+exhausts*, restated in place, with its sentence on the stdlib conformance gate. That gate,
+`ein-infer/tests/stdlib_coverage.rs`, keeps the description: its question is what a program can activate,
+which a claim's least question need not visit, and its doc comment says so.
