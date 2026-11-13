@@ -1,7 +1,7 @@
 # S1f.6.28 — Word problems, second pass: a reading is always chosen, and *what is not listed is zero*
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's replies of that day. **Running 2026-11-13:** T1 done
+**Status:** planned 2026-11-12, on the user's replies of that day. **Running 2026-11-13:** T1 to T3 done
 ([the record](#record-2026-11-13)). It continues
 [S1f.6.20](s1f.6.20_word_problems.md), whose file is that stage's record; the examples it changes are
 [`examples/word_problems/`](../../../examples/word_problems/README.md), banked at `f3fe6ff0`.
@@ -274,3 +274,98 @@ fails the test, as the page's `boxes13` does above. No program of the corpus is 
 E-33, 29 passed, 41.18 s (S1f.6.27 recorded 39.76 s with one test fewer); `cargo fmt --all --check`; `cargo
 clippy -p ein-infer --all-targets -- -D warnings`; `site_census` on three files, its new fields read back. The
 wider sweeps run with T5, which adds the programs.
+
+### T1f.6.28.2 — the readings rebuilt, shown before they are banked, done
+
+**`readings.ein`, always owed** (`build/s1f.6.28/p2/readings.ein`, the page's `readings_always` of
+[`word_problems.md` § 4.3](word_problems.md#43-the-three-ways-to-write-readings-as-hypotheses)). Against the
+module as banked at `f3fe6ff0` (the page's `readings_plain`, nothing owed):
+
+- **an obligation, `reading-owed`**: where a question asks how many containers are needed, `(wanted (needed C K
+  Q))`, and no reading the theory holds is supposed, the state owes `(open reads-as)`. Its `:why` is what the
+  read-out's `owed` row prints ([S1f.6.26](s1f.6.26_what_root_owes.md)): *a reading of need is owed: the question
+  asks how many boxes are needed for [(together Bob Alice apples now)], and the problem does not say what need
+  means*;
+- **the hrule proposes a reading for every such question**, `(wanted (needed …))`, where it proposed one only
+  where a division leaves something over;
+- **`need-matters` and `reading-matters` are gone**: they named the gap in the state with no reading, which is
+  no longer in R; the `owed` row names it now;
+- the import of `words` gains `wanted`, which the obligation and the hrule read. The rules of each reading,
+  `one-reading` and the entry rule's closures are as they were; the entry rule names `reading-owed` and no
+  longer `need-matters`.
+
+**The table** (`build/s1f.6.28/t2/run.sh` then `python3 build/s1f.6.28/t2/table.py`, the release binary, whose
+engine `41806bcd` leaves as `fc92f075` built it, 2026-11-13; every output under `build/s1f.6.28/t2/out/<program>/`). *Apart from the engine* is the
+script's own computation: the problem's arithmetic in Python, and R by the readings' meaning over the four
+subsets of the two candidates, with two readings at once a contradiction and no reading a debt.
+
+| | `boxes12`: 5 + 7 apples, boxes of 3 | `boxes13`: 5 + 8 apples, boxes of 3 | `boxes13_stated` (scratch): the same, *Every apple must be packed.* |
+|---|---|---|---|
+| apart from the engine | 12 = 3 × 4 + 0; R = {pack-all}, {whole-only}; each answers 4: **two states, one class** | 13 = 3 × 4 + 1; whole-only 4 and 1 over, pack-all ⌈13 ÷ 3⌉ = 5 and 0 over; R = {pack-all}, {whole-only}: **two states, two classes** | the stated reading is root's: R = {∅}, 5 |
+| `ein solve` (describe) | 2 states, `∅ not in R — root owes 1 instance`, its `owed` row as above; minimal and maximal lines 2 states each; `N` 1 minimal dead set, the two readings together; monotone; 2 candidates, 0 dead alone; query 1: **1 class over 2 states, 4**; query 2: 2 classes, pack-all and whole-only; 4 saturations · 5 facts beyond root | 2 states, the same rows; query 1: **2 classes, 4 (state 2, whole-only) and 5 (state 1, pack-all)**; query 2: each with its reading and what is left over, 1 and z; 4 saturations · 45 facts beyond root | 1 state, ∅, root owes nothing; `N` 1 minimal dead set, whole-only, dead alone by `one-reading` against root's pack-all; 5 boxes, z over; 2 saturations |
+| `--single` | `Ambiguity — R holds two states or more`, the two states; 3 saturations | `Ambiguity`, the two states; 3 saturations | `Solution — R is one state`; 2 saturations |
+| `--minimal` | `2 states — all of them`; 3 saturations | `2 states — all of them`; 3 saturations | `1 state — all of them`; 1 saturation |
+| `--maximal` | `2 states — all of them`; 4 saturations | `2 states — all of them`; 4 saturations | `1 state — all of them`; 2 saturations |
+| `ein test -v` | 3 claims held: the region claim (state route, k_s = 2), query 1 (*describe: all of R, 1 class over 2 states*), query 2 (2 classes) | 3 held: the region claim, query 1 (2 classes over 2 states), query 2 | 2 held |
+| `ein oracle` | 2 states, `E` 2 minimal discharging sets, the same `owed` row | 2 states, the same | 1 state |
+| root's firings (`ein saturate`) | 145, as banked | 146 | 161 |
+| exit, every run above | 0 | 0 | 0 |
+
+**Every answer agrees with the computation apart from the engine**, and every mode with describe and the oracle
+(`--count`: 2 states, 2 commitments, on both). `boxes12` is the first corpus witness of *answer correct, solution
+not necessarily*, as round 2 put it: two solutions, one class. The read-out names the debt that took root out of
+R, and the `(region …)` names each state's reading, `from {(reads-as need pack-all)}`. `boxes13_stated` shows that a
+reading the problem states closes the debt as a sentence closes a gap; it stays in scratch, the stage banking the
+13-apple problem the user wrote and no twin of it (reply 35, *"take only needed right now"*).
+
+**The trace of each state** (`ein solve FILE --trace T.md`, `build/s1f.6.28/t2/out/<program>/trace.md`):
+
+| | root | state 1, pack-all | state 2, whole-only |
+|---|---|---|---|
+| `boxes12` | 145 steps, ten of the word theory: `asked-is-wanted`, `need-plan`, `together-plan`, `holds-states`, `has-states` twice, `together-means-sum`, `together-is-the-sum`, `holds-means-divide`, `need-exact` | **0 steps** | **0 steps** |
+| `boxes13` | 146 steps, the same ten with `need-left-over` in place of `need-exact` | 15 steps: `need-pack-all-plan`, the calculator's 4 + 1 in thirteen, `need-pack-all` | 1 step: `need-whole-only` |
+
+### T1f.6.28.3 — *why divided, and not subtracted*, written down, done
+
+Nothing is built; this section reads the traces above, which are the program's own account of the choice.
+
+**What the trace says.**
+
+- **Which operation, and what in the problem called for it.** Each operation is one rule's request, and its step
+  names the rule, its `:why` and its premises. On both programs: step 5, `need-plan`, *how many boxes means a
+  division: first how many apples there are to pack, and how many one of the boxes holds*, from `(wanted (needed
+  boxes apples …))`; step 25, `holds-means-divide`, *one of the boxes holds (n z 3), so the number of boxes is a
+  division: (n (n z 1) 3) divided by (n z 3)*, from the question's quantity, the sum's value and the capacity.
+  *Need* with *a box holds* means division because those two premises are the rule's, and that is all the
+  trace can say of why: it is the rule's reading of the words.
+- **Why 13 ÷ 3 and not 3 ÷ 13.** The rule writes `(div ?a ?m)`, the quantity to pack first and the capacity
+  second, and the step shows the bindings: `?a` the value of `(together Bob Alice apples now)`, `?m` the value of
+  `(capacity boxes apples)`. The order of the operands is the rule's.
+- **Why the sum first.** The division's premise is the sum's answer, `(value (together …) 13)`, which step 24
+  derives; so the order of the operations is the derivation's (steps 10 to 24, then 25), and no fact states it.
+- **What each reading adds.** On `boxes13` the states differ in the step that answers: whole-only's one step,
+  *4 boxes are filled, and 1 apple stays unpacked*; pack-all's plan, *4 boxes do not hold everything, since 1
+  apple is left over; one more does, and need asks for the least number, so add 1 to 4*, the addition, and the
+  answer. The second operation of pack-all, + 1, is explained by the reading and by nothing else.
+- **On `boxes12` the reading changes nothing in the derivation.** Both states' traces are empty: the answer is
+  root's, `need-exact`, *12 divided by 3 = 4 and nothing is left over: 4 boxes, each full, whatever need means*.
+  The two solutions of R have one derivation, and the reading each supposes is a commitment no rule read. That is
+  what *answer correct, solution not necessarily* comes to on this theory: the program says the reading did not
+  matter, in the `:why` of the step that answered.
+
+**What it does not say.**
+
+- **Why not 3 + 13, or 13 − 3.** No rule of `words` concludes `add` or `sub` from `needed`, so no such step
+  exists; a trace lists what fired and not what could have and did not. That the theory has no other reading of
+  *how many boxes* is read off the theory (`ein render rules examples/word_problems/words.ein`: `needed` is
+  read by `need-plan`, `holds-means-divide`, `need-exact` and `need-left-over`, and by nothing that asks for a
+  sum or a difference), not off the run.
+- **That the division is right.** The rule is the theory's decision about what the words mean, valid under
+  `(model-counts-only)`, which `need-exact` takes as a premise and the trace cites (*a box holds any 3
+  apples*). Nothing judges whether a solution is correct beside its answer: the engine has no wrong solution,
+  only facts that follow. A solution correct with its reasoning wrong is the user's M2 case, out of scope.
+- **The operations as alternatives.** The search here is over readings, `(reads-as need R)`, under rules that
+  stay fixed (the user's distinction of 2026-11-11); an operation is never a hypothesis, so no state of R is
+  *the subtraction*, dead or with another answer, that the read-out could show beside the division. *Why not
+  subtract* answered by a state is a search over formulas, a theory of solutions:
+  [M1h's P1h.4](../../m1h_beyond_word_problems/README.md#p1h4--the-formula-and-the-calculation) and M2's.
