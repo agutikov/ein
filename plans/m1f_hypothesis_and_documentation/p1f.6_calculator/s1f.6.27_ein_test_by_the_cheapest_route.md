@@ -579,3 +579,28 @@ solve` (Q-M1f.222's (b)); a cheaper N for a bare description (Q-M1f.224's (b) an
 **Not run by this stage**: `./run_tests.sh` and `./run_tests.sh --nightly`, which run on the stage's last commit
 in detached worktrees, their outcome written under this line by the records commit; `utils/ci_container.sh`, which
 the stage file does not need: no DOT writer, review bundle script or CI install changed.
+
+**The gate and the nightly, run by the coordinator** (2026-11-13), each in a detached worktree on
+`8f987963`, the stage's last commit, whose code is `4d2187e7`'s (T7 moved plan pages only):
+
+| run | outcome |
+|---|---|
+| `./run_tests.sh` | exit 0 (`build/s1f.6.27/gate.log`), its link check over 553 pages with no finding |
+| `./run_tests.sh --nightly` | exit 0, every step of its three jobs (`build/s1f.6.27/nightly.log`); `utils/stdlib_mutants.py --check` among them, 437 of 500 killed, the bank held |
+
+**The new slow entry in the nightly.** `send_more_money.ein` is described in the nightly's slow halves, and no
+step moved toward its budget of 5 min on the runner. Each step's `finished in`, on this machine with a gate
+running beside each nightly, against S1f.6.26's nightly on `9ac0f7ab`, taken the same way
+(`build/s1f.6.26/nightly.log`):
+
+| step | `9ac0f7ab` | `8f987963` |
+|---|---:|---:|
+| `corpus_cli`, the slow entries | 130.6 s | 144.0 s |
+| `answer_dump` | 43.0 s | 45.3 s |
+| `answer_round_trip`, the slow and `heavy_dump` entries | 193.8 s | 143.0 s |
+| `lever_invariance`, the slow cells | 55.2 s | 42.5 s |
+| `corpus_cores`, the slow entries | 227.9 s | 225.3 s |
+| `region`, the slow half | 56.3 s | 51.4 s |
+| `obligation_rung`, the slow half | 72.2 s | 69.2 s |
+
+The runner's times are not these; the next nightly in CI is what shows them.
