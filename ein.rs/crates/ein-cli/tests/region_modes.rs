@@ -702,6 +702,56 @@ fn the_trace_takes_its_three_shaping_flags() {
     );
 }
 
+/// **A step names every conclusion of its firing**, in the order the rule
+/// writes them (M1f S1f.6.25, E-5 of P1f.6's `findings.md`). Until that stage
+/// the *Derives* line, and `--reorder`'s arrow, named the first alone: a
+/// second conclusion was stored, held by the state and read by later steps,
+/// and no step said where it came from. Each conclusion carries its own
+/// statement, its relation's `:why`; a rule of one conclusion prints the line
+/// it always did.
+#[test]
+fn a_trace_step_names_every_conclusion_of_its_firing() {
+    let dir = scratch("trace-conclusions");
+    let file = dir.join("two.ein");
+    std::fs::write(
+        &file,
+        "(relation p Thing :why \"{?1} is p\")\n\
+         (relation q Thing :why \"{?1} is q\")\n\
+         (relation r Thing Thing :why \"{?1} is related to {?2}\")\n\
+         (p a)\n\
+         (rule many () :match (p ?x)\n\
+           :assert (and (q ?x) (flag ?x) (not (r ?x b)) (r ?x ?x))\n\
+           :why \"{?x} is q, flagged and related to itself\")\n\
+         (rule one () :match (flag ?x) :assert (seen ?x) :why \"{?x} is seen\")\n\
+         (solve :hypothesis-relations ())\n",
+    )
+    .unwrap();
+    let file = file.to_string_lossy().to_string();
+    let trace = |extra: &[&str]| {
+        let p = dir.join("t.md").to_string_lossy().to_string();
+        let mut a = vec!["solve", &file, "--no-diagrams", "--trace", &p];
+        a.extend(extra.iter());
+        let r = ein(&a);
+        assert_eq!(r.code, 0, "{}", r.err);
+        std::fs::read_to_string(&p).unwrap()
+    };
+    let plain = trace(&[]);
+    assert!(
+        plain.contains(
+            "Derives `q(a)` — a is q; `flag(a)`; `not(r(a, b))`; `r(a, a)` — a is related to a\n"
+        ),
+        "{plain}"
+    );
+    // One conclusion: the line as it was, a full stop where no statement ends it.
+    assert!(plain.contains("Derives `seen(a)`.\n"), "{plain}");
+    let reorder = trace(&["--reorder"]);
+    assert!(
+        reorder.contains("· `many` → `q(a)`, `flag(a)`, `not(r(a, b))`, `r(a, a)` — "),
+        "{reorder}"
+    );
+    assert!(reorder.contains("· `one` → `seen(a)` — "), "{reorder}");
+}
+
 /// `ein oracle`'s five options from `ein solve` — T1e2.1a.5.3's first step,
 /// `solve_interface.md` § 2.2.
 #[test]

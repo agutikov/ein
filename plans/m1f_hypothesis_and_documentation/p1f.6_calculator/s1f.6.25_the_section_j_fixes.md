@@ -153,3 +153,65 @@ under the next free id. A change to what a surface prints shows real computed ex
 changes an answer; exit non-zero only on error. The gate is `./run_tests.sh`, then `./run_tests.sh --nightly`
 after each code commit; `utils/ci_container.sh` only if a DOT writer or the review bundle changes (T1 may
 touch the bundle's writer). The five tasks may be five commits, each green.
+
+## Record, 2026-11-13
+
+Each task is a build commit of its own, so that one can be reverted without the others; a register row is
+filed `open` in a commit before its fix. The baseline every sweep compares with is the release binary and
+the stdlib at `5e5685b7`, kept as `build/s1f.6.25/ein-old` and `build/s1f.6.25/stdlib-old`, and the sweep is
+`python3 build/s1f.6.25/sweep.py --diff`: `ein saturate --dump` and `ein solve` over every `.ein` file
+`5e5685b7` tracks, stdout, stderr and exit, times masked.
+
+### T1f.6.25.1 — E-5, done
+
+**The surfaces, read first.** A firing's conclusions are named in three places.
+
+| surface | what it printed | after |
+|---|---|---|
+| `--trace`'s step, `ein_render::trace::region::derives_line` | *Derives `c1`*, the firing's first conclusion and its statement | every conclusion, in the order the rule writes them, `; ` between two, each with its own statement |
+| `--trace --reorder`'s step, the same module's `steps` | `` `rule` → `c1` `` | `` `rule` → `c1`, `c2`, … `` |
+| a `--dump-answer` state file | a line a fact, each with its own `; rule r: <reason> — <statement>` comment | unchanged: every conclusion is a fact of the state and always had its line |
+
+The review bundle's case pages carry the trace's text as written, so they say what the trace says; the
+bundle's writer is not changed, and `utils/ci_container.sh` is not part of this task's done. One place in
+it still reads the first conclusion alone, E-40 below.
+
+**The fix** (`ein-render`'s `trace/ast.rs`, `linearize.rs`, `region.rs`). A `TraceStep` carries its firing's
+other conclusions, `more`, each with its statement. A firing's `derived` already held every conclusion,
+new or already known, in the rule's order (`ein_infer::firing::fire`), so nothing in the engine moved. A
+step's section under `--reorder` is still its first conclusion's entity. The natural-language reading of a
+fact is not changed. The form of the line is a default,
+[Q-M1f.214](../open_questions.md#q-m1f214--the-derives-line-of-a-firing-with-several-conclusions).
+
+**Before and after**, on `build/s1f.6.25/p/e5.ein`, a rule `two` with `:assert (and (q ?x) (flag ?x) (not (r
+?x b)) (r ?x ?x))` beside `(p a)` (`ein solve FILE --trace T.md`, the binary at `5e5685b7` and the tree's,
+2026-11-13):
+
+```text
+before   Derives `q(a)` — a is q
+after    Derives `q(a)` — a is q; `flag(a)`; `not(r(a, b))`; `r(a, a)` — a is related to a
+before   **Step 1** · `two` → `q(a)` — a is q and related to itself          (--reorder)
+after    **Step 1** · `two` → `q(a)`, `flag(a)`, `not(r(a, b))`, `r(a, a)` — a is q and related to itself
+```
+
+**What moved, named before blessing.** `cargo test --workspace --no-fail-fast` on the fix
+(`build/s1f.6.25/ws-t1.log`, 2026-11-13) failed two tests and no other:
+
+- `ein-render/tests/golden/corpus_shapes.md5`: 173 `region-trace` digests of 23 765 renderings, and no
+  digest of another kind (`build/s1f.6.25/t1-moved.txt`). They are the programs in which a rule of several
+  conclusions fires: 97 under `tests/stdlib/`, 16 under `examples/word_problems/`, 15 `binary_logic`, 13
+  `arith`, 9 `beyond_arith`, 7 `binary_arithmetic`, the six zebra programs (the stdlib's setup fan-outs
+  conclude four facts a firing), 3 `domain_elim`, 2 `ein-bugs`, 1 `features` and four stdlib modules. No
+  line count moved: a step keeps its one *Derives* line.
+- `ein-render/tests/golden/trace_unconditional.md`, one line: *Derives `functional(color-loc)`.* reads
+  *Derives `functional(color-loc)`; `injective(color-loc)`; `total(color-loc)`; `surjective(color-loc)`.*
+
+**The pin**: `ein-cli/tests/region_modes.rs`'s `a_trace_step_names_every_conclusion_of_its_firing`, both
+forms, and a rule of one conclusion printing the line it always did.
+
+**The sweep** moved no answer: of 837 files one differs, `examples/broken/load/import_module_not_found.ein`,
+by the path in its refusal, the old stdlib's directory, as in every sweep that points the old binary at a
+copy (`build/s1f.6.25/sweep-t1.txt`, 2026-11-13). R, N, H, claims and exit codes are untouched; the zebra
+programs' answers did not move, and their `--trace` files name three conclusions more a setup step.
+
+**Page**: `09_natural_language.md`'s table row for a relation's `:why`.

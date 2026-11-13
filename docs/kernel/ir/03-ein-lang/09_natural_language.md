@@ -21,7 +21,7 @@ reference nothing binds as written, which is why [§ 7](#7-what-holds-this-page)
 
 | text | on | fills | printed by |
 |---|---|---|---|
-| `:why` | `(relation R …)` | **positional**: `{?1}` the fact's first argument, `{?2}` its second, … — the fact's **statement** | a `--dump-answer` state file, after each fact of R; `--trace`, after each derived fact of R (*Derives `…` — …*) |
+| `:why` | `(relation R …)` | **positional**: `{?1}` the fact's first argument, `{?2}` its second, … — the fact's **statement** | a `--dump-answer` state file, after each fact of R; `--trace`, after each derived fact of R (*Derives `…` — …*; a firing of several conclusions names every one, in the order its rule writes them, `; ` between two, each with its own statement, M1f S1f.6.25) |
 | `:why` | `(rule …)`, `(hrule …)` | the firing's variables: a parameter, or a variable a positive premise binds — a derived fact's **reason** | `--trace`'s step line, the DOT slice's rule node, an obligation's owe line, a state file after each fact the rule derived first |
 | `:why` | `(macro …)` | a parameter | nothing ([§ 5](#5-where-a-template-has-nowhere-to-live)); it documents the pattern |
 | `:goal-text` | `(query …)` | the goal's variables, per row | the read-out's projection class (`“…”`) |

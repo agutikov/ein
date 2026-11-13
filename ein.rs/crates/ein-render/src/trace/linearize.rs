@@ -66,8 +66,9 @@ fn step_from_firing(
     diagrams: bool,
     conditional: bool,
 ) -> TraceStep {
-    // `firing.derived` is a tuple; the linear step records the *primary*
-    // conclusion, and the per-step slice renders the full fan-out.
+    // `firing.derived` is a tuple: the step is headed by its first
+    // conclusion, which names its section, and carries the others in
+    // `more` (M1f S1f.6.25, E-5); the per-step slice renders the fan-out.
     let derived = fact_ref(terms, firing.derived[0]);
     let mut step = TraceStep::new(n, terms.sym(firing.rule).to_string(), derived);
     step.premises = firing
@@ -87,6 +88,13 @@ fn step_from_firing(
         .unwrap_or_default();
     step.statement =
         kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, firing.derived[0]));
+    step.more = firing.derived[1..]
+        .iter()
+        .map(|d| {
+            let says = kb.and_then(|kb| crate::sentence::statement(kb.program(), terms, *d));
+            (fact_ref(terms, *d), says)
+        })
+        .collect();
     step.sources = firing
         .premises
         .iter()

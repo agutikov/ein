@@ -100,6 +100,11 @@ pub struct TraceStep {
     /// What the derived fact says: its relation's `:why`, positional — M1f
     /// S1f.5.14's T1f.5.14.2. `None` where the relation carries none.
     pub statement: Option<String>,
+    /// The firing's other conclusions, in the order the rule writes them,
+    /// each with its statement (M1f S1f.6.25, E-5): a firing stores every
+    /// conclusion of its rule, and until that stage a step named the first
+    /// alone. Empty for a rule of one conclusion.
+    pub more: Vec<(FactRef, Option<String>)>,
     /// The inline DOT slice — render-time, not serialised.
     pub diagram: Option<String>,
     /// The clustering key (target entity) — render-time, not serialised.
@@ -120,6 +125,7 @@ impl TraceStep {
             bindings: Vec::new(),
             why: String::new(),
             statement: None,
+            more: Vec::new(),
             diagram: None,
             section: None,
             sources: Vec::new(),
@@ -129,6 +135,14 @@ impl TraceStep {
 
     pub fn derived_label(&self) -> String {
         self.derived.label()
+    }
+
+    /// Every conclusion's label, the first one first.
+    pub fn derived_labels(&self) -> Vec<String> {
+        std::iter::once(&self.derived)
+            .chain(self.more.iter().map(|(f, _)| f))
+            .map(FactRef::label)
+            .collect()
     }
 
     pub fn premise_labels(&self) -> Vec<String> {

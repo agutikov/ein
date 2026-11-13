@@ -26,7 +26,7 @@
 
 Premises: `bijective(color-loc)`
 
-Derives `functional(color-loc)`.
+Derives `functional(color-loc)`; `injective(color-loc)`; `total(color-loc)`; `surjective(color-loc)`.
 
 <dot>
 

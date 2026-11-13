@@ -226,6 +226,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.211](#q-m1f211--which-fact-carries-the-flag-of-a-division-by-zero-at-the-call) | which fact carries the flag of a division by zero at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: (ii), the call, `(division-by-zero (div-call TAG X Y))` as it was asserted, and a public request's flag as it was, so a public division has two flags and `ein solve` reads as before; the three designs are shown on nine programs in the record**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.212](#q-m1f212--a-theorys-wrong-answer-and-the-register) | a theory's wrong answer and the register | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: not a register row. The register holds the engine's wrong answers, and a tagged call by zero that derived nothing was a rule of a theory, answered by the engine as written; the witness is a test program**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.213](#q-m1f213--the-binary-example-theory-and-the-flag-at-the-call) | the binary example theory and the flag at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: `gen_binary.py` carries the rule over, so `bin.ein` has 68 rules and flags `(div-call2 TAG X Y)` by zero as decimal does**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
+| [Q-M1f.214](#q-m1f214--the-derives-line-of-a-firing-with-several-conclusions) | the *Derives* line of a firing with several conclusions | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: one line, every conclusion in the rule's order, `; ` between two, each with its own statement**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6251--e-5-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4123,3 +4124,18 @@ own, `div-call2`, which `conv.ein` calls.
 **Defaulted 2026-11-13: (a), the user's to revise.** The ruling is about division by zero wherever it
 happens, and the rule knows nothing of the base, which is the generator's test for what it keeps; the
 check was left out because its rules name the ten digits. No binary program's `ein solve` moved.
+
+### Q-M1f.214 — The *Derives* line of a firing with several conclusions
+
+**Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6251--e-5-done)'s T1 (E-5). The stage file says the line *lists every conclusion the
+firing stored, in the order the rule writes them*, and not how a line of several reads.
+
+- **(a) One line,** `; ` between two conclusions, each followed by its own statement where its relation
+  has a `:why`: *Derives `q(a)` — a is q; `flag(a)`; `r(a, a)` — a is related to a*. A rule of one
+  conclusion prints the line it always did, so no golden of such a rule moves.
+- **(b) A line a conclusion,** each a *Derives* of its own. Every step of a multi-conclusion rule grows,
+  and a reader of the file who counts *Derives* lines no longer counts steps.
+- **(c) A list under the word.**
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It is the stage file's word, *the line*, and
+`--reorder`'s arrow lists the same conclusions with commas, having no statements to carry.

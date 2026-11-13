@@ -31,7 +31,7 @@ bbdc04d47ecccd97       34L  examples/arith/add.ein::read-out[maximal]
 e339b898b1871ea8       34L  examples/arith/add.ein::read-out[minimal]
 394935c63d7b06e4       34L  examples/arith/add.ein::read-out[single]
 479f1193faecfa7a       34L  examples/arith/add.ein::read-out[n2]
-991e3ef228dd39b7     1449L  examples/arith/add.ein::region-trace
+87321f7b32236da8     1449L  examples/arith/add.ein::region-trace
 800c068fb3326423     1921L  examples/arith/add.ein::states
 60dd7ca1907ae0d0        7L  examples/arith/add.ein::region-lattice
 36e7b5106995006d       90L  examples/arith/add.ein::cores[describe]
@@ -73,7 +73,7 @@ b34e1a8cd60a5c12     9999L  examples/arith/div.ein::dot[kb-origin]
 591f96f9b9c0d04f       25L  examples/arith/div.ein::read-out[minimal]
 b9abe70743597179       26L  examples/arith/div.ein::read-out[single]
 72b8dcf704da1115       26L  examples/arith/div.ein::read-out[n2]
-de9d3498de975966    11727L  examples/arith/div.ein::region-trace
+7895f8eb37e5cc45    11727L  examples/arith/div.ein::region-trace
 be745cf163b0aa27     2413L  examples/arith/div.ein::states
 51db70ab937c7932        7L  examples/arith/div.ein::region-lattice
 a182173227d1088b       90L  examples/arith/div.ein::cores[describe]
@@ -115,7 +115,7 @@ b1a27ef0024faaa8       23L  examples/arith/div_by_zero.ein::read-out[describe]
 6d7a87b9c10cc825       15L  examples/arith/div_by_zero.ein::read-out[minimal]
 c1e2e8cd889d9332       15L  examples/arith/div_by_zero.ein::read-out[single]
 2fe6234b0b82ff0a       15L  examples/arith/div_by_zero.ein::read-out[n2]
-8f915ea767f86978     1054L  examples/arith/div_by_zero.ein::region-trace
+d5c0c1c472c45a8f     1054L  examples/arith/div_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  examples/arith/div_by_zero.ein::states
 b123a141b9decbc7        7L  examples/arith/div_by_zero.ein::region-lattice
 eab9ce5cac7c509e       99L  examples/arith/div_by_zero.ein::cores[describe]
@@ -157,7 +157,7 @@ fd3a5d40a5deddbf       23L  examples/arith/factorial.ein::read-out[maximal]
 2668e29a6659ab97       23L  examples/arith/factorial.ein::read-out[minimal]
 20aa516b7e6ef11e       23L  examples/arith/factorial.ein::read-out[single]
 38d527be067fa581       23L  examples/arith/factorial.ein::read-out[n2]
-8595236d8db99e9e    64611L  examples/arith/factorial.ein::region-trace
+68b7b13542d1cd8b    64611L  examples/arith/factorial.ein::region-trace
 a8e88ab5ca107938     5126L  examples/arith/factorial.ein::states
 09d03db32ab1d0ed        7L  examples/arith/factorial.ein::region-lattice
 21c3f4c24a348b61       90L  examples/arith/factorial.ein::cores[describe]
@@ -199,7 +199,7 @@ acb77b8259082656    10279L  examples/arith/int.ein::dot[kb-no-instances]
 0cb918fdd8f85277      103L  examples/arith/int.ein::read-out[minimal]
 b31e0b6652f67198       95L  examples/arith/int.ein::read-out[single]
 daed6a40cf324885       95L  examples/arith/int.ein::read-out[n2]
-d75bacf3fa9f7464    15563L  examples/arith/int.ein::region-trace
+f5ed8dd5e1625be1    15563L  examples/arith/int.ein::region-trace
 53fbced641640324     2739L  examples/arith/int.ein::states
 fdba2b3210e0f005        7L  examples/arith/int.ein::region-lattice
 8a0d6b11e1d09671       90L  examples/arith/int.ein::cores[describe]
@@ -241,7 +241,7 @@ d69ff2f3172ff898    24238L  examples/arith/long_numbers.ein::dot[kb-since]
 722696cbb688859a       59L  examples/arith/long_numbers.ein::read-out[minimal]
 4902247e87e97123       55L  examples/arith/long_numbers.ein::read-out[single]
 47816fcccc55137a       55L  examples/arith/long_numbers.ein::read-out[n2]
-49cc063c449d31f1    68637L  examples/arith/long_numbers.ein::region-trace
+eee9f0432a593e58    68637L  examples/arith/long_numbers.ein::region-trace
 72047c22d898a769     5138L  examples/arith/long_numbers.ein::states
 329c9dc08a1ed3f3        7L  examples/arith/long_numbers.ein::region-lattice
 517ddaa84a97b21a       90L  examples/arith/long_numbers.ein::cores[describe]
@@ -283,7 +283,7 @@ e71dbddd1ab468a6      283L  examples/arith/many_calculations.ein::dot[constraint
 9ba981e10b960ccc       59L  examples/arith/many_calculations.ein::read-out[minimal]
 01e6bfcd89029fdb       55L  examples/arith/many_calculations.ein::read-out[single]
 361a8fd7247d7a54       55L  examples/arith/many_calculations.ein::read-out[n2]
-18292e91270a1644   169899L  examples/arith/many_calculations.ein::region-trace
+f805dcde707ac635   169899L  examples/arith/many_calculations.ein::region-trace
 5315749e6c8bb4ce    10302L  examples/arith/many_calculations.ein::states
 b130f6f89ba64a0d        7L  examples/arith/many_calculations.ein::region-lattice
 cf19f085d67f6425       90L  examples/arith/many_calculations.ein::cores[describe]
@@ -325,7 +325,7 @@ bce094d52491679a       46L  examples/arith/mul.ein::read-out[describe]
 01258399f51fa007       36L  examples/arith/mul.ein::read-out[minimal]
 9ea2be5ef771280a       37L  examples/arith/mul.ein::read-out[single]
 adb480b6f2311080       37L  examples/arith/mul.ein::read-out[n2]
-043d01a519008553     8339L  examples/arith/mul.ein::region-trace
+575a0951f709a467     8339L  examples/arith/mul.ein::region-trace
 57b00cde4ae75539     2258L  examples/arith/mul.ein::states
 1d7d49369ed619d1        7L  examples/arith/mul.ein::region-lattice
 bae046d06b86684b       90L  examples/arith/mul.ein::cores[describe]
@@ -367,7 +367,7 @@ e757cf47fa5f5579       63L  examples/arith/num9.ein::read-out[maximal]
 1c3fa42711c7ae5c       63L  examples/arith/num9.ein::read-out[minimal]
 a5eae19e33b1bac2       61L  examples/arith/num9.ein::read-out[single]
 cb33e1b4fe0e4692       61L  examples/arith/num9.ein::read-out[n2]
-46d9790d48a0273e     1672L  examples/arith/num9.ein::region-trace
+3306f6cacef0cf64     1672L  examples/arith/num9.ein::region-trace
 d69359d8f720854e     1744L  examples/arith/num9.ein::states
 a31fa87f587de892        7L  examples/arith/num9.ein::region-lattice
 b55bed12f5a284d1       90L  examples/arith/num9.ein::cores[describe]
@@ -409,7 +409,7 @@ f1fbd0189ee1f846    10135L  examples/arith/num9_both_ways.ein::dot[kb-no-instanc
 a4a5a87ef31e9e61       23L  examples/arith/num9_both_ways.ein::read-out[minimal]
 058c7a07cbcb15a0       23L  examples/arith/num9_both_ways.ein::read-out[single]
 2b55845a3758f4cb       23L  examples/arith/num9_both_ways.ein::read-out[n2]
-6398b1ea78906f5a     1919L  examples/arith/num9_both_ways.ein::region-trace
+e09ed5020d971b4f     1919L  examples/arith/num9_both_ways.ein::region-trace
 afc18ad06bb0554f     2004L  examples/arith/num9_both_ways.ein::states
 120df4b04a5af6bf        7L  examples/arith/num9_both_ways.ein::region-lattice
 e15bc485e9a5a639       90L  examples/arith/num9_both_ways.ein::cores[describe]
@@ -451,7 +451,7 @@ a128b1dae7ce4211     9643L  examples/arith/num9_overflow.ein::dot[kb-since]
 62540769724fd194       41L  examples/arith/num9_overflow.ein::read-out[minimal]
 09e3dc2d29a962d6       40L  examples/arith/num9_overflow.ein::read-out[single]
 37f825397f5ee5a2       40L  examples/arith/num9_overflow.ein::read-out[n2]
-3ba9c65bd42195e3      597L  examples/arith/num9_overflow.ein::region-trace
+78c22b923cd3c7c9      597L  examples/arith/num9_overflow.ein::region-trace
 f774d9c76c288cfe     1717L  examples/arith/num9_overflow.ein::states
 9c1a229a47829adc        7L  examples/arith/num9_overflow.ein::region-lattice
 f060ba9ff9b636dd       90L  examples/arith/num9_overflow.ein::cores[describe]
@@ -493,7 +493,7 @@ bbb83400073865b6       74L  examples/arith/rat.ein::read-out[describe]
 0e16c824f996f86c       72L  examples/arith/rat.ein::read-out[minimal]
 768d787b76f49cb2       66L  examples/arith/rat.ein::read-out[single]
 c12563cffb2a4945       66L  examples/arith/rat.ein::read-out[n2]
-e74a3c1bab65234d    49757L  examples/arith/rat.ein::region-trace
+8e74888b44afb47e    49757L  examples/arith/rat.ein::region-trace
 cf09ebb143966ac4     4473L  examples/arith/rat.ein::states
 4ede2f7ba60fd5ba        7L  examples/arith/rat.ein::region-lattice
 49aea6bb3ca852c4       90L  examples/arith/rat.ein::cores[describe]
@@ -535,7 +535,7 @@ cc53db60636558f2       47L  examples/arith/sub.ein::read-out[maximal]
 a391112cf9b9caa4       47L  examples/arith/sub.ein::read-out[minimal]
 b42f6e9d367383b7       48L  examples/arith/sub.ein::read-out[single]
 740fb675867bc196       48L  examples/arith/sub.ein::read-out[n2]
-d9fc32675ddebae4     2797L  examples/arith/sub.ein::region-trace
+34a9c3a84e6db264     2797L  examples/arith/sub.ein::region-trace
 37759dc11e129ce7     1995L  examples/arith/sub.ein::states
 f5267701d4a78c3e        7L  examples/arith/sub.ein::region-lattice
 3ea92665b0a101dd       90L  examples/arith/sub.ein::cores[describe]
@@ -577,7 +577,7 @@ af7064326de5fd5f       30L  examples/beyond_arith/casting_out_nines.ein::read-ou
 d617e194515fbcb6       21L  examples/beyond_arith/casting_out_nines.ein::read-out[minimal]
 0dce64d54ac6d0ef       21L  examples/beyond_arith/casting_out_nines.ein::read-out[single]
 836fb19c543fa9ac       21L  examples/beyond_arith/casting_out_nines.ein::read-out[n2]
-c237f8d93b5033d8   173947L  examples/beyond_arith/casting_out_nines.ein::region-trace
+41205c23f12aaa03   173947L  examples/beyond_arith/casting_out_nines.ein::region-trace
 919958dc476056ba    10277L  examples/beyond_arith/casting_out_nines.ein::states
 8fb854814504ba2c        7L  examples/beyond_arith/casting_out_nines.ein::region-lattice
 dcac44e62e1983e2       90L  examples/beyond_arith/casting_out_nines.ein::cores[describe]
@@ -619,7 +619,7 @@ c0852c4bb96b3df3       32L  examples/beyond_arith/collatz.ein::read-out[maximal]
 f4b6bf8d0d2bcaf6       32L  examples/beyond_arith/collatz.ein::read-out[minimal]
 8f9175338e12f68b       31L  examples/beyond_arith/collatz.ein::read-out[single]
 f062b16c1bf67506       31L  examples/beyond_arith/collatz.ein::read-out[n2]
-8e6d6dbcbee08eaf    99297L  examples/beyond_arith/collatz.ein::region-trace
+4658fa94f7ddbd18    99297L  examples/beyond_arith/collatz.ein::region-trace
 e216c2b5e623311f     6635L  examples/beyond_arith/collatz.ein::states
 08cc440d873d61e5        7L  examples/beyond_arith/collatz.ein::region-lattice
 c5643897aba4c856       90L  examples/beyond_arith/collatz.ein::cores[describe]
@@ -871,7 +871,7 @@ d85dbe48c725ea29    10235L  examples/beyond_arith/equation_two_unknowns.ein::dot
 e6a65e8fc8be8b40       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[minimal]
 413d9ddbcfc53422       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[single]
 41b67edc401d5fe6       18L  examples/beyond_arith/equation_two_unknowns.ein::read-out[n2]
-697f56eec3b8152b    14456L  examples/beyond_arith/equation_two_unknowns.ein::region-trace
+7b905f5485be3be6    14456L  examples/beyond_arith/equation_two_unknowns.ein::region-trace
 65e89279180c146a     5855L  examples/beyond_arith/equation_two_unknowns.ein::states
 f65104645a8e2f85       11L  examples/beyond_arith/equation_two_unknowns.ein::region-lattice
 421e4d777c0f84a3    69321L  examples/beyond_arith/equation_two_unknowns.ein::cores[describe]
@@ -913,7 +913,7 @@ bbe2c1284215edfe       11L  examples/beyond_arith/fibonacci.ein::dot[constraints
 c37352d831fd209e       23L  examples/beyond_arith/fibonacci.ein::read-out[minimal]
 e5dbfd6a68504a18       23L  examples/beyond_arith/fibonacci.ein::read-out[single]
 a06f09ea79d302ee       23L  examples/beyond_arith/fibonacci.ein::read-out[n2]
-18a57f1253f238bd    15009L  examples/beyond_arith/fibonacci.ein::region-trace
+053bccd39ca2498d    15009L  examples/beyond_arith/fibonacci.ein::region-trace
 ee3a88580f7b1a3f     2601L  examples/beyond_arith/fibonacci.ein::states
 9c6ad45775a2d1c0        7L  examples/beyond_arith/fibonacci.ein::region-lattice
 30f37760c8248418       90L  examples/beyond_arith/fibonacci.ein::cores[describe]
@@ -955,7 +955,7 @@ f16ab19131ea5076       40L  examples/beyond_arith/gcd.ein::read-out[maximal]
 30fe18be6d7538af       40L  examples/beyond_arith/gcd.ein::read-out[minimal]
 1632f6f9cb4ee62b       43L  examples/beyond_arith/gcd.ein::read-out[single]
 50f03b69736b05eb       43L  examples/beyond_arith/gcd.ein::read-out[n2]
-b6491fd0ff165cf9    37039L  examples/beyond_arith/gcd.ein::region-trace
+bc054d32ec7b71d5    37039L  examples/beyond_arith/gcd.ein::region-trace
 4876a1f34698013c     3633L  examples/beyond_arith/gcd.ein::states
 82b8426f38131926        7L  examples/beyond_arith/gcd.ein::region-lattice
 e726794a2172d1cf       90L  examples/beyond_arith/gcd.ein::cores[describe]
@@ -1039,7 +1039,7 @@ d730db7de4dd3a16    10211L  examples/beyond_arith/laws.ein::dot[kb-origin]
 6f98f6dc4debf2cb       28L  examples/beyond_arith/laws.ein::read-out[minimal]
 83fe17deb66d7d94       27L  examples/beyond_arith/laws.ein::read-out[single]
 3a8103678f7a96ce       27L  examples/beyond_arith/laws.ein::read-out[n2]
-b1714a159770f317   294427L  examples/beyond_arith/laws.ein::region-trace
+adb5588477443f99   294427L  examples/beyond_arith/laws.ein::region-trace
 6e73f18c2b20a0c0    16264L  examples/beyond_arith/laws.ein::states
 57170e35514ab3dc        7L  examples/beyond_arith/laws.ein::region-lattice
 f5d88b518df6f9d9       90L  examples/beyond_arith/laws.ein::cores[describe]
@@ -1081,7 +1081,7 @@ d3b5c6e1b5e6e655    10059L  examples/beyond_arith/perfect.ein::dot[kb-no-instanc
 b6dcbb5c94380e34       23L  examples/beyond_arith/perfect.ein::read-out[minimal]
 a41d3fe5e70aa2b8       23L  examples/beyond_arith/perfect.ein::read-out[single]
 16913940786960c3       23L  examples/beyond_arith/perfect.ein::read-out[n2]
-e9e82b62f13936c2   146599L  examples/beyond_arith/perfect.ein::region-trace
+61b8bf5a27f0fe46   146599L  examples/beyond_arith/perfect.ein::region-trace
 3f8bb9f70f18686f     8920L  examples/beyond_arith/perfect.ein::states
 371f0a2c3859cd0d        7L  examples/beyond_arith/perfect.ein::region-lattice
 1f9afc542cf56796       90L  examples/beyond_arith/perfect.ein::cores[describe]
@@ -1123,7 +1123,7 @@ c228ccd74bc3dfc4       41L  examples/beyond_arith/primes.ein::read-out[maximal]
 8669c10c54ed5033       41L  examples/beyond_arith/primes.ein::read-out[minimal]
 61296ca76e8c2210       45L  examples/beyond_arith/primes.ein::read-out[single]
 00256804fc9c3aa1       45L  examples/beyond_arith/primes.ein::read-out[n2]
-a1dcd4e30de31826   129287L  examples/beyond_arith/primes.ein::region-trace
+9d933c5b5bd9cded   129287L  examples/beyond_arith/primes.ein::region-trace
 16799debaf4e5a46     8081L  examples/beyond_arith/primes.ein::states
 a3988b0d0277d40f        7L  examples/beyond_arith/primes.ein::region-lattice
 8487d6d228b14ff8       90L  examples/beyond_arith/primes.ein::cores[describe]
@@ -1165,7 +1165,7 @@ c02b3904f81182d9       47L  examples/beyond_arith/pythagorean.ein::read-out[desc
 e0576668a2f5f47b       33L  examples/beyond_arith/pythagorean.ein::read-out[minimal]
 28103d913e4e9316       38L  examples/beyond_arith/pythagorean.ein::read-out[single]
 9cfa54401ef8006d       38L  examples/beyond_arith/pythagorean.ein::read-out[n2]
-93900e2eb6d1d473    44042L  examples/beyond_arith/pythagorean.ein::region-trace
+63cef835a26d2ef4    44042L  examples/beyond_arith/pythagorean.ein::region-trace
 c73c30d3a0e44db6     3969L  examples/beyond_arith/pythagorean.ein::states
 8ff32bcaeb8a970b        7L  examples/beyond_arith/pythagorean.ein::region-lattice
 d88005b06d14f4eb       90L  examples/beyond_arith/pythagorean.ein::cores[describe]
@@ -1249,7 +1249,7 @@ a77f5d5effb7815c      605L  examples/binary_arithmetic/bin.ein::dot[kb-since]
 41a62b909a0ceb85       15L  examples/binary_arithmetic/bin.ein::read-out[minimal]
 139841ad914a48ad       15L  examples/binary_arithmetic/bin.ein::read-out[single]
 5e48fb6e5709dd47       15L  examples/binary_arithmetic/bin.ein::read-out[n2]
-923d48e191d59563      291L  examples/binary_arithmetic/bin.ein::region-trace
+1a5aa593834aa5fc      291L  examples/binary_arithmetic/bin.ein::region-trace
 870fe8fc480f9e15      157L  examples/binary_arithmetic/bin.ein::states
 a488aa495ad22645        7L  examples/binary_arithmetic/bin.ein::region-lattice
 d7fb6a9801e33c5c       90L  examples/binary_arithmetic/bin.ein::cores[describe]
@@ -1333,7 +1333,7 @@ e6df2227694fa2d0       38L  examples/binary_arithmetic/both_bases.ein::read-out[
 02daf37e5093b5df       30L  examples/binary_arithmetic/both_bases.ein::read-out[minimal]
 0eee0f7dad5d10a3       29L  examples/binary_arithmetic/both_bases.ein::read-out[single]
 3e6342f22ec88bc0       29L  examples/binary_arithmetic/both_bases.ein::read-out[n2]
-13998db893b03116     1643L  examples/binary_arithmetic/both_bases.ein::region-trace
+18e907cb2d8bbcbe     1643L  examples/binary_arithmetic/both_bases.ein::region-trace
 9b5523f685bb3ab8     2068L  examples/binary_arithmetic/both_bases.ein::states
 aebe14cef3b789cc        7L  examples/binary_arithmetic/both_bases.ein::region-lattice
 a5862398b7b53371       90L  examples/binary_arithmetic/both_bases.ein::cores[describe]
@@ -1375,7 +1375,7 @@ c7f50df00ce533df       15L  examples/binary_arithmetic/conv.ein::read-out[maxima
 16540e5078693c15       15L  examples/binary_arithmetic/conv.ein::read-out[minimal]
 d3857afa7cd8fe24       15L  examples/binary_arithmetic/conv.ein::read-out[single]
 7e1640ad798fd7ee       15L  examples/binary_arithmetic/conv.ein::read-out[n2]
-2a53c4df7e4bf01a      763L  examples/binary_arithmetic/conv.ein::region-trace
+071412fe318a01a0      763L  examples/binary_arithmetic/conv.ein::region-trace
 dc2adb439a982898     2041L  examples/binary_arithmetic/conv.ein::states
 08e916948bfea8b3        7L  examples/binary_arithmetic/conv.ein::region-lattice
 6b10b87678469a01       90L  examples/binary_arithmetic/conv.ein::cores[describe]
@@ -1417,7 +1417,7 @@ c2688bad56341801       68L  examples/binary_arithmetic/conversions.ein::read-out
 bf00706d23f3b7fb       52L  examples/binary_arithmetic/conversions.ein::read-out[minimal]
 b049561c4ca9f68c       59L  examples/binary_arithmetic/conversions.ein::read-out[single]
 b87aafbd98d3e956       59L  examples/binary_arithmetic/conversions.ein::read-out[n2]
-186974d0542c40a6    36857L  examples/binary_arithmetic/conversions.ein::region-trace
+ab8ef875f02a169b    36857L  examples/binary_arithmetic/conversions.ein::region-trace
 1a8496f1f5418f4b     3799L  examples/binary_arithmetic/conversions.ein::states
 4964069831a44c63        7L  examples/binary_arithmetic/conversions.ein::region-lattice
 7d525c828dce2273       90L  examples/binary_arithmetic/conversions.ein::cores[describe]
@@ -1459,7 +1459,7 @@ f0ed10439f28f6d3       21L  examples/binary_arithmetic/div_by_zero.ein::read-out
 5d73dd82b0d4a1c6       15L  examples/binary_arithmetic/div_by_zero.ein::read-out[minimal]
 e8e005fb0a0b1fdf       15L  examples/binary_arithmetic/div_by_zero.ein::read-out[single]
 3ce3f43476005a98       15L  examples/binary_arithmetic/div_by_zero.ein::read-out[n2]
-7933f3c9b22ba7bc      796L  examples/binary_arithmetic/div_by_zero.ein::region-trace
+2657197c25d964d2      796L  examples/binary_arithmetic/div_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  examples/binary_arithmetic/div_by_zero.ein::states
 2ddd75ada98e6e0a        7L  examples/binary_arithmetic/div_by_zero.ein::region-lattice
 4fa4dd64673bc5e7       93L  examples/binary_arithmetic/div_by_zero.ein::cores[describe]
@@ -1501,7 +1501,7 @@ c34e2eff72c5e588       32L  examples/binary_arithmetic/first.ein::read-out[maxim
 b19db58b64a96dfa       32L  examples/binary_arithmetic/first.ein::read-out[minimal]
 a2b0826532880748       31L  examples/binary_arithmetic/first.ein::read-out[single]
 f196a80a0bbe4c7a       31L  examples/binary_arithmetic/first.ein::read-out[n2]
-1b466dbaeaf85db7     1039L  examples/binary_arithmetic/first.ein::region-trace
+ca28d428aece9a9e     1039L  examples/binary_arithmetic/first.ein::region-trace
 0cfe384d5a1caa8d      198L  examples/binary_arithmetic/first.ein::states
 8a67ce2f9945473a        7L  examples/binary_arithmetic/first.ein::region-lattice
 0a8b14e509f3078c       90L  examples/binary_arithmetic/first.ein::cores[describe]
@@ -1543,7 +1543,7 @@ a3d728bc5641999a       55L  examples/binary_arithmetic/five_operations.ein::read
 c3452b4a3e1d58b7       55L  examples/binary_arithmetic/five_operations.ein::read-out[minimal]
 621591d95b5479e2       52L  examples/binary_arithmetic/five_operations.ein::read-out[single]
 e4858cb6b03d5a48       52L  examples/binary_arithmetic/five_operations.ein::read-out[n2]
-8d94a3c40cc3789f    11847L  examples/binary_arithmetic/five_operations.ein::region-trace
+89b49a1c13d0fe6f    11847L  examples/binary_arithmetic/five_operations.ein::region-trace
 7c911ed3d6f59744      719L  examples/binary_arithmetic/five_operations.ein::states
 aa16f63a16b7d389        7L  examples/binary_arithmetic/five_operations.ein::region-lattice
 088dbdd43a67781b       90L  examples/binary_arithmetic/five_operations.ein::cores[describe]
@@ -1585,7 +1585,7 @@ cb2a495c96ab3940       59L  examples/binary_logic/adder_against_table.ein::read-
 03415761d2d66581       59L  examples/binary_logic/adder_against_table.ein::read-out[minimal]
 e65d869c179ff380       62L  examples/binary_logic/adder_against_table.ein::read-out[single]
 2ed7ddf6818b26b7       62L  examples/binary_logic/adder_against_table.ein::read-out[n2]
-8b9b0de91108364b     1625L  examples/binary_logic/adder_against_table.ein::region-trace
+43342d8b716554a7     1625L  examples/binary_logic/adder_against_table.ein::region-trace
 a145ab0508454463      180L  examples/binary_logic/adder_against_table.ein::states
 d1d962296a701291        7L  examples/binary_logic/adder_against_table.ein::region-lattice
 187edc1512fc5922       90L  examples/binary_logic/adder_against_table.ein::cores[describe]
@@ -1669,7 +1669,7 @@ ba5e408bea98c052       15L  examples/binary_logic/circuit.ein::read-out[maximal]
 013610279e94481c       15L  examples/binary_logic/circuit.ein::read-out[minimal]
 2e92d15c38a47260       15L  examples/binary_logic/circuit.ein::read-out[single]
 5e62aca2d26cffce       15L  examples/binary_logic/circuit.ein::read-out[n2]
-c5af05585e0eed5f       51L  examples/binary_logic/circuit.ein::region-trace
+cd77bb5e180c65a1       51L  examples/binary_logic/circuit.ein::region-trace
 db1c2ec67890370f      101L  examples/binary_logic/circuit.ein::states
 6f07a66e1f5c6ccb        7L  examples/binary_logic/circuit.ein::region-lattice
 46d0b326a3712407       90L  examples/binary_logic/circuit.ein::cores[describe]
@@ -1711,7 +1711,7 @@ c5eb65046c4e7527       53L  examples/binary_logic/equivalent.ein::read-out[descr
 9d3449f4559fe7ab       21L  examples/binary_logic/equivalent.ein::read-out[minimal]
 69cc1abfb3f26adc       20L  examples/binary_logic/equivalent.ein::read-out[single]
 9a646df2409dc7dc       20L  examples/binary_logic/equivalent.ein::read-out[n2]
-7beaa86fa29bb421      217L  examples/binary_logic/equivalent.ein::region-trace
+118821d403422820      217L  examples/binary_logic/equivalent.ein::region-trace
 d41d8cd98f00b204        0L  examples/binary_logic/equivalent.ein::states
 57546adc629a5571        7L  examples/binary_logic/equivalent.ein::region-lattice
 10044941989036da     1290L  examples/binary_logic/equivalent.ein::cores[describe]
@@ -1837,7 +1837,7 @@ c09c967542469b2b       24L  examples/binary_logic/inputs.ein::read-out[describe]
 4285fef1d98dc0b7       15L  examples/binary_logic/inputs.ein::read-out[minimal]
 aa449e28caccec44       15L  examples/binary_logic/inputs.ein::read-out[single]
 824ed98b5c44fd8b       15L  examples/binary_logic/inputs.ein::read-out[n2]
-9639c51e347cb297       75L  examples/binary_logic/inputs.ein::region-trace
+0eb5c8a858f5b833       75L  examples/binary_logic/inputs.ein::region-trace
 d6fc9b79a593fb4d       86L  examples/binary_logic/inputs.ein::states
 a2ae45ef76d85cf7        7L  examples/binary_logic/inputs.ein::region-lattice
 8af74e64234a1694       90L  examples/binary_logic/inputs.ein::cores[describe]
@@ -1879,7 +1879,7 @@ ba908331376ca088       37L  examples/binary_logic/knights.ein::read-out[maximal]
 cf84861ba466bc54       37L  examples/binary_logic/knights.ein::read-out[minimal]
 4de3f979515c7396       37L  examples/binary_logic/knights.ein::read-out[single]
 5354b30363006b2d       37L  examples/binary_logic/knights.ein::read-out[n2]
-8c870236350d95a6      494L  examples/binary_logic/knights.ein::region-trace
+05f51397bfb35a7a      494L  examples/binary_logic/knights.ein::region-trace
 7960a4545e67ad37      218L  examples/binary_logic/knights.ein::states
 592dda2d9e8916ba       10L  examples/binary_logic/knights.ein::region-lattice
 4ab88735f9d4d8e4      826L  examples/binary_logic/knights.ein::cores[describe]
@@ -1921,7 +1921,7 @@ af3ce8b2b2c3c564      431L  examples/binary_logic/not_equivalent.ein::dot[kb-no-
 ceee78357acd2ad8       28L  examples/binary_logic/not_equivalent.ein::read-out[minimal]
 2b2714d63234bb38       28L  examples/binary_logic/not_equivalent.ein::read-out[single]
 242c76f8dcd2bd48       28L  examples/binary_logic/not_equivalent.ein::read-out[n2]
-af260fd8e1695c53      670L  examples/binary_logic/not_equivalent.ein::region-trace
+3db8f1448dd25a61      670L  examples/binary_logic/not_equivalent.ein::region-trace
 15fd31c2a446db32      228L  examples/binary_logic/not_equivalent.ein::states
 50d549e2ac67a1bd       10L  examples/binary_logic/not_equivalent.ein::region-lattice
 d8b9b6b2f5fa070b     1056L  examples/binary_logic/not_equivalent.ein::cores[describe]
@@ -2047,7 +2047,7 @@ f7670fa0ff8095f7      494L  examples/binary_logic/props_check.ein::read-out[maxi
 d01c9fe1d07f5b7b      494L  examples/binary_logic/props_check.ein::read-out[minimal]
 4fe500d656d721f8      486L  examples/binary_logic/props_check.ein::read-out[single]
 ab65cc16646e590a      486L  examples/binary_logic/props_check.ein::read-out[n2]
-025c8eb68f5a34d2     9827L  examples/binary_logic/props_check.ein::region-trace
+bd94e051b805c85d     9827L  examples/binary_logic/props_check.ein::region-trace
 0865aec7fbe0f246      507L  examples/binary_logic/props_check.ein::states
 efec358d99f9737b        7L  examples/binary_logic/props_check.ein::region-lattice
 ebb68c559bd7460b       90L  examples/binary_logic/props_check.ein::cores[describe]
@@ -2089,7 +2089,7 @@ fdefcbb84446f199       15L  examples/binary_logic/props_rules.ein::read-out[maxi
 919832ecb5dcbd37       15L  examples/binary_logic/props_rules.ein::read-out[minimal]
 6f75688e7594fa61       15L  examples/binary_logic/props_rules.ein::read-out[single]
 f4fe1b8894058a9c       15L  examples/binary_logic/props_rules.ein::read-out[n2]
-025c8eb68f5a34d2     9827L  examples/binary_logic/props_rules.ein::region-trace
+bd94e051b805c85d     9827L  examples/binary_logic/props_rules.ein::region-trace
 a04c0a2eabdaa938      525L  examples/binary_logic/props_rules.ein::states
 4717a0418b91d90a        7L  examples/binary_logic/props_rules.ein::region-lattice
 eed7872f40d6df2c       90L  examples/binary_logic/props_rules.ein::cores[describe]
@@ -2131,7 +2131,7 @@ a62a2b9e5107676c       29L  examples/binary_logic/require.ein::dot[rules-overlay
 78606230011d2ed1       15L  examples/binary_logic/require.ein::read-out[minimal]
 a4e49d600de3d46b       15L  examples/binary_logic/require.ein::read-out[single]
 26ab831ad5db6a4a       15L  examples/binary_logic/require.ein::read-out[n2]
-0984e1856400ca32       99L  examples/binary_logic/require.ein::region-trace
+3dd83df249453edb       99L  examples/binary_logic/require.ein::region-trace
 f2cd927fc2101163       90L  examples/binary_logic/require.ein::states
 dd239170a8eb8580        7L  examples/binary_logic/require.ein::region-lattice
 d5588cdd55d0bddc       90L  examples/binary_logic/require.ein::cores[describe]
@@ -2173,7 +2173,7 @@ ba37677dd2b7a019       23L  examples/binary_logic/satisfiable.ein::read-out[maxi
 4114680758842c84       23L  examples/binary_logic/satisfiable.ein::read-out[minimal]
 bca516a73e16d382       23L  examples/binary_logic/satisfiable.ein::read-out[single]
 33415eea66154606       23L  examples/binary_logic/satisfiable.ein::read-out[n2]
-0a8a53a7f2de7d95      381L  examples/binary_logic/satisfiable.ein::region-trace
+2b75cae31f543765      381L  examples/binary_logic/satisfiable.ein::region-trace
 0da807cc8d3eabcd      111L  examples/binary_logic/satisfiable.ein::states
 18c8951edec888fd        8L  examples/binary_logic/satisfiable.ein::region-lattice
 3a3f07679aa9c2bc      996L  examples/binary_logic/satisfiable.ein::cores[describe]
@@ -2215,7 +2215,7 @@ e2049983112241f5      114L  examples/binary_logic/simplify.ein::dot[rules-overla
 10572df27d735c7b       47L  examples/binary_logic/simplify.ein::read-out[minimal]
 4f04cae7acecb453       45L  examples/binary_logic/simplify.ein::read-out[single]
 b9eaa9be9dcda55a       45L  examples/binary_logic/simplify.ein::read-out[n2]
-7db96f5ae9943735      189L  examples/binary_logic/simplify.ein::region-trace
+717bab7eb556991b      189L  examples/binary_logic/simplify.ein::region-trace
 d4ba5130704196d5       72L  examples/binary_logic/simplify.ein::states
 3594ffd40241f776        7L  examples/binary_logic/simplify.ein::region-lattice
 532535e47dc012ab       90L  examples/binary_logic/simplify.ein::cores[describe]
@@ -2257,7 +2257,7 @@ c2c54b7b7d46605d      388L  examples/binary_logic/simulation.ein::dot[kb-no-inst
 aa2cdf434529a7d2       23L  examples/binary_logic/simulation.ein::read-out[minimal]
 c17f1ea2eb5a3980       23L  examples/binary_logic/simulation.ein::read-out[single]
 ca9a06f00e897266       23L  examples/binary_logic/simulation.ein::read-out[n2]
-ab7b41d0c39ffbc3      181L  examples/binary_logic/simulation.ein::region-trace
+f0e4d6165b06560e      181L  examples/binary_logic/simulation.ein::region-trace
 a5b2c284898a6592       91L  examples/binary_logic/simulation.ein::states
 5a32e81aaf79e9c0        7L  examples/binary_logic/simulation.ein::region-lattice
 def89d400ae1d2d4       90L  examples/binary_logic/simulation.ein::cores[describe]
@@ -2299,7 +2299,7 @@ f0b7662fc2940356      792L  examples/binary_logic/synthesis.ein::dot[kb-since]
 9bc9a36705769689       28L  examples/binary_logic/synthesis.ein::read-out[minimal]
 04411fb163ea7924       28L  examples/binary_logic/synthesis.ein::read-out[single]
 a0693a786f5a77ee       28L  examples/binary_logic/synthesis.ein::read-out[n2]
-fca88c1fb974a775     1958L  examples/binary_logic/synthesis.ein::region-trace
+8e32f330302c9216     1958L  examples/binary_logic/synthesis.ein::region-trace
 5282b56582c8225a      398L  examples/binary_logic/synthesis.ein::states
 c29fe27269ed5da4       15L  examples/binary_logic/synthesis.ein::region-lattice
 4d702cf187921ce8      921L  examples/binary_logic/synthesis.ein::cores[describe]
@@ -2341,7 +2341,7 @@ e143ca37ab2278cd      416L  examples/binary_logic/truth_table.ein::dot[kb-no-ins
 4915d6115e5742d1       58L  examples/binary_logic/truth_table.ein::read-out[minimal]
 bac4cb71f0369176       28L  examples/binary_logic/truth_table.ein::read-out[single]
 0d7b91dac82cf18f       28L  examples/binary_logic/truth_table.ein::read-out[n2]
-3e46ee4002220e47     1876L  examples/binary_logic/truth_table.ein::region-trace
+e0e666f349be394b     1876L  examples/binary_logic/truth_table.ein::region-trace
 9a0e3c714270595a      856L  examples/binary_logic/truth_table.ein::states
 78668c3cff186d10       16L  examples/binary_logic/truth_table.ein::region-lattice
 9ffa31feacf5c1c7      976L  examples/binary_logic/truth_table.ein::cores[describe]
@@ -2383,7 +2383,7 @@ bdd1d64323ad75dd      435L  examples/binary_logic/unsatisfiable.ein::dot[kb-sinc
 bb7f3637fd26cae5       21L  examples/binary_logic/unsatisfiable.ein::read-out[minimal]
 23b17517681d3479       20L  examples/binary_logic/unsatisfiable.ein::read-out[single]
 10c2dbef61d6d5d2       20L  examples/binary_logic/unsatisfiable.ein::read-out[n2]
-9735b140dd884a35      206L  examples/binary_logic/unsatisfiable.ein::region-trace
+0ca304bbf69b7ca0      206L  examples/binary_logic/unsatisfiable.ein::region-trace
 d41d8cd98f00b204        0L  examples/binary_logic/unsatisfiable.ein::states
 4ec1308609ba9090        7L  examples/binary_logic/unsatisfiable.ein::region-lattice
 b06467636a70d62c     1069L  examples/binary_logic/unsatisfiable.ein::cores[describe]
@@ -3831,7 +3831,7 @@ ae61260dbf1cb99f       21L  examples/domain_elim/ab.ein::read-out[maximal]
 690216d782e2997c       21L  examples/domain_elim/ab.ein::read-out[minimal]
 83dbf83ce24292ac       21L  examples/domain_elim/ab.ein::read-out[single]
 bd8ee67c625a7b17       21L  examples/domain_elim/ab.ein::read-out[n2]
-8677336809974be6      591L  examples/domain_elim/ab.ein::region-trace
+a83e58c7cdedb177      591L  examples/domain_elim/ab.ein::region-trace
 56a435214ba5ff50       29L  examples/domain_elim/ab.ein::states
 162cde19b9a03b87        7L  examples/domain_elim/ab.ein::region-lattice
 9d128a87b5bd874a       90L  examples/domain_elim/ab.ein::cores[describe]
@@ -3873,7 +3873,7 @@ bf65864786497313       41L  examples/domain_elim/b_branch.ein::dot[kb-since]
 f7799c4c27c4de74       20L  examples/domain_elim/b_branch.ein::read-out[minimal]
 fe82e3468ae65989       24L  examples/domain_elim/b_branch.ein::read-out[single]
 05690fc1201ad920       24L  examples/domain_elim/b_branch.ein::read-out[n2]
-107a688c8e5e6e55      113L  examples/domain_elim/b_branch.ein::region-trace
+4dde0ea6f264ad14      113L  examples/domain_elim/b_branch.ein::region-trace
 485c5867adda5287       37L  examples/domain_elim/b_branch.ein::states
 b52961830a3196a4       22L  examples/domain_elim/b_branch.ein::region-lattice
 686033d873ca699e      344L  examples/domain_elim/b_branch.ein::cores[describe]
@@ -3915,7 +3915,7 @@ c118a1410a7d46ce       34L  examples/domain_elim/b_only.ein::read-out[describe]
 401f58f9eeca9325       20L  examples/domain_elim/b_only.ein::read-out[minimal]
 d4a9df55ec28ef09       24L  examples/domain_elim/b_only.ein::read-out[single]
 ac1c2ff6b38efb91       24L  examples/domain_elim/b_only.ein::read-out[n2]
-29bbf75fe7a82fa6      383L  examples/domain_elim/b_only.ein::region-trace
+521ff7eb4278377c      383L  examples/domain_elim/b_only.ein::region-trace
 a0e886f27e1b8702       53L  examples/domain_elim/b_only.ein::states
 250c20b894670df0        9L  examples/domain_elim/b_only.ein::region-lattice
 d9a4ca518e71c195      133L  examples/domain_elim/b_only.ein::cores[describe]
@@ -12708,7 +12708,7 @@ c3852627ffb048fd       27L  examples/ein-bugs/zebra2-bad.ein::read-out[describe]
 1c6d3b96d40913f6       17L  examples/ein-bugs/zebra2-bad.ein::read-out[minimal]
 622f3e394d774bdb       17L  examples/ein-bugs/zebra2-bad.ein::read-out[single]
 37b232487ef92503       17L  examples/ein-bugs/zebra2-bad.ein::read-out[n2]
-533df556bae93bc8    65871L  examples/ein-bugs/zebra2-bad.ein::region-trace
+03c8daa99ba4a50a    65871L  examples/ein-bugs/zebra2-bad.ein::region-trace
 d41d8cd98f00b204        0L  examples/ein-bugs/zebra2-bad.ein::states
 8d3fad3072a90366        7L  examples/ein-bugs/zebra2-bad.ein::region-lattice
 bd7412f45a400cb0      102L  examples/ein-bugs/zebra2-bad.ein::cores[describe]
@@ -12750,7 +12750,7 @@ dd2b76667a9eef84       29L  examples/ein-bugs/zebra2-hints.ein::read-out[describ
 2993735802848598       17L  examples/ein-bugs/zebra2-hints.ein::read-out[minimal]
 0dd8639abf645e04       17L  examples/ein-bugs/zebra2-hints.ein::read-out[single]
 979170277287ab33       17L  examples/ein-bugs/zebra2-hints.ein::read-out[n2]
-bb07b19e17fe609b     5265L  examples/ein-bugs/zebra2-hints.ein::region-trace
+4a3cb8070072b552     5265L  examples/ein-bugs/zebra2-hints.ein::region-trace
 d41d8cd98f00b204        0L  examples/ein-bugs/zebra2-hints.ein::states
 670681a5fb828df2        7L  examples/ein-bugs/zebra2-hints.ein::region-lattice
 0e8576928513dadb      196L  examples/ein-bugs/zebra2-hints.ein::cores[describe]
@@ -13128,7 +13128,7 @@ eacd4b2ae14fb01c       16L  examples/features/09_adjacent_via_same_house.ein::re
 3ba53d2b37f155af       16L  examples/features/09_adjacent_via_same_house.ein::read-out[minimal]
 eebc6590ccc9a7ef       16L  examples/features/09_adjacent_via_same_house.ein::read-out[single]
 e240346095c7e856       16L  examples/features/09_adjacent_via_same_house.ein::read-out[n2]
-7efdd013b393a393      508L  examples/features/09_adjacent_via_same_house.ein::region-trace
+28bfc3a0963860a1      508L  examples/features/09_adjacent_via_same_house.ein::region-trace
 d41d8cd98f00b204        0L  examples/features/09_adjacent_via_same_house.ein::states
 68faa8496f4aff87        7L  examples/features/09_adjacent_via_same_house.ein::region-lattice
 0d688c68cbdb5b5e      188L  examples/features/09_adjacent_via_same_house.ein::cores[describe]
@@ -16068,7 +16068,7 @@ e87b9bbdab5c426c       33L  examples/word_problems/bob1.ein::read-out[describe]
 c98bc4f732f853f8       23L  examples/word_problems/bob1.ein::read-out[minimal]
 b24e570c4b2b0bf5       24L  examples/word_problems/bob1.ein::read-out[single]
 3e43f99dc7ebd507       24L  examples/word_problems/bob1.ein::read-out[n2]
-8b53f987e2f2c1ac     1003L  examples/word_problems/bob1.ein::region-trace
+98b6e6b2a03355bb     1003L  examples/word_problems/bob1.ein::region-trace
 58156bf171330b3a     1956L  examples/word_problems/bob1.ein::states
 a4d4116f33e256db        7L  examples/word_problems/bob1.ein::region-lattice
 6992449220a7a0ae       90L  examples/word_problems/bob1.ein::cores[describe]
@@ -16110,7 +16110,7 @@ b7d314723295fc61       46L  examples/word_problems/boxes12.ein::read-out[describ
 25a24da4ede530ce       37L  examples/word_problems/boxes12.ein::read-out[minimal]
 3420081d25587cda       37L  examples/word_problems/boxes12.ein::read-out[single]
 99fb1510dc568107       37L  examples/word_problems/boxes12.ein::read-out[n2]
-e6baf4bb013ab090     3589L  examples/word_problems/boxes12.ein::region-trace
+450fd50802631d50     3589L  examples/word_problems/boxes12.ein::region-trace
 abaad71643f6dab2     2099L  examples/word_problems/boxes12.ein::states
 0f7d95852d4b7156        7L  examples/word_problems/boxes12.ein::region-lattice
 edb14acd7d7e5b0d       90L  examples/word_problems/boxes12.ein::cores[describe]
@@ -16152,7 +16152,7 @@ a00c3d57d4f14d6b       33L  examples/word_problems/bystander.ein::read-out[descr
 3baae5cc96f27049       23L  examples/word_problems/bystander.ein::read-out[minimal]
 07e65d4b4737e98a       24L  examples/word_problems/bystander.ein::read-out[single]
 43f266c95abd893a       24L  examples/word_problems/bystander.ein::read-out[n2]
-c15f29380500aaa7      665L  examples/word_problems/bystander.ein::region-trace
+65600348b24b513f      665L  examples/word_problems/bystander.ein::region-trace
 d7bca77281e53c70     1938L  examples/word_problems/bystander.ein::states
 1583901e683f5de4        7L  examples/word_problems/bystander.ein::region-lattice
 cc9bc80ba94f5280       90L  examples/word_problems/bystander.ein::cores[describe]
@@ -16194,7 +16194,7 @@ cd4fad2a3053972e       19L  examples/word_problems/contra.ein::read-out[maximal]
 01c5500afe00dde3       19L  examples/word_problems/contra.ein::read-out[minimal]
 63e8f720964da610       19L  examples/word_problems/contra.ein::read-out[single]
 08cd02053f83bd4f       19L  examples/word_problems/contra.ein::read-out[n2]
-a1477979b0b8c7cb     1026L  examples/word_problems/contra.ein::region-trace
+cad95951b46c4281     1026L  examples/word_problems/contra.ein::region-trace
 d41d8cd98f00b204        0L  examples/word_problems/contra.ein::states
 8cb93b1a37019839        7L  examples/word_problems/contra.ein::region-lattice
 4e0a6d0e7f68236b      108L  examples/word_problems/contra.ein::cores[describe]
@@ -16236,7 +16236,7 @@ cc815bd908c82660       41L  examples/word_problems/gap.ein::read-out[maximal]
 4f4bc75047a6036f       41L  examples/word_problems/gap.ein::read-out[minimal]
 1663c886276fb40c       40L  examples/word_problems/gap.ein::read-out[single]
 c823b57464395f71       40L  examples/word_problems/gap.ein::read-out[n2]
-9d53e338c7b1e833     1259L  examples/word_problems/gap.ein::region-trace
+1ca411b7d6f300ac     1259L  examples/word_problems/gap.ein::region-trace
 f82865f4e3c1a739     1982L  examples/word_problems/gap.ein::states
 9a08247b32136d52        7L  examples/word_problems/gap.ein::region-lattice
 4ce53034d8b95f82       90L  examples/word_problems/gap.ein::cores[describe]
@@ -16278,7 +16278,7 @@ b167f3c2c28e6527    10165L  examples/word_problems/gap_assume.ein::dot[kb-no-ins
 8ed793414edc4223       39L  examples/word_problems/gap_assume.ein::read-out[minimal]
 13c8df0b976773d3       38L  examples/word_problems/gap_assume.ein::read-out[single]
 8d42ac7d23a4ea96       38L  examples/word_problems/gap_assume.ein::read-out[n2]
-80dcf942b68b0ca8     1875L  examples/word_problems/gap_assume.ein::region-trace
+0dfd235cb8771963     1875L  examples/word_problems/gap_assume.ein::region-trace
 f5acef68c9cfbea4     2015L  examples/word_problems/gap_assume.ein::states
 7e53dc460e5001f7        7L  examples/word_problems/gap_assume.ein::region-lattice
 17e798228ff0c2b7       90L  examples/word_problems/gap_assume.ein::cores[describe]
@@ -16320,7 +16320,7 @@ dba536c2ab20da4d       41L  examples/word_problems/gap_fact.ein::read-out[descri
 0fdec8f07932642f       27L  examples/word_problems/gap_fact.ein::read-out[minimal]
 c41facbbe7ef46a6       32L  examples/word_problems/gap_fact.ein::read-out[single]
 00cc264449cf41e7       32L  examples/word_problems/gap_fact.ein::read-out[n2]
-db98e04ab7a2fd55     1751L  examples/word_problems/gap_fact.ein::region-trace
+cd38b789af9daa83     1751L  examples/word_problems/gap_fact.ein::region-trace
 0852dc9cf606edff     2000L  examples/word_problems/gap_fact.ein::states
 872307a1264ab58d        7L  examples/word_problems/gap_fact.ein::region-lattice
 bf777f7ab6c81ca1       90L  examples/word_problems/gap_fact.ein::cores[describe]
@@ -16362,7 +16362,7 @@ b312a7e0c154cac3       30L  examples/word_problems/gaps.ein::read-out[describe]
 c26ff9b74f0e9924       15L  examples/word_problems/gaps.ein::read-out[minimal]
 5c7b64d5b621e599       17L  examples/word_problems/gaps.ein::read-out[single]
 5592270284845a95       17L  examples/word_problems/gaps.ein::read-out[n2]
-3f5c8dc9c4bd8d05      139L  examples/word_problems/gaps.ein::region-trace
+51da63c8df152b38      139L  examples/word_problems/gaps.ein::region-trace
 86caa0765b75e537       67L  examples/word_problems/gaps.ein::states
 916b5c7b80480755       15L  examples/word_problems/gaps.ein::region-lattice
 0c8862234faedb66      205L  examples/word_problems/gaps.ein::cores[describe]
@@ -16404,7 +16404,7 @@ e632c35c956eb86f    10446L  examples/word_problems/kinds.ein::dot[kb-since]
 63620e90b037b9c2       39L  examples/word_problems/kinds.ein::read-out[minimal]
 24996780991c604d       37L  examples/word_problems/kinds.ein::read-out[single]
 359b4f679d0a39e8       37L  examples/word_problems/kinds.ein::read-out[n2]
-737cf7db75fc4efc      765L  examples/word_problems/kinds.ein::region-trace
+d309d11ba3879f7e      765L  examples/word_problems/kinds.ein::region-trace
 aa6198bc5f7dbc0f     1954L  examples/word_problems/kinds.ein::states
 ae18847dc4f97415        7L  examples/word_problems/kinds.ein::region-lattice
 a1616b0163a0698e       90L  examples/word_problems/kinds.ein::cores[describe]
@@ -16446,7 +16446,7 @@ eb7953e156f0bfb5    10163L  examples/word_problems/kinds_assume.ein::dot[kb-no-i
 c206fd06baf034d9       32L  examples/word_problems/kinds_assume.ein::read-out[minimal]
 948615112d5551a0       32L  examples/word_problems/kinds_assume.ein::read-out[single]
 d638eace5c6f62ec       32L  examples/word_problems/kinds_assume.ein::read-out[n2]
-7b096bd3f6c088f5     1063L  examples/word_problems/kinds_assume.ein::region-trace
+c7439b4db4d10f8b     1063L  examples/word_problems/kinds_assume.ein::region-trace
 9b08fb9465d11cda     1970L  examples/word_problems/kinds_assume.ein::states
 f75a74a6aae48b04        7L  examples/word_problems/kinds_assume.ein::region-lattice
 fc2c622f5e8f9928       90L  examples/word_problems/kinds_assume.ein::cores[describe]
@@ -16488,7 +16488,7 @@ efb3088324b5898e       34L  examples/word_problems/kinds_full.ein::read-out[maxi
 4191b01fac0feb19       34L  examples/word_problems/kinds_full.ein::read-out[minimal]
 dda6fcb3c92e9748       37L  examples/word_problems/kinds_full.ein::read-out[single]
 77479fb9dacdc5a4       37L  examples/word_problems/kinds_full.ein::read-out[n2]
-b05485521016abdb      983L  examples/word_problems/kinds_full.ein::region-trace
+f3a90c3b2dc75cd3      983L  examples/word_problems/kinds_full.ein::region-trace
 92a2445efe42d950     1958L  examples/word_problems/kinds_full.ein::states
 0ef4aa79b9fcc486        7L  examples/word_problems/kinds_full.ein::region-lattice
 5bbf9ec0e23e728e       90L  examples/word_problems/kinds_full.ein::cores[describe]
@@ -16530,7 +16530,7 @@ de76d9ad85f7ac9b    10141L  examples/word_problems/more.ein::dot[kb-origin]
 b8eaf948dc7740f6       23L  examples/word_problems/more.ein::read-out[minimal]
 ee4f62f803878a3c       25L  examples/word_problems/more.ein::read-out[single]
 17fe29a67b6ea4d8       25L  examples/word_problems/more.ein::read-out[n2]
-d28afe9bc0992db7     1389L  examples/word_problems/more.ein::region-trace
+d49bc6eab7bac3df     1389L  examples/word_problems/more.ein::region-trace
 136210b86f2ccea9     1979L  examples/word_problems/more.ein::states
 d5e2197065f8efde        7L  examples/word_problems/more.ein::region-lattice
 fe949aada2a41e7a       90L  examples/word_problems/more.ein::cores[describe]
@@ -16572,7 +16572,7 @@ ab9cb82c9e73463e       44L  examples/word_problems/pencils.ein::read-out[maximal
 f0919fc618e30537       44L  examples/word_problems/pencils.ein::read-out[minimal]
 a82d3f0339e4a61a       53L  examples/word_problems/pencils.ein::read-out[single]
 8806acb168f2e627       53L  examples/word_problems/pencils.ein::read-out[n2]
-277f6ac7a060bf8b     7159L  examples/word_problems/pencils.ein::region-trace
+e8e3cbe1d921019d     7159L  examples/word_problems/pencils.ein::region-trace
 636b57502a4c4f8f     2265L  examples/word_problems/pencils.ein::states
 73306c249bfb484a        7L  examples/word_problems/pencils.ein::region-lattice
 7e25f85965a22111       90L  examples/word_problems/pencils.ein::cores[describe]
@@ -16614,7 +16614,7 @@ bbac514918e42eb2       50L  examples/word_problems/readings.ein::dot[kb-none]
 700efe29146fc79b       16L  examples/word_problems/readings.ein::read-out[minimal]
 ca406dcea4e0f2aa       16L  examples/word_problems/readings.ein::read-out[single]
 c60f970f616937c4       16L  examples/word_problems/readings.ein::read-out[n2]
-cccab93633b3cc02       64L  examples/word_problems/readings.ein::region-trace
+a9a259a2238e96d3       64L  examples/word_problems/readings.ein::region-trace
 c0d06b1c5deb9567       17L  examples/word_problems/readings.ein::states
 bfb527e6cead3757        7L  examples/word_problems/readings.ein::region-lattice
 9a2df56f71129e28       90L  examples/word_problems/readings.ein::cores[describe]
@@ -16656,7 +16656,7 @@ e59763e9d952a5ca       32L  examples/word_problems/unused.ein::read-out[maximal]
 a75a88ea9c5b588f       32L  examples/word_problems/unused.ein::read-out[minimal]
 8abd048675620d1b       34L  examples/word_problems/unused.ein::read-out[single]
 8359681aca3925d1       34L  examples/word_problems/unused.ein::read-out[n2]
-5b4ce797a2ac6718     1003L  examples/word_problems/unused.ein::region-trace
+ad475f7145bf558f     1003L  examples/word_problems/unused.ein::region-trace
 0d7e010a375108b5     1959L  examples/word_problems/unused.ein::states
 51392935b17fe239        7L  examples/word_problems/unused.ein::region-lattice
 a8ca839bea7a2d21       90L  examples/word_problems/unused.ein::cores[describe]
@@ -16698,7 +16698,7 @@ aa47592994f580dc       15L  examples/word_problems/words.ein::read-out[maximal]
 48652103b2b4e252       15L  examples/word_problems/words.ein::read-out[minimal]
 3b6a922f3d517e26       15L  examples/word_problems/words.ein::read-out[single]
 442bfbb553776e41       15L  examples/word_problems/words.ein::read-out[n2]
-d704837054f50c63      575L  examples/word_problems/words.ein::region-trace
+b89c33cffecec955      575L  examples/word_problems/words.ein::region-trace
 b0d38a2bbbd31f3c     1929L  examples/word_problems/words.ein::states
 9a5cf940f8a89d33        7L  examples/word_problems/words.ein::region-lattice
 96e9a64ed01ea21e       90L  examples/word_problems/words.ein::cores[describe]
@@ -16740,7 +16740,7 @@ f8400c734fe4fd77      148L  examples/zebra.ein::dot[kb-since]
 3764f5c9ff63a667       55L  examples/zebra.ein::read-out[minimal]
 ebfc5eea3436a62e       55L  examples/zebra.ein::read-out[single]
 362a6621a509c3f4       55L  examples/zebra.ein::read-out[n2]
-3a3dab29c2893f95    32764L  examples/zebra.ein::region-trace
+d9ed9b6ba6f20249    32764L  examples/zebra.ein::region-trace
 3056203feb6b493e      609L  examples/zebra.ein::states
 0aa22cdfc9d6e28b       25L  examples/zebra.ein::region-lattice
 f3ec80e973023912     9037L  examples/zebra.ein::cores[describe]
@@ -16782,7 +16782,7 @@ ca9a94d56a5fdede      126L  examples/zebra2-hints.ein::read-out[describe]
 7d81951a4e4cf029       24L  examples/zebra2-hints.ein::read-out[minimal]
 bcc8769ca4b7b450       37L  examples/zebra2-hints.ein::read-out[single]
 5125ba40c8bb885d       37L  examples/zebra2-hints.ein::read-out[n2]
-e6d5e2f8c937aeac    18765L  examples/zebra2-hints.ein::region-trace
+f3c5b5bc0e7de614    18765L  examples/zebra2-hints.ein::region-trace
 3a420478afeb142c     2313L  examples/zebra2-hints.ein::states
 357dcddbfe211b3d      157L  examples/zebra2-hints.ein::region-lattice
 c5c2a0823c919798     5891L  examples/zebra2-hints.ein::cores[describe]
@@ -16824,7 +16824,7 @@ ef069200a6191420       17L  examples/zebra2-minus-15-obligations.ein::read-out[m
 48d4e010fa3e5ee9      119L  examples/zebra2-minus-15-obligations.ein::read-out[minimal]
 e086c1c6c1a6195e       50L  examples/zebra2-minus-15-obligations.ein::read-out[single]
 48bccfdda8dded5b       50L  examples/zebra2-minus-15-obligations.ein::read-out[n2]
-f1ecb7348ca51464     5019L  examples/zebra2-minus-15-obligations.ein::region-trace
+2e08d1162546edd9     5019L  examples/zebra2-minus-15-obligations.ein::region-trace
 d41d8cd98f00b204        0L  examples/zebra2-minus-15-obligations.ein::states
 aba48c3961006248        7L  examples/zebra2-minus-15-obligations.ein::region-lattice
 ec0ec051cbaffe54     6136L  examples/zebra2-minus-15-obligations.ein::cores[describe]
@@ -16866,7 +16866,7 @@ b0a7cbe53512c67b      281L  examples/zebra2-minus-15.ein::dot[kb-since]
 53ff6c724f0fde7d      119L  examples/zebra2-minus-15.ein::read-out[minimal]
 1218e143aa9c311b       50L  examples/zebra2-minus-15.ein::read-out[single]
 7c1c97156e7b3da9       50L  examples/zebra2-minus-15.ein::read-out[n2]
-226f430ca1be8bfd     5019L  examples/zebra2-minus-15.ein::region-trace
+fb9e166bc36f308d     5019L  examples/zebra2-minus-15.ein::region-trace
 d41d8cd98f00b204        0L  examples/zebra2-minus-15.ein::states
 c8fdd918669fbcbe        7L  examples/zebra2-minus-15.ein::region-lattice
 629995ec8cf0a6d2     6136L  examples/zebra2-minus-15.ein::cores[describe]
@@ -16908,7 +16908,7 @@ bc7f3187695dfc86       42L  examples/zebra2-obligations.ein::read-out[describe]
 b5b87fd6cb01d803       34L  examples/zebra2-obligations.ein::read-out[minimal]
 ba025f6a913015e0       37L  examples/zebra2-obligations.ein::read-out[single]
 15d4ee1badc50ae9       37L  examples/zebra2-obligations.ein::read-out[n2]
-31a903fb40cbc168    13531L  examples/zebra2-obligations.ein::region-trace
+617a7c8a458ba019    13531L  examples/zebra2-obligations.ein::region-trace
 6fd22347932c2a0f      429L  examples/zebra2-obligations.ein::states
 f60e0d793d3f9bda       25L  examples/zebra2-obligations.ein::region-lattice
 43cc02406d0bf067     7963L  examples/zebra2-obligations.ein::cores[describe]
@@ -16950,7 +16950,7 @@ a55eb52690325eb2      166L  examples/zebra2.ein::dot[kb-origin]
 bdac3bfa6b2efc92       34L  examples/zebra2.ein::read-out[minimal]
 2c1052e36f9c77ab       37L  examples/zebra2.ein::read-out[single]
 d148448fd6960be9       37L  examples/zebra2.ein::read-out[n2]
-233bb791d34fdc3a    13531L  examples/zebra2.ein::region-trace
+49bea24b98216a79    13531L  examples/zebra2.ein::region-trace
 6fd22347932c2a0f      429L  examples/zebra2.ein::states
 1db41542f1143f89       25L  examples/zebra2.ein::region-lattice
 b7e6349194596972     7963L  examples/zebra2.ein::cores[describe]
@@ -17034,7 +17034,7 @@ ef88367730a42537     9997L  stdlib/arith.ein::dot[kb-origin]
 ad42b1493134a69f       15L  stdlib/arith.ein::read-out[minimal]
 182b91849acd4b66       15L  stdlib/arith.ein::read-out[single]
 fcf49b1832da2d15       15L  stdlib/arith.ein::read-out[n2]
-3fa120ba69bbdaad      433L  stdlib/arith.ein::region-trace
+86246285c1c1320e      433L  stdlib/arith.ein::region-trace
 86f2f8494c1a31b1     1864L  stdlib/arith.ein::states
 76c0a191a35b97ff        7L  stdlib/arith.ein::region-lattice
 f864788e17abff3a       90L  stdlib/arith.ein::cores[describe]
@@ -17244,7 +17244,7 @@ b8b85400da5d3291       24L  stdlib/int.ein::read-out[describe]
 ce98147f410f5f34       15L  stdlib/int.ein::read-out[minimal]
 89fa2b48f4a42afc       15L  stdlib/int.ein::read-out[single]
 9d26f954307aa488       15L  stdlib/int.ein::read-out[n2]
-d7f4510bb3532933      685L  stdlib/int.ein::region-trace
+d30cfa45482b11a2      685L  stdlib/int.ein::region-trace
 7c6ef9738509e97a     1983L  stdlib/int.ein::states
 461fe9a58a4f1f0a        7L  stdlib/int.ein::region-lattice
 054a6e013865c5f2       90L  stdlib/int.ein::cores[describe]
@@ -17328,7 +17328,7 @@ f0187ae1d74e8dd2     9581L  stdlib/num9.ein::dot[kb-since]
 88d05ae121b4fd08       15L  stdlib/num9.ein::read-out[minimal]
 cdb291d09a9e1cbb       15L  stdlib/num9.ein::read-out[single]
 aa47c1c375babad5       15L  stdlib/num9.ein::read-out[n2]
-2c0faf37615e7008      195L  stdlib/num9.ein::region-trace
+ba48add3130cfe5f      195L  stdlib/num9.ein::region-trace
 19fc45ae916f11ff     1700L  stdlib/num9.ein::states
 5a576405b7df84df        7L  stdlib/num9.ein::region-lattice
 e3d006ef09f42c08       90L  stdlib/num9.ein::cores[describe]
@@ -17370,7 +17370,7 @@ b195f9bc44e389d5       15L  stdlib/rat.ein::read-out[maximal]
 2889242dbbcf6934       15L  stdlib/rat.ein::read-out[minimal]
 461571af460da905       15L  stdlib/rat.ein::read-out[single]
 730360be601f01f4       15L  stdlib/rat.ein::read-out[n2]
-7357671d228e45a6      913L  stdlib/rat.ein::region-trace
+7b1a1b80bd2ad751      913L  stdlib/rat.ein::region-trace
 73f8227be6c4111b     2090L  stdlib/rat.ein::states
 16b9157c697f1fcb        7L  stdlib/rat.ein::region-lattice
 f015f3de7e8bd751       90L  stdlib/rat.ein::cores[describe]
@@ -17958,7 +17958,7 @@ f416c9b83f9c7bce       40L  tests/stdlib/algebra/03_boolean.ein::dot[kb-none]
 b51aff7017d98a15       24L  tests/stdlib/algebra/03_boolean.ein::read-out[minimal]
 e5d9d5a0a27ab570       24L  tests/stdlib/algebra/03_boolean.ein::read-out[single]
 07808a86b0399789       24L  tests/stdlib/algebra/03_boolean.ein::read-out[n2]
-ac091dc41801735c      169L  tests/stdlib/algebra/03_boolean.ein::region-trace
+c012808166c93a0c      169L  tests/stdlib/algebra/03_boolean.ein::region-trace
 58bbf9af593771fe       17L  tests/stdlib/algebra/03_boolean.ein::states
 aa56a5259875654f        7L  tests/stdlib/algebra/03_boolean.ein::region-lattice
 5ef7f63f0df12002       90L  tests/stdlib/algebra/03_boolean.ein::cores[describe]
@@ -18084,7 +18084,7 @@ d0af95c84715a304       32L  tests/stdlib/algebra/06_equational.ein::read-out[des
 bba5b47ff4336026       24L  tests/stdlib/algebra/06_equational.ein::read-out[minimal]
 53531c8564775a40       24L  tests/stdlib/algebra/06_equational.ein::read-out[single]
 195e5e4791144610       24L  tests/stdlib/algebra/06_equational.ein::read-out[n2]
-0fee9fc2cbc2a8ff      183L  tests/stdlib/algebra/06_equational.ein::region-trace
+7fa290f186a83409      183L  tests/stdlib/algebra/06_equational.ein::region-trace
 ef8b507e6547ad8d       20L  tests/stdlib/algebra/06_equational.ein::states
 7d7e01dba655e952        7L  tests/stdlib/algebra/06_equational.ein::region-lattice
 ae1502111e9e3252       90L  tests/stdlib/algebra/06_equational.ein::cores[describe]
@@ -18966,7 +18966,7 @@ be1086dc5368e0e3       27L  tests/stdlib/arith/01_add.ein::read-out[maximal]
 2232142df6449f70       27L  tests/stdlib/arith/01_add.ein::read-out[minimal]
 396083e37c7df2ff       26L  tests/stdlib/arith/01_add.ein::read-out[single]
 aa6191203bc47b8c       26L  tests/stdlib/arith/01_add.ein::read-out[n2]
-2cea77efeb3a6d7e     1071L  tests/stdlib/arith/01_add.ein::region-trace
+cc2aba836abc95e5     1071L  tests/stdlib/arith/01_add.ein::region-trace
 3a9993805dab37b3     1898L  tests/stdlib/arith/01_add.ein::states
 5a568050b9c3135e        7L  tests/stdlib/arith/01_add.ein::region-lattice
 8dce587d24cf1cc6       90L  tests/stdlib/arith/01_add.ein::cores[describe]
@@ -19008,7 +19008,7 @@ a4c2a893c176c09b       37L  tests/stdlib/arith/02_carry_out.ein::read-out[descri
 a14002b3bf746f74       29L  tests/stdlib/arith/02_carry_out.ein::read-out[minimal]
 803bc71a7852232d       29L  tests/stdlib/arith/02_carry_out.ein::read-out[single]
 8a75a9b069a01520       29L  tests/stdlib/arith/02_carry_out.ein::read-out[n2]
-23d752cdd83a6330     1461L  tests/stdlib/arith/02_carry_out.ein::region-trace
+42702685e2f3833c     1461L  tests/stdlib/arith/02_carry_out.ein::region-trace
 06204a02d6b7c46a     1920L  tests/stdlib/arith/02_carry_out.ein::states
 2ffb072182d51749        7L  tests/stdlib/arith/02_carry_out.ein::region-lattice
 7492f5d25d532da3       90L  tests/stdlib/arith/02_carry_out.ein::cores[describe]
@@ -19050,7 +19050,7 @@ d0f156013e885502       33L  tests/stdlib/arith/03_lengths.ein::read-out[maximal]
 e5b5461e5f963876       33L  tests/stdlib/arith/03_lengths.ein::read-out[minimal]
 b15d18b896c3dfdd       35L  tests/stdlib/arith/03_lengths.ein::read-out[single]
 f82c2b2ba1c5be9d       35L  tests/stdlib/arith/03_lengths.ein::read-out[n2]
-5a38012fa1b7181b     1997L  tests/stdlib/arith/03_lengths.ein::region-trace
+662fcfcb31916fa4     1997L  tests/stdlib/arith/03_lengths.ein::region-trace
 63491588bae1d4d3     1952L  tests/stdlib/arith/03_lengths.ein::states
 b6814992fd6a9b3c        7L  tests/stdlib/arith/03_lengths.ein::region-lattice
 c768a1420892b40e       90L  tests/stdlib/arith/03_lengths.ein::cores[describe]
@@ -19092,7 +19092,7 @@ fc09038b294ceef5       31L  tests/stdlib/arith/04_zero.ein::read-out[maximal]
 508fb86624dd3820       31L  tests/stdlib/arith/04_zero.ein::read-out[minimal]
 cd839da65d776ce3       31L  tests/stdlib/arith/04_zero.ein::read-out[single]
 6a9a5f1dc0fb4beb       31L  tests/stdlib/arith/04_zero.ein::read-out[n2]
-35393faaac706625     1085L  tests/stdlib/arith/04_zero.ein::region-trace
+8a574a7faeb03bd3     1085L  tests/stdlib/arith/04_zero.ein::region-trace
 35de10591db6a10a     1901L  tests/stdlib/arith/04_zero.ein::states
 91cc1877683d2d8d        7L  tests/stdlib/arith/04_zero.ein::region-lattice
 6e4facd0bf6ee9f9       90L  tests/stdlib/arith/04_zero.ein::cores[describe]
@@ -19134,7 +19134,7 @@ c86eeac41d5ea6c2       31L  tests/stdlib/arith/05_high_zeros.ein::read-out[maxim
 133865970dbb59c0       31L  tests/stdlib/arith/05_high_zeros.ein::read-out[minimal]
 6073adb969fd67b8       32L  tests/stdlib/arith/05_high_zeros.ein::read-out[single]
 2d86099182b58359       32L  tests/stdlib/arith/05_high_zeros.ein::read-out[n2]
-10d2205043480cb9     1689L  tests/stdlib/arith/05_high_zeros.ein::region-trace
+7520a9a67b77b322     1689L  tests/stdlib/arith/05_high_zeros.ein::region-trace
 6a5325762125acd8     1934L  tests/stdlib/arith/05_high_zeros.ein::states
 0cf2e62d4c87cd9b        7L  tests/stdlib/arith/05_high_zeros.ein::region-lattice
 4cc79e32370da7f5       90L  tests/stdlib/arith/05_high_zeros.ein::cores[describe]
@@ -19176,7 +19176,7 @@ bd706cf3bb474dfb       40L  tests/stdlib/arith/06_named.ein::read-out[maximal]
 1abe5c246a0775eb       40L  tests/stdlib/arith/06_named.ein::read-out[minimal]
 c881e8366819ca98       40L  tests/stdlib/arith/06_named.ein::read-out[single]
 94a789d82a3688da       40L  tests/stdlib/arith/06_named.ein::read-out[n2]
-1744a00fc308b2f0     1701L  tests/stdlib/arith/06_named.ein::region-trace
+dd72c9ee94cc2c67     1701L  tests/stdlib/arith/06_named.ein::region-trace
 d57d3a15d9a78211     1936L  tests/stdlib/arith/06_named.ein::states
 aa2b17927198afb9        7L  tests/stdlib/arith/06_named.ein::region-lattice
 7de59edda696db70       90L  tests/stdlib/arith/06_named.ein::cores[describe]
@@ -19218,7 +19218,7 @@ ccaebed074d517e6       41L  tests/stdlib/arith/07_only_what_is_asked.ein::read-o
 593fa23baf6de834       35L  tests/stdlib/arith/07_only_what_is_asked.ein::read-out[minimal]
 31c1ee6fcfe23c69       33L  tests/stdlib/arith/07_only_what_is_asked.ein::read-out[single]
 a3789539496e83c2       33L  tests/stdlib/arith/07_only_what_is_asked.ein::read-out[n2]
-407690f17724b120      851L  tests/stdlib/arith/07_only_what_is_asked.ein::region-trace
+094dd543e7323d16      851L  tests/stdlib/arith/07_only_what_is_asked.ein::region-trace
 f46f8fb7474493c0     1890L  tests/stdlib/arith/07_only_what_is_asked.ein::states
 619959566a2cb308        7L  tests/stdlib/arith/07_only_what_is_asked.ein::region-lattice
 a9b4acfd0fb9f694       90L  tests/stdlib/arith/07_only_what_is_asked.ein::cores[describe]
@@ -19260,7 +19260,7 @@ d98eb6323441b6cd     9999L  tests/stdlib/arith/08_sub.ein::dot[kb-no-instances]
 2d19d06d62a4a12c       38L  tests/stdlib/arith/08_sub.ein::read-out[minimal]
 95cdefdf36107bc4       38L  tests/stdlib/arith/08_sub.ein::read-out[single]
 1d7a98f88f1a6d2b       38L  tests/stdlib/arith/08_sub.ein::read-out[n2]
-5b10e8b5d30e6e2b     2017L  tests/stdlib/arith/08_sub.ein::region-trace
+668fb5bbe109c32d     2017L  tests/stdlib/arith/08_sub.ein::region-trace
 a8dd3e8499754a3d     1948L  tests/stdlib/arith/08_sub.ein::states
 c4c755578960ac29        7L  tests/stdlib/arith/08_sub.ein::region-lattice
 700492aaad106bc7       90L  tests/stdlib/arith/08_sub.ein::cores[describe]
@@ -19302,7 +19302,7 @@ fb5a5dd307a306f5       54L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::read
 55b63fb088d62609       41L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::read-out[minimal]
 5245881a2b315227       46L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::read-out[single]
 0ae962b06f1c956f       46L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::read-out[n2]
-7ea6ba2ffe2be840     3999L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::region-trace
+660e97d91c08c85d     3999L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::region-trace
 bbd66d876de11670     2061L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::states
 f8d4f5dd00c5e914        7L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::region-lattice
 d0ab8fd7254fc9af       90L  tests/stdlib/arith/09_sub_borrow_and_zeros.ein::cores[describe]
@@ -19344,7 +19344,7 @@ c629d06f11d903a6       40L  tests/stdlib/arith/10_sub_named.ein::read-out[maxima
 7cea0f5e3e904002       40L  tests/stdlib/arith/10_sub_named.ein::read-out[minimal]
 548871077d8a2af4       40L  tests/stdlib/arith/10_sub_named.ein::read-out[single]
 f9954201022a2630       40L  tests/stdlib/arith/10_sub_named.ein::read-out[n2]
-8e17a547e900e7bd     2151L  tests/stdlib/arith/10_sub_named.ein::region-trace
+75b8e89b15c66c21     2151L  tests/stdlib/arith/10_sub_named.ein::region-trace
 0334bab94af18359     1961L  tests/stdlib/arith/10_sub_named.ein::states
 8ee1d7074d2b2727        7L  tests/stdlib/arith/10_sub_named.ein::region-lattice
 fd2b0cb1a3396790       90L  tests/stdlib/arith/10_sub_named.ein::cores[describe]
@@ -19386,7 +19386,7 @@ c286a9af349c8d76       43L  tests/stdlib/arith/11_cmp.ein::read-out[describe]
 d78bee6b8aa78865       33L  tests/stdlib/arith/11_cmp.ein::read-out[minimal]
 2556f54f1ed5d0b2       35L  tests/stdlib/arith/11_cmp.ein::read-out[single]
 c3c051501895df32       35L  tests/stdlib/arith/11_cmp.ein::read-out[n2]
-bd5760b1f4a0613f     1629L  tests/stdlib/arith/11_cmp.ein::region-trace
+8bb286c49e3420bd     1629L  tests/stdlib/arith/11_cmp.ein::region-trace
 94a9603e625509cb     1934L  tests/stdlib/arith/11_cmp.ein::states
 f0a603c97b58474f        7L  tests/stdlib/arith/11_cmp.ein::region-lattice
 64c8f22e5b39f1bf       90L  tests/stdlib/arith/11_cmp.ein::cores[describe]
@@ -19428,7 +19428,7 @@ cb54c6947134e95f       62L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::rea
 0941153b2730b737       50L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::read-out[minimal]
 fc9001f801995bae       54L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::read-out[single]
 15aec0f44beac510       54L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::read-out[n2]
-8a9ab7425b590f00     2687L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::region-trace
+735147bd75247f39     2687L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::region-trace
 959a8ab0eafa729f     1996L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::states
 a67dafadab5debd2        7L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::region-lattice
 2d17bc8ca8291ae0       90L  tests/stdlib/arith/12_cmp_lengths_and_names.ein::cores[describe]
@@ -19470,7 +19470,7 @@ ffbc8dd297256132       37L  tests/stdlib/arith/13_mul.ein::read-out[describe]
 9f7d619edae33dff       29L  tests/stdlib/arith/13_mul.ein::read-out[minimal]
 d72d28ca53654c85       29L  tests/stdlib/arith/13_mul.ein::read-out[single]
 fca8e7db6744a0bd       29L  tests/stdlib/arith/13_mul.ein::read-out[n2]
-f84ec941cce5465f     3653L  tests/stdlib/arith/13_mul.ein::region-trace
+81393f66317778d5     3653L  tests/stdlib/arith/13_mul.ein::region-trace
 7e60ad14c10f4597     2026L  tests/stdlib/arith/13_mul.ein::states
 07f2a13cbd4dffff        7L  tests/stdlib/arith/13_mul.ein::region-lattice
 5587a9d220790956       90L  tests/stdlib/arith/13_mul.ein::cores[describe]
@@ -19512,7 +19512,7 @@ e421f42b92f58c00       41L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::rea
 ae1f61128511fa3a       41L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::read-out[minimal]
 b08134c3e610e2fd       46L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::read-out[single]
 4bdf405f1923bb3b       46L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::read-out[n2]
-eb4e80a70d959f2a     8265L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::region-trace
+ced98138f7cc8af3     8265L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::region-trace
 69b374972348043f     2267L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::states
 6cafc1b93a5ed609        7L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::region-lattice
 15b4d2f6d55d244b       90L  tests/stdlib/arith/14_mul_zeros_and_carries.ein::cores[describe]
@@ -19554,7 +19554,7 @@ d3e52617cbf6d4cb       59L  tests/stdlib/arith/15_mul_long_and_named.ein::read-o
 6a72236617315280       50L  tests/stdlib/arith/15_mul_long_and_named.ein::read-out[minimal]
 a484ee9b415a369e       51L  tests/stdlib/arith/15_mul_long_and_named.ein::read-out[single]
 94fe8d44649eacdd       51L  tests/stdlib/arith/15_mul_long_and_named.ein::read-out[n2]
-e7c6a830f32f1969     6971L  tests/stdlib/arith/15_mul_long_and_named.ein::region-trace
+fd2027e2ff64481b     6971L  tests/stdlib/arith/15_mul_long_and_named.ein::region-trace
 99fcac74944af877     2190L  tests/stdlib/arith/15_mul_long_and_named.ein::states
 6d4816fc5ab1fe8a        7L  tests/stdlib/arith/15_mul_long_and_named.ein::region-lattice
 0ecd9b875ee4048c       90L  tests/stdlib/arith/15_mul_long_and_named.ein::cores[describe]
@@ -19596,7 +19596,7 @@ f2b6bb53b72697b6       27L  tests/stdlib/arith/16_div.ein::read-out[maximal]
 3f918e85fdaa162c       27L  tests/stdlib/arith/16_div.ein::read-out[minimal]
 9e106976a4e08c22       26L  tests/stdlib/arith/16_div.ein::read-out[single]
 c08c9308819b3b47       26L  tests/stdlib/arith/16_div.ein::read-out[n2]
-fba685b66091ff41     5205L  tests/stdlib/arith/16_div.ein::region-trace
+45b295fd29150e16     5205L  tests/stdlib/arith/16_div.ein::region-trace
 dc665493da383503     2095L  tests/stdlib/arith/16_div.ein::states
 5418dab410303fab        7L  tests/stdlib/arith/16_div.ein::region-lattice
 e6efff56b74e08a1       90L  tests/stdlib/arith/16_div.ein::cores[describe]
@@ -19638,7 +19638,7 @@ e0658bbe88085771       29L  tests/stdlib/arith/17_div_every_digit.ein::read-out[
 4b8624c57ef086e9       29L  tests/stdlib/arith/17_div_every_digit.ein::read-out[minimal]
 bd4fa9f14d35fa16       29L  tests/stdlib/arith/17_div_every_digit.ein::read-out[single]
 de722d3e6f0021d3       29L  tests/stdlib/arith/17_div_every_digit.ein::read-out[n2]
-fb0b561e3bc37cb6    16583L  tests/stdlib/arith/17_div_every_digit.ein::region-trace
+bbc53dc96c75dff3    16583L  tests/stdlib/arith/17_div_every_digit.ein::region-trace
 9a3448d0a8c967e0     2642L  tests/stdlib/arith/17_div_every_digit.ein::states
 a316eb3d153b2563        7L  tests/stdlib/arith/17_div_every_digit.ein::region-lattice
 20d18d00db579a11       90L  tests/stdlib/arith/17_div_every_digit.ein::cores[describe]
@@ -19680,7 +19680,7 @@ d41d8cd98f00b204        0L  tests/stdlib/arith/18_div_small_and_zeros.ein::dot[r
 42a4912ba2b4d6ef       41L  tests/stdlib/arith/18_div_small_and_zeros.ein::read-out[minimal]
 3a49ad1315de9fea       47L  tests/stdlib/arith/18_div_small_and_zeros.ein::read-out[single]
 cacd7334d3ae00b6       47L  tests/stdlib/arith/18_div_small_and_zeros.ein::read-out[n2]
-6f3534430f24f9c1    24385L  tests/stdlib/arith/18_div_small_and_zeros.ein::region-trace
+2ad0f3737696533f    24385L  tests/stdlib/arith/18_div_small_and_zeros.ein::region-trace
 c245a8570a5af02f     3036L  tests/stdlib/arith/18_div_small_and_zeros.ein::states
 cbed41087ef14173        7L  tests/stdlib/arith/18_div_small_and_zeros.ein::region-lattice
 116fb1a65a1192ce       90L  tests/stdlib/arith/18_div_small_and_zeros.ein::cores[describe]
@@ -19722,7 +19722,7 @@ f8fcdf39b135d60e       16L  tests/stdlib/arith/19_div_named_and_chained.ein::dot
 d519383ba67a248b       29L  tests/stdlib/arith/19_div_named_and_chained.ein::read-out[minimal]
 1cfb8b3e3504b0ea       29L  tests/stdlib/arith/19_div_named_and_chained.ein::read-out[single]
 bf88ee7b4e60293d       29L  tests/stdlib/arith/19_div_named_and_chained.ein::read-out[n2]
-31bb550e9c1e1ac5     7349L  tests/stdlib/arith/19_div_named_and_chained.ein::region-trace
+1792bf6978a22f6d     7349L  tests/stdlib/arith/19_div_named_and_chained.ein::region-trace
 002c8fa5b277159e     2207L  tests/stdlib/arith/19_div_named_and_chained.ein::states
 2bed3fcff32f0e76        7L  tests/stdlib/arith/19_div_named_and_chained.ein::region-lattice
 78b8cb1037ccb347       90L  tests/stdlib/arith/19_div_named_and_chained.ein::cores[describe]
@@ -19764,7 +19764,7 @@ a753f6068eb66dd7       21L  tests/stdlib/arith/20_div_by_zero.ein::read-out[desc
 914d446e1dbe706e       15L  tests/stdlib/arith/20_div_by_zero.ein::read-out[minimal]
 e19f288419c2a58b       15L  tests/stdlib/arith/20_div_by_zero.ein::read-out[single]
 1ddeb646cd2a285f       15L  tests/stdlib/arith/20_div_by_zero.ein::read-out[n2]
-0202177795b099c9      964L  tests/stdlib/arith/20_div_by_zero.ein::region-trace
+06fecac15f864b21      964L  tests/stdlib/arith/20_div_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/20_div_by_zero.ein::states
 b665cab5bb2348cd        7L  tests/stdlib/arith/20_div_by_zero.ein::region-lattice
 213045b671cb220a       93L  tests/stdlib/arith/20_div_by_zero.ein::cores[describe]
@@ -19806,7 +19806,7 @@ a172795523a7694b       15L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ei
 cd45385055579927       15L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::read-out[minimal]
 8eb5513debd02261       15L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::read-out[single]
 892c11ca79fac0cb       15L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::read-out[n2]
-d15a841242ee2c4b      846L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::region-trace
+4f4ac6383378a8c3      846L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::states
 5c10d5343787d04f        7L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::region-lattice
 c7fe9fdc1d6caf7d       99L  tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein::cores[describe]
@@ -19848,7 +19848,7 @@ d184e86aea208667       15L  tests/stdlib/arith/22_malformed_digit.ein::read-out[
 ceb313b29e192176       15L  tests/stdlib/arith/22_malformed_digit.ein::read-out[minimal]
 5425342b89fe60c9       15L  tests/stdlib/arith/22_malformed_digit.ein::read-out[single]
 f31c2326879d379a       15L  tests/stdlib/arith/22_malformed_digit.ein::read-out[n2]
-2d2a524265781f2d      988L  tests/stdlib/arith/22_malformed_digit.ein::region-trace
+d01b576977db43f0      988L  tests/stdlib/arith/22_malformed_digit.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/22_malformed_digit.ein::states
 7b1e0fe80e24da00        7L  tests/stdlib/arith/22_malformed_digit.ein::region-lattice
 f97ca9050be0a2ac       93L  tests/stdlib/arith/22_malformed_digit.ein::cores[describe]
@@ -19890,7 +19890,7 @@ e56806d486dde49a       21L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::r
 5551fb4dbb055def       15L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::read-out[minimal]
 8d12e75815c6e82b       15L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::read-out[single]
 76a925241b41c4e0       15L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::read-out[n2]
-39b226ba8114e735      926L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::region-trace
+6fcb3dac54fa7f69      926L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::states
 88c9c5ba5fbe2285        7L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::region-lattice
 ae3d3718595772e4       93L  tests/stdlib/arith/23_malformed_fact_as_digit.ein::cores[describe]
@@ -19932,7 +19932,7 @@ b4cac1efa10e5135       22L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::r
 c4aab2b2776b8712       15L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::read-out[minimal]
 d1fe1f1a4618be3a       15L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::read-out[single]
 b789d10e3315d1e7       15L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::read-out[n2]
-1067e3968e3157d7      974L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::region-trace
+3326bf76ec00959d      974L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::states
 ef1e7d30781329a5        7L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::region-lattice
 a35ee5c1c8f7d3c5       96L  tests/stdlib/arith/24_malformed_ends_in_digit.ein::cores[describe]
@@ -19974,7 +19974,7 @@ f1b8673e6ed4778b       15L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::re
 4514cf8de0de1e63       15L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::read-out[minimal]
 b559c07e0887111f       15L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::read-out[single]
 6a47b7c13afbf4dc       15L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::read-out[n2]
-d053131649bb8008      972L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::region-trace
+79fa618944f301b7      972L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::states
 d212e7f1f7c1f2c1        7L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::region-lattice
 55b16734aac1c7dd       93L  tests/stdlib/arith/25_malformed_ends_in_zero.ein::cores[describe]
@@ -20016,7 +20016,7 @@ babfaeed58267110       12L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::
 e949d1bc76603056       15L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::read-out[minimal]
 fcdf1d60c5b1d926       15L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::read-out[single]
 7f61a0c403a7ef41       15L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::read-out[n2]
-95f1eba68824c3c7      974L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::region-trace
+00fc8a91cb29d404      974L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::states
 c954714c1f6ea206        7L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::region-lattice
 5b30ce4be2e89a41       96L  tests/stdlib/arith/26_malformed_ends_in_a_name.ein::cores[describe]
@@ -20058,7 +20058,7 @@ ed8bfd44bd289adc       22L  tests/stdlib/arith/27_malformed_digit_as_number.ein:
 dbbf9bb04df99e62       15L  tests/stdlib/arith/27_malformed_digit_as_number.ein::read-out[minimal]
 54a668b2e930b271       15L  tests/stdlib/arith/27_malformed_digit_as_number.ein::read-out[single]
 3165873161cdcbee       15L  tests/stdlib/arith/27_malformed_digit_as_number.ein::read-out[n2]
-17625331192ed50d      866L  tests/stdlib/arith/27_malformed_digit_as_number.ein::region-trace
+d13c27a3ec580d7b      866L  tests/stdlib/arith/27_malformed_digit_as_number.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/27_malformed_digit_as_number.ein::states
 271d944b427c961c        7L  tests/stdlib/arith/27_malformed_digit_as_number.ein::region-lattice
 9657589e2aceca03       96L  tests/stdlib/arith/27_malformed_digit_as_number.ein::cores[describe]
@@ -20100,7 +20100,7 @@ ce7e7d5b14dcfe8d       15L  tests/stdlib/arith/28_malformed_zero_digit_as_number
 4024b0796fdaf982       15L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::read-out[minimal]
 648c0bb5f3b8fdb5       15L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::read-out[single]
 a2b2e4db497f3bbc       15L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::read-out[n2]
-0e6566b669424765      802L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::region-trace
+c97076cf1fe9d58b      802L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::states
 6c0c8b75391c0744        7L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::region-lattice
 b1fc7db603649b16       93L  tests/stdlib/arith/28_malformed_zero_digit_as_number.ein::cores[describe]
@@ -20142,7 +20142,7 @@ e6ef3deccc576edd    10252L  tests/stdlib/arith/29_undeclared_name.ein::dot[kb-si
 712d8c390eb0b8bc       15L  tests/stdlib/arith/29_undeclared_name.ein::read-out[minimal]
 ffc9b229b49a950b       15L  tests/stdlib/arith/29_undeclared_name.ein::read-out[single]
 6497463ee5f16f90       15L  tests/stdlib/arith/29_undeclared_name.ein::read-out[n2]
-514c4e1de47d1c14      974L  tests/stdlib/arith/29_undeclared_name.ein::region-trace
+90f013d559485c55      974L  tests/stdlib/arith/29_undeclared_name.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/29_undeclared_name.ein::states
 6e8bef5b15d8c55e        7L  tests/stdlib/arith/29_undeclared_name.ein::region-lattice
 29202f74a064dd28       96L  tests/stdlib/arith/29_undeclared_name.ein::cores[describe]
@@ -20184,7 +20184,7 @@ e024fb1653e7393d    10001L  tests/stdlib/arith/30_declared_name.ein::dot[kb-no-i
 4014a97ca8f159bb       41L  tests/stdlib/arith/30_declared_name.ein::read-out[minimal]
 9e3e54ce58040dac       38L  tests/stdlib/arith/30_declared_name.ein::read-out[single]
 a59a821bb3239fc3       38L  tests/stdlib/arith/30_declared_name.ein::read-out[n2]
-afc88013ebe3920b     1285L  tests/stdlib/arith/30_declared_name.ein::region-trace
+cb78a27de4b4908d     1285L  tests/stdlib/arith/30_declared_name.ein::region-trace
 3c945e9076d00b8b     1913L  tests/stdlib/arith/30_declared_name.ein::states
 73d07ec3027ad72d        7L  tests/stdlib/arith/30_declared_name.ein::region-lattice
 39c08fab9218f5fc       90L  tests/stdlib/arith/30_declared_name.ein::cores[describe]
@@ -20226,7 +20226,7 @@ ba57234acfd89952       22L  tests/stdlib/arith/31_malformed_through_a_name.ein::
 0079b8d1d676f2ee       15L  tests/stdlib/arith/31_malformed_through_a_name.ein::read-out[minimal]
 77f9aacfd3901607       15L  tests/stdlib/arith/31_malformed_through_a_name.ein::read-out[single]
 78b6dcb5eb44f0e5       15L  tests/stdlib/arith/31_malformed_through_a_name.ein::read-out[n2]
-78b35cc12e92176f     2206L  tests/stdlib/arith/31_malformed_through_a_name.ein::region-trace
+909a5077a2c6da93     2206L  tests/stdlib/arith/31_malformed_through_a_name.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/31_malformed_through_a_name.ein::states
 cc2571852ad61c95        7L  tests/stdlib/arith/31_malformed_through_a_name.ein::region-lattice
 838b500943a6f4f2       96L  tests/stdlib/arith/31_malformed_through_a_name.ein::cores[describe]
@@ -20268,7 +20268,7 @@ cb5af283036c2b2f    10001L  tests/stdlib/arith/32_malformed_name_for_a_name.ein:
 198845fbf0d674cb       15L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::read-out[minimal]
 fb1634681f8c5287       15L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::read-out[single]
 bd6d8fda098e2bf6       15L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::read-out[n2]
-98c6f1744cc84112      996L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::region-trace
+192ef87ee4946020      996L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::states
 c344f8938397e8b7        7L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::region-lattice
 d3308d29d551191a       99L  tests/stdlib/arith/32_malformed_name_for_a_name.ein::cores[describe]
@@ -20310,7 +20310,7 @@ ef0747f84108c464    10000L  tests/stdlib/arith/33_let_twice.ein::dot[kb-no-insta
 f8d97cb03ad48226       15L  tests/stdlib/arith/33_let_twice.ein::read-out[minimal]
 0ff7e47680694c09       15L  tests/stdlib/arith/33_let_twice.ein::read-out[single]
 afa91383402ac4cc       15L  tests/stdlib/arith/33_let_twice.ein::read-out[n2]
-ba74ea438181ee10     1082L  tests/stdlib/arith/33_let_twice.ein::region-trace
+bb65104bbd996adc     1082L  tests/stdlib/arith/33_let_twice.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/33_let_twice.ein::states
 c30fa633dfb73fbe        7L  tests/stdlib/arith/33_let_twice.ein::region-lattice
 c70d641112e755e7       96L  tests/stdlib/arith/33_let_twice.ein::cores[describe]
@@ -20352,7 +20352,7 @@ b2020c40f1ba9f72     9999L  tests/stdlib/arith/34_let_twice_the_same.ein::dot[kb
 14a51fde2c718e4d       34L  tests/stdlib/arith/34_let_twice_the_same.ein::read-out[minimal]
 f4b0eec98213a752       32L  tests/stdlib/arith/34_let_twice_the_same.ein::read-out[single]
 04bc815c0288e239       32L  tests/stdlib/arith/34_let_twice_the_same.ein::read-out[n2]
-9c374ee8c459096f      725L  tests/stdlib/arith/34_let_twice_the_same.ein::region-trace
+51f06e7cab4ba7eb      725L  tests/stdlib/arith/34_let_twice_the_same.ein::region-trace
 0e66421eb4211287     1882L  tests/stdlib/arith/34_let_twice_the_same.ein::states
 835e8d8a1b55e471        7L  tests/stdlib/arith/34_let_twice_the_same.ein::region-lattice
 a4bca9377065fa58       90L  tests/stdlib/arith/34_let_twice_the_same.ein::cores[describe]
@@ -20394,7 +20394,7 @@ aca00037bed5b94b     9998L  tests/stdlib/arith/35_let_zero.ein::dot[kb-no-instan
 af68fc39628f381b       15L  tests/stdlib/arith/35_let_zero.ein::read-out[minimal]
 fbd3f2e643dc39f8       15L  tests/stdlib/arith/35_let_zero.ein::read-out[single]
 3def74ea2fad3ae0       15L  tests/stdlib/arith/35_let_zero.ein::read-out[n2]
-f5d2603621f57dd2      494L  tests/stdlib/arith/35_let_zero.ein::region-trace
+306243b651e7de3c      494L  tests/stdlib/arith/35_let_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/35_let_zero.ein::states
 d7b6cd18cb64501c        7L  tests/stdlib/arith/35_let_zero.ein::region-lattice
 43d9cc2fe5671ec5       93L  tests/stdlib/arith/35_let_zero.ein::cores[describe]
@@ -20436,7 +20436,7 @@ f7d9ad4e53036d35       15L  tests/stdlib/arith/36_let_digit.ein::read-out[maxima
 095b28e710f80cd4       15L  tests/stdlib/arith/36_let_digit.ein::read-out[minimal]
 8fafce3115e6a6e9       15L  tests/stdlib/arith/36_let_digit.ein::read-out[single]
 fa3e4aefe9584ba8       15L  tests/stdlib/arith/36_let_digit.ein::read-out[n2]
-3c9353ced5c83d59      764L  tests/stdlib/arith/36_let_digit.ein::region-trace
+43b6ce139d8f2b6b      764L  tests/stdlib/arith/36_let_digit.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/36_let_digit.ein::states
 e28d7646370240b4        7L  tests/stdlib/arith/36_let_digit.ein::region-lattice
 bd778920458d8b50       96L  tests/stdlib/arith/36_let_digit.ein::cores[describe]
@@ -20478,7 +20478,7 @@ d13f5a5432b513b6       15L  tests/stdlib/arith/37_let_zero_digit.ein::read-out[m
 3188c6eaa14ee4e7       15L  tests/stdlib/arith/37_let_zero_digit.ein::read-out[minimal]
 36a2e599bb233710       15L  tests/stdlib/arith/37_let_zero_digit.ein::read-out[single]
 9dae1bfb0a6450b6       15L  tests/stdlib/arith/37_let_zero_digit.ein::read-out[n2]
-631ddf9c5f92f105      762L  tests/stdlib/arith/37_let_zero_digit.ein::region-trace
+e09abdd7db262b4d      762L  tests/stdlib/arith/37_let_zero_digit.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/37_let_zero_digit.ein::states
 2ea9e0b7f2ee55a2        7L  tests/stdlib/arith/37_let_zero_digit.ein::region-lattice
 031180654b4b4ee6       93L  tests/stdlib/arith/37_let_zero_digit.ein::cores[describe]
@@ -20520,7 +20520,7 @@ e1fbabb0f6018658    10296L  tests/stdlib/arith/38_what_stays_silent.ein::dot[kb-
 b91e6fc1aee86f18       41L  tests/stdlib/arith/38_what_stays_silent.ein::read-out[minimal]
 5af186b3d35f6f1f       38L  tests/stdlib/arith/38_what_stays_silent.ein::read-out[single]
 59d174ae1ca5ab6b       38L  tests/stdlib/arith/38_what_stays_silent.ein::read-out[n2]
-df9c8e4c9cb19f08     1155L  tests/stdlib/arith/38_what_stays_silent.ein::region-trace
+7e3e364bcc1a357e     1155L  tests/stdlib/arith/38_what_stays_silent.ein::region-trace
 961791eac496cd02     1913L  tests/stdlib/arith/38_what_stays_silent.ein::states
 253b1626575b3bd5        7L  tests/stdlib/arith/38_what_stays_silent.ein::region-lattice
 b1320f7ba8d0edba       90L  tests/stdlib/arith/38_what_stays_silent.ein::cores[describe]
@@ -20562,7 +20562,7 @@ c11c6acbf93db9ed    10018L  tests/stdlib/arith/39_div_call_by_zero.ein::dot[kb-n
 7a2b0c7c53157b82       15L  tests/stdlib/arith/39_div_call_by_zero.ein::read-out[minimal]
 10f16394a4ad2877       15L  tests/stdlib/arith/39_div_call_by_zero.ein::read-out[single]
 ed012c0ccd6e0c1e       15L  tests/stdlib/arith/39_div_call_by_zero.ein::read-out[n2]
-74c6443cbfdb39fe     2798L  tests/stdlib/arith/39_div_call_by_zero.ein::region-trace
+aae835f80693ad9a     2798L  tests/stdlib/arith/39_div_call_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/39_div_call_by_zero.ein::states
 2e9adcd235336905        7L  tests/stdlib/arith/39_div_call_by_zero.ein::region-lattice
 de2a0a155c1c9f69       93L  tests/stdlib/arith/39_div_call_by_zero.ein::cores[describe]
@@ -20604,7 +20604,7 @@ e8cc01ee5ca3d6dc       22L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::re
 a5f498a63326f7f3       15L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::read-out[minimal]
 7d5eb83fcc9e2dbd       15L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::read-out[single]
 3ee312db6450e782       15L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::read-out[n2]
-3ba9b533d3883434      638L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::region-trace
+c427c4fbcbc93042      638L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::states
 7c27ceebb9d3dd9e        7L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::region-lattice
 77c1cc9c7d276063       96L  tests/stdlib/arith/40_div_call_by_zero_spelt.ein::cores[describe]
@@ -20646,7 +20646,7 @@ b4be2eb40b81b846       31L  tests/stdlib/arith/41_div_call_not_zero.ein::read-ou
 2d91af1e4e07c100       31L  tests/stdlib/arith/41_div_call_not_zero.ein::read-out[minimal]
 73eef2205cdad7a3       32L  tests/stdlib/arith/41_div_call_not_zero.ein::read-out[single]
 3dd33df650a28b60       32L  tests/stdlib/arith/41_div_call_not_zero.ein::read-out[n2]
-643e514ee7bc87c8     5613L  tests/stdlib/arith/41_div_call_not_zero.ein::region-trace
+4944b5c6c3b9a2e3     5613L  tests/stdlib/arith/41_div_call_not_zero.ein::region-trace
 87856a847d9e2bfb     2120L  tests/stdlib/arith/41_div_call_not_zero.ein::states
 30033ab6b588e7d9        7L  tests/stdlib/arith/41_div_call_not_zero.ein::region-lattice
 d6f399b1bde5b1c5       90L  tests/stdlib/arith/41_div_call_not_zero.ein::cores[describe]
@@ -20688,7 +20688,7 @@ a1fc962252396ded       19L  tests/stdlib/bijection/01_setup_and_negatives.ein::r
 6162c47fd5dc3a51       19L  tests/stdlib/bijection/01_setup_and_negatives.ein::read-out[minimal]
 1f26bef3936969d5       19L  tests/stdlib/bijection/01_setup_and_negatives.ein::read-out[single]
 339a2ced7ad6c5b0       19L  tests/stdlib/bijection/01_setup_and_negatives.ein::read-out[n2]
-367f87c4d4397aa3      263L  tests/stdlib/bijection/01_setup_and_negatives.ein::region-trace
+324f396e164daaf7      263L  tests/stdlib/bijection/01_setup_and_negatives.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/bijection/01_setup_and_negatives.ein::states
 18fc4c0b33164a27        7L  tests/stdlib/bijection/01_setup_and_negatives.ein::region-lattice
 fc7cffe8d7d52a0b       88L  tests/stdlib/bijection/01_setup_and_negatives.ein::cores[describe]
@@ -20730,7 +20730,7 @@ ed3969e4be66c206       44L  tests/stdlib/bijection/02_domain_elimination.ein::do
 6bee26745078d24c       19L  tests/stdlib/bijection/02_domain_elimination.ein::read-out[minimal]
 af89b97de48a07fc       19L  tests/stdlib/bijection/02_domain_elimination.ein::read-out[single]
 082c4f23509214ec       19L  tests/stdlib/bijection/02_domain_elimination.ein::read-out[n2]
-bacae5d18b3e8d20      255L  tests/stdlib/bijection/02_domain_elimination.ein::region-trace
+8bbb53fb9f4c734f      255L  tests/stdlib/bijection/02_domain_elimination.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/bijection/02_domain_elimination.ein::states
 c9b640ef87fb10c3        7L  tests/stdlib/bijection/02_domain_elimination.ein::region-lattice
 0e23061bb934dfea       88L  tests/stdlib/bijection/02_domain_elimination.ein::cores[describe]
@@ -20772,7 +20772,7 @@ e27d9f38a2969c84       19L  tests/stdlib/bijection/03_range_elimination.ein::rea
 1545eecae905059d       19L  tests/stdlib/bijection/03_range_elimination.ein::read-out[minimal]
 69fa98614828c521       19L  tests/stdlib/bijection/03_range_elimination.ein::read-out[single]
 f9a775c6ce471cbc       19L  tests/stdlib/bijection/03_range_elimination.ein::read-out[n2]
-08858e6bdd55890a      255L  tests/stdlib/bijection/03_range_elimination.ein::region-trace
+f5667291ddb9df8c      255L  tests/stdlib/bijection/03_range_elimination.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/bijection/03_range_elimination.ein::states
 e8f1c1911f925a62        7L  tests/stdlib/bijection/03_range_elimination.ein::region-lattice
 9c497c93a264f3e8       88L  tests/stdlib/bijection/03_range_elimination.ein::cores[describe]
@@ -20898,7 +20898,7 @@ a2a7f888b9fe6001       52L  tests/stdlib/bijection/06_blind_enumeration.ein::dot
 0ac6dd6e7295aaf5       25L  tests/stdlib/bijection/06_blind_enumeration.ein::read-out[minimal]
 a8fc04e2804c8c74       25L  tests/stdlib/bijection/06_blind_enumeration.ein::read-out[single]
 e33f46a34df42efd       25L  tests/stdlib/bijection/06_blind_enumeration.ein::read-out[n2]
-c1741e4223adc494      547L  tests/stdlib/bijection/06_blind_enumeration.ein::region-trace
+76a83385697b8793      547L  tests/stdlib/bijection/06_blind_enumeration.ein::region-trace
 bb64908c70024f3b       35L  tests/stdlib/bijection/06_blind_enumeration.ein::states
 3045bbb3de2e3e87       40L  tests/stdlib/bijection/06_blind_enumeration.ein::region-lattice
 0aba82205c04276c      623L  tests/stdlib/bijection/06_blind_enumeration.ein::cores[describe]
@@ -21318,7 +21318,7 @@ d4ea667e83bb1131       58L  tests/stdlib/int/01_simplify.ein::read-out[describe]
 73f39fde7b3bf391       43L  tests/stdlib/int/01_simplify.ein::read-out[minimal]
 0d344c79a65a0eaf       50L  tests/stdlib/int/01_simplify.ein::read-out[single]
 8defa4f434377c12       50L  tests/stdlib/int/01_simplify.ein::read-out[n2]
-f1500b865040bd15     3787L  tests/stdlib/int/01_simplify.ein::region-trace
+aa3b2fb04d9a5e4e     3787L  tests/stdlib/int/01_simplify.ein::region-trace
 874f37451fa7251e     2148L  tests/stdlib/int/01_simplify.ein::states
 91d490ee9f6b6044        7L  tests/stdlib/int/01_simplify.ein::region-lattice
 7f1eb9dc014e9480       90L  tests/stdlib/int/01_simplify.ein::cores[describe]
@@ -21360,7 +21360,7 @@ e3c4f981c2525586       39L  tests/stdlib/int/02_neg.ein::read-out[maximal]
 c376a7e2d26d5f9c       39L  tests/stdlib/int/02_neg.ein::read-out[minimal]
 a0e1b5a0cfbf6a79       44L  tests/stdlib/int/02_neg.ein::read-out[single]
 61481fca821f262f       44L  tests/stdlib/int/02_neg.ein::read-out[n2]
-51b8835fb3bd21b3     2681L  tests/stdlib/int/02_neg.ein::region-trace
+550d5de7ae226d75     2681L  tests/stdlib/int/02_neg.ein::region-trace
 7910d77856e52eab     2092L  tests/stdlib/int/02_neg.ein::states
 0c9f45bc11a2fd2f        7L  tests/stdlib/int/02_neg.ein::region-lattice
 5c5671d1d1980b51       90L  tests/stdlib/int/02_neg.ein::cores[describe]
@@ -21402,7 +21402,7 @@ b1fd55f428e3c77e       47L  tests/stdlib/int/03_add.ein::read-out[maximal]
 cdbc1e7f03111738       47L  tests/stdlib/int/03_add.ein::read-out[minimal]
 439002ad7ad534a3       56L  tests/stdlib/int/03_add.ein::read-out[single]
 07cca0f84695c364       56L  tests/stdlib/int/03_add.ein::read-out[n2]
-5c7bd82721b64e0e     7723L  tests/stdlib/int/03_add.ein::region-trace
+c03af7adb7622b30     7723L  tests/stdlib/int/03_add.ein::region-trace
 e0a889fe906e4fe3     2345L  tests/stdlib/int/03_add.ein::states
 0d2637d1aeb93732        7L  tests/stdlib/int/03_add.ein::region-lattice
 8ff4224c4aff61c7       90L  tests/stdlib/int/03_add.ein::cores[describe]
@@ -21444,7 +21444,7 @@ c1d142ab1929d7cc       45L  tests/stdlib/int/04_sub.ein::read-out[maximal]
 ba2faa186c804d27       45L  tests/stdlib/int/04_sub.ein::read-out[minimal]
 0f7bf9f580a588b2       53L  tests/stdlib/int/04_sub.ein::read-out[single]
 4633ad18861b2715       53L  tests/stdlib/int/04_sub.ein::read-out[n2]
-19d1ba2ab47f9948     6669L  tests/stdlib/int/04_sub.ein::region-trace
+66ae6d6b55c9a5c2     6669L  tests/stdlib/int/04_sub.ein::region-trace
 6ee4c7a1de512e00     2293L  tests/stdlib/int/04_sub.ein::states
 7d50b053f54bccc5        7L  tests/stdlib/int/04_sub.ein::region-lattice
 3da776a49754c2e6       90L  tests/stdlib/int/04_sub.ein::cores[describe]
@@ -21486,7 +21486,7 @@ d3e605902f8a5c66       45L  tests/stdlib/int/05_mul.ein::read-out[maximal]
 2e976a0579439ad8       45L  tests/stdlib/int/05_mul.ein::read-out[minimal]
 cec33c18f824b2af       53L  tests/stdlib/int/05_mul.ein::read-out[single]
 bd0af494b9c2006a       53L  tests/stdlib/int/05_mul.ein::read-out[n2]
-6e7273041d34d704    17319L  tests/stdlib/int/05_mul.ein::region-trace
+7e912184d7181ff9    17319L  tests/stdlib/int/05_mul.ein::region-trace
 0f60ebd9e68a9480     2816L  tests/stdlib/int/05_mul.ein::states
 13c96de180e481d8        7L  tests/stdlib/int/05_mul.ein::region-lattice
 625bc895930f5427       90L  tests/stdlib/int/05_mul.ein::cores[describe]
@@ -21528,7 +21528,7 @@ a3d84d44f18a5970       67L  tests/stdlib/int/06_cmp.ein::read-out[describe]
 3c00ff9b4f906ee9       49L  tests/stdlib/int/06_cmp.ein::read-out[minimal]
 84bb26e6d15a0b4a       59L  tests/stdlib/int/06_cmp.ein::read-out[single]
 827d89812e9b2d67       59L  tests/stdlib/int/06_cmp.ein::read-out[n2]
-a428a905073bcb38     5989L  tests/stdlib/int/06_cmp.ein::region-trace
+07d6eed8e90a6968     5989L  tests/stdlib/int/06_cmp.ein::region-trace
 5b1e41b51e2b3133     2254L  tests/stdlib/int/06_cmp.ein::states
 7778e5b006b3513b        7L  tests/stdlib/int/06_cmp.ein::region-lattice
 a3f2aebe8946d42b       90L  tests/stdlib/int/06_cmp.ein::cores[describe]
@@ -21570,7 +21570,7 @@ aedc0c296faf0555    10263L  tests/stdlib/int/07_unsimplified.ein::dot[kb-no-inst
 f2bd8dce296e4c1b       62L  tests/stdlib/int/07_unsimplified.ein::read-out[minimal]
 7170c037bfb8d705       62L  tests/stdlib/int/07_unsimplified.ein::read-out[single]
 392c847a3d2cd105       62L  tests/stdlib/int/07_unsimplified.ein::read-out[n2]
-17075879113ef003     6599L  tests/stdlib/int/07_unsimplified.ein::region-trace
+9128a8e87c768f14     6599L  tests/stdlib/int/07_unsimplified.ein::region-trace
 bda7be21ce6da2d7     2286L  tests/stdlib/int/07_unsimplified.ein::states
 9620387758c3b553        7L  tests/stdlib/int/07_unsimplified.ein::region-lattice
 c92399e0c0ad54a8       90L  tests/stdlib/int/07_unsimplified.ein::cores[describe]
@@ -21612,7 +21612,7 @@ cec70da6b5eda8e8       65L  tests/stdlib/int/08_named_and_chained.ein::read-out[
 1bda58ac07158d6a       65L  tests/stdlib/int/08_named_and_chained.ein::read-out[minimal]
 bfeb7cf2313dc3a9       61L  tests/stdlib/int/08_named_and_chained.ein::read-out[single]
 daa2ae745a5b4f01       61L  tests/stdlib/int/08_named_and_chained.ein::read-out[n2]
-1625426145616072     4881L  tests/stdlib/int/08_named_and_chained.ein::region-trace
+7e4a1b8c5c40d103     4881L  tests/stdlib/int/08_named_and_chained.ein::region-trace
 1189fcd93cb540e3     2205L  tests/stdlib/int/08_named_and_chained.ein::states
 f950835c4c060fbe        7L  tests/stdlib/int/08_named_and_chained.ein::region-lattice
 86c6f164674d6ba6       90L  tests/stdlib/int/08_named_and_chained.ein::cores[describe]
@@ -21654,7 +21654,7 @@ ac32c8ac92224fcd    10273L  tests/stdlib/int/09_div_euclid.ein::dot[kb-no-instan
 f64d3dca7547cc0e       61L  tests/stdlib/int/09_div_euclid.ein::read-out[minimal]
 e1b6d81ec22fef4b       77L  tests/stdlib/int/09_div_euclid.ein::read-out[single]
 3b1a1c8c77cebec0       77L  tests/stdlib/int/09_div_euclid.ein::read-out[n2]
-86ffbfb78dab7594    47473L  tests/stdlib/int/09_div_euclid.ein::region-trace
+9183c08edd3d977a    47473L  tests/stdlib/int/09_div_euclid.ein::region-trace
 ecd93d4696d82ae0     4290L  tests/stdlib/int/09_div_euclid.ein::states
 21572426d3436852        7L  tests/stdlib/int/09_div_euclid.ein::region-lattice
 332697ac27c1377d       90L  tests/stdlib/int/09_div_euclid.ein::cores[describe]
@@ -21696,7 +21696,7 @@ c15a62ddc62ad277       46L  tests/stdlib/int/10_div_trunc.ein::dot[constraints]
 c913ece4bda3dca8       61L  tests/stdlib/int/10_div_trunc.ein::read-out[minimal]
 8d8786385bba48fe       77L  tests/stdlib/int/10_div_trunc.ein::read-out[single]
 ec8b1c7945276e8c       77L  tests/stdlib/int/10_div_trunc.ein::read-out[n2]
-9eb0d99214ac0f93    45817L  tests/stdlib/int/10_div_trunc.ein::region-trace
+25c29be0b8fd075e    45817L  tests/stdlib/int/10_div_trunc.ein::region-trace
 b600844d843965d3     4210L  tests/stdlib/int/10_div_trunc.ein::states
 c6aa8bc29c38c223        7L  tests/stdlib/int/10_div_trunc.ein::region-lattice
 d9c34603858bb068       90L  tests/stdlib/int/10_div_trunc.ein::cores[describe]
@@ -21738,7 +21738,7 @@ c4c8301ad3763fdd       61L  tests/stdlib/int/11_div_floor.ein::read-out[maximal]
 ef796f4fe69477ef       61L  tests/stdlib/int/11_div_floor.ein::read-out[minimal]
 c1222d1b2dd143af       77L  tests/stdlib/int/11_div_floor.ein::read-out[single]
 7c305c05f18ed2e5       77L  tests/stdlib/int/11_div_floor.ein::read-out[n2]
-450930ef6f06fdcc    47889L  tests/stdlib/int/11_div_floor.ein::region-trace
+25697615bbf98765    47889L  tests/stdlib/int/11_div_floor.ein::region-trace
 665969ec90842c08     4310L  tests/stdlib/int/11_div_floor.ein::states
 0540fac9b34b2b5e        7L  tests/stdlib/int/11_div_floor.ein::region-lattice
 4cbe1b2dea9f080b       90L  tests/stdlib/int/11_div_floor.ein::cores[describe]
@@ -21780,7 +21780,7 @@ be2c3525a3d12ebf    10257L  tests/stdlib/int/12_div_euclid_by_zero.ein::dot[kb-n
 1ac647618e8e4a14       15L  tests/stdlib/int/12_div_euclid_by_zero.ein::read-out[minimal]
 67483b8979c5e632       15L  tests/stdlib/int/12_div_euclid_by_zero.ein::read-out[single]
 b80f9cd5ff9395bc       15L  tests/stdlib/int/12_div_euclid_by_zero.ein::read-out[n2]
-182e892f3ad4f1db     1752L  tests/stdlib/int/12_div_euclid_by_zero.ein::region-trace
+137ecc351f8a40dd     1752L  tests/stdlib/int/12_div_euclid_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/int/12_div_euclid_by_zero.ein::states
 1e58af02c0271d7e        7L  tests/stdlib/int/12_div_euclid_by_zero.ein::region-lattice
 89c9f048eadfbb98       99L  tests/stdlib/int/12_div_euclid_by_zero.ein::cores[describe]
@@ -21822,7 +21822,7 @@ b1c4a9be04efd9fc    10753L  tests/stdlib/int/13_div_trunc_by_zero.ein::dot[kb-si
 02f701e3c5a221ae       15L  tests/stdlib/int/13_div_trunc_by_zero.ein::read-out[minimal]
 185cfd7ffeada0b2       15L  tests/stdlib/int/13_div_trunc_by_zero.ein::read-out[single]
 4f5f98de510ec784       15L  tests/stdlib/int/13_div_trunc_by_zero.ein::read-out[n2]
-e2c30319ea8abff1     1836L  tests/stdlib/int/13_div_trunc_by_zero.ein::region-trace
+24781de4efd9d004     1836L  tests/stdlib/int/13_div_trunc_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/int/13_div_trunc_by_zero.ein::states
 2c5c45e0623c0ea7        7L  tests/stdlib/int/13_div_trunc_by_zero.ein::region-lattice
 d34a220388d05836      102L  tests/stdlib/int/13_div_trunc_by_zero.ein::cores[describe]
@@ -21864,7 +21864,7 @@ ad2f60c6ed09a095       15L  tests/stdlib/int/14_div_floor_by_zero.ein::read-out[
 9b0b7f774516cfe4       15L  tests/stdlib/int/14_div_floor_by_zero.ein::read-out[minimal]
 bb9a8d231c8626f1       15L  tests/stdlib/int/14_div_floor_by_zero.ein::read-out[single]
 d05e3f79df1657d4       15L  tests/stdlib/int/14_div_floor_by_zero.ein::read-out[n2]
-59f8dacefb4f56c3     1946L  tests/stdlib/int/14_div_floor_by_zero.ein::region-trace
+3355bda6d23f9eff     1946L  tests/stdlib/int/14_div_floor_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/int/14_div_floor_by_zero.ein::states
 f2062a936fd58060        7L  tests/stdlib/int/14_div_floor_by_zero.ein::region-lattice
 9c6dce2b094cb8de      105L  tests/stdlib/int/14_div_floor_by_zero.ein::cores[describe]
@@ -21990,7 +21990,7 @@ d0fc56402d160c4f     9506L  tests/stdlib/num9/01_add.ein::dot[kb-none]
 73dab2d68c30dcd7       29L  tests/stdlib/num9/01_add.ein::read-out[minimal]
 5b86fe51947a1bd4       29L  tests/stdlib/num9/01_add.ein::read-out[single]
 467c7a108b3967bc       29L  tests/stdlib/num9/01_add.ein::read-out[n2]
-9a3854a4f75a531b      263L  tests/stdlib/num9/01_add.ein::region-trace
+f849da6ff07b8ba7      263L  tests/stdlib/num9/01_add.ein::region-trace
 39fdfc2fbe57839a     1704L  tests/stdlib/num9/01_add.ein::states
 6c2b21a8ba96c471        7L  tests/stdlib/num9/01_add.ein::region-lattice
 c315f8e6f7dc4721       90L  tests/stdlib/num9/01_add.ein::cores[describe]
@@ -22032,7 +22032,7 @@ fcbb7c647f337901     9506L  tests/stdlib/num9/02_add_overflow.ein::dot[kb-none]
 7daf4f5c1d1440e4       36L  tests/stdlib/num9/02_add_overflow.ein::read-out[minimal]
 bd28511baaa142ac       34L  tests/stdlib/num9/02_add_overflow.ein::read-out[single]
 9dda59717a679390       34L  tests/stdlib/num9/02_add_overflow.ein::read-out[n2]
-489219cbb5857688      257L  tests/stdlib/num9/02_add_overflow.ein::region-trace
+37ba531ecac1cdd7      257L  tests/stdlib/num9/02_add_overflow.ein::region-trace
 9105bd41be12ba3f     1704L  tests/stdlib/num9/02_add_overflow.ein::states
 250108e2cd7ab934        7L  tests/stdlib/num9/02_add_overflow.ein::region-lattice
 724ff6a549e844c5       90L  tests/stdlib/num9/02_add_overflow.ein::cores[describe]
@@ -22074,7 +22074,7 @@ c13fe678f181178f     9599L  tests/stdlib/num9/03_sub.ein::dot[kb-since]
 a13bd29888d98c6d       31L  tests/stdlib/num9/03_sub.ein::read-out[minimal]
 7fa35d2352fa0ed3       32L  tests/stdlib/num9/03_sub.ein::read-out[single]
 6694573bed11d993       32L  tests/stdlib/num9/03_sub.ein::read-out[n2]
-56f54bfed1aebd47      329L  tests/stdlib/num9/03_sub.ein::region-trace
+96615c26a36b054a      329L  tests/stdlib/num9/03_sub.ein::region-trace
 3e076e322255a595     1706L  tests/stdlib/num9/03_sub.ein::states
 ec5ea06cba76b850        7L  tests/stdlib/num9/03_sub.ein::region-lattice
 c1e8e56b2379eb2a       90L  tests/stdlib/num9/03_sub.ein::cores[describe]
@@ -22116,7 +22116,7 @@ b10d29b5e385e1c8       43L  tests/stdlib/num9/04_cmp.ein::read-out[describe]
 21be7d1270a0ffc2       33L  tests/stdlib/num9/04_cmp.ein::read-out[minimal]
 7a356cf9c54b9f1d       35L  tests/stdlib/num9/04_cmp.ein::read-out[single]
 658b799fae34da87       35L  tests/stdlib/num9/04_cmp.ein::read-out[n2]
-112107442f8ccaa1      332L  tests/stdlib/num9/04_cmp.ein::region-trace
+72426a4b81268cab      332L  tests/stdlib/num9/04_cmp.ein::region-trace
 80a3c7ac0533d60e     1708L  tests/stdlib/num9/04_cmp.ein::states
 49196d7ce45f8738        7L  tests/stdlib/num9/04_cmp.ein::region-lattice
 5f3c097e93de2b55       90L  tests/stdlib/num9/04_cmp.ein::cores[describe]
@@ -22158,7 +22158,7 @@ dd8a2f93f4c548d4       38L  tests/stdlib/num9/05_mul.ein::read-out[maximal]
 ae5d2dd3dcc91d92       38L  tests/stdlib/num9/05_mul.ein::read-out[minimal]
 5ce5366e742732a9       38L  tests/stdlib/num9/05_mul.ein::read-out[single]
 0da2767e72b5ed3f       38L  tests/stdlib/num9/05_mul.ein::read-out[n2]
-f21d4d38abc05980     1216L  tests/stdlib/num9/05_mul.ein::region-trace
+45b97d4c07f4c3f6     1216L  tests/stdlib/num9/05_mul.ein::region-trace
 4c2a25b0620c3b64     1736L  tests/stdlib/num9/05_mul.ein::states
 a9e70cce2624870a        7L  tests/stdlib/num9/05_mul.ein::region-lattice
 8cbf0c2686a08f0c       90L  tests/stdlib/num9/05_mul.ein::cores[describe]
@@ -22200,7 +22200,7 @@ d25aebd860c92d22     9508L  tests/stdlib/num9/06_mul_overflow.ein::dot[kb-no-ins
 0cdae5b827df0f39       40L  tests/stdlib/num9/06_mul_overflow.ein::read-out[minimal]
 b481b7e77f8e8ea6       40L  tests/stdlib/num9/06_mul_overflow.ein::read-out[single]
 d9ac41d7f6e72c27       40L  tests/stdlib/num9/06_mul_overflow.ein::read-out[n2]
-6b9630f3badbe1e2     1363L  tests/stdlib/num9/06_mul_overflow.ein::region-trace
+4fb0b4beb68a285b     1363L  tests/stdlib/num9/06_mul_overflow.ein::region-trace
 94fe02e852ec00dc     1744L  tests/stdlib/num9/06_mul_overflow.ein::states
 d9c6cb245f96e6e3        7L  tests/stdlib/num9/06_mul_overflow.ein::region-lattice
 b24071f0b0a7b34f       90L  tests/stdlib/num9/06_mul_overflow.ein::cores[describe]
@@ -22242,7 +22242,7 @@ f99031bd328bc70a       27L  tests/stdlib/num9/07_div.ein::read-out[maximal]
 33c619a237241e1e       27L  tests/stdlib/num9/07_div.ein::read-out[minimal]
 dc9bad76a03a4025       26L  tests/stdlib/num9/07_div.ein::read-out[single]
 02238d0b4fe67f4b       26L  tests/stdlib/num9/07_div.ein::read-out[n2]
-06b02ea74d6f21b8      684L  tests/stdlib/num9/07_div.ein::region-trace
+3e45996010ffa581      684L  tests/stdlib/num9/07_div.ein::region-trace
 4b7f0d1ef85c1bf7     1712L  tests/stdlib/num9/07_div.ein::states
 f62b8c286b5775d9        7L  tests/stdlib/num9/07_div.ein::region-lattice
 aa8de2f24b3f1206       90L  tests/stdlib/num9/07_div.ein::cores[describe]
@@ -22284,7 +22284,7 @@ cf4d2cb2b4027446     9753L  tests/stdlib/num9/08_div_every_digit.ein::dot[kb-sin
 fb5b2bb2e4517b5b       29L  tests/stdlib/num9/08_div_every_digit.ein::read-out[minimal]
 5dc726a4ae63847c       29L  tests/stdlib/num9/08_div_every_digit.ein::read-out[single]
 a8357951b6f67f2a       29L  tests/stdlib/num9/08_div_every_digit.ein::read-out[n2]
-fe5b7fda43b6bcd3     1308L  tests/stdlib/num9/08_div_every_digit.ein::region-trace
+f76e52df86933927     1308L  tests/stdlib/num9/08_div_every_digit.ein::region-trace
 936f2ea7991c24db     1724L  tests/stdlib/num9/08_div_every_digit.ein::states
 214a2a23ec682d1d        7L  tests/stdlib/num9/08_div_every_digit.ein::region-lattice
 72b5d0344a5ef8a8       90L  tests/stdlib/num9/08_div_every_digit.ein::cores[describe]
@@ -22326,7 +22326,7 @@ fef693262c5ae1da       21L  tests/stdlib/num9/09_div_by_zero.ein::read-out[descr
 b93475fd2e27acfa       15L  tests/stdlib/num9/09_div_by_zero.ein::read-out[minimal]
 c7a480f5962dcfb0       15L  tests/stdlib/num9/09_div_by_zero.ein::read-out[single]
 2aaa30ddee4fe662       15L  tests/stdlib/num9/09_div_by_zero.ein::read-out[n2]
-b8800952a76bc8ea      367L  tests/stdlib/num9/09_div_by_zero.ein::region-trace
+205f31a8b698ea7e      367L  tests/stdlib/num9/09_div_by_zero.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/num9/09_div_by_zero.ein::states
 ba46dff73e35f708        7L  tests/stdlib/num9/09_div_by_zero.ein::region-lattice
 c6aa75d105f91591       93L  tests/stdlib/num9/09_div_by_zero.ein::cores[describe]
@@ -22368,7 +22368,7 @@ a125da89541b393d     9617L  tests/stdlib/num9/10_to9.ein::dot[kb-since]
 09cd48bf63505af4       56L  tests/stdlib/num9/10_to9.ein::read-out[minimal]
 bba7fc4e6a0b66f7       64L  tests/stdlib/num9/10_to9.ein::read-out[single]
 c75e17fe947873ba       64L  tests/stdlib/num9/10_to9.ein::read-out[n2]
-7a4d7e5e1906a66a      435L  tests/stdlib/num9/10_to9.ein::region-trace
+61f401f5c3d48b18      435L  tests/stdlib/num9/10_to9.ein::region-trace
 15600e9bd64b3db4     1724L  tests/stdlib/num9/10_to9.ein::states
 2779f6977118c40b        7L  tests/stdlib/num9/10_to9.ein::region-lattice
 a523d319fb6aedf4       90L  tests/stdlib/num9/10_to9.ein::cores[describe]
@@ -22410,7 +22410,7 @@ a31e53459ab1d6e7       47L  tests/stdlib/num9/11_from9.ein::read-out[maximal]
 44524e5d94292504       47L  tests/stdlib/num9/11_from9.ein::read-out[minimal]
 2b90f4a4e934e856       56L  tests/stdlib/num9/11_from9.ein::read-out[single]
 3a851a0e2873a0ea       56L  tests/stdlib/num9/11_from9.ein::read-out[n2]
-c433f6ed4ec27763      435L  tests/stdlib/num9/11_from9.ein::region-trace
+14bb71ffe48bac28      435L  tests/stdlib/num9/11_from9.ein::region-trace
 181e032c4802b139     1722L  tests/stdlib/num9/11_from9.ein::states
 747f05e7fb804c9d        7L  tests/stdlib/num9/11_from9.ein::region-lattice
 1b02af51a08d4311       90L  tests/stdlib/num9/11_from9.ein::cores[describe]
@@ -22452,7 +22452,7 @@ b875417e9719ac62       27L  tests/stdlib/num9/12_both_modules.ein::read-out[maxi
 a6d591e4dee15831       27L  tests/stdlib/num9/12_both_modules.ein::read-out[minimal]
 acb9075edc92be5c       26L  tests/stdlib/num9/12_both_modules.ein::read-out[single]
 ca1508c2ef7b4aa1       26L  tests/stdlib/num9/12_both_modules.ein::read-out[n2]
-6398b1ea78906f5a     1919L  tests/stdlib/num9/12_both_modules.ein::region-trace
+e09ed5020d971b4f     1919L  tests/stdlib/num9/12_both_modules.ein::region-trace
 afc18ad06bb0554f     2004L  tests/stdlib/num9/12_both_modules.ein::states
 cf3e15cb463b601d        7L  tests/stdlib/num9/12_both_modules.ein::region-lattice
 52f14a02f6cf1269       90L  tests/stdlib/num9/12_both_modules.ein::cores[describe]
@@ -22494,7 +22494,7 @@ c0a6f0915c1cfc39       27L  tests/stdlib/num9/13_chain.ein::read-out[maximal]
 ab706b90bf842da6       27L  tests/stdlib/num9/13_chain.ein::read-out[minimal]
 8b908a62f0a3d637       26L  tests/stdlib/num9/13_chain.ein::read-out[single]
 0fa059282c452b92       26L  tests/stdlib/num9/13_chain.ein::read-out[n2]
-a227c93d14823aaf     1039L  tests/stdlib/num9/13_chain.ein::region-trace
+41363e800261552c     1039L  tests/stdlib/num9/13_chain.ein::region-trace
 39ca3d979e45035b     1724L  tests/stdlib/num9/13_chain.ein::states
 750b77c2d81abfb0        7L  tests/stdlib/num9/13_chain.ein::region-lattice
 1e71c8fb736c6dff       90L  tests/stdlib/num9/13_chain.ein::cores[describe]
@@ -22536,7 +22536,7 @@ b1d2502f1ab22801       47L  tests/stdlib/rat/01_simplify.ein::read-out[maximal]
 f64800deeafca4fe       47L  tests/stdlib/rat/01_simplify.ein::read-out[minimal]
 74eeb73406005585       56L  tests/stdlib/rat/01_simplify.ein::read-out[single]
 9c72341244d324a6       56L  tests/stdlib/rat/01_simplify.ein::read-out[n2]
-ee259190c57d6501    91815L  tests/stdlib/rat/01_simplify.ein::region-trace
+85714d0febf683ae    91815L  tests/stdlib/rat/01_simplify.ein::region-trace
 9dc9f2a7dcafa342     6490L  tests/stdlib/rat/01_simplify.ein::states
 9d36eccc923495ac        7L  tests/stdlib/rat/01_simplify.ein::region-lattice
 3eacb5e2d204f660       90L  tests/stdlib/rat/01_simplify.ein::cores[describe]
@@ -22578,7 +22578,7 @@ d884fdc729c12cdc       46L  tests/stdlib/rat/02_neg.ein::read-out[describe]
 d38e223c2fd75709       35L  tests/stdlib/rat/02_neg.ein::read-out[minimal]
 f99ec46608b68515       38L  tests/stdlib/rat/02_neg.ein::read-out[single]
 56843efb1e73cc20       38L  tests/stdlib/rat/02_neg.ein::read-out[n2]
-91fe88889c0ae186    37261L  tests/stdlib/rat/02_neg.ein::region-trace
+cc82a42c34426572    37261L  tests/stdlib/rat/02_neg.ein::region-trace
 00839a3446b9ea0d     3856L  tests/stdlib/rat/02_neg.ein::states
 607f56406706bdad        7L  tests/stdlib/rat/02_neg.ein::region-lattice
 342e99dfd24e1306       90L  tests/stdlib/rat/02_neg.ein::cores[describe]
@@ -22620,7 +22620,7 @@ a26755472bc660d8       55L  tests/stdlib/rat/03_add.ein::read-out[describe]
 2a6a7f4228a9ce7f       41L  tests/stdlib/rat/03_add.ein::read-out[minimal]
 bdb78702c1516ffc       47L  tests/stdlib/rat/03_add.ein::read-out[single]
 f60f64db9988a44a       47L  tests/stdlib/rat/03_add.ein::read-out[n2]
-f83a5d32c8f8990f    95681L  tests/stdlib/rat/03_add.ein::region-trace
+6f257a49b248e29c    95681L  tests/stdlib/rat/03_add.ein::region-trace
 ddb9bc0ea02f7706     6685L  tests/stdlib/rat/03_add.ein::states
 1e133e37f12dd382        7L  tests/stdlib/rat/03_add.ein::region-lattice
 18003cf6935965ca       90L  tests/stdlib/rat/03_add.ein::cores[describe]
@@ -22662,7 +22662,7 @@ a6c8d35d0137099b       39L  tests/stdlib/rat/04_sub.ein::read-out[maximal]
 d38368b00ed05f7a       39L  tests/stdlib/rat/04_sub.ein::read-out[minimal]
 1cfc08464be16094       44L  tests/stdlib/rat/04_sub.ein::read-out[single]
 65fcffc6116ad83a       44L  tests/stdlib/rat/04_sub.ein::read-out[n2]
-35f648861857a9e9    70173L  tests/stdlib/rat/04_sub.ein::region-trace
+2112da7e460d9e42    70173L  tests/stdlib/rat/04_sub.ein::region-trace
 de9d7d646d5c0912     5455L  tests/stdlib/rat/04_sub.ein::states
 f12c882e351c245b        7L  tests/stdlib/rat/04_sub.ein::region-lattice
 0a261d43a9cd27eb       90L  tests/stdlib/rat/04_sub.ein::cores[describe]
@@ -22704,7 +22704,7 @@ b1cfe6632e491e61       52L  tests/stdlib/rat/05_mul.ein::read-out[describe]
 2eee88b1811b4366       39L  tests/stdlib/rat/05_mul.ein::read-out[minimal]
 39c929674b9ffe32       44L  tests/stdlib/rat/05_mul.ein::read-out[single]
 574b2e1ab74f474e       44L  tests/stdlib/rat/05_mul.ein::read-out[n2]
-a92424a37633ef4c    74991L  tests/stdlib/rat/05_mul.ein::region-trace
+e626868edd57e405    74991L  tests/stdlib/rat/05_mul.ein::region-trace
 386c88ec322bf9ba     5678L  tests/stdlib/rat/05_mul.ein::states
 1ac3b2b02f669aa9        7L  tests/stdlib/rat/05_mul.ein::region-lattice
 d479cf312e30800a       90L  tests/stdlib/rat/05_mul.ein::cores[describe]
@@ -22746,7 +22746,7 @@ ddbd6560ffa9a5c7    10532L  tests/stdlib/rat/06_div.ein::dot[kb-no-instances]
 22b1cd930b972e5a       37L  tests/stdlib/rat/06_div.ein::read-out[minimal]
 73ace2b8a8fe23fd       41L  tests/stdlib/rat/06_div.ein::read-out[single]
 d48315e8073ae4c2       41L  tests/stdlib/rat/06_div.ein::read-out[n2]
-05bdaae798a39b62    68629L  tests/stdlib/rat/06_div.ein::region-trace
+a9fe590590c12ad5    68629L  tests/stdlib/rat/06_div.ein::region-trace
 33e0a9db3df983d9     5378L  tests/stdlib/rat/06_div.ein::states
 92bc04aad0c9e7f0        7L  tests/stdlib/rat/06_div.ein::region-lattice
 4f28e6ccbc3fc07c       90L  tests/stdlib/rat/06_div.ein::cores[describe]
@@ -22788,7 +22788,7 @@ e6e5bd9eee180621       45L  tests/stdlib/rat/07_cmp.ein::read-out[maximal]
 97841a0bb23994fa       45L  tests/stdlib/rat/07_cmp.ein::read-out[minimal]
 486d503de158b8fa       53L  tests/stdlib/rat/07_cmp.ein::read-out[single]
 d31ccabbebee6e72       53L  tests/stdlib/rat/07_cmp.ein::read-out[n2]
-3a5d5e52c7ba502d    17655L  tests/stdlib/rat/07_cmp.ein::region-trace
+451baa19238573b1    17655L  tests/stdlib/rat/07_cmp.ein::region-trace
 1f09f33cce7ede86     2924L  tests/stdlib/rat/07_cmp.ein::states
 fb6bcd9059ff3d1d        7L  tests/stdlib/rat/07_cmp.ein::region-lattice
 0afcc63385383cfd       90L  tests/stdlib/rat/07_cmp.ein::cores[describe]
@@ -22830,7 +22830,7 @@ ea99b9843b6e0705       73L  tests/stdlib/rat/08_unsimplified.ein::read-out[maxim
 03432c081910e69c       73L  tests/stdlib/rat/08_unsimplified.ein::read-out[minimal]
 33f0ba8be1d11744       73L  tests/stdlib/rat/08_unsimplified.ein::read-out[single]
 aa81e21738955c0d       73L  tests/stdlib/rat/08_unsimplified.ein::read-out[n2]
-1b73302d84b1148b    87651L  tests/stdlib/rat/08_unsimplified.ein::region-trace
+dc02d3b1766c3593    87651L  tests/stdlib/rat/08_unsimplified.ein::region-trace
 5bc6cc70235049d2     6310L  tests/stdlib/rat/08_unsimplified.ein::states
 4907c2f45168b8d2        7L  tests/stdlib/rat/08_unsimplified.ein::region-lattice
 ea2e1bef2709630f       90L  tests/stdlib/rat/08_unsimplified.ein::cores[describe]
@@ -22872,7 +22872,7 @@ f9a66eb758613be2    16807L  tests/stdlib/rat/09_named_and_chained.ein::dot[kb-si
 8e111cc6b33ccfc7       45L  tests/stdlib/rat/09_named_and_chained.ein::read-out[minimal]
 a735d8b52e23da88       42L  tests/stdlib/rat/09_named_and_chained.ein::read-out[single]
 cb7dc24e0ae618b1       42L  tests/stdlib/rat/09_named_and_chained.ein::read-out[n2]
-fab5e8ec4ec63d04    29319L  tests/stdlib/rat/09_named_and_chained.ein::region-trace
+688d7ff5d85426ec    29319L  tests/stdlib/rat/09_named_and_chained.ein::region-trace
 e775c5d04db1e773     3473L  tests/stdlib/rat/09_named_and_chained.ein::states
 c17c7c5474afa3e7        7L  tests/stdlib/rat/09_named_and_chained.ein::region-lattice
 7656863d8c919312       90L  tests/stdlib/rat/09_named_and_chained.ein::cores[describe]
@@ -22914,7 +22914,7 @@ ced537f50db2dad7    10528L  tests/stdlib/rat/10_div_by_zero_rational.ein::dot[kb
 2fd5ec468299925f       15L  tests/stdlib/rat/10_div_by_zero_rational.ein::read-out[minimal]
 e780a2119fd41a0a       15L  tests/stdlib/rat/10_div_by_zero_rational.ein::read-out[single]
 57b5827b011658d6       15L  tests/stdlib/rat/10_div_by_zero_rational.ein::read-out[n2]
-52927a7a929dcd2c    11508L  tests/stdlib/rat/10_div_by_zero_rational.ein::region-trace
+c586c9575d977860    11508L  tests/stdlib/rat/10_div_by_zero_rational.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/rat/10_div_by_zero_rational.ein::states
 64c016830b8380c2        7L  tests/stdlib/rat/10_div_by_zero_rational.ein::region-lattice
 6757c1db5e4d6c0e       99L  tests/stdlib/rat/10_div_by_zero_rational.ein::cores[describe]
@@ -22956,7 +22956,7 @@ c06701aa5d899c56       21L  tests/stdlib/rat/11_zero_denominator_first.ein::read
 43c269a9ca447e80       15L  tests/stdlib/rat/11_zero_denominator_first.ein::read-out[minimal]
 e423e523c3c3c9db       15L  tests/stdlib/rat/11_zero_denominator_first.ein::read-out[single]
 1ac0ea9357c024c8       15L  tests/stdlib/rat/11_zero_denominator_first.ein::read-out[n2]
-3a5b3b13fd8c6701    11202L  tests/stdlib/rat/11_zero_denominator_first.ein::region-trace
+57d1d075a9002b7d    11202L  tests/stdlib/rat/11_zero_denominator_first.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/rat/11_zero_denominator_first.ein::states
 00b426a7d458e44b        7L  tests/stdlib/rat/11_zero_denominator_first.ein::region-lattice
 ab6ecb015b117aff       93L  tests/stdlib/rat/11_zero_denominator_first.ein::cores[describe]
@@ -22998,7 +22998,7 @@ f565b9c556b31605    10529L  tests/stdlib/rat/12_zero_denominator_second.ein::dot
 c446db6692f82f33       15L  tests/stdlib/rat/12_zero_denominator_second.ein::read-out[minimal]
 d7ba2cff67e29e95       15L  tests/stdlib/rat/12_zero_denominator_second.ein::read-out[single]
 8562ec97ede58321       15L  tests/stdlib/rat/12_zero_denominator_second.ein::read-out[n2]
-abbc92e10937b0b3    11394L  tests/stdlib/rat/12_zero_denominator_second.ein::region-trace
+4ce5087c8c0ec2bd    11394L  tests/stdlib/rat/12_zero_denominator_second.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/rat/12_zero_denominator_second.ein::states
 f5f644e9209b5a7d        7L  tests/stdlib/rat/12_zero_denominator_second.ein::region-lattice
 00840a21bfa664d5      102L  tests/stdlib/rat/12_zero_denominator_second.ein::cores[describe]
@@ -23040,7 +23040,7 @@ d67c52abeb6c9aef       15L  tests/stdlib/rat/13_zero_denominator_one_operand.ein
 7b19b20d0a642530       15L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::read-out[minimal]
 40d4e87ec07db4f0       15L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::read-out[single]
 ea17e1a146ca44b5       15L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::read-out[n2]
-f0fe6118ef78c286    11202L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::region-trace
+a2a573985b92ab46    11202L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::states
 7208f1cbed48f201        7L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::region-lattice
 f03ff7bc490bfb4f       93L  tests/stdlib/rat/13_zero_denominator_one_operand.ein::cores[describe]
@@ -23082,7 +23082,7 @@ a53b9c542c07c0d9       33L  tests/stdlib/slots/01_partition.ein::read-out[maxima
 f0197c646fb92db5       33L  tests/stdlib/slots/01_partition.ein::read-out[minimal]
 cd77282fdece1021       36L  tests/stdlib/slots/01_partition.ein::read-out[single]
 f2d9a62dcb75fe01       36L  tests/stdlib/slots/01_partition.ein::read-out[n2]
-a912ca1dc325c2d0     1545L  tests/stdlib/slots/01_partition.ein::region-trace
+43244634a18e74b8     1545L  tests/stdlib/slots/01_partition.ein::region-trace
 80ea3a3147c5eaf1       55L  tests/stdlib/slots/01_partition.ein::states
 aaf629928b312d93        7L  tests/stdlib/slots/01_partition.ein::region-lattice
 f264be631b50ea13       90L  tests/stdlib/slots/01_partition.ein::cores[describe]
@@ -23124,7 +23124,7 @@ ede6ddf465a7fc4a       48L  tests/stdlib/slots/02_negative.ein::dot[kb-no-instan
 7d4e47c8638deb65       19L  tests/stdlib/slots/02_negative.ein::read-out[minimal]
 8f10973e68d0c947       19L  tests/stdlib/slots/02_negative.ein::read-out[single]
 6e95a14b532eebe8       19L  tests/stdlib/slots/02_negative.ein::read-out[n2]
-a2bafac37a3ee90c     1737L  tests/stdlib/slots/02_negative.ein::region-trace
+5571829362129fec     1737L  tests/stdlib/slots/02_negative.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/slots/02_negative.ein::states
 1139cd71fb56af07        7L  tests/stdlib/slots/02_negative.ein::region-lattice
 a7e2888529b10474      100L  tests/stdlib/slots/02_negative.ein::cores[describe]
@@ -23166,7 +23166,7 @@ a2467aa72e3c1bd7       46L  tests/stdlib/slots/03_fill.ein::dot[kb-no-instances]
 929d65ae64515492       19L  tests/stdlib/slots/03_fill.ein::read-out[minimal]
 3b28fe9586262105       19L  tests/stdlib/slots/03_fill.ein::read-out[single]
 155008c148cd8f65       19L  tests/stdlib/slots/03_fill.ein::read-out[n2]
-3c978679ecd5597b     1345L  tests/stdlib/slots/03_fill.ein::region-trace
+7806521ca8ea97fa     1345L  tests/stdlib/slots/03_fill.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/slots/03_fill.ein::states
 5758a3df65fc0d68        7L  tests/stdlib/slots/03_fill.ein::region-lattice
 2e61baf3b3454380      100L  tests/stdlib/slots/03_fill.ein::cores[describe]
@@ -23208,7 +23208,7 @@ b2c98e8c10c2196c       19L  tests/stdlib/slots/04_elimination.ein::read-out[maxi
 8727ed4da15f5600       19L  tests/stdlib/slots/04_elimination.ein::read-out[minimal]
 0a676f600097076d       19L  tests/stdlib/slots/04_elimination.ein::read-out[single]
 29d35848e46dc48e       19L  tests/stdlib/slots/04_elimination.ein::read-out[n2]
-d030afe8c8d57b11     1345L  tests/stdlib/slots/04_elimination.ein::region-trace
+d0cd3b196612e7dc     1345L  tests/stdlib/slots/04_elimination.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/slots/04_elimination.ein::states
 5402541a652b642d        7L  tests/stdlib/slots/04_elimination.ein::region-lattice
 0ab658db1611a719      100L  tests/stdlib/slots/04_elimination.ein::cores[describe]
@@ -23334,7 +23334,7 @@ df59941d07e767ae       19L  tests/stdlib/slots/07_spatial_prune.ein::read-out[ma
 5cf94f52fa74b8ba       19L  tests/stdlib/slots/07_spatial_prune.ein::read-out[minimal]
 27cd6084feaa20e7       19L  tests/stdlib/slots/07_spatial_prune.ein::read-out[single]
 6720cee2596b6d9b       19L  tests/stdlib/slots/07_spatial_prune.ein::read-out[n2]
-0cb57967540c188a     3695L  tests/stdlib/slots/07_spatial_prune.ein::region-trace
+73d9864084aa1c1d     3695L  tests/stdlib/slots/07_spatial_prune.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/slots/07_spatial_prune.ein::states
 d22a2aaf8110485f        7L  tests/stdlib/slots/07_spatial_prune.ein::region-lattice
 460a74243c71f3ac      104L  tests/stdlib/slots/07_spatial_prune.ein::cores[describe]
@@ -23376,7 +23376,7 @@ fb03f3a74505a6bf       55L  tests/stdlib/slots/08_spatial_adjacent.ein::dot[kb-n
 80b69876e5c8d3d7       35L  tests/stdlib/slots/08_spatial_adjacent.ein::read-out[minimal]
 59883fe1668c5df0       38L  tests/stdlib/slots/08_spatial_adjacent.ein::read-out[single]
 c9daecfb6a2e5110       38L  tests/stdlib/slots/08_spatial_adjacent.ein::read-out[n2]
-51944ba636b3fd1a     3733L  tests/stdlib/slots/08_spatial_adjacent.ein::region-trace
+f62b3beebd70b1ae     3733L  tests/stdlib/slots/08_spatial_adjacent.ein::region-trace
 070208b5a182d5bf       96L  tests/stdlib/slots/08_spatial_adjacent.ein::states
 866d70efcf878584        7L  tests/stdlib/slots/08_spatial_adjacent.ein::region-lattice
 a1ac25e430f32411       90L  tests/stdlib/slots/08_spatial_adjacent.ein::cores[describe]
@@ -23586,7 +23586,7 @@ c6b7056e4d9bd54b       76L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein
 27c14dab38624348       19L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::read-out[minimal]
 2b594da8fe9432c1       19L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::read-out[single]
 a5f045b9b3e9b609       19L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::read-out[n2]
-785656d559dc7032     2459L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::region-trace
+3f8ee4cd229cbe48     2459L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::states
 882e26bc2455fbdb        7L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::region-lattice
 ffad965093ddba96      112L  tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein::cores[describe]
@@ -23628,7 +23628,7 @@ bbe3530841be0731       26L  tests/stdlib/typing/01_reflexive.ein::read-out[maxim
 52348ce8167d42e9       26L  tests/stdlib/typing/01_reflexive.ein::read-out[minimal]
 d15e25c4c8ceab05       26L  tests/stdlib/typing/01_reflexive.ein::read-out[single]
 752e7e458a0c39de       26L  tests/stdlib/typing/01_reflexive.ein::read-out[n2]
-a5e3484e8b730bb3      163L  tests/stdlib/typing/01_reflexive.ein::region-trace
+b537a69e0dd9dce8      163L  tests/stdlib/typing/01_reflexive.ein::region-trace
 a8cddbee7f152dae        9L  tests/stdlib/typing/01_reflexive.ein::states
 1181ff39c70deb01        7L  tests/stdlib/typing/01_reflexive.ein::region-lattice
 8d6231b59878bb63       90L  tests/stdlib/typing/01_reflexive.ein::cores[describe]
@@ -23670,7 +23670,7 @@ b4dcaa6978cfc6a9       27L  tests/stdlib/typing/02_type_hierarchy_converse.ein::
 16f2b07a34c8a1c1       19L  tests/stdlib/typing/02_type_hierarchy_converse.ein::read-out[minimal]
 327caf383e708556       19L  tests/stdlib/typing/02_type_hierarchy_converse.ein::read-out[single]
 c28dfba155a43076       19L  tests/stdlib/typing/02_type_hierarchy_converse.ein::read-out[n2]
-b49c83c5b6f33f36       74L  tests/stdlib/typing/02_type_hierarchy_converse.ein::region-trace
+8dee4067c914dea1       74L  tests/stdlib/typing/02_type_hierarchy_converse.ein::region-trace
 d41d8cd98f00b204        0L  tests/stdlib/typing/02_type_hierarchy_converse.ein::states
 a098bc3cf8495be7        7L  tests/stdlib/typing/02_type_hierarchy_converse.ein::region-lattice
 04f5c30ea7ac1862       99L  tests/stdlib/typing/02_type_hierarchy_converse.ein::cores[describe]
@@ -23712,7 +23712,7 @@ d41d8cd98f00b204        0L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein:
 6547feaa0a939030       24L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::read-out[minimal]
 bcfdc703a3f71f2d       24L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::read-out[single]
 e15676284b266e9a       24L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::read-out[n2]
-9521011707dd1662       69L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::region-trace
+e41d82608298a05a       69L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::region-trace
 fab49c262a35266a       10L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::states
 9665d578490ba62c        7L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::region-lattice
 f7a21331f38b4df3       90L  tests/stdlib/typing/03_type_hierarchy_welltyped.ein::cores[describe]

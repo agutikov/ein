@@ -60,11 +60,22 @@ pub struct RegionTrace {
 /// `Derives `(f)`.`, and what the fact says where its relation carries a
 /// `:why` (M1f S1f.5.14's T1f.5.14.2): `Derives `(f)` — <statement>`, the
 /// statement as its template writes it.
+///
+/// **Every conclusion the firing stored, in the order the rule writes them**
+/// (M1f S1f.6.25, E-5), each with its statement, `; ` between two: `Derives
+/// `(f)` — <statement>; `(g)`.` Until that stage the line named the first
+/// alone, so a second conclusion was stored and nowhere named. A rule of one
+/// conclusion prints the line it always did.
 fn derives_line(step: &TraceStep) -> String {
-    match &step.statement {
-        Some(s) => format!("Derives `{}` — {}", step.derived_label(), md_text(s, "")),
-        None => format!("Derives `{}`.", step.derived_label()),
-    }
+    let one = |label: String, says: &Option<String>| match says {
+        Some(s) => format!("`{label}` — {}", md_text(s, "")),
+        None => format!("`{label}`"),
+    };
+    let mut parts = vec![one(step.derived_label(), &step.statement)];
+    parts.extend(step.more.iter().map(|(f, says)| one(f.label(), says)));
+    let last = step.more.last().map_or(&step.statement, |(_, says)| says);
+    let stop = if last.is_some() { "" } else { "." };
+    format!("Derives {}{stop}", parts.join("; "))
 }
 
 fn step(step: &TraceStep, diagrams: bool) -> Vec<String> {
@@ -114,7 +125,7 @@ fn steps(steps: &[TraceStep], diagrams: bool, reorder: bool) -> Vec<String> {
                 "**Step {}** · `{}` → `{}`{why}",
                 s.n,
                 s.rule,
-                s.derived_label()
+                s.derived_labels().join("`, `")
             ));
             out.push(String::new());
             out.push(premises_line(s));
