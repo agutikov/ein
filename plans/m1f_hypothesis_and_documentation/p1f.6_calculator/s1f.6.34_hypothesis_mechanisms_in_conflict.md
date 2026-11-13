@@ -18,59 +18,93 @@ The user, 2026-11-13, on that question:
 So neither of the two: **a program whose hypothesis declarations contradict one another is told so**, and the
 contradiction E-47 met, `:no-hypothesis (R)` beside an hrule that proposes R, is one case of it, not the whole.
 
-## What is known
+## The user's simplification, 2026-11-13
 
-The ladder, as `AGENTS.md` and [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
-state it: the puzzle's `(hrule …)` if it declares one, else the facts that would discharge what the state owes
-(`oblgen.rs`), else the blind enumerator (`hypgen.rs`). What scopes each, read off the code on 2026-11-13:
+> actually we can make it easier: the program ussually has either positive hypothesis generation - by
+> obligations or hrules or hypothesis-relations, or negative filtering of all possible hypothesis by
+> no-hypothesis and __closed__; are those all 5 control mechanisms? let's make all pairs and analyze potential
+> conflicts; I guess it's easy to detect most of them during load, e.g. no-hypothesis make no sense if there
+> are hrules - if the conflict then it's conflict, if not - then it filters nothing; filtered obligations are
+> nonsense by definition; obligated relation can't be __closed__ also, naming same relations in
+> hypothesis-relations and no-hypothesis - also nonsense; combining positives e.g. hrules with obligations and
+> hypothesis-relations - maybe possible but not very practical, but they don't conflict at least
 
-| declaration | read by | not read by |
-|---|---|---|
-| `(solve :hrules …)` | the hrule rung: which hrules, with which activators | the obligation rung, the blind enumerator |
-| `(solve :hypothesis-relations …)` | the blind enumerator (`hypgen::relation_plan`) and the obligation rung (`oblgen::scoping`), *speculate only these* | the hrule rung |
-| `(solve :no-hypothesis …)` | the same two, *never these* | the hrule rung |
-| `(__closed__ R)`, a stated or derived closure | the same two, before the lists | the hrule rung |
+## The mechanisms, read off the code (2026-11-13)
 
-So **every scoping declaration is silent toward the hrule rung**, and a program can state that R is never
-guessed, or that only S is, while an hrule it activates guesses R. E-47's witness is
-`build/s1f.6.28/p2/kinds_listed_has_hyp_stated.ein` (gitignored; the stage re-creates it): an hrule supposing
-`(has ?p apples (n z 1) ?t)`, `(solve :hrules (maybe-apples) :no-hypothesis (has))`, refused by *forbid* with
-the remedy it already wrote. Without `listed_is_all` its twin loads, and the read-out's `universe` row reads
-*1 candidate* of `has` with `:no-hypothesis (has)` written.
+`hypgen.rs`'s ladder: **hrules** if the program declares any `(hrule …)`, and then the other two rungs never
+run; otherwise **obligations** while the state owes something it may branch on (`oblgen::generate`, *declined*
+falls through); otherwise the **blind enumerator**. So the five the user names, and a sixth that no declaration
+writes:
+
+| | mechanism | what it does | read by |
+|---|---|---|---|
+| H | `(hrule …)`, activated by `(solve :hrules …)` | generates, rung 1, alone where declared | itself |
+| O | an obligation rule, `:assert (open ?R)`, activated by a fact such as `(total R isa)` | **two roles**: a state that owes is not in R, whatever generated it; and, with no hrule, rung 2 proposes facts of the owed relation | the discharge test; rung 2 |
+| B | the blind enumerator | generates, rung 3, the default: no hrule, nothing owed | — |
+| HR | `(solve :hypothesis-relations …)` | a whitelist, *speculate only these* | rungs 2 and 3 (`oblgen::scoping`, `hypgen::relation_plan`) |
+| NH | `(solve :no-hypothesis …)` | a blacklist, *never these* | rungs 2 and 3 |
+| C | `(__closed__ R)`, stated or derived | excludes R from rungs 2 and 3, **and** says R's extent is complete for `absent` | rungs 2 and 3; the matcher |
+
+HR is a filter that the user counts among the positives: it generates nothing of itself. **H and O together are
+the Zebra puzzle's own form,** not an impractical one: `examples/zebra2.ein` declares `(hrule guess …)` and
+imports `std.bijection`, whose `total-owed` and `surjective-owed` judge every state the hrule reaches.
+
+## The pairs
+
+| pair | verdict |
+|---|---|
+| H + O | **no conflict**: H generates, O judges (zebra2) |
+| H + HR | HR is **dead**, rungs 2 and 3 never running; a **conflict** where an active hrule proposes a relation HR leaves out |
+| H + NH | NH is **dead**; a **conflict** where an active hrule proposes a relation NH lists (E-47) |
+| H + C | a **conflict** where an active hrule proposes a closed relation; closing another relation is C's second role and stands |
+| O + HR | with no hrule, a **conflict** where an owed relation is outside HR: the owing state cannot branch, *stuck* |
+| O + NH | with no hrule, a **conflict** where an owed relation is in NH: *"filtered obligations are nonsense by definition"* |
+| O + C | a **conflict** where an owed relation is closed: *"obligated relation can't be __closed__ also"* |
+| HR + NH | a **conflict** where one relation is in both; NH naming a relation HR already leaves out is **redundant** |
+| HR + C | a **conflict** where a listed relation is closed |
+| NH + C | an overlap is **redundant**, both saying the same; never a conflict |
+
+**When each is known.** The lists, an hrule's `:assert` heads (a parameterised hrule's through the activators
+`:hrules` gives it), a written `__closed__` fact and a written obligation activator are known at load. A
+*derived* closure (the stdlib's closing rules, `(__closed__ fa)` and the like) and a derived activator
+(`bijective-setup`'s `(total color-loc is-a)`) are known at root's fixpoint, before any search. So the check runs
+once, on root, on every command that reads the program.
+
+E-47's witness is `build/s1f.6.28/p2/kinds_listed_has_hyp_stated.ein` (gitignored; the stage re-creates it): an
+hrule supposing `(has ?p apples (n z 1) ?t)`, `(solve :hrules (maybe-apples) :no-hypothesis (has))`, refused by
+*forbid* with the remedy it already wrote; H + NH.
 
 ## Tasks
 
-1. **T1f.6.34.1 — the census of contradictions, on real programs, shown before the loader moves.** Every pair
-   of hypothesis declarations that can say opposite things of one relation, at least: an active hrule whose
-   `:assert` heads a relation that `:no-hypothesis` lists, that `:hypothesis-relations` omits where it is given,
-   or that a stated `(__closed__ R)` closes; a relation both lists name. For each: a witness program, what each
-   command answers today, and how many corpus programs (`examples/`, `tests/`, `stdlib/`) carry it, by a
-   script, never by reading the directories. A relation an hrule proposes only through a parameter (`?R`) is
-   the activator's, and the census says how the check reads it. Recorded as the record's first section.
-2. **T1f.6.34.2 — the report.** **Default, the user's to revise:** a load refusal, one line per conflict,
-   placed at the declaration, on every command, exit 1 (`ein test`: 2), naming both sides, as
+1. **T1f.6.34.1 — the pairs on real programs, shown before the loader moves.** For each row of § The pairs: a
+   witness program, what each command answers today, and the corpus programs (`examples/`, `tests/`, `stdlib/`)
+   that carry it, counted by a script that reads root's fixpoint, never by reading the directories. A row the
+   corpus carries as a conflict is shown with its answer; a row the code reads otherwise than the table says is
+   a finding, and the table is corrected. Recorded as the record's first section.
+2. **T1f.6.34.2 — the report.** A **conflict** is refused, one line per conflict, naming both declarations and
+   the relation, with the load-error exit (1; `ein test`: 2), on every command, as
    [`defined_behaviour.md` § 4.20](../../../docs/kernel/defined_behaviour.md#420-a-solve--list-names-what-the-program-has--m1f-s1f78)
-   refuses a list that names nothing. It is the form the language's other contradictions take, and it keeps
-   *no config option changes R* true, since nothing is filtered differently. A corpus program the census finds
-   in conflict is shown with its answer before it is refused, and is either corrected, its conflict being an
-   accident, or kept as a fixture of the refusal. Every new refusal a section of § 4 and a row of the grammar
-   page's table where it is a shape; Q-M1f rows for the defaults.
-3. **T1f.6.34.3 — *forbid*'s remedies.** A remedy that the loader would now refuse as a conflict is not offered:
-   where R's candidates include an hrule's, the message names the hrule (deactivate it, or let it assert the
-   relation the claim does not read) and not `:no-hypothesis`. Held by a test on E-47's witness.
+   refuses a list that names nothing. A **dead** or **redundant** declaration prints one `note:` line on stderr
+   and moves no exit code (the user: *"if not - then it filters nothing"*; Q-M1f row, defaulted). No lever,
+   option or flag decides either. A corpus program in conflict is corrected where its conflict is an accident,
+   or kept as a fixture of the refusal. Every new refusal is a section of § 4; Q-M1f rows for the defaults.
+3. **T1f.6.34.3 — *forbid*'s remedies.** A remedy that the check would refuse is not offered: where R's
+   candidates are an hrule's, the message names the hrule, not `:no-hypothesis`. Held by a test on E-47's
+   witness.
 4. **T1f.6.34.4 — the pages and the records:** `defined_behaviour.md`, the grammar's § Solve,
-   `06_reserved_names.md` § Hypothesis / query control (what each declaration scopes, the table above made
-   normative), the read-out reference if a printed line moves; E-47 closed in [`findings.md`](findings.md); the
-   phase README's row; the stage's record.
+   `06_reserved_names.md` § Hypothesis / query control (the mechanisms table above made normative), the
+   read-out reference if a printed line moves; E-47 closed in [`findings.md`](findings.md); the phase README's
+   row; the stage's record.
 
 ## Acceptance
 
-- Every pair of hypothesis declarations that can contradict one another over a relation is listed in the record,
-  with its witness, and each is reported by the loader or named there as not a contradiction, with the reason.
+- Every row of § The pairs has a witness in the record and behaves as its verdict says: a conflict refused, a
+  dead or redundant declaration noted, H + O silent.
 - E-47's witness is refused for the conflict, naming the hrule and the list, and no longer for *forbid* with a
   remedy it already wrote; its twin without `listed_is_all` is refused for the same conflict.
-- No program that loads and has no conflict changes its answer or its output: the sweep over every tracked
-  program, before and after.
+- No program that loads and has no conflict changes its answer, its stdout or its exit code: the sweep over
+  every tracked program, before and after; a dead or redundant declaration's `note:` is on stderr, and the
+  record counts the programs that print one.
 - *Forbid* offers no remedy the loader refuses.
 
 ## What it must not do
