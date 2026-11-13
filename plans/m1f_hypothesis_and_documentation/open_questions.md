@@ -259,6 +259,13 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.244](#q-m1f244--o--c-beside-an-hrule) | O + C beside an hrule | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: a conflict whatever generates; O + HR and O + NH only with no hrule; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
 | [Q-M1f.245](#q-m1f245--where-the-conflict-check-runs) | where the conflict check runs | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: at load on every command, on root of a second load; `ein_infer::mechanisms::check` for a library caller, not in `region::prepare`; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
 | [Q-M1f.246](#q-m1f246--the-corpuss-twenty-four-programs-in-conflict) | the corpus's twenty-four programs in conflict | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: each corrected to say what it meant, one kept as the refusal's fixture; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
+| [Q-M1f.247](#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one) | what the closure (ii) follows: a relation of any kind, or a declared one | **open, raised 2026-11-14 by S1f.6.35's T1, the stage stopped for it**; recommended: (b), a relation the module declares; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.248](#q-m1f248--a-closing-rule-under-the-closure-ii) | a closing rule under the closure (ii) | **open, raised 2026-11-14 by S1f.6.35's T1, the stage stopped for it**; recommended: (a), a rule that closes a kept relation concludes it; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.249](#q-m1f249--the-answers-h-moves-under-the-recommended-reading) | the answers (h) moves under the recommended reading | **open, raised 2026-11-14 by S1f.6.35's T1, the stage stopped for it**; recommended: (a), accepted as the ruling's, each fixture or note restated; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.250](#q-m1f250--a-listed-name-a-module-states-facts-of-and-does-not-declare) | a listed name a module states facts of and does not declare | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: bound to the relation the module's facts are of, as the module reads it; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.251](#q-m1f251--a-prefixed-name-that-names-nothing-the-module-declares) | a prefixed name that names nothing the module declares | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.252](#q-m1f252--an-empty-segment-or-a--in-a-modules-name) | an empty segment or a `/` in a module's name | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.253](#q-m1f253--how-a-name-prints-under-as) | how a name prints under `:as` | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: the main file's alias spelling, `a.sum-of`, as today; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4878,3 +4885,111 @@ its question was root's saturation or root's verdict alone. None is an accident 
 **Defaulted 2026-11-14: (a), the user's to revise.** Fourteen of the twenty-four answer as before, twelve of them
 printing as before too and the bijection fixtures `02` and `03` one `outside` line more; nine answer a different R,
 by their own edit and not the engine's, each claim restated and held; one is refused.
+
+### Q-M1f.247 — What the closure (ii) follows: a relation of any kind, or a declared one
+
+**Raised** 2026-11-14 by [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#t1f6351--the-examples-first-on-a-prototype-done-and-the-stop)'s T1, on its prototype of (h). The ruling: *"a listed or kept relation to
+the rules that read or conclude it"*. A relation in Ein is what `(relation …)` declares, and also the head of
+any fact, declared or not: a parametrised rule's activators, `(converse owns owned-by)`, are facts of a relation
+named after the rule, which `std.algebra` and the other zebra modules never declare.
+
+- **(a) Any kept name of the module's own** that its rules read or conclude: a rule's name read as its
+  activators' relation too. `std.algebra`'s nine lemmas come with any activator (`symmetric` brings 13
+  declarations where today it brings 4), and `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` is refuted,
+  `converse-pair-symmetric` checking the well-typed pair reversed (E-53).
+- **(b) A relation the module declares.** The calculator's selections bring the circuit; a zebra module's
+  bring what their names reach, as today, and its own imports' lists. No claim moves.
+- **(c) A listed relation only**, not a kept one: a selection of `add` brings what reads `add`, and nothing
+  follows from what that brings; the circuit's walks, read by no listed name, stay behind.
+
+**Recommended: (b).** **Open; the stage stopped for it** (the coordinator's instruction: a stop where (h) as
+ruled moves R).
+
+### Q-M1f.248 — A closing rule under the closure (ii)
+
+**Raised** 2026-11-14 by S1f.6.35's T1, with Q-M1f.247. `std.arith` closes every relation it declares and names
+every rule it has in one rule with an empty `:match`, `arith`, which writes `(__closed__ let)` and `(arith-rule
+add-ask)`: the relations are values there, so (ii)'s *conclude* does not reach the rule. A selection that keeps
+the circuit and not its closure leaves `let` open, and *forbid* refuses the program: the acceptance's own
+`(import std.arith :symbols (add sum-of n))`, and the sixteen `std.num9` programs, whose module lists
+`division-by-zero`.
+
+- **(a) A rule whose `:assert` writes `(__closed__ R)` of a kept `R` concludes it**, so the selection brings it,
+  and the closing rule's own names bring the rest: `:symbols (add sum-of n)` computes, `(sum-of (n z 2) (n z 3)
+  (n z 5))`; every `std.num9` program loads, with the calculator whole (580 more facts and rules, R unmoved).
+- **(b) No**: a selection that wants a computed theory lists its entry, as today. The acceptance's program is
+  refused; `std.num9` lists `arith`.
+- **(c) The closures written as top-level facts** in each module, `(__closed__ let)`, which a kept relation's
+  facts bring: every module's text moves, against Q-M1f.240's default.
+
+**Recommended: (a).** **Open; the stage stopped for it.**
+
+### Q-M1f.249 — The answers (h) moves under the recommended reading
+
+**Raised** 2026-11-14 by S1f.6.35's T1. Under Q-M1f.247 (b) and Q-M1f.248 (a), of the 514 tracked programs
+that load, R is the same on 510; the read-out byte-equal on 478 and equal once module prefixes are off on 500.
+What moves, each by the ruling and not by a defect:
+
+- `tests/imports/02_nested_import_left_behind.ein`, E-20's witness: its module's own import of `lower` is an
+  edge of the program, so `(got a aa)` is derived and its claim `(model)` refuted; R is {∅} either way;
+- `examples/word_problems/gaps.ein` and `listed_is_all.ein`, modules read alone: `ein solve` describes them,
+  R {∅} where it was E-1's four states of `(asked __closed__)`; their corpus entries run no solve;
+- `examples/features/09_adjacent_via_same_house.ein`: R unmoved, the universe row 82 candidates to none, an
+  obligation rule loaded by `std.bijection`'s own import (E-51);
+- and one program's text beyond its imports: `examples/binary_logic/adder_against_table.ein`'s own copy of
+  `circuit`'s `gate` replaced by `(import circuit :symbols (gate))`, R and read-out unmoved.
+
+- **(a) Accepted as the ruling's**: the witness's claim restated, `(model (got a aa))`, and its file named for
+  what it shows; the two modules' notes say a solve now describes them; no register row.
+- **(b) Each a register row**, as a wrong answer would be.
+
+**Recommended: (a).** **Open; the stage stopped for it.**
+
+### Q-M1f.250 — A listed name a module states facts of and does not declare
+
+**Raised** 2026-11-14 by S1f.6.35's T1. Today a selection may list a name the module only states facts of (*a
+relation needs no declaration*); `examples/binary_logic/equivalent.ein` lists `gate` from `full_adder`, a library
+of `gate` facts, and `require` lists `total-owed` from `inputs`, which states `(total-owed in is-a)`. Under (h)
+those facts are of another module's relation (`circuit.gate`, `std.algebra.total-owed`).
+
+- **(a) The listed name is bound to the relation the module's facts are of, as the module's own text reads it**,
+  and the selection brings those facts. The importer writes `gate` and means `circuit`'s.
+- **(b) Refused as a re-export**: the importer brings the library whole and lists the relation from its
+  declaring module.
+
+**The default T2 would take: (a).** The user's to revise.
+
+### Q-M1f.251 — A prefixed name that names nothing the module declares
+
+**Raised** 2026-11-14 by S1f.6.35's T1. Under `(import std.int :as i)`, `i.n`: `std.int` declares no `n`, which is
+`std.arith`'s. Likewise `std.arith.nope` beside an import of `std.arith`.
+
+- **(a) Refused at load**, naming the module and the name, as a `:symbols` name it does not provide is.
+- **(b) A name of its own**, as today, answered by silence.
+
+**The default T2 would take: (a)**, Q-M1f.238's reading for a module the program does bring. The user's to
+revise.
+
+### Q-M1f.252 — An empty segment or a `/` in a module's name
+
+**Raised** 2026-11-14 by S1f.6.35's T1. Today `(import ..succ)` loads `succ.ein` beside the importer, the empty
+segments dropped, and `(import ../x/m)` names `/x/m.ein`, an absolute path (E-32). Under (h) a module's name is its
+identity, so `..succ` and `succ` would be one file under two names.
+
+- **(a) Refused at load**: a module's name is segments joined by dots, none empty, none holding a `/`.
+- **(b) Normalised**, the empty segments dropped, as today.
+
+**The default T2 would take: (a)**, the user's *"`..` going outside the folder is restricted so there is always
+one single path"*. The user's to revise.
+
+### Q-M1f.253 — How a name prints under `:as`
+
+**Raised** 2026-11-14 by S1f.6.35's T1, on Q-M1f.237's default (the main file's short name where it has one,
+the full name otherwise). Under `(import std.arith :as a)` the program writes `a.sum-of`.
+
+- **(a) The main file's alias spelling, `a.sum-of`**, read as its name for the declaration: every qualified
+  program prints as today. Where the program lists the name too, the listed short name.
+- **(b) The full name, `std.arith.sum-of`**: an alias is no short name.
+
+**The default T2 would take: (a)**: Q-M1f.237's *"it prints a program's facts as the program writes them"*.
+The user's to revise.
