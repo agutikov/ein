@@ -159,6 +159,7 @@ pub fn load_held(
             let t = Instant::now();
             let kb = ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load)
                 .map_err(|e| format!("kb load error: {e}"))?;
+            say_notes(&kb.program().notes);
             Ok(Loaded {
                 kb,
                 forms,
@@ -174,6 +175,24 @@ pub fn load_held(
         Held::Container(_) => {
             let _ = (terms, query, load);
             Err(no_einb_line(path))
+        }
+    }
+}
+
+/// **What the loader noticed and did not refuse**, said once (M1f S1f.6.25,
+/// E-20 of P1f.6's `findings.md`): each of [`ein_core::Program::notes`] on
+/// stderr as `note: <line>`, on every command, since every command that
+/// loads a program loads it through [`load_held`]. A command may load one
+/// file several times, once a query and once a question, and each line
+/// carries its file and position, so a line is printed the first time the
+/// process meets it and never again. No answer and no exit code moves.
+fn say_notes(notes: &[String]) {
+    static SAID: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+    let mut said = SAID.lock().unwrap_or_else(|e| e.into_inner());
+    for note in notes {
+        if !said.contains(note) {
+            eprintln!("note: {note}");
+            said.push(note.clone());
         }
     }
 }

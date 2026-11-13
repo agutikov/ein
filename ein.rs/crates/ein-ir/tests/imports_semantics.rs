@@ -721,6 +721,64 @@ fn a_name_a_selection_lists_survives_the_tree_shake() {
     );
 }
 
+/// **What a selection left behind, as the resolver reports it** — M1f
+/// S1f.6.25, E-20 of P1f.6's `findings.md`. The line, its place and what it
+/// is quiet on are `ein-cli`'s `import_left_behind.rs`; this holds the
+/// resolver's half: the report is beside the forms and never changes them,
+/// it sees through a module's own imports, and a qualified import renames
+/// what an inner selection left as it renames the declaration.
+#[test]
+fn the_resolver_reports_what_a_selection_left_behind() {
+    let lower = "(relation ask Thing :why \"a\")\n\
+         (relation double-of Thing Thing :why \"d\")\n\
+         (rule answer () :match (ask ?x) :assert (double-of ?x ?x) :why \"w\")\n\
+         (rule lower () :match () :assert (lower-rule answer) :why \"e\")\n";
+    let upper = "(import lower :symbols (lower))\n\
+         (rule read () :match (double-of ?x ?y) :assert (got ?x ?y) :why \"r\")\n\
+         (rule upper () :match () :assert (upper-rule read) :why \"e\")\n";
+    let scratch = Scratch::new("ein-import-left");
+    for (name, text) in [("lower", lower), ("upper", upper)] {
+        std::fs::write(scratch.path().join(format!("{name}.ein")), text).expect("written");
+    }
+    let left = |src: &str| -> Vec<(String, Vec<String>)> {
+        let mut ast = Ast::new();
+        let forms = parse(&mut ast, src, Some("p.ein")).expect("parses");
+        let plain = Resolver::new()
+            .resolve_imports(&mut ast, &forms, Some(scratch.path()))
+            .expect("resolves");
+        let (noted, left) = Resolver::new()
+            .resolve_imports_noting(&mut ast, &forms, Some(scratch.path()))
+            .expect("resolves");
+        assert_eq!(plain.len(), noted.len(), "the report moved the forms");
+        left.into_iter().map(|l| (l.at, l.relations)).collect()
+    };
+    let v = |xs: &[&str]| xs.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    // The upper theory's entry does not name the lower one's.
+    assert_eq!(
+        left("(import upper :symbols (upper))"),
+        vec![("p.ein:1:9".to_string(), v(&["double-of"]))]
+    );
+    // The lower theory's entry listed beside it: nothing is left.
+    assert_eq!(left("(import upper :symbols (upper lower))"), vec![]);
+    assert_eq!(
+        left("(import upper :symbols (upper))\n(import lower :symbols (answer))"),
+        vec![]
+    );
+    // The upper module alone, and qualified: its own import brings the whole
+    // lower theory.
+    assert_eq!(left("(import upper :as u)"), vec![]);
+    // A module whose own selection leaves a rule behind, imported qualified:
+    // the relation is reported under the name the import gives it.
+    std::fs::write(
+        scratch.path().join("mid.ein"),
+        "(import upper :symbols (upper))\n",
+    )
+    .expect("written");
+    let got = left("(import mid :as m)");
+    assert_eq!(got.len(), 1, "{got:?}");
+    assert_eq!(got[0].1, v(&["m.double-of"]));
+}
+
 // ── M1f S1f.6.11: a flat import brings a module's facts ──────────────────────
 
 /// The ontology library of S1f.6.11's table: a declared relation with two

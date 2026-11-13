@@ -2089,6 +2089,27 @@ declaration writes, followed through the module's declarations.
   the importer was solved under the module's lattice, and two qualified
   imports of a module holding a `(solve …)` were refused, *2 (solve …)
   forms*.
+- **A selection that brings a relation's declaration and no rule that
+  derives it is said, not refused** (M1f
+  [S1f.6.25](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
+  E-20;
+  [Q-M1f.217](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f217--when-the-loader-says-that-a-selection-left-a-relations-rules-behind)):
+  `note: <file>:<line>:<col>: (import M :symbols (…)) brings the declaration
+  of r and no rule that derives it: M has such a rule, its own or one it
+  imports, and the selection names none — a selection brings the names it
+  lists and what their declarations write, so list the rule, or the entry
+  that names it, if r is to be derived`, on stderr, once, on every command
+  that loads the program, the position the form's first argument's. Two
+  relations read *the declarations of r and s … derives either*, more *of r
+  and n more relations … derives any of them*. The conditions, all four: `r`'s
+  declaration is kept and `r` is not listed; a rule or an hrule among the
+  module's resolved forms concludes a fact of `r`, the head of a conclusion
+  under `and` and `not`, a fact inside a conclusion being a value; the
+  selection keeps no such rule; and the program as resolved holds none
+  (`ein_ir::imports`' `LeftBehind`, `resolve_imports_noting`). The program
+  loads, and no answer and no exit code moves. A container says it when it is
+  saved and not when it is opened, the stored program having no import, and
+  `--json-summary` does not carry it (E-42 of P1f.6's findings).
 - **A listed name** is one the module declares or states a fact of. Any other
   is refused, on every command: `kb load error: (import M :symbols …) — not
   provided by the module: n at …`.

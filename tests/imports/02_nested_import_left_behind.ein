@@ -1,0 +1,32 @@
+;;; A theory built on a theory, imported by an entry that does not name the
+;;; lower one's: the lower theory's rules stay behind, and the loader says
+;;; so in one line — M1f S1f.6.25, E-20 of P1f.6's `findings.md`.
+;;;
+;;; `upper_without_entry.ein` imports `lower` by its entry and uses it; its
+;;; own entry, `upper`, names its two rules and not `lower`. The closure of
+;;; `(upper)` follows the names those rules write: the relations `ask` and
+;;; `double-of`, whose declarations come, and no rule of the lower theory.
+;;; That is the closure rule as `01_grammar.md` § Import states it: a
+;;; selection is a selection. So `(ask a)` is derived and never answered, and
+;;; `ask` and `double-of`, which the lower theory's entry would have closed,
+;;; are open: left to itself the search would guess their facts. This
+;;; program states no hypothesis, to keep the answer small: R {∅}, and the
+;;; goal has no row.
+;;;
+;;; The symptom, an unanswered request, is far from the cause, an entry
+;;; name missing two files away, so the loader prints, on every command:
+;;;
+;;;   note: tests/imports/02_nested_import_left_behind.ein:28:2: (import
+;;;   upper_without_entry :symbols (upper)) brings the declaration of
+;;;   double-of and no rule that derives it …
+;;;
+;;; `ein-cli/tests/import_left_behind.rs` holds the line.
+
+(import upper_without_entry :symbols (upper))
+
+(wanted a)
+
+(solve :hypothesis-relations () :expect (region (model)))
+(query :goal (got ?x ?y)
+       :goal-text "{?x}'s double is {?y}"
+       :expect (model))

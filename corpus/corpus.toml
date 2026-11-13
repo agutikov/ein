@@ -4231,6 +4231,36 @@ runs   = ["test", "solve", "saturate"]
 note   = "M1f S1f.5.2 (T1f.5.2.2) — natural-language text in the three keywords that take a string, each with Cyrillic, CJK, an emoji and every escape a string reads, and a `:source` with a raw newline. `ein-cli/tests/natural_language_text.rs` holds the text byte for byte on every surface that carries it; the claim is about facts, which the text does not move."
 
 [[entry]]
+path   = "tests/imports/lower.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — the lower of two theories: a request answered off a table, and an entry, `lower`, that closes its relations and names its rule. Imported by `upper.ein` and `upper_without_entry.ein`. Alone it has no request: R {∅}."
+
+[[entry]]
+path   = "tests/imports/upper.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — the upper theory, over `lower.ein`, whose entry names the lower one's, `(upper-rule lower)`, so a selection of `upper` brings both whole. Alone it wants nothing: R {∅}."
+
+[[entry]]
+path   = "tests/imports/upper_without_entry.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — `upper.ein` without the lower theory's entry name in its own. Loaded alone it holds both theories, its own import bringing the lower one; imported by its entry it leaves the lower theory's rules behind, which `02_nested_import_left_behind.ein` shows."
+
+[[entry]]
+path   = "tests/imports/01_nested_import_whole.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate"]
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — a theory built on a theory, imported by an entry that names the lower one's: both come whole, the request is answered, `(got a aa)`, and the loader prints nothing. The twin of `02`."
+
+[[entry]]
+path   = "tests/imports/02_nested_import_left_behind.ein"
+group  = "positive"
+runs   = ["test", "solve", "saturate", "saturate --dump"]
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — the same import through an entry that does not name the lower theory's: the closure brings `double-of`'s declaration and no rule that derives it, the request is derived and never answered, and the loader says so in one `note:` line on stderr, on every command, exit 0 (`ein-cli/tests/import_left_behind.rs`). `bob1_nested_import.ein` of S1f.6.20's prototype, rebuilt small."
+
+[[entry]]
 path   = "tests/region/01_states.ein"
 group  = "positive"
 runs   = ["test", "saturate"]

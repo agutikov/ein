@@ -195,7 +195,8 @@ pub fn load_query_with(
     // Imports resolve up front into one flat, import-free, qualified stream.
     // Resolution errors are **fatal** and return immediately: a half-resolved
     // program cannot be ingested.
-    let forms = Resolver::new().resolve_imports(ast, forms, base_dir)?;
+    let (forms, left) = Resolver::new().resolve_imports_noting(ast, forms, base_dir)?;
+    kb.program_mut().notes = left.iter().map(|l| l.line()).collect();
 
     let (mut relations, mut rules, mut macro_forms, mut facts) =
         (Vec::new(), Vec::new(), Vec::new(), Vec::new());

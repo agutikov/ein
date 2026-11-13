@@ -1177,6 +1177,31 @@ own as a program. `(__closed__ r)` is a fact of `__closed__` like another: a
 library that closes its own relations has the marker listed, or writes it in
 a rule the selection names.
 
+**One line where a selection leaves a relation's rules behind** (M1f
+[S1f.6.25](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
+E-20). The closure brings the *declaration* of every relation a kept rule
+writes or reads, and not the rules that derive it: a theory built on a
+theory, imported by its entry, brings the lower theory's relations and none
+of its rules unless its entry names the lower one's. That is the rule above
+and it is not changed. Where it happens the loader says so, on stderr, on
+every command that loads the program, once:
+
+```text
+note: p.ein:1:9: (import upper :symbols (upper)) brings the declaration of double-of and no rule that derives it: upper has such a rule, its own or one it imports, and the selection names none — a selection brings the names it lists and what their declarations write, so list the rule, or the entry that names it, if double-of is to be derived
+```
+
+It is a diagnostic, never a refusal: the program loads and answers as it
+would without the line, and no exit code moves. It is printed when all four
+hold: the relation's declaration came through the closure, **its name not
+listed** (a listed relation is asked for on purpose); the module, with what
+it imports, has a rule or an hrule whose `:assert` concludes a fact of it;
+the selection keeps none of them; and the resolved program holds no rule that
+concludes one either, another import's or its own. So a library of facts,
+`(import std.digits :symbols (fa nz __closed__))`, prints nothing, having no
+rule. The line and its condition are `ein-cli`'s
+[`import_left_behind.rs`](../../../../ein.rs/crates/ein-cli/tests/import_left_behind.rs);
+`defined_behaviour.md` § 4.25 states it.
+
 **An imported fact is a fact of the program.** It is stored as if written
 where the import stands: background, or given where it carries a `:source`.
 Its constants are names of the program, so they are among the objects the

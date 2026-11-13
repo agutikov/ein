@@ -1723,6 +1723,19 @@
 0    stdlib/typing.ein :: render rules
 0    stdlib/typing.ein :: saturate
 0    stdlib/typing.ein :: solve
+0    tests/imports/01_nested_import_whole.ein :: saturate
+0    tests/imports/01_nested_import_whole.ein :: solve
+0    tests/imports/01_nested_import_whole.ein :: test
+0    tests/imports/02_nested_import_left_behind.ein :: saturate
+0    tests/imports/02_nested_import_left_behind.ein :: saturate --dump
+0    tests/imports/02_nested_import_left_behind.ein :: solve
+0    tests/imports/02_nested_import_left_behind.ein :: test
+0    tests/imports/lower.ein :: saturate
+0    tests/imports/lower.ein :: test
+0    tests/imports/upper.ein :: saturate
+0    tests/imports/upper.ein :: test
+0    tests/imports/upper_without_entry.ein :: saturate
+0    tests/imports/upper_without_entry.ein :: test
 0    tests/region/01_states.ein :: saturate
 0    tests/region/01_states.ein :: test
 0    tests/region/02_merged_single.ein :: saturate

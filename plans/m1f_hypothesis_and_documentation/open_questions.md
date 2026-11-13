@@ -229,6 +229,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.214](#q-m1f214--the-derives-line-of-a-firing-with-several-conclusions) | the *Derives* line of a firing with several conclusions | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: one line, every conclusion in the rule's order, `; ` between two, each with its own statement**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6251--e-5-done) |
 | [Q-M1f.215](#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program) | a qualified import and what a module states as a program | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a wrong answer, W90; no import brings a module's `(query …)`, `(solve …)` or `(config …)`, nor its `(trace …)`**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6252--e-8-done) |
 | [Q-M1f.216](#q-m1f216--a-state-file-that-re-writes-less-than-the-program-as-loaded-and-the-register) | a state file that re-writes less than the program as loaded, and the register | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a register row, W91, under schema `/22`; the fix makes every name a top-level selection lists live, and no more**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6253--e-11-done) |
+| [Q-M1f.217](#q-m1f217--when-the-loader-says-that-a-selection-left-a-relations-rules-behind) | when the loader says that a selection left a relation's rules behind | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: condition C of the census, a relation not listed, with a deriving rule in the module, none kept and none in the resolved program; one line a form, `note:` on stderr**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6254--e-20-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4182,3 +4183,28 @@ build/s1f.6.25/e8_census.py`, 2026-11-13).
 moved to `/22` for it. 2 (a) since it is what the stage file specifies; 2 (b)'s case, a qualified import
 of a library whose entry is an empty-`:match` rule, is E-41 of the phase's `findings.md`, found and not
 fixed.
+
+### Q-M1f.217 — When the loader says that a selection left a relation's rules behind
+
+**Raised** 2026-11-13 by [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6254--e-20-done)'s T4 (E-20). The stage file asks for the condition to be chosen on a census, and to
+stop if none is quiet on the corpus and loud on the three witnesses. Three were taken (`python3
+build/s1f.6.25/e20_census.py`, 2026-11-13, 842 tracked files and the witnesses):
+
+- **(A) Any kept relation declaration,** listed or not, where the module has a rule that concludes it and
+  the selection keeps none: 24 tracked files print a line, every `std.num9` program among them, whose
+  module lists `division-by-zero` on purpose.
+- **(B) A, and the resolved program holds no rule that concludes it:** 2 tracked files,
+  `examples/word_problems/gaps.ein` and `readings.ein`, each a module that lists the word theory's
+  relations on purpose and is a corpus program alone.
+- **(C) B, and the relation is not listed,** so it came through the closure: no tracked file, and each of
+  the three witnesses.
+
+**Defaulted 2026-11-13: (C), the user's to revise.** A name in the list is asked for; a relation the
+closure dragged in is the one nobody chose. The stage file's second candidate, *the module has an entry
+rule and it is not kept*, was not taken: the language has no notion of an entry, and a rule with an empty
+`:match` is only how the stdlib writes one.
+
+Three smaller things, also defaults: the line is `note: `, the prefix the read-out's own stderr lines
+carry; relations past the second are counted and not listed, so the line stays one line; and a
+conclusion is the head of a fact the `:assert` concludes, not a fact written inside one, so the
+calculator's `n`, which every number is built of, is not taken for a relation rules derive.

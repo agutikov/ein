@@ -63,6 +63,78 @@ const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
 /// `load_query_with`) reads every other head as a fact's relation.
 const DIRECTIVES: [&str; 5] = ["query", "solve", "config", "trace", "import"];
 
+/// **A selection that brought a relation's declaration and no rule that
+/// derives it** — M1f S1f.6.25, E-20 of P1f.6's `findings.md`. A diagnostic,
+/// never a refusal: the closure rule is unchanged, and a selection is a
+/// selection.
+///
+/// The case it is for: a theory built on a theory. `upper` imports `lower`
+/// by `lower`'s entry and a program imports `upper` by `upper`'s; the closure
+/// of that selection follows the names `upper`'s rules write, so it reaches
+/// the declarations of `lower`'s relations and, unless `upper`'s entry names
+/// `lower`'s, none of `lower`'s rules. No request is then answered and the
+/// lower theory's relations are open, far from the cause.
+///
+/// **The condition** (chosen on the census in the stage's record): the
+/// relation's declaration came through the selection's *closure*, its name
+/// not listed (a listed relation is asked for on purpose); the module, with
+/// what it imports, holds a rule or an hrule whose `:assert` writes the
+/// relation; the selection keeps none of them; and the program as resolved
+/// holds no rule that writes it either, by another import or its own. A
+/// library of facts has no such rule and is never named.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LeftBehind {
+    /// `<file>:<line>:<col>` of the import form, or empty where the parser
+    /// kept no position for it.
+    pub at: String,
+    /// The import form, as written.
+    pub import: String,
+    /// The module the form names.
+    pub module: String,
+    /// The relations, in the module's order.
+    pub relations: Vec<String>,
+}
+
+impl LeftBehind {
+    /// The one line a loader prints for it.
+    pub fn line(&self) -> String {
+        let at = if self.at.is_empty() {
+            String::new()
+        } else {
+            format!("{}: ", self.at)
+        };
+        let (first, more) = (&self.relations[0], self.relations.len() - 1);
+        let (what, them) = match more {
+            0 => (format!("the declaration of {first}"), "it"),
+            1 => (
+                format!("the declarations of {first} and {}", self.relations[1]),
+                "either",
+            ),
+            n => (
+                format!("the declarations of {first} and {n} more relations"),
+                "any of them",
+            ),
+        };
+        format!(
+            "{at}{} brings {what} and no rule that derives {them}: {} has such a rule, its own \
+             or one it imports, and the selection names none — a selection brings the names it \
+             lists and what their declarations write, so list the rule, or the entry that names \
+             it, if {first} is to be derived",
+            self.import, self.module
+        )
+    }
+}
+
+/// What one resolution carries from import to import: the chain of modules
+/// being loaded (the cycle check), the modules parsed so far, and what the
+/// selections left behind ([`LeftBehind`]).
+#[derive(Default)]
+struct Walk {
+    loading: Vec<String>,
+    cache: ModuleCache,
+    left: Vec<LeftBehind>,
+}
+
 /// A load-time failure. The message is output, byte for byte — the
 /// `examples/broken/load/*.expected` fixtures are the gate.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -230,14 +302,40 @@ impl Resolver {
         forms: &[NodeId],
         base_dir: Option<&Path>,
     ) -> Result<Vec<NodeId>, LoadError> {
-        self.resolve(
-            ast,
-            forms,
-            base_dir,
-            false,
-            &mut Vec::new(),
-            &mut ModuleCache::new(),
-        )
+        self.resolve_imports_noting(ast, forms, base_dir)
+            .map(|(forms, _)| forms)
+    }
+
+    /// [`Self::resolve_imports`], and what its selections left behind
+    /// ([`LeftBehind`], M1f S1f.6.25): each selection of the program, or of
+    /// a module it imports, that brought a relation's declaration and no rule
+    /// that derives it, where the resolved program holds none either.
+    pub fn resolve_imports_noting(
+        &self,
+        ast: &mut Ast,
+        forms: &[NodeId],
+        base_dir: Option<&Path>,
+    ) -> Result<(Vec<NodeId>, Vec<LeftBehind>), LoadError> {
+        let mut walk = Walk::default();
+        let out = self.resolve(ast, forms, base_dir, false, &mut walk)?;
+        let mut left = walk.left;
+        // What the program as resolved declares, and what its rules write.
+        let mut declared: BTreeSet<String> = BTreeSet::new();
+        let mut written: BTreeSet<String> = BTreeSet::new();
+        for &f in &out {
+            match ast.head_name(f) {
+                Some("relation") => declared.extend(decl_name(ast, f)),
+                Some("rule") | Some("hrule") => written.extend(concluded(ast, f)),
+                _ => {}
+            }
+        }
+        for l in &mut left {
+            l.relations
+                .retain(|r| declared.contains(r) && !written.contains(r));
+        }
+        left.retain(|l| !l.relations.is_empty());
+        left.dedup();
+        Ok((out, left))
     }
 
     /// `within_stdlib` is what makes the three resolution tiers agree — M1e
@@ -254,8 +352,7 @@ impl Resolver {
         forms: &[NodeId],
         base_dir: Option<&Path>,
         within_stdlib: bool,
-        loading: &mut Vec<String>,
-        cache: &mut ModuleCache,
+        walk: &mut Walk,
     ) -> Result<Vec<NodeId>, LoadError> {
         let mut out: Vec<NodeId> = Vec::new();
         let mut had_import = false;
@@ -277,8 +374,8 @@ impl Resolver {
                 )));
             }
             let (key, text, dir) = self.locate(&spec.module, base_dir, &loc)?;
-            if loading.contains(&key) {
-                let mut chain = loading.clone();
+            if walk.loading.contains(&key) {
+                let mut chain = walk.loading.clone();
                 chain.push(key);
                 return Err(LoadError(format!(
                     "import cycle: {} (at {loc})",
@@ -286,26 +383,34 @@ impl Resolver {
                 )));
             }
             // Parsed once per resolution, not once per edge.
-            let sub = match cache.get(&key) {
+            let sub = match walk.cache.get(&key) {
                 Some(sub) => sub.clone(),
                 None => {
                     let sub = parse(ast, &text, Some(&key))?;
-                    cache.insert(key.clone(), sub.clone());
+                    walk.cache.insert(key.clone(), sub.clone());
                     sub
                 }
             };
-            loading.push(key);
-            let resolved = self.resolve(
-                ast,
-                &sub,
-                dir.as_deref(),
-                within_stdlib || is_std,
-                loading,
-                cache,
-            )?;
-            loading.pop();
+            walk.loading.push(key);
+            let inner = walk.left.len();
+            let resolved =
+                self.resolve(ast, &sub, dir.as_deref(), within_stdlib || is_std, walk)?;
+            walk.loading.pop();
             match &spec.symbols {
-                Some(symbols) => out.extend(select(ast, &resolved, symbols, &spec.module, &loc)?),
+                Some(symbols) => {
+                    let kept = select(ast, &resolved, symbols, &spec.module, &loc)?;
+                    let relations = left_behind(ast, &resolved, &kept, symbols);
+                    if !relations.is_empty() {
+                        walk.left.push(LeftBehind {
+                            at: first_loc(ast, form)
+                                .map_or(String::new(), |l| loc_repr(ast, Some(l))),
+                            import: crate::dump::dump_compact(ast, form),
+                            module: spec.module.clone(),
+                            relations,
+                        });
+                    }
+                    out.extend(kept);
+                }
                 None => {
                     let prefix = format!(
                         "{}{MODULE_SEP}",
@@ -321,6 +426,16 @@ impl Resolver {
                         .copied()
                         .filter(|f| !ast.head_name(*f).is_some_and(|h| DIRECTIVES.contains(&h)))
                         .collect();
+                    // What the module's own selections left behind is
+                    // renamed as its declarations are.
+                    let renamed = defined_names(ast, &brought);
+                    for l in &mut walk.left[inner..] {
+                        for r in &mut l.relations {
+                            if renamed.contains(r) && !ein_core::is_reserved(r) {
+                                *r = format!("{prefix}{r}");
+                            }
+                        }
+                    }
                     out.extend(qualify(ast, &brought, &prefix));
                 }
             }
@@ -428,14 +543,14 @@ impl Resolver {
         // `(form, is_imported)` — the puzzle's own forms are false, everything
         // an import brings in (transitively) is true.
         let mut tagged: Vec<(NodeId, bool)> = Vec::new();
-        let mut cache = ModuleCache::new();
+        // One cache for the whole program; each import its own chain.
+        let mut walk = Walk::default();
         // The names the program's own imports list (M1f S1f.6.25, E-11).
         let mut listed: Vec<String> = Vec::new();
         for &form in forms {
             if ast.head_name(form) == Some("import") {
                 listed.extend(import_spec(ast, form)?.symbols.unwrap_or_default());
-                let resolved =
-                    self.resolve(ast, &[form], base_dir, false, &mut Vec::new(), &mut cache)?;
+                let resolved = self.resolve(ast, &[form], base_dir, false, &mut walk)?;
                 for f in resolved {
                     tagged.push((f, true));
                 }
@@ -796,6 +911,78 @@ fn select(
                 .is_some_and(|n| keep.contains(&n))
         })
         .collect())
+}
+
+/// The relations a selection brought the declaration of and no rule for
+/// ([`LeftBehind`]'s first three conditions): declared among `forms`, kept in
+/// `kept`, not in `symbols`, written by the `:assert` of a rule or an hrule
+/// of `forms`, and by none of `kept`. In the module's order.
+fn left_behind(ast: &Ast, forms: &[NodeId], kept: &[NodeId], symbols: &[String]) -> Vec<String> {
+    let writers = |fs: &[NodeId]| -> BTreeSet<String> {
+        fs.iter()
+            .filter(|f| matches!(ast.head_name(**f), Some("rule") | Some("hrule")))
+            .flat_map(|f| concluded(ast, *f))
+            .collect()
+    };
+    let (in_module, in_kept) = (writers(forms), writers(kept));
+    let mut out: Vec<String> = Vec::new();
+    for &f in kept {
+        if ast.head_name(f) != Some("relation") {
+            continue;
+        }
+        let Some(name) = decl_name(ast, f) else {
+            continue;
+        };
+        if !symbols.contains(&name)
+            && in_module.contains(&name)
+            && !in_kept.contains(&name)
+            && !out.contains(&name)
+        {
+            out.push(name);
+        }
+    }
+    out
+}
+
+/// The relations a rule's or an hrule's `:assert` concludes a fact of: the
+/// head of each conclusion, under `(and …)` and `(not …)`. A relation written
+/// as a variable is none, and neither is the head of a fact *inside* a
+/// conclusion, which is a value ([`kw_heads`] collects those too, for the
+/// tree-shake, which wants every name).
+fn concluded(ast: &Ast, rule: NodeId) -> BTreeSet<String> {
+    fn walk(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
+        match ast.head_name(node) {
+            Some("and") | Some("not") => {
+                for &a in ast.form_args(node) {
+                    walk(ast, a, out);
+                }
+            }
+            Some(name) => {
+                out.insert(name.to_string());
+            }
+            None => {}
+        }
+    }
+    let mut out = BTreeSet::new();
+    for &a in ast.form_args(rule) {
+        if let Node::KwPair { key, value } = ast.node(a)
+            && let Node::Keyword(k) = ast.node(key)
+            && ast.sym(k) == "assert"
+        {
+            walk(ast, value, &mut out);
+        }
+    }
+    out
+}
+
+/// Where a form is written: its own position, or its head's, or its first
+/// argument's that has one. The parser keeps none for a top-level form.
+fn first_loc(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
+    ast.loc(node).or_else(|| match ast.node(node) {
+        Node::SForm { head, .. } => first_loc(ast, head)
+            .or_else(|| ast.form_args(node).iter().find_map(|&a| first_loc(ast, a))),
+        _ => None,
+    })
 }
 
 /// Drop repeated **identical** declarations, keeping the first.

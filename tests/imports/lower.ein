@@ -1,0 +1,29 @@
+;;; The lower of two theories — a library with an entry, which `upper.ein`
+;;; and `upper_without_entry.ein` import, and the witnesses beside them
+;;; through those (M1f S1f.6.25, E-20 of P1f.6's `findings.md`).
+;;;
+;;; A request `(ask X)` is answered by `(double-of X Y)`, read off a table.
+;;; `lower` is the entry: it closes the theory's relations and names its one
+;;; other rule, so `(import lower :symbols (lower))` brings the whole theory.
+;;; Alone it has no request: R {∅}.
+
+(relation ask Thing :why "the double of {?1} is asked")
+(relation double-of Thing Thing :why "the double of {?1} is {?2}")
+(relation pair Thing Thing :why "{?2} is twice {?1}")
+(relation lower-rule Rule :why "{?1} is a rule of the lower theory")
+
+(pair a aa)
+(pair b bb)
+
+(rule answer ()
+  :match  (and (ask ?x) (pair ?x ?y))
+  :assert (double-of ?x ?y)
+  :why    "the double of {?x} was asked, and the table has {?y}")
+
+(rule lower ()
+  :match  ()
+  :assert (and (__closed__ ask) (__closed__ double-of) (__closed__ pair)
+               (__closed__ lower-rule) (lower-rule answer))
+  :why    "the lower theory is computed, never guessed")
+
+(solve :expect (region (model)))

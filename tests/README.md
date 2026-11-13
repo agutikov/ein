@@ -63,6 +63,21 @@ byte on every surface that carries it: the read-out and `answer.txt`,
 program` and a `.einb`. Corpus group `positive`, runs `test`, `solve` and
 `saturate`.
 
+## `imports/` — a theory built on a theory
+
+M1f [S1f.6.25](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md)
+(T1f.6.25.4, E-20 of P1f.6's findings). Five files: two theories, `lower.ein`
+and `upper.ein` over it, each with an entry rule; `upper_without_entry.ein`,
+the upper one with the lower theory's entry name left out of its own; and two
+programs that import the upper theory by its entry. `01_nested_import_whole`
+gets both theories and its request answered. `02_nested_import_left_behind`
+gets the upper theory's rules and only the *declarations* of the lower one's
+relations, since a selection's closure follows names: its request is derived
+and never answered, and the loader prints one `note:` line on stderr, on every
+command, exit 0. Each file's claim is about facts and holds either way;
+`ein-cli/tests/import_left_behind.rs` holds the line, that it is printed once,
+and what it stays quiet on. Corpus group `positive`.
+
 ## `stdlib/` — the stdlib conformance corpus
 
 M1c [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus).

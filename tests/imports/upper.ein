@@ -1,0 +1,33 @@
+;;; The upper of two theories, built on `lower.ein` — M1f S1f.6.25, E-20 of
+;;; P1f.6's `findings.md`.
+;;;
+;;; `(wanted X)` asks the lower theory for X's double and reads the answer
+;;; back as `(got X Y)`. Its entry, `upper`, names the lower theory's entry,
+;;; `(upper-rule lower)`: a selection's closure follows the names a kept
+;;; declaration writes, so `(import upper :symbols (upper))` brings both
+;;; theories whole. `upper_without_entry.ein` is this file without that one
+;;; name. Alone it wants nothing: R {∅}.
+
+(import lower :symbols (lower))
+
+(relation wanted Thing :why "{?1}'s double is wanted")
+(relation got Thing Thing :why "{?1}'s double is {?2}")
+(relation upper-rule Rule :why "{?1} is a rule the upper theory brings")
+
+(rule want ()
+  :match  (wanted ?x)
+  :assert (ask ?x)
+  :why    "{?x}'s double is wanted, so it is asked")
+
+(rule read ()
+  :match  (and (wanted ?x) (double-of ?x ?y))
+  :assert (got ?x ?y)
+  :why    "{?x}'s double was wanted, and it is {?y}")
+
+(rule upper ()
+  :match  ()
+  :assert (and (__closed__ wanted) (__closed__ got) (__closed__ upper-rule)
+               (upper-rule want) (upper-rule read) (upper-rule lower))
+  :why    "the upper theory, and the lower one it rests on")
+
+(solve :expect (region (model)))

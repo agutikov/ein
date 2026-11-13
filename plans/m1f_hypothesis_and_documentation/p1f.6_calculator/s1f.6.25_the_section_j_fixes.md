@@ -354,3 +354,74 @@ entries.
 
 **Pages**: `stdlib/README.md` § Importing (the inlining route), `answer_dump.md`, the four module
 comments, `examples/README.md`, `imports.rs`'s doc.
+
+### T1f.6.25.4 — E-20, done
+
+**The census, on real programs first.** Three candidate conditions, each built behind a switch in a local
+binary and run over every tracked `.ein` and the witnesses (`python3 build/s1f.6.25/e20_census.py`,
+`build/s1f.6.25/e20_census.txt`, 2026-11-13; 842 tracked files, and four more: this task's pair,
+`build/s1f.6.20/witness/bob1_nested_import.ein` and `build/s1f.6.16/out/witness_2p128/only_conv.ein`). The
+switch is not in the committed source.
+
+| condition | tracked files that print a line | the three witnesses |
+|---|---|---|
+| **A** a kept relation declaration, listed or not, where the module has a rule that concludes it and the selection keeps none | **24**: every program that imports `std.num9`, whose module lists `std.arith`'s `division-by-zero` on purpose (17, the module among them), and seven under `examples/word_problems/`, `gaps` and `readings`, which list the word theory's relations on purpose, and the five problems that import one of them | all three |
+| **B** A, and the program as resolved holds no rule that concludes it | **2**: `examples/word_problems/gaps.ein` and `readings.ein`, each a module that is also a corpus program alone | all three |
+| **C** B, and the relation is not listed: it came through the closure | **0** | **all three** |
+
+The lines C prints:
+
+```text
+tests/imports/02_nested_import_left_behind.ein   (import upper_without_entry :symbols (upper))   double-of
+bob1_nested_import.ein                           (import words_no_arith_entry :symbols (words))  sum-of and 4 more relations
+only_conv.ein                                    (import conv :symbols (conv))                   done and 3 more relations
+```
+
+**C is chosen**: quiet on the corpus, loud on the three witnesses, so the task did not stop
+([Q-M1f.217](../open_questions.md#q-m1f217--when-the-loader-says-that-a-selection-left-a-relations-rules-behind),
+defaulted). `(import std.digits :symbols (fa nz __closed__))` prints nothing under any of the three: a
+library of facts has no rule. The stage file's second candidate, *the module has an entry rule and it is
+not kept*, was not built: the language has no notion of an entry.
+
+**What was built.** `ein_ir::imports`: `resolve` records, at each selection, the relations whose
+declaration the selection kept without listing, that a rule or an hrule of the module's resolved forms
+concludes, and that no kept rule concludes (`left_behind`, `concluded`); `resolve_imports_noting` returns
+them beside the forms, less those the program as resolved has a rule for or no declaration of
+(`LeftBehind`, one per import form, renamed with its declarations under a qualified import).
+`resolve_imports` returns the forms as it did. The loader keeps the lines (`ein_core::Program::notes`) and
+`ein-cli`'s one load path prints each once a process, `note: <line>` (`common::say_notes`): a mode that
+loads the file three times says it once. **The closure rule is not changed**, and nothing is refused.
+
+**The line**, on the witness, on every command that loads it (`ein solve
+tests/imports/02_nested_import_left_behind.ein`, 2026-11-13):
+
+```text
+note: tests/imports/02_nested_import_left_behind.ein:25:9: (import upper_without_entry :symbols (upper)) brings the declaration of double-of and no rule that derives it: upper_without_entry has such a rule, its own or one it imports, and the selection names none — a selection brings the names it lists and what their declarations write, so list the rule, or the entry that names it, if double-of is to be derived
+```
+
+Before the stage the same commands printed nothing. Exit codes are unchanged, 0 on each of fourteen
+commands, and the program answers as it did: `(ask a)` derived, no `double-of`, the goal with no row.
+
+**The witness** is `bob1_nested_import.ein` rebuilt small under `tests/imports/`, five files:
+`lower.ein` and `upper.ein`, two theories with an entry each; `upper_without_entry.ein`;
+`01_nested_import_whole.ein`, which prints nothing and whose request is answered; and
+`02_nested_import_left_behind.ein`. Each states a claim that holds (`ein test tests/imports`, 7
+expectations held), and each is a corpus entry.
+
+**The pins**: `ein-cli/tests/import_left_behind.rs` (the line whole, once on fourteen commands, the twin
+silent, every exit 0; the answer unmoved; seven programs it is quiet on, a library of facts, a listed
+relation, the rule kept, a rule of the program's own, another import's, a qualified import; one, two and
+four relations in one line; a container, said when saved and not when opened) and
+`imports_semantics.rs`'s `the_resolver_reports_what_a_selection_left_behind`.
+
+**`--json-summary` does not carry it**: the summary has no place for a load diagnostic, which the stage
+file calls a finding, E-42, with the container's half: `ein kb save` says the line and opening the `.einb`
+does not, the stored program having no import.
+
+**What moved, named before blessing**: `corpus_exits.txt`, the five new files' cells, each exit 0;
+`corpus_shapes.md5`, the five new files' digests, none moved. **The sweep** (`build/s1f.6.25/sweep-t4.txt`,
+2026-11-13): no tracked program prints the line, stdout, stderr and exit the same on every file but the
+refusal's path. The register is unmoved: a missing line is no wrong answer, and nothing a program was
+answered moves.
+
+**Pages**: `01_grammar.md` § Import, `defined_behaviour.md` § 4.25, `tests/README.md` § `imports/`.

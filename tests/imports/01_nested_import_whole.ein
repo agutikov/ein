@@ -1,0 +1,16 @@
+;;; A theory built on a theory, imported by its entry: both come whole —
+;;; M1f S1f.6.25 (E-20 of P1f.6's `findings.md`), the twin of
+;;; `02_nested_import_left_behind.ein`.
+;;;
+;;; `upper`'s entry names `lower`, the lower theory's entry, so the closure
+;;; of `(upper)` reaches every rule of both. The request is answered, and the
+;;; loader prints nothing.
+
+(import upper :symbols (upper))
+
+(wanted a)
+
+(solve :expect (region (model)))
+(query :goal (got ?x ?y)
+       :goal-text "{?x}'s double is {?y}"
+       :expect (model (got a aa)))
