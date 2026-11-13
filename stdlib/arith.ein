@@ -144,9 +144,17 @@
 ;;;     (div-call TAG X Y)        asked: X divided by Y; answered by
 ;;;                               (div-done TAG Q R), and flagged where Y is
 ;;;                               zero by value (above)
+;;;     (operand TAG X)           wanted: what the operand X stands for, a
+;;;                               number or a name a `let` states; answered
+;;;                               by (operand-is TAG N), and X checked
 ;;;
-;;; X and Y are numbers as `n` and `z` build them, high zeros allowed, and
-;;; never a name a `let` states: a call looks nothing up. Every answer is in
+;;; The look-up is also where a theory over this one adds its own values:
+;;; `std.int` answers `(operand TAG (int P N))` by `(operand-is TAG (int P
+;;; N))`, so an integer stands for itself and a name goes through this
+;;; module's `let`.
+;;;
+;;; In the five calls X and Y are numbers as `n` and `z` build them, high
+;;; zeros allowed, and never a name a `let` states: a call looks nothing up. Every answer is in
 ;;; normal form. A walk starts at the units with no digits yet, `z`; a
 ;;; subtraction with no borrow, `0`, and a comparison with nothing yet
 ;;; decided, `eq`: those are the values a caller writes, and the test holds
@@ -304,15 +312,15 @@
 ;;; **What a program reads:** the results `sum-of`, `diff-of`, `cmp-of`,
 ;;; `product-of` and `quot-of`; the flags `division-by-zero`, `malformed`
 ;;; and `undeclared`; the orders `lt`, `eq` and `gt`; and the tagged calls'
-;;; answers, `done`, `short`, `order-is` and `div-done`.
+;;; answers, `done`, `short`, `order-is`, `div-done` and `operand-is`.
 ;;;
 ;;; **The interface** is all of those: the number's `n` and `z`, the
 ;;; requests, `let`, the results, the flags, and the five tagged calls,
 ;;; `add-walk`, `sub-walk`, `cmp-walk`, `mul-call` and `div-call`, with their
-;;; four answers.
+;;; four answers, and the look-up, `operand` and `operand-is`.
 ;;;
 ;;; **The circuit's own**, in the state for a query or a `--trace` to see,
-;;; and not a promise: `b`, `named`, `operand`, `operand-is`, `mul-walk`,
+;;; and not a promise: `b`, `named`, `mul-walk`,
 ;;; `strip`, `turn`, `top-first`, `top-first-is`, `mul-step`, `multiples`,
 ;;; `div-step`, `div-choose`, `div-digit`; the check's `check`,
 ;;; `bad-operand`, `bad-request`, `no-let` and `not-a-number`; the tags

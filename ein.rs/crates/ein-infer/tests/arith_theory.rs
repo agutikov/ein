@@ -1563,7 +1563,7 @@ fn the_rules_of_a_family_differ_by_their_digit_alone() {
 /// in `examples/binary_arithmetic/conv.ein`. Each module's calls come first
 /// and then the facts that answer them; `std.int`'s comparison is answered
 /// by `std.arith`'s `order-is`.
-const TAGGED: [(&str, &str, &str); 19] = [
+const TAGGED: [(&str, &str, &str); 21] = [
     (
         "arith",
         "(add-walk TAG X Y C z)",
@@ -1577,10 +1577,12 @@ const TAGGED: [(&str, &str, &str); 19] = [
     ("arith", "(cmp-walk TAG X Y eq)", "Tag Number Number Order"),
     ("arith", "(mul-call TAG X Y)", "Tag Number Number"),
     ("arith", "(div-call TAG X Y)", "Tag Number Number"),
+    ("arith", "(operand TAG X)", "Tag Operand"),
     ("arith", "(done TAG S)", "Tag Number"),
     ("arith", "(short TAG)", "Tag"),
     ("arith", "(order-is TAG O)", "Tag Order"),
     ("arith", "(div-done TAG Q R)", "Tag Number Number"),
+    ("arith", "(operand-is TAG N)", "Tag Number"),
     ("int", "(int-norm TAG P N)", "Tag Number Number"),
     (
         "int",
@@ -1656,7 +1658,7 @@ fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
 }
 
 /// **The tagged calls keep their shapes** (M1f S1f.6.30's T1). `std.arith`'s
-/// five calls and their four answers, and `std.int`'s and `std.rat`'s calls
+/// five calls and their four answers and its operand look-up, and `std.int`'s and `std.rat`'s calls
 /// with theirs, are what a theory built on the calculator calls: an
 /// interface since the user's reply of 2026-11-12 to round 2's item 41. Held
 /// three ways:

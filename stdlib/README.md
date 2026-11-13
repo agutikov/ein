@@ -180,10 +180,14 @@ what `std.int`, `std.rat`, the binary conversions and the programs under
 (cmp-walk TAG X Y eq)     asked: X against Y   answered by (order-is TAG O), O one of lt, eq, gt
 (mul-call TAG X Y)        asked: X × Y         answered by (done TAG P)
 (div-call TAG X Y)        asked: X ÷ Y         answered by (div-done TAG Q R); flagged where Y is zero
+(operand TAG X)           wanted: what X is    answered by (operand-is TAG N); X a number or a let's name
 ```
 
-X and Y are numbers as `n` and `z` build them, high zeros allowed, never a
-name a `let` states: a call looks nothing up. A walk starts with `z`, no
+In the five calls X and Y are numbers as `n` and `z` build them, high zeros
+allowed, never a name a `let` states: a call looks nothing up; the look-up,
+`operand`, is the one that reads a `let`, and the place a theory over this one
+adds its own values (`std.int` answers `(operand TAG (int P N))` itself, so an
+integer stands for itself and a name goes through `let`). A walk starts with `z`, no
 digits yet; a subtraction with `0`, no borrow, and a comparison with `eq`,
 nothing yet decided; those are the values a caller writes. An addition's
 carry in is the caller's: `0` for X + Y, or a bit, as
@@ -196,7 +200,7 @@ of its requests (E-39). Checking the laws of arithmetic over the digits took
 16.8 s through requests and 0.42 s through these calls (`build/s1f.6.10/gen4.py`
 against `gen4t.py`, 2026-11-12).
 [`arith_theory.rs`](../ein.rs/crates/ein-infer/tests/arith_theory.rs)'s
-`the_tagged_calls_keep_their_shapes` holds the declarations of the nine
+`the_tagged_calls_keep_their_shapes` holds the declarations of the eleven
 relations, and of `std.int`'s and `std.rat`'s calls below, to these shapes;
 holds each module's header and this page to naming them as written here; and
 reads every module of the stdlib and every program under `examples/` and
@@ -620,7 +624,7 @@ digits; **and, from a rule, the tagged calls**
 **What it reads**: the results `sum-of`, `diff-of`, `cmp-of`, `product-of`
 and `quot-of`; the flags `division-by-zero`, `malformed` and `undeclared`; the
 orders `lt`, `eq` and `gt`; the tagged calls' answers, `done`, `short`,
-`order-is` and `div-done`. **The circuit's own**, which is in the state to be
+`order-is`, `div-done` and `operand-is`. **The circuit's own**, which is in the state to be
 seen and is no promise: `b`, some sixty names of its walks, its hand-overs,
 its check and its tags, `arith-rule`, and the seven tables of `std.digits`. A second *declaration* of any of them is refused at
 load, with the name in the message. A written *fact* of a result or of the

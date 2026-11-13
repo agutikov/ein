@@ -145,9 +145,10 @@ four answers in one shape:
 (cmp-walk TAG X Y eq)     asked: X against Y   answered by (order-is TAG O), O one of lt, eq, gt
 (mul-call TAG X Y)        asked: X × Y         answered by (done TAG P)
 (div-call TAG X Y)        asked: X ÷ Y         answered by (div-done TAG Q R); flagged where Y is zero
+(operand TAG X)           wanted: what X is    answered by (operand-is TAG N); X a number or a let's name
 ```
 
-with what a caller writes in them (numbers as `n` and `z` build them, never a `let`'s name; a tag of its own,
+(the last row added by T1's second commit, below) with what a caller writes in them (numbers as `n` and `z` build them, never a `let`'s name; a tag of its own,
 never one of the theory's, E-39; one call a tag). The header's list of the module's names now has three parts
 and an interface: the nine leave *the circuit's own*. `std.int`'s and `std.rat`'s headers and README sections
 lay their calls out the same way, `(int-norm TAG P N)`, `(int-add-call TAG P1 N1 P2 N2)`, `(int-mul-call TAG
@@ -183,12 +184,21 @@ the user's to revise):
 
 - `std.int` calls `sub-walk` (rules `int-norm-walks` and `int-div-rest`), and `tests/stdlib/arith/08_sub.ein`
   reads `short`: the seven names were the eight examples' and none subtracts by the walk. **Taken:** `sub-walk`
-  and `short` are in the interface, nine relations.
+  and `short` are in the interface, nine relations (eleven since the look-up below).
 - `examples/binary_arithmetic/conv.ein`'s `to-dec-double` starts an addition with the bit as its carry in,
   `(add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)`, and the test as first written, to round 2's
   `(add-walk TAG X Y 0 z)`, failed on it: *`(add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)` starts a walk with
   `?bit` where `(add-walk TAG X Y 0 z)` writes 0*. **Taken:** the carry is the caller's, `(add-walk TAG X Y C z)`,
   C `0` or `1`; the test holds `z`.
+
+**What T3's census found after.** `std.int` and `std.rat` read two names of `std.arith`'s that the nine did
+not hold, `operand` and `operand-is`: they call the operand look-up for every operand of every request, so a
+name goes through `std.arith`'s `let`, and extend it, `int-operand` and `rat-operand` answering it for an
+integer and a rational. The prototypes of T4 that hide what a module does not export failed sixteen claims
+of `tests/stdlib/int/` and `rat/` until the two were exported (below). **Taken, by the same default:** the
+look-up is in the interface, `(operand TAG X)` answered by `(operand-is TAG N)`, eleven relations; the
+header, the README and `TAGGED` (21 rows) say so, and the test reads 423 forms in the same 18 files
+(`cargo test -p ein-infer --test arith_theory the_tagged_calls -- --nocapture`, 2026-11-13).
 
 Q-M1f.189 is marked answered and built. No finding: no engine behaviour is in question.
 

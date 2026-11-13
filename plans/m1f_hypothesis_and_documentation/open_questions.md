@@ -240,7 +240,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.225](#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up) | what the fact-grain test does where the closure gives up | **ruled 2026-11-13, (a)** (*"Ok"*): the closure runs only where a relation-grain site reads it; on a flagged program it gives up after 10 000 shapes on the safe side, every site one; and `region.rs`'s `fact_grain_never_calls_a_violated_cube_monotone` fails on a program where it gives up, naming it, so the bound never decides a verdict the test reads**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6281--e-33-resolved-done) |
 | [Q-M1f.226](#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0) | an obligation's name in a closing rule, and `alive_invariant`'s R0 | **ruled 2026-11-13, (b)** (*"I suppose yes, what it cost?"*, then *"continue next stages till the end of the phase"*): the names index holds the obligations' names; before, defaulted (a): `every_name_of_the_program_is_a_candidate_object` lists a seeded name the program categorises as an obligation's and does not hold it to the blind enumerator's objects; no engine source moves (E-48)**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done) |
 | [Q-M1f.227](#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take) | how a run of the biggest calculation is held to about 16 GB, and how long it may take | **defaulted 2026-11-13 (S1f.6.29), the user's to revise: a cgroup a run, `MemoryMax=16000000000` (16.0 GB, 14.9 GiB) and no swap, `oom_score_adj` 1000; a run past 600 s killed; the search narrowed to 3 %. The sweep stopped half-way: at the cap the host had about 1.4 GB left and Claude Code reaped the background command, which is not restarted unasked**; [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md#t1f6292--the-search-for-the-size-the-instrument-done-the-sweep-stopped-by-the-host-half-measured) |
-| [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk, and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
+| [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk; the operand look-up, `operand` and `operand-is`, which `std.int` and `std.rat` call and extend; and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4537,16 +4537,21 @@ list:
   simplification (`stdlib/int.ein`, rule `int-norm-walks`, both ways at once) and in a division's remainder (`int-div-rest`), and
   `tests/stdlib/arith/08_sub.ein` reads `short`. The question's list came from the eight banked examples, which
   never subtract by the walk.
+- **The operand look-up, `operand`, answered by `operand-is`.** `std.int` and `std.rat` call it for every
+  operand of every request, so that a name goes through `std.arith`'s `let`, and extend it: their rules
+  `int-operand` and `rat-operand` answer `(operand TAG (int P N))` and `(operand TAG (rat I D))` themselves. Found
+  by T3's census, which read the modules over `std.arith` for the names they use of it, after T1's first commit.
 - **An addition's carry in.** `examples/binary_arithmetic/conv.ein`'s `to-dec-double` writes
   `(add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)`: the number so far, plus itself, plus the bit as the carry, in
   one walk. The rules take a carry of `0` or `1` there; the test, written to round 2's `0`, failed on that file
   first.
 
-- **(a) The interface is what the callers write:** nine relations, `sub-walk` and `short` among them, and
+- **(a) The interface is what the callers write:** eleven relations, `sub-walk`, `short`, `operand` and
+  `operand-is` among them, and
   `(add-walk TAG X Y C z)` with C a carry in of `0` or `1`; a subtraction starts at `0`, a comparison at `eq`, a
   walk at `z`.
-- **(b) The seven names and the `0`:** `sub-walk` and `short` stay the circuit's own and `std.int` calls what is
-  not promised; `conv.ein` is rewritten to double with a carry of `0` and add the bit as a second call, one walk
+- **(b) The seven names and the `0`:** `sub-walk`, `short`, `operand` and `operand-is` stay the circuit's own and
+  `std.int` and `std.rat` call what is not promised; `conv.ein` is rewritten to double with a carry of `0` and add the bit as a second call, one walk
   more a bit.
 
 **Defaulted 2026-11-13: (a), the user's to revise.** It promises what two shipped callers already depend on, and
