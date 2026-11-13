@@ -1,7 +1,7 @@
 # S1f.6.29 — The biggest calculation: a generator with size arguments
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. Not started.
+**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** [the record](#record-2026-11-13).
 **Depends on:** [S1f.6.15](s1f.6.15_load_against_calculation.md), whose generator and cost script it
 extends. Independent of the stdlib layout; no stdlib module and no engine source moves.
 
@@ -94,3 +94,59 @@ A wrong answer of the engine met at a large size is a row in `corpus/wrong_answe
 before its fix. Findings go to [`findings.md`](findings.md) under the next free id; questions to
 [`open_questions.md`](../open_questions.md) under the next free id. The gate is `./run_tests.sh`; the nightly
 only if a file under `ein.rs/` changed, which none should. `utils/ci_container.sh` is not needed.
+
+## Record, 2026-11-13
+
+The engine every run below uses is the release binary built at `2ef68530` (`cargo build --release -p ein-cli`,
+2026-11-13); no engine source and no stdlib module moves in this stage. Scratch, and every program the stage
+writes, is under `build/s1f.6.29/` (gitignored).
+
+### T1f.6.29.1 — the generator takes sizes, done
+
+[`utils/gen_arith_examples.py`](../../../utils/gen_arith_examples.py) gains a second mode, `--op`, which writes one
+program to the path `-o` names. With no `--op` the script is what it was: no argument writes the three shipped files,
+`--check` compares them, and `--out DIR --digits … --factorial …` writes the three at other sizes elsewhere. The
+shipped files' bytes are unchanged (`sha256sum -c build/s1f.6.29/shipped.sha256`, the three hashes taken before the
+first edit, all OK), so `--check` holds those three and nothing else, as before.
+
+| argument | what it states |
+|---|---|
+| `--op` | the shape: `add`, `sub`, `cmp`, `mul`, `div`; `mix`, the five in turn; `factorial`, the chain |
+| `--digits N` | the digits of each operand, exactly; a division's divisor |
+| `--dividend N` | a division's dividend in digits, by default twice the divisor's (as `long_numbers.ein`'s `e` by `d` and `arith_cost.py`'s one-request sweep) |
+| `--count N` | requests in all, by default 1; `mix` takes at least five, one of each |
+| `--n N` | the factorial chain's last number |
+| `--seed S` | the operands' seed, by default the shipped files' 20261111 |
+| `--no-expect` | leaves every `:expect` out |
+
+**A size and a seed name one program.** The operands are drawn from `random.Random(seed)` in one order, the
+header writes the arguments in one order and no path, so the same arguments write the same bytes to any path
+(`--op mix --digits 9 --count 1000` written twice, and with its arguments in another order to another directory:
+`cmp` silent, one sha256). The choices the task left open, each within the stage's latitude:
+
+- **One request names its operands with `let`,** `a` and `b`, as `long_numbers.ein` does, so the request, its
+  answer fact and the claim repeat names and not digits. **Many requests write their numbers,** as
+  `many_calculations.ein` does, and are distinct pairs, so the count is the requests the engine sees (a count past
+  the pairs that exist is refused with the number that do).
+- **A claim is stated where Python computes it, and written where it nests within the parser's limit.** Python
+  computes every answer, so the only claim left out without `--no-expect` is one whose answer nests past
+  `ein_ir::grammar::NESTING_LIMIT`, 1 000: a sum of two 999-digit numbers, at this seed a product of 499 digits by 499 and
+  longer, a factorial past 448!, which has 995 digits. The query stays, so `ein solve` prints the answer, and the header says the claim is left out
+  and why. The boundary is the parser's own: a program nested 1 000 deep loads and one nested 1 001 deep is refused
+  (`--op add --digits 999` and `--digits 1000` under `ein test`, 2026-11-13).
+- **A program whose operands nest past the limit is refused by the generator,** with the arguments and the limit,
+  so a size the parser would refuse never reaches the engine: `--digits 1000`, or a dividend of 1 000.
+- **`mix` takes the five operations in turn,** the count shared out add first, and its queries read the first request
+  of each operation; a single operation's batch has one query, on its first request.
+
+The programs it writes carry a header that names the arguments, says that the file is not checked in and run by no
+test, gate step, nightly step or dev-host step, with the user's words, and points to `stdlib/README.md` § The biggest
+calculation.
+
+Run (2026-11-13): `python3 utils/gen_arith_examples.py --check`, exit 0; 14 programs at small sizes, each of the five
+operations one request of 30 digits and 40 of 6, `mix` 23 of 9 and 10 of 3 by 7, `factorial` to 30!, and one with
+`--no-expect`, under `ein test build/s1f.6.29/t1`: 14 files, 21 expectations, 21 held; the argument errors, each
+refused with its line (`--op` without `-o`, `--n` beside an operation, `--dividend` beside a sum, `mix` under five
+requests, `--check` beside `--op`, `--count` without `--op`, 82 one-digit products); `cargo test --manifest-path
+ein.rs/Cargo.toml -p ein-cli --test arith_search_free`, 2 passed (`the_generated_examples_are_what_the_generator_writes`
+among them), 25.9 s.

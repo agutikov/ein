@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the three generated examples of `examples/arith/` (M1f S1f.6.15).
+"""Write the three generated examples of `examples/arith/` (M1f S1f.6.15), or one program of a stated size.
 
 The user, 2026-11-11: *"add examples with long numbers and many calculations
 so we can compare load time with calculation time"*. A small arithmetic
@@ -35,6 +35,41 @@ through the three functions below (`long_numbers`, `many_calculations`,
     python3 utils/gen_arith_examples.py --out DIR --digits 300 --short 60 \\
         --requests 2000 --factorial 120
 
+**One program of a stated size, on demand** (M1f S1f.6.29). The user,
+2026-11-12: *"Let's have biggest solvable arithmetic calculation in let's say
+100+-50 seconds on this host. make a generator in python that takes some size
+arguments and generate an example"*, and, told that memory ends a calculation
+before time does, *"Ok, then pick the one that fits into memory, say ~16GB;
+do not call it in tests and in CI, just for manual solve call"*. `--op` writes
+one program to the path `-o` names:
+
+    python3 utils/gen_arith_examples.py --op mul --digits 300 -o build/big/mul.ein
+    python3 utils/gen_arith_examples.py --op div --digits 300 --dividend 600 -o build/big/div.ein
+    python3 utils/gen_arith_examples.py --op mix --digits 9 --count 1000 -o build/big/mix.ein
+    python3 utils/gen_arith_examples.py --op factorial --n 200 -o build/big/chain.ein
+
+    --op        add, sub, cmp, mul, div; mix, the five in turn; factorial, the chain
+    --digits N  the digits of each operand, exactly, at most 999 (a written
+                number nests a level a digit); a division's divisor
+    --dividend  a division's dividend, in digits (default twice the divisor's)
+    --count N   requests in all (default 1); one request names its operands with
+                `let`, many write theirs
+    --n N       the factorial chain's last number
+    --seed S    the operands' seed (default the shipped files'), so a size and a
+                seed name one program, whatever the path
+    --no-expect leave every `:expect` out, for a size where the claim's text
+                would weigh more than the program
+
+A claim is stated where Python computes the answer, which is everywhere, and
+written where it nests within the parser's limit of 1 000 parentheses
+(`ein_ir::grammar::NESTING_LIMIT`); a claim past it is left out, and the
+file's header says so. Such a program is **not checked in and is run by no
+test, gate step, nightly step or dev-host step**: it is written under `build/`
+and solved by hand. `utils/arith_cost.py --biggest` finds the sizes that fit in
+about 16 GB, and `stdlib/README.md` § The biggest calculation has them. With no
+`--op`, nothing of this mode runs: `--check` holds the three shipped files and
+nothing else.
+
 No dependency beyond the standard library.
 """
 from __future__ import annotations
@@ -42,6 +77,7 @@ from __future__ import annotations
 import argparse
 import math
 import random
+import re
 import sys
 import textwrap
 from pathlib import Path
@@ -60,6 +96,7 @@ FACTORIAL = 25    # factorial: the last number of the chain
 
 OPS = ("add", "sub", "cmp", "mul", "div")
 IMPORT = "(import std.arith :symbols (arith))\n"
+NESTING_LIMIT = 1000  # `ein_ir::grammar::NESTING_LIMIT`: a `(` deeper than this is refused
 
 
 def enc(v: int) -> str:
@@ -271,7 +308,15 @@ def factorial(last: int = FACTORIAL) -> str:
 ;;; `factorial` is the program's own relation, and the program closes it:
 ;;; the theory closes its own relations and cannot close the importer's.
 """
-    body = f"""\
+    return f"{head}\n{IMPORT}\n{factorial_body(last)}"
+
+
+def factorial_body(last: int, expect: bool = True) -> str:
+    """The chain's relation, its three rules and the query; the claim where `expect`."""
+    value = math.factorial(last)
+    said = (f"\n       :expect (model {wrapped(f'(factorial {enc(last)} {enc(value)})', 22)}))\n"
+            if expect else ")\n")
+    return f"""\
 (relation factorial Number Number
   :why "{{?1}}! = {{?2}}")
 (__closed__ factorial)
@@ -296,10 +341,149 @@ def factorial(last: int = FACTORIAL) -> str:
   :why    "{{?k}}! x {{?next}} is {{?next}}!")
 
 (query :goal (factorial {enc(last)} ?f)
-       :goal-text "{last}! = {{?f}}"
-       :expect (model {wrapped(f"(factorial {enc(last)} {enc(value)})", 22)}))
-"""
-    return f"{head}\n{IMPORT}\n{body}"
+       :goal-text "{last}! = {{?f}}"{said}"""
+
+
+# ── One program of a stated size, on demand (S1f.6.29) ─────────────────────
+
+SHAPES = (*OPS, "mix", "factorial")
+WHAT = {"add": "sum", "sub": "difference", "cmp": "comparison", "mul": "product", "div": "quotient"}
+
+
+def nesting(text: str) -> int:
+    """The deepest `(` of a program's text, outside strings and comments, as the parser counts it."""
+    deepest = depth = 0
+    for ch in re.sub(r"[^()]", "", re.sub(r'"[^"]*"|;[^\n]*', "", text)):
+        depth += 1 if ch == "(" else -1
+        deepest = max(deepest, depth)
+    return deepest
+
+
+def command(op: str, digits: int | None, dividend: int | None, count: int, n: int | None,
+            seed: int, expect: bool) -> str:
+    """The arguments that name the program, in one order, and no path."""
+    words = ["python3 utils/gen_arith_examples.py", "--op", op]
+    if op == "factorial":
+        words += ["--n", str(n)]
+    else:
+        words += ["--digits", str(digits)]
+        if op in ("div", "mix"):
+            words += ["--dividend", str(dividend)]
+        words += ["--count", str(count), "--seed", str(seed)]
+    if not expect:
+        words.append("--no-expect")
+    return " ".join(words + ["-o", "FILE"])
+
+
+def distinct(op: str, count: int, digits: int, dividend: int, rnd: random.Random) -> list[tuple[int, int]]:
+    """`count` distinct operand pairs of exactly the stated digits; a divisor has at least one."""
+    first = dividend if op == "div" else digits
+    room = 9 * 10 ** (first - 1) * 9 * 10 ** (digits - 1)
+    if count > room:
+        raise SystemExit(f"{count} requests of {op} on {first} and {digits} digits: only {room} pairs exist")
+    seen: dict[tuple[int, int], None] = {}
+    while len(seen) < count:
+        seen[(draw(rnd, first), draw(rnd, digits))] = None
+    return list(seen)
+
+
+def on_demand(op: str, digits: int | None, dividend: int | None, count: int, n: int | None,
+              seed: int, expect: bool) -> str:
+    """One program of a stated size: the arguments and the seed name it, whatever the path."""
+    cmd = command(op, digits, dividend, count, n, seed, expect)
+    if op == "factorial":
+        value = math.factorial(n)
+        shape = (f"The factorial chain to {n}!, a number of {len(str(value))} digits, by the program's own three "
+                 "rules, as in `examples/arith/factorial.ein`, whose header explains them: two numbers written, 1 "
+                 "and the last, and the fact 1! = 1; everything else derived.")
+        claims = [(factorial_body(n, True), factorial_body(n, False))]
+        title = f"The factorial chain to {n}!"
+    else:
+        ops = OPS if op == "mix" else (op,)
+        rnd = random.Random(seed)
+        per = {o: count // len(ops) + (1 if i < count % len(ops) else 0) for i, o in enumerate(ops)}
+        batches = {o: distinct(o, per[o], digits, dividend, rnd) for o in ops if per[o]}
+        sizes = (f"numbers of exactly {digits} digits"
+                 + (f", a dividend of {dividend}" if "div" in batches else ""))
+        if count == 1:
+            (x, y), = batches[op]
+            title = f"One {WHAT[op]}, {dividend if op == 'div' else digits} digits by {digits}"
+            shape = (f"One request, `({op} a b)`, on {sizes}, named with `let`, so the request, its answer and "
+                     "the claim repeat the names and not the digits.")
+            let = lambda name, v: f"(let {name}\n  {wrapped(enc(v), 2)})\n"
+            requests_text = let("a", x) + let("b", y) + f"\n({op} a b)\n"
+            said = {"add": "a + b", "sub": "a - b", "cmp": "a against b", "mul": "a x b",
+                    "div": "a divided by b"}[op]
+            claims = [(claim(op, "a", "b", x, y, said), unclaimed(op, "a", "b", said))]
+        else:
+            title = f"{count} requests" + (", the five operations in turn" if op == "mix" else f" of {op}")
+            shape = (f"{count} requests"
+                     + (f", the five operations of `std.arith` in turn ({', '.join(f'{per[o]} of {o}' for o in ops)})"
+                        if op == "mix" else f" of `{op}`")
+                     + f", on {sizes}, each written with its numbers. "
+                     + ("The queries read the first request of each operation." if op == "mix"
+                        else "The query reads the first request."))
+            requests_text = "".join(f"({o} {enc(x)} {enc(y)})\n" for i in range(max(per.values()))
+                                    for o in ops if i < len(batches.get(o, ())) for x, y in [batches[o][i]])
+            claims = [(claim(o, enc(x), enc(y), x, y, f"{x} {SIGN[o]} {y}"),
+                       unclaimed(o, enc(x), enc(y), f"{x} {SIGN[o]} {y}"))
+                      for o in ops if o in batches for x, y in batches[o][:1]]
+    # A claim is written where it nests within the parser's limit, and where it is asked for.
+    kept, past = [], 0
+    for stated, bare in claims:
+        if expect and nesting(stated) <= NESTING_LIMIT:
+            kept.append(stated)
+        else:
+            past += expect
+            kept.append(bare)
+    if not expect:
+        note = ";;; Every `:expect` is left out (`--no-expect`); the queries print the answers.\n"
+    elif past:
+        note = prose(("The claim is" if len(claims) == 1 else f"{past} of {len(claims)} claims are")
+                     + " left out: the answer would nest past the parser's limit "
+                     f"of {NESTING_LIMIT} parentheses (`ein_ir::grammar::NESTING_LIMIT`), so the query prints it "
+                     "and nothing holds it."
+                     + (" Every other `:expect` is Python's answer, so `ein test FILE` holds the engine to it."
+                        if past < len(claims) else ""))
+    else:
+        note = ";;; Every `:expect` is Python's answer, so `ein test FILE` holds the engine to it.\n"
+    head = f""";;; {title}. M1f P1f.6 (S1f.6.29).
+;;;
+;;; GENERATED on demand by `utils/gen_arith_examples.py`, with the arguments
+;;;
+;;;     {cmd}
+;;;
+;;; which name this program, whatever the path. **Not checked in, and run by
+;;; no test, gate step, nightly step or dev-host step**: the user, 2026-11-12,
+;;; "do not call it in tests and in CI, just for manual solve call".
+;;; `stdlib/README.md` § The biggest calculation has the sizes that fit in
+;;; about 16 GB, with the commands and the figures.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+{prose(shape)};;;
+;;;     ein saturate FILE    the calculation: parse, load, saturate, firings
+;;;     ein solve FILE       the answer: the state, and each query read
+;;;
+{note}"""
+    text = (f"{head}\n{IMPORT}\n{kept[0]}" if op == "factorial"
+            else f"{head}\n{IMPORT}\n{requests_text}\n" + "\n".join(kept))
+    if nesting(text) > NESTING_LIMIT:
+        raise SystemExit(f"{cmd}: the operands nest {nesting(text)} deep, past the parser's limit of "
+                         f"{NESTING_LIMIT} parentheses (`ein_ir::grammar::NESTING_LIMIT`): a written number is "
+                         "a level a digit, so an operand has at most 999")
+    return text
+
+
+def prose(text: str) -> str:
+    """A paragraph of a header, on comment lines of at most 78 columns."""
+    return "".join(f";;; {line}\n" for line in textwrap.wrap(text, 74, break_long_words=False))
+
+
+def unclaimed(op: str, x: str, y: str, said: str) -> str:
+    """The query of `claim`, its answer printed and not claimed."""
+    return (f"(query :goal ({RESULT[op]} {x} {y} {VARS[op]})\n"
+            f"       :goal-text \"{said} {TEXT[op]}\")\n")
 
 
 def files(args: argparse.Namespace) -> dict[str, str]:
@@ -313,14 +497,58 @@ def files(args: argparse.Namespace) -> dict[str, str]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--check", action="store_true", help="exit 1 if a shipped file differs")
-    ap.add_argument("--out", type=Path, default=OUT, help="the directory to write to")
+    ap.add_argument("--out", type=Path, help="the directory the three files are written to")
     ap.add_argument("--seed", type=int, default=SEED)
-    ap.add_argument("--digits", type=int, default=DIGITS)
-    ap.add_argument("--short", type=int, default=SHORT)
-    ap.add_argument("--requests", type=int, default=REQUESTS)
-    ap.add_argument("--operand", type=int, default=OPERAND)
-    ap.add_argument("--factorial", type=int, default=FACTORIAL)
+    ap.add_argument("--digits", type=int, help="the three: a and b of long_numbers.ein; --op: each operand")
+    ap.add_argument("--short", type=int, help="the three: c, d, and half of e")
+    ap.add_argument("--requests", type=int, help="the three: requests an operation")
+    ap.add_argument("--operand", type=int, help="the three: an operand's most digits")
+    ap.add_argument("--factorial", type=int, help="the three: the chain's last number")
+    one = ap.add_argument_group("one program of a stated size, on demand (S1f.6.29)")
+    one.add_argument("--op", choices=SHAPES, help="the shape: one operation, the five in turn, or the chain")
+    one.add_argument("-o", "--output", type=Path, help="the file to write")
+    one.add_argument("--dividend", type=int, help="a division's dividend in digits (default twice --digits)")
+    one.add_argument("--count", type=int, help="requests in all (default 1)")
+    one.add_argument("--n", type=int, help="the factorial chain's last number")
+    one.add_argument("--no-expect", action="store_true", help="leave every :expect out")
     args = ap.parse_args()
+    if args.op:
+        three = [f for f in ("check", "out", "short", "requests", "operand", "factorial") if getattr(args, f)]
+        if three:
+            ap.error(f"--op writes one program; --{three[0]} is for the three shipped files")
+        if args.output is None:
+            ap.error("--op needs -o FILE")
+        if args.op == "factorial":
+            if args.n is None or args.n < 2 or args.digits or args.dividend or args.count:
+                ap.error("--op factorial takes --n N, N at least 2, and no --digits, --dividend or --count")
+        else:
+            if args.n is not None:
+                ap.error("--n is the factorial chain's")
+            if args.digits is None or args.digits < 1:
+                ap.error(f"--op {args.op} needs --digits N, N at least 1")
+            if args.dividend is not None and args.op not in ("div", "mix"):
+                ap.error("--dividend is a division's")
+            args.count = 1 if args.count is None else args.count
+            if args.count < 1 or (args.op == "mix" and args.count < len(OPS)):
+                ap.error(f"--count is at least {len(OPS) if args.op == 'mix' else 1}")
+            args.dividend = 2 * args.digits if args.dividend is None else args.dividend
+            if args.dividend < 1:
+                ap.error("--dividend is at least 1")
+        text = on_demand(args.op, args.digits, args.dividend, args.count, args.n, args.seed, not args.no_expect)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(text)
+        print(f"wrote {args.output}, {len(text.encode())} bytes, nested {nesting(text)} deep")
+        return 0
+    for f in ("output", "dividend", "count", "n"):
+        if getattr(args, f) is not None:
+            ap.error(f"--{f} is for --op")
+    if args.no_expect:
+        ap.error("--no-expect is for --op")
+    args.out = OUT if args.out is None else args.out
+    for f, default in (("digits", DIGITS), ("short", SHORT), ("requests", REQUESTS), ("operand", OPERAND),
+                       ("factorial", FACTORIAL)):
+        if getattr(args, f) is None:
+            setattr(args, f, default)
     bad = 0
     for name, text in files(args).items():
         path = args.out / name
