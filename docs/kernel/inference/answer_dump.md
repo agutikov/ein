@@ -24,7 +24,7 @@ ein solve examples/zebra2.ein --maximal --dump-answer out/
 ```text
 out/
   index.json      what is here — the question, the summary's region block, and every state file by name
-  answer.txt      the read-out uncut: stdout with no listing cut
+  answer.txt      the read-out uncut: stdout with no listing cut, and every row of a block stdout stops at four
   answer.json     byte-identical to --json-summary on the same run
   models/NN.ein   program + one state's facts, one per state the run reached
   owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
@@ -51,7 +51,11 @@ out/
   W92; the engine counts exactly, `ein_infer::count`).
 - **`answer.txt`** reads back: its `(region …)` is the claim a `(solve …
   :expect …)` states, `(merged …)`s included
-  ([`01_grammar.md` § Solve](../ir/03-ein-lang/01_grammar.md#solve)).
+  ([`01_grammar.md` § Solve](../ir/03-ein-lang/01_grammar.md#solve)). Its rows
+  are whole too: every `owed` row under `∅`, each instance root owes, where
+  stdout prints four and counts the rest (M1f S1f.6.26,
+  [`read_out.md` § 2](read_out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)),
+  as every `site` and `stale` row of the warning.
 - **`owing/`** holds the frontier of an empty R whose nodes all owe, each with
   what it owes. **`nogoods.json`** is `[]` where N is empty or was not
   computed (a line mode does not compute it). Each member is `{set, core,

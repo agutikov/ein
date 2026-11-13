@@ -171,6 +171,13 @@ fn an_owing_node_is_not_a_state() {
     assert_eq!(run.summary["region"]["root"], "owing");
     assert_eq!(run.summary["region"]["root_owes"], 1);
     assert_eq!(rows(&run, "∅"), vec!["not in R — root owes 1 instance"]);
+    // And what it owes is named under the row, the summary's own string
+    // (M1f S1f.6.26, E-19).
+    assert_eq!(rows(&run, "owed"), vec!["likes owes Ann a Food."]);
+    assert_eq!(
+        run.summary["region"]["root_owed"],
+        serde_json::json!(["likes owes Ann a Food."])
+    );
     let single = solve(&[
         "examples/features/13_mixed_solution_and_open.ein",
         "--single",
@@ -194,6 +201,243 @@ fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
     );
     assert_eq!(rows(&run, "owing"), vec!["∅ — owes 10"]);
     assert!(rows(&run, "open states").is_empty() && rows(&run, "solution_nodes").is_empty());
+}
+
+/// **The read-out names what root owes, beside the states that pay it** —
+/// M1f S1f.6.26 (E-19), the user's reply 30 (a) of 2026-11-12. Where root is
+/// alive, owes and R is not empty, the `∅` row counted the instances and no
+/// row named one: they were `--events`' `owe` lines alone, where an empty R's
+/// `owing` rows print each through its rule's `:why`. The `owed` rows under
+/// `∅` name them, on every surface that repeats the read-out's rows.
+///
+/// The program: 120 things each owe a mark, and one supposition marks them
+/// all, so R is one state and root owes 120 instances.
+///
+/// - **stdout**: four `owed` rows, in the order the obligation reports its
+///   instances, and one line for the other 116 that names `--dump-answer
+///   DIR`; they do not take the listings' 100 lines, so R is still printed as
+///   its `(region …)`;
+/// - **`--dump-answer`'s `answer.txt`**: all 120, and no such line;
+/// - **`--trace`**: its headline is stdout's rows;
+/// - **`--json-summary`**: `region.root_owed` holds the 120, the count row's
+///   `region.root_owes` beside it;
+/// - **`ein oracle`**: the same four rows, its line naming the command that
+///   writes the rest;
+/// - **`--count`** prints the `∅` row and no `owed` row, and its summary holds
+///   the instances all the same; **a mode** prints neither row, and its
+///   summary's `root_owed` is `null`, as `root_owes` is.
+///
+/// R, the claim and the exit code are what they were: the query's one class
+/// is every mark, on the one state.
+#[test]
+fn the_read_out_names_what_root_owes() {
+    let dir = Scratch::new("ein-read-out-owed");
+    let file = dir.join("owes120.ein");
+    let things: Vec<String> = (1..=120).map(|i| format!("(thing t{i:03})")).collect();
+    std::fs::write(
+        &file,
+        format!(
+            "(relation thing T :why \"{{?1}} is a thing\")\n\
+             (relation go :why \"every thing is marked\")\n\
+             (relation ink T :why \"{{?1}} is an ink\")\n\
+             (relation mark T T :why \"{{?1}} is marked in {{?2}}\")\n\
+             {}\n(ink red)\n\
+             (hrule guess () :match () :assert (go) :why \"suppose every thing is marked\")\n\
+             (rule mark-all () :match (and (go) (thing ?x)) :assert (mark ?x red) \
+             :why \"{{?x}} is marked, every thing being so\")\n\
+             (rule owe-mark () :match (and (thing ?x) (absent (and (ink ?i) (mark ?x ?i)))) \
+             :assert (open mark) :why \"{{?x}} owes a mark\")\n\
+             (query :goal (go) :expect (model (go)))\n",
+            things.join(" ")
+        ),
+    )
+    .expect("the program is written");
+    let file = file.to_string_lossy().to_string();
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs");
+        assert_eq!(
+            out.status.code(),
+            Some(0),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        String::from_utf8_lossy(&out.stdout).into_owned()
+    };
+    let owed = |text: &str| -> Vec<String> {
+        text.lines()
+            .filter_map(|l| l.strip_prefix("    owed            "))
+            .map(str::to_string)
+            .collect()
+    };
+    let all: Vec<String> = (1..=120).map(|i| format!("t{i:03} owes a mark")).collect();
+    const ROOT: &str = "  ∅                 not in R — root owes 120 instances";
+    let rest = |by: &str| {
+        format!(
+            "                    … 116 more instances: {by} writes every one, to DIR/answer.txt"
+        )
+    };
+
+    // Stdout: four, and the line; the listing is whole.
+    let json = dir.join("s.json");
+    let trace = dir.join("t.md");
+    let answer = dir.join("answer");
+    let stdout = run(&[
+        "solve",
+        &file,
+        "--json-summary",
+        &json.to_string_lossy(),
+        "--trace",
+        &trace.to_string_lossy(),
+        "--dump-answer",
+        &answer.to_string_lossy(),
+    ]);
+    let lines: Vec<&str> = stdout.lines().collect();
+    let at = lines
+        .iter()
+        .position(|l| *l == ROOT)
+        .unwrap_or_else(|| panic!("no `∅` row:\n{stdout}"));
+    assert_eq!(owed(&stdout), all[..4], "{stdout}");
+    assert_eq!(
+        lines[at + 1..at + 6].join("\n"),
+        format!(
+            "{}\n{}",
+            all[..4]
+                .iter()
+                .map(|w| format!("    owed            {w}"))
+                .collect::<Vec<_>>()
+                .join("\n"),
+            rest("--dump-answer DIR")
+        ),
+        "the rows under `∅`:\n{stdout}"
+    );
+    assert!(lines[at + 6].starts_with("  minimal line "), "{stdout}");
+    assert!(
+        stdout.contains("\n  (region\n") && !stdout.contains("not shown"),
+        "the `owed` rows took the listing's lines:\n{stdout}"
+    );
+    assert!(stdout.contains("\n  :expect           holds\n"), "{stdout}");
+
+    // `answer.txt`: every one, uncut.
+    let whole = std::fs::read_to_string(answer.join("answer.txt")).expect("answer.txt");
+    assert_eq!(owed(&whole), all, "{whole}");
+    assert!(!whole.contains("more instance"), "{whole}");
+
+    // The trace's headline is stdout's rows.
+    let traced = std::fs::read_to_string(&trace).expect("the trace");
+    assert_eq!(owed(&traced), all[..4], "{traced}");
+    assert!(traced.contains(&rest("--dump-answer DIR")), "{traced}");
+
+    // The summary holds them all, beside the count.
+    let summary: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&json).expect("a summary")).expect("JSON");
+    assert_eq!(summary["region"]["root_owes"], 120);
+    assert_eq!(summary["region"]["root_owed"], serde_json::json!(all));
+    assert_eq!(summary["region"]["k_s"], 1);
+
+    // `ein oracle`: the same rows, and the command that writes the rest.
+    let oracle = run(&["oracle", &file]);
+    assert_eq!(owed(&oracle), all[..4], "{oracle}");
+    assert!(
+        oracle.contains(&rest("ein solve FILE --dump-answer DIR")),
+        "{oracle}"
+    );
+
+    // `--count`: the `∅` row alone; the summary all the same.
+    let cj = dir.join("c.json");
+    let count = run(&[
+        "solve",
+        &file,
+        "--count",
+        "--json-summary",
+        &cj.to_string_lossy(),
+    ]);
+    assert!(count.lines().any(|l| l == ROOT), "{count}");
+    assert!(owed(&count).is_empty(), "{count}");
+    let cs: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&cj).expect("a summary")).expect("JSON");
+    assert_eq!(cs["region"]["root_owed"], serde_json::json!(all));
+
+    // A mode prints no `∅` row, so no `owed` row, and its summary states
+    // neither number.
+    for mode in [
+        &["--single"][..],
+        &["--minimal"],
+        &["--maximal"],
+        &["-n", "2"],
+    ] {
+        let mj = dir.join("m.json");
+        let mut args = vec!["solve", file.as_str()];
+        args.extend_from_slice(mode);
+        let mj_s = mj.to_string_lossy().to_string();
+        args.extend_from_slice(&["--json-summary", &mj_s]);
+        let text = run(&args);
+        assert!(
+            owed(&text).is_empty() && !text.contains("\n  ∅ "),
+            "{mode:?}:\n{text}"
+        );
+        let ms: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&mj).expect("a summary")).expect("JSON");
+        assert!(
+            ms["region"]["root_owed"].is_null() && ms["region"]["root_owes"].is_null(),
+            "{mode:?}"
+        );
+    }
+}
+
+/// **A query over an empty R says which empty** — M1f S1f.6.26, the row half
+/// of E-18. Each query's `over` row read *R is empty: no state to answer from*
+/// whether root was dead or alive and owing, so nothing a query printed told a
+/// contradiction from a debt. It says which, as root says it, under describe,
+/// `--single` and `-n` alike, the three that print the row.
+///
+/// **No claim moves** (Q-M1f.219, defaulted to no change): `as :expect` is
+/// `(false)` under both wordings, and a query's `:expect (false)` holds on an
+/// R that is empty by owing as it did, exit 0, on
+/// `examples/binary_logic/unsatisfiable.ein`, whose root owes three instances
+/// and is not on the owing frontier.
+#[test]
+fn a_query_over_an_empty_r_says_which_empty() {
+    const DEAD: &str = "all of R — R is empty, root is dead: no state to answer from";
+    let owing = |n: &str| {
+        format!("all of R — R is empty, root is alive and owes {n}: no state to answer from")
+    };
+    for (file, want) in [
+        ("tests/stdlib/slots/03_fill.ein", owing("10 instances")),
+        (
+            "tests/stdlib/closure/03_closed_and_owing.ein",
+            owing("1 instance"),
+        ),
+        ("examples/ein-bugs/zebra2-bad.ein", DEAD.to_string()),
+        (
+            "tests/stdlib/algebra/09_irreflexive_violated.ein",
+            DEAD.to_string(),
+        ),
+    ] {
+        for mode in [&[][..], &["--single"], &["-n", "2"]] {
+            let mut argv = vec![file];
+            argv.extend_from_slice(mode);
+            let run = solve(&argv);
+            assert_eq!(rows(&run, "over"), vec![want.clone()], "{file} {mode:?}");
+            assert_eq!(rows(&run, "as :expect"), vec!["(false)"], "{file} {mode:?}");
+            assert!(
+                !run.out.contains("R is empty: no state"),
+                "{file} {mode:?}: the bare wording:\n{}",
+                run.out
+            );
+        }
+    }
+    // The claim under the row is what it was.
+    let run = solve(&["examples/binary_logic/unsatisfiable.ein"]);
+    assert_eq!(run.summary["region"]["empty"], "owing");
+    assert_eq!(run.summary["region"]["root_owes"], 3);
+    assert_eq!(rows(&run, "over"), vec![owing("3 instances")]);
+    assert_eq!(rows(&run, ":expect"), vec!["holds"]);
+    assert_eq!(run.summary["queries"][0]["expect"]["outcome"], "held");
+    assert_eq!(rows(&run, "(solve :expect)"), vec!["holds"]);
 }
 
 /// **`--count` prints describe's rows and reads no state**, on every corpus

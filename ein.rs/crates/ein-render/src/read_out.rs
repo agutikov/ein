@@ -105,6 +105,8 @@ rows! {
     Empty => "empty", Row;
     /// Where root, ∅, stands.
     Root => "∅", Row;
+    /// An obligation instance root owes, where root is alive and not in R.
+    Owed => "owed", Block;
     /// The minimal line, described or listed.
     MinimalLine => "minimal line", Row;
     /// The maximal line, described or listed.
@@ -241,6 +243,7 @@ impl Row {
                 Row::Exhausted,
                 Row::Empty,
                 Row::Root,
+                Row::Owed,
                 Row::MinimalLine,
                 Row::MaximalLine,
                 Row::Components,
@@ -1509,6 +1512,9 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 plural(root.owes as u64, "instance", "instances")
             ),
         );
+        if !count {
+            owed_rows(out, &root.owed);
+        }
     }
 
     if !count && (k_s > 0 || !d.exhausted) {
@@ -1671,6 +1677,40 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         Row::Work,
         work_text(d.work.saturations, d.work.facts, d.work.layers),
     );
+}
+
+/// The most `owed` rows stdout prints under `∅` before a line says how many
+/// more `--dump-answer` writes: the warning's cut ([`WARNING_ROWS`]).
+pub const OWED_ROWS: usize = 4;
+
+/// The `owed` rows under `∅`: each obligation instance an alive root owes,
+/// through its rule's `:why`, where root is not in R and R is not exhausted
+/// and empty — M1f S1f.6.26, E-19, the user's reply 30 (a) of 2026-11-12.
+/// Until then the `∅` row counted them and nothing on stdout named one, where
+/// an empty R's `owing` rows did: the debt of a root beside a state that pays
+/// it, a problem's named gap beside the supposition that closes it, was in
+/// `--events`' `owe` lines alone.
+///
+/// A block under a row, as the warning's is: at most [`OWED_ROWS`] on stdout,
+/// then one line that counts the rest and names what writes them, and every
+/// one in `--dump-answer`'s `answer.txt`. It does not take the listings'
+/// [`LIST_LINES`], which are R's (Q-M1f.220). `--count` prints none.
+fn owed_rows(out: &mut Out, owed: &[String]) {
+    for (i, w) in owed.iter().enumerate() {
+        if i == OWED_ROWS && !out.uncut {
+            out.more(format!(
+                "… {}: {} writes every one, to DIR/answer.txt",
+                plural(
+                    (owed.len() - OWED_ROWS) as u64,
+                    "more instance",
+                    "more instances"
+                ),
+                out.hint
+            ));
+            break;
+        }
+        out.line(sub_row(Row::Owed, w));
+    }
 }
 
 fn work_text(saturations: u64, facts: u64, layers: Option<usize>) -> String {
@@ -2194,6 +2234,27 @@ fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
     code
 }
 
+/// Why a query over an empty R has no state to answer from: which kind of
+/// empty R is, as root says it — M1f S1f.6.26, the row half of E-18. A dead
+/// root leaves every node dead (L0), and an alive root of an empty R owes,
+/// since one that owed nothing would be in R. Until then the row read *R is
+/// empty: no state to answer from* on both, so a query could not tell a
+/// contradiction from a debt. The claim under it is not changed: `as :expect
+/// (false)` on both, as a query's `(false)` holds on both (Q-M1f.219).
+fn empty_words(a: &ein_infer::explore::Answer) -> String {
+    if a.root_dead {
+        "R is empty, root is dead: no state to answer from".to_string()
+    } else if a.root_owes > 0 {
+        format!(
+            "R is empty, root is alive and owes {}: no state to answer from",
+            plural(a.root_owes as u64, "instance", "instances")
+        )
+    } else {
+        // No run reaches this: an alive root that owes nothing is in R.
+        "R is empty: no state to answer from".to_string()
+    }
+}
+
 /// One query's block: its goal, the set it is over, its classes, and the
 /// `:expect` that states them.
 fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
@@ -2217,9 +2278,9 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
         out.line(numbered_line(Row::Query, qi, n_q, &q.goal));
         if q.classes.is_empty() && q.exact {
             let empty = if r.states.is_empty() {
-                "R is empty: no state to answer from"
+                empty_words(a)
             } else {
-                "it holds no state"
+                "it holds no state".to_string()
             };
             out.row(Row::Over, format!("{over} — {empty}"));
             out.row(Row::AsExpect, "(false)");

@@ -71,8 +71,8 @@ value re-blesses an example and has no prose here to chase. What a table states 
 
 A bare `ein solve FILE` describes all of R. `ein oracle FILE` prints the same rows over the cube, route 2 asked for by
 name, then `the cube` (§ 9). `--count` prints `asked`, `states (k_s)`, `commitments (k_c)`, `exhausted`, `empty` or
-`∅`, `lattice` with its block, `strata`, `universe`, `route` and `work`, each describe's text, then `claims` (§ 7) and
-no listing: it reads no state.
+`∅` (without its `owed` rows), `lattice` with its block, `strata`, `universe`, `route` and `work`, each describe's
+text, then `claims` (§ 7) and no listing: it reads no state.
 
 <!-- rows: describe -->
 | label | printed when | says | kind | summary | example |
@@ -83,6 +83,7 @@ no listing: it reads no state.
 | `exhausted` | as `states (k_s)` | whether the run classified every commitment, so that these are all of R; when not, why: the state route's or route 1's budget, with the facts spent and what the next step projects, or a flagged program past `--region-limit` | the run | `region.exhausted`, `region.stopped.spent`, `region.stopped.projected`, `region.stopped.commitments`, `region.stopped.n`, `region.stopped.limit` | [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit), [X11](read_out_examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
 | `empty` | in place of `∅`, when R is exhausted and empty | which kind of empty: every node dead, root's own fixpoint deriving `(false)`, or every alive node owing | R | — | [X6](read_out_examples.md#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe), [X7](read_out_examples.md#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) |
 | `∅` | otherwise | where root stands: in R, not in R and how many instances it owes, or dead | R | `region.root_owes` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X5](read_out_examples.md#x5--latticesynthmerged_statesein-every-state-merged) |
+| `owed` | under `∅`, where root is alive and owes: describe and `ein oracle`, at the block's indent, up to four | an obligation instance root's own fixpoint leaves undischarged, through its rule's `:why`: what the `∅` row counts, named (M1f S1f.6.26; below the table) | around R | `region.root_owed[k]` | [X5](read_out_examples.md#x5--latticesynthmerged_statesein-every-state-merged), [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) |
 | `minimal line` | describe and `ein oracle`, unless R is exhausted and empty | the minimal line's size in states: where ∅ is in R, `1 state — ∅`, on every program and at every limit, the `∅` row above it saying why (M1f S1f.5.6: until then a clause beside it, *the trivial line: no obligation is stated*, read whether a node the run met owed); on an exhausted R without ∅, how many minimal commitments reach it and the size of the smallest, *the least guess*; on a partial run, a lower bound and how far it is complete | R | `region.minimal.states` | [X5](read_out_examples.md#x5--latticesynthmerged_statesein-every-state-merged), [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) |
 | `maximal line` | as `minimal line` | the maximal line's size in states, ⊤ *trivial* when nothing dies; on a partial run what is certified, or *not known* where the line needs the whole cube | R | `region.maximal.states` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit), [X11](read_out_examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) |
 | `components` | as `minimal line` | how many components R has under one-fact edges, and their sizes in commitments where there are several; *not known* on a partial run | R | `region.components` | [X4](read_out_examples.md#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes), [X5](read_out_examples.md#x5--latticesynthmerged_statesein-every-state-merged) |
@@ -97,6 +98,19 @@ no listing: it reads no state.
 | `route` | every run | the route that answered, and the licences it used. On route 2 describe and `ein oracle` say *no licence* and why, where the summary and a mode's row name `L7 the cube` ([Q-M1f.20](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another)) | the run | — | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `work` | every run | saturations, facts beyond root, and the route's layers: what the run cost, each counter defined in [`answer_dump.md` § The run summary](answer_dump.md#the-run-summary). No lever but a speed lever moves it, and the wall clock is `-s`'s | the run | `work.saturations`, `work.facts`, `work.layers` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 <!-- /rows -->
+
+**What root owes** (M1f [S1f.6.26](../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md),
+E-19). Where the `∅` row reads *not in R — root owes n*, the `owed` rows under it name the n instances, each through
+its obligation rule's `:why`, in the order the rules report them: the debt of a root beside the states that pay it,
+which until that stage was a count on stdout and an `owe` line of `--events`. The block is cut as the warning's is
+(§ 5.1): at most four `owed` rows, then one line at the values' column that counts the rest and names what writes
+them, `--dump-answer DIR`, whose `answer.txt` has every one. It does not take the listings' 100 lines, which are R's
+([Q-M1f.220](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f220--the-form-of-the-rows-for-what-root-owes)).
+`--count` prints the `∅` row alone, and a mode prints neither. `--trace`'s headline is these rows as stdout prints
+them, and the summary's `region.root_owed` holds every instance on every description, `[]` where root owes none.
+Where R is exhausted and empty the `empty` row stands in place of `∅`, and what is owed is under the frontier's
+`owing` rows (§ 6): root's own instances are there where root is on the frontier, and in `region.root_owed` alone
+where it is not.
 
 **A partial description** prints what it certified and bounds the rest. The state route stops between sizes, so it
 is complete up to states of k candidates; route 1 stops between layers, complete up to commitments of L candidates.
@@ -235,7 +249,9 @@ whole items while the lines last, and at least one; a line a text's line break a
 wrapped in `(region …)`: its first comment says how long the whole is, the states that fit keep their numbers, and its
 last says what was left out and that `--dump-answer DIR` writes the rest to `DIR/answer.txt`, the read-out uncut
 ([X13](read_out_examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines)). `ein oracle`
-writes no answer directory, so its lines name `ein solve FILE --dump-answer DIR`. The rows are never cut.
+writes no answer directory, so its lines name `ein solve FILE --dump-answer DIR`. The rows are never cut; a block
+under a row prints at most four rows of a kind, and three kinds say where the rest is: the warning's `site` and
+`stale` rows (§ 5.1) and `∅`'s `owed` rows (§ 2).
 
 **Two objects called *model*.** A listing's `(model …)`, and the summary's `region.states[].facts`, is a state's facts
 over the candidates' relations, root's included: what tells R's states apart, and the region language's claim form.
@@ -275,7 +291,7 @@ all of R by default, or over the states listed where the run asked another quest
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
 | `query`, `query i of n` | per `(query …)`, after the listing; numbered where the program has several | the goal | — | `queries[k].goal` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once) |
-| `over` | under each query | the set the classes are over, how many states it holds, and how many projection classes they fall into; *a lower bound* where they are | R | `queries[k].classes` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
+| `over` | under each query | the set the classes are over, how many states it holds, and how many projection classes they fall into; *a lower bound* where they are; over an empty R, which kind of empty it is, *root is dead* or *root is alive and owes n instances*, and that there is no state to answer from | R | `queries[k].classes` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `class i of n` | per class, while stdout's lines last, at the block's indent | how many states give it, and which by their numbers in the listing when that is complete; then each binding row, sorted, with the `:goal-text` sentence filled for it, a variable an `eq` or `neq` guard binds among them; *the goal holds: it has no variable* where the goal has none, and *the goal holds: it binds no variable* where each of its variables is an `(absent …)`'s own; *undetermined here* where the goal has no row | R | `queries[q].classes[i].states` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X4](read_out_examples.md#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) |
 | `as :expect` | under the classes | the claim that states exactly these classes, to paste into the query, each class the goal's instances under its rows, substituted at every depth, an `eq`, `neq` or `(absent …)` instance among them; or *not printed*, and why: a lower bound, the states listed, a cut, or past what is left of the 100 lines | the listing | — | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once), [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `:expect` | under a query that states a claim | the claim checked against the classes: holds, FAILED and why, or NOT CHECKED and why | — | — | [X3](read_out_examples.md#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) |
@@ -290,6 +306,14 @@ all of R by default, or over the states listed where the run asked another quest
 
 A claim the run refutes writes one stderr line and exits 1; one it could not check writes a `note:` and exits 0
 (§ 10).
+
+**A query over an empty R** (M1f S1f.6.26, the row half of E-18). The `over` row says which kind of empty R is, as
+root says it: *R is empty, root is dead*, every node being dead with it, or *R is empty, root is alive and owes n
+instances*, an alive root of an empty R always owing. Describe, `--single` and `-n` print it alike. Until that stage
+the row read *R is empty: no state to answer from* on both, so a query's block could not tell a contradiction from a
+debt. The claim under it is the same on both, `as :expect (false)`: a query's `(false)` says the query has no class,
+and holds on either empty, where the region's `(false)` holds on the dead kind alone
+([Q-M1f.219](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f219--a-querys-false-on-a-program-that-only-owes)).
 
 ---
 
@@ -413,8 +437,9 @@ the same rule, wrote `[]` on every node that is not dead.
 
 ### 11.2 The fields no row prints as itself
 
-Every other field of the seven keys is in a row's summary column above. Under a mode, R's own numbers are `null`; under
-`--count`, `region.states` and `region.frontier`; under `--monotone`, `region` itself.
+Every other field of the seven keys is in a row's summary column above. Under a mode, R's own numbers are `null`, and
+`region.root_owed` with `region.root_owes`; under `--count`, `region.states` and `region.frontier`; under `--monotone`,
+`region` itself.
 
 <!-- fields -->
 | field | what it holds | where stdout shows it |

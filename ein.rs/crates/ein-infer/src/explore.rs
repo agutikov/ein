@@ -315,6 +315,11 @@ pub struct Answer {
     pub candidates: Vec<Candidate>,
     pub monotonicity: Monotonicity,
     pub root_dead: bool,
+    /// The obligation instances root's own fixpoint leaves undischarged, as
+    /// `region::Prepared::root_owes` counts them for every route: with
+    /// [`Self::root_dead`], which kind of empty an empty `R` is, on every
+    /// question (M1f S1f.6.26, E-18). An alive root that owes none is in `R`.
+    pub root_owes: u32,
     pub route: Route,
     pub licences: Vec<Licence>,
     /// The states the run prints, in the route's order: members of the
@@ -519,6 +524,8 @@ pub(crate) struct Space<'a> {
     candidates: Vec<Candidate>,
     monotonicity: Monotonicity,
     root_dead: bool,
+    /// What root's fixpoint owes, as `prepare` counted it.
+    root_owes: u32,
     seen: FxHashMap<Box<[u32]>, Seen>,
     classes: FxHashMap<Box<[FactId]>, u32>,
     /// Root's node, once evaluated: what it owes, or why it is dead.
@@ -560,7 +567,7 @@ impl<'a> Space<'a> {
             memo,
             plans,
             root: root_stats,
-            root_owes: _,
+            root_owes,
         } = prepared;
         let flagged = !monotonicity.is_monotone();
         let mut axes = Axes::new(root, &candidates, hypothesised, false)
@@ -583,6 +590,7 @@ impl<'a> Space<'a> {
             candidates,
             monotonicity,
             root_dead,
+            root_owes: root_owes as u32,
             seen: FxHashMap::default(),
             classes: FxHashMap::default(),
             root_node: None,
@@ -621,6 +629,7 @@ impl<'a> Space<'a> {
             candidates: self.candidates,
             monotonicity: self.monotonicity,
             root_dead: self.root_dead,
+            root_owes: self.root_owes,
             route,
             licences: found.licences,
             states: found.states,
@@ -1207,6 +1216,7 @@ fn describe_route_1(
 ) -> Result<Answer, SolveError> {
     let mut prepared = prepared;
     let root_stats = std::mem::take(&mut prepared.root);
+    let root_owes = prepared.root_owes as u32;
     let d = downset::compute_prepared(
         root,
         terms,
@@ -1290,6 +1300,7 @@ fn describe_route_1(
         candidates: d.candidates,
         monotonicity: d.monotonicity,
         root_dead: d.root_dead,
+        root_owes,
         route: Route::DownSet,
         licences: vec![Licence::DeadUpward],
         exhausted: shape.is_some(),
@@ -1456,6 +1467,7 @@ fn describe_states(
         candidates: s.candidates.clone(),
         monotonicity: s.monotonicity.clone(),
         root_dead: s.root.dead,
+        root_owes: s.root.owes,
         route: Route::States,
         licences,
         exhausted: d.exhausted,
@@ -1785,6 +1797,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         wall: Duration::ZERO,
         warning: r.warning,
         candidates: r.candidates,
+        root_owes: r.nodes[0].owes,
         monotonicity: r.monotonicity,
         root_dead: r.root_dead,
         root: r.root,

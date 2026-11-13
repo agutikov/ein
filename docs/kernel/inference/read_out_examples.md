@@ -23,12 +23,12 @@ page is frozen where it was, beside [`read_out.md`'s record](../../../plans/m1e2
 | [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every question: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single`, `--count`, `--monotone`, and `-y` |
 | [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query `:over maximal`, and its claim holding |
 | [X4](#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) | `lattice/07_two_pairs_two_tables.ein` | 16 | 8 components, and 2 projection classes of 4 |
-| [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
+| [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R, and what it owes; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: the line members describe certifies, under describe and `--maximal`; `--minimal` decided at root, ∅ being in R; `--count` |
-| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
+| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: cut on stdout and whole in `answer.txt`, its region and the 36 instances root owes; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
 | [X13](#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) | `saturation/type-exclusivity/colors.ein` | 8 | an exhausted R past stdout's 100 lines: what fits, and where the rest is |
@@ -487,6 +487,10 @@ solve · examples/lattice/07_two_pairs_two_tables.ein
   commitments (k_c) 8
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 not in R — root owes 4 instances
+    owed            sits owes Ann a Seat.
+    owed            sits owes Bob a Seat.
+    owed            sits owes Cat a Seat.
+    owed            sits owes Dan a Seat.
   minimal line      8 states, from 8 commitments — the least guess is 4 candidates
   maximal line      8 states
   components        8, each a single commitment
@@ -582,11 +586,12 @@ A goal that hides the seat needs a relation that does not carry it: a projection
 under its bindings. The program below is 07 with one relation and one rule added, and it is **not a corpus file**:
 
 ```lisp
-(relation pair-at Group Table)
+(relation pair-at Group Table :why "pair {?1} sits at table {?2}")
 
 (rule pair-at ()
   :match  (and (member ?a ?g) (sits ?a ?s) (at ?s ?t))
-  :assert (pair-at ?g ?t))
+  :assert (pair-at ?g ?t)
+  :why    "{?a} of pair {?g} sits in {?s}, a seat at table {?t}")
 
 (query :goal (pair-at ?g ?t))
 ```
@@ -612,7 +617,8 @@ exit 0
 
 ## X5 — `lattice/synth/merged_states.ein`: every state merged
 
-*A brings B* and *C brings D*; an obligation needs A or C, and A with C is dead. ∅ owes, so it is not in R and the
+*A brings B* and *C brings D*; an obligation needs A or C, and A with C is dead. ∅ owes, so it is not in R, and the
+`owed` row under `∅` names the one instance it owes, through the obligation rule's `:why` (M1f S1f.6.26). The
 minimal line is two states, each reached from one candidate. Every state is reached by exactly two commitments, its
 minimal one and that one plus what it brings, so every state gets a `(merged …)`: k_c = 16 against k_s = 8. The
 A-side and the C-side never meet, which is the two components.
@@ -627,6 +633,7 @@ solve · examples/lattice/synth/merged_states.ein
   commitments (k_c) 16
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 not in R — root owes 1 instance
+    owed            from the start: one of A C is required
   minimal line      2 states, from 2 commitments — the least guess is 1 candidate
   maximal line      2 states
   components        2, with 8 + 8 commitments
@@ -731,7 +738,8 @@ exit 0
 No candidate, and root owes one `total-owed` instance: R is empty of the second kind. The `owing` rows are the
 frontier, the alive owing nodes with no alive node one fact up (here root itself), each with what it owes through the
 rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the printer closes the
-**candidates'** relations, which tell R's states apart, and this program has none.
+**candidates'** relations, which tell R's states apart, and this program has none. The query's `over` row says which
+kind of empty R is: root is alive and owes one instance.
 
 `ein solve tests/stdlib/closure/03_closed_and_owing.ein`
 
@@ -754,7 +762,7 @@ solve · tests/stdlib/closure/03_closed_and_owing.ein
   (region (owing (model)))
 
   query             (closed-here ?R)
-  over              all of R — R is empty: no state to answer from
+  over              all of R — R is empty, root is alive and owes 1 instance: no state to answer from
   as :expect        (false)
 
   (solve :expect)   holds
@@ -778,7 +786,7 @@ solve · --single tests/stdlib/closure/03_closed_and_owing.ein
   work              1 saturation · 0 facts beyond root
 
   query             (closed-here ?R)
-  over              all of R — R is empty: no state to answer from
+  over              all of R — R is empty, root is alive and owes 1 instance: no state to answer from
   as :expect        (false)
 
   (solve :expect)   NOT CHECKED
@@ -792,7 +800,8 @@ exit 0
 ## X7 — `tests/stdlib/algebra/09_irreflexive_violated.ein`: R empty, every node dead
 
 Root holds `(loops A A)`, which `irreflexive` refutes. Root's core and the rule that refutes it say why, and the form
-is `(false)`.
+is `(false)`. The query's `over` row says that root is dead, where X6's says that it owes: the claim under each is
+`(false)`.
 
 `ein solve tests/stdlib/algebra/09_irreflexive_violated.ein`
 
@@ -815,7 +824,7 @@ solve · tests/stdlib/algebra/09_irreflexive_violated.ein
   (false)
 
   query             (loops ?x ?y)
-  over              all of R — R is empty: no state to answer from
+  over              all of R — R is empty, root is dead: no state to answer from
   as :expect        (false)
 
   (solve :expect)   holds
@@ -839,7 +848,7 @@ solve · --single tests/stdlib/algebra/09_irreflexive_violated.ein
   work              1 saturation · 0 facts beyond root
 
   query             (loops ?x ?y)
-  over              all of R — R is empty: no state to answer from
+  over              all of R — R is empty, root is dead: no state to answer from
   as :expect        (false)
 
   (solve :expect)   NOT CHECKED
@@ -1143,9 +1152,10 @@ exit 0
 ## X10 — `zebra2.ein`: the puzzle
 
 **At the default budget** the state route describes R exhausted. R is one state, 261 982 commitments, 63 minimal
-generators, and four of them single facts. R as one `(region …)` is past stdout's 100 lines, so stdout lists the state
-and leaves out the `(merged …)`, and says where it is. The query's class is exact, so it is printed with its
-`as :expect`.
+generators, and four of them single facts. Root owes 36 instances, a house for each of 18 values the clues have not
+placed and a value for each of 18 places still empty: the `owed` rows name four, and one line counts the other 32. R
+as one `(region …)` is past stdout's 100 lines, so stdout lists the state and leaves out the `(merged …)`, and says
+where it is. The query's class is exact, so it is printed with its `as :expect`.
 
 `ein solve examples/zebra2.ein`
 
@@ -1157,6 +1167,11 @@ solve · examples/zebra2.ein
   commitments (k_c) 261 982
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 not in R — root owes 36 instances
+    owed            color-loc owes Red a House.
+    owed            color-loc owes Green a House.
+    owed            color-loc owes Ivory a House.
+    owed            nation-loc owes Englishman a House.
+                    … 32 more instances: --dump-answer DIR writes every one, to DIR/answer.txt
   minimal line      1 state, from 63 commitments — the least guess is 1 candidate
   maximal line      1 state
   components        1
@@ -1199,8 +1214,9 @@ solve · examples/zebra2.ein
 exit 0
 ```
 
-**What `--dump-answer DIR` writes to `DIR/answer.txt`** for the same run: the whole `(region …)`, whose
-`(merged …)` lists all 63 minimal commitments. That is what pins k_c, and it reads back as the claim.
+**What `--dump-answer DIR` writes to `DIR/answer.txt`** for the same run: all 36 `owed` rows, and the whole
+`(region …)`, whose `(merged …)` lists all 63 minimal commitments. That is what pins k_c, and it reads back as the
+claim.
 
 `ein solve --dump-answer DIR examples/zebra2.ein` — `DIR/answer.txt`
 
@@ -1212,6 +1228,42 @@ solve · examples/zebra2.ein
   commitments (k_c) 261 982
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 not in R — root owes 36 instances
+    owed            color-loc owes Red a House.
+    owed            color-loc owes Green a House.
+    owed            color-loc owes Ivory a House.
+    owed            nation-loc owes Englishman a House.
+    owed            nation-loc owes Spaniard a House.
+    owed            nation-loc owes Ukrainian a House.
+    owed            nation-loc owes Japanese a House.
+    owed            drink-loc owes Coffee a House.
+    owed            drink-loc owes Tea a House.
+    owed            drink-loc owes Juice a House.
+    owed            smoke-loc owes Old_Gold a House.
+    owed            smoke-loc owes Chesterfields a House.
+    owed            smoke-loc owes Lucky_Strike a House.
+    owed            smoke-loc owes Parliament a House.
+    owed            pet-loc owes Dog a House.
+    owed            pet-loc owes Snail a House.
+    owed            pet-loc owes Fox a House.
+    owed            pet-loc owes Zebra a House.
+    owed            color-loc owes House-3 a preimage in Color.
+    owed            color-loc owes House-4 a preimage in Color.
+    owed            color-loc owes House-5 a preimage in Color.
+    owed            nation-loc owes House-2 a preimage in Nationality.
+    owed            nation-loc owes House-3 a preimage in Nationality.
+    owed            nation-loc owes House-4 a preimage in Nationality.
+    owed            nation-loc owes House-5 a preimage in Nationality.
+    owed            drink-loc owes House-2 a preimage in Drink.
+    owed            drink-loc owes House-4 a preimage in Drink.
+    owed            drink-loc owes House-5 a preimage in Drink.
+    owed            smoke-loc owes House-2 a preimage in Cigarette.
+    owed            smoke-loc owes House-3 a preimage in Cigarette.
+    owed            smoke-loc owes House-4 a preimage in Cigarette.
+    owed            smoke-loc owes House-5 a preimage in Cigarette.
+    owed            pet-loc owes House-1 a preimage in Pet.
+    owed            pet-loc owes House-3 a preimage in Pet.
+    owed            pet-loc owes House-4 a preimage in Pet.
+    owed            pet-loc owes House-5 a preimage in Pet.
   minimal line      1 state, from 63 commitments — the least guess is 1 candidate
   maximal line      1 state
   components        1
@@ -2067,7 +2119,7 @@ solve · examples/ein-bugs/zebra2-bad.ein
   (false)
 
   query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
-  over              all of R — R is empty: no state to answer from
+  over              all of R — R is empty, root is dead: no state to answer from
   as :expect        (false)
 
 exit 0

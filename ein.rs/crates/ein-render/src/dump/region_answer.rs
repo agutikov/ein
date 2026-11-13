@@ -183,6 +183,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ("complete_up_to", Json::Null),
             ("root", Json::Null),
             ("root_owes", Json::Null),
+            ("root_owed", Json::Null),
             ("empty", empty),
             ("minimal", Json::Null),
             ("maximal", Json::Null),
@@ -240,6 +241,10 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         ),
         ("root", Json::str(root)),
         ("root_owes", Json::int(i64::from(d.root.owes))),
+        // Each instance root owes, through its rule's `:why`: the read-out's
+        // `owed` rows, on every description, `[]` where root owes none (M1f
+        // S1f.6.26, E-19).
+        ("root_owed", strs(&d.root.owed)),
         ("empty", empty),
         (
             "minimal",

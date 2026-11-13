@@ -249,6 +249,117 @@ the rest, outside the 100 lines (`read_out.md` § 5.1, approved 2026-11-03).
 **Found on the way:** [E-43](findings.md), the cut region's last line names nothing where every state was
 shown, on the binary at `e9d692e0`.
 
+### T1f.6.26.2 — the printer, done
+
+**Built** (`ein-render`'s `read_out.rs`, `ein-infer`'s `explore.rs`).
+
+- `Row::Owed`, label `owed`, a block's row, in the `describe` table after `∅`. `owed_rows` prints one an
+  instance of `Described::root.owed`, the strings every route already kept for root's node, under the `∅`
+  row where it reads *not in R — root owes n*; past `OWED_ROWS`, four, one line at the values' column, *… n
+  more instances: `--dump-answer DIR` writes every one, to DIR/answer.txt*, and no cut where the read-out is
+  written uncut. `ein oracle`'s line names `ein solve FILE --dump-answer DIR`, as its other cut lines do.
+  `--count` is not given the rows.
+- `empty_words`: a query's `over` row over an empty R reads *R is empty, root is dead: no state to answer
+  from* or *R is empty, root is alive and owes n instances: no state to answer from*. A mode holds no
+  description, so `Answer` gained `root_owes`, the count `region::prepare` already takes for every route
+  (`Prepared::root_owes`, M1f S1f.5.6): no saturation and no tally is added. An alive root that owes
+  nothing is in R, so no run reaches a third wording.
+- No core is taken: an instance's text is its obligation rule's `:why`, which the node function renders
+  where it tallies what a node owes.
+
+**The pins** (`ein-cli/tests/read_out.rs`):
+
+- `the_read_out_names_what_root_owes`: a program written in the test, 120 things that each owe a mark and
+  one supposition that marks them all. Stdout has the `∅` row, four `owed` rows in report order and the line
+  for the other 116, then `minimal line`; R is still printed as its `(region …)`, so the rows took none of
+  the listings' lines; `answer.txt` has all 120 and no such line; the trace's headline is stdout's rows;
+  `region.root_owed` is the 120 strings; `ein oracle` prints the same four and names the command that
+  writes the rest; `--count` prints the `∅` row and no `owed` row; each of `--single`, `--minimal`,
+  `--maximal` and `-n 2` prints neither row and writes `root_owed: null`.
+- `a_query_over_an_empty_r_says_which_empty`: the row under describe, `--single` and `-n 2` on two programs
+  whose root owes (`tests/stdlib/slots/03_fill.ein`, 10 instances, and
+  `tests/stdlib/closure/03_closed_and_owing.ein`, 1) and two whose root is dead
+  (`examples/ein-bugs/zebra2-bad.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`), `as :expect
+  (false)` under each; and on `examples/binary_logic/unsatisfiable.ein` the query's `:expect (false)` holds
+  as it did, the solve claim with it.
+- `an_owing_node_is_not_a_state`, which held the `∅` row of `features/13_mixed_solution_and_open.ein`, holds
+  its `owed` row and the summary's string too.
+- `summary_properties.rs`' `the_description_is_coherent_on_every_corpus_cell`, two identities more, on every
+  corpus cell: `region.root_owed` names exactly `region.root_owes` instances and is `null` with it, and a
+  root in R owes nothing.
+
+**The pages, in the same commit.** [`read_out.md`](../../../docs/kernel/inference/read_out.md): the `owed`
+row in § 2's table, its summary column `region.root_owed[k]`, and a paragraph under the table on what is
+printed where, the cut and where the rest is; § 7's `over` row and a paragraph on the two wordings and the
+claim under them; § 6's sentence on what is never cut; § 11.2's sentence on a mode's `null`.
+[`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md), re-written by
+`utils/read_out_examples.py`: 69 lines came and 17 went (`git diff --numstat`), the `owed` rows of X4, X5
+and X10 (four and the line on stdout, all 36 in X10's `answer.txt` block), the `over` rows of X6, X7 and
+X16, and the script's prose for them. `answer_dump.md`: `answer.txt` holds every `owed` row.
+`read_out_reference.rs` holds the page to the printer, six tests passing: X5 and X10 print the new label,
+and its fourth test holds each printed `owed` row to `region.root_owed[k]`.
+
+**The generator did not run** ([E-45](findings.md)). `utils/read_out_examples.py` writes one program that
+is no corpus file, X4's variant of `lattice/07_two_pairs_two_tables.ein` with a relation and a rule added,
+neither with a `:why`, which every load has required since S1f.5.14's flip (`4b231abd`, 2026-11-10): the
+variant's run printed a load error and the script raised at it, `ValueError: substring not found`, on the
+binary at `e9d692e0` too. The relation and the rule have a `:why` now, in the script and so in the page's
+block. The page's other blocks were current, `read_out_examples.rs` holding each to the binary: the
+re-write moved nothing but the rows above.
+
+### T1f.6.26.3 — the other surfaces, done
+
+| surface | what it carries | held by |
+|---|---|---|
+| `--trace FILE.md` | its headline is the read-out's rows above the listing, from the same printer, so it names the instances stdout names, four and the line | `the_read_out_names_what_root_owes`; the 36 `region-trace` digests |
+| `--json-summary` | **`region.root_owed`, new**: every instance root owes, through its rule's `:why`, on every description, `[]` where root owes none, `null` under a mode as `region.root_owes` is | the same test; `read_out_reference.rs`' third and fourth tests |
+| `--dump-answer DIR` | `answer.txt` has every `owed` row; `answer.json` is the summary, and `index.json` its `region` block | the same test; `region_answer.rs` |
+| `--events`' `region` event | the summary's `region` block, so the field with it | by construction (`modes::emit_region`) |
+| `--single`, `--minimal`, `--maximal`, `-n N` | no `∅` row, so no `owed` row; the query's `over` row under `--single` and `-n` | the two tests |
+| `ein oracle` | describe's rows over the cube: the `owed` rows and the `over` row | `the_read_out_names_what_root_owes` |
+| `ein test -v` | unchanged: its line for a query over an empty R, *0 classes over 0 states*, names neither kind | not in the stage |
+
+**The check the task asks for.** The summary did not carry root's instances where R is not empty.
+`region.frontier` is `null` there, and a hole is a node between two members of R, which ∅ never is, so root
+is not among `region.holes.minimal` either: the summary held `region.root_owes`, the count. So the field was
+added, in `ein-summary/2` as it stands: a key on every run, as `region.core_status` and
+`root.hypgen.types_as_objects` were added. On an R that is empty by owing with root off the frontier, four
+corpus programs, it is the one place root's own instances are ([E-44](findings.md)).
+
+### T1f.6.26.5 — the goldens, done
+
+**Counted before the commit, and no other golden moved.** `EIN_BLESS=1 cargo test -p ein-render --test
+corpus_shapes` wrote the manifest, and `python3 build/s1f.6.26/shapes_moved.py` compares it with
+`e9d692e0`'s (2026-11-13): **2 726 of 24 269 digests moved, none new and none gone**
+(`build/s1f.6.26/t5-moved.txt`).
+
+| kind | moved | by how many lines | why |
+|---|---:|---|---|
+| `cores[describe]` | 502 | 443 by +1; 59 by n + 2, n from 1 to 46 | the summary's `region` block: `"root_owed": []`, or the n instances a root owes |
+| `cores[single]`, `[n2]`, `[minimal]`, `[maximal]` | 502 each | +1 | `"root_owed": null` under a mode |
+| `read-out[describe]` | 84 | 36 by +1 to +5; 48 by 0 | the `owed` rows of the 36 programs of T1's census; the `over` row of 48 programs whose R is empty and that ask a query |
+| `read-out[single]`, `read-out[n2]` | 48 each | 0 | the `over` row, the same 48 |
+| `region-trace` | 36 | +1 to +5 | the headline's `owed` rows |
+
+502 is every program of the sweep that reaches a region, and 59 the programs whose root is alive and
+owes. No digest of `read-out[minimal]`, `read-out[maximal]`, `states`, `region-lattice`, `oracle` or any
+other kind moved. `read_out_examples.md` is the read-out's golden page, above. `corpus_exits.txt`,
+`help_shape.txt` and the trace goldens did not move.
+
+**The sweep** (`python3 build/s1f.6.26/sweep.py --diff`, 2026-11-13, `build/s1f.6.26/sweep-t2.txt`): the
+release binary at `e9d692e0` against the tree's, over the 849 `.ein` files `e9d692e0` tracks; per file
+`ein saturate --dump`, `ein solve`, `ein solve --single`, `ein solve -n 2` and `ein test`, stdout, stderr
+and exit, and the two summaries of a bare solve compared with `region.root_owed` taken out of the new one.
+
+- **84 files moved, each by the new rows alone:** 36 gained `owed` rows under a bare solve (six of them the
+  line for the rest), and 48 had the `over` row reworded, under a bare solve, `--single` and `-n 2`.
+- **No summary differs** once the new field is taken out: R (`k_s`, `k_c`, every state, the frontier), N
+  (`region.nogoods`), H (`region.universe`, `root.hypgen`), every claim's outcome (`queries[].expect`,
+  `claim`) and every other field are the same on all 511 programs that write one.
+- **No exit code moved,** and no line of `ein saturate --dump` or `ein test`.
+
+`lever_invariance.rs` holds the read-out under every lever, unchanged and passing.
+
 ### T1f.6.26.4 — E-18's claim, asked, done
 
 Filed as [Q-M1f.219](../open_questions.md#q-m1f219--a-querys-false-on-a-program-that-only-owes), **defaulted

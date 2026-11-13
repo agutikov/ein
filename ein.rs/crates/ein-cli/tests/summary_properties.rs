@@ -321,6 +321,24 @@ fn the_description_is_coherent_on_every_corpus_cell() {
             let listed = states.iter().filter(|x| x["listed"] == true).count() as i64;
             let exhausted = r["exhausted"] == true;
 
+            // ── what root owes (M1f S1f.6.26, E-19) ────────────────────
+            // The instances are named where the count is stated, one a
+            // count: on a description, and `null` with it under a mode.
+            check(
+                "region.root_owed names region.root_owes instances, and is null with it",
+                match (&r["root_owes"], &r["root_owed"]) {
+                    (J::Null, J::Null) => true,
+                    (n, J::Array(a)) => {
+                        n.as_u64() == Some(a.len() as u64) && a.iter().all(J::is_string)
+                    }
+                    _ => false,
+                },
+            );
+            check(
+                "a root in R owes nothing",
+                r["root"] != "in-r" || r["root_owes"] == 0,
+            );
+
             // ── what a description of R is made of ─────────────────────
             if regime == "describe" && exhausted {
                 described += 1;
