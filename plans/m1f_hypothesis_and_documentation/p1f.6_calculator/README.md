@@ -185,6 +185,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.31](s1f.6.31_the_stdlib_layout.md) | The stdlib layout: `std.math.*` and `std.bool.*` | S1f.6.22, S1f.6.12's build, S1f.6.24; the layout reply | planned 2026-11-12 (replies 16, 38, 42, 52) |
 | [S1f.6.32](s1f.6.32_gcd_and_lcm.md) | gcd and lcm, as `std.math.gcd` | S1f.6.31, S1f.6.24 | planned 2026-11-12 (reply 38) |
 | [S1f.6.33](s1f.6.33_lowest_terms_on_request.md) | `std.rat` reduces only when asked | S1f.6.32 | planned 2026-11-12 (round 2's item 54 (b)) |
+| [S1f.6.34](s1f.6.34_hypothesis_mechanisms_in_conflict.md) | A conflict between the hypothesis mechanisms is reported; an engine stage | — | planned 2026-11-13 (the user's ruling on E-47: *"report conflict if any hypothesis mechanism constradicts itself"*) |
 
 No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 18 and 19 are unassigned.
 
@@ -208,6 +209,8 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 18 a
 9. **S1f.6.9, what is left of the width.** It may run beside the extensions.
 10. **S1f.6.10, the investigation, last.** **Done 2026-11-12.**
 11. **The stages of 2026-11-12,** in the order of [`replies_2026-11-12.md` § The order](replies_2026-11-12.md#the-order): those independent of the stdlib layout first, then the layout move, then what is born under the new names.
+12. **S1f.6.34, the conflicts between the hypothesis mechanisms** (2026-11-13), independent of the layout: after
+    S1f.6.30, the last of the stages of 2026-11-12 that are, and before S1f.6.31's move.
 
 ## Findings stay in the phase
 
