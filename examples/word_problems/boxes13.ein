@@ -1,0 +1,36 @@
+;;; Bob has 5 apples, Alice has 8. A box holds 3. How many boxes do they need?
+;;; 13 apples in boxes of 3: 4 are filled and 1 is left over, and the word
+;;; *need* has two readings the problem does not choose between. A reading is
+;;; always chosen (`readings`, owed), so R is two states, one a reading each:
+;;; 4 boxes and 1 apple unpacked (whole-only), and 5 boxes, the last part full
+;;; (pack-all). Two states and two answers, each named by its reading.
+(import words :symbols (words))
+(import readings :symbols (readings))
+
+(has Bob apples (n z 5) now    :source "Bob has 5 apples,")
+(has Alice apples (n z 8) now  :source "Alice has 8.")
+(holds boxes apples (n z 3)    :source "A box holds 3.")
+(asked (needed boxes apples (together Bob Alice apples now)) :source "How many boxes do they need?")
+
+(solve :hrules (read-need)
+       :expect (region (model (reads-as need pack-all))
+                       (model (reads-as need whole-only))))
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (or (model (asked (needed boxes apples (together Bob Alice apples now)))
+                          (value (needed boxes apples (together Bob Alice apples now)) (n z 4)))
+                   (model (asked (needed boxes apples (together Bob Alice apples now)))
+                          (value (needed boxes apples (together Bob Alice apples now)) (n z 5)))))
+(query :goal (and (asked ?q) (value ?q ?n) (value (over ?q) ?o) (reads-as need ?m))
+       :goal-text "with need read as {?m}: {?n} boxes, and {?o} apples left unpacked"
+       :expect (or (model (asked (needed boxes apples (together Bob Alice apples now)))
+                          (reads-as need pack-all)
+                          (value (needed boxes apples (together Bob Alice apples now)) (n z 5))
+                          (value (over (needed boxes apples (together Bob Alice apples now))) z))
+                   (model (asked (needed boxes apples (together Bob Alice apples now)))
+                          (reads-as need whole-only)
+                          (value (needed boxes apples (together Bob Alice apples now)) (n z 4))
+                          (value (over (needed boxes apples (together Bob Alice apples now))) (n z 1)))))
+(query :goal (model-counts-only)
+       :goal-text "this answer holds in a model where things are counted by number alone: a box holds any 3 apples")

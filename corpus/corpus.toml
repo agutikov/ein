@@ -4421,6 +4421,12 @@ group  = "positive"
 runs   = ["render rules", "saturate"]
 
 [[entry]]
+path   = "examples/word_problems/before.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.28 — a witness banked with today's answer and no fix, on the user's question of 2026-11-12: *Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before?* The right answer is 7; the theory reads *gave* in one direction of time and plans from no earlier moment to a later one, so no request reaches the calculator, the question has no row and `gaps` names `(not-stated (amount Bob apples t0))`, which is its claim. M1h's P1h.1 owns it, and the claim moves to 7 in the commit that answers it."
+
+[[entry]]
 path   = "examples/word_problems/bob1.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate"]
@@ -4430,7 +4436,13 @@ note   = "M1f S1f.6.20 — a transfer read as a subtraction: *Bob has 5 apples. 
 path   = "examples/word_problems/boxes12.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "solve --trace {out}/trace.md"]
-note   = "M1f S1f.6.20 — the two-step problem, the user's: *Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?* 5 + 7 = 12, 12 / 3 = 4, the two requests derived in that order and nothing else asked of the calculator; `readings` is imported and proposes nothing, since nothing is left over, so the universe has no candidate; the trace cell writes the plan as sentences."
+note   = "M1f S1f.6.20, rebuilt by S1f.6.28 — the two-step problem, the user's: *Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?* 5 + 7 = 12, 12 / 3 = 4, the two requests derived in that order and nothing else asked of the calculator. A reading of *need* is always owed (`readings`), so R is two states, a reading each, and one class, 4: two solutions and one answer, the first corpus witness of *answer correct, solution not necessarily*; neither state's trace has a step, the answer being root's `need-exact`, *whatever need means*. The trace cell writes the plan as sentences."
+
+[[entry]]
+path   = "examples/word_problems/boxes13.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "solve --trace {out}/trace.md"]
+note   = "M1f S1f.6.28 — the remainder variant, back: *Bob has 5 apples, Alice has 8. A box holds 3. How many boxes do they need?* 13 = 3 × 4 + 1, and *need* has two readings the problem does not choose between; a reading is always owed (`readings`), so R is two states and two classes, 4 boxes and 1 apple unpacked under whole-only, 5 boxes under pack-all, root owing the reading. Left out at S1f.6.20 because `region.rs`'s fact-grain sweep did not end on it (E-33, resolved by S1f.6.28's T1). The trace cell writes each state's answer under its reading."
 
 [[entry]]
 path   = "examples/word_problems/bystander.ein"
@@ -4487,6 +4499,18 @@ runs   = ["solve", "test", "saturate"]
 note   = "M1f S1f.6.20 — both kinds stated for both: 8 apples, and the pears are never wanted."
 
 [[entry]]
+path   = "examples/word_problems/kinds_listed.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate"]
+note   = "M1f S1f.6.28 — the apples-and-pears problem with *what is not listed is zero* adopted (`listed_is_all`): Alice has no apples by the assumption, so 5, and `rests-on` names what the answer rests on; without the import it is a gap (kinds.ein). States `(solve :no-hypothesis (has))`, so that `has` is no hypothesis relation."
+
+[[entry]]
+path   = "examples/word_problems/listed_is_all.ein"
+group  = "positive"
+runs   = ["saturate", "render rules"]
+note   = "M1f S1f.6.28 — a module a problem imports to adopt *what is not listed is zero* for `has` (the user's reply 32): for every holder and kind the `has` sentences name at a moment with no amount listed, `(assumed (amount WHO KIND MOMENT) z)`, resting on `(adopted listed-is-all has)`; it reads `absent` over `has`, so it is kept apart from `words`. No solve: as gaps.ein, it imports the declarations of `words` and not its closing rule, so alone `assumed` is open and a solve describes the blind enumerator's `(assumed __closed__ z)` (E-1 of the phase's findings), not the module."
+
+[[entry]]
 path   = "examples/word_problems/more.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate"]
@@ -4502,7 +4526,7 @@ note   = "M1f S1f.6.20 — three operations chained: 12 cartons of 144 pencils, 
 path   = "examples/word_problems/readings.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules"]
-note   = "M1f S1f.6.20 — a theory module, imported by boxes12: the two readings of *need* as facts, `reads-as` left open for the hrule `read-need`, nothing owed (the page's `readings_plain`). Alone it holds no division, so nothing is proposed: R {∅}. The 13-apple problems that make it propose are not corpus entries: `region.rs`'s fact-grain sweep does not end on them (E-33 of the phase's findings, Q-M1f.198)."
+note   = "M1f S1f.6.20, rebuilt by S1f.6.28 — a theory module, imported by boxes12 and boxes13: the two readings of *need* as facts, `reads-as` proposed by the hrule `read-need` for every question of how many containers are needed, and a reading always owed by the obligation `reading-owed` (the page's `readings_always`, the user's reply 31). Alone it has no question, so nothing is wanted, proposed or owed: R {∅}."
 
 [[entry]]
 path   = "examples/word_problems/unused.ein"

@@ -1,0 +1,27 @@
+;;; Bob has 5 apples, Alice has 3 pears. How many apples do they have together?
+;;; With *what is not listed is zero* adopted for `has` (`listed_is_all`): the
+;;; problem lists apples and pears, Bob and Alice, and no apples for Alice, so
+;;; she has none, an assumption the answer rests on: 5. Without the import the
+;;; amount is a gap (`kinds.ein`); the same assumption written by hand is
+;;; `kinds_assume.ein`.
+(import words :symbols (words))
+(import gaps :symbols (gaps))
+(import listed_is_all :symbols (listed-is-all))
+
+(has Bob apples (n z 5) now    :source "Bob has 5 apples,")
+(has Alice pears (n z 3) now   :source "Alice has 3 pears.")
+(asked (together Bob Alice apples now) :source "How many apples do they have together?")
+
+(solve :no-hypothesis (has))
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model (asked (together Bob Alice apples now))
+                      (value (together Bob Alice apples now) (n z 5))))
+(query :goal (rests-on ?q ?g ?v)
+       :goal-text "the answer to [{?q}] rests on the assumption that [{?g}] is {?v}"
+       :expect (model (rests-on (together Bob Alice apples now) (amount Alice apples now) z)))
+(query :goal (assumed ?g ?v)
+       :goal-text "assumed: [{?g}] is {?v}"
+       :expect (model (assumed (amount Alice apples now) z)
+                      (assumed (amount Bob pears now) z)))

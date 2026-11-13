@@ -238,6 +238,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.223](#q-m1f223--what-the-surfaces-of-ein-test-say-of-the-question) | what the surfaces of `ein test` say of the question | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: `-v` names the question before what the run found, *(--single: all of R, 1 class over 1 states)*, and *describe, after -n 3* on a fall-back; `--json-report` is `ein-test-report/5` with `route` and `fell_back_from` on every row; `--events` and `--json-summary` hold the last question asked**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
 | [Q-M1f.224](#q-m1f224--what-a-bare-description-pays-for-n) | what a bare description pays for N | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: no change; a bare `ein solve` prints the `N` row with its count and takes the minimal transversals that count is, where a surface that prints neither `N` nor its count, `--count` and `ein test` without an artefact, takes none**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6275--e-31-measured-done) |
 | [Q-M1f.225](#q-m1f225--what-the-fact-grain-test-does-where-the-closure-gives-up) | what the fact-grain test does where the closure gives up | **defaulted 2026-11-13 (S1f.6.28), the user's to revise: the closure runs only where a relation-grain site reads it; on a flagged program it gives up after 10 000 shapes on the safe side, every site one; and `region.rs`'s `fact_grain_never_calls_a_violated_cube_monotone` fails on a program where it gives up, naming it, so the bound never decides a verdict the test reads**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6281--e-33-resolved-done) |
+| [Q-M1f.226](#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0) | an obligation's name in a closing rule, and `alive_invariant`'s R0 | **defaulted 2026-11-13 (S1f.6.28), the user's to revise: `every_name_of_the_program_is_a_candidate_object` lists a seeded name the program categorises as an obligation's and does not hold it to the blind enumerator's objects; no engine source moves (E-48)**; [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -3887,6 +3888,7 @@ the gate can hold, and report what was left out. Every program in which a hypoth
 word theory meets it, so it bears on question 6 of the page, and on the hypothesis form of an assumption
 (question 4), whichever is ruled.
 
+
 ### Q-M1f.199 — How the skipped views of the DOT sweep are pinned
 
 **Raised** 2026-11-12 by [S1f.6.21](p1f.6_calculator/s1f.6.21_the_gate_reduced.md)'s T2, which asks that the
@@ -4415,4 +4417,27 @@ answer there or not end.
 **Defaulted 2026-11-13: (a), the user's to revise.** It is the only one of the three that keeps what the test
 means on every program and ends. No program of the corpus is one; the largest closure a flagged corpus program
 computes is 100 shapes.
+
+### Q-M1f.226 — An obligation's name in a closing rule, and `alive_invariant`'s R0
+
+**Raised** 2026-11-13 by [S1f.6.28](p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6285--banked-done)'s
+T5 ([E-48](p1f.6_calculator/findings.md)). The rebuilt `examples/word_problems/readings.ein` owes a reading by an
+obligation, `reading-owed`, and its closing rule names every rule of the module, `(readings-rule reading-owed)`
+among them, since a selective import brings what the selected rule names: without it a problem that imports
+`readings` has no obligation (`boxes12.ein`, 3 states and root owing nothing, 2026-11-13). Named there, the
+obligation's name is *seeded*, a name of the program the KB's names index does not hold, since the index unions
+the rules' names and not the obligations'; and `Program::categorise` calls it a rule's name (M1d S1d.2.4), which
+the blind enumerator drops by design. `ein-infer/tests/alive_invariant.rs`'s
+`every_name_of_the_program_is_a_candidate_object` asserted every seeded name to be one of the enumerator's
+objects, and failed on the three files.
+
+- **(a) The test lists a seeded obligation's name and does not hold it to the objects**, with a comment that says
+  why. No engine source moves; R0 holds of every other seeded name as before.
+- **(b) The names index holds the obligations' names as it holds the rules'** (`ein-core`'s `Kb`, the two places
+  that union the registry's names in). The name is then not seeded, R0 is unchanged, and `candidate_objects`
+  drops it as it drops every rule's. An engine change, in an examples stage.
+- **(c) The closing rule leaves the obligation out.** Not viable: the import then leaves the obligation behind.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It moves no engine source in a stage whose subject is the
+examples; (b) is the change that removes the asymmetry the finding names, and is a stage of its own.
 

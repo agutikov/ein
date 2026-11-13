@@ -1,0 +1,33 @@
+;;; Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before?
+;;;
+;;; A WITNESS, banked with today's answer and no fix (M1f S1f.6.28, on the
+;;; user's question of 2026-11-12). THE RIGHT ANSWER IS 7, 5 + 2. The theory
+;;; does not give it: the giving is from t0 to t1, the amount is stated at t1,
+;;; and the question asks the amount at t0. The word rules read *gave* in one
+;;; direction of time, *what the giver has after is what they had before less
+;;; what they gave*, and no rule plans from an earlier moment to a later one,
+;;; so no request reaches the calculator, the question has no row, and `gaps`
+;;; names its quantity as not stated. The theory reads a word as an
+;;; instruction, and not as a relation between three quantities.
+;;; Who owns it: M1h's P1h.1, temporal and causal theories, whose opening
+;;; question is the two ways to answer it, a second set of rules for each word
+;;; reverted in time, or the event stated once as a relation with whichever
+;;; quantity is unknown asked for; the second meets M1g's P1g.9, one equation
+;;; and three methods. When either lands, the claims below move to 7 in that
+;;; commit.
+(import words :symbols (words))
+(import gaps :symbols (gaps))
+
+(gave Bob Alice apples (n z 2) t0 t1 :source "Bob gave Alice 2 apples.")
+(has Bob apples (n z 5) t1           :source "Now Bob has 5.")
+(asked (amount Bob apples t0)        :source "How many apples did Bob have before?")
+
+(query :goal (and (asked ?q) (value ?q ?n))
+       :goal-text "{?q}: {?n}"
+       :expect (model))
+(query :goal (not-stated ?q)
+       :goal-text "not stated: {?q}"
+       :expect (model (not-stated (amount Bob apples t0))))
+(query :goal (unanswered ?q ?g)
+       :goal-text "no answer to [{?q}]: the problem does not state [{?g}]"
+       :expect (model (unanswered (amount Bob apples t0) (amount Bob apples t0))))

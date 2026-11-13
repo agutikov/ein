@@ -1,7 +1,7 @@
 # S1f.6.28 — Word problems, second pass: a reading is always chosen, and *what is not listed is zero*
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's replies of that day. **Running 2026-11-13:** T1 to T3 done
+**Status:** planned 2026-11-12, on the user's replies of that day. **Running 2026-11-13:** T1 to T5 done
 ([the record](#record-2026-11-13)). It continues
 [S1f.6.20](s1f.6.20_word_problems.md), whose file is that stage's record; the examples it changes are
 [`examples/word_problems/`](../../../examples/word_problems/README.md), banked at `f3fe6ff0`.
@@ -369,3 +369,128 @@ Nothing is built; this section reads the traces above, which are the program's o
   *the subtraction*, dead or with another answer, that the read-out could show beside the division. *Why not
   subtract* answered by a state is a search over formulas, a theory of solutions:
   [M1h's P1h.4](../../m1h_beyond_word_problems/README.md#p1h4--the-formula-and-the-calculation) and M2's.
+
+### T1f.6.28.4 — `listed_is_all.ein`, and the two forms of the apples-and-pears problem, done
+
+**The module** (`examples/word_problems/listed_is_all.ein`), written as the user's reply has it:
+
+- **It says which relation it is adopted for**, in a fact every zero rests on: `(adopted listed-is-all has
+  :source "ASSUMPTION, not in the problem: the problem lists everything each has, so what it does not list of a
+  kind, they have none of")`.
+- **One rule over the typed arguments of `has`**, `(relation has Who Kind Number Moment)`: `unlisted-is-zero`
+  ranges, at each moment `has` is stated at, over every holder (Who) and every kind (Kind) the sentences name,
+  and where none lists an amount of that kind for that holder derives `(assumed (amount WHO KIND MOMENT) z)`.
+  The zero is `assumed`, the marked fact of reply 29 (a), which a problem otherwise writes by hand
+  (`kinds_assume.ein`): `words`' `assumed-gives-value` reads it where the amount is wanted, and `gaps`'
+  `answer-rests-on-assumption` puts `rests-on` beside the answer. It derives no `has`: a rule that concluded
+  `(has Alice apples z now)` from `(absent (has Alice apples ?v now))` would read its own conclusion under the
+  `absent`.
+- **The Zebra sentence**, in the header: *in the Zebra puzzle a house with no one listed in it is a house whose
+  owner is not known yet, and the same rule would conclude that nobody lives there.*
+- It reads `absent` over `has`, so it is kept apart from `words`, as `gaps` is, and imports from `words` what
+  it reads, `has`, `amount` and `assumed`. Its entry rule closes `adopted` and its rule list:
+  `(import listed_is_all :symbols (listed-is-all))`.
+
+**The two forms** (`ein solve`, `ein test`, 2026-11-13, `build/s1f.6.28/t2/out/`):
+
+| | `kinds.ein`, banked, unchanged | `kinds_listed.ein`, new: the same three sentences, `listed_is_all` imported, `(solve :no-hypothesis (has))` |
+|---|---|---|
+| the answer | none: `(asked …)` with `(value …)` has no row | **5**: `(value (together Bob Alice apples now) (n z 5))` |
+| what it says of Alice's apples | `(unanswered (together Bob Alice apples now) (amount Alice apples now))`, the gap | `(rests-on (together Bob Alice apples now) (amount Alice apples now) z)`, the assumption it rests on |
+| what is assumed | nothing | `(assumed (amount Alice apples now) z)` and `(assumed (amount Bob pears now) z)`: every holder and kind with none listed; Bob's pears are never wanted, so nothing reads the second |
+| the trace | — | `unlisted-is-zero` twice, its premises `(adopted listed-is-all has)` with its `:source` and the two sentences; then `assumed-gives-value`, *it is ASSUMED to be z*; then the sum, and `answer-rests-on-assumption` |
+| R, universe, lattice | {∅}; no candidate; monotone | {∅}; no candidate; monotone |
+| root's firings | 10 | 27 |
+
+Apart from the engine: 5 + 0 = 5, Alice having no apples by the assumption, and no answer without it.
+
+**What the static check and *forbid* say** (`ein solve FILE --monotone` and `ein solve FILE`, the release binary,
+engine as at `fc92f075`, 2026-11-13; the variants under `build/s1f.6.28/p2/`):
+
+| the program | static check | *forbid* |
+|---|---|---|
+| `kinds_listed.ein`, as banked | monotone, *no site* | nothing to refuse |
+| the same without `(solve :no-hypothesis (has))` | monotone, no site: the blind enumerator never guesses a relation of four arguments, so `has` is in no candidate either way | nothing to refuse |
+| the same with an hrule that supposes Alice has 1 apple as well, `(has ?p apples (n z 1) ?t)` | — | **refused**, exit 1, four lines: `gave-more-than-had-is-false`, `division-by-zero-is-false`, `malformed-is-false` and `undeclared-is-false` each conclude `(false)` from a flag that a rule derives *resting on (absent …) over has, a relation a commitment can still extend* |
+| that, with `(solve :hrules (…) :no-hypothesis (has))` | — | **refused the same**: `:no-hypothesis` scopes the blind enumerator and not the hrule rung, so the hrule's candidate stays (E-47) |
+
+So the module is legal exactly where `has` is no hypothesis relation, which is the condition *forbid* reads: a
+zero by `absent` over a relation a commitment can extend is *not yet*, not *none*. The banked problem states its
+lattice, `(solve :no-hypothesis (has))`, as the stage file asks; on it the statement changes nothing that runs,
+since no rung would propose `has` there, and it does not by itself keep an hrule from proposing it (E-47).
+Whether a relation may adopt the assumption, and whether anything should check it, is M1h's
+[S1h.3.2](../../m1h_beyond_word_problems/p1h.3_gaps_assumptions_and_readings/s1h.3.2_assumptions_marked_supposed_and_universal.md)
+T5's.
+
+### T1f.6.28.5 — banked, done
+
+**What is banked**, under [`examples/word_problems/`](../../../examples/word_problems/README.md), each file the
+program T2 to T4 ran with a header written for it (`diff` of the bodies against `build/s1f.6.28/p2/`, none):
+
+| file | what | its claims |
+|---|---|---|
+| `readings.ein` | rebuilt, T2's always-owed module | none (a module); its corpus entry keeps `solve`, `saturate` and `render rules` |
+| `boxes12.ein` | rebuilt: imports the new `readings`; header says what R is now | **the region claim, the two states** `(region (model (reads-as need pack-all)) (model (reads-as need whole-only)))`; query 1, **one class**, 4; query 2, the two readings |
+| `boxes13.ein` | new, the 13-apple problem | the region claim, the two states; query 1, **two classes**, 4 and 5; query 2, each with its reading and what is left over |
+| `listed_is_all.ein` | new, T4's module | none (a module) |
+| `kinds_listed.ein` | new, the apples-and-pears problem with `listed_is_all` imported and `(solve :no-hypothesis (has))` | 5; `(rests-on (together Bob Alice apples now) (amount Alice apples now) z)`; the two `assumed` zeros |
+| `before.ein` | new, **the witness** | the question has no row; `(not-stated (amount Bob apples t0))`; `(unanswered (amount Bob apples t0) (amount Bob apples t0))`. Its header: **the right answer is 7**, the theory reads *gave* in one direction of time, M1h's P1h.1 owns it, the second way meets M1g's P1g.9, and the claims move to 7 in the commit that answers it |
+
+`kinds.ein`, the apples-and-pears problem without the import, is unchanged: the other form. **No new word**
+(reply 35): the word rules of `words.ein` are as banked, and the two new problems use *has*, *together*, *holds*,
+*need* and *gave*, which it had.
+
+`ein test examples/word_problems/` holds **31 claims in 20 files, none failed and none not checked** (0.59 s;
+the banking held 21 in 13).
+
+**The corpus entries** (`corpus/corpus.toml`): `before.ein`, `kinds_listed.ein` under `solve`, `test` and
+`saturate`; `boxes13.ein` under those and `solve --trace`, as `boxes12.ein`; `listed_is_all.ein` under
+`saturate` and `render rules`, as `gaps.ein`, since alone `assumed` is open and a solve describes the blind
+enumerator's `(assumed __closed__ z)` (E-1); the notes of `boxes12.ein` and `readings.ein` say what changed. None
+is `slow`: every declared run of the four took 0.03 s to 0.05 s, `boxes13.ein`'s four 0.18 s together (the release
+binary, one run each, wall, 2026-11-13), far under the 1 s that makes an entry slow.
+
+**The tests that read the corpus, run before relying on it** (2026-11-13):
+
+- `cargo test -p ein-infer --test region`, **alone first**, as `AGENTS.md` has it for E-33, with `boxes13.ein`
+  in the corpus: 29 passed, 40.60 s. The fact-grain sweep reads **441 cubes**, the 437 of T1 and the four new
+  programs' (a count printed for the run and taken out).
+- `-p ein-infer --test alive_invariant --test claim_routes`: `alive_invariant` failed first on R0 (E-48, below),
+  then passed with the list; `claim_routes` 3 passed, 22.70 s.
+- `-p ein-cli --test corpus_cli --test lever_invariance --test answer_round_trip --test test_cli --test
+  wrong_answers`: `corpus_cli` failed with *12 of 2388 cells differ from the banked table*, every one a new cell
+  of the four new entries, exit 0 each, none moved; blessed; then all passed, 7, 4, 9, 43 and 1, 58.96 s, 56.67 s,
+  27.91 s, 9.74 s, 16.38 s.
+- `-p ein-render --test corpus_shapes --test dot_wellformed --test golden_trace`: `corpus_shapes` failed, *237
+  of 24311 renderings moved*, 352.69 s; blessed (353.12 s), then `dot_wellformed` 3 passed and `golden_trace` 2.
+- `-p ein-infer -p ein-corpus`, the whole of both: 40 binaries, 456 tests, all passed
+  (`build/s1f.6.28/t5-infer.log`).
+
+**The goldens, counted before they were blessed.** `corpus_exits.txt`: **12 lines added**, the four new entries'
+cells, each exit 0, and none removed or moved (`EIN_BLESS=1 cargo test -p ein-cli --test corpus_cli
+every_cell_reproduces`, then `git diff`). `corpus_shapes.md5`: **168 new digests**, the four new files' 42
+each, **69 moved**, every one `boxes12.ein`'s (39) or `readings.ein`'s (30), the two files T2 rebuilt, and **0
+gone**; no other file's rendering moved (`EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes`, then
+`python3 build/s1f.6.28/shapes_moved.py`, the golden at HEAD against the tree's: 24 311 renderings to 24 479;
+`boxes12.ein`'s `states` by 2 099 lines, its two states and their facts written where one state was, and its
+read-outs by 11 lines each, the `owed` row and the states; the rest of the moves by a few lines each).
+
+**`alive_invariant.rs`**, by hand: `SEEDED` gains the four new files (149 to 153 entries): `before.ein` and
+`kinds_listed.ein`, `z` inside a number they write; `boxes13.ein`, as `boxes12.ein`; `listed_is_all.ein`, `z`
+in `unlisted-is-zero`'s conclusion. And `reading-owed`, asserted by rule `readings`, joins the lines of
+`readings.ein`, `boxes12.ein` and `boxes13.ein`.
+
+**E-48, met here.** `alive_invariant`'s R0 failed on the three files: *`reading-owed`, asserted by rule
+`readings` is a name of the program and not among the blind enumerator's objects … — the seed is gone*. The
+closing rule names the obligation, as it names every rule of the module, and must: leaving it out of the list
+leaves it out of the program that imports `readings`, measured (`boxes12.ein` with the name dropped from the
+list: 3 states, root owing nothing; with it moved to a fact of the module, the same; `build/s1f.6.28/p3/`). Named
+there, the obligation's name is seeded, the names index holding the rules' names and not the obligations', and
+it is no candidate object, an obligation's name being a rule's (`Program::categorise`). No answer depends on it.
+**Defaulted** ([Q-M1f.226](../open_questions.md#q-m1f226--an-obligations-name-in-a-closing-rule-and-alive_invariants-r0),
+(a), the user's to revise): R0 lists a seeded obligation's name and does not hold it to the objects, with a
+comment that says why; (b), the names index holding obligations' names, is the `ein-core` change that removes
+the asymmetry, and is left to a stage of its own.
+
+**No wrong answer of the engine was met**, so no row of `corpus/wrong_answers.toml` was filed: `before.ein`'s
+missing 7 is the theory's, which reads *gave* one way, and not the engine's, which answers the theory it is given.

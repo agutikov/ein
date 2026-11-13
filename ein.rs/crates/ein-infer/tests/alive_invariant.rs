@@ -33,7 +33,7 @@
 //! kind (a run of digits is a name since S1f.5.5's swap) — and the test that
 //! sweeps for it is [`no_run_reaches_a_name_the_program_does_not_have`].
 
-use ein_core::{FactId, Kb, Terms};
+use ein_core::{FactId, Kb, NameCategory, Terms};
 use ein_corpus::{corpus_files, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::invariant::{self, Universe};
@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 149] = [
+const SEEDED: [(&str, &[&str]); 153] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -930,7 +930,16 @@ const SEEDED: [(&str, &[&str]); 149] = [
     // hrule, `read-need`, in a conclusion, and its `need-pack-all-plan`
     // asserts `(add ?f (n z 1))`. `gap_assume.ein` and `kinds_assume.ein`
     // write `z` at top level, in `(assumed … z)`, and `gaps.ein` imports no
-    // number, so they are not here.
+    // number, so they are not here. M1f S1f.6.28 adds four: `boxes13.ein` as
+    // `boxes12.ein`; `before.ein` and `kinds_listed.ein`, `z` in a number they
+    // write; and `listed_is_all.ein`, whose `unlisted-is-zero` concludes
+    // `(assumed … z)`. `readings.ein`'s closing rule names its obligation,
+    // `reading-owed`, which its three files list and R0 does not hold to the
+    // objects (E-48).
+    (
+        "examples/word_problems/before.ein",
+        &["`z`, in (gave Bob Alice apples (n z 2) t0 t1)"],
+    ),
     (
         "examples/word_problems/bob1.ein",
         &["`z`, in (has Bob apples (n z 5) t0)"],
@@ -939,6 +948,15 @@ const SEEDED: [(&str, &[&str]); 149] = [
         "examples/word_problems/boxes12.ein",
         &[
             "`read-need`, asserted by rule `readings`",
+            "`reading-owed`, asserted by rule `readings`",
+            "`z`, in (has Bob apples (n z 5) now)",
+        ],
+    ),
+    (
+        "examples/word_problems/boxes13.ein",
+        &[
+            "`read-need`, asserted by rule `readings`",
+            "`reading-owed`, asserted by rule `readings`",
             "`z`, in (has Bob apples (n z 5) now)",
         ],
     ),
@@ -967,6 +985,14 @@ const SEEDED: [(&str, &[&str]); 149] = [
         &["`z`, in (has Bob apples (n z 5) now)"],
     ),
     (
+        "examples/word_problems/kinds_listed.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/listed_is_all.ein",
+        &["`z`, asserted by rule `unlisted-is-zero`"],
+    ),
+    (
         "examples/word_problems/more.ein",
         &["`z`, in (has Bob apples (n z 5) now)"],
     ),
@@ -979,6 +1005,7 @@ const SEEDED: [(&str, &[&str]); 149] = [
         &[
             "`1`, asserted by rule `need-pack-all-plan`",
             "`read-need`, asserted by rule `readings`",
+            "`reading-owed`, asserted by rule `readings`",
             "`z`, asserted by rule `need-pack-all-plan`",
         ],
     ),
@@ -1030,6 +1057,18 @@ fn every_name_of_the_program_is_a_candidate_object() {
         }
         let objects = ein_infer::candidate_objects(&kb, &terms, &ast);
         for c in invariant::seeded(&kb, &terms, &ast) {
+            // An obligation's name is a rule's (`Program::categorise`, M1d
+            // S1d.2.4), which the blind enumerator never guesses, so it is no
+            // object; the names index unions the rules' names and not the
+            // obligations', so it is seeded where a rule names one as a value,
+            // as a closing rule does to bring it with its import (M1f S1f.6.28,
+            // E-48). Listed, and not held to the objects.
+            if kb.category(&terms, c.name) == NameCategory::Rule
+                && kb.program().obligations.contains(c.name)
+            {
+                found.push((rel.clone(), c.render(&terms)));
+                continue;
+            }
             assert!(
                 objects.contains(&c.name),
                 "{rel}: {} is a name of the program and not among the blind \

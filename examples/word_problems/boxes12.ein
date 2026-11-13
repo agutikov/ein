@@ -1,8 +1,11 @@
 ;;; Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?
 ;;; Three numbers and two steps, and the program is the plan: *they* means
-;;; together, so 5 + 7 = 12; a box *holds* 3, so 12 / 3 = 4. Nothing is left
-;;; over, so the readings of *need* agree: none is proposed, and the problem
-;;; is search-free.
+;;; together, so 5 + 7 = 12; a box *holds* 3, so 12 / 3 = 4. A reading of
+;;; *need* is always chosen (`readings`, owed), so R is two states, one a
+;;; reading each, and both answer 4, since nothing is left over: two
+;;; solutions and one answer. Neither state's trace has a step: the answer is
+;;; root's, `need-exact`, *whatever need means*, and the reading each state
+;;; supposes is one no rule reads.
 (import words :symbols (words))
 (import readings :symbols (readings))
 
@@ -11,7 +14,9 @@
 (holds boxes apples (n z 3)    :source "A box holds 3.")
 (asked (needed boxes apples (together Bob Alice apples now)) :source "How many boxes do they need?")
 
-(solve :hrules (read-need))
+(solve :hrules (read-need)
+       :expect (region (model (reads-as need pack-all))
+                       (model (reads-as need whole-only))))
 
 (query :goal (and (asked ?q) (value ?q ?n))
        :goal-text "{?q}: {?n}"
@@ -19,6 +24,7 @@
                       (value (needed boxes apples (together Bob Alice apples now)) (n z 4))))
 (query :goal (reads-as need ?m)
        :goal-text "need is read as {?m}"
-       :expect (model))
+       :expect (or (model (reads-as need pack-all))
+                   (model (reads-as need whole-only))))
 (query :goal (model-counts-only)
        :goal-text "this answer holds in a model where things are counted by number alone: a box holds any 3 apples")

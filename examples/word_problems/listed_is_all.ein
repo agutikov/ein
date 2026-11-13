@@ -1,0 +1,47 @@
+;;; `listed_is_all` — *what is not listed is zero*, an assumption a problem
+;;; adopts by importing this module (M1f P1f.6, S1f.6.28, on the user's reply
+;;; 32 of 2026-11-12: *"what is not listed is zero - good idea, it could be a
+;;; reusable universal assumption"*, and round 2's: *"relation arguments are
+;;; marked with some objects that can be treated as types. So can add a rule
+;;; that assigns zero to every unknown"*). It is adopted for one relation,
+;;; `has`, and says so in a fact, `(adopted listed-is-all has)`, which every
+;;; zero it derives rests on. The arguments of `has` are typed, `(relation has
+;;; Who Kind Number Moment)`: at each moment its sentences are about, the rule
+;;; ranges over every holder (Who) and every kind (Kind) they name, and where
+;;; no sentence lists an amount of that kind for that holder it derives one,
+;;; zero, as the problem's assumption: `(assumed (amount WHO KIND MOMENT) z)`,
+;;; the marked fact a problem otherwise writes by hand (`kinds_assume.ein`).
+;;; With `gaps` imported, an answer computed from it carries `rests-on`.
+;;;
+;;; It is an assumption and not what the words mean, and it does not hold of
+;;; every relation: in the Zebra puzzle a house with no one listed in it is a
+;;; house whose owner is not known yet, and the same rule would conclude that
+;;; nobody lives there.
+;;;
+;;; It reads `absent` over `has`, so it is kept apart from `words`, which has
+;;; none, as `gaps` is; and a problem that imports it states that `has` is no
+;;; hypothesis relation, `(solve :no-hypothesis (has))`, so that what is
+;;; listed is decided at root. Import it beside `words` and `gaps`:
+;;; `(import listed_is_all :symbols (listed-is-all))`.
+(import words :symbols (has amount assumed))
+
+(relation adopted Assumption Relation
+  :why "ASSUMED, and not a sentence of the problem: {?1} is adopted for {?2}")
+(adopted listed-is-all has
+  :source "ASSUMPTION, not in the problem: the problem lists everything each has, so what it does not list of a kind, they have none of")
+
+(rule unlisted-is-zero ()
+  :match  (and (adopted listed-is-all has)
+               (has ?p ?a ?x ?t) (has ?b ?k ?y ?t)
+               (absent (has ?p ?k ?v ?t)))
+  :assert (assumed (amount ?p ?k ?t) z)
+  :why    "the problem lists what {?p} has at {?t}, and lists {?k}, and does not list any {?k} for {?p}: what is listed is all, so {?p} has none")
+
+(relation listed-is-all-rule Rule
+  :why "{?1} is a rule of listed_is_all")
+(listed-is-all-rule listed-is-all)
+(rule listed-is-all ()
+  :match  ()
+  :assert (and (__closed__ adopted) (__closed__ listed-is-all-rule)
+               (listed-is-all-rule unlisted-is-zero))
+  :why    "the assumption guesses nothing: what it adopts is stated, and every zero it derives is marked as assumed")

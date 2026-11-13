@@ -1587,6 +1587,9 @@
 0    examples/syntax/unary-and-nary.ein :: saturate
 1    examples/syntax/wrappers.ein :: render rules
 0    examples/syntax/wrappers.ein :: saturate
+0    examples/word_problems/before.ein :: saturate
+0    examples/word_problems/before.ein :: solve
+0    examples/word_problems/before.ein :: test
 0    examples/word_problems/bob1.ein :: saturate
 0    examples/word_problems/bob1.ein :: solve
 0    examples/word_problems/bob1.ein :: test
@@ -1594,6 +1597,10 @@
 0    examples/word_problems/boxes12.ein :: solve
 0    examples/word_problems/boxes12.ein :: solve --trace {out}/trace.md
 0    examples/word_problems/boxes12.ein :: test
+0    examples/word_problems/boxes13.ein :: saturate
+0    examples/word_problems/boxes13.ein :: solve
+0    examples/word_problems/boxes13.ein :: solve --trace {out}/trace.md
+0    examples/word_problems/boxes13.ein :: test
 0    examples/word_problems/bystander.ein :: saturate
 0    examples/word_problems/bystander.ein :: solve
 0    examples/word_problems/bystander.ein :: test
@@ -1620,6 +1627,11 @@
 0    examples/word_problems/kinds_full.ein :: saturate
 0    examples/word_problems/kinds_full.ein :: solve
 0    examples/word_problems/kinds_full.ein :: test
+0    examples/word_problems/kinds_listed.ein :: saturate
+0    examples/word_problems/kinds_listed.ein :: solve
+0    examples/word_problems/kinds_listed.ein :: test
+0    examples/word_problems/listed_is_all.ein :: render rules
+0    examples/word_problems/listed_is_all.ein :: saturate
 0    examples/word_problems/more.ein :: saturate
 0    examples/word_problems/more.ein :: solve
 0    examples/word_problems/more.ein :: test
