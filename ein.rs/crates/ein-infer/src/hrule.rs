@@ -75,6 +75,13 @@ impl Hrules {
         Ok(Hrules { plans })
     }
 
+    /// The compiled plans, in the generator's order: one per hrule without
+    /// parameters and one per activator of one with them
+    /// ([`crate::mechanisms`] reads which hrule and activator each is).
+    pub(crate) fn plans(&self) -> &[Arc<Plan>] {
+        &self.plans
+    }
+
     /// The relations these plans conclude — what an hrule-driven search can
     /// still propose, for M1e S1e.2.3's eligibility
     /// ([`crate::hypgen::eligible_relations`]) and, since M1e2 S1e2.2.8, what

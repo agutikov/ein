@@ -44,6 +44,7 @@ pub mod hypgen;
 pub mod invariant;
 pub mod lookahead;
 pub mod match_;
+pub mod mechanisms;
 pub mod monotone;
 pub mod mt19937;
 pub mod naf_deps;
