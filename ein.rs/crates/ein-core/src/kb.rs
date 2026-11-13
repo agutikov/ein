@@ -1487,11 +1487,17 @@ impl Kb {
             }
         }
         // Registry names are unioned in, so a relation declared with no facts
-        // yet still has an entry.
+        // yet still has an entry. An obligation's name is a rule's
+        // (`Program::categorise`), so it is unioned in as a rule's is, and a
+        // rule that names one as a value seeds nothing (M1f Q-M1f.226 (b),
+        // E-48).
         for name in self.program.relations.keys() {
             layer.names.entry(name);
         }
         for name in self.program.rules.keys() {
+            layer.names.entry(name);
+        }
+        for name in self.program.obligations.keys() {
             layer.names.entry(name);
         }
         layer
@@ -1557,6 +1563,7 @@ impl Kb {
             .relations
             .keys()
             .chain(self.program.rules.keys())
+            .chain(self.program.obligations.keys())
         {
             flat.names.entry(name);
         }

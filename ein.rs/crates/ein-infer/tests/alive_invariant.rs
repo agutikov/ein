@@ -33,7 +33,7 @@
 //! kind (a run of digits is a name since S1f.5.5's swap) — and the test that
 //! sweeps for it is [`no_run_reaches_a_name_the_program_does_not_have`].
 
-use ein_core::{FactId, Kb, NameCategory, Terms};
+use ein_core::{FactId, Kb, Terms};
 use ein_corpus::{corpus_files, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::invariant::{self, Universe};
@@ -934,8 +934,8 @@ const SEEDED: [(&str, &[&str]); 153] = [
     // `boxes12.ein`; `before.ein` and `kinds_listed.ein`, `z` in a number they
     // write; and `listed_is_all.ein`, whose `unlisted-is-zero` concludes
     // `(assumed … z)`. `readings.ein`'s closing rule names its obligation,
-    // `reading-owed`, which its three files list and R0 does not hold to the
-    // objects (E-48).
+    // `reading-owed`, which the names index holds since Q-M1f.226 (b), as it
+    // holds a rule's name, so it is not seeded (E-48).
     (
         "examples/word_problems/before.ein",
         &["`z`, in (gave Bob Alice apples (n z 2) t0 t1)"],
@@ -948,7 +948,6 @@ const SEEDED: [(&str, &[&str]); 153] = [
         "examples/word_problems/boxes12.ein",
         &[
             "`read-need`, asserted by rule `readings`",
-            "`reading-owed`, asserted by rule `readings`",
             "`z`, in (has Bob apples (n z 5) now)",
         ],
     ),
@@ -956,7 +955,6 @@ const SEEDED: [(&str, &[&str]); 153] = [
         "examples/word_problems/boxes13.ein",
         &[
             "`read-need`, asserted by rule `readings`",
-            "`reading-owed`, asserted by rule `readings`",
             "`z`, in (has Bob apples (n z 5) now)",
         ],
     ),
@@ -1005,7 +1003,6 @@ const SEEDED: [(&str, &[&str]); 153] = [
         &[
             "`1`, asserted by rule `need-pack-all-plan`",
             "`read-need`, asserted by rule `readings`",
-            "`reading-owed`, asserted by rule `readings`",
             "`z`, asserted by rule `need-pack-all-plan`",
         ],
     ),
@@ -1057,18 +1054,6 @@ fn every_name_of_the_program_is_a_candidate_object() {
         }
         let objects = ein_infer::candidate_objects(&kb, &terms, &ast);
         for c in invariant::seeded(&kb, &terms, &ast) {
-            // An obligation's name is a rule's (`Program::categorise`, M1d
-            // S1d.2.4), which the blind enumerator never guesses, so it is no
-            // object; the names index unions the rules' names and not the
-            // obligations', so it is seeded where a rule names one as a value,
-            // as a closing rule does to bring it with its import (M1f S1f.6.28,
-            // E-48). Listed, and not held to the objects.
-            if kb.category(&terms, c.name) == NameCategory::Rule
-                && kb.program().obligations.contains(c.name)
-            {
-                found.push((rel.clone(), c.render(&terms)));
-                continue;
-            }
             assert!(
                 objects.contains(&c.name),
                 "{rel}: {} is a name of the program and not among the blind \
