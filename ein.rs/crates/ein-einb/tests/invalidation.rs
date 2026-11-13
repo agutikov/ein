@@ -134,7 +134,6 @@ fn a_stdlib_that_moved_under_the_file_is_a_cache_miss() {
     let meta = Meta {
         engine: ein_einb::engine_version().to_string(),
         writer: "test".to_string(),
-        created_unix: 0,
         state: KbState::Saturated,
         config: None,
         sources: Vec::new(),
@@ -223,16 +222,19 @@ fn file_of(sections: &[(u32, Vec<u8>)]) -> Vec<u8> {
     out.into_vec()
 }
 
-/// **A file that holds an integer is refused, never misread** — M1f S1f.5.4.
+/// **A file that holds an integer is refused, never misread** — M1f S1f.5.4,
+/// at format 2.0.
 ///
 /// Ein has had no int since the kind was retired: a run of digits is a name
-/// since S1f.5.5's swap, and `INTS` is written empty. A file a writer before
-/// then wrote from a program with an int holds two things no file since does:
-/// an `INTS` entry, and a value tagged `0b01` in `FACTS`. Each is built here
-/// on a file this writer wrote, at its layout and with its digest good, and
-/// each is refused with [`EinbError::Int`]'s sentence, where reading it as a
-/// name or a fact would have been a wrong answer. The file as written opens,
-/// and a name of digits in it is a name.
+/// since S1f.5.5's swap. Through format 1.2 an empty `INTS` section (kind 3)
+/// stayed in every file; 2.0 dropped it (Q-M1f.10 (b)), so what this writer
+/// writes has no section of kind 3. What a writer before S1f.5.4 wrote from a
+/// program with an int is refused on two grounds, each built here on a file
+/// this writer wrote, its digest good: its header says 1.x, refused with the
+/// version line; and a value tagged `0b01` in `FACTS`, refused with
+/// [`EinbError::Int`]'s sentence, where reading it as a name or a fact would
+/// have been a wrong answer. The file as written opens, and a name of digits in
+/// it is a name.
 #[test]
 fn a_file_that_holds_an_integer_is_refused() {
     let text = "(relation p T :why \"p holds of {?1}\")\n(p 7)\n(p 07)\n";
@@ -252,42 +254,33 @@ fn a_file_that_holds_an_integer_is_refused() {
     assert_eq!(stored, ["(p 07)", "(p 7)"], "`7` and `07` are two names");
 
     let sections = sections_of(&bytes);
-    let ints = ein_einb::Kind::Ints as u32;
-    let facts = ein_einb::Kind::Facts as u32;
-    let empty = sections
-        .iter()
-        .find(|(k, _)| *k == ints)
-        .expect("an INTS section");
-    assert_eq!(
-        empty.1,
-        [0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "INTS is the empty table: no entry, no text, one offset, padded"
+    assert!(
+        sections.iter().all(|(k, _)| *k != 3),
+        "no INTS section (kind 3) since format 2.0"
     );
 
-    // An `INTS` entry: the table a 1.x writer wrote for a pool holding `7`.
-    let mut one = ein_einb::wire::Writer::new();
-    for word in [1u32, 1, 0, 1] {
-        one.u32(word);
-    }
-    one.bytes(b"7");
-    one.align(ein_einb::header::ALIGN);
-    let with_entry: Vec<(u32, Vec<u8>)> = sections
-        .iter()
-        .map(|(k, b)| {
-            (
-                *k,
-                if *k == ints {
-                    one.as_slice().to_vec()
-                } else {
-                    b.clone()
-                },
+    // A 1.x file: this one, its header's version set to the last 1.x, 1.2.
+    // The digest is over what follows the header, so it stays good.
+    let mut old = bytes.clone();
+    old[8..10].copy_from_slice(&1u16.to_le_bytes());
+    old[10..12].copy_from_slice(&2u16.to_le_bytes());
+    let mut terms = Terms::new();
+    match ein_einb::open_bytes(&old, &mut terms, &OpenOptions::default()) {
+        Err(e @ EinbError::Version { major: 1, minor: 2 }) => assert_eq!(
+            e.to_string(),
+            format!(
+                ".einb format 1.2 — this engine reads {}.x",
+                ein_einb::FORMAT_MAJOR
             )
-        })
-        .collect();
+        ),
+        Err(e) => panic!("a 1.x file: refused for another reason: {e}"),
+        Ok(_) => panic!("a 1.x file: opened"),
+    }
 
     // A value tagged `0b01` in `FACTS`: the first argument of the first row,
     // its two tag bits an int's (`n_rows`, `n_args`, the 12-byte rows, then
     // the argument arena).
+    let facts = ein_einb::Kind::Facts as u32;
     let with_tag: Vec<(u32, Vec<u8>)> = sections
         .iter()
         .map(|(k, b)| {
@@ -301,22 +294,15 @@ fn a_file_that_holds_an_integer_is_refused() {
             (*k, b)
         })
         .collect();
-
-    for (what, sections) in [
-        ("an INTS entry", with_entry),
-        ("a value tagged 0b01", with_tag),
-    ] {
-        let file = file_of(&sections);
-        let mut terms = Terms::new();
-        match ein_einb::open_bytes(&file, &mut terms, &OpenOptions::default()) {
-            Err(e @ EinbError::Int) => assert_eq!(
-                e.to_string(),
-                ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
-                 digits is a name): save it again from its .ein",
-                "{what}"
-            ),
-            Err(e) => panic!("{what}: refused for another reason: {e}"),
-            Ok(_) => panic!("{what}: opened"),
-        }
+    let file = file_of(&with_tag);
+    let mut terms = Terms::new();
+    match ein_einb::open_bytes(&file, &mut terms, &OpenOptions::default()) {
+        Err(e @ EinbError::Int) => assert_eq!(
+            e.to_string(),
+            ".einb holds an integer, which Ein has not had since M1f S1f.5.4 (a run of \
+             digits is a name): save it again from its .ein"
+        ),
+        Err(e) => panic!("a value tagged 0b01: refused for another reason: {e}"),
+        Ok(_) => panic!("a value tagged 0b01: opened"),
     }
 }

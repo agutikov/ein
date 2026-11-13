@@ -31,12 +31,7 @@ use crate::{EinbError, Result};
 /// the decoder recurses and the input may be arbitrary bytes.
 const MAX_NAF_DEPTH: u32 = 64;
 
-// ── SYMBOLS / INTS ─────────────────────────────────────────────────
-//
-// `INTS` is a string table like `SYMBOLS`, and since M1f S1f.5.4 an empty one:
-// Ein has no int (a run of digits is a name since S1f.5.5's swap), and the
-// section stays in the layout so that a file reads as it did, in either
-// direction, with no format bump (`crate` § What is in a file).
+// ── SYMBOLS ────────────────────────────────────────────────────────
 
 /// A string table: `count`, the blob length, `count + 1` prefix-sum offsets,
 /// then the blob.
@@ -95,25 +90,6 @@ pub fn read_symbols(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<(
     for i in 0..offsets.len() - 1 {
         maps.sym
             .push(terms.intern_text(nth_str(&offsets, blob, i)?)?);
-    }
-    Ok(())
-}
-
-/// The empty integer table every file carries since M1f S1f.5.4: the bytes
-/// the int pool's table had when it held nothing, which it did for every
-/// program since S1f.5.5's swap.
-pub fn write_ints() -> Vec<u8> {
-    write_strings(0, |_| unreachable!("an empty table has no entry"))
-}
-
-/// Refuse a file whose integer table holds an entry — one written before M1f
-/// S1f.5.4 from a program with an int — rather than read it as anything else.
-/// An empty table is what every writer since writes, and what one before
-/// wrote for a program with none.
-pub fn read_ints(body: &[u8]) -> Result<()> {
-    let (offsets, _) = read_strings(body)?;
-    if offsets.len() > 1 {
-        return Err(EinbError::Int);
     }
     Ok(())
 }

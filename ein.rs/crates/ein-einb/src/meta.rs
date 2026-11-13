@@ -79,16 +79,18 @@ impl Source {
     }
 }
 
+/// What a container was made from: every field is an input of the bytes that
+/// follow it, so **a save is a function of the program, its state and the
+/// engine**, and saving a container again writes the bytes it was opened from.
+/// No clock is read: until format 2.0 a `created_unix` field held the second
+/// the file was written in, which nothing compared, and which made two saves of
+/// one program differ by that second and the header's digest over it.
 #[derive(Clone, PartialEq, Debug)]
 pub struct Meta {
     /// The engine semver that wrote the file.
     pub engine: String,
     /// Free text naming the writer, for a human reading a `.einb` header.
     pub writer: String,
-    /// Seconds since the Unix epoch, or `0` when the clock was unreadable.
-    /// Informational only: nothing compares it, because a cache keyed on time
-    /// is a cache that expires correct answers.
-    pub created_unix: u64,
     pub state: KbState,
     /// The `SolverConfig` in force when the file was written — the same
     /// resolution `solve` did, banked, so a reader can see what produced the
@@ -147,7 +149,6 @@ impl Meta {
     pub fn write(&self, w: &mut Writer) {
         w.str(&self.engine);
         w.str(&self.writer);
-        w.u64(self.created_unix);
         w.u8(self.state.tag());
         w.bytes(&self.stdlib);
         w.u32(self.sources.len() as u32);
@@ -167,7 +168,6 @@ impl Meta {
     pub fn read(r: &mut Reader<'_>) -> Result<Meta> {
         let engine = r.str()?.to_string();
         let writer = r.str()?.to_string();
-        let created_unix = r.u64()?;
         let state = KbState::from_tag(r.u8()?)?;
         let stdlib = r.array::<32>()?;
         // 4 bytes of path length + 32 of digest is the floor for one source.
@@ -187,7 +187,6 @@ impl Meta {
         Ok(Meta {
             engine,
             writer,
-            created_unix,
             state,
             config,
             sources,

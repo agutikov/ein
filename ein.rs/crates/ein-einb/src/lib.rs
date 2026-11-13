@@ -13,8 +13,8 @@
 //!
 //! ## What is in a file
 //!
-//! `META` (what it was made from), `SYMBOLS` / `INTS` / `FACTS` (the interned
-//! tables, in id order; `INTS` empty since M1f S1f.5.4, below), `PRESENT`
+//! `META` (what it was made from), `SYMBOLS` / `FACTS` (the interned
+//! tables, in id order), `PRESENT`
 //! (which of those facts this KB believes, in
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
@@ -22,18 +22,20 @@
 //! S1e2.2.11) `CLOSURE` (each derived fact's closure and smallest-closure
 //! arrival, which a full alternatives list keeps beside it), and since format
 //! 1.2 (M1e2 S1e2.2.21) `UNIVERSAL` (the facts each derivation's universals
-//! read, which a core follows).
+//! read, which a core follows). **Format 2.0** (2026-11-13) is 1.2 with no
+//! time in `META`, so a save is a function of what was saved ([`Meta`]), and
+//! with no `INTS` (below); this reader opens 2.x alone, and a 1.x file is
+//! refused with the version line.
 //!
-//! **`INTS` is empty, and a file whose `INTS` is not is refused** (M1f
-//! S1f.5.4). Ein has no int since S1f.5.5's swap, which made a run of digits a
-//! name, so the int pool and its id space are gone. The section stays in the
-//! layout, written empty and required, so that no layout changed and no
-//! version moved (design/10 §4 bumps the major on a layout change): a 1.x
-//! reader opens what this writer writes, and this reader opens what a 1.x
-//! writer wrote for a program with no int, which was every program a corpus
-//! file is. A file written from a program with one holds an `INTS` entry and
-//! values tagged `0b01`, and each is refused, [`EinbError::Int`], never read
-//! as a name or a fact.
+//! **No `INTS`, and a value with an int's tag is refused** (M1f S1f.5.4).
+//! Ein has no int since S1f.5.5's swap, which made a run of digits a name, so
+//! the int pool and its id space are gone. Through format 1.2 the integer
+//! table stayed in the layout, written empty and required, so that no version
+//! moved (design/10 §4 bumps the major on a layout change; M1f Q-M1f.10's
+//! default (a)); 2.0, whose major moved for `META`, dropped it (Q-M1f.10 (b),
+//! the user's word of 2026-11-13), and its kind number, 3, is not reused. A
+//! value tagged `0b01`, which only a 1.x writer wrote, for a program with an
+//! int, is refused, [`EinbError::Int`], never read as a name or a fact.
 //!
 //! ## What is not a section
 //!
@@ -151,9 +153,9 @@ pub enum EinbError {
     /// The file disagrees with itself: re-interning entry *i* did not yield
     /// the id the file says it has.
     NotInjective(&'static str),
-    /// The file holds an integer — an `INTS` entry or a value with an int's
-    /// tag bits — which a 1.x writer wrote for a program with an int before
-    /// M1f S1f.5.4 retired the kind. There is no value to read it as.
+    /// The file holds an integer — a value with an int's tag bits — which only
+    /// a 1.x writer wrote, for a program with an int, before M1f S1f.5.4
+    /// retired the kind. There is no value to read it as.
     Int,
 }
 
@@ -236,7 +238,6 @@ pub fn save_to_vec(
         w.into_vec()
     }));
     bodies.push((Kind::Symbols, sections::write_symbols(terms)));
-    bodies.push((Kind::Ints, sections::write_ints()));
     bodies.push((Kind::Facts, sections::write_facts(terms)));
     bodies.push((Kind::Present, sections::write_present(kb)));
     let kept = sections::Kept::of(kb);
@@ -311,10 +312,6 @@ fn meta_for(opts: &SaveOptions, kb: &Kb) -> Meta {
     Meta {
         engine: engine_version().to_string(),
         writer: format!("ein-einb {}", engine_version()),
-        created_unix: std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs())
-            .unwrap_or(0),
         state: opts.state,
         config: kb.program().config.clone(),
         sources: opts.sources.clone(),
@@ -446,7 +443,6 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
 
     let mut maps = tables::Maps::default();
     sections::read_symbols(want(Kind::Symbols, "SYMBOLS")?, terms, &mut maps)?;
-    sections::read_ints(want(Kind::Ints, "INTS")?)?;
     sections::read_facts(want(Kind::Facts, "FACTS")?, terms, &mut maps)?;
     let remapped = !maps.identity();
 
@@ -467,12 +463,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     let (loaded, forms) =
         sections::load_program(&program, &mut ast, terms, opts.query, &opts.load, &name)?;
 
-    // A file written before format 1.2 carries no record's universals (M1e2
-    // S1e2.2.21), which a core follows on root's derivations as on a node's:
-    // its derived state would report other cores than its `.ein`, so it is
-    // dropped as a stale engine's is, and the program re-saturates.
-    let lacks_universals = head.minor < 2;
-    if meta.state.is_derived() && (!freshness.keeps_derived() || lacks_universals) {
+    if meta.state.is_derived() && !freshness.keeps_derived() {
         return Ok(Opened {
             kb: loaded,
             ast,
@@ -495,12 +486,8 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
     if let Some(body) = found[Kind::Nogoods as usize] {
         sections::read_nogoods(body, &kb, &maps)?;
     }
-    // A file written before format 1.1 carries no closures: its derived
-    // facts take their primaries' (M1e2 S1e2.2.11).
-    match found[Kind::Closure as usize] {
-        Some(body) => sections::read_closure(body, &mut kb, &maps)?,
-        None if head.minor < 1 => kb.rebuild_closures(terms),
-        None => {}
+    if let Some(body) = found[Kind::Closure as usize] {
+        sections::read_closure(body, &mut kb, &maps)?;
     }
     // The rebuild is from the file's fact list; the rules-by-relation snapshot
     // is not, and `loaded` is where a load-time one comes from.

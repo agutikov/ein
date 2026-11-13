@@ -25,7 +25,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.7](#q-m1f7--where-may-a-program-write-the-kernels-dunders) | where may a program write the kernel's dunders? | **ruled 2026-11-08, (b)**: never bound; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T11 |
 | [Q-M1f.8](#q-m1f8--the-parsers-remaining-cost-within-grmtools-or-past-it) | the parser's remaining cost: within grmtools, or past it? | **defaulted 2026-11-09 (the user's instruction): within grmtools; alternatives parked for the close**; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T12 |
 | [Q-M1f.9](#q-m1f9--what-a-deleted-loader-line-leaves-behind) | what a deleted loader line leaves behind | **ruled 2026-11-09, (a)** (*"ok, keep (a), continue"*; defaulted the same day): an `expect`, `unreachable!` or `assert!` naming the grammar's production; a hand-built `Ast` the grammar would refuse panics, which no `ein` command reaches; [S1f.5.5](p1f.5_the_no_owner_items/s1f.5.5_the_grammar.md)'s T5 |
-| [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **defaulted 2026-11-09 (the user's instruction): the section stays, written empty, and a file that holds an int is refused; no format bump**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
+| [Q-M1f.10](#q-m1f10--the-einb-ints-section-once-the-int-kind-is-gone) | the `.einb` `INTS` section, once the int kind is gone | **re-ruled 2026-11-13, (b)** (*"yes, do it"*): dropped at format 2.0, whose major moved for `META`'s timestamp; defaulted (a) 2026-11-09; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 |
 | [Q-M1f.11](#q-m1f11--a-template-reference-to-a-variable-no-reference-can-name) | a template reference to a variable no reference can name | **defaulted 2026-11-09 (the user's instruction): the loader refuses it, one line a reference**; [S1f.5.4](p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.5 |
 | [Q-M1f.12](#q-m1f12--which-surfaces-carry-natural-language-text) | which surfaces carry natural-language text | **defaulted 2026-11-09 (the user's instruction): those that carried it before the swap, each held byte for byte; none added**; [S1f.5.2](p1f.5_the_no_owner_items/s1f.5.2_strings_are_natural_language.md)'s T1f.5.2.2 |
 | [Q-M1f.13](#q-m1f13--f3s-cause-reaches-a-disjunction-whose-row-is-it) | F3's cause reaches a disjunction: whose row is it? | **defaulted 2026-11-09 (the user's instruction): W39, `open`, deferred to F22, as W25 is**; [S1f.5.1](p1f.5_the_no_owner_items/s1f.5.1_bare_underscore_refused.md)'s T1f.5.1.3 |
@@ -577,6 +577,16 @@ decisions till the end of the phase"*. (a) is the agent's recommendation: the pl
 go, and (a) keeps its bytes so that nothing needs one; it moves no golden and no output (`ein-einb/tests/invalidation.rs`'
 `a_file_that_holds_an_integer_is_refused` builds both shapes of an old file and holds the refusal), and the next
 major bump, whenever one is made, can drop the section. Re-opening it means (b).
+
+**Re-ruled 2026-11-13: (b), at format 2.0.** The per-commit CI went red on `einb_cli`'s
+`a_container_saved_again_is_the_container` (runs 43396694686 and 43433241494): `META`'s `created_unix`, the second a
+file was saved in, under the header's digest, made two saves of one program differ wherever they crossed a second.
+On the user's *"remove"* the field went, a layout change and so a major bump, 1.2 to 2.0; the coordinator then put
+this question again, since the bump (a) avoided was being made anyway, and the user said *"yes, do it"*. The `INTS`
+section is not written, not read and not required; its kind number, 3, is retired and not reused, so a section of
+kind 3 is an unknown one and skipped; a 1.x file is refused with the version line, and a value tagged `0b01` still
+with `EinbError::Int`'s sentence. `a_file_that_holds_an_integer_is_refused` holds the three: no kind 3 in what
+the writer writes, a 1.2 header refused, a tagged value refused.
 
 ### Q-M1f.11 — A template reference to a variable no reference can name
 
