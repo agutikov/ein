@@ -1,6 +1,7 @@
 # M1j — `nlp/` and `smt/` as one proof of concept: Zebra sentences through link grammar to SMT
 
-**Status:** **done 2026-11-13**, on branch `m1j`; planned 2026-11-12, on the user's note of that day. **A
+**Status:** **done 2026-11-13**, built on branch `m1j` and merged into master the same day as `3d941d81`
+([§ The merge](#the-merge)); planned 2026-11-12, on the user's note of that day. **A
 small milestone:** one README, its tasks as sections, no phase directories. It carries no estimate (the
 user's ruling of 2026-11-08).
 **Depends on:** nothing in the engine. It uses the two scratch areas, [`nlp/`](../../nl2smt/README.md) and
@@ -365,3 +366,28 @@ Each is the user's to revise.
 - **The submodules.** Neither is re-added; each one command is in `nl2smt/README.md`.
 - **Anything sent upstream.** The parser's unlinked *Old* and the unset heights in its postscript output
   are worked around here and noted on the folder's page.
+
+### The merge
+
+The branch was merged into master from the root as `3d941d81` (2026-11-13), a merge commit over the four
+above, and the branch and its worktree were removed.
+
+**Checked on the branch before the merge**, by the coordinator, on the tools above (2026-11-13):
+`python3 nl2smt/nl2smt.py nl2smt/puzzles/zebra.txt`, one solution and no other, the two answers right;
+`python3 nl2smt/test_pipeline.py`, 9 tests OK, cvc5, z3 and cvc4 each run; and inputs the branch does not
+bank, each read from its parse:
+
+| the edit | what the pipeline says |
+|---|---|
+| *red* and *green* exchanged through the text | one solution and no other, the two colours exchanged |
+| the clue *The Norwegian lives in the first house.* dropped | more than 20 solutions (`--solutions 20`) |
+| *The Japanese lives in the house next to the man who drinks tea.* | `(assert (near nation-Japanese drink-tea))` |
+| *The man who owns the zebra smokes Kools.* | `(assert (= pet-zebra smoke-Kools))` |
+| *The blue house is immediately to the right of the house where the fox is kept.* | `(assert (order pet-fox colour-blue))` |
+| *There are four houses.* with *Milk is drunk in the middle house.* | refused: *line 2: 4 houses have no middle one* |
+| *The dog owns the Spaniard.* | refused: *"owns" wants a pet, which "Spaniard" is not* |
+| the two questions replaced by *Who lives in the green house?* and *Who smokes Kools?* | *Japanese* and *Norwegian* |
+
+**The gate on the merged tree**: `./run_tests.sh` on `3d941d81` in a detached worktree, exit 0
+(2026-11-13, `build/m1j/gate-merge.log`), its link check over 508 pages with no finding. The pipeline's own
+tests are not among its steps, as § Left out says.
