@@ -1,7 +1,7 @@
 # S1f.6.30 — Name clashes between imported theories: investigation, proposals, and a stop
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1 done
+**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13:** T1 and T2 done
 ([the record](#record-2026-11-13)). **An investigation that stops
 for the user** before any change to the grammar or to what an import means; its first task, the tagged calls
 as an interface, changes neither and is built.
@@ -210,4 +210,24 @@ stdlib_semantics` 16; `cargo test -p ein-ir`, every binary green, `the_embedded_
 them; `cargo test -p ein-cli --test arith_search_free` 2 passed; `cargo fmt --all --check`, `cargo clippy
 --workspace --all-targets -- -D warnings` and `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`,
 clean. No corpus answer, golden or printed line moves: the modules moved in comments alone.
+
+### T1f.6.30.2 — what mixing and connecting two theories does today, done
+
+[`import_clashes.md` § 2](import_clashes.md#2-the-probes-t2): twenty-five rows, each a program or two with its output, in
+one table; every case of the task's list and four more, P4c to P4f (a written fact of the wrong count, one of
+the right count, and the two names the census of T3 shows real programs meet, a rule `add-column` and a
+relation `b`), P8 (a core and a trace under a prefix) and P10 (a stack of theories, each `:as`). Programs
+under `build/s1f.6.30/p/`, run by `build/s1f.6.30/run.sh` on the release binary at `2ef68530`, each in a
+`systemd-run --user --scope` of 2 GB and no swap and killed after 60 s, 2026-11-13; the facts by relation
+from `ein saturate`'s state before saturation. The first run of the runner had no cap: P7a declared `price`,
+`total` and `fee-of` and left them open, so describing R searched them, and was stopped at 4 GB; every probe
+since closes the relations it declares, and every run is capped.
+
+**What it found.** Flat imports connect by name (P1a, P1b, P6): the tables arrive once, and every shipped
+module and example theory loads flat beside every other (P6c), each but `std.arith` having names of its own.
+The same sharing is the clash (P2, P4): a declaration of a name a flat theory declares is refused with the
+first name and no place, and a written fact of the right count joins the theory's relation in silence (P4d).
+`:as` is the way out and shares nothing (P3, P5, P10): the tables arrive once per prefix, 3 656 facts where
+one calculator is 1 839, and two theories under two prefixes connect only through undeclared names, the
+digits. A mistake under `:as` is silence (P3c, P7b, P7c): **E-49**, filed. No wrong answer of the engine.
 
