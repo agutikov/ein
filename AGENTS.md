@@ -518,9 +518,15 @@ constrained-reasoning research.
   where that is spelled out: no propagation, no domains, nothing learned from
   a dead subtree, and every condition compiled code that only answers this one
   puzzle.
-- **`nl2smt/`** — natural language and SMT in one folder (`nlp/` and `smt/`
-  until [M1j](plans/m1j_nlp_smt_poc/README.md)), wired into nothing: no crate
-  depends on it and the gate does not run it. `nl2smt/smt/` holds three
+- **`nl2smt/`** — **the Zebra puzzle's sentences through link grammar to
+  SMT**, a proof of concept ([M1j](plans/m1j_nlp_smt_poc/README.md); `nlp/`
+  and `smt/` until then), wired into nothing: no crate depends on it and the
+  gate does not run it. `python3 nl2smt/nl2smt.py nl2smt/puzzles/zebra.txt`
+  takes English lines over a written vocabulary (`vocabulary.rktd`) through
+  `link-parser`, a Racket converter (`lg2smt.rkt`) and an SMT solver, one
+  direction; `python3 nl2smt/test_pipeline.py` is its tests, which skip where
+  `link-parser`, `racket` or every solver is missing.
+  [`nl2smt/README.md`](nl2smt/README.md) is the page. `nl2smt/smt/` holds three
   hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
   [M10](plans/m10_external_benchmarks/README.md)
   counts as part of its benchmark corpus, so their content does not change;
@@ -530,8 +536,8 @@ constrained-reasoning research.
   ablation since the 2026-08-23 reshape. **The two submodules the old
   directories carried** (`opencog/link-grammar`, `CVC4/CVC4`) were
   deinitialised at M1a S1a.10.5 — never checked out here, and a cost on every
-  recursive clone. [`nl2smt/README.md`](nl2smt/README.md) has the one
-  `git submodule add` that restores each.
+  recursive clone. The page has the one `git submodule add` that restores
+  each.
 
 ## Where the work is
 
@@ -567,7 +573,7 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
   [M1h](plans/m1h_beyond_word_problems/README.md);
   [M12](plans/m12_rules_as_data/README.md), rules as data (its
   `rule_census.md` tables are written by `utils/rule_census.py --page`);
-  [M15](plans/m15_mcp_server/README.md); [M1j](plans/m1j_nlp_smt_poc/README.md).
+  [M15](plans/m15_mcp_server/README.md).
   M1e2 closed on 2026-11-08 and its plans stay in `plans/m1e2_correctness/`.
 
 ## Standing rules

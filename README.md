@@ -707,7 +707,7 @@ both measured and declined, with the workload that would reopen them named).
 | [`plans/ideas/`](plans/ideas/README.md) | the author's ten founding notes — authoritative on intent |
 | [`plans/followups/`](plans/followups/README.md) | the parked research threads (`ls plans/followups/`), closed ledgers, and the raw notes behind EinAf |
 | [`utils/`](utils/README.md) | the scripts driving `ein.rs` (`ls utils/*.py utils/*.sh`): renderers, checks (the manifest, the six-property fuzzer), the measurement set (`bench_env.sh` first) |
-| [`nl2smt/`](nl2smt/README.md) | natural language and SMT in one folder (`nlp/` and `smt/` until M1j), scratch from the 2021 prototype: dependency-parsing scripts and three hand-written `.smt` encodings; its README names the submodule that restores each tool |
+| [`nl2smt/`](nl2smt/README.md) | a proof of concept wired into nothing: the Zebra puzzle's English sentences through link grammar and a Racket converter to an SMT solver (`python3 nl2smt/nl2smt.py nl2smt/puzzles/zebra.txt`). With it, the 2021 prototype's scratch it grew from (`nlp/` and `smt/` until M1j): two parsing scripts and three hand-written `.smt` encodings; its README names the submodule that restores each tool |
 | [`AGENTS.md`](AGENTS.md) | orientation for AI coding agents (`CLAUDE.md` is a symlink to it) |
 
 ## Knowledge graph
