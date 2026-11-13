@@ -612,6 +612,18 @@ numbers at 500); **E-14** and **E-17** (the worked solution, § 6a).
 2. **`ein test` on a search program (E-30).** Should the runner decide a claim by the cheapest route that
    decides it, `--single`'s for a claim of one state? **Recommended: yes, as a stage**, before any theory of
    puzzles ships an example it cannot test.
+
+   **Closed 2026-11-13 by [S1f.6.27](s1f.6.27_ein_test_by_the_cheapest_route.md#record-2026-11-13)**, on the
+   user's reply (a) of 2026-11-12 (round 2, item 39). `ein test` reads a file's claims by their shapes and
+   asks the least question that can decide them, `--single` for a claim of one class and `-n k+1` for one
+   of k, and describes R only for a region claim or for what that question left undecided. SEND + MORE =
+   MONEY is in the corpus with its answer claimed,
+   [`examples/beyond_arith/send_more_money.ein`](../../../examples/beyond_arith/send_more_money.ein), and
+   `ein test` holds the claim by `--single`'s 17 747 saturations, 0.46 s, where describing R stops at the
+   budget after 336 101, 7.5 s (`ein test FILE -v`, `ein solve FILE`, 2026-11-13). § 3's sentence *so `ein
+   test` cannot check the claim*, and the summary's, are this page's record of the day they were written.
+   What the stage did not change: the order the obligation tree branches in, E-29, which is still why the
+   letters are declared by column.
 3. **The order of obligations (E-29).** Is a state-dependent choice wanted for the obligation tree, and is it
    P1f.10's? **Recommended: yes and yes**; SEND + MORE in two declaration orders is the witness, under
    `build/s1f.6.10/p/`.

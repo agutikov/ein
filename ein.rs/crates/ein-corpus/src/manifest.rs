@@ -361,7 +361,7 @@ mod tests {
     }
 
     #[test]
-    fn the_slow_set_is_exactly_these_fourteen() {
+    fn the_slow_set_is_exactly_these_fifteen() {
         let manifest = corpus();
         let slow: Vec<&str> = manifest
             .entry
@@ -377,9 +377,13 @@ mod tests {
             // and `features/02` and `zebra2-hints` left, the state route
             // describing each in milliseconds. Seven joined and
             // `features/04_open` left at M1e2 S1e2.1a.5's switch, re-taken
-            // 2026-10-18 (§ 8).
+            // 2026-10-18 (§ 8). `beyond_arith/send_more_money` joined when M1f
+            // S1f.6.27 banked it, its bare `solve` describing R to the budget
+            // in 7.47 s (`utils/bench_env.sh python3 utils/corpus_cost.py -k
+            // send_more_money --runs 3`, 2026-11-13).
             [
                 "examples/features/01_not_and_absent.ein",
+                "examples/beyond_arith/send_more_money.ein",
                 "examples/lattice/06_friends_tables.ein",
                 "examples/lattice/07_two_pairs_two_tables.ein",
                 "examples/saturation/square-bwd/floors.ein",
@@ -434,7 +438,7 @@ mod tests {
     }
 
     /// **The `heavy_dump` set, per commit** (M1f S1f.5.13), as
-    /// [`the_slow_set_is_exactly_these_fourteen`] pins `slow`'s. Whether the
+    /// [`the_slow_set_is_exactly_these_fifteen`] pins `slow`'s. Whether the
     /// flag is *true* is `answer_round_trip`'s to say, which dumps the
     /// unflagged entries per commit and the flagged ones only under
     /// `EIN_CORPUS_SLOW=1`; so an entry that gained the flag would leave the

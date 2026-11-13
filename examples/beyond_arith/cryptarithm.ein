@@ -6,11 +6,12 @@
 ;;; it are known, and a column that does not add up is (false). One state:
 ;;; 1 + 99 = 100.
 ;;;
-;;; The same rules solve SEND + MORE = MONEY, 80 candidates: `ein solve
-;;; --single` finds 9567 + 1085 = 10652 and shows it is the only one. That
-;;; program is not in the corpus, because describing its R, which is what a
-;;; bare `ein solve` and `ein test` do, visits every partial assignment that
-;;; is still alive and stops at the budget.
+;;; The same rules solve SEND + MORE = MONEY, 80 candidates, beside it as
+;;; `send_more_money.ein`: `ein solve --single` finds 9567 + 1085 = 10652
+;;; and shows it is the only one, and `ein test` holds that claim by asking
+;;; the same question. Describing its R, which a bare `ein solve` does,
+;;; visits every partial assignment that is still alive and stops at the
+;;; budget (M1f S1f.6.27).
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.

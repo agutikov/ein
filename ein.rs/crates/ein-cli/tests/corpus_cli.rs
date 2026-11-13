@@ -111,7 +111,7 @@ impl Cell {
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
 /// `ein_corpus::manifest::SLOW_MS` or more together. Which ones is
-/// `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen`'s to say, per commit
+/// `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to say, per commit
 /// (M1e S1e.3.6), where there were seventeen at
 /// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced),
 /// one of them `zebra2.ein` at 16 ms. Their cells run in the CI nightly's

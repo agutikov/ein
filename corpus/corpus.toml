@@ -8,7 +8,7 @@
 # `slow = true` keeps an entry out of the default sweep, and since S1a.9.0 it
 # is a claim with a threshold behind it: an entry is slow when its declared
 # runs cost **1 s or more together**, which is what `cost_ms` records. Which
-# entries are is `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen`'s to
+# entries are is `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen`'s to
 # say, per commit, and this header does not copy its list. A re-take moves the
 # flag both ways, which is what a measured flag is for: M1a T1a.7.2.0 made
 # `branching/07_lookahead_off.ein` 2.8x cheaper and took it out, and M1e2's
@@ -364,7 +364,7 @@ note   = "M1f S1f.6.10 — bounded theorem checking, the part Ein does: every on
 path   = "examples/beyond_arith/cryptarithm.ein"
 group  = "positive"
 runs   = ["solve", "solve --single", "solve -n 1", "test"]
-note   = "M1f S1f.6.10 — search on the tables: I + BB = ILL, letters as unknown digits, all different, each column through the full adder as soon as its letters and the carry below are known; 30 candidates, one state, 1 + 99 = 100. The same rules solve SEND + MORE = MONEY under `--single` (17 747 saturations); that one is not here, since describing its R stops at the budget."
+note   = "M1f S1f.6.10 — search on the tables: I + BB = ILL, letters as unknown digits, all different, each column through the full adder as soon as its letters and the carry below are known; 30 candidates, one state, 1 + 99 = 100. The same rules solve SEND + MORE = MONEY under `--single` (17 747 saturations), `send_more_money.ein` beside it since M1f S1f.6.27."
 
 [[entry]]
 path   = "examples/beyond_arith/equation_by_search.ein"
@@ -431,6 +431,14 @@ path   = "examples/beyond_arith/pythagorean.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate"]
 note   = "M1f S1f.6.10 — a question about a set, asked by an ordinary join on a number: the squares of 1 to 13, every pair of them added, and a sum that is itself a square is a triple; six ordered triples, (3, 4, 5), (6, 8, 10), (5, 12, 13) and their mirrors."
+
+[[entry]]
+path   = "examples/beyond_arith/send_more_money.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "test"]
+slow   = true
+cost_ms = 8404
+note   = "M1f S1f.6.27 — the stage's witness: SEND + MORE = MONEY, `cryptarithm.ein`'s rules on 80 candidates, its one state 9567 + 1085 = 10652 claimed. `ein test` reads the claim, one class over all of R, and asks `--single`, which finds the state and shows R holds no other in 17 747 saturations: held. A bare `solve` describes R, visits every partial assignment still alive, and stops at the default --region-budget after 336 101 saturations, the claim a note there, *not checked*, exit 0; until S1f.6.27 that was `ein test`'s only question, and the claim was NOT CHECKED, exit 1, which kept the program out of the corpus. The letters are declared by column, units first (E-29). Slow by the bare `solve`, which asks the fixture's other half, that describing this R stops: 8.40 s together, the bare `solve` 7.47 s and `solve --single` and `test` 465 ms each (`utils/bench_env.sh python3 utils/corpus_cost.py -k send_more_money --runs 3`, 2026-11-13)."
 
 [[entry]]
 path   = "examples/beyond_arith/tables_backwards.ein"

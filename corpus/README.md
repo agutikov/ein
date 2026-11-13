@@ -226,7 +226,7 @@ the build and machine
 the sweep it has just run, at a 4× tolerance).
 
 **Which entries are slow is a test's to say**, and this page does not copy its
-list: `ein-corpus`'s `the_slow_set_is_exactly_these_fourteen` names them, in
+list: `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen` names them, in
 path order, and fails per commit when the set moves (M1e S1e.3.6; its name has
 moved with the set), and `grep -c '^slow *= *true' corpus/corpus.toml` counts
 them. A re-take moves the flag both ways: `features/04_open` lost it at M1e2

@@ -280,9 +280,9 @@ constrained-reasoning research.
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   ([corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md) is the
-  measurement, `utils/corpus_cost.py` re-takes it). **Fourteen** entries are
-  slow since M1e2 S1e2.1c.2 (re-taken 2026-11-03, `utils/bench_env.sh --cores
-  PT python3 utils/corpus_cost.py`). Describe takes the state route since
+  measurement, `utils/corpus_cost.py` re-takes it). **Fifteen** entries are
+  slow, fourteen of them since M1e2 S1e2.1c.2 (re-taken 2026-11-03,
+  `utils/bench_env.sh --cores PT python3 utils/corpus_cost.py`). Describe takes the state route since
   that stage, and the default `--region-budget` is 2²⁰ facts, which the user
   ruled after 2²⁴ ran the gate's sweeps out of memory. The six `square-*` cubes
   joined, their `render lattice` counting states to the budget (1.6 s each).
@@ -701,7 +701,7 @@ EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test f
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
 cargo test … -p ein-infer --features counters --test arith_batch   # M1f S1f.6.3: the calculator's batch, by the matcher's count; by hand since S1f.6.21, in no tier
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fourteen names
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fifteen names
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance   # the dev host's, since M1f S1f.5.27
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens

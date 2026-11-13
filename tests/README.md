@@ -707,7 +707,8 @@ or `-n k+1` for queries' claims over one part of R and the description for a
 region claim, and then the description for whatever that left undecided
 ([`01_grammar.md` § Query](../docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
 So a query's claim on a search too large to describe can go in where the
-question decides it; a region claim on such a program still cannot. Where both questions stop
+question decides it, which is what `examples/beyond_arith/send_more_money.ein`
+is; a region claim on such a program still cannot. Where both questions stop
 short, `:expect` reports
 [`NOT CHECKED`](../docs/kernel/defined_behaviour.md) — which is honest, is not
 a pass, and **takes a failing exit code**. So the policy needs no mechanism: a

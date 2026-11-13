@@ -112,6 +112,9 @@
 0    examples/beyond_arith/pythagorean.ein :: saturate
 0    examples/beyond_arith/pythagorean.ein :: solve
 0    examples/beyond_arith/pythagorean.ein :: test
+0    examples/beyond_arith/send_more_money.ein :: solve
+0    examples/beyond_arith/send_more_money.ein :: solve --single
+0    examples/beyond_arith/send_more_money.ein :: test
 0    examples/beyond_arith/tables_backwards.ein :: saturate
 0    examples/beyond_arith/tables_backwards.ein :: solve
 0    examples/beyond_arith/tables_backwards.ein :: test
