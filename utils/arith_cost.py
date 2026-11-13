@@ -40,7 +40,9 @@ Each program is written by `gen_arith_examples.py`'s `on_demand`, the function b
 `--work`. **Every run is held in a cgroup of its own** (`systemd-run --user --scope -p MemoryMax=… -p
 MemorySwapMax=0`), so a run that would pass the cap is killed by the kernel inside its scope and reported
 as such, and its `oom_score_adj` is 1000, so that if the host ran out of memory first the kernel would end
-it before anything of the user's. A run past `--time-limit` is killed and reported. The search doubles a
+it before anything of the user's. A run past `--time-limit` is killed and reported. **No run starts
+where the host has less than the cap and `--keep-free` (4 GB) available**: the sweep stops there, prints
+what it found, and exits 3. The search doubles a
 size until a run fails or the parser's bound is reached, then narrows between the last size that ended and
 the first that did not, to `--resolution`. *rss* is the run's peak resident memory (`wait4`), and every
 run is one process, measured once. `free`'s *available* is printed before each run.
@@ -326,14 +328,26 @@ def available() -> int:
     return 0
 
 
-def capped(args: list[str], out: Path, mem: int, limit: float) -> dict:
-    """One `ein` process in a cgroup of its own, capped at `mem` bytes and `limit` seconds."""
+class Short(Exception):
+    """The host has less memory available than a run may take and the margin it must leave."""
+
+
+KEEP_FREE = 4_000_000_000      # bytes the host keeps beside a run at the cap
+
+
+def capped(args: list[str], out: Path, mem: int, limit: float, keep_free: int = KEEP_FREE) -> dict:
+    """One `ein` process in a cgroup of its own, capped at `mem` bytes and `limit` seconds; not started where
+    the host has less than `mem + keep_free` available, so a run at its cap never takes the host to its own
+    limit (2026-11-13: a run at the cap with 1.4 GB left beside it had the session's background command reaped)."""
     def adjust() -> None:
         with open("/proc/self/oom_score_adj", "w") as f:
             f.write("1000")
     cmd = ["systemd-run", "--user", "--scope", "--quiet", "-p", f"MemoryMax={mem}", "-p", "MemorySwapMax=0",
            "-p", "OOMPolicy=continue", "--", EIN, *args]
     avail = available()
+    if avail < mem + keep_free:
+        raise Short(f"`MemAvailable` is {avail / 1e9:.1f} GB, under the cap and the margin, "
+                    f"{(mem + keep_free) / 1e9:.1f} GB: `ein {' '.join(args)}` not started")
     with open(out, "wb") as so, open(out.with_suffix(".err"), "wb") as se:
         start = time.perf_counter()
         proc = subprocess.Popen(cmd, stdout=so, stderr=se, cwd=REPO, preexec_fn=adjust)
@@ -405,14 +419,14 @@ def printed(text: str) -> list[dict[str, str]]:
 
 
 def biggest_run(command: str, shape: str, size: int, work: Path, mem: int, limit: float, seed: int,
-                log: list) -> dict:
+                log: list, keep_free: int = KEEP_FREE) -> dict:
     """Write the program of `shape` at `size`, run `ein COMMAND` on it under the cap, and log the run."""
     kw = SHAPES[shape][0](size)
     path = work / f"{shape}-{size}.ein"
     if not path.exists():
         path.write_text(gen.on_demand(seed=seed, expect=True, **kw))
     out = work / f"{shape}-{size}.{command}.out"
-    r = capped([command, str(path)], out, mem, limit)
+    r = capped([command, str(path)], out, mem, limit, keep_free)
     r.update(command=command, shape=shape, size=size, path=str(path.relative_to(REPO)),
              bytes=path.stat().st_size, date=time.strftime("%Y-%m-%d"),
              generate=gen.command(seed=seed, expect=True, **kw).replace("-o FILE", f"-o {path.relative_to(REPO)}"))
@@ -460,14 +474,14 @@ def next_size(oks: list[dict], bad: dict | None, bound: int | None, mem: int, li
 
 
 def biggest_search(command: str, shape: str, work: Path, mem: int, limit: float, seed: int, resolution: float,
-                   log: list) -> dict:
+                   log: list, keep_free: int = KEEP_FREE) -> dict:
     """The largest size of `shape` whose `ein COMMAND` ends within the cap and the limit."""
     _, first, bound = SHAPES[shape]
     oks: list[dict] = []
     bad: dict | None = None
     size = first
     while True:
-        r = biggest_run(command, shape, size, work, mem, limit, seed, log)
+        r = biggest_run(command, shape, size, work, mem, limit, seed, log, keep_free)
         if r["how"] == "ok":
             oks.append(r)
             oks.sort(key=lambda o: o["size"])
@@ -490,16 +504,26 @@ def section_biggest(args: argparse.Namespace) -> None:
     print("## The biggest calculation\n")
     print(f"Every run in a cgroup of its own, `MemoryMax={args.mem}` ({args.mem / 1e9:.1f} GB, "
           f"{args.mem / 2**30:.1f} GiB) and no swap, and killed past {args.time_limit:.0f} s; the size doubled, "
-          f"then narrowed to {args.resolution:.0%}. *available* is `MemAvailable` before the first run: "
-          f"{available() / 1e9:.1f} GB.\n", flush=True)
+          f"then narrowed to {args.resolution:.0%}; no run started with less than "
+          f"{(args.mem + args.keep_free) / 1e9:.1f} GB available. *available* is `MemAvailable` before the first "
+          f"run: {available() / 1e9:.1f} GB.\n", flush=True)
     log: list = []
     found = []
+    record = work / f"biggest-{time.strftime('%Y%m%d-%H%M%S')}.json"
+    short = None
     for command in args.commands:
         for shape in args.shapes:
             print(f"{command} {shape}:", file=sys.stderr, flush=True)
-            found.append(biggest_search(command, shape, work, args.mem, args.time_limit, args.seed,
-                                        args.resolution, log))
-            (work / "biggest.json").write_text(json.dumps(dict(found=found, runs=log), indent=1))
+            try:
+                found.append(biggest_search(command, shape, work, args.mem, args.time_limit, args.seed,
+                                            args.resolution, log, args.keep_free))
+            except Short as e:
+                short = f"{command} {shape}: {e}"
+                print(f"  !! {short}; the sweep stops here", file=sys.stderr, flush=True)
+                break
+            record.write_text(json.dumps(dict(found=found, runs=log), indent=1))
+        if short:
+            break
     rows = []
     for f in found:
         b, n = f["best"], f["next"]
@@ -509,7 +533,11 @@ def section_biggest(args: argparse.Namespace) -> None:
         if f["command"] == "solve" and "facts" not in b:
             # the same program's saturation, for its counts: `ein solve` prints neither
             out = work / f"{f['shape']}-{b['size']}.saturate.out"
-            sat = capped(["saturate", b["path"]], out, args.mem, args.time_limit)
+            try:
+                sat = capped(["saturate", b["path"]], out, args.mem, args.time_limit, args.keep_free)
+            except Short as e:
+                print(f"  !! {e}", file=sys.stderr, flush=True)
+                sat = dict(how="short")
             if sat["how"] == "ok":
                 b["firings"], b["facts"] = counts(out)
         inside = "yes" if WINDOW[0] <= b["wall"] <= WINDOW[1] else "no"
@@ -530,7 +558,11 @@ def section_biggest(args: argparse.Namespace) -> None:
     table(["command", "shape", "size", "text", "ended", "wall s", "peak RSS GB", "available GB"],
           [[f"`ein {r['command']}`", r["shape"], count(r["size"]), size(REPO / r["path"]), r["how"],
             f"{r['wall']:.1f}", f"{r['rss'] / 1e9:.2f}", f"{r['available'] / 1e9:.1f}"] for r in log])
-    (work / "biggest.json").write_text(json.dumps(dict(found=found, runs=log), indent=1))
+    if short:
+        print(f"**Stopped:** {short}.\n")
+    record.write_text(json.dumps(dict(found=found, runs=log, stopped=short), indent=1))
+    if short:
+        sys.exit(3)
 
 
 def main() -> int:
@@ -546,12 +578,16 @@ def main() -> int:
     big.add_argument("--shapes", nargs="+", choices=tuple(SHAPES), default=list(SHAPES))
     big.add_argument("--mem", type=int, default=MEM_CAP, help="the cap, in bytes (default 16 000 000 000)")
     big.add_argument("--time-limit", type=float, default=TIME_LIMIT, help="seconds a run may take")
-    big.add_argument("--resolution", type=float, default=0.02, help="how close the search narrows")
+    big.add_argument("--resolution", type=float, default=0.03, help="how close the search narrows")
+    big.add_argument("--keep-free", type=int, default=KEEP_FREE,
+                     help="bytes the host must have available beyond the cap before a run starts (default 4 GB)")
     big.add_argument("--work", type=Path, default=WORK / "biggest", help="where the programs are written")
     args = ap.parse_args()
     if args.biggest:
-        version = subprocess.run([EIN, "--version"], capture_output=True, text=True, cwd=REPO).stdout.splitlines()[0]
-        print(f"`{version}`, seed {args.seed}; `python3 utils/arith_cost.py {' '.join(sys.argv[1:])}`\n")
+        lines = subprocess.run([EIN, "--version"], capture_output=True, text=True, cwd=REPO).stdout.splitlines()
+        stdlib = next((l.split(None, 1)[1] for l in lines if l.startswith("stdlib")), "?")
+        print(f"`{lines[0]}` (`{EIN}`), stdlib `{stdlib}`, seed {args.seed}; "
+              f"`python3 utils/arith_cost.py {' '.join(sys.argv[1:])}`\n")
         section_biggest(args)
         return 0
     which = args.only or (["split", "examples"] if args.quick else

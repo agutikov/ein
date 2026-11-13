@@ -222,3 +222,46 @@ the longest product a program can write, 999 digits by 999, is 15 s and 6.1 GB, 
 2.9 GB. A program that derives its numbers, or asks for many, reaches the cap first, in under a minute: about a
 kilobyte a stored fact (E-26), 16.5 million facts at the cap for the requests and 16.0 million for the chain.
 The batch of 43 430 requests is the one row inside the window.
+
+### T1f.6.29.2, second half — the sweep resumed on the user's word, and stopped on it
+
+**Resumed.** The user, 2026-11-13, after the reap above: *"run again, I freed memory"*. At the resume `MemAvailable`
+was 27 583 096 kB, 28.2 GB (22:37:08, `build/s1f.6.29/free-resume.txt`), so a run at the cap left the host about
+12 GB. The same cap, scope and `oom_score_adj`; three changes to the instrument, none to what a run is:
+
+- **A guard:** no run starts where `MemAvailable` is under the cap and `--keep-free`, 4 GB by default, 20 GB in all;
+  the sweep then stops, prints what it found and exits 3, so a run at its cap never takes the host to the reaper's
+  threshold again (tried with `--keep-free 100000000000`: not started, exit 3). No run of the resumed sweep met it;
+  the lowest `MemAvailable` before a run was 22.0 GB.
+- **The binary and the stdlib pinned.** Another stage's agent, S1f.6.30's, worked in the same tree while the sweep
+  ran, and its commits changed `stdlib/arith.ein`, `int.ein` and `rat.ein` (`ffb47f3c`, `63955507`), which the
+  binary resolves from the checkout. So the resumed runs used a copy of the release binary built at `2ef68530`
+  (`build/s1f.6.29/pin/bin/ein`, the same sha256) and the stdlib of `2ef68530` through `EIN_STDLIB`
+  (`git archive 2ef68530 stdlib`, its manifest's sha256 `6a9bdd83…`, the one the first half's `--version`
+  printed): one measurement with the first half. Five of the sweep's programs, `product-100`, `quotient-100`,
+  `requests-2000`, `chain-100` and `chain-200`, give the same firings and facts on both stdlibs (`ein saturate`
+  under each, on cpu12, counts only).
+- **Each invocation writes its own record,** `biggest-<date>-<time>.json`, and prints the stdlib it ran on.
+
+**What it measured** (one run each, 2026-11-13; cpu4; S1f.6.30's agent running builds and tests beside it):
+
+- `ein saturate`, chain, searched again from the start (`utils/bench_env.sh env EIN_BIN=… EIN_STDLIB=… python3
+  utils/arith_cost.py --biggest --commands saturate --shapes chain …`, 22:37): 100 (0.2 s, 0.08 GB), 200 (0.8,
+  0.43), 400 (3.8, 1.77), 800 (21.1, 8.28), 1 050 (43.0, 15.88), **1 081 (47.0 s, 15.98 GB, 16 270 571 firings,
+  16 280 163 facts)**, 1 113 killed at the cap at 40.5 s. The search ran to the cap: within 3 %.
+- `ein solve` (`--commands solve`, 22:39), each run's printed answers held to Python's:
+  - product: 100 (2.7 s, 0.10 GB), 200 (21.9, 0.35), 400 (187.2, 1.21), 563 killed at 600 s (2.46 GB), **547
+    (500.8 s, 2.26 GB)**: the time limit bound it. 547 digits by 547 is a product of 1 094 digits, past the
+    parser's limit for a claim, so the file states none, and its printed answer is Python's.
+  - quotient: 100 (16.7 s, 0.18 GB), 200 (137.8, 0.59), **313 (586.4 s, 1.37 GB)**, 322 killed at 600 s: the time
+    limit; its claim holds.
+  - requests: 2 000 (14.0 s, 1.20 GB), 4 000 (28.6, 2.38), 8 000 (62.3, 4.92), 16 000 (123.0, 10.00), 24 080
+    (203.6, 14.97), 24 802 (202.0, 15.00), 49 604 killed at the cap at 55.4 s, 35 075 killed at the cap at 89.1 s,
+    29 495 (247.7, 15.98), **30 379 (277.2 s, 15.98 GB)**, the five claims held. 32 643 was running when the sweep
+    was stopped, so the search ended between 30 379 and 35 075, not within 3 %.
+  - chain: not run.
+
+**Stopped.** The user, 2026-11-13, at 23:48: *"runs way too long than I expected - just write down generated
+examples and close"*. The sweep was stopped during `ein solve`'s requests (`TaskStop`), no `ein` process or `run-`
+scope was left (`pgrep -a ein`, `systemctl --user list-units --type=scope`, 23:48), and no run was taken after.
+The saturations that would have counted the `ein solve` rows' firings and facts are among what was not run.
