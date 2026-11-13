@@ -17057,10 +17057,14 @@ settings = "default"
 owner    = "S1f.6.25"
 question = ["P1f.6 findings.md E-11", "Q-M1f.216"]
 witness  = "examples/ein-bugs/wrong-answers/dump-selection.ein"
-status   = "open"
-open_because = "the state file's program goes through the tree-shake, `ein_ir::resolve_and_minimize`, which keeps an imported declaration a live name reaches or a live premise activates, and a rule with an empty `:match` that only the import's list names is reached by neither: S1f.6.25's T1f.6.25.3 makes a listed name live"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.6.25 (T1f.6.25.3, 2026-11-13), from E-11 of P1f.6's `findings.md`. R is right, {∅}: what is wrong is the file `--dump-answer` writes for its one state, `models/01.ein`, which says *the program as loaded, imports inlined* and holds neither `(rule palette …)` nor `(relation color …)`, so reloaded it is two facts of an undeclared relation and no rule. The row records two lines of that file, the relation's declaration and the rule's name, each absent (schema /22). `std.arith` and the modules over it meet the same defect and write their entry's name as a fact to work around it, `(arith-rule arith)`"
+note     = "Filed by S1f.6.25 (T1f.6.25.3, 2026-11-13), from E-11 of P1f.6's `findings.md`. R is right, {∅}: what is wrong is the file `--dump-answer` writes for its one state, `models/01.ein`, which says *the program as loaded, imports inlined* and holds neither `(rule palette …)` nor `(relation color …)`, so reloaded it is two facts of an undeclared relation and no rule. The row records two lines of that file, the relation's declaration and the rule's name, each absent (schema /22). `std.arith` and the modules over it meet the same defect and write their entry's name as a fact to work around it, `(arith-rule arith)`. Fixed by the same task (2026-11-13): the file holds the relation's declaration and the rule"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.6.25 (T1f.6.25.3): `ein_ir::resolve_and_minimize` takes every name a top-level import's selection lists as live, so the tree-shake keeps a listed rule nothing else reaches, and what it names"
+date   = "2026-11-13"
 
 [case.wrong]
 run       = "solve"
@@ -17103,6 +17107,6 @@ models    = [
   [],
 ]
 printed   = [
-  { file = "models/01.ein", label = "(relation color", line = "" },
-  { file = "models/01.ein", label = "palette", line = "" },
+  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
+  { file = "models/01.ein", label = "palette", line = "  palette" },
 ]

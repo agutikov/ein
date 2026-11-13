@@ -778,9 +778,11 @@
 (relation num9-rule Rule
   :why "{?1} is a rule of std.num9")
 
-;; The closing rule's own name, as a written fact: it keeps `arith9` in a
+;; The closing rule's own name, as a written fact: it kept `arith9` in a
 ;; program that is inlined and tree-shaken, as the program a `--dump-answer`
-;; state file re-writes is (E-11 of P1f.6's `findings.md`).
+;; state file re-writes is (E-11 of P1f.6's `findings.md`). No longer needed
+;; for that since M1f S1f.6.25, a name a selection lists being live; it stays,
+;; since removing it would move every state of every program.
 (num9-rule arith9)
 
 (rule arith9 ()

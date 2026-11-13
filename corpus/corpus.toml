@@ -2936,7 +2936,7 @@ note   = "M1f W91's library: a relation and one rule with an empty `:match`, its
 path   = "examples/ein-bugs/wrong-answers/dump-selection.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "M1f W91 (`W91/dump-selection`), filed by S1f.6.25's T1f.6.25.3 (2026-11-13) from E-11 of P1f.6's findings: `(import dump-selection-library :symbols (palette))`, R {∅}, whose `--dump-answer` state file re-writes a program with neither the rule nor the relation it names. Open."
+note   = "M1f W91 (`W91/dump-selection`), filed by S1f.6.25's T1f.6.25.3 (2026-11-13) from E-11 of P1f.6's findings: `(import dump-selection-library :symbols (palette))`, R {∅}, whose `--dump-answer` state file re-wrote a program with neither the rule nor the relation it names. Fixed by the same task: a name a selection lists is live, and the file is the program as loaded."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/import-directives-module.ein"

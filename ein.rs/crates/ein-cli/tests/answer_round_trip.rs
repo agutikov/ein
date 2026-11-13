@@ -145,15 +145,20 @@ const WRITTEN_PROVENANCE: [&str; 1] =
 /// count than declared, so no state holds such a fact. Empty since.
 const UNFILLED_TEMPLATE: [&str; 0] = [];
 
-/// **The witness whose state file re-writes less than the program as
-/// loaded**, the witness of an open register row (M1f S1f.6.25, 2026-11-13):
+/// **The witness whose state file re-wrote less than the program as
+/// loaded**, the witness of a register row open for one commit (M1f S1f.6.25, 2026-11-13):
 /// W91, a library's entry rule with an empty `:match`, imported by its name
 /// alone. The tree-shake the file is written through drops the rule, which no
 /// live name reaches and no live premise activates, and the relation only it
-/// names, so the reloaded file lacks the declarations' facts. It is the row's
-/// own wrong answer, so the file is named rather than checked, and it must
-/// still lose them: the commit that fixes W91 takes it off the list.
-const SELECTION_DROPPED: [&str; 1] = ["examples/ein-bugs/wrong-answers/dump-selection.ein"];
+/// names, so the reloaded file lacked the declarations' facts. It was the
+/// row's own wrong answer, so the file was named rather than checked, and had
+/// still to lose them. `dump-selection.ein` left the list at S1f.6.25's
+/// T1f.6.25.3 (2026-11-13): a name a selection lists is live, so the file is
+/// the program as loaded, and the sweep below holds it as it holds every
+/// corpus program: the witness without `std.arith`'s workaround fact, a
+/// library whose entry is a rule with an empty `:match`, imported by
+/// selection. Empty since.
+const SELECTION_DROPPED: [&str; 0] = [];
 
 /// The difference, a few facts each way.
 fn diff(want: &BTreeSet<String>, got: &BTreeSet<String>) -> String {

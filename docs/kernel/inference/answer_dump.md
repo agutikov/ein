@@ -105,7 +105,12 @@ records are the summary's `region.states[]` now.
 ## Every state file loads, and is a fixpoint
 
 A state file is the program as loaded, imports inlined, followed by every fact
-of the state, one a line, sorted by its text. The program's own `(relation …)`
+of the state, one a line, sorted by its text. The program is written through
+`ein_ir::resolve_and_minimize`, which keeps every declaration a flat import
+brings since M1f S1f.6.25 (a name a selection lists is live; W91: until then a
+library's entry rule with an empty `:match`, imported by its name, was left
+out, with a relation only it names) and shakes what a qualified import brings
+and nothing reaches. The program's own `(relation …)`
 declarations are not repeated, because the loader refuses a second one. So the
 file **loads as a program**, and saturating it **derives no fact and no
 `(false)`**. Each state is read again through the node function every route

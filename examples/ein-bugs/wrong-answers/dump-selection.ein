@@ -31,6 +31,8 @@
 ;;; reloaded it is a program of two facts of an undeclared relation, with no
 ;;; rule: `ein saturate --dump` on it lists no declared relation and no rule
 ;;; where the run that wrote it had one of each.
+;;; The answer above by hand since S1f.6.25 (T1f.6.25.3): a name a
+;;; selection lists is live.
 
 (import dump-selection-library :symbols (palette))
 

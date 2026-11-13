@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 147] = [
+const SEEDED: [(&str, &[&str]); 149] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -187,6 +187,20 @@ const SEEDED: [(&str, &[&str]); 147] = [
     (
         "examples/ein-bugs/wrong-answers/assert-neq-w-x.ein",
         &["`w`, asserted by rule `r`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/dump-selection-library.ein",
+        &[
+            "`Green`, asserted by rule `palette`",
+            "`Red`, asserted by rule `palette`",
+        ],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/dump-selection.ein",
+        &[
+            "`Green`, asserted by rule `palette`",
+            "`Red`, asserted by rule `palette`",
+        ],
     ),
     (
         "examples/ein-bugs/wrong-answers/empty-match-fact.ein",

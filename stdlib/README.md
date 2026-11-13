@@ -1237,7 +1237,14 @@ print!("{}", ein_ir::dump_canonical(&ast, &inlined));
 `resolve_and_minimize` keeps an imported declaration that a live name reaches
 *or* that a live match pattern activates — the `*-setup` glue rules are fired
 by their pattern and never by name, so keeping only what is named would drop a
-whole activator-driven module and leave a file that no longer solves.
+whole activator-driven module and leave a file that no longer solves. **A name
+an import's selection lists is live** (M1f S1f.6.25, W91): `(import lib
+:symbols (entry))` asks for `entry` by name, so an entry that is a rule with
+an empty `:match`, which no name in the program's own forms and no premise
+reaches, is kept, and with it everything a flat import brings. Until that
+stage it was dropped, and a library wrote its entry's name as a fact to keep
+it, `std.arith`'s `(arith-rule arith)`; the facts stay and are no longer
+needed for this.
 `dump_canonical` is the canonical `.ein` printer, and the parser's unescape is
 its inverse, so the text re-parses.
 

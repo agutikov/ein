@@ -481,9 +481,11 @@ def render(w: int) -> str:
 (relation {rule_rel} Rule
   :why "{{?1}} is a rule of std.{nm('num#')}")
 
-;; The closing rule's own name, as a written fact: it keeps `{entry}` in a
+;; The closing rule's own name, as a written fact: it kept `{entry}` in a
 ;; program that is inlined and tree-shaken, as the program a `--dump-answer`
-;; state file re-writes is (E-11 of P1f.6's `findings.md`).
+;; state file re-writes is (E-11 of P1f.6's `findings.md`). No longer needed
+;; for that since M1f S1f.6.25, a name a selection lists being live; it stays,
+;; since removing it would move every state of every program.
 ({rule_rel} {entry})
 
 (rule {entry} ()

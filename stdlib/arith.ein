@@ -1186,11 +1186,13 @@
   :why "{?1} is a rule of std.arith")
 
 ;; The closing rule's own name, as a written fact. A selection brings it,
-;; since `arith-rule` is a name `arith` writes, and it is what keeps `arith`
-;; in a program that is inlined and tree-shaken, as the program a
-;; `--dump-answer` state file re-writes is: the tree-shake keeps a rule that a
-;; name or a premise reaches, and nothing else reaches a rule that matches on
-;; nothing (E-11 of P1f.6's `findings.md`).
+;; since `arith-rule` is a name `arith` writes. It was what kept `arith` in a
+;; program that is inlined and tree-shaken, as the program a `--dump-answer`
+;; state file re-writes is, while the tree-shake kept only a rule that a name
+;; or a premise reaches (E-11 of P1f.6's `findings.md`). Since M1f S1f.6.25 a
+;; name a selection lists is live, so the fact is no longer needed for that;
+;; it stays, since removing it would move every state of every program that
+;; imports the theory.
 (arith-rule arith)
 
 (rule arith ()

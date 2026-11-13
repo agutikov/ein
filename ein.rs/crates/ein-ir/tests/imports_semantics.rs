@@ -649,6 +649,78 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     assert_eq!(format!("{got:?}"), format!("{want:?}"));
 }
 
+/// **A name an import's selection lists is live** — M1f S1f.6.25, E-11 of
+/// P1f.6's `findings.md`, W91.
+///
+/// The tree-shake kept an imported declaration that a name in the program's
+/// own forms reaches or that a live premise activates. A library's entry that
+/// is a rule with an empty `:match`, imported by its name alone, is reached by
+/// neither: it fires once at root in the program as loaded, and the inlined
+/// program lacked it and the relation only it names. `std.arith` wrote its
+/// closing rule's name as a fact, `(arith-rule arith)`, for the name
+/// reference to follow, and every module over it copied that. Listed names
+/// are roots of the reachability now, so everything a top-level flat import
+/// brings is kept; an unlisted declaration a qualified import brings and
+/// nothing reaches is still shaken out.
+#[test]
+fn a_name_a_selection_lists_survives_the_tree_shake() {
+    let lib = "(relation color Thing :why \"{?1} is a colour\")\n\
+         (relation shade Thing :why \"{?1} is a shade\")\n\
+         (rule palette () :match () :assert (and (color Red) (color Green)) :why \"colours\")\n\
+         (rule shades () :match (color ?x) :assert (shade ?x) :why \"{?x} has a shade\")\n\
+         (macro both (?a ?b) (and ?a ?b) :why \"{?a} and {?b}\")\n";
+    let scratch = Scratch::new("ein-import-listed");
+    std::fs::write(scratch.path().join("lib.ein"), lib).expect("written");
+    let heads = |src: &str| -> Vec<String> {
+        let mut ast = Ast::new();
+        let forms = parse(&mut ast, src, Some("<program>")).expect("parses");
+        let kept =
+            ein_ir::resolve_and_minimize(&mut ast, &forms, Some(scratch.path())).expect("resolves");
+        kept.iter()
+            .map(|&f| {
+                let line = ein_ir::dump::dump_compact(&ast, f);
+                line.split_whitespace()
+                    .take(2)
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            })
+            .collect()
+    };
+    let v = |xs: &[&str]| xs.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+    // The entry alone: the rule and the relation it writes, where neither
+    // came. `shades` is not in the closure and was never brought.
+    assert_eq!(
+        heads("(import lib :symbols (palette))"),
+        v(&["(relation color", "(rule palette"])
+    );
+    // A listed relation and a listed macro nothing uses are kept too: the
+    // inlined text is the program as loaded.
+    assert_eq!(
+        heads("(import lib :symbols (shade both))"),
+        v(&["(relation shade", "(macro both"])
+    );
+    // And it is the same program: loaded from the import and from the
+    // inlined text, the same relations, rules and facts.
+    let src = "(import lib :symbols (palette))";
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, src, Some("<program>")).expect("parses");
+    let inlined =
+        ein_ir::resolve_and_minimize(&mut ast, &forms, Some(scratch.path())).expect("resolves");
+    let standalone = dump_canonical(&ast, &inlined);
+    let mut terms = ein_core::Terms::new();
+    let want = ein_ir::load(&mut ast, &mut terms, &forms, Some(scratch.path())).expect("loads");
+    let mut ast2 = Ast::new();
+    let forms2 = parse(&mut ast2, &standalone, Some("<inlined>")).expect("re-parses");
+    let mut terms2 = ein_core::Terms::new();
+    let got = ein_ir::load(&mut ast2, &mut terms2, &forms2, None).expect("the dump loads");
+    assert_eq!(format!("{got:?}"), format!("{want:?}"));
+    // A qualified import is shaken as it was: what nothing reaches goes.
+    assert_eq!(
+        heads("(import lib :as l)\n(l.shade Blue)"),
+        v(&["(relation l.shade", "(l.shade Blue)"])
+    );
+}
+
 // ── M1f S1f.6.11: a flat import brings a module's facts ──────────────────────
 
 /// The ontology library of S1f.6.11's table: a declared relation with two

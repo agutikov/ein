@@ -403,6 +403,17 @@ impl Resolver {
     /// own name is referenced nowhere, because the `*-setup` glue rules are
     /// fired by their match pattern rather than by name).
     ///
+    /// **And a name an import's selection lists is live** (M1f S1f.6.25, E-11,
+    /// W91): `(import lib :symbols (entry))` names `entry`, and a rule with an
+    /// empty `:match`, which fires once in any program that holds it, is
+    /// reached by neither relation above. Until that stage such a rule, and a
+    /// relation only it names, were dropped, so the program a `--dump-answer`
+    /// state file re-writes was not the program that ran, and `std.arith`
+    /// wrote its closing rule's name as a fact, `(arith-rule arith)`, for the
+    /// name reference to follow. A selection's closure is what is reachable
+    /// from its listed names, so everything a top-level flat import brings is
+    /// kept; what is shaken is what a qualified import brings.
+    ///
     /// Without the activation pass this would silently drop an entire
     /// activator-driven library and leave a file that no longer solves. The
     /// surviving set is observable through the compile cache's size and
@@ -418,8 +429,11 @@ impl Resolver {
         // an import brings in (transitively) is true.
         let mut tagged: Vec<(NodeId, bool)> = Vec::new();
         let mut cache = ModuleCache::new();
+        // The names the program's own imports list (M1f S1f.6.25, E-11).
+        let mut listed: Vec<String> = Vec::new();
         for &form in forms {
             if ast.head_name(form) == Some("import") {
+                listed.extend(import_spec(ast, form)?.symbols.unwrap_or_default());
                 let resolved =
                     self.resolve(ast, &[form], base_dir, false, &mut Vec::new(), &mut cache)?;
                 for f in resolved {
@@ -473,7 +487,8 @@ impl Resolver {
         }
 
         let mut reachable: BTreeSet<String> = BTreeSet::new();
-        let mut work: Vec<String> = Vec::new();
+        // A name a selection lists is live: the program asked for it by name.
+        let mut work: Vec<String> = listed;
         for &(f, imp) in &tagged {
             if !imp || decl_name(ast, f).is_none() {
                 let mut names = BTreeSet::new();

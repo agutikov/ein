@@ -291,3 +291,66 @@ fix goes, are defaults,
 (`ein_corpus::register`'s `printed_file`, `wrong_answers.rs`). The row records two lines of
 `models/01.ein`, the relation's declaration and the rule's name, absent while it is open. While the row
 was open `answer_round_trip.rs` named the witness in `SELECTION_DROPPED`, which had still to lose facts.
+
+**The fix** (`ein_ir::imports`' `resolve_and_minimize`): every name a top-level import's `:symbols` lists
+is a root of the tree-shake's reachability, beside the names the program's own forms write. A selection's
+closure is what is reachable from its listed names, so everything a top-level flat import brings is kept,
+and the re-written program is the program as loaded; what a qualified import brings and nothing reaches is
+shaken as before. It is the function `stdlib/README.md`'s inlining route documents, so that route is
+covered, and the page says so. After the fix `models/01.ein` of the witness holds
+
+```lisp
+(relation color Thing :why "{?1} is a colour")
+
+(rule
+  palette
+  ()
+  :match ()
+  :assert (and (color Red) (color Green))
+  :why "the library states its colours")
+
+(solve :hypothesis-relations ())
+```
+
+above the same two facts (`ein solve examples/ein-bugs/wrong-answers/dump-selection.ein --dump-answer D`,
+2026-11-13).
+
+**The workaround facts stay**, as the stage file has it: `(arith-rule arith)`, `(int-rule int-arith)`,
+`(rat-rule rat-arith)` and `(num9-rule arith9)` are not removed. Each module's comment beside the fact says
+it is no longer needed for this and why it is kept (`stdlib/arith.ein`, `int.ein`, `rat.ein` by hand;
+`num9.ein` through `utils/gen_num9.py`). Since `stdlib/arith.ein` was edited, though in a comment alone:
+the manifest re-banked (`python3 utils/stdlib_manifest.py --write`), `examples/binary_arithmetic/gen_binary.py`
+re-run by hand, its three files byte for byte what they were and `--check` exit 0, and the batch run by
+hand (`cargo test -p ein-infer --features counters --test arith_batch`, below).
+
+**The pins**: `answer_round_trip.rs`'s sweep, which holds `dump-selection.ein` as it holds every corpus
+program, the witness without the workaround (`SELECTION_DROPPED` is empty); `imports_semantics.rs`'s
+`a_name_a_selection_lists_survives_the_tree_shake`; and the register row, flipped to `fixed`, its two
+lines of `models/01.ein` present.
+
+**What it does not cover**, found and not fixed: E-41, the same drop through a qualified import.
+
+**The register**: W91 flipped to `fixed`: 315 fixed, 16 open and 1 not wrong (`grep '^status'
+corpus/wrong_answers.toml | sort | uniq -c`, 2026-11-13).
+
+**What moved, named before blessing** (`build/s1f.6.25/t3-moved.txt`): eight `ir[minimize]` digests of
+`corpus_shapes.md5` and no digest of another kind. One is the witness's. The other seven are programs
+whose import lists a name that nothing else reaches, which the tree-shake dropped and now keeps, so their
+inlined text, and the program part of their state files, grows by that declaration:
+`examples/branching/12_typed_blind_solve.ein`, `examples/domain_elim/ab.ein`,
+`examples/ein-bugs/zebra2-hints.ein`, `examples/features/03_forall.ein`, `examples/features/04_open.ein`,
+`examples/zebra2-hints.ein` and `stdlib/bijection.ein`. No answer of theirs moved: **the sweep**
+(`build/s1f.6.25/sweep-t3.txt`, 2026-11-13) differs on the refusal's path alone, and
+`answer_round_trip.rs` reloads every one of their state files to its state.
+
+**By hand, since `stdlib/arith.ein` was edited**: `cargo test -p ein-infer --features counters --test
+arith_batch`, 5 passed (`build/s1f.6.25/t3-tests.log`, 2026-11-13).
+
+**A list the row's commit missed**: `alive_invariant.rs`'s `SEEDED` names every corpus program in which a
+rule asserts a name no fact writes, and the two new files are such programs (`Red` and `Green`, asserted
+by `palette`). The rows' commit, `1a1cbf26`, did not add them, and was not put through the whole gate, so
+`cargo test -p ein-infer --test alive_invariant` fails on that commit; this task's commit adds the two
+entries.
+
+**Pages**: `stdlib/README.md` § Importing (the inlining route), `answer_dump.md`, the four module
+comments, `examples/README.md`, `imports.rs`'s doc.

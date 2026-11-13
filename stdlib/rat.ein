@@ -555,7 +555,8 @@
   :why "{?1} is a rule std.rat brings")
 
 ;; The closing rule's own name, as a written fact (E-11 of P1f.6's
-;; `findings.md`).
+;; `findings.md`): no longer needed since M1f S1f.6.25, a name a selection
+;; lists being live, and kept, since removing it would move every state.
 (rat-rule rat-arith)
 
 (rule rat-arith ()

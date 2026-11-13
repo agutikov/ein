@@ -648,8 +648,10 @@
 (relation int-rule Rule
   :why "{?1} is a rule std.int brings")
 
-;; The closing rule's own name, as a written fact: what keeps it in a program
-;; that is inlined and tree-shaken (E-11 of P1f.6's `findings.md`).
+;; The closing rule's own name, as a written fact: what kept it in a program
+;; that is inlined and tree-shaken (E-11 of P1f.6's `findings.md`), and no
+;; longer needed for that since M1f S1f.6.25, a name a selection lists being
+;; live. It stays: removing it would move every state of every program.
 (int-rule int-arith)
 
 (rule int-arith ()
