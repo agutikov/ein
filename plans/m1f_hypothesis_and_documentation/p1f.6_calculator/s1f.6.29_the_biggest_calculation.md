@@ -1,7 +1,7 @@
 # S1f.6.29 — The biggest calculation: a generator with size arguments
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12, on the user's reply of that day. **Running since 2026-11-13; stopped in T2 by the host's memory, the sweep half measured and not restarted unasked:** [the record](#record-2026-11-13).
+**Status:** planned 2026-11-12, on the user's reply of that day. **Done 2026-11-13, closed on the user's word, the solve half partly measured:** [the record](#record-2026-11-13), and [the close](#the-close-on-the-users-word).
 **Depends on:** [S1f.6.15](s1f.6.15_load_against_calculation.md), whose generator and cost script it
 extends. Independent of the stdlib layout; no stdlib module and no engine source moves.
 
@@ -265,3 +265,80 @@ was 27 583 096 kB, 28.2 GB (22:37:08, `build/s1f.6.29/free-resume.txt`), so a ru
 examples and close"*. The sweep was stopped during `ein solve`'s requests (`TaskStop`), no `ein` process or `run-`
 scope was left (`pgrep -a ein`, `systemctl --user list-units --type=scope`, 23:48), and no run was taken after.
 The saturations that would have counted the `ein solve` rows' firings and facts are among what was not run.
+
+### T1f.6.29.3 — the page, done
+
+[`stdlib/README.md` § The biggest calculation](../../../stdlib/README.md#the-biggest-calculation), under § What a
+program pays: the user's two replies quoted; how the sizes were searched (the cap, its mechanism, 600 s, 3 %, cpu4,
+the binary and stdlib of `2ef68530`, the counts the same on `63955507`'s for five smaller programs, another stage's
+agent beside the sweep); one row per command and shape with the program, wall, peak RSS, firings and facts, whether
+it fell in 100 ± 50 s, and what bound it; the two commands of each measured row; and the sentence on the limits.
+Each of the seven generator commands on the page, re-run into a scratch directory, writes the file measured byte for
+byte (`cmp`, 2026-11-13).
+
+### T1f.6.29.4 — nothing checked in, the catalogue, Q-M1f.166, done
+
+- **Nothing checked in.** Every program the stage wrote is under `build/s1f.6.29/` (gitignored): the 37 programs of
+  the sweep under `biggest/`, the small ones of T1 under `t1/`, the pinned binary and stdlib under `pin/`. No file
+  under `examples/`, `tests/` or `stdlib/` and no corpus entry is added; `--check` holds the three shipped files and
+  nothing else, and no test, gate step, nightly step or dev-host step writes or runs a program of the generator's
+  `--op` mode.
+- **[`utils/README.md`](../../../utils/README.md):** the generator's line gains the `--op` mode and the user's words
+  on it; `arith_cost.py`'s line gains `--biggest`, the cap, its mechanism and `--keep-free`; the page's opening
+  paragraph says the generator writes, on demand, a program of a stated size.
+- **[Q-M1f.166](../open_questions.md#q-m1f166--the-sizes-of-the-generated-arithmetic-examples)** ruled, row and
+  section, with the user's words of reply 49 and round 2's item 49, and what this stage did with them.
+  [Q-M1f.227](../open_questions.md#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take)
+  gains the resume and the close.
+- **[`findings.md`](findings.md):** E-24 gains `ein solve` against `ein saturate` at the sweep's sizes, E-26 the
+  facts held at 16 GB. Their owner stays M1g's S1g.6.2.
+- **The phase README's row:** done, closed on the user's word, the solve half partly measured.
+
+## The close, on the user's word
+
+The user, 2026-11-13, while `ein solve`'s requests were being narrowed: *"runs way too long than I expected - just
+write down generated examples and close"*. So the stage closes on what was measured, and the generator and the
+programs it writes are its result. Which limit bound each row: under `ein saturate`, the parser bounds a written
+operand before memory or time does (999 digits by 999 and 998 by 499), and the 16 GB cap bounds a program that asks
+for many results or derives its numbers (43 430 requests, 1 081!), each in about a minute; under `ein solve`, the
+600 s limit bounds a long product or quotient (547 by 547, 626 by 313) while it holds 2.3 GB or less, and the cap
+bounds the batch (30 379 requests, searched to there and stopped).
+
+**The four commits:** `d78513af` (T1), `53645cb0` and `6496d285` (T2, its two halves), `40bb7419` (T3), and this
+one (T4).
+
+**Acceptance, point by point.**
+
+- *One command writes an arithmetic program of a stated size; the same arguments write the same file:* `python3
+  utils/gen_arith_examples.py --op OP … -o FILE`; the same arguments, in another order and to another path, write
+  the same bytes, and the page's seven commands write the files measured.
+- *The page names, with commands and dates, the biggest calculation that fits in about 16 GB under `ein saturate`
+  and under `ein solve`, with the time each took:* under `ein saturate`, in full, four rows. Under `ein solve`,
+  partly: the product and the quotient to the 600 s limit, the requests to 30 379, not narrowed to the end, and the
+  chain not measured. The user closed the stage there.
+- *The three shipped examples and their `--check` are unchanged; the corpus gains no file, and no test or CI step
+  generates or solves a large program:* the three files' sha256 are those taken before the first edit; `--check`
+  exits 0 and holds those three alone; no corpus entry, test or tier step was added.
+
+**Defaults taken:** Q-M1f.227 (the cap of 16.0 GB in a cgroup a run, 600 s, 3 %; since the resume, no run started
+under 20 GB available), the user's to revise. Choices within the stage's latitude: T1's list (one request named by
+`let`, many written; a claim left out where it would nest past the parser's limit; an operand past it refused; `mix`
+the five in turn), and the four shapes (a quotient 2N by N, the requests nine-digit).
+
+**Findings:** none new. E-24 and E-26 gain the figures above. No wrong answer met: every `ein solve` row's printed
+answers are Python's, and no register row is filed.
+
+**What was not measured, and why.**
+
+- `ein solve` on the chain: not run. The user stopped the sweep before it.
+- `ein solve` on the requests: not narrowed to the end. 30 379 ended at the cap and 35 075 was killed at it; 32 643
+  was running when the user stopped the sweep.
+- The firings and facts of the `ein solve` rows: `ein solve` prints neither, and the saturations that would count
+  them come at the end of the sweep, which was stopped first.
+- No answer of an `ein saturate` row is checked by its run, since `ein saturate` prints none; the same programs at
+  `ein solve`'s sizes are.
+- The first sweep's `ein saturate` chain, 1 075! with the next size cut by the reap, is superseded by the resumed
+  search, 1 081!.
+
+**What was not run:** the gate and the nightly, the coordinator's, on the stage's last commit; `utils/ci_container.sh`,
+not needed (no DOT writer, review bundle script or CI install changed).
