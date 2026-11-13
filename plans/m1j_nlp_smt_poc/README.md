@@ -3,8 +3,8 @@
 **Status:** planned 2026-11-12, on the user's note of that day. Not started. **A small milestone:** one
 README, its tasks as sections, no phase directories. It carries no estimate (the user's ruling of
 2026-11-08).
-**Depends on:** nothing in the engine. It uses the two scratch areas, [`nlp/`](../../nlp/README.md) and
-[`smt/`](../../smt/README.md), a link-grammar parser or an equivalent, a Lisp, Python, and an SMT solver.
+**Depends on:** nothing in the engine. It uses the two scratch areas, [`nlp/`](../../nl2smt/README.md) and
+[`smt/`](../../nl2smt/README.md), a link-grammar parser or an equivalent, a Lisp, Python, and an SMT solver.
 **Blocks:** nothing.
 
 ## The instruction
@@ -25,13 +25,13 @@ Everything below is drawn from that note. Where the note does not say, the page 
 
 ## What exists
 
-- **[`nlp/`](../../nlp/README.md):** two throwaway scripts from the 2021 prototype's look at dependency
+- **[`nlp/`](../../nl2smt/README.md):** two throwaway scripts from the 2021 prototype's look at dependency
   parsing, `xxx.py` and `xxx-link.py`, and a reading list. `xxx-link.py` is the *linkgrammar script*: it
   imports the `linkgrammar` Python bindings and holds the Zebra puzzle's sentences as text (*The Englishman
   lives in the red house. The Spaniard owns the dog. …*). The `link-grammar` submodule it used was
   deinitialised at M1a S1a.10.5 and never checked out here; the directory's README has the one command that
   restores it.
-- **[`smt/`](../../smt/README.md):** three hand-written encodings, `einstain-problem.smt`,
+- **[`smt/`](../../nl2smt/README.md):** three hand-written encodings, `einstain-problem.smt`,
   `einstain-problem-minus-15.smt` and `4-queens.smt`. The Zebra one is the **target's shape**: integer
   constants such as `house-red` and `nation-england`, the helper functions `order` and `near`, and an
   assertion a clue. Its `CVC4` submodule was deinitialised at the same stage.

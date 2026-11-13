@@ -707,7 +707,7 @@ both measured and declined, with the workload that would reopen them named).
 | [`plans/ideas/`](plans/ideas/README.md) | the author's ten founding notes — authoritative on intent |
 | [`plans/followups/`](plans/followups/README.md) | the parked research threads (`ls plans/followups/`), closed ledgers, and the raw notes behind EinAf |
 | [`utils/`](utils/README.md) | the scripts driving `ein.rs` (`ls utils/*.py utils/*.sh`): renderers, checks (the manifest, the six-property fuzzer), the measurement set (`bench_env.sh` first) |
-| `nlp/`, `smt/` | scratch from the 2021 prototype — dependency-parsing scripts and three hand-written `.smt` encodings; each README names the submodule that restores its tool |
+| [`nl2smt/`](nl2smt/README.md) | natural language and SMT in one folder (`nlp/` and `smt/` until M1j), scratch from the 2021 prototype: dependency-parsing scripts and three hand-written `.smt` encodings; its README names the submodule that restores each tool |
 | [`AGENTS.md`](AGENTS.md) | orientation for AI coding agents (`CLAUDE.md` is a symlink to it) |
 
 ## Knowledge graph
@@ -725,7 +725,7 @@ python3 utils/render_knowledge_graph_cy.py  # interactive Cytoscape.js page → 
 The design is from 2020–2021 — a typed constraint graph with triangle / square
 inference and multilevel hypothesis branching
 ([idea 05](plans/ideas/05-zebra-puzzle-graph-reasoner.md)), and a link-grammar
-+ SMT front end that `nlp/` and `smt/` still hold. The modernisation started
++ SMT front end that [`nl2smt/`](nl2smt/README.md) still holds. The modernisation started
 in May 2026 with the founding notes and the external-tech catalogue; **M1**
 shipped the engine on 2026-06-17; **M1a** began `ein.rs` on 2026-08-17,
 met its speed targets on 2026-08-19 and closed its parallelism phase on

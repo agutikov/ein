@@ -167,8 +167,8 @@ puzzle.
   [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-grammar-as-ebnf)
   deinitialised it rather than making every clone fetch it. The three
   hand-written `.smt` files it sat beside **stay**, and are named below.
-  `smt/README.md` has the one command that re-adds it if a stage ever wants
-  1.8.
+  [`nl2smt/README.md`](../../nl2smt/README.md) (the two directories are one
+  since M1j) has the one command that re-adds it if a stage ever wants 1.8.
 - **Comparison invites integration.** Every time a table shows a solver
   winning by 100×, the next thought is "so call it". That is M3, it is
   dropped, and if the numbers argue otherwise the argument belongs in a
@@ -210,7 +210,7 @@ the harness lives.
   catalogue the system list is drawn from (§3 SMT, §4 CP/MIP, §5 ASP,
   §6 logic programming); [`03`](../../docs/lib/03-theorem-proving-formal-methods.md)
   for Lean
-- [`smt/`](../../smt) — `4-queens.smt`, `einstain-problem.smt`,
+- [`nl2smt/smt/`](../../nl2smt/smt) — `4-queens.smt`, `einstain-problem.smt`,
   `einstain-problem-minus-15.smt`: three of this corpus's encodings already
   exist, hand-written in 2021, and they are the reason the two example
   problems in the user's brief are the two problems that scratch directory

@@ -177,8 +177,8 @@ task classes F3).
 models and unsat cores back into the IR (5 phases, ~1 month, Q25–Q30).
 User decision: the *idea* is dropped, not merely the schedule — Ein
 stays a graph-native reasoner with no solver back-end. The plan folder
-is in git history. What stays: [`smt/`](../smt/) as a scratch area with
-its CVC4 submodule, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
+is in git history. What stays: [`nl2smt/smt/`](../nl2smt/README.md) (`smt/` until M1j) as a scratch area,
+its CVC4 submodule deinitialised since, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
 as external-tech catalogue and [M5](m5_presentation/README.md) Track A's
 *comparison* axis — which [M1c](../docs/history/m1c_external_validation/README.md)'s
 [M10](m10_external_benchmarks/README.md) turns

@@ -518,20 +518,20 @@ constrained-reasoning research.
   where that is spelled out: no propagation, no domains, nothing learned from
   a dead subtree, and every condition compiled code that only answers this one
   puzzle.
-- **`nlp/`, `smt/`** — scratch areas, 56 KB, wired into nothing. `smt/` holds
-  three hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
+- **`nl2smt/`** — natural language and SMT in one folder (`nlp/` and `smt/`
+  until [M1j](plans/m1j_nlp_smt_poc/README.md)), wired into nothing: no crate
+  depends on it and the gate does not run it. `nl2smt/smt/` holds three
+  hand-written `.smt` encodings of the Zebra puzzle and 4-queens, which
   [M10](plans/m10_external_benchmarks/README.md)
-  counts as part of its benchmark corpus; `nlp/` holds two throwaway
-  dependency-parsing scripts that
+  counts as part of its benchmark corpus, so their content does not change;
+  `nl2smt/prototype/` holds two throwaway dependency-parsing scripts that
   [M2 S2.6.4](plans/m2_nl_to_ir/p2.6_ablations/s2.6.4_representation_ablations.md)
   starts from — the link-grammar A/B, one arm of M2's representation
-  ablation since the 2026-08-23 reshape. **The two submodules they used to carry** (`opencog/link-grammar`,
-  `CVC4/CVC4`) were deinitialised at M1a S1a.10.5 — never checked out here,
-  and a cost on every recursive clone. Each README has the one
-  `git submodule add` that restores it.
-  [M1j](plans/m1j_nlp_smt_poc/README.md) (planned 2026-11-12) puts the two
-  into one folder as a proof of concept, Zebra sentences through link grammar
-  to SMT code.
+  ablation since the 2026-08-23 reshape. **The two submodules the old
+  directories carried** (`opencog/link-grammar`, `CVC4/CVC4`) were
+  deinitialised at M1a S1a.10.5 — never checked out here, and a cost on every
+  recursive clone. [`nl2smt/README.md`](nl2smt/README.md) has the one
+  `git submodule add` that restores each.
 
 ## Where the work is
 
