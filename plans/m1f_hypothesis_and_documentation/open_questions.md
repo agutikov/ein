@@ -231,6 +231,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.216](#q-m1f216--a-state-file-that-re-writes-less-than-the-program-as-loaded-and-the-register) | a state file that re-writes less than the program as loaded, and the register | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: a register row, W91, under schema `/22`; the fix makes every name a top-level selection lists live, and no more**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6253--e-11-done) |
 | [Q-M1f.217](#q-m1f217--when-the-loader-says-that-a-selection-left-a-relations-rules-behind) | when the loader says that a selection left a relation's rules behind | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: condition C of the census, a relation not listed, with a deriving rule in the module, none kept and none in the resolved program; one line a form, `note:` on stderr**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6254--e-20-done) |
 | [Q-M1f.218](#q-m1f218--what-a-count-past-the-runs-reach-says) | what a count past the run's reach says | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: counted exactly and reported up to 2^63 − 1, which reads *this many or more* on every surface; no wider integer is printed**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6255--e-22-done) |
+| [Q-M1f.219](#q-m1f219--a-querys-false-on-a-program-that-only-owes) | a query's `(false)` on a program that only owes | **defaulted 2026-11-13 (S1f.6.26), the user's to revise: no change, the claim holds as it does; the row under the query now says which empty R is; the meaning is [M1g's P1g.7](../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md)'s**; [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6264--e-18s-claim-asked-done) |
+| [Q-M1f.220](#q-m1f220--the-form-of-the-rows-for-what-root-owes) | the form of the rows for what root owes | **defaulted 2026-11-13 (S1f.6.26), the user's to revise: an `owed` row an instance in the block under `∅`, at most four on stdout and one line for the rest, outside the listings' 100 lines, every one in `answer.txt`; `--count` prints none**; [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6261--the-rows-shown-first-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4231,3 +4233,57 @@ holding a signed 64-bit integer.
 
 **Defaulted 2026-11-13: (a), the user's to revise.** What it costs: a count from 2^63 to 2^64 − 1, which
 the read-out printed exactly, now reads *9 223 372 036 854 775 807 or more*.
+
+### Q-M1f.219 — A query's `(false)` on a program that only owes
+
+**Raised** 2026-11-13 by [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6264--e-18s-claim-asked-done)'s T4, the claim half of E-18 of the calculator's
+[`findings.md`](p1f.6_calculator/findings.md). A query's `:expect (false)` says that the query has no class,
+and a query has no class over an empty R, whichever kind of empty it is. So the claim **holds** on a
+program whose root is alive and only owes, where `ein solve --single` says `Open` and not `Contradiction`,
+and where the region claim tells the two apart: `(solve :expect (region (owing …)))` holds and `(solve
+:expect (false))` fails, *(false) says every node is dead; R is empty, but alive nodes owe*.
+
+The witnesses. S1f.6.20's two, in scratch: `build/s1f.6.20/witness/gap_a2x.ein`, a word problem whose root
+owes a quantity, with a query claiming `(false)`, which holds, and `gap_a2y.ein`, the same program claiming
+`(solve :expect (false))`, which fails. Three tracked programs whose query claims `(false)` and holds on an
+R that is empty by owing: `examples/binary_logic/unsatisfiable.ein`, `examples/binary_logic/equivalent.ein`
+and `examples/beyond_arith/equation_no_solution.ein` (`ein solve FILE`, 2026-11-13).
+
+- **(a) No change.** A query's `(false)` is *no class*, on either empty. Since S1f.6.26 the row above it
+  says which empty: *R is empty, root is dead* or *R is empty, root is alive and owes n instances*. A
+  program that means *contradiction* states it over the region, `(solve :expect (false))`.
+- **(b) A query's `(false)` fails where root is alive.** It would then mean what the region's `(false)`
+  means, *every node is dead*, and the three tracked programs above would each need another claim: what a
+  query claims over an R that is empty by owing would have to be written first.
+- **(c) A second claim form for a query,** one that says *no class, because R is empty by owing*.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It is a change to what a claim means, which is the
+subject of question 24 of the calculator's [`questions.md`](p1f.6_calculator/questions.md#q24), not ruled
+(round 2, items 24, 28 and 37), and of
+[M1g's P1g.7](../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md), which decides it with what an
+unpayable debt may be called. No claim's outcome moved in S1f.6.26.
+
+### Q-M1f.220 — The form of the rows for what root owes
+
+**Raised** 2026-11-13 by [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6261--the-rows-shown-first-done)'s T1, which shows the rows on real programs before the printer moves
+(E-19; the user's reply 30 (a) of 2026-11-12, *a read-out row for what root owes when R is not empty*). The
+stage file has *the same rows the empty case prints today, under the `∅` row*, and has the listing share
+the read-out's 100 lines. Three forms were looked at, the first two built and run on the corpus:
+
+- **(a) A block under `∅`, cut as the warning's block is.** One `owed` row an instance, its value the
+  instance through its rule's `:why`; at most four on stdout, then one line, *… n more instances:
+  `--dump-answer DIR` writes every one, to DIR/answer.txt*; outside the listings' 100 lines; every one in
+  `answer.txt`. `--count` prints the `∅` row and no `owed` row.
+- **(b) The stage file's words: the rows charged to the listings' 100 lines.** Every instance is printed
+  while the lines last. Measured (`python3 build/s1f.6.26/sweep.py --diff`, 849 files, 2026-11-13): the five
+  zebra programs print 36 or 46 rows between `∅` and `minimal line`; `zebra2-minus-15.ein` and its twin then
+  list four of their 32 certified states where they listed seven; and a root that owes a hundred instances
+  leaves R's own listing, whatever its size, cut and outside its `(region …)`.
+- **(c) Every instance, never cut,** as an empty R's `owing` rows are today: 46 lines on the two programs,
+  and as many as a program's root owes.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** The debts of a root are not R's states, and (b)
+charges them before the answer. What (a) costs: a fifth instance is not on stdout, and
+`lattice/06_friends_tables_everyone_sits.ein`, whose root owes five, prints four and *… 1 more instance*.
+The label `owed`, and the two wordings of a query's row over an empty R, *R is empty, root is dead* and
+*R is empty, root is alive and owes n instances*, are defaults of the same task.
