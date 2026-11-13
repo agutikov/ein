@@ -19,6 +19,7 @@
 //! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
+//! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
 //! | **a malformed request has exactly one flag and no answer**, and the flag derives `(false)`; a well-formed one has no flag (S1f.6.12) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
 //!
@@ -431,6 +432,10 @@ fn named_operands_work_for_every_request() {
 /// the flag derives `(false)`; and the request is never answered with a
 /// number. Requests whose divisor is not zero are not flagged.
 ///
+/// Since S1f.6.24 the request's call is flagged beside it,
+/// `(division-by-zero (div-call (quotient X Y) U V))`, U and V the numbers the
+/// operands stand for: **two flags for one public division**, exactly.
+///
 /// The saturator here runs root to its fixpoint whatever it derives, so the
 /// other requests of the program are answered in root's state beside the
 /// contradiction; what a *solve* makes of a dead root, an empty R, is
@@ -445,13 +450,25 @@ fn a_division_by_zero_is_flagged_and_false() {
         for y in &zeros {
             body.push_str(&format!("(div {x} {y})\n"));
             want.insert(format!("(division-by-zero (div {x} {y}))"));
+            let number = |o: &String| {
+                if o == "none" {
+                    "z".to_string()
+                } else {
+                    o.clone()
+                }
+            };
+            want.insert(format!(
+                "(division-by-zero (div-call (quotient {x} {y}) {} {}))",
+                number(x),
+                number(y)
+            ));
         }
         body.push_str(&format!("(div {x} some)\n(div {x} (n z 3))\n"));
     }
     let flags: BTreeSet<String> = run(&body, "division-by-zero").into_iter().collect();
     assert_eq!(
         flags, want,
-        "the flags are the requests that divide by zero"
+        "the flags are the requests that divide by zero, and the call of each"
     );
     assert_eq!(run(&body, "false"), ["(false)"], "the flag derives (false)");
     for fact in run(&body, "quot-of") {
@@ -470,6 +487,76 @@ fn a_division_by_zero_is_flagged_and_false() {
     let fine = "(div (n z 7) (n z 3))\n(div z (n z 3))\n";
     assert!(run(fine, "division-by-zero").is_empty());
     assert!(run(fine, "false").is_empty());
+}
+
+/// **A division by zero is flagged at the call, whoever made it** (S1f.6.24;
+/// the user's ruling of 2026-11-12: *"(div ?x 0) must emit division-by-zero
+/// no matter where it happens"*). Until the stage a tagged call with a zero
+/// divisor derived nothing, and each theory over this one wrote a rule of its
+/// own.
+///
+/// The calls here are written as facts, which the theory computes with as
+/// with a derived one. The tags are every shape the modules and the examples
+/// use: a bare name; `std.arith`'s own; `std.int`'s, its request and the two
+/// signs; `std.rat`'s three; and a tag of a program's own that holds numbers.
+/// Each call with a divisor that is zero by value, `z` or written with
+/// digits, has exactly one flag, the call as asserted, and no answer; each
+/// call with another divisor is answered and not flagged.
+#[test]
+fn a_tagged_call_by_zero_is_flagged_whoever_made_it() {
+    let tags = [
+        "mine".to_string(),
+        "(quotient (n z 7) nobody)".into(),
+        "(int-div-m (int-div-of (int-div-trunc a b)) pos neg (n z 3))".into(),
+        "(rat-gcd-rem (rat-g (rat-add a b) pos (n z 6) (n z 4)) (n z 4))".into(),
+        "(rat-q-num (rat-add a b) neg (n z 4) (n z 2))".into(),
+        "(rat-q-den (rat-add a b) pos (n z 3))".into(),
+        "(tr-div (n (n z 1) 7) (n z 0))".into(),
+    ];
+    let zeros = ["z".to_string(), written("0"), written("000")];
+    let dividends = ["z".to_string(), written("7"), written("120")];
+    for tag in &tags {
+        let mut body = String::new();
+        let mut want = BTreeSet::new();
+        for x in &dividends {
+            for y in &zeros {
+                // The tag holds the divisor too, so that each call has a tag
+                // of its own, as a caller's has.
+                body.push_str(&format!("(div-call (at {tag} {x} {y}) {x} {y})\n"));
+                want.insert(format!(
+                    "(division-by-zero (div-call (at {tag} {x} {y}) {x} {y}))"
+                ));
+            }
+            body.push_str(&format!("(div-call (at {tag} {x} three) {x} (n z 3))\n"));
+        }
+        let flags: BTreeSet<String> = run(&body, "division-by-zero").into_iter().collect();
+        assert_eq!(flags, want, "the flags are the calls that divide by zero");
+        assert_eq!(run(&body, "false"), ["(false)"], "the flag derives (false)");
+        let answers = run(&body, "div-done");
+        assert_eq!(
+            answers.len(),
+            dividends.len(),
+            "the calls that do not divide by zero are each answered: {answers:?}"
+        );
+        for fact in &answers {
+            assert!(fact.contains(" three) "), "a call by zero answered: {fact}");
+        }
+        // The tag itself, bare, as a caller with one division writes it.
+        // `std.arith`'s own tag is a public request's, so its call has the
+        // request's flag beside it, whoever wrote the call.
+        let bare = format!("(div-call {tag} (n z 7) z)\n");
+        let mut want = vec![format!("(division-by-zero (div-call {tag} (n z 7) z))")];
+        if tag.starts_with("(quotient ") {
+            want.insert(0, "(division-by-zero (div (n z 7) nobody))".into());
+        }
+        assert_eq!(run(&bare, "division-by-zero"), want);
+        assert_eq!(run(&bare, "false"), ["(false)"]);
+    }
+    // No flag and no contradiction without a zero divisor.
+    let fine = "(div-call mine (n z 7) (n z 3))\n(div-call (other) z (n z 3))\n";
+    assert!(run(fine, "division-by-zero").is_empty());
+    assert!(run(fine, "false").is_empty());
+    assert_eq!(run(fine, "div-done").len(), 2);
 }
 
 // ── malformed requests (S1f.6.12) ──────────────────────────────────
@@ -913,8 +1000,10 @@ fn the_circuit_of_one_division() {
     );
     // A division by zero stops at the divisor's normal form: the operands,
     // one row, its strip, the flag and the contradiction; and the dividend's
-    // six places are checked beside it.
-    assert_eq!(div("127645", ""), (16, 10), "127645 / 0");
+    // six places are checked beside it. Since S1f.6.24 the call is flagged
+    // beside the request and is a contradiction too: two firings more, no
+    // deeper.
+    assert_eq!(div("127645", ""), (18, 10), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────

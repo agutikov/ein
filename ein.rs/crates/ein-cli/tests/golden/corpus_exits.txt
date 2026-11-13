@@ -2048,6 +2048,21 @@
 0    tests/stdlib/arith/38_what_stays_silent.ein :: saturate
 0    tests/stdlib/arith/38_what_stays_silent.ein :: solve
 0    tests/stdlib/arith/38_what_stays_silent.ein :: test
+0    tests/stdlib/arith/39_div_call_by_zero.ein :: render constraints
+0    tests/stdlib/arith/39_div_call_by_zero.ein :: render rules
+0    tests/stdlib/arith/39_div_call_by_zero.ein :: saturate
+0    tests/stdlib/arith/39_div_call_by_zero.ein :: solve
+0    tests/stdlib/arith/39_div_call_by_zero.ein :: test
+0    tests/stdlib/arith/40_div_call_by_zero_spelt.ein :: render constraints
+0    tests/stdlib/arith/40_div_call_by_zero_spelt.ein :: render rules
+0    tests/stdlib/arith/40_div_call_by_zero_spelt.ein :: saturate
+0    tests/stdlib/arith/40_div_call_by_zero_spelt.ein :: solve
+0    tests/stdlib/arith/40_div_call_by_zero_spelt.ein :: test
+0    tests/stdlib/arith/41_div_call_not_zero.ein :: render constraints
+0    tests/stdlib/arith/41_div_call_not_zero.ein :: render rules
+0    tests/stdlib/arith/41_div_call_not_zero.ein :: saturate
+0    tests/stdlib/arith/41_div_call_not_zero.ein :: solve
+0    tests/stdlib/arith/41_div_call_not_zero.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate

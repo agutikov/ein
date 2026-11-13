@@ -4,7 +4,10 @@
 ;;; (division-by-zero2 (div2 X Y)), the request as written, and from the flag
 ;;; (false): two steps. Root is dead and R is empty. `ein solve` names the
 ;;; request in the unsat core and `division-by-zero-is-false2` under
-;;; `refuted by`, and exits 0: an empty R is an answer.
+;;; `refuted by`, and exits 0: an empty R is an answer. Root's state holds a
+;;; second flag, the request's tagged call, (division-by-zero2 (div-call2 …)):
+;;; a division by zero is flagged at the call, whoever made it, as in decimal
+;;; (M1f S1f.6.24).
 ;;;
 ;;; The sum beside it is a good request. It loses its answer with the rest of
 ;;; the program, so the only claim such a program can make is this one.

@@ -281,6 +281,21 @@ two variables exchanged is the same rule. `arith_theory.rs` holds all of
 them from outside the language: its harness compares the flags' text, and
 asks that a digit as an operand has no `undeclared` flag.
 
+**S1f.6.24's rule has one mutant, killed, and costs the bank one line**: 437
+of 500 over the stdlib (`python3 utils/stdlib_mutants.py`, 2026-11-13).
+`39_div_call_by_zero.ein` and `40_div_call_by_zero_spelt.ein` are a division
+by zero that a rule of the program's own makes through the tagged call,
+`(div-call (mine A B) A B)`, with no `div` request: they kill
+`div-call-by-zero` with its premise's arguments exchanged, and
+`41_div_call_not_zero.ein` is the same rules loaded and silent. The line the
+bank gained is `div-by-zero` with its premise exchanged, which
+`20_div_by_zero.ein` killed until now: a public division by zero has two
+flags since the stage, the request's and its call's, either of which is
+`(false)`, and a dead program's one claim cannot say which flag killed it.
+`arith_search_free.rs` holds it from outside the language: a dead program
+whose core names a `(div X Y)` has exactly two flags in root's state, each by
+its own rule, and `arith_theory.rs` holds the two for every public request.
+
 ### `stdlib/num9/`: wide rules, and a generated module
 
 M1f [S1f.6.13](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md).

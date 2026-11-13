@@ -95,6 +95,12 @@ tables. The module's header says what a division by zero is and how a program av
 
 ## T2 record, 2026-11-11: division by zero on every surface
 
+**Since [S1f.6.24](s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) (2026-11-13) a division by
+zero is flagged at the tagged call, whoever made it,** on the user's ruling of 2026-11-12, which overruled
+Q-M1f.163's default. What is below is the record of 2026-11-11 and reads as it did for `ein solve`; root's
+state holds a second flag, the request's call, `--trace` two steps more, and a call under another tag is no
+longer silent.
+
 The shipped theory, on [`examples/arith/div_by_zero.ein`](../../../examples/arith/div_by_zero.ein): two `let`s,
 `(add 2 2)`, `(div takings customers)` with `customers` zero, and `(solve :expect (false))`. Every command
 exits 0.

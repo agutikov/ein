@@ -19,6 +19,12 @@
 ;;; state beside the flag, but a dead state is no answer: a `(query …)` of
 ;;; this program reads nothing. `ein solve` names the request in the unsat
 ;;; core, and `--trace` shows the flag and the contradiction as two steps.
+;;;
+;;; Since S1f.6.24 the request's tagged call is flagged beside the request,
+;;; `(division-by-zero (div-call (quotient (n z 7) z) (n z 7) z))`, by
+;;; `div-call-by-zero`, and is a contradiction too: two flags in root's state
+;;; and two steps more in the trace. `39_div_call_by_zero.ein` is a call made
+;;; by a rule of the program's own, where that flag is the only one.
 
 (import std.arith :symbols (arith))
 

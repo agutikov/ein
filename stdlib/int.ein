@@ -78,6 +78,10 @@
 ;;; `div` there. A divisor that is zero by value derives `std.arith`'s flag,
 ;;; `(division-by-zero REQUEST)`, the request as written, and `std.arith`'s
 ;;; rule derives `(false)` from it: no rule of this module concludes `(false)`.
+;;; The module sees the zero by the divisor's shape before it calls
+;;; `std.arith`'s division, so it makes no call with a zero divisor and the
+;;; request has one flag, its own; `std.arith` flags any such call, whoever
+;;; made it (S1f.6.24), and none is made here.
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;

@@ -23,8 +23,11 @@
 ;;; addition, subtraction and comparison, the same up to their names (nothing
 ;;; in them says ten); a multiplication with no digit multiplier, since a row
 ;;; is nothing or the multiplicand; and a division in which one subtraction
-;;; decides a quotient bit, where decimal bisects nine multiples. 67 rules
-;;; where decimal has 88, three tables where it has seven.
+;;; decides a quotient bit, where decimal bisects nine multiples. 68 rules
+;;; where decimal has 89 beside its check of what a program wrote, three
+;;; tables where it has seven. A division by zero is flagged at the tagged
+;;; call, whoever made it, as decimal's is (M1f S1f.6.24): the request's flag
+;;; and its call's.
 ;;;
 ;;; The names are placeholders, the shipped ones with a `2`; the shape, the
 ;;; names and whether binary arithmetic ships at all are the plan page's
@@ -130,8 +133,8 @@
   :why "the first operand of {?1} divided by {?2}")
 (relation div-second2 Operand Operand Number
   :why "the second operand of {?1} divided by {?2}, whose first is {?3}")
-(relation div-m12 Tag Number
-  :why "1 times the divisor, for {?1}, which divides {?2}")
+(relation div-m12 Tag Number Number
+  :why "1 times the divisor, for {?1}, which divides {?2} by {?3} as the call wrote it")
 (rule operand-zero2 ()
   :match  (operand2 ?k z)
   :assert (operand-is2 ?k z)
@@ -313,9 +316,13 @@
   :assert (quot-of2 ?x ?y ?q ?r)
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 (rule div-by-zero2 ()
-  :match  (done2 (div-m12 (quotient2 ?x ?y) ?u) z)
+  :match  (done2 (div-m12 (quotient2 ?x ?y) ?u ?v) z)
   :assert (division-by-zero2 (div2 ?x ?y))
   :why    "the divisor of {?x} divided by {?y} is zero")
+(rule div-call-by-zero2 ()
+  :match  (done2 (div-m12 ?k ?u ?v) z)
+  :assert (division-by-zero2 (div-call2 ?k ?u ?v))
+  :why    "the divisor of {?u} divided by {?v}, wanted for {?k}, is zero")
 (rule division-by-zero-is-false2 ()
   :match  (division-by-zero2 ?request)
   :assert (false)
@@ -354,7 +361,7 @@
   :why    "no digit of the multiplier is left: the product is {?acc}")
 (rule div-multiples2 ()
   :match  (div-call2 ?k ?u ?v)
-  :assert (add-walk2 (div-m12 ?k ?u) z ?v 0 z)
+  :assert (add-walk2 (div-m12 ?k ?u ?v) z ?v 0 z)
   :why    "to divide {?u} by {?v}: first the divisor in normal form, zero plus {?v}")
 (rule strip-top2 ()
   :match  (strip2 ?k (a2 1 ?r))
@@ -367,7 +374,7 @@
 (relation div-trial2 Tag Number Digits Number Number
   :why "a trial, for {?1}: the divisor {?2} taken from {?5}")
 (rule div-turn2 ()
-  :match  (done2 (div-m12 ?k ?u) (b2 ?p ?a))
+  :match  (done2 (div-m12 ?k ?u ?v) (b2 ?p ?a))
   :assert (top-first2 (div-digits2 ?k (b2 ?p ?a)) ?u z)
   :why    "the divisor is not zero. Now the digits of {?u}, the top one first")
 (rule div-begin2 ()
@@ -514,6 +521,7 @@
               (arith-rule2 div-start2)
               (arith-rule2 div-answer2)
               (arith-rule2 div-by-zero2)
+              (arith-rule2 div-call-by-zero2)
               (arith-rule2 division-by-zero-is-false2)
               (arith-rule2 mul-turn2)
               (arith-rule2 mul-begin2)

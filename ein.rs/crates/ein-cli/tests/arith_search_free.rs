@@ -52,8 +52,11 @@ const ROOTS: [&str; 5] = [
 
 /// The relations an answer is a fact of: `std.arith`'s five results, and
 /// `std.num9`'s five, its overflow flag and its conversions' answers, and
-/// `std.int`'s six and `std.rat`'s seven.
-const RESULTS: [&str; 30] = [
+/// `std.int`'s six and `std.rat`'s seven; and `div-done`, the hand-over of
+/// `std.arith`'s tagged division, which is the answer a rule of a program's
+/// own reads where it calls the division itself (S1f.6.24's `41`).
+const RESULTS: [&str; 31] = [
+    "div-done",
     "sum-of",
     "diff-of",
     "cmp-of",
@@ -94,9 +97,12 @@ const THEORIES: [&str; 4] = [
     "(import std.rat ",
 ];
 
-/// The requests a division by zero can be, by the start of their text: a
-/// dead program's core names exactly one.
-const DIVIDES: [&str; 4] = ["(div ", "(div9 ", "(rat-", "(int-div-"];
+/// What a division by zero can come from, by the start of its text: a dead
+/// program's core names exactly one. The four kinds of request, and, since
+/// S1f.6.24 flags a division at the call whoever made it, the fact a rule of
+/// the program's own makes its tagged call from: `(share A B)`, of
+/// `tests/stdlib/arith/39_div_call_by_zero.ein` and `40`.
+const DIVIDES: [&str; 5] = ["(div ", "(div9 ", "(rat-", "(int-div-", "(share "];
 
 /// What else such a core may hold: the `let` of a named operand, and the
 /// table rows a zero written with digits was read through, `md` where
@@ -129,8 +135,12 @@ const MALFORMED_BY: [&str; 6] = [
 ];
 
 /// The rules that derive the flag, each with the start of the flag it
-/// derives.
-const FLAGGERS: [(&str, &str); 7] = [
+/// derives. Since S1f.6.24 the first is the flag of a call, `std.arith`'s
+/// `(div-call TAG X Y)` with a divisor that is zero, whoever asserted it; a
+/// public `(div X Y)` has that flag beside its own, and the modules' rules
+/// below flag their request before any call is made, so theirs is one flag.
+const FLAGGERS: [(&str, &str); 8] = [
+    ("(division-by-zero (div-call ", "div-call-by-zero"),
     ("(division-by-zero (int-div-", "int-div-by-zero"),
     ("(division-by-zero (div ", "div-by-zero"),
     ("(division-by-zero (div9 ", "div9-by-zero"),
@@ -315,9 +325,51 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         "{file}: (false), by the second rule"
     );
     if division {
-        assert!(
-            FLAGGERS.iter().any(|(start, rule)| fact(start, rule)),
-            "{file}: the flag, by its own rule"
+        // Every flag in root's state is by the rule that derives its shape.
+        let flags: Vec<&str> = saturate
+            .stdout
+            .lines()
+            .map(str::trim)
+            .filter(|l| l.starts_with(flag))
+            .collect();
+        assert!(!flags.is_empty(), "{file}: no flag in root's state");
+        for line in &flags {
+            assert!(
+                FLAGGERS.iter().any(|(start, rule)| line.starts_with(start)
+                    && line.ends_with(&format!(":rule {rule})"))),
+                "{file}: the flag, by its own rule: {line}"
+            );
+        }
+        // Where the flag comes from (S1f.6.24). A public `(div X Y)` is
+        // flagged twice, the request and its call under `std.arith`'s tag; a
+        // call a rule of the program's own made is flagged once, the call;
+        // and a module that sees the zero before it calls flags its request
+        // and no call.
+        let calls = flags
+            .iter()
+            .filter(|l| l.starts_with("(division-by-zero (div-call "))
+            .count();
+        let named = core
+            .iter()
+            .find(|f| DIVIDES.iter().any(|h| f.starts_with(h)))
+            .expect("the core names what divided");
+        let (want_calls, want_flags) = if named.starts_with("(div ") {
+            assert!(
+                flags
+                    .iter()
+                    .any(|l| l.starts_with("(division-by-zero (div-call (quotient ")),
+                "{file}: a request's call is under the tag (quotient X Y)"
+            );
+            (1, 2)
+        } else if named.starts_with("(share ") {
+            (1, 1)
+        } else {
+            (0, 1)
+        };
+        assert_eq!(
+            (calls, flags.len()),
+            (want_calls, want_flags),
+            "{file}: the flags of one division by zero: {flags:?}"
         );
         assert!(
             !saturate

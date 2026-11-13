@@ -536,6 +536,15 @@ fn an_integer_is_not_a_rational_operand() {
 /// `std.arith`'s rule derives `(false)`; and the request is never answered.
 /// The requests beside them are answered and not flagged.
 ///
+/// **One flag a request, and it is the request's** (S1f.6.24). `std.arith`
+/// flags a division at its tagged call since that stage, whoever made it.
+/// None of this module's rules is replaced by it: a request with a
+/// denominator of zero performs no division, and a `rat-div` by a rational
+/// that is zero is seen at the divisor's numerator, before any call; the
+/// module's own calls, Euclid's chain and lowest terms, divide by numbers
+/// that are not zero. So the set below holds no `(division-by-zero
+/// (div-call …))`, and the equality is exact.
+///
 /// The saturator here runs root to its fixpoint whatever it derives; what a
 /// *solve* makes of a dead root is `ein-cli/tests/arith_search_free.rs`'s.
 #[test]

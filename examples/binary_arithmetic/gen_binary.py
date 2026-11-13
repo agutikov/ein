@@ -4,13 +4,13 @@
 M1f P1f.6, S1f.6.16. The plan page, `plans/m1f_hypothesis_and_documentation/
 p1f.6_calculator/binary_arithmetic.md`, tried three ways to have binary numbers
 and recommends (b): a theory of its own, its own shape `(b2 PREFIX BIT)` and
-every name its own, so that it stands beside decimal in one program. 51 of its
-67 rules are `std.arith`'s, the same up to their names, so they are not written
+every name its own, so that it stands beside decimal in one program. 52 of its
+68 rules are `std.arith`'s, the same up to their names, so they are not written
 twice: this script reads `stdlib/arith.ein`, keeps what does not know the base,
 replaces what does, and renames.
 
     examples/binary_arithmetic/bits.ein   the three tables, 28 rows
-    examples/binary_arithmetic/bin.ein    the theory, 67 rules and its closing rule
+    examples/binary_arithmetic/bin.ein    the theory, 68 rules and its closing rule
     examples/binary_logic/bits.ein        a copy of the tables: an import cannot
                                           reach a sibling directory
 
@@ -136,7 +136,7 @@ DIV2 = r'''
   :why "a trial, for {?1}: the divisor {?2} taken from {?5}")
 
 (rule div-turn ()
-  :match  (done (div-m1 ?k ?u) (n ?p ?a))
+  :match  (done (div-m1 ?k ?u ?v) (n ?p ?a))
   :assert (top-first (div-digits ?k (n ?p ?a)) ?u z)
   :why    "the divisor is not zero. Now the digits of {?u}, the top one first")
 (rule div-begin ()
@@ -217,7 +217,7 @@ MUL2 = r'''
 NORM2 = r'''
 (rule div-multiples ()
   :match  (div-call ?k ?u ?v)
-  :assert (add-walk (div-m1 ?k ?u) z ?v 0 z)
+  :assert (add-walk (div-m1 ?k ?u ?v) z ?v 0 z)
   :why    "to divide {?u} by {?v}: first the divisor in normal form, zero plus {?v}")
 (rule strip-top ()
   :match  (strip ?k (b 1 ?r))
@@ -226,6 +226,7 @@ NORM2 = r'''
 '''
 
 DIV_KEEP = {"div-multiples", "div-ask", "div-ask-second", "div-start", "div-answer", "div-by-zero",
+            "div-call-by-zero",
             "division-by-zero-is-false"}
 DIV_REL_GONE = {"multiples", "div-choose", "div-digit", "div-digits", "div-step", "div-trial"} | \
                {f"div-m{i}" for i in range(2, 10)}
@@ -351,8 +352,11 @@ BIN_HEADER = """\
 ;;; addition, subtraction and comparison, the same up to their names (nothing
 ;;; in them says ten); a multiplication with no digit multiplier, since a row
 ;;; is nothing or the multiplicand; and a division in which one subtraction
-;;; decides a quotient bit, where decimal bisects nine multiples. 67 rules
-;;; where decimal has 88, three tables where it has seven.
+;;; decides a quotient bit, where decimal bisects nine multiples. 68 rules
+;;; where decimal has 89 beside its check of what a program wrote, three
+;;; tables where it has seven. A division by zero is flagged at the tagged
+;;; call, whoever made it, as decimal's is (M1f S1f.6.24): the request's flag
+;;; and its call's.
 ;;;
 ;;; The names are placeholders, the shipped ones with a `2`; the shape, the
 ;;; names and whether binary arithmetic ships at all are the plan page's

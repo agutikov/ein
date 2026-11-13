@@ -583,6 +583,12 @@ fn a_natural_number_is_not_an_integer_operand() {
 /// name. `int-div-by-zero` derives `std.arith`'s flag with the request as
 /// written, `std.arith`'s rule derives `(false)`, and the request has no
 /// quotient; the request beside it is answered.
+///
+/// **One flag a request, and it is the request's** (S1f.6.24). `std.arith`
+/// flags a division at its tagged call since that stage, whoever made it;
+/// this module sees a divisor that is zero by its shape before it calls, so
+/// no call with a zero divisor is made and no `(division-by-zero (div-call
+/// …))` stands beside the request's flag. The equality below is exact.
 #[test]
 fn a_division_by_zero_is_the_flag_under_every_convention() {
     let zeros = [

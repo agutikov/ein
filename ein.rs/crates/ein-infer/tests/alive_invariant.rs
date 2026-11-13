@@ -159,7 +159,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 146] = [
+const SEEDED: [(&str, &[&str]); 147] = [
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -463,6 +463,12 @@ const SEEDED: [(&str, &[&str]); 146] = [
     (
         "tests/stdlib/arith/38_what_stays_silent.ein",
         &["`end`, in (add (n end 1) (n z 5))"],
+    ),
+    // M1f S1f.6.24 — a division by zero at a tagged call: `39` and `41`
+    // write `z` at top level in a `share` fact, and `40` only inside a number.
+    (
+        "tests/stdlib/arith/40_div_call_by_zero_spelt.ein",
+        &["`z`, in (share (n z 7) (n (n z 0) 0))"],
     ),
     // M1f S1f.6.7 — `std.int`: an integer's parts are numbers, so `z` is inside
     // a nested fact here too, and the module holds it through `std.arith`'s rule.

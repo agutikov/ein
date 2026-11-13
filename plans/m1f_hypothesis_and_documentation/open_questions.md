@@ -175,7 +175,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.160](#q-m1f160--a-zero-digit-of-the-multiplier) | a zero digit of the multiplier | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-11 (S1f.6.5): a row like any other, no rule tells it apart**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
 | [Q-M1f.161](#q-m1f161--the-dot-sweep-several-files-at-a-time) | the DOT sweep, several files at a time | **2026-11-12:** stands; not overruled by reply 45. **defaulted 2026-11-11 (S1f.6.5): the corpus files shared out among the cores, the report in the files' order; what the sweep holds unchanged. With Q-M1f.147 and .153, for the user to confirm**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
 | [Q-M1f.162](#q-m1f162--the-longest-sampled-operand-of-a-product) | the longest sampled operand of a product | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-11 (S1f.6.5): 19 digits, so the product stays in `u128`**; [S1f.6.5](p1f.6_calculator/s1f.6.5_multiplication.md) |
-| [Q-M1f.163](#q-m1f163--division-called-with-a-tag-and-whose-division-by-zero-is-flagged) | division called with a tag, and whose division by zero is flagged | **Overruled 2026-11-12** (reply 48): a division by zero is flagged wherever it is called; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md). **defaulted 2026-11-11 (S1f.6.6): `(div-call TAG X Y)` answered by `(div-done TAG Q R)`; the flag is derived for a public request, `(quotient X Y)`, and a later theory that calls division says what its own zero divisor is**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
+| [Q-M1f.163](#q-m1f163--division-called-with-a-tag-and-whose-division-by-zero-is-flagged) | division called with a tag, and whose division by zero is flagged | **Overruled 2026-11-12** (reply 48: *"(div ?x 0) must emit division-by-zero no matter where it happens"*): a division by zero is flagged wherever it is called; **built 2026-11-13** by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13), `div-call-by-zero`. **defaulted 2026-11-11 (S1f.6.6): `(div-call TAG X Y)` answered by `(div-done TAG Q R)`; the flag is derived for a public request, `(quotient X Y)`, and a later theory that calls division says what its own zero divisor is**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.164](#q-m1f164--divisions-families-of-nine-rules-by-hand-or-generated) | division's families of nine rules: by hand or generated? | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-11 (S1f.6.6): by hand, and a test holds that the rules of a family differ by their digit alone**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.165](#q-m1f165--what-search-free-means-of-a-program-that-divides-by-zero) | what search-free means of a program that divides by zero | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-11 (S1f.6.6): no candidate, one saturation, R empty and decided by root, the request in the core; the test holds such a program to that where it holds the others to R = {∅}**; [S1f.6.6](p1f.6_calculator/s1f.6.6_division.md) |
 | [Q-M1f.166](#q-m1f166--the-sizes-of-the-generated-arithmetic-examples) | the sizes of the generated arithmetic examples | **Ruled 2026-11-12** (reply 49): a generator with size arguments; [S1f.6.29](p1f.6_calculator/s1f.6.29_the_biggest_calculation.md). **defaulted 2026-11-11 (S1f.6.15): what every per-commit surface affords, 100-digit operands, 100 requests and 25!; the plan's sizes are the script's sweep and the generator's arguments**; [S1f.6.15](p1f.6_calculator/s1f.6.15_load_against_calculation.md) Round 2's item 49 (`dc88520b`): about 16 GB of memory is the bound, and no test or CI step runs it. |
@@ -194,7 +194,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.179](#q-m1f179--the-remainder-of-an-integer-division) | the remainder of an integer division: Euclidean, truncated or floored | **Ruled 2026-11-12** (replies 1 (d), 2 (a)): all three conventions, each its own request; the Euclidean remainder a natural number; **built 2026-11-12** by [S1f.6.22](p1f.6_calculator/s1f.6.22_integer_division.md). Before: **open, the user's; not defaulted.** Integer division is not built until it is ruled; the stage recommends Euclidean and shows the three as rules and computed examples; [S1f.6.7](p1f.6_calculator/s1f.6.7_negative_numbers.md) |
 | [Q-M1f.180](#q-m1f180--the-names-of-stdrat) | the names of `std.rat` | **2026-11-12** (reply 52): the relation names stand; the modules move under `std.math`, [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md). **defaulted 2026-11-12 (S1f.6.8), the user's to revise: a prefix, `rat-add` answered by `rat-sum-of` and so on, `rat-div` by `rat-quot-of`, one rational; the entry `rat-arith`**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.181](#q-m1f181--what-stdrat-reads-as-an-operand) | what `std.rat` reads as an operand | **Kept as built 2026-11-12** (reply 12); promotion is [M1g's P1g.8](../m1g_logic/p1g.8_a_theory_of_types/README.md), with a types theory. **defaulted 2026-11-12 (S1f.6.8), the user's to revise: a rational written out, `(rat (int P N) D)`, or a name through `std.arith`'s `let`; an integer or a natural number is not promoted**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
-| [Q-M1f.182](#q-m1f182--a-zero-denominator-is-stdariths-division-by-zero) | a zero denominator is `std.arith`'s division by zero | **Confirmed** in round 2 (`dc88520b`) (item 48, point 2: *"OK, I agree"*). **defaulted 2026-11-12 (S1f.6.8), the user's to revise: the same flag relation, the request as written, on any operand of any request, and on a `rat-div` by a rational that is zero**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
+| [Q-M1f.182](#q-m1f182--a-zero-denominator-is-stdariths-division-by-zero) | a zero denominator is `std.arith`'s division by zero | **Confirmed** in round 2 (`dc88520b`) (item 48, point 2: *"OK, I agree"*); [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) left `std.rat`'s four rules as built, none of them replaced by the flag at the call. **defaulted 2026-11-12 (S1f.6.8), the user's to revise: the same flag relation, the request as written, on any operand of any request, and on a `rat-div` by a rational that is zero**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.183](#q-m1f183--lowest-terms-by-stdariths-division-and-what-it-costs) | lowest terms by `std.arith`'s division, and what it costs | **Ruled** in round 2 (`dc88520b`) (item 54, *"(b)"*): reduce only on request; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md). **defaulted 2026-11-12 (S1f.6.8), the user's to revise: Euclid's chain over `div-call`, one reduction at the end of each operation, none in a comparison; 492 firings for 1/2 + 1/3**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.184](#q-m1f184--the-harness-of-stdrat-and-the-sizes-memory-allows) | the harness of `std.rat`, and the sizes memory allows | **2026-11-12:** stands; section I of the calculator's `questions.md` was left empty. **defaulted 2026-11-12 (S1f.6.8): 28 operands exhaustively, 250 requests a saturation, batches of 100, 400 and 1 200**; [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md) |
 | [Q-M1f.185](#q-m1f185--a-state-file-nested-past-the-parsers-limit) | a state file nested past the parser's limit (E-4): say it, flag it, or change the engine | **Ruled 2026-11-12** (reply 44 (a)): stated on the page and left. The stage recommended (a), which it had done; (b) and (c) are probed and not built; [S1f.6.9](p1f.6_calculator/s1f.6.9_width.md) |
@@ -223,6 +223,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.208](#q-m1f208--how-the-theory-says-that-an-operand-is-a-name) | how the theory says that an operand is a name | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: two guards on a variable nothing else binds, `(neq ?v z) (eq ?v ?x)`, in that order; `z` and the digits left out so that a request has one flag; its cost, a comparison a name of the program, stated and pinned**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.209](#q-m1f209--the-binary-example-theory-and-the-check) | the binary example theory and the check | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: `gen_binary.py` leaves the check out, so `bin.ein` is unchanged and answers a malformed request by silence**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.210](#q-m1f210--stdint-and-stdrat-and-the-flags) | `std.int` and `std.rat`, and the flags | **open, shown**: neither module is changed, as the stage file has it; three rules in each would turn their tags into requests, and the table is in the record; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.211](#q-m1f211--which-fact-carries-the-flag-of-a-division-by-zero-at-the-call) | which fact carries the flag of a division by zero at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: (ii), the call, `(division-by-zero (div-call TAG X Y))` as it was asserted, and a public request's flag as it was, so a public division has two flags and `ein solve` reads as before; the three designs are shown on nine programs in the record**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
+| [Q-M1f.212](#q-m1f212--a-theorys-wrong-answer-and-the-register) | a theory's wrong answer and the register | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: not a register row. The register holds the engine's wrong answers, and a tagged call by zero that derived nothing was a rule of a theory, answered by the engine as written; the witness is a test program**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
+| [Q-M1f.213](#q-m1f213--the-binary-example-theory-and-the-flag-at-the-call) | the binary example theory and the flag at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: `gen_binary.py` carries the rule over, so `bin.ein` has 68 rules and flags `(div-call2 TAG X Y)` by zero as decimal does**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4067,3 +4070,56 @@ rational is not seen at all: the parts go to `std.arith`'s walks and never throu
 - **(c) (b), and each part of an integer and a rational handed to `std.arith`'s check,** a firing a digit
   of each part, as a natural number's operand costs.
 
+### Q-M1f.211 — Which fact carries the flag of a division by zero at the call
+
+**Raised** 2026-11-13 by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13)'s T1, as the stage file's design question. The user's
+ruling of 2026-11-12, *"(div ?x 0) must emit division-by-zero no matter where it happens"*, moves the
+detection to `(div-call TAG X Y)`; it does not say what the flag names.
+
+- **(i) The call alone,** `(division-by-zero (div-call TAG X Y))`. One rule. A public division's flag then
+  reads `(division-by-zero (div-call (quotient X Y) U V))` where it read `(division-by-zero (div X Y))`:
+  `ein solve` is unmoved (the core is the written request, `refuted by` the same rule), and the flag in
+  `--trace` and in `ein saturate --dump` is respelt.
+- **(ii) The call, and the public request as it was.** Two flags for one public division; `ein solve` is
+  unmoved; `--trace` shows two steps more and `ein saturate --dump` one fact more.
+- **(iii) The caller's request, through the tag:** the theory derives a marker that is no flag,
+  `(div-zero TAG X Y)`, and each caller writes a rule from its tag to its request's flag. A caller that
+  writes none stays alive and silent, which is what the ruling overruled.
+
+**Defaulted 2026-11-13: (ii), the user's to revise.** It is the stage file's default: no text a program
+read before moves. Two details the stage settled inside it. **The request's flag is derived first and
+from the walk,** `div-by-zero` written before `div-call-by-zero` and both matching the divisor's normal
+form, so that a trace reads the request's flag, then the call's, then the two contradictions; deriving the
+request's flag *from* the call's reverses that order and reads no better. **The call's flag repeats the
+call as it was asserted,** the divisor as the caller wrote it, `(n (n z 0) 0)` and not `z`, so the flag
+names a fact that is in the state: for that the first multiple's tag holds the divisor beside the
+dividend, `(div-m1 TAG X Y)`, which respells that walk's facts in every division's state and adds none.
+
+### Q-M1f.212 — A theory's wrong answer and the register
+
+**Raised** 2026-11-13 by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13)'s T2. Until the stage a rule of a program's own that
+called `(div-call TAG X z)` derived nothing and the program was alive, which the user ruled wrong.
+
+- **(a) Not a register row.** `corpus/wrong_answers.toml` holds the *engine's* wrong answers; here the
+  engine answered the program as the stdlib's rules said, and what was wrong was a rule of a theory. The
+  witness is a test program, `tests/stdlib/arith/39_div_call_by_zero.ein`, and the record's run of it on
+  the stdlib before the change.
+- **(b) A row,** filed `open` before the fix, with a schema that can say *a theory's*.
+
+**Defaulted 2026-11-13: (a), the user's to revise,** as the stage file has it. S1f.6.12 did the same for
+the malformed requests answered by silence.
+
+### Q-M1f.213 — The binary example theory and the flag at the call
+
+**Raised** 2026-11-13 by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13). `examples/binary_arithmetic/bin.ein` is generated from
+`stdlib/arith.ein`, keeps `div-by-zero` and `division-by-zero-is-false`, and has a tagged division of its
+own, `div-call2`, which `conv.ein` calls.
+
+- **(a) The generator carries the new rule over,** as it carries the two beside it: `div-call-by-zero2`,
+  68 rules where 67, and the first step's tag holding the divisor as written.
+- **(b) The generator leaves it out,** as it leaves S1f.6.12's check out (Q-M1f.209), and `bin.ein` stays
+  byte for byte what it was.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** The ruling is about division by zero wherever it
+happens, and the rule knows nothing of the base, which is the generator's test for what it keeps; the
+check was left out because its rules name the ten digits. No binary program's `ein solve` moved.

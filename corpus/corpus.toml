@@ -442,7 +442,7 @@ note   = "M1f S1f.6.10 — tables read backwards where a column has more than on
 path   = "examples/binary_arithmetic/bin.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules"]
-note   = "M1f S1f.6.16 — a theory module, the plan page's way (b): binary arithmetic of its own, `(b2 PREFIX BIT)`, the five operations by saturation, 67 rules and the closing rule `bin`; generated from `stdlib/arith.ein` by `gen_binary.py` beside it, run by hand. Alone it has no request, so nothing is computed: R {∅}."
+note   = "M1f S1f.6.16 — a theory module, the plan page's way (b): binary arithmetic of its own, `(b2 PREFIX BIT)`, the five operations by saturation, 68 rules and the closing rule `bin` (67 until M1f S1f.6.24, which flags a division by zero at the tagged call); generated from `stdlib/arith.ein` by `gen_binary.py` beside it, run by hand. Alone it has no request, so nothing is computed: R {∅}."
 
 [[entry]]
 path   = "examples/binary_arithmetic/bits.ein"
@@ -3757,6 +3757,24 @@ path   = "tests/stdlib/arith/38_what_stays_silent.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.12, `std.arith`: what the theory does not flag: a number that ends in a name that is neither a digit nor a constant, a fact of another relation as an operand or inside a number, the accumulator's shape as an operand; each neither flagged nor answered, R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/arith/39_div_call_by_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.24, `std.arith`: a division by zero made by a rule of the program's own through the tagged call, `(div-call (mine A B) A z)`: `div-call-by-zero` derives `(division-by-zero (div-call TAG X Y))`, the call as asserted, and `division-by-zero-is-false` derives `(false)`; root is dead, the core the program's own fact, `(solve :expect (false))`. Until the stage the call derived nothing."
+
+[[entry]]
+path   = "tests/stdlib/arith/40_div_call_by_zero_spelt.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.24, `std.arith`: a tagged call whose divisor is zero written with digits, 00: flagged by value, the flag naming the divisor as the caller wrote it; the core the program's fact and the `md` row the zero was put into normal form by; `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/arith/41_div_call_not_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.24, `std.arith`: the rules of `39` and `40` with no zero divisor, one written with a high zero and one dividend zero: `div-call-by-zero` loaded and silent, each call answered, R is {∅}."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"

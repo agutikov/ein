@@ -61,6 +61,13 @@
 ;;; written, and `std.arith`'s `division-by-zero-is-false` derives `(false)`
 ;;; from the flag. Root is dead and R is empty. A program that must not die
 ;;; compares its divisor with zero first, and asks only where it is not.
+;;; These rules are the module's own and stay (S1f.6.24): `std.arith` flags a
+;;; division at its tagged call, whoever made it, but a request with a
+;;; denominator of zero performs no division, and a `rat-div` by a rational
+;;; that is zero is seen before any call. The module's own calls, Euclid's
+;;; chain and lowest terms, divide by numbers that are not zero, so a
+;;; request has one flag. A `let` that names a rational over zero and that
+;;; no request uses is not flagged.
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
 ;;;

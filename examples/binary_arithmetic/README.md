@@ -14,7 +14,7 @@ has the prototype these were banked from, the counts, the costs and the comparis
 | file | what it is | answer |
 |---|---|---|
 | [`bits.ein`](bits.ein) | the tables: the full adder `fa2`, the full subtractor `fs2`, comparison `cl2`; 28 rows where decimal has 1 664. Generated | facts, no rule |
-| [`bin.ein`](bin.ein) | the theory: a number is `(b2 PREFIX BIT)` and `z` is zero; requests `add2`, `sub2`, `cmp2`, `mul2`, `div2`, answered by `sum-of2`, `diff-of2`, `cmp-of2`, `product-of2`, `quot-of2`; 67 rules and a closing rule, `bin`. Generated from `stdlib/arith.ein` | a module |
+| [`bin.ein`](bin.ein) | the theory: a number is `(b2 PREFIX BIT)` and `z` is zero; requests `add2`, `sub2`, `cmp2`, `mul2`, `div2`, answered by `sum-of2`, `diff-of2`, `cmp-of2`, `product-of2`, `quot-of2`; 68 rules and a closing rule, `bin`. Generated from `stdlib/arith.ein` | a module |
 | [`conv.ein`](conv.ein) | conversion as requests: `(to-bin X)` answered by `(bin-of X B)`, `(to-dec B)` by `(dec-of B X)`; eleven rules over `std.arith` and `bin`. Written by hand | a module |
 | [`first.ein`](first.ein) | 101 + 111, and a subtraction of two named numbers | 1100; 110 − 11 = 11 |
 | [`five_operations.ein`](five_operations.ein) | the five operations at decimal's example operands, in binary | 127645, 118511 each way, 56088, 5105 remainder 20, `gt` |
@@ -42,7 +42,7 @@ decimal in one program with a plain import, which conversion needs, and a number
 The two it sets aside, (a) the shipped names over binary tables and (c) one theory whose every request
 carries its base, are described on the page with their measurements and are not here.
 
-The page also recommends that the binary rules be generated from `std.arith`, since 51 of the 67 differ from
+The page also recommends that the binary rules be generated from `std.arith`, since 52 of the 68 differ from
 it only in their names. So `bin.ein` is generated, by [`gen_binary.py`](gen_binary.py), which reads
 `stdlib/arith.ein`. **It leaves `std.arith`'s check of malformed numbers and undeclared names out** (M1f
 S1f.6.12): those rules name the ten digits and the table `nz`, so they are decimal's, and `bin.ein` is

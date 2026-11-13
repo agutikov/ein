@@ -1,7 +1,8 @@
 ;;; Ein stdlib — `std.arith`: school arithmetic on natural numbers of any
 ;;; length, computed by saturation alone (M1f P1f.6; addition, S1f.6.3;
 ;;; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5; division,
-;;; S1f.6.6; malformed numbers and undeclared names, S1f.6.12).
+;;; S1f.6.6; malformed numbers and undeclared names, S1f.6.12; a division by
+;;; zero flagged at the call, S1f.6.24).
 ;;;
 ;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
 ;;; This module is a *theory* written in Ein over the ten digit names `0` to
@@ -93,6 +94,17 @@
 ;;; dead: R is empty, no query of the program has an answer, and the request
 ;;; is what `ein solve` names as the reason. A program that must not die
 ;;; compares its divisor with zero first, and asks only where it is not.
+;;;
+;;; **It is flagged wherever it is called** (S1f.6.24). Every division goes
+;;; through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero
+;;; by value derives `(division-by-zero (div-call TAG X Y))`, the call as it
+;;; was asserted, and `(false)` from it, whoever made the call: this module
+;;; for a request, a module over this one, or a rule of a program's own. So a
+;;; public division by zero holds two flags, the request's and its call's,
+;;; and reads as it always did in `ein solve`; `--trace` shows the second
+;;; flag and its contradiction as two steps more. A theory in which division
+;;; by zero is allowed, a wheel or a meadow, would be a module of its own
+;;; that does not import the flag's rules; none exists.
 ;;;
 ;;; A program reads an answer with a goal that has a variable in the result's
 ;;; place, `(sum-of X Y ?s)`, and a rule of the program may match it like any
@@ -385,8 +397,8 @@
   :why "the first operand of {?1} divided by {?2}")
 (relation div-second Operand Operand Number
   :why "the second operand of {?1} divided by {?2}, whose first is {?3}")
-(relation div-m1 Tag Number
-  :why "1 times the divisor, for {?1}, which divides {?2}")
+(relation div-m1 Tag Number Number
+  :why "1 times the divisor, for {?1}, which divides {?2} by {?3} as the call wrote it")
 (relation div-m2 Tag Number Number
   :why "2 times the divisor, for {?1}, which divides {?2}, the multiples known being {?3}")
 (relation div-m3 Tag Number Number Number
@@ -729,13 +741,15 @@
 ;; `(div-done TAG QUOTIENT REMAINDER)`. First the divisor's nine multiples,
 ;; each a row of multiplication, in a chain whose tags hold the multiples
 ;; already known. Y times 1 is Y in normal form, and shows whether Y is zero.
+;; The first multiple's tag holds Y as the call wrote it, beside X, so that a
+;; division by zero can be flagged with the call it was (below).
 (rule div-multiples ()
   :match  (div-call ?k ?u ?v)
-  :assert (mul-walk (div-m1 ?k ?u) ?v 1 0 z)
+  :assert (mul-walk (div-m1 ?k ?u ?v) ?v 1 0 z)
   :why    "to divide {?u} by {?v}: first {?v} x 1, the divisor in normal form")
 
 (rule div-multiple-2 ()
-  :match  (done (div-m1 ?k ?u) (n ?p ?a))
+  :match  (done (div-m1 ?k ?u ?v) (n ?p ?a))
   :assert (mul-walk (div-m2 ?k ?u (n ?p ?a)) (n ?p ?a) 2 0 z)
   :why    "the divisor is not zero: next, 2 times the divisor")
 
@@ -932,16 +946,33 @@
   :assert (quot-of ?x ?y ?q ?r)
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 
-;; ── Division by zero, in two steps ──────────────────────────────────────────
-;; A request whose divisor is zero has no answer. It is flagged, and the flag
-;; is a contradiction: the program asked for what does not exist. Two rules
+;; ── Division by zero, in two steps, at the call ─────────────────────────────
+;; A division whose divisor is zero has no answer. It is flagged, and the flag
+;; is a contradiction: the program asked for what does not exist. Two steps
 ;; (the user's ruling of 2026-11-11), so that a trace shows the flag as a
-;; step of its own and the contradiction as the next. The second is the one
-;; rule of the theory that concludes `(false)`.
+;; step of its own and the contradiction as the next.
+;;
+;; **The flag is raised at the call, whoever made it** (S1f.6.24; the user's
+;; ruling of 2026-11-12: a division by zero is flagged no matter where it
+;; happens). Every division passes through `(div-call TAG X Y)`: a program's
+;; `(div X Y)`, a module's, and a rule of a program's own that calls the
+;; division under a tag of its own. `div-call-by-zero` flags the call,
+;; `(division-by-zero (div-call TAG X Y))`, as it was asserted, for a Y that
+;; is zero by value. A public request is flagged as it always was too,
+;; `(division-by-zero (div X Y))`, the request as written, by `div-by-zero`,
+;; which is written first so that the request's flag is the first derived:
+;; two flags for one public division, and the contradiction from each.
+;; A theory in which division by zero is allowed (a wheel, a meadow) would
+;; be a module of its own that does not import these rules; none is built.
 (rule div-by-zero ()
-  :match  (done (div-m1 (quotient ?x ?y) ?u) z)
+  :match  (done (div-m1 (quotient ?x ?y) ?u ?v) z)
   :assert (division-by-zero (div ?x ?y))
   :why    "the divisor of {?x} divided by {?y} is zero")
+
+(rule div-call-by-zero ()
+  :match  (done (div-m1 ?k ?u ?v) z)
+  :assert (division-by-zero (div-call ?k ?u ?v))
+  :why    "the divisor of {?u} divided by {?v}, wanted for {?k}, is zero")
 
 (rule division-by-zero-is-false ()
   :match  (division-by-zero ?request)
@@ -1246,7 +1277,8 @@
                (arith-rule div-next-none) (arith-rule div-end)
                (arith-rule div-ask) (arith-rule div-ask-second)
                (arith-rule div-start) (arith-rule div-answer)
-               (arith-rule div-by-zero) (arith-rule division-by-zero-is-false)
+               (arith-rule div-by-zero) (arith-rule div-call-by-zero)
+               (arith-rule division-by-zero-is-false)
                (arith-rule check-step) (arith-rule check-digit)
                (arith-rule check-prefix-digit) (arith-rule check-prefix-zero)
                (arith-rule check-prefix-named)

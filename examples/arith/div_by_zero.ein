@@ -28,6 +28,15 @@
 ;;; and the contradiction as two steps, and `ein saturate --dump` shows
 ;;; root's state, the flag and `(false)` in it, each with its rule.
 ;;;
+;;; Since S1f.6.24 a division by zero is flagged at the call, whoever made
+;;; it (the user's ruling of 2026-11-12). The request's division is a tagged
+;;; call of the theory's own, so root's state holds a second flag beside the
+;;; request's, `(division-by-zero (div-call (quotient takings customers)
+;;; (n (n (n z 1) 2) 0) z))`, and the trace shows it and its contradiction
+;;; as two steps more, after the request's. What `ein solve` prints is what
+;;; it printed. `tests/stdlib/arith/39_div_call_by_zero.ein` is a division
+;;; by zero that a rule of the program's own makes, with no `div` request.
+;;;
 ;;; `(solve :expect (false))` is the one claim such a program can make. A
 ;;; program that must not die compares its divisor with zero first, `(cmp
 ;;; customers z)`, and derives its `div` request by a rule that matches
