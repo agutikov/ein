@@ -233,6 +233,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.218](#q-m1f218--what-a-count-past-the-runs-reach-says) | what a count past the run's reach says | **defaulted 2026-11-13 (S1f.6.25), the user's to revise: counted exactly and reported up to 2^63 − 1, which reads *this many or more* on every surface; no wider integer is printed**; [S1f.6.25](p1f.6_calculator/s1f.6.25_the_section_j_fixes.md#t1f6255--e-22-done) |
 | [Q-M1f.219](#q-m1f219--a-querys-false-on-a-program-that-only-owes) | a query's `(false)` on a program that only owes | **defaulted 2026-11-13 (S1f.6.26), the user's to revise: no change, the claim holds as it does; the row under the query now says which empty R is; the meaning is [M1g's P1g.7](../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md)'s**; [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6264--e-18s-claim-asked-done) |
 | [Q-M1f.220](#q-m1f220--the-form-of-the-rows-for-what-root-owes) | the form of the rows for what root owes | **defaulted 2026-11-13 (S1f.6.26), the user's to revise: an `owed` row an instance in the block under `∅`, at most four on stdout and one line for the rest, outside the listings' 100 lines, every one in `answer.txt`; `--count` prints none**; [S1f.6.26](p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6261--the-rows-shown-first-done) |
+| [Q-M1f.221](#q-m1f221--one-question-a-file-and-the-fall-back) | one question a file, and the fall-back | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: a file is asked the least question that can decide every claim it states, `--single` or `-n k+1` over the one part its queries' claims are over, and what that leaves undecided is asked the describing question; a solve claim, and claims over more than one part, ask describe at once; no mode a claim**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
+| [Q-M1f.222](#q-m1f222--a-claim-refuted-by-a-state-a-run-found) | a claim refuted by a state a run found | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: under `ein test` a run that did not exhaust what a claim is about refutes the claim where a state it found gives a class the claim does not list, and `(solve :expect (false))` where root is alive; `ein solve` under a mode keeps its note, *not checked*, and its exit 0**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
+| [Q-M1f.223](#q-m1f223--what-the-surfaces-of-ein-test-say-of-the-question) | what the surfaces of `ein test` say of the question | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: `-v` names the question before what the run found, *(--single: all of R, 1 class over 1 states)*, and *describe, after -n 3* on a fall-back; `--json-report` is `ein-test-report/5` with `route` and `fell_back_from` on every row; `--events` and `--json-summary` hold the last question asked**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4287,3 +4290,77 @@ charges them before the answer. What (a) costs: a fifth instance is not on stdou
 `lattice/06_friends_tables_everyone_sits.ein`, whose root owes five, prints four and *… 1 more instance*.
 The label `owed`, and the two wordings of a query's row over an empty R, *R is empty, root is dead* and
 *R is empty, root is alive and owes n instances*, are defaults of the same task.
+
+### Q-M1f.221 — One question a file, and the fall-back
+
+**Raised** 2026-11-13 by [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done)'s T1 (E-30; the user's reply (a) of 2026-11-12 on question 39, *`ein test`
+reads the shape of each claim and runs the cheapest mode that decides it*). The reply settles that the
+runner asks a cheaper question than describe. It does not say how many runs a file with several claims
+gets, nor what happens where the cheaper question does not decide.
+
+- **(a) One question a file, then the describing one.** The file is asked the least question that can
+  decide every claim it states: for queries' claims all over one part of R, the most classes one lists
+  being k, that part is asked for k + 1 states, and `--single` where k is at most one; a `(solve … :expect
+  …)`, and claims over more than one part, ask describe at once. What the question leaves undecided is asked
+  the describing question, of the program loaded again. Two runs a file at most.
+- **(b) A mode a claim.** Each claim is asked its own question in its own run.
+- **(c) One question a file and no fall-back:** a claim the question leaves undecided is NOT CHECKED.
+
+Measured over the 69 corpus files whose claims are queries' alone (`python3 build/s1f.6.27/t1_price.py`,
+2026-11-13): describe saturates 2 357 nodes, (a) 1 494 in 69 runs and one fall-back, (b) 1 590 in 156 runs,
+each of which loads the program. (c) would leave `tests/region/08_query_classes.ein`, held today, NOT
+CHECKED: two classes over seven states, where three states found decide nothing.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It is the stage file's own preference (*one run where
+one run decides them all*), it is the cheapest of the three on the corpus, and it is the only one under
+which no claim describe decides today is left unchecked. What it costs: a file whose least question does
+not decide is run twice, and the first run's work is not reused.
+
+### Q-M1f.222 — A claim refuted by a state a run found
+
+**Raised** 2026-11-13 by the same task. Round 2's item 39 has *find up to k + 1: a (k + 1)-th refutes the
+claim*. A claim is about projection classes and a mode finds states, and several states can fall in one
+class, so the rule as built is: **a class of a state found that the claim does not list refutes the
+claim**, whatever the run left unvisited, since every state a run lists is a certified member of the part
+it was asked. Until this stage a run that did not exhaust what a claim is about decided nothing, under
+`ein test` and under `ein solve` alike. The same reading refutes `(solve … :expect (false))` at an alive
+root where describe stops at its budget.
+
+The rule could be given to `ein solve` too: `ein solve --single FILE`, on a file whose claim lists one
+class where R has two states in two classes, prints `:expect NOT CHECKED` and a `note:` and exits 0 today,
+and would print `FAILED` and exit 1.
+
+- **(a) `ein test` alone.** The runner decides claims; `ein solve` under a mode answers the question it was
+  asked, and a claim that question did not exhaust stays a note, *not checked*, exit 0, as the user's
+  ruling of 2026-10-16 has it (*a claim the run could not check is a `note:` under `ein solve`*).
+- **(b) Both.** A run that holds a state whose class a claim does not list has refuted the claim, and by
+  the same ruling a refuted claim exits 1 under `ein solve`. Whether a `-n N` run then says FAILED or *not
+  checked* of a false claim would depend on which states it met first.
+- **(c) Neither:** a claim is decided by an exhausted answer alone, and a false claim on a search too large
+  to describe stays NOT CHECKED under `ein test`.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** The stage is the runner's, and under (a) no line and
+no exit code of `ein solve` moves, which the stage's sweep holds. `ein_infer::explore::Options::refute` is
+the one switch, set by `ein test` and by nothing else; (b) is setting it under `ein solve`.
+
+### Q-M1f.223 — What the surfaces of `ein test` say of the question
+
+**Raised** 2026-11-13 by the same task, for T3 and T4. The stage file has *`--json-report` gains the route
+each row was decided by* and *`ein test -v` says the route in a word*, and leaves the words.
+
+- **`-v`.** A query claim's line names the question before what the run found: *holds (--single: all of
+  R, 1 class over 1 states)*, *holds (-n 4: all of R, 3 classes over 3 states)*, *holds (describe: all of
+  R, 2 classes over 7 states)*, and on a fall-back *holds (describe, after -n 3: …)*. The question is
+  spelled as `ein solve`'s flags, and `describe` for the bare run. A solve claim's line is unchanged: it is
+  asked describe alone and names the engine's route, *state route*, as before.
+- **`--json-report`.** `ein-test-report/5`, additively: every row carries `route`, the question its
+  claim's outcome was read off, in the same spelling, and `fell_back_from`, the question asked first where
+  it left the claim undecided; both `null` on a row no run checked.
+- **A claim still NOT CHECKED** keeps describe's line and gains one: *asked first: --single, which stopped
+  at --region-budget*, or *…, which found 3 states, each in a class the claim lists, and did not exhaust
+  what the claim is about*.
+- **`--events` and `--json-summary`**, which name one run: where a file was asked two questions they hold
+  the last, the describing run. The first run's stream is not kept.
+
+**Defaulted 2026-11-13: as above, the user's to revise.** The alternative for the artefacts is both runs in
+one stream, which the event protocol's one header a file does not have a place for.
