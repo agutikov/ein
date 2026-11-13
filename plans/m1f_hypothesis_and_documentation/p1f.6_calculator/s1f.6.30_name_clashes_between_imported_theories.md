@@ -3,8 +3,10 @@
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-12, on the user's reply of that day. **Stopped for the user at T5, 2026-11-13:**
 T1 to T5 done ([the record](#record-2026-11-13)); the proposals and the questions are
-[`import_clashes.md`](import_clashes.md), Q-M1f.231 to .236, open, the user's. T6 stays planned, to the
-ruling. **An investigation that stops
+[`import_clashes.md`](import_clashes.md), Q-M1f.231 to .236. **Ruled 2026-11-13 and closed:** the user chose a
+model of their own, (h), full names and short names, in conversation that day ([`import_clashes.md` § 7](import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names)); Q-M1f.231 to
+.236 ruled, .237 to .240 defaulted; T6, the fix, is the stage of its own
+[S1f.6.35](s1f.6.35_imports_by_full_name.md), after S1f.6.34 and before S1f.6.31. **An investigation that stops
 for the user** before any change to the grammar or to what an import means; its first task, the tagged calls
 as an interface, changes neither and is built.
 **Depends on:** nothing in the phase. It is the last of the stages independent of the stdlib layout, and its

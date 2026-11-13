@@ -821,3 +821,91 @@ them.
   one only an alias exports, or nothing; the two alternatives said in their headers, the logic's two rules
   renamed, `difference` by step 1. *Recommended: the note, and the three as said.*
 
+
+## 7. The ruling, 2026-11-13: (h), full names and short names
+
+The user ruled in conversation on 2026-11-13, after reading § 0 to § 6, with a model of their own that the
+page had not proposed. In their words, in order:
+
+> flat import has to import listed symbols unrenamed, but remain (private) symbols standard way - with
+> std.module... path; would that solve our issue?
+
+> let's call symbols full names `std.math.arith.decimal...` and call short names short; […] 1. it names what
+> it explicitely calls, all other names are pulled-in automatically (if required) with full names; but they
+> still work, engine must remember that std.math.arith.decimal.add here == just `add`; yes, it is alias; 2. if
+> it happens in the same file - it's an error, not correct ein code, just like ordinary namespaces; 3. Yes, we
+> can accept it now, silent re-definition, like variables shadowing, it's a mistake. 4. Ok, is that an issue?
+> 5. It make sense that if user imports specific name then he wants only them and don't want any background
+> side effects of this import, and if import whole module with or without :as - then wants everything; 6.
+> before; […] full names can call global and short names can call local, because they are local in the file,
+> OK?
+
+> 1 - yes (ii); module canonical identity should work fine, std has one defined root, other imports are
+> relative to the program file, `..` going outside the folder is restricted so there is always one single
+> path; ignore potential problems with symlinks and hardlinks - it is out of the scope, if user is smart
+> enough to make them - import problems are his own;
+
+The numbers in the second quotation answer the coordinator's list of what (h) left open; (ii) in the third is
+the closure's direction, below. **The model, (h):**
+
+- **A full name is the name.** Every name a module declares has one full name, its module's canonical name
+  and the short name, `std.math.decimal-arith.add` once [S1f.6.31](s1f.6.31_the_stdlib_layout.md) has moved
+  the modules (`std.arith.add` until then). It is the same whoever imports the module, through whatever path,
+  so a module is **one copy per program**: every path to it reaches the same declarations under the same
+  names, and they are one. Full names are global: any file may write one.
+- **A short name is an alias, local to the file that imports.** `(import M :symbols (add sum-of))` lets that
+  file write `add` for M's full name `….add`. It renames nothing in M. A module's own file writes its own
+  declarations short; an importer never sees another file's short names (**no re-export**).
+- **What an import brings.** A selection brings the listed names and **what they require** (ruling 1 (ii)):
+  the closure follows a kept rule to the relations it writes, as today, **and a listed or kept relation to the
+  rules that read it or conclude it**, transitively through M's own names, so `:symbols (add sum-of)` brings
+  the circuit that answers `add` and nothing that no listed name needs: *"no background side effects"*. A
+  whole-module import, bare or `:as`, brings everything (5). What a program holds is the union over its import
+  edges, each by full name.
+- **`:as a`** is a second alias prefix: `a.add` is the full name `….add`; it makes no copy.
+- **Errors, in one file** (2): one short name bound to two full names, by two imports or by an import and the
+  file's own declaration, is refused at load. Binding one short name to one full name twice is not an error.
+- **Shadowing is the writer's** (3): a short name a file writes and no import of it lists is the file's own,
+  whatever a module it imports declares under that short name; nothing is said. E-49 is accepted as this.
+- **Module identity** (ruling 1): the stdlib has one root and its names are its modules'; any other module
+  resolves against the program's own file tree, `..` stays refused, so one file has one path and one name.
+  Symlinks and hard links are out of scope.
+- **Before the layout move** (6): the fix lands before [S1f.6.31](s1f.6.31_the_stdlib_layout.md), so the move
+  renames full names once, after them.
+
+**How the user's dependency question works** (*"A <import- B <import- C <import- Prog, A <import- Prog, A
+<import- E <import- Prog; How it works now and how it should work?"*), probed on the release binary at
+`2ef68530` on the coordinator's scratch modules (a module `A` with a relation `a-in`, a rule `a-step` that
+concludes `a-out`, an entry rule `a` naming `a-step`, and a fact `(a-in seed)`; `B`, `C` and `E` each import
+the one below flat by its entry and pass its output on by a rule of their own):
+
+| program | today | under (h) |
+|---|---|---|
+| all flat, the user's graph | A's forms arrive three times, are equal, and merge: **one copy**; the program's `(a-in mine)` joins A's | one copy, by full name; the program writes `a-in` only if its own import of A lists it |
+| the program imports C alone and writes `a-in`, reads `a-out` | **the short names leak**: both connect to A's rule, A never imported by the program | `a-in` and `a-out` are the program's own (3); A's are `A.a-in`, reachable by full name |
+| the program declares its own `a-out` and imports C alone | refused, *conflicting definitions of 'a-out'* | loads: its `a-out` is its own |
+| the program imports A qualified, the rest flat | **two copies**, `A.a-in`/`A.a-step` and `a-in`/`a-step`, each with its seed, not connected | one copy |
+| `(import C :as cc)` beside a flat A | **two copies**: C's whole subtree prefixed, `cc.a-in` | one copy; `cc.` aliases C's own names |
+| a qualified import inside a qualified one | the prefix follows the path: `Bq.A.a-in` | the defining module's: `A.a-in` |
+| a cycle X → Y → X | refused, *import cycle: X.ein -> Y.ein -> X.ein* | refused, as today |
+| `(A.a-in x)` written with A imported flat | a new relation `A.a-in`, unconnected, in silence | A's own `a-in`, by its full name |
+| a program declares `(relation std.arith.mine …)` | loads: a name with dots is a name | refused where the program imports that module (default below) |
+
+**Defaults taken for what the user's words leave open,** each the user's to revise (Q-M1f.237 to .240):
+
+- **How a name prints** (Q-M1f.233, which the user asked *"is that an issue?"* of and the coordinator answered:
+  a one-time move of outputs, R unmoved): a state, a trace and a core print the **main file's short name**
+  where it has one, the full name otherwise.
+- **A full name of a module no import brings** is refused at load, naming the module; it is not an implicit
+  import.
+- **A file declaring a name under the full name of a module it imports** is refused at load. A `--dump-answer`
+  state file, which imports nothing and declares the full names it was loaded with, loads as today.
+- **Entry rules and `__closed__` lists stay** in the shipped modules: (ii) makes an entry rule unnecessary for an
+  import, and keeping them moves nothing a program reads.
+
+**What it decides of the other questions:** Q-M1f.231, (h); Q-M1f.232, no export list, the importer chooses;
+Q-M1f.234, refused in one file; Q-M1f.235, `..` stays refused and E-32 stays as stated, the copy of `bits.ein`
+going with S1f.6.16's build, which moves the binary tables into the stdlib; Q-M1f.236, E-49 accepted as shadowing, and E-50 dissolved by full names: `std.bijection` and `std.elim`
+and the logic's two rules coexist, and a program that lists a clashing short name from both is refused (2).
+**The fix is [S1f.6.35](s1f.6.35_imports_by_full_name.md),** planned to this section, after S1f.6.34 and
+before S1f.6.31.

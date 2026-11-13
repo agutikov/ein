@@ -243,12 +243,16 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.228](#q-m1f228--what-the-interface-of-the-tagged-calls-holds-beyond-the-seven-names-round-2-showed) | what the interface of the tagged calls holds beyond the seven names round 2 showed | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the interface is what the callers write: `sub-walk` and `short` beside the seven, since `std.int` calls the subtraction walk; the operand look-up, `operand` and `operand-is`, which `std.int` and `std.rat` call and extend; and an addition's carry in as the caller's value, since `examples/binary_arithmetic/conv.ein` writes a bit there**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6301--the-tagged-calls-an-interface-done) |
 | [Q-M1f.229](#q-m1f229--what-the-census-of-imported-names-reads-and-how) | what the census of imported names reads, and how | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: the twelve stdlib modules and the fourteen example theories another file imports, the import mechanism's own fixtures left out; each imported by every name it declares itself; static, and held to the loader on every pair**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6303--the-census-done) |
 | [Q-M1f.230](#q-m1f230--how-the-proposals-are-prototyped-and-priced) | how the proposals are prototyped and priced | **defaulted 2026-11-13 (S1f.6.30), the user's to revise: `std.arith` alone, as module text under `$EIN_STDLIB`; exported, the requests, `let`, results, flags, `n`, the interface, the entry and the one rule another module selects; a hidden name spelt `std.arith.X`; the convention's prefix `arith-`; the price by two sweeps of the 133 programs that bring the calculator and a bound of `corpus_shapes.md5`, not by blessing**; [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6304--the-proposals-each-on-real-computed-examples-done) |
-| [Q-M1f.231](#q-m1f231--which-way-the-import-mechanism-closes-the-gap) | which way the import mechanism closes the gap | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
-| [Q-M1f.232](#q-m1f232--how-a-module-says-what-it-exports-and-what-stdarith-exports) | how a module says what it exports, and what `std.arith` exports | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
-| [Q-M1f.233](#q-m1f233--how-a-name-a-module-does-not-export-is-printed) | how a name a module does not export is printed | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
-| [Q-M1f.234](#q-m1f234--two-flat-imports-that-export-one-name) | two flat imports that export one name | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
-| [Q-M1f.235](#q-m1f235--a-module-in-a-sibling-directory-e-32) | a module in a sibling directory (E-32) | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
-| [Q-M1f.236](#q-m1f236--e-49-and-e-50) | E-49 and E-50 | **open, the user's** (2026-11-13), not defaulted: S1f.6.30 stops for it; [`import_clashes.md` § 6](p1f.6_calculator/import_clashes.md#6-the-questions) |
+| [Q-M1f.231](#q-m1f231--which-way-the-import-mechanism-closes-the-gap) | which way the import mechanism closes the gap | **ruled 2026-11-13: (h)**, the user's own model, full names and short names; [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names); the fix is [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md) |
+| [Q-M1f.232](#q-m1f232--how-a-module-says-what-it-exports-and-what-stdarith-exports) | how a module says what it exports, and what `std.arith` exports | **ruled 2026-11-13 by (h)**: no export list; a module's every name has a full name and the importer lists the short names it writes; [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names) |
+| [Q-M1f.233](#q-m1f233--how-a-name-a-module-does-not-export-is-printed) | how a name a module does not export is printed | **answered 2026-11-13 by (h)** (*"Ok, is that an issue?"*, answered: a one-time move of outputs, R unmoved): the rule is [Q-M1f.237](#q-m1f237--how-a-name-prints-under-h)'s default; [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names) |
+| [Q-M1f.234](#q-m1f234--two-flat-imports-that-export-one-name) | two flat imports that export one name | **ruled 2026-11-13**: one short name bound to two full names in one file is refused at load (*"it's an error, not correct ein code, just like ordinary namespaces"*); [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names) |
+| [Q-M1f.235](#q-m1f235--a-module-in-a-sibling-directory-e-32) | a module in a sibling directory (E-32) | **ruled 2026-11-13**: `..` stays refused, a module has one path; E-32 stays as stated, and the copy of `bits.ein` goes with S1f.6.16's build, which moves the binary tables into the stdlib; [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names) |
+| [Q-M1f.236](#q-m1f236--e-49-and-e-50) | E-49 and E-50 | **ruled 2026-11-13**: E-49 accepted as shadowing (*"silent re-definition, like variables shadowing, it's a mistake"*); E-50 dissolved by full names; [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names) |
+| [Q-M1f.237](#q-m1f237--how-a-name-prints-under-h) | how a name prints under (h) | **defaulted 2026-11-13, the user's to revise**: the main file's short name where it has one, the full name otherwise; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md) |
+| [Q-M1f.238](#q-m1f238--a-full-name-of-a-module-no-import-brings) | a full name of a module no import brings | **defaulted 2026-11-13, the user's to revise**: refused at load, naming the module; not an implicit import; S1f.6.35 |
+| [Q-M1f.239](#q-m1f239--a-declaration-under-an-imported-modules-full-name) | a declaration under an imported module's full name | **defaulted 2026-11-13, the user's to revise**: refused at load; a `--dump-answer` state file, which imports nothing, loads as today; S1f.6.35 |
+| [Q-M1f.240](#q-m1f240--entry-rules-and-__closed__-lists-under-h) | entry rules and `__closed__` lists under (h) | **defaulted 2026-11-13, the user's to revise**: they stay in the shipped modules; S1f.6.35 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4631,6 +4635,8 @@ can prototype it ([§ 4](p1f.6_calculator/import_clashes.md#4-the-proposals-t4))
 
 **Recommended: (f), in two steps, (a) and (b) first** ([§ 5](p1f.6_calculator/import_clashes.md#5-the-recommendation)). **Open, the user's.**
 
+The user, 2026-11-13, in conversation, quoted in full in [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names): *"flat import has to import listed symbols unrenamed, but remain (private) symbols standard way - with std.module... path"*, then the numbered answers and *"1 - yes (ii)"*. **Ruled: (h)**, which the page had not proposed: a full name per declaration, global and the same through every path, so one copy of a module; a short name an alias local to the file that lists it; a selection brings what the listed names require (the closure (ii)); a whole-module import brings everything. The fix is [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md).
+
 ### Q-M1f.232 — How a module says what it exports, and what `std.arith` exports
 
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; it matters under (a) and (f) of Q-M1f.231.
@@ -4645,6 +4651,8 @@ can prototype it ([§ 4](p1f.6_calculator/import_clashes.md#4-the-proposals-t4))
 
 **Recommended: (i) and (i).** **Open, the user's.**
 
+**Ruled 2026-11-13 by (h):** no `(export …)`, no entry list: every name a module declares has a full name, and the importer lists the short names it writes.
+
 ### Q-M1f.233 — How a name a module does not export is printed
 
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; under (a) and (f). A state, `--trace`, a core and `ein saturate
@@ -4657,6 +4665,8 @@ can prototype it ([§ 4](p1f.6_calculator/import_clashes.md#4-the-proposals-t4))
 
 **Recommended: (i).** **Open, the user's.**
 
+**Answered 2026-11-13 by (h).** The user asked *"Ok, is that an issue?"*; the coordinator answered that it is a one-time move of printed outputs, R unmoved, and that the rule left open is which name a state prints: [Q-M1f.237](#q-m1f237--how-a-name-prints-under-h), defaulted.
+
 ### Q-M1f.234 — Two flat imports that export one name
 
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; under (f). P2a, `std.arith` and `chores`, both exporting `done`.
@@ -4667,6 +4677,8 @@ can prototype it ([§ 4](p1f.6_calculator/import_clashes.md#4-the-proposals-t4))
 - **(iii) The later import wins.** One theory's rules then read the other's facts: a wrong answer waiting.
 
 **Recommended: (ii).** **Open, the user's.**
+
+**Ruled 2026-11-13:** *"2. if it happens in the same file - it's an error, not correct ein code, just like ordinary namespaces"*. One short name bound to two full names in one file, by two imports or by an import and the file's own declaration, is refused at load; one short name bound to one full name twice is not an error.
 
 ### Q-M1f.235 — A module in a sibling directory (E-32)
 
@@ -4681,6 +4693,8 @@ proposals and ruled with them.
 
 **Recommended: (g1), after (b).** **Open, the user's.**
 
+**Ruled 2026-11-13:** *"module canonical identity should work fine, std has one defined root, other imports are relative to the program file, `..` going outside the folder is restricted so there is always one single path; ignore potential problems with symlinks and hardlinks - it is out of the scope"*. `..` stays refused; E-32 stays as stated, and `examples/binary_logic/bits.ein`'s copy goes with S1f.6.16's build, which moves the binary tables into the stdlib. Read by the coordinator as: an import resolves inside the program's file tree, as today, so a file has one path and one canonical name; the reading is put to the user with the ruling.
+
 ### Q-M1f.236 — E-49 and E-50
 
 **Raised** 2026-11-13 by [S1f.6.30](p1f.6_calculator/s1f.6.30_name_clashes_between_imported_theories.md#t1f6305--the-page-and-the-stop-done)'s T5; the two findings its probes and census filed.
@@ -4693,3 +4707,50 @@ proposals and ruled with them.
   `std.bijection`.
 
 **Recommended: (i) and (i).** **Open, the user's.**
+
+**Ruled 2026-11-13:** E-49, *"3. Yes, we can accept it now, silent re-definition, like variables shadowing, it's a mistake"*: no `note:` line. E-50 is dissolved by full names under (h): the two pairs and `difference` coexist, and a program that lists one clashing short name from both modules is refused (Q-M1f.234).
+
+### Q-M1f.237 — How a name prints under (h)
+
+**Raised** 2026-11-13 by the user's ruling of Q-M1f.231 ([`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names)). Under (h) a name a module declares
+is its full name, and a file may write it short. A state, a trace, a core and a read-out row print one of them.
+
+- **(a) The main file's short name where it has one, the full name otherwise.** A program that lists `add`
+  reads `(add …)`; the circuit's own steps read `std.arith.strip`.
+- **(b) Always the full name.** One spelling per fact, long.
+- **(c) Always the short name,** the module said apart. Ambiguous where two modules declare one short name.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** It prints a program's facts as the program writes them.
+
+### Q-M1f.238 — A full name of a module no import brings
+
+**Raised** 2026-11-13 with Q-M1f.237. Full names are global (*"full names can call global"*); a file may write
+`std.arith.add` where no import of the program brings `std.arith`.
+
+- **(a) Refused at load,** naming the module: *write an import of it*.
+- **(b) An implicit import** of the whole module.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** An import stays the one way a module enters a program.
+
+### Q-M1f.239 — A declaration under an imported module's full name
+
+**Raised** 2026-11-13 with Q-M1f.237. Today a name with dots is a name, and a program may declare
+`(relation std.arith.mine …)` (the coordinator's probe `v10`, 2026-11-13).
+
+- **(a) Refused at load where the program imports that module;** a `--dump-answer` state file, which imports
+  nothing and declares the full names it was loaded with, loads as today.
+- **(b) Allowed,** a module's name space open to any file.
+
+**Defaulted 2026-11-13: (a), the user's to revise.**
+
+### Q-M1f.240 — Entry rules and `__closed__` lists under (h)
+
+**Raised** 2026-11-13 with Q-M1f.237. Under the closure (ii) a selection follows a relation to the rules that
+read or conclude it, so an entry rule that names every rule of its module (`arith`, `int-arith`, …) is no
+longer needed to bring them.
+
+- **(a) They stay,** as they are; a program may still list the entry.
+- **(b) They go,** each module's `*-rule` relation and facts with them.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** Keeping them moves nothing a program reads; removing them
+moves every state of every program that imports a module.
