@@ -315,7 +315,7 @@ by row on one program whose claims change, and `stands` on its nine cases;
 
 ### T1f.6.27.3 and .4 — the runner, and a NOT CHECKED that says why, done
 
-**Built** (`ein-cli`'s `test.rs`). A file is loaded and its claims found as before; then it is asked
+**Built** (`9116a3f3`; `ein-cli`'s `test.rs`). A file is loaded and its claims found as before; then it is asked
 `least`'s question with `refute` set. Where that is not the describing question and left a query's claim
 undecided, the program is loaded again and asked `describing`'s, and each claim is read off the run
 `stands` names. A solve claim is asked describe alone. The file's deadline, `-T`, is one instant for both
@@ -381,3 +381,78 @@ paragraph and the report's schema, which the page had at `/2` while the binary w
 exhausts*, restated in place, with its sentence on the stdlib conformance gate. That gate,
 `ein-infer/tests/stdlib_coverage.rs`, keeps the description: its question is what a program can activate,
 which a claim's least question need not visit, and its doc comment says so.
+
+### T1f.6.27.5 — E-31, measured, done
+
+**What the profile shows.** `perf record` of the release binary at `9ac0f7ab` describing x × 7 at five digits
+(`build/s1f.6.27/p/mul7_5.ein`, 16 331 saturations; `build/s1f.6.27/perf-b5.data`, 2026-11-13): 19 619 of the
+20 746 samples on the machine's performance cores, 94.6 %, are `ein_infer::transversal::Mmcs::rec`, and 0.8 %
+more `transversal::minimal_edges`; the 161 samples on its efficiency cores are the parse. Re-taken on this section's binary, the same
+run is 87.0 % and 98.7 % `Mmcs::rec` on the two kinds of core (`perf-t5-describe.data`, taken while the tests
+ran, so its 9.0 s are an upper bound), and `ein solve --count` on the same file is 307 ms with one sample of
+`transversal` in 1 263 (`perf-t5-count.data`): its time is the walk's saturations and the parse.
+
+**Which surfaces need N.** On the state route `N` is the one part of an exhausted description that is not read
+off the states the walk met: it is searched for after the walk, the minimal transversals of the maximal alive
+states' complements. Its **count** is how many transversals there are, so a surface that prints the count
+needs the search as much as one that prints the sets, and E-31's question, *whether a surface that prints a
+count of N needs the sets*, is answered yes.
+
+| the surface | prints of N |
+|---|---|
+| a bare `ein solve`'s `N` row; `--trace`'s N; `--dump-answer`'s `nogoods.json` | the sets, or their count and which a partial run holds |
+| the summary's `region.nogoods`, so `--json-summary`, `--dump-answer`'s `answer.json` and `index.json`, and `--events`' `region` event | the count |
+| `--dump-lattice`'s `nodes.json` and `nodes.md`, the nodes the walk visited | neither |
+| `ein solve --count`'s rows; every line of `ein test`, and `--json-report` | neither |
+
+**Built.** `explore::Options::nogoods`, on by default: off, an exhausted description on the state route does
+not search for `N` (`states::describe_with`), and `Described::nogoods_skipped` says so. Route 1 and the cube
+read `N` off what they visited and take it regardless. `ein solve --count` asks without it unless it writes
+`--json-summary`, `--events` or `--dump-answer` (it refuses `--trace`); `ein test` asks without it unless it
+writes `--json-summary` or `--events`. No surface of a run that skipped `N` prints it; a printer handed such a
+description says *not taken* in the `N` row and writes `null` for the summary's count, which no command
+reaches. The flag is no option of any command and chooses no route, as `Cores` does not: it is *a core is taken
+only where a surface prints one* (the user's ruling of 2026-11-05) applied to `N`.
+
+**The pins.** `ein-infer/tests/explore.rs`'s `a_description_asked_without_n_is_the_description_less_n`: on
+every corpus file and register witness outside the slow set, under describe and `--count`, the description
+asked without `N` equals the one asked with it in every field once `N` is taken out of both, the states,
+counts, lines, saturations, facts and verdict; only an exhausted description on the state route skips `N`; and
+where nothing was skipped the two answers are equal whole: 976 runs, 314 of which skipped N, which held 5 688
+sets where it was taken (`cargo test -p ein-infer --test explore a_description_asked_without_n -- --nocapture`,
+2026-11-13). `ein-cli/tests/test_cli.rs`'s
+`a_run_that_prints_no_n_takes_none_and_says_the_same`: on `tests/region/01_states.ein`, whose N is one set,
+`--count` prints the same rows with a summary and without, `ein test -v` the same lines, and each summary's
+`region.nogoods` is the bare description's.
+
+**The sweep** (`python3 build/s1f.6.27/sweep.py --old build/s1f.6.27/ein-t3b --new build/s1f.6.27/ein-t5
+--diff`, 2026-11-13, `build/s1f.6.27/sweep-t5.txt`): T3's binary against this section's, over the 849 files:
+`ein saturate --dump`, `ein solve` bare, `--single`, `-n 2` and `--count`, stdout, stderr and exit, and the
+whole `--json-summary`, 0 files moved; `ein test FILE` and `ein test FILE -v`, 0 files moved; the reports,
+0 differ; no claim's outcome moved. The two artefacts `--count` writes beside it, `ein solve FILE --count
+--dump-lattice DIR` and `--count --dump-answer DIR`, every file each writes, stdout, stderr and exit: 0 files
+moved (`python3 build/s1f.6.27/lattice_sweep.py build/s1f.6.27/ein-t3b build/s1f.6.27/ein-t5`,
+`build/s1f.6.27/sweep-t5-dumps.txt`).
+
+**What it costs and saves** (`python3 build/s1f.6.27/t5_time.py build/s1f.6.27/ein-t3b build/s1f.6.27/ein-t5
+--runs 3`, best of three, 2026-11-13, `build/s1f.6.27/t5-time.txt`; taken while the tests ran, so upper
+bounds; every row's stdout, stderr and exit the same on the two binaries):
+
+| the command | T3's binary | this section's |
+|---|---:|---:|
+| `ein solve p/mul7_5.ein --count` | 5.02 s | 0.21 s |
+| `ein solve p/two_seven.ein --count`, TWO + TWO = FOUR | 33.71 s | 1.00 s |
+| `ein solve p/mul7_5.ein`, a bare description | 5.04 s | 5.13 s |
+| `ein test examples tests stdlib -q` | 5.16 s | 5.16 s |
+
+The corpus's claims are on programs whose N is small, so `ein test` over the corpus gains nothing measurable;
+what gains is a count on a search program, and a solve claim on one.
+
+**What is left of E-31** is a bare `ein solve` on such a program, which prints `N`'s count and pays for it:
+5.1 s of x × 7 at five digits, where `--count` takes 0.21 s. Removing it moves a row of every description, so
+it is not free by this task's rule. Filed as
+[Q-M1f.224](../open_questions.md#q-m1f224--what-a-bare-description-pays-for-n), defaulted to no change, the
+user's to revise; E-31's row says so.
+
+**The page:** [`read_out.md`](../../../docs/kernel/inference/read_out.md) § 2, the `--count` paragraph: it
+prints no `N` row and takes no N where it writes no artefact.

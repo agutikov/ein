@@ -236,6 +236,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.221](#q-m1f221--one-question-a-file-and-the-fall-back) | one question a file, and the fall-back | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: a file is asked the least question that can decide every claim it states, `--single` or `-n k+1` over the one part its queries' claims are over, and what that leaves undecided is asked the describing question; a solve claim, and claims over more than one part, ask describe at once; no mode a claim**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
 | [Q-M1f.222](#q-m1f222--a-claim-refuted-by-a-state-a-run-found) | a claim refuted by a state a run found | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: under `ein test` a run that did not exhaust what a claim is about refutes the claim where a state it found gives a class the claim does not list, and `(solve :expect (false))` where root is alive; `ein solve` under a mode keeps its note, *not checked*, and its exit 0**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
 | [Q-M1f.223](#q-m1f223--what-the-surfaces-of-ein-test-say-of-the-question) | what the surfaces of `ein test` say of the question | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: `-v` names the question before what the run found, *(--single: all of R, 1 class over 1 states)*, and *describe, after -n 3* on a fall-back; `--json-report` is `ein-test-report/5` with `route` and `fell_back_from` on every row; `--events` and `--json-summary` hold the last question asked**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6271--the-table-on-real-programs-done) |
+| [Q-M1f.224](#q-m1f224--what-a-bare-description-pays-for-n) | what a bare description pays for N | **defaulted 2026-11-13 (S1f.6.27), the user's to revise: no change; a bare `ein solve` prints the `N` row with its count and takes the minimal transversals that count is, where a surface that prints neither `N` nor its count, `--count` and `ein test` without an artefact, takes none**; [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6275--e-31-measured-done) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4364,3 +4365,28 @@ each row was decided by* and *`ein test -v` says the route in a word*, and leave
 
 **Defaulted 2026-11-13: as above, the user's to revise.** The alternative for the artefacts is both runs in
 one stream, which the event protocol's one header a file does not have a place for.
+
+### Q-M1f.224 — What a bare description pays for N
+
+**Raised** 2026-11-13 by [S1f.6.27](p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md#t1f6275--e-31-measured-done)'s
+T5 (E-31). On the state route `N` is the one part of an exhausted description that is not read off the states
+the walk met: it is searched for after the walk, the minimal transversals of the maximal alive states'
+complements (`ein_infer::transversal`, MMCS). Its count is how many transversals there are, so a surface that
+prints the count needs the search as much as one that prints the sets. The stage made the runs that print
+neither take none, `ein solve --count` and `ein test` without an artefact, and every surface stayed byte for
+byte. A bare `ein solve` prints the `N` row and its count, so it still pays: on x × 7 at five digits
+(`build/s1f.6.27/p/mul7_5.ein`, 16 331 saturations) `ein solve` takes 5.05 s, 87 % and 98.7 % of the samples on
+the machine's two kinds of core `transversal::Mmcs::rec`, where `--count` takes 0.21 s (`perf record`, the
+release binary of S1f.6.27's T5, 2026-11-13).
+
+- **(a) No change.** A bare `ein solve` prints `N` and its count, and pays for them; a question that wants
+  less is asked by `--count`, a mode, or `ein test`.
+- **(b) The `N` row reads *not taken* on stdout**, and its count and sets are taken where an artefact that
+  carries them is written (`--json-summary`, `--events`, `--dump-answer`, `--trace`). Every describe's
+  stdout moves by one row, and the read-out's examples page with it.
+- **(c) A cheaper search for N**: an engine stage on `ein_infer::transversal`, the output kept byte for byte.
+  How much it gains is not measured.
+
+**Defaulted 2026-11-13: (a), the user's to revise.** The stage's rule for E-31 was *remove the work only if
+every surface is byte-identical after*, and (b) moves a row; (c) is a stage of its own. Neither is this
+phase's to start without a reply.

@@ -303,7 +303,16 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
                 Json::Null
             },
         ),
-        ("nogoods", Json::int(d.nogoods as i64)),
+        (
+            "nogoods",
+            // A run that took no N has no count to write; every run that
+            // writes this block takes it (`ein_infer::explore::Options::nogoods`).
+            if d.nogoods_skipped {
+                Json::Null
+            } else {
+                Json::int(d.nogoods as i64)
+            },
+        ),
         (
             "discharging",
             shape

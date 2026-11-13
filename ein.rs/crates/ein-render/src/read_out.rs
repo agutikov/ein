@@ -1563,7 +1563,11 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 }
                 out.row(
                     Row::N,
-                    plural(d.nogoods, "minimal dead set", "minimal dead sets"),
+                    if d.nogoods_skipped {
+                        "not taken: this run was asked by a surface that prints no N".to_string()
+                    } else {
+                        plural(d.nogoods, "minimal dead set", "minimal dead sets")
+                    },
                 );
                 if let Some(e) = shape.discharging {
                     out.row(

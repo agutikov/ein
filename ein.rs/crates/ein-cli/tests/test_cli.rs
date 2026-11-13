@@ -1647,3 +1647,74 @@ fn the_pages_name_the_reports_schema() {
     let help = ein(&["test", "--help"]);
     assert!(help.out.contains(&schema), "--help: {}", help.out);
 }
+
+/// **A run that prints no N takes none** (T1f.6.27.5, E-31). `N` is searched
+/// for after the walk, and on a search whose alive nodes are partial
+/// assignments that search is most of a description's time. `ein test` and
+/// `ein solve --count` print neither `N` nor its count, so they ask the
+/// description without it, and with an artefact that carries the count they
+/// ask with it: the lines are the same either way, and the count written is
+/// the description's. `tests/region/01_states.ein`, whose claim is its
+/// region, so it is described, and whose three candidates are dead together.
+#[test]
+fn a_run_that_prints_no_n_takes_none_and_says_the_same() {
+    let file = "tests/region/01_states.ein";
+    let d = Dir::new("no-n");
+    let read = |path: &std::path::Path| -> serde_json::Value {
+        serde_json::from_str(&std::fs::read_to_string(path).expect("a summary")).expect("JSON")
+    };
+    let described = d.0.join("described.json");
+    let bare = ein(&[
+        "solve",
+        file,
+        "--json-summary",
+        &described.to_string_lossy(),
+    ]);
+    assert_eq!(bare.code, 0, "{}{}", bare.out, bare.err);
+    let n = read(&described)["region"]["nogoods"].clone();
+    assert_eq!(n, 1, "the fixture's N moved");
+    assert!(bare.out.contains("1 minimal dead set"), "{}", bare.out);
+
+    // `--count`: the same rows with a summary and without, and the summary's
+    // count is the description's.
+    let counted = d.0.join("counted.json");
+    let plain = ein(&["solve", file, "--count"]);
+    let with = ein(&[
+        "solve",
+        file,
+        "--count",
+        "--json-summary",
+        &counted.to_string_lossy(),
+    ]);
+    assert_eq!((plain.code, with.code), (0, 0), "{}{}", plain.err, with.err);
+    let rows = |out: &str| -> Vec<String> {
+        out.lines()
+            .filter(|l| !l.starts_with("solve ·") && !l.trim_start().starts_with("work"))
+            .map(str::to_string)
+            .collect()
+    };
+    assert_eq!(rows(&plain.out), rows(&with.out));
+    assert!(!plain.out.contains("minimal dead set"), "{}", plain.out);
+    assert_eq!(read(&counted)["region"]["nogoods"], n);
+
+    // `ein test`: the same lines and the same outcome, and its summary's
+    // count is the description's too.
+    let tested = d.0.join("tested.json");
+    let plain = ein(&["test", file, "-v"]);
+    let with = ein(&[
+        "test",
+        file,
+        "-v",
+        "--json-summary",
+        &tested.to_string_lossy(),
+    ]);
+    assert_eq!((plain.code, with.code), (0, 0), "{}{}", plain.err, with.err);
+    let lines = |out: &str| -> Vec<String> {
+        out.lines()
+            .filter(|l| !l.contains(" expectation"))
+            .map(str::to_string)
+            .collect()
+    };
+    assert_eq!(lines(&plain.out), lines(&with.out));
+    assert_eq!(read(&tested)["region"]["nogoods"], n);
+}

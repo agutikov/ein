@@ -1052,6 +1052,11 @@ fn ask(
         visited: m.get_one::<String>("events").is_some(),
         nogoods: false,
     };
+    // Nor does a claim read `N`, and no line here prints it or its count:
+    // the description is asked without it, but where an artefact that
+    // carries the count is written (M1f S1f.6.27, E-31).
+    opts.nogoods =
+        m.get_one::<String>("events").is_some() || m.get_one::<String>("json-summary").is_some();
     let config = kb.program().config.clone().unwrap_or_default();
     let file = path.display().to_string();
     let mut events = crate::solve::events_start(m, &file, &config);

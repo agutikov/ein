@@ -238,6 +238,17 @@ pub fn run(m: &ArgMatches) -> i32 {
         visited: lattice_dir.is_some() || m.get_one::<String>("events").is_some(),
         nogoods: describing && (dump.is_some() || m.get_one::<String>("trace").is_some()),
     };
+    // `N` only where a surface prints it or its count (M1f S1f.6.27, E-31,
+    // *minimum work per question*): `--count`'s rows print neither, so a
+    // `--count` that writes none of the artefacts that carry the count, the
+    // summary, `--dump-answer`'s and `--events`' `region` event, asks the
+    // description without it. `--dump-lattice`'s files are the nodes the walk
+    // visited and carry no `N`, `--count` refuses `--trace`, and every other
+    // question prints `N` or reads no description.
+    opts.nogoods = !counting
+        || summary_path.is_some()
+        || dump.is_some()
+        || m.get_one::<String>("events").is_some();
     // `--diff-models FILE` is read before the run, as the walk's is: a file
     // it cannot read, or whose facts the parser refuses (M1f S1f.5.5,
     // T1f.5.5.6: every error recovery reaches, each with the file's line and

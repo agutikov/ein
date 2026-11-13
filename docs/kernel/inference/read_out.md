@@ -72,7 +72,16 @@ value re-blesses an example and has no prose here to chase. What a table states 
 A bare `ein solve FILE` describes all of R. `ein oracle FILE` prints the same rows over the cube, route 2 asked for by
 name, then `the cube` (§ 9). `--count` prints `asked`, `states (k_s)`, `commitments (k_c)`, `exhausted`, `empty` or
 `∅` (without its `owed` rows), `lattice` with its block, `strata`, `universe`, `route` and `work`, each describe's
-text, then `claims` (§ 7) and no listing: it reads no state.
+text, then `claims` (§ 7) and no listing: it reads no state. It prints no `N` row either, and since M1f S1f.6.27 a
+`--count` that writes no artefact carrying N's count does not take N: on the state route N is searched for after the
+walk, the minimal transversals of the maximal alive states' complements, and on a search whose alive nodes are partial
+assignments that search is most of a description's time (E-31 of P1f.6's
+[`findings.md`](../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)). A surface that prints
+N's count needs the search as much as one that prints its sets, the count being how many transversals there are; so
+`--json-summary`, `--events` or `--dump-answer` beside `--count` asks for N, and `region.nogoods` is the description's;
+`--dump-lattice`'s files carry no N. `ein test` asks the same way: no line of it prints N, and its `--json-summary`
+and `--events` ask for it. R, its counts, its states and every claim's outcome are the same either way
+(`explore::a_description_asked_without_n_is_the_description_less_n`).
 
 <!-- rows: describe -->
 | label | printed when | says | kind | summary | example |

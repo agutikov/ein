@@ -750,11 +750,30 @@ pub struct Description {
     /// ∅ and ⊤ are both in `R`, so `R` is the whole cube (L1, L2) — decided by
     /// two saturations even on a partial run.
     pub cube: bool,
+    /// The run exhausted `R` and `N` was not asked for ([`describe_with`]):
+    /// [`Self::nogoods`] is `None` and [`Self::nogoods_met`] holds the
+    /// members the walk met, as on a partial run.
+    pub nogoods_skipped: bool,
 }
 
 /// `R` from what `s` met. `s` must not have declined for any reason but its
 /// budget.
 pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
+    describe_with(s, true)
+}
+
+/// [`describe`], taking `N` only where `nogoods`. `N` is the one part of an
+/// exhausted description that is not read off the states met: it is the
+/// minimal transversals of the maximal alive states' complements, a search
+/// over as many edges as there are maximal alive states, and on a program
+/// whose alive nodes are partial assignments it is most of describe's time
+/// (94.6 % of the samples on a five-digit equation, `perf record`,
+/// 2026-11-13; E-31 of P1f.6's `findings.md`). Its count is the number of
+/// those transversals, so a surface that prints the count needs the search as
+/// much as one that prints the sets. A run none of whose surfaces prints
+/// either asks without it (M1f S1f.6.27, *minimum work per question*): no
+/// other field of the description reads `N`.
+pub fn describe_with(s: &StateRoute, nogoods: bool) -> Result<Description, SolveError> {
     let n = s.n();
     let ns = s.states.len();
     let exhausted = s.declined.is_none();
@@ -908,7 +927,8 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
     // complements — a set is dead exactly when no maximal alive state holds
     // it (L1). Where N comes from is a decision taken without a ruling; the
     // module's § "Where N and E come from" gives its argument.
-    let nogoods = if exhausted {
+    let want_nogoods = nogoods;
+    let nogoods = if exhausted && want_nogoods {
         let full = Bits::full(n);
         let edges: Vec<Bits> = s
             .states
@@ -1045,6 +1065,7 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
         subcubes,
         frontier,
         cube,
+        nogoods_skipped: exhausted && !want_nogoods && !top_alive,
     })
 }
 

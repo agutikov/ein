@@ -170,6 +170,12 @@ pub struct Described {
     pub nogoods: u64,
     /// The same sets, each with why it is dead, in visit order.
     pub dead: Vec<Dead>,
+    /// `N` was not taken: the description is exhausted, and the run was asked
+    /// by a surface that prints neither `N` nor its count
+    /// ([`crate::explore::Options::nogoods`], M1f S1f.6.27). [`Self::nogoods`]
+    /// and [`Self::dead`] then hold the members the walk met, which no
+    /// surface of such a run reads; one that did would say *not taken*.
+    pub nogoods_skipped: bool,
     /// Candidates dead alone, which no state can hold.
     pub dead_alone: u64,
     /// Which they are, as candidate indices — those met, on a partial run.
@@ -450,6 +456,7 @@ pub fn of_downset(d: &DownSet) -> Described {
         states,
         shape,
         frontier,
+        nogoods_skipped: false,
         work,
     }
 }
@@ -668,6 +675,7 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
         states,
         shape,
         frontier,
+        nogoods_skipped: d.nogoods_skipped,
         work: Work {
             saturations: s.saturations(),
             facts: s.facts(),
@@ -827,6 +835,7 @@ pub fn of_cube(r: &Region) -> Described {
             holes: Some((t.holes.len() as u64, holes)),
         }),
         frontier,
+        nogoods_skipped: false,
         work: Work {
             saturations: cube,
             facts: r

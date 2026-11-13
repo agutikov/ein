@@ -1096,3 +1096,101 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
          taken after the walk, {walk_dead} dead nodes its walk visited with no core taken"
     );
 }
+
+/// **A description asked without N is the description, less N** — M1f
+/// S1f.6.27's T5, E-31 of P1f.6's `findings.md`, *minimum work per question*.
+/// `N` is the one part of an exhausted description on the state route that is
+/// searched for after the walk, and `ein solve --count` and `ein test` print
+/// neither it nor its count, so they ask without it
+/// ([`explore::Options::nogoods`]). On every corpus file and register
+/// witness outside the slow set: the two descriptions are equal in every
+/// field once `N` is taken out of both, the same states, counts, lines,
+/// saturations and facts; one that skipped `N` says so, and only an
+/// exhausted description of the state route skips it; and a run that did not
+/// skip it is the default's, field for field.
+#[test]
+fn a_description_asked_without_n_is_the_description_less_n() {
+    let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
+        .entry
+        .iter()
+        .filter(|e| e.slow)
+        .map(|e| repo_root().join(&e.path))
+        .collect();
+    let mut failures = Vec::new();
+    let (mut runs, mut skipped, mut sets) = (0usize, 0usize, 0u64);
+    for path in corpus_and_register() {
+        if slow.contains(&path) || loaded(&path).is_none() {
+            continue;
+        }
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        for ask in [Ask::Describe, Ask::Count] {
+            let mut with = explore::Options::new(Mode {
+                which: Which::All,
+                ask,
+            });
+            with.jobs = jobs();
+            let mut without = with;
+            without.nogoods = false;
+            let run = |o: &explore::Options| {
+                let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
+                explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
+            };
+            let (a, b) = match (run(&with), run(&without)) {
+                (Ok(a), Ok(b)) => (a, b),
+                (Err(x), Err(y)) if x == y => continue,
+                (x, y) => {
+                    failures.push(format!("{rel}: {:?} against {:?}", x.err(), y.err()));
+                    continue;
+                }
+            };
+            runs += 1;
+            let less_n = |a: &Answer| -> Answer {
+                let mut a = a.clone();
+                if let Some(d) = a.described.as_mut() {
+                    d.dead.clear();
+                    d.nogoods = 0;
+                    d.nogoods_skipped = false;
+                }
+                if let Some(s) = a.shape.as_mut() {
+                    s.nogoods = 0;
+                }
+                a
+            };
+            if said(&less_n(&a)) != said(&less_n(&b)) {
+                failures.push(format!("{rel} {ask:?}: the description differs beyond N"));
+            }
+            let (da, db) = (
+                a.described.as_ref().expect("described"),
+                b.described.as_ref().expect("described"),
+            );
+            if da.nogoods_skipped {
+                failures.push(format!("{rel} {ask:?}: N skipped where it was asked for"));
+            }
+            if db.nogoods_skipped {
+                skipped += 1;
+                sets += da.nogoods;
+                if !(db.exhausted && b.route == explore::Route::States) {
+                    failures.push(format!(
+                        "{rel} {ask:?}: N skipped on route {:?}, exhausted {}",
+                        b.route, db.exhausted
+                    ));
+                }
+            } else if said(&a) != said(&b) {
+                failures.push(format!(
+                    "{rel} {ask:?}: N was not skipped and the answer differs"
+                ));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // Not vacuous: N is skipped on programs that have one.
+    assert!(
+        runs >= 600 && skipped >= 100 && sets >= 1000,
+        "{runs} runs, {skipped} skipped N, which held {sets} sets"
+    );
+    eprintln!("{runs} runs, {skipped} skipped N, which held {sets} sets where it was taken");
+}

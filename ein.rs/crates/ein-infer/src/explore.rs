@@ -194,6 +194,16 @@ pub struct Options {
     /// asked did not exhaust is a note and not checked, as it was. No answer
     /// and no route reads it.
     pub refute: bool,
+    /// `N` is taken, the minimal dead sets and so their count: the default,
+    /// and what every surface that prints either asks. Off, an exhausted
+    /// description on the state route does not search for it
+    /// ([`crate::states::describe_with`], M1f S1f.6.27, E-31): what `ein solve
+    /// --count` and `ein test` ask where they write no artefact that carries
+    /// it, since neither prints `N` or how many it holds. `R`, its two counts, its
+    /// states, its lines and every claim's outcome are the same either way
+    /// (`ein-infer/tests/explore.rs`). Route 1 and the cube read `N` off what
+    /// they visited, and take it regardless.
+    pub nogoods: bool,
 }
 
 impl Options {
@@ -207,6 +217,7 @@ impl Options {
             sanity: false,
             cores: Cores::ALL,
             refute: false,
+            nogoods: true,
         }
     }
 }
@@ -1174,6 +1185,7 @@ impl<'a> Space<'a> {
             states,
             shape: None,
             frontier: Vec::new(),
+            nogoods_skipped: false,
             work: described::Work {
                 saturations: self.saturations,
                 facts: self.spent,
@@ -1433,7 +1445,7 @@ fn describe_states(
             ));
         }
     };
-    let d = crate::states::describe(&s)?;
+    let d = crate::states::describe_with(&s, opts.nogoods)?;
     let mut described = described::of_states(&s, &d);
     // N's cores, after the walk (M1f S1f.5.12): the route reads `N` off its
     // maximal alive states, so a member it did not saturate, or saturated
