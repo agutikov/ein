@@ -23,6 +23,7 @@ until the user says otherwise (a default is not a ruling, and any may be reopene
 | [Q-M1g.13](#q-m1g13--may-a-finished-search-call-an-unpayable-debt-dead) | may a finished search call an unpayable debt dead? | P1g.7 (S1g.7.3) | open; **the user's**, deferred on 2026-11-12 |
 | [Q-M1g.14](#q-m1g14--the-types-theory-its-shape-and-its-name) | the types theory: its shape and its name | P1g.8 (S1g.8.1) | open |
 | [Q-M1g.15](#q-m1g15--where-m1h-sits-against-this-milestone) | where M1h sits against this milestone | the coordinator, before either starts | open; **the user's** |
+| [Q-M1g.16](#q-m1g16--proof-system-theory-and-what-a-theorem-is) | proof system, theory, and what a theorem is: where each is in Ein, and how a theorem is searched, proved, saved and reused | the milestone's last phase, after P1g.3, P1g.5, P1g.11 | open; **the user's**, the milestone's main goal (2026-11-14) |
 
 ---
 
@@ -174,3 +175,17 @@ stops for the user; nothing is named before then.
 complete"*; nothing says whether M1h runs before it, after it or beside it. M1h's first phases (temporal
 and causal theories, slicing) need nothing of this milestone; its gaps-and-assumptions phase reads P1g.7's
 ruling if that exists. No default is taken; it is the same question as M1h's own, asked once.
+
+## Q-M1g.16 — Proof system, theory, and what a theorem is
+
+**Raised** 2026-11-14 by the user as *"one of the main goals of the whole milestone"*, quoted in full in the
+[README § The main goal](README.md#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14): where in
+Ein a proof system (formulas and proofs) is, and where a theory (axioms and theorems); what a theorem is; how it
+is searched, verified or proved, saved and reused, so that new theorems are proved with old ones; and whether,
+and how, a theorem can be an Ein rule.
+
+The readings the plan starts from, none chosen: **(a)** a theorem is an object-level fact, `(theorem F)` with a
+checked proof, reused as an axiom of the next proof; **(b)** a theorem is an Ein rule, a derived rule applied
+forward, with a proof that it is admissible; **(c)** both, a proved (a)-theorem with schematic letters turned
+into a (b)-rule by rules as data or a generator. No default is taken: the decision is the milestone's, made on
+the programs of P1g.3, P1g.5 and P1g.11, and it is **the user's**.

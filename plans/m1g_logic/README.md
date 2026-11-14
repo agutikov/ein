@@ -156,6 +156,9 @@ It works at **two levels**, and keeping them apart is half of what it has to say
     P1g.6 stage that owns one runs when the geometry's programs have shown it and the user has ruled, and
     the geometry takes its named detour until then.
 
+12. **The main goal's decision** ([§ The main goal](#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14))
+    last, on the programs of P1g.3, P1g.5 and P1g.11; its phase is planned when P1g.3's first stage has run.
+
 The order of items 10 and 11 was chosen in the split of 2026-11-13 from the dependencies and is not the
 user's ruling ([P1g.10 § Choices made in the split](p1g.10_school_algebra/README.md#choices-made-in-the-split)).
 
@@ -301,6 +304,54 @@ maximal line is sound. Six are P1g.6's existing candidates met on a figure. **It
 needed is found by S1g.11.1's and S1g.11.2's computed programs first, and an engine or grammar change needs
 the user's ruling on them.
 
+## The main goal: proof system, theory, and what a theorem is (2026-11-14)
+
+The user, 2026-11-14:
+
+> M1g - important notes: one of the main goals of the whole milestone would be to decide where is in Ein a
+> Proof System (with formulas and proofs) and where is Theory (with axioms and theorems), what are they,
+> especially finally what is theorem, how it can be searched, verified/proved, saved and reused. So it would
+> became possible to build new therems and use them to prove other theorems. The way they currently named
+> rules could be logic rules, e.g. like 12 natural deduction rules. But there is an idea of theorems as ein
+> rules, but it is not clear how it could even work this way.
+
+So the milestone does not end with its phases' pages alone: it ends with a **decision**, made on the programs
+they leave, of five things ([Q-M1g.16](open_questions.md#q-m1g16--proof-system-theory-and-what-a-theorem-is)):
+
+1. **Where the proof system is:** formulas and proofs, and the rules of inference over them. P1g.3 builds it
+   at the object level: a formula a nested fact, a proof facts a saturation checks (probe 2), natural
+   deduction's rules ([S1g.3.3](p1g.3_proof_systems/s1g.3.3_natural_deduction.md), whose table of every
+   connective's introduction and elimination is the user's *"12 natural deduction rules"*). Ein's own rules can
+   *be* the logic's rules, the forward ones outright; the rules that discharge an assumption are the part no
+   Ein rule states today.
+2. **Where the theory is:** axioms and theorems, as distinct from the rules of inference. Axioms are facts or
+   schemas ([S1g.3.1](p1g.3_proof_systems/s1g.3.1_hilbert_systems.md)); Peano's are
+   [P1g.5](p1g.5_peano_and_induction/README.md)'s; a school figure's are
+   [P1g.11](p1g.11_school_geometry/README.md)'s.
+3. **What a theorem is,** at the two levels this milestone keeps apart ([§ What this is](#what-this-is)): a
+   fact about a formula, `(theorem F)` with its proof, at the object level; or a rule of Ein, a derived rule
+   applied forward, at the meta level; or both, one made from the other. **The stdlib already has the second
+   kind, unproved:** `std.algebra`'s `converse-pair-symmetric` is a theorem written as a rule, and M1f's
+   [E-53](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) is what one costs when nothing
+   proves it: it does not compose with the converse type checks, and a well-typed pair is refuted.
+4. **How a theorem is searched, verified and proved:** proof search
+   ([S1g.3.2](p1g.3_proof_systems/s1g.3.2_finding_a_proof.md)), proof checking by saturation (S1g.3.1), and,
+   for a theorem written as a rule, a proof that the rule is admissible, which nothing in the plan does yet.
+5. **How a theorem is saved and reused,** so that new theorems are proved with old ones: a module of proved
+   theorems, imported as any module is (M1f's [S1f.6.35](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md)
+   makes an import one copy by full name); and **the bridge** the user names as unclear, *"theorems as ein
+   rules, but it is not clear how it could even work"*: a proved object-level theorem with schematic letters
+   turned into an Ein rule. That turn reads a formula as a rule, which is rules as data
+   ([S1g.6.5](p1g.6_engine_requirements/s1g.6.5_rules_as_data_and_refutations.md),
+   [M12](../m12_rules_as_data/README.md)), or a generator that writes the rule's text; and the geometry meets
+   the same question from the other side, theorems used as rules
+   ([S1g.11.2](p1g.11_school_geometry/s1g.11.2_theorems_as_rules.md),
+   [S1g.6.7](p1g.6_engine_requirements/s1g.6.7_what_theorems_as_rules_needs.md)).
+
+**Where it is decided.** Last, after P1g.3, P1g.5 and P1g.11 have run, on their programs; each of those phases
+records what it shows of the five, and the phase that writes the decision is planned when P1g.3's first stage has
+run (proposed: P1g.12, *theorems proved, saved and reused*). Nothing here changes an earlier phase's tasks.
+
 ## What it pulls in
 
 Each idea and followup the instruction's *"pull in related ideas/ and followups/"* reaches, with what of it
@@ -376,6 +427,10 @@ The instruction's last question, and how this plan answered it, under the schema
   has a corpus entry.
 - **F1b is closed as promoted,** and each row of [§ What it pulls in](#what-it-pulls-in) is done or says why
   not.
+- **The main goal is decided** ([§ The main goal](#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14)):
+  a page says where in Ein the proof system and the theory are and what a theorem is, and shows on programs one
+  theorem searched, proved and checked, saved, and reused to prove another, or names exactly what stops each step;
+  the user rules on it.
 
 ## Risks, each with what checks it
 

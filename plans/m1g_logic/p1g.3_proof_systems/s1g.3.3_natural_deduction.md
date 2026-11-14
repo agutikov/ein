@@ -23,11 +23,54 @@ The coordinator's sorting, each row **to be tried**:
 
 | rule | shape | in Ein |
 |---|---|---|
-| `And` elimination, `Imp` elimination (modus ponens), `Iff` elimination, `Bot` elimination, double-negation elimination | from formulas that hold, a formula that holds | a forward rule over `(holds F)`. Saturation applies it |
-| `And` introduction, `Or` introduction, `Iff` introduction | from formulas that hold, a *larger* formula | a forward rule would build every conjunction of everything: a flood. On request, `(want (And A B))` asks for A and for B: the goal's shape decides the step |
-| `Imp` introduction, `Not` introduction (reductio), `Or` elimination (cases) | from a *derivation under an assumption*, a formula with the assumption **discharged** | the question of this stage |
+| `And` elimination, `Imp` elimination (modus ponens), `Iff` elimination, `Not` elimination, double-negation elimination | from formulas that hold, a formula that holds | a forward rule over `(holds F)`. Saturation applies it |
+| `And` introduction, `Or` introduction, `Iff` introduction (from both implications), `Bot` elimination (*ex falso*) | from formulas that hold, a *larger* formula, or (*ex falso*) any formula | a forward rule would build every conjunction of everything: a flood; and *ex falso*'s conclusion has a variable no premise binds, which the loader refuses ([`defined_behaviour.md` § 4.13](../../../docs/kernel/defined_behaviour.md)). On request, `(want (And A B))` asks for A and for B: the goal's shape decides the step |
+| `Imp` introduction, `Not` introduction (reductio), `Or` elimination (cases), `Iff` introduction (from two derivations) | from a *derivation under an assumption*, a formula with the assumption **discharged** | the question of this stage |
 
-The third group is where the two readings part.
+The third group is where the two readings part. (`Bot` elimination was in the first group until 2026-11-14:
+moved, by the table below, since a forward rule cannot conclude a formula nothing binds.)
+
+## Every connective's introduction and elimination (added 2026-11-14)
+
+The user, 2026-11-14: *"Add a table of all connectives introductions and eliminations"*. Gentzen's and
+Prawitz's rules for the propositional connectives, in this plan's spelling, `A`, `B`, `C` formulas, `⊢` *infer*,
+and `[A]⋯B` *a derivation of `B` from the assumption `A`, which the rule discharges*. The last column places each
+rule in a group of § The rules, sorted by what they need: **forward** (a rule saturation applies), **on request**
+(a goal-directed rule over `(want F)`), **discharging** (the question of this stage, Reading 1 and Reading 2
+below).
+
+| connective | introduction | elimination | discharges | in Ein |
+|---|---|---|---|---|
+| `And` (∧) | **∧I:** `A`, `B` ⊢ `(And A B)` | **∧E₁:** `(And A B)` ⊢ `A`; **∧E₂:** `(And A B)` ⊢ `B` | — | I on request; E forward |
+| `Or` (∨) | **∨I₁:** `A` ⊢ `(Or A B)`; **∨I₂:** `B` ⊢ `(Or A B)` | **∨E:** `(Or A B)`, `[A]⋯C`, `[B]⋯C` ⊢ `C` | ∨E: `A` and `B` | I on request; E discharging (proof by cases) |
+| `Imp` (→) | **→I:** `[A]⋯B` ⊢ `(Imp A B)` | **→E** (modus ponens): `(Imp A B)`, `A` ⊢ `B` | →I: `A` | I discharging; E forward |
+| `Not` (¬) | **¬I:** `[A]⋯Bot` ⊢ `(Not A)` | **¬E:** `A`, `(Not A)` ⊢ `Bot` | ¬I: `A` | I discharging (intuitionistic reductio); E forward, concluding the object-level `(holds Bot)` and not Ein's `(false)`: a formula that is false at the object level is a fact, where Ein's `(false)` kills the state (Reading 1 uses the second) |
+| `Iff` (↔) | **↔I:** `[A]⋯B`, `[B]⋯A` ⊢ `(Iff A B)` | **↔E₁:** `(Iff A B)`, `A` ⊢ `B`; **↔E₂:** `(Iff A B)`, `B` ⊢ `A` | ↔I: `A` and `B` | I discharging, or on request from `(Imp A B)` and `(Imp B A)` where `Iff` is defined by them; E forward |
+| `Bot` (⊥) | none: ⊥ is reached by ¬E | **⊥E** (*ex falso quodlibet*): `Bot` ⊢ `A` | — | E on request |
+| `Top` (⊤) | **⊤I:** ⊢ `Top` | none | — | I a fact, `(holds Top)` |
+
+**Classical logic** adds any one of three rules to the intuitionistic ones above; each gives the other two:
+
+| rule | shape | discharges | in Ein |
+|---|---|---|---|
+| **RAA** (*reductio ad absurdum*) | `[(Not A)]⋯Bot` ⊢ `A` | `(Not A)` | discharging; Reading 2's classical rule, and what probe 4 met in Reading 1 |
+| **¬¬E** (double-negation elimination) | `(Not (Not A))` ⊢ `A` | — | forward |
+| **LEM** (excluded middle) | ⊢ `(Or A (Not A))` | — | on request: one instance per formula asked about |
+
+**The usual twelve.** ∧I, ∧E₁, ∧E₂, ∨I₁, ∨I₂, ∨E, →I, →E, ¬I, ¬E, ⊥E and one classical rule (RAA or ¬¬E): the
+count a textbook gives when `Iff` is defined as `(And (Imp A B) (Imp B A))` and `Top` as `(Not Bot)`. With RAA
+as the twelfth, four are forward rules (∧E₁, ∧E₂, →E, ¬E), four are on request (∧I, ∨I₁, ∨I₂, ⊥E), and four
+discharge an assumption (∨E, →I, ¬I, RAA); with ¬¬E as the twelfth, five are forward and three discharge. The
+discharging group is a quarter to a third of the system, and it is exactly the part no Ein rule states today.
+
+**The quantifiers,** for completeness; they are [P1g.4](../p1g.4_first_order_logic/README.md)'s
+([S1g.4.4](../p1g.4_first_order_logic/s1g.4.4_quantifier_rules.md)), with `A(x)` a formula with `x` free and
+`t` a term:
+
+| quantifier | introduction | elimination | condition | in Ein |
+|---|---|---|---|---|
+| ∀ | **∀I:** `A(a)` ⊢ `∀x A(x)` | **∀E:** `∀x A(x)` ⊢ `A(t)` | ∀I: `a` fresh, in no open assumption | I needs a fresh name ([S1g.6.4](../p1g.6_engine_requirements/s1g.6.4_witnesses_and_fresh_names.md), [Q-M1g.8](../open_questions.md#q-m1g8--fresh-names)); E on request (which `t` is a choice) |
+| ∃ | **∃I:** `A(t)` ⊢ `∃x A(x)` | **∃E:** `∃x A(x)`, `[A(a)]⋯C` ⊢ `C` | ∃E: `a` fresh, not in `C` | I on request; E discharging, and a fresh name |
 
 ## Reading 1: an assumption is a commitment
 
