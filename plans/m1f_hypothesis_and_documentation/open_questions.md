@@ -266,6 +266,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.251](#q-m1f251--a-prefixed-name-that-names-nothing-the-module-declares) | a prefixed name that names nothing the module declares | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.252](#q-m1f252--an-empty-segment-or-a--in-a-modules-name) | an empty segment or a `/` in a module's name | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.253](#q-m1f253--how-a-name-prints-under-as) | how a name prints under `:as` | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: the main file's alias spelling, `a.sum-of`, as today; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.261](#q-m1f261--the-decimal-theorys-module-name-after-the-user-wrote-stdmatharith-in-passing) | the decimal theory's module name, after the user wrote `std.math.arith` in passing | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: `std.math.decimal-arith`, entry `decimal-arith`, as replies 16 and 52 and round 2's confirmed layout name it; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-replies-re-read) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -5143,3 +5144,24 @@ no `region` block to hold root's standing (`region.root`, `root_owes`, `root_owe
 **Defaulted 2026-11-14: (a), the user's to revise.** Every claim of the 21 holds under `ein solve`, `ein test` and
 `ein oracle`, and `utils/stdlib_mutants.py` over `tests/` with the 20 of them it holds leaves the banked survivor set
 exactly, 71 (the prototype, 2026-11-14).
+
+### Q-M1f.261 — The decimal theory's module name, after the user wrote `std.math.arith` in passing
+
+**Raised** 2026-11-14 by [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-replies-re-read), re-reading
+the replies before the move. Replies 16 and 52 of 2026-11-12 say *"rename arith to decimal-arith"*, and round 2's
+layout, `std.math.decimal-arith` with the entry `decimal-arith`, was confirmed (*"Confirm others"*). Later, writing
+about imports, the user named the module otherwise twice: *"let's call symbols full names
+`std.math.arith.decimal...`"* (2026-11-13, [`import_clashes.md` § 7](p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names))
+and *"when import std.math.arith and use std.math.arith.sum must work identical to sum from import std.math.arith
+:symbols (sum)"* (2026-11-14, Q-M1f.247), beside `sum`, which is no name of the module.
+
+- **(a) `std.math.decimal-arith`, `stdlib/math/decimal-arith.ein`, entry `decimal-arith`**: the layout as replied
+  and confirmed; the later mentions are examples about imports.
+- **(b) `std.math.arith`, `stdlib/math/arith.ein`**, as the user wrote it on 2026-11-14; the entry `arith` or
+  `decimal-arith`.
+- **(c) `std.math.arith.decimal`, `stdlib/math/arith/decimal.ein`**, as written on 2026-11-13: round 2's option (b),
+  one level deeper, which round 2's reply did not take.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** The move is mechanical and held by a sweep (S1f.6.31's T5), so
+(b) or (c) is the same move again, with the same sweep, before S1f.6.16's build adds `std.math.binary-arith` beside
+it.
