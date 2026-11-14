@@ -1,8 +1,8 @@
 ;;; Application 2, the truth table of a circuit, by search: the full adder's
 ;;; three inputs are hypotheses, and R is every input assignment.
 ;;;
-;;; `inputs.ein` says an input has exactly one value, by an obligation and
-;;; `functional`. The obligation proposes the candidates, two an input, six
+;;; `std.bool.inputs` says an input has exactly one value, by an obligation
+;;; and `functional`. The obligation proposes the candidates, two an input, six
 ;;; here, and makes a state with an input unset no answer. So R is the eight
 ;;; total assignments, and the query's eight projection classes are the rows
 ;;; of the table: `ein solve` prints the truth table.
@@ -25,9 +25,9 @@
 ;;; The claim was computed in Python by enumeration.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.2.
-(import inputs :symbols (inputs in is-a total-owed functional in-drives))
-(import full_adder :symbols (gate))
-(import circuit :symbols (val))
+(import std.bool.inputs :symbols (inputs is-a in))
+(import std.bool.circuit :symbols (val))
+(import full_adder)
 
 (is-a a Input) (is-a b Input) (is-a cin Input)
 

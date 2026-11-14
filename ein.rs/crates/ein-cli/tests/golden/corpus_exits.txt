@@ -146,20 +146,12 @@
 0    examples/binary_logic/adder_against_table.ein :: test
 0    examples/binary_logic/bits.ein :: saturate
 0    examples/binary_logic/bits.ein :: solve
-0    examples/binary_logic/circuit.ein :: render rules
-0    examples/binary_logic/circuit.ein :: saturate
-0    examples/binary_logic/circuit.ein :: solve
 0    examples/binary_logic/equivalent.ein :: solve
 0    examples/binary_logic/equivalent.ein :: solve --single
 0    examples/binary_logic/equivalent.ein :: solve -n 1
 0    examples/binary_logic/equivalent.ein :: test
 0    examples/binary_logic/full_adder.ein :: saturate
 0    examples/binary_logic/full_adder.ein :: solve
-0    examples/binary_logic/gates.ein :: saturate
-0    examples/binary_logic/gates.ein :: solve
-0    examples/binary_logic/inputs.ein :: render rules
-0    examples/binary_logic/inputs.ein :: saturate
-0    examples/binary_logic/inputs.ein :: solve
 0    examples/binary_logic/knights.ein :: solve
 0    examples/binary_logic/knights.ein :: solve --single
 0    examples/binary_logic/knights.ein :: solve -n 1
@@ -171,17 +163,6 @@
 0    examples/binary_logic/post.ein :: saturate
 0    examples/binary_logic/post.ein :: solve
 0    examples/binary_logic/post.ein :: test
-0    examples/binary_logic/props.ein :: saturate
-0    examples/binary_logic/props.ein :: solve
-0    examples/binary_logic/props_check.ein :: saturate
-0    examples/binary_logic/props_check.ein :: solve
-0    examples/binary_logic/props_check.ein :: test
-0    examples/binary_logic/props_rules.ein :: render rules
-0    examples/binary_logic/props_rules.ein :: saturate
-0    examples/binary_logic/props_rules.ein :: solve
-0    examples/binary_logic/require.ein :: render rules
-0    examples/binary_logic/require.ein :: saturate
-0    examples/binary_logic/require.ein :: solve
 0    examples/binary_logic/satisfiable.ein :: solve
 0    examples/binary_logic/satisfiable.ein :: solve --single
 0    examples/binary_logic/satisfiable.ein :: solve -n 1
@@ -1703,34 +1684,50 @@
 0    stdlib/algebra.ein :: render rules
 0    stdlib/algebra.ein :: saturate
 0    stdlib/algebra.ein :: solve
-0    stdlib/math/decimal-arith.ein :: render constraints
-0    stdlib/math/decimal-arith.ein :: render rules
-0    stdlib/math/decimal-arith.ein :: saturate
-0    stdlib/math/decimal-arith.ein :: solve
 0    stdlib/bijection.ein :: render constraints
 0    stdlib/bijection.ein :: render rules
 0    stdlib/bijection.ein :: saturate
 0    stdlib/bijection.ein :: solve
+0    stdlib/bool/circuit.ein :: render constraints
+0    stdlib/bool/circuit.ein :: render rules
+0    stdlib/bool/circuit.ein :: saturate
+0    stdlib/bool/circuit.ein :: solve
+0    stdlib/bool/gates.ein :: render constraints
+0    stdlib/bool/gates.ein :: render rules
+0    stdlib/bool/gates.ein :: saturate
+0    stdlib/bool/gates.ein :: solve
+0    stdlib/bool/inputs.ein :: render constraints
+0    stdlib/bool/inputs.ein :: render rules
+0    stdlib/bool/inputs.ein :: saturate
+0    stdlib/bool/inputs.ein :: solve
+0    stdlib/bool/props.ein :: render constraints
+0    stdlib/bool/props.ein :: render rules
+0    stdlib/bool/props.ein :: saturate
+0    stdlib/bool/props.ein :: solve
 0    stdlib/closure.ein :: render constraints
 0    stdlib/closure.ein :: render rules
 0    stdlib/closure.ein :: saturate
 0    stdlib/closure.ein :: solve
-0    stdlib/math/digits.ein :: render constraints
-1    stdlib/math/digits.ein :: render rules
-0    stdlib/math/digits.ein :: saturate
-0    stdlib/math/digits.ein :: solve
 0    stdlib/elim.ein :: render constraints
 0    stdlib/elim.ein :: render rules
 0    stdlib/elim.ein :: saturate
 0    stdlib/elim.ein :: solve
-0    stdlib/math/int.ein :: render constraints
-0    stdlib/math/int.ein :: render rules
-0    stdlib/math/int.ein :: saturate
-0    stdlib/math/int.ein :: solve
 0    stdlib/macro.ein :: render constraints
 1    stdlib/macro.ein :: render rules
 0    stdlib/macro.ein :: saturate
 0    stdlib/macro.ein :: solve
+0    stdlib/math/decimal-arith.ein :: render constraints
+0    stdlib/math/decimal-arith.ein :: render rules
+0    stdlib/math/decimal-arith.ein :: saturate
+0    stdlib/math/decimal-arith.ein :: solve
+0    stdlib/math/digits.ein :: render constraints
+1    stdlib/math/digits.ein :: render rules
+0    stdlib/math/digits.ein :: saturate
+0    stdlib/math/digits.ein :: solve
+0    stdlib/math/int.ein :: render constraints
+0    stdlib/math/int.ein :: render rules
+0    stdlib/math/int.ein :: saturate
+0    stdlib/math/int.ein :: solve
 0    stdlib/math/num9.ein :: render constraints
 0    stdlib/math/num9.ein :: render rules
 0    stdlib/math/num9.ein :: saturate
@@ -1913,6 +1910,136 @@
 0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: saturate
 0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: solve
 0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: test
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
+1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: solve
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: test
+0    tests/stdlib/bijection/02_domain_elimination.ein :: render constraints
+0    tests/stdlib/bijection/02_domain_elimination.ein :: render rules
+0    tests/stdlib/bijection/02_domain_elimination.ein :: saturate
+0    tests/stdlib/bijection/02_domain_elimination.ein :: solve
+0    tests/stdlib/bijection/02_domain_elimination.ein :: test
+0    tests/stdlib/bijection/03_range_elimination.ein :: render constraints
+0    tests/stdlib/bijection/03_range_elimination.ein :: render rules
+0    tests/stdlib/bijection/03_range_elimination.ein :: saturate
+0    tests/stdlib/bijection/03_range_elimination.ein :: solve
+0    tests/stdlib/bijection/03_range_elimination.ein :: test
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: render constraints
+1    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: render rules
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: saturate
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: solve
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: test
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: render constraints
+1    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: render rules
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: saturate
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: solve
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: test
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: render constraints
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: saturate
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: solve
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: test
+0    tests/stdlib/bool/circuit/01_propagate.ein :: render constraints
+1    tests/stdlib/bool/circuit/01_propagate.ein :: render rules
+0    tests/stdlib/bool/circuit/01_propagate.ein :: saturate
+0    tests/stdlib/bool/circuit/01_propagate.ein :: solve
+0    tests/stdlib/bool/circuit/01_propagate.ein :: test
+0    tests/stdlib/bool/circuit/02_one_value.ein :: render constraints
+1    tests/stdlib/bool/circuit/02_one_value.ein :: render rules
+0    tests/stdlib/bool/circuit/02_one_value.ein :: saturate
+0    tests/stdlib/bool/circuit/02_one_value.ein :: solve
+0    tests/stdlib/bool/circuit/02_one_value.ein :: test
+0    tests/stdlib/bool/gates/01_a_relation_a_function.ein :: render constraints
+1    tests/stdlib/bool/gates/01_a_relation_a_function.ein :: render rules
+0    tests/stdlib/bool/gates/01_a_relation_a_function.ein :: saturate
+0    tests/stdlib/bool/gates/01_a_relation_a_function.ein :: solve
+0    tests/stdlib/bool/gates/01_a_relation_a_function.ein :: test
+0    tests/stdlib/bool/inputs/01_in_drives.ein :: render constraints
+1    tests/stdlib/bool/inputs/01_in_drives.ein :: render rules
+0    tests/stdlib/bool/inputs/01_in_drives.ein :: saturate
+0    tests/stdlib/bool/inputs/01_in_drives.ein :: solve
+0    tests/stdlib/bool/inputs/01_in_drives.ein :: test
+0    tests/stdlib/bool/inputs/02_required.ein :: render constraints
+1    tests/stdlib/bool/inputs/02_required.ein :: render rules
+0    tests/stdlib/bool/inputs/02_required.ein :: saturate
+0    tests/stdlib/bool/inputs/02_required.ein :: solve
+0    tests/stdlib/bool/inputs/02_required.ein :: test
+0    tests/stdlib/bool/props/01_column.ein :: render constraints
+1    tests/stdlib/bool/props/01_column.ein :: render rules
+0    tests/stdlib/bool/props/01_column.ein :: saturate
+0    tests/stdlib/bool/props/01_column.ein :: solve
+0    tests/stdlib/bool/props/01_column.ein :: test
+0    tests/stdlib/bool/props/02_between_two.ein :: render constraints
+1    tests/stdlib/bool/props/02_between_two.ein :: render rules
+0    tests/stdlib/bool/props/02_between_two.ein :: saturate
+0    tests/stdlib/bool/props/02_between_two.ein :: solve
+0    tests/stdlib/bool/props/02_between_two.ein :: test
+0    tests/stdlib/bool/props/03_commutative_associative_idempotent.ein :: render constraints
+1    tests/stdlib/bool/props/03_commutative_associative_idempotent.ein :: render rules
+0    tests/stdlib/bool/props/03_commutative_associative_idempotent.ein :: saturate
+0    tests/stdlib/bool/props/03_commutative_associative_idempotent.ein :: solve
+0    tests/stdlib/bool/props/03_commutative_associative_idempotent.ein :: test
+0    tests/stdlib/bool/props/04_reads_and_ignores.ein :: render constraints
+1    tests/stdlib/bool/props/04_reads_and_ignores.ein :: render rules
+0    tests/stdlib/bool/props/04_reads_and_ignores.ein :: saturate
+0    tests/stdlib/bool/props/04_reads_and_ignores.ein :: solve
+0    tests/stdlib/bool/props/04_reads_and_ignores.ein :: test
+0    tests/stdlib/bool/props/05_identity_and_absorbing.ein :: render constraints
+1    tests/stdlib/bool/props/05_identity_and_absorbing.ein :: render rules
+0    tests/stdlib/bool/props/05_identity_and_absorbing.ein :: saturate
+0    tests/stdlib/bool/props/05_identity_and_absorbing.ein :: solve
+0    tests/stdlib/bool/props/05_identity_and_absorbing.ein :: test
+0    tests/stdlib/bool/props/06_post_inside.ein :: render constraints
+1    tests/stdlib/bool/props/06_post_inside.ein :: render rules
+0    tests/stdlib/bool/props/06_post_inside.ein :: saturate
+0    tests/stdlib/bool/props/06_post_inside.ein :: solve
+0    tests/stdlib/bool/props/06_post_inside.ein :: test
+0    tests/stdlib/bool/props/07_post_outside.ein :: render constraints
+1    tests/stdlib/bool/props/07_post_outside.ein :: render rules
+0    tests/stdlib/bool/props/07_post_outside.ein :: saturate
+0    tests/stdlib/bool/props/07_post_outside.ein :: solve
+0    tests/stdlib/bool/props/07_post_outside.ein :: test
+0    tests/stdlib/closure/01_infer_closure.ein :: render constraints
+1    tests/stdlib/closure/01_infer_closure.ein :: render rules
+0    tests/stdlib/closure/01_infer_closure.ein :: saturate
+0    tests/stdlib/closure/01_infer_closure.ein :: solve
+0    tests/stdlib/closure/01_infer_closure.ein :: test
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: render constraints
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: render rules
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: saturate
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: solve
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: test
+0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
+0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
+0    tests/stdlib/elim/01_domain_elimination.ein :: saturate
+0    tests/stdlib/elim/01_domain_elimination.ein :: solve
+0    tests/stdlib/elim/01_domain_elimination.ein :: test
+0    tests/stdlib/elim/02_no_room_left.ein :: render constraints
+1    tests/stdlib/elim/02_no_room_left.ein :: render rules
+0    tests/stdlib/elim/02_no_room_left.ein :: saturate
+0    tests/stdlib/elim/02_no_room_left.ein :: solve
+0    tests/stdlib/elim/02_no_room_left.ein :: test
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: render constraints
+1    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: render rules
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: saturate
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: solve
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: test
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: render constraints
+1    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: render rules
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: saturate
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: solve
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: test
+0    tests/stdlib/macro/01_forall.ein :: render constraints
+0    tests/stdlib/macro/01_forall.ein :: render rules
+0    tests/stdlib/macro/01_forall.ein :: saturate
+0    tests/stdlib/macro/01_forall.ein :: solve
+0    tests/stdlib/macro/01_forall.ein :: test
+0    tests/stdlib/macro/02_unknown.ein :: render constraints
+0    tests/stdlib/macro/02_unknown.ein :: render rules
+0    tests/stdlib/macro/02_unknown.ein :: saturate
+0    tests/stdlib/macro/02_unknown.ein :: solve
+0    tests/stdlib/macro/02_unknown.ein :: test
 0    tests/stdlib/math/decimal-arith/01_add.ein :: render constraints
 1    tests/stdlib/math/decimal-arith/01_add.ein :: render rules
 0    tests/stdlib/math/decimal-arith/01_add.ein :: saturate
@@ -2118,46 +2245,6 @@
 0    tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein :: saturate
 0    tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein :: solve
 0    tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein :: test
-0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
-1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
-0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate
-0    tests/stdlib/bijection/01_setup_and_negatives.ein :: solve
-0    tests/stdlib/bijection/01_setup_and_negatives.ein :: test
-0    tests/stdlib/bijection/02_domain_elimination.ein :: render constraints
-0    tests/stdlib/bijection/02_domain_elimination.ein :: render rules
-0    tests/stdlib/bijection/02_domain_elimination.ein :: saturate
-0    tests/stdlib/bijection/02_domain_elimination.ein :: solve
-0    tests/stdlib/bijection/02_domain_elimination.ein :: test
-0    tests/stdlib/bijection/03_range_elimination.ein :: render constraints
-0    tests/stdlib/bijection/03_range_elimination.ein :: render rules
-0    tests/stdlib/bijection/03_range_elimination.ein :: saturate
-0    tests/stdlib/bijection/03_range_elimination.ein :: solve
-0    tests/stdlib/bijection/03_range_elimination.ein :: test
-0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: render constraints
-1    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: render rules
-0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: saturate
-0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: solve
-0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: test
-0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: render constraints
-1    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: render rules
-0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: saturate
-0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: solve
-0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: test
-0    tests/stdlib/bijection/06_blind_enumeration.ein :: render constraints
-0    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
-0    tests/stdlib/bijection/06_blind_enumeration.ein :: saturate
-0    tests/stdlib/bijection/06_blind_enumeration.ein :: solve
-0    tests/stdlib/bijection/06_blind_enumeration.ein :: test
-0    tests/stdlib/closure/01_infer_closure.ein :: render constraints
-1    tests/stdlib/closure/01_infer_closure.ein :: render rules
-0    tests/stdlib/closure/01_infer_closure.ein :: saturate
-0    tests/stdlib/closure/01_infer_closure.ein :: solve
-0    tests/stdlib/closure/01_infer_closure.ein :: test
-0    tests/stdlib/closure/02_closed_and_satisfied.ein :: render constraints
-0    tests/stdlib/closure/02_closed_and_satisfied.ein :: render rules
-0    tests/stdlib/closure/02_closed_and_satisfied.ein :: saturate
-0    tests/stdlib/closure/02_closed_and_satisfied.ein :: solve
-0    tests/stdlib/closure/02_closed_and_satisfied.ein :: test
 0    tests/stdlib/math/digits/01_tables.ein :: render constraints
 1    tests/stdlib/math/digits/01_tables.ein :: render rules
 0    tests/stdlib/math/digits/01_tables.ein :: saturate
@@ -2168,26 +2255,6 @@
 0    tests/stdlib/math/digits/02_a_core_names_its_rows.ein :: saturate
 0    tests/stdlib/math/digits/02_a_core_names_its_rows.ein :: solve
 0    tests/stdlib/math/digits/02_a_core_names_its_rows.ein :: test
-0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
-0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
-0    tests/stdlib/elim/01_domain_elimination.ein :: saturate
-0    tests/stdlib/elim/01_domain_elimination.ein :: solve
-0    tests/stdlib/elim/01_domain_elimination.ein :: test
-0    tests/stdlib/elim/02_no_room_left.ein :: render constraints
-1    tests/stdlib/elim/02_no_room_left.ein :: render rules
-0    tests/stdlib/elim/02_no_room_left.ein :: saturate
-0    tests/stdlib/elim/02_no_room_left.ein :: solve
-0    tests/stdlib/elim/02_no_room_left.ein :: test
-0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: render constraints
-1    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: render rules
-0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: saturate
-0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: solve
-0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: test
-0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: render constraints
-1    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: render rules
-0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: saturate
-0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: solve
-0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: test
 0    tests/stdlib/math/int/01_simplify.ein :: render constraints
 1    tests/stdlib/math/int/01_simplify.ein :: render rules
 0    tests/stdlib/math/int/01_simplify.ein :: saturate
@@ -2258,16 +2325,6 @@
 0    tests/stdlib/math/int/14_div_floor_by_zero.ein :: saturate
 0    tests/stdlib/math/int/14_div_floor_by_zero.ein :: solve
 0    tests/stdlib/math/int/14_div_floor_by_zero.ein :: test
-0    tests/stdlib/macro/01_forall.ein :: render constraints
-0    tests/stdlib/macro/01_forall.ein :: render rules
-0    tests/stdlib/macro/01_forall.ein :: saturate
-0    tests/stdlib/macro/01_forall.ein :: solve
-0    tests/stdlib/macro/01_forall.ein :: test
-0    tests/stdlib/macro/02_unknown.ein :: render constraints
-0    tests/stdlib/macro/02_unknown.ein :: render rules
-0    tests/stdlib/macro/02_unknown.ein :: saturate
-0    tests/stdlib/macro/02_unknown.ein :: solve
-0    tests/stdlib/macro/02_unknown.ein :: test
 0    tests/stdlib/math/num9/01_add.ein :: render constraints
 1    tests/stdlib/math/num9/01_add.ein :: render rules
 0    tests/stdlib/math/num9/01_add.ein :: saturate

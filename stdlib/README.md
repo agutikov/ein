@@ -41,8 +41,10 @@ and `ein-infer`'s `the_inventory_reads_every_module_the_manifest_lists` fail on
 a `.ein` here that the manifest or the coverage gate does not see.
 
 The calculator is under `math/` (the user's replies 16, 38, 42 and 52 to
-P1f.6's questions, and round 2's layout, 2026-11-12); the zebra modules stay at
-the top; the suite mirrors it, `tests/stdlib/math/<module>/`.
+P1f.6's questions, and round 2's layout, 2026-11-12), Boolean functions and
+circuits under `bool/` (round 2's replies to the layout and to item 23,
+*"std.bool"*; M1f S1f.6.17); the zebra modules stay at the top; the suite
+mirrors it, `tests/stdlib/math/<module>/` and `tests/stdlib/bool/<module>/`.
 
 | module | file | what it is | entry |
 |---|---|---|---|
@@ -51,6 +53,10 @@ the top; the suite mirrors it, `tests/stdlib/math/<module>/`.
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers over it, `(int P N)` ([§](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)) | `int-arith` |
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rationals over both, `(rat Z D)` ([§](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)) | `rat-arith` |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | nine digits in one fact, by wide rules, generated ([§](#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613)) | `arith9` |
+| `std.bool.gates` | [`bool/gates.ein`](bool/gates.ein) | the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` (its rows generated) and a relation each, `(And A B OUT)` ([§](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | `gates` |
+| `std.bool.props` | [`bool/props.ein`](bool/props.ein) | thirty relations known of the sixteen, derived from the rows by rules ([§](#stdboolprops-what-is-known-of-the-sixteen-by-rules)) | `props` |
+| `std.bool.circuit` | [`bool/circuit.ein`](bool/circuit.ein) | a circuit as a program, simulated by saturation ([§](#stdboolcircuit-a-circuit-as-a-program)) | `circuit` |
+| `std.bool.inputs` | [`bool/inputs.ein`](bool/inputs.ein) | a circuit's inputs as hypotheses, and required values ([§](#stdboolinputs-inputs-as-hypotheses)) | `inputs` |
 | `std.algebra`, `std.bijection`, `std.closure`, `std.elim`, `std.macro`, `std.slots`, `std.typing` | the top level | the relation algebra, the puzzle libraries and the macros ([§ Modules](#modules)) | |
 
 Until S1f.6.31 the five were `std.digits`, `std.arith` (entry `arith`),
@@ -1212,6 +1218,94 @@ circuit's own five relations, the signs `pos` and `neg`, twenty-two tags,
 `rat-rule` and `rat-arith`; everything of `std.math.int` and `std.math.decimal-arith` comes with
 it.
 
+## `std.bool`: the sixteen functions of two inputs, and circuits (M1f S1f.6.17)
+
+Four modules under `bool/`, the user's rulings of 2026-11-12 on P1f.6's
+questions 19 to 23 and round 2's item 23 (*"std.bool"*); the stage that built
+them is [S1f.6.17](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md),
+and its plan page, [`binary_logic.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md),
+the prototype they come from. The two bits are the names `0` and `1`, which
+are decimal's digits too: Ein has no truth values of its own, as it has no
+numbers. Each module comes whole with what it imports (M1f S1f.6.35), and
+each has an entry, its closing rule, that closes its relations and names its
+rules and the entry below it:
+
+    std.bool.gates  ←  std.bool.props
+                    ←  std.bool.circuit  ←  std.bool.inputs  →  std.algebra
+
+Nothing but `std.bool.inputs` guesses, and it guesses only an input's value.
+No rule of the four writes `absent`, `not` or `or`; `ein-infer/tests/bool_theory.rs`
+holds that on their text, and every fact of the tables and the property rules
+to an enumeration of the sixteen columns in Rust. The applications, six of
+them, are [`examples/binary_logic/`](../examples/binary_logic/README.md).
+
+### `std.bool.gates`: the table and a relation a function
+
+A function of two bits is its column of four outputs, and there are sixteen,
+each with a name: `Zero And Andn Fst Randn Snd Xor Or Nor Xnor Nsnd Orn Nfst
+Rorn Nand One`, capitalised because `and`, `or` and `not` are Ein's own words.
+Two layouts (reply 19 (c)):
+
+    (gate2 Xor 0 1 1)   the table, 64 rows: a function is a value, so a rule
+                        about any function needs no parameter, and a search can
+                        make the function a hypothesis
+    (Xor 0 1 1)         a relation a function, its four rows, derived from the
+                        table by sixteen rules, `Zero-rows` to `One-rows`
+
+with each function's column as a second name, `(column-name Xor f0110)`, and
+three small tables the property rules read, `inv`, `le` and `bit`. **The
+table's rows are generated** by `utils/gen_gates.py`, between two lines of
+the file that say so; the rest is written by hand, the sixteen rules among
+it. The script's `--check` is in the gate.
+
+**A function's name is the module's.** Declared as a relation, each name has
+one full name, `std.bool.gates.Xor`, as the relation and as the value in the
+table, so a program that writes it, as a gate's function too, lists it:
+`(import std.bool.gates :symbols (Xor And))`. A name a program writes and does
+not list is its own, a name no row has: a gate of that function computes
+nothing, and nothing says so (E-62 of P1f.6's findings, Q-M1f.264). Every
+program that imports the module derives the second layout, 64 firings at
+root: an import brings every rule, so the sixteen are not a program's to
+select (Q-M1f.263).
+
+### `std.bool.props`: what is known of the sixteen, by rules
+
+Thirty relations, every fact derived from the 64 rows by 31 monotone rules
+(reply 20 (b), *"in separate reusable file"*): a program that imports the
+module pays 405 firings at root, beside the table's 65, and one that does not
+pays nothing (`ein saturate` on a program that imports it and writes nothing
+else, 2026-11-14). They are each function's column; five relations between two
+functions, `swap-of`, `complement-of`, `dual-of`, `left-negated` and
+`right-negated`; `commutative`, `associative`, `idempotent`; which inputs a
+function reads or ignores; its identity and absorbing bits, one-sided (reply
+21 (b)) and two-sided; and Post's five classes from inside and from outside,
+with `complete-alone`, Nand and Nor. *For every input* is a conjunction of a
+function's four rows and *not in a class* one witness, so no rule needs
+`absent`. Until the build the facts were generated and the rules their check;
+the direction turned, and the generated facts are now the claims of
+`tests/stdlib/bool/props/`, written from the columns by `utils/gen_gates.py`.
+The module's header lists each relation with its definition.
+
+### `std.bool.circuit`: a circuit as a program
+
+`(gate INSTANCE FUNCTION IN1 IN2 OUT)` and `(val WIRE BIT)`: wires are names,
+a gate is a fact, and `propagate` carries values from a gate's inputs to its
+output through the table, so saturation is simulation, a firing a gate.
+`one-value` makes a wire that carries both bits a contradiction.
+
+### `std.bool.inputs`: inputs as hypotheses
+
+`(is-a WIRE Input)`, written; `(in WIRE BIT)`, the hypothesis; `(require
+WIRE BIT)`, written. An input owes exactly one value, by `std.algebra`'s
+`(total-owed in is-a)` and `(functional in)`, and the obligation is what
+proposes the candidates, two an input, through the obligations rung. R is the
+input assignments that contradict nothing, so a truth table is a query's
+classes and satisfiability is R with requirements; an unsatisfiable question
+is R empty because every alive node owes (E-23 of P1f.6's findings, question
+24 of the phase, not ruled). Describing R over n inputs is 3^n + n
+saturations: a demonstration, not a SAT solver (round 2's item 25, *"yes,
+both"*; the cheaper search is M1g's S1g.6.6).
+
 ## What tests these modules
 
 [**`tests/stdlib/`**](../tests/README.md) — one program per rule or tight
@@ -1234,13 +1328,14 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — some seconds, and **368 of 368** on 2026-11-14 since
+them activated — some seconds, and **423 of 423** on 2026-11-14 since
 `std.math.decimal-arith`'s 116 (M1f S1f.6.3 to S1f.6.6, S1f.6.12's checks and
 S1f.6.24's call), `std.math.num9`'s 47 (S1f.6.13), `std.math.int`'s 71
-(S1f.6.7, and S1f.6.22's division) and `std.math.rat`'s 57 (S1f.6.8) joined
-the 77. *Of 368* is the command's, `find stdlib -name '*.ein' -exec cat {} +
-| grep -c '^(rule '`, which reads every depth (the calculator's modules are
-under `stdlib/math/` since S1f.6.31, and `cat stdlib/*.ein` would count 77);
+(S1f.6.7, and S1f.6.22's division), `std.math.rat`'s 57 (S1f.6.8) and
+`std.bool`'s 55 (S1f.6.17) joined the 77. *Of 423* is the command's, `find
+stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '`, which reads every
+depth (the calculator's modules are under `stdlib/math/` since S1f.6.31 and
+`std.bool`'s under `stdlib/bool/`, and `cat stdlib/*.ein` would count 77);
 *all of them* is `every_stdlib_rule_is_activated_by_a_program`'s, which fails
 the day it stops being true. `python3 utils/stdlib_census.py --check` is the same census with
 the numbers, over every corpus entry rather than the suite.
@@ -1281,6 +1376,7 @@ install-relative import could not find it.
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | school arithmetic on numbers of nine digits in one fact, `(num9 d8 … d0)`, **computed by saturation alone**, by wide rules, a premise a column: `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`, `mul9`/`product9-of`, `div9`/`quot9-of`; `(overflow REQUEST)` and no number where an answer does not fit; conversions to and from `std.math.decimal-arith`'s numbers, `to9`/`as9` and `from9`/`of9`. **Generated** by `utils/gen_num9.py`. One entry, `arith9` | S1f.6.13 |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers as a positive and a negative part, `(int P N)`, over `std.math.decimal-arith`'s natural numbers, **computed by saturation alone**: `int-simplify`/`int-simple-of`, `int-neg`/`int-neg-of`, `int-add`/`int-sum-of`, `int-sub`/`int-diff-of`, `int-mul`/`int-product-of`, `int-cmp`/`int-cmp-of`, every answer in normal form, one part `z`; every rule has one premise; integer division names its convention, `int-div-euclid`/`int-quot-euclid-of` (the remainder a natural number), `int-div-trunc`/`int-quot-trunc-of` and `int-div-floor`/`int-quot-floor-of`, since M1f S1f.6.22 ([§ `std.math.int`](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)); imported by its one entry, `(import std.math.int :symbols (int-arith))`, which brings `std.math.decimal-arith` too | M1f S1f.6.7, S1f.6.22 |
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.math.decimal-arith`'s division; a zero denominator is a division by zero, `std.math.decimal-arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int` and `std.math.decimal-arith` too | M1f S1f.6.8 |
+| `std.bool.gates`, `std.bool.props`, `std.bool.circuit`, `std.bool.inputs` | [`bool/`](bool/) | the sixteen Boolean functions of two inputs as a table and as a relation each; thirty relations known of them, derived by rules; a circuit simulated by saturation; inputs as hypotheses that each owe one value, and required values ([§ `std.bool`](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | M1f S1f.6.17 |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.math.digits`](#stdmathdigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |

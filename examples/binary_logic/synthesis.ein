@@ -3,7 +3,7 @@
 ;;; table on all eight inputs? Two do: Or and Xor.
 ;;;
 ;;; The gate's type is the hypothesis, `(kind o1 F)`, owed and functional as
-;;; an input's value is in `inputs.ein`: sixteen candidates. No input is
+;;; an input's value is in `std.bool.inputs`: sixteen candidates. No input is
 ;;; guessed. The eight inputs are written as test vectors, every value
 ;;; carries the vector it belongs to, and a state in which some vector's
 ;;; carry is not the table's is a contradiction. Fourteen of the sixteen are
@@ -20,7 +20,7 @@
 ;;; The claim was computed in Python by enumeration.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.6.
-(import gates :symbols (gate2 column-name __closed__))
+(import std.bool.gates :symbols (gate2 column-name Xor And Or))
 (import bits :symbols (fa2))
 (import std.algebra :symbols (total-owed functional))
 

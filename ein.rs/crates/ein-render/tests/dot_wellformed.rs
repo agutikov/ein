@@ -110,22 +110,27 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 
 /// The directories that hold a corpus file with a view past
 /// [`DOT_LAYOUT_BOUND`]: the calculator's modules (`stdlib/math/` since M1f
-/// S1f.6.31, and no other module of the stdlib), the programs that import
-/// them and so hold the digit tables, and three rule libraries wide enough
-/// on their own (`stdlib/math/num9.ein`'s wide rules,
-/// `examples/binary_arithmetic/five_operations.ein` and
-/// `examples/binary_logic/props_rules.ein` with the program that imports
-/// it). 663 views of 111 files on 2026-11-12, the smallest of 1 025 edges
-/// (`cargo test -p ein-render --test dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
+/// S1f.6.31), the programs that import them and so hold the digit tables,
+/// and three rule libraries wide enough on their own: `stdlib/math/num9.ein`'s
+/// wide rules, `examples/binary_arithmetic/five_operations.ein`, and
+/// `std.bool.props` (`stdlib/bool/props.ein` since M1f S1f.6.17, its
+/// `kb-since` view, which holds what its rules derive) with the programs that
+/// import it, under `tests/stdlib/bool/props/` and `examples/binary_logic/`,
+/// where two more programs pass the bound by `std.bool.gates`' table and its
+/// second layout. 876 views of 154 files on 2026-11-14, the smallest of
+/// 1 020 edges (`cargo test -p ein-render --test dot_wellformed --
+/// --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
 /// what it used to check is noticed.
-const SKIPPING: [&str; 11] = [
+const SKIPPING: [&str; 13] = [
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
     "examples/binary_logic",
     "examples/word_problems",
+    "stdlib/bool",
     "stdlib/math",
+    "tests/stdlib/bool/props",
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/digits",
     "tests/stdlib/math/int",

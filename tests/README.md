@@ -87,7 +87,8 @@ activates it and each stating what it should and should not derive. **The
 directories mirror the library**: a module `std.x` has its programs under
 `stdlib/x/`, and `std.math.x`, the calculator's, under `stdlib/math/x/` since
 M1f S1f.6.31, which moved `arith/` to `math/decimal-arith/` and `digits/`,
-`int/`, `rat/` and `num9/` under `math/` with their modules.
+`int/`, `rat/` and `num9/` under `math/` with their modules; `std.bool.x`'s
+are under `stdlib/bool/x/` since M1f S1f.6.17.
 
 **Why they exist.** Every other check in this repository is *relative*: the
 goldens compare ein.rs to its own past. The stdlib was where that gap was
@@ -110,6 +111,7 @@ alone.
 | [`stdlib/math/int/`](stdlib/math/int/) | 71 | `std.math.int`, integers as a positive and a negative part over `std.math.decimal-arith` (M1f S1f.6.7, and S1f.6.22 for division): fourteen programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; and a division by zero under each, claiming `(false)`. See [below](#stdlibmathint-a-theory-over-a-theory) |
 | [`stdlib/math/rat/`](stdlib/math/rat/) | 57 | `std.math.rat`, rational numbers in lowest terms over `std.math.int` and `std.math.decimal-arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand. See [below](#stdlibmathrat-lowest-terms-and-four-ways-to-divide-by-zero) |
 | [`stdlib/math/digits/`](stdlib/math/digits/) | — | `std.math.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
+| [`stdlib/bool/`](stdlib/bool/) | 55 | `std.bool.gates`, `.props`, `.circuit` and `.inputs`, the sixteen Boolean functions of two inputs and a circuit (M1f S1f.6.17): twelve programs, eight of them written by `utils/gen_gates.py`, each claiming relations whole; a circuit simulated and one refuted; inputs as hypotheses, a truth table and a requirement. See [below](#stdlibbool-the-sixteen-functions-by-rules-and-a-circuit) |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
 ### The obligation pairs, and the check that is not an `:expect`
@@ -443,6 +445,54 @@ with zero through.
 run, and the bank is unmoved (`python3 utils/stdlib_mutants.py --check`,
 2026-11-12). No request here is another the other way round where both would
 be answered alike, `stdlib/math/num9/`'s lesson.
+
+### `stdlib/bool/`: the sixteen functions, by rules, and a circuit
+
+M1f [S1f.6.17](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md).
+Four modules, a directory each. **Eight of the twelve programs are
+generated**, by `utils/gen_gates.py` from the sixteen columns, whose
+`--check` is in the gate: `gates/01` claims each of the sixteen relations of
+the second layout whole, and `props/01` to `07` claim every relation of
+`std.bool.props`, a family a program, each relation's whole extent computed in
+Python. A library with no refutation rule has its negative case in that
+idiom alone: a claim that names a relation closes it, so a rule that derived
+one fact too many, or one too few, fails the file. Right is held from outside
+the language too, by `ein-infer/tests/bool_theory.rs`, against each
+property's definition in Rust. A generated program's R is {∅}; the four
+written by hand state theirs.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `gates/01_a_relation_a_function.ein` | the sixteen `Zero-rows` to `One-rows`, and `gates` | a relation with a row its function does not have, or without one it has |
+| `props/01_column.ein` | `column-of` | a column read in the wrong order |
+| `props/02_between_two.ein` | `swap`, `complement`, `dual`, `left-neg`, `right-neg` | a function paired with the wrong one; a dual written as its complement, the stage file's hand count |
+| `props/03_commutative_associative_idempotent.ein` | `commutative-r`, `assoc-point`, `associative-r`, `idempotent-r` | a function associative at seven points of eight |
+| `props/04_reads_and_ignores.ein` | `reads-first-r`, `reads-second-r`, `ignores-first-r`, `ignores-second-r` | an input exchanged for the other |
+| `props/05_identity_and_absorbing.ein` | the one-sided and two-sided identity and absorbing rules, six | a side exchanged: `Andn` has a right identity and no left one |
+| `props/06_post_inside.ein` | `preserves-zero-r`, `preserves-one-r`, `monotone-r`, `affine-r`, `self-dual-r` | an order of the bits read backwards |
+| `props/07_post_outside.ein` | the five `escapes-` rules and `complete-alone-r` | a witness pair read backwards |
+| `circuit/01_propagate.ein` | `propagate`, `circuit`; `one-value` loaded and silent | a gate's inputs exchanged (`Rorn`'s are read); a gate with an input unset computing |
+| `circuit/02_one_value.ein` | `one-value`: a gate's output against a written value, `(solve :expect (false))` | two values on a wire passed over |
+| `inputs/01_in_drives.ein` | `in-drives`, `inputs`, and `std.algebra`'s `total-owed` and `functional`; `required` loaded and silent | R not the four assignments; the truth table's rows |
+| `inputs/02_required.ein` | `required`: two requirements, one assignment of four left | a requirement read the wrong way round |
+
+**The mutation sweep kills 27 of the modules' 45 mutants, and the 18 that
+survive are equivalent to their rules**, each deriving the very facts the rule
+does, so no claim made of facts can tell them apart and none is a hole
+(`python3 utils/stdlib_mutants.py`, 2026-11-14, banked in
+[`mutation_survivors.txt`](mutation_survivors.txt)):
+
+- **thirteen exchange the arguments of an `(inv …)` premise**, in `complement`,
+  `dual`, `reads-first-r`, `reads-second-r`, `escapes-affine-r` and
+  `escapes-self-dual-r`: `inv` is its own converse, `(inv 0 1) (inv 1 0)`, so the
+  premise matches the same pairs either way round;
+- **five exchange the arguments of the conclusion** of `swap`, `complement`,
+  `dual`, `left-neg` and `right-neg`: each relation is an involution, G is F's
+  swap exactly when F is G's, so the rule's matches come in mirrored pairs and
+  the conclusion written the other way round writes the same facts.
+
+Every mutant of `std.bool.circuit` and `std.bool.inputs` is killed, as is every
+one that exchanges an `le`, a one-sided relation or a value of `val`.
 
 ### Five things about how they are written
 

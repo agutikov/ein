@@ -124,7 +124,15 @@ constrained-reasoning research.
   (decimal-arith add n sum-of))`), `std.math.num9` (generated, entry
   `arith9`), `std.math.int` (`int-arith`) and `std.math.rat` (`rat-arith`); a
   module over a module names the lower one's entry in its own closing rule,
-  and lists every name of the lower one it writes.
+  and lists every name of the lower one it writes. **Boolean functions and
+  circuits are under `stdlib/bool/`**, their programs under
+  `tests/stdlib/bool/`, each module's entry its last name: `std.bool.gates`
+  (the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` whose
+  rows are generated and a relation each, `(And A B OUT)`), `std.bool.props`
+  (thirty relations known of them, derived by rules), `std.bool.circuit` and
+  `std.bool.inputs` (a circuit's inputs as hypotheses); a function's name is
+  `std.bool.gates`', as a relation and as a value, so a program that writes
+  one lists it. `std.logic` is left free for M1g.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each.
 - **`tests/`** — **the ein-lang test suites**, a third corpus root beside
@@ -366,14 +374,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `00_ebnf.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` (`utils/gen_arith_tables.py`, then
   `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
-  (`utils/gen_num9.py`);
+  (`utils/gen_num9.py`); `stdlib/bool/gates.ein`'s rows and the programs
+  under `tests/stdlib/bool/gates/` and `props/` (`utils/gen_gates.py`, then
+  `utils/stdlib_manifest.py --write`);
   three `examples/arith/` programs (`utils/gen_arith_examples.py`); the four
   zebra2 variants (`examples/gen_zebra2_variants.py`);
   `read_out_examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
   defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
   `--check` or a test in the gate. **Not in the gate, run by hand**:
   `examples/binary_arithmetic/gen_binary.py` (after any edit to
-  `stdlib/math/decimal-arith.ein`) and `examples/binary_logic/gen_gates.py`.
+  `stdlib/math/decimal-arith.ein`).
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `read_out.md` in the same

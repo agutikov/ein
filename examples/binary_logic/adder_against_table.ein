@@ -19,9 +19,10 @@
 ;;; The third claim, the table's rows, was computed in Python.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
-(import gates :symbols (gate2 __closed__))
+(import std.bool.gates :symbols (gate2))
+(import std.bool.circuit :symbols (gate))   ; the relation full_adder's gates are facts of
 (import bits :symbols (fa2))
-(import full_adder :symbols (gate))     ; `circuit`'s `gate`, which full_adder's gates are facts of
+(import full_adder)
 
 (relation at Vector Wire Bit
   :why "on test vector {?1}, {?2} carries {?3}")

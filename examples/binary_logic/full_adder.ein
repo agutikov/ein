@@ -5,13 +5,17 @@
 ;;;   sum  = (a xor b) xor cin
 ;;;   cout = (a and b) or ((a xor b) and cin)
 ;;;
-;;; A program brings the five gates with (import full_adder :symbols (gate)):
-;;; `gate` is `circuit.ein`'s, which this module imports, since its facts are
-;;; of that relation (M1f S1f.6.35: a module that states facts of another
-;;; module's relation imports it, and an import brings `circuit` whole).
+;;; A program brings the five gates with (import full_adder). `gate` is
+;;; `std.bool.circuit`'s, which this module imports, since its facts are of
+;;; that relation, and `Xor`, `And` and `Or` are `std.bool.gates`', so it
+;;; lists them (M1f S1f.6.35: a module that states facts of another module's
+;;; relation imports it, and a file lists every short name it writes from the
+;;; module that declares it). A program that writes `gate` itself lists it
+;;; from `std.bool.circuit`.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
-(import circuit :symbols (gate))
+(import std.bool.circuit :symbols (gate))
+(import std.bool.gates :symbols (Xor And Or))
 
 (gate x1 Xor a b ab)        ; a xor b
 (gate x2 Xor ab cin sum)    ; the sum bit

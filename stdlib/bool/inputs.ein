@@ -1,0 +1,90 @@
+;;; Ein stdlib — `std.bool.inputs`: a circuit's inputs as hypotheses, each
+;;; owing exactly one value, and the values a program requires (M1f P1f.6,
+;;; S1f.6.17).
+;;;
+;;; This is the one module of `std.bool` with a search in it. An input wire
+;;; has exactly one value, and which one is for the search to try:
+;;;
+;;;     (is-a WIRE Input)   written by a program: this wire is an input
+;;;     (in WIRE BIT)       a hypothesis: the input is set to the bit
+;;;     (require WIRE BIT)  written by a program: a state in which the wire
+;;;                         carries the other bit is a contradiction
+;;;
+;;; *Exactly one* is two declarations of `std.algebra` over a typed relation.
+;;; `(total-owed in is-a)` says every input owes a value, so a state with an
+;;; input unset is not an answer; `(functional in)` says none has two. The
+;;; obligation is also what proposes the candidates, through the obligations
+;;; rung of hypothesis generation: two an input, (in w 0) and (in w 1), and no
+;;; other fact is ever guessed. `in-drives` puts an input's value on its wire,
+;;; where `std.bool.circuit` carries it on.
+;;;
+;;; So R is the input assignments that contradict nothing: with no
+;;; requirement, every assignment, and a query's projection classes are a
+;;; truth table's rows; with requirements, the assignments that satisfy them,
+;;; which is satisfiability, and empty where none does. Such an R is empty
+;;; because every alive node owes an input it cannot be given, not because
+;;; every node is dead: `ein solve --single` answers `Open` (E-23 of P1f.6's
+;;; findings; question 24 of the phase, not ruled).
+;;;
+;;; **What it costs.** A node of the search is a partial assignment, each
+;;; input unset, 0 or 1: describing R over n inputs is 3^n + n saturations,
+;;; and finding one state 2^n. That is a demonstration and not a SAT solver
+;;; (the user's reply to round 2's item 25, 2026-11-12, "yes, both"): a
+;;; cheaper search for *exactly one value per object* is M1g's S1g.6.6. Where
+;;; every input is to be tried, writing the inputs as test vectors is one
+;;; saturation (`examples/binary_logic/adder_against_table.ein`).
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.bool.inputs :symbols (is-a in require))
+;;;     (import std.bool.circuit :symbols (gate))
+;;;     (import std.bool.gates :symbols (Xor And))
+;;;
+;;; An import brings the module whole, `std.bool.circuit`, `std.bool.gates`
+;;; and `std.algebra` with it (M1f S1f.6.35); a program lists the names it
+;;; writes from the module that declares each. `inputs` is the entry, the
+;;; closing rule at the end of this file: it closes `is-a` and `require`,
+;;; which are written and never guessed, names every rule, and names
+;;; `circuit`, the entry of `std.bool.circuit`. `in` is not closed: it is the
+;;; hypothesis.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; `is-a`, `in` and `require`; the rules `in-drives` and `required`;
+;;; `inputs-rule`, and the entry `inputs`; the facts `(is-a 0 Bit)`,
+;;; `(is-a 1 Bit)`, `(total-owed in is-a)` and `(functional in)`. The types
+;;; `Input` and `Bit` are values, not the module's. Everything of
+;;; `std.bool.circuit`, `std.bool.gates` and `std.algebra` comes with it.
+
+(import std.bool.circuit :symbols (circuit val))
+(import std.algebra :symbols (total-owed functional))
+
+(relation is-a Thing Type
+  :why "{?1} is a {?2}")
+(relation in Input Bit
+  :why "the input {?1} is set to {?2}")
+(relation require Wire Bit
+  :why "{?1} is required to carry {?2}")
+
+(is-a 0 Bit) (is-a 1 Bit)
+(total-owed in is-a)     ; every input owes a value: a state with an input unset is not an answer
+(functional in)          ; and none has two
+
+(rule in-drives ()
+  :match  (in ?w ?v)
+  :assert (val ?w ?v)
+  :why    "the input {?w} is set to {?v}")
+(rule required ()
+  :match  (and (require ?w ?v) (val ?w ?u) (neq ?u ?v))
+  :assert (false)
+  :why    "{?w} is required to carry {?v} and carries {?u}")
+
+;; ── The closing rule, the module's entry ────────────────────────────────────
+(relation inputs-rule Rule
+  :why "{?1} is a rule of the inputs theory")
+(inputs-rule inputs)
+(rule inputs ()
+  :match  ()
+  :assert (and (__closed__ is-a) (__closed__ require) (__closed__ inputs-rule)
+               (inputs-rule in-drives) (inputs-rule required) (inputs-rule circuit))
+  :why    "types and requirements are written, never guessed")

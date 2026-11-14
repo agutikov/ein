@@ -18,9 +18,9 @@
 ;;; Both claims were computed in Python by enumeration.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.5.
-(import require :symbols (requirements require))
-(import inputs :symbols (is-a in))
-(import circuit :symbols (gate))
+(import std.bool.inputs :symbols (inputs is-a in require))
+(import std.bool.circuit :symbols (gate))
+(import std.bool.gates :symbols (Nfst Xnor))
 
 (is-a A Input) (is-a B Input) (is-a C Input)
 (gate sa Nfst B B said-A)        ; "B is a knave": not B

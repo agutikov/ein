@@ -4,8 +4,8 @@
 ;;; A set of functions builds every function exactly when, for each of
 ;;; Post's five classes, it has a member outside that class. The classes are
 ;;; the functions that keep zero, that keep one, the monotone, the affine and
-;;; the self-dual; `props.ein` has each from inside and from outside, as
-;;; facts.
+;;; the self-dual; `std.bool.props` derives each from inside and from
+;;; outside, from the table's rows, when the program loads.
 ;;;
 ;;;   and-or          And, Or          no: both are monotone, and keep 0 and 1
 ;;;   and-or-not      And, Or, Nfst    yes
@@ -31,8 +31,10 @@
 ;;; Search-free: every relation is closed, one saturation.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 2.
-(import props :symbols (escapes-zero escapes-one escapes-monotone escapes-affine escapes-self-dual
-                        preserves-zero preserves-one monotone affine self-dual __closed__))
+(import std.bool.props :symbols (escapes-zero escapes-one escapes-monotone escapes-affine
+                                 escapes-self-dual preserves-zero preserves-one monotone affine
+                                 self-dual))
+(import std.bool.gates :symbols (And Or Nfst Rorn Zero Xor One Xnor Nand Nor))
 (import std.macro :symbols (forall))
 
 (relation member Set Function

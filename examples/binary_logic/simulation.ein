@@ -7,8 +7,8 @@
 ;;;   ein solve examples/binary_logic/simulation.ein
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.1.
-(import circuit :symbols (circuit val))
-(import full_adder :symbols (gate))
+(import std.bool.circuit :symbols (circuit val))
+(import full_adder)
 
 (val a 1) (val b 1) (val cin 0)
 

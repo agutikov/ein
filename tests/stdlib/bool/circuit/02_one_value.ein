@@ -1,0 +1,23 @@
+;;; `std.bool.circuit` — `one-value`: a wire that carries both bits is a
+;;; contradiction. M1f S1f.6.17.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `val` is a function of the wire: a state in which one wire carries 0 and 1
+;;; is dead. Here `g1` puts a and b's conjunction, 1, on `c`, and the program
+;;; writes that `c` carries 0. The other half, `one-value` loaded and silent,
+;;; is `01_propagate.ein`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Root is dead, and there is no candidate to try: every node is dead,
+;;; `(false)`. Its core is the gate, the table's row, the three values and
+;;; `one-value`.
+
+(import std.bool.circuit :symbols (circuit gate val))
+(import std.bool.gates :symbols (And))
+
+(gate g1 And a b c)
+(val a 1) (val b 1) (val c 0)
+
+(solve :expect (false))

@@ -1,0 +1,38 @@
+;;; `std.bool.inputs` — `required`: a required value makes a satisfiability
+;;; question. M1f S1f.6.17.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(require WIRE BIT)` makes a state in which the wire carries the other
+;;; bit dead. With the inputs as hypotheses, R is then the assignments under
+;;; which every requirement holds: the satisfying ones. Here `c`, a and not
+;;; b, is required to be 1 and `d`, a xor b, to be 1: one assignment of the
+;;; four, a = 1 and b = 0. The other three are dead by `required`, each on
+;;; `c`. The other half, `required` loaded and silent, is `01_in_drives.ein`.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   a b | c = a and not b | d = a xor b
+;;;   0 0 | 0               | 0
+;;;   0 1 | 0               | 1
+;;;   1 0 | 1               | 1    the one that satisfies both
+;;;   1 1 | 0               | 0
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The region claim is R, one state; the query's claim is its inputs.
+
+(import std.bool.inputs :symbols (inputs is-a in require))
+(import std.bool.circuit :symbols (gate))
+(import std.bool.gates :symbols (Andn Xor))
+
+(is-a a Input) (is-a b Input)
+(gate g1 Andn a b c)
+(gate g2 Xor a b d)
+(require c 1) (require d 1)
+
+(solve :expect (region (model (in a 1) (in b 0))))
+
+(query :goal (and (in a ?a) (in b ?b))
+       :goal-text "a = {?a}, b = {?b}"
+       :expect (model (in a 1) (in b 0)))

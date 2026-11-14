@@ -6,8 +6,9 @@
 ;;;   b xor a  is  a xor b        (commutative Xor): two gates over the same
 ;;;                               wires in either order are one gate
 ;;;
-;;; The properties are the generated facts of `props.ein`, three relations
-;;; of its thirty, imported flat. On the six gates below the rules derive
+;;; The properties are `std.bool.props`', three relations of its thirty,
+;;; derived from the table's rows when the program loads (some four hundred
+;;; firings, every one at root). On the six gates below the rules derive
 ;;; that p is x, that q is the constant 1, and that g3 and g4 are one gate.
 ;;; The two Andn gates, a and not b and b and not a, are not merged, rightly:
 ;;; Andn is not commutative, and no rule said so by name.
@@ -20,7 +21,8 @@
 ;;; functions' columns.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 6.
-(import props :symbols (identity-of absorbing-of commutative __closed__))
+(import std.bool.props :symbols (identity-of absorbing-of commutative))
+(import std.bool.gates :symbols (And Or Xor Andn))
 
 (relation gate Instance Function Wire Wire Wire
   :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")

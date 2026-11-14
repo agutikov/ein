@@ -1,0 +1,61 @@
+;;; Ein stdlib — `std.bool.circuit`: a circuit as a program, simulated by
+;;; saturation (M1f P1f.6, S1f.6.17).
+;;;
+;;; Wires are names, a gate is a fact, and one rule carries values from a
+;;; gate's inputs to its output, looking its function up in the table of
+;;; `std.bool.gates`. Saturation is then simulation, search-free, like the
+;;; calculator: a firing a gate, and nothing guessed.
+;;;
+;;;     (gate INSTANCE FUNCTION IN1 IN2 OUT)   a gate of the circuit, written by
+;;;                                            a program; FUNCTION is one of the
+;;;                                            sixteen of `std.bool.gates`
+;;;     (val WIRE BIT)                         the wire carries the bit
+;;;
+;;; `propagate` fires once for a gate whose two inputs carry a value. A wire
+;;; that carries both bits is a contradiction, `one-value`. A gate whose input
+;;; carries no value computes nothing, and its output carries none.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.bool.circuit :symbols (gate val))
+;;;     (import std.bool.gates :symbols (Xor And))
+;;;
+;;; An import brings the module whole, `std.bool.gates` with it (M1f
+;;; S1f.6.35); a program lists the names it writes from the module that
+;;; declares each, and a function's name, written as a gate's FUNCTION, is
+;;; `std.bool.gates`'s (that module's header says why it must be listed).
+;;; `circuit` is the entry, the closing rule at the end of this file: gates
+;;; are written and values derived, never guessed, so it closes `gate` and
+;;; `val`, names every rule, and names `gates`, the entry of
+;;; `std.bool.gates`. Inputs as hypotheses are `std.bool.inputs`.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; `gate` and `val`; the rules `propagate` and `one-value`; `circuit-rule`,
+;;; and the entry `circuit`. Everything of `std.bool.gates` comes with it.
+
+(import std.bool.gates :symbols (gates gate2))
+
+(relation gate Instance Function Wire Wire Wire
+  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
+(relation val Wire Bit
+  :why "{?1} carries {?2}")
+
+(rule propagate ()
+  :match  (and (gate ?g ?f ?a ?b ?o) (val ?a ?x) (val ?b ?y) (gate2 ?f ?x ?y ?z))
+  :assert (val ?o ?z)
+  :why    "{?g}: {?f} of {?x} and {?y} is {?z}, on {?o}")
+(rule one-value ()
+  :match  (and (val ?w ?x) (val ?w ?y) (neq ?x ?y))
+  :assert (false)
+  :why    "the wire {?w} carries both {?x} and {?y}")
+
+;; ── The closing rule, the module's entry ────────────────────────────────────
+(relation circuit-rule Rule
+  :why "{?1} is a rule of the circuit theory")
+(circuit-rule circuit)
+(rule circuit ()
+  :match  ()
+  :assert (and (__closed__ gate) (__closed__ val) (__closed__ circuit-rule)
+               (circuit-rule propagate) (circuit-rule one-value) (circuit-rule gates))
+  :why    "a circuit is simulated and never guessed: every relation of the theory is closed")

@@ -1,0 +1,40 @@
+;;; `std.bool.circuit` — `propagate`: a circuit simulated by saturation. M1f
+;;; S1f.6.17.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A gate whose two inputs carry a value puts its function of them on its
+;;; output, looked up in `std.bool.gates`' table; a gate one of whose inputs
+;;; carries nothing computes nothing. Nothing is guessed. `one-value` is
+;;; loaded here and silent, no wire carrying two values: its other half is
+;;; `02_one_value.ein`.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   a = 1, b = 0
+;;;   g1  Nand a b -> c   not (1 and 0)   = 1
+;;;   g2  Xor  c a -> d   1 xor 1         = 0
+;;;   g3  Rorn c d -> e   not 1 or 0      = 0    (Rorn d c would be 1: the
+;;;                                               order of the inputs is read)
+;;;   g4  And  e x -> y   x carries nothing, so y carries nothing
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `val`'s whole extent: a claim that names a relation closes it, so a value
+;;; on `x` or `y`, or a second value on any wire, refutes it. R is {∅}: `gate`
+;;; and `val` are closed, and there is no candidate.
+
+(import std.bool.circuit :symbols (circuit gate val))
+(import std.bool.gates :symbols (Nand Xor Rorn And))
+
+(gate g1 Nand a b c)
+(gate g2 Xor c a d)
+(gate g3 Rorn c d e)
+(gate g4 And e x y)
+(val a 1) (val b 0)
+
+(solve :expect (region (model)))
+
+(query :goal (val ?w ?v)
+       :goal-text "{?w} carries {?v}"
+       :expect (model (val a 1) (val b 0) (val c 1) (val d 0) (val e 0)))

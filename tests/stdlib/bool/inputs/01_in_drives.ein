@@ -1,0 +1,47 @@
+;;; `std.bool.inputs` — inputs as hypotheses: `in-drives`, an input's one
+;;; value, and a truth table read off R. M1f S1f.6.17.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An input owes exactly one value. `(total-owed in is-a)` proposes the
+;;; candidates, two an input, and makes a state with an input unset owe;
+;;; `(functional in)` kills a state with an input set twice. `in-drives` puts
+;;; an input's value on its wire, and `std.bool.circuit` carries it on. So R
+;;; is every assignment of the inputs, and a query over the inputs and an
+;;; output has a class a row of the truth table. `required` is loaded here
+;;; and silent, nothing being required: its other half is `02_required.ein`.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   g1  Andn a b -> c   a and not b
+;;;
+;;;   a b | c
+;;;   0 0 | 0
+;;;   0 1 | 0
+;;;   1 0 | 1
+;;;   1 1 | 0
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The region claim is R: the four assignments, each a state, and no state
+;;; with an input unset, which owes. The query's claim is the table, a class
+;;; a row; `Andn` is not commutative, so the rows tell the inputs apart.
+
+(import std.bool.inputs :symbols (inputs is-a in))
+(import std.bool.circuit :symbols (gate val))
+(import std.bool.gates :symbols (Andn))
+
+(is-a a Input) (is-a b Input)
+(gate g1 Andn a b c)
+
+(solve :expect (region (model (in a 0) (in b 0))
+                       (model (in a 0) (in b 1))
+                       (model (in a 1) (in b 0))
+                       (model (in a 1) (in b 1))))
+
+(query :goal (and (in a ?a) (in b ?b) (val c ?c))
+       :goal-text "a = {?a}, b = {?b}: c = {?c}"
+       :expect (or (model (in a 0) (in b 0) (val c 0))
+                   (model (in a 0) (in b 1) (val c 0))
+                   (model (in a 1) (in b 0) (val c 1))
+                   (model (in a 1) (in b 1) (val c 0))))
