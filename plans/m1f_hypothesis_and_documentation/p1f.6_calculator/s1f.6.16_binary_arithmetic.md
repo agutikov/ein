@@ -13,7 +13,9 @@ stdlib layout. **Its trial, T1f.6.16.5, done 2026-11-14, and the build stopped f
 can be written with parameters and do the shipped rules' work to the count, but take 3 to 5 % more saturation
 and 1 to 4 ms more load, and decimal's states change in more than rule names
 ([§ Record, 2026-11-14](#record-2026-11-14-t1f6165-the-trial-and-the-stop)). Nothing built; the question is
-[there](#the-question-for-the-user).
+[there](#the-question-for-the-user). **The user ruled (a) the same day, the design first: shown in
+[§ The design](#the-design-after-the-users-ruling-of-2026-11-14)** (one call of a macro connects a base; the base's
+own module is the file that combines; the build waits for the user's word).
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
@@ -430,3 +432,205 @@ answered against; (c) is (a) with an engine stage in front, whose gain is not kn
 
 **Meanwhile:** nothing of the build runs. S1f.6.17's T1f.6.17.7, the full adder against `std.math.bits`' table,
 waits with it.
+
+### The design, after the user's ruling of 2026-11-14
+
+The user, 2026-11-14, on [§ The question for the user](#the-question-for-the-user):
+
+> (a), show me the design first, if they can't be connected with single hand written fact, if it require ~100
+> facts for that - then you need a separate file that combines theories, that import two of them, does the
+> combination job and can then be included by end user
+
+**Status:** designed on a prototype under `build/s1f.6.16/design/` (2026-11-14) and shown; nothing under
+`stdlib/`, `tests/`, `examples/` or `ein.rs/` moved. T1f.6.16.6 to .11 wait for the user's word on the design.
+Every number below is the release binary at `24a7fb34` (sha256 `f9f9774c5c9ee47a…`).
+
+#### 1. One hand-written form connects a base: yes
+
+**What the engine has.** A rule with parameters fires for a fact headed by its own name, one plan a fact
+([`01_grammar.md` § Rules](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)), so 78 rules take 78 activators,
+and nothing lets one fact activate several rules. Not available: one activator relation for all 78 (two rules of
+one name are refused, *conflicting definitions*); a macro's call written as a fact (refused at load since
+S1f.7.12, [`defined_behaviour.md` § 4.24](../../../docs/kernel/defined_behaviour.md#424-a-macros-call-is-no-fact--m1f-s1f712));
+the base's names held in a fact of a declared relation that a rule reads (S1f.5.18 refuses it: an argument of a
+declared relation may hold a fact). **What does work is to derive the 78 activators from one form at root**:
+activation reads a derived activator as a written one, and the activated rules compile when it appears, as
+`std.algebra`'s lemmas' do. Two ways, each tried on the trial's stdlib (`python3
+build/s1f.6.16/trial/mk_variants.py`):
+
+- **(ii) a fan-out rule, one fact.** `std.math.positional` holds `(rule positional (?OPERAND ?OPERAND-IS ?N
+  ?CHECK … 63 parameters) :match () :assert (and (operand-zero ?OPERAND ?OPERAND-IS) (operand-number ?OPERAND
+  ?N ?OPERAND-IS ?CHECK) … 78 activators))`, and a base writes **one fact**, `(positional operand operand-is n
+  check let named add-walk fa b strip turn nz done add … undeclared)`, its 63 relations in the parameters' order.
+- **(iii) a macro, one call.** `std.math.positional` holds `(macro positional (… the same 63 …) (and … the same
+  78 …))`, and a base writes one rule whose whole conclusion is **one call**: `(rule decimal-arith-positional ()
+  :match () :assert (positional operand operand-is n check … undeclared))`.
+
+Measured beside the trial's 78 written activators, (i) (parse, load and compile of one sum, 41 interleaved
+rounds; saturation, 15; `utils/bench_env.sh --core 2 python3 build/s1f.6.16/trial/lt_time.py`; the machine was
+busier than for the trial, the shipped 4 000 sums taking 288 ms where 268, and the order of the four was the same
+in a second run of 21 rounds):
+
+| | firings | depth | load + compile, one sum | saturation, 4 000 sums | saturation, 250 products |
+|---|---:|---:|---:|---:|---:|
+| shipped | as shipped | as shipped | 23.49 ms | 288.16 ms | 199.58 ms |
+| (i) 78 activators a base | the same | the same | 25.66 ms | 297.80 ms, +3.3 % | 207.16 ms, +3.8 % |
+| (ii) one fact, a fan-out rule | +1 | the same | 25.95 ms | 314.82 ms, +9.3 % | 215.34 ms, +7.9 % |
+| (iii) one call of a macro | +1 | the same | 25.62 ms | 299.30 ms, +3.9 % | 207.48 ms, +4.0 % |
+
+The firings and depths are the page's seven targets' (one more each under (ii) and (iii): 32 / 21 for 123078 +
+4567 where 31 / 21). Why (ii) costs twice what (iii) does at the same firings is not attributed (E-61's
+neighbour).
+
+**What each reads,** under (ii) and (iii) alike (`compare.py --solve` with `TRIAL_DIR` on each, 2026-11-14):
+every read-out of the 143 programs is the shipped one but for rule names; root's state on the 124 that import
+decimal trades the 78 `(arith-rule R)` facts for the 78 activators, derived now, as under (i), and under (ii)
+holds the one fact too. A trace has one step more, the first, `std.math.positional.positional` (ii) or
+`decimal-arith-positional` (iii), deriving the 78 activators, and is the trial's after it. The unsat core and
+`refuted by` are the trial's: the request, `std.math.positional.malformed-is-false`,
+`std.math.decimal-arith.division-by-zero-is-false`. S1f.5.18's check loads both. The closing rule's list names the
+base's own rules and the connecting rule and not positional's 78, as under (i) (E-55).
+
+**(iii)'s call is a rule's whole conclusion, and not one of the closing rule's,** because of
+[E-63](findings.md): a conclusion that is an `and` inside an `and`, which the grammar writes `Conclusion ::= '('
+'and' Conclusions ')'`, is stored as one fact headed `and`, so the call there stored `(and (operand-zero …) …)`
+and activated nothing, in silence. A wrong answer of the engine (below); once fixed, the call can stand in the
+closing rule, and (iii) costs no firing at all.
+
+**Proposed: (iii).** One hand-written form a base, at the cost the user took with (a); (ii) is the literal one
+fact, at twice the saturation cost. [Q-M1f.266](../open_questions.md#q-m1f266--how-a-base-is-connected-to-the-shared-rules).
+
+#### 2. The modules: the base's own module is the file that combines
+
+Since one form connects a base, no file of some hundred facts exists, and the file the ruling asks for, *that
+imports the two, does the combination and is what an end user includes*, is the base's module itself:
+`std.math.decimal-arith` imports the shared rules and the tables, declares the base's relations, holds the base's
+own rules and the connecting call, and is what a program imports, as today. **A separate combining file would buy
+nothing and cost a list**: it would write the base's 63 relation names, which under S1f.6.35 a file other than the
+declaring one lists by short name in its import, and the base's relations are of no use without the shared
+rules (Q-M1f.266).
+
+| module | file | imports | holds | entry, closing rule |
+|---|---|---|---|---|
+| `std.math.positional` | `stdlib/math/positional.ein` | nothing | the 78 shared rules, every relation a parameter in capitals (a lower-case one interns a bare name the harnesses read first); the macro `positional`, 63 parameters, whose body activates each rule once | the macro is its entry; no closing rule, since it declares no relation |
+| `std.math.digits` | `stdlib/math/digits.ein` | nothing | as today: 7 tables, 1 664 rows, generated | none, facts |
+| `std.math.bits` | `stdlib/math/bits.ein` | nothing | `bin-fa` 8, `bin-fs` 8, `bin-cl` 12, `bin-nz` 1: 29 rows, generated, with a `--check` in the gate through a cargo test | none, facts |
+| `std.math.decimal-arith` | `stdlib/math/decimal-arith.ein` | `std.math.digits :symbols (fa fs md cl nz mid adj)`, `std.math.positional :symbols (positional)` | decimal's 74 relations, as today, every full name kept; its 37 own rules (the digit multiplier, the division of base ten, the two checks that list the digits, `division-by-zero-is-false`); the rule `decimal-arith-positional`, the call; `(arith-rule decimal-arith)` | `decimal-arith`: closes every relation and table as today, names its own 38 rules |
+| `std.math.binary-arith` | `stdlib/math/binary-arith.ein` | `std.math.bits :symbols (bin-fa bin-fs bin-cl bin-nz)`, `std.math.positional :symbols (positional)` | binary's 61 relations, `b2` and every other name `bin-`; its 16 own rules (multiplication by a bit, division by one subtraction a bit, the divisor in normal form, its two checks, its `bin-division-by-zero-is-false`); `binary-arith-positional`, the call | `binary-arith`: closes its relations and the four tables, names its 17 own rules |
+| `std.math.convert` | `stdlib/math/convert.ein` | `std.math.decimal-arith :symbols (n div-call div-done add-walk done)`, `std.math.binary-arith :symbols (bin-b bin-strip bin-done bin-top-first bin-top-first-is)` | `(to-bin X)` answered by `(bin-of X B)`, `(to-dec B)` by `(dec-of B X)`; 11 relations, 11 rules, `examples/binary_arithmetic/conv.ein`'s under the `bin-` names | `convert` |
+| `std.math.int`, `.rat`, `.num9` | as today | `std.math.decimal-arith` as today | unchanged: every name they list, the tagged calls and `division-by-zero-is-false`, is still `std.math.decimal-arith`'s, under the same full name | as today |
+
+A program that imports a base brings `std.math.positional` with it (an import brings its module's imports, one
+copy a program), and one that imports both brings one copy, its rules activated once a base.
+
+#### 3. What an end user writes
+
+Each a real program under `build/s1f.6.16/design/p/`, run on the prototype's stdlib (`EIN_STDLIB=build/s1f.6.16/design/stdlib
+ein test` and `ein solve`, 2026-11-14): each claim held, no candidate, one state, R {∅}, *monotone (the static
+check)*. Under S1f.6.35, a file lists the short names it writes, and what it does not write prints by its full
+name.
+
+**Decimal only,** what a program writes today, unchanged:
+
+```lisp
+(import std.math.decimal-arith :symbols (decimal-arith n add div sum-of quot-of))
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))     ; 123078 + 4567
+(div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))                 ; 127645 / 25
+```
+
+`?s = 127645`, `?q = 5105`, `?r = 20` (each as `(n …)`); 261 firings; 117 rules and 1 836 facts at load.
+
+**Binary only,** and nothing of decimal loaded:
+
+```lisp
+(import std.math.binary-arith :symbols (binary-arith b2 bin-add bin-mul bin-sum-of bin-product-of))
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))     ; 101 + 111
+(bin-mul (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))     ; 101 x 111
+```
+
+`(bin-sum-of … (b2 (b2 (b2 (b2 z 1) 1) 0) 0))`, 1100, and `(bin-product-of … (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1)
+1))`, 100011; 81 firings. **It holds no decimal table row**: its `ein saturate --dump` writes no fact and no name
+of `std.math.digits` or `std.math.decimal-arith` (`grep -c 'decimal-arith\|std\.math\.digits'`: 0); 96 rules and
+166 facts at load, where the decimal program has 117 and 1 836.
+
+**Both bases in one program,** each imported whole; they share `z` and the digits `0` and `1`, and no name else:
+
+```lisp
+(import std.math.decimal-arith :symbols (decimal-arith n add sum-of))
+(import std.math.binary-arith :symbols (binary-arith b2 bin-add bin-sum-of))
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
+```
+
+127645 and 1100; 56 firings.
+
+**A conversion each way:**
+
+```lisp
+(import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))
+(import std.math.decimal-arith :symbols (n))
+(import std.math.binary-arith :symbols (b2))
+(to-bin (n (n (n z 2) 5) 5))                                               ; 255
+(to-dec (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 1) 0) 0) 0))   ; 1111101000
+```
+
+`(bin-of 255 11111111)` and `(dec-of 1111101000 1000)`, each number in its base's shape; 931 firings.
+
+#### 4. The round-2 question under this design
+
+> So we potentially can import std.math.rat and std.math.binary-arith and then connect them with single fact?
+
+**The mechanism, yes; today's `std.math.int` and `std.math.rat`, no.** Their rules name decimal's relations:
+`std.math.int` lists twelve of them, `n`, `operand`, `operand-is`, `add-walk`, `sub-walk`, `cmp-walk`,
+`mul-call`, `div-call`, `done`, `order-is`, `div-done` and `division-by-zero`, and `std.math.rat` those and
+`std.math.int`'s. Written as `std.math.positional` is, every such relation a parameter and a macro of the twelve,
+a program, or a file `std.math.rat-binary` as `std.math.binary-arith` is binary's, would connect rationals to
+binary with one call, `(rat-over b2 bin-operand bin-operand-is bin-add-walk …)`, at the few per cent measured
+here. That is [S1g.10.7](../../m1g_logic/p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md)'s,
+not built here.
+
+#### 5. The open choices, each with a proposed default
+
+Filed defaulted, the user's to revise:
+
+- [Q-M1f.266](../open_questions.md#q-m1f266--how-a-base-is-connected-to-the-shared-rules): how a base is
+  connected, **(iii) one call of a macro, in the base's own module**; or (ii) one fact; or (i) 78 facts; or a
+  separate combining file.
+- [Q-M1f.267](../open_questions.md#q-m1f267--the-binary-theorys-names): the binary theory's names, **`b2` kept,
+  every other name `bin-`, the tables `bin-fa`, `bin-fs`, `bin-cl`, `bin-nz`; the conversions `to-bin`, `bin-of`,
+  `to-dec`, `dec-of`**.
+- [Q-M1f.268](../open_questions.md#q-m1f268--how-far-binary-flags-a-malformed-request): how far binary flags a
+  malformed request, **as far as decimal**: the shared check and two rules of its own over `0` and `1`.
+- [Q-M1f.269](../open_questions.md#q-m1f269--division-by-zero-is-false-stays-decimals): `division-by-zero-is-false`
+  **stays decimal's**, since `std.math.num9`'s closing rule names it; binary has its own.
+- [Q-M1f.270](../open_questions.md#q-m1f270--the-connecting-macros-body-written-or-generated): the macro's body
+  **written by hand** in `std.math.positional` and held by a test that it activates each rule of the module once,
+  with that rule's parameters.
+
+#### 6. What the build then does, T1f.6.16.6 to .11
+
+On the defaults, after the user's word on this design:
+
+1. **T6, `std.math.bits`:** generated with its `--check` in the gate through a cargo test, as `std.math.digits` is,
+   every row held to Rust's integers.
+2. **`std.math.positional` and decimal re-cut** (the first half of T7): the 78 rules move out of
+   `std.math.decimal-arith` as the trial wrote them, the macro beside them, `decimal-arith-positional` in their
+   place; `arith_theory.rs`'s static tests read both files (the rule of the theory with a parameter as a head;
+   the closing rule names the module's own rules, and a new test holds the macro's body), `the_tagged_calls_keep_their_shapes`
+   unchanged in what it holds. Goldens named before blessing: every program that imports decimal moves in its
+   rule names and its 78 facts traded; no claim and no exit moves (the trial's sweep says which 124).
+3. **T7, `std.math.binary-arith`:** the 61 relations, the 16 own rules, the call; division by zero and the
+   check as decimal's.
+4. **T8, `std.math.convert`**, as above.
+5. **T9, the tests:** binary's rows of `OPS` against Rust's integers, binary in `arith_search_free.rs`, a program
+   a rule under `tests/stdlib/math/` (positional's rules activated by both bases' programs), a program that
+   imports both and one that converts, the census and the mutants, the batch by hand on both bases.
+6. **T10, the examples:** `examples/binary_arithmetic/` imports `std.math.*`; `bits.ein`, `bin.ein`, `conv.ein`
+   and `gen_binary.py` retired; `examples/binary_logic/bits.ein` goes with S1f.6.17's build, which is moving that
+   directory now.
+7. **T11, the pages:** `binary_arithmetic.md`'s closing section, a `stdlib/README.md` section a module, and
+   `AGENTS.md`'s calculator lines.
+
+**E-63 first**, a wrong answer: its register row, witness and corpus entry in a commit of their own before any
+fix (`build/s1f.6.16/design/and_in_and.ein` is the witness); the build needs no fix of it under (iii) as
+designed, and needs one to put the call in the closing rule.

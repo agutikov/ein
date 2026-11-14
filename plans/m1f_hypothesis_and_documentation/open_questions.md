@@ -268,6 +268,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.253](#q-m1f253--how-a-name-prints-under-as) | how a name prints under `:as` | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: the main file's alias spelling, `a.sum-of`, as today; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.261](#q-m1f261--the-decimal-theorys-module-name-after-the-user-wrote-stdmatharith-in-passing) | the decimal theory's module name, after the user wrote `std.math.arith` in passing | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: `std.math.decimal-arith`, entry `decimal-arith`, as replies 16 and 52 and round 2's confirmed layout name it; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-replies-re-read) |
 | [Q-M1f.262](#q-m1f262--a-records-link-to-a-file-the-layout-moved) | a record's link to a file the layout moved | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: the link's target re-pointed, its text and the record's prose as they were; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#t1f6314--testsstdlib-follows-moved) |
+| [Q-M1f.266](#q-m1f266--how-a-base-is-connected-to-the-shared-rules) | how a base is connected to the shared rules of `std.math.positional` | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (iii), one call of a macro, a rule of the base's own module; the base's module is the file that combines; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.267](#q-m1f267--the-binary-theorys-names) | the binary theory's names | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: `b2` kept; every other name `bin-`, the tables `bin-fa`, `bin-fs`, `bin-cl`, `bin-nz` among them; the conversions `to-bin`, `bin-of`, `to-dec`, `dec-of`; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.268](#q-m1f268--how-far-binary-flags-a-malformed-request) | how far binary flags a malformed request | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: as far as decimal: the shared check and two rules of binary's own over `0` and `1`; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.269](#q-m1f269--division-by-zero-is-false-stays-decimals) | `division-by-zero-is-false` stays decimal's | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (a), it stays `std.math.decimal-arith`'s, which `std.math.num9` names; binary has its own; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.270](#q-m1f270--the-connecting-macros-body-written-or-generated) | the connecting macro's body, written or generated | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (a), written by hand in `std.math.positional` and held by a test; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -5182,3 +5187,79 @@ test directory the stage moved (`s1f.6.7`, `.8`, `.13`, `.16`, `.24`, `word_prob
 - **(c) Rewrite the records to the new names.**
 
 **Defaulted 2026-11-14: (a), the user's to revise.** The phase README's note maps every old name to the new.
+
+### Q-M1f.266 — How a base is connected to the shared rules
+
+**Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14), on the user's ruling of that day: *"(a), show me the design
+first, if they can't be connected with single hand written fact, if it require ~100 facts for that - then you need
+a separate file that combines theories"*. A rule with parameters fires for a fact of its own name, so the 78 shared
+rules take 78 activators; one hand-written form can derive them at root. Measured on the prototype (the stage's
+record): the same work by every count but one firing; saturation over the shipped theory +3.3 to +3.8 % for (i),
++7.9 to +9.3 % for (ii), +3.9 to +4.0 % for (iii).
+
+- **(i) 78 activator facts a base,** the trial's.
+- **(ii) one fact a base,** `(positional operand operand-is n …)`, 63 names in the order of a fan-out rule's
+  parameters, which derives the 78.
+- **(iii) one call a base,** `(rule decimal-arith-positional () :match () :assert (positional operand …))`, a macro
+  of `std.math.positional` whose body is the 78. A rule of its own until [E-63](p1f.6_calculator/findings.md) is
+  fixed, and then the call can stand in the closing rule, with no firing.
+
+And where the connection is written: **in the base's own module**, which imports the shared rules and the tables
+and is what a program imports, so the base's module is the file that combines; or **in a separate combining file**
+over a module of the base's relations and rules, which would list the base's 63 names in its import (S1f.6.35).
+
+**Defaulted 2026-11-14: (iii), in the base's own module, the user's to revise.** One hand-written form, at the cost
+the user took with (a); (ii) is the literal one fact at twice the saturation cost; a separate file buys nothing,
+since nothing uses the base's relations without the shared rules.
+
+### Q-M1f.267 — The binary theory's names
+
+**Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). Reply 14 took a word prefix, `bin-add` answered by
+`bin-sum-of`; the plan kept the shape `b2` by default and filed the question for the build.
+
+- **(a) `b2` kept; every other name `bin-`**: the requests and results, the internal relations and tags, binary's own
+  rules and its connecting rule, its entry `binary-arith`, and the tables of `std.math.bits`, `bin-fa`, `bin-fs`,
+  `bin-cl` and `bin-nz`; the conversions `to-bin`, `bin-of`, `to-dec` and `dec-of`, as banked.
+- **(b) The shape `bin` too**, so that no name ends in a digit.
+- **(c) The tables unprefixed**, `fa`, `fs`, `cl`, `nz` in `std.math.bits`: their full names already differ from
+  `std.math.digits`' (S1f.6.35), and a file lists one or the other.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** As `std.math.int` prefixes every name with `int-`.
+
+### Q-M1f.268 — How far binary flags a malformed request
+
+**Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). The plan's T1f.6.16.7 says *"the detection of malformed
+numbers as far as the shared rules bring it, and the page saying what stays silent"*. The shared rules bring all of
+S1f.6.12's check but the two rules that list the digits, `check-digit` and `operand-undeclared`.
+
+- **(a) As far as decimal**: binary writes those two over `0` and `1`, so a bit's place holding anything else and an
+  undeclared name are flagged, and binary is silent where decimal is.
+- **(b) The shared rules alone**: `(b2 z 7)` and a name no `bin-let` states are answered by silence, and the page
+  says so.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** Two rules, measured on the prototype: 234 sampled requests
+right, each answered once.
+
+### Q-M1f.269 — `division-by-zero-is-false` stays decimal's
+
+**Raised** 2026-11-14 by [S1f.6.16's trial](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#record-2026-11-14-t1f6165-the-trial-and-the-stop).
+`std.math.num9`'s closing rule names the rule, `(num9-rule division-by-zero-is-false)`, and a rule's name written as
+an argument makes every parameterised conclusion of its arity a possible activator (S1f.5.18, E-55), so a shared,
+parameterised one refuses `std.math.num9`.
+
+- **(a) It stays `std.math.decimal-arith`'s**, and binary has `bin-division-by-zero-is-false`.
+- **(b) It is shared**, and `std.math.num9`'s closing rule stops naming it: its states lose one fact.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** One rule of one premise, and `std.math.num9` untouched.
+
+### Q-M1f.270 — The connecting macro's body, written or generated
+
+**Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). The macro `positional` activates each of the module's 78 rules
+once with that rule's parameters, so its body repeats every rule's parameter list.
+
+- **(a) Written by hand**, beside the rules it activates, and held by a test that every rule is activated once, with
+  its parameters in their order.
+- **(b) Generated** from the module's rules by a script with a `--check` in the gate.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** The module stays a file a reader can follow, as the plan's
+reply 16 wanted of `std.math.decimal-arith`; the test fails on the drift a generator would prevent.
