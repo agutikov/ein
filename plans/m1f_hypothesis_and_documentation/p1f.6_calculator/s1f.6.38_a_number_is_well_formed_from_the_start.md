@@ -663,3 +663,22 @@ dead either way, a rule's premise variables exchanged, `numeral-prefix-named`'s 
 No binary numeral, no `std.math.binary`, no `std.math.positional`: S1f.6.16's build. `bin.ein` stays the example it
 was, with `z` listed from `std.math.arith`. E2 (a constructor's domain checked at load), a numeral a rule assembles
 from a variable, `(n end 1)` and another type in int and rat stay silent, as ruled.
+
+### The gate and the nightly, 2026-11-14 to -15
+
+Run once over the batch since the gate on `27197ea3` (S1f.6.36, S1f.6.31, S1f.6.17's build, S1f.6.37 and this
+stage), on `723dfd6e`, both in the runner's image, `utils/ci_container.sh` (Ubuntu 26.04.1, amd64v3, Graphviz
+14.1.2, rustc 1.97.1), which is part of done here since a DOT writer moved (S1f.6.37's `rules.rs`, this stage's KB
+views):
+
+- **The gate**, `./run_tests.sh`: exit 0, 99 min 23 s; its link check over 562 pages with no finding
+  (`build/gate-batch3/ci_container.log`).
+- **The nightly**, `utils/ci_container.sh --nightly`: exit 0, 78 min 42 s; the mutation census 461 of 572 killed,
+  the banked survivors (`build/gate-batch3/nightly.log`).
+
+Both took longer than gate #2's (57 and 42 min), and the cause is the machine: **the laptop ran on battery** (the
+user, 2026-11-15). From 38 min into the gate every binary took 2.1 to 2.9 times gate #2's, small ones included,
+where before it the ratios were 0.93 to 1.5; per program the engine is unchanged, four commits from `27197ea3` to
+`723dfd6e` agreeing within ±2 % under `ein solve` and `ein oracle` in release and at the dev profile
+(`build/ab/`). What the gate's time is made of, and the stage that answers the user's *"the total testing time is
+insane"*, is [S1f.6.39](s1f.6.39_the_gate_made_fast.md).
