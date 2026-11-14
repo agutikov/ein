@@ -1,0 +1,47 @@
+;;; `std.math.rat` — multiplication: the numerators' product over the
+;;; denominators'. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(rat-mul X Y)` is answered by `(rat-product-of X Y S)`, S in lowest
+;;; terms.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; The operands (`rat-mul-ask`, `rat-mul-start`). The numerators are
+;;; multiplied by `std.math.int`, which hands over an integer in normal form
+;;; (`rat-mul-numerator`); the denominators by `std.math.decimal-arith`
+;;; (`rat-mul-denominator`); and the two go to lowest terms without a second
+;;; simplification of the numerator (`rat-mul-reduce`; `rat-mul-answer`).
+;;;
+;;;    2/3 x  3/4 = 1/2      -2/3 x 3/5 = -2/5      4/5 x -5/8 = -1/2
+;;;   -1/2 x -2/7 = 1/7       0/3 x -5/9 = 0/1      7/1 x 1/7 = 1/1
+;;;   12/35 x 25/18 = 10/21
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `rat-product-of`'s whole extent, seven requests, no pair both ways round.
+
+(import std.math.rat :symbols (rat-arith rat-mul rat rat-product-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (n))
+
+(rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))
+(rat-mul (rat (int z (n z 2)) (n z 3)) (rat (int (n z 3) z) (n z 5)))
+(rat-mul (rat (int (n z 4) z) (n z 5)) (rat (int z (n z 5)) (n z 8)))
+(rat-mul (rat (int z (n z 1)) (n z 2)) (rat (int z (n z 2)) (n z 7)))
+(rat-mul (rat (int z z) (n z 3)) (rat (int z (n z 5)) (n z 9)))
+(rat-mul (rat (int (n z 7) z) (n z 1)) (rat (int (n z 1) z) (n z 7)))
+(rat-mul (rat (int (n (n z 1) 2) z) (n (n z 3) 5)) (rat (int (n (n z 2) 5) z) (n (n z 1) 8)))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (rat-product-of (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)) (rat (int (n z 1) z) (n z 2)))
+                      (rat-product-of (rat (int z (n z 2)) (n z 3)) (rat (int (n z 3) z) (n z 5)) (rat (int z (n z 2)) (n z 5)))
+                      (rat-product-of (rat (int (n z 4) z) (n z 5)) (rat (int z (n z 5)) (n z 8)) (rat (int z (n z 1)) (n z 2)))
+                      (rat-product-of (rat (int z (n z 1)) (n z 2)) (rat (int z (n z 2)) (n z 7)) (rat (int (n z 1) z) (n z 7)))
+                      (rat-product-of (rat (int z z) (n z 3)) (rat (int z (n z 5)) (n z 9)) (rat (int z z) (n z 1)))
+                      (rat-product-of (rat (int (n z 7) z) (n z 1)) (rat (int (n z 1) z) (n z 7)) (rat (int (n z 1) z) (n z 1)))
+                      (rat-product-of (rat (int (n (n z 1) 2) z) (n (n z 3) 5)) (rat (int (n (n z 2) 5) z) (n (n z 1) 8)) (rat (int (n (n z 1) 0) z) (n (n z 2) 1)))))

@@ -2,10 +2,10 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.num9`'s numbers have nine digits (`num9.ein` beside this file).
+;;; `std.math.num9`'s numbers have nine digits (`num9.ein` beside this file).
 ;;; 999999999 + 1 and 123078 x 123078 have ten and eleven. Each request
 ;;; derives `(overflow REQUEST)`, the request as written, and no result
-;;; fact: never a truncated number. `std.arith`, whose numbers have any
+;;; fact: never a truncated number. `std.math.decimal-arith`, whose numbers have any
 ;;; length, answers both (`mul.ein`).
 ;;;
 ;;; ── What it does to the rest of the program ────────────────────────────
@@ -15,7 +15,7 @@
 ;;; flag, as `too-big` does here. (A division by zero is the other kind of
 ;;; failure, a contradiction: `div_by_zero.ein`.)
 
-(import std.num9 :symbols (arith9 add9 num9 mul9 overflow sum9-of product9-of))
+(import std.math.num9 :symbols (arith9 add9 num9 mul9 overflow sum9-of product9-of))
 
 (relation too-big Request
   :why "{?1} needs more than nine digits")

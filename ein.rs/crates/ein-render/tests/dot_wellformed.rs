@@ -83,8 +83,8 @@ enum Verdict {
 /// run tests only on small"*).
 ///
 /// `dot`'s layered layout is superlinear in the edges, and a library of facts
-/// is where that shows. `stdlib/digits.ein` (M1f S1f.6.2) is the calculator's
-/// 1 664 table rows over eleven shared names, and every view of it has some
+/// is where that shows. `stdlib/math/digits.ein` (M1f S1f.6.2) is the
+/// calculator's 1 664 table rows over eleven shared names, and every view of it has some
 /// 7 900 edges: `dot` 16.0.0 had not drawn one after five minutes, and `fdp`,
 /// the layout a KB view suggests, not after 100 s. Table by table, the KB view
 /// of `fa` alone (1 014 edges) takes `dot` 0.5 s, `fa` and `fs` (2 021) 3.2 s,
@@ -93,8 +93,8 @@ enum Verdict {
 /// slowest took 0.43 s, so no view that `dot` drew then is past the bound.
 ///
 /// **The bound is under the smallest table** since M1f S1f.6.3 (it was 1 500
-/// for a stage): the KB view of a program that imports `std.arith` holds
-/// `fa`'s 200 rows, some 1 200 edges. So a view that holds a table is past
+/// for a stage): the KB view of a program that imports
+/// `std.math.decimal-arith` holds `fa`'s 200 rows, some 1 200 edges. So a view that holds a table is past
 /// the bound, and what `dot` lays out is what it laid out before the tables.
 ///
 /// **What is given up:** nothing checks that the DOT text of a skipped view
@@ -109,9 +109,10 @@ enum Verdict {
 const DOT_LAYOUT_BOUND: usize = 1000;
 
 /// The directories that hold a corpus file with a view past
-/// [`DOT_LAYOUT_BOUND`]: the calculator's modules, the programs that import
+/// [`DOT_LAYOUT_BOUND`]: the calculator's modules (`stdlib/math/` since M1f
+/// S1f.6.31, and no other module of the stdlib), the programs that import
 /// them and so hold the digit tables, and three rule libraries wide enough
-/// on their own (`stdlib/num9.ein`'s wide rules,
+/// on their own (`stdlib/math/num9.ein`'s wide rules,
 /// `examples/binary_arithmetic/five_operations.ein` and
 /// `examples/binary_logic/props_rules.ein` with the program that imports
 /// it). 663 views of 111 files on 2026-11-12, the smallest of 1 025 edges
@@ -124,12 +125,12 @@ const SKIPPING: [&str; 11] = [
     "examples/binary_arithmetic",
     "examples/binary_logic",
     "examples/word_problems",
-    "stdlib",
-    "tests/stdlib/arith",
-    "tests/stdlib/digits",
-    "tests/stdlib/int",
-    "tests/stdlib/num9",
-    "tests/stdlib/rat",
+    "stdlib/math",
+    "tests/stdlib/math/decimal-arith",
+    "tests/stdlib/math/digits",
+    "tests/stdlib/math/int",
+    "tests/stdlib/math/num9",
+    "tests/stdlib/math/rat",
 ];
 
 /// The edges of a DOT text: its ` -> ` arrows.
@@ -356,7 +357,7 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
 }
 
 /// The sweep, **several files at a time** since M1f S1f.6.5: a program that
-/// imports `std.arith` holds the digit tables, each of its six KB views is
+/// imports `std.math.decimal-arith` holds the digit tables, each of its six KB views is
 /// some 9 000 edges, and the bounded layout of the time took two seconds on
 /// one. Since S1f.6.21 those views are skipped and the sharing is kept: the
 /// files are independent, each view a `dot` process of its own, so they are

@@ -83,7 +83,11 @@ Corpus group `positive`.
 
 M1c [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus).
 One program per stdlib rule or tight family, each the smallest thing that
-activates it and each stating what it should and should not derive.
+activates it and each stating what it should and should not derive. **The
+directories mirror the library**: a module `std.x` has its programs under
+`stdlib/x/`, and `std.math.x`, the calculator's, under `stdlib/math/x/` since
+M1f S1f.6.31, which moved `arith/` to `math/decimal-arith/` and `digits/`,
+`int/`, `rat/` and `num9/` under `math/` with their modules.
 
 **Why they exist.** Every other check in this repository is *relative*: the
 goldens compare ein.rs to its own past. The stdlib was where that gap was
@@ -101,11 +105,11 @@ alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus `02`, closed and satisfied; its twin `03`, closed and **owing**, the one place in the suite where one fact decided a verdict word from M1d S1d.2.6, is `examples/ein-bugs/closed-and-owing.ein` since M1f S1f.6.34, which refuses an obligation on a closed relation, and `02` dropped its obligation |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
-| [`stdlib/arith/`](stdlib/arith/) | 115 | `std.arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division; S1f.6.12, malformed numbers and undeclared names): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero and the fourteen that state something the theory flags, which claim `(false)`; see [below](#stdlibarith-a-theory-whose-answers-a-program-cannot-check) |
-| [`stdlib/num9/`](stdlib/num9/) | 47 | `std.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibnum9-wide-rules-and-a-generated-module) |
-| [`stdlib/int/`](stdlib/int/) | 71 | `std.int`, integers as a positive and a negative part over `std.arith` (M1f S1f.6.7, and S1f.6.22 for division): fourteen programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; and a division by zero under each, claiming `(false)`. See [below](#stdlibint-a-theory-over-a-theory) |
-| [`stdlib/rat/`](stdlib/rat/) | 57 | `std.rat`, rational numbers in lowest terms over `std.int` and `std.arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand. See [below](#stdlibrat-lowest-terms-and-four-ways-to-divide-by-zero) |
-| [`stdlib/digits/`](stdlib/digits/) | — | `std.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
+| [`stdlib/math/decimal-arith/`](stdlib/math/decimal-arith/) | 115 | `std.math.decimal-arith`, school arithmetic computed by saturation alone (M1f S1f.6.3, addition; S1f.6.4, subtraction and comparison; S1f.6.5, multiplication; S1f.6.6, division; S1f.6.12, malformed numbers and undeclared names): one program per rule or tight family, each claiming its result relation's whole extent and R = {∅}, but the two that divide by zero and the fourteen that state something the theory flags, which claim `(false)`; see [below](#stdlibmathdecimal-arith-a-theory-whose-answers-a-program-cannot-check) |
+| [`stdlib/math/num9/`](stdlib/math/num9/) | 47 | `std.math.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.math.decimal-arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibmathnum9-wide-rules-and-a-generated-module) |
+| [`stdlib/math/int/`](stdlib/math/int/) | 71 | `std.math.int`, integers as a positive and a negative part over `std.math.decimal-arith` (M1f S1f.6.7, and S1f.6.22 for division): fourteen programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; and a division by zero under each, claiming `(false)`. See [below](#stdlibmathint-a-theory-over-a-theory) |
+| [`stdlib/math/rat/`](stdlib/math/rat/) | 57 | `std.math.rat`, rational numbers in lowest terms over `std.math.int` and `std.math.decimal-arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand. See [below](#stdlibmathrat-lowest-terms-and-four-ways-to-divide-by-zero) |
+| [`stdlib/math/digits/`](stdlib/math/digits/) | — | `std.math.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
 ### The obligation pairs, and the check that is not an `:expect`
@@ -162,7 +166,7 @@ happening to owe something.
 ### A module of facts has no rule to activate
 
 M1f [S1f.6.2](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md).
-`std.digits` holds the calculator's seven digit tables as plain facts, 1 664
+`std.math.digits` holds the calculator's seven digit tables as plain facts, 1 664
 rows, and no rule. The coverage gate asks that every stdlib *rule* be
 activated by a program here, so it has nothing to ask of this module, and
 `stdlib_coverage.rs` names it as rule-free, beside `std.macro`, rather than
@@ -176,7 +180,7 @@ language: [`ein-ir/tests/digit_tables.rs`](../ein.rs/crates/ein-ir/tests/digit_t
 computes every table from Rust's integers and compares, none missing and none
 twice, and runs the generator's `--check`.
 
-The two programs under [`stdlib/digits/`](stdlib/digits/) hold what only a
+The two programs under [`stdlib/math/digits/`](stdlib/math/digits/) hold what only a
 program can show:
 
 | file | what it holds |
@@ -184,10 +188,10 @@ program can show:
 | `01_tables.ein` | an import brings a table's rows (S1f.6.11's fix, W88, seen from the stdlib), and since S1f.6.35 the module whole; each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and the module's own closing facts, which every import brings since S1f.6.35 (until then only with `__closed__` listed), leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
 | `02_a_core_names_its_rows.ein` | a refutation through a lookup: root is dead and the unsat core is `(column 7 5 3)` and `(fa 7 5 0 2 1)`, the claim and the row it was checked against. The agreeing `(column 7 5 2)` is there so the rule is matched and silent once (*a refutation rule gets two files*, here two facts) |
 
-### `stdlib/arith/`: a theory whose answers a program cannot check
+### `stdlib/math/decimal-arith/`: a theory whose answers a program cannot check
 
 M1f [S1f.6.3](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md).
-`std.arith` is school arithmetic written in Ein over `std.digits`' tables,
+`std.math.decimal-arith` is school arithmetic written in Ein over `std.math.digits`' tables,
 computed by saturation alone. Its programs are written like the others here,
 one per rule or tight family, each claiming `sum-of`'s whole extent, with two
 differences worth knowing before adding one.
@@ -279,7 +283,7 @@ request has no result fact; `arith_theory.rs` holds every kind of fault
 under every operation and either operand to exactly one flag, and the list
 of what stays silent.
 
-`arith`, the closing rule, fires once at root in each. **The mutation sweep
+`decimal-arith`, the closing rule, fires once at root in each. **The mutation sweep
 kills every mutant of the module**, 21 of 21: the sweep reads 188 of 238 where
 it read 167 of 217, and the bank's 50 survivors are the ones it had
 (`python3 utils/stdlib_mutants.py --check`, 2026-11-11). `03_lengths.ein` is
@@ -314,18 +318,18 @@ flags since the stage, the request's and its call's, either of which is
 whose core names a `(div X Y)` has exactly two flags in root's state, each by
 its own rule, and `arith_theory.rs` holds the two for every public request.
 
-### `stdlib/num9/`: wide rules, and a generated module
+### `stdlib/math/num9/`: wide rules, and a generated module
 
 M1f [S1f.6.13](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md).
-`std.num9` is the calculator's second module: nine digit names in one fact,
+`std.math.num9` is the calculator's second module: nine digit names in one fact,
 `(num9 0 0 0 1 2 3 0 7 8)`, and rules with a premise a column, so a sum is
-one firing. What `stdlib/arith/` says of its programs holds of these: each
+one firing. What `stdlib/math/decimal-arith/` says of its programs holds of these: each
 claims R = {∅} on its `(solve …)` form, `arith_search_free.rs` reads the
 search-free claim off every one, and right is held from outside the language,
 by `ein-infer/tests/num9_theory.rs` against Rust's integers, **exhaustively**
 at width 2 on the generator's own output and on a sample at width 9. The
 module is written by `utils/gen_num9.py`; a rule is changed there, and
-`--check` in that test file fails on an edit to `stdlib/num9.ein` itself.
+`--check` in that test file fails on an edit to `stdlib/math/num9.ein` itself.
 
 | file | the rules it is there for | what would fail it |
 |---|---|---|
@@ -337,10 +341,10 @@ module is written by `utils/gen_num9.py`; a rule is changed there, and
 | `06_mul_overflow.ein` | `mul9-overflows-shift`, `-row`, `-add`, each by a product that falls off the top in that place and no other; the product beside them answered | an overflow missed, or a number stored for it |
 | `07_div.ein` | `div9-start`, `div9-step-0`, `-1`, `-5`, `div9-done`: 127645 ÷ 25 = 5105 remainder 20 | a step that reads the wrong multiple |
 | `08_div_every_digit.ein` | `div9-step-1` to `div9-step-9`, a quotient of 123456789; and a divisor of nine digits whose ninth multiple has ten | a multiple truncated to nine digits |
-| `09_div_by_zero.ein` | `div9-by-zero`, and `std.arith`'s `division-by-zero-is-false` through this module's import: `(solve :expect (false))` | a division by zero answered, or passed over in silence |
+| `09_div_by_zero.ein` | `div9-by-zero`, and `std.math.decimal-arith`'s `division-by-zero-is-false` through this module's import: `(solve :expect (false))` | a division by zero answered, or passed over in silence |
 | `10_to9.ein` | `to9-zero`, `to9-1` to `to9-9`, `to9-big`: `as9`'s and `big`'s whole extents | a number padded on the wrong side; ten digits read as nine |
 | `11_from9.ein` | `from9-zero`, `from9-1` to `from9-9`: `of9`'s whole extent, a zero inside the number kept | an answer with a high zero |
-| `12_both_modules.ein` | both modules flat in one program: one sum by each and the answers compared by `std.arith`, `eq` | a name of one module that is a name of the other |
+| `12_both_modules.ein` | both modules flat in one program: one sum by each and the answers compared by `std.math.decimal-arith`, `eq` | a name of one module that is a name of the other |
 | `13_chain.ein` | a `div9` request a rule of the program derives from a `product9-of` | a derived request left unanswered |
 
 **No request here is another the other way round where it matters**, and
@@ -354,12 +358,12 @@ is gone from the rules. **The sweep kills every mutant of the module**, 41 of
 41, and the bank is unmoved (`python3 utils/stdlib_mutants.py --check`,
 2026-11-11).
 
-### `stdlib/int/`: a theory over a theory
+### `stdlib/math/int/`: a theory over a theory
 
 M1f [S1f.6.7](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md).
-`std.int` is the calculator's first extension: an integer is `(int P N)`, two
-natural numbers of `std.arith`, and every rule of the module has one premise
-and starts one of `std.arith`'s walks. What `stdlib/arith/` says of its
+`std.math.int` is the calculator's first extension: an integer is `(int P N)`, two
+natural numbers of `std.math.decimal-arith`, and every rule of the module has one premise
+and starts one of `std.math.decimal-arith`'s walks. What `stdlib/math/decimal-arith/` says of its
 programs holds of these: each claims R = {∅} on its `(solve …)` form,
 `arith_search_free.rs` reads the search-free claim off every one, and right is
 held from outside the language, by `ein-infer/tests/int_theory.rs` against
@@ -376,9 +380,9 @@ the program was drafted.
 | `05_mul.ein` | `int-mul-ask`, `-start`, `-answer`, `int-mul-first` to `-fourth`, `-plus`, `-minus`, `-norm`: every combination of signs, zero on either side, operands not simplified | a cross product on the wrong side: the sign of every mixed product |
 | `06_cmp.ein` | `int-cmp-ask`, `-start`, `-answer`, `int-cmp-left`, `-right`, `-sides`: twelve comparisons, two pairs written differently that are `eq` | the sides added straight and not across |
 | `07_unsimplified.ein` | the stage's own case: 5 less 3 and 2 less 0 under each of the four operations | an operand read by its spelling |
-| `08_named_and_chained.ein` | names through `std.arith`'s `let`; two rules of the program's own that read a negative difference by its shape, one deriving an `int-neg` request | a named integer left unanswered; a derived request left unanswered |
+| `08_named_and_chained.ein` | names through `std.math.decimal-arith`'s `let`; two rules of the program's own that read a negative difference by its shape, one deriving an `int-neg` request | a named integer left unanswered; a derived request left unanswered |
 
-**No request here is another the other way round,** `stdlib/num9/`'s lesson,
+**No request here is another the other way round,** `stdlib/math/num9/`'s lesson,
 kept from the first draft: `03_add.ein`'s header says why. **The mutation
 sweep kills every mutant of the module**, 42 of 42, on its first run, and the
 bank is unmoved (`python3 utils/stdlib_mutants.py --check`, 2026-11-12); 60
@@ -400,12 +404,12 @@ claim such a program can make, and each writes its zero another way.
 | `13_div_trunc_by_zero.ein` | `int-div-by-zero`, the divisor 3 less 3 | a zero read by its spelling |
 | `14_div_floor_by_zero.ein` | `int-div-by-zero`, the divisor a name for 0 less 00 | a flag that does not repeat the request as written |
 
-### `stdlib/rat/`: lowest terms, and four ways to divide by zero
+### `stdlib/math/rat/`: lowest terms, and four ways to divide by zero
 
 M1f [S1f.6.8](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md).
-`std.rat` is the calculator's second extension: a rational is `(rat Z D)`, an
-integer of `std.int` over a natural number, answered in lowest terms. What
-`stdlib/int/` says of its programs holds of these: every rule of the module
+`std.math.rat` is the calculator's second extension: a rational is `(rat Z D)`, an
+integer of `std.math.int` over a natural number, answered in lowest terms. What
+`stdlib/math/int/` says of its programs holds of these: every rule of the module
 has one premise, nine of the thirteen claim R = {∅}, and right is held from
 outside the language, by `ein-infer/tests/rat_theory.rs` against exact
 fractions. Each claim here was computed by Python's fractions when the
@@ -421,7 +425,7 @@ program was drafted.
 | `06_div.ein` | `rat-div-ask`, `-start`, `-answer`, `rat-div-pos`, `rat-div-neg`: six quotients | the divisor not turned over; its sign lost |
 | `07_cmp.ein` | `rat-cmp-ask`, `-start`, `-answer`, `rat-cmp-sides`: ten comparisons, 22/7 against 355/113 | the denominators ignored; the order of a negative pair |
 | `08_unsimplified.ein` | the stage's own case: 2/4 and 1/2 under each of the five operations | an operand read by its spelling |
-| `09_named_and_chained.ein` | names through `std.arith`'s `let`; two rules of the program's own, each deriving a request from an answer | a named rational left unanswered; a derived request left unanswered |
+| `09_named_and_chained.ein` | names through `std.math.decimal-arith`'s `let`; two rules of the program's own, each deriving a request from an answer | a named rational left unanswered; a derived request left unanswered |
 | `10_div_by_zero_rational.ein` | `rat-div-zero`: a divisor that is 0 over 5; `(solve :expect (false))` | a division by zero answered, or passed over in silence |
 | `11_zero_denominator_first.ein` | `rat-operand-zero`, `rat-zero-first` | a rational over zero computed with |
 | `12_zero_denominator_second.ein` | `rat-zero-second`: the operand named, the zero written `(n (n z 0) 0)` | a zero read by its spelling |
@@ -431,14 +435,14 @@ program was drafted.
 states a sum beside the request that kills it, and claims only `(solve
 :expect (false))`: root's own fixpoint derives `(false)`, R is empty, and
 `arith_search_free.rs` holds each to that, the request named in the core and
-`std.arith`'s rule under `refuted by`. A core names the request, a `let`
+`std.math.decimal-arith`'s rule under `refuted by`. A core names the request, a `let`
 where the operand is named, and the rows of `cl` a denominator was compared
 with zero through.
 
 **The mutation sweep kills every mutant of the module**, 44 of 44, on its first
 run, and the bank is unmoved (`python3 utils/stdlib_mutants.py --check`,
 2026-11-12). No request here is another the other way round where both would
-be answered alike, `stdlib/num9/`'s lesson.
+be answered alike, `stdlib/math/num9/`'s lesson.
 
 ### Five things about how they are written
 
@@ -605,7 +609,7 @@ refused. `stdlib/` and `tests/` are unchanged since `3ee7796a`, the last green
 nightly's commit (S1f.5.17, 2026-11-08). **The bank's diff is those two lines,
 removed, and nothing added**: 52 → 50.
 
-**188 of 238 on 2026-11-11: `std.arith` added 21 mutants and the suite kills
+**188 of 238 on 2026-11-11: `std.math.decimal-arith` added 21 mutants and the suite kills
 every one** (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.3](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md)).
 The module's rules have no `neq` and no `absent`, so its mutants are the two
@@ -613,7 +617,7 @@ exchange families: a premise's two arguments, a tag and a number, and a
 conclusion's. Exchanged, a step hands its answer to nobody, the chain stops,
 and the program's `sum-of` claim fails for want of a row; the one mutant
 that still answers, `(add ?x ?y)` read as `(add ?y ?x)`, files the sum under
-the operands exchanged, which `arith/01_add.ein` refuses. `std.digits` has no
+the operands exchanged, which `arith/01_add.ein` refuses. `std.math.digits` has no
 rule and adds none. **The bank is unmoved**, 50 lines.
 
 **203 of 253 on 2026-11-11: subtraction and comparison added 15 mutants and
@@ -635,10 +639,10 @@ lines.
 **234 of 284 on 2026-11-11: division added 18 mutants and the suite kills
 every one** (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.6](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)).
-**The bank is unmoved**, 50 lines: `std.arith`'s 89 rules have 67 mutants and
+**The bank is unmoved**, 50 lines: `std.math.decimal-arith`'s 89 rules have 67 mutants and
 no survivor.
 
-**275 of 325 on 2026-11-11: `std.num9` added 41 mutants and the suite kills
+**275 of 325 on 2026-11-11: `std.math.num9` added 41 mutants and the suite kills
 every one** (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.13](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md)).
 Its rules write no guard, so its mutants are the exchange families: a
@@ -649,17 +653,17 @@ no longer writes, and two were `(sub9 X Y)` with its operands exchanged, which
 `num9/03_sub.ein` kills since it stopped asking a pair both ways round. **The
 bank is unmoved**, 50 lines.
 
-**317 of 367 on 2026-11-12: `std.int` added 42 mutants and the suite kills
+**317 of 367 on 2026-11-12: `std.math.int` added 42 mutants and the suite kills
 every one**, on its first run (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.7](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md)).
 Every rule of the module has one premise and no guard, so its mutants are the
 exchange families: a request's two operands, a hand-over's tag and answer.
 **The bank is unmoved**, 50 lines.
 
-**361 of 411 on 2026-11-12: `std.rat` added 44 mutants and the suite kills
+**361 of 411 on 2026-11-12: `std.math.rat` added 44 mutants and the suite kills
 every one**, on its first run (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.8](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md)).
-As `std.int`'s, they are the exchange families. **The bank is unmoved**, 50
+As `std.math.int`'s, they are the exchange families. **The bank is unmoved**, 50
 lines.
 
 **431 of 502 on 2026-11-14: one killed, eleven masked by whole modules**
@@ -732,7 +736,8 @@ python3 utils/stdlib_census.py -k tests/stdlib     # this directory's own contri
 python3 utils/stdlib_census.py --check             # exit 1 while any rule is at zero
 ```
 
-It parses `stdlib/*.ein` for rule heads, then sweeps every corpus entry under
+It parses every `.ein` under `stdlib/`, at any depth (`stdlib/math/` since
+M1f S1f.6.31), for rule heads, then sweeps every corpus entry under
 every declared `solve` / `saturate` / `test` run with `--events` and counts
 `fire` by rule. A firing counts for a module only when the file does not
 declare that name itself and the module is in its import closure, so a puzzle's

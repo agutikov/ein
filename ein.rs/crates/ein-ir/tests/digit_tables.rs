@@ -1,7 +1,7 @@
-//! **`std.digits`, every row held to the integers** — M1f
+//! **`std.math.digits`, every row held to the integers** — M1f
 //! [S1f.6.2](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md).
 //!
-//! `stdlib/digits.ein` is the calculator's gates: seven tables of plain facts,
+//! `stdlib/math/digits.ein` is the calculator's gates: seven tables of plain facts,
 //! written by `utils/gen_arith_tables.py`. Ein has no numbers, so nothing in
 //! the engine can say whether `(fa 7 5 0 2 1)` is true; a wrong row would be a
 //! wrong answer in every program that adds 7 and 5, and no golden would know.
@@ -105,7 +105,7 @@ fn expected() -> BTreeMap<&'static str, Vec<Row>> {
 }
 
 fn module_text() -> String {
-    let path = repo_root().join("stdlib/digits.ein");
+    let path = repo_root().join("stdlib/math/digits.ein");
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
 }
 
@@ -150,8 +150,8 @@ fn by_head(ast: &Ast, forms: &[NodeId]) -> BTreeMap<String, Vec<Row>> {
 #[test]
 fn every_row_agrees_with_the_integers() {
     let mut ast = Ast::new();
-    let forms =
-        parse(&mut ast, &module_text(), Some("stdlib/digits.ein")).expect("std.digits parses");
+    let forms = parse(&mut ast, &module_text(), Some("stdlib/math/digits.ein"))
+        .expect("std.math.digits parses");
     let got = by_head(&ast, &forms);
     let want = expected();
     let sizes: Vec<(&str, usize)> = TABLES.iter().map(|t| (*t, want[t].len())).collect();
@@ -175,7 +175,7 @@ fn every_row_agrees_with_the_integers() {
         let want = &want[table];
         if let Some(i) = (0..rows.len().max(want.len())).find(|&i| rows.get(i) != want.get(i)) {
             panic!(
-                "std.digits' `{table}` differs from the integers at sorted row {i}: \
+                "std.math.digits' `{table}` differs from the integers at sorted row {i}: \
                  the module has {:?}, the integers say {:?} ({} rows against {})",
                 rows.get(i),
                 want.get(i),
@@ -189,8 +189,8 @@ fn every_row_agrees_with_the_integers() {
 #[test]
 fn the_module_is_seven_closed_tables_and_nothing_else() {
     let mut ast = Ast::new();
-    let forms =
-        parse(&mut ast, &module_text(), Some("stdlib/digits.ein")).expect("std.digits parses");
+    let forms = parse(&mut ast, &module_text(), Some("stdlib/math/digits.ein"))
+        .expect("std.math.digits parses");
     let got = by_head(&ast, &forms);
     let tables: Vec<Row> = TABLES.iter().map(|t| vec![(*t).to_string()]).collect();
     assert_eq!(got["relation"], tables, "the declarations, in order");
@@ -223,7 +223,7 @@ fn the_file_is_what_the_generator_writes() {
         .status();
     assert!(
         matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): `stdlib/digits.ein` is generated and \
+        "`python3` does not run ({probe:?}): `stdlib/math/digits.ein` is generated and \
          `utils/gen_arith_tables.py --check` is the only check that compares its \
          bytes with the script's — a missing gate, not a missing convenience"
     );
@@ -234,7 +234,7 @@ fn the_file_is_what_the_generator_writes() {
         .expect("python3 ran a moment ago");
     assert!(
         out.status.success(),
-        "stdlib/digits.ein is stale — run `python3 utils/gen_arith_tables.py` and \
+        "stdlib/math/digits.ein is stale — run `python3 utils/gen_arith_tables.py` and \
          `python3 utils/stdlib_manifest.py --write`\n{}{}",
         String::from_utf8_lossy(&out.stdout),
         String::from_utf8_lossy(&out.stderr),
@@ -243,7 +243,7 @@ fn the_file_is_what_the_generator_writes() {
 
 /// The tier a release binary uses. Since M1f S1f.6.35 an import brings the
 /// module whole: the listed tables under their short names with their rows,
-/// every other table under its full name, `std.digits.fs`, and the module's
+/// every other table under its full name, `std.math.digits.fs`, and the module's
 /// seven closing facts.
 #[test]
 fn a_flat_import_brings_a_table_from_the_embedded_copy() {
@@ -251,13 +251,13 @@ fn a_flat_import_brings_a_table_from_the_embedded_copy() {
     let mut ast = Ast::new();
     let forms = parse(
         &mut ast,
-        "(import std.digits :symbols (fa nz __closed__))\n",
+        "(import std.math.digits :symbols (fa nz __closed__))\n",
         Some("<probe>"),
     )
     .expect("parses");
     let resolved = resolver
         .resolve_imports(&mut ast, &forms, None)
-        .expect("std.digits resolves from the embedded copy");
+        .expect("std.math.digits resolves from the embedded copy");
     let got = by_head(&ast, &resolved);
     let want = expected();
     let mut fa = got["fa"].clone();
@@ -276,7 +276,7 @@ fn a_flat_import_brings_a_table_from_the_embedded_copy() {
             !got.contains_key(other),
             "`{other}` was not listed and arrived under its short name"
         );
-        let mut rows = got[format!("std.digits.{other}").as_str()].clone();
+        let mut rows = got[format!("std.math.digits.{other}").as_str()].clone();
         rows.sort();
         let mut wanted = want[other].clone();
         wanted.sort();

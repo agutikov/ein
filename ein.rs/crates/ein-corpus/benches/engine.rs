@@ -44,18 +44,13 @@ fn frontend(c: &mut Criterion) {
         sources.push((rel.to_string(), std::fs::read_to_string(&path).expect(rel)));
     }
     let stdlib = root.join("stdlib");
-    let mut modules: Vec<PathBuf> = std::fs::read_dir(&stdlib)
-        .expect("stdlib")
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|x| x == "ein"))
-        .collect();
-    modules.sort();
-    for path in modules {
+    // Every module at any depth: the calculator's are under `math/` since
+    // M1f S1f.6.31, named by their path from `stdlib/`.
+    for path in ein_corpus::ein_files_under(&stdlib) {
         let name = path
-            .file_name()
-            .expect("name")
-            .to_string_lossy()
+            .strip_prefix(&stdlib)
+            .expect("under stdlib/")
+            .display()
             .to_string();
         sources.push((name, std::fs::read_to_string(&path).expect("module")));
     }

@@ -4,7 +4,7 @@
 ([README § The move](README.md#the-move-of-2026-11-13)); nothing of its content was redesigned.
 **Status:** planned 2026-11-12, on the user's reply of that day. Not started. **An investigation that stops
 for the user** with real programs computed on a prototype; it changes no shipped module before a ruling.
-**Depends on:** the calculator's extensions as shipped (`std.int`, `std.rat`), and binary arithmetic in the
+**Depends on:** the calculator's extensions as shipped (`std.math.int`, `std.math.rat`), and binary arithmetic in the
 stdlib ([S1f.6.16's build](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-build-as-ruled-2026-11-12)),
 since a second representation of the natural numbers is what the question is asked about. Until that has
 shipped, the banked `examples/binary_arithmetic/` theory can stand in for the prototype.
@@ -35,10 +35,10 @@ parameters, is the one under which it would be literally so, the fact being the 
 
 ## What is hardcoded today
 
-`std.int` is `(int P N)` with P and N numbers of `std.arith`, and its 36 rules each start one of
-`std.arith`'s walks under a tag: `add-walk`, `mul-call`, `cmp-walk`, the subtraction walk. `std.rat` is
-`(rat Z D)` over `std.int` and `std.arith`'s division. So the compound types name the decimal theory's
-relations in every rule. An integer over binary naturals would today be a second copy of `std.int` with
+`std.math.int` is `(int P N)` with P and N numbers of `std.math.decimal-arith`, and its 36 rules each start one of
+`std.math.decimal-arith`'s walks under a tag: `add-walk`, `mul-call`, `cmp-walk`, the subtraction walk. `std.math.rat` is
+`(rat Z D)` over `std.math.int` and `std.math.decimal-arith`'s division. So the compound types name the decimal theory's
+relations in every rule. An integer over binary naturals would today be a second copy of `std.math.int` with
 other names in it, which is the copy the user's reply to question 16 did not want for the bases themselves
 (*"extract common rules into separate file the both import"*).
 
@@ -48,7 +48,7 @@ How a compound type says *a natural number, and its operations* without saying w
 try, each on real programs, none chosen before the measurement:
 
 - **Parameters.** A rule with parameters is compiled once per activator fact, the mechanism the calculator's
-  phase tries first for the bases' shared rules (the trial of S1f.6.16's build). `std.int`'s rules would
+  phase tries first for the bases' shared rules (the trial of S1f.6.16's build). `std.math.int`'s rules would
   take the underlying theory's call relations as parameters, and a program would activate *integers over
   decimal* or *integers over binary*. The trial's result bears directly on this: if a parameter cannot
   stand where a walk needs it, or costs firings, it fails here for the same reason.
@@ -74,7 +74,7 @@ non-number, the smallest it can find in the phase, to see whether the list is ri
 
 ## Tasks
 
-1. **What is hardcoded, counted:** for `std.int` and `std.rat`, every rule that names a relation of the
+1. **What is hardcoded, counted:** for `std.math.int` and `std.math.rat`, every rule that names a relation of the
    natural-number theory, and which relation; the list of calls the two modules make in all.
 2. **Each direction on a prototype** under `build/`, with the same targets: an integer sum and product and
    a rational sum over decimal naturals and over binary naturals, in one program and in two. Answers
@@ -95,7 +95,7 @@ non-number, the smallest it can find in the phase, to see whether the list is ri
 
 ## What it must not do
 
-- **Not change `std.int`, `std.rat` or their names** before a ruling.
+- **Not change `std.math.int`, `std.math.rat` or their names** before a ruling.
 - **Not build a types theory** (M1g's) or promotion between number kinds (question 12: *"keep as is now"*).
 - **Not add a representation.** Binary and decimal are the two; *"any new natural numbers"* is what the
   design must allow, not what the stage adds.

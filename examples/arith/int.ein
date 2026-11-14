@@ -4,9 +4,9 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.arith` has natural numbers only (`add.ein` beside this file is the
+;;; `std.math.decimal-arith` has natural numbers only (`add.ein` beside this file is the
 ;;; introduction), so its subtraction answers two numbers, a difference and
-;;; what the first operand is short by. `std.int` is a second theory over it
+;;; what the first operand is short by. `std.math.int` is a second theory over it
 ;;; that makes those two numbers one: an integer is two natural numbers, a
 ;;; positive part and a negative part, and its value is the first less the
 ;;; second.
@@ -32,7 +32,7 @@
 ;;; ── What happens ───────────────────────────────────────────────────────
 ;;;
 ;;; Nothing is guessed, and no rule of the theory looks at a sign. A sum
-;;; adds the positive parts and the negative parts, each by `std.arith`'s
+;;; adds the positive parts and the negative parts, each by `std.math.decimal-arith`'s
 ;;; walk, and then simplifies the pair by subtracting both ways at once: the
 ;;; subtraction that ends with no borrow is the part that is left.
 ;;;
@@ -55,9 +55,9 @@
 ;;;   floored     -4, remainder 1    the quotient rounded down, as Python;
 ;;;                                  the remainder takes the divisor's sign
 ;;;
-;;; The sizes, 7 and 2, are divided by `std.arith`; truncated only puts the
+;;; The sizes, 7 and 2, are divided by `std.math.decimal-arith`; truncated only puts the
 ;;; signs on, and the other two take one more in the quotient and 2 - 1 for
-;;; the remainder. Dividing by an integer that is zero is `std.arith`'s
+;;; the remainder. Dividing by an integer that is zero is `std.math.decimal-arith`'s
 ;;; division by zero (`div_by_zero.ein` beside this file).
 ;;;
 ;;; ── The program's own rules ────────────────────────────────────────────
@@ -69,11 +69,11 @@
 ;;; `ein solve examples/arith/int.ein --trace T.md` writes every step as a
 ;;; sentence.
 
-(import std.int :symbols (int-arith int-add int int-sub int-mul int-simplify int-neg
+(import std.math.int :symbols (int-arith int-add int int-sub int-mul int-simplify int-neg
                           int-div-euclid int-div-trunc int-div-floor int-cmp int-cmp-of int-sum-of
                           int-diff-of int-product-of int-simple-of int-neg-of int-quot-euclid-of
                           int-quot-trunc-of int-quot-floor-of))
-(import std.arith :symbols (n let))
+(import std.math.decimal-arith :symbols (n let))
 
 (relation morning Name
   :why "{?1} is a morning's temperature")

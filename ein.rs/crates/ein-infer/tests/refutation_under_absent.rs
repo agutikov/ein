@@ -276,7 +276,7 @@ fn beside_an_hrule_the_remedy_names_the_hrule_and_not_the_list() {
     }
     let program = |listed: bool, list: bool| {
         format!(
-            "(import words :symbols (words has asked together))\n(import std.arith :symbols (n))\n\
+            "(import words :symbols (words has asked together))\n(import std.math.decimal-arith :symbols (n))\n\
              (import gaps :symbols (gaps))\n{}\
              (has Bob apples (n z 5) now)\n(has Alice pears (n z 3) now)\n\
              (asked (together Bob Alice apples now))\n\

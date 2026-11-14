@@ -2,7 +2,7 @@
 ;;; which is 5 + 7 = 12.
 ;;;
 ;;; Ein has no numbers. `bin.ein` beside this file is a theory written in Ein
-;;; that does school arithmetic on binary numbers, as `std.arith` does on
+;;; that does school arithmetic on binary numbers, as `std.math.decimal-arith` does on
 ;;; decimal ones: the two bits are the names `0` and `1`, what is known of
 ;;; them is three small tables of facts (`bits.ein`), and the rules are the
 ;;; wiring.

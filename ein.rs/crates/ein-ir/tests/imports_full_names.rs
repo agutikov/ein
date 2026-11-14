@@ -287,16 +287,16 @@ fn the_refusals() {
         e.contains("'n.done' is a full name of n, which no import of the program brings"),
         "{e}"
     );
-    let e = refused("(std.arith.add a b)\n", &mods);
+    let e = refused("(std.math.decimal-arith.add a b)\n", &mods);
     assert!(
-        e.contains("'std.arith.add' is a full name of std.arith"),
+        e.contains("'std.math.decimal-arith.add' is a full name of std.math.decimal-arith"),
         "{e}"
     );
     // …and a name the program declares is its own, whatever its dots: a
     // state file declares the full names it was loaded with.
     resolved(
         &mods,
-        "(relation std.arith.add T T :why \"a\")\n(std.arith.add a b)\n",
+        "(relation std.math.decimal-arith.add T T :why \"a\")\n(std.math.decimal-arith.add a b)\n",
     )
     .expect("a state file's declarations");
     // A declaration of the program under an imported module's full name

@@ -75,7 +75,7 @@
 //! `Δ̂` holds, and the closure is not computed ([`FactGrain::shapes`] is
 //! `None`). Until then it was computed on every program and thrown away on
 //! these, and on a program where a supposed fact leads to a request to
-//! `std.arith` with an operand the commitment does not bind, `(div _ (n z
+//! `std.math.decimal-arith` with an operand the commitment does not bind, `(div _ (n z
 //! 3))`, it follows every shape of every circuit of the calculator: the
 //! nesting is widened past [`MAX_NESTING`], but the breadth is not, and on
 //! E-33's witness the antichain held 137 731 shapes after 1 312 s, still

@@ -34,7 +34,8 @@ where the Rust assertion names the first one it reaches, and it answers in
 milliseconds without a toolchain, which is why it is the per-commit tier's
 first step rather than something you wait for a build to tell you.
 
-Format: one `<sha256>  <name>` line per module, sorted by name — `sha256sum`'s
+Format: one `<sha256>  <path>` line per module, its path from `stdlib/` at any
+depth (`math/decimal-arith.ein`, M1f S1f.6.31), sorted as text — `sha256sum`'s
 own format, so `sha256sum -c MANIFEST.sha256` works from inside `stdlib/`.
 """
 from __future__ import annotations
@@ -65,13 +66,21 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def modules(root: Path) -> list[str]:
+    """Every module under ``root``, at any depth, as its path from ``root``
+    (`algebra.ein`, `math/decimal-arith.ein`), sorted as text — the order
+    `ein_ir::stdlib::Source::modules` lists the embedded copy in. A module
+    under a subdirectory is `std.<dir>.<name>` (M1f S1f.6.31: `std.math.*`),
+    and a glob of one directory would leave it out of the manifest in
+    silence, embedded and checked by nothing."""
+    return sorted(p.relative_to(root).as_posix() for p in root.rglob("*.ein"))
+
+
 def build(root: Path) -> str:
     """The manifest text for ``root``. Covers `*.ein` only — the README moves
     with the modules but is prose, and hashing it would make a typo fix look
     like a semantic change."""
-    return "".join(
-        f"{digest(p)}  {p.name}\n" for p in sorted(root.glob("*.ein"))
-    )
+    return "".join(f"{digest(root / name)}  {name}\n" for name in modules(root))
 
 
 def parse(text: str) -> dict[str, str]:
@@ -112,7 +121,7 @@ def main() -> int:
     root = stdlib_dir()
     if args.write:
         (root / MANIFEST_NAME).write_text(build(root), encoding="utf-8")
-        n = len(list(root.glob("*.ein")))
+        n = len(modules(root))
         print(f"wrote {root / MANIFEST_NAME} ({n} modules)")
         return 0
 

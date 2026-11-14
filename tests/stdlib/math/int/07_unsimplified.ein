@@ -1,0 +1,51 @@
+;;; `std.math.int` — an operand that is not simplified answers as its normal form
+;;; does. M1f S1f.6.7.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An operand is read by value. 5 less 3 and 2 less 0 are the one integer 2,
+;;; and every operation gives the two the same answer, in normal form; the
+;;; request is repeated as it was written, so they are two requests with two
+;;; result facts.
+;;;
+;;;   2 + -7 = -5       2 - -7 = 9       2 x -7 = -14       2 against -7: gt
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Four claims, each a result relation's whole extent: two facts, one for
+;;; each spelling of 2, with the same third argument.
+
+(import std.math.int :symbols (int-arith int-add int int-sub int-mul int-cmp int-sum-of int-diff-of
+                          int-product-of int-cmp-of))
+(import std.math.decimal-arith :symbols (n))
+
+(int-add (int (n z 5) (n z 3)) (int z (n z 7)))
+(int-sub (int (n z 5) (n z 3)) (int z (n z 7)))
+(int-mul (int (n z 5) (n z 3)) (int z (n z 7)))
+(int-cmp (int (n z 5) (n z 3)) (int z (n z 7)))
+(int-add (int (n z 2) z) (int z (n z 7)))
+(int-sub (int (n z 2) z) (int z (n z 7)))
+(int-mul (int (n z 2) z) (int z (n z 7)))
+(int-cmp (int (n z 2) z) (int z (n z 7)))
+
+(solve :expect (region (model)))
+
+(query :goal (int-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (int-sum-of (int (n z 5) (n z 3)) (int z (n z 7)) (int z (n z 5)))
+                      (int-sum-of (int (n z 2) z) (int z (n z 7)) (int z (n z 5)))))
+
+(query :goal (int-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (int-diff-of (int (n z 5) (n z 3)) (int z (n z 7)) (int (n z 9) z))
+                      (int-diff-of (int (n z 2) z) (int z (n z 7)) (int (n z 9) z))))
+
+(query :goal (int-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (int-product-of (int (n z 5) (n z 3)) (int z (n z 7)) (int z (n (n z 1) 4)))
+                      (int-product-of (int (n z 2) z) (int z (n z 7)) (int z (n (n z 1) 4)))))
+
+(query :goal (int-cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (int-cmp-of (int (n z 5) (n z 3)) (int z (n z 7)) gt)
+                      (int-cmp-of (int (n z 2) z) (int z (n z 7)) gt)))

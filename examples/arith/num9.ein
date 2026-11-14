@@ -3,13 +3,13 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.num9` is the calculator's second module (`add.ein` beside this file
-;;; introduces the first, `std.arith`). Its number is the one the phase's
+;;; `std.math.num9` is the calculator's second module (`add.ein` beside this file
+;;; introduces the first, `std.math.decimal-arith`). Its number is the one the phase's
 ;;; instruction wrote, `(num9 0 0 0 1 2 3 0 7 8)` for 123078: nine digit
 ;;; names, the most significant first, a fixed width.
 ;;;
 ;;;   (add9 X Y)    (sum9-of X Y S)          123078 + 4567 = 127645
-;;;   (sub9 X Y)    (diff9-of X Y D R)       two numbers, as std.arith's
+;;;   (sub9 X Y)    (diff9-of X Y D R)       two numbers, as std.math.decimal-arith's
 ;;;   (cmp9 X Y)    (cmp9-of X Y O)          lt, eq or gt
 ;;;   (mul9 X Y)    (product9-of X Y P)      123 x 456 = 56088
 ;;;   (div9 X Y)    (quot9-of X Y Q R)       127645 / 25 = 5105 remainder 20
@@ -37,7 +37,7 @@
 ;;; is a flag and no number. `num9_both_ways.ein` computes one sum in both
 ;;; modules and compares.
 
-(import std.num9 :symbols (arith9 add9 num9 sub9 cmp9 mul9 div9 product9-of sum9-of diff9-of
+(import std.math.num9 :symbols (arith9 add9 num9 sub9 cmp9 mul9 div9 product9-of sum9-of diff9-of
                            cmp9-of quot9-of))
 
 (add9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))

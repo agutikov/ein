@@ -4251,7 +4251,7 @@ fn declared_counts(ast: &Ast, relations: &[NodeId]) -> Declared {
 /// count, so a premise `(likes ?who)` matched no fact of the declared count
 /// and a conclusion `(fan ?who ?what)` derived facts no premise of it read;
 /// and the calculator's `(add (n z 5))`, one operand where `add` declares
-/// two, and a `std.num9` number of eight digits were answered by silence,
+/// two, and a `std.math.num9` number of eight digits were answered by silence,
 /// exit 0 (E-2 of P1f.6's `findings.md`).
 ///
 /// This collects every such form at or under `node`, in the order written: a

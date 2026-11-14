@@ -2,7 +2,7 @@
 
 Elementary-school word problems as Ein programs (M1f P1f.6,
 [S1f.6.20](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)). The
-calculator, [`std.arith`](../../stdlib/arith.ein), is a library among other relations here and not the subject: a
+calculator, [`std.math.decimal-arith`](../../stdlib/math/decimal-arith.ein), is a library among other relations here and not the subject: a
 problem states what its sentences say as facts, a theory of what the words mean turns them into requests to the
 calculator, and the theory reads the answers back as facts about the people. The engine knows no arithmetic and
 no word.
@@ -114,7 +114,7 @@ a moment with no amount listed, `(assumed (amount WHO KIND MOMENT) z)`, resting 
 It does not hold of every relation: in the Zebra puzzle an empty house is one whose owner is not known yet. A
 problem that adopts it states that `has` is no hypothesis relation, `(solve :no-hypothesis (has))`.
 
-Each module has one entry rule, as `std.arith` has `arith`: `(import words :symbols (words))`, `(import gaps
+Each module has one entry rule, as `std.math.decimal-arith` has `decimal-arith`: `(import words :symbols (words))`, `(import gaps
 :symbols (gaps))`, `(import readings :symbols (readings))`, `(import listed_is_all :symbols (listed-is-all))`. A
 problem that imports `readings` also writes `(solve :hrules (read-need))`, which a module cannot write for it.
 

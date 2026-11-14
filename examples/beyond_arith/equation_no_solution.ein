@@ -15,7 +15,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.digits :symbols (md nz __closed__))
+(import std.math.digits :symbols (md nz __closed__))
 (import std.algebra :symbols (total-owed functional))
 (relation is-a Thing Type :why "{?1} is a {?2}")
 (relation dig Place Digit :why "the digit of x at {?1} is {?2}")

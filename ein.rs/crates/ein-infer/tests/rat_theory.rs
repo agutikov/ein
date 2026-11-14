@@ -1,8 +1,8 @@
-//! **`std.rat`, held to exact fractions and to the rule of the theory** — M1f
+//! **`std.math.rat`, held to exact fractions and to the rule of the theory** — M1f
 //! [S1f.6.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md).
 //!
-//! `stdlib/rat.ein` is the calculator's second extension: a rational is
-//! `(rat Z D)`, an integer of `std.int` over a natural number of `std.arith`
+//! `stdlib/math/rat.ein` is the calculator's second extension: a rational is
+//! `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith`
 //! that is not zero, and its normal form is in lowest terms. The module calls
 //! the two theories below it and edits neither. Ein has no numbers, so what
 //! holds the theory's answers is here.
@@ -49,7 +49,7 @@ const DEN: i128 = 4;
 /// The requests of one saturation.
 const CHUNK: usize = 250;
 
-const IMPORT: &str = "(import std.rat :symbols (rat-arith))\n";
+const IMPORT: &str = "(import std.math.rat :symbols (rat-arith))\n";
 
 // ── fractions, and how the theory writes them ──────────────────────
 
@@ -68,7 +68,7 @@ fn frac(n: i128, d: i128) -> Frac {
     Frac(s * n / g, s * d / g)
 }
 
-/// A string of decimal digits as a number of `std.arith`, high zeros kept.
+/// A string of decimal digits as a number of `std.math.decimal-arith`, high zeros kept.
 fn written(digits: &str) -> String {
     let mut out = String::from("z");
     for ch in digits.chars() {
@@ -467,7 +467,7 @@ fn simplification_and_negation_are_right() {
     }
 }
 
-/// A request may name an operand, through `std.arith`'s `let`, and the
+/// A request may name an operand, through `std.math.decimal-arith`'s `let`, and the
 /// answer repeats the name.
 #[test]
 fn named_operands_work_for_every_request() {
@@ -534,14 +534,14 @@ fn an_integer_is_not_a_rational_operand() {
 // ── a zero denominator, and a division by zero ─────────────────────
 
 /// **A zero denominator is a division by zero, in two steps**, as
-/// `std.arith`'s is (the user's ruling of 2026-11-11). A request with an
+/// `std.math.decimal-arith`'s is (the user's ruling of 2026-11-11). A request with an
 /// operand whose denominator is zero, written `z`, with digits, or under a
 /// name, and a `rat-div` by a rational that is zero, however that is
 /// written, derive `(division-by-zero REQUEST)`, the request as written;
-/// `std.arith`'s rule derives `(false)`; and the request is never answered.
+/// `std.math.decimal-arith`'s rule derives `(false)`; and the request is never answered.
 /// The requests beside them are answered and not flagged.
 ///
-/// **One flag a request, and it is the request's** (S1f.6.24). `std.arith`
+/// **One flag a request, and it is the request's** (S1f.6.24). `std.math.decimal-arith`
 /// flags a division at its tagged call since that stage, whoever made it.
 /// None of this module's rules is replaced by it: a request with a
 /// denominator of zero performs no division, and a `rat-div` by a rational
@@ -645,18 +645,18 @@ fn circuit(body: &str) -> (usize, usize) {
     let mut depth_of: BTreeMap<ein_core::FactId, usize> = BTreeMap::new();
     let (mut firings, mut deepest) = (0usize, 0usize);
     let closers = [
-        ein_corpus::spellings("arith")
+        ein_corpus::spellings("decimal-arith")
             .iter()
             .find_map(|n| terms.syms.get(n))
-            .expect("std.arith's closing rule"),
+            .expect("std.math.decimal-arith's closing rule"),
         ein_corpus::spellings("int-arith")
             .iter()
             .find_map(|n| terms.syms.get(n))
-            .expect("std.int's closing rule"),
+            .expect("std.math.int's closing rule"),
         ein_corpus::spellings("rat-arith")
             .iter()
             .find_map(|n| terms.syms.get(n))
-            .expect("std.rat's closing rule"),
+            .expect("std.math.rat's closing rule"),
     ];
     {
         let mut s = Session {
@@ -739,10 +739,10 @@ struct Module {
 }
 
 fn module() -> Module {
-    let path = repo_root().join("stdlib/rat.ein");
+    let path = repo_root().join("stdlib/math/rat.ein");
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("std.rat parses");
+    let forms = parse(&mut ast, &text, path.to_str()).expect("std.math.rat parses");
     Module { ast, forms }
 }
 
@@ -807,14 +807,18 @@ impl Module {
 }
 
 /// **The rule of the theory, on the text**, in its strongest form: every
-/// rule of `std.rat` but the closing rule has exactly **one** premise. It
+/// rule of `std.math.rat` but the closing rule has exactly **one** premise. It
 /// reads no table itself and joins nothing: all it needs travels in the
 /// call's tag (E-3 of P1f.6's `findings.md` is why).
 #[test]
 fn every_rule_has_one_premise() {
     let m = module();
     let rules = m.declared("rule");
-    assert!(rules.len() >= 50, "std.rat parsed to {} rules", rules.len());
+    assert!(
+        rules.len() >= 50,
+        "std.math.rat parsed to {} rules",
+        rules.len()
+    );
     for (name, rule) in &rules {
         let premises = m.conjuncts(m.clause(*rule, "match"));
         if name == "rat-arith" {
@@ -824,7 +828,7 @@ fn every_rule_has_one_premise() {
         assert_eq!(
             premises.len(),
             1,
-            "rule {name} has {} premises: a rule of std.rat has ONE, and carries \
+            "rule {name} has {} premises: a rule of std.math.rat has ONE, and carries \
              what it needs in the call's tag",
             premises.len()
         );
@@ -833,8 +837,8 @@ fn every_rule_has_one_premise() {
 
 /// No `absent`, no `not`, no `or` and no guard: the module is monotone and
 /// has one stratum. It concludes no `(false)` either: a zero denominator
-/// derives `std.arith`'s flag, by one of the four rules named here, and
-/// `std.arith`'s rule derives the contradiction.
+/// derives `std.math.decimal-arith`'s flag, by one of the four rules named here, and
+/// `std.math.decimal-arith`'s rule derives the contradiction.
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();
@@ -872,13 +876,13 @@ fn the_theory_writes_no_negation_and_no_guard() {
     );
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
-        "std.rat guesses nothing and expands nothing"
+        "std.math.rat guesses nothing and expands nothing"
     );
 }
 
 /// `rat-arith` is the theory's one entry. It closes every relation the
 /// module declares, names every other rule, and names `int-arith` and
-/// `arith`, the entries of the theories below, without which a selection
+/// `decimal-arith`, the entries of the theories below, without which a selection
 /// leaves their rules behind in silence (E-20 of P1f.6's `findings.md`).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
@@ -914,11 +918,11 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         .map(|(n, _)| n.clone())
         .filter(|n| n != "rat-arith")
         .collect();
-    want_named.insert("arith".to_string());
+    want_named.insert("decimal-arith".to_string());
     want_named.insert("int-arith".to_string());
     assert_eq!(
         named, want_named,
-        "`rat-arith` names every other rule of the module, `int-arith` and `arith`"
+        "`rat-arith` names every other rule of the module, `int-arith` and `decimal-arith`"
     );
 
     // The module imports the two theories below it, each by its entry.
@@ -933,7 +937,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
                 .to_string()
         })
         .collect();
-    assert_eq!(imports, ["std.arith", "std.int"]);
+    assert_eq!(imports, ["std.math.decimal-arith", "std.math.int"]);
 
     // Its own name is a written fact, the module's only one (E-11).
     let facts: Vec<(String, Vec<String>)> = m

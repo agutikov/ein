@@ -51,7 +51,7 @@ After the terms are moved the equation is `a·x = d`:
 | a ≠ 0, a divides d | *x = d/a* | derive the root | A-1 |
 | a ≠ 0, a does not divide d | *x = d/a*, a fraction; or, over the whole numbers, *no whole root* | with S1f.6.8, the root is a rational. Without it, the remainder is read by its shape, `(n ?p ?r)`, with no negation | A-2 |
 | d would be negative | *x is negative* | with S1f.6.7, a root. Without it, `diff-of`'s second number says *short by*, and that is reported | — |
-| a = 0, d ≠ 0 | *0 = 5: no solution* | **not divide.** The naive solver asks `(div d z)`, and the calculator's ruled division by zero kills root (A-3). So the theory compares a with zero first, as [`stdlib/arith.ein`](../../../stdlib/arith.ein) tells a program that must not die to do, and answers *no root* | A-3 |
+| a = 0, d ≠ 0 | *0 = 5: no solution* | **not divide.** The naive solver asks `(div d z)`, and the calculator's ruled division by zero kills root (A-3). So the theory compares a with zero first, as [`stdlib/math/decimal-arith.ein`](../../../stdlib/math/decimal-arith.ein) tells a program that must not die to do, and answers *no root* | A-3 |
 | a = 0, d = 0 | *0 = 0: every number is a solution* | answer *every number*, and derive no value: there is no one value to derive | — |
 
 **The question for the user** (e of the [README](README.md#the-questions-for-the-user)): what the two last rows
@@ -112,7 +112,7 @@ agent ran it once on 2026-11-11: 10 candidates, 9 dead alone, N 9, k_s 2, R is �
 `{(value x (n z 5))}`, 11 saturations; `:over maximal` reads `?v = (n z 5)`.
 
 ```lisp
-(import std.arith :symbols (arith))
+(import std.math.decimal-arith :symbols (decimal-arith))
 
 (relation digit Digit          :why "{?1} is a digit")
 (relation sought Unknown       :why "{?1} is asked for")

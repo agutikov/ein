@@ -9,8 +9,8 @@ The user, 2026-11-11: *"add examples with long numbers and many calculations so 
 with calculation time"*. `ein saturate FILE` prints three times of its own, and this script reads them:
 
     parse:      the program's own text, lexed and parsed
-    kb load:    macros, imports and facts: for a program that imports `std.arith`, mostly the 1 664 rows
-                of `std.digits`, parsed and stored, whatever the program asks
+    kb load:    macros, imports and facts: for a program that imports `std.math.decimal-arith`, mostly the 1 664 rows
+                of `std.math.digits`, parsed and stored, whatever the program asks
     saturate:   the calculation, with its firings
 
 The tables it prints, each a section:
@@ -185,24 +185,26 @@ def one_request(op: str, digits: int, seed: int) -> str:
     rnd = random.Random(seed * 1000 + digits)
     x = gen.draw(rnd, 2 * digits if op == "div" else digits)
     y = gen.draw(rnd, digits)
-    return f"{gen.IMPORT}({op} {gen.enc(x)} {gen.enc(y)})\n"
+    body = f"({op} {gen.enc(x)} {gen.enc(y)})\n"
+    return gen.import_line(body) + body
 
 
 def batch(op: str, n: int, seed: int) -> str:
     """`n` requests of `op` on two numbers of exactly nine digits."""
     import random
     rnd = random.Random(seed)
-    return gen.IMPORT + "".join(f"({op} {gen.enc(gen.draw(rnd, 9))} {gen.enc(gen.draw(rnd, 9))})\n"
-                                for _ in range(n))
+    body = "".join(f"({op} {gen.enc(gen.draw(rnd, 9))} {gen.enc(gen.draw(rnd, 9))})\n" for _ in range(n))
+    return gen.import_line(body) + body
 
 
 def section_split(best: int) -> None:
     print("## What a program pays before its first request\n")
     progs = [
         ("no import: one relation", '(relation thing Thing :why "{?1} is a thing")\n'),
-        ("`std.digits` alone, the seven tables", "(import std.digits :symbols (fa fs md cl nz mid adj))\n"),
-        ("`std.arith`, the theory and the tables", gen.IMPORT),
-        ("`std.arith` and 17 + 5", f"{gen.IMPORT}(add {gen.enc(17)} {gen.enc(5)})\n"),
+        ("`std.math.digits` alone, the seven tables", "(import std.math.digits :symbols (fa fs md cl nz mid adj))\n"),
+        ("`std.math.decimal-arith`, the theory and the tables", gen.import_line("")),
+        ("`std.math.decimal-arith` and 17 + 5",
+         gen.import_line(f"(add {gen.enc(17)} {gen.enc(5)})\n") + f"(add {gen.enc(17)} {gen.enc(5)})\n"),
     ]
     rows = []
     for i, (what, text) in enumerate(progs):
@@ -404,7 +406,7 @@ def expected(kw: dict, seed: int) -> list[dict[str, str]]:
 
 
 def printed(text: str) -> list[dict[str, str]]:
-    """Each query's bindings as `ein solve` prints them, a number read back from `std.arith`'s spelling."""
+    """Each query's bindings as `ein solve` prints them, a number read back from `std.math.decimal-arith`'s spelling."""
     def value(v: str) -> str:
         v = v.strip()
         if v == "z":

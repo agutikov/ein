@@ -1,0 +1,33 @@
+;;; `std.math.decimal-arith` — a malformed number: a name that is no digit, in a digit's
+;;; place. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request the theory cannot read is flagged, `(malformed REQUEST)`, the
+;;; request as written, and `malformed-is-false` derives `(false)` from the
+;;; flag, as for a division by zero (the user's rulings of 2026-11-11 and
+;;; 2026-11-12). Every operand that is found is checked a place a firing,
+;;; `check-step`, and the rule that finds the fault says `(bad-operand TAG
+;;; (not-a-number THING))`; the operand's tag is turned into the request by
+;;; one of ten rules, here `bad-add-first`, and `bad-request-malformed`
+;;; derives the flag.
+;;;
+;;; `check-digit`: the place of a digit holds `x`, which is none of the ten.
+;;; The rule has ten `neq` guards and no table: `neq` holds of every other
+;;; name. The bad place is the second from the units, so the check walks one
+;;; place before it meets it.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim
+;;; such a program can make. The sum beside it was computed and is in root's
+;;; state, but a dead state is no answer. `ein solve` names the request in
+;;; the unsat core, and `--trace` shows the flag and the contradiction as two
+;;; steps.
+
+(import std.math.decimal-arith :symbols (decimal-arith add n))
+
+(add (n z 2) (n z 2))
+(add (n (n (n z 1) x) 7) (n z 5))
+
+(solve :expect (false))

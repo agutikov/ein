@@ -161,10 +161,10 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// loader refuses a list naming an hrule the program does not declare.
 ///
 /// **Moved at M1f S1f.6.35**, imports by full name: a rule a program does not
-/// list is named by its full name, `std.int.int-div-pn` (66 lines); the
-/// sixteen programs that bring `std.num9`, and `gaps`, `listed_is_all` and
+/// list is named by its full name, `std.math.int.int-div-pn` (66 lines); the
+/// sixteen programs that bring `std.math.num9`, and `gaps`, `listed_is_all` and
 /// `readings`, hold the calculator whole and meet `z` first in
-/// `std.arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
+/// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
 /// `0` and `1` in its `domain-elimination`.
 const SEEDED: [(&str, &[&str]); 156] = [
     (
@@ -182,8 +182,8 @@ const SEEDED: [(&str, &[&str]); 156] = [
     (
         "examples/arith/int.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))",
         ],
     ),
@@ -197,7 +197,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/arith/num9.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/arith/num9_both_ways.ein",
@@ -205,13 +205,13 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/arith/num9_overflow.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/arith/rat.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
@@ -232,7 +232,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/beyond_arith/equation_two_unknowns.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/beyond_arith/fibonacci.ein",
@@ -251,7 +251,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/beyond_arith/laws.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/beyond_arith/perfect.ein",
@@ -282,7 +282,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/binary_arithmetic/conv.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/binary_arithmetic/first.ein",
@@ -498,7 +498,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/word_problems/gaps.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/word_problems/kinds.ein",
@@ -514,7 +514,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/word_problems/listed_is_all.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
         "examples/word_problems/more.ein",
@@ -528,7 +528,7 @@ const SEEDED: [(&str, &[&str]); 156] = [
         "examples/word_problems/readings.ein",
         &[
             "`read-need`, asserted by rule `readings`",
-            "`z`, matched by rule `std.arith.operand-zero`",
+            "`z`, matched by rule `std.math.decimal-arith.operand-zero`",
         ],
     ),
     (
@@ -537,9 +537,12 @@ const SEEDED: [(&str, &[&str]); 156] = [
     ),
     (
         "examples/word_problems/words.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
-    ("stdlib/arith.ein", &["`z`, matched by rule `operand-zero`"]),
+    (
+        "stdlib/math/decimal-arith.ein",
+        &["`z`, matched by rule `operand-zero`"],
+    ),
     (
         "stdlib/elim.ein",
         &[
@@ -548,23 +551,23 @@ const SEEDED: [(&str, &[&str]); 156] = [
         ],
     ),
     (
-        "stdlib/int.ein",
+        "stdlib/math/int.ein",
         &[
             "`neg`, asserted by rule `int-div-pn`",
             "`pos`, asserted by rule `int-div-pp`",
-            "`z`, matched by rule `std.arith.operand-zero`",
+            "`z`, matched by rule `std.math.decimal-arith.operand-zero`",
         ],
     ),
     (
-        "stdlib/num9.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "stdlib/math/num9.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "stdlib/rat.ein",
+        "stdlib/math/rat.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
-            "`z`, matched by rule `std.arith.operand-zero`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+            "`z`, matched by rule `std.math.decimal-arith.operand-zero`",
         ],
     ),
     (
@@ -580,106 +583,106 @@ const SEEDED: [(&str, &[&str]); 156] = [
         &["`C`, in (not (sits-with A C))"],
     ),
     (
-        "tests/stdlib/arith/01_add.ein",
+        "tests/stdlib/math/decimal-arith/01_add.ein",
         &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
     ),
     (
-        "tests/stdlib/arith/02_carry_out.ein",
+        "tests/stdlib/math/decimal-arith/02_carry_out.ein",
         &["`z`, in (add (n (n (n (n (n (n (n (n (n z 9) 9) 9) 9) 9) 9) 9) 9) 9) (n z 1))"],
     ),
     (
-        "tests/stdlib/arith/03_lengths.ein",
+        "tests/stdlib/math/decimal-arith/03_lengths.ein",
         &["`z`, in (add (n z 7) (n (n (n z 1) 2) 3))"],
     ),
     (
-        "tests/stdlib/arith/05_high_zeros.ein",
+        "tests/stdlib/math/decimal-arith/05_high_zeros.ein",
         &["`z`, in (add (n (n (n z 0) 0) 5) (n (n z 0) 7))"],
     ),
     (
-        "tests/stdlib/arith/06_named.ein",
+        "tests/stdlib/math/decimal-arith/06_named.ein",
         &["`z`, in (let price (n (n (n z 2) 5) 0))"],
     ),
     (
-        "tests/stdlib/arith/07_only_what_is_asked.ein",
+        "tests/stdlib/math/decimal-arith/07_only_what_is_asked.ein",
         &["`z`, in (let a (n (n z 1) 9))"],
     ),
     (
-        "tests/stdlib/arith/08_sub.ein",
+        "tests/stdlib/math/decimal-arith/08_sub.ein",
         &["`z`, in (sub (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
     ),
     (
-        "tests/stdlib/arith/10_sub_named.ein",
+        "tests/stdlib/math/decimal-arith/10_sub_named.ein",
         &["`z`, in (let budget (n (n (n z 5) 0) 0))"],
     ),
     (
-        "tests/stdlib/arith/11_cmp.ein",
+        "tests/stdlib/math/decimal-arith/11_cmp.ein",
         &["`z`, in (cmp (n (n z 2) 5) (n (n z 1) 9))"],
     ),
     (
-        "tests/stdlib/arith/13_mul.ein",
+        "tests/stdlib/math/decimal-arith/13_mul.ein",
         &["`z`, in (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))"],
     ),
     (
-        "tests/stdlib/arith/15_mul_long_and_named.ein",
+        "tests/stdlib/math/decimal-arith/15_mul_long_and_named.ein",
         &["`z`, in (let price (n (n (n z 2) 5) 0))"],
     ),
     (
-        "tests/stdlib/arith/16_div.ein",
+        "tests/stdlib/math/decimal-arith/16_div.ein",
         &["`z`, in (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))"],
     ),
     (
-        "tests/stdlib/arith/17_div_every_digit.ein",
+        "tests/stdlib/math/decimal-arith/17_div_every_digit.ein",
         &["`z`, in (div (n (n (n (n (n (n (n (n (n (n z 8) 6) 4) 1) 9) 7) 5) 2) 3) 3) (n z 7))"],
     ),
     (
-        "tests/stdlib/arith/19_div_named_and_chained.ein",
+        "tests/stdlib/math/decimal-arith/19_div_named_and_chained.ein",
         &["`z`, in (let price (n (n (n z 1) 2) 5))"],
     ),
     (
-        "tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein",
+        "tests/stdlib/math/decimal-arith/21_div_by_zero_spelt_and_named.ein",
         &["`z`, in (let none (n (n z 0) 0))"],
     ),
     (
-        "tests/stdlib/arith/22_malformed_digit.ein",
+        "tests/stdlib/math/decimal-arith/22_malformed_digit.ein",
         &[
             "`x`, in (add (n (n (n z 1) x) 7) (n z 5))",
             "`z`, in (add (n z 2) (n z 2))",
         ],
     ),
     (
-        "tests/stdlib/arith/23_malformed_fact_as_digit.ein",
+        "tests/stdlib/math/decimal-arith/23_malformed_fact_as_digit.ein",
         &["`z`, in (add (n z 2) (n z 2))"],
     ),
     (
-        "tests/stdlib/arith/24_malformed_ends_in_digit.ein",
+        "tests/stdlib/math/decimal-arith/24_malformed_ends_in_digit.ein",
         &["`z`, in (add (n z 2) (n z 2))"],
     ),
     (
-        "tests/stdlib/arith/25_malformed_ends_in_zero.ein",
+        "tests/stdlib/math/decimal-arith/25_malformed_ends_in_zero.ein",
         &["`z`, in (add (n z 2) (n z 2))"],
     ),
     (
-        "tests/stdlib/arith/26_malformed_ends_in_a_name.ein",
+        "tests/stdlib/math/decimal-arith/26_malformed_ends_in_a_name.ein",
         &["`z`, in (let price (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/27_malformed_digit_as_number.ein",
+        "tests/stdlib/math/decimal-arith/27_malformed_digit_as_number.ein",
         &["`z`, in (add (n z 2) (n z 2))"],
     ),
     (
-        "tests/stdlib/arith/28_malformed_zero_digit_as_number.ein",
+        "tests/stdlib/math/decimal-arith/28_malformed_zero_digit_as_number.ein",
         &["`z`, in (add (n z 2) (n z 2))"],
     ),
     (
-        "tests/stdlib/arith/29_undeclared_name.ein",
+        "tests/stdlib/math/decimal-arith/29_undeclared_name.ein",
         &["`z`, in (let price (n (n z 1) 9))"],
     ),
     (
-        "tests/stdlib/arith/30_declared_name.ein",
+        "tests/stdlib/math/decimal-arith/30_declared_name.ein",
         &["`z`, in (let price (n (n z 1) 9))"],
     ),
     (
-        "tests/stdlib/arith/31_malformed_through_a_name.ein",
+        "tests/stdlib/math/decimal-arith/31_malformed_through_a_name.ein",
         &[
             "`x`, in (let broken (n (n z x) 1))",
             "`y`, in (let unused (n z y))",
@@ -687,31 +690,31 @@ const SEEDED: [(&str, &[&str]); 156] = [
         ],
     ),
     (
-        "tests/stdlib/arith/32_malformed_name_for_a_name.ein",
+        "tests/stdlib/math/decimal-arith/32_malformed_name_for_a_name.ein",
         &["`z`, in (let price (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/33_let_twice.ein",
+        "tests/stdlib/math/decimal-arith/33_let_twice.ein",
         &["`z`, in (let price (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/34_let_twice_the_same.ein",
+        "tests/stdlib/math/decimal-arith/34_let_twice_the_same.ein",
         &["`z`, in (let price (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/36_let_digit.ein",
+        "tests/stdlib/math/decimal-arith/36_let_digit.ein",
         &["`z`, in (let 7 (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/37_let_zero_digit.ein",
+        "tests/stdlib/math/decimal-arith/37_let_zero_digit.ein",
         &["`z`, in (let 0 (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/38_what_stays_silent.ein",
+        "tests/stdlib/math/decimal-arith/38_what_stays_silent.ein",
         &["`end`, in (add (n end 1) (n z 5))"],
     ),
     (
-        "tests/stdlib/arith/40_div_call_by_zero_spelt.ein",
+        "tests/stdlib/math/decimal-arith/40_div_call_by_zero_spelt.ein",
         &["`z`, in (share (n z 7) (n (n z 0) 0))"],
     ),
     (
@@ -729,266 +732,266 @@ const SEEDED: [(&str, &[&str]); 156] = [
         ],
     ),
     (
-        "tests/stdlib/int/01_simplify.ein",
+        "tests/stdlib/math/int/01_simplify.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-simplify (int (n z 5) (n z 3)))",
         ],
     ),
     (
-        "tests/stdlib/int/02_neg.ein",
+        "tests/stdlib/math/int/02_neg.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-neg (int (n z 7) z))",
         ],
     ),
     (
-        "tests/stdlib/int/03_add.ein",
+        "tests/stdlib/math/int/03_add.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-add (int (n z 7) z) (int (n z 5) z))",
         ],
     ),
     (
-        "tests/stdlib/int/04_sub.ein",
+        "tests/stdlib/math/int/04_sub.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-sub (int (n z 7) z) (int (n z 5) z))",
         ],
     ),
     (
-        "tests/stdlib/int/05_mul.ein",
+        "tests/stdlib/math/int/05_mul.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))",
         ],
     ),
     (
-        "tests/stdlib/int/06_cmp.ein",
+        "tests/stdlib/math/int/06_cmp.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-cmp (int (n z 7) z) (int (n z 5) z))",
         ],
     ),
     (
-        "tests/stdlib/int/07_unsimplified.ein",
+        "tests/stdlib/math/int/07_unsimplified.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-add (int (n z 5) (n z 3)) (int z (n z 7)))",
         ],
     ),
     (
-        "tests/stdlib/int/08_named_and_chained.ein",
+        "tests/stdlib/math/int/08_named_and_chained.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (let balance (int (n (n z 4) 0) z))",
         ],
     ),
     (
-        "tests/stdlib/int/09_div_euclid.ein",
+        "tests/stdlib/math/int/09_div_euclid.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-div-euclid (int (n z 7) z) (int (n z 2) z))",
         ],
     ),
     (
-        "tests/stdlib/int/10_div_trunc.ein",
+        "tests/stdlib/math/int/10_div_trunc.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-div-trunc (int (n z 7) z) (int (n z 2) z))",
         ],
     ),
     (
-        "tests/stdlib/int/11_div_floor.ein",
+        "tests/stdlib/math/int/11_div_floor.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-div-floor (int (n z 7) z) (int (n z 2) z))",
         ],
     ),
     (
-        "tests/stdlib/int/12_div_euclid_by_zero.ein",
+        "tests/stdlib/math/int/12_div_euclid_by_zero.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-add (int (n z 2) z) (int z (n z 5)))",
         ],
     ),
     (
-        "tests/stdlib/int/13_div_trunc_by_zero.ein",
+        "tests/stdlib/math/int/13_div_trunc_by_zero.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (int-add (int (n z 2) z) (int z (n z 5)))",
         ],
     ),
     (
-        "tests/stdlib/int/14_div_floor_by_zero.ein",
+        "tests/stdlib/math/int/14_div_floor_by_zero.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (let nothing (int (n z 0) (n (n z 0) 0)))",
         ],
     ),
     (
-        "tests/stdlib/num9/01_add.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/01_add.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/02_add_overflow.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/02_add_overflow.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/03_sub.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/03_sub.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/04_cmp.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/04_cmp.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/05_mul.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/05_mul.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/06_mul_overflow.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/06_mul_overflow.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/07_div.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/07_div.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/08_div_every_digit.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/08_div_every_digit.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/09_div_by_zero.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/09_div_by_zero.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/11_from9.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/11_from9.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/num9/12_both_modules.ein",
+        "tests/stdlib/math/num9/12_both_modules.ein",
         &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
     ),
     (
-        "tests/stdlib/num9/13_chain.ein",
-        &["`z`, matched by rule `std.arith.operand-zero`"],
+        "tests/stdlib/math/num9/13_chain.ein",
+        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "tests/stdlib/rat/01_simplify.ein",
+        "tests/stdlib/math/rat/01_simplify.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-simplify (rat (int (n z 2) z) (n z 4)))",
         ],
     ),
     (
-        "tests/stdlib/rat/02_neg.ein",
+        "tests/stdlib/math/rat/02_neg.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-neg (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
-        "tests/stdlib/rat/03_add.ein",
+        "tests/stdlib/math/rat/03_add.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "tests/stdlib/rat/04_sub.ein",
+        "tests/stdlib/math/rat/04_sub.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "tests/stdlib/rat/05_mul.ein",
+        "tests/stdlib/math/rat/05_mul.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
-        "tests/stdlib/rat/06_div.ein",
+        "tests/stdlib/math/rat/06_div.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
-        "tests/stdlib/rat/07_cmp.ein",
+        "tests/stdlib/math/rat/07_cmp.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "tests/stdlib/rat/08_unsimplified.ein",
+        "tests/stdlib/math/rat/08_unsimplified.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))",
         ],
     ),
     (
-        "tests/stdlib/rat/09_named_and_chained.ein",
+        "tests/stdlib/math/rat/09_named_and_chained.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (let half (rat (int (n z 1) z) (n z 2)))",
         ],
     ),
     (
-        "tests/stdlib/rat/10_div_by_zero_rational.ein",
+        "tests/stdlib/math/rat/10_div_by_zero_rational.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "tests/stdlib/rat/11_zero_denominator_first.ein",
+        "tests/stdlib/math/rat/11_zero_denominator_first.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "tests/stdlib/rat/12_zero_denominator_second.ein",
+        "tests/stdlib/math/rat/12_zero_denominator_second.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))",
         ],
     ),
     (
-        "tests/stdlib/rat/13_zero_denominator_one_operand.ein",
+        "tests/stdlib/math/rat/13_zero_denominator_one_operand.ein",
         &[
-            "`neg`, asserted by rule `std.int.int-div-pn`",
-            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
             "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),

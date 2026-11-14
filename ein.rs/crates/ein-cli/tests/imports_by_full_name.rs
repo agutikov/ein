@@ -53,7 +53,7 @@ fn program(tag: &str, src: &str, modules: &[(&str, &str)]) -> Scratch {
 fn the_calculator_by_the_names_a_program_writes() {
     let s = program(
         "ein-full-acc",
-        "(import std.arith :symbols (add sum-of n))\n\
+        "(import std.math.decimal-arith :symbols (add sum-of n))\n\
          (add (n z 2) (n z 3))\n\
          (query :goal (sum-of ?x ?y ?s) :expect (model (sum-of (n z 2) (n z 3) (n z 5))))\n",
         &[],
@@ -66,7 +66,10 @@ fn the_calculator_by_the_names_a_program_writes() {
     let r = ein_in(s.path(), &["solve", "p.ein", "--trace", "trace.md"]);
     assert_eq!(r.code, 0, "{}", r.stderr);
     let trace = std::fs::read_to_string(s.path().join("trace.md")).expect("a trace");
-    assert!(trace.contains("`std.arith.add-ask`"), "the circuit's rule");
+    assert!(
+        trace.contains("`std.math.decimal-arith.add-ask`"),
+        "the circuit's rule"
+    );
     assert!(
         trace.contains("sum-of(n(z, 2), n(z, 3), n(z, 5))"),
         "the program's name"
@@ -80,7 +83,7 @@ fn a_programs_own_names_beside_the_calculator() {
          (query :goal (done ?t) :expect (model (done laundry)))\n",
         "(relation b T :why \"{?1} is b\")\n(__closed__ b)\n(b one)\n\
          (query :goal (b ?x) :expect (model (b one)))\n",
-        "(import std.digits :symbols (fa))\n\
+        "(import std.math.digits :symbols (fa))\n\
          (relation column Col Digit Digit :why \"column {?1} adds {?2} and {?3}\")\n\
          (relation col Col Digit Digit :why \"column {?1} gives {?2}, carry {?3}\")\n\
          (__closed__ column) (__closed__ col)\n(column units 7 5)\n\
@@ -89,7 +92,7 @@ fn a_programs_own_names_beside_the_calculator() {
          (query :goal (col ?c ?d ?k) :expect (model (col units 2 1)))\n",
     ] {
         let src = format!(
-            "(import std.arith :symbols (arith add n sum-of))\n(add (n z 7) (n z 5))\n{own}\
+            "(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))\n(add (n z 7) (n z 5))\n{own}\
              (query :goal (sum-of ?x ?y ?s) :expect (model (sum-of (n z 7) (n z 5) (n (n z 1) 2))))\n"
         );
         let s = program("ein-full-own", &src, &[]);
@@ -114,9 +117,11 @@ fn an_alias_makes_no_copy() {
             .expect("a count")
             .to_string()
     };
-    let once = facts("(import std.arith :symbols (arith add n))\n(add (n z 2) (n z 3))\n");
+    let once = facts(
+        "(import std.math.decimal-arith :symbols (decimal-arith add n))\n(add (n z 2) (n z 3))\n",
+    );
     let twice = facts(
-        "(import std.arith :symbols (arith add n))\n(import std.arith :as a)\n\
+        "(import std.math.decimal-arith :symbols (decimal-arith add n))\n(import std.math.decimal-arith :as a)\n\
          (add (n z 2) (n z 3))\n",
     );
     assert_eq!(once, twice, "an alias brings no second calculator");

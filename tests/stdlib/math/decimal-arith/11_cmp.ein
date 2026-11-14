@@ -1,0 +1,44 @@
+;;; `std.math.decimal-arith` — comparison: `lt`, `eq` and `gt`. M1f S1f.6.4.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(cmp X Y)` is answered by `(cmp-of X Y O)`, where O is
+;;; one of the names `lt`, `eq` and `gt`: X is less than, equal to or greater
+;;; than Y.
+;;;
+;;; ── The comparison, by hand ────────────────────────────────────────────────
+;;;
+;;; One walk from the units (`cmp-start`, `cmp-column`), carrying the order of
+;;; the digits already passed, `eq` before the first. A column whose digits
+;;; differ overrules the order below it, and a column of equal digits keeps
+;;; it: the comparator's table, `cl` of `std.math.digits`.
+;;;
+;;;   25 against 19      units: 5 against 9, lt;  tens: 2 against 1, gt
+;;;   19 against 25      units: 9 against 5, gt;  tens: 1 against 2, lt
+;;;   471 against 471    eq, eq, eq
+;;;   471 against 461    eq, gt, and the equal top digits keep gt
+;;;
+;;; No number is built, so nothing is turned round: the walk ends (`cmp-end`)
+;;; and the order is the answer (`cmp-answer`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `cmp-of`'s whole extent: four requests, one order each. A request answered
+;;; with two orders, the order of the units beside the order of the whole,
+;;; fails the file.
+
+(import std.math.decimal-arith :symbols (decimal-arith cmp n cmp-of))
+
+(cmp (n (n z 2) 5) (n (n z 1) 9))
+(cmp (n (n z 1) 9) (n (n z 2) 5))
+(cmp (n (n (n z 4) 7) 1) (n (n (n z 4) 7) 1))
+(cmp (n (n (n z 4) 7) 1) (n (n (n z 4) 6) 1))
+
+(solve :expect (region (model)))
+
+(query :goal (cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (cmp-of (n (n z 2) 5) (n (n z 1) 9) gt)
+                      (cmp-of (n (n z 1) 9) (n (n z 2) 5) lt)
+                      (cmp-of (n (n (n z 4) 7) 1) (n (n (n z 4) 7) 1) eq)
+                      (cmp-of (n (n (n z 4) 7) 1) (n (n (n z 4) 6) 1) gt)))

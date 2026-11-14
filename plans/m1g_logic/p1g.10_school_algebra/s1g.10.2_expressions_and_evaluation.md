@@ -63,7 +63,7 @@ the same walk, building a tree in place of a number. S1g.10.5 uses it to solve a
 for `Times` are the three for `Plus` with `mul` and `product-of`.
 
 ```lisp
-(import std.arith :symbols (arith))
+(import std.math.decimal-arith :symbols (decimal-arith))
 
 (relation Plus Expr Expr       :why "{?1} plus {?2}")
 (relation Times Expr Expr      :why "{?1} times {?2}")
@@ -234,4 +234,4 @@ a name that is both a variable of a problem and a `let` constant.
 - `(calc E)` and `(let NAME E)` answer as `design.md` § C's examples showed, search-free.
 - A used name nothing states, and a name defined through itself, are each reported by name, by a rule, and
   held by a test.
-- The calculator's core is unchanged: no rule of `std.arith` reads an expression.
+- The calculator's core is unchanged: no rule of `std.math.decimal-arith` reads an expression.

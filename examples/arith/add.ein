@@ -3,10 +3,10 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; Ein has no numbers and no arithmetic. `std.arith` is a theory written in
+;;; Ein has no numbers and no arithmetic. `std.math.decimal-arith` is a theory written in
 ;;; Ein that knows school arithmetic the way a circuit does: the ten digits
 ;;; are plain names, what is known about them is tables of facts
-;;; (`std.digits`), and the theory's rules are the wiring. This program
+;;; (`std.math.digits`), and the theory's rules are the wiring. This program
 ;;; imports it with one name, states one request, and reads the answer.
 ;;;
 ;;;   (n PREFIX DIGIT)     a number, in reading order: ten times the prefix,
@@ -35,7 +35,7 @@
 ;;; The second request names its operands. Its answer repeats the names, so
 ;;; the goal `(sum-of apples pears ?fruit)` reads it.
 
-(import std.arith :symbols (arith add n let sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add n let sum-of))
 
 (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
 

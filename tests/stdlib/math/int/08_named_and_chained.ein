@@ -1,0 +1,75 @@
+;;; `std.math.int` — operands by name, and a rule of the program that reads an
+;;; answer's sign. M1f S1f.6.7.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(let NAME (int P N))` names an integer: `let` is `std.math.decimal-arith`'s, and a
+;;; request of this module may name its operands as a request of that one may.
+;;; The answer repeats the names. A rule of the program tells a negative
+;;; answer from the rest with no negation: it matches `(int z (n ?p ?a))`, a
+;;; negative part that is a number and not zero.
+;;;
+;;;   balance = 40, bill = 52, refund = -15 (written 0 less 15)
+;;;   balance - bill      = -12       overdrawn, by 12
+;;;   balance - refund    = 55
+;;;   bill x refund       = -780
+;;;   bill against refund : gt
+;;;
+;;; The program's own rule `settle` asks for the negation of every difference
+;;; that came out negative, and that request is answered too: 12.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `int-diff-of`'s whole extent, the names as written; `overdrawn`'s, the one
+;;; difference that is negative; and the negation the program's rule asked
+;;; for, whose operand is an integer the theory computed.
+
+(import std.math.int :symbols (int-arith int int-sub int-mul int-cmp int-diff-of int-neg int-neg-of
+                          int-product-of int-cmp-of))
+(import std.math.decimal-arith :symbols (let n))
+
+(relation overdrawn Name Name Number
+  :why "{?1} does not cover {?2}: short by {?3}")
+(__closed__ overdrawn)
+
+(let balance (int (n (n z 4) 0) z))
+(let bill    (int (n (n z 5) 2) z))
+(let refund  (int z (n (n z 1) 5)))
+
+(int-sub balance bill)
+(int-sub balance refund)
+(int-mul bill refund)
+(int-cmp bill refund)
+
+(rule short-of-money ()
+  :match  (int-diff-of ?account ?cost (int z (n ?p ?a)))
+  :assert (overdrawn ?account ?cost (n ?p ?a))
+  :why    "{?account} less {?cost} is negative")
+
+(rule settle ()
+  :match  (int-diff-of ?account ?cost (int z (n ?p ?a)))
+  :assert (int-neg (int z (n ?p ?a)))
+  :why    "what is owed is the difference negated")
+
+(solve :expect (region (model)))
+
+(query :goal (int-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (int-diff-of balance bill (int z (n (n z 1) 2)))
+                      (int-diff-of balance refund (int (n (n z 5) 5) z))))
+
+(query :goal (overdrawn ?account ?cost ?by)
+       :goal-text "{?account} does not cover {?cost}: short by {?by}"
+       :expect (model (overdrawn balance bill (n (n z 1) 2))))
+
+(query :goal (int-neg-of ?x ?s)
+       :goal-text "{?x} negated is {?s}"
+       :expect (model (int-neg-of (int z (n (n z 1) 2)) (int (n (n z 1) 2) z))))
+
+(query :goal (int-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (int-product-of bill refund (int z (n (n (n z 7) 8) 0)))))
+
+(query :goal (int-cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (int-cmp-of bill refund gt)))

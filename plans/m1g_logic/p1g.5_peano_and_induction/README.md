@@ -2,7 +2,7 @@
 
 **Milestone:** [M1g](../README.md)
 **Status:** planned 2026-11-11, not started.
-**Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s rulings; `std.arith`, the decimal calculator
+**Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s rulings; `std.math.decimal-arith`, the decimal calculator
 of [P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), which S1g.5.2 holds the unary
 numbers to; for S1g.5.3, [S1g.4.4](../p1g.4_first_order_logic/s1g.4.4_quantifier_rules.md)'s proof checker.
 **Pulls in:** [F26](../../followups/f26_consistency_and_completeness.md)'s § *Does Gödel's theorem say
@@ -45,7 +45,7 @@ open, where a search does not end, and what self-reference would need.
 | ID | title | depends on | status |
 |---|---|---|---|
 | [S1g.5.1](s1g.5.1_unary_numbers_and_the_axioms.md) | Unary numbers and the axioms as rules: `z`, `(s N)`, addition, multiplication and order by recursion, on request | P1g.1 | planned |
-| [S1g.5.2](s1g.5.2_agreement_with_the_calculator.md) | Agreement with the calculator: conversion between unary and decimal, and the two theories held equal | S1g.5.1; `std.arith` | planned |
+| [S1g.5.2](s1g.5.2_agreement_with_the_calculator.md) | Agreement with the calculator: conversion between unary and decimal, and the two theories held equal | S1g.5.1; `std.math.decimal-arith` | planned |
 | [S1g.5.3](s1g.5.3_induction.md) | Induction: a schema over formulas against checking up to a bound; one theorem proved for all numbers, checked by Ein | S1g.5.1; S1g.4.4 | planned; **stops for the user** |
 | [S1g.5.4](s1g.5.4_goedel_made_concrete.md) | Gödel made concrete: what the theory decides, a search that does not end, the liar, and what self-reference needs | S1g.5.1 to .3; S1g.4.5 | planned; a report |
 
@@ -53,7 +53,7 @@ open, where a search does not end, and what self-reference would need.
 
 - **Peano's recursion computes,** search-free, held by the search-free test: addition, multiplication and
   order on unary numbers, each answer exactly once.
-- **Right, against Rust's integers,** on every pair up to a bound, and **against `std.arith`,** on the same
+- **Right, against Rust's integers,** on every pair up to a bound, and **against `std.math.decimal-arith`,** on the same
   pairs through the conversion: the two theories written in Ein agree with each other, not only each with
   Rust.
 - **Each axiom has a program** that shows what it is in Ein: a rule, a property of nested facts, or a schema.

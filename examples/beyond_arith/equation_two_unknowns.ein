@@ -3,7 +3,7 @@
 ;;;
 ;;; x's two digits and y's one are hypotheses, 30 candidates. Here the
 ;;; constraint is not a table but the calculator itself: once all three
-;;; digits are set, rules of this program ask `std.arith` for 3x, for 5y and
+;;; digits are set, rules of this program ask `std.math.decimal-arith` for 3x, for 5y and
 ;;; for their sum, and a sum that is not 47 is (false). So search and the
 ;;; search-free theory meet: every guess is checked by a computation that
 ;;; guesses nothing.
@@ -15,7 +15,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.arith :symbols (arith mul n product-of add sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith mul n product-of add sum-of))
 (import std.algebra :symbols (total-owed functional))
 (relation is-a Thing Type :why "{?1} is a {?2}")
 (relation dig Place Digit :why "the digit at {?1} is {?2}")

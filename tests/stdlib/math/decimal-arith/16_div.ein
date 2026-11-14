@@ -1,0 +1,48 @@
+;;; `std.math.decimal-arith` — long division: 127645 divided by 25 is 5105, remainder 20.
+;;; M1f S1f.6.6.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(div X Y)` is answered by `(quot-of X Y Q R)`: the
+;;; quotient and the remainder, X = Q x Y + R with R less than Y.
+;;;
+;;; ── The division, by hand ──────────────────────────────────────────────────
+;;;
+;;; First the divisor's multiples, 25, 50, 75, … 225, each a row of
+;;; multiplication (`div-multiples`, `div-multiple-2` to `div-multiple-9`).
+;;; Then the dividend's digits from the top (`div-turn`, `div-begin`), one
+;;; step a digit: the digit is brought down beside what is left over
+;;; (`div-bring-first`, `div-bring`), and the quotient's digit is found by
+;;; halving the range 0 to 10, each trial a subtraction of a multiple
+;;; (`div-try-5` first; `div-fits` or `div-too-big`; `div-digit-found`).
+;;;
+;;;   bring down    number    trials                              digit   left
+;;;   1                  1    5 no, 2 no, 1 no                        0      1
+;;;   2                 12    5 no, 2 no, 1 no                        0     12
+;;;   7                127    5 fits (2), 7 no, 6 no                  5      2
+;;;   6                 26    5 no, 2 no, 1 fits (1)                  1      1
+;;;   4                 14    5 no, 2 no, 1 no                        0     14
+;;;   5                145    5 fits (20), 7 no, 6 no                 5     20
+;;;
+;;; A 0 before the quotient's first digit is not written (`div-next-none`); a
+;;; 0 after it is (`div-next-zero`); any other digit goes after the quotient
+;;; so far (`div-next`). No digit is left (`div-end`): 5105, remainder 20
+;;; (`div-answer`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `quot-of`'s whole extent: one request, one answer, the quotient and the
+;;; remainder each in normal form. The `(solve …)` form claims R = {∅}:
+;;; a trial is a subtraction whose outcome the tables decide, and nothing is
+;;; guessed.
+
+(import std.math.decimal-arith :symbols (decimal-arith div n quot-of))
+
+(div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))
+
+(solve :expect (region (model)))
+
+(query :goal (quot-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}"
+       :expect (model (quot-of (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5)
+                               (n (n (n (n z 5) 1) 0) 5) (n (n z 2) 0))))

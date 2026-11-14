@@ -1,0 +1,34 @@
+;;; `std.math.num9` — comparison: lt, gt and eq. M1f S1f.6.13.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(cmp9 X Y)` is answered by `(cmp9-of X Y O)`, O one of the names `lt`,
+;;; `eq`, `gt`. One rule, `cmp9-columns`, a premise a column over the
+;;; comparator's table, from the units: each column's row takes the order of
+;;; the digits below and hands on the order with this column counted, and a
+;;; column whose digits differ overrules what is below it.
+;;;
+;;;   4567 against 123078     lt
+;;;   123078 against 4567     gt
+;;;   25 against 25           eq
+;;;   190 against 109         gt: the tens overrule the units, where 0 is less than 9
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `cmp9-of`'s whole extent: four requests, one order each.
+
+(import std.math.num9 :symbols (arith9 cmp9 num9 cmp9-of))
+
+(cmp9 (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 2 3 0 7 8))
+(cmp9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))
+(cmp9 (num9 0 0 0 0 0 0 0 2 5) (num9 0 0 0 0 0 0 0 2 5))
+(cmp9 (num9 0 0 0 0 0 0 1 9 0) (num9 0 0 0 0 0 0 1 0 9))
+
+(solve :expect (region (model)))
+
+(query :goal (cmp9-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (cmp9-of (num9 0 0 0 0 0 4 5 6 7) (num9 0 0 0 1 2 3 0 7 8) lt)
+                      (cmp9-of (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7) gt)
+                      (cmp9-of (num9 0 0 0 0 0 0 0 2 5) (num9 0 0 0 0 0 0 0 2 5) eq)
+                      (cmp9-of (num9 0 0 0 0 0 0 1 9 0) (num9 0 0 0 0 0 0 1 0 9) gt)))

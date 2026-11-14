@@ -12,7 +12,7 @@ stages are added.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop, as M1g's phases do, and
 [P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), the calculator. Specifically:
 
-- **the four operations and comparison,** `std.arith`
+- **the four operations and comparison,** `std.math.decimal-arith`
   ([S1f.6.3](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md) to
   [S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)),
   done 2026-11-11: every number here is the calculator's, `z` or `(n PREFIX DIGIT)`;
@@ -180,7 +180,7 @@ the same shape from the other side and the two must not be confused:
 
 The spelling shows the difference and avoids a clash. `add`, `sub`, `mul` and `div` are the calculator's request
 relations and mean *asked* once the theory is imported flat
-([`stdlib/arith.ein`](../../../stdlib/arith.ein) § The names this module occupies). An expression's heads are
+([`stdlib/math/decimal-arith.ein`](../../../stdlib/math/decimal-arith.ein) § The names this module occupies). An expression's heads are
 other ordinary relations. This plan writes them capitalised, `Plus`, `Minus`, `Times`, `Over`, `Neg`, `Pow`, as
 M1g writes its connectives `And` and `Imp`
 ([Q-M1g.1](../open_questions.md#q-m1g1--the-spelling-of-the-connectives)); the user ruled for the
@@ -221,7 +221,7 @@ A rule that says *like terms add* is `?`-quantified over object-level variables:
 | [S1g.10.4](s1g.10.4_linear_equations.md) | S1f.8.4 | Linear equations in one unknown: the pupil's derivation, no solution and every number, derivation against search, and word problems that need an unknown | S1g.10.3; S1f.6.20 | **yes, once:** what *no solution* and *every number* are (a flag, a dead root, a result fact) |
 | [S1g.10.5](s1g.10.5_systems_and_quadratics.md) | S1f.8.5 | Systems of two linear equations; quadratics with a rational root; inequalities, optional | S1g.10.4 | no; the optional part runs on the user's word |
 | [S1g.10.6](s1g.10.6_a_program_that_states_false_facts.md) | S1f.8.10 | A program that states false facts, `2 + 2 = 5`: what happens today, and whether an existing theory already answers it (the user, 2026-11-12) | the calculator as shipped | no; its page is **shown** |
-| [S1g.10.7](s1g.10.7_compound_numbers_without_a_hardcoded_representation.md) | S1f.8.11 | Compound numbers without a hardcoded representation: integers and rationals over binary or decimal naturals, *"or even not numbers"* (the user, 2026-11-12) | `std.int`, `std.rat`; binary arithmetic in the stdlib, or its banked examples | **yes:** the directions on a prototype, before any shipped module moves |
+| [S1g.10.7](s1g.10.7_compound_numbers_without_a_hardcoded_representation.md) | S1f.8.11 | Compound numbers without a hardcoded representation: integers and rationals over binary or decimal naturals, *"or even not numbers"* (the user, 2026-11-12) | `std.math.int`, `std.math.rat`; binary arithmetic in the stdlib, or its banked examples | **yes:** the directions on a prototype, before any shipped module moves |
 
 No stage carries an estimate. Engine findings go to [`findings.md`](findings.md).
 
@@ -260,7 +260,7 @@ program is reproduced as a sketch in the stage that re-takes it. The geometry's 
 
 | # | the program | what the binary said | re-taken by |
 |---|---|---|---|
-| A-1 | `3x + 4 = 19` as `(linear x 3 4 19)`, three rules of the program over `std.arith`: take the constant from both sides, divide by the coefficient, read the quotient | `(value x (n z 5))`; no candidate, k_s 1, R {∅}, 1 saturation; the claim holds under `ein test`. `--trace` writes **123 steps, of which 3 are the pupil's** (steps 2, 19 and 123); the other 120 are the calculator's columns | [S1g.10.4](s1g.10.4_linear_equations.md) |
+| A-1 | `3x + 4 = 19` as `(linear x 3 4 19)`, three rules of the program over `std.math.decimal-arith`: take the constant from both sides, divide by the coefficient, read the quotient | `(value x (n z 5))`; no candidate, k_s 1, R {∅}, 1 saturation; the claim holds under `ein test`. `--trace` writes **123 steps, of which 3 are the pupil's** (steps 2, 19 and 123); the other 120 are the calculator's columns | [S1g.10.4](s1g.10.4_linear_equations.md) |
 | A-2 | the same with 18 for 19, and a rule that reads a remainder `(n ?p ?r)` | `(no-root x)` derived with no negation: a non-zero normal-form number always has the shape `(n P D)`, so *the remainder is not zero* is a pattern | S1g.10.4 |
 | A-3 | the same with the coefficient `z`: `0·x + 4 = 19` | **root is dead:** the naive solver asks `(div 15 z)`, and the calculator's ruled division by zero derives `(false)`. `refuted by division-by-zero-is-false`; the core is the equation and three table rows. A solver must compare the coefficient with zero before it divides | S1g.10.4 |
 | A-4 | `3x + 4 = 19` by search: an hrule proposes `(value x (n z D))` for each of ten digits, a rule kills two values of one unknown, a rule kills a value whose left side is not 19 | 10 candidates, **9 dead alone**, N 9, k_s 2: ∅ and `{(value x (n z 5))}`, 11 saturations. ∅ is in R because nothing says the unknown has a value; `:over maximal` reads the one answer | S1g.10.4 |
@@ -391,10 +391,9 @@ those last words name is this one.
 **The order, with the additions.** S1g.10.6 is independent and may run at any time. S1g.10.7 runs after the
 calculator's binary build, beside the algebra.
 
-**Names.** The calculator's modules move under `std.math` before this phase starts
-([S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)): where this
-plan says `std.arith`, `std.int` and `std.rat`, read `std.math.decimal-arith`, `std.math.int` and
-`std.math.rat`. The relations keep their names.
+**Names.** The calculator's modules are under `std.math` since [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
+(2026-11-14): `std.math.decimal-arith`, `std.math.int` and `std.math.rat`, which this plan names; before that stage they
+were `std.arith`, `std.int` and `std.rat`. The relations kept their names.
 
 ## What is left to M1g's other phases
 

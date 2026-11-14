@@ -2,7 +2,7 @@
 ;;; How many apples do they have together?
 ;;; Both kinds stated for both: 5 + 3 = 8, and the pears are never wanted.
 (import words :symbols (words has asked together value))
-(import std.arith :symbols (n))
+(import std.math.decimal-arith :symbols (n))
 
 (has Bob apples (n z 5) now    :source "Bob has 5 apples")
 (has Bob pears (n z 2) now     :source "and 2 pears.")

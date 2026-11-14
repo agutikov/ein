@@ -287,7 +287,10 @@ def main() -> int:
         return 2
 
     src = ROOT / "stdlib"
-    modules = {p.name: p.read_text() for p in sorted(src.glob("*.ein"))}
+    # Every module at any depth, keyed by its path from `stdlib/`: the
+    # calculator's are under `math/` since M1f S1f.6.31, `math/decimal-arith.ein`.
+    modules = {p.relative_to(src).as_posix(): p.read_text()
+               for p in sorted(src.rglob("*.ein"), key=lambda p: p.relative_to(src).as_posix())}
     muts: list[Mutation] = []
     for name, text in modules.items():
         muts.extend(mutations_of(name, text))

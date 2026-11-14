@@ -7,7 +7,7 @@
 //! Bob)` beside `(relation likes Person Drink)` was stored, a premise
 //! `(likes ?who)` matched nothing, a conclusion `(fan ?who ?what)` derived
 //! facts no premise of the declared count read, and the calculator's `(add (n
-//! z 5))` and a `std.num9` number of eight digits were answered by silence,
+//! z 5))` and a `std.math.num9` number of eight digits were answered by silence,
 //! exit 0. Since then the loader refuses each (`ein_ir::from_ir`'s
 //! `refuse_wrong_counts`), one line a form, at the form, the same on every
 //! command.
@@ -444,13 +444,13 @@ fn an_imported_declaration_is_held_too() {
     let cases: [(&str, &str, &str); 4] = [
         (
             "flat-stdlib",
-            "(import std.arith :symbols (arith add n))\n(add (n z 5))\n",
+            "(import std.math.decimal-arith :symbols (decimal-arith add n))\n(add (n z 5))\n",
             ":2:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand \
              Operand) declares 2",
         ),
         (
             "qualified-stdlib",
-            "(import std.arith :as a)\n(a.add (a.n z 5) (a.n 5))\n",
+            "(import std.math.decimal-arith :as a)\n(a.add (a.n z 5) (a.n 5))\n",
             ":2:19: the fact (a.add (a.n z 5) (a.n 5)) holds (a.n 5), which gives a.n 1 \
              argument, and (relation a.n Number Digit) declares 2",
         ),

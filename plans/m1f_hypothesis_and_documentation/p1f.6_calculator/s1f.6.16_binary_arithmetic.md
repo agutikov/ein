@@ -27,7 +27,7 @@ assumed:
 
 - **The tables shrink, a lot.** A full adder is 8 rows where decimal's is 200; a digit product with a carry is
   4 where decimal's is 900; *not zero* is one row; the comparison table is 12.
-- **The wiring may not change at all.** The circuits of [`std.arith`](../../../stdlib/arith.ein) walk a
+- **The wiring may not change at all.** The circuits of [`std.arith`](../../../stdlib/math/decimal-arith.ein) walk a
   number a column at a time and look each column up; nothing in a walk says *ten*. If so, binary arithmetic is
   the same rules over other tables, and the stage's finding is that the theory is **generic in its base**,
   which says where decimal lives: in the tables and nowhere else.

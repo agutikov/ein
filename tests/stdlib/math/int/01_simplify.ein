@@ -1,0 +1,56 @@
+;;; `std.math.int` — an integer is two natural numbers, and its normal form has one
+;;; of them zero. M1f S1f.6.7.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(int P N)` is P less N, each part a number of `std.math.decimal-arith`. A request fact
+;;; `(int-simplify X)` is answered by `(int-simple-of X S)`: S is X's one
+;;; normal form, `(int D z)` where P is not the smaller, `(int z R)` where it
+;;; is, and `(int z z)` for zero, the part that is left in `std.math.decimal-arith`'s normal
+;;; form.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; The operand stands for itself (`int-simplify-ask`, `int-operand`,
+;;; `int-simplify-start`). Then both subtractions at once, P - N and N - P, by
+;;; `std.math.decimal-arith`'s walk (`int-norm-walks`): the one that ends with no borrow
+;;; hands its number over, and it is the positive part (`int-norm-plus`) or the
+;;; negative (`int-norm-minus`). Where P = N both hand over zero and both rules
+;;; say `(int z z)` (`int-simplify-answer`).
+;;;
+;;;   5 less 3      2            3 less 5       -2          3 less 3     0
+;;;   0 less 0      0            120 less 0     120         0 less 120   -120
+;;;   1000 less 999 1            007 less 012   -5          00 less 0    0
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `int-simple-of`'s whole extent: nine requests, nine answers, each operand
+;;; repeated as written, high zeros and all, and each answer in normal form.
+;;; The `(solve …)` form claims R = {∅}: nothing is guessed.
+
+(import std.math.int :symbols (int-arith int-simplify int int-simple-of))
+(import std.math.decimal-arith :symbols (n))
+
+(int-simplify (int (n z 5) (n z 3)))
+(int-simplify (int (n z 3) (n z 5)))
+(int-simplify (int (n z 3) (n z 3)))
+(int-simplify (int z z))
+(int-simplify (int (n (n (n z 1) 2) 0) z))
+(int-simplify (int z (n (n (n z 1) 2) 0)))
+(int-simplify (int (n (n (n (n z 1) 0) 0) 0) (n (n (n z 9) 9) 9)))
+(int-simplify (int (n (n (n z 0) 0) 7) (n (n (n z 0) 1) 2)))
+(int-simplify (int (n (n z 0) 0) z))
+
+(solve :expect (region (model)))
+
+(query :goal (int-simple-of ?x ?s)
+       :goal-text "{?x} is {?s}"
+       :expect (model (int-simple-of (int (n z 5) (n z 3)) (int (n z 2) z))
+                      (int-simple-of (int (n z 3) (n z 5)) (int z (n z 2)))
+                      (int-simple-of (int (n z 3) (n z 3)) (int z z))
+                      (int-simple-of (int z z) (int z z))
+                      (int-simple-of (int (n (n (n z 1) 2) 0) z) (int (n (n (n z 1) 2) 0) z))
+                      (int-simple-of (int z (n (n (n z 1) 2) 0)) (int z (n (n (n z 1) 2) 0)))
+                      (int-simple-of (int (n (n (n (n z 1) 0) 0) 0) (n (n (n z 9) 9) 9)) (int (n z 1) z))
+                      (int-simple-of (int (n (n (n z 0) 0) 7) (n (n (n z 0) 1) 2)) (int z (n z 5)))
+                      (int-simple-of (int (n (n z 0) 0) z) (int z z))))

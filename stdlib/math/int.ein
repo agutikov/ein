@@ -1,0 +1,748 @@
+;;; Ein stdlib — `std.math.int`: integers as a positive and a negative part, over
+;;; the natural numbers of `std.math.decimal-arith`, computed by saturation alone (M1f
+;;; P1f.6, S1f.6.7).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; This module is a theory written in Ein over `std.math.decimal-arith`, which it calls
+;;; and does not edit: every step is one of that theory's walks, started with
+;;; a tag of this module's, and nothing is guessed. On a program that imports
+;;; it and states requests the universe has no candidate, R is {∅}, and the
+;;; answer is root's fixpoint. No `absent`, no `not` and no guard of its own;
+;;; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the undeclared
+;;; name's, and so two strata (S1f.6.12). Nothing of an operand is flagged
+;;; here but a `let` that cannot be read: `std.math.decimal-arith`'s header says why.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.int :symbols (int-arith int-add int int-sum-of))
+;;;     (import std.math.decimal-arith :symbols (n))
+;;;
+;;; An import brings the module whole, `std.math.decimal-arith` and the tables with it
+;;; (M1f S1f.6.35); a program lists the names it writes, from the module that
+;;; declares each: `int-add`, `int`, `int-sum-of` from this one, `n` from
+;;; `std.math.decimal-arith`. `int-arith` is the theory's entry, the closing rule at the end
+;;; of this file: it names every rule and closes every relation of the module,
+;;; and it names `decimal-arith`, `std.math.decimal-arith`'s entry.
+;;;
+;;; ── The integer ────────────────────────────────────────────────────────────
+;;;
+;;; An integer is `(int P N)`: two natural numbers of `std.math.decimal-arith`, and its
+;;; value is P less N (the user's proposal of 2026-11-08: "numbers containing
+;;; 2 parts - positive and negative, that can be simplified until one of them
+;;; is zero").
+;;;
+;;;     7        (int (n z 7) z)
+;;;     -7       (int z (n z 7))
+;;;     0        (int z z)
+;;;     2        (int (n z 5) (n z 3))      not simplified: 5 less 3
+;;;
+;;; The **normal form** has one part `z`, and the other in `std.math.decimal-arith`'s
+;;; normal form, with no high zero; zero is `(int z z)`. Every integer has
+;;; exactly one. An operand may be written with both parts and with high
+;;; zeros, and is read by value; every answer is in normal form.
+;;;
+;;; ── The protocol: a request fact, answered by a result fact ────────────────
+;;;
+;;;     (int-simplify X)   (int-simple-of X S)      X in normal form
+;;;     (int-neg X)        (int-neg-of X S)         0 - X
+;;;     (int-add X Y)      (int-sum-of X Y S)       X + Y
+;;;     (int-sub X Y)      (int-diff-of X Y S)      X - Y: one integer, and no
+;;;                                                 second number, since a
+;;;                                                 difference is never short
+;;;     (int-mul X Y)      (int-product-of X Y S)   X x Y
+;;;     (int-cmp X Y)      (int-cmp-of X Y O)       O is `lt`, `eq` or `gt`
+;;;
+;;; The operands are repeated as written. An operand is an integer written
+;;; out, `(int P N)` with P and N numbers, or a name a `(let NAME (int P N))`
+;;; states: `let` is `std.math.decimal-arith`'s, and a name stands for what its `let`
+;;; says. A natural number is **not** an integer operand: `(int-add (n z 5)
+;;; X)` is never answered. Write `(int (n z 5) z)`.
+;;;
+;;; **Division names its convention** (M1f S1f.6.22, the user's ruling of
+;;; 2026-11-12). There is no bare `int-div`. For X divided by Y, Y not zero,
+;;; each request is answered by one fact with a quotient and a remainder, X =
+;;; Q x Y + R:
+;;;
+;;;     (int-div-euclid X Y)   (int-quot-euclid-of X Y Q R)
+;;;         0 <= R < |Y|. Q is an integer, and R is a **natural number** of
+;;;         `std.math.decimal-arith`, `z` or `(n PREFIX DIGIT)`, since it is never negative
+;;;     (int-div-trunc X Y)    (int-quot-trunc-of X Y Q R)
+;;;         Q rounded toward zero, R with the dividend's sign; both integers
+;;;     (int-div-floor X Y)    (int-quot-floor-of X Y Q R)
+;;;         Q rounded down, R with the divisor's sign; both integers
+;;;
+;;;      X /  Y     Euclidean     truncated     floored
+;;;      7 /  2      3, 1          3,  1          3,  1
+;;;     -7 /  2     -4, 1         -3, -1         -4,  1
+;;;      7 / -2     -3, 1         -3,  1         -4, -1
+;;;     -7 / -2      4, 1          3, -1          3, -1
+;;;
+;;; The three agree where neither operand is negative, and with `std.math.decimal-arith`'s
+;;; `div` there. A divisor that is zero by value derives `std.math.decimal-arith`'s flag,
+;;; `(division-by-zero REQUEST)`, the request as written, and `std.math.decimal-arith`'s
+;;; rule derives `(false)` from it: no rule of this module concludes `(false)`.
+;;; The module sees the zero by the divisor's shape before it calls
+;;; `std.math.decimal-arith`'s division, so it makes no call with a zero divisor and the
+;;; request has one flag, its own; `std.math.decimal-arith` flags any such call, whoever
+;;; made it (S1f.6.24), and none is made here.
+;;;
+;;; ── How it computes ────────────────────────────────────────────────────────
+;;;
+;;; Each operation works on the parts with `std.math.decimal-arith`'s walks, then
+;;; simplifies:
+;;;
+;;;   - **Simplifying** is subtraction both ways at once, P - N and N - P, as
+;;;     `std.math.decimal-arith`'s `sub` goes: the walk that ends with no borrow hands its
+;;;     number over, and that number is the part that is not zero.
+;;;   - **A sum** is (P1 + P2, N1 + N2), two addition walks. **A difference**
+;;;     is the same with the second operand's parts exchanged, and **a
+;;;     negation** is a simplification with the parts exchanged.
+;;;   - **A product** is (P1 x P2 + N1 x N2, P1 x N2 + N1 x P2): four
+;;;     products and two sums. No rule looks at a sign.
+;;;   - **A comparison** adds across, P1 + N2 against N1 + P2, and compares
+;;;     the two sums by `std.math.decimal-arith`'s walk. It builds no integer.
+;;;   - **A division** simplifies both operands, so that each shows its sign
+;;;     by its shape, and hands the two sizes to `std.math.decimal-arith`'s `div-call`
+;;;     with the signs in the tag. Truncated only puts the signs on. Floored
+;;;     and Euclidean adjust two of the four combinations of signs where a
+;;;     remainder is left: one more in the quotient, an addition walk, and
+;;;     the divisor's size less the remainder, a subtraction walk. The rules
+;;;     that read a sign read a shape, `(int z (n ?b ?c))`, and no guard.
+;;;
+;;; **A call's tag is its request.** `(int-add X Y)` is the tag of its own
+;;; computation, and the rule that answers reads `(int-done (int-add ?x ?y)
+;;; ?s)`. **The tagged calls a later theory makes are an interface,** as
+;;; `std.math.decimal-arith`'s are (P1f.6's question 41, round 2, the user's *"(a)"*),
+;;; held to these shapes by `ein-infer/tests/arith_theory.rs`'s
+;;; `the_tagged_calls_keep_their_shapes`:
+;;;
+;;;     (int-norm TAG P N)                 P less N, in normal form;
+;;;                                        answered by (int-done TAG INTEGER)
+;;;     (int-add-call TAG P1 N1 P2 N2)     P1 less N1, plus P2 less N2;
+;;;                                        answered by (int-done TAG INTEGER)
+;;;     (int-mul-call TAG P1 N1 P2 N2)     P1 less N1, times P2 less N2;
+;;;                                        answered by (int-done TAG INTEGER)
+;;;     (int-cmp-call TAG P1 N1 P2 N2)     P1 less N1, against P2 less N2;
+;;;                                        answered by `std.math.decimal-arith`'s
+;;;                                        (order-is TAG O)
+;;;
+;;; Each part is a natural number of `std.math.decimal-arith`, written out; a call looks
+;;; nothing up.
+;;;
+;;; **No rule joins two facts on a number,** `std.math.decimal-arith`'s rule, kept here:
+;;; every rule of this module has one premise. `ein-infer/tests/
+;;; int_theory.rs` holds that on this file's text, and holds the answers to
+;;; Rust's signed integers.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Its own: `int`; the requests `int-simplify`, `int-neg`, `int-add`,
+;;; `int-sub`, `int-mul`, `int-cmp`, `int-div-euclid`, `int-div-trunc` and
+;;; `int-div-floor`; the results `int-simple-of`, `int-neg-of`, `int-sum-of`,
+;;; `int-diff-of`, `int-product-of`, `int-cmp-of`, `int-quot-euclid-of`,
+;;; `int-quot-trunc-of` and `int-quot-floor-of`; the calls `int-norm`,
+;;; `int-add-call`, `int-mul-call`, `int-cmp-call` and their hand-over
+;;; `int-done`; a division's hand-over `int-div-done`; the tags `int-only`,
+;;; `int-first`, `int-second`, `int-plus`, `int-minus`, `int-add-p`,
+;;; `int-add-n`, `int-mul-pp`, `int-mul-nn`, `int-mul-pos`, `int-mul-pn`,
+;;; `int-mul-np`, `int-mul-neg`, `int-cmp-l`, `int-cmp-r`, `int-div-of`,
+;;; `int-div-a`, `int-div-b`, `int-div-m`, `int-div-q` and `int-div-r`; the
+;;; signs `pos` and `neg`, two names inside a division's tags; `int-rule`,
+;;; and the entry `int-arith`. Everything of `std.math.decimal-arith` comes with it. The
+;;; interface is `int`, the requests, the results and the four calls; the
+;;; tags are in the state for a query or a `--trace` to see, and are not a
+;;; promise.
+
+(import std.math.decimal-arith :symbols (decimal-arith operand operand-is sub-walk done add-walk mul-call cmp-walk
+                            order-is division-by-zero n div-call div-done))
+
+;; ── The integer ─────────────────────────────────────────────────────────────
+(relation int Number Number
+  :why "the integer {?1} less {?2}")
+
+;; ── The protocol ────────────────────────────────────────────────────────────
+(relation int-simplify Operand
+  :why "asked: {?1} in normal form")
+(relation int-simple-of Operand Integer
+  :why "{?1} is {?2}")
+(relation int-neg Operand
+  :why "asked: {?1} negated")
+(relation int-neg-of Operand Integer
+  :why "{?1} negated is {?2}")
+(relation int-add Operand Operand
+  :why "asked: {?1} + {?2}")
+(relation int-sum-of Operand Operand Integer
+  :why "{?1} + {?2} = {?3}")
+(relation int-sub Operand Operand
+  :why "asked: {?1} - {?2}")
+(relation int-diff-of Operand Operand Integer
+  :why "{?1} - {?2} = {?3}")
+(relation int-mul Operand Operand
+  :why "asked: {?1} x {?2}")
+(relation int-product-of Operand Operand Integer
+  :why "{?1} x {?2} = {?3}")
+(relation int-cmp Operand Operand
+  :why "asked: {?1} compared with {?2}")
+(relation int-cmp-of Operand Operand Order
+  :why "{?1} against {?2}: {?3}")
+(relation int-div-euclid Operand Operand
+  :why "asked: {?1} divided by {?2}, the remainder never negative")
+(relation int-quot-euclid-of Operand Operand Integer Number
+  :why "{?1} divided by {?2} = {?3}, remainder {?4}, the remainder never negative")
+(relation int-div-trunc Operand Operand
+  :why "asked: {?1} divided by {?2}, rounded toward zero")
+(relation int-quot-trunc-of Operand Operand Integer Integer
+  :why "{?1} divided by {?2} = {?3}, remainder {?4}, rounded toward zero")
+(relation int-div-floor Operand Operand
+  :why "asked: {?1} divided by {?2}, rounded down")
+(relation int-quot-floor-of Operand Operand Integer Integer
+  :why "{?1} divided by {?2} = {?3}, remainder {?4}, rounded down")
+
+;; ── The calls, and their hand-over ──────────────────────────────────────────
+(relation int-norm Tag Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, as an integer in normal form")
+(relation int-done Tag Integer
+  :why "the answer for {?1} is {?2}")
+(relation int-add-call Tag Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, plus {?4} less {?5}")
+(relation int-mul-call Tag Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, times {?4} less {?5}")
+(relation int-cmp-call Tag Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, compared with {?4} less {?5}")
+(relation int-div-done Request Integer Remainder
+  :why "the answer for {?1}: {?2}, remainder {?3}")
+
+;; ── The tags: what a call's answer is for ───────────────────────────────────
+(relation int-only Request
+  :why "the operand of {?1}")
+(relation int-first Request Operand
+  :why "the first operand of {?1}, whose second is {?2}")
+(relation int-second Request Number Number
+  :why "the second operand of {?1}, whose first is {?2} less {?3}")
+(relation int-plus Tag
+  :why "the positive part, for {?1}")
+(relation int-minus Tag
+  :why "the negative part, for {?1}")
+(relation int-add-p Tag Number Number
+  :why "the sum of the positive parts, for {?1}, the negative parts being {?2} and {?3}")
+(relation int-add-n Tag Number
+  :why "the sum of the negative parts, for {?1}, the positive parts' sum being {?2}")
+(relation int-mul-pp Tag Number Number Number Number
+  :why "the product of the positive parts, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}")
+(relation int-mul-nn Tag Number Number Number Number Number
+  :why "the product of the negative parts, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}; the positive parts' product is {?6}")
+(relation int-mul-pos Tag Number Number Number Number
+  :why "the positive part of the product, for {?1}, which multiplies {?2} less {?3} by {?4} less {?5}")
+(relation int-mul-pn Tag Number Number Number
+  :why "the first operand's positive part times the second's negative, for {?1}; still to multiply are {?2} and {?3}, and the positive part is {?4}")
+(relation int-mul-np Tag Number Number
+  :why "the first operand's negative part times the second's positive, for {?1}; the positive part is {?2}, and the other product {?3}")
+(relation int-mul-neg Tag Number
+  :why "the negative part of the product, for {?1}, whose positive part is {?2}")
+(relation int-cmp-l Tag Number Number
+  :why "the left side of the comparison, for {?1}; still to add are {?2} and {?3}")
+(relation int-cmp-r Tag Number
+  :why "the right side of the comparison, for {?1}, whose left side is {?2}")
+(relation int-div-of Request
+  :why "the division {?1}")
+(relation int-div-a Request Number Number
+  :why "the dividend simplified, for {?1}, whose divisor is {?2} less {?3}")
+(relation int-div-b Request Integer
+  :why "the divisor simplified, for {?1}, whose dividend is {?2}")
+(relation int-div-m Request Sign Sign Number
+  :why "the sizes divided, for {?1}: the dividend is {?2}, the divisor {?3}, and its size {?4}")
+(relation int-div-q Request Sign Number Number
+  :why "one more in the quotient, for {?1}, toward {?2}; the divisor's size is {?3} and the sizes' remainder {?4}")
+(relation int-div-r Request Sign Number
+  :why "the divisor's size less the remainder, for {?1}, toward {?2}; the quotient's size is {?3}")
+
+;; ── The operands ────────────────────────────────────────────────────────────
+;; An integer stands for itself, as a number does in `std.math.decimal-arith`; a name goes
+;; through `std.math.decimal-arith`'s `operand-name` and its `let`. The second operand is
+;; asked for when the first is found, by one rule for every request.
+(rule int-operand ()
+  :match  (operand ?k (int ?p ?n))
+  :assert (operand-is ?k (int ?p ?n))
+  :why    "an integer stands for itself")
+
+(rule int-operand-second ()
+  :match  (operand-is (int-first ?k ?y) (int ?p ?n))
+  :assert (operand (int-second ?k ?p ?n) ?y)
+  :why    "the first operand is {?p} less {?n}: now the integer {?y} stands for")
+
+;; ── The normal form ─────────────────────────────────────────────────────────
+;; `(int-norm TAG P N)`: P - N and N - P at once, by `std.math.decimal-arith`'s
+;; subtraction walk. The walk that ends with no borrow hands over a number in
+;; normal form; the other is short and says nothing. Where P = N both hand
+;; over zero, and the two rules below say the one fact, `(int z z)`.
+(rule int-norm-walks ()
+  :match  (int-norm ?k ?p ?n)
+  :assert (and (sub-walk (int-plus ?k) ?p ?n 0 z)
+               (sub-walk (int-minus ?k) ?n ?p 0 z))
+  :why    "take {?n} from {?p}, and {?p} from {?n}: one of the two has an answer")
+
+(rule int-norm-plus ()
+  :match  (done (int-plus ?k) ?d)
+  :assert (int-done ?k (int ?d z))
+  :why    "the positive part is {?d}, and the negative part is zero")
+
+(rule int-norm-minus ()
+  :match  (done (int-minus ?k) ?r)
+  :assert (int-done ?k (int z ?r))
+  :why    "the negative part is {?r}, and the positive part is zero")
+
+;; ── Simplification, and negation ────────────────────────────────────────────
+(rule int-simplify-ask ()
+  :match  (int-simplify ?x)
+  :assert (operand (int-only (int-simplify ?x)) ?x)
+  :why    "{?x} in normal form is asked: first, the integer {?x} stands for")
+
+(rule int-simplify-start ()
+  :match  (operand-is (int-only (int-simplify ?x)) (int ?p ?n))
+  :assert (int-norm (int-simplify ?x) ?p ?n)
+  :why    "simplify {?p} less {?n}")
+
+(rule int-simplify-answer ()
+  :match  (int-done (int-simplify ?x) ?s)
+  :assert (int-simple-of ?x ?s)
+  :why    "{?x} is {?s}")
+
+(rule int-neg-ask ()
+  :match  (int-neg ?x)
+  :assert (operand (int-only (int-neg ?x)) ?x)
+  :why    "{?x} negated is asked: first, the integer {?x} stands for")
+
+(rule int-neg-start ()
+  :match  (operand-is (int-only (int-neg ?x)) (int ?p ?n))
+  :assert (int-norm (int-neg ?x) ?n ?p)
+  :why    "the parts change places: simplify {?n} less {?p}")
+
+(rule int-neg-answer ()
+  :match  (int-done (int-neg ?x) ?s)
+  :assert (int-neg-of ?x ?s)
+  :why    "{?x} negated is {?s}")
+
+;; ── Addition, and subtraction ───────────────────────────────────────────────
+;; `(int-add-call TAG P1 N1 P2 N2)`: the positive parts added, then the
+;; negative parts, then the pair simplified.
+(rule int-add-plus ()
+  :match  (int-add-call ?k ?p ?n ?q ?m)
+  :assert (add-walk (int-add-p ?k ?n ?m) ?p ?q 0 z)
+  :why    "first the positive parts: {?p} + {?q}")
+
+(rule int-add-minus ()
+  :match  (done (int-add-p ?k ?n ?m) ?s)
+  :assert (add-walk (int-add-n ?k ?s) ?n ?m 0 z)
+  :why    "the positive parts make {?s}: now the negative parts, {?n} + {?m}")
+
+(rule int-add-norm ()
+  :match  (done (int-add-n ?k ?s) ?t)
+  :assert (int-norm ?k ?s ?t)
+  :why    "the negative parts make {?t}: simplify {?s} less {?t}")
+
+(rule int-add-ask ()
+  :match  (int-add ?x ?y)
+  :assert (operand (int-first (int-add ?x ?y) ?y) ?x)
+  :why    "{?x} + {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-add-start ()
+  :match  (operand-is (int-second (int-add ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-add-call (int-add ?x ?y) ?p ?n ?q ?m)
+  :why    "add {?p} less {?n} and {?q} less {?m}")
+
+(rule int-add-answer ()
+  :match  (int-done (int-add ?x ?y) ?s)
+  :assert (int-sum-of ?x ?y ?s)
+  :why    "{?x} + {?y} = {?s}")
+
+;; To take an integer away is to add it with its parts exchanged.
+(rule int-sub-ask ()
+  :match  (int-sub ?x ?y)
+  :assert (operand (int-first (int-sub ?x ?y) ?y) ?x)
+  :why    "{?x} - {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-sub-start ()
+  :match  (operand-is (int-second (int-sub ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-add-call (int-sub ?x ?y) ?p ?n ?m ?q)
+  :why    "to take {?q} less {?m} away, add {?m} less {?q}")
+
+(rule int-sub-answer ()
+  :match  (int-done (int-sub ?x ?y) ?s)
+  :assert (int-diff-of ?x ?y ?s)
+  :why    "{?x} - {?y} = {?s}")
+
+;; ── Multiplication ──────────────────────────────────────────────────────────
+;; `(int-mul-call TAG P1 N1 P2 N2)`: (P1 - N1) x (P2 - N2) is
+;; (P1 x P2 + N1 x N2) less (P1 x N2 + N1 x P2). Four products of
+;; `std.math.decimal-arith`, two sums, and the pair simplified; no rule looks at a sign.
+(rule int-mul-first ()
+  :match  (int-mul-call ?k ?p ?n ?q ?m)
+  :assert (mul-call (int-mul-pp ?k ?p ?n ?q ?m) ?p ?q)
+  :why    "first the positive parts: {?p} x {?q}")
+
+(rule int-mul-second ()
+  :match  (done (int-mul-pp ?k ?p ?n ?q ?m) ?a)
+  :assert (mul-call (int-mul-nn ?k ?p ?n ?q ?m ?a) ?n ?m)
+  :why    "the positive parts make {?a}: now the negative parts, {?n} x {?m}")
+
+(rule int-mul-plus ()
+  :match  (done (int-mul-nn ?k ?p ?n ?q ?m ?a) ?b)
+  :assert (add-walk (int-mul-pos ?k ?p ?n ?q ?m) ?a ?b 0 z)
+  :why    "the negative parts make {?b}: the product's positive part is {?a} + {?b}")
+
+(rule int-mul-third ()
+  :match  (done (int-mul-pos ?k ?p ?n ?q ?m) ?s)
+  :assert (mul-call (int-mul-pn ?k ?n ?q ?s) ?p ?m)
+  :why    "the positive part is {?s}: now across, {?p} x {?m}")
+
+(rule int-mul-fourth ()
+  :match  (done (int-mul-pn ?k ?n ?q ?s) ?c)
+  :assert (mul-call (int-mul-np ?k ?s ?c) ?n ?q)
+  :why    "that makes {?c}: and across the other way, {?n} x {?q}")
+
+(rule int-mul-minus ()
+  :match  (done (int-mul-np ?k ?s ?c) ?d)
+  :assert (add-walk (int-mul-neg ?k ?s) ?c ?d 0 z)
+  :why    "that makes {?d}: the product's negative part is {?c} + {?d}")
+
+(rule int-mul-norm ()
+  :match  (done (int-mul-neg ?k ?s) ?t)
+  :assert (int-norm ?k ?s ?t)
+  :why    "the negative part is {?t}: simplify {?s} less {?t}")
+
+(rule int-mul-ask ()
+  :match  (int-mul ?x ?y)
+  :assert (operand (int-first (int-mul ?x ?y) ?y) ?x)
+  :why    "{?x} x {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-mul-start ()
+  :match  (operand-is (int-second (int-mul ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-mul-call (int-mul ?x ?y) ?p ?n ?q ?m)
+  :why    "multiply {?p} less {?n} by {?q} less {?m}")
+
+(rule int-mul-answer ()
+  :match  (int-done (int-mul ?x ?y) ?s)
+  :assert (int-product-of ?x ?y ?s)
+  :why    "{?x} x {?y} = {?s}")
+
+;; ── Comparison ──────────────────────────────────────────────────────────────
+;; `(int-cmp-call TAG P1 N1 P2 N2)`: P1 - N1 against P2 - N2 is P1 + N2
+;; against N1 + P2, two sums and `std.math.decimal-arith`'s comparison walk, which hands
+;; over `(order-is TAG ORDER)`.
+(rule int-cmp-left ()
+  :match  (int-cmp-call ?k ?p ?n ?q ?m)
+  :assert (add-walk (int-cmp-l ?k ?n ?q) ?p ?m 0 z)
+  :why    "add across: the left side is {?p} + {?m}")
+
+(rule int-cmp-right ()
+  :match  (done (int-cmp-l ?k ?n ?q) ?l)
+  :assert (add-walk (int-cmp-r ?k ?l) ?n ?q 0 z)
+  :why    "the left side is {?l}: the right side is {?n} + {?q}")
+
+(rule int-cmp-sides ()
+  :match  (done (int-cmp-r ?k ?l) ?r)
+  :assert (cmp-walk ?k ?l ?r eq)
+  :why    "the right side is {?r}: compare {?l} with {?r}")
+
+(rule int-cmp-ask ()
+  :match  (int-cmp ?x ?y)
+  :assert (operand (int-first (int-cmp ?x ?y) ?y) ?x)
+  :why    "{?x} compared with {?y} is asked: first, the integer {?x} stands for")
+
+(rule int-cmp-start ()
+  :match  (operand-is (int-second (int-cmp ?x ?y) ?p ?n) (int ?q ?m))
+  :assert (int-cmp-call (int-cmp ?x ?y) ?p ?n ?q ?m)
+  :why    "compare {?p} less {?n} with {?q} less {?m}")
+
+(rule int-cmp-answer ()
+  :match  (order-is (int-cmp ?x ?y) ?o)
+  :assert (int-cmp-of ?x ?y ?o)
+  :why    "{?x} against {?y}: {?o}")
+
+;; ── Division, under three conventions ───────────────────────────────────────
+;; What the three share is written once. A request's `-ask` rule looks its
+;; first operand up under the tag `(int-first (int-div-of REQUEST) Y)`, and
+;; from there every rule down to the division of the sizes is the same for
+;; the three, the request travelling as `?k`: the dividend simplified, then
+;; the divisor, so that each is `(int SIZE z)` or `(int z SIZE)` and shows its
+;; sign by its shape; a divisor that is `(int z z)` is the flag; otherwise one
+;; rule a combination of signs hands the sizes to `std.math.decimal-arith`'s `div-call`,
+;; the signs in the tag as the names `pos` and `neg`.
+(rule int-div-start ()
+  :match  (operand-is (int-second (int-div-of ?k) ?p ?n) (int ?q ?m))
+  :assert (int-norm (int-div-a ?k ?q ?m) ?p ?n)
+  :why    "first the dividend, simplified: {?p} less {?n}")
+
+(rule int-div-divisor ()
+  :match  (int-done (int-div-a ?k ?q ?m) ?a)
+  :assert (int-norm (int-div-b ?k ?a) ?q ?m)
+  :why    "the dividend is {?a}: now the divisor, simplified, {?q} less {?m}")
+
+(rule int-div-by-zero ()
+  :match  (int-done (int-div-b ?k ?a) (int z z))
+  :assert (division-by-zero ?k)
+  :why    "the divisor of {?k} is zero")
+
+(rule int-div-pp ()
+  :match  (int-done (int-div-b ?k (int ?a z)) (int (n ?b ?c) z))
+  :assert (div-call (int-div-m ?k pos pos (n ?b ?c)) ?a (n ?b ?c))
+  :why    "neither is negative: divide the sizes, {?a} by (n {?b} {?c})")
+
+(rule int-div-pn ()
+  :match  (int-done (int-div-b ?k (int ?a z)) (int z (n ?b ?c)))
+  :assert (div-call (int-div-m ?k pos neg (n ?b ?c)) ?a (n ?b ?c))
+  :why    "the divisor is negative: divide the sizes, {?a} by (n {?b} {?c})")
+
+(rule int-div-np ()
+  :match  (int-done (int-div-b ?k (int z (n ?a ?d))) (int (n ?b ?c) z))
+  :assert (div-call (int-div-m ?k neg pos (n ?b ?c)) (n ?a ?d) (n ?b ?c))
+  :why    "the dividend is negative: divide the sizes, (n {?a} {?d}) by (n {?b} {?c})")
+
+(rule int-div-nn ()
+  :match  (int-done (int-div-b ?k (int z (n ?a ?d))) (int z (n ?b ?c)))
+  :assert (div-call (int-div-m ?k neg neg (n ?b ?c)) (n ?a ?d) (n ?b ?c))
+  :why    "both are negative: divide the sizes, (n {?a} {?d}) by (n {?b} {?c})")
+
+;; The adjustment's second walk, shared by the two conventions that adjust:
+;; the quotient's size is one more, and the remainder's is the divisor's size
+;; less what the sizes' division left. `?s` is where the convention's last
+;; rule sends the answer.
+(rule int-div-rest ()
+  :match  (done (int-div-q ?k ?s ?b ?r) ?q)
+  :assert (sub-walk (int-div-r ?k ?s ?q) ?b ?r 0 z)
+  :why    "the quotient's size is {?q}: now the divisor's size less the remainder, {?b} - {?r}")
+
+;; Euclidean: 0 <= R < |Y|, and R a natural number. Where the dividend is not
+;; negative the sizes' remainder is the answer's; where it is negative and a
+;; remainder is left, the quotient's size is one more and the remainder is
+;; |Y| - r. `neg` and `pos` in the adjustment's tags are the quotient's sign.
+(rule int-div-euclid-ask ()
+  :match  (int-div-euclid ?x ?y)
+  :assert (operand (int-first (int-div-of (int-div-euclid ?x ?y)) ?y) ?x)
+  :why    "{?x} divided by {?y}, the remainder never negative, is asked: first, the integer {?x} stands for")
+
+(rule int-div-euclid-pp ()
+  :match  (div-done (int-div-m (int-div-euclid ?x ?y) pos pos ?b) ?q ?r)
+  :assert (int-div-done (int-div-euclid ?x ?y) (int ?q z) ?r)
+  :why    "neither is negative: the sizes' quotient {?q} and remainder {?r} are the answer")
+
+(rule int-div-euclid-pn ()
+  :match  (div-done (int-div-m (int-div-euclid ?x ?y) pos neg ?b) ?q ?r)
+  :assert (int-div-done (int-div-euclid ?x ?y) (int z ?q) ?r)
+  :why    "the divisor is negative: the quotient is {?q} negated, and the remainder {?r} stays")
+
+(rule int-div-euclid-np-exact ()
+  :match  (div-done (int-div-m (int-div-euclid ?x ?y) neg pos ?b) ?q z)
+  :assert (int-div-done (int-div-euclid ?x ?y) (int z ?q) z)
+  :why    "the dividend is negative and nothing is left: the quotient is {?q} negated")
+
+(rule int-div-euclid-nn-exact ()
+  :match  (div-done (int-div-m (int-div-euclid ?x ?y) neg neg ?b) ?q z)
+  :assert (int-div-done (int-div-euclid ?x ?y) (int ?q z) z)
+  :why    "both are negative and nothing is left: the quotient is {?q}")
+
+(rule int-div-euclid-np-more ()
+  :match  (div-done (int-div-m (int-div-euclid ?x ?y) neg pos ?b) ?q (n ?r ?d))
+  :assert (add-walk (int-div-q (int-div-euclid ?x ?y) neg ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
+
+(rule int-div-euclid-nn-more ()
+  :match  (div-done (int-div-m (int-div-euclid ?x ?y) neg neg ?b) ?q (n ?r ?d))
+  :assert (add-walk (int-div-q (int-div-euclid ?x ?y) pos ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
+
+(rule int-div-euclid-neg ()
+  :match  (done (int-div-r (int-div-euclid ?x ?y) neg ?q) ?t)
+  :assert (int-div-done (int-div-euclid ?x ?y) (int z ?q) ?t)
+  :why    "the quotient is {?q} negated, and the remainder is {?t}")
+
+(rule int-div-euclid-pos ()
+  :match  (done (int-div-r (int-div-euclid ?x ?y) pos ?q) ?t)
+  :assert (int-div-done (int-div-euclid ?x ?y) (int ?q z) ?t)
+  :why    "the quotient is {?q}, and the remainder is {?t}")
+
+(rule int-div-euclid-answer ()
+  :match  (int-div-done (int-div-euclid ?x ?y) ?q ?r)
+  :assert (int-quot-euclid-of ?x ?y ?q ?r)
+  :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
+
+;; Truncated: Q toward zero, R with the dividend's sign. The sizes' division
+;; is the answer, and four rules put the signs on. A negated size that is
+;; zero is `(int z z)` already.
+(rule int-div-trunc-ask ()
+  :match  (int-div-trunc ?x ?y)
+  :assert (operand (int-first (int-div-of (int-div-trunc ?x ?y)) ?y) ?x)
+  :why    "{?x} divided by {?y}, rounded toward zero, is asked: first, the integer {?x} stands for")
+
+(rule int-div-trunc-pp ()
+  :match  (div-done (int-div-m (int-div-trunc ?x ?y) pos pos ?b) ?q ?r)
+  :assert (int-div-done (int-div-trunc ?x ?y) (int ?q z) (int ?r z))
+  :why    "neither is negative: the sizes' quotient {?q} and remainder {?r} are the answer")
+
+(rule int-div-trunc-pn ()
+  :match  (div-done (int-div-m (int-div-trunc ?x ?y) pos neg ?b) ?q ?r)
+  :assert (int-div-done (int-div-trunc ?x ?y) (int z ?q) (int ?r z))
+  :why    "the divisor is negative: the quotient is {?q} negated, and the remainder {?r} stays")
+
+(rule int-div-trunc-np ()
+  :match  (div-done (int-div-m (int-div-trunc ?x ?y) neg pos ?b) ?q ?r)
+  :assert (int-div-done (int-div-trunc ?x ?y) (int z ?q) (int z ?r))
+  :why    "the dividend is negative: the quotient is {?q} negated, and the remainder {?r} negated")
+
+(rule int-div-trunc-nn ()
+  :match  (div-done (int-div-m (int-div-trunc ?x ?y) neg neg ?b) ?q ?r)
+  :assert (int-div-done (int-div-trunc ?x ?y) (int ?q z) (int z ?r))
+  :why    "both are negative: the quotient is {?q}, and the remainder {?r} negated")
+
+(rule int-div-trunc-answer ()
+  :match  (int-div-done (int-div-trunc ?x ?y) ?q ?r)
+  :assert (int-quot-trunc-of ?x ?y ?q ?r)
+  :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
+
+;; Floored: Q rounded down, R with the divisor's sign. Where the signs agree
+;; the sizes' division is the answer; where they differ and a remainder is
+;; left, the quotient is -(q + 1) and the remainder's size is |Y| - r. `neg`
+;; and `pos` in the adjustment's tags are the remainder's sign, the
+;; divisor's.
+(rule int-div-floor-ask ()
+  :match  (int-div-floor ?x ?y)
+  :assert (operand (int-first (int-div-of (int-div-floor ?x ?y)) ?y) ?x)
+  :why    "{?x} divided by {?y}, rounded down, is asked: first, the integer {?x} stands for")
+
+(rule int-div-floor-pp ()
+  :match  (div-done (int-div-m (int-div-floor ?x ?y) pos pos ?b) ?q ?r)
+  :assert (int-div-done (int-div-floor ?x ?y) (int ?q z) (int ?r z))
+  :why    "neither is negative: the sizes' quotient {?q} and remainder {?r} are the answer")
+
+(rule int-div-floor-nn ()
+  :match  (div-done (int-div-m (int-div-floor ?x ?y) neg neg ?b) ?q ?r)
+  :assert (int-div-done (int-div-floor ?x ?y) (int ?q z) (int z ?r))
+  :why    "both are negative: the quotient is {?q}, and the remainder {?r} negated")
+
+(rule int-div-floor-pn-exact ()
+  :match  (div-done (int-div-m (int-div-floor ?x ?y) pos neg ?b) ?q z)
+  :assert (int-div-done (int-div-floor ?x ?y) (int z ?q) (int z z))
+  :why    "the divisor is negative and nothing is left: the quotient is {?q} negated")
+
+(rule int-div-floor-np-exact ()
+  :match  (div-done (int-div-m (int-div-floor ?x ?y) neg pos ?b) ?q z)
+  :assert (int-div-done (int-div-floor ?x ?y) (int z ?q) (int z z))
+  :why    "the dividend is negative and nothing is left: the quotient is {?q} negated")
+
+(rule int-div-floor-pn-more ()
+  :match  (div-done (int-div-m (int-div-floor ?x ?y) pos neg ?b) ?q (n ?r ?d))
+  :assert (add-walk (int-div-q (int-div-floor ?x ?y) neg ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
+
+(rule int-div-floor-np-more ()
+  :match  (div-done (int-div-m (int-div-floor ?x ?y) neg pos ?b) ?q (n ?r ?d))
+  :assert (add-walk (int-div-q (int-div-floor ?x ?y) pos ?b (n ?r ?d)) ?q (n z 1) 0 z)
+  :why    "a remainder is left, (n {?r} {?d}): one more in the quotient's size, {?q} + 1")
+
+(rule int-div-floor-neg ()
+  :match  (done (int-div-r (int-div-floor ?x ?y) neg ?q) ?t)
+  :assert (int-div-done (int-div-floor ?x ?y) (int z ?q) (int z ?t))
+  :why    "the quotient is {?q} negated, and the remainder is {?t} negated")
+
+(rule int-div-floor-pos ()
+  :match  (done (int-div-r (int-div-floor ?x ?y) pos ?q) ?t)
+  :assert (int-div-done (int-div-floor ?x ?y) (int z ?q) (int ?t z))
+  :why    "the quotient is {?q} negated, and the remainder is {?t}")
+
+(rule int-div-floor-answer ()
+  :match  (int-div-done (int-div-floor ?x ?y) ?q ?r)
+  :assert (int-quot-floor-of ?x ?y ?q ?r)
+  :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
+
+;; ── The closing rule, and the theory's one entry ────────────────────────────
+;; Every relation of the module is closed, so the search has no candidate
+;; among them, and every rule is named. It names `decimal-arith` too, `std.math.decimal-arith`'s
+;; entry. Until M1f S1f.6.35 the names were what made `(import std.math.int
+;; :symbols (int-arith))` bring the whole theory, the lower one's included, a
+;; selection's closure following the names a kept declaration writes (E-20 of
+;; P1f.6's `findings.md`); every import brings its module whole since, and the
+;; names stay for a program and a trace to read.
+;; `ein-infer/tests/int_theory.rs` holds that nothing is missing here.
+(relation int-rule Rule
+  :why "{?1} is a rule std.math.int brings")
+
+;; The closing rule's own name, as a written fact: what kept it in a program
+;; that is inlined and tree-shaken (E-11 of P1f.6's `findings.md`), and no
+;; longer needed for that since M1f S1f.6.25, a name a selection lists being
+;; live. It stays: removing it would move every state of every program.
+(int-rule int-arith)
+
+(rule int-arith ()
+  :match  ()
+  :assert (and (__closed__ int)
+               (__closed__ int-simplify) (__closed__ int-simple-of)
+               (__closed__ int-neg) (__closed__ int-neg-of)
+               (__closed__ int-add) (__closed__ int-sum-of)
+               (__closed__ int-sub) (__closed__ int-diff-of)
+               (__closed__ int-mul) (__closed__ int-product-of)
+               (__closed__ int-cmp) (__closed__ int-cmp-of)
+               (__closed__ int-norm) (__closed__ int-done)
+               (__closed__ int-add-call) (__closed__ int-mul-call)
+               (__closed__ int-cmp-call)
+               (__closed__ int-only) (__closed__ int-first)
+               (__closed__ int-second)
+               (__closed__ int-plus) (__closed__ int-minus)
+               (__closed__ int-add-p) (__closed__ int-add-n)
+               (__closed__ int-mul-pp) (__closed__ int-mul-nn)
+               (__closed__ int-mul-pos) (__closed__ int-mul-pn)
+               (__closed__ int-mul-np) (__closed__ int-mul-neg)
+               (__closed__ int-cmp-l) (__closed__ int-cmp-r)
+               (__closed__ int-div-euclid) (__closed__ int-quot-euclid-of)
+               (__closed__ int-div-trunc) (__closed__ int-quot-trunc-of)
+               (__closed__ int-div-floor) (__closed__ int-quot-floor-of)
+               (__closed__ int-div-done) (__closed__ int-div-of)
+               (__closed__ int-div-a) (__closed__ int-div-b)
+               (__closed__ int-div-m) (__closed__ int-div-q)
+               (__closed__ int-div-r)
+               (__closed__ int-rule)
+               (int-rule decimal-arith)
+               (int-rule int-operand) (int-rule int-operand-second)
+               (int-rule int-norm-walks) (int-rule int-norm-plus)
+               (int-rule int-norm-minus)
+               (int-rule int-simplify-ask) (int-rule int-simplify-start)
+               (int-rule int-simplify-answer)
+               (int-rule int-neg-ask) (int-rule int-neg-start)
+               (int-rule int-neg-answer)
+               (int-rule int-add-plus) (int-rule int-add-minus)
+               (int-rule int-add-norm)
+               (int-rule int-add-ask) (int-rule int-add-start)
+               (int-rule int-add-answer)
+               (int-rule int-sub-ask) (int-rule int-sub-start)
+               (int-rule int-sub-answer)
+               (int-rule int-mul-first) (int-rule int-mul-second)
+               (int-rule int-mul-plus) (int-rule int-mul-third)
+               (int-rule int-mul-fourth) (int-rule int-mul-minus)
+               (int-rule int-mul-norm)
+               (int-rule int-mul-ask) (int-rule int-mul-start)
+               (int-rule int-mul-answer)
+               (int-rule int-cmp-left) (int-rule int-cmp-right)
+               (int-rule int-cmp-sides)
+               (int-rule int-cmp-ask) (int-rule int-cmp-start)
+               (int-rule int-cmp-answer)
+               (int-rule int-div-start) (int-rule int-div-divisor)
+               (int-rule int-div-by-zero) (int-rule int-div-pp)
+               (int-rule int-div-pn) (int-rule int-div-np)
+               (int-rule int-div-nn) (int-rule int-div-rest)
+               (int-rule int-div-euclid-ask) (int-rule int-div-euclid-pp)
+               (int-rule int-div-euclid-pn)
+               (int-rule int-div-euclid-np-exact)
+               (int-rule int-div-euclid-nn-exact)
+               (int-rule int-div-euclid-np-more)
+               (int-rule int-div-euclid-nn-more)
+               (int-rule int-div-euclid-neg) (int-rule int-div-euclid-pos)
+               (int-rule int-div-euclid-answer) (int-rule int-div-trunc-ask)
+               (int-rule int-div-trunc-pp) (int-rule int-div-trunc-pn)
+               (int-rule int-div-trunc-np) (int-rule int-div-trunc-nn)
+               (int-rule int-div-trunc-answer) (int-rule int-div-floor-ask)
+               (int-rule int-div-floor-pp) (int-rule int-div-floor-nn)
+               (int-rule int-div-floor-pn-exact)
+               (int-rule int-div-floor-np-exact)
+               (int-rule int-div-floor-pn-more)
+               (int-rule int-div-floor-np-more) (int-rule int-div-floor-neg)
+               (int-rule int-div-floor-pos) (int-rule int-div-floor-answer))
+  :why    "integers are computed and never guessed: every relation of the theory is closed")

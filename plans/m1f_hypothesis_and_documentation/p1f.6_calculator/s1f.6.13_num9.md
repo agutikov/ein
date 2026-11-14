@@ -63,7 +63,7 @@ nested fact, so a batch is quadratic: 250 divisions in 193 ms and 4 000 in 8.1 s
 
 ## T1 record, 2026-11-11: the generator and the module
 
-[`utils/gen_num9.py`](../../../utils/gen_num9.py) writes [`stdlib/num9.ein`](../../../stdlib/num9.ein): 47 rules and 22
+[`utils/gen_num9.py`](../../../utils/gen_num9.py) writes [`stdlib/num9.ein`](../../../stdlib/math/num9.ein): 47 rules and 22
 relations in 819 lines (`grep -c '^(rule' stdlib/num9.ein`, `grep -c '^(relation'`, `wc -l`, 2026-11-11), one
 stratum, no `absent`, `not`, `or` or guard. `--check` is in the gate as `num9_theory.rs`'s
 `the_file_is_what_the_generator_writes`; `--width W --stdout`, 2 to 9, prints the same theory over `(numW …)`, and
@@ -228,7 +228,7 @@ program's claim. No rule of either module routes a request to the other.
 
 ## T6 record, 2026-11-11: the page, the examples, and what moved
 
-**The page** is [`stdlib/README.md` § `std.num9`](../../../stdlib/README.md#stdnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613),
+**The page** is [`stdlib/README.md` § `std.num9`](../../../stdlib/README.md#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613),
 with § When to use which module: the batch table above as the evidence, where the plan named round 3's. What it
 says that the plan did not expect: **`std.num9` wins at volume and loses on one request.** It is five to seven
 times `std.arith` on a batch of sums or differences and 1.4 times on quotients, level on products; but a program

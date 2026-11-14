@@ -1,0 +1,29 @@
+;;; `std.math.decimal-arith` — operands written with high zeros are read by value, and
+;;; every answer is in normal form. M1f S1f.6.3.
+;;;
+;;; `(n (n (n z 0) 0) 5)` is 005, which is 5. The walk adds the zeros like any
+;;; digits, so they arrive at the top of the accumulator, where `strip-zero`
+;;; drops them one by one until `strip-top` meets a digit that is not zero, or
+;;; `strip-none` finds nothing left.
+;;;
+;;;   005 + 07  = 12      one high zero dropped from 012
+;;;   00 + 000  = 0       three dropped, and the answer is `z`
+;;;   0100 + 1  = 101     a zero *inside* a number is a digit and stays
+;;;
+;;; `sum-of` repeats the operands **as written**, zeros and all, and its third
+;;; argument is the normal form. The claim is the relation's whole extent, so
+;;; an answer `(n (n (n z 0) 1) 2)` fails the file.
+
+(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+
+(add (n (n (n z 0) 0) 5) (n (n z 0) 7))
+(add (n (n z 0) 0) (n (n (n z 0) 0) 0))
+(add (n (n (n (n z 0) 1) 0) 0) (n z 1))
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n (n (n z 0) 0) 5) (n (n z 0) 7) (n (n z 1) 2))
+                      (sum-of (n (n z 0) 0) (n (n (n z 0) 0) 0) z)
+                      (sum-of (n (n (n (n z 0) 1) 0) 0) (n z 1) (n (n (n z 1) 0) 1))))

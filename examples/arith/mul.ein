@@ -3,8 +3,8 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.arith` is school arithmetic written in Ein over the digit tables of
-;;; `std.digits` (`add.ein` beside this file is the introduction).
+;;; `std.math.decimal-arith` is school arithmetic written in Ein over the digit tables of
+;;; `std.math.digits` (`add.ein` beside this file is the introduction).
 ;;;
 ;;;   (mul X Y)             a request fact: X x Y is asked
 ;;;   (product-of X Y P)    the answer, repeating the operands
@@ -31,7 +31,7 @@
 ;;; named constants; the program asks for their product, and `fence` asks for
 ;;; the sum of the two, which the theory answers like a written request.
 
-(import std.arith :symbols (arith mul n let product-of add sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith mul n let product-of add sum-of))
 
 (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))
 (mul (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))

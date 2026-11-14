@@ -1,0 +1,34 @@
+;;; `std.math.decimal-arith` — division by zero: the flag, and `(false)` from it.
+;;; M1f S1f.6.6.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request whose divisor is zero has no answer, and the theory says so in
+;;; two steps (the user's ruling of 2026-11-11). `div-by-zero` derives the
+;;; flag, `(division-by-zero (div X Y))`, naming the request.
+;;; `division-by-zero-is-false` derives `(false)` from the flag: a program
+;;; that divides by zero is a contradiction, and no query of it has an
+;;; answer.
+;;;
+;;; This program asks for one sum and one division by zero.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty. It is the one
+;;; claim such a program can make. The sum was computed, and is in root's
+;;; state beside the flag, but a dead state is no answer: a `(query …)` of
+;;; this program reads nothing. `ein solve` names the request in the unsat
+;;; core, and `--trace` shows the flag and the contradiction as two steps.
+;;;
+;;; Since S1f.6.24 the request's tagged call is flagged beside the request,
+;;; `(division-by-zero (div-call (quotient (n z 7) z) (n z 7) z))`, by
+;;; `div-call-by-zero`, and is a contradiction too: two flags in root's state
+;;; and two steps more in the trace. `39_div_call_by_zero.ein` is a call made
+;;; by a rule of the program's own, where that flag is the only one.
+
+(import std.math.decimal-arith :symbols (decimal-arith add n div))
+
+(add (n z 2) (n z 2))
+(div (n z 7) z)
+
+(solve :expect (false))

@@ -5,7 +5,7 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; One request an operation of `std.arith` (`add.ein` beside this file is
+;;; One request an operation of `std.math.decimal-arith` (`add.ein` beside this file is
 ;;; the introduction), on numbers nobody would type: `a` and `b` have
 ;;; 100 digits each, `c` and `d` have 10, and `e` has 20.
 ;;;
@@ -24,10 +24,10 @@
 ;;;     ein saturate examples/arith/long_numbers.ein
 ;;;
 ;;; prints three times: `parse:`, the program's own text; `kb load:`, mostly
-;;; the 1 664 rows of the tables in `std.digits`, the same for every program
+;;; the 1 664 rows of the tables in `std.math.digits`, the same for every program
 ;;; that imports the theory; and `saturate:`, the calculation, with its
 ;;; firings. `python3 utils/arith_cost.py` prints them for this file and for
-;;; a sweep of sizes, and `stdlib/README.md` § `std.arith` has the table.
+;;; a sweep of sizes, and `stdlib/README.md` § `std.math.decimal-arith` has the table.
 ;;;
 ;;; A sum, a difference and a comparison cost a few firings a digit. A
 ;;; product costs the two lengths multiplied, and a quotient more: each of
@@ -39,8 +39,8 @@
 ;;; The generator takes the sizes: `--digits 300 --short 60` writes the
 ;;; program the stage's plan asked for.
 
-(import std.arith :symbols (arith let n b add sub cmp mul div sum-of diff-of cmp-of product-of
-                            quot-of))
+(import std.math.decimal-arith :symbols (decimal-arith let n b add sub cmp mul div sum-of diff-of
+                                         cmp-of product-of quot-of))
 
 ;; 10 digits each, and 20
 (let c

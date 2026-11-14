@@ -215,8 +215,10 @@ class Program:
         self.rules = {f[1]: f for f in self.forms if isinstance(f, list) and f and f[0] == "rule"}
         # A stdlib rule is the one in the module the program imports it from.
         modules: dict[str, dict[str, list]] = {}
-        for lib in sorted((REPO / "stdlib").glob("*.ein")):
-            modules["std." + lib.stem] = {f[1]: f for f in parse(lib.read_text(encoding="utf-8"))
+        stdlib = REPO / "stdlib"
+        for lib in sorted(stdlib.rglob("*.ein")):  # every depth: `std.math.x` since M1f S1f.6.31
+            modules["std." + ".".join(lib.relative_to(stdlib).with_suffix("").parts)] = {
+                f[1]: f for f in parse(lib.read_text(encoding="utf-8"))
                                          if isinstance(f, list) and f and f[0] == "rule"}
         self.stdlib = {}
         for f in self.forms:

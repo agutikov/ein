@@ -118,23 +118,49 @@ impl Source {
         }
     }
 
-    /// Every module name in this source, sorted. Sorted because the caller
-    /// may report them and iteration order must not reach an observable
+    /// Every module in this source, at any depth, as its path from the root
+    /// (`algebra.ein`, `math/decimal-arith.ein`), sorted. Sorted because the
+    /// caller may report them and iteration order must not reach an observable
     /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)).
+    /// At any depth because `std.math.x` is `math/x.ein` (M1f S1f.6.31): a
+    /// list of one directory would leave such a module out of the check that
+    /// reads this, in silence. Read by tests; no command lists the stdlib.
     pub fn modules(&self) -> Vec<String> {
         let mut out: Vec<String> = match self {
-            Source::Override(root) | Source::Checkout(root) => std::fs::read_dir(root)
-                .into_iter()
-                .flatten()
-                .flatten()
-                .map(|e| e.file_name().to_string_lossy().to_string())
-                .filter(|n| n.ends_with(".ein"))
-                .collect(),
-            Source::Embedded => EMBEDDED
-                .files()
-                .map(|f| f.path().display().to_string())
-                .filter(|n| n.ends_with(".ein"))
-                .collect(),
+            Source::Override(root) | Source::Checkout(root) => {
+                let mut found = Vec::new();
+                let mut stack = vec![root.clone()];
+                while let Some(dir) = stack.pop() {
+                    for entry in std::fs::read_dir(&dir).into_iter().flatten().flatten() {
+                        let path = entry.path();
+                        if path.is_dir() {
+                            stack.push(path);
+                        } else if path.extension().is_some_and(|x| x == "ein")
+                            && let Ok(rel) = path.strip_prefix(root)
+                        {
+                            let parts: Vec<String> = rel
+                                .components()
+                                .map(|c| c.as_os_str().to_string_lossy().to_string())
+                                .collect();
+                            found.push(parts.join("/"));
+                        }
+                    }
+                }
+                found
+            }
+            Source::Embedded => {
+                let mut found = Vec::new();
+                let mut stack = vec![&EMBEDDED];
+                while let Some(dir) = stack.pop() {
+                    stack.extend(dir.dirs());
+                    found.extend(
+                        dir.files()
+                            .map(|f| f.path().display().to_string().replace('\\', "/"))
+                            .filter(|n| n.ends_with(".ein")),
+                    );
+                }
+                found
+            }
         };
         out.sort();
         out
@@ -231,6 +257,27 @@ mod tests {
             .map(|l| l.split_once("  ").expect("<sha256>  <name>").1)
             .collect();
         assert_eq!(Source::Embedded.modules(), listed);
+    }
+
+    /// The checkout's modules, at any depth, are the manifest's, and some are
+    /// under a subdirectory (M1f S1f.6.31, T1f.6.31.7). `std.math.x` is
+    /// `math/x.ein`; before that stage both readers listed one directory, so a
+    /// module there was embedded and checked by nothing.
+    #[test]
+    fn the_checkout_has_no_module_the_manifest_does_not_list() {
+        let root = crate_dir().join("../../../stdlib");
+        let text = std::fs::read_to_string(root.join(MARKER)).expect("manifest");
+        let listed: Vec<&str> = text
+            .lines()
+            .filter(|l| !l.trim().is_empty())
+            .map(|l| l.split_once("  ").expect("<sha256>  <name>").1)
+            .collect();
+        let found = Source::Checkout(root).modules();
+        assert_eq!(found, listed);
+        assert!(
+            found.iter().any(|m| m.contains('/')),
+            "no module under a subdirectory: {found:?}"
+        );
     }
 
     /// **Tier 2 — the checkout walk**, driven with the override absent.

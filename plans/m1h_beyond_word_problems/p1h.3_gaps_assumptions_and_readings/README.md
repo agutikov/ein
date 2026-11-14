@@ -162,8 +162,8 @@ As the tree stands on 2026-11-13. Each is re-taken by the stage that uses it.
   ([`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
 
 **Names.** [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
-moves the calculator's modules under `std.math`; where this phase's files say `std.arith`, read
-`std.math.decimal-arith` once that stage has run.
+moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this
+phase's files name.
 
 ## The stages
 

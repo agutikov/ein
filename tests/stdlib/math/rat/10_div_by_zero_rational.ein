@@ -1,0 +1,26 @@
+;;; `std.math.rat` — a division by a rational that is zero. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A `rat-div` whose divisor is zero has no answer. The divisor's numerator
+;;; is simplified (`rat-div-start`), it is `(int z z)`, and `rat-div-zero`
+;;; derives the flag `(division-by-zero (rat-div X Y))`, the request as
+;;; written; `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)` from
+;;; the flag. The divisor here is 0 over 5, with a denominator that is not
+;;; zero: it is the rational that is zero, not its spelling.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make. The sum beside
+;;; the request is computed in root's state all the same, and no query of the
+;;; program has an answer.
+
+(import std.math.rat :symbols (rat-arith rat-add rat rat-div))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (n))
+
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
+(rat-div (rat (int (n z 3) z) (n z 4)) (rat (int z z) (n z 5)))
+
+(solve :expect (false))

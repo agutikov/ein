@@ -75,7 +75,7 @@ missing from it ([S1h.4.1](s1h.4.1_the_two_parts_and_a_well_formed_formula.md)).
 - **Not an expression layer of its own.** A formula as a value is P1g.10's expression data
   ([S1g.10.2](../../m1g_logic/p1g.10_school_algebra/s1g.10.2_expressions_and_evaluation.md)); the phase
   reads what that stage built before proposing anything.
-- **Not a change to the calculator.** The second part *"is already solved"*; no rule of `std.arith` moves.
+- **Not a change to the calculator.** The second part *"is already solved"*; no rule of `std.math.decimal-arith` moves.
 - **Not a number printed as a number.** A step reads *(n z 5) + (n z 7) = (n (n z 1) 2)* today (E-14 of the
   calculator's findings); whether a number may print as one is asked by
   [M1g's S1g.6.3](../../m1g_logic/p1g.6_engine_requirements/s1g.6.3_seeing_nested_facts.md), and this phase
@@ -124,8 +124,8 @@ figure is re-taken by the stage that uses it.
   there by the user's reply 10. Not built on 2026-11-13.
 
 **Names.** [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
-moves the calculator's modules under `std.math`; where this phase's files say `std.arith`, read
-`std.math.decimal-arith` once that stage has run.
+moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this
+phase's files name; a line quoted from the S1f.6.20 investigation's output keeps the name it printed.
 
 ## The stages
 

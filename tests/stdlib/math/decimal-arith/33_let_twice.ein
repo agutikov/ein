@@ -1,0 +1,24 @@
+;;; `std.math.decimal-arith` — a name stated twice, with two numbers. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A `let` the theory cannot read is flagged as the `let`, `(malformed (let
+;;; NAME NUMBER))`, whether or not a request uses the name, and `malformed-
+;;; is-false` derives `(false)`. `let-twice` joins two `let`s on the name,
+;;; which the fact index keys, and compares the two numbers by a guard. Until
+;;; S1f.6.12 this program had two answers to its one request, 6 and 8, and no
+;;; word.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty. Both `let`s are
+;;; flagged, each by the other, and the unsat core is the two of them.
+;;; `34_let_twice_the_same.ein` is the case that is fine.
+
+(import std.math.decimal-arith :symbols (decimal-arith let n add))
+
+(let price (n z 5))
+(let price (n z 7))
+(add price (n z 1))
+
+(solve :expect (false))

@@ -2,9 +2,9 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.arith` computes on numbers of any length, `z` and `(n PREFIX
-;;; DIGIT)`; `std.num9` on nine digits in one fact. They import flat into one
-;;; program, and `std.num9` has a request each way between the two shapes:
+;;; `std.math.decimal-arith` computes on numbers of any length, `z` and `(n PREFIX
+;;; DIGIT)`; `std.math.num9` on nine digits in one fact. They import flat into one
+;;; program, and `std.math.num9` has a request each way between the two shapes:
 ;;;
 ;;;   (to9 X)      (as9 X W)    X as nine digits; or (big X), where X is
 ;;;                             written with more than nine
@@ -15,23 +15,23 @@
 ;;;
 ;;; ── What happens ───────────────────────────────────────────────────────
 ;;;
-;;;   (add 123078 4567)          std.arith: 31 firings, one a step
+;;;   (add 123078 4567)          std.math.decimal-arith: 31 firings, one a step
 ;;;   (to9 …) twice              the operands in nine digits, a firing each
-;;;   sum-in-nine                asks std.num9 for the same sum: one firing
+;;;   sum-in-nine                asks std.math.num9 for the same sum: one firing
 ;;;   back-again                 asks for that sum as a number of any length
-;;;   compare                    asks std.arith to compare the two answers
+;;;   compare                    asks std.math.decimal-arith to compare the two answers
 ;;;
 ;;; The comparison answers `eq`.
 ;;;
 ;;; ── When to use which ──────────────────────────────────────────────────
 ;;;
-;;; `std.num9` where every number fits nine digits and a sum in one firing
+;;; `std.math.num9` where every number fits nine digits and a sum in one firing
 ;;; matters, or where a fixed width with an overflow flag is what is
-;;; modelled; `std.arith` for numbers of any length, for named constants and
-;;; for batches (`stdlib/README.md` § `std.num9` has both measured).
+;;; modelled; `std.math.decimal-arith` for numbers of any length, for named constants and
+;;; for batches (`stdlib/README.md` § `std.math.num9` has both measured).
 
-(import std.arith :symbols (arith add n sum-of cmp cmp-of))
-(import std.num9 :symbols (arith9 to9 as9 add9 sum9-of num9 from9 of9))
+(import std.math.decimal-arith :symbols (decimal-arith add n sum-of cmp cmp-of))
+(import std.math.num9 :symbols (arith9 to9 as9 add9 sum9-of num9 from9 of9))
 
 (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
 (to9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))

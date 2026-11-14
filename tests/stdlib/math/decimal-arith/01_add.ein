@@ -1,0 +1,43 @@
+;;; `std.math.decimal-arith` — a sum, column by column: 123078 + 4567 = 127645.
+;;; M1f S1f.6.3.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(add X Y)` is answered by a result fact `(sum-of X Y S)`
+;;; that repeats the operands, and a program reads it with a goal that has a
+;;; variable in the result's place. A number is `z` or `(n PREFIX DIGIT)`, in
+;;; reading order: `(n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)` is 123078.
+;;;
+;;; ── The sum, by hand ───────────────────────────────────────────────────────
+;;;
+;;;     1 2 3 0 7 8
+;;;   +     4 5 6 7
+;;;   ─────────────
+;;;     1 2 7 6 4 5        carries: 8+7 = 15, 7+6+1 = 14, 0+5+1 = 6, 3+4 = 7
+;;;
+;;; Four columns have a digit of each number (`add-column`), and two have the
+;;; first number's alone (`add-column-first`). No carry leaves the top
+;;; (`add-end`), no high zero is there to drop (`strip-top`), and the six
+;;; digits are turned round (`turn-step`, `turn-end`) into the answer
+;;; (`add-answer`). Both operands are numbers and stand for themselves
+;;; (`operand-number`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The claim names `sum-of`, so it is the relation's whole extent: one
+;;; request, one answer, and a second answer for the same request, a wrong
+;;; digit or a high zero, fails the file. The `(solve …)` form claims R = {∅}:
+;;; the theory closes its own relations, so nothing is guessed and the answer
+;;; is root's fixpoint.
+
+(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+
+(add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                              (n (n (n (n z 4) 5) 6) 7)
+                              (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))))

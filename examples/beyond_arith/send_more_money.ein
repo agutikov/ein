@@ -22,7 +22,7 @@
 ;;; I + BB = ILL beside it, `cryptarithm.ein`, is the same rules on 30
 ;;; candidates. M1f P1f.6: `plans/…/p1f.6_calculator/beyond_arithmetic.md`
 ;;; § 3 has the probe both were banked from, and what each costs.
-(import std.digits :symbols (fa nz __closed__))
+(import std.math.digits :symbols (fa nz __closed__))
 (import std.algebra :symbols (total-owed functional injective))
 
 (relation is-a Thing Type :why "{?1} is a {?2}")

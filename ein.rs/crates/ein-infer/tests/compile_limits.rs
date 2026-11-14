@@ -79,14 +79,14 @@ fn one_variable_past_the_ceiling_is_refused_at_load() {
     );
 }
 
-/// The one module whose rules are wide **by design**: `std.num9` (M1f
+/// The one module whose rules are wide **by design**: `std.math.num9` (M1f
 /// S1f.6.13), school arithmetic on nine digits in one fact. A rule of it has
 /// a premise a column, so it binds some multiple of nine variables: 35 for a
 /// sum, and [`WIDEST_BY_DESIGN`] for the one that computes a divisor's
 /// multiples by 2 to 9, eight rows of nine columns in one firing. The module
 /// is generated (`utils/gen_num9.py`), its width is fixed, and no rule of it
 /// grows unless the generator is changed, which moves the number below.
-const WIDE_BY_DESIGN: &str = "stdlib/num9.ein";
+const WIDE_BY_DESIGN: &str = "stdlib/math/num9.ein";
 
 /// `div9-start`: nine digits of the dividend, nine of the divisor, and for
 /// each multiple by 2 to 9 its nine digits and the nine carries between its
@@ -98,15 +98,15 @@ fn wide_by_design() -> std::collections::BTreeSet<String> {
     let path = ein_corpus::repo_root().join(WIDE_BY_DESIGN);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("std.num9 parses");
+    let forms = parse(&mut ast, &text, path.to_str()).expect("std.math.num9 parses");
     forms
         .iter()
         .filter(|&&f| ast.head_name(f) == Some("rule"))
         .filter_map(|&f| ast.form_args(f).first().and_then(|&a| ast.atom_name(a)))
-        // Each by its short name, as `stdlib/num9.ein` loaded alone prints it,
+        // Each by its short name, as `stdlib/math/num9.ein` loaded alone prints it,
         // and by its full name, as a program that imports it does since M1f
         // S1f.6.35.
-        .flat_map(|n| [n.to_string(), format!("std.num9.{n}")])
+        .flat_map(|n| [n.to_string(), format!("std.math.num9.{n}")])
         .collect()
 }
 
@@ -116,7 +116,7 @@ fn wide_by_design() -> std::collections::BTreeSet<String> {
 ///
 /// **Since M1f S1f.6.13 one module is measured apart**
 /// ([Q-M1f.173](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f173--max_regs-and-the-wide-rules-of-stdnum9),
-/// defaulted, the user's to overrule). `std.num9`'s generated rules are
+/// defaulted, the user's to overrule). `std.math.num9`'s generated rules are
 /// within 8× of the ceiling by what they are, and the widest takes 162 of
 /// the 256 registers. That is held as a number, [`WIDEST_BY_DESIGN`], and
 /// under the ceiling; every other rule of the corpus is held to the distance
@@ -126,7 +126,7 @@ fn the_corpus_is_nowhere_near_the_ceiling() {
     let by_design = wide_by_design();
     assert!(
         by_design.len() >= 40,
-        "std.num9 declared {} rules",
+        "std.math.num9 declared {} rules",
         by_design.len()
     );
     let (mut widest, mut widest_rule) = (0usize, String::new());
@@ -164,7 +164,7 @@ fn the_corpus_is_nowhere_near_the_ceiling() {
         ein_infer::MAX_REGS
     );
     assert_eq!(
-        (designed_rule.trim_start_matches("std.num9."), designed),
+        (designed_rule.trim_start_matches("std.math.num9."), designed),
         WIDEST_BY_DESIGN,
         "the widest rule of {WIDE_BY_DESIGN} moved: its rules are wide by design, \
          and how wide is a decision about MAX_REGS ({}), which Q-M1f.173 took at \

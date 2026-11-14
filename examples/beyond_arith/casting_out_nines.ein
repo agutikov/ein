@@ -1,11 +1,11 @@
 ;;; Casting out nines, checked on every number from 0 to 40: a number and
 ;;; the sum of its digits leave the same remainder when divided by 9.
 ;;; Saturation alone: the digit sum is a walk over the number's digits, each
-;;; an addition of std.arith; then two divisions by 9, and the remainders are
+;;; an addition of std.math.decimal-arith; then two divisions by 9, and the remainders are
 ;;; set against each other.
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.arith :symbols (arith n cmp-walk order-is add-walk done div-call div-done))
+(import std.math.decimal-arith :symbols (decimal-arith n cmp-walk order-is add-walk done div-call div-done))
 
 (relation count Number Number :why "counting: {?1}, on the way to {?2}")
 (relation cnt Number Number :why "is {?1} below {?2}?")

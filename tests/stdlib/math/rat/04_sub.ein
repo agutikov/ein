@@ -1,0 +1,43 @@
+;;; `std.math.rat` — subtraction. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(rat-sub X Y)` is answered by `(rat-diff-of X Y S)`, S in lowest terms.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; To take a rational away is to add it with its numerator's parts exchanged
+;;; (`rat-sub-ask`, `rat-sub-start`, then addition's cross products,
+;;; denominator and lowest terms; `rat-sub-answer`).
+;;;
+;;;    1/2 -  1/3 = 1/6       1/4 - 1/3 = -1/12     -1/2 - 1/6 = -2/3
+;;;    3/4 - -1/4 = 1/1      -2/3 - -1/6 = -1/2      5/7 - 5/7 = 0/1
+;;;    0/1 -  3/8 = -3/8
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `rat-diff-of`'s whole extent, seven requests, no pair both ways round.
+
+(import std.math.rat :symbols (rat-arith rat-sub rat rat-diff-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (n))
+
+(rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
+(rat-sub (rat (int (n z 1) z) (n z 4)) (rat (int (n z 1) z) (n z 3)))
+(rat-sub (rat (int z (n z 1)) (n z 2)) (rat (int (n z 1) z) (n z 6)))
+(rat-sub (rat (int (n z 3) z) (n z 4)) (rat (int z (n z 1)) (n z 4)))
+(rat-sub (rat (int z (n z 2)) (n z 3)) (rat (int z (n z 1)) (n z 6)))
+(rat-sub (rat (int (n z 5) z) (n z 7)) (rat (int (n z 5) z) (n z 7)))
+(rat-sub (rat (int z z) (n z 1)) (rat (int (n z 3) z) (n z 8)))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-diff-of ?x ?y ?s)
+       :goal-text "{?x} - {?y} = {?s}"
+       :expect (model (rat-diff-of (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)) (rat (int (n z 1) z) (n z 6)))
+                      (rat-diff-of (rat (int (n z 1) z) (n z 4)) (rat (int (n z 1) z) (n z 3)) (rat (int z (n z 1)) (n (n z 1) 2)))
+                      (rat-diff-of (rat (int z (n z 1)) (n z 2)) (rat (int (n z 1) z) (n z 6)) (rat (int z (n z 2)) (n z 3)))
+                      (rat-diff-of (rat (int (n z 3) z) (n z 4)) (rat (int z (n z 1)) (n z 4)) (rat (int (n z 1) z) (n z 1)))
+                      (rat-diff-of (rat (int z (n z 2)) (n z 3)) (rat (int z (n z 1)) (n z 6)) (rat (int z (n z 1)) (n z 2)))
+                      (rat-diff-of (rat (int (n z 5) z) (n z 7)) (rat (int (n z 5) z) (n z 7)) (rat (int z z) (n z 1)))
+                      (rat-diff-of (rat (int z z) (n z 1)) (rat (int (n z 3) z) (n z 8)) (rat (int z (n z 3)) (n z 8)))))

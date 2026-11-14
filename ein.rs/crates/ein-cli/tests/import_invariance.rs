@@ -9,7 +9,7 @@
 //!
 //! - **S**, the program as written, its imports selective, `:symbols (…)`;
 //! - **W**, every selective import of the program whole, `(import M)`, and
-//!   every name the program wrote short written in full, `std.arith.add`
+//!   every name the program wrote short written in full, `std.math.decimal-arith.add`
 //!   (`ein_ir::Resolver::short_names` says which);
 //! - **A**, every selective import `(import M :as impK)`, and every such name
 //!   written `impK.add`.
@@ -243,16 +243,18 @@ fn form(path: &Path, text: &str, mode: char) -> Option<(String, Vec<String>)> {
 /// Every module name a program's text and its modules' may print: the
 /// stdlib's and the program's directory's, longest first.
 fn module_prefixes(dir: &Path) -> Vec<String> {
-    let mut out: Vec<String> = std::fs::read_dir(repo_root().join("stdlib"))
+    let stdlib = repo_root().join("stdlib");
+    // Every module at any depth, a dot a directory: `std.math.decimal-arith`
+    // (M1f S1f.6.31).
+    let mut out: Vec<String> = ein_corpus::ein_files_under(&stdlib)
         .into_iter()
-        .flatten()
-        .flatten()
-        .filter_map(|e| {
-            let p = e.path();
-            if p.extension()? != "ein" {
-                return None;
-            }
-            Some(format!("std.{}", p.file_stem()?.to_str()?))
+        .filter_map(|p| {
+            let rel = p.strip_prefix(&stdlib).ok()?.with_extension("");
+            let parts: Vec<String> = rel
+                .components()
+                .map(|c| c.as_os_str().to_string_lossy().to_string())
+                .collect();
+            Some(format!("std.{}", parts.join(".")))
         })
         .chain(
             std::fs::read_dir(dir)

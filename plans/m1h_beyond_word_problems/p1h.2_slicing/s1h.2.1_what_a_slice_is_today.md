@@ -61,7 +61,7 @@ several classes), one program of `tests/stdlib/` from each of two refutation pai
    long. What the page must show among them:
    - `unused.ein`: Alice's 7, Carol's 9 and the box are in the unused facts, with their sentences;
    - `bob1.ein`: of the calculator's rules, how many one subtraction used
-     (`grep -c '^(rule ' stdlib/arith.ein` is the whole, re-counted on the day);
+     (`grep -c '^(rule ' stdlib/math/decimal-arith.ein` is the whole, re-counted on the day);
    - `boxes12.ein`: `(model-counts-only)` is in the used facts, and in `bob1.ein`'s it is not;
    - `gap.ein`: an answer that rests on an `absent`. `(not-stated …)` was derived because a fact was *not*
      there, and a walk through premises finds no fact for that premise. The page says what the script wrote

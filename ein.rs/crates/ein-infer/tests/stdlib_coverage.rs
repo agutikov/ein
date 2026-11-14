@@ -86,12 +86,12 @@ const STDLIB: &str = "stdlib";
 
 /// The modules that declare no rules, and so are absent from the inventory
 /// by construction. Named rather than inferred: `std.macro` ships `forall` and
-/// `open`, which are *macros*, and `std.digits` (M1f S1f.6.2) is a library of
+/// `open`, which are *macros*, and `std.math.digits` (M1f S1f.6.2) is a library of
 /// **facts**, the calculator's digit tables, with no rule for this gate to ask
 /// about: what holds its rows is `ein-ir/tests/digit_tables.rs`, every one
 /// against Rust's integers. A day when `algebra.ein` parses to zero rules must
 /// not read the same as either.
-const RULE_FREE_MODULES: [&str; 2] = ["std.digits", "std.macro"];
+const RULE_FREE_MODULES: [&str; 2] = ["std.math.digits", "std.macro"];
 
 // ── the declaration inventory ──────────────────────────────────────
 
@@ -123,18 +123,12 @@ impl Decl {
 /// for, which is the failure a coverage check must not have.
 fn inventory() -> (Vec<Decl>, BTreeMap<String, Vec<String>>) {
     let dir = repo_root().join(STDLIB);
-    let mut paths: Vec<PathBuf> = std::fs::read_dir(&dir)
-        .unwrap_or_else(|e| panic!("{}: {e}", dir.display()))
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|x| x == "ein"))
-        .collect();
-    paths.sort();
+    let paths = module_files();
     assert!(!paths.is_empty(), "no modules in {}", dir.display());
 
     let (mut decls, mut imports) = (Vec::new(), BTreeMap::new());
     for path in &paths {
-        let module = format!("std.{}", path.file_stem().expect("stem").to_string_lossy());
+        let module = module_name(path);
         let mut ast = Ast::new();
         let text = std::fs::read_to_string(path).expect("module text");
         let forms = parse(&mut ast, &text, path.to_str()).expect("the stdlib parses");
@@ -149,6 +143,31 @@ fn inventory() -> (Vec<Decl>, BTreeMap<String, Vec<String>>) {
         imports.insert(module, mods);
     }
     (decls, imports)
+}
+
+/// Every module file under `stdlib/`, **at any depth**: `std.math.x` is
+/// `stdlib/math/x.ein` (M1f S1f.6.31), and a reader of one directory would
+/// leave such a module's rules out of the claim in silence.
+/// [`the_inventory_reads_every_module_the_manifest_lists`] holds the two to
+/// the manifest.
+fn module_files() -> Vec<PathBuf> {
+    let mut paths = ein_files_under(&repo_root().join(STDLIB));
+    paths.sort();
+    paths
+}
+
+/// A module file's canonical name: `stdlib/math/decimal-arith.ein` is
+/// `std.math.decimal-arith`, a dot a directory, as the resolver reads it.
+fn module_name(path: &Path) -> String {
+    let rel = path
+        .strip_prefix(repo_root().join(STDLIB))
+        .unwrap_or_else(|_| panic!("{} is not under {STDLIB}/", path.display()));
+    let parts: Vec<String> = rel
+        .with_extension("")
+        .components()
+        .map(|c| c.as_os_str().to_string_lossy().to_string())
+        .collect();
+    format!("std.{}", parts.join("."))
 }
 
 /// The `(rule …)` / `(hrule …)` names a form list declares — with their
@@ -499,4 +518,47 @@ fn every_program_states_an_expectation() {
         "programs under {SUITE}/ that state no expectation:\n  {}",
         silent.join("\n  "),
     );
+}
+
+/// **The inventory reads every module the manifest lists, and no other**
+/// (M1f S1f.6.31, T1f.6.31.7). The calculator's modules live under
+/// `stdlib/math/` since that stage, and both readers of the stdlib that a
+/// subdirectory could hide a module from are held here: this file's
+/// [`module_files`], and `stdlib/MANIFEST.sha256`, which `ein-ir`'s
+/// `the_embedded_copy_has_no_extra_modules` holds the embedded copy to and
+/// `utils/stdlib_manifest.py` writes. A `.ein` under `stdlib/` at any depth
+/// that either does not see fails here, named.
+#[test]
+fn the_inventory_reads_every_module_the_manifest_lists() {
+    let dir = repo_root().join(STDLIB);
+    let manifest = std::fs::read_to_string(dir.join("MANIFEST.sha256")).expect("the manifest");
+    let listed: BTreeSet<String> = manifest
+        .lines()
+        .filter(|l| !l.trim().is_empty())
+        .map(|l| l.split_once("  ").expect("<sha256>  <path>").1.to_string())
+        .collect();
+    let read: BTreeSet<String> = module_files()
+        .iter()
+        .map(|p| {
+            let rel = p.strip_prefix(&dir).expect("under stdlib/");
+            let parts: Vec<String> = rel
+                .components()
+                .map(|c| c.as_os_str().to_string_lossy().to_string())
+                .collect();
+            parts.join("/")
+        })
+        .collect();
+    assert_eq!(
+        read, listed,
+        "the modules this file reads and the ones stdlib/MANIFEST.sha256 lists differ: \
+         run `python3 utils/stdlib_manifest.py --write`"
+    );
+    assert!(
+        read.iter().any(|m| m.contains('/')),
+        "no module under a subdirectory: the check reads none of what it is for"
+    );
+    let named: BTreeSet<String> = module_files().iter().map(|p| module_name(p)).collect();
+    for m in ["std.math.decimal-arith", "std.math.digits", "std.algebra"] {
+        assert!(named.contains(m), "{m} is not read: {named:?}");
+    }
 }

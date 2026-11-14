@@ -1,4 +1,4 @@
-;;; Decimal and binary in one program: 123078 + 4567 by `std.arith`, and
+;;; Decimal and binary in one program: 123078 + 4567 by `std.math.decimal-arith`, and
 ;;; 101 + 111 by the binary theory, each imported flat by its one name.
 ;;;
 ;;; The two theories share no relation: a decimal number is (n PREFIX DIGIT)
@@ -12,7 +12,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
 ;;; the prototype this program was banked from, its counts and its costs.
-(import std.arith :symbols (arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
 (import bin :symbols (bin add2 b2 sum-of2))
 
 (add  (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))

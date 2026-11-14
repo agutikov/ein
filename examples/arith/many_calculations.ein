@@ -5,7 +5,7 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; 20 requests for each of 5 operations of `std.arith`, 100 in all, on
+;;; 20 requests for each of 5 operations of `std.math.decimal-arith`, 100 in all, on
 ;;; numbers of one to 6 digits: a page of school exercises. The requests are
 ;;; written with their numbers, so the program's text is mostly numbers.
 ;;;
@@ -27,7 +27,8 @@
 ;;; The queries read the first request of each operation. A goal with the
 ;;; operands written claims that one answer and no other.
 
-(import std.arith :symbols (arith add n sub cmp mul div sum-of diff-of cmp-of product-of quot-of))
+(import std.math.decimal-arith :symbols (decimal-arith add n sub cmp mul div sum-of diff-of cmp-of
+                                         product-of quot-of))
 
 ;; 20 requests: X + Y
 (add (n (n (n (n z 4) 3) 8) 8) (n (n (n z 1) 6) 0))

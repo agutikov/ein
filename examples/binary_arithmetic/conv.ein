@@ -1,5 +1,5 @@
 ;;; Conversion between decimal and binary, as requests: a theory built on two
-;;; others, the shipped `std.arith` and the binary theory `bin.ein` beside
+;;; others, the shipped `std.math.decimal-arith` and the binary theory `bin.ein` beside
 ;;; this file. Eleven rules, each a step in a chain of those theories' own
 ;;; operations, and no rule joins two facts on a number.
 ;;;
@@ -18,18 +18,18 @@
 ;;;
 ;;; One name brings it and both theories under it:
 ;;; (import conv :symbols (conv)). The closing rule names the two theories'
-;;; entries, `(arith-rule arith)` and `(arith-rule2 bin)`: without them a flat
+;;; entries, `(arith-rule decimal-arith)` and `(arith-rule2 bin)`: without them a flat
 ;;; import of `conv` alone would bring this module's rules and none of
 ;;; theirs, in silence (E-20 of the phase's `findings.md`).
 ;;;
 ;;; It reaches into both theories: `div-call`, `add-walk`, `done`, `strip2`
-;;; and `top-first2` are the circuits' own tagged calls, which `std.arith`'s
+;;; and `top-first2` are the circuits' own tagged calls, which `std.math.decimal-arith`'s
 ;;; header says are not a promise. Whether they become an interface is the
 ;;; plan page's fifth question, open.
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md`
 ;;; § Conversion between decimal and binary.
-(import std.arith :symbols (arith n div-call div-done add-walk done arith-rule))
+(import std.math.decimal-arith :symbols (decimal-arith n div-call div-done add-walk done arith-rule))
 (import bin :symbols (bin a2 strip2 done2 top-first2 top-first-is2 arith-rule2))
 
 (relation to-bin Number :why "asked: {?1} written in binary")
@@ -98,7 +98,7 @@
   :assert (and (__closed__ to-bin) (__closed__ bin-of) (__closed__ to-dec) (__closed__ dec-of)
                (__closed__ to-bin-go) (__closed__ to-dec-go) (__closed__ halving) (__closed__ bits)
                (__closed__ dec-bits) (__closed__ doubling) (__closed__ conv-rule)
-               (arith-rule arith) (arith-rule2 bin)
+               (arith-rule decimal-arith) (arith-rule2 bin)
                (conv-rule to-bin-ask) (conv-rule to-bin-halve) (conv-rule to-bin-bit-0) (conv-rule to-bin-bit-1)
                (conv-rule to-bin-end) (conv-rule to-bin-answer) (conv-rule to-dec-ask) (conv-rule to-dec-begin)
                (conv-rule to-dec-double) (conv-rule to-dec-next) (conv-rule to-dec-answer))

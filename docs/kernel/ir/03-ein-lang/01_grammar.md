@@ -1224,7 +1224,7 @@ replaced, before the loader runs, by the program's one list of forms.
 
 **A full name is the name.** Every name a module declares — a relation, a
 rule, an hrule, a macro — has one **full name**, the module's name and the
-name, `std.arith.add`, `onto.is-a`: the same through every import path, so a
+name, `std.math.decimal-arith.add`, `onto.is-a`: the same through every import path, so a
 module read by two imports, under two aliases or by none of the program's own
 is one copy. A full name is global: any file may write one of a module the
 program brings. The main file has no module name, so what it declares keeps
@@ -1269,7 +1269,7 @@ module's declared name holds no dot (Q-M1f.241), so a full name reads one way.
 Each refusal is `defined_behaviour.md` § 4.28.
 
 **What prints** is the main file's spelling: the short name it lists, else its
-first alias's, `o.is-a`, else the full name, `std.arith.strip` (Q-M1f.237,
+first alias's, `o.is-a`, else the full name, `std.math.decimal-arith.strip` (Q-M1f.237,
 Q-M1f.253). A spelling another file writes as a name of its own is not taken,
 so that two names never print as one.
 

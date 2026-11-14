@@ -1,6 +1,6 @@
 ;;; The full adder's table read backwards: which x makes x + 4567 = 127645?
 ;;;
-;;; A table is a relation, not a function. `std.arith` reads the full adder
+;;; A table is a relation, not a function. `std.math.decimal-arith` reads the full adder
 ;;; `(fa A B CARRY-IN DIGIT CARRY-OUT)` by its two operands; the rule
 ;;; `un-column` below reads it by ONE operand's digit, the carry and the SUM's
 ;;; digit, and the table gives the other operand's digit and the carry out.
@@ -14,7 +14,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.digits :symbols (fa nz __closed__))
+(import std.math.digits :symbols (fa nz __closed__))
 
 (relation unadd Number Number :why "asked: which x makes x + {?1} = {?2}?")
 (relation un-walk Tag Number Number Digit Digits :why "for {?1}: {?2} and {?3} still to read, carry {?4}, x's digits so far {?5}")

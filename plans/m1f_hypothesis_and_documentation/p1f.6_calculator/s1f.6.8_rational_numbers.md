@@ -55,7 +55,7 @@ rewritten with tags so that it follows the rule of the theory.
 
 ## T1 record, 2026-11-12
 
-**`std.rat`,** [`stdlib/rat.ein`](../../../stdlib/rat.ein), written by hand: 48 relations, 56 rules and the
+**`std.rat`,** [`stdlib/rat.ein`](../../../stdlib/math/rat.ein), written by hand: 48 relations, 56 rules and the
 closing rule (`grep -c '^(relation ' stdlib/rat.ein`, `grep -c '^(rule ' stdlib/rat.ein`, 2026-11-12). It imports
 `std.arith` and `std.int`, each by its entry, and edits neither.
 
@@ -148,7 +148,7 @@ answered and not flagged; and a rational that is zero an operand like any other 
 
 ## T3 record, 2026-11-12: the tests
 
-- **Thirteen programs** under [`tests/stdlib/rat/`](../../../tests/stdlib/rat/), each a corpus entry of group
+- **Thirteen programs** under [`tests/stdlib/rat/`](../../../tests/stdlib/math/rat/), each a corpus entry of group
   `stdlib` with its `:expect`, nine with `(solve :expect (region (model)))` and four with `(solve :expect
   (false))`. Every claim was computed by Python's fractions when the programs were drafted
   (`build/s1f.6.8/draft_tests.py`), and `ein test tests/stdlib/rat` holds 28 of 28. `stdlib_coverage.rs`: 307

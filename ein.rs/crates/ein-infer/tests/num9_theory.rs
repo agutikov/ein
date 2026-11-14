@@ -1,7 +1,7 @@
-//! **`std.num9`, held to the integers and to its own rule** — M1f
+//! **`std.math.num9`, held to the integers and to its own rule** — M1f
 //! [S1f.6.13](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md).
 //!
-//! `stdlib/num9.ein` is school arithmetic on numbers of nine digits, the
+//! `stdlib/math/num9.ein` is school arithmetic on numbers of nine digits, the
 //! calculator's second module: wide rules, a premise a column, written by
 //! `utils/gen_num9.py`. Ein has no numbers, so nothing in the engine can say
 //! whether a sum is right. What holds the theory is here.
@@ -11,8 +11,8 @@
 //! | **exhaustively, at a width small enough to exhaust:** the generator's output at width 2, every pair of operands, all five operations, 49 900 requests | [`width_two_is_right_on_every_pair`] |
 //! | at the shipped width, a sample of operands of every length, the corners, and requests that overflow | [`width_nine_is_right_on_a_sample`] |
 //! | **overflow is a flag and never a truncated number**: a request has exactly one of an answer and a flag | both, through [`hold`] |
-//! | the conversions to and from `std.arith`'s numbers, at every count of digits; `big` past the width | [`conversions_are_right_at_every_length`] |
-//! | a division by zero derives the flag, and `std.arith`'s rule `(false)` from it | [`a_division_by_zero_is_flagged_and_false`] |
+//! | the conversions to and from `std.math.decimal-arith`'s numbers, at every count of digits; `big` past the width | [`conversions_are_right_at_every_length`] |
+//! | a division by zero derives the flag, and `std.math.decimal-arith`'s rule `(false)` from it | [`a_division_by_zero_is_flagged_and_false`] |
 //! | the file is what the generator writes: the script's `--check`, which is how that check is in the gate | [`the_file_is_what_the_generator_writes`] |
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `absent`, no `not`, no `or`, no guard, and no `(false)` of its own | [`the_theory_writes_no_negation`] |
@@ -35,7 +35,7 @@ use ein_ir::{Ast, Node, NodeId, parse};
 /// The shipped width.
 const WIDTH: u32 = 9;
 
-const IMPORT: &str = "(import std.num9 :symbols (arith9))\n";
+const IMPORT: &str = "(import std.math.num9 :symbols (arith9))\n";
 
 // ── numbers as the two theories write them ─────────────────────────
 
@@ -52,7 +52,7 @@ fn fixed(v: u64, w: u32) -> String {
     out
 }
 
-/// A string of decimal digits as a number of `std.arith`, as written:
+/// A string of decimal digits as a number of `std.math.decimal-arith`, as written:
 /// `""` is `z`, `"042"` is `(n (n (n z 0) 4) 2)`.
 fn nested(digits: &str) -> String {
     let mut out = String::from("z");
@@ -62,7 +62,7 @@ fn nested(digits: &str) -> String {
     out
 }
 
-/// `v` in `std.arith`'s normal form.
+/// `v` in `std.math.decimal-arith`'s normal form.
 fn normal(v: u64) -> String {
     if v == 0 {
         "z".into()
@@ -144,9 +144,9 @@ fn run(src: &str, relations: &[&str], closer: &str) -> Run {
         .iter()
         .find_map(|n| terms.syms.get(n))
         .expect("the closing rule's name");
-    // `std.arith`'s closing rule fires too since M1f S1f.6.35, the module
-    // coming whole with `std.num9`'s import of it; it is no request's either.
-    let lower = terms.syms.get("std.arith.arith");
+    // `std.math.decimal-arith`'s closing rule fires too since M1f S1f.6.35, the module
+    // coming whole with `std.math.num9`'s import of it; it is no request's either.
+    let lower = terms.syms.get("std.math.decimal-arith.decimal-arith");
     let mut firings = 0usize;
     {
         let mut s = Session {
@@ -332,7 +332,7 @@ fn generator(args: &[&str]) -> std::process::Output {
         .status();
     assert!(
         matches!(probe, Ok(s) if s.success()),
-        "`python3` does not run ({probe:?}): `stdlib/num9.ein` is generated, and \
+        "`python3` does not run ({probe:?}): `stdlib/math/num9.ein` is generated, and \
          `utils/gen_num9.py` is what this file holds it to — a missing gate, not a \
          missing convenience"
     );
@@ -495,7 +495,7 @@ fn conversions_are_right_at_every_length() {
     assert_eq!(big, want_big, "(big X)");
 }
 
-/// **Division by zero is a contradiction, in two steps,** as in `std.arith`
+/// **Division by zero is a contradiction, in two steps,** as in `std.math.decimal-arith`
 /// and by its rule: `div9-by-zero` derives the flag, naming the request as
 /// written, and `division-by-zero-is-false` derives `(false)`. No quotient
 /// is stored for the request. Beside it, a division that is not by zero is
@@ -570,7 +570,7 @@ fn the_file_is_what_the_generator_writes() {
     let out = generator(&["--check"]);
     assert!(
         out.status.success(),
-        "stdlib/num9.ein is stale — run `python3 utils/gen_num9.py` and \
+        "stdlib/math/num9.ein is stale — run `python3 utils/gen_num9.py` and \
          `python3 utils/stdlib_manifest.py --write`\n{}{}",
         String::from_utf8_lossy(&out.stdout),
         String::from_utf8_lossy(&out.stderr),
@@ -579,10 +579,10 @@ fn the_file_is_what_the_generator_writes() {
 
 // ── the module's text ──────────────────────────────────────────────
 
-/// The tables of `std.digits` the module reads.
+/// The tables of `std.math.digits` the module reads.
 const TABLES: [&str; 6] = ["fa", "fs", "md", "cl", "nz", "adj"];
 
-/// What the module takes from `std.arith`: the number's relation, for the
+/// What the module takes from `std.math.decimal-arith`: the number's relation, for the
 /// conversions, and the flag with the rule from it to `(false)`.
 const FROM_ARITH: [&str; 3] = ["n", "division-by-zero", "division-by-zero-is-false"];
 
@@ -592,10 +592,10 @@ struct Module {
 }
 
 fn module() -> Module {
-    let path = repo_root().join("stdlib/num9.ein");
+    let path = repo_root().join("stdlib/math/num9.ein");
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("std.num9 parses");
+    let forms = parse(&mut ast, &text, path.to_str()).expect("std.math.num9 parses");
     Module { ast, forms }
 }
 
@@ -687,7 +687,7 @@ impl Module {
 }
 
 /// **The rule of the theory, kept by the second module too.** Every rule
-/// has at most one premise that is not a row of `std.digits`; that premise
+/// has at most one premise that is not a row of `std.math.digits`; that premise
 /// holds the numbers, and a table row holds none. It is what the prototype's
 /// division broke, joining its state with the divisor's multiples on the
 /// divisor, so that 4 000 divisions took 8.1 s: here the multiples travel in
@@ -698,7 +698,7 @@ fn no_rule_joins_two_facts_on_a_number() {
     let rules = m.declared("rule");
     assert!(
         rules.len() >= 40,
-        "std.num9 parsed to {} rules",
+        "std.math.num9 parsed to {} rules",
         rules.len()
     );
     for (name, rule) in &rules {
@@ -723,8 +723,8 @@ fn no_rule_joins_two_facts_on_a_number() {
         }
         assert!(
             state.len() <= 1,
-            "rule {name} joins {state:?}: a rule of std.num9 has ONE premise that \
-             holds numbers, and its other premises are rows of std.digits (E-3 of \
+            "rule {name} joins {state:?}: a rule of std.math.num9 has ONE premise that \
+             holds numbers, and its other premises are rows of std.math.digits (E-3 of \
              P1f.6's findings.md)"
         );
     }
@@ -732,7 +732,7 @@ fn no_rule_joins_two_facts_on_a_number() {
 
 /// No `absent`, no `not`, no `or`, no guard: the theory is monotone and has
 /// one stratum. And it concludes no `(false)` of its own: a division by zero
-/// derives `std.arith`'s flag, and `std.arith`'s rule does the rest.
+/// derives `std.math.decimal-arith`'s flag, and `std.math.decimal-arith`'s rule does the rest.
 #[test]
 fn the_theory_writes_no_negation() {
     let m = module();
@@ -749,13 +749,13 @@ fn the_theory_writes_no_negation() {
     }
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
-        "std.num9 guesses nothing and expands nothing"
+        "std.math.num9 guesses nothing and expands nothing"
     );
 }
 
 /// `arith9` is the theory's one entry: it closes every relation the module
 /// declares, every table it reads and the two relations it takes from
-/// `std.arith`, and names every other rule of the module and the one it
+/// `std.math.decimal-arith`, and names every other rule of the module and the one it
 /// takes. Its own name is the module's one written fact (E-11).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
@@ -784,16 +784,16 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
             other => panic!("`arith9` asserts a {other:?}"),
         }
     }
-    let tables = m.imported("std.digits");
+    let tables = m.imported("std.math.digits");
     assert_eq!(
         tables,
         TABLES.iter().map(|t| t.to_string()).collect(),
         "the tables the module imports"
     );
     assert_eq!(
-        m.imported("std.arith"),
+        m.imported("std.math.decimal-arith"),
         FROM_ARITH.iter().map(|t| t.to_string()).collect(),
-        "what the module takes from std.arith"
+        "what the module takes from std.math.decimal-arith"
     );
 
     let mut want_closed: BTreeSet<String> =
@@ -803,7 +803,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     assert_eq!(
         closed, want_closed,
         "`arith9` closes every relation the module declares, every table it \
-         imports, and the two relations it takes from std.arith"
+         imports, and the two relations it takes from std.math.decimal-arith"
     );
     let mut want_named: BTreeSet<String> = rules
         .iter()

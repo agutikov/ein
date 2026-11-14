@@ -1,9 +1,9 @@
-//! **`std.arith`, held to the integers and to its own rule** — M1f
+//! **`std.math.decimal-arith`, held to the integers and to its own rule** — M1f
 //! [S1f.6.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md).
 //!
-//! `stdlib/arith.ein` is school arithmetic written *in* Ein, over the digit
-//! tables of `std.digits`. Ein has no numbers, so the engine cannot say
-//! whether a sum is right, and a program under `tests/stdlib/arith/` can
+//! `stdlib/math/decimal-arith.ein` is school arithmetic written *in* Ein, over the digit
+//! tables of `std.math.digits`. Ein has no numbers, so the engine cannot say
+//! whether a sum is right, and a program under `tests/stdlib/math/decimal-arith/` can
 //! claim a handful of sums and no more. What holds the theory is here.
 //!
 //! | claim | where |
@@ -22,7 +22,7 @@
 //! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
 //! | **a malformed request has exactly one flag and no answer**, and the flag derives `(false)`; a well-formed one has no flag (S1f.6.12) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
-//! | **the tagged calls are an interface** (S1f.6.30): `std.arith`'s, `std.int`'s and `std.rat`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
+//! | **the tagged calls are an interface** (S1f.6.30): `std.math.decimal-arith`'s, `std.math.int`'s and `std.math.rat`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -58,7 +58,7 @@ const SMALL: u128 = 120;
 /// The longest sampled operand, in digits.
 const MAX_DIGITS: u32 = 30;
 
-const IMPORT: &str = "(import std.arith :symbols (arith))\n";
+const IMPORT: &str = "(import std.math.decimal-arith :symbols (decimal-arith))\n";
 
 // ── numbers as the theory writes them ──────────────────────────────
 
@@ -503,8 +503,8 @@ fn a_division_by_zero_is_flagged_and_false() {
 ///
 /// The calls here are written as facts, which the theory computes with as
 /// with a derived one. The tags are every shape the modules and the examples
-/// use: a bare name; `std.arith`'s own; `std.int`'s, its request and the two
-/// signs; `std.rat`'s three; and a tag of a program's own that holds numbers.
+/// use: a bare name; `std.math.decimal-arith`'s own; `std.math.int`'s, its request and the two
+/// signs; `std.math.rat`'s three; and a tag of a program's own that holds numbers.
 /// Each call with a divisor that is zero by value, `z` or written with
 /// digits, has exactly one flag, the call as asserted, and no answer; each
 /// call with another divisor is answered and not flagged.
@@ -548,7 +548,7 @@ fn a_tagged_call_by_zero_is_flagged_whoever_made_it() {
             assert!(fact.contains(" three) "), "a call by zero answered: {fact}");
         }
         // The tag itself, bare, as a caller with one division writes it.
-        // `std.arith`'s own tag is a public request's, so its call has the
+        // `std.math.decimal-arith`'s own tag is a public request's, so its call has the
         // request's flag beside it, whoever wrote the call.
         let bare = format!("(div-call {tag} (n z 7) z)\n");
         let mut want = vec![format!("(division-by-zero (div-call {tag} (n z 7) z))")];
@@ -841,7 +841,10 @@ fn circuit(body: &str) -> (usize, usize) {
     let mut events = Events::off();
     let mut depth_of: BTreeMap<ein_core::FactId, usize> = BTreeMap::new();
     let (mut firings, mut deepest) = (0usize, 0usize);
-    let closer = terms.syms.get("arith").expect("the closing rule's name");
+    let closer = terms
+        .syms
+        .get("decimal-arith")
+        .expect("the closing rule's name");
     {
         let mut s = Session {
             kb: &mut kb,
@@ -1014,7 +1017,7 @@ fn the_circuit_of_one_division() {
 
 // ── the module's text ──────────────────────────────────────────────
 
-/// The seven tables of `std.digits`: a premise over one is a lookup by digits.
+/// The seven tables of `std.math.digits`: a premise over one is a lookup by digits.
 const TABLES: [&str; 7] = ["fa", "fs", "md", "cl", "nz", "mid", "adj"];
 
 /// The one rule that may join other facts, and the premises it has, **in
@@ -1067,10 +1070,10 @@ struct Module {
 }
 
 fn module() -> Module {
-    let path = repo_root().join("stdlib/arith.ein");
+    let path = repo_root().join("stdlib/math/decimal-arith.ein");
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("std.arith parses");
+    let forms = parse(&mut ast, &text, path.to_str()).expect("std.math.decimal-arith parses");
     Module { ast, forms }
 }
 
@@ -1159,7 +1162,7 @@ impl Module {
 }
 
 /// **The rule of the theory, on the text.** Every rule has at most one
-/// premise that is not a row of `std.digits`; that premise holds the numbers,
+/// premise that is not a row of `std.math.digits`; that premise holds the numbers,
 /// and a table row holds none: its arguments are digits, names or variables,
 /// never a form. The two exceptions join on a **name** and are named in
 /// [`NAME_LOOKUP`] and [`NAME_TWICE`].
@@ -1175,7 +1178,7 @@ fn no_rule_joins_two_facts_on_a_number() {
     let rules = m.declared("rule");
     assert!(
         rules.len() >= 18,
-        "std.arith parsed to {} rules",
+        "std.math.decimal-arith parsed to {} rules",
         rules.len()
     );
     let mut exceptions_seen = 0;
@@ -1246,8 +1249,8 @@ fn no_rule_joins_two_facts_on_a_number() {
         }
         assert!(
             state.len() <= 1,
-            "rule {name} joins {state:?}: a rule of std.arith has ONE premise \
-             that holds numbers, and its other premises are rows of std.digits. \
+            "rule {name} joins {state:?}: a rule of std.math.decimal-arith has ONE premise \
+             that holds numbers, and its other premises are rows of std.math.digits. \
              A second one changes no answer and makes every batch of requests \
              cost the square of its count (E-3 of P1f.6's findings.md); carry \
              what the rule needs in the call's tag instead"
@@ -1353,13 +1356,13 @@ fn the_theory_writes_one_absent_over_let() {
     );
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
-        "std.arith guesses nothing and expands nothing"
+        "std.math.decimal-arith guesses nothing and expands nothing"
     );
 }
 
-/// `arith` is the theory's one entry. A relation it does not close is one the
+/// `decimal-arith` is the theory's one entry. A relation it does not close is one the
 /// search may guess facts of; a rule it does not name is one
-/// `(import std.arith :symbols (arith))` leaves behind, in silence. Both are
+/// `(import std.math.decimal-arith :symbols (decimal-arith))` leaves behind, in silence. Both are
 /// easy to forget when a rule is added, and neither changes an answer the day
 /// it is forgotten.
 #[test]
@@ -1368,11 +1371,11 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let rules = m.declared("rule");
     let (_, closer) = rules
         .iter()
-        .find(|(n, _)| n == "arith")
-        .expect("the closing rule, `arith`");
+        .find(|(n, _)| n == "decimal-arith")
+        .expect("the closing rule, `decimal-arith`");
     assert!(
         m.conjuncts(m.clause(*closer, "match")).is_empty(),
-        "`arith` fires at root, on nothing"
+        "`decimal-arith` fires at root, on nothing"
     );
     let (mut closed, mut named) = (BTreeSet::new(), BTreeSet::new());
     for c in m.conjuncts(m.clause(*closer, "assert")) {
@@ -1386,11 +1389,11 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         match m.ast.head_name(c) {
             Some("__closed__") => assert!(closed.insert(arg.clone()), "closed twice: {arg}"),
             Some("arith-rule") => assert!(named.insert(arg.clone()), "named twice: {arg}"),
-            other => panic!("`arith` asserts a {other:?}"),
+            other => panic!("`decimal-arith` asserts a {other:?}"),
         }
     }
 
-    // The tables the module imports, read off its `(import std.digits …)`.
+    // The tables the module imports, read off its `(import std.math.digits …)`.
     let mut tables = BTreeSet::new();
     for &f in &m.forms {
         if m.ast.head_name(f) != Some("import") {
@@ -1399,8 +1402,8 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         let args = m.ast.form_args(f);
         assert_eq!(
             m.ast.atom_name(args[0]),
-            Some("std.digits"),
-            "std.arith imports std.digits and nothing else"
+            Some("std.math.digits"),
+            "std.math.decimal-arith imports std.math.digits and nothing else"
         );
         for &a in &args[1..] {
             if let Node::KwPair { key, value } = m.ast.node(a) {
@@ -1418,7 +1421,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     }
     assert!(
         tables.iter().all(|t| TABLES.contains(&t.as_str())) && !tables.is_empty(),
-        "the import lists tables of std.digits: {tables:?}"
+        "the import lists tables of std.math.digits: {tables:?}"
     );
 
     let mut want_closed: BTreeSet<String> =
@@ -1426,16 +1429,16 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     want_closed.extend(tables);
     assert_eq!(
         closed, want_closed,
-        "`arith` closes every relation the module declares and every table it imports"
+        "`decimal-arith` closes every relation the module declares and every table it imports"
     );
     let want_named: BTreeSet<String> = rules
         .iter()
         .map(|(n, _)| n.clone())
-        .filter(|n| n != "arith")
+        .filter(|n| n != "decimal-arith")
         .collect();
     assert_eq!(
         named, want_named,
-        "`arith` names every other rule of the module"
+        "`decimal-arith` names every other rule of the module"
     );
 
     // Its own name is a written fact, the module's only one: what keeps the
@@ -1464,7 +1467,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         .collect();
     assert_eq!(
         facts,
-        [("arith-rule".to_string(), vec!["arith".to_string()])],
+        [("arith-rule".to_string(), vec!["decimal-arith".to_string()])],
         "the module writes one fact, the closing rule's own name"
     );
 }
@@ -1475,8 +1478,8 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
 /// sign in the sentence, and the second tag's third argument.
 #[test]
 fn the_rules_from_a_tag_to_its_request_are_alike() {
-    let path = repo_root().join("stdlib/arith.ein");
-    let text = std::fs::read_to_string(&path).expect("std.arith");
+    let path = repo_root().join("stdlib/math/decimal-arith.ein");
+    let text = std::fs::read_to_string(&path).expect("std.math.decimal-arith");
     let rule = |name: &str| -> String {
         let start = text
             .find(&format!("(rule {name} ()"))
@@ -1512,8 +1515,8 @@ fn the_rules_from_a_tag_to_its_request_are_alike() {
 /// variable that names its multiple, exchanged.
 #[test]
 fn the_rules_of_a_family_differ_by_their_digit_alone() {
-    let path = repo_root().join("stdlib/arith.ein");
-    let text = std::fs::read_to_string(&path).expect("std.arith");
+    let path = repo_root().join("stdlib/math/decimal-arith.ein");
+    let text = std::fs::read_to_string(&path).expect("std.math.decimal-arith");
     let rule = |name: &str| -> String {
         let start = text
             .find(&format!("(rule {name} ()"))
@@ -1566,28 +1569,32 @@ fn the_rules_of_a_family_differ_by_their_digit_alone() {
 /// every caller writes that name: a walk starts at `z`, a subtraction at `0`
 /// and a comparison at `eq`; an addition's carry in is the caller's, a bit
 /// in `examples/binary_arithmetic/conv.ein`. Each module's calls come first
-/// and then the facts that answer them; `std.int`'s comparison is answered
-/// by `std.arith`'s `order-is`.
+/// and then the facts that answer them; `std.math.int`'s comparison is answered
+/// by `std.math.decimal-arith`'s `order-is`.
 const TAGGED: [(&str, &str, &str); 21] = [
     (
-        "arith",
+        "decimal-arith",
         "(add-walk TAG X Y C z)",
         "Tag Number Number Digit Digits",
     ),
     (
-        "arith",
+        "decimal-arith",
         "(sub-walk TAG X Y 0 z)",
         "Tag Number Number Digit Digits",
     ),
-    ("arith", "(cmp-walk TAG X Y eq)", "Tag Number Number Order"),
-    ("arith", "(mul-call TAG X Y)", "Tag Number Number"),
-    ("arith", "(div-call TAG X Y)", "Tag Number Number"),
-    ("arith", "(operand TAG X)", "Tag Operand"),
-    ("arith", "(done TAG S)", "Tag Number"),
-    ("arith", "(short TAG)", "Tag"),
-    ("arith", "(order-is TAG O)", "Tag Order"),
-    ("arith", "(div-done TAG Q R)", "Tag Number Number"),
-    ("arith", "(operand-is TAG N)", "Tag Number"),
+    (
+        "decimal-arith",
+        "(cmp-walk TAG X Y eq)",
+        "Tag Number Number Order",
+    ),
+    ("decimal-arith", "(mul-call TAG X Y)", "Tag Number Number"),
+    ("decimal-arith", "(div-call TAG X Y)", "Tag Number Number"),
+    ("decimal-arith", "(operand TAG X)", "Tag Operand"),
+    ("decimal-arith", "(done TAG S)", "Tag Number"),
+    ("decimal-arith", "(short TAG)", "Tag"),
+    ("decimal-arith", "(order-is TAG O)", "Tag Order"),
+    ("decimal-arith", "(div-done TAG Q R)", "Tag Number Number"),
+    ("decimal-arith", "(operand-is TAG N)", "Tag Number"),
     ("int", "(int-norm TAG P N)", "Tag Number Number"),
     (
         "int",
@@ -1662,8 +1669,8 @@ fn declaration(ast: &Ast, form: NodeId) -> Option<(String, Vec<String>)> {
     Some((name, rest))
 }
 
-/// **The tagged calls keep their shapes** (M1f S1f.6.30's T1). `std.arith`'s
-/// five calls and their four answers and its operand look-up, and `std.int`'s and `std.rat`'s calls
+/// **The tagged calls keep their shapes** (M1f S1f.6.30's T1). `std.math.decimal-arith`'s
+/// five calls and their four answers and its operand look-up, and `std.math.int`'s and `std.math.rat`'s calls
 /// with theirs, are what a theory built on the calculator calls: an
 /// interface since the user's reply of 2026-11-12 to round 2's item 41. Held
 /// three ways:
@@ -1691,8 +1698,8 @@ fn the_tagged_calls_keep_their_shapes() {
     let readme = std::fs::read_to_string(root.join("stdlib/README.md")).expect("stdlib/README.md");
     // ── the declarations, and the pages ──
     let mut declared: BTreeMap<&str, Vec<String>> = BTreeMap::new();
-    for module in ["arith", "int", "rat"] {
-        let path = root.join(format!("stdlib/{module}.ein"));
+    for module in ["decimal-arith", "int", "rat"] {
+        let path = root.join(format!("stdlib/math/{module}.ein"));
         let text = std::fs::read_to_string(&path).expect("a module");
         let mut ast = Ast::new();
         let forms = parse(&mut ast, &text, path.to_str()).expect("a module parses");
@@ -1702,7 +1709,7 @@ fn the_tagged_calls_keep_their_shapes() {
             let (relation, places) = tagged_shape(written);
             let rest = decls
                 .get(relation)
-                .unwrap_or_else(|| panic!("std.{m} declares no {relation}"));
+                .unwrap_or_else(|| panic!("std.math.{m} declares no {relation}"));
             let got: Vec<&str> = rest
                 .iter()
                 .filter(|r| !r.starts_with(':'))
@@ -1711,7 +1718,7 @@ fn the_tagged_calls_keep_their_shapes() {
             assert_eq!(
                 got.join(" "),
                 types,
-                "std.{m}'s {relation} is declared with other types than the interface's"
+                "std.math.{m}'s {relation} is declared with other types than the interface's"
             );
             assert_eq!(
                 places.len(),
@@ -1720,7 +1727,7 @@ fn the_tagged_calls_keep_their_shapes() {
             );
             assert!(
                 text.contains(written),
-                "std.{m}'s header does not write {written}"
+                "std.math.{m}'s header does not write {written}"
             );
             assert!(
                 readme.contains(written),
@@ -1882,9 +1889,9 @@ fn the_tagged_calls_keep_their_shapes() {
     // Not vacuous: the callers the pages name are read, and every walk is
     // started somewhere.
     for caller in [
-        "stdlib/arith.ein",
-        "stdlib/int.ein",
-        "stdlib/rat.ein",
+        "stdlib/math/decimal-arith.ein",
+        "stdlib/math/int.ein",
+        "stdlib/math/rat.ein",
         "examples/beyond_arith/casting_out_nines.ein",
         "examples/binary_arithmetic/conv.ein",
     ] {

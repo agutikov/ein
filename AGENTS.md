@@ -115,13 +115,16 @@ constrained-reasoning research.
   *ladder* — the puzzle's `(hrule …)` if it declares one, else the facts that
   would discharge what the state owes
   ([`oblgen.rs`](ein.rs/crates/ein-infer/src/oblgen.rs)), else the blind
-  combinatorial enumerator. **The calculator's modules**, each with an entry
-  name a program may list beside the names it writes: `std.digits` (the digit
-  tables, a library of *facts*, generated), `std.arith` (`(import std.arith
-  :symbols (arith add n sum-of))`), `std.num9` (generated, entry `arith9`),
-  `std.int` (`int-arith`) and `std.rat` (`rat-arith`); a module over a module
-  names the lower one's entry in its own closing rule, and lists every name of
-  the lower one it writes.
+  combinatorial enumerator. **The calculator's modules are under
+  `stdlib/math/`**, `std.math.x` in `math/x.ein` (a dot a directory, at any
+  depth, from all three places), their programs under `tests/stdlib/math/`,
+  each with an entry name a program may list beside the names it writes:
+  `std.math.digits` (the digit tables, a library of *facts*, generated),
+  `std.math.decimal-arith` (`(import std.math.decimal-arith :symbols
+  (decimal-arith add n sum-of))`), `std.math.num9` (generated, entry
+  `arith9`), `std.math.int` (`int-arith`) and `std.math.rat` (`rat-arith`); a
+  module over a module names the lower one's entry in its own closing rule,
+  and lists every name of the lower one it writes.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each.
 - **`tests/`** — **the ein-lang test suites**, a third corpus root beside
@@ -297,8 +300,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   declaration has types.** It is no type check. A fixture that wants a
   relation at several counts leaves it undeclared.
 - **Every import brings its module whole**, with its own imports, one copy
-  per program, every declared name under its **full name**, `std.arith.add`;
-  the three shapes differ only in names: `:symbols (…)` lets the file write
+  per program, every declared name under its **full name**,
+  `std.math.decimal-arith.add`; the three shapes differ only in names: `:symbols (…)` lets the file write
   the listed names short, `:as a` writes `a.add`, a bare import writes full
   names. **A file lists every short name it writes** from the module that
   declares it (no re-export); one it writes and does not list is its own. One
@@ -361,15 +364,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 
 - **Generated, never edited by hand** (edit the generator and re-run):
   `00_ebnf.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
-  `stdlib/digits.ein` (`utils/gen_arith_tables.py`, then
-  `utils/stdlib_manifest.py --write`); `stdlib/num9.ein` (`utils/gen_num9.py`);
+  `stdlib/math/digits.ein` (`utils/gen_arith_tables.py`, then
+  `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
+  (`utils/gen_num9.py`);
   three `examples/arith/` programs (`utils/gen_arith_examples.py`); the four
   zebra2 variants (`examples/gen_zebra2_variants.py`);
   `read_out_examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
   defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
   `--check` or a test in the gate. **Not in the gate, run by hand**:
   `examples/binary_arithmetic/gen_binary.py` (after any edit to
-  `stdlib/arith.ein`) and `examples/binary_logic/gen_gates.py`.
+  `stdlib/math/decimal-arith.ein`) and `examples/binary_logic/gen_gates.py`.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `read_out.md` in the same
@@ -380,12 +384,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   commit of its own; the fix flips the row, and any `:expect` that stated the
   wrong answer, in the fixing commit.
 - **A stdlib rule needs a program under `tests/stdlib/` that activates it**,
-  or `stdlib_coverage.rs` fails. A rule or relation added to `std.arith`
-  (or to a module over it) goes into its closing rule's two lists
-  (`arith_theory.rs`); a new operation is a row of `OPS`, and joins
-  `arith_search_free.rs` by its lists. **No rule of the calculator joins two
-  facts on a number.** `std.arith` reads **one `absent`, over `let`**, which
-  no rule may derive, and writes guards in three named rules
+  or `stdlib_coverage.rs` fails. A rule or relation added to
+  `std.math.decimal-arith` (or to a module over it) goes into its closing
+  rule's two lists (`arith_theory.rs`); a new operation is a row of `OPS`,
+  and joins `arith_search_free.rs` by its lists. **No rule of the calculator
+  joins two facts on a number.** `std.math.decimal-arith` reads **one
+  `absent`, over `let`**, which no rule may derive, and writes guards in three named rules
   (`arith_theory.rs`); a program it flags, `(malformed …)` or
   `(undeclared …)`, is dead and claims only `(solve :expect (false))`.
 - **A stage that changes a rule of the calculator runs the batch by hand**:
@@ -394,8 +398,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - `dot_wellformed.rs` skips a view of more than 1 000 edges; a program with
   such a view in a directory not named in its `SKIPPING` fails the sweep.
 - **A flagged corpus program in which a hypothesis leads to a request to
-  `std.arith` through a rule with an unbound operand fails `region.rs`'s
-  fact-grain test**: the prototype's closure gives up past 10 000 shapes and
+  `std.math.decimal-arith` through a rule with an unbound operand fails
+  `region.rs`'s fact-grain test**: the prototype's closure gives up past 10 000 shapes and
   the test names the program rather than read a narrower verdict (E-33,
   Q-M1f.225). An unflagged one costs it nothing: the closure runs only where
   a site reads it.

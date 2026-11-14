@@ -1,0 +1,58 @@
+;;; `std.math.int` — comparison, by value. M1f S1f.6.7.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(int-cmp X Y)` is answered by `(int-cmp-of X Y O)`: O is `lt`, `eq` or
+;;; `gt`, the order of the two values, so two integers written differently
+;;; compare `eq` where they are the same integer.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; P1 less N1 against P2 less N2 is P1 + N2 against N1 + P2: two sums of
+;;; natural numbers (`int-cmp-left`, `int-cmp-right`) and `std.math.decimal-arith`'s
+;;; comparison walk over them (`int-cmp-sides`), which builds no number. The
+;;; operands are found by `int-cmp-ask` and `int-cmp-start`, and
+;;; `int-cmp-answer` hands the order over.
+;;;
+;;;    7 against 5   gt     4 against 9    lt    -7 against 5    lt
+;;;    6 against -8  gt    -7 against -5   lt    -3 against -9   gt
+;;;    0 against -1  gt     0 against 0    eq
+;;;    5 less 3 against 2            eq    3 less 5 against 10 less 12   eq
+;;;    100 against 99  gt  -100 against -99  lt
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `int-cmp-of`'s whole extent, twelve requests, no pair both ways round.
+
+(import std.math.int :symbols (int-arith int-cmp int int-cmp-of))
+(import std.math.decimal-arith :symbols (n))
+
+(int-cmp (int (n z 7) z) (int (n z 5) z))
+(int-cmp (int (n z 4) z) (int (n z 9) z))
+(int-cmp (int z (n z 7)) (int (n z 5) z))
+(int-cmp (int (n z 6) z) (int z (n z 8)))
+(int-cmp (int z (n z 7)) (int z (n z 5)))
+(int-cmp (int z (n z 3)) (int z (n z 9)))
+(int-cmp (int z z) (int z (n z 1)))
+(int-cmp (int z z) (int z z))
+(int-cmp (int (n z 5) (n z 3)) (int (n z 2) z))
+(int-cmp (int (n z 3) (n z 5)) (int (n (n z 1) 0) (n (n z 1) 2)))
+(int-cmp (int (n (n (n z 1) 0) 0) z) (int (n (n z 9) 9) z))
+(int-cmp (int z (n (n (n z 1) 0) 0)) (int z (n (n z 9) 9)))
+
+(solve :expect (region (model)))
+
+(query :goal (int-cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (int-cmp-of (int (n z 7) z) (int (n z 5) z) gt)
+                      (int-cmp-of (int (n z 4) z) (int (n z 9) z) lt)
+                      (int-cmp-of (int z (n z 7)) (int (n z 5) z) lt)
+                      (int-cmp-of (int (n z 6) z) (int z (n z 8)) gt)
+                      (int-cmp-of (int z (n z 7)) (int z (n z 5)) lt)
+                      (int-cmp-of (int z (n z 3)) (int z (n z 9)) gt)
+                      (int-cmp-of (int z z) (int z (n z 1)) gt)
+                      (int-cmp-of (int z z) (int z z) eq)
+                      (int-cmp-of (int (n z 5) (n z 3)) (int (n z 2) z) eq)
+                      (int-cmp-of (int (n z 3) (n z 5)) (int (n (n z 1) 0) (n (n z 1) 2)) eq)
+                      (int-cmp-of (int (n (n (n z 1) 0) 0) z) (int (n (n z 9) 9) z) gt)
+                      (int-cmp-of (int z (n (n (n z 1) 0) 0)) (int z (n (n z 9) 9)) lt)))

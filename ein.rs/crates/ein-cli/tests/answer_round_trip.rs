@@ -155,7 +155,7 @@ const UNFILLED_TEMPLATE: [&str; 0] = [];
 /// still to lose them. `dump-selection.ein` left the list at S1f.6.25's
 /// T1f.6.25.3 (2026-11-13): a name a selection lists is live, so the file is
 /// the program as loaded, and the sweep below holds it as it holds every
-/// corpus program: the witness without `std.arith`'s workaround fact, a
+/// corpus program: the witness without `std.math.decimal-arith`'s workaround fact, a
 /// library whose entry is a rule with an empty `:match`, imported by
 /// selection. Empty since.
 const SELECTION_DROPPED: [&str; 0] = [];

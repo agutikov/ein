@@ -5,7 +5,7 @@ stops here for the user: nothing ships, no engine source, stdlib, corpus or test
 **Taken:** 2026-11-11.
 
 This page shows a prototype theory of what the words of an elementary-school problem mean, written in Ein over the
-calculator [`std.arith`](../../../stdlib/arith.ein), and every problem of the stage's table run on it. It is also
+calculator [`std.arith`](../../../stdlib/math/decimal-arith.ein), and every problem of the stage's table run on it. It is also
 the first instance of M2's
 [reasoning as a program](../../m2_nl_to_ir/README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11): for
 each problem the English sentences and the Ein facts are side by side, and the facts were written by hand.

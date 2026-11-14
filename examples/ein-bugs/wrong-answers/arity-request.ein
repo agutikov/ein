@@ -6,7 +6,7 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.arith` declares `(relation add Operand Operand)`. The request gives
+;;; `std.math.decimal-arith` declares `(relation add Operand Operand)`. The request gives
 ;;; one operand.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
@@ -23,7 +23,7 @@
 ;;; command, with no word.
 ;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
-(import std.arith :symbols (arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
 
 (add (n z 5))
 

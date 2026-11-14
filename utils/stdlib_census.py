@@ -188,8 +188,10 @@ def body_key(rule_form: list) -> str:
 def inventory() -> tuple[list[dict], dict[str, list[str]]]:
     """Every `(rule …)` in `stdlib/`, and each module's own imports."""
     rules, imports = [], {}
-    for path in sorted(STDLIB.glob("*.ein")):
-        module = f"std.{path.stem}"
+    # Every module at any depth, a dot a directory: `stdlib/math/decimal-arith.ein`
+    # is `std.math.decimal-arith` (M1f S1f.6.31).
+    for path in sorted(STDLIB.rglob("*.ein"), key=lambda p: p.relative_to(STDLIB).as_posix()):
+        module = "std." + ".".join(path.relative_to(STDLIB).with_suffix("").parts)
         imports[module] = []
         for form in read_forms(path.read_text(encoding="utf-8")):
             if not (isinstance(form, list) and form and isinstance(form[0], str)):

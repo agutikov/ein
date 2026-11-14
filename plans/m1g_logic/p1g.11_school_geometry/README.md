@@ -16,7 +16,7 @@ new features in the engine"*. The algebra is [P1g.10](../p1g.10_school_algebra/R
   [S1g.11.1](s1g.11.1_what_school_geometry_is.md), follows them, as it did when both were stages of one phase;
 - **[S1g.10.4](../p1g.10_school_algebra/s1g.10.4_linear_equations.md), linear equations,** for the last stage
   only: a figure's problem with an unknown is that stage's equation over this phase's facts;
-- **the four operations and comparison,** `std.arith`
+- **the four operations and comparison,** `std.math.decimal-arith`
   ([S1f.6.3](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md) to
   [S1f.6.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.6_division.md)),
   done 2026-11-11: every measure here is the calculator's number, `z` or `(n PREFIX DIGIT)`;
@@ -317,9 +317,9 @@ user only when a program of this phase has shown it, and is then asked by P1g.6 
 
 ## Names
 
-The calculator's modules move under `std.math` before this phase starts
-([S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)): where this
-plan says `std.arith`, read `std.math.decimal-arith`. The relations keep their names. (From P1f.8's
+The calculator's modules are under `std.math` since
+[S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md) (2026-11-14): the
+decimal calculator is `std.math.decimal-arith`, `std.arith` before that stage. The relations kept their names. (From P1f.8's
 § Additions of 2026-11-12, whose four additions are otherwise all the algebra's,
 [P1g.10's](../p1g.10_school_algebra/README.md#additions-of-2026-11-12).)
 

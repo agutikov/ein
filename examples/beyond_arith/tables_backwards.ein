@@ -16,7 +16,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.digits :symbols (fa md nz __closed__))
+(import std.math.digits :symbols (fa md nz __closed__))
 
 (relation unmul Digit Number :why "asked: which x makes x times {?1} = {?2}?")
 (relation halve Number :why "asked: which x makes x + x = {?1}?")

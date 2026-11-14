@@ -6,7 +6,7 @@
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; It writes two numbers, 1 and 25, and one fact, 1! = 1. Everything else
-;;; is derived: three rules of the program's own ask `std.arith` for the
+;;; is derived: three rules of the program's own ask `std.math.decimal-arith` for the
 ;;; next number, k + 1, for whether k is below the last, and for the product
 ;;; k! x (k + 1), and state the next factorial from the answers. A request is
 ;;; a fact, so a rule may derive one (`div.ein` beside this file).
@@ -35,7 +35,7 @@
 ;;; ── The program's own joins ────────────────────────────────────────────
 ;;;
 ;;; `next-product` and `next-factorial` each join two or three facts on a
-;;; number, which `std.arith` itself never does: the engine's index does not
+;;; number, which `std.math.decimal-arith` itself never does: the engine's index does not
 ;;; key on a nested fact, so each such premise looks through its relation
 ;;; (E-3 of P1f.6's `findings.md`). Here that is 25 facts a relation, and
 ;;; it does not show; a program with thousands of steps would carry its
@@ -44,7 +44,7 @@
 ;;; `factorial` is the program's own relation, and the program closes it:
 ;;; the theory closes its own relations and cannot close the importer's.
 
-(import std.arith :symbols (arith let n add cmp cmp-of sum-of mul product-of))
+(import std.math.decimal-arith :symbols (decimal-arith let n add cmp cmp-of sum-of mul product-of))
 
 (relation factorial Number Number
   :why "{?1}! = {?2}")

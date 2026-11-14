@@ -330,10 +330,19 @@ fn an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit() {
     let copy = dir.join("stdlib");
     std::fs::create_dir_all(&copy).expect("a stdlib copy");
     let real = repo_root().join("stdlib");
-    for entry in std::fs::read_dir(&real).expect("the stdlib") {
-        let from = entry.expect("an entry").path();
-        if from.is_file() {
-            std::fs::copy(&from, copy.join(from.file_name().expect("a name"))).expect("copy");
+    // Every file at any depth: the calculator's modules are under `math/`
+    // since M1f S1f.6.31, and the manifest lists them by that path.
+    let mut stack = vec![real.clone()];
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).expect("the stdlib") {
+            let from = entry.expect("an entry").path();
+            let to = copy.join(from.strip_prefix(&real).expect("under stdlib/"));
+            if from.is_dir() {
+                std::fs::create_dir_all(&to).expect("a subdirectory");
+                stack.push(from);
+            } else if from.is_file() {
+                std::fs::copy(&from, to).expect("copy");
+            }
         }
     }
     let same = ein_with(
@@ -460,11 +469,9 @@ fn a_container_is_not_larger_than_the_program_it_replaces() {
     // The container holds the *resolved* program — the puzzle plus every
     // stdlib module it imports — so it is bigger than the one file it names
     // and smaller than the tree that file pulls in.
-    let imported: u64 = std::fs::read_dir(repo_root().join("stdlib"))
-        .expect("the stdlib")
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().extension().is_some_and(|x| x == "ein"))
-        .filter_map(|e| e.metadata().ok().map(|m| m.len()))
+    let imported: u64 = ein_corpus::ein_files_under(&repo_root().join("stdlib"))
+        .iter()
+        .filter_map(|p| std::fs::metadata(p).ok().map(|m| m.len()))
         .sum();
     assert!(
         container < source + imported,

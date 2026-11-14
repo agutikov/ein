@@ -89,7 +89,7 @@ Problem 4 as probed (A-1). **Sketch only, to be replaced by programs whose answe
 the planning agent ran it once on 2026-11-11 and the binary answered `(value x (n z 5))`, no candidate, k_s 1.
 
 ```lisp
-(import std.arith :symbols (arith))
+(import std.math.decimal-arith :symbols (decimal-arith))
 
 ;; "Solve 3x + 4 = 19."  a·x + b = c, written with the coefficient, the constant and the right side.
 (relation linear Unknown Number Number Number

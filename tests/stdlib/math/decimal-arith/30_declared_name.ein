@@ -1,0 +1,36 @@
+;;; `std.math.decimal-arith` — a `let` answers the request an undeclared name left
+;;; flagged. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `29_undeclared_name.ein` with one line more, `(let rebate …)`. The
+;;; `absent` no longer holds, so no flag is derived, `operand-name` finds the
+;;; number, and the product is computed. Nothing of the flag is left: root is
+;;; the only state, and it has either the `let` or the flag.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive and owes nothing. The two queries claim that the
+;;; product is 57 and that neither flag has a fact: naming a relation closes
+;;; it, so `(model)` over `undeclared` says its extent is empty.
+
+(import std.math.decimal-arith :symbols (decimal-arith let n add mul product-of undeclared malformed))
+
+(let price (n (n z 1) 9))
+(let rebate (n z 3))
+(add price (n z 2))
+(mul price rebate)
+
+(solve :expect (region (model)))
+
+(query :goal (product-of price rebate ?p)
+       :goal-text "price x rebate = {?p}"
+       :expect (model (product-of price rebate (n (n z 5) 7))))
+
+(query :goal (undeclared ?name ?request)
+       :goal-text "{?request} uses {?name}, which no let states"
+       :expect (model))
+
+(query :goal (malformed ?request)
+       :goal-text "{?request} holds something that is not a number"
+       :expect (model))

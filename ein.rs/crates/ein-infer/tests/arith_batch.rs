@@ -1,5 +1,5 @@
 //! **A batch of requests costs in proportion to its count** — the measured
-//! half of the rule of `std.arith`, M1f
+//! half of the rule of `std.math.decimal-arith`, M1f
 //! [S1f.6.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.3_addition.md).
 //!
 //! The rule of the theory is *no rule joins two facts on a number*, and
@@ -50,7 +50,7 @@
 //! and its bound to [`BOUND`]. Each operation is measured in batches of its
 //! own (S1f.6.4).
 //!
-//! `std.num9` (S1f.6.13), `std.int` (S1f.6.7) and `std.rat` (S1f.6.8) have a
+//! `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7) and `std.math.rat` (S1f.6.8) have a
 //! test of their own each, below, of the same shape.
 
 use ein_core::Terms;
@@ -58,7 +58,7 @@ use ein_core::counters;
 use ein_infer::{Events, Saturator, Session, SharedMemo};
 use ein_ir::{Ast, parse};
 
-const IMPORT: &str = "(import std.arith :symbols (arith))\n";
+const IMPORT: &str = "(import std.math.decimal-arith :symbols (decimal-arith))\n";
 
 /// The request relations a batch is made of, each with its result relation.
 /// A batch is measured per operation, so that one operation's proportion is
@@ -172,9 +172,14 @@ fn saturate(src: &str, result: &str) -> Work {
         .syms
         .get(result)
         .or_else(|| {
-            ["std.arith", "std.num9", "std.int", "std.rat"]
-                .iter()
-                .find_map(|m| terms.syms.get(&format!("{m}.{result}")))
+            [
+                "std.math.decimal-arith",
+                "std.math.num9",
+                "std.math.int",
+                "std.math.rat",
+            ]
+            .iter()
+            .find_map(|m| terms.syms.get(&format!("{m}.{result}")))
         })
         .map_or(0, |rel| kb.facts_of(rel).count());
     Work {
@@ -230,7 +235,7 @@ fn a_batch_costs_in_proportion_to_its_count() {
                     c <= base * TOLERANCE,
                     "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
                      candidates a request at {} and {c:.1} at {n}. A rule of \
-                     std.arith joins two facts on a number: the index does not key \
+                     std.math.decimal-arith joins two facts on a number: the index does not key \
                      a nested fact, so that premise walks its whole relation (E-3 \
                      of P1f.6's findings.md). `arith_theory.rs` names the rule if \
                      it is written as two premises",
@@ -244,7 +249,7 @@ fn a_batch_costs_in_proportion_to_its_count() {
                     g <= base_guards * TOLERANCE,
                     "`{op}`: the guards' work per request grew with the batch: \
                      {base_guards:.1} values a request at {} and {g:.1} at {n}. A guard \
-                     of std.arith ranges over something that grows with the requests; \
+                     of std.math.decimal-arith ranges over something that grows with the requests; \
                      `candidates` does not see it (E-27 of P1f.6's findings.md)",
                     sizes[0]
                 );
@@ -324,11 +329,11 @@ fn a_number_operand_does_not_walk_the_lets() {
     }
 }
 
-// ── std.num9 (S1f.6.13) ────────────────────────────────────────────
+// ── std.math.num9 (S1f.6.13) ────────────────────────────────────────────
 
-const IMPORT9: &str = "(import std.num9 :symbols (arith9))\n";
+const IMPORT9: &str = "(import std.math.num9 :symbols (arith9))\n";
 
-/// `std.num9`'s requests, each with its result relation and the digits of
+/// `std.math.num9`'s requests, each with its result relation and the digits of
 /// its two operands, chosen so that every request has an answer and none
 /// overflows: two numbers of eight digits have a sum of at most nine, and
 /// two of four a product of at most eight.
@@ -349,7 +354,7 @@ const BOUND9_CMP: f64 = 1200.0;
 const BOUND9_MUL: f64 = 14000.0;
 const BOUND9_DIV: f64 = 36000.0;
 
-/// A number of exactly `digits` digits as `std.num9` writes it, nine digit
+/// A number of exactly `digits` digits as `std.math.num9` writes it, nine digit
 /// names with zeros in front.
 fn number9(rng: &mut u64, digits: u32) -> String {
     let mut out = String::from("(num9");
@@ -430,7 +435,7 @@ fn a_batch_of_nine_digit_requests_costs_in_proportion_to_its_count() {
                 assert!(
                     c <= base * TOLERANCE,
                     "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
-                     candidates a request at {} and {c:.1} at {n}. A rule of std.num9 \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.math.num9 \
                      joins two facts on a number (E-3 of P1f.6's findings.md); \
                      `num9_theory.rs` names the rule if it is written as two premises",
                     sizes[0]
@@ -448,14 +453,14 @@ fn a_batch_of_nine_digit_requests_costs_in_proportion_to_its_count() {
     }
 }
 
-// ── std.int (S1f.6.7) ──────────────────────────────────────────────
+// ── std.math.int (S1f.6.7) ──────────────────────────────────────────────
 
-const IMPORT_INT: &str = "(import std.int :symbols (int-arith))\n";
+const IMPORT_INT: &str = "(import std.math.int :symbols (int-arith))\n";
 
-/// `std.int`'s requests over two integers, each with its result relation and
+/// `std.math.int`'s requests over two integers, each with its result relation and
 /// what a request may cost at the smallest batch, in `candidates`: a little
 /// above the measure, as [`BOUND`] is; and the digits of an operand's parts,
-/// six, and four for a product, which is four of `std.arith`'s. Every third
+/// six, and four for a product, which is four of `std.math.decimal-arith`'s. Every third
 /// operand is written with both parts, not simplified. The three divisions
 /// (S1f.6.22) are of four-digit parts, a divisor that is zero left out.
 const REQUESTS_INT: [(&str, &str, f64, u32); 7] = [
@@ -513,9 +518,9 @@ fn batch_int(op: &str, count: usize, digits: u32) -> String {
     src
 }
 
-/// **The integers keep the rule of the theory.** Every rule of `std.int` has
+/// **The integers keep the rule of the theory.** Every rule of `std.math.int` has
 /// one premise (`int_theory.rs` holds that on the text), and each step is a
-/// walk of `std.arith` under a tag of the module's. Here: a request of each
+/// walk of `std.math.decimal-arith` under a tag of the module's. Here: a request of each
 /// operation costs the same `candidates` and the same firings at 1 000 and
 /// at 4 000 requests as at 250.
 #[test]
@@ -551,7 +556,7 @@ fn a_batch_of_integer_requests_costs_in_proportion_to_its_count() {
                 assert!(
                     c <= base * TOLERANCE,
                     "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
-                     candidates a request at {} and {c:.1} at {n}. A rule of std.int \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.math.int \
                      joins two facts on a number (E-3 of P1f.6's findings.md); \
                      `int_theory.rs` names the rule if it is written as two premises",
                     sizes[0]
@@ -569,11 +574,11 @@ fn a_batch_of_integer_requests_costs_in_proportion_to_its_count() {
     }
 }
 
-// ── std.rat (S1f.6.8) ──────────────────────────────────────────────
+// ── std.math.rat (S1f.6.8) ──────────────────────────────────────────────
 
-const IMPORT_RAT: &str = "(import std.rat :symbols (rat-arith))\n";
+const IMPORT_RAT: &str = "(import std.math.rat :symbols (rat-arith))\n";
 
-/// `std.rat`'s requests over two rationals, each with its result relation
+/// `std.math.rat`'s requests over two rationals, each with its result relation
 /// and what a request may cost at the smallest batch, in `candidates`: a
 /// little above the measure, as [`BOUND`] is.
 const REQUESTS_RAT: [(&str, &str, f64); 5] = [
@@ -587,7 +592,7 @@ const BOUND_RAT_ADD: f64 = 10000.0;
 const BOUND_RAT_MUL: f64 = 9500.0;
 const BOUND_RAT_CMP: f64 = 900.0;
 
-/// The batches of `std.rat`. Smaller than the others': lowest terms is a
+/// The batches of `std.math.rat`. Smaller than the others': lowest terms is a
 /// chain of divisions, some hundreds of firings a request, and a stored fact
 /// costs about a kilobyte (E-26 of P1f.6's `findings.md`).
 const SIZES_RAT: [usize; 3] = [100, 400, 1200];
@@ -630,10 +635,10 @@ fn batch_rat(op: &str, count: usize) -> String {
     src
 }
 
-/// **The rationals keep the rule of the theory.** Every rule of `std.rat`
+/// **The rationals keep the rule of the theory.** Every rule of `std.math.rat`
 /// has one premise (`rat_theory.rs` holds that on the text): the cross
 /// products, Euclid's chain and the two divisions by what it finds are each
-/// a call of `std.arith` or `std.int` under a tag. Here: a request of each
+/// a call of `std.math.decimal-arith` or `std.math.int` under a tag. Here: a request of each
 /// operation costs the same `candidates` and the same firings at 400 and at
 /// 1 200 requests as at 100.
 #[test]
@@ -669,7 +674,7 @@ fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
                 assert!(
                     c <= base * TOLERANCE_RAT,
                     "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
-                     candidates a request at {} and {c:.1} at {n}. A rule of std.rat \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.math.rat \
                      joins two facts on a number (E-3 of P1f.6's findings.md); \
                      `rat_theory.rs` names the rule if it is written as two premises",
                     sizes[0]
@@ -687,7 +692,7 @@ fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
     }
 }
 
-/// What a request of `std.rat` costs depends on its operands more than a sum
+/// What a request of `std.math.rat` costs depends on its operands more than a sum
 /// of two nine-digit numbers does: the length of Euclid's chain varies from
 /// request to request. A hundred requests are a small sample of that, so the
 /// per-request work at a larger batch may exceed the smallest's by this

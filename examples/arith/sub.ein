@@ -4,8 +4,8 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.arith` is school arithmetic written in Ein over the digit tables of
-;;; `std.digits` (`add.ein` beside this file is the introduction). The theory
+;;; `std.math.decimal-arith` is school arithmetic written in Ein over the digit tables of
+;;; `std.math.digits` (`add.ein` beside this file is the introduction). The theory
 ;;; has natural numbers only, so a subtraction is answered by two numbers:
 ;;;
 ;;;   (sub X Y)            a request fact: X - Y is asked
@@ -41,7 +41,7 @@
 ;;; `ein solve examples/arith/sub.ein --trace T.md` writes every step as a
 ;;; sentence.
 
-(import std.arith :symbols (arith sub n let cmp diff-of cmp-of))
+(import std.math.decimal-arith :symbols (decimal-arith sub n let cmp diff-of cmp-of))
 
 (relation missing Name Name Number
   :why "{?1} is short of {?2} by {?3}")

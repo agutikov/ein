@@ -4,7 +4,7 @@
 **Status:** planned 2026-11-12, on the user's reply of that day to the calculator's questions. Not started.
 No stage file yet: the phase is this README, and its stages are sections below.
 **Depends on:** [P1g.1](../p1g.1_survey_and_design/README.md)'s stop; of M1f, the calculator's number kinds
-as shipped (`std.arith`, `std.int`, `std.rat`, under `std.math` after
+as shipped (`std.math.decimal-arith`, `std.math.int`, `std.math.rat`, under `std.math` since
 [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)), and
 [P1g.10's S1g.10.7](../p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md),
 which says what the compound numbers would need of a types theory.

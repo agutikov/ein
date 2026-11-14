@@ -3,7 +3,7 @@
 **Phase:** [P1g.5](README.md)
 **Status:** planned 2026-11-11, not started.
 **Depends on:** [S1g.5.1](s1g.5.1_unary_numbers_and_the_axioms.md);
-[`std.arith`](../../../stdlib/arith.ein), the decimal calculator
+[`std.math.decimal-arith`](../../../stdlib/math/decimal-arith.ein), the decimal calculator
 ([P1f.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)); and, if it shipped, the binary
 module of [S1f.6.16](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md).
 
@@ -22,14 +22,14 @@ Two requests, each a chain of the theories' own operations:
 
 - **decimal to unary:** walk the decimal number from its top digit; at each digit, multiply the unary
   accumulator by ten and add the digit's unary value (ten facts, `(unary-digit 3 (s (s (s z))))`). Horner's
-  rule, in unary arithmetic. Or the direct way: count down the decimal number by `std.arith`'s subtraction of
+  rule, in unary arithmetic. Or the direct way: count down the decimal number by `std.math.decimal-arith`'s subtraction of
   one, adding a successor each step. Both to be tried; the first uses only S1g.5.1's theory, the second uses
   the calculator as the counter.
-- **unary to decimal:** walk the unary number down, adding one to a decimal accumulator with `std.arith`'s
+- **unary to decimal:** walk the unary number down, adding one to a decimal accumulator with `std.math.decimal-arith`'s
   addition at each successor. n calculator additions for the number n.
 
-Each is tagged or carries a continuation as `std.arith`'s own circuits do, since a conversion calls an
-operation and needs its answer: `std.arith`'s tagged entries (`add-walk`, `mul-call` and `div-call`, answered by `done` and `div-done` under
+Each is tagged or carries a continuation as `std.math.decimal-arith`'s own circuits do, since a conversion calls an
+operation and needs its answer: `std.math.decimal-arith`'s tagged entries (`add-walk`, `mul-call` and `div-call`, answered by `done` and `div-done` under
 the caller's tag) are what S1f.6.3 to S1f.6.6 left for a later theory to use, and this is such a theory. S1f.6.16's
 decimal-to-binary conversion is the model, if it was built.
 
@@ -38,7 +38,7 @@ decimal-to-binary conversion is the model, if it was built.
 For an operation ∘ and decimal numbers a and b, one program computes four things and a claim relates them:
 
 ```
-        a , b  ──── std.arith ────▶  a ∘ b          (decimal)
+        a , b  ──── std.math.decimal-arith ────▶  a ∘ b          (decimal)
           │                             │
        to unary                      to unary
           ▼                             ▼

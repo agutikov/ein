@@ -4,7 +4,7 @@
 ;;; flag. Root is dead and R is empty; the unsat core names the two sentences,
 ;;; the question and the model's assumption.
 (import words :symbols (words has gave asked amount value))
-(import std.arith :symbols (n))
+(import std.math.decimal-arith :symbols (n))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (gave Bob Alice apples (n z 7) t0 t1  :source "He gave 7 to Alice.")

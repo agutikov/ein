@@ -2207,7 +2207,7 @@ kb load error: t.ein:3:2: the fact (likes Bob) gives likes 1 argument, and (rela
 count was stored beside the rest; matching is by count, so a premise or a
 goal of another count matched nothing and a conclusion of another count
 derived facts no premise of the declared count read; and the calculator's
-`(add (n z 5))`, one operand where `add` declares two, and a `std.num9`
+`(add (n z 5))`, one operand where `add` declares two, and a `std.math.num9`
 number of eight digits were answered by silence, exit 0. A `--dump-answer`
 state file printed such a fact's English with a place nothing filled, *Bob
 likes {?2}*. No program of the corpus that loaded was refused by the check
@@ -2325,7 +2325,7 @@ form or the name is written:
 | one short name bound to two full names in one file, by two imports or by an import and the file's own declaration (Q-M1f.234) | `p.ein:2:9: 'done' is bound to two full names in the program, m.done and n.done — one short name names one declaration in a file: list it from one module, or write the other by its full name`; `… infer-closure (its own declaration) and std.closure.infer-closure …` |
 | one alias prefixing two modules in one file | `p.ein:2:9: 'x' prefixes two modules in one file, m and n — one short name names one thing in a file` |
 | a prefixed or full name that names nothing its module declares (Q-M1f.251) | `p.ein:2:2: 'x.nope' names nothing: m declares no 'nope' — a prefixed name is a full name of a declaration of the module it names (Q-M1f.251)` |
-| a full name of a module no import of the program brings (Q-M1f.238), with an import of another module or with none | `p.ein:1:2: 'std.arith.add' is a full name of std.arith, which no import of the program brings — a module enters a program by an import of it: write (import std.arith …) (Q-M1f.238)` |
+| a full name of a module no import of the program brings (Q-M1f.238), with an import of another module or with none | `p.ein:1:2: 'std.math.decimal-arith.add' is a full name of std.math.decimal-arith, which no import of the program brings — a module enters a program by an import of it: write (import std.math.decimal-arith …) (Q-M1f.238)` |
 | the main file declaring a name under the full name of a module the program imports (Q-M1f.239) | `p.ein:2:11: the program declares 'm.mine', a full name of m, which the program imports — a declaration's full name is its own file's, and a full name of m is one m declares (Q-M1f.239)` |
 | a module declaring a name with a dot (Q-M1f.241) | `d.ein:2:11: d declares 'y.z', a name with a dot — a module's declared name holds no dot, so that a full name such as d.x reads one way (Q-M1f.241)` |
 | a module's name with an empty segment or a `/`, `..` among them (Q-M1f.252) | `(import ..m) — a module's name is its path from the program's directory, a name per directory joined by dots, none empty and none holding a '/': no '..', no path (Q-M1f.252) at None` |

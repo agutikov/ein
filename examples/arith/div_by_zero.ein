@@ -7,7 +7,7 @@
 ;;;
 ;;; ── What happens ───────────────────────────────────────────────────────
 ;;;
-;;; `std.arith` has no answer for a division by zero and does not make one
+;;; `std.math.decimal-arith` has no answer for a division by zero and does not make one
 ;;; up. It says so in two steps (the user's ruling of 2026-11-11):
 ;;;
 ;;;   1. the request derives a flag that names it,
@@ -34,7 +34,7 @@
 ;;; request's, `(division-by-zero (div-call (quotient takings customers)
 ;;; (n (n (n z 1) 2) 0) z))`, and the trace shows it and its contradiction
 ;;; as two steps more, after the request's. What `ein solve` prints is what
-;;; it printed. `tests/stdlib/arith/39_div_call_by_zero.ein` is a division
+;;; it printed. `tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein` is a division
 ;;; by zero that a rule of the program's own makes, with no `div` request.
 ;;;
 ;;; `(solve :expect (false))` is the one claim such a program can make. A
@@ -42,7 +42,7 @@
 ;;; customers z)`, and derives its `div` request by a rule that matches
 ;;; `(cmp-of customers z gt)`.
 
-(import std.arith :symbols (arith let n add div))
+(import std.math.decimal-arith :symbols (decimal-arith let n add div))
 
 (let takings   (n (n (n z 1) 2) 0))
 (let customers z)

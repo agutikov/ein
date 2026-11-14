@@ -3,8 +3,8 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.rat` is the third theory of the calculator, over `std.int` (`int.ein`
-;;; beside this file) and `std.arith` (`add.ein`): a rational is an integer
+;;; `std.math.rat` is the third theory of the calculator, over `std.math.int` (`int.ein`
+;;; beside this file) and `std.math.decimal-arith` (`add.ein`): a rational is an integer
 ;;; over a natural number that is not zero, and every answer is in lowest
 ;;; terms.
 ;;;
@@ -25,7 +25,7 @@
 ;;;
 ;;; Nothing is guessed. A sum is the cross products over the product of the
 ;;; denominators, and then lowest terms: the greatest common divisor by
-;;; Euclid's chain, each step a division of `std.arith`, and both terms
+;;; Euclid's chain, each step a division of `std.math.decimal-arith`, and both terms
 ;;; divided by it.
 ;;;
 ;;;   1/2 + 1/3:   1 x 3 + 1 x 2 = 5, over 2 x 3 = 6
@@ -46,11 +46,11 @@
 ;;; `ein solve examples/arith/rat.ein --trace T.md` writes every step as a
 ;;; sentence.
 
-(import std.rat :symbols (rat-arith rat-add rat rat-sub rat-div rat-simplify rat-mul
+(import std.math.rat :symbols (rat-arith rat-add rat rat-sub rat-div rat-simplify rat-mul
                           rat-product-of rat-cmp rat-cmp-of rat-sum-of rat-diff-of rat-quot-of
                           rat-simple-of))
-(import std.int :symbols (int))
-(import std.arith :symbols (n let))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (n let))
 
 (relation short-of Name Rational
   :why "there is not enough {?1}: {?2} is needed")

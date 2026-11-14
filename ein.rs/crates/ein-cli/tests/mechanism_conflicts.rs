@@ -430,7 +430,7 @@ fn e47s_witness_is_refused_for_the_conflict_and_not_by_forbid() {
     // The names the program writes, each listed from the module that declares
     // it (M1f S1f.6.35).
     const IMPORTS: &str = "(import words :symbols (words has asked together value))\n\
-         (import std.arith :symbols (n))\n(import gaps :symbols (gaps))\n";
+         (import std.math.decimal-arith :symbols (n))\n(import gaps :symbols (gaps))\n";
     let witnesses = [
         (
             "kinds_listed_has_hyp_stated",

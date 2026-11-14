@@ -6,7 +6,7 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `std.arith` declares a number's constructor with two arguments, `(relation
+;;; `std.math.decimal-arith` declares a number's constructor with two arguments, `(relation
 ;;; n Number Digit)`: what is to the left, and a digit. The request's first
 ;;; operand is `(n 1)`, where `(n z 1)` was meant.
 ;;;
@@ -24,7 +24,7 @@
 ;;; command, with no word.
 ;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
-(import std.arith :symbols (arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
 
 (add (n 1) (n z 5))
 

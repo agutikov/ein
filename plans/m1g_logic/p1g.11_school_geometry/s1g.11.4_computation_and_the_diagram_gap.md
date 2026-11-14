@@ -120,7 +120,7 @@ once on 2026-11-11: the binary answered `(measure (ang B C A) (n (n z 7) 0))`, t
 k_s 1.
 
 ```lisp
-(import std.arith :symbols (arith))
+(import std.math.decimal-arith :symbols (decimal-arith))
 
 (relation triangle Point Point Point :why "{?1}{?2}{?3} is a triangle")
 (relation ang Point Point Point      :why "the angle {?1}{?2}{?3}, at {?2}")

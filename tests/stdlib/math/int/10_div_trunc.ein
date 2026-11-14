@@ -1,0 +1,82 @@
+;;; `std.math.int` — division, truncated, every combination of signs with a
+;;; remainder and without. M1f S1f.6.22.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(int-div-trunc X Y)` is answered by `(int-quot-trunc-of X Y Q R)` with
+;;; X = Q x Y + R, Q rounded toward zero and R with the dividend's sign, both
+;;; integers in normal form.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; Both operands are simplified and the sizes divided by `std.math.decimal-arith`
+;;; (`int-div-trunc-ask`, then the shared `int-div-start`, `int-div-divisor`
+;;; and one of `int-div-pp`, `-pn`, `-np`, `-nn`). The sizes' quotient q and
+;;; remainder r are the answer with the signs put on, one rule a combination:
+;;; q, r (`int-div-trunc-pp`); -q, r (`-pn`); -q, -r (`-np`); q, -r (`-nn`).
+;;; No walk follows the division. A negated zero is `(int z z)`.
+;;;
+;;; X / Y = Q, R:
+;;;
+;;;   7 / 2 = 3, 1                      -7 / 2 = -3, -1
+;;;   7 / -2 = -3, 1                    -7 / -2 = 3, -1
+;;;   6 / 3 = 2, 0                      -6 / 3 = -2, 0
+;;;   6 / -3 = -2, 0                    -6 / -3 = 2, 0
+;;;   0 / 5 = 0, 0                      0 / -5 = 0, 0
+;;;   1 / 4 = 0, 1                      -1 / 4 = 0, -1
+;;;   1 / -4 = 0, 1                     -1 / -4 = 0, -1
+;;;   127645 / -25 = -5105, 20          -127645 / 25 = -5105, -20
+;;;   (5 less 12) / (3 less 1) = -7 / 2 = -3, -1
+;;;   (2 less 8) / (1 less 4) = -6 / -3 = 2, 0
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `int-quot-trunc-of`'s whole extent, 18 requests: the four combinations
+;;; of signs with a remainder left and with none, a dividend of zero, a
+;;; dividend smaller than the divisor, six digits by two, and two requests
+;;; whose operands are written with both parts and read by value.
+
+(import std.math.int :symbols (int-arith int-div-trunc int int-quot-trunc-of))
+(import std.math.decimal-arith :symbols (n))
+
+(int-div-trunc (int (n z 7) z) (int (n z 2) z))
+(int-div-trunc (int z (n z 7)) (int (n z 2) z))
+(int-div-trunc (int (n z 7) z) (int z (n z 2)))
+(int-div-trunc (int z (n z 7)) (int z (n z 2)))
+(int-div-trunc (int (n z 6) z) (int (n z 3) z))
+(int-div-trunc (int z (n z 6)) (int (n z 3) z))
+(int-div-trunc (int (n z 6) z) (int z (n z 3)))
+(int-div-trunc (int z (n z 6)) (int z (n z 3)))
+(int-div-trunc (int z z) (int (n z 5) z))
+(int-div-trunc (int z z) (int z (n z 5)))
+(int-div-trunc (int (n z 1) z) (int (n z 4) z))
+(int-div-trunc (int z (n z 1)) (int (n z 4) z))
+(int-div-trunc (int (n z 1) z) (int z (n z 4)))
+(int-div-trunc (int z (n z 1)) (int z (n z 4)))
+(int-div-trunc (int (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) z) (int z (n (n z 2) 5)))
+(int-div-trunc (int z (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5)) (int (n (n z 2) 5) z))
+(int-div-trunc (int (n z 5) (n (n z 1) 2)) (int (n z 3) (n z 1)))
+(int-div-trunc (int (n z 2) (n z 8)) (int (n z 1) (n z 4)))
+
+(solve :expect (region (model)))
+
+(query :goal (int-quot-trunc-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}"
+       :expect (model (int-quot-trunc-of (int (n z 7) z) (int (n z 2) z) (int (n z 3) z) (int (n z 1) z))
+                      (int-quot-trunc-of (int z (n z 7)) (int (n z 2) z) (int z (n z 3)) (int z (n z 1)))
+                      (int-quot-trunc-of (int (n z 7) z) (int z (n z 2)) (int z (n z 3)) (int (n z 1) z))
+                      (int-quot-trunc-of (int z (n z 7)) (int z (n z 2)) (int (n z 3) z) (int z (n z 1)))
+                      (int-quot-trunc-of (int (n z 6) z) (int (n z 3) z) (int (n z 2) z) (int z z))
+                      (int-quot-trunc-of (int z (n z 6)) (int (n z 3) z) (int z (n z 2)) (int z z))
+                      (int-quot-trunc-of (int (n z 6) z) (int z (n z 3)) (int z (n z 2)) (int z z))
+                      (int-quot-trunc-of (int z (n z 6)) (int z (n z 3)) (int (n z 2) z) (int z z))
+                      (int-quot-trunc-of (int z z) (int (n z 5) z) (int z z) (int z z))
+                      (int-quot-trunc-of (int z z) (int z (n z 5)) (int z z) (int z z))
+                      (int-quot-trunc-of (int (n z 1) z) (int (n z 4) z) (int z z) (int (n z 1) z))
+                      (int-quot-trunc-of (int z (n z 1)) (int (n z 4) z) (int z z) (int z (n z 1)))
+                      (int-quot-trunc-of (int (n z 1) z) (int z (n z 4)) (int z z) (int (n z 1) z))
+                      (int-quot-trunc-of (int z (n z 1)) (int z (n z 4)) (int z z) (int z (n z 1)))
+                      (int-quot-trunc-of (int (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) z) (int z (n (n z 2) 5)) (int z (n (n (n (n z 5) 1) 0) 5)) (int (n (n z 2) 0) z))
+                      (int-quot-trunc-of (int z (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5)) (int (n (n z 2) 5) z) (int z (n (n (n (n z 5) 1) 0) 5)) (int z (n (n z 2) 0)))
+                      (int-quot-trunc-of (int (n z 5) (n (n z 1) 2)) (int (n z 3) (n z 1)) (int z (n z 3)) (int z (n z 1)))
+                      (int-quot-trunc-of (int (n z 2) (n z 8)) (int (n z 1) (n z 4)) (int (n z 2) z) (int z z))))

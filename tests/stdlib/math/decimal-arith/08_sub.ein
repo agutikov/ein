@@ -1,0 +1,58 @@
+;;; `std.math.decimal-arith` — a difference, both ways round: 123078 - 4567 = 118511, and
+;;; 4567 - 123078 is short by 118511. M1f S1f.6.4.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(sub X Y)` is answered by `(diff-of X Y D R)`, two
+;;; numbers. D is X - Y where X is not the smaller, and `z` otherwise. R is
+;;; what X is short of Y by, Y - X, where X is the smaller, and `z`
+;;; otherwise. The theory has no negative number; R is its place.
+;;;
+;;; ── The difference, by hand ────────────────────────────────────────────────
+;;;
+;;;     1 2 3 0 7 8
+;;;   -     4 5 6 7
+;;;   ─────────────
+;;;     1 1 8 5 1 1        8-7 = 1, 7-6 = 1, 0-5 borrows: 5, 3-4-1 borrows: 8,
+;;;                        2-1 = 1, 1
+;;;
+;;; The circuit does not know which number is the smaller before the top
+;;; column, and guesses nothing: `sub-start` begins two walks, X - Y and
+;;; Y - X. Four columns have a digit of each number (`sub-column`); then the
+;;; shorter has run out, which is the number taken away in one walk
+;;; (`sub-column-first`) and the number taken from in the other
+;;; (`sub-column-second`). One walk ends with no borrow (`sub-end`) and hands
+;;; its digits over; the other ends with a borrow (`sub-borrow-out`) and has
+;;; no answer. In the first request the walk that ends well is X - Y
+;;; (`sub-answer`); in the second it is Y - X (`sub-answer-short`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The first claim names `diff-of`, so it is the relation's whole extent: two
+;;; requests, one answer each. The second is `short`'s whole extent: of the
+;;; four walks, exactly two ended with a borrow, and a walk that did hands
+;;; over no number. The `(solve …)` form claims R = {∅}: nothing is guessed.
+
+(import std.math.decimal-arith :symbols (decimal-arith sub n diff-of short shortfall difference))
+
+(sub (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
+(sub (n (n (n (n z 4) 5) 6) 7) (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+
+(solve :expect (region (model)))
+
+(query :goal (diff-of ?x ?y ?d ?r)
+       :goal-text "{?x} - {?y} = {?d}, short by {?r}"
+       :expect (model (diff-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                               (n (n (n (n z 4) 5) 6) 7)
+                               (n (n (n (n (n (n z 1) 1) 8) 5) 1) 1)
+                               z)
+                      (diff-of (n (n (n (n z 4) 5) 6) 7)
+                               (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                               z
+                               (n (n (n (n (n (n z 1) 1) 8) 5) 1) 1))))
+
+(query :goal (short ?walk)
+       :expect (model (short (shortfall (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                                        (n (n (n (n z 4) 5) 6) 7)))
+                      (short (difference (n (n (n (n z 4) 5) 6) 7)
+                                         (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)))))

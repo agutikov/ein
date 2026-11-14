@@ -230,12 +230,8 @@ fn locations(entry: &Path, name: &str) -> Vec<String> {
     if let Some(line) = find(entry) {
         return vec![format!("{}:{line}", relative(entry))];
     }
-    let mut hits: Vec<String> = std::fs::read_dir(repo_root().join("stdlib"))
+    let mut hits: Vec<String> = ein_corpus::ein_files_under(&repo_root().join("stdlib"))
         .into_iter()
-        .flatten()
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|x| x == "ein"))
         .filter_map(|p| find(&p).map(|line| format!("{}:{line}", relative(&p))))
         .collect();
     hits.sort();
@@ -261,9 +257,10 @@ fn imported_modules(entry: &Path) -> std::collections::BTreeSet<String> {
         if !seen.insert(m.clone()) {
             continue;
         }
-        let file = repo_root()
-            .join("stdlib")
-            .join(format!("{}.ein", m.trim_start_matches("std.")));
+        let file = repo_root().join("stdlib").join(format!(
+            "{}.ein",
+            m.trim_start_matches("std.").replace('.', "/")
+        ));
         stack.extend(imports(&file));
     }
     seen

@@ -60,7 +60,7 @@ has a value here.
 
 ## T1 record, 2026-11-12
 
-**`std.int`,** [`stdlib/int.ein`](../../../stdlib/int.ein), written by hand: 34 relations, 36 rules and the
+**`std.int`,** [`stdlib/int.ein`](../../../stdlib/math/int.ein), written by hand: 34 relations, 36 rules and the
 closing rule (`grep -c '^(relation ' stdlib/int.ein`, `grep -c '^(rule ' stdlib/int.ein`, 2026-11-12). It imports
 `std.arith` by its entry and edits nothing of it.
 
@@ -211,7 +211,7 @@ programs under `tests/stdlib/int/`, one of them the division by zero; and the cl
 
 ## T3 record, 2026-11-12: the tests
 
-- **Eight programs** under [`tests/stdlib/int/`](../../../tests/stdlib/int/), each a corpus entry of group
+- **Eight programs** under [`tests/stdlib/int/`](../../../tests/stdlib/math/int/), each a corpus entry of group
   `stdlib` with its `:expect` and `(solve :expect (region (model)))`: the normal form, negation, the four
   operations each in every combination of signs, an unsimplified operand answering as its normal form does (the
   stage's task 3), and operands by name with two rules of the program's own. Every claim was computed by

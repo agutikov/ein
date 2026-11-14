@@ -574,7 +574,7 @@ fn fact_grain_on_programs_written_to_test_it() {
 }
 
 /// **Where the closure runs, and where it gives up** (M1f S1f.6.28, E-33).
-/// Two programs on which a supposed fact concludes a request to `std.arith`
+/// Two programs on which a supposed fact concludes a request to `std.math.decimal-arith`
 /// whose dividend the commitment does not bind, `(div _ (n z 3))`, which sends
 /// the closure through every shape of the division's circuits. Without a site
 /// the verdict reads nothing of `Δ̂`, which is not computed, and the cube is
@@ -583,7 +583,7 @@ fn fact_grain_on_programs_written_to_test_it() {
 /// site is one, the verdict the safe *not monotone*.
 #[test]
 fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side() {
-    const READING: &str = "(import std.arith :symbols (arith div n quot-of))
+    const READING: &str = "(import std.math.decimal-arith :symbols (decimal-arith div n quot-of))
          (relation reading T :why \"{?1} is a reading\") (relation read-as T :why \"read as {?1}\")
          (relation amount T T :why \"there are {?2} {?1}\") (relation answer T T :why \"the answer for {?1} is {?2}\")
          (relation counted T :why \"{?1} is counted\")

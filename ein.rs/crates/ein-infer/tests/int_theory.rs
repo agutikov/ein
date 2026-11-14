@@ -1,12 +1,12 @@
-//! **`std.int`, held to the signed integers and to the rule of the theory** —
+//! **`std.math.int`, held to the signed integers and to the rule of the theory** —
 //! M1f
 //! [S1f.6.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.7_negative_numbers.md).
 //!
-//! `stdlib/int.ein` is the calculator's first extension: an integer is
-//! `(int P N)`, two natural numbers of `std.arith`, and its value is P less
-//! N. The module calls `std.arith`'s walks and does not edit it. Ein has no
+//! `stdlib/math/int.ein` is the calculator's first extension: an integer is
+//! `(int P N)`, two natural numbers of `std.math.decimal-arith`, and its value is P less
+//! N. The module calls `std.math.decimal-arith`'s walks and does not edit it. Ein has no
 //! numbers, so what holds the theory's answers is here, as
-//! `arith_theory.rs` holds `std.arith`'s.
+//! `arith_theory.rs` holds `std.math.decimal-arith`'s.
 //!
 //! | claim | where |
 //! |---|---|
@@ -20,8 +20,8 @@
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_each_operation`] |
 //! | **the rule of the theory**, on the module's text: every rule has one premise, so none joins two facts | [`every_rule_has_one_premise`] |
 //! | no `absent`, `not`, `or`, guard or `(false)` | [`the_theory_writes_no_negation_and_no_guard`] |
-//! | a division by zero derives `std.arith`'s flag, the request as written, and `(false)`, and no quotient | [`a_division_by_zero_is_the_flag_under_every_convention`] |
-//! | the closing rule closes every relation and names every rule, and names `std.arith`'s entry | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
+//! | a division by zero derives `std.math.decimal-arith`'s flag, the request as written, and `(false)`, and no quotient | [`a_division_by_zero_is_the_flag_under_every_convention`] |
+//! | the closing rule closes every relation and names every rule, and names `std.math.decimal-arith`'s entry | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //!
 //! The oracle is `i128`. The *measured* half of the rule of the theory is
 //! `arith_batch.rs`; the search-free claim, on the binary, is
@@ -49,11 +49,11 @@ use ein_ir::{Ast, Node, NodeId, parse};
 /// signs and of simplified and unsimplified operands.
 const PART: u128 = 9;
 
-const IMPORT: &str = "(import std.int :symbols (int-arith))\n";
+const IMPORT: &str = "(import std.math.int :symbols (int-arith))\n";
 
 // ── numbers and integers as the theory writes them ─────────────────
 
-/// A string of decimal digits as a number of `std.arith`, high zeros kept.
+/// A string of decimal digits as a number of `std.math.decimal-arith`, high zeros kept.
 fn written(digits: &str) -> String {
     let mut out = String::from("z");
     for ch in digits.chars() {
@@ -231,7 +231,7 @@ const OPS: [Op; 7] = [
         divides: false,
         answer: |a, b| normal(a - b),
     },
-    // The Euclidean remainder is a **natural number** of `std.arith`, in
+    // The Euclidean remainder is a **natural number** of `std.math.decimal-arith`, in
     // normal form, and never an integer (the user's ruling of 2026-11-12).
     Op {
         request: "int-div-euclid",
@@ -508,7 +508,7 @@ fn simplification_and_negation_are_right() {
     }
 }
 
-/// A request may name an operand, through `std.arith`'s `let`, and the
+/// A request may name an operand, through `std.math.decimal-arith`'s `let`, and the
 /// answer repeats the name.
 #[test]
 fn named_operands_work_for_every_request() {
@@ -585,11 +585,11 @@ fn a_natural_number_is_not_an_integer_operand() {
 
 /// **A division by zero, under every convention**: the divisor is zero by
 /// value, written `(int z z)`, with both parts equal, with digits, or by
-/// name. `int-div-by-zero` derives `std.arith`'s flag with the request as
-/// written, `std.arith`'s rule derives `(false)`, and the request has no
+/// name. `int-div-by-zero` derives `std.math.decimal-arith`'s flag with the request as
+/// written, `std.math.decimal-arith`'s rule derives `(false)`, and the request has no
 /// quotient; the request beside it is answered.
 ///
-/// **One flag a request, and it is the request's** (S1f.6.24). `std.arith`
+/// **One flag a request, and it is the request's** (S1f.6.24). `std.math.decimal-arith`
 /// flags a division at its tagged call since that stage, whoever made it;
 /// this module sees a divisor that is zero by its shape before it calls, so
 /// no call with a zero divisor is made and no `(division-by-zero (div-call
@@ -651,14 +651,14 @@ fn circuit(body: &str) -> (usize, usize) {
     let mut depth_of: BTreeMap<ein_core::FactId, usize> = BTreeMap::new();
     let (mut firings, mut deepest) = (0usize, 0usize);
     let closers = [
-        ein_corpus::spellings("arith")
+        ein_corpus::spellings("decimal-arith")
             .iter()
             .find_map(|n| terms.syms.get(n))
-            .expect("std.arith's closing rule"),
+            .expect("std.math.decimal-arith's closing rule"),
         ein_corpus::spellings("int-arith")
             .iter()
             .find_map(|n| terms.syms.get(n))
-            .expect("std.int's closing rule"),
+            .expect("std.math.int's closing rule"),
     ];
     {
         let mut s = Session {
@@ -691,12 +691,12 @@ fn circuit(body: &str) -> (usize, usize) {
 }
 
 /// **Each operation as a circuit**, on the operands `arith_theory.rs` pins
-/// `std.arith`'s on, with a sign: 123078 and −4567. A sum is two addition
+/// `std.math.decimal-arith`'s on, with a sign: 123078 and −4567. A sum is two addition
 /// walks and the two subtraction walks of the simplification, which run side
 /// by side, so its depth is less than its size. A product is four of
-/// `std.arith`'s products, of which three have a zero operand here, two
+/// `std.math.decimal-arith`'s products, of which three have a zero operand here, two
 /// sums and the simplification. A division is two simplifications,
-/// `std.arith`'s division of the sizes and, where the convention adjusts,
+/// `std.math.decimal-arith`'s division of the sizes and, where the convention adjusts,
 /// an addition walk and a subtraction walk: −7 by 2, and −127645 by 25,
 /// under each convention.
 ///
@@ -774,10 +774,10 @@ struct Module {
 }
 
 fn module() -> Module {
-    let path = repo_root().join("stdlib/int.ein");
+    let path = repo_root().join("stdlib/math/int.ein");
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("std.int parses");
+    let forms = parse(&mut ast, &text, path.to_str()).expect("std.math.int parses");
     Module { ast, forms }
 }
 
@@ -842,8 +842,8 @@ impl Module {
 }
 
 /// **The rule of the theory, on the text**, in its strongest form: every
-/// rule of `std.int` but the closing rule has exactly **one** premise. It
-/// reads no table of `std.digits` itself and joins nothing: all it needs
+/// rule of `std.math.int` but the closing rule has exactly **one** premise. It
+/// reads no table of `std.math.digits` itself and joins nothing: all it needs
 /// travels in the call's tag. A second premise that looks a fact up by a
 /// number would change no answer and make every batch cost the square of its
 /// count (E-3 of P1f.6's `findings.md`).
@@ -851,7 +851,11 @@ impl Module {
 fn every_rule_has_one_premise() {
     let m = module();
     let rules = m.declared("rule");
-    assert!(rules.len() >= 30, "std.int parsed to {} rules", rules.len());
+    assert!(
+        rules.len() >= 30,
+        "std.math.int parsed to {} rules",
+        rules.len()
+    );
     for (name, rule) in &rules {
         let premises = m.conjuncts(m.clause(*rule, "match"));
         if name == "int-arith" {
@@ -861,7 +865,7 @@ fn every_rule_has_one_premise() {
         assert_eq!(
             premises.len(),
             1,
-            "rule {name} has {} premises: a rule of std.int has ONE, and carries \
+            "rule {name} has {} premises: a rule of std.math.int has ONE, and carries \
              what it needs in the call's tag",
             premises.len()
         );
@@ -870,9 +874,9 @@ fn every_rule_has_one_premise() {
 
 /// No `absent`, no `not`, no `or`, no guard, and no `(false)`: the module is
 /// monotone, has one stratum, and never refutes. A contradiction in a
-/// program of integers is `std.arith`'s, a division by zero: since S1f.6.22
+/// program of integers is `std.math.decimal-arith`'s, a division by zero: since S1f.6.22
 /// the module derives that theory's flag, `(division-by-zero REQUEST)`, and
-/// `std.arith`'s rule concludes `(false)` from it.
+/// `std.math.decimal-arith`'s rule concludes `(false)` from it.
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();
@@ -894,12 +898,12 @@ fn the_theory_writes_no_negation_and_no_guard() {
     }
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
-        "std.int guesses nothing and expands nothing"
+        "std.math.int guesses nothing and expands nothing"
     );
 }
 
 /// `int-arith` is the theory's one entry. It closes every relation the
-/// module declares, names every other rule, and names `arith`, `std.arith`'s
+/// module declares, names every other rule, and names `decimal-arith`, `std.math.decimal-arith`'s
 /// entry, without which a selection leaves the lower theory's rules behind
 /// in silence (E-20 of P1f.6's `findings.md`).
 #[test]
@@ -936,13 +940,13 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         .map(|(n, _)| n.clone())
         .filter(|n| n != "int-arith")
         .collect();
-    want_named.insert("arith".to_string());
+    want_named.insert("decimal-arith".to_string());
     assert_eq!(
         named, want_named,
-        "`int-arith` names every other rule of the module, and `arith`"
+        "`int-arith` names every other rule of the module, and `decimal-arith`"
     );
 
-    // The module imports `std.arith` by its entry and nothing else.
+    // The module imports `std.math.decimal-arith` by its entry and nothing else.
     let imports: Vec<String> = m
         .forms
         .iter()
@@ -954,7 +958,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
                 .to_string()
         })
         .collect();
-    assert_eq!(imports, ["std.arith"]);
+    assert_eq!(imports, ["std.math.decimal-arith"]);
 
     // Its own name is a written fact, the module's only one (E-11).
     let facts: Vec<(String, Vec<String>)> = m

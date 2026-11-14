@@ -1,6 +1,6 @@
 ;;; `words` — what the words of an elementary-school word problem mean, as
 ;;; rules (M1f P1f.6, S1f.6.20). An example theory, not a stdlib module: it
-;;; imports the calculator, `std.arith`, and is imported by the problems
+;;; imports the calculator, `std.math.decimal-arith`, and is imported by the problems
 ;;; beside it, `(import words :symbols (words))`. README.md has the
 ;;; vocabulary. A problem states what its sentences say as facts
 ;;; (`has`, `gave`, `holds`, `packed-in`, `there-are`, `asked`); the rules
@@ -18,7 +18,7 @@
 ;;; A quantity is a nested fact: `(amount Bob apples t0)`, how many apples Bob
 ;;; has at the moment t0. A number is the calculator's, `(n z 5)`.
 
-(import std.arith :symbols (arith sub diff-of add sum-of cmp cmp-of mul product-of div quot-of))
+(import std.math.decimal-arith :symbols (decimal-arith sub diff-of add sum-of cmp cmp-of mul product-of div quot-of))
 
 ;; ── What the model leaves out, stated once ──────────────────────────────────
 (relation model-counts-only
@@ -321,7 +321,7 @@
                (__closed__ wanted) (__closed__ needs) (__closed__ value)
                (__closed__ has-more) (__closed__ same-amount)
                (__closed__ gave-more-than-had) (__closed__ words-rule)
-               (__closed__ words-uses) (words-uses arith)
+               (__closed__ words-uses) (words-uses decimal-arith)
                (words-rule asked-is-wanted) (words-rule assumed-gives-value) (words-rule has-states)
                (words-rule gave-plan-giver) (words-rule gave-means-less)
                (words-rule giver-has-the-difference) (words-rule giver-gave-too-many)

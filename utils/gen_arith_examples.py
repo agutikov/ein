@@ -3,7 +3,7 @@
 
 The user, 2026-11-11: *"add examples with long numbers and many calculations
 so we can compare load time with calculation time"*. A small arithmetic
-program spends its run reading the tables of `std.digits`, not calculating.
+program spends its run reading the tables of `std.math.digits`, not calculating.
 These three are the other end, each a different way a program can be long:
 
     examples/arith/long_numbers.ein        few requests, long operands
@@ -96,28 +96,28 @@ FACTORIAL = 25    # factorial: the last number of the chain
 
 OPS = ("add", "sub", "cmp", "mul", "div")
 # Under M1f S1f.6.35's imports, a program lists the short names it writes from the module that declares
-# them: the entry, and every name of `std.arith`'s the text writes, in the order it first writes them.
+# them: the entry, and every name of `std.math.decimal-arith`'s the text writes, in the order it first writes them.
 ARITH_NAMES = None
 
 
 def arith_names() -> set:
-    """Every name `stdlib/arith.ein` declares."""
+    """Every name `stdlib/math/decimal-arith.ein` declares."""
     global ARITH_NAMES
     if ARITH_NAMES is None:
-        text = (REPO / "stdlib" / "arith.ein").read_text()
+        text = (REPO / "stdlib" / "math" / "decimal-arith.ein").read_text()
         ARITH_NAMES = set(re.findall(r"^\((?:relation|rule|hrule|macro)\s+(\S+)", text, re.M))
     return ARITH_NAMES
 
 
 def import_line(body: str) -> str:
-    """`(import std.arith :symbols (arith …))`: the entry and the names `body` writes, wrapped at 100
+    """`(import std.math.decimal-arith :symbols (decimal-arith …))`: the entry and the names `body` writes, wrapped at 100
     columns under the list's first name."""
-    names = ["arith"]
+    names = ["decimal-arith"]
     code = re.sub(r'"(?:\\.|[^"\\])*"|;[^\n]*', " ", body)
     for tok in re.findall(r"[^\s()]+", code):
         if tok in arith_names() and tok not in names:
             names.append(tok)
-    head = "(import std.arith :symbols ("
+    head = "(import std.math.decimal-arith :symbols ("
     lines = [head]
     for n in names:
         last = lines[-1]
@@ -130,7 +130,7 @@ NESTING_LIMIT = 1000  # `ein_ir::grammar::NESTING_LIMIT`: a `(` deeper than this
 
 
 def enc(v: int) -> str:
-    """A natural number in `std.arith`'s spelling: `z`, or `(n PREFIX DIGIT)`."""
+    """A natural number in `std.math.decimal-arith`'s spelling: `z`, or `(n PREFIX DIGIT)`."""
     s = "z"
     for ch in str(v) if v else "":
         s = f"(n {s} {ch})"
@@ -189,7 +189,7 @@ def long_numbers(digits: int = DIGITS, short: int = SHORT, seed: int = SEED) -> 
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; One request an operation of `std.arith` (`add.ein` beside this file is
+;;; One request an operation of `std.math.decimal-arith` (`add.ein` beside this file is
 ;;; the introduction), on numbers nobody would type: `a` and `b` have
 ;;; {digits} digits each, `c` and `d` have {short}, and `e` has {2 * short}.
 ;;;
@@ -208,10 +208,10 @@ def long_numbers(digits: int = DIGITS, short: int = SHORT, seed: int = SEED) -> 
 ;;;     ein saturate examples/arith/long_numbers.ein
 ;;;
 ;;; prints three times: `parse:`, the program's own text; `kb load:`, mostly
-;;; the 1 664 rows of the tables in `std.digits`, the same for every program
+;;; the 1 664 rows of the tables in `std.math.digits`, the same for every program
 ;;; that imports the theory; and `saturate:`, the calculation, with its
 ;;; firings. `python3 utils/arith_cost.py` prints them for this file and for
-;;; a sweep of sizes, and `stdlib/README.md` § `std.arith` has the table.
+;;; a sweep of sizes, and `stdlib/README.md` § `std.math.decimal-arith` has the table.
 ;;;
 ;;; A sum, a difference and a comparison cost a few firings a digit. A
 ;;; product costs the two lengths multiplied, and a quotient more: each of
@@ -258,7 +258,7 @@ def many_calculations(count: int = REQUESTS, operand: int = OPERAND, seed: int =
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; {count} requests for each of {len(ops)} operations of `std.arith`, {count * len(ops)} in all, on
+;;; {count} requests for each of {len(ops)} operations of `std.math.decimal-arith`, {count * len(ops)} in all, on
 ;;; numbers of one to {operand} digits: a page of school exercises. The requests are
 ;;; written with their numbers, so the program's text is mostly numbers.
 ;;;
@@ -302,7 +302,7 @@ def factorial(last: int = FACTORIAL) -> str:
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; It writes two numbers, 1 and {last}, and one fact, 1! = 1. Everything else
-;;; is derived: three rules of the program's own ask `std.arith` for the
+;;; is derived: three rules of the program's own ask `std.math.decimal-arith` for the
 ;;; next number, k + 1, for whether k is below the last, and for the product
 ;;; k! x (k + 1), and state the next factorial from the answers. A request is
 ;;; a fact, so a rule may derive one (`div.ein` beside this file).
@@ -331,7 +331,7 @@ def factorial(last: int = FACTORIAL) -> str:
 ;;; ── The program's own joins ────────────────────────────────────────────
 ;;;
 ;;; `next-product` and `next-factorial` each join two or three facts on a
-;;; number, which `std.arith` itself never does: the engine's index does not
+;;; number, which `std.math.decimal-arith` itself never does: the engine's index does not
 ;;; key on a nested fact, so each such premise looks through its relation
 ;;; (E-3 of P1f.6's `findings.md`). Here that is {last} facts a relation, and
 ;;; it does not show; a program with thousands of steps would carry its
@@ -458,7 +458,7 @@ def on_demand(op: str, digits: int | None, dividend: int | None, count: int, n: 
         else:
             title = f"{count} requests" + (", the five operations in turn" if op == "mix" else f" of {op}")
             shape = (f"{count} requests"
-                     + (f", the five operations of `std.arith` in turn ({', '.join(f'{per[o]} of {o}' for o in ops)})"
+                     + (f", the five operations of `std.math.decimal-arith` in turn ({', '.join(f'{per[o]} of {o}' for o in ops)})"
                         if op == "mix" else f" of `{op}`")
                      + f", on {sizes}, each written with its numbers. "
                      + ("The queries read the first request of each operation." if op == "mix"

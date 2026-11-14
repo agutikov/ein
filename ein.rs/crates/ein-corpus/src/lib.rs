@@ -43,7 +43,7 @@ pub fn repo_root() -> PathBuf {
 /// in the order `body` first writes them; a module with nothing listed writes
 /// no line. An import brings its module whole since S1f.6.35 and a list only
 /// names, so a program lists the names it writes from the module that
-/// declares them (`std.int`'s tests list `n` from `std.arith`). A name two of
+/// declares them (`std.math.int`'s tests list `n` from `std.math.decimal-arith`). A name two of
 /// the modules declare is the first one's.
 ///
 /// `module` is a `std.*` name, read from the checkout's `stdlib/`; a
@@ -126,7 +126,7 @@ pub fn import_lines(modules: &[(&str, &[&str])], body: &str) -> String {
 /// off the stdlib's own `(import …)` lines, follow with nothing of their own;
 /// every one then lists the names `src`'s body writes that it declares. A
 /// text that starts with no import is returned as it is. What a test that
-/// built a program on `(import std.arith :symbols (arith))` writes since M1f
+/// built a program on `(import std.math.decimal-arith :symbols (decimal-arith))` writes since M1f
 /// S1f.6.35, where a list only names.
 pub fn listed(src: &str) -> String {
     let mut modules: Vec<(String, Vec<String>)> = Vec::new();
@@ -205,16 +205,21 @@ pub fn listed(src: &str) -> String {
 /// name, where the program lists it, and its full name under each stdlib
 /// module, where it does not. A test that reads a relation by name looks for
 /// each in turn.
+///
+/// Every module at any depth: `stdlib/math/decimal-arith.ein` is
+/// `std.math.decimal-arith` (M1f S1f.6.31).
 pub fn spellings(short: &str) -> Vec<String> {
     let mut out = vec![short.to_string()];
     let dir = repo_root().join("stdlib");
-    let mut modules: Vec<String> = std::fs::read_dir(&dir)
+    let mut modules: Vec<String> = ein_files_under(&dir)
         .into_iter()
-        .flatten()
-        .flatten()
-        .filter_map(|e| {
-            let p = e.path();
-            (p.extension()? == "ein").then(|| p.file_stem()?.to_str().map(str::to_string))?
+        .filter_map(|p| {
+            let rel = p.strip_prefix(&dir).ok()?.with_extension("");
+            let parts: Vec<String> = rel
+                .components()
+                .map(|c| c.as_os_str().to_string_lossy().to_string())
+                .collect();
+            Some(parts.join("."))
         })
         .collect();
     modules.sort();
@@ -223,22 +228,33 @@ pub fn spellings(short: &str) -> Vec<String> {
 }
 
 /// `text` with every stdlib module prefix taken off where it starts a name,
-/// `(std.arith.done (std.arith.sum a b) c)` read `(done (sum a b) c)`: what a
-/// test that compares facts in their short spelling reads (M1f S1f.6.35).
+/// `(std.math.decimal-arith.done (std.math.decimal-arith.sum a b) c)` read
+/// `(done (sum a b) c)`: what a test that compares facts in their short
+/// spelling reads (M1f S1f.6.35).
 pub fn unprefixed(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut rest = text;
     let mut at_start = true;
     while !rest.is_empty() {
         if at_start && let Some(after) = rest.strip_prefix("std.") {
-            // `std.<module>.` where <module> holds no dot.
-            if let Some(dot) = after.find('.')
-                && after[..dot]
-                    .chars()
-                    .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
-                && !after[..dot].is_empty()
-            {
-                rest = &after[dot + 1..];
+            // `std.<segment>.…<segment>.`, a segment a run of name characters
+            // with no dot: a module's canonical name is a dot a directory
+            // (`std.math.decimal-arith.`, M1f S1f.6.31), and the name after
+            // it holds none.
+            let segment = |s: &str| -> Option<usize> {
+                let dot = s.find('.')?;
+                (dot > 0
+                    && s[..dot]
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_'))
+                .then_some(dot)
+            };
+            if let Some(dot) = segment(after) {
+                let mut tail = &after[dot + 1..];
+                while let Some(dot) = segment(tail) {
+                    tail = &tail[dot + 1..];
+                }
+                rest = tail;
                 at_start = false;
                 continue;
             }

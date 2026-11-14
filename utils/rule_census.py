@@ -309,7 +309,9 @@ def group_of(path):
     if root == "stdlib":
         return root, "stdlib"
     if root == "tests":
-        return root, "/".join(parts[:3]) if len(parts) > 3 else "/".join(parts[:2])
+        # The file's directory: `tests/stdlib/<module>`, the calculator's under
+        # `tests/stdlib/math/<module>` since M1f S1f.6.31.
+        return root, "/".join(parts[:-1]) if len(parts) > 2 else "/".join(parts[:2])
     if len(parts) == 2:
         return root, "examples (top level)"
     return root, "/".join(parts[:2])
@@ -1745,7 +1747,7 @@ def main():
         f"holding {nb} rules the reader can read; files the reader cannot read: {len(unread)}"
         + (" (" + ", ".join(f"`{p}`" for p in unread) + ")" if unread else "") + ".")
     stdlib_rules = sum(1 for r in rules if r.root == "stdlib" and r.kind == "rule")
-    say(f"- `rule` forms in `stdlib/`: {stdlib_rules} (the check: `cat stdlib/*.ein | grep -c '^(rule '`).")
+    say(f"- `rule` forms in `stdlib/`: {stdlib_rules} (the check: `find stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '`, every depth).")
     notes = Counter(n.split(":")[0] for r in rules for n in r.notes)
     say("- rules with a clause missing or written twice: "
         + (", ".join(f"{k} {v}" for k, v in sorted(notes.items())) or "none") + ".")
@@ -2884,8 +2886,8 @@ def main():
         md_table(["", "files"] + [f"`{os.path.basename(b)[:-4]}`" for b in allmods], rows,
                  ["---"] + ["---:"] * (len(allmods) + 1)), "")
 
-    # the rules of one stdlib module as a picture: std.arith's 3c graph
-    for mod in ("stdlib/arith.ein", "stdlib/algebra.ein"):
+    # the rules of one stdlib module as a picture: std.math.decimal-arith's 3c graph
+    for mod in ("stdlib/math/decimal-arith.ein", "stdlib/algebra.ein"):
         if mod not in rules_by_file:
             continue
         nodes = rules_by_file[mod]

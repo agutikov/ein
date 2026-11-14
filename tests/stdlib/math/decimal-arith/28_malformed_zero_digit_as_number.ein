@@ -1,0 +1,30 @@
+;;; `std.math.decimal-arith` — the digit 0 where a number goes. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request the theory cannot read is flagged, `(malformed REQUEST)`, the
+;;; request as written, and `malformed-is-false` derives `(false)` from the
+;;; flag, as for a division by zero (the user's rulings of 2026-11-11 and
+;;; 2026-11-12). Every operand that is found is checked a place a firing,
+;;; `check-step`, and the rule that finds the fault says `(bad-operand TAG
+;;; (not-a-number THING))`; the operand's tag is turned into the request by
+;;; one of ten rules, here `bad-mul-first`, and `bad-request-malformed`
+;;; derives the flag.
+;;;
+;;; `operand-digit-zero`: the digit 0 is not the number zero, which is `z`.
+;;; `nz` holds no row for 0, so it has a rule of its own.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim
+;;; such a program can make. The sum beside it was computed and is in root's
+;;; state, but a dead state is no answer. `ein solve` names the request in
+;;; the unsat core, and `--trace` shows the flag and the contradiction as two
+;;; steps.
+
+(import std.math.decimal-arith :symbols (decimal-arith add n mul))
+
+(add (n z 2) (n z 2))
+(mul 0 (n z 5))
+
+(solve :expect (false))

@@ -1,0 +1,634 @@
+;;; Ein stdlib — `std.math.rat`: rational numbers, an integer over a natural
+;;; number, in lowest terms, computed by saturation alone (M1f P1f.6,
+;;; S1f.6.8).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; This module is a theory written in Ein over `std.math.int` and `std.math.decimal-arith`,
+;;; which it calls and does not edit. Nothing is guessed: on a program that
+;;; imports it and states requests the universe has no candidate, R is {∅},
+;;; and the answer is root's fixpoint. No `absent`, no `not` and no guard of
+;;; its own; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the
+;;; undeclared name's, and so two strata (S1f.6.12). Nothing of an operand is
+;;; flagged here but a `let` that cannot be read: `std.math.decimal-arith`'s header says
+;;; why.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.rat :symbols (rat-arith rat-add rat rat-sum-of))
+;;;     (import std.math.int :symbols (int))
+;;;     (import std.math.decimal-arith :symbols (n))
+;;;
+;;; An import brings the module whole, the two theories below and the tables
+;;; with it (M1f S1f.6.35); a program lists the names it writes, from the
+;;; module that declares each. `rat-arith` is the theory's entry, the closing
+;;; rule at the end of this file: it names every rule and closes every relation
+;;; of the module, and it names `int-arith` and `decimal-arith`, the entries of the two
+;;; theories below.
+;;;
+;;; ── The rational ───────────────────────────────────────────────────────────
+;;;
+;;; A rational is `(rat Z D)`: Z an integer of `std.math.int`, `(int P N)`, and D
+;;; a natural number of `std.math.decimal-arith` that is not zero (the user's proposal of
+;;; 2026-11-08: "integer numerator and natural denominator").
+;;;
+;;;     1/2      (rat (int (n z 1) z) (n z 2))
+;;;     -3/4     (rat (int z (n z 3)) (n z 4))
+;;;     0        (rat (int z z) (n z 1))
+;;;     2/4      (rat (int (n z 2) z) (n z 4))       not in lowest terms
+;;;
+;;; The **normal form** is in lowest terms: the numerator in `std.math.int`'s
+;;; normal form, the denominator with no high zero, the two with no common
+;;; divisor but 1, and zero written 0 over 1. Every rational has exactly one.
+;;; An operand may be written any way that has its value, and is read by
+;;; value; every answer is in normal form.
+;;;
+;;; ── The protocol: a request fact, answered by a result fact ────────────────
+;;;
+;;;     (rat-simplify X)   (rat-simple-of X S)      X in lowest terms
+;;;     (rat-neg X)        (rat-neg-of X S)         0 - X
+;;;     (rat-add X Y)      (rat-sum-of X Y S)       X + Y
+;;;     (rat-sub X Y)      (rat-diff-of X Y S)      X - Y
+;;;     (rat-mul X Y)      (rat-product-of X Y S)   X x Y
+;;;     (rat-div X Y)      (rat-quot-of X Y S)      X / Y: exact, one rational,
+;;;                                                 and no remainder
+;;;     (rat-cmp X Y)      (rat-cmp-of X Y O)       O is `lt`, `eq` or `gt`
+;;;
+;;; The operands are repeated as written. An operand is a rational written
+;;; out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))`
+;;; states. An integer or a natural number is **not** a rational operand:
+;;; write 5 as `(rat (int (n z 5) z) (n z 1))`.
+;;;
+;;; **A zero denominator is a division by zero, and a contradiction,** as in
+;;; `std.math.decimal-arith` and by its rule. A request with an operand whose denominator
+;;; is zero, however the zero is written, and a `rat-div` by a rational that
+;;; is zero, derive the flag `(division-by-zero REQUEST)`, the request as
+;;; written, and `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)`
+;;; from the flag. Root is dead and R is empty. A program that must not die
+;;; compares its divisor with zero first, and asks only where it is not.
+;;; These rules are the module's own and stay (S1f.6.24): `std.math.decimal-arith` flags a
+;;; division at its tagged call, whoever made it, but a request with a
+;;; denominator of zero performs no division, and a `rat-div` by a rational
+;;; that is zero is seen before any call. The module's own calls, Euclid's
+;;; chain and lowest terms, divide by numbers that are not zero, so a
+;;; request has one flag. A `let` that names a rational over zero and that
+;;; no request uses is not flagged.
+;;;
+;;; ── How it computes ────────────────────────────────────────────────────────
+;;;
+;;;   - **The operands,** each looked up, and each denominator compared with
+;;;     zero by `std.math.decimal-arith`'s comparison walk.
+;;;   - **A sum** of P1 less N1 over D1 and P2 less N2 over D2 is the cross
+;;;     products, P1 x D2 + P2 x D1 less N1 x D2 + N2 x D1, over D1 x D2:
+;;;     five products and two sums of natural numbers. **A difference** is
+;;;     the same with the second numerator's parts exchanged.
+;;;   - **A comparison** is a difference's numerator and nothing more: its
+;;;     positive part against its negative part, by `std.math.decimal-arith`'s walk. The
+;;;     denominators are positive, so the order is the order of the cross
+;;;     products.
+;;;   - **A product** is the numerators' product, `std.math.int`'s, over the
+;;;     denominators'. **A quotient** is a product with the divisor turned
+;;;     over, its sign kept in the numerator.
+;;;   - **Lowest terms.** The numerator is simplified by `std.math.int`. The
+;;;     greatest common divisor of its size and the denominator is Euclid's
+;;;     chain: gcd(A, B) is gcd(B, A mod B) until the remainder is zero, each
+;;;     step a division of `std.math.decimal-arith`. Then both are divided by it.
+;;;
+;;; **A call's tag is its request,** as in `std.math.int`. **The tagged calls a
+;;; later theory makes are an interface,** as `std.math.decimal-arith`'s are (P1f.6's
+;;; question 41, round 2, the user's *"(a)"*), held to these shapes by
+;;; `ein-infer/tests/arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`:
+;;;
+;;;     (rat-norm TAG P N D)                  P less N over D, in lowest
+;;;                                           terms; answered by
+;;;                                           (rat-done TAG RATIONAL)
+;;;     (rat-mul-call TAG P1 N1 D1 P2 N2 D2)  P1 less N1 over D1, times P2
+;;;                                           less N2 over D2; answered by
+;;;                                           (rat-done TAG RATIONAL)
+;;;     (rat-cross TAG P1 N1 D1 P2 N2 D2)     P1 x D2 + P2 x D1, and
+;;;                                           N1 x D2 + N2 x D1; answered by
+;;;                                           (rat-cross-is TAG POSITIVE NEGATIVE)
+;;;
+;;; Each part is a natural number of `std.math.decimal-arith`, written out; a call looks
+;;; nothing up, and its denominators must not be zero.
+;;;
+;;; **No rule joins two facts on a number:** every rule of this module has
+;;; one premise. `ein-infer/tests/rat_theory.rs` holds that on this file's
+;;; text, and holds the answers to exact fractions.
+;;;
+;;; **What it costs.** Lowest terms is a chain of divisions, and a division
+;;; computes its divisor's nine multiples first: a sum of two fractions of
+;;; one digit is some hundreds of firings (`stdlib/README.md` § `std.math.rat`
+;;; has them measured). Nothing limits the length: cross products are as
+;;; long as their operands together, and nested numbers hold them.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Its own: `rat`; the requests `rat-simplify`, `rat-neg`, `rat-add`,
+;;; `rat-sub`, `rat-mul`, `rat-div` and `rat-cmp`; the results
+;;; `rat-simple-of`, `rat-neg-of`, `rat-sum-of`, `rat-diff-of`,
+;;; `rat-product-of`, `rat-quot-of` and `rat-cmp-of`; the calls `rat-norm`,
+;;; `rat-mul-call`, `rat-cross`, and their hand-overs `rat-done` and
+;;; `rat-cross-is`; the circuit's own `rat-operand-is`, `rat-zero-den`,
+;;; `rat-reduce`, `rat-gcd` and `rat-gcd-is`; the signs `pos` and `neg`; the
+;;; tags `rat-of`, `rat-den`, `rat-only`, `rat-first`, `rat-second`, `rat-x1`
+;;; to `rat-x6`, `rat-sum-num`, `rat-sum-den`, `rat-cmp-num`, `rat-mul-num`,
+;;; `rat-mul-den`, `rat-div-by`, `rat-num`, `rat-g`, `rat-gcd-rem`,
+;;; `rat-q-num` and `rat-q-den`; `rat-rule`, and the entry `rat-arith`.
+;;; Everything of `std.math.int` and `std.math.decimal-arith` comes with it, the flag
+;;; `division-by-zero` and the orders `lt`, `eq` and `gt` among them. The
+;;; interface is `rat`, the requests, the results, the flag and the three
+;;; calls; the rest is in the state for a query or a `--trace` to see, and is
+;;; not a promise.
+
+(import std.math.decimal-arith :symbols (decimal-arith operand operand-is cmp-walk order-is division-by-zero n div-call
+                            div-done mul-call done add-walk))
+(import std.math.int :symbols (int-arith int int-norm int-done int-mul-call))
+
+;; ── The rational ────────────────────────────────────────────────────────────
+(relation rat Integer Number
+  :why "{?1} over {?2}")
+
+;; ── The protocol ────────────────────────────────────────────────────────────
+(relation rat-simplify Operand
+  :why "asked: {?1} in lowest terms")
+(relation rat-simple-of Operand Rational
+  :why "{?1} is {?2}")
+(relation rat-neg Operand
+  :why "asked: {?1} negated")
+(relation rat-neg-of Operand Rational
+  :why "{?1} negated is {?2}")
+(relation rat-add Operand Operand
+  :why "asked: {?1} + {?2}")
+(relation rat-sum-of Operand Operand Rational
+  :why "{?1} + {?2} = {?3}")
+(relation rat-sub Operand Operand
+  :why "asked: {?1} - {?2}")
+(relation rat-diff-of Operand Operand Rational
+  :why "{?1} - {?2} = {?3}")
+(relation rat-mul Operand Operand
+  :why "asked: {?1} x {?2}")
+(relation rat-product-of Operand Operand Rational
+  :why "{?1} x {?2} = {?3}")
+(relation rat-div Operand Operand
+  :why "asked: {?1} divided by {?2}")
+(relation rat-quot-of Operand Operand Rational
+  :why "{?1} divided by {?2} = {?3}")
+(relation rat-cmp Operand Operand
+  :why "asked: {?1} compared with {?2}")
+(relation rat-cmp-of Operand Operand Order
+  :why "{?1} against {?2}: {?3}")
+
+;; ── The calls and the circuit's own facts ───────────────────────────────────
+(relation rat-operand-is Tag Number Number Number
+  :why "found, for {?1}: {?2} less {?3}, over {?4}, which is not zero")
+(relation rat-zero-den Tag
+  :why "{?1} has no answer: the denominator is zero")
+(relation rat-cross Tag Number Number Number Number Number Number
+  :why "wanted, for {?1}: the cross products of {?2} less {?3} over {?4} and {?5} less {?6} over {?7}")
+(relation rat-cross-is Tag Number Number
+  :why "the cross products for {?1} make {?2} less {?3}")
+(relation rat-mul-call Tag Number Number Number Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3} over {?4}, times {?5} less {?6} over {?7}")
+(relation rat-norm Tag Number Number Number
+  :why "wanted, for {?1}: {?2} less {?3}, over {?4}, in lowest terms")
+(relation rat-reduce Tag Integer Number
+  :why "wanted, for {?1}: {?2} over {?3}, in lowest terms")
+(relation rat-gcd Tag Number Number
+  :why "wanted, for {?1}: the greatest common divisor of {?2} and {?3}")
+(relation rat-gcd-is Tag Number
+  :why "the greatest common divisor for {?1} is {?2}")
+(relation rat-done Tag Rational
+  :why "the answer for {?1} is {?2}")
+
+;; ── The tags: what a call's answer is for ───────────────────────────────────
+(relation rat-of Tag
+  :why "the rational that is {?1}")
+(relation rat-den Tag Number Number Number
+  :why "the denominator of {?1}, which is {?2} less {?3} over {?4}, against zero")
+(relation rat-only Request
+  :why "the operand of {?1}")
+(relation rat-first Request Operand
+  :why "the first operand of {?1}, whose second is {?2}")
+(relation rat-second Request Number Number Number
+  :why "the second operand of {?1}, whose first is {?2} less {?3} over {?4}")
+(relation rat-x1 Tag Number Number Number Number Number
+  :why "the first cross product, for {?1}")
+(relation rat-x2 Tag Number Number Number Number Number
+  :why "the second cross product, for {?1}; the first is {?6}")
+(relation rat-x3 Tag Number Number Number Number
+  :why "the positive cross products' sum, for {?1}")
+(relation rat-x4 Tag Number Number Number
+  :why "the third cross product, for {?1}; the positive part is {?4}")
+(relation rat-x5 Tag Number Number
+  :why "the fourth cross product, for {?1}; the positive part is {?2} and the third product {?3}")
+(relation rat-x6 Tag Number
+  :why "the negative cross products' sum, for {?1}; the positive part is {?2}")
+(relation rat-sum-num Tag Number Number
+  :why "the numerator of the sum, for {?1}, whose denominators are {?2} and {?3}")
+(relation rat-sum-den Tag Number Number
+  :why "the denominator of the sum, for {?1}, whose numerator is {?2} less {?3}")
+(relation rat-cmp-num Tag
+  :why "the two sides of the comparison, for {?1}")
+(relation rat-mul-num Tag Number Number
+  :why "the numerator of the product, for {?1}, whose denominators are {?2} and {?3}")
+(relation rat-mul-den Tag Integer
+  :why "the denominator of the product, for {?1}, whose numerator is {?2}")
+(relation rat-div-by Tag Number Number Number Number
+  :why "the divisor's numerator simplified, for {?1}, which divides {?2} less {?3} over {?4}; the divisor's denominator is {?5}")
+(relation rat-num Tag Number
+  :why "the numerator simplified, for {?1}, over {?2}")
+(relation rat-g Tag Sign Number Number
+  :why "the greatest common divisor, for {?1}: the numerator is {?2}, of size {?3}, over {?4}")
+(relation rat-gcd-rem Tag Number
+  :why "a step of Euclid's chain, for {?1}: the remainder of a division by {?2}")
+(relation rat-q-num Tag Sign Number Number
+  :why "the numerator's size divided by the common divisor {?4}, for {?1}")
+(relation rat-q-den Tag Sign Number
+  :why "the denominator divided by the common divisor, for {?1}; the numerator is {?2}, of size {?3}")
+
+;; ── The operands ────────────────────────────────────────────────────────────
+;; A rational stands for itself; a name goes through `std.math.decimal-arith`'s
+;; `operand-name` and its `let`. Each operand's denominator is compared with
+;; zero by `std.math.decimal-arith`'s walk, which reads it by value: `gt`, and the operand
+;; is found; `eq`, and it has no value.
+(rule rat-operand ()
+  :match  (operand ?k (rat ?i ?d))
+  :assert (operand-is ?k (rat ?i ?d))
+  :why    "a rational stands for itself")
+
+(rule rat-operand-check ()
+  :match  (operand-is (rat-of ?k) (rat (int ?p ?n) ?d))
+  :assert (cmp-walk (rat-den ?k ?p ?n ?d) ?d z eq)
+  :why    "the operand is {?p} less {?n}, over {?d}: is the denominator zero?")
+
+(rule rat-operand-found ()
+  :match  (order-is (rat-den ?k ?p ?n ?d) gt)
+  :assert (rat-operand-is ?k ?p ?n ?d)
+  :why    "the denominator {?d} is not zero")
+
+(rule rat-operand-zero ()
+  :match  (order-is (rat-den ?k ?p ?n ?d) eq)
+  :assert (rat-zero-den ?k)
+  :why    "the denominator {?d} is zero")
+
+(rule rat-operand-second ()
+  :match  (rat-operand-is (rat-first ?k ?y) ?p ?n ?d)
+  :assert (operand (rat-of (rat-second ?k ?p ?n ?d)) ?y)
+  :why    "the first operand is {?p} less {?n}, over {?d}: now the rational {?y} stands for")
+
+;; ── A zero denominator: `std.math.decimal-arith`'s flag, and its rule to `(false)` ───────
+(rule rat-zero-only ()
+  :match  (rat-zero-den (rat-only ?request))
+  :assert (division-by-zero ?request)
+  :why    "the operand of {?request} has a denominator of zero")
+
+(rule rat-zero-first ()
+  :match  (rat-zero-den (rat-first ?request ?y))
+  :assert (division-by-zero ?request)
+  :why    "the first operand of {?request} has a denominator of zero")
+
+(rule rat-zero-second ()
+  :match  (rat-zero-den (rat-second ?request ?p ?n ?d))
+  :assert (division-by-zero ?request)
+  :why    "the second operand of {?request} has a denominator of zero")
+
+;; ── Lowest terms ────────────────────────────────────────────────────────────
+;; `(rat-norm TAG P N D)`: the numerator simplified by `std.math.int`, then
+;; `(rat-reduce TAG INTEGER D)`, which takes the sign off, finds the greatest
+;; common divisor of the numerator's size and D, and divides both by it.
+(rule rat-norm-numerator ()
+  :match  (rat-norm ?k ?p ?n ?d)
+  :assert (int-norm (rat-num ?k ?d) ?p ?n)
+  :why    "first the numerator, {?p} less {?n}, simplified")
+
+(rule rat-norm-reduce ()
+  :match  (int-done (rat-num ?k ?d) ?i)
+  :assert (rat-reduce ?k ?i ?d)
+  :why    "the numerator is {?i}: now {?i} over {?d} in lowest terms")
+
+(rule rat-reduce-pos ()
+  :match  (rat-reduce ?k (int ?a z) ?d)
+  :assert (rat-gcd (rat-g ?k pos ?a ?d) ?a ?d)
+  :why    "the numerator is not negative: the greatest common divisor of {?a} and {?d}")
+
+(rule rat-reduce-neg ()
+  :match  (rat-reduce ?k (int z (n ?b ?c)) ?d)
+  :assert (rat-gcd (rat-g ?k neg (n ?b ?c) ?d) (n ?b ?c) ?d)
+  :why    "the numerator is negative: the greatest common divisor of its size and {?d}")
+
+;; Euclid's chain: the greatest common divisor of A and B is that of B and
+;; the remainder of A divided by B, and of A and zero it is A. Each step is a
+;; division of `std.math.decimal-arith`; the remainders get smaller, so the chain ends.
+(rule rat-gcd-step ()
+  :match  (rat-gcd ?k ?a (n ?b ?c))
+  :assert (div-call (rat-gcd-rem ?k (n ?b ?c)) ?a (n ?b ?c))
+  :why    "divide {?a} by {?b}{?c}: the remainder is what goes on")
+
+(rule rat-gcd-next ()
+  :match  (div-done (rat-gcd-rem ?k ?b) ?q ?r)
+  :assert (rat-gcd ?k ?b ?r)
+  :why    "the remainder is {?r}: now the greatest common divisor of {?b} and {?r}")
+
+(rule rat-gcd-end ()
+  :match  (rat-gcd ?k ?a z)
+  :assert (rat-gcd-is ?k ?a)
+  :why    "nothing is left over: the greatest common divisor is {?a}")
+
+(rule rat-lowest-numerator ()
+  :match  (rat-gcd-is (rat-g ?k ?s ?a ?d) ?g)
+  :assert (div-call (rat-q-num ?k ?s ?d ?g) ?a ?g)
+  :why    "the common divisor is {?g}: divide the numerator's size, {?a}, by it")
+
+(rule rat-lowest-denominator ()
+  :match  (div-done (rat-q-num ?k ?s ?d ?g) ?q ?r)
+  :assert (div-call (rat-q-den ?k ?s ?q) ?d ?g)
+  :why    "that makes {?q}: divide the denominator, {?d}, by {?g}")
+
+(rule rat-lowest-pos ()
+  :match  (div-done (rat-q-den ?k pos ?q) ?e ?r)
+  :assert (rat-done ?k (rat (int ?q z) ?e))
+  :why    "in lowest terms: {?q} over {?e}")
+
+(rule rat-lowest-neg ()
+  :match  (div-done (rat-q-den ?k neg ?q) ?e ?r)
+  :assert (rat-done ?k (rat (int z ?q) ?e))
+  :why    "in lowest terms: {?q} over {?e}, negative")
+
+;; ── The cross products ──────────────────────────────────────────────────────
+;; `(rat-cross TAG P1 N1 D1 P2 N2 D2)`: P1 x D2 + P2 x D1, and N1 x D2 + N2 x
+;; D1, handed over as `(rat-cross-is TAG POSITIVE NEGATIVE)`: the numerator
+;; of a sum, and the two sides of a comparison.
+(rule rat-cross-first ()
+  :match  (rat-cross ?k ?p ?n ?d ?q ?m ?e)
+  :assert (mul-call (rat-x1 ?k ?n ?d ?q ?m ?e) ?p ?e)
+  :why    "the first cross product: {?p} x {?e}")
+
+(rule rat-cross-second ()
+  :match  (done (rat-x1 ?k ?n ?d ?q ?m ?e) ?a)
+  :assert (mul-call (rat-x2 ?k ?n ?d ?m ?e ?a) ?q ?d)
+  :why    "that makes {?a}: the second, {?q} x {?d}")
+
+(rule rat-cross-plus ()
+  :match  (done (rat-x2 ?k ?n ?d ?m ?e ?a) ?b)
+  :assert (add-walk (rat-x3 ?k ?n ?d ?m ?e) ?a ?b 0 z)
+  :why    "that makes {?b}: the positive part is {?a} + {?b}")
+
+(rule rat-cross-third ()
+  :match  (done (rat-x3 ?k ?n ?d ?m ?e) ?s)
+  :assert (mul-call (rat-x4 ?k ?d ?m ?s) ?n ?e)
+  :why    "the positive part is {?s}: the third cross product, {?n} x {?e}")
+
+(rule rat-cross-fourth ()
+  :match  (done (rat-x4 ?k ?d ?m ?s) ?a)
+  :assert (mul-call (rat-x5 ?k ?s ?a) ?m ?d)
+  :why    "that makes {?a}: the fourth, {?m} x {?d}")
+
+(rule rat-cross-minus ()
+  :match  (done (rat-x5 ?k ?s ?a) ?b)
+  :assert (add-walk (rat-x6 ?k ?s) ?a ?b 0 z)
+  :why    "that makes {?b}: the negative part is {?a} + {?b}")
+
+(rule rat-cross-end ()
+  :match  (done (rat-x6 ?k ?s) ?t)
+  :assert (rat-cross-is ?k ?s ?t)
+  :why    "the cross products make {?s} less {?t}")
+
+;; ── Simplification, and negation ────────────────────────────────────────────
+(rule rat-simplify-ask ()
+  :match  (rat-simplify ?x)
+  :assert (operand (rat-of (rat-only (rat-simplify ?x))) ?x)
+  :why    "{?x} in lowest terms is asked: first, the rational {?x} stands for")
+
+(rule rat-simplify-start ()
+  :match  (rat-operand-is (rat-only (rat-simplify ?x)) ?p ?n ?d)
+  :assert (rat-norm (rat-simplify ?x) ?p ?n ?d)
+  :why    "{?p} less {?n}, over {?d}, in lowest terms")
+
+(rule rat-simplify-answer ()
+  :match  (rat-done (rat-simplify ?x) ?s)
+  :assert (rat-simple-of ?x ?s)
+  :why    "{?x} is {?s}")
+
+(rule rat-neg-ask ()
+  :match  (rat-neg ?x)
+  :assert (operand (rat-of (rat-only (rat-neg ?x))) ?x)
+  :why    "{?x} negated is asked: first, the rational {?x} stands for")
+
+(rule rat-neg-start ()
+  :match  (rat-operand-is (rat-only (rat-neg ?x)) ?p ?n ?d)
+  :assert (rat-norm (rat-neg ?x) ?n ?p ?d)
+  :why    "the numerator's parts change places: {?n} less {?p}, over {?d}")
+
+(rule rat-neg-answer ()
+  :match  (rat-done (rat-neg ?x) ?s)
+  :assert (rat-neg-of ?x ?s)
+  :why    "{?x} negated is {?s}")
+
+;; ── Addition, and subtraction ───────────────────────────────────────────────
+;; The cross products are the numerator; the denominator is the product of
+;; the two; and the whole is put in lowest terms. The two rules after the
+;; cross products serve a difference too, whose tag is its own request.
+(rule rat-sum-denominator ()
+  :match  (rat-cross-is (rat-sum-num ?k ?d ?e) ?s ?t)
+  :assert (mul-call (rat-sum-den ?k ?s ?t) ?d ?e)
+  :why    "the numerator is {?s} less {?t}: the denominator is {?d} x {?e}")
+
+(rule rat-sum-norm ()
+  :match  (done (rat-sum-den ?k ?s ?t) ?f)
+  :assert (rat-norm ?k ?s ?t ?f)
+  :why    "the denominator is {?f}: now lowest terms")
+
+(rule rat-add-ask ()
+  :match  (rat-add ?x ?y)
+  :assert (operand (rat-of (rat-first (rat-add ?x ?y) ?y)) ?x)
+  :why    "{?x} + {?y} is asked: first, the rational {?x} stands for")
+
+(rule rat-add-start ()
+  :match  (rat-operand-is (rat-second (rat-add ?x ?y) ?p ?n ?d) ?q ?m ?e)
+  :assert (rat-cross (rat-sum-num (rat-add ?x ?y) ?d ?e) ?p ?n ?d ?q ?m ?e)
+  :why    "add {?p} less {?n} over {?d} and {?q} less {?m} over {?e}: first the cross products")
+
+(rule rat-add-answer ()
+  :match  (rat-done (rat-add ?x ?y) ?s)
+  :assert (rat-sum-of ?x ?y ?s)
+  :why    "{?x} + {?y} = {?s}")
+
+;; To take a rational away is to add it with its numerator's parts exchanged.
+(rule rat-sub-ask ()
+  :match  (rat-sub ?x ?y)
+  :assert (operand (rat-of (rat-first (rat-sub ?x ?y) ?y)) ?x)
+  :why    "{?x} - {?y} is asked: first, the rational {?x} stands for")
+
+(rule rat-sub-start ()
+  :match  (rat-operand-is (rat-second (rat-sub ?x ?y) ?p ?n ?d) ?q ?m ?e)
+  :assert (rat-cross (rat-sum-num (rat-sub ?x ?y) ?d ?e) ?p ?n ?d ?m ?q ?e)
+  :why    "to take {?q} less {?m} over {?e} away, add {?m} less {?q} over {?e}")
+
+(rule rat-sub-answer ()
+  :match  (rat-done (rat-sub ?x ?y) ?s)
+  :assert (rat-diff-of ?x ?y ?s)
+  :why    "{?x} - {?y} = {?s}")
+
+;; ── Comparison ──────────────────────────────────────────────────────────────
+;; The numerator of the difference, and no more: its positive part against
+;; its negative part. It builds no rational and divides nothing.
+(rule rat-cmp-sides ()
+  :match  (rat-cross-is (rat-cmp-num ?k) ?s ?t)
+  :assert (cmp-walk ?k ?s ?t eq)
+  :why    "compare {?s} with {?t}")
+
+(rule rat-cmp-ask ()
+  :match  (rat-cmp ?x ?y)
+  :assert (operand (rat-of (rat-first (rat-cmp ?x ?y) ?y)) ?x)
+  :why    "{?x} compared with {?y} is asked: first, the rational {?x} stands for")
+
+(rule rat-cmp-start ()
+  :match  (rat-operand-is (rat-second (rat-cmp ?x ?y) ?p ?n ?d) ?q ?m ?e)
+  :assert (rat-cross (rat-cmp-num (rat-cmp ?x ?y)) ?p ?n ?d ?m ?q ?e)
+  :why    "compare {?p} less {?n} over {?d} with {?q} less {?m} over {?e}: the cross products of their difference")
+
+(rule rat-cmp-answer ()
+  :match  (order-is (rat-cmp ?x ?y) ?o)
+  :assert (rat-cmp-of ?x ?y ?o)
+  :why    "{?x} against {?y}: {?o}")
+
+;; ── Multiplication ──────────────────────────────────────────────────────────
+;; `(rat-mul-call TAG P1 N1 D1 P2 N2 D2)`: the numerators' product by
+;; `std.math.int`, which hands over an integer in normal form; the denominators'
+;; by `std.math.decimal-arith`; then lowest terms.
+(rule rat-mul-numerator ()
+  :match  (rat-mul-call ?k ?p ?n ?d ?q ?m ?e)
+  :assert (int-mul-call (rat-mul-num ?k ?d ?e) ?p ?n ?q ?m)
+  :why    "first the numerators: {?p} less {?n}, times {?q} less {?m}")
+
+(rule rat-mul-denominator ()
+  :match  (int-done (rat-mul-num ?k ?d ?e) ?i)
+  :assert (mul-call (rat-mul-den ?k ?i) ?d ?e)
+  :why    "the numerator is {?i}: the denominator is {?d} x {?e}")
+
+(rule rat-mul-reduce ()
+  :match  (done (rat-mul-den ?k ?i) ?f)
+  :assert (rat-reduce ?k ?i ?f)
+  :why    "the denominator is {?f}: now lowest terms")
+
+(rule rat-mul-ask ()
+  :match  (rat-mul ?x ?y)
+  :assert (operand (rat-of (rat-first (rat-mul ?x ?y) ?y)) ?x)
+  :why    "{?x} x {?y} is asked: first, the rational {?x} stands for")
+
+(rule rat-mul-start ()
+  :match  (rat-operand-is (rat-second (rat-mul ?x ?y) ?p ?n ?d) ?q ?m ?e)
+  :assert (rat-mul-call (rat-mul ?x ?y) ?p ?n ?d ?q ?m ?e)
+  :why    "multiply {?p} less {?n} over {?d} by {?q} less {?m} over {?e}")
+
+(rule rat-mul-answer ()
+  :match  (rat-done (rat-mul ?x ?y) ?s)
+  :assert (rat-product-of ?x ?y ?s)
+  :why    "{?x} x {?y} = {?s}")
+
+;; ── Division ────────────────────────────────────────────────────────────────
+;; To divide by a rational is to multiply by it turned over. Its numerator is
+;; simplified first, since its size becomes a denominator, which is a natural
+;; number: a positive divisor P over E turns into E over P, a negative one,
+;; of size N, into E negated over N, and a divisor that is zero has no
+;; turning over: the request divides by zero.
+(rule rat-div-ask ()
+  :match  (rat-div ?x ?y)
+  :assert (operand (rat-of (rat-first (rat-div ?x ?y) ?y)) ?x)
+  :why    "{?x} divided by {?y} is asked: first, the rational {?x} stands for")
+
+(rule rat-div-start ()
+  :match  (rat-operand-is (rat-second (rat-div ?x ?y) ?p ?n ?d) ?q ?m ?e)
+  :assert (int-norm (rat-div-by (rat-div ?x ?y) ?p ?n ?d ?e) ?q ?m)
+  :why    "to divide by {?q} less {?m} over {?e}: first its numerator, simplified")
+
+(rule rat-div-pos ()
+  :match  (int-done (rat-div-by ?k ?p ?n ?d ?e) (int (n ?a ?b) z))
+  :assert (rat-mul-call ?k ?p ?n ?d ?e z (n ?a ?b))
+  :why    "the divisor is positive: multiply by {?e} over {?a}{?b}")
+
+(rule rat-div-neg ()
+  :match  (int-done (rat-div-by ?k ?p ?n ?d ?e) (int z (n ?a ?b)))
+  :assert (rat-mul-call ?k ?p ?n ?d z ?e (n ?a ?b))
+  :why    "the divisor is negative: multiply by {?e} negated, over {?a}{?b}")
+
+(rule rat-div-zero ()
+  :match  (int-done (rat-div-by ?request ?p ?n ?d ?e) (int z z))
+  :assert (division-by-zero ?request)
+  :why    "the divisor of {?request} is zero")
+
+(rule rat-div-answer ()
+  :match  (rat-done (rat-div ?x ?y) ?s)
+  :assert (rat-quot-of ?x ?y ?s)
+  :why    "{?x} divided by {?y} = {?s}")
+
+;; ── The closing rule, and the theory's one entry ────────────────────────────
+;; Every relation of the module is closed and every rule named, with
+;; `int-arith` and `decimal-arith`, the entries of the theories below. Until M1f
+;; S1f.6.35 a selection's closure followed the names a kept declaration
+;; writes (E-20 of P1f.6's `findings.md`); every import brings its module
+;; whole since, and the names stay for a program and a trace to read. `ein-infer/tests/rat_theory.rs` holds that nothing is
+;; missing here.
+(relation rat-rule Rule
+  :why "{?1} is a rule std.math.rat brings")
+
+;; The closing rule's own name, as a written fact (E-11 of P1f.6's
+;; `findings.md`): no longer needed since M1f S1f.6.25, a name a selection
+;; lists being live, and kept, since removing it would move every state.
+(rat-rule rat-arith)
+
+(rule rat-arith ()
+  :match  ()
+  :assert (and (__closed__ rat) (__closed__ rat-simplify)
+               (__closed__ rat-simple-of) (__closed__ rat-neg)
+               (__closed__ rat-neg-of) (__closed__ rat-add)
+               (__closed__ rat-sum-of) (__closed__ rat-sub)
+               (__closed__ rat-diff-of) (__closed__ rat-mul)
+               (__closed__ rat-product-of) (__closed__ rat-div)
+               (__closed__ rat-quot-of) (__closed__ rat-cmp)
+               (__closed__ rat-cmp-of) (__closed__ rat-operand-is)
+               (__closed__ rat-zero-den) (__closed__ rat-cross)
+               (__closed__ rat-cross-is) (__closed__ rat-mul-call)
+               (__closed__ rat-norm) (__closed__ rat-reduce)
+               (__closed__ rat-gcd) (__closed__ rat-gcd-is)
+               (__closed__ rat-done) (__closed__ rat-of) (__closed__ rat-den)
+               (__closed__ rat-only) (__closed__ rat-first)
+               (__closed__ rat-second) (__closed__ rat-x1)
+               (__closed__ rat-x2) (__closed__ rat-x3) (__closed__ rat-x4)
+               (__closed__ rat-x5) (__closed__ rat-x6)
+               (__closed__ rat-sum-num) (__closed__ rat-sum-den)
+               (__closed__ rat-cmp-num) (__closed__ rat-mul-num)
+               (__closed__ rat-mul-den) (__closed__ rat-div-by)
+               (__closed__ rat-num) (__closed__ rat-g)
+               (__closed__ rat-gcd-rem) (__closed__ rat-q-num)
+               (__closed__ rat-q-den) (__closed__ rat-rule) (rat-rule decimal-arith)
+               (rat-rule int-arith) (rat-rule rat-operand)
+               (rat-rule rat-operand-check) (rat-rule rat-operand-found)
+               (rat-rule rat-operand-zero) (rat-rule rat-operand-second)
+               (rat-rule rat-zero-only) (rat-rule rat-zero-first)
+               (rat-rule rat-zero-second) (rat-rule rat-norm-numerator)
+               (rat-rule rat-norm-reduce) (rat-rule rat-reduce-pos)
+               (rat-rule rat-reduce-neg) (rat-rule rat-gcd-step)
+               (rat-rule rat-gcd-next) (rat-rule rat-gcd-end)
+               (rat-rule rat-lowest-numerator)
+               (rat-rule rat-lowest-denominator) (rat-rule rat-lowest-pos)
+               (rat-rule rat-lowest-neg) (rat-rule rat-cross-first)
+               (rat-rule rat-cross-second) (rat-rule rat-cross-plus)
+               (rat-rule rat-cross-third) (rat-rule rat-cross-fourth)
+               (rat-rule rat-cross-minus) (rat-rule rat-cross-end)
+               (rat-rule rat-simplify-ask) (rat-rule rat-simplify-start)
+               (rat-rule rat-simplify-answer) (rat-rule rat-neg-ask)
+               (rat-rule rat-neg-start) (rat-rule rat-neg-answer)
+               (rat-rule rat-sum-denominator) (rat-rule rat-sum-norm)
+               (rat-rule rat-add-ask) (rat-rule rat-add-start)
+               (rat-rule rat-add-answer) (rat-rule rat-sub-ask)
+               (rat-rule rat-sub-start) (rat-rule rat-sub-answer)
+               (rat-rule rat-cmp-sides) (rat-rule rat-cmp-ask)
+               (rat-rule rat-cmp-start) (rat-rule rat-cmp-answer)
+               (rat-rule rat-mul-numerator) (rat-rule rat-mul-denominator)
+               (rat-rule rat-mul-reduce) (rat-rule rat-mul-ask)
+               (rat-rule rat-mul-start) (rat-rule rat-mul-answer)
+               (rat-rule rat-div-ask) (rat-rule rat-div-start)
+               (rat-rule rat-div-pos) (rat-rule rat-div-neg)
+               (rat-rule rat-div-zero) (rat-rule rat-div-answer))
+  :why    "rationals are computed and never guessed: every relation of the theory is closed")

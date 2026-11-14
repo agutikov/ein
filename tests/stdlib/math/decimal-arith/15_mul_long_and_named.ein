@@ -1,0 +1,51 @@
+;;; `std.math.decimal-arith` — a long product, and a product by name:
+;;; 123078 x 123078 = 15148194084. M1f S1f.6.5.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A number has any length, so a product is never too long: the square of a
+;;; six-digit number has eleven digits here, where a fixed width of nine
+;;; could not hold it. A `mul` request may name its operands with `(let NAME
+;;; NUMBER)`, and its answer repeats the names.
+;;;
+;;;   123078 x 123078      = 15148194084
+;;;   price = 250, qty = 12
+;;;   price x qty          = 3000
+;;;   qty x 2              = 24
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The first claim is `product-of`'s whole extent. The second is `done`'s
+;;; for the three public products: a finished multiplication hands its answer
+;;; over as `(done (product X Y) P)`, once a request. The third reads one
+;;; answer as a program would, the names in the goal.
+
+(import std.math.decimal-arith :symbols (decimal-arith let n mul product-of done product))
+
+(let price (n (n (n z 2) 5) 0))
+(let qty   (n (n z 1) 2))
+
+(mul (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+(mul price qty)
+(mul qty (n z 2))
+
+(solve :expect (region (model)))
+
+(query :goal (product-of ?x ?y ?p)
+       :goal-text "{?x} x {?y} = {?p}"
+       :expect (model (product-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                                  (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                                  (n (n (n (n (n (n (n (n (n (n (n z 1) 5) 1) 4) 8) 1) 9) 4) 0) 8) 4))
+                      (product-of price qty (n (n (n (n z 3) 0) 0) 0))
+                      (product-of qty (n z 2) (n (n z 2) 4))))
+
+(query :goal (done (product ?x ?y) ?p)
+       :expect (model (done (product (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8)
+                                     (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))
+                            (n (n (n (n (n (n (n (n (n (n (n z 1) 5) 1) 4) 8) 1) 9) 4) 0) 8) 4))
+                      (done (product price qty) (n (n (n (n z 3) 0) 0) 0))
+                      (done (product qty (n z 2)) (n (n z 2) 4))))
+
+(query :goal (product-of price qty ?total)
+       :goal-text "the order comes to {?total}"
+       :expect (model (product-of price qty (n (n (n (n z 3) 0) 0) 0))))

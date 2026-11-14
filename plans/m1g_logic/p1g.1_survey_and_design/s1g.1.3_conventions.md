@@ -43,7 +43,7 @@ syntax: real examples first).
 4. **Propositional letters.** Bare names, declared by a fact, `(atom p)`, so that a rule can tell a letter
    from a compound without a negative test (the theory writes no `absent`). A letter is then a name of the
    program, and the blind enumerator may propose facts about it: each module closes its relations, as
-   `std.arith` does.
+   `std.math.decimal-arith` does.
 5. **The truth values.** `0` and `1`, shared with the gates, or names of their own (Q-M1g.3).
 6. **The protocol.** The calculator's: a request fact answered by a result fact that repeats the request,
    `(eval F)` by `(value-of F V)`, so nothing is computed that was not asked for. And whether the theory

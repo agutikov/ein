@@ -183,14 +183,14 @@ The default stands as [Q-M1f.211](../open_questions.md#q-m1f211--which-fact-carr
 `ein solve` prints `states (k_s) 1`, *∅ in R — root is alive and owes nothing*, exit 0, and `ein saturate
 --dump` holds no `division-by-zero` fact. The share among nobody has no `share-of` fact and nothing says
 so. The same program is banked with its claim as
-[`tests/stdlib/arith/39_div_call_by_zero.ein`](../../../tests/stdlib/arith/39_div_call_by_zero.ein), which
+[`tests/stdlib/arith/39_div_call_by_zero.ein`](../../../tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein), which
 fails on the old stdlib (`(solve :expect) FAILED — (false) says every node is dead, and R has 1 state`) and
 holds on the new. **No register row**, the stage file's default:
 [Q-M1f.212](../open_questions.md#q-m1f212--a-theorys-wrong-answer-and-the-register).
 
 ### T3: the rule, as built
 
-In [`stdlib/arith.ein`](../../../stdlib/arith.ein):
+In [`stdlib/arith.ein`](../../../stdlib/math/decimal-arith.ein):
 
 - `(relation div-m1 Tag Number Number)`, the divisor as the call wrote it beside the dividend;
   `div-multiples` writes it and `div-multiple-2` reads past it. The facts of the first multiple's walk are

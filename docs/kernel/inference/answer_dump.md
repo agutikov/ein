@@ -119,7 +119,7 @@ prints (its own spelling where it has one, the full name otherwise), since M1f
 S1f.6.35, when an import began to bring its module whole and the tree-shake
 `resolve_and_minimize` went (it had kept a listed name since S1f.6.25's W91 and
 shaken what a qualified import brought and nothing reached, E-41). A state
-file declares the full names it was loaded with, `std.arith.strip`, and
+file declares the full names it was loaded with, `std.math.decimal-arith.strip`, and
 imports nothing, which the loader reads as the program's own names
 (`defined_behaviour.md` § 4.28). The program's own `(relation …)`
 declarations are not repeated, because the loader refuses a second one. So the

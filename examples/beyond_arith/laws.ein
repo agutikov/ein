@@ -4,7 +4,7 @@
 ;;; y + r with r less than y, for the 16 dividends written with two of the
 ;;; digits and the divisors 1, 2 and 3. Saturation alone, no hypothesis.
 ;;;
-;;; For each instance `std.arith` computes both sides; `holds2` and `holds3`
+;;; For each instance `std.math.decimal-arith` computes both sides; `holds2` and `holds3`
 ;;; say they agree, `fails2` and `fails3` that they do not, and the two
 ;;; claims are that nothing fails. It is a proof for this domain and no
 ;;; further: Ein has no way to say "for every number".
@@ -18,8 +18,8 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.arith :symbols (arith n add-walk mul-call done div-call div-done cmp-walk order-is))
-(import std.digits :symbols (nz))
+(import std.math.decimal-arith :symbols (decimal-arith n add-walk mul-call done div-call div-done cmp-walk order-is))
+(import std.math.digits :symbols (nz))
 
 (relation digit Digit :why "{?1} is a digit")
 (relation d Number :why "{?1} is in the domain")

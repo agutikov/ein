@@ -33,7 +33,7 @@ The cases, each a different thing though all read *2 + 2 = 5*:
 | a false **result**, with the request beside it | `(add 2 2)` and `(sum-of 2 2 5)` | two `sum-of` facts for one request, 4 derived and 5 written; no contradiction, since nothing says a sum is unique |
 | a false result with **no** request | `(sum-of 2 2 5)` alone | one fact, never checked: nothing asks |
 | a false **internal** fact | `(done (sum 2 2) 5)`, the witness of question 7 | the circuit takes it as its own hand-over, and the public answer is 5 |
-| a false **table row** | `(fa 2 2 0 5 0)` beside `std.digits` | a second row for one column; where a table is closed, what closure says of a written extra row |
+| a false **table row** | `(fa 2 2 0 5 0)` beside `std.math.digits` | a second row for one column; where a table is closed, what closure says of a written extra row |
 | a false statement in a **problem's own vocabulary** | *Bob has 5 apples* and *Bob has 7 apples* at one moment | the word theory's question, [S1f.6.20](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)'s `contra.ein` is its neighbour |
 | a false **equation as data** | `(equation (Plus (num 2) (num 2)) (num 5))` | not a false fact at all: a statement the program *talks about*, which [S1g.10.4](s1g.10.4_linear_equations.md) answers *no solution* |
 | an **identity** that is false | *prove (a+b)² = a² + b²* | [S1g.10.3](s1g.10.3_simplification_and_identities.md): two normal forms that differ |

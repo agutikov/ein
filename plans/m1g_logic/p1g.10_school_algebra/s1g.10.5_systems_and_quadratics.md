@@ -128,7 +128,7 @@ S1f.6.7's `(int P N)`.
 
 1. **Systems:** both methods, the agreement test, the degenerate pairs, the request for a method.
 2. **The square root:** the three ways on the prototype; the circuit that ships, as a module beside the
-   calculator's (its place, `std.arith` or the phase's own module, is put to the user with S1g.10.1's question c).
+   calculator's (its place, `std.math.decimal-arith` or the phase's own module, is put to the user with S1g.10.1's question c).
 3. **Quadratics:** the discriminant, the roots where it is a square, the stated outcome where it is not;
    factoring by divisors as a search over a derived domain.
 4. **The check,** and the equation with an extraneous root.

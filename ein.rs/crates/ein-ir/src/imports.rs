@@ -12,7 +12,7 @@
 //!   `(query …)`, `(solve …)`, `(config …)` and `(trace …)` (`DIRECTIVES`),
 //!   is the program's own and no import brings it (M1f S1f.6.25, E-8).
 //! - **A name a module declares has one full name**, the module's canonical
-//!   name and the name, `std.arith.add`, the same through every import path
+//!   name and the name, `std.math.decimal-arith.add`, the same through every import path
 //!   and global: any file may write it. A module's canonical name is
 //!   `std.x.y` under the stdlib, and any other a path **from the program
 //!   file's directory**, a dot per directory, for the imports a module writes

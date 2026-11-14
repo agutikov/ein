@@ -1,0 +1,44 @@
+;;; `std.math.decimal-arith` — a product, the school way: 123 x 456 = 56088. M1f S1f.6.5.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(mul X Y)` is answered by `(product-of X Y P)`. A product
+;;; has no width to overflow.
+;;;
+;;; ── The product, by hand ───────────────────────────────────────────────────
+;;;
+;;; The circuit takes the multiplier's digits from the top (`mul-turn`,
+;;; `top-first-step`, `top-first-end`, `mul-begin`). For each digit it
+;;; multiplies the whole multiplicand by it, a row (`mul-row`, `mul-column`,
+;;; then `mul-carry-out` or `mul-walk-end`), and adds the row to ten times
+;;; the sum so far (`mul-add-row`, `mul-next`); the first row has nothing to
+;;; be added to (`mul-first-row`).
+;;;
+;;;   456's digits, the top one first: 4, 5, 6
+;;;
+;;;   123 x 4          =   492                         the sum so far:   492
+;;;   123 x 5          =   615      4920 +  615   =                     5535
+;;;   123 x 6          =   738     55350 +  738   =                    56088
+;;;
+;;; No digit is left (`mul-end`), and the sum is the product (`mul-answer`).
+;;; The second request has the two numbers exchanged: its rows are 456 x 1,
+;;; 456 x 2 and 456 x 3, a different computation with the same product.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `product-of`'s whole extent: two requests, one answer each, filed under
+;;; its own operands in their own order. The `(solve …)` form claims R = {∅}.
+
+(import std.math.decimal-arith :symbols (decimal-arith mul n product-of))
+
+(mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))
+(mul (n (n (n z 4) 5) 6) (n (n (n z 1) 2) 3))
+
+(solve :expect (region (model)))
+
+(query :goal (product-of ?x ?y ?p)
+       :goal-text "{?x} x {?y} = {?p}"
+       :expect (model (product-of (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6)
+                                  (n (n (n (n (n z 5) 6) 0) 8) 8))
+                      (product-of (n (n (n z 4) 5) 6) (n (n (n z 1) 2) 3)
+                                  (n (n (n (n (n z 5) 6) 0) 8) 8))))

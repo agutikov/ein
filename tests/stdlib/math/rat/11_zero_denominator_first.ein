@@ -1,0 +1,25 @@
+;;; `std.math.rat` — a first operand with a denominator of zero. M1f S1f.6.8.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A rational's denominator is not zero. Each operand's denominator is
+;;; compared with zero as the operand is looked up (`rat-operand-check`), and
+;;; one that is zero (`rat-operand-zero`) makes the request a division by
+;;; zero: `rat-zero-first` derives `(division-by-zero (rat-add X Y))`, and
+;;; `std.math.decimal-arith`'s rule `(false)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make. The sum beside
+;;; the request is computed in root's state all the same, and no query of the
+;;; program has an answer.
+
+(import std.math.rat :symbols (rat-arith rat-add rat))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (n))
+
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
+(rat-add (rat (int (n z 3) z) z) (rat (int (n z 1) z) (n z 4)))
+
+(solve :expect (false))

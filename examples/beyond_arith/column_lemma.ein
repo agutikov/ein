@@ -1,6 +1,6 @@
 ;;; The column lemma: every row of the full adder's table is right.
 ;;;
-;;; `std.digits` writes the full adder as 200 facts, `(fa A B CARRY-IN DIGIT
+;;; `std.math.digits` writes the full adder as 200 facts, `(fa A B CARRY-IN DIGIT
 ;;; CARRY-OUT)`. This program derives the same table a second way, by
 ;;; counting: it is told only which digit follows which, `(next 0 1)` to
 ;;; `(next 8 9)`, and that after 9 comes 0 and one more ten. From that,
@@ -22,7 +22,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.digits :symbols (fa __closed__))
+(import std.math.digits :symbols (fa __closed__))
 
 (relation digit Digit :why "{?1} is a digit")
 (relation next Digit Digit :why "after {?1} comes {?2}")

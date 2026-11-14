@@ -148,7 +148,7 @@ def program_names(text: str) -> tuple[dict, dict, set]:
 
 def stdlib_names() -> tuple[set, set]:
     rules, asserted = set(), set()
-    for p in sorted(STDLIB.glob("*.ein")):
+    for p in sorted(STDLIB.rglob("*.ein")):  # every depth: `math/` since M1f S1f.6.31
         _, r, a = program_names(p.read_text())
         rules |= set(r)
         asserted |= a

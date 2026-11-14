@@ -1,0 +1,20 @@
+;;; `std.math.decimal-arith` — the digit 0 as a constant's name. M1f S1f.6.12.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A `let` the theory cannot read is flagged as the `let`, `(malformed (let
+;;; NAME NUMBER))`, whether or not a request uses the name, and `malformed-
+;;; is-false` derives `(false)`. `let-digit-zero`: `nz` holds no row for 0,
+;;; so the digit 0 has a rule of its own.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty; the unsat core is
+;;; the `let`.
+
+(import std.math.decimal-arith :symbols (decimal-arith let n add))
+
+(let 0 (n z 5))
+(add (n z 2) (n z 2))
+
+(solve :expect (false))

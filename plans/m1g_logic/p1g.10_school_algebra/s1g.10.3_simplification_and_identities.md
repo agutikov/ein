@@ -86,7 +86,7 @@ no candidate, k_s 1. It is one rewriter rule, *collect like terms*, in a spellin
 language (`(term C x)` for `c·x`), and it handles exactly the expression shown.
 
 ```lisp
-(import std.arith :symbols (arith))
+(import std.math.decimal-arith :symbols (decimal-arith))
 
 (relation term Number Name   :why "{?1} of {?2}")
 (relation Plus Expr Expr     :why "{?1} plus {?2}")

@@ -526,8 +526,8 @@ How the schema of [`plans/README.md`](../README.md) was applied when the phases 
   those between the user's three stay free. A phase's later stages are numbered on from its last (S1h.20.3,
   S1h.30.3) when its plan past a survey is written.
 - **Names.** [S1f.6.31](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
-  moves the calculator's modules under `std.math`. Where a stage file says `std.arith`, read
-  `std.math.decimal-arith` once that stage has run; the relations keep their names.
+  moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which the
+  stage files name; the relations kept their names.
 
 ## Acceptance
 
