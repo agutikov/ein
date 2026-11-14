@@ -747,3 +747,96 @@ promise, and the one tracked answer it touches is `typing/03`'s, which it return
 pair it accepts, which under an equality is the same pair. With T2: the register row `open` first (its witness
 `typing/03` under (h), or the lemma listed by hand, today), then F1 in the fixing commit, the row flipped, and
 the stdlib's manifest re-taken (`utils/stdlib_manifest.py --write`) and `utils/stdlib_mutants.py --check` run.
+
+### Import invariance
+
+**The criterion, the user's, 2026-11-14:** *"WHAT moves 5 programs? You can easily verify correctness, you don't
+even need to have correct program itself - the answer MUST be invarian of import type - write 2 same programs with
+different imports and check that both have equivalent solution (up to names prefixes). If they move - then import
+works not correclty - partial import does not pull everything required."* The change is judged by **import
+invariance under (h)**, not by what moves against today's engine.
+
+**The check, on the prototype** (`build/s1f.6.35/inv.py`, V2, the release binary of `4676a5de`, 2026-11-14).
+Every tracked program that imports, in four forms, each flattened by `h.py` and solved:
+
+- **S**, the program as (h) asks it written (`tree/`), its imports selective;
+- **W**, every import of the program whole, `(import M)`, and every name it wrote short written in full
+  (`std.arith.add`);
+- **A**, every import of the program `(import M :as impK)`, and every such name written `impK.add`;
+- **W\***, S with every import edge of every file, the modules' own included, bringing its module whole and the
+  files' short names bound as written: what each module's text would be with its own imports whole and its
+  names in full, so that a module's partial selection (`std.num9`'s of `std.arith`, `std.int`'s, `inputs'`) is
+  held to its whole import too.
+
+R is compared by the summary (states as sets of facts, k_s, k_c, root's verdict and debts, the lines, the
+components, the universe, every query's classes and claim) with every module prefix and alias taken off, and
+`ein test`'s verdicts likewise.
+
+| | count |
+|---|---:|
+| tracked programs that import | 314 |
+| checked (the 10 others are import refusals the prototype refuses before a form exists: a cycle, a missing module, a malformed import) | 304 |
+| forms compared | 1 212 |
+| programs that load in S | 280, 216 of them stating a claim |
+| **differences in R or a claim**, W, A or W\* against S | **0** |
+| programs refused in every form whose refusal line differs | 16: the line's names (`std.arith.add` for `add`) and places in the prototype's text, and `examples/broken/load/reserved_open_symbols.ein`, whose refused `:symbols (open)` the A form deletes |
+
+**Nested two and three deep** (`build/s1f.6.35/inv_dep.py`): the user's graph, A ← B ← C ← Prog, A ← Prog,
+A ← E ← Prog, each of B → A, C → B, E → A selective, whole with full names or `:as`, and the program's three
+imports each of the three kinds: **81 programs, 0 differences**; every one answers `a-out`, `c-out` and `e-out`
+`mine` and `seed`, one copy of A.
+
+**So the closure as ruled (V2) has no defect on the corpus**: no selection failed to pull in what a whole import of
+its module brings and the answer needs. (Under V3 the same check would have failed on
+`tests/stdlib/typing/03`, whose S, holding no lemma, answers 1 state where W, holding `converse-pair-symmetric`,
+is refuted: the user's ruling of Q-M1f.247 is what this check demands.)
+
+**The five movers, read through the criterion.** Each written with today's whole-module import — every selective
+import of the program `:as impK`, every name the module's resolved text declares written `impK.x`
+(`build/s1f.6.35/whole_today.py`, run beside each program as `.today_whole_NAME.ein`, so that a local module resolves, and kept under `build/s1f.6.35/whole_today/`) — and read by **today's**
+resolver:
+
+| program | today, selective | today, whole | under (h), every form |
+|---|---|---|---|
+| `tests/imports/02_nested_import_left_behind.ein` | `(got ?x ?y)` no row, the `note:` | `(imp0.got a aa)`: one state, the query answered | `(got a aa)` |
+| `examples/word_problems/gaps.ein` | 4 states, `(asked __closed__)` … | 1 state, no candidate | 1 state, no candidate |
+| `examples/word_problems/listed_is_all.ein` | 4 states, `(assumed __closed__ z)` … | 1 state, no candidate | 1 state, no candidate |
+| `examples/features/09_adjacent_via_same_house.ein` | root dead; *82 candidates, 82 dead alone* | root dead; *no candidate*, and `outside pet-loc — no candidate: no obligation owes it …` | the same as today's whole |
+| `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` | 1 state, the claim held | `:as`: 1 state, held — but only because `std.typing`, which writes `std.algebra`'s activators without importing it, reads a bare `converse` the program now writes `imp0.converse`, so no check runs; **flat, every rule of `std.algebra` listed** (`.today_flatwhole_…`): root dead, *refuted by converse-illtyped-ran* | refuted by `converse-illtyped-ran` |
+
+**Four of the five are today's selective import having been incomplete** (E-20's family): today's whole import
+already answers what (h) answers. The fifth, `typing/03`, is answered by today's whole import of `std.algebra`
+as (h) answers it wherever the typing knob is connected to it; **E-53 is confirmed a bug of `std.algebra` that
+exists today, independent of imports**: a program holding the whole module refutes a pair well-typed through the
+hierarchy. Its register row's witness can be today's form (`std.algebra` listed whole beside `std.typing`).
+
+**What the closure cannot make invariant: the hypothesis generator's program-wide readings.** Three probes
+written to test it outside the corpus (`build/s1f.6.35/inv_probe/`, each `_s` selective and `_w` whole, under
+(h); and under today's resolver, `_s` against `:as`):
+
+| probe | S under (h) | W under (h) | today, S / whole |
+|---|---|---|---|
+| `blind`: `std.algebra :symbols (symmetric)` beside a declared `near` the blind enumerator proposes | 2 states, 2 candidates | **1 state, no candidate** | 2 states / 1 state |
+| `names`: a library `lib` that declares `colour` and `shape`, closes neither and states `(colour red)`, `(shape square)`; `:symbols (colour)` | 1 state, no candidate | **16 states, 4 candidates** | 1 / 16 |
+| `hrule`: a library whose hrule reads `colour`, no fact activating it; `:symbols (colour)` | 1 state | 1 state | 2 / 1 |
+
+- **`blind`** moves by **E-51**: the hypothesis ladder takes the obligations rung where an obligation *rule* is
+  loaded, activated or not; a whole `std.algebra` loads `total-owed` and `surjective-owed`, which touch nothing
+  the selection keeps, and the rung, owing nothing, proposes nothing.
+- **`names`** moves by the **blind enumerator's universe**, every declared relation of the program × every name
+  of it: a whole `lib` brings `shape`, untouched by `colour`, and the object `square`.
+- **`hrule`** holds under (h) and moves today: the closure (ii) follows `colour` to the hrule that reads it, so
+  the selection holds the hrule a whole import holds (rung 1, inactive: no candidate).
+
+Neither of the first two is the closure's: what moves R is a declaration no selected name touches, read by the
+generator as a property of the whole program, and each moved the same way before (h). To remove either, the
+closure would have to bring what nothing selected touches (the user's earlier *"no background side effects"*,
+and it would make every selection whole), or the generator would have to change: E-51's ladder is S1d.2.6's
+ruling (*"a loaded rule no fact activates still decides that nothing is guessed"*), and the blind enumerator's
+objects are the alive-set invariant's list of the program's names (`ein_infer::invariant`). **By the
+coordinator's instruction this is a stop**: invariance holds on every tracked program and every nested probe,
+and fails, through those two readings, on programs written to reach them.
+
+Q-M1f.249: the five moves satisfy the criterion (today's whole import gives (h)'s answer on four, and on the
+fifth wherever `std.algebra` is whole and connected), so they are accepted on it **if the stop is answered so
+that the stage continues**; recorded there then.
