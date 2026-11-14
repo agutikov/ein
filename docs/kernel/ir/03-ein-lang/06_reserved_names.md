@@ -41,6 +41,7 @@ you can author a puzzle without reading engine source.
 | say "∀ b s.t. G, B holds"                    | `(forall ?b G B)` *(import `std.macro`)*| §macro sugar |
 | tag a relation symmetric / transitive / …    | `(symmetric R)` + the rule consuming it | §not-reserved |
 | freeze a relation (no guessing on it)        | `(__closed__ R)` *(usually auto)*       | §hypothesis control |
+| read a fact nested in what a file writes     | `(written T)` in a `:match`             | §`written` |
 | scope / exclude the blind enumerator         | `(solve … :hypothesis-relations (…))` / `:no-hypothesis (…)` | §hypothesis control |
 
 ## Top-level declarators — the closed classifier set (P1.7c)
@@ -88,7 +89,9 @@ computed predicates (`eq` / `neq`), `relation`, or, since M1f S1f.5.5's
 T1f.5.5.11, the kernel's dunders `__closed__` and `__symmetric__`, which a
 program uses and never binds
 ([Q-M1f.7](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f7--where-may-a-program-write-the-kernels-dunders)
-(b)); an import's `:as` takes the same guard since then. The engine's three
+(b)); an import's `:as` takes the same guard since then; and, since M1f
+S1f.6.38, `written`, the relation the loader states what a file writes in
+([§ `written`](#written--what-a-file-writes-stated-by-the-loader-m1f-s1f638)). The engine's three
 writeback rule names are refused wherever a program writes them
 ([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The thirteen reserved words
 (`not` / `and` / `or` / `neq` / the declarators but `relation` / `open`, the last since M1f S1f.5.23) can't be written as a declared
@@ -130,7 +133,7 @@ lexer's set is twelve since M1e2 S1e2.1a.4, with the `solve` declarator.)
 
 | | the question it answers | membership | how it fails |
 |---|---|---|---|
-| `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` (the two dunders since M1f T1f.5.5.11) | a **load** error, at the declaration |
+| `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `__closed__` `__symmetric__` `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` `written` (the two dunders since M1f T1f.5.5.11, `written` since M1f S1f.6.38) | a **load** error, at the declaration |
 | `ein_ir::grammar::RESERVED_WORDS` — [`00_ebnf.md`](00_ebnf.md) (`ein-ir`'s `LEXER_KEYWORDS` until M1f S1f.5.5's swap, the printer's `ein_core::text::LEXER_KEYWORDS` since) | what may never be a **name**? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` `open` (`open` since M1f S1f.5.23) | a **parse** error, wherever a name goes |
 
 Five names are in both since M1f S1f.5.23, four until then, and neither set
@@ -261,6 +264,31 @@ ships `slot-owed-room` and `slot-owed-fill`, fanned out by
 `slot-partition-setup`. All four assert `(open ?R)` and nothing else, and the
 *direction* is nowhere in the head: it falls out of which slot the rule's own
 `absent` leaves free.
+
+## `written` — what a file writes, stated by the loader (M1f S1f.6.38)
+
+Reserved since M1f
+[S1f.6.38](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md)
+(the user's ruling of 2026-11-14 on
+[Q-M1f.272](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f272--how-a-representation-module-sees-a-numeral-right-away),
+E1), and a kernel relation as `relation` is: the loader states
+`(written T)` for every fact `T` nested at any depth in a fact a file writes,
+a program's, a local module's or a stdlib module's (for a stored negation
+`(not P)`, the facts nested in P's arguments), and for the facts a rule's or an
+hrule's conclusion nests where they hold no variable
+([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)).
+
+| | |
+|---|---|
+| form | `(written T)`, one argument, a fact |
+| who writes it | the loader alone. A fact of it, or its negation, written in a file, and a conclusion of it, are refused at load; no declarator binds the name (`ein_core::RESERVED`) |
+| who reads it | a rule's `:match` or a goal, `(written (n ?p ?a))`: a representation module's check of its own terms, `std.math.decimal`'s of a numeral, wherever the numeral is written |
+| the search | never a hypothesis target, no relation of the program's registry, and decided at root, so nothing that reads it is stale |
+| its provenance | the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`, one of [`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#names-the-parser-and-the-loader-make-up)'s made-up names), from the fact it was read in, so a core names the fact as written; from a rule's text, from no fact |
+
+It shows where `relation`'s mirror facts show, `ein saturate --dump`, a KB
+view and a `.einb`, and a `--dump-answer` state file writes none of it, the
+loader stating it again when the file is read.
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 

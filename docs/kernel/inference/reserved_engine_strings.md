@@ -100,7 +100,7 @@ empty-`premises_raw` shape, or the walks will try to expand it.
 
 ## Names the parser and the loader make up
 
-Five names stand for something a program writes no name for. Each starts
+Six names stand for something a program writes no name for. Each starts
 with `#`, which is no name character: the name rule leaves it out, since `#|`
 opens a comment, so no program can spell one. `ein_core::text::INTERNAL_NAMES`
 lists them, `ein_core::text::is_internal` is the test the dumper and
@@ -118,6 +118,7 @@ could have written `(p (@empty))` and loaded the fact `(p ())`.
 | `#params` | `@params` | a rule's or a macro's parameter list | the list, with no head |
 | `#list` | `@list` | a fact's `:using` list, in the generated parser's tree | the list, with no head |
 | `#query` | `<query>` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |
+| `#written` | — (M1f S1f.6.38) | the loader's step a `(written T)` fact is derived by, from the fact it was read in (`ein_core::terms::WRITTEN_STEP`; [`defined_behaviour.md` § 4.30](../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)) | a quoted name, `:rule "#written"` in `ein saturate --dump` |
 
 No run reaches a value `#empty` since M1f
 [S1f.5.9](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s

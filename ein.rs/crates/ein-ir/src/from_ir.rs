@@ -21,8 +21,8 @@ use crate::parse;
 use ein_core::config::{FLAGS, SolverConfig};
 use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
-    FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
-    is_predicate, is_reserved,
+    Added, FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value,
+    detect_provenance_cycles, is_predicate, is_reserved,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -272,9 +272,18 @@ pub fn load_query_with(
         &mut errors,
     )?;
     // Pass 3 — facts.
+    let mut stored: Vec<(NodeId, FactId)> = Vec::with_capacity(facts.len());
     for &form in &facts {
-        ingest_fact(ast, terms, &mut kb, form)?;
+        if let Some(id) = ingest_fact(ast, terms, &mut kb, form)? {
+            stored.push((form, id));
+        }
     }
+    // `written` is the loader's to state (M1f S1f.6.38): a fact of it a file
+    // writes is refused, and so is a rule's conclusion of it (the rules pass).
+    refuse_written_facts(ast, &facts, &mut errors);
+    // …and stated: every fact nested in what a file writes, and the ground
+    // ones of a rule's conclusion (E1, Q-M1f.272 and Q-M1f.275 (a)).
+    state_written(ast, terms, &mut kb, &stored)?;
     // A fact, or a fact it holds, of a declared relation at another count of
     // arguments than declared (M1f S1f.6.23, W89).
     refuse_wrong_counts_in_facts(ast, &facts, &declared, &mut errors);
@@ -1280,6 +1289,192 @@ fn ingest_relation(
     Ok(())
 }
 
+// ── `written`: what a file writes, stated (M1f S1f.6.38) ───────────
+
+/// The second half of every refusal of a `written` fact a program writes, or a
+/// rule concludes (`defined_behaviour.md` § 4.30).
+const WRITTEN_IS_THE_LOADERS: &str = "written is the loader's: it states (written T) for each \
+     fact nested in a fact a file writes, and a program does not write it";
+
+/// Is `node` a fact, or a stored negation of one, of the kernel relation
+/// `written`?
+fn writes_written(ast: &Ast, node: NodeId) -> bool {
+    match ast.head_name(node) {
+        Some(ein_core::terms::WRITTEN) => true,
+        Some("not") => ast
+            .form_args(node)
+            .iter()
+            .any(|&a| ast.head_name(a) == Some(ein_core::terms::WRITTEN)),
+        _ => false,
+    }
+}
+
+/// A fact a file writes of `written`, or a stored negation of one: refused,
+/// one line each, placed at the fact (M1f S1f.6.38, § 4.30).
+fn refuse_written_facts(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
+    for &form in facts {
+        if writes_written(ast, form) {
+            errors.push(format!(
+                "{}{} — {WRITTEN_IS_THE_LOADERS}",
+                placed_form(ast, form),
+                crate::dump::dump_compact(ast, form),
+            ));
+        }
+    }
+}
+
+/// **The loader states every fact nested in what a file writes** (M1f
+/// S1f.6.38, E1; the user's ruling of 2026-11-14 on Q-M1f.272, and Q-M1f.275
+/// (a)): for each fact stored from a file, a program's, a local module's or a
+/// stdlib module's, each fact nested among its arguments at any depth,
+/// `(written T)`, once a value; for a stored negation `(not P)`, the facts
+/// nested in P's arguments, P being no term the file writes but the fact it
+/// denies, and so for a negation nested anywhere. Each is derived by the
+/// loader's step [`ein_core::terms::WRITTEN_STEP`] from the fact it was read
+/// in, its one premise, so a core that rests on it names the fact as
+/// written.
+///
+/// Then **the ground nested facts of every rule's and hrule's conclusion**,
+/// in the registries' order, each by the same step from no premise: the
+/// rule's text holds it, and a core that rests on it rests on no fact. A
+/// nested fact a rule assembles from a variable is stated by nothing (the
+/// stage's r2).
+///
+/// A representation module reads it: `std.math.decimal`'s check of a numeral
+/// is five rules over `(written (n P A))`, so every numeral a file writes is
+/// checked by what it is, wherever it sits, with no calculation started
+/// (`stdlib/math/decimal.ein`). Nothing else reads it.
+fn state_written(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    stored: &[(NodeId, FactId)],
+) -> Result<(), Overflow> {
+    let written = terms.kernel.written;
+    let step = terms.kernel.written_step;
+    let not = terms.kernel.not;
+    let mut seen: rustc_hash::FxHashSet<Value> = rustc_hash::FxHashSet::default();
+    for &(form, id) in stored {
+        let (rel, args) = terms.fact(id);
+        let mut found: Vec<Value> = Vec::new();
+        if rel == not {
+            for &a in args {
+                denied(terms, a, &mut found, &mut seen);
+            }
+        } else {
+            nested(terms, args.to_vec(), &mut found, &mut seen);
+        }
+        for t in found {
+            let prov = terms
+                .provs
+                .push(Prov::from_rule(step, Box::new([id]), core_loc(ast, form)));
+            kb.add_fact(terms, written, &[t], Some(prov))?;
+        }
+    }
+    let conclusions: Vec<(NodeId, Option<Loc>)> = kb
+        .program()
+        .rules
+        .values()
+        .chain(kb.program().hrules.values())
+        .filter_map(|r| r.assert_.as_ref().map(|p| (NodeId(p.expr.0), r.loc)))
+        .collect();
+    for (assert_node, loc) in conclusions {
+        let mut ground: Vec<NodeId> = Vec::new();
+        for c in ast.conjuncts(assert_node) {
+            match ast.head_name(c) {
+                Some("not") => {
+                    for &p in ast.form_args(c) {
+                        if matches!(ast.node(p), Node::SForm { .. }) {
+                            ground_nested(ast, ast.form_args(p), &mut ground);
+                        }
+                    }
+                }
+                Some("false" | "eq" | "neq") | None => {}
+                Some(_) => ground_nested(ast, ast.form_args(c), &mut ground),
+            }
+        }
+        let mut found: Vec<Value> = Vec::new();
+        for node in ground {
+            let values = fact_args(ast, terms, &[node])?;
+            nested(terms, values, &mut found, &mut seen);
+        }
+        for t in found {
+            let prov = terms.provs.push(Prov::from_rule(step, Box::new([]), loc));
+            kb.add_fact(terms, written, &[t], Some(prov))?;
+        }
+    }
+    Ok(())
+}
+
+/// Each fact among `args` and nested in them, at any depth, in the order
+/// written, the outer before the inner, that `seen` does not hold yet; a
+/// negation's denied fact by [`denied`].
+fn nested(
+    terms: &Terms,
+    args: Vec<Value>,
+    found: &mut Vec<Value>,
+    seen: &mut rustc_hash::FxHashSet<Value>,
+) {
+    for a in args {
+        let Some(id) = a.as_fact() else {
+            continue;
+        };
+        if !seen.insert(a) {
+            continue;
+        }
+        found.push(a);
+        let (rel, inner) = terms.fact(id);
+        let inner = inner.to_vec();
+        if rel == terms.kernel.not {
+            for d in inner {
+                denied(terms, d, found, seen);
+            }
+        } else {
+            nested(terms, inner, found, seen);
+        }
+    }
+}
+
+/// The facts nested in the arguments of `p`, the fact a negation denies.
+fn denied(
+    terms: &Terms,
+    p: Value,
+    found: &mut Vec<Value>,
+    seen: &mut rustc_hash::FxHashSet<Value>,
+) {
+    if let Some(id) = p.as_fact() {
+        let inner = terms.fact(id).1.to_vec();
+        nested(terms, inner, found, seen);
+    }
+}
+
+/// The outermost nested forms among `args`, at any depth, that hold no
+/// variable and no string: a ground one is pushed whole, and the inside of
+/// one that holds a variable is searched for ground ones.
+fn ground_nested(ast: &Ast, args: &[NodeId], out: &mut Vec<NodeId>) {
+    for &a in args {
+        if !matches!(ast.node(a), Node::SForm { .. }) {
+            continue;
+        }
+        if is_ground(ast, a) {
+            out.push(a);
+        } else {
+            ground_nested(ast, ast.form_args(a), out);
+        }
+    }
+}
+
+/// Does `node` hold no variable and no string, its head included?
+fn is_ground(ast: &Ast, node: NodeId) -> bool {
+    match ast.node(node) {
+        Node::Var(_) | Node::Str(_) | Node::KwPair { .. } => false,
+        Node::SForm { head, .. } => {
+            is_ground(ast, head) && ast.form_args(node).iter().all(|&a| is_ground(ast, a))
+        }
+        _ => true,
+    }
+}
+
 // ── Pass 2 — rules ─────────────────────────────────────────────────
 
 /// What the rules pass reads of the passes before it: the macros it expands
@@ -1469,6 +1664,23 @@ fn ingest_rules(
                     crate::dump::dump_compact(ast, assert_node),
                     count(n, "conclusion"),
                 ));
+                continue;
+            }
+        }
+        // `written` is the loader's to state, and a rule that concluded it
+        // would let a commitment extend it (M1f S1f.6.38, § 4.30).
+        if !is_obligation {
+            let n_written = errors.len();
+            for c in ast.conjuncts(assert_node) {
+                if writes_written(ast, c) {
+                    errors.push(format!(
+                        "{}{head} '{name}': its :assert writes {} — {WRITTEN_IS_THE_LOADERS}",
+                        placed_form(ast, c),
+                        crate::dump::dump_compact(ast, c),
+                    ));
+                }
+            }
+            if errors.len() != n_written {
                 continue;
             }
         }
@@ -5023,7 +5235,12 @@ fn walk_pattern(ast: &Ast, node: NodeId, variables: &mut Vec<String>, relations:
 /// One fact, with its provenance. A fact's relation is a name (`ein.y`'s
 /// `FactHead`); until M1f S1f.5.5's T5 this pass refused one that was not,
 /// *fact with non-atom head*, which the grammar refuses since the swap.
-fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Result<(), Overflow> {
+fn ingest_fact(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    form: NodeId,
+) -> Result<Option<FactId>, Overflow> {
     let head_name = ast
         .head_name(form)
         .expect("a fact's relation is a name (ein.y's FactHead)")
@@ -5095,7 +5312,7 @@ fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Resul
         let values = fact_args(ast, terms, &sides)?;
         if values.len() == 2 {
             if (values[0] == values[1]) == eq {
-                return Ok(());
+                return Ok(None);
             }
             head_name = "false".to_string();
             args.retain(|&a| matches!(ast.node(a), Node::KwPair { .. }));
@@ -5116,8 +5333,10 @@ fn ingest_fact(ast: &Ast, terms: &mut Terms, kb: &mut Kb, form: NodeId) -> Resul
         });
     }
     let args = fact_args(ast, terms, &args)?;
-    kb.add_fact(terms, head, &args, Some(prov))?;
-    Ok(())
+    let id = match kb.add_fact(terms, head, &args, Some(prov))? {
+        Added::New(id) | Added::Existing { id, .. } => id,
+    };
+    Ok(Some(id))
 }
 
 // ── Config ─────────────────────────────────────────────────────────
@@ -6477,12 +6696,18 @@ mod tests {
             .facts()
             .map(|f| terms.facts.args(f).iter().map(|a| a.tag()).collect())
             .collect();
-        assert_eq!(nested, vec![vec![Tag::Fact], vec![Tag::Fact]]);
+        assert_eq!(
+            nested,
+            vec![vec![Tag::Fact], vec![Tag::Fact], vec![Tag::Fact]]
+        );
         let compacts = facts(&terms, &kb);
         assert_eq!(compacts[1], "(p (q a))", "{compacts:?}");
+        // The fact nested in `(p (q a))` is stated as written (M1f S1f.6.38),
+        // and the negation's denied fact is not: it is no term the file writes.
+        assert_eq!(compacts[2], "(written (q a))", "{compacts:?}");
         // The inner proposition is interned but not believed: it is not in
         // the fact list, and that is what makes the negated index meaningful.
-        assert_eq!(kb.n_facts(), 2);
+        assert_eq!(kb.n_facts(), 3);
         let inner = terms.facts.args(kb.facts().next().expect("a fact"))[0]
             .as_fact()
             .expect("nested");

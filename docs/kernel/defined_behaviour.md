@@ -2402,6 +2402,73 @@ written and through a macro's call, on nine commands) and `corpus/wrong_answers.
 W95 rows. A macro's call that leaves the `(and …)` is placed as § 4.16 places a
 form a body writes, at the macro's body.
 
+### 4.30 `written` is the loader's: what a file writes, stated at load — M1f S1f.6.38
+
+**The loader states every fact nested in what a file writes**, as it states
+each declaration's mirror (M1f
+[S1f.6.38](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md),
+E1, the user's ruling of 2026-11-14 on
+[Q-M1f.272](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f272--how-a-representation-module-sees-a-numeral-right-away)):
+for each fact stored from a file, a program's, a local module's or a stdlib
+module's, each fact nested among its arguments at any depth is stated once,
+`(written T)`; for a stored negation `(not P)`, the facts nested in P's
+arguments, P being the fact it denies and no term the file writes. And the
+facts nested in every rule's and hrule's conclusion that hold no variable
+([Q-M1f.275](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f275--what-the-loader-states-as-written)
+(a), accepted): a nested fact a rule assembles from a variable is stated by
+nothing. A fact of `eq`, which is checked and never stored, states nothing.
+
+| a file writes | root holds, beside it |
+|---|---|
+| `(add (n (n z 1) 2) (n z 5))` | `(written (n (n z 1) 2))`, `(written (n z 1))`, `(written (n z 5))` |
+| `(not (p (q (k a))))` | `(written (q (k a)))`, `(written (k a))`: P's arguments' facts, and nothing of `(p (q (k a)))`, the fact denied |
+| `(rule r () :match (s ?x) :assert (p (q a) (k ?x)) …)` | `(written (q a))`, from the rule's text |
+
+`written` is a **kernel relation**, as `relation` is: reserved, so no
+declarator binds it ([`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md));
+never a hypothesis target, no relation of the program's registry; and decided
+at root, since nothing but the loader states it. Each `(written T)` is derived
+by the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`, one of the
+names the loader makes up) from the fact it was read in, its one premise, so a
+**core that rests on one names the fact as written**, and `refuted by` names
+the rule that read it; one stated from a rule's text rests on no fact, and its
+core is ∅. What reads it is a representation module's check of its own terms,
+`std.math.decimal`'s of a numeral, which so sees every numeral a file writes,
+wherever it sits, with no calculation started.
+
+**Where it shows** is where the mirror facts show: `ein saturate --dump` lists
+each, `(written (n z 1) :rule "#written")`, in its `DERIVED` block, and counts
+it; a KB view draws it; a `.einb` stores it. A `--dump-answer` state file
+writes none, as it writes no declaration's mirror, since the loader states them
+again from the facts the file holds, a fact the run derived among them, and
+says so in its header where the state holds any; `ein render`'s KB text leaves
+them out for the same reason; `-P`'s blocks, the facts *beyond the program as
+loaded*, and a `(model …)`'s comparison leave them out. The read-out prints
+none: a state's listing is its facts over the candidates' relations, and
+`written` is no candidate's.
+
+**A program does not write it.** A fact of `written`, or a stored negation of
+one, written in a file, and a rule's or an hrule's conclusion of one, is
+refused at load, on every command, one `kb load error:` line each at the
+command's load-error exit (1; `ein test` 2), placed at the form:
+
+| the program | the line |
+|---|---|
+| `(written (p a))` | `kb load error: w.ein:2:2: (written (p a)) — written is the loader's: it states (written T) for each fact nested in a fact a file writes, and a program does not write it` |
+| `(rule r () :match (p ?x) :assert (and (q ?x) (written (p ?x))) …)` | `kb load error: w.ein:4:47: rule 'r': its :assert writes (written (p ?x)) — written is the loader's: …` |
+| `(relation written T …)` | `kb load error: relation 'written' shadows a reserved kernel name at None` |
+
+A rule may **read** it, `:match (written (n ?p ?a))`, and so may a goal.
+Until S1f.6.38 no fact a file wrote was stated as written, and a check of a
+numeral ran where a request asked for an operand
+([E-38](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)).
+
+Pinned by `ein-cli`'s `written_facts.rs`: what is stated, and from what, for a
+fact, a negation, a module's fact and a rule's conclusion; the refusals on nine
+commands; a core that names the fact as written; and a dumped state that
+reloads to its facts and states its `written` facts again
+(`answer_round_trip.rs` holds the second on every corpus program).
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands

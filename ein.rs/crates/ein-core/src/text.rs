@@ -156,12 +156,13 @@ pub const LIST_HEAD: &str = "#list";
 /// program writes no name for, each starting with [`INTERNAL_MARK`], so no
 /// program can spell one (`ein-ir/tests/generated_parser.rs`,
 /// `no_name_the_loader_makes_up_is_a_name`).
-pub const INTERNAL_NAMES: [&str; 5] = [
+pub const INTERNAL_NAMES: [&str; 6] = [
     EMPTY_HEAD,
     NESTED_HEAD,
     PARAMS_HEAD,
     LIST_HEAD,
     crate::terms::QUERY_RULE,
+    crate::terms::WRITTEN_STEP,
 ];
 
 /// Is `name` one the parser, the loader or the engine made up

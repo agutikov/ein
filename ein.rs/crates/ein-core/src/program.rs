@@ -114,8 +114,9 @@ impl Program {
 
     /// A name's `NameRef` category.
     ///
-    /// `relation` and `rule` are the only two kernel forms hardcoded as
-    /// `"relation"`. Since S1.7.6, `type` and `instance` are **not** special:
+    /// `relation` and `rule` are the two kernel forms hardcoded as
+    /// `"relation"`, and `written`, the loader's statement of what a file
+    /// writes, since M1f S1f.6.38. Since S1.7.6, `type` and `instance` are **not** special:
     /// they categorise as relations only when a puzzle declares them.
     /// `hrules` are deliberately absent — a name declared only as an hrule
     /// falls through to `"object"`.
@@ -134,7 +135,10 @@ impl Program {
     /// `hrules` stay out as a fixed behaviour rather than as a judgement about
     /// what an hrule's name is, which is why the two cannot share a line.
     pub fn categorise(&self, terms: &Terms, name: Symbol) -> NameCategory {
-        if name == terms.kernel.relation || name == terms.kernel.rule {
+        if name == terms.kernel.relation
+            || name == terms.kernel.rule
+            || name == terms.kernel.written
+        {
             return NameCategory::Relation;
         }
         if self.relations.contains(name) {

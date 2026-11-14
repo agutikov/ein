@@ -298,6 +298,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `--no-require-why` loads a program without.
 - `__closed__` and `__symmetric__` are reserved and never bound; names the
   loader makes up start with `#` (`ein_core::text::INTERNAL_NAMES`).
+- **`written` is the loader's**: it states `(written T)` for every fact
+  nested in a fact a file writes, and for each one a rule's conclusion nests
+  that holds no variable, derived from the fact it was read in. A rule reads
+  it, which is how a representation module checks its own terms where they
+  are written (`std.math.decimal`'s numeral); no program writes it, and no
+  declarator binds it (`defined_behaviour.md` § 4.30).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.

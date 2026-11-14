@@ -168,6 +168,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// the same day, when the stage's refusal of an hrule concluding more than one
 /// fact (Q-M1f.271's default) made the loader refuse both.
 ///
+/// **Moved at M1f S1f.6.38**, the loader's `(written T)`: six programs whose
+/// `z` only a rule's conclusion wrote meet it first in the fact the loader
+/// states from that conclusion, `(written (n z 1))`, where they met it in the
+/// rule that matched it.
+///
 /// **Moved at M1f S1f.6.35**, imports by full name: a rule a program does not
 /// list is named by its full name, `std.math.int.int-div-pn` (66 lines); the
 /// sixteen programs that bring `std.math.num9`, and `gaps`, `listed_is_all` and
@@ -240,7 +245,7 @@ const SEEDED: [(&str, &[&str]); 158] = [
     ),
     (
         "examples/beyond_arith/equation_two_unknowns.ein",
-        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
+        &["`z`, in (written (n z 3))"],
     ),
     (
         "examples/beyond_arith/fibonacci.ein",
@@ -282,7 +287,7 @@ const SEEDED: [(&str, &[&str]); 158] = [
     ),
     (
         "examples/binary_arithmetic/bin.ein",
-        &["`z`, matched by rule `operand-zero2`"],
+        &["`z`, in (written (b2 z 1))"],
     ),
     (
         "examples/binary_arithmetic/both_bases.ein",
@@ -290,7 +295,7 @@ const SEEDED: [(&str, &[&str]); 158] = [
     ),
     (
         "examples/binary_arithmetic/conv.ein",
-        &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
+        &["`z`, in (written (bin.b2 z 1))"],
     ),
     (
         "examples/binary_arithmetic/first.ein",
@@ -544,7 +549,7 @@ const SEEDED: [(&str, &[&str]); 158] = [
         "examples/word_problems/readings.ein",
         &[
             "`read-need`, asserted by rule `readings`",
-            "`z`, matched by rule `std.math.decimal-arith.operand-zero`",
+            "`z`, in (written (n z 1))",
         ],
     ),
     (
@@ -556,10 +561,6 @@ const SEEDED: [(&str, &[&str]); 158] = [
         &["`z`, matched by rule `std.math.decimal-arith.operand-zero`"],
     ),
     (
-        "stdlib/math/decimal-arith.ein",
-        &["`z`, matched by rule `operand-zero`"],
-    ),
-    (
         "stdlib/elim.ein",
         &[
             "`0`, matched by rule `domain-elimination`",
@@ -567,11 +568,15 @@ const SEEDED: [(&str, &[&str]); 158] = [
         ],
     ),
     (
+        "stdlib/math/decimal-arith.ein",
+        &["`z`, matched by rule `operand-zero`"],
+    ),
+    (
         "stdlib/math/int.ein",
         &[
             "`neg`, asserted by rule `int-div-pn`",
             "`pos`, asserted by rule `int-div-pp`",
-            "`z`, matched by rule `std.math.decimal-arith.operand-zero`",
+            "`z`, in (written (n z 1))",
         ],
     ),
     (
@@ -583,7 +588,7 @@ const SEEDED: [(&str, &[&str]); 158] = [
         &[
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
             "`pos`, asserted by rule `std.math.int.int-div-pp`",
-            "`z`, matched by rule `std.math.decimal-arith.operand-zero`",
+            "`z`, in (written (n z 1))",
         ],
     ),
     (
@@ -597,6 +602,20 @@ const SEEDED: [(&str, &[&str]); 158] = [
     (
         "tests/stdlib/algebra/22_symmetric_negative.ein",
         &["`C`, in (not (sits-with A C))"],
+    ),
+    (
+        "tests/stdlib/elim/03_typecheck_arg0_violated.ein",
+        &[
+            "`0`, matched by rule `std.elim.domain-elimination`",
+            "`1`, matched by rule `std.elim.domain-elimination`",
+        ],
+    ),
+    (
+        "tests/stdlib/elim/04_typecheck_arg1_violated.ein",
+        &[
+            "`0`, matched by rule `std.elim.domain-elimination`",
+            "`1`, matched by rule `std.elim.domain-elimination`",
+        ],
     ),
     (
         "tests/stdlib/math/decimal-arith/01_add.ein",
@@ -732,20 +751,6 @@ const SEEDED: [(&str, &[&str]); 158] = [
     (
         "tests/stdlib/math/decimal-arith/40_div_call_by_zero_spelt.ein",
         &["`z`, in (share (n z 7) (n (n z 0) 0))"],
-    ),
-    (
-        "tests/stdlib/elim/03_typecheck_arg0_violated.ein",
-        &[
-            "`0`, matched by rule `std.elim.domain-elimination`",
-            "`1`, matched by rule `std.elim.domain-elimination`",
-        ],
-    ),
-    (
-        "tests/stdlib/elim/04_typecheck_arg1_violated.ein",
-        &[
-            "`0`, matched by rule `std.elim.domain-elimination`",
-            "`1`, matched by rule `std.elim.domain-elimination`",
-        ],
     ),
     (
         "tests/stdlib/math/int/01_simplify.ein",

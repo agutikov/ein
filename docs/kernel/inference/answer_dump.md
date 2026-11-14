@@ -122,7 +122,13 @@ shaken what a qualified import brought and nothing reached, E-41). A state
 file declares the full names it was loaded with, `std.math.decimal-arith.strip`, and
 imports nothing, which the loader reads as the program's own names
 (`defined_behaviour.md` § 4.28). The program's own `(relation …)`
-declarations are not repeated, because the loader refuses a second one. So the
+declarations are not repeated, because the loader refuses a second one, and
+neither are the loader's `(written T)` facts (M1f S1f.6.38,
+`defined_behaviour.md` § 4.30), which it refuses where a file writes one and
+states again from the facts the file holds: from every fact of the state, a
+fact the run derived among them, so the reloaded state holds every `written`
+fact the state held and one for each fact nested only in a derived one, and the
+header says so where the state holds any. So the
 file **loads as a program**, and saturating it **derives no fact and no
 `(false)`**. Each state is read again through the node function every route
 uses, so the file is the state the read-out names and not a copy of one.

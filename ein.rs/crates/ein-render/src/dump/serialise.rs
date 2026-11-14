@@ -66,9 +66,11 @@ fn fact_line(kb: &Kb, terms: &Terms, f: FactId) -> String {
 /// `(relation R)`, which the loader adds itself on reading the declaration
 /// and refuses as a second one if the file states it. So the companion is left
 /// out wherever its declaration is written, and the file loads back to the
-/// same facts.
+/// same facts. So is every `(written T)`, which the loader states from the
+/// facts the file holds and refuses where a file writes it (M1f S1f.6.38).
 pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
     let relation = terms.kernel.relation;
+    let written = terms.kernel.written;
     let typed: rustc_hash::FxHashSet<Value> = kb
         .facts()
         .filter_map(|f| {
@@ -78,7 +80,7 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
         .collect();
     let companion = |f: FactId| {
         let (rel, args) = terms.fact(f);
-        rel == relation && args.len() == 1 && typed.contains(&args[0])
+        rel == written || rel == relation && args.len() == 1 && typed.contains(&args[0])
     };
     let (mut ont, mut rest): (Vec<String>, Vec<String>) = (Vec::new(), Vec::new());
     for f in kb.facts().filter(|&f| !companion(f)) {

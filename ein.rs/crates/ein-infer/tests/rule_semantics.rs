@@ -1096,14 +1096,15 @@ fn a_wildcard_in_a_pattern_matches_any_value_and_binds_nothing() {
 /// `:assert ()` asserts nothing since M1f S1f.5.9's T1f.5.9.2 (2026-11-09,
 /// W34): `empty-form` matches and derives nothing, and is no firing. Until
 /// then it stored a fact under the parser's synthetic head for `()`, whose
-/// name joined H; until T1f.5.5.8 that head was `@empty`, so `written`'s
+/// name joined H; until T1f.5.5.8 that head was `@empty`, so `at-empty`'s
 /// `(@empty)` was the fact `empty-form` had already stored, and its firing
-/// re-derived it. `written` stores its own fact either way.
+/// re-derived it. `at-empty` stores its own fact either way. (The rule was
+/// named `written` until M1f S1f.6.38 reserved the name.)
 #[test]
 fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
     let text = "(relation q Node :why \"q holds of {?1}\")\n(q a)\n\
          (rule empty-form () :match (q ?x) :assert () :why \"q holds of {?x}, and the empty conclusion asserts nothing\")\n\
-         (rule written () :match (q ?x) :assert (@empty) :why \"q holds of {?x}, so @empty holds\")\n";
+         (rule at-empty () :match (q ?x) :assert (@empty) :why \"q holds of {?x}, so @empty holds\")\n";
     let mut ast = Ast::new();
     let forms =
         ein_ir::grammar::parse(&mut ast, text, Some("<fixture>")).expect("the generated parser");
@@ -1115,11 +1116,11 @@ fn an_empty_conclusion_and_one_named_at_empty_are_two_facts() {
             .flat_map(|f| f.derived.iter().copied())
             .collect()
     };
-    let written = by("written");
+    let written = by("at-empty");
     assert_eq!(
         written.len(),
         1,
-        "`written` re-derived a fact it did not store"
+        "`at-empty` re-derived a fact it did not store"
     );
     let (rel, args) = run.terms.facts.get(written[0]);
     assert_eq!((run.terms.sym(rel), args.len()), ("@empty", 0));

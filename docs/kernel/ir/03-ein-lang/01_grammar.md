@@ -279,6 +279,21 @@ Auto-vivified relations — property-tag carriers like `symmetric`, which
 have no declaration — get neither, so `(relation ?R)` means precisely
 *declared* relation.
 
+**What a file writes, stated** (M1f S1f.6.38). As it stores each
+declaration's mirror, the loader states each fact nested in a fact a file
+writes, at any depth, as `(written T)`, and each nested fact of a rule's or an
+hrule's conclusion that holds no variable; a stored negation's denied fact is
+no term, and what it nests is. A rule reads it, `:match (written (n ?p ?a))`,
+which is how a representation module checks every term of its own a file
+writes, wherever it sits; no program writes it
+([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638),
+[`06_reserved_names.md` § `written`](06_reserved_names.md#written--what-a-file-writes-stated-by-the-loader-m1f-s1f638)):
+
+```lisp
+(p (q a (k b)))
+;; stores (p (q a (k b))), and states (written (q a (k b))) and (written (k b))
+```
+
 **`:why` render template.** A `:why "<tmpl>"` string turns a fact
 of this relation into natural-language text, its *statement*: written after each
 fact of the relation in a `--dump-answer` state file and after each one `--trace`

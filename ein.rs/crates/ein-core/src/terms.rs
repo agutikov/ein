@@ -209,9 +209,11 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// `(imply1 functional __closed__)` hands the trigger to a rule. The engine's
 /// three writeback names ([`FORCED_POSITIVE`], [`MONOTONIC_UNCONDITIONAL`],
 /// [`LOOKAHEAD_DIES`]) are not here: the grammar refuses them wherever a
-/// program writes them.
-pub const RESERVED: [&str; 11] = [
+/// program writes them. **[`WRITTEN`] is here since M1f S1f.6.38**: the
+/// loader states its facts, so no program declares it either.
+pub const RESERVED: [&str; 12] = [
     CLOSED, SYMMETRIC, "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
+    WRITTEN,
 ];
 
 pub fn is_predicate(name: &str) -> bool {
@@ -269,6 +271,24 @@ pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";
 /// rule name to be reported under. One of [`crate::text::INTERNAL_NAMES`], so
 /// no rule a program writes can be named it (`<query>` until M1f T1f.5.5.8).
 pub const QUERY_RULE: &str = "#query";
+/// `(written T)` — the fact `T` is nested in a fact a file writes, or in a
+/// rule's conclusion where it holds no variable (M1f S1f.6.38, E1, the user's
+/// ruling of 2026-11-14 on Q-M1f.272). A kernel relation as `relation`'s
+/// mirror facts are: **the loader states it** and nothing else does, so it is
+/// reserved (no declarator binds it), never a hypothesis target, and decided
+/// at root; a program that writes a fact of it, or a rule that concludes one,
+/// is refused at load (`defined_behaviour.md` § 4.30). What reads it is a
+/// representation module's check of its own terms, `std.math.decimal`'s of a
+/// numeral, which so sees every numeral a program writes, wherever it sits,
+/// with no calculation started.
+pub const WRITTEN: &str = "written";
+/// The step a `(written T)` fact is derived by: the loader's reading of the
+/// fact that holds `T`, its one premise, so a core that rests on a `written`
+/// fact names the fact as written (M1f S1f.6.38). A `T` stated from a rule's
+/// conclusion rests on no fact: the rule's text holds it. One of
+/// [`crate::text::INTERNAL_NAMES`], so no rule a program writes can be named
+/// it.
+pub const WRITTEN_STEP: &str = "#written";
 /// `(__closed__ R)` — R is a relation no rule can positively conclude.
 pub const CLOSED: &str = "__closed__";
 /// `(__symmetric__ R)` — R's extension is closed under arg-swap by the kernel.
@@ -319,6 +339,9 @@ pub struct Kernel {
     pub symmetric: Symbol,
     pub mirror_a: Symbol,
     pub mirror_b: Symbol,
+    /// [`WRITTEN`] and [`WRITTEN_STEP`] (M1f S1f.6.38), interned after `open`.
+    pub written: Symbol,
+    pub written_step: Symbol,
 }
 
 impl Terms {
@@ -357,6 +380,9 @@ impl Terms {
             // others. `id_order_invariance` says a permuted id space moves no
             // answer, so this is about keeping the *renderings* still too.
             open: intern("open"),
+            // M1f S1f.6.38's two, appended for the same reason.
+            written: intern(WRITTEN),
+            written_step: intern(WRITTEN_STEP),
         };
         Terms {
             syms: Table::Own(syms),

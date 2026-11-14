@@ -1235,7 +1235,12 @@ fn model_facts(
     let mut terms = Terms::new();
     let kb = ein_ir::load(ast, &mut terms, forms, None)
         .map_err(|e| ExpectedError::NotFacts(format!("a model's facts do not load: {e}")))?;
-    let mut facts: Vec<String> = kb.facts().map(|f| terms.fact_text(f)).collect();
+    // The loader's `(written T)` is no fact the model lists (M1f S1f.6.38).
+    let mut facts: Vec<String> = kb
+        .facts()
+        .filter(|&f| terms.fact(f).0 != terms.kernel.written)
+        .map(|f| terms.fact_text(f))
+        .collect();
     facts.sort();
     Ok(facts)
 }
@@ -1257,7 +1262,8 @@ fn first_loc(ast: &ein_ir::Ast, node: ein_ir::NodeId) -> Option<ein_ir::Loc> {
 
 /// A recorded state's facts the way an [`Expected`] compares them: over
 /// `closes` when it names relations, otherwise every positive fact that is not
-/// a given (`:source`) one and not a relation declaration.
+/// a given (`:source`) one, not a relation declaration and not the loader's
+/// `(written T)` (M1f S1f.6.38).
 pub fn comparable_facts(terms: &Terms, kb: &Kb, closes: Option<&[String]>) -> Vec<String> {
     let mut out: Vec<String> = kb
         .facts()
@@ -1268,6 +1274,7 @@ pub fn comparable_facts(terms: &Terms, kb: &Kb, closes: Option<&[String]>) -> Ve
                 None => {
                     rel != "not"
                         && rel != "relation"
+                        && rel != ein_core::terms::WRITTEN
                         && kb
                             .primary(f)
                             .is_none_or(|p| terms.provs.get(p).kind != ein_core::ProvKind::Source)

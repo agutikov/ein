@@ -79,7 +79,12 @@ rule from asserting `(is-a co-located EquivalenceRelation)`, and nothing
 in the store treats such a fact differently. Since S1.22.4 each
 declaration also stores the arity-1 fact `(relation R)`, so "R is a
 relation" is itself an ordinary matchable proposition about a relation
-node. See
+node. And since M1f S1f.6.38 root holds, beside the facts a file writes
+and the declarations' mirrors, `(written T)` for each fact `T` nested in a
+fact a file writes, or in a rule's conclusion where it holds no variable:
+the loader's statement of what was written, derived from the fact it was
+read in, which a representation module reads to check its own terms
+([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)). See
 [`../03-ein-lang/08_self_describing.md`](../03-ein-lang/08_self_describing.md)
 for what userspace builds on top of it.
 

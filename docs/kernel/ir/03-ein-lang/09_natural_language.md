@@ -170,7 +170,7 @@ engine's**: the read-out's labels ([`read_out.md`](../../inference/read_out.md))
 *Derives* and *Premises*, the provenance words a state file writes (`source`, `rule`, `hypothesis`) and its separators
 (`: `, ` — `), and the verdict and protocol words [`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md)
 registers. The engine owns no domain word: it has no sentence for a relation that has none, and a `kernel` relation,
-`not` or `relation`, reads as its s-expression. A stage that adds a word to an output adds it on the engine's side,
+`not`, `relation` or `written`, reads as its s-expression. A stage that adds a word to an output adds it on the engine's side,
 in `read_out.md` or `reserved_engine_strings.md`, and never in a renderer's vocabulary for the domain.
 
 ## 7. What holds this page
