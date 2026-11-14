@@ -119,6 +119,8 @@ It works at **two levels**, and keeping them apart is half of what it has to say
 | [P1g.9](p1g.9_one_equation_three_methods/README.md) | One equation, three methods: arithmetic read backwards, search, and algebra (added 2026-11-12) | 5, in the README | `x × 7 = 862` and its neighbours by each method as kept programs; what *no solution* is under each, side by side; the cost of each; the question *arithmetic or algebra* answered on the programs; inverse requests proposed or declined |
 | [P1g.10](p1g.10_school_algebra/README.md) | School algebra: expressions, equations, and the derivation a pupil writes (moved here 2026-11-13; the algebra half of M1f's P1f.8) | 7 | expressions as data over the calculator's numbers, evaluated and brought to a polynomial normal form by saturation alone; identities proved by normal forms; a linear equation solved as the derivation a pupil writes, beside the same equation by search; systems and quadratics with a rational root; a program that states false facts; compound numbers without a hardcoded representation. Its first stage **stops for the user** |
 | [P1g.11](p1g.11_school_geometry/README.md) | School geometry: a figure as facts, theorems as rules, and the proofs a pupil writes (moved here 2026-11-13; the geometry half of M1f's P1f.8) | 4 | a figure written as facts and the literature read honestly; a rule base of theorems saturated over a figure, the trace a two-column proof; constructions, proof by contradiction and case splits as three uses of a hypothesis, each with its measured limit; the facts a pupil reads off the picture detected as gaps; and the report on which fragment of school mathematics is a formal derivation in Ein. Its first stage **stops for the user**; what it needs of the engine is found on its programs and listed as candidates in S1g.6.7 |
+| [P1g.20](p1g.20_theorems_proved_saved_reused/README.md) | Theorems searched, proved, saved and reused (added 2026-11-14; the first of the third group) | 5, in the README, provisional | the chain run on programs, on the features the second group decided and built: a theorem searched for, proved, checked, saved as a module, imported and reused to prove another, on propositional logic and Peano at least; reuse measured; every theorem-as-rule the stdlib ships proved or marked |
+| [P1g.30](p1g.30_ein_in_ein/README.md) | Ein in Ein: a theory of Ein written in Ein, towards Gödel, Tarski, self-reference, introspection and metacircularity (added 2026-11-14; the milestone's last) | 6, in the README, provisional | every corpus program quoted and judged by Ein's grammar written in Ein as the parser judges it; code and decode round-trip; saturation written in Ein reaching the engine's fixpoint on named programs; a quine; the liar, a Gödel sentence and Tarski's limit each by a program or marked the textbook's. Its first stage **stops for the user** |
 
 ## The order
 
@@ -167,6 +169,10 @@ It works at **two levels**, and keeping them apart is half of what it has to say
     analysis with the decision and the implementation, then the final formalizations on what was decided and
     built (the user, 2026-11-14, [§ Three groups of phases](#three-groups-of-phases-the-user-2026-11-14)). This
     order, item 6 among it, is restated into the groups when M1g starts.
+13. **[P1g.20](p1g.20_theorems_proved_saved_reused/README.md)** first in the third group, after the second
+    group's answer and implementation.
+14. **[P1g.30](p1g.30_ein_in_ein/README.md) last of all,** after P1g.20, whose proof system it encodes (the user,
+    2026-11-14: *"in the very end of M1g"*). The ids leave room for the phases the restatement adds.
 
 The order of items 10 and 11 was chosen in the split of 2026-11-13 from the dependencies and is not the
 user's ruling ([P1g.10 § Choices made in the split](p1g.10_school_algebra/README.md#choices-made-in-the-split)).
@@ -381,8 +387,14 @@ So the milestone runs in three groups, and the answer to the five comes **in the
    the features it needs built into Ein. Today's [P1g.6](p1g.6_engine_requirements/README.md) is the seed of this
    group, recast from *a stage when a phase reaches a need* to *the analysis of all of them, then the build*.
 3. **Final formalizations** on the decided and implemented features: theorems searched, proved, saved and
-   reused to prove others, on the theories the first group attempted. The phase proposed earlier as P1g.12
-   (*theorems proved, saved and reused*) is one of this group's.
+   reused to prove others, on the theories the first group attempted:
+   [P1g.20](p1g.20_theorems_proved_saved_reused/README.md), *theorems searched, proved, saved and reused*, is the
+   first of this group's (the user, 2026-11-14: *"materialize both phases, let theorem-reuse be p1g.20 and this
+   this self-theory p1g.30"*).
+
+And **last, [P1g.30](p1g.30_ein_in_ein/README.md), Ein in Ein** (the user, 2026-11-14): a theory of Ein written
+in Ein, its syntax as EBNF describes EBNF, its programs coded as Gödel numbered formulas, its saturation as a
+metacircular evaluator; one step towards Gödel, Tarski, self-reference, introspection and metacircularity.
 
 **What this restates, and when.** The phase list, [§ The order](#the-order) (its items 6 and 12) and the
 [acceptance](#acceptance) line on the main goal are restated into the three groups as **M1g's first planning
@@ -471,6 +483,9 @@ The instruction's last question, and how this plan answered it, under the schema
   with the requirements that answer rests on, and the user rules on it; the features it needs are built; and
   the final formalizations show on programs one theorem searched, proved and checked, saved, and reused to prove
   another, or name exactly what stops each step.
+- **Ein is a theory written in Ein** ([P1g.30](p1g.30_ein_in_ein/README.md)): its grammar, its coding and its
+  saturation written as Ein programs and held to the parser, the loader and the engine on the corpus, and the
+  self-reference page shown by programs or marked the textbook's.
 
 ## Risks, each with what checks it
 
@@ -497,8 +512,8 @@ The instruction's last question, and how this plan answered it, under the schema
   place it expects to be short. S1g.6.7 writes the candidates down before the programs, S1g.11.1's survey and
   S1g.11.2's targets are the programs, and nothing is designed before they have run and the user has ruled.
 - **Scope.** Each of sequent calculus, resolution, tableaux, modal logic, intuitionistic semantics and
-  Gödel numbering is a subject. The first three are one optional stage; the rest are named where they come up
-  and not planned.
+  Gödel numbering is a subject. The first three are one optional stage; Gödel numbering is
+  [P1g.30](p1g.30_ein_in_ein/README.md)'s (2026-11-14); the rest are named where they come up and not planned.
 
 ## Connections
 
