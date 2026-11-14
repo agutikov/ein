@@ -1,0 +1,19 @@
+;;; W95 — an hrule whose conclusion is an `(and …)` proposes its first conjunct
+;;; alone, and the others are dropped in silence.
+;;;
+;;; An hrule proposes facts, each a commitment of its own, and `h` writes two,
+;;; `(p a)` and `(q a)`. The hypothesis layer read the first template of the
+;;; hrule's plan alone (`ein_infer::hrule`'s `proposes`), so H was `{(p a)}`
+;;; and R two states, ∅ and `{(p a)}`; `(q a)` was proposed by nothing and no
+;;; line said so. The mechanisms check and the hypothesis relations read the
+;;; first conjunct too (`asserted_relation`), so `q` was no relation the hrule
+;;; proposes.
+;;;
+;;; The right answer is the reading's: S1f.6.37's default (Q-M1f.271 (a)) is a
+;;; refusal at load, one line, *an hrule proposes one fact per match: write one
+;;; hrule per conclusion*. Under (b), each conjunct proposed, H would be
+;;; `{(p a), (q a)}` and R four states, which two hrules give. E-65 of P1f.6's
+;;; `findings.md`, met by S1f.6.37's inventory of what reads a conclusion.
+(relation p Thing :why "p {?1}")
+(relation q Thing :why "q {?1}")
+(hrule h () :match () :assert (and (p a) (q a)) :why "propose p and q of a")

@@ -170,8 +170,18 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
 /// `answer_round_trip.rs`' copy. W30's two left the list at M1f S1f.5.7's
 /// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored; and
 /// W34's at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts
-/// nothing. Empty since.
-const DO_NOT_LOAD: [&str; 0] = [];
+/// nothing. Empty from then until M1f S1f.6.37's T1f.6.37.1 (2026-11-14), which
+/// named W94's two witnesses and `W95/hrule-and-in-and`: a conclusion that is
+/// an `and` inside an `and` stored one fact headed `and`, which a state file
+/// writes as a fact line `(and (p a) (q a))`, and the parser refuses. Since
+/// then each entry says **how many** of its run's state files do not load,
+/// where W30's and W34's were every one: `hrule-and-in-and`'s ∅ holds no such
+/// fact and loads. S1f.6.37's fix takes the three off the list.
+const DO_NOT_LOAD: [(&str, usize); 3] = [
+    ("examples/ein-bugs/wrong-answers/and-in-and-macro.ein", 1),
+    ("examples/ein-bugs/wrong-answers/and-in-and.ein", 1),
+    ("examples/ein-bugs/wrong-answers/hrule-and-in-and.ein", 1),
+];
 
 /// The programs the per-commit checks run on, with a question each: all of R
 /// on a program with a dead set and on an owing root, a line, a part, the
@@ -263,15 +273,16 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         let mut found = Vec::new();
         let n = check_states(&dir, &format!("{file} :: {run}"), &mut found);
         states += n;
-        if DO_NOT_LOAD.contains(&file.as_str()) {
+        if let Some(&(_, k)) = DO_NOT_LOAD.iter().find(|(f, _)| *f == file.as_str()) {
             let unloaded = found
                 .iter()
                 .filter(|b| b.contains(" does not load: "))
                 .count();
-            if n == 0 || unloaded != n || found.len() != n {
+            if unloaded != k || found.len() != k {
                 bad.push(format!(
-                    "{file} :: {run}: DO_NOT_LOAD names it, and {unloaded} of its {n} state files \
-                     do not load (its row, W30 or W34, fixed? drop it from the list in the same commit): {found:?}"
+                    "{file} :: {run}: DO_NOT_LOAD says {k} of its state files do not load, and \
+                     {unloaded} of its {n} do not (its row, W94 or W95, fixed? drop it from the \
+                     list in the same commit): {found:?}"
                 ));
             }
         } else {

@@ -118,8 +118,18 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
 /// `answer_dump.rs`'s copy. W30's two left the list at M1f S1f.5.7's
 /// T1f.5.7.4 (2026-11-09): a concluded `neq` is checked, never stored; and
 /// W34's at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts
-/// nothing, so no state holds the fact. Empty since.
-const DO_NOT_LOAD: [&str; 0] = [];
+/// nothing, so no state holds the fact. Empty from then until M1f S1f.6.37's
+/// T1f.6.37.1 (2026-11-14), which named W94's two witnesses and
+/// `W95/hrule-and-in-and`, each a state holding a fact headed `and`, which a
+/// state file writes as a fact line the parser refuses. Each entry says how
+/// many of its state files do not load: `hrule-and-in-and`'s ∅ loads, and is
+/// checked as any other. S1f.6.37's fix takes the three off the list, with
+/// `answer_dump.rs`' copy.
+const DO_NOT_LOAD: [(&str, usize); 3] = [
+    ("examples/ein-bugs/wrong-answers/and-in-and-macro.ein", 1),
+    ("examples/ein-bugs/wrong-answers/and-in-and.ein", 1),
+    ("examples/ein-bugs/wrong-answers/hrule-and-in-and.ein", 1),
+];
 
 /// **The state files that reload a fact with a provenance today**, each the
 /// witness of an open register row (M1f S1f.7.9, 2026-11-11): W87, a fact the
@@ -242,19 +252,19 @@ fn check(
     held.add(no_core_unless_dead(file, dir, bad));
     let candidates = r.answer.candidates.clone();
     let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &candidates).expect("prepares");
+    let named = DO_NOT_LOAD
+        .iter()
+        .find(|(f, _)| *f == file)
+        .map(|&(_, n)| n);
+    let mut unloaded = 0usize;
     for (path, set) in &files {
         let facts: Vec<_> = set.iter().map(|&b| candidates[b as usize].fact).collect();
         let want = nodes
             .with_fixpoint(&facts, |kb, terms| by_value(kb, terms))
             .expect("saturates");
-        let named = DO_NOT_LOAD.contains(&file);
         match reloaded(&dir.join(path)) {
-            Err(_) if named => {}
+            Err(_) if named.is_some() => unloaded += 1,
             Err(e) => bad.push(format!("{file}: {path} does not load: {e}")),
-            Ok(_) if named => bad.push(format!(
-                "{file}: {path} loads, and DO_NOT_LOAD names it: its row (W30 or W34) is \
-                 fixed, so drop it from the list in the same commit"
-            )),
             Ok((got, not_given)) => {
                 let dropped = SELECTION_DROPPED.contains(&file);
                 if got != want && !dropped {
@@ -281,6 +291,14 @@ fn check(
                 }
             }
         }
+    }
+    if let Some(n) = named
+        && unloaded != n
+    {
+        bad.push(format!(
+            "{file}: DO_NOT_LOAD says {n} of its state files do not load, and {unloaded} do not: \
+             its row (W94 or W95) is fixed, so drop it from the list in the same commit"
+        ));
     }
     Some(files.len())
 }

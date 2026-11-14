@@ -1,0 +1,15 @@
+;;; W95 — an hrule whose conclusion is an `and` inside an `and` proposes one
+;;; fact headed `and`, a commitment no state can hold.
+;;;
+;;; E-63 in an hrule: the inner `(and …)` was a template headed `and`, and as
+;;; the first conjunct it was the one the hypothesis layer read (`hrule-and.ein`),
+;;; so H was `{(and (p a) (q a))}`, one candidate over the relation `and`, and R
+;;; two states, the second holding `(and (p a) (q a))`; `(r a)` was proposed by
+;;; nothing. Read flat since S1f.6.37, the conclusion is three conjuncts, and
+;;; the right answer is `hrule-and.ein`'s under the reading taken: refused at
+;;; load under Q-M1f.271 (a), the default; under (b) H `{(p a), (q a), (r a)}`
+;;; and R eight states. E-63 and E-65 of P1f.6's `findings.md`.
+(relation p Thing :why "p {?1}")
+(relation q Thing :why "q {?1}")
+(relation r Thing :why "r {?1}")
+(hrule h () :match () :assert (and (and (p a) (q a)) (r a)) :why "propose p and q, and r, of a")

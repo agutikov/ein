@@ -1,0 +1,23 @@
+;;; W94 — a conclusion that is an `and` inside an `and` stores one fact headed
+;;; `and`, and none of its conjuncts.
+;;;
+;;; The grammar's `Conclusion ::= '(' 'and' Conclusions ')'` nests, so the rule
+;;; below loads. Its conclusion is the conjunction of `(r a)`, `(p a)` and
+;;; `(q a)`, as `(and (r a) (p a) (q a))` is: the rule fires once at root (its
+;;; `:match` is `()`, the empty conjunction, which holds), so root holds the
+;;; three facts. `p`, `q` and `r` are closed, so nothing is guessed and R is
+;;; {∅}; each query's one class is root's fact, and each claim holds.
+;;;
+;;; The compiler split the top `(and …)` alone, so the inner one was a template
+;;; headed `and`: root held `(r a)` and `(and (p a) (q a))`, a fact no state can
+;;; hold, and neither `(p a)` nor `(q a)`. Both goals had no row and both claims
+;;; FAILED, exit 1. E-63 of P1f.6's `findings.md`, met by S1f.6.16's design;
+;;; S1f.6.37 reads a conclusion flat at any depth, as a premise is read (the
+;;; user's ruling of 2026-11-14, *"ok, flatten is fine, continue"*).
+(relation p Thing :why "p {?1}")
+(relation q Thing :why "q {?1}")
+(relation r Thing :why "r {?1}")
+(rule nested () :match () :assert (and (r a) (and (p a) (q a))) :why "r, and p and q, of a")
+(__closed__ p) (__closed__ q) (__closed__ r)
+(query :goal (p ?x) :expect (model (p a)))
+(query :goal (q ?x) :expect (model (q a)))

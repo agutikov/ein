@@ -17266,3 +17266,218 @@ relations = []
 models    = [
   [],
 ]
+
+# ══ W94 — a conclusion that is an `and` inside an `and` stores one fact headed `and`, and none of its conjuncts ══
+[[case]]
+id       = "W94/and-in-and"
+case     = "W94"
+title    = "a conclusion that is an `and` inside an `and` stores one fact headed `and`, and none of its conjuncts"
+class    = "claim"
+settings = "default"
+owner    = "S1f.6.37"
+question = ["P1f.6 findings.md E-63"]
+witness  = "examples/ein-bugs/wrong-answers/and-in-and.ein"
+status   = "open"
+open_because = "S1f.6.37's to fix (T1f.6.37.3, the user's ruling of 2026-11-14, *\"ok, flatten is fine, continue\"*): the grammar's `Conclusion` nests and the loader's checks walk every level, but the compiler splits the top `(and …)` alone (`ein_infer::compile`'s `assert_conjuncts`), so the inner one is a template headed `and` and root stores `(and (p a) (q a))` where it should store `(p a)` and `(q a)`"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 of P1f.6's `findings.md`, met by S1f.6.16's design: `build/s1f.6.16/design/and_in_and.ein` with a second query, over `q`. `ein saturate --dump` lists the derived `(and (p a) (q a) :rule nested)` and `(r a :rule nested)`. No tracked program writes the shape: no conclusion of the corpus, as written or after expansion, nests an `and` (S1f.6.37's census, `cargo run --release -p ein-infer --example conclusion_census`)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 9a922b96 (2026-11-14): R {∅}, each goal has no row, *undetermined here*, and both claims FAILED, exit 1; root holds `(r a)` and `(and (p a) (q a))`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "failed" }, { classes = 1, expect = "failed" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "the grammar's `Conclusion` (`ein.y`): an `(and …)` of conclusions concludes each, and the user's ruling of 2026-11-14 on S1f.6.37, *\"ok, flatten is fine, continue\"*: a conclusion is read flat at any depth, as a premise is"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "held" }, { classes = 1, expect = "held" }]
+derived   = "The rule's `:match` is `()`, which holds, so it fires once at root and concludes `(r a)`, `(p a)` and `(q a)`, as `(and (r a) (p a) (q a))` does. Every relation is closed, so nothing is guessed: R is {∅}, and each query's one class is root's fact, `(p a)` and `(q a)`, so both claims hold, exit 0"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "failed" }, { classes = 1, expect = "failed" }]
+
+[[case]]
+id       = "W94/and-in-and-macro"
+case     = "W94"
+title    = "a conclusion that is an `and` inside an `and` stores one fact headed `and`, and none of its conjuncts"
+class    = "claim"
+settings = "default"
+owner    = "S1f.6.37"
+question = ["P1f.6 findings.md E-63"]
+witness  = "examples/ein-bugs/wrong-answers/and-in-and-macro.ein"
+status   = "open"
+open_because = "S1f.6.37's to fix (T1f.6.37.3): a macro whose body is an `(and …)`, called as one conjunct of a rule's `(and …)`, expands to `W94/and-in-and`'s conclusion, which the compiler splits at the top alone"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 of P1f.6's `findings.md`: `build/s1f.6.16/trial/m/m1.ein` with a second query, over `q`. The same call as the rule's whole conclusion, `m2.ein`, concludes each fact; S1f.6.16's design places such a call in a closing rule's `(and …)`"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 9a922b96 (2026-11-14): R {∅}, each goal has no row and both claims FAILED, exit 1; root holds `(r a)` and `(and (p a) (q a))`"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "failed" }, { classes = 1, expect = "failed" }]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "as `W94/and-in-and`'s: a macro's call is replaced by its body at load, and the conclusion it leaves is read flat at any depth"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+queries   = [{ classes = 1, expect = "held" }, { classes = 1, expect = "held" }]
+derived   = "The expansion is `(and (r a) (and (p a) (q a)))`, `W94/and-in-and`'s conclusion, so root holds `(r a)`, `(p a)` and `(q a)`, R is {∅}, and both claims hold, exit 0"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+queries   = [{ classes = 1, expect = "failed" }, { classes = 1, expect = "failed" }]
+
+# ══ W95 — an hrule whose conclusion is an `(and …)` proposes its first conjunct alone ══
+[[case]]
+id       = "W95/hrule-and"
+case     = "W95"
+title    = "an hrule whose conclusion is an `(and …)` proposes its first conjunct alone, and the others are dropped in silence"
+class    = "refusal, contested"
+settings = "default"
+owner    = "S1f.6.37"
+question = ["P1f.6 findings.md E-65", "Q-M1f.271"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-and.ein"
+status   = "open"
+open_because = "S1f.6.37's to fix under Q-M1f.271's default, (a), the user's to revise: the hypothesis layer reads an hrule plan's first template alone (`ein_infer::hrule`'s `proposes`, `plan.assert_template()`), and so do the hypothesis relations and the mechanisms check (`ein_infer::compile::asserted_relation`), so `(q a)` is proposed by nothing, and no line says so"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-65 of P1f.6's `findings.md`, met taking T1f.6.37.2's inventory of what reads a conclusion. No tracked hrule writes an `(and …)`: every hrule conclusion of the corpus, as written and after expansion, is one conjunct (S1f.6.37's census)"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve -H` on the witness, release, at 9a922b96 (2026-11-14): H `{(p a)}`, R two states, ∅ and `{(p a)}`, exit 0; nothing proposes `(q a)`"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p", "q"]
+models    = [[], ["(p a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(p a)"]]
+
+[case.right]
+reading   = "Q-M1f.271 (a), S1f.6.37's default, the user's to revise: an hrule proposes one fact per match, each a commitment of its own, so its conclusion is one conjunct, and one of more is refused at load. Not ruled"
+refused   = true
+derived   = "The hrule's conclusion is two conjuncts, `(p a)` and `(q a)`, so the program is refused at load, one line naming the hrule and saying to write one hrule per conclusion"
+
+[[case.right.alternative]]
+reading   = "Q-M1f.271 (b): each conjunct proposed, as two hrules propose them"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["p", "q"]
+models    = [[], ["(p a)"], ["(p a)", "(q a)"], ["(q a)"]]
+derived   = "H `{(p a), (q a)}`, nothing refutes and nothing is owed, so R is the four states"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["p"]
+models    = [
+  [],
+  ["(p a)"],
+]
+
+[[case]]
+id       = "W95/hrule-and-in-and"
+case     = "W95"
+title    = "an hrule whose conclusion is an `(and …)` proposes its first conjunct alone, and the others are dropped in silence"
+class    = "refusal, contested"
+settings = "default"
+owner    = "S1f.6.37"
+question = ["P1f.6 findings.md E-63", "P1f.6 findings.md E-65", "Q-M1f.271"]
+witness  = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
+status   = "open"
+open_because = "S1f.6.37's to fix under Q-M1f.271's default, (a): E-63 in an hrule, whose first template is the inner `(and …)`, so the hypothesis layer proposes `(and (p a) (q a))`, a fact headed `and` that no state can hold, and nothing proposes `(r a)`"
+look_at  = ["root", "summary"]
+note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 and E-65 of P1f.6's `findings.md`. `ein solve -H` lists one candidate over the relation `and`. Read flat, which S1f.6.37's fix does, the conclusion is three conjuncts and the hrule proposes `(p a)` alone, `W95/hrule-and`'s answer, until the refusal"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve -H` on the witness, release, at 9a922b96 (2026-11-14): H `{(and (p a) (q a))}`, one candidate over the relation `and`, and R two states, the second holding `(and (p a) (q a))`, exit 0"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["and", "p", "q", "r"]
+models    = [[], ["(and (p a) (q a))"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(and (p a) (q a))"]]
+
+[case.right]
+reading   = "Q-M1f.271 (a), S1f.6.37's default, the user's to revise, read on the conclusion flat (the user's ruling of 2026-11-14 on S1f.6.37): an hrule's conclusion is one conjunct, and one of more is refused at load. Not ruled"
+refused   = true
+derived   = "Read flat, the conclusion is `(p a)`, `(q a)` and `(r a)`, three conjuncts, so the program is refused at load, as `W95/hrule-and` is"
+
+[[case.right.alternative]]
+reading   = "Q-M1f.271 (b): each conjunct proposed"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+closes    = ["p", "q", "r"]
+derived   = "H `{(p a), (q a), (r a)}`, and R every one of the eight subsets"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["and"]
+models    = [
+  [],
+  ["(and (p a) (q a))"],
+]

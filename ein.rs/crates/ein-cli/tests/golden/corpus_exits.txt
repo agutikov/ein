@@ -600,6 +600,13 @@
 0    examples/ein-bugs/wrong-answers/alt-flag-refuted-by.ein :: solve
 0    examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein :: saturate
 0    examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein :: solve
+0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: saturate
+0    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: saturate --dump
+1    examples/ein-bugs/wrong-answers/and-in-and-macro.ein :: solve
+0    examples/ein-bugs/wrong-answers/and-in-and.ein :: render rules
+0    examples/ein-bugs/wrong-answers/and-in-and.ein :: saturate
+0    examples/ein-bugs/wrong-answers/and-in-and.ein :: saturate --dump
+1    examples/ein-bugs/wrong-answers/and-in-and.ein :: solve
 1    examples/ein-bugs/wrong-answers/arity-in-assert.ein :: saturate
 1    examples/ein-bugs/wrong-answers/arity-in-assert.ein :: solve
 1    examples/ein-bugs/wrong-answers/arity-in-goal.ein :: saturate
@@ -783,6 +790,10 @@
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve -H
+0    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: saturate
+0    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: solve
+0    examples/ein-bugs/wrong-answers/hrule-and.ein :: saturate
+0    examples/ein-bugs/wrong-answers/hrule-and.ein :: solve
 1    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: saturate
 1    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: solve
 0    examples/ein-bugs/wrong-answers/hrule-eq.ein :: saturate

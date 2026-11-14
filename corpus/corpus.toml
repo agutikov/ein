@@ -2947,6 +2947,30 @@ runs   = ["solve", "saturate", "saturate --dump"]
 note   = "M1f W90 (`W90/import-directives-twice`), filed by S1f.6.25's T1f.6.25.2 (2026-11-13): the same module imported `:as m` and `:as k`, which was refused at load, *2 (solve …) forms*, though the program writes none. Fixed by the same task: it loads, R four states."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/and-in-and.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump", "render rules"]
+note   = "M1f W94 (`W94/and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 of P1f.6's findings: a rule concluding `(and (r a) (and (p a) (q a)))`, which the grammar takes, stored `(r a)` and one fact headed `and`, and neither `(p a)` nor `(q a)`, so both queries' claims FAILED, exit 1."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/and-in-and-macro.ein"
+group  = "regression"
+runs   = ["solve", "saturate", "saturate --dump"]
+note   = "M1f W94 (`W94/and-in-and-macro`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14): a macro whose body is `(and (p ?x) (q ?x))`, called as one conjunct of a rule's `(and …)` conclusion, which expands to `and-in-and.ein`'s conclusion and stored the same fact headed `and`."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-and.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W95 (`W95/hrule-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-65 of P1f.6's findings: an hrule concluding `(and (p a) (q a))`, of which the hypothesis layer proposed the first conjunct alone, H `{(p a)}`, in silence."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 and E-65: an hrule concluding `(and (and (p a) (q a)) (r a))`, which proposed `(and (p a) (q a))`, one candidate over the relation `and`."
+
+[[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
