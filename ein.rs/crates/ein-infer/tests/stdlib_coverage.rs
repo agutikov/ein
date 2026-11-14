@@ -342,6 +342,19 @@ fn resolve(
     if ran.local.contains(name) {
         return Vec::new();
     }
+    // A rule the program does not name short fires under its full name since
+    // M1f S1f.6.35, `std.algebra.total-owed`: the module is in its name.
+    if let Some((module, short)) = name.rsplit_once('.')
+        && module.starts_with("std.")
+    {
+        return by_name
+            .get(short)
+            .into_iter()
+            .flatten()
+            .copied()
+            .filter(|&i| decls[i].module == module)
+            .collect();
+    }
     let Some(all) = by_name.get(name) else {
         return Vec::new();
     };

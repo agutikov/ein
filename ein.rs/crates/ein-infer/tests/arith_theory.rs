@@ -146,7 +146,7 @@ fn parts(fact: &str) -> Vec<String> {
 
 /// Saturate `IMPORT` + `body` and return every fact of `relation`, as text.
 fn run(body: &str, relation: &str) -> Vec<String> {
-    let src = format!("{IMPORT}{body}");
+    let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &src, Some("<arith>")).expect("the requests parse");
@@ -164,10 +164,15 @@ fn run(body: &str, relation: &str) -> Vec<String> {
         sat.saturate(&mut s, None, &mut |_| {})
             .expect("the theory reaches its fixpoint");
     }
-    let Some(rel) = terms.syms.get(relation) else {
+    let Some(rel) = ein_corpus::spellings(relation)
+        .iter()
+        .find_map(|n| terms.syms.get(n))
+    else {
         return Vec::new();
     };
-    kb.facts_of(rel).map(|f| sexpr(&terms, f)).collect()
+    kb.facts_of(rel)
+        .map(|f| ein_corpus::unprefixed(&sexpr(&terms, f)))
+        .collect()
 }
 
 /// One operation of the theory, as the harness asks it: its request and
@@ -828,7 +833,7 @@ fn what_stays_silent() {
 ///
 /// The closing rule's one firing is not the request's and is left out.
 fn circuit(body: &str) -> (usize, usize) {
-    let src = format!("{IMPORT}{body}");
+    let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &src, Some("<arith>")).expect("the request parses");

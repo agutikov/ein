@@ -3,7 +3,9 @@
 ;;; does each class get, and how many are left over?
 ;;; Three operations, each derived from the one before:
 ;;; 12 x 144 = 1728, 1728 - 250 = 1478, 1478 / 31 = 47, remainder 21.
-(import words :symbols (words))
+(import words :symbols (words has holds packed-in gave there-are asked each-of amount rest-of
+                        value))
+(import std.arith :symbols (n))
 
 (has School cartons (n (n z 1) 2) t0   :source "A school has 12 boxes of pencils,")
 (holds cartons pencils (n (n (n z 1) 4) 4) :source "144 pencils in each.")

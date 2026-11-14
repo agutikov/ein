@@ -20,7 +20,7 @@
 ;;; the `let` of its first operand in the unsat core, and `--trace` shows the
 ;;; flag and the contradiction as two steps.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n add mul))
 
 (let price (n (n z 1) 9))
 (add price (n z 2))

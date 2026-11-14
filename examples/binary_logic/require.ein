@@ -9,7 +9,8 @@
 ;;; functional in-drives)).
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.3.
-(import inputs :symbols (inputs in is-a total-owed functional in-drives))
+(import inputs :symbols (inputs in is-a total-owed functional in-drives inputs-rule))
+(import circuit :symbols (val))
 (relation require Wire Bit
   :why "{?1} is required to carry {?2}")
 (rule required ()

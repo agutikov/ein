@@ -37,6 +37,220 @@ pub fn repo_root() -> PathBuf {
         .expect("repo root")
 }
 
+/// **The imports a test program writes, under M1f S1f.6.35's full names**:
+/// for each `(module, entries)`, one `(import MODULE :symbols (…))` line
+/// listing the entries and every name the module declares that `body` writes,
+/// in the order `body` first writes them; a module with nothing listed writes
+/// no line. An import brings its module whole since S1f.6.35 and a list only
+/// names, so a program lists the names it writes from the module that
+/// declares them (`std.int`'s tests list `n` from `std.arith`). A name two of
+/// the modules declare is the first one's.
+///
+/// `module` is a `std.*` name, read from the checkout's `stdlib/`; a
+/// declaration is a line that starts `(relation`, `(rule`, `(hrule` or
+/// `(macro`, which is how every stdlib module writes one.
+pub fn import_lines(modules: &[(&str, &[&str])], body: &str) -> String {
+    let declared: Vec<std::collections::BTreeSet<String>> = modules
+        .iter()
+        .map(|(m, _)| {
+            let rel = m
+                .strip_prefix("std.")
+                .expect("a std.* module")
+                .replace('.', "/");
+            let text =
+                std::fs::read_to_string(repo_root().join("stdlib").join(format!("{rel}.ein")))
+                    .unwrap_or_else(|e| panic!("{m}: {e}"));
+            text.lines()
+                .filter_map(|l| {
+                    let rest = ["(relation ", "(rule ", "(hrule ", "(macro "]
+                        .iter()
+                        .find_map(|d| l.strip_prefix(d))?;
+                    rest.split_whitespace().next().map(str::to_string)
+                })
+                .collect()
+        })
+        .collect();
+    let mut lists: Vec<Vec<String>> = modules
+        .iter()
+        .map(|(_, entries)| entries.iter().map(|e| e.to_string()).collect())
+        .collect();
+    // The names `body` writes, outside strings and comments, in order.
+    let mut tokens: Vec<String> = Vec::new();
+    let mut chars = body.chars().peekable();
+    let mut tok = String::new();
+    while let Some(c) = chars.next() {
+        if c == '"' {
+            while let Some(d) = chars.next() {
+                if d == '\\' {
+                    chars.next();
+                } else if d == '"' {
+                    break;
+                }
+            }
+        } else if c == ';' {
+            for d in chars.by_ref() {
+                if d == '\n' {
+                    break;
+                }
+            }
+        } else if c.is_whitespace() || c == '(' || c == ')' {
+            if !tok.is_empty() {
+                tokens.push(std::mem::take(&mut tok));
+            }
+        } else {
+            tok.push(c);
+        }
+    }
+    if !tok.is_empty() {
+        tokens.push(tok);
+    }
+    for t in tokens {
+        if lists.iter().any(|l| l.contains(&t)) {
+            continue;
+        }
+        if let Some(i) = declared.iter().position(|d| d.contains(&t)) {
+            lists[i].push(t);
+        }
+    }
+    modules
+        .iter()
+        .zip(lists)
+        .filter(|(_, l)| !l.is_empty())
+        .map(|((m, _), l)| format!("(import {m} :symbols ({}))\n", l.join(" ")))
+        .collect()
+}
+
+/// **A test program's text with its leading `std.*` imports rewritten to name
+/// what it writes** ([`import_lines`]): each `(import std.M :symbols (…))` at
+/// the head of `src` keeps its entries, and the modules each imports, read
+/// off the stdlib's own `(import …)` lines, follow with nothing of their own;
+/// every one then lists the names `src`'s body writes that it declares. A
+/// text that starts with no import is returned as it is. What a test that
+/// built a program on `(import std.arith :symbols (arith))` writes since M1f
+/// S1f.6.35, where a list only names.
+pub fn listed(src: &str) -> String {
+    let mut modules: Vec<(String, Vec<String>)> = Vec::new();
+    let mut rest = src;
+    loop {
+        let trimmed = rest.trim_start();
+        let Some(form) = trimmed.strip_prefix("(import ") else {
+            break;
+        };
+        // The form's end: its closing paren, the list's counted in.
+        let mut depth = 1;
+        let mut end = None;
+        for (i, c) in form.char_indices() {
+            match c {
+                '(' => depth += 1,
+                ')' => {
+                    depth -= 1;
+                    if depth == 0 {
+                        end = Some(i);
+                        break;
+                    }
+                }
+                _ => {}
+            }
+        }
+        let Some(end) = end else { break };
+        let head = &form[..end];
+        let module = head.split_whitespace().next().unwrap_or("").to_string();
+        let entries: Vec<String> = head
+            .split_once(":symbols (")
+            .map(|(_, l)| {
+                l.trim_end_matches(')')
+                    .split_whitespace()
+                    .map(str::to_string)
+                    .collect()
+            })
+            .unwrap_or_default();
+        modules.push((module, entries));
+        rest = &form[end + 1..];
+    }
+    let rest = rest.strip_prefix('\n').unwrap_or(rest);
+    // Only a head of `std.*` selections is rewritten: a whole import names
+    // nothing, and a file-relative module is not the stdlib's to read.
+    if modules.is_empty()
+        || modules
+            .iter()
+            .any(|(m, e)| !m.starts_with("std.") || m.ends_with(')') || e.is_empty())
+    {
+        return src.to_string();
+    }
+    let mut i = 0;
+    while i < modules.len() {
+        let rel = modules[i].0["std.".len()..].replace('.', "/");
+        let text = std::fs::read_to_string(repo_root().join("stdlib").join(format!("{rel}.ein")))
+            .unwrap_or_default();
+        for l in text.lines() {
+            if let Some(m) = l
+                .strip_prefix("(import ")
+                .and_then(|r| r.split_whitespace().next())
+                && !modules.iter().any(|(x, _)| x == m)
+            {
+                modules.push((m.to_string(), Vec::new()));
+            }
+        }
+        i += 1;
+    }
+    let refs: Vec<(&str, Vec<&str>)> = modules
+        .iter()
+        .map(|(m, e)| (m.as_str(), e.iter().map(String::as_str).collect()))
+        .collect();
+    let args: Vec<(&str, &[&str])> = refs.iter().map(|(m, e)| (*m, e.as_slice())).collect();
+    format!("{}{rest}", import_lines(&args, rest))
+}
+
+/// Every spelling a stdlib name may print in since M1f S1f.6.35: its short
+/// name, where the program lists it, and its full name under each stdlib
+/// module, where it does not. A test that reads a relation by name looks for
+/// each in turn.
+pub fn spellings(short: &str) -> Vec<String> {
+    let mut out = vec![short.to_string()];
+    let dir = repo_root().join("stdlib");
+    let mut modules: Vec<String> = std::fs::read_dir(&dir)
+        .into_iter()
+        .flatten()
+        .flatten()
+        .filter_map(|e| {
+            let p = e.path();
+            (p.extension()? == "ein").then(|| p.file_stem()?.to_str().map(str::to_string))?
+        })
+        .collect();
+    modules.sort();
+    out.extend(modules.into_iter().map(|m| format!("std.{m}.{short}")));
+    out
+}
+
+/// `text` with every stdlib module prefix taken off where it starts a name,
+/// `(std.arith.done (std.arith.sum a b) c)` read `(done (sum a b) c)`: what a
+/// test that compares facts in their short spelling reads (M1f S1f.6.35).
+pub fn unprefixed(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut rest = text;
+    let mut at_start = true;
+    while !rest.is_empty() {
+        if at_start && let Some(after) = rest.strip_prefix("std.") {
+            // `std.<module>.` where <module> holds no dot.
+            if let Some(dot) = after.find('.')
+                && after[..dot]
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+                && !after[..dot].is_empty()
+            {
+                rest = &after[dot + 1..];
+                at_start = false;
+                continue;
+            }
+        }
+        let c = rest.chars().next().expect("non-empty");
+        out.push(c);
+        at_start = matches!(c, '(' | ')' | ' ' | '"' | '\n' | '`' | '\'' | ',' | '[');
+        rest = &rest[c.len_utf8()..];
+    }
+    out
+}
+
 /// The manifest, loaded from its one location.
 pub fn corpus() -> Corpus {
     let path = repo_root().join(manifest::MANIFEST);

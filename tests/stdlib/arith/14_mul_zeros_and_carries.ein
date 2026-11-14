@@ -23,7 +23,7 @@
 ;;; normal form: an answer `(n (n (n z 0) 3) 5)` for 007 x 05, or `(n z 0)`
 ;;; for 0 x 7, fails the file.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith mul n product-of))
 
 (mul z (n z 7))
 (mul (n z 7) z)

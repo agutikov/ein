@@ -35,7 +35,7 @@
 ;;; The second request names its operands. Its answer repeats the names, so
 ;;; the goal `(sum-of apples pears ?fruit)` reads it.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith add n let sum-of))
 
 (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
 

@@ -27,7 +27,7 @@
 ;;; speculated `(is-a* Pet Place)` would make the pair well-typed and the
 ;;; verdict a model.
 
-(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran converse))
 
 (relation is-a*    T T :why "{?1} is a subtype of {?2}")
 (relation owns     Person Pet   :why "{?1} owns {?2}")

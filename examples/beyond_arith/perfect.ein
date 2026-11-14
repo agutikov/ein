@@ -4,7 +4,7 @@
 ;;; n: `eq` perfect, `lt` deficient, `gt` abundant. Saturation alone.
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith n cmp-walk order-is add-walk done div-call div-done))
 
 (relation count Number Number :why "counting: {?1}, on the way to {?2}")
 (relation cnt Number Number :why "is {?1} below {?2}?")

@@ -230,6 +230,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: obligation_rung, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test obligation_rung
 
+    nightly_step "deep-corpus: import_invariance, the slow entries"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test import_invariance
+
     nightly_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -295,6 +298,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus: obligation_rung, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test obligation_rung
+
+    dev_host_step "deep-corpus: import_invariance, the slow entries"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test import_invariance
 
     dev_host_step "dev host: route_invariance, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test route_invariance

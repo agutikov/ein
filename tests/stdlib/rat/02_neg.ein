@@ -19,7 +19,9 @@
 ;;; `rat-neg-of`'s whole extent. An operand that is not in lowest terms is
 ;;; negated by value and answered in lowest terms.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-neg rat rat-neg-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-neg (rat (int (n z 3) z) (n z 4)))
 (rat-neg (rat (int z (n z 3)) (n z 4)))

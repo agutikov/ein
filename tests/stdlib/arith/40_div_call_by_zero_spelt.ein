@@ -18,7 +18,7 @@
 ;;; row of the digit multiplier's table the zero written 00 was put into
 ;;; normal form by.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith div-call div-done n))
 
 (relation share Number Number
   :why "asked: {?1} shared among {?2}")

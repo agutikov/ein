@@ -17,12 +17,12 @@
 ;;; `is-a*` (the transitive closure, for an inheritance hierarchy). A puzzle
 ;;; declares the relation's properties positionally — (functional R 0 1)
 ;;; (total R 0) — its hierarchy via `isa` facts, and opts each relation into
-;;; each rule by declaring its activator fact. These rules are GENERIC, so
-;;; import them FLAT (`:symbols`) to keep the bare names their activators reference.
+;;; each rule by declaring its activator fact. These rules are GENERIC; list
+;;; them (`:symbols`) to write their activators by the bare names.
 ;;;
-;;; Dependency: the rules use `forall` (std.macro). Selective import is not
-;;; auto-closure (A1 D7), so the importer must also pull it in:
-;;;     (import std.macro :symbols (forall))
+;;; Dependency: the rules use `forall` (std.macro), which this module imports,
+;;; so an import of it brings std.macro too (M1f S1f.6.35); a puzzle lists the
+;;; rules whose activators it writes:
 ;;;     (import std.elim :symbols (typecheck-arg-0 typecheck-arg-1
 ;;;                                domain-elimination no-room-left))
 ;;; then declare activators naming the hierarchy relation, e.g.

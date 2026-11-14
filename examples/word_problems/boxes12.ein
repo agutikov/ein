@@ -6,8 +6,9 @@
 ;;; solutions and one answer. Neither state's trace has a step: the answer is
 ;;; root's, `need-exact`, *whatever need means*, and the reading each state
 ;;; supposes is one no rule reads.
-(import words :symbols (words))
-(import readings :symbols (readings))
+(import words :symbols (words has holds asked needed together value model-counts-only))
+(import readings :symbols (readings read-need reads-as pack-all whole-only))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) now    :source "Bob has 5 apples,")
 (has Alice apples (n z 7) now  :source "Alice has 7.")

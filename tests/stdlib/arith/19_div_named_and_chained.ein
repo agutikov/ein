@@ -20,7 +20,7 @@
 ;;; number the product gave, `(quot-of 1500 people 214 2)`, and the written
 ;;; one under its names.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n mul div product-of quot-of))
 
 (let price  (n (n (n z 1) 2) 5))
 (let qty    (n (n z 1) 2))

@@ -9,14 +9,16 @@
 ;;; (Schröder B10, contravariance B7, converse-over-join B8).
 ;;;
 ;;; All rules are GENERIC (parametrised over the operand relations), so a puzzle
-;;; imports them FLAT and declares activator facts naming the operands:
+;;; imports the module, listing the rules whose activators it writes, and
+;;; declares activator facts naming the operands:
 ;;;
 ;;;     (import std.algebra :symbols (converse compose meet))
 ;;;     (converse right-of left-of)            ; R2 = R1°
 ;;;     (compose  right-of right-of two-right)  ; two-right = right-of ; right-of
 ;;;     (meet     owns rents shares)            ; shares = owns ∩ rents
 ;;;
-;;; Reach individual rules by `:symbols` so the activators' bare names resolve.
+;;; An import brings every rule of the module (M1f S1f.6.35); `:symbols` names
+;;; the rules whose activators the puzzle writes, so their bare names resolve.
 ;;;
 ;;; ── intrinsic vs extensive ───────────────────────────────────────────────────
 ;;; INTRINSIC ops (`compose` / `meet` / `difference` / `converse` / `join` /
@@ -36,9 +38,9 @@
 ;;; ceiling and correctly stay as puzzle-local named rules.
 
 ;; Dependency: the extensive totality checks (`total` / `surjective`) quantify
-;; with `forall` (std.macro). Self-imported so `(import std.algebra :symbols
-;; (total …))` pulls it transitively; import is idempotent (S1.8a.f20), so a
-;; puzzle that also imports `forall` is fine.
+;; with `forall` (std.macro), imported here, so any import of std.algebra brings
+;; std.macro too; one copy per program, so a puzzle that also imports `forall`
+;; is fine.
 (import std.macro :symbols (forall))
 
 ;; ── converse — (converse R1 R2) ⟺ R2 = R1° (the inverse relation).
@@ -274,8 +276,8 @@
 ;; never an `is-a` literal (is-a-free body, S1.8.A10), so `(?isa …)` is an
 ;; activator-bound scan. Activate per relation: `(total R is-a)` / `(surjective R is-a)`.
 ;;
-;; Dependency: these use `forall` (std.macro) — selective import is not
-;; auto-closure (A1 D7), so an importer must pull `forall` in too. Priority 110.
+;; Dependency: these use `forall` (std.macro), which this module imports, so
+;; any import of it brings std.macro too (M1f S1f.6.35).
 (rule total (?R ?isa)
   :match  (and (relation ?R ?A ?B)
                (?isa ?a ?A)

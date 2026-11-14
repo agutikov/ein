@@ -241,10 +241,10 @@ fn the_file_is_what_the_generator_writes() {
     );
 }
 
-/// The tier a release binary uses. A listed table arrives with its rows, a
-/// table not listed does not, and `__closed__` brings the module's seven
-/// closing facts (Q-M1f.142: a fact of a kernel relation comes when its
-/// relation's name is in the closure).
+/// The tier a release binary uses. Since M1f S1f.6.35 an import brings the
+/// module whole: the listed tables under their short names with their rows,
+/// every other table under its full name, `std.digits.fs`, and the module's
+/// seven closing facts.
 #[test]
 fn a_flat_import_brings_a_table_from_the_embedded_copy() {
     let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Embedded);
@@ -267,11 +267,6 @@ fn a_flat_import_brings_a_table_from_the_embedded_copy() {
     nz.sort();
     assert_eq!(nz, want["nz"]);
     assert_eq!(
-        got["relation"],
-        [["fa"], ["nz"]],
-        "the two listed declarations"
-    );
-    assert_eq!(
         got["__closed__"].len(),
         7,
         "every closing fact of the module"
@@ -279,7 +274,12 @@ fn a_flat_import_brings_a_table_from_the_embedded_copy() {
     for other in ["fs", "md", "cl", "mid", "adj"] {
         assert!(
             !got.contains_key(other),
-            "`{other}` was not listed and arrived"
+            "`{other}` was not listed and arrived under its short name"
         );
+        let mut rows = got[format!("std.digits.{other}").as_str()].clone();
+        rows.sort();
+        let mut wanted = want[other].clone();
+        wanted.sort();
+        assert_eq!(rows, wanted, "`{other}` arrives whole, under its full name");
     }
 }

@@ -583,7 +583,7 @@ fn fact_grain_on_programs_written_to_test_it() {
 /// site is one, the verdict the safe *not monotone*.
 #[test]
 fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side() {
-    const READING: &str = "(import std.arith :symbols (arith))
+    const READING: &str = "(import std.arith :symbols (arith div n quot-of))
          (relation reading T :why \"{?1} is a reading\") (relation read-as T :why \"read as {?1}\")
          (relation amount T T :why \"there are {?2} {?1}\") (relation answer T T :why \"the answer for {?1} is {?2}\")
          (relation counted T :why \"{?1} is counted\")
@@ -2055,8 +2055,11 @@ fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
             "{file}"
         );
         for i in &t.instances {
+            // The program writes no `slot-owed-fill`: its full name since M1f
+            // S1f.6.35.
             let rule = terms.sym(i.key.0).to_string();
-            match (&i.alternatives, rule.as_str()) {
+            let short = rule.strip_prefix("std.slots.").unwrap_or(&rule);
+            match (&i.alternatives, short) {
                 (Ok(a), _) => assert!(!a.is_empty(), "{file}: {rule} licensed, no alternative"),
                 (Err(why), "slot-owed-fill") => {
                     assert!(why.contains("no candidate proposes"), "{file}: {why}")

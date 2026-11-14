@@ -35,7 +35,9 @@
 ;;; operand repeated as written and each answer in lowest terms. The
 ;;; `(solve …)` form claims R = {∅}: nothing is guessed.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-simplify rat rat-simple-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-simplify (rat (int (n z 2) z) (n z 4)))
 (rat-simplify (rat (int z (n z 6)) (n z 8)))

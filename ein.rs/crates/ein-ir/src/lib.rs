@@ -37,5 +37,5 @@ pub use from_ir::{
     load_file_with, load_query, load_query_with, load_with, pattern_relations,
 };
 pub use grammar::{ParseError, SyntaxError, parse};
-pub use imports::{LeftBehind, LoadError, Resolver, resolve_and_minimize, resolve_imports};
+pub use imports::{LoadError, Resolver, resolve_imports};
 pub use macros::{Macro, MacroError, collect_macros, expand_macros};

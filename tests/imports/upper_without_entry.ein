@@ -8,7 +8,7 @@
 ;;; theories whole. `upper_without_entry.ein` is this file without that one
 ;;; name. Alone it wants nothing: R {∅}.
 
-(import lower :symbols (lower))
+(import lower :symbols (lower ask double-of))
 
 (relation wanted Thing :why "{?1}'s double is wanted")
 (relation got Thing Thing :why "{?1}'s double is {?2}")

@@ -101,17 +101,16 @@
 ;; `(typecheck-arg-0 color-loc is-a* Color)`, …). Only co-located* / adjacent-via*
 ;; stay puzzle-specific — they exceed relation algebra's 3-variable ceiling.
 ;;
-;; We list only the ENTRY rules — those this puzzle's facts activate
-;; (`(bijective …)` fires `bijective-properties` + `bijective-setup`; the
-;; `(relation …)` signatures + `(bijective …)` fire `typecheck-setup`).
-;; `:symbols` import is auto-closure (S1.8a.f20): each entry rule drags in the
-;; machinery it asserts/matches — `bijective-properties` pulls functional /
-;; injective / total / surjective; `bijective-setup` pulls domain/range
-;; elimination + the negative-completion rules; `typecheck-setup` pulls
-;; typecheck-arg-{0,1}. `std.bijection` re-exports `bijective-properties` and
-;; self-imports `forall` + the std.algebra cardinality rules, so this one line
-;; pulls the entire working stack — no transitive bookkeeping here.
-(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
+;; An import brings its module whole, with the modules it imports (M1f
+;; S1f.6.35): `std.bijection` imports `forall` and std.algebra, so this one line
+;; loads the entire working stack — `bijective-properties` (functional /
+;; injective / total / surjective), domain/range elimination, the
+;; negative-completion rules, typecheck-arg-{0,1}. `:symbols` lists the two
+;; entry rules this file's `(bijective …)`, hierarchy and `(relation …)` facts
+;; activate; it writes neither, and a listed name costs nothing. `bijective`,
+;; `bijection-hierarchy` and `typecheck-hierarchy` are relations no module
+;; declares, one name in every file.
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 
 ;; The two type-membership hierarchies the bijection rules quantify over:
 ;;   is-a   — DIRECT membership (elimination / totality / negative completion);

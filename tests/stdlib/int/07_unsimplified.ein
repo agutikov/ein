@@ -15,7 +15,9 @@
 ;;; Four claims, each a result relation's whole extent: two facts, one for
 ;;; each spelling of 2, with the same third argument.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-add int int-sub int-mul int-cmp int-sum-of int-diff-of
+                          int-product-of int-cmp-of))
+(import std.arith :symbols (n))
 
 (int-add (int (n z 5) (n z 3)) (int z (n z 7)))
 (int-sub (int (n z 5) (n z 3)) (int z (n z 7)))

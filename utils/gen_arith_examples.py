@@ -95,7 +95,37 @@ OPERAND = 6       # many_calculations: an operand has 1 to this many digits
 FACTORIAL = 25    # factorial: the last number of the chain
 
 OPS = ("add", "sub", "cmp", "mul", "div")
-IMPORT = "(import std.arith :symbols (arith))\n"
+# Under M1f S1f.6.35's imports, a program lists the short names it writes from the module that declares
+# them: the entry, and every name of `std.arith`'s the text writes, in the order it first writes them.
+ARITH_NAMES = None
+
+
+def arith_names() -> set:
+    """Every name `stdlib/arith.ein` declares."""
+    global ARITH_NAMES
+    if ARITH_NAMES is None:
+        text = (REPO / "stdlib" / "arith.ein").read_text()
+        ARITH_NAMES = set(re.findall(r"^\((?:relation|rule|hrule|macro)\s+(\S+)", text, re.M))
+    return ARITH_NAMES
+
+
+def import_line(body: str) -> str:
+    """`(import std.arith :symbols (arith …))`: the entry and the names `body` writes, wrapped at 100
+    columns under the list's first name."""
+    names = ["arith"]
+    code = re.sub(r'"(?:\\.|[^"\\])*"|;[^\n]*', " ", body)
+    for tok in re.findall(r"[^\s()]+", code):
+        if tok in arith_names() and tok not in names:
+            names.append(tok)
+    head = "(import std.arith :symbols ("
+    lines = [head]
+    for n in names:
+        last = lines[-1]
+        if last.endswith("(") or len(last) + 1 + len(n) + 2 <= 100:
+            lines[-1] = last + ("" if last.endswith("(") else " ") + n
+        else:
+            lines.append(" " * len(head) + n)
+    return "\n".join(lines) + "))\n"
 NESTING_LIMIT = 1000  # `ein_ir::grammar::NESTING_LIMIT`: a `(` deeper than this is refused
 
 
@@ -202,7 +232,8 @@ def long_numbers(digits: int = DIGITS, short: int = SHORT, seed: int = SEED) -> 
                         claim("cmp", "a", "b", a, b, "a against b"),
                         claim("mul", "c", "d", c, d, "c x d"),
                         claim("div", "e", "d", e, d, "e divided by d")))
-    return f"{head}\n{IMPORT}\n{lets}\n{reqs}\n{claims}"
+    body = f"\n{lets}\n{reqs}\n{claims}"
+    return f"{head}\n{import_line(body)}{body}"
 
 
 def requests(op: str, count: int, operand: int, rnd: random.Random) -> list[tuple[int, int]]:
@@ -255,7 +286,8 @@ def many_calculations(count: int = REQUESTS, operand: int = OPERAND, seed: int =
         body += "".join(f"({op} {enc(x)} {enc(y)})\n" for x, y in batches[op])
     claims = "\n".join(claim(op, enc(x), enc(y), x, y, f"{x} {SIGN[op]} {y}")
                        for op in ops for x, y in batches[op][:1])
-    return f"{head}\n{IMPORT}{body}\n{claims}"
+    rest = f"{body}\n{claims}"
+    return f"{head}\n{import_line(rest)}{rest}"
 
 
 def factorial(last: int = FACTORIAL) -> str:
@@ -308,7 +340,8 @@ def factorial(last: int = FACTORIAL) -> str:
 ;;; `factorial` is the program's own relation, and the program closes it:
 ;;; the theory closes its own relations and cannot close the importer's.
 """
-    return f"{head}\n{IMPORT}\n{factorial_body(last)}"
+    body = f"\n{factorial_body(last)}"
+    return f"{head}\n{import_line(body)}{body}"
 
 
 def factorial_body(last: int, expect: bool = True) -> str:
@@ -473,8 +506,9 @@ def on_demand(op: str, digits: int | None, dividend: int | None, count: int, n: 
 ;;;     ein solve FILE       the answer: the state, and each query read
 ;;;
 {note}"""
-    text = (f"{head}\n{IMPORT}\n{kept[0]}" if op == "factorial"
-            else f"{head}\n{IMPORT}\n{requests_text}\n" + "\n".join(kept))
+    body = (f"\n{kept[0]}" if op == "factorial"
+            else f"\n{requests_text}\n" + "\n".join(kept))
+    text = f"{head}\n{import_line(body)}{body}"
     if nesting(text) > NESTING_LIMIT:
         raise SystemExit(f"{cmd}: the operands nest {nesting(text)} deep, past the parser's limit of "
                          f"{NESTING_LIMIT} parentheses (`ein_ir::grammar::NESTING_LIMIT`): a written number is "

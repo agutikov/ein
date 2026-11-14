@@ -374,6 +374,11 @@ def resolve(name: str, activator, ctx: tuple[set[str], set[str]],
     closure, local = ctx
     if name in local:
         return []
+    # A rule the program does not name short fires under its full name since
+    # M1f S1f.6.35, `std.algebra.total-owed`: the module is in its name.
+    module, dot, short = name.rpartition(".")
+    if dot and module.startswith("std."):
+        return [r for r in by_name.get(short, []) if r["module"] == module]
     cands = [r for r in by_name.get(name, []) if r["module"] in closure]
     if len(cands) > 1 and activator is not None:
         narrowed = [r for r in cands if len(r["params"]) == len(activator)]

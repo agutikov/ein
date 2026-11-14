@@ -3,7 +3,8 @@
 ;;; Alice's 7, Carol's 9 and the box are stated and never wanted: an unused
 ;;; fact is not an error, and the second query, every value the run knows,
 ;;; lists none of them.
-(import words :symbols (words))
+(import words :symbols (words has holds gave asked amount value))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (has Alice apples (n z 7) t0          :source "Alice has 7 apples.")

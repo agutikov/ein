@@ -359,12 +359,14 @@ def render(w: int) -> str:
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
-;;;     (import std.{nm('num#')} :symbols ({entry}))
+;;;     (import std.{nm('num#')} :symbols ({entry} {nm('add#')} {nm('num#')} {nm('sum#-of')}))
 ;;;
-;;; `{entry}` is the theory's one entry, the closing rule at the end of this
-;;; file: it names every rule and closes every relation of the theory and the
-;;; tables it reads. A program may import `std.arith` beside it, flat: no name
-;;; of this module is a name of that one, but the three it takes from it.
+;;; An import brings the whole theory, the tables and `std.arith` with it,
+;;; under full names (M1f S1f.6.35); a program lists the names it writes.
+;;; `{entry}` is the theory's entry, the closing rule at the end of this file:
+;;; it names every rule and closes every relation of the theory and the tables
+;;; it reads. `n` and `division-by-zero` are `std.arith`'s, which this module
+;;; lists, and a program that writes them lists them from `std.arith`.
 ;;;
 ;;; ── The protocol: a request fact, answered by a result fact or by a flag ───
 ;;;
@@ -475,9 +477,9 @@ def render(w: int) -> str:
 ;; ── The closing rule, and the theory's one entry ──
 ;; Arithmetic is computed and never guessed: every relation of the theory, and
 ;; each table it reads, is closed, so the search has no candidate among them.
-;; The rule also names every rule of the module, which is what makes
-;; `(import std.{nm('num#')} :symbols ({entry}))` bring the whole theory: a selection's
-;; closure follows the names a kept declaration writes.
+;; The rule also names every rule of the module, which until M1f S1f.6.35 was
+;; what made `(import std.{nm('num#')} :symbols ({entry}))` bring the whole theory;
+;; every import brings its module whole since.
 (relation {rule_rel} Rule
   :why "{{?1}} is a rule of std.{nm('num#')}")
 

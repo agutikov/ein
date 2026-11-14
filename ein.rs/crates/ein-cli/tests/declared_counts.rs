@@ -428,9 +428,11 @@ fn the_registers_witnesses_are_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// An imported declaration is held as the program's own is: flat, under
+/// An imported declaration is held as the program's own is: listed, under
 /// `:as`, where the relation has the qualified name, and from a file beside
-/// the program.
+/// the program. A list names what the program writes since M1f S1f.6.35: an
+/// `add` the program does not list is its own relation, which nothing
+/// declares.
 #[test]
 fn an_imported_declaration_is_held_too() {
     let scratch = Scratch::new("ein-declared-counts-imports");
@@ -442,14 +444,14 @@ fn an_imported_declaration_is_held_too() {
     let cases: [(&str, &str, &str); 4] = [
         (
             "flat-stdlib",
-            "(import std.arith :symbols (arith))\n(add (n z 5))\n",
+            "(import std.arith :symbols (arith add n))\n(add (n z 5))\n",
             ":2:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand \
              Operand) declares 2",
         ),
         (
             "qualified-stdlib",
-            "(import std.arith :as a)\n(a.add (a.n a.z 5) (a.n 5))\n",
-            ":2:21: the fact (a.add (a.n a.z 5) (a.n 5)) holds (a.n 5), which gives a.n 1 \
+            "(import std.arith :as a)\n(a.add (a.n z 5) (a.n 5))\n",
+            ":2:19: the fact (a.add (a.n z 5) (a.n 5)) holds (a.n 5), which gives a.n 1 \
              argument, and (relation a.n Number Digit) declares 2",
         ),
         (

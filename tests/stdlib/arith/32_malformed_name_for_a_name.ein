@@ -23,7 +23,7 @@
 ;;; the two `let`s in the unsat core, and `--trace` shows the flag and the
 ;;; contradiction as two steps.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n add div))
 
 (let price (n z 5))
 (let alias price)

@@ -18,7 +18,7 @@
 ;;; A quantity is a nested fact: `(amount Bob apples t0)`, how many apples Bob
 ;;; has at the moment t0. A number is the calculator's, `(n z 5)`.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith sub diff-of add sum-of cmp cmp-of mul product-of div quot-of))
 
 ;; ── What the model leaves out, stated once ──────────────────────────────────
 (relation model-counts-only

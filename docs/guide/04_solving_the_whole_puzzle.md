@@ -11,7 +11,7 @@ pieces from this guide, in layers:
 
 ```lisp
 (import std.algebra   :symbols (symmetric transitive includes))   ; the library logic
-(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 
 (relation nation-loc Nationality House :why "the {?1} lives in {?2}")   ; the schema
 (relation color-loc  Color       House :why "{?2} is painted {?1}")

@@ -21,7 +21,8 @@
 ;;; round: a rule that read `(int-add X Y)` as `(int-add Y X)` would answer
 ;;; each such request with the other's fact, and the claim would hold.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-add int int-sum-of))
+(import std.arith :symbols (n))
 
 (int-add (int (n z 7) z) (int (n z 5) z))
 (int-add (int (n z 7) z) (int z (n z 5)))

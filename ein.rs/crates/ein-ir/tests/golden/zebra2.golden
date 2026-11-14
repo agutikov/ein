@@ -1,8 +1,6 @@
 (import std.algebra :symbols (symmetric transitive includes))
 
-(import
-  std.bijection
-  :symbols (bijective-properties bijective-setup typecheck-setup))
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 
 (bijection-hierarchy is-a)
 

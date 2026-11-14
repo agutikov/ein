@@ -26,7 +26,9 @@
 ;;;
 ;;; `rat-cmp-of`'s whole extent, ten requests, no pair both ways round.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-cmp rat rat-cmp-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
 (rat-cmp (rat (int (n z 1) z) (n z 4)) (rat (int (n z 2) z) (n z 7)))

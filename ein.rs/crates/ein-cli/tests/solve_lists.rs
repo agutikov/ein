@@ -315,12 +315,16 @@ fn a_list_naming_what_the_program_has_loads() {
         })
         .collect();
     // A relation only an imported rule concludes, and `eq` given to a
-    // parameter that names a relation.
+    // parameter that names a relation. `functional` is listed: a name the
+    // program writes and does not list is its own since M1f S1f.6.35. The
+    // list held `injective` too until then; with `std.algebra` whole, its
+    // generic `imply1` could write `(injective <fact>)`, and S1f.5.18's check
+    // refuses the program, as today's whole import did (E-55).
     programs.push((
         "an-imported-rules-conclusion".to_string(),
         "(import std.algebra :symbols (bijective-properties functional))\n\
          (relation r A B :why \"{?1} r {?2}\")\n(is-a a A) (is-a b B)\n(bijective r)\n\
-         (solve :no-hypothesis (functional injective is-a))\n"
+         (solve :no-hypothesis (functional is-a))\n"
             .to_string(),
     ));
     programs.push((

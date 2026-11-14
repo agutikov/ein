@@ -29,7 +29,9 @@
 ;;; round: a rule that read `(rat-add X Y)` as `(rat-add Y X)` would answer
 ;;; each such request with the other's fact, and the claim would hold.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-add rat rat-sum-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
 (rat-add (rat (int (n z 1) z) (n z 6)) (rat (int (n z 1) z) (n z 3)))

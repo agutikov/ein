@@ -28,6 +28,10 @@
 ;;; Expects single-arg property facts `(functional R)` `(total R)` (the form
 ;;; zebra2's `bijective-properties` derives), not std.elim's positional one.
 
+;; The two property facts it reads are `std.algebra`'s activators (M1f S1f.6.35:
+;; a name a module writes of another module's is listed from it).
+(import std.algebra :symbols (functional total))
+
 (rule infer-closure ()
   :match  (and (functional ?R) (total ?R))
   :assert (__closed__ ?R)

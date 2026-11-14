@@ -230,7 +230,9 @@ pub(crate) fn resolve_jobs(n: i64) -> usize {
 /// with its imports inlined, by the three calls `stdlib/README.md` documents
 /// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
 /// holds to the same program; or, on a `.einb`, the program it stores, already
-/// resolved and import-flattened (M1f S1f.5.12, W43). The file has already
+/// resolved and import-flattened (M1f S1f.5.12, W43). The program as loaded,
+/// whole: since M1f S1f.6.35 an import brings its module whole and nothing is
+/// shaken out (E-41), so the file declares every full name the run had. The file has already
 /// loaded, so a failure here is a defect, and it is written into the file
 /// rather than swallowed.
 pub(crate) fn inlined_program(file: &str) -> String {
@@ -245,7 +247,7 @@ pub(crate) fn inlined_program(file: &str) -> String {
         Ok(f) => f,
         Err(e) => return format!(";; (the source did not parse for inlining: {e})\n{text}"),
     };
-    match ein_ir::resolve_and_minimize(&mut ast, &forms, p.base.as_deref()) {
+    match ein_ir::resolve_imports(&mut ast, &forms, p.base.as_deref()) {
         Ok(inlined) => ein_ir::dump_canonical(&ast, &inlined),
         Err(e) => format!(";; (imports could not be inlined: {e})\n{text}"),
     }

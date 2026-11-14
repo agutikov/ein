@@ -36,7 +36,8 @@
 ;;; dividend smaller than the divisor, six digits by two, and two requests
 ;;; whose operands are written with both parts and read by value.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-div-trunc int int-quot-trunc-of))
+(import std.arith :symbols (n))
 
 (int-div-trunc (int (n z 7) z) (int (n z 2) z))
 (int-div-trunc (int z (n z 7)) (int (n z 2) z))

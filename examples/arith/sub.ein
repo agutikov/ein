@@ -41,7 +41,7 @@
 ;;; `ein solve examples/arith/sub.ein --trace T.md` writes every step as a
 ;;; sentence.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith sub n let cmp diff-of cmp-of))
 
 (relation missing Name Name Number
   :why "{?1} is short of {?2} by {?3}")

@@ -16,7 +16,8 @@
 ;;; `as9`'s whole extent, eleven conversions, one for each rule and 007, and
 ;;; `big`'s, the one number of ten digits.
 
-(import std.num9 :symbols (arith9))
+(import std.num9 :symbols (arith9 to9 as9 num9 big))
+(import std.arith :symbols (n))
 
 (to9 z)
 (to9 (n z 7))

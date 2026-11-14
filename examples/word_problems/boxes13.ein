@@ -4,8 +4,9 @@
 ;;; always chosen (`readings`, owed), so R is two states, one a reading each:
 ;;; 4 boxes and 1 apple unpacked (whole-only), and 5 boxes, the last part full
 ;;; (pack-all). Two states and two answers, each named by its reading.
-(import words :symbols (words))
-(import readings :symbols (readings))
+(import words :symbols (words has holds asked needed together value over model-counts-only))
+(import readings :symbols (readings read-need reads-as pack-all whole-only))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) now    :source "Bob has 5 apples,")
 (has Alice apples (n z 8) now  :source "Alice has 8.")

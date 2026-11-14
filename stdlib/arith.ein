@@ -22,13 +22,16 @@
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
-;;;     (import std.arith :symbols (arith))
+;;;     (import std.arith :symbols (arith add n sum-of))
 ;;;
-;;; `arith` is the theory's one entry: the closing rule at the end of this
-;;; file. It names every rule and closes every relation of the theory and the
-;;; tables it reads, so that one name brings all of it, the rows of the tables
-;;; included, and leaves nothing of the theory for the search to guess. A
-;;; relation the importing program declares itself is the program's to close.
+;;; An import brings the whole theory, the rows of its tables included, under
+;;; full names, `std.arith.add` (M1f S1f.6.35); a program lists the names it
+;;; writes, the requests, the results, `n` and `let`, and the rest print by
+;;; their full names. `arith` is the theory's entry, the closing rule at the
+;;; end of this file: it names every rule and closes every relation of the
+;;; theory and the tables it reads, which leaves nothing of the theory for the
+;;; search to guess. A relation the importing program declares itself is the
+;;; program's to close.
 ;;;
 ;;; ── The number ─────────────────────────────────────────────────────────────
 ;;;
@@ -1232,9 +1235,11 @@
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Arithmetic is computed and never guessed: every relation of the theory, and
 ;; each table it reads, is closed, so the search has no candidate among them.
-;; The rule also names every rule of the module, which is what makes
-;; `(import std.arith :symbols (arith))` bring the whole theory: a selection's
-;; closure follows the names a kept declaration writes.
+;; The rule also names every rule of the module, which until M1f S1f.6.35 was
+;; what made `(import std.arith :symbols (arith))` bring the whole theory, a
+;; selection's closure following the names a kept declaration writes; every
+;; import brings its module whole since, and the names stay for a program and
+;; a trace to read.
 ;; `ein-infer/tests/arith_theory.rs` holds that no relation and no rule of
 ;; this file is missing here.
 (relation arith-rule Rule

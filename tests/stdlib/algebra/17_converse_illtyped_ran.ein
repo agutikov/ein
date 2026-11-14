@@ -11,7 +11,7 @@
 ;;; compared the wrong two type positions would pass one file and fail the
 ;;; other rather than passing both.
 
-(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran converse))
 
 (relation is-a*    T T :why "{?1} is a subtype of {?2}")
 (relation owns     Person Pet   :why "{?1} owns {?2}")

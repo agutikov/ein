@@ -11,11 +11,11 @@
 ;;; fact, so this module — like std.algebra's check — names no `is-a` literal;
 ;;; the dependency on the is-a* closure is explicit, carried as the ?isR* value.
 ;;;
-;;; Depends on std.algebra's converse-illtyped-{dom,ran} (the activators this
-;;; derives only bite when those rules are loaded). Selective import is not
-;;; auto-closure (A1 D7), so a consumer pulls both:
+;;; Depends on std.algebra's converse-illtyped-{dom,ran}, whose activators this
+;;; derives; it imports std.algebra, so an import of it brings std.algebra too
+;;; (M1f S1f.6.35). A consumer lists what it writes:
 ;;;
-;;;     (import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+;;;     (import std.algebra :symbols (converse))
 ;;;     (import std.typing  :symbols (type-hierarchy-converse))
 ;;;
 ;;; Every rule here is NON-generic (empty params, relation read from a premise)
@@ -29,6 +29,10 @@
 ;; instantiated at the puzzle's hierarchy relation ?isR*. Relies on reflective
 ;; rule-implication (S1.8.A9): the derived activators light up the generic
 ;; converse-illtyped-{dom,ran} rules on the next saturation pass.
+;; The activators it reads and writes are `std.algebra`'s (M1f S1f.6.35: a name a
+;; module writes of another module's is listed from it, or it is the module's own).
+(import std.algebra :symbols (converse converse-illtyped-dom converse-illtyped-ran))
+
 (rule type-hierarchy-converse ()
   :match  (and (converse ?R1 ?R2) (type-hierarchy ?isR*))
   :assert (and (converse-illtyped-dom ?R1 ?R2 ?isR*)

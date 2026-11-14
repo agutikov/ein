@@ -122,14 +122,16 @@ fn load(rel: &str) -> (Ast, Terms, Kb) {
 }
 
 /// The rules the puzzle **provides**, imports resolved — so a rule promoted to
-/// the stdlib counts as provided, not just one still defined inline.
+/// the stdlib counts as provided, not just one still defined inline. Read by
+/// the names the stdlib writes: a rule the puzzle does not list prints by its
+/// full name since M1f S1f.6.35, `std.bijection.domain-elimination`.
 fn provided(rel: &str) -> BTreeSet<String> {
     let (_, terms, kb) = load(rel);
     let p = kb.program();
     p.rules
         .keys()
         .chain(p.hrules.keys())
-        .map(|s| terms.sym(s).to_string())
+        .map(|s| ein_corpus::unprefixed(terms.sym(s)))
         .collect()
 }
 
@@ -177,7 +179,7 @@ fn rules_in_trace(rel: &str) -> BTreeSet<String> {
         .filter_map(|l| l.strip_prefix("### Step "))
         .filter_map(|l| l.split_once('`'))
         .filter_map(|(_, rest)| rest.split_once('`'))
-        .map(|(rule, _)| rule.to_string())
+        .map(|(rule, _)| ein_corpus::unprefixed(rule))
         .collect()
 }
 

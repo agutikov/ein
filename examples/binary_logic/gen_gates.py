@@ -419,7 +419,12 @@ def build():
          "(import gates :symbols (gate2 column-name inv le bit __closed__))"] + decls() + [RULES.strip(), closing]
     rules = "\n".join(r) + "\n"
 
-    c = [CHECK_HEADER + FOOT.rstrip("\n"), "(import props_rules :symbols (props-derived))"]
+    # The entry, and every relation the check writes, listed (M1f S1f.6.35: an import names what the
+    # file writes; it brings the module whole whatever it lists).
+    head, imp = "(import props_rules :symbols (", ["(import props_rules :symbols (props-derived"]
+    for n in WHYS:
+        imp[-1:] = [imp[-1] + " " + n] if len(imp[-1]) + 1 + len(n) + 2 <= 100 else [imp[-1], " " * len(head) + n]
+    c = [CHECK_HEADER + FOOT.rstrip("\n"), "\n".join(imp) + "))"]
     for n, (t, _) in WHYS.items():
         vs = " ".join(f"?{chr(ord('a') + i)}" for i in range(len(t.split())))
         c.append(f"(query :goal ({n} {vs})\n       :expect (model "

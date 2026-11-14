@@ -15,7 +15,7 @@
 ;;; flagged, each by the other, and the unsat core is the two of them.
 ;;; `34_let_twice_the_same.ein` is the case that is fine.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n add))
 
 (let price (n z 5))
 (let price (n z 7))

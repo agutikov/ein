@@ -25,7 +25,7 @@
 ;;; form. An answer with a high zero, `(n (n (n (n z 0) 9) 9) 9)`, or a second
 ;;; answer for an equal pair, fails the file.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith sub n diff-of))
 
 (sub (n (n (n (n z 1) 0) 0) 0) (n z 1))
 (sub (n (n (n (n z 1) 0) 0) 0) (n (n (n z 9) 9) 9))

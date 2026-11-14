@@ -28,7 +28,8 @@
 ;;; repeated as written, high zeros and all, and each answer in normal form.
 ;;; The `(solve …)` form claims R = {∅}: nothing is guessed.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-simplify int int-simple-of))
+(import std.arith :symbols (n))
 
 (int-simplify (int (n z 5) (n z 3)))
 (int-simplify (int (n z 3) (n z 5)))

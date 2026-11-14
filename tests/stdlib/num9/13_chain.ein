@@ -11,7 +11,7 @@
 ;;;
 ;;; `quot9-of`'s whole extent, the one quotient.
 
-(import std.num9 :symbols (arith9))
+(import std.num9 :symbols (arith9 mul9 num9 product9-of div9 quot9-of))
 
 (mul9 (num9 0 0 0 0 0 0 1 2 3) (num9 0 0 0 0 0 0 4 5 6))
 

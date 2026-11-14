@@ -43,10 +43,11 @@
 ;;; Dependencies are **self-imported** (idempotent re-import, S1.8a.f20): `forall`
 ;;; (std.macro) for the elimination quantifiers, and the cardinality rules
 ;;; (std.algebra) the bodies guard on (`functional`/`total`/…) or a puzzle
-;;; activates (`bijective-properties`). So a puzzle's
-;;; `(import std.bijection :symbols (bijective-properties bijective-setup
-;;; typecheck-setup))` pulls the whole working stack via auto-closure — no
-;;; transitive-dependency bookkeeping for the importer.
+;;; activates (`bijective-properties`). An import brings this module whole, and
+;;; std.algebra and std.macro with it (M1f S1f.6.35): a puzzle's
+;;; `(import std.bijection :symbols (bijective-setup typecheck-setup))` holds the
+;;; whole working stack, and lists from std.algebra what it writes of it
+;;; (`bijective-properties`, a rule of std.algebra's, is std.algebra's to list).
 (import std.macro   :symbols (forall))
 (import std.algebra :symbols (functional injective total surjective bijective-properties
                               total-owed surjective-owed))

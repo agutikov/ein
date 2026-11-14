@@ -26,7 +26,7 @@
 ;;; and two steps more in the trace. `39_div_call_by_zero.ein` is a call made
 ;;; by a rule of the program's own, where that flag is the only one.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith add n div))
 
 (add (n z 2) (n z 2))
 (div (n z 7) z)

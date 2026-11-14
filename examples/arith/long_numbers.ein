@@ -39,7 +39,8 @@
 ;;; The generator takes the sizes: `--digits 300 --short 60` writes the
 ;;; program the stage's plan asked for.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n b add sub cmp mul div sum-of diff-of cmp-of product-of
+                            quot-of))
 
 ;; 10 digits each, and 20
 (let c

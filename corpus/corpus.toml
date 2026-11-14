@@ -3889,7 +3889,7 @@ note   = "the control half of the closed-and-owing pair (M1d S1d.2.2). Closed by
 path   = "tests/stdlib/digits/01_tables.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.2: `std.digits` imported flat with `__closed__` listed, a row of each table claimed, `nz` and `adj` whole, and R {∅} claimed on the solve form: the module's own closing facts leave no candidate. S1f.6.11's fix (W88) seen from the stdlib."
+note   = "M1f S1f.6.2: `std.digits` imported, a row of each table claimed, `nz` and `adj` whole, and R {∅} claimed on the solve form: the module's own closing facts leave no candidate, which every import brings since S1f.6.35 (until then only with `__closed__` listed). S1f.6.11's fix (W88) seen from the stdlib."
 
 [[entry]]
 path   = "tests/stdlib/digits/02_a_core_names_its_rows.ein"
@@ -4278,7 +4278,7 @@ note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — the upper theory, over `lower.ein`
 path   = "tests/imports/upper_without_entry.ein"
 group  = "positive"
 runs   = ["test", "saturate"]
-note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — `upper.ein` without the lower theory's entry name in its own. Loaded alone it holds both theories, its own import bringing the lower one; imported by its entry it leaves the lower theory's rules behind, which `02_nested_import_left_behind.ein` shows."
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — `upper.ein` without the lower theory's entry name in its own. Loaded alone it holds both theories, its own import bringing the lower one; imported by its entry it left the lower theory's rules behind until M1f S1f.6.35, since when every import brings its module whole, `02_nested_import_left_behind.ein`'s answer."
 
 [[entry]]
 path   = "tests/imports/01_nested_import_whole.ein"
@@ -4290,7 +4290,7 @@ note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — a theory built on a theory, import
 path   = "tests/imports/02_nested_import_left_behind.ein"
 group  = "positive"
 runs   = ["test", "solve", "saturate", "saturate --dump"]
-note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — the same import through an entry that does not name the lower theory's: the closure brings `double-of`'s declaration and no rule that derives it, the request is derived and never answered, and the loader says so in one `note:` line on stderr, on every command, exit 0 (`ein-cli/tests/import_left_behind.rs`). `bob1_nested_import.ein` of S1f.6.20's prototype, rebuilt small."
+note   = "M1f S1f.6.25 (T1f.6.25.4, E-20) — the same import through an entry that does not name the lower theory's. Until M1f S1f.6.35 the selection's closure brought `double-of`'s declaration and no rule that derives it, the request was never answered, and the loader said so in a `note:` line; since, every import brings its module whole, with its own imports, and the request is answered, `(got a aa)`, as today's whole import `:as` answered it before (the stage's record, *Import invariance*). `bob1_nested_import.ein` of S1f.6.20's prototype, rebuilt small."
 
 [[entry]]
 path   = "tests/region/01_states.ein"
@@ -4490,7 +4490,7 @@ note   = "M1f S1f.6.20 — the gap closed by a sentence, *Alice has 4 apples*: 3
 path   = "examples/word_problems/gaps.ein"
 group  = "positive"
 runs   = ["saturate", "render rules"]
-note   = "M1f S1f.6.20 — a theory module, imported by the gap and kinds problems: a wanted quantity with no value and nothing to compute it from is `not-stated`, by `absent`. No solve: it imports the declarations of `words` and not its closing rule, so alone `asked` and `wanted` are open and a solve describes the blind enumerator's `(asked __closed__)` (E-1 of the phase's findings), not the module."
+note   = "M1f S1f.6.20 — a theory module, imported by the gap and kinds problems: a wanted quantity with no value and nothing to compute it from is `not-stated`, by `absent`. No solve run, by its history: until M1f S1f.6.35 it imported the declarations of `words` and not its closing rule, so alone `asked` and `wanted` were open and a solve described the blind enumerator's `(asked __closed__)` (E-1 of the phase's findings), not the module; since, every import brings `words` whole and a solve describes the module, R {∅}, as today's whole import did before."
 
 [[entry]]
 path   = "examples/word_problems/kinds.ein"
@@ -4520,7 +4520,7 @@ note   = "M1f S1f.6.28 — the apples-and-pears problem with *what is not listed
 path   = "examples/word_problems/listed_is_all.ein"
 group  = "positive"
 runs   = ["saturate", "render rules"]
-note   = "M1f S1f.6.28 — a module a problem imports to adopt *what is not listed is zero* for `has` (the user's reply 32): for every holder and kind the `has` sentences name at a moment with no amount listed, `(assumed (amount WHO KIND MOMENT) z)`, resting on `(adopted listed-is-all has)`; it reads `absent` over `has`, so it is kept apart from `words`. No solve: as gaps.ein, it imports the declarations of `words` and not its closing rule, so alone `assumed` is open and a solve describes the blind enumerator's `(assumed __closed__ z)` (E-1 of the phase's findings), not the module."
+note   = "M1f S1f.6.28 — a module a problem imports to adopt *what is not listed is zero* for `has` (the user's reply 32): for every holder and kind the `has` sentences name at a moment with no amount listed, `(assumed (amount WHO KIND MOMENT) z)`, resting on `(adopted listed-is-all has)`; it reads `absent` over `has`, so it is kept apart from `words`. No solve run, by its history: as gaps.ein, until M1f S1f.6.35 it imported the declarations of `words` and not its closing rule, so alone `assumed` was open and a solve described the blind enumerator's `(assumed __closed__ z)` (E-1 of the phase's findings), not the module; since, every import brings `words` whole, R {∅}."
 
 [[entry]]
 path   = "examples/word_problems/more.ein"

@@ -177,7 +177,7 @@ one state: 25 facts over H
   who_water = Norwegian
   who_zebra = Japanese
 saturations: 45, R listed whole: true
-trace: 569 steps
+trace: 581 steps
 ";
     assert_eq!(out, want);
 }

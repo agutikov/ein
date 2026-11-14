@@ -15,7 +15,7 @@
 ;;; flag, as `too-big` does here. (A division by zero is the other kind of
 ;;; failure, a contradiction: `div_by_zero.ein`.)
 
-(import std.num9 :symbols (arith9))
+(import std.num9 :symbols (arith9 add9 num9 mul9 overflow sum9-of product9-of))
 
 (relation too-big Request
   :why "{?1} needs more than nine digits")

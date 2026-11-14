@@ -16,7 +16,10 @@
 ;;; Five claims, each a result relation's whole extent: two facts, one for
 ;;; each spelling of a half, with the same last argument.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-add rat rat-sub rat-mul rat-div rat-cmp rat-sum-of
+                          rat-diff-of rat-product-of rat-quot-of rat-cmp-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
 (rat-sub (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))

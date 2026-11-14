@@ -22,7 +22,7 @@
 ;;; whose first operand was short, with the number it is short by, and not
 ;;; for the request whose two numbers are equal.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith diff-of n let sub))
 
 (relation overdrawn Name Number
   :why "{?1} is overdrawn by {?2}")

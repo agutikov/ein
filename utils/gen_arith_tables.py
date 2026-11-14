@@ -114,19 +114,18 @@ HEADER = """\
 ;;; A row's arguments are digits, except `cl`'s orders, the names `lt`, `eq`
 ;;; and `gt`, and the bound `10` of `mid` and `adj`, a name like any digit.
 ;;;
-;;; Importing. A library of facts is imported **flat**; a listed table brings
-;;; its declaration and its rows (M1f S1f.6.11), and a table not listed is not
-;;; loaded:
+;;; Importing. An import brings every table and its rows (M1f S1f.6.35); a
+;;; program lists the tables it writes, and the others print by their full
+;;; names, `std.digits.fs`:
 ;;;
 ;;;     (import std.digits :symbols (fa nz __closed__))
 ;;;
 ;;; **Closed.** Each table is closed by a written `(__closed__ R)` fact below:
-;;; a table is complete, and a row is never a hypothesis. Those facts are
-;;; facts of `__closed__`, so a flat import brings them when `__closed__` is
-;;; listed, as above, and leaves them behind when it is not; then `nz` and
-;;; `adj`, of one and two arguments, are relations the search may guess rows
-;;; of. A theory that reads the tables closes the ones it reads in its own
-;;; closing rule, as `std.arith` does, and its importer lists nothing here.
+;;; a table is complete, and a row is never a hypothesis. Those facts come
+;;; with every import of the module, as its rows do (M1f S1f.6.35; until then
+;;; a selection brought them only where it listed `__closed__`). A theory that
+;;; reads the tables closes the ones it reads in its own closing rule too, as
+;;; `std.arith` does.
 """
 
 

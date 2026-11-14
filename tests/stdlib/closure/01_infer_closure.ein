@@ -59,6 +59,7 @@
 (import std.bijection :symbols (functional-negative injective-negative
                                 domain-elimination))
 (import std.closure   :symbols (infer-closure))
+(import std.algebra :symbols (functional total))
 
 (relation is-a  T T          :why "{?1} is a {?2}")
 (relation wears Agent Colour :why "{?1} wears {?2}")

@@ -5,10 +5,14 @@
 ;;;   sum  = (a xor b) xor cin
 ;;;   cout = (a and b) or ((a xor b) and cin)
 ;;;
-;;; A program brings the five gates with (import full_adder :symbols (gate))
-;;; beside a theory that declares `gate` (`circuit.ein`, or its own).
+;;; A program brings the five gates with (import full_adder :symbols (gate)):
+;;; `gate` is `circuit.ein`'s, which this module imports, since its facts are
+;;; of that relation (M1f S1f.6.35: a module that states facts of another
+;;; module's relation imports it, and an import brings `circuit` whole).
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
+(import circuit :symbols (gate))
+
 (gate x1 Xor a b ab)        ; a xor b
 (gate x2 Xor ab cin sum)    ; the sum bit
 (gate a1 And a b g1)        ; both inputs

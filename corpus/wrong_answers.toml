@@ -17087,15 +17087,15 @@ minimal  = [[]]
 maximal  = [[]]
 
 [case.right]
-reading   = "`read_out.md` § 8.2 and the state file's own header: *the program as loaded, imports inlined, and then every fact of the state*; S1f.6.25's default (the stage file, T1f.6.25.3; Q-M1f.216): a name an import's selection lists is live"
+reading   = "`read_out.md` § 8.2 and the state file's own header: *the program as loaded, imports inlined, and then every fact of the state*; S1f.6.25's default (the stage file, T1f.6.25.3; Q-M1f.216): a name an import's selection lists is live. Since M1f S1f.6.35 every import brings its module whole and a name the program does not list prints by its full name (Q-M1f.237's default, `defined_behaviour.md` § 4.28)"
 verdict   = "Solution"
 k         = 1
 exhausted = true
 printed   = [
-  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
+  { file = "models/01.ein", label = "(relation dump-selection-library.color", line = "(relation dump-selection-library.color Thing :why \"{?1} is a colour\")" },
   { file = "models/01.ein", label = "palette", line = "  palette" },
 ]
-derived   = "The selection lists `palette`, whose closure is the rule and `color`, the relation it writes: the program as loaded holds both declarations, the rule fires once at root, and root holds `(color Red)` and `(color Green)`. No candidate, R {∅}. The state file writes that program and those two facts, so it holds the relation's declaration and the rule, which the canonical dump writes over several lines, its name on the second"
+derived   = "The import brings the library whole, the rule and `color`, the relation it writes: the program as loaded holds both declarations, the rule fires once at root, and root holds `(color Red)` and `(color Green)`. No candidate, R {∅}. The state file writes that program and those two facts, so it holds the relation's declaration and the rule, which the canonical dump writes over several lines, its name on the second. The program lists `palette` and not `color`, so since S1f.6.35 the relation prints by its full name, `dump-selection-library.color`, which the state file declares as its own (`defined_behaviour.md` § 4.28); until then the line read `(relation color Thing …)`"
 
 [case.now]
 run       = "solve"
@@ -17107,7 +17107,7 @@ models    = [
   [],
 ]
 printed   = [
-  { file = "models/01.ein", label = "(relation color", line = "(relation color Thing :why \"{?1} is a colour\")" },
+  { file = "models/01.ein", label = "(relation dump-selection-library.color", line = "(relation dump-selection-library.color Thing :why \"{?1} is a colour\")" },
   { file = "models/01.ein", label = "palette", line = "  palette" },
 ]
 
@@ -17229,7 +17229,7 @@ look_at  = ["root", "refuted", "summary"]
 note     = "Filed by S1f.6.35 (2026-11-14) from E-53 of P1f.6's `findings.md`. `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` with `converse-pair-symmetric` listed beside the two checks: what every program that writes `converse` holds once an import brings its module whole (the user's ruling of 2026-11-14), and what a program holding the whole of `std.algebra` flat holds today. The lemma derives `(converse owned-by owns)`, `std.typing`'s knob derives the checks' activators for it, and `converse-illtyped-ran` asks of the mirror whether `Animal` is `Pet` or a subtype of it."
 
 [case.fixed]
-commit = "00000000"
+commit = "dc94b947"
 by     = "S1f.6.35 (F1 of its record's *E-53 under the ruling*, a default): `std.algebra`'s `converse-illtyped-dom` and `-ran` refute a side only where its two types are neither equal nor one a subtype of the other, `(absent (?isR* ?D2 ?Rn1))` and `(absent (?isR* ?Rn2 ?D1))` beside the one-way premises, so a pair and the mirror the lemma derives check alike"
 date   = "2026-11-14"
 

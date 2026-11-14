@@ -25,7 +25,7 @@
 ;;; the `let` in the unsat core, and `--trace` shows the flag and the
 ;;; contradiction as two steps.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n add div))
 
 (let broken (n (n z x) 1))
 (let unused (n z y))

@@ -144,6 +144,7 @@ struct Work {
 fn saturate(src: &str, result: &str) -> Work {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
+    let src = &ein_corpus::listed(src);
     let forms = parse(&mut ast, src, Some("<arith-batch>")).expect("the batch parses");
     let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the batch loads");
     let mut events = Events::off();
@@ -165,9 +166,16 @@ fn saturate(src: &str, result: &str) -> Work {
         candidates = counted.candidates;
         guards = counted.predicate_value;
     }
+    // The program writes the requests and not the result, so the result
+    // prints by its full name (M1f S1f.6.35).
     let answers = terms
         .syms
         .get(result)
+        .or_else(|| {
+            ["std.arith", "std.num9", "std.int", "std.rat"]
+                .iter()
+                .find_map(|m| terms.syms.get(&format!("{m}.{result}")))
+        })
         .map_or(0, |rel| kb.facts_of(rel).count());
     Work {
         firings,

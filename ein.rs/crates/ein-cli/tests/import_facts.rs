@@ -1,20 +1,23 @@
-//! **A flat import brings a module's facts, on every command** — M1f
-//! S1f.6.11 (W88; Q-M1f.135 to .144).
+//! **An import brings a module's facts, on every command** — M1f S1f.6.11
+//! (W88; Q-M1f.135 to .144), and since S1f.6.35 the whole module.
 //!
 //! `(import M :symbols (…))` kept the listed declarations and their closure
 //! and dropped every fact of `M`, in silence, so a library of facts, an
 //! ontology or a table, arrived empty, and a relation `M` only states facts
 //! of could not be listed at all. The user ruled on 2026-11-11 that
-//! *importing facts is mandatory*. Since the stage a name in the selection's
-//! closure selects the module's declaration of it, if any, and every
-//! top-level fact whose relation it is (`ein_ir::imports`' `select`).
+//! *importing facts is mandatory*. From S1f.6.11 a name in the selection's
+//! closure selected the module's declaration of it, if any, and every
+//! top-level fact whose relation it is; since S1f.6.35 every import brings
+//! its module whole and a list only names (*"in all cases we import
+//! everything, the difference only in names"*, the user, 2026-11-14).
 //!
-//! What a selection brings, form for form, is `ein-ir`'s
+//! What an import brings, form for form, is `ein-ir`'s
 //! `imports_semantics.rs`. This file holds the other half of the acceptance,
 //! *on every command that loads a program*: each register witness, given a
 //! claim, answers on every command what its **twin** answers, the same
-//! program with the selected forms written in place of the import, and its
-//! saved container answers what the file does. One tool, consistent answers.
+//! program with the module written in place of the import, under the names
+//! the program prints, and its saved container answers what the file does.
+//! One tool, consistent answers.
 
 #![cfg(feature = "einb")]
 
@@ -101,17 +104,12 @@ fn comparable(text: &str, path: &str) -> String {
     out.join("\n")
 }
 
-const IS_A: &str = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n\
-     (is-a Tea Drink)\n\
-     (is-a Milk Drink :source \"the ontology\")\n";
-
-/// A register witness of W88: its file, its module, the forms its import
-/// selects, as the module writes them and in its order, the claim its goal's
-/// rows make.
+/// A register witness of W88: its file, its module, the names its import
+/// lists, the claim its goal's rows make.
 struct Witness {
     file: &'static str,
     module: &'static str,
-    selected: String,
+    listed: &'static [&'static str],
     claim: &'static str,
 }
 
@@ -120,44 +118,83 @@ fn witnesses() -> Vec<Witness> {
         Witness {
             file: "import-facts-flat",
             module: "import-facts-library",
-            selected: IS_A.to_string(),
+            listed: &["is-a"],
             claim: "(model (is-a Milk Drink) (is-a Tea Drink))",
         },
         Witness {
             file: "import-facts-rule",
             module: "import-facts-library",
-            selected: format!(
-                "{IS_A}(rule liquids ()\n  :match  (is-a ?x Drink)\n  :assert (liquid ?x)\n  \
-                 :why    \"{{?x}} is a drink, so {{?x}} is a liquid\")\n"
-            ),
+            listed: &["liquids"],
             claim: "(model (liquid Milk) (liquid Tea))",
         },
         Witness {
             file: "import-facts-undeclared",
             module: "import-facts-library",
-            selected: "(likes Tea Milk)\n(not (likes Milk Tea))\n".to_string(),
+            listed: &["likes"],
             claim: "(model (likes Tea Milk))",
         },
         Witness {
             file: "import-facts-table",
             module: "import-facts-table-module",
-            selected: "(relation fa Digit Digit Digit Digit Digit :why \"{?1} + {?2} + carry {?3} is digit {?4}, carry {?5}\")\n\
-                 (relation num2 Digit Digit :why \"the number {?1}{?2}\")\n\
-                 (relation add Number Number :why \"asked: {?1} + {?2}\")\n\
-                 (relation sum-of Number Number Number :why \"{?1} + {?2} = {?3}\")\n\
-                 (fa 9 1 0 0 1)\n\
-                 (fa 0 0 1 1 0)\n\
-                 (rule add2 ()\n  :match  (and (add (num2 ?a1 ?a0) (num2 ?b1 ?b0))\n               \
-                 (fa ?a0 ?b0 0 ?s0 ?c1)\n               (fa ?a1 ?b1 ?c1 ?s1 0))\n  \
-                 :assert (sum-of (num2 ?a1 ?a0) (num2 ?b1 ?b0) (num2 ?s1 ?s0))\n  \
-                 :why    \"{?a1}{?a0} + {?b1}{?b0} is {?s1}{?s0}, column by column\")\n"
-                .to_string(),
+            listed: &["add2", "add", "num2", "sum-of"],
             claim: "(model (sum-of (num2 0 9) (num2 0 1) (num2 1 0)))",
         },
     ]
 }
 
-/// The witness with its claim, and its twin: the forms the import selects
+/// **What the import brings, written in place** (M1f S1f.6.35): the module
+/// whole, its comments and its `(solve …)` left out, each name it declares
+/// that the program does not list under its full name, `module.unused`, as
+/// the program prints it. A dotted name the main file declares where no
+/// module of the program has its prefix is the program's own
+/// (`defined_behaviour.md` § 4.28), so the twin loads. Strings are left as
+/// they are.
+fn in_place(text: &str, module: &str, listed: &[&str]) -> String {
+    let declared: Vec<&str> = text
+        .lines()
+        .filter_map(|l| {
+            ["(relation ", "(rule ", "(hrule ", "(macro "]
+                .iter()
+                .find_map(|d| l.strip_prefix(d))?
+                .split_whitespace()
+                .next()
+        })
+        .filter(|n| !listed.contains(n))
+        .collect();
+    let mut out = String::new();
+    for line in text
+        .lines()
+        .filter(|l| !l.starts_with(';') && !l.starts_with("(solve "))
+    {
+        let mut in_string = false;
+        let mut token = String::new();
+        let flush = |token: &mut String, out: &mut String| {
+            if declared.contains(&token.as_str()) {
+                out.push_str(module);
+                out.push('.');
+            }
+            out.push_str(token);
+            token.clear();
+        };
+        for c in line.chars() {
+            if in_string {
+                out.push(c);
+                in_string = c != '"';
+            } else if c == '"' || c == '(' || c == ')' || c.is_whitespace() {
+                flush(&mut token, &mut out);
+                out.push(c);
+                in_string = c == '"';
+            } else {
+                token.push(c);
+            }
+        }
+        flush(&mut token, &mut out);
+        out.push('\n');
+    }
+    out
+}
+
+/// The witness with its claim, and its twin: the module ([`in_place`])
 /// written where the import stood. Comments are dropped from both, so a line
 /// and a column are the same in neither and nothing compared names one.
 fn programs(w: &Witness, dir: &Path) -> (String, String) {
@@ -183,7 +220,10 @@ fn programs(w: &Witness, dir: &Path) -> (String, String) {
         .find(|l| l.starts_with("(import "))
         .unwrap_or_else(|| panic!("{}: the witness imports its module on one line", w.file))
         .to_string();
-    let twin = claimed.replace(&format!("{import}\n"), &w.selected);
+    let twin = claimed.replace(
+        &format!("{import}\n"),
+        &in_place(&read(w.module), w.module, w.listed),
+    );
     let (file, twin_file) = (format!("{}.ein", w.file), format!("{}-twin.ein", w.file));
     std::fs::write(dir.join(&file), &claimed).expect("the witness");
     std::fs::write(dir.join(&twin_file), &twin).expect("the twin");

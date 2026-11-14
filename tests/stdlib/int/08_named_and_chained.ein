@@ -24,7 +24,9 @@
 ;;; difference that is negative; and the negation the program's rule asked
 ;;; for, whose operand is an integer the theory computed.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int int-sub int-mul int-cmp int-diff-of int-neg int-neg-of
+                          int-product-of int-cmp-of))
+(import std.arith :symbols (let n))
 
 (relation overdrawn Name Name Number
   :why "{?1} does not cover {?2}: short by {?3}")

@@ -30,8 +30,8 @@
 ;;; modelled; `std.arith` for numbers of any length, for named constants and
 ;;; for batches (`stdlib/README.md` § `std.num9` has both measured).
 
-(import std.arith :symbols (arith))
-(import std.num9 :symbols (arith9))
+(import std.arith :symbols (arith add n sum-of cmp cmp-of))
+(import std.num9 :symbols (arith9 to9 as9 add9 sum9-of num9 from9 of9))
 
 (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
 (to9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))

@@ -1,1 +1,1 @@
-conflicting definitions of 'infer-closure': same name, different body (at None)
+{FILE}:8:9: 'infer-closure' is bound to two full names in the program, infer-closure (its own declaration) and std.closure.infer-closure — one short name names one declaration in a file: list it from one module, or write the other by its full name

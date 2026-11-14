@@ -18,7 +18,9 @@
 ;;;
 ;;; `rat-diff-of`'s whole extent, seven requests, no pair both ways round.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-sub rat rat-diff-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
 (rat-sub (rat (int (n z 1) z) (n z 4)) (rat (int (n z 1) z) (n z 3)))

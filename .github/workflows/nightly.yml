@@ -107,6 +107,12 @@ jobs:
         env: { EIN_CORPUS_SLOW: "1" }
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test obligation_rung
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.6.35 — every corpus program that imports answers alike with its
+      # imports selective, whole and `:as` (the user's criterion of 2026-11-14);
+      # the per-commit tier reads the entries that are not slow, and this the
+      # slow ones too: 83 s here (2026-11-14).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test import_invariance
+        env: { EIN_CORPUS_SLOW: "1" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # M1e2 S1e2.3.6 — the test steps left nothing in their `TMPDIR`,

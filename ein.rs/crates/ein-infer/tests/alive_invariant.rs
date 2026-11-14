@@ -159,7 +159,151 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// **Joined at M1f S1f.7.8**: `syntax/query-full.ein`'s `House`, `Water` and
 /// `Tea`, constants of the two hrules its `:hrules` names, declared since the
 /// loader refuses a list naming an hrule the program does not declare.
-const SEEDED: [(&str, &[&str]); 153] = [
+///
+/// **Moved at M1f S1f.6.35**, imports by full name: a rule a program does not
+/// list is named by its full name, `std.int.int-div-pn` (66 lines); the
+/// sixteen programs that bring `std.num9`, and `gaps`, `listed_is_all` and
+/// `readings`, hold the calculator whole and meet `z` first in
+/// `std.arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
+/// `0` and `1` in its `domain-elimination`.
+const SEEDED: [(&str, &[&str]); 156] = [
+    (
+        "examples/arith/add.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "examples/arith/div.ein",
+        &["`z`, in (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))"],
+    ),
+    (
+        "examples/arith/factorial.ein",
+        &["`z`, in (let last (n (n z 2) 5))"],
+    ),
+    (
+        "examples/arith/int.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))",
+        ],
+    ),
+    (
+        "examples/arith/long_numbers.ein",
+        &["`z`, in (let c (n (n (n (n (n (n (n (n (n (n z 9) 4) 9) 3) 5) 7) 8) 9) 2) 3))"],
+    ),
+    (
+        "examples/arith/mul.ein",
+        &["`z`, in (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))"],
+    ),
+    (
+        "examples/arith/num9.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/arith/num9_both_ways.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "examples/arith/num9_overflow.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/arith/rat.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "examples/arith/sub.ein",
+        &["`z`, in (sub (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "examples/beyond_arith/collatz.ein",
+        &["`z`, in (collatz (n z 7) (n (n z 2) 0))"],
+    ),
+    (
+        "examples/beyond_arith/equation_refuted.ein",
+        &[
+            "`e`, asserted by rule `um-start`",
+            "`z`, in (unmul 7 (n (n (n z 8) 6) 2))",
+        ],
+    ),
+    (
+        "examples/beyond_arith/equation_two_unknowns.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/beyond_arith/fibonacci.ein",
+        &["`z`, in (fib-to (n (n z 3) 0))"],
+    ),
+    (
+        "examples/beyond_arith/gcd.ein",
+        &["`z`, in (gcd (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))"],
+    ),
+    (
+        "examples/beyond_arith/inverse_addition.ein",
+        &[
+            "`e`, asserted by rule `un-start`",
+            "`z`, in (unadd (n (n (n (n z 4) 5) 6) 7) (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))",
+        ],
+    ),
+    (
+        "examples/beyond_arith/laws.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/beyond_arith/perfect.ein",
+        &["`z`, in (count (n z 1) (n (n z 1) 2))"],
+    ),
+    (
+        "examples/beyond_arith/primes.ein",
+        &["`z`, in (count (n z 2) (n (n z 3) 0))"],
+    ),
+    (
+        "examples/beyond_arith/pythagorean.ein",
+        &["`z`, in (count (n z 1) (n (n z 1) 3))"],
+    ),
+    (
+        "examples/beyond_arith/tables_backwards.ein",
+        &[
+            "`e`, asserted by rule `um-start`",
+            "`z`, in (unmul 7 (n (n (n z 8) 6) 1))",
+        ],
+    ),
+    (
+        "examples/binary_arithmetic/bin.ein",
+        &["`z`, matched by rule `operand-zero2`"],
+    ),
+    (
+        "examples/binary_arithmetic/both_bases.ein",
+        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+    ),
+    (
+        "examples/binary_arithmetic/conv.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/binary_arithmetic/first.ein",
+        &["`z`, in (add2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))"],
+    ),
+    (
+        "examples/binary_arithmetic/five_operations.ein",
+        &[
+            "`z`, in (add2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))",
+        ],
+    ),
+    (
+        "examples/binary_logic/post.ein",
+        &[
+            "`affine-class`, asserted by rule `inside-affine`",
+            "`monotone-class`, asserted by rule `inside-monotone`",
+            "`one-preserving`, asserted by rule `inside-one`",
+            "`self-dual-class`, asserted by rule `inside-self-dual`",
+            "`zero-preserving`, asserted by rule `inside-zero`",
+        ],
+    ),
     (
         "examples/ein-bugs/activator-all-nested.ein",
         &["`a`, in (item (box a))"],
@@ -314,36 +458,127 @@ const SEEDED: [(&str, &[&str]); 153] = [
             "`r`, in (ontology (relation r T T) (is-a a T))",
         ],
     ),
-    // M1f S1f.6.3 — the calculator. `z`, zero, is the innermost name of every
-    // number, so a program that writes no bare `z` holds it only inside a
-    // nested fact, and the module only in a rule's `:match`.
     (
-        "examples/arith/add.ein",
-        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+        "examples/word_problems/before.ein",
+        &["`z`, in (gave Bob Alice apples (n z 2) t0 t1)"],
     ),
     (
-        "examples/arith/div.ein",
-        &["`z`, in (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))"],
-    ),
-    // M1f S1f.6.15 — two of the three generated examples; the third,
-    // `many_calculations.ein`, draws an operand that is zero and writes it `z`.
-    (
-        "examples/arith/factorial.ein",
-        &["`z`, in (let last (n (n z 2) 5))"],
+        "examples/word_problems/bob1.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
     ),
     (
-        "examples/arith/long_numbers.ein",
-        &["`z`, in (let c (n (n (n (n (n (n (n (n (n (n z 9) 4) 9) 3) 5) 7) 8) 9) 2) 3))"],
+        "examples/word_problems/boxes12.ein",
+        &[
+            "`read-need`, asserted by rule `readings`",
+            "`z`, in (has Bob apples (n z 5) now)",
+        ],
     ),
     (
-        "examples/arith/mul.ein",
-        &["`z`, in (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))"],
+        "examples/word_problems/boxes13.ein",
+        &[
+            "`read-need`, asserted by rule `readings`",
+            "`z`, in (has Bob apples (n z 5) now)",
+        ],
     ),
     (
-        "examples/arith/sub.ein",
-        &["`z`, in (sub (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
+        "examples/word_problems/bystander.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/contra.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/gap.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/gap_fact.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/gaps.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/word_problems/kinds.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/kinds_full.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/kinds_listed.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/listed_is_all.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "examples/word_problems/more.ein",
+        &["`z`, in (has Bob apples (n z 5) now)"],
+    ),
+    (
+        "examples/word_problems/pencils.ein",
+        &["`z`, in (has School cartons (n (n z 1) 2) t0)"],
+    ),
+    (
+        "examples/word_problems/readings.ein",
+        &[
+            "`read-need`, asserted by rule `readings`",
+            "`z`, matched by rule `std.arith.operand-zero`",
+        ],
+    ),
+    (
+        "examples/word_problems/unused.ein",
+        &["`z`, in (has Bob apples (n z 5) t0)"],
+    ),
+    (
+        "examples/word_problems/words.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     ("stdlib/arith.ein", &["`z`, matched by rule `operand-zero`"]),
+    (
+        "stdlib/elim.ein",
+        &[
+            "`0`, matched by rule `domain-elimination`",
+            "`1`, matched by rule `domain-elimination`",
+        ],
+    ),
+    (
+        "stdlib/int.ein",
+        &[
+            "`neg`, asserted by rule `int-div-pn`",
+            "`pos`, asserted by rule `int-div-pp`",
+            "`z`, matched by rule `std.arith.operand-zero`",
+        ],
+    ),
+    (
+        "stdlib/num9.ein",
+        &["`z`, matched by rule `std.arith.operand-zero`"],
+    ),
+    (
+        "stdlib/rat.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, matched by rule `std.arith.operand-zero`",
+        ],
+    ),
+    (
+        "tests/stdlib/algebra/07_schroder.ein",
+        &[
+            "`C`, in (not (t A C))",
+            "`D`, in (not (t D F))",
+            "`G`, matched by rule `probe-undecided`",
+        ],
+    ),
+    (
+        "tests/stdlib/algebra/22_symmetric_negative.ein",
+        &["`C`, in (not (sits-with A C))"],
+    ),
     (
         "tests/stdlib/arith/01_add.ein",
         &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
@@ -404,9 +639,6 @@ const SEEDED: [(&str, &[&str]); 153] = [
         "tests/stdlib/arith/21_div_by_zero_spelt_and_named.ein",
         &["`z`, in (let none (n (n z 0) 0))"],
     ),
-    // M1f S1f.6.12 — the programs of malformed numbers: `z` inside a number
-    // as everywhere, and the names that stand in a digit's place or at a
-    // number's end, which are what each program is about.
     (
         "tests/stdlib/arith/22_malformed_digit.ein",
         &[
@@ -478,343 +710,175 @@ const SEEDED: [(&str, &[&str]); 153] = [
         "tests/stdlib/arith/38_what_stays_silent.ein",
         &["`end`, in (add (n end 1) (n z 5))"],
     ),
-    // M1f S1f.6.24 — a division by zero at a tagged call: `39` and `41`
-    // write `z` at top level in a `share` fact, and `40` only inside a number.
     (
         "tests/stdlib/arith/40_div_call_by_zero_spelt.ein",
         &["`z`, in (share (n z 7) (n (n z 0) 0))"],
     ),
-    // M1f S1f.6.7 — `std.int`: an integer's parts are numbers, so `z` is inside
-    // a nested fact here too, and the module holds it through `std.arith`'s rule.
     (
-        "examples/arith/int.ein",
+        "tests/stdlib/elim/03_typecheck_arg0_violated.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (int-add (int z (n (n z 1) 2)) (int (n (n z 4) 0) z))",
+            "`0`, matched by rule `std.elim.domain-elimination`",
+            "`1`, matched by rule `std.elim.domain-elimination`",
         ],
     ),
     (
-        "stdlib/int.ein",
+        "tests/stdlib/elim/04_typecheck_arg1_violated.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, matched by rule `operand-zero`",
+            "`0`, matched by rule `std.elim.domain-elimination`",
+            "`1`, matched by rule `std.elim.domain-elimination`",
         ],
     ),
     (
         "tests/stdlib/int/01_simplify.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-simplify (int (n z 5) (n z 3)))",
         ],
     ),
     (
         "tests/stdlib/int/02_neg.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-neg (int (n z 7) z))",
         ],
     ),
     (
         "tests/stdlib/int/03_add.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-add (int (n z 7) z) (int (n z 5) z))",
         ],
     ),
     (
         "tests/stdlib/int/04_sub.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-sub (int (n z 7) z) (int (n z 5) z))",
         ],
     ),
     (
         "tests/stdlib/int/05_mul.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))",
         ],
     ),
     (
         "tests/stdlib/int/06_cmp.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-cmp (int (n z 7) z) (int (n z 5) z))",
         ],
     ),
     (
         "tests/stdlib/int/07_unsimplified.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-add (int (n z 5) (n z 3)) (int z (n z 7)))",
         ],
     ),
     (
         "tests/stdlib/int/08_named_and_chained.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (let balance (int (n (n z 4) 0) z))",
         ],
     ),
-    // M1f S1f.6.22 — the divisions of integers: `z` as above, and the signs.
     (
         "tests/stdlib/int/09_div_euclid.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-div-euclid (int (n z 7) z) (int (n z 2) z))",
         ],
     ),
     (
         "tests/stdlib/int/10_div_trunc.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-div-trunc (int (n z 7) z) (int (n z 2) z))",
         ],
     ),
     (
         "tests/stdlib/int/11_div_floor.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-div-floor (int (n z 7) z) (int (n z 2) z))",
         ],
     ),
     (
         "tests/stdlib/int/12_div_euclid_by_zero.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-add (int (n z 2) z) (int z (n z 5)))",
         ],
     ),
     (
         "tests/stdlib/int/13_div_trunc_by_zero.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (int-add (int (n z 2) z) (int z (n z 5)))",
         ],
     ),
     (
         "tests/stdlib/int/14_div_floor_by_zero.ein",
         &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
             "`z`, in (let nothing (int (n z 0) (n (n z 0) 0)))",
         ],
     ),
-    // M1f S1f.6.8 — `std.rat`: `z` as above, and the two signs, `pos` and `neg`,
-    // which only the module's rules write, in a tag. Since S1f.6.22 `std.int`'s
-    // division writes the same two names in its tags, so every program of
-    // integers holds them too, and its rules are the ones named, being the
-    // first that assert them.
-    (
-        "examples/arith/rat.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "stdlib/rat.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, matched by rule `operand-zero`",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/01_simplify.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-simplify (rat (int (n z 2) z) (n z 4)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/02_neg.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-neg (rat (int (n z 3) z) (n z 4)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/03_add.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/04_sub.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/05_mul.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/06_div.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int (n z 3) z) (n z 4)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/07_cmp.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/08_unsimplified.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/09_named_and_chained.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (let half (rat (int (n z 1) z) (n z 2)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/10_div_by_zero_rational.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/11_zero_denominator_first.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/12_zero_denominator_second.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))",
-        ],
-    ),
-    (
-        "tests/stdlib/rat/13_zero_denominator_one_operand.ein",
-        &[
-            "`neg`, asserted by rule `int-div-pn`",
-            "`pos`, asserted by rule `int-div-pp`",
-            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
-        ],
-    ),
-    (
-        "stdlib/elim.ein",
-        &[
-            "`0`, matched by rule `domain-elimination`",
-            "`1`, matched by rule `domain-elimination`",
-        ],
-    ),
-    (
-        "tests/stdlib/algebra/07_schroder.ein",
-        &[
-            "`C`, in (not (t A C))",
-            "`D`, in (not (t D F))",
-            "`G`, matched by rule `probe-undecided`",
-        ],
-    ),
-    (
-        "tests/stdlib/algebra/22_symmetric_negative.ein",
-        &["`C`, in (not (sits-with A C))"],
-    ),
-    // M1f S1f.6.13 — `std.num9`. Its numbers are nine digit names and hold no
-    // `z`; the module names it in a rule's `:match`, the conversion of zero,
-    // which every program that imports the theory holds. The two programs
-    // that import `std.arith` beside it write a nested number.
-    (
-        "examples/arith/num9.ein",
-        &["`z`, matched by rule `to9-zero`"],
-    ),
-    (
-        "examples/arith/num9_both_ways.ein",
-        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
-    ),
-    (
-        "examples/arith/num9_overflow.ein",
-        &["`z`, matched by rule `to9-zero`"],
-    ),
-    ("stdlib/num9.ein", &["`z`, matched by rule `to9-zero`"]),
     (
         "tests/stdlib/num9/01_add.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/02_add_overflow.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/03_sub.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/04_cmp.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/05_mul.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/06_mul_overflow.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/07_div.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/08_div_every_digit.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/09_div_by_zero.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/11_from9.ein",
-        &["`z`, matched by rule `to9-zero`"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
         "tests/stdlib/num9/12_both_modules.ein",
@@ -822,197 +886,111 @@ const SEEDED: [(&str, &[&str]); 153] = [
     ),
     (
         "tests/stdlib/num9/13_chain.ein",
-        &["`z`, matched by rule `to9-zero`"],
-    ),
-    // M1f S1f.6.10 — the probes banked under `examples/beyond_arith/`. A
-    // program that writes a nested number names `z` inside it; one that
-    // imports `std.arith` and writes none holds the theory's own, matched by
-    // `operand-zero`; and the three inverse walks start their accumulator at
-    // `e`, which a rule asserts and no fact writes. `casting_out_nines.ein`
-    // writes `z` at top level, in `(count z …)`, so it is not here.
-    (
-        "examples/beyond_arith/collatz.ein",
-        &["`z`, in (collatz (n z 7) (n (n z 2) 0))"],
+        &["`z`, matched by rule `std.arith.operand-zero`"],
     ),
     (
-        "examples/beyond_arith/equation_refuted.ein",
+        "tests/stdlib/rat/01_simplify.ein",
         &[
-            "`e`, asserted by rule `um-start`",
-            "`z`, in (unmul 7 (n (n (n z 8) 6) 2))",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-simplify (rat (int (n z 2) z) (n z 4)))",
         ],
     ),
     (
-        "examples/beyond_arith/equation_two_unknowns.ein",
-        &["`z`, matched by rule `operand-zero`"],
-    ),
-    (
-        "examples/beyond_arith/fibonacci.ein",
-        &["`z`, in (fib-to (n (n z 3) 0))"],
-    ),
-    (
-        "examples/beyond_arith/gcd.ein",
-        &["`z`, in (gcd (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))"],
-    ),
-    (
-        "examples/beyond_arith/inverse_addition.ein",
+        "tests/stdlib/rat/02_neg.ein",
         &[
-            "`e`, asserted by rule `un-start`",
-            "`z`, in (unadd (n (n (n (n z 4) 5) 6) 7) (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-neg (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
-        "examples/beyond_arith/laws.ein",
-        &["`z`, matched by rule `operand-zero`"],
-    ),
-    (
-        "examples/beyond_arith/perfect.ein",
-        &["`z`, in (count (n z 1) (n (n z 1) 2))"],
-    ),
-    (
-        "examples/beyond_arith/primes.ein",
-        &["`z`, in (count (n z 2) (n (n z 3) 0))"],
-    ),
-    (
-        "examples/beyond_arith/pythagorean.ein",
-        &["`z`, in (count (n z 1) (n (n z 1) 3))"],
-    ),
-    (
-        "examples/beyond_arith/tables_backwards.ein",
+        "tests/stdlib/rat/03_add.ein",
         &[
-            "`e`, asserted by rule `um-start`",
-            "`z`, in (unmul 7 (n (n (n z 8) 6) 1))",
-        ],
-    ),
-    // M1f S1f.6.16 and S1f.6.17 — the prototypes banked under
-    // `examples/binary_arithmetic/` and `examples/binary_logic/`. A binary
-    // number is `(b2 PREFIX BIT)` over the same `z`, so a program that
-    // writes one names `z` inside it; the theory alone holds it in
-    // `operand-zero2`, and `conv.ein` in `std.arith`'s `operand-zero`.
-    // `conversions.ein` and `div_by_zero.ein` write `z` at top level, in
-    // `(to-bin z)` and `(div2 … z)`, so they are not here. `post.ein` names
-    // Post's five classes in its rules' conclusions and in no fact.
-    (
-        "examples/binary_arithmetic/bin.ein",
-        &["`z`, matched by rule `operand-zero2`"],
-    ),
-    (
-        "examples/binary_arithmetic/both_bases.ein",
-        &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
-    ),
-    (
-        "examples/binary_arithmetic/conv.ein",
-        &["`z`, matched by rule `operand-zero`"],
-    ),
-    (
-        "examples/binary_arithmetic/first.ein",
-        &["`z`, in (add2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))"],
-    ),
-    (
-        "examples/binary_arithmetic/five_operations.ein",
-        &[
-            "`z`, in (add2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "examples/binary_logic/post.ein",
+        "tests/stdlib/rat/04_sub.ein",
         &[
-            "`affine-class`, asserted by rule `inside-affine`",
-            "`monotone-class`, asserted by rule `inside-monotone`",
-            "`one-preserving`, asserted by rule `inside-one`",
-            "`self-dual-class`, asserted by rule `inside-self-dual`",
-            "`zero-preserving`, asserted by rule `inside-zero`",
-        ],
-    ),
-    // M1f S1f.6.20 — the word problems banked under `examples/word_problems/`.
-    // A problem writes its numbers nested, `(has Bob apples (n z 5) t0)`, so
-    // it names `z` inside one; `words.ein` alone holds the calculator's own,
-    // matched by `operand-zero`. `readings.ein`'s closing rule names its
-    // hrule, `read-need`, in a conclusion, and its `need-pack-all-plan`
-    // asserts `(add ?f (n z 1))`. `gap_assume.ein` and `kinds_assume.ein`
-    // write `z` at top level, in `(assumed … z)`, and `gaps.ein` imports no
-    // number, so they are not here. M1f S1f.6.28 adds four: `boxes13.ein` as
-    // `boxes12.ein`; `before.ein` and `kinds_listed.ein`, `z` in a number they
-    // write; and `listed_is_all.ein`, whose `unlisted-is-zero` concludes
-    // `(assumed … z)`. `readings.ein`'s closing rule names its obligation,
-    // `reading-owed`, which the names index holds since Q-M1f.226 (b), as it
-    // holds a rule's name, so it is not seeded (E-48).
-    (
-        "examples/word_problems/before.ein",
-        &["`z`, in (gave Bob Alice apples (n z 2) t0 t1)"],
-    ),
-    (
-        "examples/word_problems/bob1.ein",
-        &["`z`, in (has Bob apples (n z 5) t0)"],
-    ),
-    (
-        "examples/word_problems/boxes12.ein",
-        &[
-            "`read-need`, asserted by rule `readings`",
-            "`z`, in (has Bob apples (n z 5) now)",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-sub (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
         ],
     ),
     (
-        "examples/word_problems/boxes13.ein",
+        "tests/stdlib/rat/05_mul.ein",
         &[
-            "`read-need`, asserted by rule `readings`",
-            "`z`, in (has Bob apples (n z 5) now)",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
-        "examples/word_problems/bystander.ein",
-        &["`z`, in (has Bob apples (n z 5) t0)"],
-    ),
-    (
-        "examples/word_problems/contra.ein",
-        &["`z`, in (has Bob apples (n z 5) t0)"],
-    ),
-    (
-        "examples/word_problems/gap.ein",
-        &["`z`, in (has Bob apples (n z 5) t0)"],
-    ),
-    (
-        "examples/word_problems/gap_fact.ein",
-        &["`z`, in (has Bob apples (n z 5) t0)"],
-    ),
-    (
-        "examples/word_problems/kinds.ein",
-        &["`z`, in (has Bob apples (n z 5) now)"],
-    ),
-    (
-        "examples/word_problems/kinds_full.ein",
-        &["`z`, in (has Bob apples (n z 5) now)"],
-    ),
-    (
-        "examples/word_problems/kinds_listed.ein",
-        &["`z`, in (has Bob apples (n z 5) now)"],
-    ),
-    (
-        "examples/word_problems/listed_is_all.ein",
-        &["`z`, asserted by rule `unlisted-is-zero`"],
-    ),
-    (
-        "examples/word_problems/more.ein",
-        &["`z`, in (has Bob apples (n z 5) now)"],
-    ),
-    (
-        "examples/word_problems/pencils.ein",
-        &["`z`, in (has School cartons (n (n z 1) 2) t0)"],
-    ),
-    (
-        "examples/word_problems/readings.ein",
+        "tests/stdlib/rat/06_div.ein",
         &[
-            "`1`, asserted by rule `need-pack-all-plan`",
-            "`read-need`, asserted by rule `readings`",
-            "`z`, asserted by rule `need-pack-all-plan`",
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int (n z 3) z) (n z 4)))",
         ],
     ),
     (
-        "examples/word_problems/unused.ein",
-        &["`z`, in (has Bob apples (n z 5) t0)"],
+        "tests/stdlib/rat/07_cmp.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
     ),
     (
-        "examples/word_problems/words.ein",
-        &["`z`, matched by rule `operand-zero`"],
+        "tests/stdlib/rat/08_unsimplified.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/09_named_and_chained.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (let half (rat (int (n z 1) z) (n z 2)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/10_div_by_zero_rational.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/11_zero_denominator_first.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/12_zero_denominator_second.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))",
+        ],
+    ),
+    (
+        "tests/stdlib/rat/13_zero_denominator_one_operand.ein",
+        &[
+            "`neg`, asserted by rule `std.int.int-div-pn`",
+            "`pos`, asserted by rule `std.int.int-div-pp`",
+            "`z`, in (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))",
+        ],
     ),
 ];
 

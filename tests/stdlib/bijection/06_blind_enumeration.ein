@@ -88,7 +88,7 @@
 ;;; `domain-elimination` fired rather than a guess landing.
 
 (import std.algebra   :symbols (includes))
-(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 
 (relation is-a  T T           :why "{?1} is a {?2}")
 (relation is-a* T T           :why "{?1} is a {?2} (transitively)")

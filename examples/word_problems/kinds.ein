@@ -2,8 +2,9 @@
 ;;; The sum is over apples alone, and how many apples Alice has is not stated:
 ;;; no answer, and the gap named. That she has none is an assumption
 ;;; (kinds_assume.ein).
-(import words :symbols (words))
-(import gaps :symbols (gaps))
+(import words :symbols (words has asked together value amount))
+(import gaps :symbols (gaps unanswered))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) now    :source "Bob has 5 apples,")
 (has Alice pears (n z 3) now   :source "Alice has 3 pears.")

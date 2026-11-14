@@ -15,8 +15,9 @@
 ;;; quantity is unknown asked for; the second meets M1g's P1g.9, one equation
 ;;; and three methods. When either lands, the claims below move to 7 in that
 ;;; commit.
-(import words :symbols (words))
-(import gaps :symbols (gaps))
+(import words :symbols (words gave has asked amount value))
+(import gaps :symbols (gaps not-stated unanswered))
+(import std.arith :symbols (n))
 
 (gave Bob Alice apples (n z 2) t0 t1 :source "Bob gave Alice 2 apples.")
 (has Bob apples (n z 5) t1           :source "Now Bob has 5.")

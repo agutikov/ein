@@ -19,7 +19,10 @@
 ;;; whose first operand is a rational the theory computed; and the comparison
 ;;; its rule `more-than-half` asked for.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat rat-add rat-sum-of rat-mul rat-product-of rat-cmp
+                          rat-cmp-of))
+(import std.arith :symbols (let n))
+(import std.int :symbols (int))
 
 (let half  (rat (int (n z 1) z) (n z 2)))
 (let third (rat (int (n z 1) z) (n z 3)))

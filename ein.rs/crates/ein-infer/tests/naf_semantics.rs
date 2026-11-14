@@ -943,6 +943,13 @@ fn the_naf_map_is_incomplete_before_saturation() {
         "the load-time map is not a strict subset of the saturated one:\n  \
          load-time: {at_load:?}\n  saturated: {saturated:?}"
     );
+    // `total` and `domain-elimination` print by their full names, which
+    // zebra2 does not list (M1f S1f.6.35).
+    let at_load: BTreeSet<String> = at_load.iter().map(|r| ein_corpus::unprefixed(r)).collect();
+    let saturated: BTreeSet<String> = saturated
+        .iter()
+        .map(|r| ein_corpus::unprefixed(r))
+        .collect();
     for rule in ["adjacent-via-fwd", "total", "domain-elimination"] {
         assert!(
             !at_load.contains(rule),

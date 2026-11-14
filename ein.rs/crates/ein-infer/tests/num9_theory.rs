@@ -136,10 +136,17 @@ struct Run {
 fn run(src: &str, relations: &[&str], closer: &str) -> Run {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
+    let src = &ein_corpus::listed(src);
     let forms = parse(&mut ast, src, Some("<num9>")).expect("the requests parse");
     let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the requests load");
     let mut events = Events::off();
-    let closer = terms.syms.get(closer).expect("the closing rule's name");
+    let closer = ein_corpus::spellings(closer)
+        .iter()
+        .find_map(|n| terms.syms.get(n))
+        .expect("the closing rule's name");
+    // `std.arith`'s closing rule fires too since M1f S1f.6.35, the module
+    // coming whole with `std.num9`'s import of it; it is no request's either.
+    let lower = terms.syms.get("std.arith.arith");
     let mut firings = 0usize;
     {
         let mut s = Session {
@@ -151,7 +158,7 @@ fn run(src: &str, relations: &[&str], closer: &str) -> Run {
         };
         let mut sat = Saturator::new(&mut s).expect("the theory compiles");
         sat.saturate(&mut s, None, &mut |f| {
-            if f.rule != closer {
+            if f.rule != closer && Some(f.rule) != lower {
                 firings += 1;
             }
         })
@@ -159,9 +166,14 @@ fn run(src: &str, relations: &[&str], closer: &str) -> Run {
     }
     let mut facts = BTreeMap::new();
     for &r in relations {
-        let found = terms.syms.get(r).map_or_else(Vec::new, |rel| {
-            kb.facts_of(rel).map(|f| sexpr(&terms, f)).collect()
-        });
+        let found = ein_corpus::spellings(r)
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .map_or_else(Vec::new, |rel| {
+                kb.facts_of(rel)
+                    .map(|f| ein_corpus::unprefixed(&sexpr(&terms, f)))
+                    .collect()
+            });
         facts.insert(r.to_string(), found);
     }
     let dead = terms

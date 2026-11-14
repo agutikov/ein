@@ -8,8 +8,9 @@
 ;;; The claim was computed in Python by enumeration.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.4.
-(import require :symbols (requirements require inputs in is-a total-owed functional in-drives))
+(import require :symbols (requirements require))
 (import full_adder :symbols (gate))
+(import inputs :symbols (is-a in))
 
 (is-a a Input) (is-a b Input) (is-a cin Input)
 (gate m1 Or a b ob)             ; a or b

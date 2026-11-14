@@ -25,7 +25,8 @@
 ;;; product whose sign is negative and whose size is zero is `(int z z)`, as
 ;;; every zero is.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-mul int int-product-of))
+(import std.arith :symbols (n))
 
 (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))
 (int-mul (int z (n (n z 1) 2)) (int (n (n z 3) 5) z))

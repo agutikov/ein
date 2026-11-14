@@ -93,12 +93,13 @@ deterministic, and `ein-render/tests/id_order_invariance.rs` and `jobs_invarianc
 `states` op) to it.
 
 A state file from `ein solve examples/zebra.ein --dump-answer DIR`, `DIR/models/01.ein`, held to a run by
-`ein-cli/tests/natural_language_page.rs`:
+`ein-cli/tests/natural_language_page.rs`. A rule the program does not list in an import prints by its full name,
+`std.slots.slot-fill`, and one it lists by the name it writes, `includes` (M1f S1f.6.35):
 
 <!-- state-file: examples/zebra.ein -->
 ```lisp
 (co-located Englishman Red) ; source "condition (2)" — Englishman and Red are in the same house
-(co-located House-1 Water) ; rule slot-fill: every Drink except Water is excluded for slot House-1 ⟹ Water is at House-1. — House-1 and Water are in the same house
+(co-located House-1 Water) ; rule std.slots.slot-fill: every Drink except Water is excluded for slot House-1 ⟹ Water is at House-1. — House-1 and Water are in the same house
 (instance House-5 House) ; House-5 is an instance of House
 (next-to House-2 House-1) ; rule includes: next-to includes right-of: from House-2 →right-of→ House-1, derive House-2 →next-to→ House-1. — House-2's house is next to House-1's
 ```

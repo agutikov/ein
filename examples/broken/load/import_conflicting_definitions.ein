@@ -1,6 +1,9 @@
-;; Import is idempotent for *identical* declarations (diamonds collapse,
-;; S1.8a.f20); a same-name declaration with a different body is a
-;; genuine conflict.
+;; One short name bound to two full names in one file is refused (M1f
+;; S1f.6.35, Q-M1f.234, the user: "if it happens in the same file - it's an
+;; error, not correct ein code, just like ordinary namespaces"): the program
+;; lists std.closure's `infer-closure` and declares its own. Until then a
+;; flat import shared a name, and a same-name declaration with a different
+;; body was refused as *conflicting definitions*.
 
 (import std.closure :symbols (infer-closure))
 (rule infer-closure () :match (foo ?x) :assert (bar ?x) :why "w")

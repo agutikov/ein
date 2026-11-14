@@ -12,7 +12,7 @@
 ;;;
 ;;; R is {∅}, the sum is 6, and `malformed` has no fact.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n add sum-of malformed))
 
 (let price (n z 5))
 (let price (n z 5))

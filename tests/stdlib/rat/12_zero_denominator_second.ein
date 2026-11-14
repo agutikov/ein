@@ -14,7 +14,9 @@
 ;;; the request is computed in root's state all the same, and no query of the
 ;;; program has an answer.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat rat-add rat-mul))
+(import std.arith :symbols (let n))
+(import std.int :symbols (int))
 
 (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))
 (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))

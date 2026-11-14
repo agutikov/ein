@@ -177,7 +177,7 @@ fn parts(fact: &str) -> Vec<String> {
 
 /// Saturate `IMPORT` + `body` and return every fact of `relation`, as text.
 fn run(body: &str, relation: &str) -> Vec<String> {
-    let src = format!("{IMPORT}{body}");
+    let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &src, Some("<rat>")).expect("the requests parse");
@@ -195,10 +195,15 @@ fn run(body: &str, relation: &str) -> Vec<String> {
         sat.saturate(&mut s, None, &mut |_| {})
             .expect("the theory reaches its fixpoint");
     }
-    let Some(rel) = terms.syms.get(relation) else {
+    let Some(rel) = ein_corpus::spellings(relation)
+        .iter()
+        .find_map(|n| terms.syms.get(n))
+    else {
         return Vec::new();
     };
-    kb.facts_of(rel).map(|f| sexpr(&terms, f)).collect()
+    kb.facts_of(rel)
+        .map(|f| ein_corpus::unprefixed(&sexpr(&terms, f)))
+        .collect()
 }
 
 /// One operation over two rationals: its request and result relations, and
@@ -631,7 +636,7 @@ fn a_zero_denominator_is_flagged_and_false() {
 /// Firings and depth of one request, as `arith_theory.rs` measures them; the
 /// three closing rules' firings are left out.
 fn circuit(body: &str) -> (usize, usize) {
-    let src = format!("{IMPORT}{body}");
+    let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &src, Some("<rat>")).expect("the request parses");
@@ -640,9 +645,18 @@ fn circuit(body: &str) -> (usize, usize) {
     let mut depth_of: BTreeMap<ein_core::FactId, usize> = BTreeMap::new();
     let (mut firings, mut deepest) = (0usize, 0usize);
     let closers = [
-        terms.syms.get("arith").expect("std.arith's closing rule"),
-        terms.syms.get("int-arith").expect("std.int's closing rule"),
-        terms.syms.get("rat-arith").expect("std.rat's closing rule"),
+        ein_corpus::spellings("arith")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.arith's closing rule"),
+        ein_corpus::spellings("int-arith")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.int's closing rule"),
+        ein_corpus::spellings("rat-arith")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.rat's closing rule"),
     ];
     {
         let mut s = Session {

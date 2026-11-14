@@ -23,7 +23,7 @@
 ;;; gives a wrong digit or a remainder that is not less than the divisor,
 ;;; and fails the file.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith div n quot-of))
 
 (div (n (n (n (n (n (n (n (n (n (n z 8) 6) 4) 1) 9) 7) 5) 2) 3) 3) (n z 7))
 (div (n (n (n (n (n (n (n (n (n z 9) 8) 7) 6) 5) 4) 3) 2) 1) (n (n (n z 1) 2) 3))

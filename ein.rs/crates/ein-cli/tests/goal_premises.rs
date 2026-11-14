@@ -496,9 +496,11 @@ fn a_goal_over_a_relation_of_the_program_loads() {
         .collect();
     // A relation only an imported rule concludes, and an unused macro whose
     // expansion no goal could hold (Q-M1f.67: one no rule or goal calls loads).
+    // The goal's `injective` is listed: a name the program writes and does
+    // not list is its own since M1f S1f.6.35.
     programs.push((
         "an-imported-rules-conclusion".to_string(),
-        "(import std.algebra :symbols (bijective-properties functional))\n\
+        "(import std.algebra :symbols (bijective-properties functional injective))\n\
          (relation r A B :why \"{?1} r {?2}\")\n(is-a a A) (is-a b B)\n(bijective r)\n\
          (query :goal (injective ?R))\n"
             .to_string(),

@@ -159,7 +159,6 @@ pub fn load_held(
             let t = Instant::now();
             let kb = ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load)
                 .map_err(|e| format!("kb load error: {e}"))?;
-            say_notes(&kb.program().notes);
             judge_mechanisms(ast, terms, &kb, |ast, terms| {
                 let forms = ein_ir::parse(ast, &text, path.to_str()).ok()?;
                 ein_ir::load_query_with(ast, terms, &forms, path.parent(), query, load).ok()
@@ -183,13 +182,15 @@ pub fn load_held(
     }
 }
 
-/// **What the loader noticed and did not refuse**, said once (M1f S1f.6.25,
-/// E-20 of P1f.6's `findings.md`): each of [`ein_core::Program::notes`] on
+/// **What the load noticed and did not refuse**, said once: each line on
 /// stderr as `note: <line>`, on every command, since every command that
-/// loads a program loads it through [`load_held`]. A command may load one
-/// file several times, once a query and once a question, and each line
-/// carries its file and position, so a line is printed the first time the
-/// process meets it and never again. No answer and no exit code moves.
+/// loads a program loads it through [`load_held`]. Today the hypothesis
+/// mechanisms' notes (M1f S1f.6.34); until M1f S1f.6.35 also the resolver's
+/// *a selection left a rule behind* (E-20), which imports that bring every
+/// module whole retired. A command may load one file several times, once a
+/// query and once a question, and each line carries its file and position,
+/// so a line is printed the first time the process meets it and never again.
+/// No answer and no exit code moves.
 fn say_notes(notes: &[String]) {
     static SAID: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
     let mut said = SAID.lock().unwrap_or_else(|e| e.into_inner());

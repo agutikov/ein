@@ -18,7 +18,8 @@
 ;;; the request is computed in root's state all the same, and no query of the
 ;;; program has an answer. Here: 7 by a name for 0 less 00.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int int-add int-div-floor))
+(import std.arith :symbols (let n))
 
 (let nothing (int (n z 0) (n (n z 0) 0)))
 (int-add (int (n z 2) z) (int z (n z 5)))

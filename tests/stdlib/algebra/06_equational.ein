@@ -44,7 +44,7 @@
 
 (import std.algebra
   :symbols (compose derive-join join-l join-r
-            compose-contravariant join-converse))
+ compose-contravariant join-converse converse))
 
 (relation r   Node Node :why "{?1} r-reaches {?2}")   ; declared and empty — every route runs backwards
 (relation s   Node Node :why "{?1} s-reaches {?2}")

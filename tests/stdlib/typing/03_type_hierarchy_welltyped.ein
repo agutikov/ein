@@ -22,7 +22,7 @@
 ;;; instead — `../algebra/01_copiers.ein` and `../algebra/21_transitive.ein`
 ;;; are where those two live.
 
-(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran converse))
 (import std.typing  :symbols (type-hierarchy-converse))
 
 (relation is-a*    T T          :why "{?1} is a subtype of {?2}")

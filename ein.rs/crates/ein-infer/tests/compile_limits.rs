@@ -103,7 +103,10 @@ fn wide_by_design() -> std::collections::BTreeSet<String> {
         .iter()
         .filter(|&&f| ast.head_name(f) == Some("rule"))
         .filter_map(|&f| ast.form_args(f).first().and_then(|&a| ast.atom_name(a)))
-        .map(str::to_string)
+        // Each by its short name, as `stdlib/num9.ein` loaded alone prints it,
+        // and by its full name, as a program that imports it does since M1f
+        // S1f.6.35.
+        .flat_map(|n| [n.to_string(), format!("std.num9.{n}")])
         .collect()
 }
 
@@ -161,7 +164,7 @@ fn the_corpus_is_nowhere_near_the_ceiling() {
         ein_infer::MAX_REGS
     );
     assert_eq!(
-        (designed_rule.as_str(), designed),
+        (designed_rule.trim_start_matches("std.num9."), designed),
         WIDEST_BY_DESIGN,
         "the widest rule of {WIDE_BY_DESIGN} moved: its rules are wide by design, \
          and how wide is a decision about MAX_REGS ({}), which Q-M1f.173 took at \

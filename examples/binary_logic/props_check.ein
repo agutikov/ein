@@ -14,7 +14,13 @@
 ;;; state and one saturation.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md`.
-(import props_rules :symbols (props-derived))
+(import props_rules :symbols (props-derived column swap-of complement-of dual-of left-negated
+                              right-negated commutative associative idempotent reads-first
+                              reads-second ignores-first ignores-second right-identity-of
+                              left-identity-of identity-of right-absorbing-of left-absorbing-of
+                              absorbing-of preserves-zero preserves-one monotone affine self-dual
+                              escapes-zero escapes-one escapes-monotone escapes-affine
+                              escapes-self-dual complete-alone))
 (query :goal (column ?a ?b ?c ?d ?e)
        :expect (model (column And 0 0 0 1) (column Andn 0 0 1 0) (column Fst 0 0 1 1)
                       (column Nand 1 1 1 0) (column Nfst 1 1 0 0) (column Nor 1 0 0 0)

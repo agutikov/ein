@@ -14,7 +14,7 @@
 ;;;
 ;;; `quot9-of`'s whole extent, two answers.
 
-(import std.num9 :symbols (arith9))
+(import std.num9 :symbols (arith9 div9 num9 quot9-of))
 
 (div9 (num9 8 6 4 1 9 7 5 2 3) (num9 0 0 0 0 0 0 0 0 7))
 (div9 (num9 9 9 9 9 9 9 9 9 9) (num9 1 2 3 4 5 6 7 8 9))

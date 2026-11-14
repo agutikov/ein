@@ -20,7 +20,7 @@
 ;;; `overflow`'s whole extent, three flags, each naming its request as
 ;;; written, and `product9-of`'s, the one product that fits.
 
-(import std.num9 :symbols (arith9))
+(import std.num9 :symbols (arith9 mul9 num9 overflow product9-of))
 
 (mul9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 1 2 3 0 7 8))
 (mul9 (num9 5 0 0 0 0 0 0 0 0) (num9 0 0 0 0 0 0 0 0 2))

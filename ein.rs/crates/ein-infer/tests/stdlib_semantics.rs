@@ -87,6 +87,9 @@ impl Sat {
 fn try_saturate(src: &str, max_steps: usize) -> Result<Sat, SaturateError> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
+    // The fixture names what it writes (M1f S1f.6.35): every module of the
+    // stack lists the names the fixture writes of it.
+    let src = &ein_corpus::listed(src);
     let forms = parse(&mut ast, src, Some("<stdlib-fixture>")).expect("the fixture parses");
     let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the fixture loads");
     let mut events = Events::off();
@@ -111,10 +114,13 @@ fn try_saturate(src: &str, max_steps: usize) -> Result<Sat, SaturateError> {
         all_rules: Vec::new(),
     };
     for (rule, derived, redundant) in raw {
-        let rule = terms.sym(rule).to_string();
+        // Read in their short spellings: a rule or a relation the fixture
+        // does not list prints by its full name.
+        let rule = ein_corpus::unprefixed(terms.sym(rule));
         if !redundant {
             for id in derived {
-                out.productive.push((rule.clone(), sexpr(&terms, id)));
+                out.productive
+                    .push((rule.clone(), ein_corpus::unprefixed(&sexpr(&terms, id))));
             }
         }
         out.all_rules.push(rule);
@@ -134,6 +140,7 @@ fn saturate(src: &str) -> Sat {
 fn knows_extension(src: &str) -> Vec<String> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
+    let src = &ein_corpus::listed(src);
     let forms = parse(&mut ast, src, Some("<symmetric>")).expect("parses");
     let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
     let mut events = Events::off();

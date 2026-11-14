@@ -1,7 +1,8 @@
 ;;; Bob has 5 apples. Carol has 9 apples. Bob gave 2 apples to Alice.
 ;;; How many apples does Carol have?
 ;;; The event did not touch Carol: what she has is unchanged, 9.
-(import words :symbols (words))
+(import words :symbols (words has gave asked amount value))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (has Carol apples (n z 9) t0          :source "Carol has 9 apples.")

@@ -132,6 +132,8 @@ fn load_path(rel: &str) -> Fixture {
 fn load_text(text: &str) -> Fixture {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
+    // A fixture that imports names what it writes (M1f S1f.6.35).
+    let text = &ein_corpus::listed(text);
     let forms = parse(&mut ast, text, Some("<fixture>")).expect("the fixture parses");
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the fixture loads");
     Fixture { ast, terms, kb }
@@ -912,7 +914,22 @@ fn a_derived_closure_marker_silences_hypgen() {
          the closed arm below would prove nothing"
     );
 
-    let mut closed = load_text(&format!("{IMPORT_CLOSURE}{objects}"));
+    // `std.closure`'s rule as the module states it, written in the program:
+    // since M1f S1f.6.35 an import of the module brings `std.algebra` whole,
+    // whose loaded obligation rules take the ladder to the obligations rung
+    // (E-51), which proposes nothing here for its own reason, and the marker
+    // would not be what silenced r.
+    let text = ein_ir::stdlib::resolve_default()
+        .read("closure.ein")
+        .expect("the stdlib is resolvable from a test");
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, &text, Some("closure.ein")).expect("the stdlib parses");
+    let rule: String = dump_canonical(&ast, &forms)
+        .lines()
+        .filter(|l| !l.starts_with("(import "))
+        .map(|l| format!("{l}\n"))
+        .collect();
+    let mut closed = load_text(&format!("{rule}{objects}"));
     closed.saturate();
     let (candidates, stats) = hypotheses(&mut closed);
     let r = closed.sym("r");
@@ -927,59 +944,65 @@ fn a_derived_closure_marker_silences_hypgen() {
     );
 }
 
-/// **an-identical-re-declaration-collapses.**
-///
-/// Import is idempotent, and it has to be: two modules may pull the same
-/// dependency, and the diamond must collapse rather than trip a duplicate-name
-/// error. The dedup key is the *body*, not the name — so this is the half that
-/// must load, and a differing body next to it is the half that must not. Both
-/// arms are here because either one alone is satisfied by a broken rule: "never
-/// error" and "always error" each pass one of them.
+/// **a-file-s-own-declaration-is-its-own** — M1f S1f.6.35, the user's model
+/// (h): a short name a file declares is its own, and one an import lists is
+/// the module's, so the two are one short name bound to two full names, and
+/// refused whatever the two bodies (Q-M1f.234). Until S1f.6.35 a flat import
+/// shared the name, an identical re-declaration collapsed (the diamond's
+/// case, which one copy of a module now answers) and a differing one was
+/// refused as *conflicting definitions*. Not listed, the file's declaration
+/// shadows the module's: two rules, `infer-closure` and
+/// `std.closure.infer-closure`, each closing `r`, one fact.
 #[test]
-fn an_identical_re_declaration_collapses() {
+fn a_files_own_declaration_is_its_own() {
     let text = ein_ir::stdlib::resolve_default()
         .read("closure.ein")
         .expect("the stdlib is resolvable from a test");
     let mut ast = Ast::new();
     let forms = parse(&mut ast, &text, Some("closure.ein")).expect("the stdlib parses");
-    let verbatim = dump_canonical(&ast, &forms);
+    let verbatim: String = dump_canonical(&ast, &forms)
+        .lines()
+        .filter(|l| !l.starts_with("(import "))
+        .map(|l| format!("{l}\n"))
+        .collect();
 
+    // Listed and declared: refused, the bodies equal or not.
+    for own in [
+        verbatim.clone(),
+        "(rule infer-closure () :match (functional ?R) :assert (__closed__ ?R) \
+         :why \"{?R} is functional, so its extension is closed\")\n"
+            .to_string(),
+    ] {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(
+            &mut ast,
+            &format!("{IMPORT_CLOSURE}{own}"),
+            Some("<fixture>"),
+        )
+        .expect("parses");
+        let err = ein_ir::load(&mut ast, &mut terms, &forms, None)
+            .expect_err("one short name, two full names");
+        assert!(
+            err.0
+                .contains("'infer-closure' is bound to two full names in the program"),
+            "unexpected error: {}",
+            err.0
+        );
+    }
+
+    // Declared and not listed: the file's own, beside the module's.
     let mut f = load_text(&format!(
-        "{IMPORT_CLOSURE}{verbatim}(relation r A B :why \"r holds of {{?1}} and {{?2}}\")\n(functional r) (total r)\n"
+        "(import std.closure)\n(import std.algebra :symbols (functional total))\n{verbatim}\
+         (relation r A B :why \"r holds of {{?1}} and {{?2}}\")\n(functional r) (total r)\n"
     ));
-    let name = f.sym("infer-closure");
-    assert!(
-        f.kb.program().rules.get(name).is_some(),
-        "the re-declared rule is gone"
-    );
-    assert_eq!(
-        f.kb.program()
-            .rules
-            .iter()
-            .filter(|(n, _)| *n == name)
-            .count(),
-        1
-    );
-    // One rule, and it still fires.
+    for name in ["infer-closure", "std.closure.infer-closure"] {
+        let name = f.sym(name);
+        assert!(f.kb.program().rules.get(name).is_some(), "{name:?}");
+    }
     f.saturate();
     let closed = f.sym(CLOSED);
     assert_eq!(f.kb.n_facts_of(closed), 1);
-
-    // The control: same name, different body.
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let differing = format!(
-        "{IMPORT_CLOSURE}(rule infer-closure () :match (functional ?R) \
-         :assert (__closed__ ?R) :why \"{{?R}} is functional, so its extension is closed\")\n"
-    );
-    let forms = parse(&mut ast, &differing, Some("<fixture>")).expect("parses");
-    let err = ein_ir::load(&mut ast, &mut terms, &forms, None)
-        .expect_err("a differing redefinition must not load");
-    assert!(
-        err.0.contains("conflicting definitions of 'infer-closure'"),
-        "unexpected error: {}",
-        err.0
-    );
 }
 
 // ── The fixpoint contract ──────────────────────────────────────────

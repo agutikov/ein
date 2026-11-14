@@ -20,7 +20,7 @@
 ;;; over as `(done (product X Y) P)`, once a request. The third reads one
 ;;; answer as a program would, the names in the goal.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n mul product-of done product))
 
 (let price (n (n (n z 2) 5) 0))
 (let qty   (n (n z 1) 2))

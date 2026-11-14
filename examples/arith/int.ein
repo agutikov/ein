@@ -69,7 +69,11 @@
 ;;; `ein solve examples/arith/int.ein --trace T.md` writes every step as a
 ;;; sentence.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-add int int-sub int-mul int-simplify int-neg
+                          int-div-euclid int-div-trunc int-div-floor int-cmp int-cmp-of int-sum-of
+                          int-diff-of int-product-of int-simple-of int-neg-of int-quot-euclid-of
+                          int-quot-trunc-of int-quot-floor-of))
+(import std.arith :symbols (n let))
 
 (relation morning Name
   :why "{?1} is a morning's temperature")

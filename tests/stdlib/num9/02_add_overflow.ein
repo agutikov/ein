@@ -15,7 +15,7 @@
 ;;; `overflow`'s whole extent, one flag, and `sum9-of`'s, one sum: the request
 ;;; that overflowed has no answer among them.
 
-(import std.num9 :symbols (arith9))
+(import std.num9 :symbols (arith9 add9 num9 overflow sum9-of))
 
 (add9 (num9 9 9 9 9 9 9 9 9 9) (num9 0 0 0 0 0 0 0 0 1))
 (add9 (num9 9 9 9 9 9 9 9 9 8) (num9 0 0 0 0 0 0 0 0 1))

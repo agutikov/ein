@@ -663,6 +663,8 @@
 0    examples/ein-bugs/wrong-answers/closure-shared-given-control.ein :: solve
 0    examples/ein-bugs/wrong-answers/closure-shared-given.ein :: saturate
 0    examples/ein-bugs/wrong-answers/closure-shared-given.ein :: solve
+0    examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein :: saturate
+0    examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-activator-committed.ein :: saturate
 0    examples/ein-bugs/wrong-answers/core-activator-committed.ein :: solve
 0    examples/ein-bugs/wrong-answers/core-activator-given.ein :: saturate
@@ -1906,6 +1908,11 @@
 0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: saturate
 0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: solve
 0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: test
+0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: render constraints
+1    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: render rules
+0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: saturate
+0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: solve
+0    tests/stdlib/algebra/27_converse_welltyped_either_way.ein :: test
 0    tests/stdlib/arith/01_add.ein :: render constraints
 1    tests/stdlib/arith/01_add.ein :: render rules
 0    tests/stdlib/arith/01_add.ein :: saturate

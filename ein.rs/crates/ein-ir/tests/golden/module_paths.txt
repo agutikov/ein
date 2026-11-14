@@ -19,10 +19,10 @@
 === (import x--y)
   (import x--y) — module not found at {ROOT}/examples/x--y.ein (None)
 === (import std.nope.)
-  (import std.nope.) — module not found at {ROOT}/stdlib/nope.ein (None)
+  (import std.nope.) — a module's name is its path from the program's directory, a name per directory joined by dots, none empty and none holding a '/': no '..', no path (Q-M1f.252) at None
 === (import std..nope)
-  (import std..nope) — module not found at {ROOT}/stdlib/nope.ein (None)
+  (import std..nope) — a module's name is its path from the program's directory, a name per directory joined by dots, none empty and none holding a '/': no '..', no path (Q-M1f.252) at None
 === (import a.)
-  (import a.) — module not found at {ROOT}/examples/a.ein (None)
+  (import a.) — a module's name is its path from the program's directory, a name per directory joined by dots, none empty and none holding a '/': no '..', no path (Q-M1f.252) at None
 === (import std.__x)
   (import std.__x) — module not found at {ROOT}/stdlib/__x.ein (None)

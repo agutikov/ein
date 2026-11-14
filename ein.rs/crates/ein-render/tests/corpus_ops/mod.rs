@@ -120,9 +120,11 @@ pub const SWEEP_LIMIT: u32 = 10;
 
 /// The frontend surfaces, which have no CLI of their own and are therefore
 /// invisible to a sweep over `ein` processes: `parse`'s accept/reject *and
-/// message*, the canonical and compact dumpers, and the three
-/// import-resolution ops.
-pub const IR_MODES: [&str; 5] = ["parse", "dump-compact", "resolve", "minimize", "expand"];
+/// message*, the canonical and compact dumpers, and the two
+/// import-resolution ops. `minimize`, the tree-shake a `--dump-answer` state
+/// file's program went through, went at M1f S1f.6.35: an import brings its
+/// module whole, and the state file writes the program as `resolve` reads it.
+pub const IR_MODES: [&str; 4] = ["parse", "dump-compact", "resolve", "expand"];
 
 #[derive(Clone, Copy)]
 pub enum Op {
@@ -546,10 +548,6 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
             .join("\n")),
         "resolve" => r
             .resolve_imports(ast, forms, base)
-            .map(|f| dump_canonical(ast, &f))
-            .map_err(|e| e.0),
-        "minimize" => r
-            .resolve_and_minimize(ast, forms, base)
             .map(|f| dump_canonical(ast, &f))
             .map_err(|e| e.0),
         "expand" => r

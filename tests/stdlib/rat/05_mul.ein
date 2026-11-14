@@ -22,7 +22,9 @@
 ;;;
 ;;; `rat-product-of`'s whole extent, seven requests, no pair both ways round.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-mul rat rat-product-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n))
 
 (rat-mul (rat (int (n z 2) z) (n z 3)) (rat (int (n z 3) z) (n z 4)))
 (rat-mul (rat (int z (n z 2)) (n z 3)) (rat (int (n z 3) z) (n z 5)))

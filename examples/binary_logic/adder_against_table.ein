@@ -21,10 +21,8 @@
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
 (import gates :symbols (gate2 __closed__))
 (import bits :symbols (fa2))
-(import full_adder :symbols (gate))
+(import full_adder :symbols (gate))     ; `circuit`'s `gate`, which full_adder's gates are facts of
 
-(relation gate Instance Function Wire Wire Wire
-  :why "{?1} is a {?2} gate from {?3} and {?4} to {?5}")
 (relation at Vector Wire Bit
   :why "on test vector {?1}, {?2} carries {?3}")
 (relation vector Vector Bit Bit Bit

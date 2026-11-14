@@ -28,7 +28,7 @@
 ;;; `03_type_hierarchy_welltyped.ein` is where the *right* hierarchy relation
 ;;; is what stops the refutation, which is the other half of the same claim.
 
-(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran converse))
 (import std.typing  :symbols (type-hierarchy-converse))
 
 (relation is-a*    T T          :why "{?1} is a subtype of {?2}")

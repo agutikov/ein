@@ -54,10 +54,18 @@ impl RuleMode {
 // ── structural-head classification ─────────────────────────────────
 
 /// The head atom's name, or `None` when the head is a `?var` / `_`.
+///
+/// `std.macro`'s `forall` reads as `forall` under either of its names: the
+/// short one a program that lists it writes, and the full one a rule of a
+/// module that imports it prints under since M1f S1f.6.35, where the program
+/// does not list it.
 fn head_name(ast: &Ast, expr: NodeId) -> Option<&str> {
     match ast.node(expr) {
         Node::SForm { head, .. } => match ast.node(head) {
-            Node::Atom(s) => Some(ast.sym(s)),
+            Node::Atom(s) => match ast.sym(s) {
+                "std.macro.forall" => Some("forall"),
+                name => Some(name),
+            },
             _ => None,
         },
         _ => None,

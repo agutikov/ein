@@ -1,8 +1,9 @@
 ;;; Bob has 5 apples. He gave 2 to Alice. How many apples do they have together?
 ;;; How many apples Alice had before is not stated. The program answers what
 ;;; it can, Bob's 3, gives no answer to *together*, and names the gap.
-(import words :symbols (words))
-(import gaps :symbols (gaps))
+(import words :symbols (words has gave asked together value amount))
+(import gaps :symbols (gaps unanswered))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (gave Bob Alice apples (n z 2) t0 t1  :source "He gave 2 to Alice.")

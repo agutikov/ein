@@ -20,7 +20,7 @@
 ;;; states, which was neither refused nor answered. It is flagged since, and
 ;;; is `29_undeclared_name.ein`.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n b add done sum sum-of))
 
 (let a (n (n z 1) 9))
 (let b (n (n z 2) 3))

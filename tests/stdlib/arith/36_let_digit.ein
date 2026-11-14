@@ -13,7 +13,7 @@
 ;;; `(solve :expect (false))`: root is dead and R is empty; the unsat core is
 ;;; the `let` and the row `(nz 7)`.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n add))
 
 (let 7 (n z 5))
 (add (n z 2) (n z 2))

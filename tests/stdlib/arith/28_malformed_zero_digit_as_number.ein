@@ -22,7 +22,7 @@
 ;;; the unsat core, and `--trace` shows the flag and the contradiction as two
 ;;; steps.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith add n mul))
 
 (add (n z 2) (n z 2))
 (mul 0 (n z 5))

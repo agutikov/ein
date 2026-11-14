@@ -27,7 +27,7 @@
 ;;; The queries read the first request of each operation. A goal with the
 ;;; operands written claims that one answer and no other.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith add n sub cmp mul div sum-of diff-of cmp-of product-of quot-of))
 
 ;; 20 requests: X + Y
 (add (n (n (n (n z 4) 3) 8) 8) (n (n (n z 1) 6) 0))

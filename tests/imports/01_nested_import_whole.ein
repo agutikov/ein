@@ -6,7 +6,7 @@
 ;;; of `(upper)` reaches every rule of both. The request is answered, and the
 ;;; loader prints nothing.
 
-(import upper :symbols (upper))
+(import upper :symbols (upper wanted got))
 
 (wanted a)
 

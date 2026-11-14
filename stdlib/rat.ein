@@ -14,12 +14,16 @@
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
-;;;     (import std.rat :symbols (rat-arith))
+;;;     (import std.rat :symbols (rat-arith rat-add rat rat-sum-of))
+;;;     (import std.int :symbols (int))
+;;;     (import std.arith :symbols (n))
 ;;;
-;;; `rat-arith` is the theory's one entry, the closing rule at the end of this
-;;; file. It names every rule and closes every relation of the module, and it
-;;; names `int-arith` and `arith`, the entries of the two theories below, so
-;;; that one name brings all three and the tables.
+;;; An import brings the module whole, the two theories below and the tables
+;;; with it (M1f S1f.6.35); a program lists the names it writes, from the
+;;; module that declares each. `rat-arith` is the theory's entry, the closing
+;;; rule at the end of this file: it names every rule and closes every relation
+;;; of the module, and it names `int-arith` and `arith`, the entries of the two
+;;; theories below.
 ;;;
 ;;; ── The rational ───────────────────────────────────────────────────────────
 ;;;
@@ -136,8 +140,9 @@
 ;;; calls; the rest is in the state for a query or a `--trace` to see, and is
 ;;; not a promise.
 
-(import std.arith :symbols (arith))
-(import std.int :symbols (int-arith))
+(import std.arith :symbols (arith operand operand-is cmp-walk order-is division-by-zero n div-call
+                            div-done mul-call done add-walk))
+(import std.int :symbols (int-arith int int-norm int-done int-mul-call))
 
 ;; ── The rational ────────────────────────────────────────────────────────────
 (relation rat Integer Number
@@ -559,9 +564,10 @@
 
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed and every rule named, with
-;; `int-arith` and `arith`, the entries of the theories below: a selection's
-;; closure follows the names a kept declaration writes (E-20 of P1f.6's
-;; `findings.md`). `ein-infer/tests/rat_theory.rs` holds that nothing is
+;; `int-arith` and `arith`, the entries of the theories below. Until M1f
+;; S1f.6.35 a selection's closure followed the names a kept declaration
+;; writes (E-20 of P1f.6's `findings.md`); every import brings its module
+;; whole since, and the names stay for a program and a trace to read. `ein-infer/tests/rat_theory.rs` holds that nothing is
 ;; missing here.
 (relation rat-rule Rule
   :why "{?1} is a rule std.rat brings")

@@ -71,12 +71,13 @@ and `upper.ein` over it, each with an entry rule; `upper_without_entry.ein`,
 the upper one with the lower theory's entry name left out of its own; and two
 programs that import the upper theory by its entry. `01_nested_import_whole`
 gets both theories and its request answered. `02_nested_import_left_behind`
-gets the upper theory's rules and only the *declarations* of the lower one's
-relations, since a selection's closure follows names: its request is derived
-and never answered, and the loader prints one `note:` line on stderr, on every
-command, exit 0. Each file's claim is about facts and holds either way;
-`ein-cli/tests/import_left_behind.rs` holds the line, that it is printed once,
-and what it stays quiet on. Corpus group `positive`.
+was the witness of E-20: until M1f S1f.6.35 a selection's closure followed
+names, so it got only the *declarations* of the lower theory's relations, its
+request was never answered, and the loader printed a `note:` line. Since,
+every import brings its module whole, the upper module's own import of the
+lower one among them, and it is answered as `01` is, `(got a aa)`; nothing is
+left behind and no line is printed (`ein-cli/tests/imports_by_full_name.rs`).
+Corpus group `positive`.
 
 ## `stdlib/` — the stdlib conformance corpus
 
@@ -180,7 +181,7 @@ program can show:
 
 | file | what it holds |
 |---|---|
-| `01_tables.ein` | a flat import brings a listed table's rows (S1f.6.11's fix, W88, seen from the stdlib); each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and with `__closed__` listed the module's own closing facts leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
+| `01_tables.ein` | an import brings a table's rows (S1f.6.11's fix, W88, seen from the stdlib), and since S1f.6.35 the module whole; each goal is a lookup, constants where the table reads and variables where it gives, and its claim closes the goal, so a second row for one reading fails the file; `nz` and `adj` are claimed whole; and the module's own closing facts, which every import brings since S1f.6.35 (until then only with `__closed__` listed), leave **no candidate**, R = {∅}, claimed on the `(solve …)` form with no `:hypothesis-relations` list to help |
 | `02_a_core_names_its_rows.ein` | a refutation through a lookup: root is dead and the unsat core is `(column 7 5 3)` and `(fa 7 5 0 2 1)`, the claim and the row it was checked against. The agreeing `(column 7 5 2)` is there so the rule is matched and silent once (*a refutation rule gets two files*, here two facts) |
 
 ### `stdlib/arith/`: a theory whose answers a program cannot check
@@ -653,6 +654,27 @@ every one**, on its first run (`python3 utils/stdlib_mutants.py`, M1f
 [S1f.6.8](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.8_rational_numbers.md)).
 As `std.int`'s, they are the exchange families. **The bank is unmoved**, 50
 lines.
+
+**431 of 502 on 2026-11-14: one killed, eleven masked by whole modules**
+(`python3 utils/stdlib_mutants.py --bless`, M1f
+[S1f.6.35](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md),
+which banked them). **Killed**: `converse-illtyped-dom` without its `neq`, by
+`stdlib/algebra/27_converse_welltyped_either_way.ein`, W93's fixture, which its
+two commits added without re-banking (*the claim lists 1 state and R is
+empty*; the binary and stdlib of `dc94b947` kill it alike). **New, eleven,
+each a mutant whose loss another rule of the same module makes good**: since
+S1f.6.35 every import brings its module whole, so a program that lists
+`symmetric` or `converse` holds `std.algebra`'s lemmas too, and with them
+`(converse R1 R2)` holds both ways (`converse-pair-symmetric`) and a symmetric
+relation is its own converse (`symmetric-is-self-converse`). A `(converse …)`
+premise read the other way round — `converse-illtyped-dom`, `-ran`,
+`compose-contravariant`'s three, `join-converse`'s three, `std.typing`'s
+`type-hierarchy-converse` — matches the mirror the lemma derives, and
+`symmetric` with its premise or its conclusion exchanged leaves the mirror to
+`converse`, through the self-converse lemma. The facts are those of the
+unmutated module, so no claim made of facts can tell them apart, and no
+program can now load one of those rules without its lemma: they are banked,
+71 lines, and E-56 of P1f.6's findings says so.
 
 **Where the remaining 50 are.** Forty-two in `slots.ein`, which has the most
 parameterised, direction-sensitive rules and the fewest programs per rule; the

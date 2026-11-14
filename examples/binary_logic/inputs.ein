@@ -25,7 +25,7 @@
 ;;; rules behind in silence (E-20 of the phase's `findings.md`).
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.2.
-(import circuit :symbols (circuit))
+(import circuit :symbols (circuit val circuit-rule))
 (import std.algebra :symbols (total-owed functional))
 (relation is-a Thing Type
   :why "{?1} is a {?2}")

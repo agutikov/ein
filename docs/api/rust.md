@@ -304,7 +304,7 @@ one state: 25 facts over H
   who_water = Norwegian
   who_zebra = Japanese
 saturations: 45, R listed whole: true
-trace: 569 steps
+trace: 581 steps
 ```
 
 > **This example asked the walk until 2026-11-03**, `ein_infer::solve::solve`

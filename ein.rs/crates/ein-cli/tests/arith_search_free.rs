@@ -171,6 +171,9 @@ struct Run {
     stderr: String,
 }
 
+/// A run, read in short names: a name of the calculator a program does not
+/// list prints by its full name since M1f S1f.6.35, `std.arith.strip`, and
+/// this test reads every one as the module writes it.
 fn ein(args: &[&str]) -> Run {
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
         .args(args)
@@ -179,8 +182,8 @@ fn ein(args: &[&str]) -> Run {
         .expect("the `ein` binary runs");
     Run {
         code: out.status.code().unwrap_or(-1),
-        stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
-        stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
+        stdout: ein_corpus::unprefixed(&String::from_utf8_lossy(&out.stdout)),
+        stderr: ein_corpus::unprefixed(&String::from_utf8_lossy(&out.stderr)),
     }
 }
 
@@ -455,9 +458,10 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
         dump.to_str().expect("utf-8"),
     ]);
     assert_eq!(solve.code, 0, "{file}: ein solve\n{}", solve.stderr);
-    let json: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(&summary).expect("the summary"))
-            .expect("the summary is JSON");
+    let json: serde_json::Value = serde_json::from_str(&ein_corpus::unprefixed(
+        &std::fs::read_to_string(&summary).expect("the summary"),
+    ))
+    .expect("the summary is JSON");
     let region = &json["region"];
     assert_eq!(
         region["universe"]["candidates"], 0,
@@ -491,21 +495,23 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
         json["work"]["saturations"], 1,
         "{file}: one saturation, no fork"
     );
-    // One `absent` where the program holds `std.arith`'s rules, which is
-    // where it imports `std.arith`, `std.int` or `std.rat`: the undeclared
-    // name's, over `let` (S1f.6.12). It is read statically, a premise of one
-    // plan, and never at a node: the theory closes `let` and no rule derives
-    // it, so the static check calls the program monotone all the same.
+    // One `absent` where the program holds `std.arith`'s rules, which since
+    // M1f S1f.6.35 is every program here: `std.num9` imports `std.arith`, and
+    // an import brings its module whole (until then a program of `std.num9`
+    // alone held none of its rules and read none). The undeclared name's,
+    // over `let` (S1f.6.12). It is read statically, a premise of one plan,
+    // and never at a node: the theory closes `let` and no rule derives it, so
+    // the static check calls the program monotone all the same.
     let mono = &json["monotonicity"];
     assert_eq!(mono["monotone"], true, "{file}");
     let absents = mono["absent_reads"]["static"].as_u64().expect("a count");
+    assert!(
+        THEORIES.iter().any(|t| text.contains(t)),
+        "{file}: imports none"
+    );
     assert_eq!(
-        absents,
-        u64::from(
-            text.contains(THEORIES[0]) || text.contains(THEORIES[2]) || text.contains(THEORIES[3])
-        ),
-        "{file}: the theory reads one `absent`, the undeclared name's, and a program \
-         of `std.num9` alone none"
+        absents, 1,
+        "{file}: the theory reads one `absent`, the undeclared name's"
     );
     for kind in ["dynamic_monotone", "dynamic_non_monotone"] {
         assert_eq!(
@@ -533,7 +539,9 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
     );
 
     // ── the same answer ──
-    let state = std::fs::read_to_string(dump.join("models/01.ein")).expect("the one state's file");
+    let state = ein_corpus::unprefixed(
+        &std::fs::read_to_string(dump.join("models/01.ein")).expect("the one state's file"),
+    );
     let from_solve = results(&state, " ; ");
     let from_saturate = results(&saturate.stdout, " :rule ");
     assert!(!from_solve.is_empty(), "{file}: no answer in the state");

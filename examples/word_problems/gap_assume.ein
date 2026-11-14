@@ -2,8 +2,9 @@
 ;;; Assume that Alice had none.
 ;;; The gap of gap.ein closed by an assumption, a fact with a marker of its
 ;;; own, `assumed`: the answer is 5, and a second fact says what it rests on.
-(import words :symbols (words))
-(import gaps :symbols (gaps))
+(import words :symbols (words has gave asked together assumed amount value))
+(import gaps :symbols (gaps rests-on unanswered))
+(import std.arith :symbols (n))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (gave Bob Alice apples (n z 2) t0 t1  :source "He gave 2 to Alice.")

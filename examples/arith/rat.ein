@@ -46,7 +46,11 @@
 ;;; `ein solve examples/arith/rat.ein --trace T.md` writes every step as a
 ;;; sentence.
 
-(import std.rat :symbols (rat-arith))
+(import std.rat :symbols (rat-arith rat-add rat rat-sub rat-div rat-simplify rat-mul
+                          rat-product-of rat-cmp rat-cmp-of rat-sum-of rat-diff-of rat-quot-of
+                          rat-simple-of))
+(import std.int :symbols (int))
+(import std.arith :symbols (n let))
 
 (relation short-of Name Rational
   :why "there is not enough {?1}: {?2} is needed")

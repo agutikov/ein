@@ -1,32 +1,29 @@
 ;;; A theory built on a theory, imported by an entry that does not name the
-;;; lower one's: the lower theory's rules stay behind, and the loader says
-;;; so in one line — M1f S1f.6.25, E-20 of P1f.6's `findings.md`.
+;;; lower one's — M1f S1f.6.25's witness of E-20 in P1f.6's `findings.md`,
+;;; and since M1f S1f.6.35 the witness that nothing is left behind.
 ;;;
 ;;; `upper_without_entry.ein` imports `lower` by its entry and uses it; its
-;;; own entry, `upper`, names its two rules and not `lower`. The closure of
-;;; `(upper)` follows the names those rules write: the relations `ask` and
-;;; `double-of`, whose declarations come, and no rule of the lower theory.
-;;; That is the closure rule as `01_grammar.md` § Import states it: a
-;;; selection is a selection. So `(ask a)` is derived and never answered, and
-;;; `ask` and `double-of`, which the lower theory's entry would have closed,
-;;; are open: left to itself the search would guess their facts. This
-;;; program states no hypothesis, to keep the answer small: R {∅}, and the
-;;; goal has no row.
+;;; own entry, `upper`, names its two rules and not `lower`. Until S1f.6.35 a
+;;; selection kept the listed names and their closure, so `(upper)` brought
+;;; `lower`'s declarations and none of its rules: `(ask a)` was derived and
+;;; never answered, the goal had no row, and the loader said so in a `note:`
+;;; line on every command.
 ;;;
-;;; The symptom, an unanswered request, is far from the cause, an entry
-;;; name missing two files away, so the loader prints, on every command:
-;;;
-;;;   note: tests/imports/02_nested_import_left_behind.ein:28:2: (import
-;;;   upper_without_entry :symbols (upper)) brings the declaration of
-;;;   double-of and no rule that derives it …
-;;;
-;;; `ein-cli/tests/import_left_behind.rs` holds the line.
+;;; Since S1f.6.35 every import brings its module whole, with the module's own
+;;; imports (the user, 2026-11-14: *"in all cases we import everything, the
+;;; difference only in names"*): `upper_without_entry`'s own import of `lower`
+;;; is an import of the program, so the lower theory is here and answers, as
+;;; it does for `01_nested_import_whole.ein`, and a selection only names. The
+;;; program lists what it writes, `wanted` and `got`. Today's whole import,
+;;; `(import upper_without_entry :as u)`, gave the same answer before S1f.6.35
+;;; (the stage's record, *Import invariance*). It states no hypothesis, to
+;;; keep the answer small: R {∅}, and `a`'s double is `aa`.
 
-(import upper_without_entry :symbols (upper))
+(import upper_without_entry :symbols (upper wanted got))
 
 (wanted a)
 
 (solve :hypothesis-relations () :expect (region (model)))
 (query :goal (got ?x ?y)
        :goal-text "{?x}'s double is {?y}"
-       :expect (model))
+       :expect (model (got a aa)))

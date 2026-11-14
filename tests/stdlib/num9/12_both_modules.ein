@@ -21,8 +21,8 @@
 ;;; 4567. The program closes nothing of its own, since it declares no
 ;;; relation, and R is {∅} still.
 
-(import std.arith :symbols (arith))
-(import std.num9 :symbols (arith9))
+(import std.arith :symbols (arith add n sum-of cmp cmp-of))
+(import std.num9 :symbols (arith9 to9 as9 add9 sum9-of num9 from9 of9))
 
 (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
 (to9 (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))

@@ -31,7 +31,7 @@
 ;;; named constants; the program asks for their product, and `fence` asks for
 ;;; the sum of the two, which the theory answers like a written request.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith mul n let product-of add sum-of))
 
 (mul (n (n (n z 1) 2) 3) (n (n (n z 4) 5) 6))
 (mul (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8))

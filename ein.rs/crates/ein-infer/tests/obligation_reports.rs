@@ -224,11 +224,13 @@ fn a_state_that_owes_is_open_and_not_a_solution() {
         "Open",
         "a state that owes is not a model — S1d.2.6"
     );
+    // In scope: it loads `std.algebra`'s two obligation rules, the module
+    // coming whole since M1f S1f.6.35, and activates one, `total-owed`.
     let (_, _, kb) = load(rel);
     assert_eq!(
         kb.program().obligations.len(),
-        1,
-        "in scope: it states one obligation"
+        2,
+        "in scope: std.algebra's two obligation rules"
     );
     let d = describe(rel);
     assert_eq!(d.k_s(), 0, "no model");
@@ -254,8 +256,15 @@ fn a_state_that_owes_is_open_and_not_a_solution() {
 #[test]
 fn a_program_that_states_no_obligation_keeps_its_word() {
     let rel = "tests/stdlib/closure/01_infer_closure.ein";
+    // It activates none: the two obligation rules it loads are `std.algebra`'s,
+    // which `std.closure` imports and every import brings whole since M1f
+    // S1f.6.35, and nothing it writes or derives activates either.
     let (_, _, kb) = load(rel);
-    assert!(kb.program().obligations.is_empty(), "states no obligation");
+    assert_eq!(
+        kb.program().obligations.len(),
+        2,
+        "std.algebra's two, loaded"
+    );
     assert!(
         !describe(rel).owing_met,
         "so no node it reaches owes anything"
@@ -284,8 +293,9 @@ fn a_program_that_states_no_obligation_keeps_its_word() {
 fn the_closed_and_owing_corner_is_a_conflict() {
     let sat = "tests/stdlib/closure/02_closed_and_satisfied.ein";
     assert_eq!(single(sat), "Solution", "closed, and owing nothing");
-    let (_, _, kb) = load(sat);
-    assert!(kb.program().obligations.is_empty(), "it states none");
+    // It activates none: std.algebra's two are loaded and nothing activates
+    // them (M1f S1f.6.35).
+    assert!(!describe(sat).owing_met, "it owes nothing");
 
     let owing = "examples/ein-bugs/closed-and-owing.ein";
     let (ast, mut terms, mut kb) = load(owing);
@@ -395,7 +405,10 @@ fn the_ledger_is_the_size_the_declarations_predict() {
         // The audit reads root's tally and root's fact store, and nothing
         // past root's fixpoint.
         let (terms, kb, root_owes) = root_tally(rel);
-        let Some(total_owed) = terms.syms.get("total-owed") else {
+        let Some(total_owed) = ein_corpus::spellings("total-owed")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+        else {
             panic!("{rel}: nothing derived a total-owed activator");
         };
         let relation = terms.kernel.relation;
@@ -527,10 +540,17 @@ fn an_obligation_rule_never_reaches_the_firing_stream() {
         // rules at all — two of the three are an obligation and its activators
         // and nothing else, which is what makes them isolate the rule.
         assert!(owes > 0, "{rel}: no owe reached the stream");
+        // The program's own saturation rules, and not the module's, which an
+        // import brings whole since M1f S1f.6.35 and which need not fire.
+        let own = kb
+            .program()
+            .rules
+            .iter()
+            .filter(|(n, _)| !terms.sym(*n).starts_with("std."))
+            .count();
         assert!(
-            fires > 0 || kb.program().rules.is_empty(),
-            "{rel}: {} saturation rules and none fired",
-            kb.program().rules.len()
+            fires > 0 || own == 0,
+            "{rel}: {own} saturation rules of its own and none fired"
         );
     }
 }

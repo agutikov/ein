@@ -66,13 +66,6 @@ pub struct Program {
     /// (`ein_infer::predicates::domain`), and shared by every fork. A load
     /// that changes the registries ([`crate::Kb::program_mut`]) clears it.
     pub domain: std::sync::OnceLock<Box<[crate::Value]>>,
-    /// **What the loader noticed and did not refuse**, a line each, in the
-    /// order found (M1f S1f.6.25, E-20 of P1f.6's `findings.md`): today one
-    /// kind, a selection that brought a relation's declaration and no rule
-    /// that derives it (`ein_ir::imports::LeftBehind`). A caller prints each
-    /// once, on stderr; they change no answer and no exit code. Empty for a
-    /// program opened from a container, whose stored text has no import left.
-    pub notes: Vec<String>,
 }
 
 impl Program {

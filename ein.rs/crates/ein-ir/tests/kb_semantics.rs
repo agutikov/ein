@@ -262,8 +262,8 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
     let (flat_terms, flat_kb) = kb_of(&flat);
     assert_eq!(
         names(&flat_terms, &flat_kb.program().macros),
-        ["forall"],
-        ":symbols is flat, and pulls only the closure of what was listed"
+        ["forall", "std.macro.unknown"],
+        ":symbols names `forall` short and brings the module whole (M1f S1f.6.35)"
     );
 
     assert_eq!(
@@ -276,17 +276,16 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
     assert!(!expanded_rule(&whole).contains("forall"), "no residue");
 }
 
-/// Importing a module whole re-qualifies what that module imported **flat**,
-/// not only what it defined.
+/// Importing a module whole brings what that module imported under the
+/// **defining module's** full name, one copy (M1f S1f.6.35).
 ///
-/// The interesting case for a library author: `mid` pulls `forall` in flat and
-/// wraps it, so `forall` is one of `mid`'s own names by the time an importer
-/// sees it, and the importer gets `mid.forall` alongside `mid.wrap`. If
-/// re-export were shallow, `mid.wrap`'s body would still name the bare
-/// `forall` its importer never imported and the composition would silently
-/// stop expanding one level in.
+/// The interesting case for a library author: `mid` lists `forall` and wraps
+/// it. Until S1f.6.35 a whole import re-qualified the subtree, `mid.forall`
+/// beside `mid.wrap`; since, `forall` is `std.macro.forall` whoever imports
+/// it, and `mid`'s short name for it is `mid`'s alone. The composition must
+/// still expand through both levels: `mid.wrap`'s body names the full name.
 #[test]
-fn importing_a_module_whole_requalifies_what_it_imported_flat() {
+fn importing_a_module_whole_names_what_it_imported_by_the_defining_module() {
     let dir = scratch("reexport");
     write(
         &dir,
@@ -307,8 +306,8 @@ fn importing_a_module_whole_requalifies_what_it_imported_flat() {
     let kb = load_file(&mut ast, &mut terms, &main).expect("the project loads");
     assert_eq!(
         names(&terms, &kb.program().macros),
-        ["mid.forall", "mid.wrap"],
-        "both the definition and the re-export are re-qualified"
+        ["mid.wrap", "std.macro.forall", "std.macro.unknown"],
+        "`mid`'s own name under its prefix, `std.macro`'s under theirs"
     );
 
     let text = std::fs::read_to_string(&main).expect("readable");
@@ -333,11 +332,10 @@ fn importing_a_module_whole_requalifies_what_it_imported_flat() {
 /// A file-relative import resolves against the **importing file's** directory,
 /// and the two tiers behave differently on the same module.
 ///
-/// Worth pinning together because the tiers are not two spellings of one
-/// thing: whole-module qualifies and takes everything, `:symbols` stays flat
-/// and takes only the closure of what was named — so `unused`, which nothing
-/// references, never arrives. A resolver that pulled the module and then
-/// filtered would pass the first half and fail the second.
+/// Since M1f S1f.6.35 the two tiers are two spellings of one thing: both
+/// bring the module whole, the bare import writing every name in full and
+/// `:symbols` the listed ones short — so `unused`, which nothing references,
+/// arrives too, under its full name.
 #[test]
 fn a_file_relative_import_resolves_against_the_importing_file() {
     let dir = scratch("relative");
@@ -370,8 +368,8 @@ fn a_file_relative_import_resolves_against_the_importing_file() {
     let kb = load_file(&mut ast, &mut terms, &main).expect("the project loads");
     assert_eq!(
         names(&terms, &kb.program().macros),
-        ["twice"],
-        "flat, and `unused` stays behind"
+        ["lib.unused", "twice"],
+        "`twice` short, and `unused` whole under its full name"
     );
 }
 
@@ -392,42 +390,47 @@ fn a_file_relative_import_without_a_base_directory_is_refused() {
     // …and a `std.*` module needs no base, which is what makes the check a
     // property of the *module name* rather than of loading from a string.
     let (terms, kb) = kb_of("(import std.macro :symbols (forall))");
-    assert_eq!(names(&terms, &kb.program().macros), ["forall"]);
+    assert_eq!(
+        names(&terms, &kb.program().macros),
+        ["forall", "std.macro.unknown"]
+    );
 }
 
-/// `:symbols` pulls the listed names **plus their name-reference closure**,
-/// transitively through the imported module's own imports.
+/// An import brings its module **whole, with the module's own imports**, all
+/// the way down (M1f S1f.6.35, the user: *"in all cases we import
+/// everything, the difference only in names"*).
 ///
 /// This is the property that makes the stdlib usable at all: a puzzle names
-/// one entry rule and gets a working stack. It is also the property most
-/// likely to rot silently — a closure that stopped following the module's own
-/// imports would still load `zebra2`, because `zebra2` lists three entry
-/// points and the missing rules would simply never fire. So the fixture names
-/// exactly one rule and asserts on eight it did not name.
+/// one entry rule and gets a working stack. Until S1f.6.35 it was a selection's
+/// name-reference closure, transitively through the module's own imports;
+/// since, nothing is selected and everything comes, the listed name short and
+/// every other under its full name. The fixture names exactly one rule and
+/// asserts on eight it did not name, across three modules.
 #[test]
-fn a_symbols_import_pulls_the_name_reference_closure() {
+fn an_import_brings_the_module_whole_with_its_own_imports() {
     let (terms, kb) = kb_of(
         "(import std.bijection :symbols (bijective-setup))\n\
          (relation color-of T T :why \"{?1} is coloured {?2}\")\n",
     );
     let rules = names(&terms, &kb.program().rules);
     for pulled in [
-        "domain-elimination",
-        "functional",
-        "functional-negative",
-        "injective",
-        "injective-negative",
-        "range-elimination",
-        "surjective",
-        "total",
+        "bijective-setup",
+        "std.bijection.domain-elimination",
+        "std.algebra.functional",
+        "std.bijection.functional-negative",
+        "std.algebra.injective",
+        "std.bijection.injective-negative",
+        "std.bijection.range-elimination",
+        "std.algebra.surjective",
+        "std.algebra.total",
     ] {
         assert!(
             rules.contains(&pulled.to_string()),
-            "auto-closure did not pull {pulled}; it pulled {rules:?}"
+            "the import did not bring {pulled}; it brought {rules:?}"
         );
     }
     assert!(
-        names(&terms, &kb.program().macros).contains(&"forall".to_string()),
+        names(&terms, &kb.program().macros).contains(&"std.macro.forall".to_string()),
         "`forall` rode in through std.bijection's own import of std.macro"
     );
 }
@@ -1047,7 +1050,11 @@ fn the_zebra_registries_and_indexes_hold_what_the_puzzle_declared() {
         ["(symmetric co-located)", "(symmetric next-to)"]
     );
     assert_eq!(apps_of("includes"), ["(includes right-of next-to)"]);
-    for reflective in ["slot-locate", "slot-occupied", "slot-elimination"] {
+    for reflective in [
+        "std.slots.slot-locate",
+        "std.slots.slot-occupied",
+        "std.slots.slot-elimination",
+    ] {
         assert!(
             apps_of(reflective).is_empty(),
             "{reflective} is activated reflectively, so it carries none at load"

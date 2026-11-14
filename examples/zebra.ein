@@ -104,10 +104,10 @@
 
 ;; ──── Imported property rules ──────────────────────────────────────
 ;; These used to be hand-rolled copies at the top of this file. They are
-;; the std.algebra property closures, imported FLAT so the bare names the
-;; property-application facts below reference (`(symmetric co-located)`,
-;; `(symmetric next-to)`, `(includes right-of next-to)`) resolve
-;; unchanged. `includes` replaces the file's old local `implies` — same
+;; the std.algebra property closures; the module comes whole, and the
+;; list names the rules the property-application facts below activate
+;; (`(symmetric co-located)`, `(symmetric next-to)`, `(includes right-of
+;; next-to)`), so they are written short. `includes` replaces the file's old local `implies` — same
 ;; body, the stdlib spelling.
 ;;
 ;; `symmetric-negative-setup` is load-bearing, not decoration: a

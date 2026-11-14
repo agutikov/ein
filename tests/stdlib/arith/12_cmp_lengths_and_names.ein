@@ -22,7 +22,7 @@
 ;;; `cmp-of`'s whole extent, the operands as written. The second claim reads
 ;;; one answer as a program would, the names in the goal.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith let n cmp cmp-of))
 
 (let small (n (n z 9) 9))
 (let large (n (n (n z 1) 0) 0))

@@ -19,7 +19,8 @@
 ;;; `int-neg-of`'s whole extent. An operand that is not simplified is negated
 ;;; by value and answered in normal form.
 
-(import std.int :symbols (int-arith))
+(import std.int :symbols (int-arith int-neg int int-neg-of))
+(import std.arith :symbols (n))
 
 (int-neg (int (n z 7) z))
 (int-neg (int z (n z 7)))

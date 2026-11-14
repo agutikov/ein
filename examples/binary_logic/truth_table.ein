@@ -27,6 +27,7 @@
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.2.
 (import inputs :symbols (inputs in is-a total-owed functional in-drives))
 (import full_adder :symbols (gate))
+(import circuit :symbols (val))
 
 (is-a a Input) (is-a b Input) (is-a cin Input)
 

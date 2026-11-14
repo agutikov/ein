@@ -1,37 +1,43 @@
-//! Import resolution — flatten-then-load (A1 D8).
+//! Import resolution — full names and short names (M1f S1f.6.35, the user's
+//! model (h) of 2026-11-13 and its ruling of 2026-11-14).
 //!
 //! `(import M [:as A | :symbols (S…)])` is resolved at the **form** level,
-//! *before* the loader runs: each import is replaced in place by the module's
-//! resolved form list, qualified per tier —
+//! *before* the loader runs, into one import-free list of forms:
 //!
-//! | form | effect |
-//! |---|---|
-//! | `(import std.macro)` | every defined name prefixed `std.macro.` |
-//! | `(import std.macro :as m)` | prefixed `m.` |
-//! | `(import std.macro :symbols (forall))` | the listed declarations and their closure, flat and unrenamed, and the module's facts of every relation the closure names |
+//! - **Every import brings its module whole**, with the module's own imports,
+//!   all the way down, and **one copy per program**: a module read by two
+//!   edges, under two aliases or by none of the program's own, is read once.
+//!   The user, 2026-11-14: *"in all cases we import everything, the
+//!   difference only in names"*. What a module states as a program, its
+//!   `(query …)`, `(solve …)`, `(config …)` and `(trace …)` (`DIRECTIVES`),
+//!   is the program's own and no import brings it (M1f S1f.6.25, E-8).
+//! - **A name a module declares has one full name**, the module's canonical
+//!   name and the name, `std.arith.add`, the same through every import path
+//!   and global: any file may write it. A module's canonical name is
+//!   `std.x.y` under the stdlib, and any other a path **from the program
+//!   file's directory**, a dot per directory, for the imports a module writes
+//!   too. The main file has no module name: what it declares keeps its name.
+//!   A name no file declares (`z`, a digit, a type, a relation stated and
+//!   never declared) has no full name and is one name in every file.
+//! - **A short name is local to the file that binds it**: its own
+//!   declarations, the names an import's `:symbols` lists, and the alias
+//!   prefix `:as a` gives (`a.add`). A bare `(import M)` binds none: the file
+//!   writes full names. Nothing is re-exported. One short name bound to two
+//!   full names in one file is refused; a short name a file writes that it
+//!   neither declares nor imports is its own, whatever a module declares under
+//!   it (shadowing, Q-M1f.236).
+//! - **What prints** is the main file's spelling where it has one, a listed
+//!   short name before an alias's, and the full name otherwise
+//!   (Q-M1f.237, Q-M1f.253): the resolved list is renamed once, full name to
+//!   that spelling, before the loader sees it, so every surface prints it.
 //!
-//! **A flat import brings a module's facts** since M1f S1f.6.11 (W88, the
-//! user's ruling of 2026-11-11, *"importing facts is mandatory"*): a listed
-//! name selects the module's declaration of it, if any, and every top-level
-//! fact whose relation it is, unrenamed and in the module's order
-//! (`select`). Until then a selection kept declarations alone, so a library
-//! of facts, an ontology, arrived empty.
-//!
-//! **No import brings a module's `(query …)`, `(solve …)`, `(config …)` or
-//! `(trace …)`** since M1f S1f.6.25 (E-8, W90): those are a *program's*, what
-//! it asks and how it is solved and configured, and a module is imported for
-//! its declarations and its facts. A flat import never brought one; a
-//! qualified one kept every form, so the importer was solved under the
-//! module's lattice, configured by its flags and asked its queries, and two
-//! qualified imports of a module with a `(solve …)` were refused, *2 (solve …)
-//! forms*.
-//!
-//! so "merge" is list concatenation and conflict detection is the loader's
-//! existing duplicate-name guard. Resolution is recursive, bottom-up and
-//! re-qualified under the outer namespace (D6), with cycle detection: a
-//! *qualified* diamond never collides because re-qualification gives each path
-//! its own prefix (`B.D.x` ≠ `C.D.x`), while a *flat* one collides into a
-//! duplicate-name error — the intended strict policy (D3).
+//! The refusals, each a section of `defined_behaviour.md` § 4: a module's
+//! name with an empty segment or a `/` (Q-M1f.252, `..` among them); one short
+//! name bound to two full names in one file (Q-M1f.234); a prefixed or full
+//! name that names nothing its module declares (Q-M1f.251); a full name of a
+//! module no import brings (Q-M1f.238); a declaration of the main file under
+//! an imported module's full name (Q-M1f.239); a module's declared name with a
+//! dot (Q-M1f.241). A cycle is refused as it always was.
 //!
 //! This module is the engine's **only** filesystem access, which is what keeps
 //! any later policy on what the engine may read a single seam rather than an
@@ -39,14 +45,12 @@
 //! does ([`crate::stdlib`]). A module on disk is read through
 //! [`crate::read::read_program`], the read every command makes of the program
 //! it is given (M1f S1f.5.22): a module that exists and cannot be read as text
-//! is refused with that read's line, naming the module's path, where until
-//! then it was `module not found at … (None)` (the close review's finding 2,
-//! W74).
+//! is refused with that read's line, naming the module's path.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::ast::{Ast, Node, NodeId, loc_repr};
+use crate::ast::{Ast, Loc, Node, NodeId, loc_repr};
 use crate::grammar::{ParseError, parse};
 use crate::read;
 use crate::stdlib;
@@ -62,78 +66,6 @@ const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
 /// trace, and an import. The loader's own dispatch (`from_ir`'s
 /// `load_query_with`) reads every other head as a fact's relation.
 const DIRECTIVES: [&str; 5] = ["query", "solve", "config", "trace", "import"];
-
-/// **A selection that brought a relation's declaration and no rule that
-/// derives it** — M1f S1f.6.25, E-20 of P1f.6's `findings.md`. A diagnostic,
-/// never a refusal: the closure rule is unchanged, and a selection is a
-/// selection.
-///
-/// The case it is for: a theory built on a theory. `upper` imports `lower`
-/// by `lower`'s entry and a program imports `upper` by `upper`'s; the closure
-/// of that selection follows the names `upper`'s rules write, so it reaches
-/// the declarations of `lower`'s relations and, unless `upper`'s entry names
-/// `lower`'s, none of `lower`'s rules. No request is then answered and the
-/// lower theory's relations are open, far from the cause.
-///
-/// **The condition** (chosen on the census in the stage's record): the
-/// relation's declaration came through the selection's *closure*, its name
-/// not listed (a listed relation is asked for on purpose); the module, with
-/// what it imports, holds a rule or an hrule whose `:assert` writes the
-/// relation; the selection keeps none of them; and the program as resolved
-/// holds no rule that writes it either, by another import or its own. A
-/// library of facts has no such rule and is never named.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LeftBehind {
-    /// `<file>:<line>:<col>` of the import form, or empty where the parser
-    /// kept no position for it.
-    pub at: String,
-    /// The import form, as written.
-    pub import: String,
-    /// The module the form names.
-    pub module: String,
-    /// The relations, in the module's order.
-    pub relations: Vec<String>,
-}
-
-impl LeftBehind {
-    /// The one line a loader prints for it.
-    pub fn line(&self) -> String {
-        let at = if self.at.is_empty() {
-            String::new()
-        } else {
-            format!("{}: ", self.at)
-        };
-        let (first, more) = (&self.relations[0], self.relations.len() - 1);
-        let (what, them) = match more {
-            0 => (format!("the declaration of {first}"), "it"),
-            1 => (
-                format!("the declarations of {first} and {}", self.relations[1]),
-                "either",
-            ),
-            n => (
-                format!("the declarations of {first} and {n} more relations"),
-                "any of them",
-            ),
-        };
-        format!(
-            "{at}{} brings {what} and no rule that derives {them}: {} has such a rule, its own \
-             or one it imports, and the selection names none — a selection brings the names it \
-             lists and what their declarations write, so list the rule, or the entry that names \
-             it, if {first} is to be derived",
-            self.import, self.module
-        )
-    }
-}
-
-/// What one resolution carries from import to import: the chain of modules
-/// being loaded (the cycle check), the modules parsed so far, and what the
-/// selections left behind ([`LeftBehind`]).
-#[derive(Default)]
-struct Walk {
-    loading: Vec<String>,
-    cache: ModuleCache,
-    left: Vec<LeftBehind>,
-}
 
 /// A load-time failure. The message is output, byte for byte — the
 /// `examples/broken/load/*.expected` fixtures are the gate.
@@ -155,26 +87,6 @@ impl From<ParseError> for LoadError {
         LoadError(e.to_string())
     }
 }
-
-/// Parsed module forms, by resolved path — [T1a.6.5.3](../../../../docs/history/m1a_rust/README.md#s1a65--frontend-and-load-path).
-///
-/// A resolution is a *tree*, and the corpus's trees are diamonds: `zebra2`
-/// imports `std.algebra` and `std.bijection`, `std.bijection` imports
-/// `std.algebra`, and all three import `std.macro`. Parsing each module once
-/// per *edge* meant a load parsed **3.3× the bytes on disk** (`parse_bytes`
-/// against the file's own length, [`ein_core::counters`]).
-///
-/// The cache lives for one resolution and holds [`NodeId`]s, which are indices
-/// into the `Ast` that resolution is building — so it is threaded through the
-/// recursion rather than kept on the [`Resolver`], and cannot outlive the arena
-/// its contents name.
-///
-/// Reusing the forms is sound because nothing downstream mutates a node:
-/// `qualify` rewrites by *building* (`rename_atoms`), `select` filters, and
-/// `dedup_declarations` compares with [`Ast::eq_nodes`], which is structural.
-/// Two importers already shared subtrees before this — `rename_atoms` returns
-/// the node it was given when no name in it is renamed.
-type ModuleCache = BTreeMap<String, Vec<NodeId>>;
 
 /// Where a module's text may come from. The stdlib half can be compiled into
 /// the binary; the file-relative half never is.
@@ -207,6 +119,67 @@ impl Default for Resolver {
             stdlib: stdlib::resolve_default(),
         }
     }
+}
+
+/// One file of the program: the main file (index 0, no module name) or a
+/// module, each read once.
+struct File {
+    /// The canonical module name; `None` for the main file.
+    name: Option<String>,
+    /// The resolved path (or the embedded copy's), what a cycle names.
+    key: String,
+    /// The file's forms, as parsed.
+    forms: Vec<NodeId>,
+    /// `(import form, spec, the index of the module it names)`, in order.
+    imports: Vec<(NodeId, ImportSpec, usize)>,
+    /// The names the file declares, each with its first declaring form.
+    declared: BTreeMap<String, NodeId>,
+    /// The relations of the file's top-level facts, as written.
+    stated: BTreeSet<String>,
+    /// Whether the file is a `std.*` module.
+    is_std: bool,
+}
+
+impl File {
+    fn new(name: Option<String>, key: String, forms: Vec<NodeId>, ast: &Ast, is_std: bool) -> File {
+        let mut declared = BTreeMap::new();
+        let mut stated = BTreeSet::new();
+        for &f in &forms {
+            if let Some(n) = decl_name(ast, f) {
+                declared.entry(n).or_insert(f);
+            } else if let Some(r) = fact_relation(ast, f) {
+                stated.insert(r);
+            }
+        }
+        File {
+            name,
+            key,
+            forms,
+            imports: Vec::new(),
+            declared,
+            stated,
+            is_std,
+        }
+    }
+
+    /// The full name of a name this file declares: the module's name and the
+    /// name, or the name itself in the main file. A reserved name is never
+    /// renamed, so that a module that illegally declares one is refused by
+    /// the loader under its own name (`CO-H2`, M1e S1e.2.1).
+    fn full(&self, short: &str) -> String {
+        match &self.name {
+            Some(m) if !ein_core::is_reserved(short) => format!("{m}{MODULE_SEP}{short}"),
+            _ => short.to_string(),
+        }
+    }
+}
+
+/// The per-file short names: a name to its full name, and an alias to the
+/// module it prefixes.
+#[derive(Default)]
+struct Table {
+    names: BTreeMap<String, String>,
+    aliases: BTreeMap<String, usize>,
 }
 
 impl Resolver {
@@ -253,22 +226,16 @@ impl Resolver {
     /// where no file is there, and [`Unread::Refused`] with the line the read
     /// of a program gives where one is and cannot be read as text.
     ///
-    /// The display path is what "module not found at …" names, and what the
-    /// read's line names, so how it is built is observable: empty segments
-    /// dropped, then the final component's extension replaced with `.ein`.
-    ///
     /// A file on disk is read through [`crate::read::read_program`], the read
     /// every command makes of the program it is given, since M1f S1f.5.22: a
     /// module that is not UTF-8 is refused at its first such byte, one that
     /// cannot be read or is a directory with the OS's reason, and a `.einb`
     /// container as one ([`crate::read::container_module_line`], Q-M1f.91).
-    /// Until then it was `read_to_string(…).ok()` behind `is_file()`, so each
-    /// was *not found* (the close review's finding 2, W74).
     fn read(&self, root: &Root, rel: &[&str]) -> (String, Result<String, Unread>) {
         match root {
             Root::Dir(dir) => {
                 let mut path = dir.clone();
-                for seg in rel.iter().filter(|s| !s.is_empty()) {
+                for seg in rel {
                     path.push(seg);
                 }
                 path.set_extension("ein");
@@ -284,88 +251,143 @@ impl Resolver {
                 (display, text)
             }
             Root::Embedded => {
-                let joined: Vec<&str> = rel.iter().copied().filter(|s| !s.is_empty()).collect();
-                let name = format!("{}.ein", joined.join("/"));
+                let name = format!("{}.ein", rel.join("/"));
                 let text = self.stdlib.read(&name).ok_or(Unread::Missing);
                 (format!("<embedded>/{name}"), text)
             }
         }
     }
 
-    /// Return `forms` with every `(import …)` replaced in place by the
-    /// imported module's resolved, qualified forms. Import-free input is
-    /// returned unchanged — the common case, and the one where `load()`'s own
-    /// inline-duplicate detection must still see the original list.
+    /// Whether a module of this canonical name exists, for a full name of a
+    /// module no import brings (Q-M1f.238). Never an error.
+    fn exists(&self, module: &str, base_dir: Option<&Path>) -> bool {
+        let segments: Vec<&str> = module.split(MODULE_SEP).collect();
+        if segments.iter().any(|s| s.is_empty() || s.contains('/')) {
+            return false;
+        }
+        if segments[0] == STDLIB_ALIAS {
+            if segments.len() < 2 || self.stdlib.problem().is_some() {
+                return false;
+            }
+            return self.read(&self.stdlib_root(), &segments[1..]).1.is_ok();
+        }
+        let Some(dir) = base_dir else { return false };
+        let mut path = dir.to_path_buf();
+        for s in &segments {
+            path.push(s);
+        }
+        path.set_extension("ein");
+        path.is_file()
+    }
+
+    /// Return `forms` with every `(import …)` replaced by the program (h)
+    /// makes of it: every module once, whole, under full names, the main
+    /// file's spelling printed. A program with no import is returned as it
+    /// is, but for its full names of a module no import brings (Q-M1f.238),
+    /// which are refused.
+    ///
+    /// `base_dir` is the program file's directory: every file-relative module
+    /// of the program is found from it.
     pub fn resolve_imports(
         &self,
         ast: &mut Ast,
         forms: &[NodeId],
         base_dir: Option<&Path>,
     ) -> Result<Vec<NodeId>, LoadError> {
-        self.resolve_imports_noting(ast, forms, base_dir)
-            .map(|(forms, _)| forms)
+        if !forms.iter().any(|&f| ast.head_name(f) == Some("import")) {
+            self.refuse_unbrought(ast, forms, base_dir)?;
+            return Ok(forms.to_vec());
+        }
+        // Read every file of the program, once each.
+        let main = File::new(None, String::new(), forms.to_vec(), ast, false);
+        let mut files = vec![main];
+        let mut by_name: BTreeMap<String, usize> = BTreeMap::new();
+        self.walk(ast, &mut files, &mut by_name, 0, &mut Vec::new(), base_dir)?;
+
+        // Every file's short names, its own and its imports'.
+        let tables = self.tables(ast, &files, &by_name)?;
+
+        // Every file's forms with every name it writes read as (h) reads it.
+        let mut rewritten: Vec<Vec<NodeId>> = Vec::with_capacity(files.len());
+        for i in 0..files.len() {
+            let mapping = self.name_map(ast, &files, &by_name, &tables, i, base_dir)?;
+            let forms: Vec<NodeId> = files[i]
+                .forms
+                .iter()
+                .map(|&f| {
+                    if ast.head_name(f) == Some("import") || mapping.is_empty() {
+                        f
+                    } else {
+                        rename_atoms(ast, f, &mapping)
+                    }
+                })
+                .collect();
+            rewritten.push(forms);
+        }
+
+        // One list: the main file's forms, a module's in place of the first
+        // import that reaches it, its own imports at theirs.
+        let mut out = Vec::new();
+        let mut done = vec![false; files.len()];
+        emit(ast, &files, &rewritten, 0, &mut done, &mut out);
+        let out = dedup_declarations(ast, &out)?;
+
+        // What prints: the main file's spelling.
+        let display = display_names(ast, &files, &tables[0], &out);
+        if display.is_empty() {
+            return Ok(out);
+        }
+        Ok(out
+            .iter()
+            .map(|&f| rename_atoms(ast, f, &display))
+            .collect())
     }
 
-    /// [`Self::resolve_imports`], and what its selections left behind
-    /// ([`LeftBehind`], M1f S1f.6.25): each selection of the program, or of
-    /// a module it imports, that brought a relation's declaration and no rule
-    /// that derives it, where the resolved program holds none either.
-    pub fn resolve_imports_noting(
+    /// The short names the main file binds through its imports' `:symbols`
+    /// lists, each to its full name: what a program written with every
+    /// import whole would write in full (`ein-cli`'s `import_invariance.rs`,
+    /// the stage's acceptance). The program's own declarations are not among
+    /// them.
+    pub fn short_names(
         &self,
         ast: &mut Ast,
         forms: &[NodeId],
         base_dir: Option<&Path>,
-    ) -> Result<(Vec<NodeId>, Vec<LeftBehind>), LoadError> {
-        let mut walk = Walk::default();
-        let out = self.resolve(ast, forms, base_dir, false, &mut walk)?;
-        let mut left = walk.left;
-        // What the program as resolved declares, and what its rules write.
-        let mut declared: BTreeSet<String> = BTreeSet::new();
-        let mut written: BTreeSet<String> = BTreeSet::new();
-        for &f in &out {
-            match ast.head_name(f) {
-                Some("relation") => declared.extend(decl_name(ast, f)),
-                Some("rule") | Some("hrule") => written.extend(concluded(ast, f)),
-                _ => {}
-            }
-        }
-        for l in &mut left {
-            l.relations
-                .retain(|r| declared.contains(r) && !written.contains(r));
-        }
-        left.retain(|l| !l.relations.is_empty());
-        left.dedup();
-        Ok((out, left))
+    ) -> Result<BTreeMap<String, String>, LoadError> {
+        let main = File::new(None, String::new(), forms.to_vec(), ast, false);
+        let mut files = vec![main];
+        let mut by_name: BTreeMap<String, usize> = BTreeMap::new();
+        self.walk(ast, &mut files, &mut by_name, 0, &mut Vec::new(), base_dir)?;
+        let tables = self.tables(ast, &files, &by_name)?;
+        Ok(tables[0]
+            .names
+            .iter()
+            .filter(|(s, _)| !files[0].declared.contains_key(*s))
+            .map(|(s, f)| (s.clone(), f.clone()))
+            .collect())
     }
 
-    /// `within_stdlib` is what makes the three resolution tiers agree — M1e
-    /// `CO-M5`. A `std.*` module's own `base_dir` is its directory under a
-    /// checkout or an override and **`None`** under the embedded root, because
-    /// `<embedded>/std/x.ein` is not a path `canonicalize` can resolve. So a
-    /// stdlib module with a file-relative import would resolve in a checkout
-    /// and fail only in an installed binary — the one configuration no test
-    /// exercised. It is refused at load instead, in every tier, with a message
-    /// that says why.
-    fn resolve(
+    /// Read the modules file `i` imports, depth first, each once. `chain` is
+    /// the files being read, for the cycle check.
+    fn walk(
         &self,
         ast: &mut Ast,
-        forms: &[NodeId],
+        files: &mut Vec<File>,
+        by_name: &mut BTreeMap<String, usize>,
+        i: usize,
+        chain: &mut Vec<usize>,
         base_dir: Option<&Path>,
-        within_stdlib: bool,
-        walk: &mut Walk,
-    ) -> Result<Vec<NodeId>, LoadError> {
-        let mut out: Vec<NodeId> = Vec::new();
-        let mut had_import = false;
-        for &form in forms {
+    ) -> Result<(), LoadError> {
+        let forms = files[i].forms.clone();
+        for form in forms {
             if ast.head_name(form) != Some("import") {
-                out.push(form);
                 continue;
             }
-            had_import = true;
             let spec = import_spec(ast, form)?;
             let loc = loc_repr(ast, ast.loc(form));
-            let is_std = spec.module.split(MODULE_SEP).next() == Some(STDLIB_ALIAS);
-            if within_stdlib && !is_std {
+            let module = canonical(&spec.module, &loc)?;
+            let is_std = module.split(MODULE_SEP).next() == Some(STDLIB_ALIAS);
+            if files[i].is_std && !is_std {
                 return Err(LoadError(format!(
                     "(import {}) — a std.* module may import only std.* modules; \
                      a file-relative import there resolves under a checkout and \
@@ -373,115 +395,77 @@ impl Resolver {
                     spec.module
                 )));
             }
-            let (key, text, dir) = self.locate(&spec.module, base_dir, &loc)?;
-            if walk.loading.contains(&key) {
-                let mut chain = walk.loading.clone();
-                chain.push(key);
-                return Err(LoadError(format!(
-                    "import cycle: {} (at {loc})",
-                    chain.join(" -> ")
-                )));
-            }
-            // Parsed once per resolution, not once per edge.
-            let sub = match walk.cache.get(&key) {
-                Some(sub) => sub.clone(),
+            let j = match by_name.get(&module) {
+                Some(&j) => {
+                    if chain.contains(&j) {
+                        let mut keys: Vec<String> =
+                            chain.iter().map(|&c| files[c].key.clone()).collect();
+                        keys.push(files[j].key.clone());
+                        let from = keys.iter().position(|k| *k == files[j].key).unwrap_or(0);
+                        return Err(LoadError(format!(
+                            "import cycle: {} (at {loc})",
+                            keys[from..].join(" -> ")
+                        )));
+                    }
+                    j
+                }
                 None => {
-                    let sub = parse(ast, &text, Some(&key))?;
-                    walk.cache.insert(key.clone(), sub.clone());
-                    sub
+                    let (key, text) = self.locate(&spec.module, &module, base_dir, &loc)?;
+                    let parsed = parse(ast, &text, Some(&key))?;
+                    let file = File::new(Some(module.clone()), key, parsed, ast, is_std);
+                    if let Some((short, decl)) =
+                        file.declared.iter().find(|(n, _)| n.contains(MODULE_SEP))
+                    {
+                        return Err(LoadError(format!(
+                            "{}: {module} declares '{short}', a name with a dot — a module's \
+                             declared name holds no dot, so that a full name such as \
+                             {module}.x reads one way (Q-M1f.241)",
+                            first_loc(ast, *decl)
+                                .map_or_else(|| file.key.clone(), |l| loc_repr(ast, Some(l)))
+                        )));
+                    }
+                    files.push(file);
+                    let j = files.len() - 1;
+                    by_name.insert(module.clone(), j);
+                    chain.push(j);
+                    self.walk(ast, files, by_name, j, chain, base_dir)?;
+                    chain.pop();
+                    j
                 }
             };
-            walk.loading.push(key);
-            let inner = walk.left.len();
-            let resolved =
-                self.resolve(ast, &sub, dir.as_deref(), within_stdlib || is_std, walk)?;
-            walk.loading.pop();
-            match &spec.symbols {
-                Some(symbols) => {
-                    let kept = select(ast, &resolved, symbols, &spec.module, &loc)?;
-                    let relations = left_behind(ast, &resolved, &kept, symbols);
-                    if !relations.is_empty() {
-                        walk.left.push(LeftBehind {
-                            at: first_loc(ast, form)
-                                .map_or(String::new(), |l| loc_repr(ast, Some(l))),
-                            import: crate::dump::dump_compact(ast, form),
-                            module: spec.module.clone(),
-                            relations,
-                        });
-                    }
-                    out.extend(kept);
-                }
-                None => {
-                    let prefix = format!(
-                        "{}{MODULE_SEP}",
-                        spec.alias.as_deref().unwrap_or(&spec.module)
-                    );
-                    // What a module asks, how it is solved and configured and
-                    // an engine's trace are a *program's*: an import of any
-                    // kind brings declarations and facts and none of
-                    // [`DIRECTIVES`] (M1f S1f.6.25, E-8, W90). A selection
-                    // never brought one ([`select`]).
-                    let brought: Vec<NodeId> = resolved
-                        .iter()
-                        .copied()
-                        .filter(|f| !ast.head_name(*f).is_some_and(|h| DIRECTIVES.contains(&h)))
-                        .collect();
-                    // What the module's own selections left behind is
-                    // renamed as its declarations are.
-                    let renamed = defined_names(ast, &brought);
-                    for l in &mut walk.left[inner..] {
-                        for r in &mut l.relations {
-                            if renamed.contains(r) && !ein_core::is_reserved(r) {
-                                *r = format!("{prefix}{r}");
-                            }
-                        }
-                    }
-                    out.extend(qualify(ast, &brought, &prefix));
-                }
-            }
+            files[i].imports.push((form, spec, j));
         }
-        // Collapse diamonds only when imports were actually spliced.
-        if had_import {
-            dedup_declarations(ast, &out)
-        } else {
-            Ok(out)
-        }
+        Ok(())
     }
 
-    /// Logical module name → `(identity, text, base_dir for its own imports)`.
+    /// Logical module name → `(identity, text)`.
     ///
-    /// `std.x.y` resolves under the stdlib root; anything else file-relative
-    /// to the importing file. The identity is the **resolved** path, because
-    /// that is what the cycle stack compares and what the imported forms'
-    /// `Loc`s name.
+    /// `std.x.y` resolves under the stdlib root; anything else from the
+    /// program file's directory. The identity is the **resolved** path,
+    /// because that is what a cycle names and what the imported forms' `Loc`s
+    /// name.
     fn locate(
         &self,
+        written: &str,
         module: &str,
         base_dir: Option<&Path>,
         loc: &str,
-    ) -> Result<(String, String, Option<PathBuf>), LoadError> {
+    ) -> Result<(String, String), LoadError> {
         let segments: Vec<&str> = module.split(MODULE_SEP).collect();
         let (root, rel) = if segments[0] == STDLIB_ALIAS {
-            let rel = &segments[1..];
-            if rel.is_empty() {
-                return Err(LoadError(format!(
-                    "(import {module}) — bare '{STDLIB_ALIAS}' is not a module at {loc}"
-                )));
-            }
             // **The override proves itself here** — M1e S1e.3.5, `EH-M2`.
             // Checked at the first `std.*` import rather than at
             // `Resolver::new`, because a program that imports nothing from the
             // stdlib has no business being refused for the shape of a variable
-            // it never reads. One error, naming the variable and what is
-            // missing, in place of a *module not found* that named neither.
+            // it never reads.
             if let Some(why) = self.stdlib.problem() {
-                return Err(LoadError(format!("(import {module}) — {why} ({loc})")));
+                return Err(LoadError(format!("(import {written}) — {why} ({loc})")));
             }
-            (self.stdlib_root(), rel.to_vec())
+            (self.stdlib_root(), segments[1..].to_vec())
         } else {
             let Some(dir) = base_dir else {
                 return Err(LoadError(format!(
-                    "(import {module}) — file-relative import needs a base directory \
+                    "(import {written}) — file-relative import needs a base directory \
                      (load from a file path) at {loc}"
                 )));
             };
@@ -492,158 +476,355 @@ impl Resolver {
             Ok(text) => text,
             Err(Unread::Missing) => {
                 return Err(LoadError(format!(
-                    "(import {module}) — module not found at {display} ({loc})"
+                    "(import {written}) — module not found at {display} ({loc})"
                 )));
             }
             Err(Unread::Refused(line)) => return Err(LoadError(line)),
         };
-        // `Path.resolve()` — the identity, so two spellings of one file are
-        // one node in the cycle graph.
-        let resolved = std::fs::canonicalize(&display).ok();
-        let key = resolved
-            .as_ref()
-            .map(|p| p.display().to_string())
-            .unwrap_or_else(|| display.clone());
-        let dir = resolved.and_then(|p| p.parent().map(Path::to_path_buf));
-        Ok((key, text, dir))
+        let key = std::fs::canonicalize(&display)
+            .ok()
+            .map_or_else(|| display.clone(), |p| p.display().to_string());
+        Ok((key, text))
     }
 
-    /// Resolve every import inline, then **tree-shake**: drop any imported
-    /// *declaration* nothing references (A1 D9).
-    ///
-    /// Reachability seeds from the puzzle's own forms and closes over two
-    /// coupled relations — **name reference** (a kept form mentioning a
-    /// declaration keeps it, transitively) and **activation** (an imported
-    /// rule whose `:match` references a *live* relation is kept even when its
-    /// own name is referenced nowhere, because the `*-setup` glue rules are
-    /// fired by their match pattern rather than by name).
-    ///
-    /// **And a name an import's selection lists is live** (M1f S1f.6.25, E-11,
-    /// W91): `(import lib :symbols (entry))` names `entry`, and a rule with an
-    /// empty `:match`, which fires once in any program that holds it, is
-    /// reached by neither relation above. Until that stage such a rule, and a
-    /// relation only it names, were dropped, so the program a `--dump-answer`
-    /// state file re-writes was not the program that ran, and `std.arith`
-    /// wrote its closing rule's name as a fact, `(arith-rule arith)`, for the
-    /// name reference to follow. A selection's closure is what is reachable
-    /// from its listed names, so everything a top-level flat import brings is
-    /// kept; what is shaken is what a qualified import brings.
-    ///
-    /// Without the activation pass this would silently drop an entire
-    /// activator-driven library and leave a file that no longer solves. The
-    /// surviving set is observable through the compile cache's size and
-    /// through firing order, so it is an observable surface, not a cosmetic
-    /// one.
-    pub fn resolve_and_minimize(
+    /// Every file's short names. A module's are read before the files that
+    /// import it, since a listed name a module states facts of is bound as
+    /// that module's own text reads it (Q-M1f.250).
+    fn tables(
         &self,
-        ast: &mut Ast,
-        forms: &[NodeId],
+        ast: &Ast,
+        files: &[File],
+        by_name: &BTreeMap<String, usize>,
+    ) -> Result<Vec<Table>, LoadError> {
+        let mut tables: Vec<Option<Table>> = (0..files.len()).map(|_| None).collect();
+        // Imports before importers: the program has no cycle (the walk
+        // refused one), so a file's modules can each be read first.
+        let mut order = Vec::with_capacity(files.len());
+        let mut seen = vec![false; files.len()];
+        fn post(files: &[File], i: usize, seen: &mut [bool], order: &mut Vec<usize>) {
+            if std::mem::replace(&mut seen[i], true) {
+                return;
+            }
+            for (_, _, j) in &files[i].imports {
+                post(files, *j, seen, order);
+            }
+            order.push(i);
+        }
+        post(files, 0, &mut seen, &mut order);
+        for i in order {
+            let file = &files[i];
+            let mut t = Table::default();
+            for short in file.declared.keys() {
+                t.names.insert(short.clone(), file.full(short));
+                if file.name.is_none()
+                    && let Some((prefix, _)) = short.rsplit_once(MODULE_SEP)
+                    && by_name.contains_key(prefix)
+                {
+                    let decl = file.declared[short];
+                    return Err(LoadError(format!(
+                        "{}: the program declares '{short}', a full name of {prefix}, \
+                         which the program imports — a declaration's full name is its own \
+                         file's, and a full name of {prefix} is one {prefix} declares \
+                         (Q-M1f.239)",
+                        place(ast, decl)
+                    )));
+                }
+            }
+            for (form, spec, j) in &file.imports {
+                let m = &files[*j];
+                let m_name = m.name.clone().expect("an imported file is a module");
+                match &spec.symbols {
+                    Some(symbols) => {
+                        let missing: BTreeSet<&str> = symbols
+                            .iter()
+                            .filter(|s| !m.declared.contains_key(*s) && !m.stated.contains(*s))
+                            .map(String::as_str)
+                            .collect();
+                        if !missing.is_empty() {
+                            return Err(LoadError(format!(
+                                "(import {} :symbols …) — not provided by the module: {} at {}",
+                                spec.module,
+                                missing.into_iter().collect::<Vec<_>>().join(", "),
+                                loc_repr(ast, ast.loc(*form))
+                            )));
+                        }
+                        for s in symbols {
+                            let full = if m.declared.contains_key(s) {
+                                m.full(s)
+                            } else {
+                                // A name the module states facts of and does not
+                                // declare: the relation those facts are of, as the
+                                // module's own text reads it.
+                                tables[*j]
+                                    .as_ref()
+                                    .and_then(|mt| mt.names.get(s).cloned())
+                                    .unwrap_or_else(|| s.clone())
+                            };
+                            bind(ast, &mut t, s, full, file, *form)?;
+                        }
+                    }
+                    None => {
+                        let alias = spec.alias.clone().unwrap_or_else(|| m_name.clone());
+                        match t.aliases.get(&alias) {
+                            Some(&k) if k != *j => {
+                                return Err(LoadError(format!(
+                                    "{}: '{alias}' prefixes two modules in one file, {} and \
+                                     {m_name} — one short name names one thing in a file",
+                                    place(ast, *form),
+                                    files[k].name.as_deref().unwrap_or("")
+                                )));
+                            }
+                            _ => {
+                                t.aliases.insert(alias, *j);
+                            }
+                        }
+                    }
+                }
+            }
+            tables[i] = Some(t);
+        }
+        Ok(tables.into_iter().map(|t| t.unwrap_or_default()).collect())
+    }
+
+    /// The renaming of file `i`'s names to their full names, refusing a
+    /// prefixed or full name that names nothing (Q-M1f.251) and a full name
+    /// of a module no import brings (Q-M1f.238).
+    fn name_map(
+        &self,
+        ast: &Ast,
+        files: &[File],
+        by_name: &BTreeMap<String, usize>,
+        tables: &[Table],
+        i: usize,
         base_dir: Option<&Path>,
-    ) -> Result<Vec<NodeId>, LoadError> {
-        // `(form, is_imported)` — the puzzle's own forms are false, everything
-        // an import brings in (transitively) is true.
-        let mut tagged: Vec<(NodeId, bool)> = Vec::new();
-        // One cache for the whole program; each import its own chain.
-        let mut walk = Walk::default();
-        // The names the program's own imports list (M1f S1f.6.25, E-11).
-        let mut listed: Vec<String> = Vec::new();
-        for &form in forms {
-            if ast.head_name(form) == Some("import") {
-                listed.extend(import_spec(ast, form)?.symbols.unwrap_or_default());
-                let resolved = self.resolve(ast, &[form], base_dir, false, &mut walk)?;
-                for f in resolved {
-                    tagged.push((f, true));
+    ) -> Result<BTreeMap<String, String>, LoadError> {
+        let t = &tables[i];
+        let mut written: BTreeMap<String, NodeId> = BTreeMap::new();
+        for &f in &files[i].forms {
+            if ast.head_name(f) != Some("import") {
+                atoms(ast, f, &mut written);
+            }
+        }
+        // The longest alias first, so that `a.b.x` reads `a.b` before `a`.
+        let mut aliases: Vec<(&String, &usize)> = t.aliases.iter().collect();
+        aliases.sort_by_key(|(a, _)| std::cmp::Reverse(a.len()));
+        let mut out = BTreeMap::new();
+        for (n, node) in written {
+            if ein_core::is_reserved(&n) {
+                continue;
+            }
+            let full = if let Some(full) = t.names.get(&n) {
+                full.clone()
+            } else if n.contains(MODULE_SEP) {
+                let aliased = aliases.iter().find_map(|(a, j)| {
+                    n.strip_prefix(a.as_str())?
+                        .strip_prefix(MODULE_SEP)
+                        .map(|r| (r, **j))
+                });
+                if let Some((rest, j)) = aliased {
+                    let m = &files[j];
+                    if !m.declared.contains_key(rest) {
+                        return Err(names_nothing(
+                            ast,
+                            node,
+                            &n,
+                            m.name.as_deref().unwrap_or(""),
+                            rest,
+                        ));
+                    }
+                    m.full(rest)
+                } else if let Some((prefix, short)) = n.rsplit_once(MODULE_SEP) {
+                    if let Some(&j) = by_name.get(prefix) {
+                        if !files[j].declared.contains_key(short) {
+                            return Err(names_nothing(ast, node, &n, prefix, short));
+                        }
+                        n.clone()
+                    } else if self.exists(prefix, base_dir) {
+                        return Err(LoadError(format!(
+                            "{}: '{n}' is a full name of {prefix}, which no import of the \
+                             program brings — a module enters a program by an import of it: \
+                             write (import {prefix} …) (Q-M1f.238)",
+                            place(ast, node)
+                        )));
+                    } else {
+                        n.clone()
+                    }
+                } else {
+                    n.clone()
                 }
             } else {
-                tagged.push((form, false));
-            }
-        }
-
-        // Imported declarations: first position wins, last body wins.
-        let mut imported_decls: Vec<(String, NodeId)> = Vec::new();
-        let mut index: BTreeMap<String, usize> = BTreeMap::new();
-        for &(f, imp) in &tagged {
-            if !imp {
-                continue;
-            }
-            let Some(name) = decl_name(ast, f) else {
-                continue;
+                n.clone()
             };
-            match index.get(&name) {
-                Some(&i) => imported_decls[i].1 = f,
-                None => {
-                    index.insert(name.clone(), imported_decls.len());
-                    imported_decls.push((name, f));
-                }
+            if full != n {
+                out.insert(n, full);
             }
         }
+        Ok(out)
+    }
 
-        // Each imported rule's match / assert relation heads, for activation.
-        let mut match_heads: Vec<(String, BTreeSet<String>)> = Vec::new();
-        let mut assert_heads: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
-        for (name, f) in &imported_decls {
-            if !matches!(ast.head_name(*f), Some("rule") | Some("hrule")) {
+    /// A program with no import may still write a full name of a module, which
+    /// no import brings (Q-M1f.238). A name it declares is its own, whatever
+    /// its dots: a `--dump-answer` state file declares the full names it was
+    /// loaded with and imports nothing (Q-M1f.239).
+    fn refuse_unbrought(
+        &self,
+        ast: &Ast,
+        forms: &[NodeId],
+        base_dir: Option<&Path>,
+    ) -> Result<(), LoadError> {
+        let declared: BTreeSet<String> = forms.iter().filter_map(|f| decl_name(ast, *f)).collect();
+        let mut written: BTreeMap<String, NodeId> = BTreeMap::new();
+        for &f in forms {
+            atoms(ast, f, &mut written);
+        }
+        for (n, node) in written {
+            if declared.contains(&n) {
                 continue;
             }
-            match_heads.push((name.clone(), kw_heads(ast, *f, "match")));
-            assert_heads.insert(name.clone(), kw_heads(ast, *f, "assert"));
-        }
-
-        // Live relations: heads of every kept fact, and the asserts of the
-        // puzzle's own (always-kept) rules — what can exist in the saturated
-        // KB and so trigger an activator-driven imported rule.
-        let mut live: BTreeSet<String> = BTreeSet::new();
-        for &(f, imp) in &tagged {
-            if decl_name(ast, f).is_none() {
-                sform_head_names(ast, f, &mut live);
-            } else if !imp && matches!(ast.head_name(f), Some("rule") | Some("hrule")) {
-                live.extend(kw_heads(ast, f, "assert"));
+            if let Some((prefix, _)) = n.rsplit_once(MODULE_SEP)
+                && self.exists(prefix, base_dir)
+            {
+                return Err(LoadError(format!(
+                    "{}: '{n}' is a full name of {prefix}, which no import of the program \
+                     brings — a module enters a program by an import of it: write (import \
+                     {prefix} …) (Q-M1f.238)",
+                    place(ast, node)
+                )));
             }
         }
-
-        let mut reachable: BTreeSet<String> = BTreeSet::new();
-        // A name a selection lists is live: the program asked for it by name.
-        let mut work: Vec<String> = listed;
-        for &(f, imp) in &tagged {
-            if !imp || decl_name(ast, f).is_none() {
-                let mut names = BTreeSet::new();
-                referenced_names(ast, f, &mut names);
-                work.extend(names);
-            }
-        }
-
-        let mut changed = true;
-        while changed {
-            changed = false;
-            while let Some(n) = work.pop() {
-                if reachable.contains(&n) {
-                    continue;
-                }
-                let Some(&i) = index.get(&n) else { continue };
-                reachable.insert(n.clone());
-                changed = true;
-                let mut names = BTreeSet::new();
-                referenced_names(ast, imported_decls[i].1, &mut names);
-                work.extend(names);
-                if let Some(heads) = assert_heads.get(&n) {
-                    live.extend(heads.iter().cloned());
-                }
-            }
-            for (name, heads) in &match_heads {
-                if !reachable.contains(name) && heads.iter().any(|h| live.contains(h)) {
-                    work.push(name.clone());
-                    changed = true;
-                }
-            }
-        }
-
-        let kept: Vec<NodeId> = tagged
-            .iter()
-            .filter(|&&(f, imp)| !imp || decl_name(ast, f).is_none_or(|n| reachable.contains(&n)))
-            .map(|&(f, _)| f)
-            .collect();
-        dedup_declarations(ast, &kept)
+        Ok(())
     }
+}
+
+/// Bind a short name in a file's table, refusing one bound to two full names
+/// (Q-M1f.234: *"if it happens in the same file - it's an error, not correct
+/// ein code, just like ordinary namespaces"*).
+fn bind(
+    ast: &Ast,
+    t: &mut Table,
+    short: &str,
+    full: String,
+    file: &File,
+    form: NodeId,
+) -> Result<(), LoadError> {
+    match t.names.get(short) {
+        Some(prev) if *prev != full => {
+            let own = file.declared.contains_key(short);
+            Err(LoadError(format!(
+                "{}: '{short}' is bound to two full names in {}, {prev}{} and {full} — one short \
+                 name names one declaration in a file: list it from one module, or write the \
+                 other by its full name",
+                place(ast, form),
+                file.name
+                    .as_deref()
+                    .map_or_else(|| "the program".to_string(), str::to_string),
+                if own { " (its own declaration)" } else { "" }
+            )))
+        }
+        _ => {
+            t.names.insert(short.to_string(), full);
+            Ok(())
+        }
+    }
+}
+
+fn names_nothing(ast: &Ast, node: NodeId, n: &str, module: &str, short: &str) -> LoadError {
+    LoadError(format!(
+        "{}: '{n}' names nothing: {module} declares no '{short}' — a prefixed name is a full \
+         name of a declaration of the module it names (Q-M1f.251)",
+        place(ast, node)
+    ))
+}
+
+/// Where a node is written, or `None`.
+fn place(ast: &Ast, node: NodeId) -> String {
+    loc_repr(ast, first_loc(ast, node))
+}
+
+/// A module's canonical name: its segments, none empty and none holding a
+/// `/` (Q-M1f.252), and not `std` alone.
+fn canonical(module: &str, loc: &str) -> Result<String, LoadError> {
+    let segments: Vec<&str> = module.split(MODULE_SEP).collect();
+    if segments.len() == 1 && segments[0] == STDLIB_ALIAS {
+        return Err(LoadError(format!(
+            "(import {module}) — bare '{STDLIB_ALIAS}' is not a module at {loc}"
+        )));
+    }
+    if segments.iter().any(|s| s.is_empty() || s.contains('/')) {
+        return Err(LoadError(format!(
+            "(import {module}) — a module's name is its path from the program's directory, a \
+             name per directory joined by dots, none empty and none holding a '/': no '..', no \
+             path (Q-M1f.252) at {loc}"
+        )));
+    }
+    Ok(module.to_string())
+}
+
+/// Splice file `i`'s forms into `out`: a module's in place of the first
+/// import that reaches it, and a module's [`DIRECTIVES`] left out.
+fn emit(
+    ast: &Ast,
+    files: &[File],
+    rewritten: &[Vec<NodeId>],
+    i: usize,
+    done: &mut [bool],
+    out: &mut Vec<NodeId>,
+) {
+    done[i] = true;
+    let mut next = files[i].imports.iter();
+    for &f in &rewritten[i] {
+        if ast.head_name(f) == Some("import") {
+            let (_, _, j) = next.next().expect("one entry per import form");
+            if !done[*j] {
+                emit(ast, files, rewritten, *j, done, out);
+            }
+            continue;
+        }
+        if i != 0 && ast.head_name(f).is_some_and(|h| DIRECTIVES.contains(&h)) {
+            continue;
+        }
+        out.push(f);
+    }
+}
+
+/// What prints: the main file's listed short name, else its first alias's
+/// spelling, else the full name (Q-M1f.237, Q-M1f.253). A spelling that is
+/// already a name of the resolved program, a name a module writes and no file
+/// declares, is not taken, so that two names never print as one.
+fn display_names(
+    ast: &Ast,
+    files: &[File],
+    main: &Table,
+    out: &[NodeId],
+) -> BTreeMap<String, String> {
+    let mut d: BTreeMap<String, String> = BTreeMap::new();
+    for (short, full) in &main.names {
+        if short != full {
+            d.entry(full.clone()).or_insert_with(|| short.clone());
+        }
+    }
+    // Aliases in the file's order: the first one written prints.
+    for &(form, ref spec, j) in &files[0].imports {
+        let _ = form;
+        let Some(alias) = &spec.alias else { continue };
+        let m = &files[j];
+        for short in m.declared.keys() {
+            let full = m.full(short);
+            if full != *short {
+                d.entry(full)
+                    .or_insert_with(|| format!("{alias}{MODULE_SEP}{short}"));
+            }
+        }
+    }
+    if d.is_empty() {
+        return d;
+    }
+    let mut used: BTreeMap<String, NodeId> = BTreeMap::new();
+    for &f in out {
+        atoms(ast, f, &mut used);
+    }
+    d.retain(|full, spelt| full != spelt && !used.contains_key(spelt.as_str()));
+    d
 }
 
 // ── Import spec ────────────────────────────────────────────────────
@@ -725,7 +906,7 @@ fn symbol_list(ast: &Ast, value: NodeId) -> Vec<String> {
         .collect()
 }
 
-// ── Qualification and selection ────────────────────────────────────
+// ── Names ──────────────────────────────────────────────────────────
 
 /// The name a declarator form binds, or `None` for a fact.
 fn decl_name(ast: &Ast, form: NodeId) -> Option<String> {
@@ -743,7 +924,7 @@ fn decl_name(ast: &Ast, form: NodeId) -> Option<String> {
 /// a declaration, or one of [`DIRECTIVES`].
 ///
 /// A stored negation, `(not (likes Milk Tea))`, is a fact of the relation it
-/// negates, so a selection that names `likes` brings it (M1f S1f.6.11).
+/// negates (M1f S1f.6.11).
 fn fact_relation(ast: &Ast, form: NodeId) -> Option<String> {
     let mut form = form;
     loop {
@@ -758,47 +939,27 @@ fn fact_relation(ast: &Ast, form: NodeId) -> Option<String> {
     }
 }
 
-/// Names a form list *declares*.
-fn defined_names(ast: &Ast, forms: &[NodeId]) -> BTreeSet<String> {
-    forms.iter().filter_map(|f| decl_name(ast, *f)).collect()
-}
-
-/// Prefix every defined name — and every reference to it — leaving reserved
-/// kernel vocabulary alone, so a module that illegally defines `absent` keeps
-/// the name and is rejected by the loader rather than silently renamed.
-///
-/// **What "reserved" means here is [`ein_core::RESERVED`], and that is the fix
-/// for `CO-H2`** (M1e S1e.2.1). This function used to filter against a
-/// hand-maintained copy of the list, eight names where `ein-core` had nine:
-/// M1d S1d.2.3 added the verdict atom `open` to one of the two and not to the
-/// other, and the sentence above stopped being true for it. A module declaring
-/// `open` — under any of `rule` / `hrule` / `relation` / `macro` — was
-/// silently renamed to `mod.open` and the program loaded with exit 0, while
-/// the same declaration written directly, or imported flat via
-/// `:symbols (open)`, was refused. Same name, different guard, depending on
-/// the import tier — and `:as` was a fourth route with the same hole, which
-/// the finding did not name because it takes this same path with a different
-/// prefix. Thirty-two cells of that matrix are
-/// `reserved_names_are_reserved_through_every_import_route` in
-/// `tests/imports_semantics.rs`.
-fn qualify(ast: &mut Ast, forms: &[NodeId], prefix: &str) -> Vec<NodeId> {
-    let mapping: BTreeMap<String, String> = defined_names(ast, forms)
-        .into_iter()
-        .filter(|n| !ein_core::is_reserved(n))
-        .map(|n| (format!("{prefix}{n}"), n))
-        .map(|(v, k)| (k, v))
-        .collect();
-    if mapping.is_empty() {
-        return forms.to_vec();
+/// Every `Atom` name under `node` — heads, arguments and kw-pair values —
+/// with the first node that writes it.
+fn atoms(ast: &Ast, node: NodeId, out: &mut BTreeMap<String, NodeId>) {
+    match ast.node(node) {
+        Node::Atom(s) => {
+            out.entry(ast.sym(s).to_string()).or_insert(node);
+        }
+        Node::SForm { head, args } => {
+            atoms(ast, head, out);
+            for &a in ast.args(args) {
+                atoms(ast, a, out);
+            }
+        }
+        Node::KwPair { value, .. } => atoms(ast, value, out),
+        _ => {}
     }
-    forms
-        .iter()
-        .map(|f| rename_atoms(ast, *f, &mapping))
-        .collect()
 }
 
 /// Rewrite every `Atom` whose name is in `mapping` — head, args and kw-pair
 /// values alike, so references and `:rule` provenance refs follow the rename.
+/// A node no name of which is renamed is returned as it is.
 fn rename_atoms(ast: &mut Ast, node: NodeId, mapping: &BTreeMap<String, String>) -> NodeId {
     match ast.node(node) {
         Node::Atom(s) => match mapping.get(ast.sym(s)) {
@@ -810,174 +971,39 @@ fn rename_atoms(ast: &mut Ast, node: NodeId, mapping: &BTreeMap<String, String>)
             None => node,
         },
         Node::SForm { head, args } => {
-            let head = rename_atoms(ast, head, mapping);
             let args: Vec<NodeId> = ast.args(args).to_vec();
+            let new_head = rename_atoms(ast, head, mapping);
             let new_args: Vec<NodeId> = args
-                .into_iter()
-                .map(|a| rename_atoms(ast, a, mapping))
+                .iter()
+                .map(|&a| rename_atoms(ast, a, mapping))
                 .collect();
+            if new_head == head && new_args == args {
+                return node;
+            }
             let loc = ast.loc(node);
-            ast.sform(head, &new_args, loc)
+            ast.sform(new_head, &new_args, loc)
         }
         Node::KwPair { key, value } => {
-            let value = rename_atoms(ast, value, mapping);
+            let new_value = rename_atoms(ast, value, mapping);
+            if new_value == value {
+                return node;
+            }
             let loc = ast.loc(node);
-            ast.push(Node::KwPair { key, value }, loc)
+            ast.push(
+                Node::KwPair {
+                    key,
+                    value: new_value,
+                },
+                loc,
+            )
         }
         _ => node,
     }
 }
 
-/// Keep the listed names **plus their dependency closure**, flat and
-/// unrenamed, and the module's **facts** of every relation the closure names.
-///
-/// Auto-closure (S1.8a.f20): a listed declaration drags in every *other*
-/// declaration of this module it references, so importing an entry rule pulls
-/// the machinery it asserts and matches without the importer enumerating it.
-/// Names referenced but not declared here — cross-module deps, kernel
-/// primitives — are left for the importer's other imports, so a module need
-/// not be self-contained.
-///
-/// **Facts** (M1f S1f.6.11, W88; point (a) of the stage, design.md § G's a3).
-/// A name in the closure, listed or named by a kept declaration, selects every
-/// top-level fact of the module whose relation it is ([`fact_relation`]), as
-/// written and in the module's order: `(import onto :symbols (is-a))` brings
-/// the `is-a` facts, and listing a rule that reads `is-a` brings them too. The
-/// closure follows the names a kept *declaration* writes, as it always did,
-/// and not the names inside a kept fact: `(likes Tea Milk)` brings no
-/// declaration of `Tea` (Q-M1f.141). A relation needs no declaration, so a
-/// listed name may be one the module only states facts of. Until this stage a
-/// selection kept declarations alone, and a module's facts were dropped in
-/// silence.
-///
-/// A listed name the module neither declares nor states a fact of is an
-/// error: there is no re-export of the absent. A rule nothing names is still
-/// dropped (point (f)): a selection is a selection.
-fn select(
-    ast: &Ast,
-    forms: &[NodeId],
-    symbols: &[String],
-    module: &str,
-    loc: &str,
-) -> Result<Vec<NodeId>, LoadError> {
-    let mut decls: BTreeMap<String, NodeId> = BTreeMap::new();
-    let mut stated: BTreeSet<String> = BTreeSet::new();
-    for &f in forms {
-        if let Some(n) = decl_name(ast, f) {
-            decls.insert(n, f); // last wins
-        } else if let Some(r) = fact_relation(ast, f) {
-            stated.insert(r);
-        }
-    }
-    let missing: Vec<&String> = symbols
-        .iter()
-        .filter(|s| !decls.contains_key(*s) && !stated.contains(*s))
-        .collect();
-    if !missing.is_empty() {
-        let mut names: Vec<&str> = missing.iter().map(|s| s.as_str()).collect();
-        names.sort_unstable();
-        names.dedup();
-        return Err(LoadError(format!(
-            "(import {module} :symbols …) — not provided by the module: {} at {loc}",
-            names.join(", ")
-        )));
-    }
-    // Every name the closure reaches: the listed ones, and the ones a kept
-    // declaration writes. A declaration is kept when its name is here, and so
-    // is a fact when its relation is.
-    let mut keep: BTreeSet<String> = BTreeSet::new();
-    let mut work: Vec<String> = symbols.to_vec();
-    // A repeated symbol is one item; the closure makes that immaterial, but
-    // the stack starts deduplicated.
-    work.sort();
-    work.dedup();
-    while let Some(n) = work.pop() {
-        if keep.contains(&n) {
-            continue;
-        }
-        if let Some(&f) = decls.get(&n) {
-            let mut names = BTreeSet::new();
-            referenced_names(ast, f, &mut names);
-            work.extend(names);
-        }
-        keep.insert(n);
-    }
-    Ok(forms
-        .iter()
-        .copied()
-        .filter(|f| {
-            decl_name(ast, *f)
-                .or_else(|| fact_relation(ast, *f))
-                .is_some_and(|n| keep.contains(&n))
-        })
-        .collect())
-}
-
-/// The relations a selection brought the declaration of and no rule for
-/// ([`LeftBehind`]'s first three conditions): declared among `forms`, kept in
-/// `kept`, not in `symbols`, written by the `:assert` of a rule or an hrule
-/// of `forms`, and by none of `kept`. In the module's order.
-fn left_behind(ast: &Ast, forms: &[NodeId], kept: &[NodeId], symbols: &[String]) -> Vec<String> {
-    let writers = |fs: &[NodeId]| -> BTreeSet<String> {
-        fs.iter()
-            .filter(|f| matches!(ast.head_name(**f), Some("rule") | Some("hrule")))
-            .flat_map(|f| concluded(ast, *f))
-            .collect()
-    };
-    let (in_module, in_kept) = (writers(forms), writers(kept));
-    let mut out: Vec<String> = Vec::new();
-    for &f in kept {
-        if ast.head_name(f) != Some("relation") {
-            continue;
-        }
-        let Some(name) = decl_name(ast, f) else {
-            continue;
-        };
-        if !symbols.contains(&name)
-            && in_module.contains(&name)
-            && !in_kept.contains(&name)
-            && !out.contains(&name)
-        {
-            out.push(name);
-        }
-    }
-    out
-}
-
-/// The relations a rule's or an hrule's `:assert` concludes a fact of: the
-/// head of each conclusion, under `(and …)` and `(not …)`. A relation written
-/// as a variable is none, and neither is the head of a fact *inside* a
-/// conclusion, which is a value ([`kw_heads`] collects those too, for the
-/// tree-shake, which wants every name).
-fn concluded(ast: &Ast, rule: NodeId) -> BTreeSet<String> {
-    fn walk(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
-        match ast.head_name(node) {
-            Some("and") | Some("not") => {
-                for &a in ast.form_args(node) {
-                    walk(ast, a, out);
-                }
-            }
-            Some(name) => {
-                out.insert(name.to_string());
-            }
-            None => {}
-        }
-    }
-    let mut out = BTreeSet::new();
-    for &a in ast.form_args(rule) {
-        if let Node::KwPair { key, value } = ast.node(a)
-            && let Node::Keyword(k) = ast.node(key)
-            && ast.sym(k) == "assert"
-        {
-            walk(ast, value, &mut out);
-        }
-    }
-    out
-}
-
 /// Where a form is written: its own position, or its head's, or its first
 /// argument's that has one. The parser keeps none for a top-level form.
-fn first_loc(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
+fn first_loc(ast: &Ast, node: NodeId) -> Option<Loc> {
     ast.loc(node).or_else(|| match ast.node(node) {
         Node::SForm { head, .. } => first_loc(ast, head)
             .or_else(|| ast.form_args(node).iter().find_map(|&a| first_loc(ast, a))),
@@ -985,16 +1011,13 @@ fn first_loc(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
     })
 }
 
-/// Drop repeated **identical** declarations, keeping the first.
+/// Drop repeated **identical** declarations, keeping the first; a second
+/// declaration of one kind and one name with another body is refused.
 ///
-/// Import is idempotent: a module and its importer — or two modules — may both
-/// pull the same shared dependency, and the diamond must collapse rather than
-/// trip a duplicate-name error. A second declaration of the same name *and
-/// kind* with a different body is a genuine conflict.
-///
-/// **A fact that arrives twice is kept once** since M1f S1f.6.11, when a flat
-/// import began to bring facts: a diamond of flat imports of one facts library
-/// yields each of its facts once, in the place of its first arrival.
+/// Every module is one copy, so two declarations of one full name come from
+/// one file's text: a file that writes one declaration twice. A fact that
+/// arrives twice is the same node and kept once (M1f S1f.6.11); a fact the
+/// program writes twice is two nodes, and is left to the loader.
 ///
 /// The key is `(kind, name)`, not the name alone: a `(rule undefeated …)` and
 /// a `(relation undefeated …)` share a name but are distinct declarations — a
@@ -1005,11 +1028,6 @@ fn dedup_declarations(ast: &Ast, forms: &[NodeId]) -> Result<Vec<NodeId>, LoadEr
     let mut out: Vec<NodeId> = Vec::new();
     for &f in forms {
         let Some(name) = decl_name(ast, f) else {
-            // One statement of one module, arriving by two paths, is one
-            // statement (M1f S1f.6.11): a module is parsed once per resolution
-            // ([`ModuleCache`]) and a flat import does not rebuild a fact, so
-            // the second arrival is the same node. A fact the program writes
-            // twice is two nodes, and is left to the loader, as it was.
             if fact_relation(ast, f).is_none() || facts.insert(f) {
                 out.push(f);
             }
@@ -1024,68 +1042,16 @@ fn dedup_declarations(ast: &Ast, forms: &[NodeId]) -> Result<Vec<NodeId>, LoadEr
                 seen.insert((kind, name), f);
                 out.push(f);
             }
-            Some(&prev) if ast.eq_nodes(prev, f) => {} // identical re-import
+            Some(&prev) if ast.eq_nodes(prev, f) => {}
             Some(_) => {
                 return Err(LoadError(format!(
                     "conflicting definitions of '{name}': same name, different body (at {})",
-                    loc_repr(ast, ast.loc(f))
+                    loc_repr(ast, first_loc(ast, f))
                 )));
             }
         }
     }
     Ok(out)
-}
-
-// ── Reachability helpers ───────────────────────────────────────────
-
-/// Every `Atom` name reachable from `node` — heads (so a macro invocation
-/// `(forall …)` counts as referencing `forall`), args and kw-pair values.
-fn referenced_names(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
-    match ast.node(node) {
-        Node::Atom(s) => {
-            out.insert(ast.sym(s).to_string());
-        }
-        Node::SForm { head, args } => {
-            if let Some(name) = ast.atom_name(head) {
-                out.insert(name.to_string());
-            }
-            for a in ast.args(args) {
-                referenced_names(ast, *a, out);
-            }
-        }
-        Node::KwPair { value, .. } => referenced_names(ast, value, out),
-        _ => {}
-    }
-}
-
-/// The `Atom` head-name of every form reachable from `node` — relation heads
-/// and logical connectives alike. Variable heads contribute nothing; callers
-/// intersect against the sets they care about, so stray connective names are
-/// harmless.
-fn sform_head_names(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
-    if let Node::SForm { head, args } = ast.node(node) {
-        if let Some(name) = ast.atom_name(head) {
-            out.insert(name.to_string());
-        }
-        for a in ast.args(args) {
-            sform_head_names(ast, *a, out);
-        }
-    }
-}
-
-/// The form heads inside a rule's `:match` / `:assert` value.
-fn kw_heads(ast: &Ast, form: NodeId, key: &str) -> BTreeSet<String> {
-    let mut out = BTreeSet::new();
-    for &a in ast.form_args(form) {
-        if let Node::KwPair { key: k, value } = ast.node(a)
-            && let Node::Keyword(s) = ast.node(k)
-            && ast.sym(s) == key
-        {
-            sform_head_names(ast, value, &mut out);
-            return out;
-        }
-    }
-    out
 }
 
 // ── Convenience wrappers ───────────────────────────────────────────
@@ -1097,13 +1063,4 @@ pub fn resolve_imports(
     base_dir: Option<&Path>,
 ) -> Result<Vec<NodeId>, LoadError> {
     Resolver::new().resolve_imports(ast, forms, base_dir)
-}
-
-/// [`Resolver::resolve_and_minimize`] with the default stdlib source.
-pub fn resolve_and_minimize(
-    ast: &mut Ast,
-    forms: &[NodeId],
-    base_dir: Option<&Path>,
-) -> Result<Vec<NodeId>, LoadError> {
-    Resolver::new().resolve_and_minimize(ast, forms, base_dir)
 }

@@ -9,7 +9,7 @@
 ;;; ein-lang `(macro …)` declarations. Reach them three ways:
 ;;;     (import std.macro)            → `(std.macro.forall …)`
 ;;;     (import std.macro :as m)      → `(m.forall …)`
-;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (flat)
+;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (short names)
 ;;;
 ;;; Each carries a `:why`, as every relation and rule here does, since M1f
 ;;; S1f.5.5's swap made the one parser the one that reads a macro's, so the

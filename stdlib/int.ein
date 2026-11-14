@@ -14,12 +14,15 @@
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
-;;;     (import std.int :symbols (int-arith))
+;;;     (import std.int :symbols (int-arith int-add int int-sum-of))
+;;;     (import std.arith :symbols (n))
 ;;;
-;;; `int-arith` is the theory's one entry, the closing rule at the end of this
-;;; file. It names every rule and closes every relation of the module, and it
-;;; names `arith`, `std.arith`'s entry, so that one name brings both theories
-;;; and the tables. A program may import `std.arith` beside it, flat.
+;;; An import brings the module whole, `std.arith` and the tables with it
+;;; (M1f S1f.6.35); a program lists the names it writes, from the module that
+;;; declares each: `int-add`, `int`, `int-sum-of` from this one, `n` from
+;;; `std.arith`. `int-arith` is the theory's entry, the closing rule at the end
+;;; of this file: it names every rule and closes every relation of the module,
+;;; and it names `arith`, `std.arith`'s entry.
 ;;;
 ;;; ── The integer ────────────────────────────────────────────────────────────
 ;;;
@@ -150,7 +153,8 @@
 ;;; tags are in the state for a query or a `--trace` to see, and are not a
 ;;; promise.
 
-(import std.arith :symbols (arith))
+(import std.arith :symbols (arith operand operand-is sub-walk done add-walk mul-call cmp-walk
+                            order-is division-by-zero n div-call div-done))
 
 ;; ── The integer ─────────────────────────────────────────────────────────────
 (relation int Number Number
@@ -652,11 +656,12 @@
 
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed, so the search has no candidate
-;; among them, and every rule is named, which is what makes `(import std.int
-;; :symbols (int-arith))` bring the whole theory. It names `arith` too,
-;; `std.arith`'s entry: a selection's closure follows the names a kept
-;; declaration writes, and without that name the lower theory's rules would
-;; stay behind, in silence (E-20 of P1f.6's `findings.md`).
+;; among them, and every rule is named. It names `arith` too, `std.arith`'s
+;; entry. Until M1f S1f.6.35 the names were what made `(import std.int
+;; :symbols (int-arith))` bring the whole theory, the lower one's included, a
+;; selection's closure following the names a kept declaration writes (E-20 of
+;; P1f.6's `findings.md`); every import brings its module whole since, and the
+;; names stay for a program and a trace to read.
 ;; `ein-infer/tests/int_theory.rs` holds that nothing is missing here.
 (relation int-rule Rule
   :why "{?1} is a rule std.int brings")

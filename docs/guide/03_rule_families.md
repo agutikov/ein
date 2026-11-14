@@ -14,7 +14,7 @@ lesson you'll take to your own puzzles:
 
 ```lisp
 (import std.algebra   :symbols (symmetric transitive includes))
-(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
+(import std.bijection :symbols (bijective-setup typecheck-setup))
 ```
 
 — and then *activates* them per relation:

@@ -1,19 +1,15 @@
-//! Import resolution, minimisation and macro expansion — S1a.1.3's
-//! acceptance.
-//!
-//! The minimisation half matters more than it looks: the surviving declaration
-//! set is observable through the plan cache and through firing order, so
-//! dropping one declaration too many or too few is a wrong answer several
-//! phases later, on a fixture that will look unrelated.
+//! Import resolution and macro expansion — S1a.1.3's acceptance, and since
+//! M1f S1f.6.35 imports by full name (`imports_full_names.rs` holds the model's
+//! own cases: short names, aliases, the refusals, the user's dependency graph).
 //!
 //! Where each part is checked:
 //!
 //! | claim | where |
 //! |---|---|
-//! | the three corpus-wide ops (`resolve` / `minimize` / `expand`) | `corpus_shapes.md5`'s 107 `ir[resolve]` + 107 `ir[minimize]` + 107 `ir[expand]` lines, through `dump_canonical` |
+//! | the corpus-wide ops (`resolve` / `expand`) | `corpus_shapes.md5`'s `ir[resolve]` and `ir[expand]` lines, through `dump_canonical` (`minimize`, the tree-shake, went at M1f S1f.6.35) |
 //! | `std.macro`'s exported names | [`stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`], which re-parses `stdlib/macro.ein` at test time |
 //! | the 14-module mangling | a checked-in table |
-//! | one module under two qualifications | [`one_module_under_two_qualifications_does_not_leak_either_way`] |
+//! | one module under two spellings is one copy | [`one_module_under_two_spellings_is_one_copy`] |
 //! | what each import form brings of a module's relations, rules, macros and facts | [`what_each_import_form_brings_of_a_module`] (M1f S1f.6.11's table) |
 //! | a facts library reached by two flat paths | [`a_diamond_of_flat_imports_yields_each_fact_once`] |
 //! | the 9 `.expected` fixtures of the resolver and the expander | [`the_import_and_macro_failures_are_byte_identical`] (12 until M1f S1f.5.5's swap moved three to `examples/broken/`, refused at the parse) |
@@ -143,61 +139,34 @@ fn the_import_and_macro_failures_are_byte_identical() {
     assert_eq!(format!("(rule x): {}", err.0), expected);
 }
 
-/// One module, imported **twice under different qualifications** in a single
-/// resolution — the shape T1a.6.5.3's module cache makes sharing-sensitive.
-///
-/// Since that task a module is parsed once per resolution and *both* importers
-/// are handed the same nodes, so a qualification that rewrote a shared subtree
-/// in place instead of building a new one would leak `m.` into the flat import
-/// (or the other way round). `rename_atoms` builds; this is the test that says
-/// so.
+/// One module, imported **twice under two spellings**, an alias and a list,
+/// is **one copy** (M1f S1f.6.35, the user's model (h)): every path to a
+/// module reaches the same declarations under the same full names. Until
+/// then the alias renamed a copy of its own, `m.forall` beside `forall`.
+/// The one copy prints by the main file's listed name, the short name
+/// coming before an alias's spelling (Q-M1f.237, Q-M1f.253).
 #[test]
-fn one_module_under_two_qualifications_does_not_leak_either_way() {
+fn one_module_under_two_spellings_is_one_copy() {
     let base = repo_root().join("examples");
     let src = "(import std.macro :as m)\n(import std.macro :symbols (forall))\n";
     let mut ast = Ast::new();
     let forms = parse(&mut ast, src, Some("<string>")).expect("parses");
-    // One form a line: since M1f S1f.5.5's swap the stdlib's macros carry a
-    // `:why` (the brief's item 4), so the canonical dump breaks each over
-    // several lines; the compact one keeps each on one.
     let got = Resolver::new()
         .resolve_imports(&mut ast, &forms, Some(&base))
         .map(|f| {
             f.iter()
                 .map(|&n| ein_ir::dump::dump_compact(&ast, n))
                 .collect::<Vec<_>>()
-                .join("\n")
         })
         .expect("resolves");
-    // Both qualifications survive, each spelled its own way.
+    let foralls: Vec<&String> = got.iter().filter(|l| l.contains("forall")).collect();
+    assert_eq!(foralls.len(), 1, "one copy of the macro: {got:#?}");
+    assert!(foralls[0].starts_with("(macro forall "), "{got:#?}");
+    // The other macro of the module, which neither spelling lists, prints
+    // under the alias.
     assert!(
-        got.contains("(macro m.forall"),
-        "the aliased copy is missing:\n{got}"
-    );
-    assert!(
-        got.contains("(macro forall"),
-        "the flat copy is missing:\n{got}"
-    );
-    assert!(
-        !got.contains("(macro m.m."),
-        "a rename was applied twice:\n{got}"
-    );
-    // Both copies expand the same body: the rename touched the *heads* only,
-    // so `m.forall` and `forall` differ in exactly one token. A resolver with
-    // no cache could not leak, so the point is that the cached one produces
-    // the text an uncached one would.
-    let flat = got
-        .lines()
-        .find(|l| l.starts_with("(macro forall"))
-        .expect("the flat copy");
-    let aliased = got
-        .lines()
-        .find(|l| l.starts_with("(macro m.forall"))
-        .expect("the aliased copy");
-    assert_eq!(
-        aliased.replacen("(macro m.forall", "(macro forall", 1),
-        flat,
-        "the two qualifications differ by more than the head"
+        got.iter().any(|l| l.starts_with("(macro m.unknown ")),
+        "{got:#?}"
     );
 }
 
@@ -205,10 +174,12 @@ fn one_module_under_two_qualifications_does_not_leak_either_way() {
 /// show up in the "module not found" text.
 ///
 /// `std.nope.`, `std..nope`, `a.` and `std.__x` are the interesting rows: an
-/// empty segment — a doubled or a trailing dot — is not an error, it is
-/// dropped, so the message names a file nobody would have guessed. Checked
-/// in as a table because the message *is* the observable — resolution either
-/// finds a module or says which file it looked for.
+/// empty segment — a doubled or a trailing dot — was dropped until M1f
+/// S1f.6.35, so the message named a file nobody would have guessed; since, a
+/// module's name is its identity, and one with an empty segment or a `/` is
+/// refused (Q-M1f.252). Checked in as a table because the message *is* the
+/// observable — resolution either finds a module or says which file it
+/// looked for.
 ///
 /// The path in each message is machine-specific, so the checkout root is
 /// replaced by `{ROOT}` the way `examples/broken/load/`'s fixtures use
@@ -606,11 +577,10 @@ fn an_override_without_the_marker_is_refused_by_name() {
 /// they compose — because a documented route nothing runs is what `CD-M5` was.
 ///
 /// The claim is not just that the dump has no `(import …)` left in it: it is
-/// that the standalone text is the **same program**. Minimisation drops
-/// imported declarations nothing reaches, and the surviving set is observable
-/// through the plan cache and firing order, so "one declaration too few" is a
-/// failure several phases away on a fixture that will look unrelated. Loading
-/// both and comparing the KBs is the cheap way to say it here.
+/// that the standalone text is the **same program**. Until M1f S1f.6.35 the
+/// route minimised, dropping imported declarations nothing reached; since,
+/// every import brings its module whole, and the inlined text is the program
+/// as resolved. Loading both and comparing the KBs is the cheap way to say it.
 #[test]
 fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     let puzzle = repo_root().join("examples/zebra2.ein");
@@ -619,7 +589,7 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     // The three calls, in the order the README prints them.
     let mut ast = Ast::new();
     let forms = parse_file(&mut ast, &puzzle);
-    let inlined = ein_ir::resolve_and_minimize(&mut ast, &forms, base).expect("resolves");
+    let inlined = ein_ir::resolve_imports(&mut ast, &forms, base).expect("resolves");
     let standalone = dump_canonical(&ast, &inlined);
 
     assert!(
@@ -644,38 +614,36 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     let mut terms2 = ein_core::Terms::new();
     let got = ein_ir::load(&mut ast2, &mut terms2, &forms2, None).expect("the dump loads");
 
-    // `<KnowledgeBase relations=N rules=N facts=N>` — the three counts
-    // minimisation can get wrong, in one comparison.
+    // `<KnowledgeBase relations=N rules=N facts=N>` — the three counts, in
+    // one comparison.
     assert_eq!(format!("{got:?}"), format!("{want:?}"));
 }
 
-/// **A name an import's selection lists is live** — M1f S1f.6.25, E-11 of
-/// P1f.6's `findings.md`, W91.
+/// **An import brings its module whole, and the inlined program is it** —
+/// M1f S1f.6.35 (the user, 2026-11-14: *"in all cases we import everything,
+/// the difference only in names"*).
 ///
-/// The tree-shake kept an imported declaration that a name in the program's
-/// own forms reaches or that a live premise activates. A library's entry that
-/// is a rule with an empty `:match`, imported by its name alone, is reached by
-/// neither: it fires once at root in the program as loaded, and the inlined
-/// program lacked it and the relation only it names. `std.arith` wrote its
-/// closing rule's name as a fact, `(arith-rule arith)`, for the name
-/// reference to follow, and every module over it copied that. Listed names
-/// are roots of the reachability now, so everything a top-level flat import
-/// brings is kept; an unlisted declaration a qualified import brings and
-/// nothing reaches is still shaken out.
+/// Until then a selection kept the listed names and their closure, and the
+/// tree-shake a `--dump-answer` state file's program went through kept what a
+/// live name reached (M1f S1f.6.25, E-11, W91; E-41 its qualified twin). A
+/// selection names now: every relation, rule and macro of the library comes,
+/// the listed one under its short name and the rest under their full names,
+/// and the inlined text loads to the same program with nothing left to
+/// resolve against.
 #[test]
-fn a_name_a_selection_lists_survives_the_tree_shake() {
+fn an_import_brings_its_module_whole_and_the_inlined_program_is_it() {
     let lib = "(relation color Thing :why \"{?1} is a colour\")\n\
          (relation shade Thing :why \"{?1} is a shade\")\n\
          (rule palette () :match () :assert (and (color Red) (color Green)) :why \"colours\")\n\
          (rule shades () :match (color ?x) :assert (shade ?x) :why \"{?x} has a shade\")\n\
          (macro both (?a ?b) (and ?a ?b) :why \"{?a} and {?b}\")\n";
-    let scratch = Scratch::new("ein-import-listed");
+    let scratch = Scratch::new("ein-import-whole");
     std::fs::write(scratch.path().join("lib.ein"), lib).expect("written");
     let heads = |src: &str| -> Vec<String> {
         let mut ast = Ast::new();
         let forms = parse(&mut ast, src, Some("<program>")).expect("parses");
         let kept =
-            ein_ir::resolve_and_minimize(&mut ast, &forms, Some(scratch.path())).expect("resolves");
+            ein_ir::resolve_imports(&mut ast, &forms, Some(scratch.path())).expect("resolves");
         kept.iter()
             .map(|&f| {
                 let line = ein_ir::dump::dump_compact(&ast, f);
@@ -687,17 +655,36 @@ fn a_name_a_selection_lists_survives_the_tree_shake() {
             .collect()
     };
     let v = |xs: &[&str]| xs.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    // The entry alone: the rule and the relation it writes, where neither
-    // came. `shades` is not in the closure and was never brought.
     assert_eq!(
         heads("(import lib :symbols (palette))"),
-        v(&["(relation color", "(rule palette"])
+        v(&[
+            "(relation lib.color",
+            "(relation lib.shade",
+            "(rule palette",
+            "(rule lib.shades",
+            "(macro lib.both"
+        ])
     );
-    // A listed relation and a listed macro nothing uses are kept too: the
-    // inlined text is the program as loaded.
     assert_eq!(
         heads("(import lib :symbols (shade both))"),
-        v(&["(relation shade", "(macro both"])
+        v(&[
+            "(relation lib.color",
+            "(relation shade",
+            "(rule lib.palette",
+            "(rule lib.shades",
+            "(macro both"
+        ])
+    );
+    assert_eq!(
+        heads("(import lib :as l)\n(l.shade Blue)"),
+        v(&[
+            "(relation l.color",
+            "(relation l.shade",
+            "(rule l.palette",
+            "(rule l.shades",
+            "(macro l.both",
+            "(l.shade Blue)"
+        ])
     );
     // And it is the same program: loaded from the import and from the
     // inlined text, the same relations, rules and facts.
@@ -705,7 +692,7 @@ fn a_name_a_selection_lists_survives_the_tree_shake() {
     let mut ast = Ast::new();
     let forms = parse(&mut ast, src, Some("<program>")).expect("parses");
     let inlined =
-        ein_ir::resolve_and_minimize(&mut ast, &forms, Some(scratch.path())).expect("resolves");
+        ein_ir::resolve_imports(&mut ast, &forms, Some(scratch.path())).expect("resolves");
     let standalone = dump_canonical(&ast, &inlined);
     let mut terms = ein_core::Terms::new();
     let want = ein_ir::load(&mut ast, &mut terms, &forms, Some(scratch.path())).expect("loads");
@@ -714,69 +701,6 @@ fn a_name_a_selection_lists_survives_the_tree_shake() {
     let mut terms2 = ein_core::Terms::new();
     let got = ein_ir::load(&mut ast2, &mut terms2, &forms2, None).expect("the dump loads");
     assert_eq!(format!("{got:?}"), format!("{want:?}"));
-    // A qualified import is shaken as it was: what nothing reaches goes.
-    assert_eq!(
-        heads("(import lib :as l)\n(l.shade Blue)"),
-        v(&["(relation l.shade", "(l.shade Blue)"])
-    );
-}
-
-/// **What a selection left behind, as the resolver reports it** — M1f
-/// S1f.6.25, E-20 of P1f.6's `findings.md`. The line, its place and what it
-/// is quiet on are `ein-cli`'s `import_left_behind.rs`; this holds the
-/// resolver's half: the report is beside the forms and never changes them,
-/// it sees through a module's own imports, and a qualified import renames
-/// what an inner selection left as it renames the declaration.
-#[test]
-fn the_resolver_reports_what_a_selection_left_behind() {
-    let lower = "(relation ask Thing :why \"a\")\n\
-         (relation double-of Thing Thing :why \"d\")\n\
-         (rule answer () :match (ask ?x) :assert (double-of ?x ?x) :why \"w\")\n\
-         (rule lower () :match () :assert (lower-rule answer) :why \"e\")\n";
-    let upper = "(import lower :symbols (lower))\n\
-         (rule read () :match (double-of ?x ?y) :assert (got ?x ?y) :why \"r\")\n\
-         (rule upper () :match () :assert (upper-rule read) :why \"e\")\n";
-    let scratch = Scratch::new("ein-import-left");
-    for (name, text) in [("lower", lower), ("upper", upper)] {
-        std::fs::write(scratch.path().join(format!("{name}.ein")), text).expect("written");
-    }
-    let left = |src: &str| -> Vec<(String, Vec<String>)> {
-        let mut ast = Ast::new();
-        let forms = parse(&mut ast, src, Some("p.ein")).expect("parses");
-        let plain = Resolver::new()
-            .resolve_imports(&mut ast, &forms, Some(scratch.path()))
-            .expect("resolves");
-        let (noted, left) = Resolver::new()
-            .resolve_imports_noting(&mut ast, &forms, Some(scratch.path()))
-            .expect("resolves");
-        assert_eq!(plain.len(), noted.len(), "the report moved the forms");
-        left.into_iter().map(|l| (l.at, l.relations)).collect()
-    };
-    let v = |xs: &[&str]| xs.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    // The upper theory's entry does not name the lower one's.
-    assert_eq!(
-        left("(import upper :symbols (upper))"),
-        vec![("p.ein:1:9".to_string(), v(&["double-of"]))]
-    );
-    // The lower theory's entry listed beside it: nothing is left.
-    assert_eq!(left("(import upper :symbols (upper lower))"), vec![]);
-    assert_eq!(
-        left("(import upper :symbols (upper))\n(import lower :symbols (answer))"),
-        vec![]
-    );
-    // The upper module alone, and qualified: its own import brings the whole
-    // lower theory.
-    assert_eq!(left("(import upper :as u)"), vec![]);
-    // A module whose own selection leaves a rule behind, imported qualified:
-    // the relation is reported under the name the import gives it.
-    std::fs::write(
-        scratch.path().join("mid.ein"),
-        "(import upper :symbols (upper))\n",
-    )
-    .expect("written");
-    let got = left("(import mid :as m)");
-    assert_eq!(got.len(), 1, "{got:?}");
-    assert_eq!(got[0].1, v(&["m.double-of"]));
 }
 
 // ── M1f S1f.6.11: a flat import brings a module's facts ──────────────────────
@@ -823,100 +747,70 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
 }
 
 /// **What each import form brings of a module** — M1f S1f.6.11's table, a
-/// case per cell (W88).
+/// case per cell (W88), and since M1f S1f.6.35 one answer for every form: the
+/// module whole, its declarations and its facts, under the names the form
+/// gives them (the user, 2026-11-14: *"in all cases we import everything, the
+/// difference only in names"*).
 ///
-/// Until the stage `:symbols` kept the listed declarations and their closure
-/// and dropped every fact, in silence, so a library of facts arrived empty;
-/// and a relation the module only states facts of could not be listed. The
-/// user ruled on 2026-11-11 that *importing facts is mandatory*. A qualified
-/// import was unmoved by that stage (point (b)): it renames each declared
-/// name wherever it stands, so the module's `is-a` facts are `o.is-a` facts,
-/// and a library of facts is imported flat. Since M1f S1f.6.25 it brings the
-/// module's declarations and facts and none of its `(query …)`, `(solve …)`
-/// and `(config …)`, as a flat import never did.
+/// A bare import writes every declared name in full, `onto.is-a`; `:as o`
+/// under the alias; a selection writes the names it lists short and every
+/// other in full. A name no file declares (`likes`, `thing`, a constant) is
+/// one name everywhere. What a module states as a program, its `(query …)`,
+/// `(solve …)` and `(config …)`, never comes (M1f S1f.6.25, E-8, W90).
 #[test]
 fn what_each_import_form_brings_of_a_module() {
     let onto = [("onto", ONTO)];
-    let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    // Whole-module and aliased: every declaration and every fact, the
-    // declared names renamed wherever they stand, the relation heading a fact
-    // among them; an undeclared relation (`likes`, and the `thing` a rule
-    // asserts) and every constant as written. The query, the solve form and
-    // the config do not come: they are the module's own as a program (M1f
-    // S1f.6.25, E-8, W90; until then all three came, the query renamed).
+    // The module whole, `short` the names the form lets the program write
+    // short and `p` the prefix of every other.
+    let whole = |p: &str, short: &[&str]| -> Vec<String> {
+        let n = |x: &str| {
+            if short.contains(&x) {
+                x.to_string()
+            } else {
+                format!("{p}.{x}")
+            }
+        };
+        vec![
+            format!("(relation {} Thing Type)", n("is-a")),
+            format!("(relation {} Thing)", n("unused")),
+            format!("({} Tea Drink)", n("is-a")),
+            format!("({} Milk Drink :source \"the ontology\")", n("is-a")),
+            "(likes Tea Milk)".to_string(),
+            "(not (likes Milk Tea))".to_string(),
+            format!(
+                "(rule {} () :match ({} ?x Drink) :assert (thing ?x))",
+                n("things"),
+                n("is-a")
+            ),
+            format!(
+                "(rule {} () :match ({} ?x Drink) :assert (liquid ?x))",
+                n("liquids"),
+                n("is-a")
+            ),
+            format!("(macro {} (?a ?b) (and ?a ?b))", n("both")),
+        ]
+    };
     for (import, p) in [("(import onto)", "onto"), ("(import onto :as o)", "o")] {
         assert_eq!(
             resolved(&onto, import).expect("resolves"),
-            lines(&[
-                &format!("(relation {p}.is-a Thing Type)"),
-                &format!("(relation {p}.unused Thing)"),
-                &format!("({p}.is-a Tea Drink)"),
-                &format!("({p}.is-a Milk Drink :source \"the ontology\")"),
-                "(likes Tea Milk)",
-                "(not (likes Milk Tea))",
-                &format!("(rule {p}.things () :match ({p}.is-a ?x Drink) :assert (thing ?x))"),
-                &format!("(rule {p}.liquids () :match ({p}.is-a ?x Drink) :assert (liquid ?x))"),
-                &format!("(macro {p}.both (?a ?b) (and ?a ?b))"),
-            ]),
+            whole(p, &[]),
             "{import}"
         );
     }
-    // A listed relation: its declaration and its facts, as written and in the
-    // module's order, a `:source` kept. Nothing else: not the relation
-    // nothing names, not `likes`, not the rules that would fire on the facts
-    // (point (f)), not the macro, and never a query, a solve form or a config.
-    assert_eq!(
-        resolved(&onto, "(import onto :symbols (is-a))").expect("resolves"),
-        lines(&[
-            "(relation is-a Thing Type)",
-            "(is-a Tea Drink)",
-            "(is-a Milk Drink :source \"the ontology\")",
-        ])
-    );
-    // A listed rule: the closure follows the names it writes, so `is-a`'s
-    // declaration comes, as it always did, and `is-a`'s facts with it.
-    assert_eq!(
-        resolved(&onto, "(import onto :symbols (things))").expect("resolves"),
-        lines(&[
-            "(relation is-a Thing Type)",
-            "(is-a Tea Drink)",
-            "(is-a Milk Drink :source \"the ontology\")",
-            "(rule things () :match (is-a ?x Drink) :assert (thing ?x))",
-        ])
-    );
-    // A relation the module only states facts of may be listed, and a stored
-    // negation is a fact of the relation it negates.
-    assert_eq!(
-        resolved(&onto, "(import onto :symbols (likes))").expect("resolves"),
-        lines(&["(likes Tea Milk)", "(not (likes Milk Tea))"])
-    );
-    // A macro and a relation with no fact: declarations alone, as before.
-    assert_eq!(
-        resolved(&onto, "(import onto :symbols (both unused))").expect("resolves"),
-        lines(&[
-            "(relation unused Thing)",
-            "(macro both (?a ?b) (and ?a ?b))"
-        ])
-    );
-    // Everything listed, in the module's order whatever the list's.
-    assert_eq!(
-        resolved(
-            &onto,
-            "(import onto :symbols (both likes liquids unused things))"
-        )
-        .expect("resolves"),
-        lines(&[
-            "(relation is-a Thing Type)",
-            "(relation unused Thing)",
-            "(is-a Tea Drink)",
-            "(is-a Milk Drink :source \"the ontology\")",
-            "(likes Tea Milk)",
-            "(not (likes Milk Tea))",
-            "(rule things () :match (is-a ?x Drink) :assert (thing ?x))",
-            "(rule liquids () :match (is-a ?x Drink) :assert (liquid ?x))",
-            "(macro both (?a ?b) (and ?a ?b))",
-        ])
-    );
+    for listed in [
+        &["is-a"][..],
+        &["things"],
+        &["likes"],
+        &["both", "unused"],
+        &["both", "likes", "liquids", "unused", "things"],
+    ] {
+        let import = format!("(import onto :symbols ({}))", listed.join(" "));
+        assert_eq!(
+            resolved(&onto, &import).expect("resolves"),
+            whole("onto", listed),
+            "{import}"
+        );
+    }
     // A name the module neither declares nor states a fact of is still
     // refused: `thing` is written only in a rule's `:assert`, and `Tea` only
     // as a value.
@@ -965,26 +859,19 @@ fn no_import_brings_a_modules_query_solve_or_config() {
             "{import}"
         );
     }
-    // Twice, under two names: two copies of the declaration and the fact,
-    // and no second lattice.
+    // Twice, under two names: one copy (M1f S1f.6.35), printed under the
+    // first alias, and no second lattice.
     assert_eq!(
         resolved(&[("m", m)], "(import m :as a)\n(import m :as b)").expect("resolves"),
-        lines(&[
-            "(relation a.is-a Thing Type)",
-            "(a.is-a Tea Drink)",
-            "(relation b.is-a Thing Type)",
-            "(b.is-a Tea Drink)",
-        ])
+        lines(&["(relation a.is-a Thing Type)", "(a.is-a Tea Drink)"])
     );
-    // Through a module that imports it qualified: the inner module's forms
-    // were dropped where it was imported, so nothing is left to bring.
+    // Through a module that imports it under an alias of its own: the
+    // module's own directives are dropped as the program's, and its names
+    // print in full, the program giving them no spelling of its own.
     let outer = "(import m :as inner)\n(solve :hypothesis-relations ())\n";
     assert_eq!(
         resolved(&[("m", m), ("outer", outer)], "(import outer :as o)").expect("resolves"),
-        lines(&[
-            "(relation o.inner.is-a Thing Type)",
-            "(o.inner.is-a Tea Drink)"
-        ])
+        lines(&["(relation m.is-a Thing Type)", "(m.is-a Tea Drink)"])
     );
     // The importer's own three are its own, and are kept where it wrote them.
     let own = "(import m :as k)\n(solve :hypothesis-relations (k.is-a))\n\
@@ -1017,11 +904,14 @@ fn no_import_brings_a_modules_query_solve_or_config() {
     assert!(kb.program().config.is_none(), "the module's config came");
 }
 
-/// **The closure follows the names a kept declaration writes, and not the
-/// names inside a kept fact** (Q-M1f.141), and a fact of a kernel relation
-/// comes as any fact does (Q-M1f.142).
+/// **A selection names; the module comes whole** — M1f S1f.6.35. Until then
+/// a selection's closure followed the names a kept declaration writes and not
+/// the names inside a kept fact (Q-M1f.141), and a fact of the marker came
+/// where the marker was listed or written (Q-M1f.142). Every form, the facts
+/// of the marker among them; a value the module declares as a relation, the
+/// `cat` of `(owns Ann cat)`, is read under its full name as the relation is.
 #[test]
-fn a_selection_follows_declarations_and_not_the_names_inside_a_fact() {
+fn a_selection_names_and_the_module_comes_whole() {
     let m = "(relation owns Person Thing :why \"{?1} owns {?2}\")\n\
          (relation cat Thing :why \"{?1} is a cat\")\n\
          (owns Ann cat)\n\
@@ -1029,44 +919,46 @@ fn a_selection_follows_declarations_and_not_the_names_inside_a_fact() {
          (__closed__ owns)\n\
          (__closed__ cat)\n\
          (rule close () :match () :assert (__closed__ pets) :why \"pets is closed\")\n";
-    let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    // `(owns Ann cat)` names `cat`, a declared relation with a fact; neither
-    // comes with `owns`, and neither does `(__closed__ owns)`.
-    assert_eq!(
-        resolved(&[("m", m)], "(import m :symbols (owns))").expect("resolves"),
-        lines(&["(relation owns Person Thing)", "(owns Ann cat)"])
-    );
-    // The marker is a relation's name like another: listed, it brings the
-    // module's `(__closed__ …)` facts; and a kept rule that writes it does.
-    assert_eq!(
-        resolved(&[("m", m)], "(import m :symbols (owns __closed__))").expect("resolves"),
-        lines(&[
-            "(relation owns Person Thing)",
-            "(owns Ann cat)",
-            "(__closed__ owns)",
-            "(__closed__ cat)",
-        ])
-    );
-    assert_eq!(
-        resolved(&[("m", m)], "(import m :symbols (close))").expect("resolves"),
-        lines(&[
-            "(__closed__ owns)",
-            "(__closed__ cat)",
-            "(rule close () :match () :assert (__closed__ pets))",
-        ])
-    );
+    let whole = |short: &[&str]| -> Vec<String> {
+        let n = |x: &str| {
+            if short.contains(&x) {
+                x.to_string()
+            } else {
+                format!("m.{x}")
+            }
+        };
+        vec![
+            format!("(relation {} Person Thing)", n("owns")),
+            format!("(relation {} Thing)", n("cat")),
+            format!("({} Ann {})", n("owns"), n("cat")),
+            format!("({} Tom)", n("cat")),
+            format!("(__closed__ {})", n("owns")),
+            format!("(__closed__ {})", n("cat")),
+            format!(
+                "(rule {} () :match () :assert (__closed__ pets))",
+                n("close")
+            ),
+        ]
+    };
+    for listed in [&["owns"][..], &["owns", "__closed__"], &["close"]] {
+        let import = format!("(import m :symbols ({}))", listed.join(" "));
+        assert_eq!(
+            resolved(&[("m", m)], &import).expect("resolves"),
+            whole(listed),
+            "{import}"
+        );
+    }
 }
 
-/// **A diamond of flat imports of one facts library yields each fact once**
-/// (M1f S1f.6.11's T4).
+/// **A diamond of imports of one facts library yields each fact once**
+/// (M1f S1f.6.11's T4; one copy of the module since M1f S1f.6.35).
 ///
-/// A flat diamond over *declarations* always collapsed, identical ones being
-/// one (`dedup_declarations`). A fact has no name to collapse on, and a
-/// module is parsed once per resolution, so a statement that arrives a second
-/// time is the same node and is kept once, where it first arrived. The same
-/// library imported flat twice by one program is the same case. A fact the
-/// program itself writes beside the library's is another statement and stays,
-/// for the loader, to which a fact stated twice is one fact.
+/// A module is read once per program whoever imports it, so a statement of
+/// it arrives once, where the module first arrives. A fact the program itself
+/// writes beside the library's is another statement and stays, for the
+/// loader, to which a fact stated twice is one fact. The program names the
+/// library's `is-a` by listing it; a name another module lists is that
+/// module's to write (no re-export).
 #[test]
 fn a_diamond_of_flat_imports_yields_each_fact_once() {
     let modules = [
@@ -1083,41 +975,39 @@ fn a_diamond_of_flat_imports_yields_each_fact_once() {
         ),
     ];
     let lines = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    // Each side re-exports the library's facts: they are facts of the side.
-    let got = resolved(
-        &modules,
-        "(import left :symbols (fizzy))\n(import right :symbols (wet likes))\n(is-a Tea Drink)\n",
-    )
-    .expect("resolves");
-    assert_eq!(
-        got,
-        lines(&[
-            "(relation is-a Thing Type)",
-            "(is-a Tea Drink)",
-            "(is-a Milk Drink :source \"the ontology\")",
-            "(is-a Cola Drink)",
-            "(rule fizzy () :match (is-a ?x Drink) :assert (fizzy ?x))",
-            "(likes Tea Milk)",
-            "(not (likes Milk Tea))",
-            "(is-a Water Drink)",
-            "(rule wet () :match (is-a ?x Drink) :assert (wet ?x))",
-            // The program's own statement of a fact the library states.
-            "(is-a Tea Drink)",
-        ])
-    );
-    // One library, imported flat twice by one program.
+    let library = [
+        "(relation is-a Thing Type)",
+        "(relation onto.unused Thing)",
+        "(is-a Tea Drink)",
+        "(is-a Milk Drink :source \"the ontology\")",
+        "(likes Tea Milk)",
+        "(not (likes Milk Tea))",
+        "(rule onto.things () :match (is-a ?x Drink) :assert (thing ?x))",
+        "(rule onto.liquids () :match (is-a ?x Drink) :assert (liquid ?x))",
+        "(macro onto.both (?a ?b) (and ?a ?b))",
+    ];
+    let src = "(import left :symbols (fizzy))\n(import right :symbols (wet))\n\
+               (import onto :symbols (is-a))\n(is-a Tea Drink)\n";
+    let mut want = lines(&library);
+    want.extend(lines(&[
+        "(is-a Cola Drink)",
+        "(rule fizzy () :match (is-a ?x Drink) :assert (fizzy ?x))",
+        "(is-a Water Drink)",
+        "(rule wet () :match (is-a ?x Drink) :assert (wet ?x))",
+        // The program's own statement of a fact the library states.
+        "(is-a Tea Drink)",
+    ]));
+    assert_eq!(resolved(&modules, src).expect("resolves"), want);
+    // One library, imported twice by one program.
+    let mut once = lines(&library);
+    once[6] = "(rule things () :match (is-a ?x Drink) :assert (thing ?x))".to_string();
     assert_eq!(
         resolved(
             &modules,
             "(import onto :symbols (is-a))\n(import onto :symbols (things))\n"
         )
         .expect("resolves"),
-        lines(&[
-            "(relation is-a Thing Type)",
-            "(is-a Tea Drink)",
-            "(is-a Milk Drink :source \"the ontology\")",
-            "(rule things () :match (is-a ?x Drink) :assert (thing ?x))",
-        ])
+        once
     );
     // And loaded, the diamond's program holds each fact once.
     let scratch = Scratch::new("ein-import-facts-diamond");
@@ -1128,7 +1018,8 @@ fn a_diamond_of_flat_imports_yields_each_fact_once() {
     let mut terms = ein_core::Terms::new();
     let forms = parse(
         &mut ast,
-        "(import left :symbols (fizzy))\n(import right :symbols (wet likes))\n",
+        "(import left :symbols (fizzy))\n(import right :symbols (wet))\n\
+         (import onto :symbols (is-a))\n",
         Some("<program>"),
     )
     .expect("parses");
