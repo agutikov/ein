@@ -162,8 +162,11 @@ It works at **two levels**, and keeping them apart is half of what it has to say
     P1g.6 stage that owns one runs when the geometry's programs have shown it and the user has ruled, and
     the geometry takes its named detour until then.
 
-12. **The main goal's decision** ([§ The main goal](#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14))
-    last, on the programs of P1g.3, P1g.5 and P1g.11; its phase is planned when P1g.3's first stage has run.
+12. **The main goal's answer** ([§ The main goal](#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14))
+    **in the middle**, not last: the milestone runs as three groups of phases, investigation, then requirements
+    analysis with the decision and the implementation, then the final formalizations on what was decided and
+    built (the user, 2026-11-14, [§ Three groups of phases](#three-groups-of-phases-the-user-2026-11-14)). This
+    order, item 6 among it, is restated into the groups when M1g starts.
 
 The order of items 10 and 11 was chosen in the split of 2026-11-13 from the dependencies and is not the
 user's ruling ([P1g.10 § Choices made in the split](p1g.10_school_algebra/README.md#choices-made-in-the-split)).
@@ -321,8 +324,9 @@ The user, 2026-11-14:
 > rules could be logic rules, e.g. like 12 natural deduction rules. But there is an idea of theorems as ein
 > rules, but it is not clear how it could even work this way.
 
-So the milestone does not end with its phases' pages alone: it ends with a **decision**, made on the programs
-they leave, of five things ([Q-M1g.16](open_questions.md#q-m1g16--proof-system-theory-and-what-a-theorem-is)):
+So the milestone's investigation has one goal: an **answer**, found on the programs its phases write, to five
+things ([Q-M1g.16](open_questions.md#q-m1g16--proof-system-theory-and-what-a-theorem-is)). The answer is what the
+milestone finds out, not a premise it starts from ([§ Three groups of phases](#three-groups-of-phases-the-user-2026-11-14)):
 
 1. **Where the proof system is:** formulas and proofs, and the rules of inference over them. P1g.3 builds it
    at the object level: a formula a nested fact, a proof facts a saturation checks (probe 2), natural
@@ -354,9 +358,38 @@ they leave, of five things ([Q-M1g.16](open_questions.md#q-m1g16--proof-system-t
    ([S1g.11.2](p1g.11_school_geometry/s1g.11.2_theorems_as_rules.md),
    [S1g.6.7](p1g.6_engine_requirements/s1g.6.7_what_theorems_as_rules_needs.md)).
 
-**Where it is decided.** Last, after P1g.3, P1g.5 and P1g.11 have run, on their programs; each of those phases
-records what it shows of the five, and the phase that writes the decision is planned when P1g.3's first stage has
-run (proposed: P1g.12, *theorems proved, saved and reused*). Nothing here changes an earlier phase's tasks.
+### Three groups of phases (the user, 2026-11-14)
+
+Asked what Q-M1g.16 waits for, the user, 2026-11-14:
+
+> The question is: where in Ein a proof system (formulas, proofs) and a theory (axioms, theorems) live, what a
+> theorem is, and how it is searched for, proved, saved and reused - that is the main question M1g is expected to
+> answer via experimenting with formalizing different math, logic, proof systems, and other formal systems in Ein.
+> The answer is the goal of investigation, not the premise I can state before start. The answer would be
+> formulated in the middle of the milestone rather than in the end. I expect work will be splitted into 3 big
+> groups of phases: investigation - attemps to formalize different theories and collection of requirements, then
+> requirements analysis decision and implementation, and then final formalizations based on decided and
+> implemented features of ein.
+
+So the milestone runs in three groups, and the answer to the five comes **in the middle**, not last:
+
+1. **Investigation.** Attempts to formalize different theories, logics, proof systems and other formal systems in
+   Ein as it is, each phase recording what it shows of the five and **the requirements it finds** on the
+   language and the engine. Today's P1g.1 to P1g.5 and P1g.7 to P1g.11 are this group's, provisionally.
+2. **Requirements analysis, the decision, and the implementation.** The requirements the first group collected,
+   analysed together; the answer to the five formulated on the first group's programs and put to the user; and
+   the features it needs built into Ein. Today's [P1g.6](p1g.6_engine_requirements/README.md) is the seed of this
+   group, recast from *a stage when a phase reaches a need* to *the analysis of all of them, then the build*.
+3. **Final formalizations** on the decided and implemented features: theorems searched, proved, saved and
+   reused to prove others, on the theories the first group attempted. The phase proposed earlier as P1g.12
+   (*theorems proved, saved and reused*) is one of this group's.
+
+**What this restates, and when.** The phase list, [§ The order](#the-order) (its items 6 and 12) and the
+[acceptance](#acceptance) line on the main goal are restated into the three groups as **M1g's first planning
+task, when the milestone starts** (after M1f closes): which of today's phases are investigation and which
+stages of theirs ship modules rather than collect requirements (P1g.8's module, P1g.10's and P1g.11's builds),
+what group 2's phases are, and what group 3 formalizes. Until then the provisional mapping above stands, and no
+phase's tasks are rewritten.
 
 ## What it pulls in
 
@@ -433,10 +466,11 @@ The instruction's last question, and how this plan answered it, under the schema
   has a corpus entry.
 - **F1b is closed as promoted,** and each row of [§ What it pulls in](#what-it-pulls-in) is done or says why
   not.
-- **The main goal is decided** ([§ The main goal](#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14)):
-  a page says where in Ein the proof system and the theory are and what a theorem is, and shows on programs one
-  theorem searched, proved and checked, saved, and reused to prove another, or names exactly what stops each step;
-  the user rules on it.
+- **The main goal is answered** ([§ The main goal](#the-main-goal-proof-system-theory-and-what-a-theorem-is-2026-11-14)):
+  after the investigation, a page says where in Ein the proof system and the theory are and what a theorem is,
+  with the requirements that answer rests on, and the user rules on it; the features it needs are built; and
+  the final formalizations show on programs one theorem searched, proved and checked, saved, and reused to prove
+  another, or name exactly what stops each step.
 
 ## Risks, each with what checks it
 

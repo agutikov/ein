@@ -23,7 +23,7 @@ until the user says otherwise (a default is not a ruling, and any may be reopene
 | [Q-M1g.13](#q-m1g13--may-a-finished-search-call-an-unpayable-debt-dead) | may a finished search call an unpayable debt dead? | P1g.7 (S1g.7.3) | open; **the user's**, deferred on 2026-11-12 |
 | [Q-M1g.14](#q-m1g14--the-types-theory-its-shape-and-its-name) | the types theory: its shape and its name | P1g.8 (S1g.8.1) | open |
 | [Q-M1g.15](#q-m1g15--where-m1h-sits-against-this-milestone) | where M1h sits against this milestone | the coordinator, before either starts | open; **the user's** |
-| [Q-M1g.16](#q-m1g16--proof-system-theory-and-what-a-theorem-is) | proof system, theory, and what a theorem is: where each is in Ein, and how a theorem is searched, proved, saved and reused | the milestone's last phase, after P1g.3, P1g.5, P1g.11 | open; **the user's**, the milestone's main goal (2026-11-14) |
+| [Q-M1g.16](#q-m1g16--proof-system-theory-and-what-a-theorem-is) | proof system, theory, and what a theorem is: where each is in Ein, and how a theorem is searched, proved, saved and reused | the middle of the milestone: the second of its three groups of phases, on the first group's programs | open; **the milestone's goal**, answered by its investigation, not a choice put to the user before it (2026-11-14) |
 
 ---
 
@@ -187,5 +187,14 @@ and how, a theorem can be an Ein rule.
 The readings the plan starts from, none chosen: **(a)** a theorem is an object-level fact, `(theorem F)` with a
 checked proof, reused as an axiom of the next proof; **(b)** a theorem is an Ein rule, a derived rule applied
 forward, with a proof that it is admissible; **(c)** both, a proved (a)-theorem with schematic letters turned
-into a (b)-rule by rules as data or a generator. No default is taken: the decision is the milestone's, made on
-the programs of P1g.3, P1g.5 and P1g.11, and it is **the user's**.
+into a (b)-rule by rules as data or a generator. These are starting hypotheses for the investigation, not options
+to pick.
+
+**What it waits for (the user, 2026-11-14):** *"that is the main question M1g is expected to answer via
+experimenting with formalizing different math, logic, proof systems, and other formal systems in Ein. The answer
+is the goal of investigation, not the premise I can state before start. The answer would be formulated in the
+middle of the milestone rather than in the end."* The milestone runs as three groups of phases, investigation,
+then requirements analysis with the decision and the implementation, then the final formalizations
+([README § Three groups of phases](README.md#three-groups-of-phases-the-user-2026-11-14)); this question is
+answered in the second, on the first group's programs and the requirements they collected, and the answer is
+put to the user then. No default is taken, and nothing is asked of the user before the investigation has run.
