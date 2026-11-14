@@ -215,6 +215,35 @@ row to Rust's integers.
 
 ---
 
+## `std.math.arith` and `std.math.decimal` — zero, the division by zero, and the numeral
+
+M1f S1f.6.38 (the user's rulings of 2026-11-14). `std.math.arith` is arithmetic
+itself, what every base shares: `z`, zero, declared so that it has one full
+name, and the flag `(division-by-zero REQUEST)` with `division-by-zero-is-false`,
+the rule from it to `(false)`; entry `arith`. `std.math.decimal` is the decimal
+representation: the numeral `(n PREFIX DIGIT)`, `named`, a name that stands for
+a number (which the module that declares `let` writes), and the numeral's
+check, which reads the facts the loader states of what a file writes,
+`(written T)`
+([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)),
+so a malformed numeral is flagged wherever it is written, with no request
+reading it; entry `decimal`. Both come whole with `std.math.decimal-arith` and
+the modules over it; a program lists what it writes of them:
+
+```lisp
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+```
+
+| fact | who writes it | meaning |
+|------|---------------|---------|
+| `(n PREFIX DIGIT)` | the program | the numeral: ten times the prefix, plus the digit; the prefix is `z` or a numeral, the digit one of `0` to `9` |
+| `(not-decimal NUMERAL THING)` | `std.math.decimal`: a **flag** | NUMERAL, written somewhere in the program, holds THING where a digit or a prefix goes: a name that is no digit, a fact, a digit or a named constant as the prefix. `not-decimal-is-false` derives `(false)` from it |
+| `(division-by-zero REQUEST)` | a module that divides: a **flag** | REQUEST divides by zero; `division-by-zero-is-false` derives `(false)` from it |
+
+The module-level account is
+[`stdlib/README.md` § `std.math.arith` and `std.math.decimal`](../../../../stdlib/README.md#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638).
+
 ## `std.math.decimal-arith` — school arithmetic on natural numbers (requests and results)
 
 M1f P1f.6 (addition, S1f.6.3; subtraction and comparison, S1f.6.4; multiplication, S1f.6.5; division, S1f.6.6). A theory over `std.math.digits`' tables, computed by
@@ -230,8 +259,9 @@ account, the rule of the theory and what holds it, is
 `decimal-arith` is the closing rule, the theory's one entry: it names every rule and
 closes every relation of the theory and each table it reads.
 
-**The number.** `z` is zero; `(n PREFIX DIGIT)` is ten times the prefix plus
-the digit: 123 is `(n (n (n z 1) 2) 3)`. Any length. An operand may carry high
+**The number.** `z` is zero, `std.math.arith`'s; `(n PREFIX DIGIT)`,
+`std.math.decimal`'s, is ten times the prefix plus the digit: 123 is `(n (n
+(n z 1) 2) 3)`. Any length. An operand may carry high
 zeros and is read by value; an answer never has one.
 
 | fact | who writes it | meaning |
@@ -246,7 +276,7 @@ zeros and is read by value; an answer never has one.
 | `(product-of X Y P)` | the theory: the result | X × Y = P, of whatever length: there is no overflow |
 | `(div X Y)` | the program: a request | X divided by Y is asked |
 | `(quot-of X Y Q R)` | the theory: the result | the quotient and the remainder: X = Q × Y + R, and R less than Y |
-| `(division-by-zero (div X Y))` | the theory: a **flag** | the request `(div X Y)`, as written, has a divisor that is zero by value. A second rule derives `(false)` from the flag, so the program is a contradiction: R is empty and no query has an answer. The request is never answered with a number |
+| `(division-by-zero (div X Y))` | the theory: a **flag**, `std.math.arith`'s | the request `(div X Y)`, as written, has a divisor that is zero by value. A second rule, `std.math.arith`'s, derives `(false)` from the flag, so the program is a contradiction: R is empty and no query has an answer. The request is never answered with a number |
 | `(let NAME NUMBER)` | the program | NAME names NUMBER; a request may name an operand. A name stands for a number, not for another name |
 
 A request is answered once. The same request written with other spellings of its
@@ -256,7 +286,7 @@ own answer. A request naming a name no `let` states is never answered.
 The circuit's own relations are in the state and are not an interface: its
 walks (`add-walk`, `sub-walk`, `cmp-walk`, `mul-walk`, `top-first`, `strip`,
 `turn`), its hand-overs (`done`, `short`, `order-is`, `top-first-is`,
-`div-done`), its calls and steps (`operand`, `operand-is`, `named`,
+`div-done`), its calls and steps (`operand`, `operand-is`,
 `mul-call`, `mul-step`, `div-call`, `div-step`, `div-choose`, `div-digit`,
 `multiples`), its tags, the accumulator's `b`, and `arith-rule`. The module's
 header lists every name.
@@ -293,7 +323,7 @@ and every answer has nine.
 | `(div9 X Y)` | the program: a request | X divided by Y is asked |
 | `(quot9-of X Y Q R)` | the theory: the result | the quotient and the remainder: X = Q × Y + R, and R less than Y |
 | `(overflow REQUEST)` | the theory: a **flag** | the answer to `(add9 X Y)` or `(mul9 X Y)`, the request as written, has more than nine digits. No result fact is stored for it, never a truncated number. Root stays alive |
-| `(division-by-zero (div9 X Y))` | the theory: a flag | Y is nine zeros. `std.math.decimal-arith`'s rule derives `(false)` from the flag, so the program is a contradiction |
+| `(division-by-zero (div9 X Y))` | the theory: a flag | Y is nine zeros. `std.math.arith`'s rule derives `(false)` from the flag, so the program is a contradiction |
 | `(to9 X)` | the program: a request | X, a number of `std.math.decimal-arith` (`z` or `(n PREFIX DIGIT)`), is asked as nine digits |
 | `(as9 X W)` | the theory: the result | W is X's digits behind zeros, where X is written with at most nine digits; high zeros of X count as written |
 | `(big X)` | the theory: a flag | X is written with more than nine digits and has no `as9` |
@@ -347,10 +377,13 @@ part `z`; an operand is read by value and every answer is in normal form.
 
 An operand is an integer written out, `(int P N)` with P and N numbers, or a
 name that `std.math.decimal-arith`'s `(let NAME (int P N))` states; the answer repeats the
-operand as written. A natural number in an integer's place is never answered.
+operand as written. A natural number in an integer's place is never answered,
+and not flagged; an undeclared name or a digit as an operand is flagged on the
+request, and a digit or a named constant where a part goes is the integer's
+own fault, `(not-integer INTEGER THING)` (M1f S1f.6.38).
 **A division names its convention** (M1f S1f.6.22): there is no bare
-`int-div`, and a divisor that is zero by value derives `std.math.decimal-arith`'s
-`(division-by-zero REQUEST)`, from which that theory derives `(false)`. The
+`int-div`, and a divisor that is zero by value derives `std.math.arith`'s
+`(division-by-zero REQUEST)`, from which that module derives `(false)`. The
 calls `int-norm`, `int-add-call`, `int-mul-call` and
 `int-cmp-call`, with the hand-over `int-done`, are for a theory built on this
 one; the tags and `int-rule` are in the state and are not an interface.
@@ -391,7 +424,7 @@ read by value and every answer is in normal form.
 | `(rat-quot-of X Y S)` | the theory: the result | X ÷ Y = S, one rational, exact; there is no remainder |
 | `(rat-cmp X Y)` | the program: a request | X is compared with Y |
 | `(rat-cmp-of X Y O)` | the theory: the result | O is the name `lt`, `eq` or `gt`, by value; nothing is reduced or divided for it |
-| `(division-by-zero REQUEST)` | the theory: a **flag**, `std.math.decimal-arith`'s | an operand of the request, as written, has a denominator of zero, or the request is a `rat-div` by a rational that is zero. `std.math.decimal-arith`'s rule derives `(false)` from the flag, so the program is a contradiction |
+| `(division-by-zero REQUEST)` | the theory: a **flag**, `std.math.arith`'s | an operand of the request, as written, has a denominator of zero, or the request is a `rat-div` by a rational that is zero. `std.math.decimal-arith`'s rule derives `(false)` from the flag, so the program is a contradiction |
 
 An operand is a rational written out, `(rat (int P N) D)`, or a name that
 `std.math.decimal-arith`'s `let` states; the answer repeats the operand as written. An

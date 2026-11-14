@@ -120,11 +120,18 @@ constrained-reasoning research.
   depth, from all three places), their programs under `tests/stdlib/math/`,
   each with an entry name a program may list beside the names it writes:
   `std.math.digits` (the digit tables, a library of *facts*, generated),
-  `std.math.decimal-arith` (`(import std.math.decimal-arith :symbols
-  (decimal-arith add n sum-of))`), `std.math.num9` (generated, entry
-  `arith9`), `std.math.int` (`int-arith`) and `std.math.rat` (`rat-arith`); a
-  module over a module names the lower one's entry in its own closing rule,
-  and lists every name of the lower one it writes. **Boolean functions and
+  `std.math.arith` (`arith`: `z` and the division by zero's flag and rule,
+  what every base shares), `std.math.decimal` (`decimal`: the numeral `n`,
+  `named`, and the numeral's check over `written`), `std.math.decimal-arith`
+  (`(import std.math.decimal-arith :symbols (decimal-arith add sum-of))`, with
+  `(import std.math.decimal :symbols (n))` and `(import std.math.arith
+  :symbols (z))` where a program writes a numeral), `std.math.num9`
+  (generated, entry `arith9`), `std.math.int` (`int-arith`) and
+  `std.math.rat` (`rat-arith`); a module over a module names the lower one's
+  entry in its own closing rule, and lists every name of the lower one it
+  writes. **A malformed term is its representation's**: a numeral's fault is
+  `std.math.decimal`'s, flagged where it is written; an operand's and a
+  `let`'s are the module's that reads them. **Boolean functions and
   circuits are under `stdlib/bool/`**, their programs under
   `tests/stdlib/bool/`, each module's entry its last name: `std.bool.gates`
   (the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` whose
@@ -407,13 +414,15 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   wrong answer, in the fixing commit.
 - **A stdlib rule needs a program under `tests/stdlib/` that activates it**,
   or `stdlib_coverage.rs` fails. A rule or relation added to
-  `std.math.decimal-arith` (or to a module over it) goes into its closing
-  rule's two lists (`arith_theory.rs`); a new operation is a row of `OPS`,
-  and joins `arith_search_free.rs` by its lists. **No rule of the calculator
-  joins two facts on a number.** `std.math.decimal-arith` reads **one
-  `absent`, over `let`**, which no rule may derive, and writes guards in three named rules
-  (`arith_theory.rs`); a program it flags, `(malformed …)` or
-  `(undeclared …)`, is dead and claims only `(solve :expect (false))`.
+  a module of the calculator goes into its closing rule's two lists
+  (`arith_theory.rs`, `int_theory.rs`, `rat_theory.rs`, `num9_theory.rs`); a
+  new operation is a row of `OPS`, and joins `arith_search_free.rs` by its
+  lists. **No rule of the calculator joins two facts on a number.**
+  `std.math.decimal-arith` reads **one `absent`, over `let`**, which no rule
+  may derive, and writes guards in two named rules, `std.math.decimal` in two
+  (`arith_theory.rs`); a program they flag, `(malformed …)`,
+  `(undeclared …)` or `(not-decimal …)`, is dead and claims only `(solve
+  :expect (false))`.
 - **A stage that changes a rule of the calculator runs the batch by hand**:
   `cargo test -p ein-infer --features counters --test arith_batch`. No tier
   runs it.

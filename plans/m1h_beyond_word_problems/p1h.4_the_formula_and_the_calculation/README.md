@@ -109,7 +109,7 @@ figure is re-taken by the stage that uses it.
 - **The checks of a formula** the reply lists are each something an earlier stage built or ruled:
   *all operations have required arguments*, the loader's arity check (S1f.6.23); *numbers and names correctly
   used*, the calculator's flags `(malformed REQUEST)` and `(undeclared NAME REQUEST)`
-  ([`stdlib/README.md` § Malformed requests](../../../stdlib/README.md#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612),
+  ([`stdlib/README.md` § Malformed requests](../../../stdlib/README.md#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638),
   S1f.6.12's build), and used and recursive names, which the user sent to P1g.10's S1g.10.2 with the
   expression layer (reply 10) and which is not built; *no division by zero*, the flag at the call
   (S1f.6.24).

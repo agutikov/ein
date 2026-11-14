@@ -50,7 +50,7 @@ part *"is already solved"*, written as a table of checks with a failing program 
    - *all operations have required arguments*: a request with an argument too few. The loader's refusal
      (S1f.6.23);
    - *numbers … correctly used*: a malformed number as an operand. `(malformed REQUEST)`, and root dead
-     ([`stdlib/README.md` § Malformed requests](../../../stdlib/README.md#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612));
+     ([`stdlib/README.md` § Malformed requests](../../../stdlib/README.md#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638));
    - *names correctly used*: an operand that names nothing, `(undeclared NAME REQUEST)`; a name stated
      twice; and the two the user sent to P1g.10 with the expression layer, a used name nothing states and a
      name defined through itself, each marked *built* or *not built* on the day;

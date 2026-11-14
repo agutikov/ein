@@ -14,7 +14,7 @@ has the prototype these were banked from, the counts, the costs and the comparis
 | file | what it is | answer |
 |---|---|---|
 | [`bits.ein`](bits.ein) | the tables: the full adder `fa2`, the full subtractor `fs2`, comparison `cl2`; 28 rows where decimal has 1 664. Generated | facts, no rule |
-| [`bin.ein`](bin.ein) | the theory: a number is `(b2 PREFIX BIT)` and `z` is zero; requests `add2`, `sub2`, `cmp2`, `mul2`, `div2`, answered by `sum-of2`, `diff-of2`, `cmp-of2`, `product-of2`, `quot-of2`; 68 rules and a closing rule, `bin`. Generated from `stdlib/math/decimal-arith.ein` | a module |
+| [`bin.ein`](bin.ein) | the theory: a number is `(b2 PREFIX BIT)` and `z` is zero, `std.math.arith`'s, which it lists, so that both bases share one `z` (M1f S1f.6.38); requests `add2`, `sub2`, `cmp2`, `mul2`, `div2`, answered by `sum-of2`, `diff-of2`, `cmp-of2`, `product-of2`, `quot-of2`; 68 rules and a closing rule, `bin`. Generated from `stdlib/math/decimal-arith.ein` | a module |
 | [`conv.ein`](conv.ein) | conversion as requests: `(to-bin X)` answered by `(bin-of X B)`, `(to-dec B)` by `(dec-of B X)`; eleven rules over `std.math.decimal-arith` and `bin`. Written by hand | a module |
 | [`first.ein`](first.ein) | 101 + 111, and a subtraction of two named numbers | 1100; 110 − 11 = 11 |
 | [`five_operations.ein`](five_operations.ein) | the five operations at decimal's example operands, in binary | 127645, 118511 each way, 56088, 5105 remainder 20, `gt` |

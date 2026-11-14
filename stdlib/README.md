@@ -49,7 +49,9 @@ mirrors it, `tests/stdlib/math/<module>/` and `tests/stdlib/bool/<module>/`.
 | module | file | what it is | entry |
 |---|---|---|---|
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | the decimal tables, facts and no rule, generated ([§](#stdmathdigits-a-library-of-facts-m1f-s1f62)) | none |
-| `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | natural numbers of any length, `(n PREFIX DIGIT)` ([§](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | `decimal-arith` |
+| `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638)) | `arith` |
+| `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and its check where it is written ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638)) | `decimal` |
+| `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | natural numbers of any length, school arithmetic over `std.math.decimal`'s numerals ([§](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | `decimal-arith` |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers over it, `(int P N)` ([§](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)) | `int-arith` |
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rationals over both, `(rat Z D)` ([§](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)) | `rat-arith` |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | nine digits in one fact, by wide rules, generated ([§](#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613)) | `arith9` |
@@ -61,7 +63,9 @@ mirrors it, `tests/stdlib/math/<module>/` and `tests/stdlib/bool/<module>/`.
 
 Until S1f.6.31 the five were `std.digits`, `std.arith` (entry `arith`),
 `std.int`, `std.rat` and `std.num9`, at the top. No alias is kept: an old name
-is the loader's *module not found*. No relation was renamed.
+is the loader's *module not found*. No relation was renamed. `std.math.arith`
+and `std.math.decimal` joined at S1f.6.38, taking `z`, the division by zero's
+flag and rule, `n` and `named` from `std.math.decimal-arith`.
 
 ## The obligation duals (M1d S1d.2.4)
 
@@ -151,6 +155,51 @@ names the row**, since a row is a premise like any other fact:
 [`tests/stdlib/math/digits/02_a_core_names_its_rows.ein`](../tests/stdlib/math/digits/02_a_core_names_its_rows.ein)
 refutes `(column 7 5 3)` and its unsat core is that fact and `(fa 7 5 0 2 1)`.
 
+## `std.math.arith` and `std.math.decimal`: arithmetic itself, and the decimal numeral (M1f S1f.6.38)
+
+Two modules below `std.math.decimal-arith`, each what its ruling says is its
+own (the user, 2026-11-14, on Q-M1f.210, *"malformed decimal numbers is a
+problem of decimal module, malformed binary numbers - of binary module, not
+arithmetic"*; on S1f.6.38's design, *"E1 yes, separate std.math.decimal
+module"* and *"z is shared by both bases, put it in std.math.arith"*; on
+S1f.6.16's, *"division by zero is false in binary arithmetic too, so it
+belongs to arithmetic itself"*):
+
+| module | declares | rules | entry |
+|---|---|---|---|
+| `std.math.arith` | `z`, zero, a relation of no argument no fact is of, so that it has one full name both bases share; the flag `division-by-zero` | `division-by-zero-is-false`, and the closing rule | `arith` |
+| `std.math.decimal` | the numeral `n`; `named`, a name that stands for a number, which the module that declares `let` writes; the flag `not-decimal` | the numeral's check, five rules over `(written (n P A))`, and the closing rule | `decimal` |
+
+`std.math.decimal-arith` imports both and lists what it writes of them, `z`,
+`division-by-zero`, `n` and `named`; `std.math.int`, `std.math.rat` and
+`std.math.num9` import them too, each for the names it writes. **A program
+lists `n` from `std.math.decimal` and `z` from `std.math.arith`** wherever it
+writes a numeral, nothing being re-exported (M1f S1f.6.35):
+
+```lisp
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+```
+
+Until S1f.6.38 the three were one module's, `std.math.decimal-arith`'s, and
+`z`, declared nowhere, was one name in every file. The move rewrote every
+program's imports once (the stage's record counts them); no answer moved.
+
+**The numeral's check reads what the loader states.** The loader states every
+fact nested in a fact a file writes, and in a rule's conclusion where it holds
+no variable, as `(written T)` (the kernel relation `written`,
+[`defined_behaviour.md` § 4.30](../docs/kernel/defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)),
+so `std.math.decimal`'s rules see every place of every numeral a file writes,
+wherever it sits, and flag a malformed one in root's first layer, with no
+request reading it: § [Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638)
+has the table. `named` is `std.math.decimal`'s so that the module below
+`let` can say *the prefix is a named constant* by a probe, at no cost a
+well-formed numeral pays
+([Q-M1f.278](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f278--how-a-module-below-let-flags-a-named-constant-inside-a-numeral),
+defaulted; saying *a name* by E-36's walk of the program's names was measured
+against it).
+
 ## `std.math.decimal-arith`: school arithmetic, computed by saturation alone (M1f P1f.6)
 
 A theory written **in** Ein over the ten digit names: `std.math.digits`' tables are
@@ -189,9 +238,9 @@ rule (`grep -c '^(rule ' stdlib/math/decimal-arith.ein`, less one, 2026-11-13).
 | **comparison** | `(cmp X Y)` is answered by `(cmp-of X Y O)`, O one of the names `lt`, `eq`, `gt`, by value: 5 and 005 are `eq` |
 | **multiplication** | `(mul X Y)` is answered by `(product-of X Y P)`. A product has no width to overflow: 123078 × 123078 is the eleven digits of 15148194084 |
 | **division** | `(div X Y)` is answered by `(quot-of X Y Q R)`, the quotient and the remainder: X = Q × Y + R, and R less than Y |
-| **division by zero** | a contradiction, **in two steps** (the user's ruling of 2026-11-11): a request whose divisor is zero, however written, derives the flag `(division-by-zero (div X Y))`, and the flag derives `(false)`. Root is dead, R is empty, and no query of the program has an answer; `ein solve` names the request in the unsat core and `division-by-zero-is-false` as what refuted it. A program that must not die compares its divisor with zero first and derives its `div` request by a rule over `(cmp-of Y z gt)`. **It is flagged wherever it is called** (S1f.6.24, the user's ruling of 2026-11-12: *"(div ?x 0) must emit division-by-zero no matter where it happens"*): every division goes through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero by value derives `(division-by-zero (div-call TAG X Y))`, the call as it was asserted, and `(false)` from it, whoever made the call, a rule of a program's own included, which until that stage derived nothing. A public request therefore holds two flags, its own and its call's under the tag `(quotient X Y)`; `ein solve` reads as it did, and `--trace` and `ein saturate --dump` show the second flag. `std.math.int`, `std.math.rat` and `std.math.num9` see a zero divisor before they call, so theirs is one flag, the request's. **A theory in which division by zero is allowed** (a wheel, a meadow, transreal arithmetic) would be a module of its own that does not import the flag's rules; none is built |
+| **division by zero** | a contradiction, **in two steps** (the user's ruling of 2026-11-11): a request whose divisor is zero, however written, derives the flag `(division-by-zero (div X Y))`, and the flag derives `(false)` by `std.math.arith`'s rule, the flag and the rule being arithmetic's own since S1f.6.38. Root is dead, R is empty, and no query of the program has an answer; `ein solve` names the request in the unsat core and `division-by-zero-is-false` as what refuted it. A program that must not die compares its divisor with zero first and derives its `div` request by a rule over `(cmp-of Y z gt)`. **It is flagged wherever it is called** (S1f.6.24, the user's ruling of 2026-11-12: *"(div ?x 0) must emit division-by-zero no matter where it happens"*): every division goes through the tagged call `(div-call TAG X Y)`, and a call whose Y is zero by value derives `(division-by-zero (div-call TAG X Y))`, the call as it was asserted, and `(false)` from it, whoever made the call, a rule of a program's own included, which until that stage derived nothing. A public request therefore holds two flags, its own and its call's under the tag `(quotient X Y)`; `ein solve` reads as it did, and `--trace` and `ein saturate --dump` show the second flag. `std.math.int`, `std.math.rat` and `std.math.num9` see a zero divisor before they call, so theirs is one flag, the request's. **A theory in which division by zero is allowed** (a wheel, a meadow, transreal arithmetic) would be a module of its own that does not import `std.math.arith`; none is built |
 | **named constants** | `(let NAME NUMBER)` names a number, and a request may name an operand: `(add price qty)` is answered by `(sum-of price qty S)`. The same sum written with the numbers is another request with its own answer. A name stands for one number: a name no `let` states, a name stated twice with two numbers, and `z` or a digit as a name are each flagged (below) |
-| **a malformed request** | a contradiction, **in two steps**, as a division by zero is (S1f.6.12, the user's rulings of 2026-11-11 and 2026-11-12). `(malformed REQUEST)`, the request as written, where an operand is not a number; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the request in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests](#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612)) |
+| **a malformed request** | a contradiction, **in two steps**, as a division by zero is (S1f.6.12, the user's rulings of 2026-11-11 and 2026-11-12). `(malformed REQUEST)`, the request as written, where a digit stands for an operand; `(malformed (let NAME NUMBER))` where a `let` cannot be read; `(undeclared NAME REQUEST)` where the request names an operand no `let` states. A malformed **numeral** is `std.math.decimal`'s, `(not-decimal NUMERAL THING)`, flagged where it is written, with no request reading it (S1f.6.38). Each flag derives `(false)` by a rule of its own. Root is dead, R is empty, every command exits 0, and `ein solve` names the fact the fault was written in, in the unsat core. **A flag means malformed; no flag does not mean well-formed** ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638)) |
 | **the one entry** | `decimal-arith`, the closing rule: it names every rule of the theory and closes every relation of it and each table it reads, so one name brings all of it and leaves nothing of it to the search. A relation the importing program declares is the program's to close |
 | **the tagged calls** | what a theory built on the calculator calls, below: an interface, held to its shapes by a test |
 
@@ -748,29 +797,47 @@ is refused at load** since S1f.6.23, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`,
 each a form of a relation the module declares
 ([`defined_behaviour.md` § 4.26](../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
 
-### Malformed requests: what is flagged, and what stays silent (M1f S1f.6.12)
+### Malformed requests and numerals: what is flagged, where, and what stays silent (M1f S1f.6.12, S1f.6.38)
 
-The user, 2026-11-11: *"if theory can detect malformed numbers - do it"*.
-Until this stage every request the theory could not read was answered by
-silence: exit 0, one state, and a query with no row. Now the theory flags
-what it can say without a negation, and one thing it can say only with one
-(the stage's
-[record](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13);
-the investigation is
-[`malformed_numbers.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/malformed_numbers.md)).
+The user, 2026-11-11: *"if theory can detect malformed numbers - do it"*;
+and 2026-11-14, on Q-M1f.210: *"malformed decimal numbers is a problem of
+decimal module … If there is a malformed number, I expect it has to be
+detected right away, without need to start calculations with it."* So a
+fault is flagged by the module whose term it is a fault of: a numeral's by
+`std.math.decimal`, as soon as the numeral is written, wherever it sits; an
+operand's and a `let`'s by the module that reads the operand,
+`std.math.decimal-arith`, and by `std.math.int` and `std.math.rat` for their
+own (S1f.6.12's
+[record](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13),
+S1f.6.38's
+[record](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)).
+
+**A numeral is checked where it is written.** The loader states every fact
+nested in a fact a file writes, and in a rule's conclusion where it holds no
+variable, as `(written T)` (the kernel relation, `defined_behaviour.md`
+§ 4.30), and every place of a numeral is such a fact, so `std.math.decimal`'s
+five rules over `(written (n P A))` see every place of every numeral, as an
+operand, inside an integer or a rational, as a `let`'s value nobody asks
+about, or in a fact of the program's own relation. The flag names the
+smallest `n` term at fault, and comes in root's first layer, before any
+calculation:
 
 | what the program wrote | the flag | by |
 |---|---|---|
-| a digit's place that holds a name that is no digit, `(n (n z 1) x)`, `z` and `10` among such names, or a fact, `(n z (n z 1))` | `(malformed REQUEST)` | `check-digit`: ten `neq` guards, which hold of every other name and of a fact |
-| a number that ends in a digit where `z` goes, `(n 1 2)` | `(malformed REQUEST)` | `check-prefix-digit`, `check-prefix-zero` |
-| a number that ends in a named constant, `(n price 1)`; an operand that names another name, `(let alias price)` | `(malformed REQUEST)` | `check-prefix-named` |
+| a digit's place that holds a name that is no digit, `(n (n z 1) x)`, `10` and a sign among such names, or a fact, `(n z (n z 1))` | `(not-decimal NUMERAL THING)` | `std.math.decimal`'s `numeral-digit`: ten `neq` guards, which hold of every other name and of a fact |
+| a numeral that ends in a digit where `z` goes, `(n 1 2)`, `(n 0 2)` | `(not-decimal NUMERAL THING)` | `numeral-prefix-digit`, `numeral-prefix-zero` |
+| a numeral that ends in a named constant, `(n price 1)` | `(not-decimal NUMERAL THING)` | `numeral-prefix-named`, by the probe `(named ?m)`: `named` is `std.math.decimal`'s, and `std.math.decimal-arith`, which declares `let`, writes it |
+| a digit or a named constant where a part of an integer goes, `(int 7 z)`, `(int price z)` | `(not-integer INTEGER THING)` | `std.math.int`'s six shape rules, over `(written (int P N))` |
+| a digit or a named constant where a rational's integer or its denominator goes, `(rat 7 (n z 2))`, `(rat (int (n z 1) z) two)` | `(not-rational RATIONAL THING)` | `std.math.rat`'s six shape rules, over `(written (rat Z D))` |
 | a digit where a number goes, `(add 7 X)`: seven is `(n z 7)` | `(malformed REQUEST)` | `operand-digit`, `operand-digit-zero` |
-| any of those behind a name, `(let broken (n z x))`, where a request uses the name | `(malformed REQUEST)` | the same rules: `operand-name` hands what it finds to the check |
 | a name stated twice with two numbers | `(malformed (let NAME NUMBER))`, each of the two | `let-twice`, a join on the name. Until S1f.6.12: **two answers to one request** |
 | `z` or a digit as a constant's name, `(let z N)`, `(let 7 N)` | `(malformed (let NAME NUMBER))` | `let-zero`, `let-digit`, `let-digit-zero`. Until S1f.6.12: `(add z X)` had two answers |
+| a `let` that names a digit or another named constant, `(let seven 7)`, `(let alias price)` | `(malformed (let NAME N))` | `let-to-digit`, `let-to-digit-zero`, `let-to-name`, whether or not a request names it (S1f.6.38; until then found where a request named it, by the check of its value) |
 | an operand that is a name no `let` states, `(add foo X)` | `(undeclared foo REQUEST)` | `operand-undeclared`: the theory's one `absent`, over `let` |
+| an undeclared name or a digit as an operand of `std.math.int` or `std.math.rat` | `(undeclared …)`, `(malformed REQUEST)` | the three rules of each module from its tags to the request, `int-bad-only`, `-first`, `-second` and `int-bad-div` (a division's tag holds `(int-div-of REQUEST)`: the request holds two flags, the tag's and its own), `rat-bad-only`, `-first`, `-second` (E-38, until S1f.6.38 silent) |
 
-Each flag derives `(false)` by a rule of its own, `malformed-is-false` and
+Each flag derives `(false)` by a rule of its own, `not-decimal-is-false`,
+`not-integer-is-false`, `not-rational-is-false`, `malformed-is-false` and
 `undeclared-is-false`, so a trace shows the flag as one step and the
 contradiction as the next:
 
@@ -778,46 +845,46 @@ contradiction as the next:
   states (k_s)      0
   empty             every node is dead — root's own fixpoint derives (false)
   unsat core        (add (n (n z 1) x) (n z 5))
-  refuted by        malformed-is-false
+  refuted by        std.math.decimal.not-decimal-is-false
 ```
 
-A request has one flag, the request as written, and no result fact; the
-well-formed requests beside it are computed in root's state, which is dead
-and so no answer. Such a program can claim only `(solve :expect (false))`.
-A `let` that is added answers an undeclared request and leaves nothing of
-the flag: root is the only state, and it has either the `let` or the flag.
+The core names the fact the numeral was written in, the `written` fact being
+derived from it; a numeral written whole in a rule's conclusion rests on no
+fact, and its core is ∅. A request has one flag, the request as written, and
+no result fact; the well-formed requests beside it are computed in root's
+state, which is dead and so no answer. Such a program can claim only
+`(solve :expect (false))`. A `let` that is added answers an undeclared
+request and leaves nothing of the flag: root is the only state, and it has
+either the `let` or the flag.
 
 **A flag means malformed; no flag does not mean well-formed.** There is no
 general report of a request no rule completes (the user's reply of
 2026-11-12). These stay silent, neither refused nor answered, and
 `arith_theory.rs`'s `what_stays_silent` holds that the list is this one:
 
-- **a number that ends in a name that is neither a digit nor a named
+- **a numeral that ends in a name that is neither a digit nor a named
   constant**, `(n end 1)`. Saying *a name* costs a walk of the program's
-  names, at every place of every number;
+  names, at every place of every numeral (E-36);
 - **a fact of another relation where a number goes**, as an operand or
   inside a number, `(add (pair 1 2) X)`, the accumulator's own shape `(b 1
   z)` among them. No rule can say *not of this shape*;
 - **a name that stands for either**;
-- **in `std.math.int` and `std.math.rat`**: a natural number where an integer goes and
-  an integer where a rational goes, and a malformed number *inside* an
-  integer or a rational, whose parts go straight to `std.math.decimal-arith`'s walks and
-  never through its operand. An undeclared name or a digit as an operand of
-  theirs is seen by `std.math.decimal-arith`'s rules, `(bad-operand TAG FAULT)` in root's
-  state, and **not flagged**: no rule of those modules turns their tag into
-  a request. A `let` that cannot be read is flagged there as here;
+- **a numeral a rule assembles from a variable**, `(n ?p x)`: no file writes
+  it, so nothing states it (Q-M1f.275 (a)), and a top-level fact of `n`,
+  which is no nested term;
+- **in `std.math.int` and `std.math.rat`, an operand of another type**: a
+  natural number where an integer goes, and an integer or a natural number
+  where a rational goes (Q-M1f.277, (b));
 - **every malformation of `std.math.num9`** (the user's reply of 2026-11-12: that
   module is kept as an example of another representation).
 
-**The check is a pass of its own, at the operand.** `operand-number` and
-`operand-name` hand each number they find to `check`, which goes one place
-down a firing; nothing is added to a walk. It was measured against guards
-on the walks themselves before it was chosen (the record's table): the pass
-costs a firing a digit of each operand, whatever the operation, and the
-mixed placement costs none for a sum, a difference and a comparison and
-more for a product and a quotient, with twice the rules. 123078 + 4567 is 31
-firings where it was 21, and still 21 deep, since the check runs beside the
-walk (`arith_theory.rs`'s `the_circuit_of_one_addition`).
+**What the check costs.** A well-formed numeral costs it no firing: its ten
+`neq` guards and two probes a place, read off a `written` fact the loader
+stated, and the loader's statement of each nested fact. Until S1f.6.38 the
+check was a pass of its own at the operand, a firing a place of each operand a
+request found, which ran beside the walk: 123078 + 4567 was 31 firings, 21
+deep; it is 21 (`arith_theory.rs`'s `the_circuit_of_one_addition`). The
+batches are in S1f.6.38's record.
 
 **What the undeclared name costs.** To say that an operand is a *name*, and
 not a number, which is a fact, `operand-undeclared` ranges a variable over
@@ -1000,10 +1067,10 @@ program that imports it holds `std.math.decimal-arith`'s one `absent`, and two s
 |---|---|
 | **the integer** | `(int P N)`. 7 is `(int (n z 7) z)`, −7 is `(int z (n z 7))`, zero is `(int z z)`, and `(int (n z 5) (n z 3))` is 2, not simplified. The **normal form** has one part `z` and the other in `std.math.decimal-arith`'s normal form; every integer has exactly one. An operand is read by value, whatever its parts and their high zeros, and every answer is in normal form, so a rule of a program tells a negative answer by its shape, `(int z (n ?p ?a))`, with no negation written |
 | **the protocol** | `(int-simplify X)` answered by `(int-simple-of X S)`; `(int-neg X)` by `(int-neg-of X S)`; `(int-add X Y)` by `(int-sum-of X Y S)`; `(int-sub X Y)` by `(int-diff-of X Y S)`, **one integer**, where `std.math.decimal-arith`'s `diff-of` answers two numbers: they are its two parts; `(int-mul X Y)` by `(int-product-of X Y S)`; `(int-cmp X Y)` by `(int-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value |
-| **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.math.decimal-arith`'s. A natural number is **not** an integer operand, and such a request is never answered (Q-M1f.175). **Nothing of an operand is flagged here** but a `let` that cannot be read: a malformed number inside an integer, an undeclared name and a digit as an operand are answered by silence ([`std.math.decimal-arith` § Malformed requests](#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612)) |
+| **an operand** | an integer written out, or a name a `(let NAME (int P N))` states: `let` is `std.math.decimal-arith`'s. A natural number is **not** an integer operand, and such a request is never answered and not flagged (Q-M1f.175, Q-M1f.277 (b)). **An undeclared name and a digit as an operand are flagged** on the request, by the module's three rules from its tags to the request and `int-bad-div` (S1f.6.38, E-38); **a digit or a named constant where a part goes**, `(int 7 z)`, `(int price z)`, is the integer's own fault, `(not-integer INTEGER THING)`, flagged where it is written (Q-M1f.276 (a)); a malformed numeral inside a part is `std.math.decimal`'s ([§ Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638)) |
 | **division** | **names its convention** (M1f S1f.6.22, the user's ruling of 2026-11-12 on [Q-M1f.179](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f179--the-remainder-of-an-integer-division)); there is no bare `int-div`. Each request is answered by one fact with a quotient and a remainder, X = Q·Y + R: `(int-div-euclid X Y)` by `(int-quot-euclid-of X Y Q R)`, 0 ≤ R < \|Y\|, Q an integer and R a **natural number** of `std.math.decimal-arith`; `(int-div-trunc X Y)` by `(int-quot-trunc-of X Y Q R)`, Q rounded toward zero and R with the dividend's sign, both integers; `(int-div-floor X Y)` by `(int-quot-floor-of X Y Q R)`, Q rounded down and R with the divisor's sign, both integers. The three agree where neither operand is negative, and with `std.math.decimal-arith`'s `div` there |
-| **division by zero** | a divisor that is zero by value, however written or named, derives `std.math.decimal-arith`'s flag, `(division-by-zero REQUEST)`, the request as written, and `std.math.decimal-arith`'s rule derives `(false)`: root is dead and R is empty, as everywhere in the calculator. No rule of the module concludes `(false)` |
-| **the one entry** | `int-arith`, the closing rule: it closes every relation of the module, names every rule, and names `decimal-arith`, so the one name brings `std.math.decimal-arith` and the tables too |
+| **division by zero** | a divisor that is zero by value, however written or named, derives `std.math.arith`'s flag, `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s rule derives `(false)`: root is dead and R is empty, as everywhere in the calculator. The module's one rule that concludes `(false)` is its integer's shape's, `not-integer-is-false` |
+| **the one entry** | `int-arith`, the closing rule: it closes every relation of the module and `nz`, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
 
 **How it computes.** Each operation works on the parts with `std.math.decimal-arith`'s
 walks and then simplifies. Simplifying is subtraction both ways at once, P − N
@@ -1114,9 +1181,9 @@ strata).
 |---|---|
 | **the rational** | `(rat Z D)`. 1/2 is `(rat (int (n z 1) z) (n z 2))`, −3/4 is `(rat (int z (n z 3)) (n z 4))`. The **normal form** is in lowest terms: the numerator in `std.math.int`'s normal form, the denominator with no high zero, the two with no common divisor but 1, and zero written 0 over 1, `(rat (int z z) (n z 1))`. Every rational has exactly one. An operand is read by value, 2/4 as 1/2, and every answer is in normal form |
 | **the protocol** | `(rat-simplify X)` answered by `(rat-simple-of X S)`; `(rat-neg X)` by `(rat-neg-of X S)`; `(rat-add X Y)` by `(rat-sum-of X Y S)`; `(rat-sub X Y)` by `(rat-diff-of X Y S)`; `(rat-mul X Y)` by `(rat-product-of X Y S)`; `(rat-div X Y)` by `(rat-quot-of X Y S)`, **one rational, exact, and no remainder**; `(rat-cmp X Y)` by `(rat-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value |
-| **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand (Q-M1f.181), and nothing of an operand is flagged here but a `let` that cannot be read, as in `std.math.int` |
-| **a zero denominator** | **a division by zero, and a contradiction**, as in `std.math.decimal-arith` and by its rule. A request any operand of which has a denominator of zero, however the zero is written, and a `rat-div` by a rational that is zero, derive `(division-by-zero REQUEST)`, the request as written, and `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)`. Root is dead and R is empty (Q-M1f.182) |
-| **the one entry** | `rat-arith`, the closing rule: it closes every relation of the module, names every rule, and names `int-arith` and `decimal-arith`, so the one name brings all three theories and the tables |
+| **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand, and is not flagged (Q-M1f.181, Q-M1f.277 (b)). An undeclared name and a digit as an operand are flagged on the request, by the module's three rules from its tags to the request (S1f.6.38, E-38); a digit or a named constant where the integer or the denominator goes, `(rat 7 (n z 2))`, is the rational's own fault, `(not-rational RATIONAL THING)`, flagged where it is written (Q-M1f.276 (a)), as in `std.math.int` |
+| **a zero denominator** | **a division by zero, and a contradiction**, as in `std.math.decimal-arith`, and by `std.math.arith`'s rule. A request any operand of which has a denominator of zero, however the zero is written, and a `rat-div` by a rational that is zero, derive `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`. Root is dead and R is empty (Q-M1f.182) |
+| **the one entry** | `rat-arith`, the closing rule: it closes every relation of the module and `nz`, names every rule, and names `int-arith`, `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
 
 **How it computes.** The operands are looked up and each denominator is
 compared with zero by `std.math.decimal-arith`'s walk. A sum of P1 less N1 over D1 and P2
@@ -1372,10 +1439,12 @@ install-relative import could not find it.
 | module | file | provides | stage |
 |--------|------|----------|-------|
 | `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
-| `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)`, **computed by saturation alone** over `std.math.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `decimal-arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it, raised at the tagged call whoever made it; a malformed request and an undeclared name a flag and `(false)` likewise, `(malformed REQUEST)` and `(undeclared NAME REQUEST)` ([§ `std.math.decimal-arith`](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6, S1f.6.12, S1f.6.24 |
+| `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag `(division-by-zero REQUEST)` with its rule to `(false)`; entry `arith` ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638)) | M1f S1f.6.38 |
+| `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, `named`, and the numeral's check over `(written (n P A))`, `(not-decimal NUMERAL THING)` and `(false)` from it, wherever a file writes the numeral; entry `decimal` ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638)) | M1f S1f.6.38 |
+| `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)` of the two modules above, **computed by saturation alone** over `std.math.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `decimal-arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it, raised at the tagged call whoever made it; a malformed operand or `let` and an undeclared name a flag and `(false)` likewise, `(malformed REQUEST)` and `(undeclared NAME REQUEST)` ([§ `std.math.decimal-arith`](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6, S1f.6.12, S1f.6.24, S1f.6.38 |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | school arithmetic on numbers of nine digits in one fact, `(num9 d8 … d0)`, **computed by saturation alone**, by wide rules, a premise a column: `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`, `mul9`/`product9-of`, `div9`/`quot9-of`; `(overflow REQUEST)` and no number where an answer does not fit; conversions to and from `std.math.decimal-arith`'s numbers, `to9`/`as9` and `from9`/`of9`. **Generated** by `utils/gen_num9.py`. One entry, `arith9` | S1f.6.13 |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers as a positive and a negative part, `(int P N)`, over `std.math.decimal-arith`'s natural numbers, **computed by saturation alone**: `int-simplify`/`int-simple-of`, `int-neg`/`int-neg-of`, `int-add`/`int-sum-of`, `int-sub`/`int-diff-of`, `int-mul`/`int-product-of`, `int-cmp`/`int-cmp-of`, every answer in normal form, one part `z`; every rule has one premise; integer division names its convention, `int-div-euclid`/`int-quot-euclid-of` (the remainder a natural number), `int-div-trunc`/`int-quot-trunc-of` and `int-div-floor`/`int-quot-floor-of`, since M1f S1f.6.22 ([§ `std.math.int`](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)); imported by its one entry, `(import std.math.int :symbols (int-arith))`, which brings `std.math.decimal-arith` too | M1f S1f.6.7, S1f.6.22 |
-| `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.math.decimal-arith`'s division; a zero denominator is a division by zero, `std.math.decimal-arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int` and `std.math.decimal-arith` too | M1f S1f.6.8 |
+| `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.math.decimal-arith`'s division; a zero denominator is a division by zero, `std.math.arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int` and `std.math.decimal-arith` too | M1f S1f.6.8 |
 | `std.bool.gates`, `std.bool.props`, `std.bool.circuit`, `std.bool.inputs` | [`bool/`](bool/) | the sixteen Boolean functions of two inputs as a table and as a relation each; thirty relations known of them, derived by rules; a circuit simulated by saturation; inputs as hypotheses that each owe one value, and required values ([§ `std.bool`](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | M1f S1f.6.17 |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.math.digits`](#stdmathdigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
@@ -1472,15 +1541,17 @@ difference only in names"*):
 ```lisp
 (import std.math.decimal-arith)                              ; the file writes std.math.decimal-arith.add, std.math.decimal-arith.sum-of
 (import std.math.decimal-arith :as a)                        ; the file writes a.add, a.sum-of
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of)) ; the file writes add, n, sum-of
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of)) ; the file writes add, sum-of
+(import std.math.decimal :symbols (n))                       ; … and n, std.math.decimal's (S1f.6.38)
 ```
 
 Every name a module declares has one **full name**, `std.math.decimal-arith.add`, the same
 whoever imports the module; it is what a state prints where the program gives
 the name no spelling of its own (a circuit's step, `std.math.decimal-arith.strip`). **A
 program lists every short name it writes**, from the module that declares it:
-`std.math.int`'s programs list `int-add`, `int`, … from `std.math.int` and `n` from
-`std.math.decimal-arith`, since `std.math.int` only imports `n` and nothing is re-exported. A
+`std.math.int`'s programs list `int-add`, `int`, … from `std.math.int`, `n` from
+`std.math.decimal` and `z` from `std.math.arith` (S1f.6.38), since `std.math.int` only
+imports them and nothing is re-exported. A
 short name a program writes and lists from no import is the program's own,
 whatever a module calls the same (shadowing); one short name bound to two full
 names in one file is refused. A module's entry rule (`decimal-arith`, `int-arith`,

@@ -357,4 +357,4 @@ build is done: [S1f.6.12 § Build record](s1f.6.12_malformed_numbers.md#build-re
   [S1f.6.30](s1f.6.30_name_clashes_between_imported_theories.md)).
 - **Q6, `std.num9`:** left silent (reply 9 (b)).
 
-What stays silent is on [`stdlib/README.md`](../../../stdlib/README.md#malformed-requests-what-is-flagged-and-what-stays-silent-m1f-s1f612).
+What stays silent is on [`stdlib/README.md`](../../../stdlib/README.md#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638).
