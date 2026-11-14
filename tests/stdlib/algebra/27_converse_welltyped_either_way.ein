@@ -1,0 +1,59 @@
+;;; `std.algebra/converse-illtyped-dom` and `-ran`, loaded, activated and
+;;; satisfied **where the subtype runs the other way** — M1f S1f.6.35, W93,
+;;; E-53 of P1f.6's findings.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;; A `(converse R1 R2)` is the equality R2 = R1°, and is ill-typed where the
+;;; two types of a side are **neither equal nor one a subtype of the other**
+;;; under the hierarchy handed in: a side whose types meet holds, whichever of
+;;; the two is the subtype. `16_converse_illtyped_dom.ein` and `17` are the
+;;; files where each fires, the types not meeting (`Pet` against `Place`,
+;;; `Person` against `Place`); `../typing/03_type_hierarchy_welltyped.ein` is a
+;;; pair whose range is the subtype. This file is the other direction, on each
+;;; side, which until W93's fix each rule refuted: the mirror of a well-typed
+;;; pair, which `converse-pair-symmetric` derives wherever it is loaded.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; `(is-a* Pet Animal)`, and two pairs, each activated on both sides:
+;;;
+;;;   owns    : Person → Animal,  owned-by : Pet    → Person
+;;;       range(owns) = Animal against domain(owned-by) = Pet: Pet ⊑ Animal,
+;;;       the domain side's types meet the other way; the range side, Person
+;;;       on both.
+;;;   kept-by : Animal → Person,  keeps    : Person → Pet
+;;;       domain(kept-by) = Animal against range(keeps) = Pet: the range
+;;;       side's, the other way; the domain side, Person on both.
+;;;
+;;; No rule fires: R is root alone, holding the one stated edge of each pair
+;;; and its mirror.
+
+(import std.algebra :symbols (converse converse-illtyped-dom converse-illtyped-ran))
+
+(relation is-a*    T T             :why "{?1} is a subtype of {?2}")
+(relation owns     Person Animal   :why "{?1} owns {?2}")
+(relation owned-by Pet    Person   :why "{?1} is owned by {?2}")
+(relation kept-by  Animal Person   :why "{?1} is kept by {?2}")
+(relation keeps    Person Pet      :why "{?1} keeps {?2}")
+
+(is-a* Pet Animal)
+
+(converse owns owned-by)
+(converse-illtyped-dom owns owned-by is-a*)
+(converse-illtyped-ran owns owned-by is-a*)
+(converse kept-by keeps)
+(converse-illtyped-dom kept-by keeps is-a*)
+(converse-illtyped-ran kept-by keeps is-a*)
+
+(owns Ann Rex)
+(kept-by Rex Bob)
+
+(solve
+  :no-hypothesis (is-a* owns owned-by kept-by keeps)
+  :expect (region (model (owns Ann Rex) (owned-by Rex Ann)
+                         (kept-by Rex Bob) (keeps Bob Rex)
+                         (is-a* Pet Animal))))
+
+(query
+  :goal (owned-by ?what ?who))

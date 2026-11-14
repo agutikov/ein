@@ -3593,6 +3593,12 @@ group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "tests/stdlib/algebra/27_converse_welltyped_either_way.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.35, W93 (E-53): `converse-illtyped-dom` and `-ran` loaded, activated and satisfied where the subtype runs the other way on each side, the mirror of a well-typed pair; refuted by each until the fix, which reads a side's types as meeting either way."
+
+[[entry]]
 path   = "tests/stdlib/arith/01_add.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]

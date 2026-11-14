@@ -1,5 +1,6 @@
 ;;; `std.algebra/converse-illtyped-dom` — a `(converse R1 R2)` whose
-;;; `range(R1)` is neither `domain(R2)` nor a subtype of it is ⊥.
+;;; `range(R1)` and `domain(R2)` are neither equal nor one a subtype of the
+;;; other is ⊥ (either way since M1f S1f.6.35, W93: `27_converse_welltyped_either_way.ein`).
 ;;;
 ;;; ── What the rule promises ─────────────────────────────────────────────────
 ;;;

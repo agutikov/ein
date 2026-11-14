@@ -17224,10 +17224,14 @@ settings = "default"
 owner    = "S1f.6.35"
 question = ["P1f.6 findings.md E-53"]
 witness  = "examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein"
-status   = "open"
-open_because = "filed before its fix, as every wrong answer is: S1f.6.35 takes F1 of its record's *E-53 under the ruling* as a default, the two checks read direction-free, in the commit after this one"
+status   = "fixed"
 look_at  = ["root", "refuted", "summary"]
 note     = "Filed by S1f.6.35 (2026-11-14) from E-53 of P1f.6's `findings.md`. `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` with `converse-pair-symmetric` listed beside the two checks: what every program that writes `converse` holds once an import brings its module whole (the user's ruling of 2026-11-14), and what a program holding the whole of `std.algebra` flat holds today. The lemma derives `(converse owned-by owns)`, `std.typing`'s knob derives the checks' activators for it, and `converse-illtyped-ran` asks of the mirror whether `Animal` is `Pet` or a subtype of it."
+
+[case.fixed]
+commit = "00000000"
+by     = "S1f.6.35 (F1 of its record's *E-53 under the ruling*, a default): `std.algebra`'s `converse-illtyped-dom` and `-ran` refute a side only where its two types are neither equal nor one a subtype of the other, `(absent (?isR* ?D2 ?Rn1))` and `(absent (?isR* ?Rn2 ?D1))` beside the one-way premises, so a pair and the mirror the lemma derives check alike"
+date   = "2026-11-14"
 
 [case.wrong]
 run       = "solve"
@@ -17257,7 +17261,8 @@ derived   = "The types meet: `Pet` is an `Animal`, `Person` is `Person`. No chec
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 0
-empty     = "dead"
+k         = 1
 relations = []
-models    = []
+models    = [
+  [],
+]

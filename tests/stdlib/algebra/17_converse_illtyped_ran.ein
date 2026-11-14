@@ -1,6 +1,6 @@
 ;;; `std.algebra/converse-illtyped-ran` — the other side of
-;;; `16_converse_illtyped_dom.ein`: a `(converse R1 R2)` whose `domain(R1)` is
-;;; neither `range(R2)` nor a subtype of it is ⊥.
+;;; `16_converse_illtyped_dom.ein`: a `(converse R1 R2)` whose `domain(R1)` and
+;;; `range(R2)` are neither equal nor one a subtype of the other is ⊥.
 ;;;
 ;;; `owns : Person → Pet` and `owned-by : Pet → Place`. The **range** side is
 ;;; now right — `Pet` on both — and the **domain** side is wrong: `Person` is
