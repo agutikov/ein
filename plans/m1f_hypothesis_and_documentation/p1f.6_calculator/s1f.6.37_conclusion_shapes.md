@@ -1,7 +1,7 @@
 # S1f.6.37 — What a rule may conclude: `and` inside `and` (E-63)
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-14, on the user's word of that day. Not started. **An engine stage**, small.
+**Status:** planned 2026-11-14, on the user's word of that day; the fix ruled the same day (flatten). Not started. **An engine stage**, small.
 **Depends on:** nothing. Runs after [S1f.6.17](s1f.6.17_binary_logic.md)'s build (which holds `corpus/` and the
 goldens while it runs) and **before [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build**, whose connecting call
 (Q-M1f.266, (iii)) then sits in each base's closing rule rather than in a rule of its own.
@@ -55,10 +55,10 @@ any other.
    loader's checks (`from_ir.rs`), `ein_infer::forbid`, `ein_infer::mechanisms`, `invariant.rs`'s names, the
    obligation reader, the NL rendering of `:why`, the rule view and the IR printer (`ein-render`), `dump.rs`,
    `rule_census.py`. Each must read the same list of conjuncts.
-3. **T1f.6.37.3 — the fix.** Default: **flatten at any depth**, as premises are, through one function every
-   reader of T2 calls; the grammar unchanged. The alternative, refusing a nested `and` at parse (`Conclusion`
-   over literals only), is filed as a Q-M1f row, defaulted, the user's to revise. Flattening keeps the macro
-   call of S1f.6.16 legal inside a closing rule.
+3. **T1f.6.37.3 — the fix: flatten at any depth**, as premises are, through one function every reader of T2
+   calls; the grammar unchanged. **Ruled by the user, 2026-11-14:** *"ok, flatten is fine, continue"* (the
+   alternative, refusing a nested `and` at parse, is not taken). Flattening keeps the macro call of S1f.6.16
+   legal inside a closing rule.
 4. **T1f.6.37.4 — every row of the table pinned:** a test per shape (the grammar page's table for the parse
    refusals, `defined_behaviour.md` § 4 for the load refusals, a solve test for each stored shape), and the
    grammar page and `01_grammar.md` saying what a conclusion is in one sentence.
