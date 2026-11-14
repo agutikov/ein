@@ -5205,7 +5205,7 @@ its module whole, so no import can select the sixteen rules apart from the table
   that module's `Xor`, a name the table's rows do not hold, so the rules would match nothing unless the table's
   names were declared where the table is, which is (a).
 
-**Defaulted 2026-11-14: (a), the user's to revise.** The cost is measured in `stdlib/README.md` § `std.bool`; the
+**Defaulted 2026-11-14: (a); accepted by the user the same day.** The user, 2026-11-14: *"I accept all listed questions defaults: Q-M1f.263, Q-M1f.264 (E-62), Q-M1f.265, E-64"*. The cost is measured in `stdlib/README.md` § `std.bool`; the
 change to (b) is sixteen premises and a relation, with the tests' claims unmoved.
 
 ### Q-M1f.264 — A function's name a program writes and does not list (E-62)
@@ -5226,7 +5226,7 @@ claims fail.
 - **(c) A loader note** where a file writes, unlisted, a short name a module it imports declares: an engine change,
   for every module, against S1f.6.35's *in silence*.
 
-**Defaulted 2026-11-14: (a), the user's to revise.** (b) is the cheapest remedy and changes no answer of the corpus;
+**Defaulted 2026-11-14: (a); accepted by the user the same day.** The user, 2026-11-14: *"I accept all listed questions defaults: Q-M1f.263, Q-M1f.264 (E-62), Q-M1f.265, E-64"*. (b) is the cheapest remedy and changes no answer of the corpus;
 (c) reopens a ruling.
 
 ### Q-M1f.265 — The names and file shapes `std.bool`'s build chose
@@ -5248,7 +5248,7 @@ The rulings name the four modules and what each holds; these were the build's to
 - **(a) As built.**
 - **(b) Another name or shape**, named in the reply.
 
-**Defaulted 2026-11-14: (a), the user's to revise.** A rename is a sweep of `tests/stdlib/bool/` and the six
+**Defaulted 2026-11-14: (a); accepted by the user the same day.** The user, 2026-11-14: *"I accept all listed questions defaults: Q-M1f.263, Q-M1f.264 (E-62), Q-M1f.265, E-64"*. A rename is a sweep of `tests/stdlib/bool/` and the six
 applications, held by their claims and by `ein-cli/tests/import_invariance.rs`.
 
 ### Q-M1f.266 — How a base is connected to the shared rules
