@@ -6,7 +6,7 @@ before anything is built** (the user's standing rule: real programs with compute
 2026-11-14, stopped for the user:** [§ T1 record](#t1-record-2026-11-14-the-design-on-real-programs). No rule-level
 way is *right away*; the design is an engine stage first (the loader states every nested fact a program writes),
 decimal's check in `std.math.decimal-arith`'s own rules over it, int and rat with the (b) part. Nothing is built;
-its open choices and findings are under [§ To file](#to-file), for the coordinator.
+its open choices and findings are under [§ To file](#to-file), for the coordinator. **Ruled 2026-11-14** ([§ The build, as ruled](#the-build-as-ruled-2026-11-14)): E1, a separate `std.math.decimal`, the other defaults.
 **Depends on:** [S1f.6.12](s1f.6.12_malformed_numbers.md)'s build, whose checks it moves;
 [S1f.6.31](s1f.6.31_the_stdlib_layout.md)'s layout. **Runs before [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s
 build**, whose design ([§ The design](s1f.6.16_binary_arithmetic.md)) put the parameterised checks in
@@ -418,3 +418,53 @@ test per surface), then the stdlib: `std.math.decimal-arith`'s check moved as §
 and Q5 in int and rat, one program per new rule under `tests/stdlib/math/`, the malformed tests' claims unchanged
 (`(solve :expect (false))`), the mutants, the batch by hand, the sweep old stdlib against new with every golden that
 moves named first; then S1f.6.16's build on the moved theory. Not started: the stage stops here for the user.
+
+## The build, as ruled (2026-11-14)
+
+The user, 2026-11-14, on T1: *"E1 yes, separate std.math.decimal module, other defaults fine"*. So Q1 (a), **Q2
+(b)** against the proposed default, Q3 (a), Q4 (a), Q5 (a), Q6 (b) (filed as Q-M1f.272 to .277 by the coordinator,
+each marked ruled or accepted). By the same ruling's symmetry, **binary's numeral is `std.math.binary`'s**, built by
+[S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build on this stage's pattern (a default, the user's to revise).
+
+**Status:** ruled, not started. Runs after [S1f.6.37](s1f.6.37_conclusion_shapes.md), which edits the same loader
+and compiler, and before S1f.6.16's build.
+
+### Tasks
+
+2. **T1f.6.38.2 — E1, the engine.** The loader states `(written T)` for every fact nested at any depth in a fact a
+   file writes (a program, a local module, a stdlib module; a stored negation's arguments too), and for the ground
+   nested facts of every rule's and hrule's conclusion (Q4 (a)). `written` is a kernel relation as the
+   declarations' mirror facts are: reserved, closed, never a hypothesis target, decided at root; how it shows (or
+   does not) in a state's listing, `--dump-answer`, `.einb`, the KB views and the read-out follows what the mirror
+   facts do, and every surface that moves is named first. A core names the fact as written, not the stated one
+   (§ 2.2, item 3). Pages: `defined_behaviour.md`, the reserved names page, the grammar's or the data model's
+   statement of what root holds, AGENTS.md § The language. **Verified by invariance:** every tracked program
+   answers alike under the old binary and the new (no rule reads `written` yet), and a dumped state reloaded
+   states the same `written` facts.
+3. **T1f.6.38.3 — `std.math.decimal`, the representation.** A new module, `stdlib/math/decimal.ein`: it declares
+   `n` and holds decimal's numeral check over `(written (n P A))` (§ 3: `numeral-digit`, the prefix rules,
+   `not-decimal`, `not-decimal-is-false`; `check-digit` leaves `decimal-arith`). `std.math.decimal-arith` imports
+   it, as do `int`, `rat` and `num9` through it. Open in the build, each a default to file: where `z` is declared,
+   which both bases share (*"one `z`; a bare `z` is of no base"*, reply 15); how a prefix that is a named constant,
+   `(n price 1)`, is flagged from a module below `let` (§ 6, Q2 (b): by E-36's cost, or another way the build
+   measures). Every program and generator that writes a numeral lists `n` from `std.math.decimal` (no re-export,
+   S1f.6.35): a mechanical rewrite, counted.
+4. **T1f.6.38.4 — the operand's faults and int and rat.** `let-to-name` in `decimal-arith`; the (b) part in int
+   and rat, `int-bad-only`/`-first`/`-second` and `rat-…`, to `(bad-request REQUEST FAULT)`; Q5 (a), `(not-integer
+   …)` and `(not-rational …)` for a digit or a named constant in their own terms; Q6 (b), another type silent and
+   named on the pages. E-38 closed.
+5. **T1f.6.38.5 — the tests, the sweep and the pages.** One program per new rule under `tests/stdlib/math/`, the
+   malformed tests' claims unchanged (`(solve :expect (false))`), E-38's 26 probes banked as programs with their
+   claims; the mutation census; the batch by hand; the sweep, old stdlib against new on every tracked program,
+   **no well-formed program's answer moves** and every malformed one is dead as before, every golden that moves
+   named first; `stdlib/README.md`, `tests/README.md`, AGENTS.md's calculator lines; Q-M1f.210 closed; the
+   record and the phase README's row.
+
+### Acceptance
+
+- A malformed decimal numeral is flagged `(not-decimal …)` and `(false)` wherever a file writes it, an operand,
+  inside an integer or a rational, in a `let`, in a program's own fact, before any request reads it.
+- No module but `std.math.decimal` names a numeral's fault; int and rat flag an undeclared name and a digit as an
+  operand.
+- No well-formed program's answer moves; the firings of a well-formed request are no more than today's.
+
