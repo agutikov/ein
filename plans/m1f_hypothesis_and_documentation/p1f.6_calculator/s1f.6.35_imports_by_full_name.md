@@ -1051,3 +1051,15 @@ import rule, E-32's), `.github/workflows/nightly.yml` and `run_tests.sh` (the in
 - **The cost above**, which is the user's to weigh, and the container budget restated from 64 KB to 80 KB
   (`ein-einb/tests/roundtrip.rs`), a default.
 - E-51 and E-54, P1f.10's: the generator's two program-wide readings, which no import form changes now.
+
+### The gate and the nightly, 2026-11-14
+
+Run once over the batch since the gate on `748d7be5` (Q-M1f.226's and S1f.6.34's commits, W93's `50fe016e` and
+`dc94b947`, this stage's `d4332cd3` and `27197ea3`), on `27197ea3`:
+
+- **The gate in the runner's image**, `utils/ci_container.sh` (Ubuntu 26.04.1, amd64v3, Graphviz 14.1.2, rustc
+  1.97.1): `./run_tests.sh`, exit 0, 57 min 15 s; its link check over 558 pages with no finding
+  (`build/gate-batch2/container-gate.log`). It stands for the local gate too, being the same steps, and is the
+  run AGENTS.md makes part of done here, since `ein-render/src/rules.rs`, a DOT writer, changed.
+- **The nightly**, `./run_tests.sh --nightly` in a detached worktree at `27197ea3`, after `./build.sh`: exit 0,
+  41 min 49 s, the invariance test's slow half among its steps (`build/gate-batch2/nightly.log`).
