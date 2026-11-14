@@ -17386,10 +17386,14 @@ settings = "default"
 owner    = "S1f.6.37"
 question = ["P1f.6 findings.md E-65", "Q-M1f.271"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-and.ein"
-status   = "open"
-open_because = "S1f.6.37's to fix under Q-M1f.271's default, (a), the user's to revise: the hypothesis layer reads an hrule plan's first template alone (`ein_infer::hrule`'s `proposes`, `plan.assert_template()`), and so do the hypothesis relations and the mechanisms check (`ein_infer::compile::asserted_relation`), so `(q a)` is proposed by nothing, and no line says so"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-65 of P1f.6's `findings.md`, met taking T1f.6.37.2's inventory of what reads a conclusion. No tracked hrule writes an `(and …)`: every hrule conclusion of the corpus, as written and after expansion, is one conjunct (S1f.6.37's census)"
+note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-65 of P1f.6's `findings.md`, met taking T1f.6.37.2's inventory of what reads a conclusion. No tracked hrule writes an `(and …)`: every hrule conclusion of the corpus, as written and after expansion, is one conjunct (S1f.6.37's census). Fixed by S1f.6.37 (2026-11-14) under Q-M1f.271's default (a): refused at load, one line, on every command"
+
+[case.fixed]
+commit = "00000000"
+by     = "S1f.6.37, under Q-M1f.271's default (a), the user's to revise: an hrule's conclusion, read flat (`ein_ir::Ast::conjuncts`), is one conjunct, and the loader refuses one of more, `defined_behaviour.md` § 4.29"
+date   = "2026-11-14"
 
 [case.wrong]
 run       = "solve"
@@ -17400,14 +17404,6 @@ k         = 2
 exhausted = true
 closes    = ["p", "q"]
 models    = [[], ["(p a)"]]
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p a)"]]
 
 [case.right]
 reading   = "Q-M1f.271 (a), S1f.6.37's default, the user's to revise: an hrule proposes one fact per match, each a commitment of its own, so its conclusion is one conjunct, and one of more is refused at load. Not ruled"
@@ -17424,15 +17420,9 @@ models    = [[], ["(p a)"], ["(p a)", "(q a)"], ["(q a)"]]
 derived   = "H `{(p a), (q a)}`, nothing refutes and nothing is owed, so R is the four states"
 
 [case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 2
-relations = ["p"]
-models    = [
-  [],
-  ["(p a)"],
-]
+run     = "solve"
+line    = "all"
+refused = "kb load error: examples/ein-bugs/wrong-answers/hrule-and.ein:19:37: hrule 'h': its :assert writes (and (p a) (q a)), 2 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion"
 
 [[case]]
 id       = "W95/hrule-and-in-and"
@@ -17443,10 +17433,14 @@ settings = "default"
 owner    = "S1f.6.37"
 question = ["P1f.6 findings.md E-63", "P1f.6 findings.md E-65", "Q-M1f.271"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
-status   = "open"
-open_because = "S1f.6.37's to fix under Q-M1f.271's default, (a): E-63 in an hrule, whose first template was the inner `(and …)`, so the hypothesis layer proposed `(and (p a) (q a))`, a fact headed `and` that no state can hold. Read flat since T1f.6.37.3, the conclusion is three conjuncts and the hrule proposes the first alone, `(p a)`, `W95/hrule-and`'s defect: nothing proposes `(q a)` or `(r a)`"
+status   = "fixed"
 look_at  = ["root", "summary"]
-note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 and E-65 of P1f.6's `findings.md`. `ein solve -H` lists one candidate over the relation `and`. Read flat, which S1f.6.37's fix does, the conclusion is three conjuncts and the hrule proposes `(p a)` alone, `W95/hrule-and`'s answer, until the refusal"
+note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 and E-65 of P1f.6's `findings.md`. `ein solve -H` lists one candidate over the relation `and`. Read flat, which S1f.6.37's fix does, the conclusion is three conjuncts and the hrule proposes `(p a)` alone, `W95/hrule-and`'s answer, until the refusal. Fixed by S1f.6.37 (2026-11-14) under Q-M1f.271's default (a): refused at load, its conclusion three conjuncts"
+
+[case.fixed]
+commit = "00000000"
+by     = "S1f.6.37: T1f.6.37.3 reads the conclusion flat (`ein_ir::Ast::conjuncts`), so no candidate is headed `and`, and under Q-M1f.271's default (a) the loader refuses an hrule whose conclusion is more than one conjunct, `defined_behaviour.md` § 4.29"
+date   = "2026-11-14"
 
 [case.wrong]
 run       = "solve"
@@ -17457,14 +17451,6 @@ k         = 2
 exhausted = true
 closes    = ["and", "p", "q", "r"]
 models    = [[], ["(and (p a) (q a))"]]
-
-[case.region]
-route    = "state route"
-monotone = true
-k_s      = 2
-k_c      = 2
-minimal  = [[]]
-maximal  = [["(p a)"]]
 
 [case.right]
 reading   = "Q-M1f.271 (a), S1f.6.37's default, the user's to revise, read on the conclusion flat (the user's ruling of 2026-11-14 on S1f.6.37): an hrule's conclusion is one conjunct, and one of more is refused at load. Not ruled"
@@ -17480,12 +17466,6 @@ closes    = ["p", "q", "r"]
 derived   = "H `{(p a), (q a), (r a)}`, and R every one of the eight subsets"
 
 [case.now]
-run       = "solve"
-line      = "all"
-exhausted = true
-k         = 2
-relations = ["p"]
-models    = [
-  [],
-  ["(p a)"],
-]
+run     = "solve"
+line    = "all"
+refused = "kb load error: examples/ein-bugs/wrong-answers/hrule-and-in-and.ein:15:42: hrule 'h': its :assert writes (and (and (p a) (q a)) (r a)), 3 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion"

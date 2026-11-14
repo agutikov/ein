@@ -301,6 +301,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - `eq` and `neq` are computed relations, never stored. A conclusion's
   variable must be bound by every way of satisfying the `:match`. An empty
   `:match` is true and fires once.
+- **A rule concludes a conjunction of literals** — facts and stored
+  negations, with `(false)` and checks among them — or `()`, or an obligation
+  as its whole `:assert`. An `(and …)` is read flat at any depth, by every
+  reader through one function, `ein_ir::Ast::conjuncts`. No disjunction and
+  no compound fact: *one of* is the hypothesis layer's. **An hrule's
+  conclusion is one fact**; one of more is refused.
 - A query's `:goal` is held to what a rule's `:match` is held to. Every name
   in a `(solve …)` list names something the program has. A macro's call is no
   fact.

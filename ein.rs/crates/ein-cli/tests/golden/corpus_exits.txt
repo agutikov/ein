@@ -790,10 +790,10 @@
 0    examples/ein-bugs/wrong-answers/guard-only-second.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve
 0    examples/ein-bugs/wrong-answers/h-long-relation.ein :: solve -H
-0    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: saturate
-0    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: solve
-0    examples/ein-bugs/wrong-answers/hrule-and.ein :: saturate
-0    examples/ein-bugs/wrong-answers/hrule-and.ein :: solve
+1    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: saturate
+1    examples/ein-bugs/wrong-answers/hrule-and-in-and.ein :: solve
+1    examples/ein-bugs/wrong-answers/hrule-and.ein :: saturate
+1    examples/ein-bugs/wrong-answers/hrule-and.ein :: solve
 1    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: saturate
 1    examples/ein-bugs/wrong-answers/hrule-assert-var.ein :: solve
 0    examples/ein-bugs/wrong-answers/hrule-eq.ein :: saturate

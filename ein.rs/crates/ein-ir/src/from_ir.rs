@@ -1455,6 +1455,23 @@ fn ingest_rules(
         if errors.len() != n_errors {
             continue;
         }
+        // An hrule proposes one fact per match, each a commitment of its own,
+        // so its conclusion, read flat, is one conjunct (M1f S1f.6.37,
+        // Q-M1f.271's default, E-65, W95). Until then the hypothesis layer read
+        // its plan's first template alone, and dropped the others in silence.
+        if head == "hrule" && !is_obligation {
+            let n = ast.conjuncts(assert_node).len();
+            if n > 1 {
+                errors.push(format!(
+                    "{}hrule '{name}': its :assert writes {}, {} — an hrule proposes one fact \
+                     per match, each a commitment of its own: write one hrule per conclusion",
+                    placed_form(ast, assert_node),
+                    crate::dump::dump_compact(ast, assert_node),
+                    count(n, "conclusion"),
+                ));
+                continue;
+            }
+        }
         let params: Vec<Symbol> = param_names
             .iter()
             .map(|p| terms.intern_text(p))

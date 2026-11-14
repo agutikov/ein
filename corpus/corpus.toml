@@ -2962,13 +2962,13 @@ note   = "M1f W94 (`W94/and-in-and-macro`), filed by S1f.6.37's T1f.6.37.1 (2026
 path   = "examples/ein-bugs/wrong-answers/hrule-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W95 (`W95/hrule-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-65 of P1f.6's findings: an hrule concluding `(and (p a) (q a))`, of which the hypothesis layer proposed the first conjunct alone, H `{(p a)}`, in silence."
+note   = "M1f W95 (`W95/hrule-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-65 of P1f.6's findings: an hrule concluding `(and (p a) (q a))`, of which the hypothesis layer proposed the first conjunct alone, H `{(p a)}`, in silence. Fixed by S1f.6.37 under Q-M1f.271's default (a): refused at load, one line, on every command."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 and E-65: an hrule concluding `(and (and (p a) (q a)) (r a))`, which proposed `(and (p a) (q a))`, one candidate over the relation `and`; read flat since S1f.6.37's T1f.6.37.3, it proposes `(p a)` alone, `hrule-and.ein`'s defect."
+note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 and E-65: an hrule concluding `(and (and (p a) (q a)) (r a))`, which proposed `(and (p a) (q a))`, one candidate over the relation `and`; read flat since S1f.6.37's T1f.6.37.3, it proposes `(p a)` alone, `hrule-and.ein`'s defect, until the same stage refuses both at load (Q-M1f.271's default (a))."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

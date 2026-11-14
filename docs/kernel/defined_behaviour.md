@@ -2371,6 +2371,37 @@ Pinned by `ein-ir`'s `imports_full_names.rs` (`the_refusals`, one case each;
 `import_invariance.rs`, every corpus program alike under its selective, whole
 and `:as` imports.
 
+### 4.29 An hrule proposes one fact per match — M1f S1f.6.37
+
+An hrule proposes facts, each a commitment of its own, so its conclusion is one
+fact: since M1f
+[S1f.6.37](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)
+an hrule whose `:assert`, read flat (`ein_ir::Ast::conjuncts`, § 4.16), is more
+than one conjunct is refused at load, on every command, one `kb load error:`
+line at the command's load-error exit (1; `ein test` 2), placed at the
+conclusion's first conjunct, read after a macro's expansion
+([Q-M1f.271](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f271--what-an-hrules-and--conclusion-proposes)
+(a), defaulted, the user's to revise):
+
+| the hrule | the line |
+|---|---|
+| `(hrule h () :match () :assert (and (p a) (q a)) …)`, and an `and` inside it, `(and (and (p a) (q a)) (r a))`, *3 conclusions* | `kb load error: h.ein:3:37: hrule 'h': its :assert writes (and (p a) (q a)), 2 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion` |
+
+An `(and …)` of one conjunct, `(and (p ?x))`, is one conclusion and loads.
+**Until S1f.6.37** the hypothesis layer read an hrule plan's first template
+alone (`ein_infer::hrule`'s `proposes`), and so did the relations it proposes
+(`ein_infer::compile::asserted_relation`, read by the mechanisms check of
+§ 4.27 and the universe's scope): `(and (p a) (q a))` proposed `(p a)` and
+nothing proposed `(q a)`, in silence; an `and` inside the `and`, first, was
+proposed as one fact headed `and` (E-63, E-65, W95). No tracked hrule wrote an
+`(and …)`. Under the question's (b) each conjunct would be a candidate of its
+own, as one hrule per conclusion makes it now.
+
+Pinned by `ein-cli`'s `conclusion_shapes.rs` (`an_hrule_concludes_one_fact`,
+written and through a macro's call, on nine commands) and `corpus/wrong_answers.toml`'s
+W95 rows. A macro's call that leaves the `(and …)` is placed as § 4.16 places a
+form a body writes, at the macro's body.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands

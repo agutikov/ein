@@ -164,8 +164,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `and-in-and-macro.ein` and W95's `hrule-and.ein` and `hrule-and-in-and.ein`,
 /// `a`, a name only a rule's or an hrule's conclusion writes. The stage's fix
 /// moves none of the four lines: the name is a constant of the conclusion,
-/// read at any depth, however the conclusion's `and` nests; W95's leave when
-/// the loader refuses them.
+/// read at any depth, however the conclusion's `and` nests. W95's two left
+/// the same day, when the stage's refusal of an hrule concluding more than one
+/// fact (Q-M1f.271's default) made the loader refuse both.
 ///
 /// **Moved at M1f S1f.6.35**, imports by full name: a rule a program does not
 /// list is named by its full name, `std.math.int.int-div-pn` (66 lines); the
@@ -173,7 +174,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `readings`, hold the calculator whole and meet `z` first in
 /// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
 /// `0` and `1` in its `domain-elimination`.
-const SEEDED: [(&str, &[&str]); 160] = [
+const SEEDED: [(&str, &[&str]); 158] = [
     (
         "examples/arith/add.ein",
         &["`z`, in (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))"],
@@ -376,14 +377,6 @@ const SEEDED: [(&str, &[&str]); 160] = [
     (
         "examples/ein-bugs/wrong-answers/goal-nested-var.ein",
         &["`a`, in (not (p a))", "`b`, in (not (p b))"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein",
-        &["`a`, asserted by hrule `h`"],
-    ),
-    (
-        "examples/ein-bugs/wrong-answers/hrule-and.ein",
-        &["`a`, asserted by hrule `h`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/match-only.ein",

@@ -20,6 +20,7 @@
 //! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion (the user's rule of 2026-11-14, *verify by invariance*) |
 //! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs` (S1f.6.37's rows at its end), and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
 //! | the same written by a macro's expansion | refused at load: `defined_behaviour.md` § 4.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
+//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271's default, E-65, W95): `defined_behaviour.md` § 4.29, [`an_hrule_concludes_one_fact`], on every command |
 //!
 //! ```text
 //! cargo test -p ein-cli --test conclusion_shapes
@@ -62,7 +63,7 @@ fn ein(text: &str, args: &[&str]) -> Run {
     let dir = scratch.path();
     std::fs::write(dir.join("c.ein"), text).expect("the program is written");
     let mut argv: Vec<String> = args.iter().map(|a| a.to_string()).collect();
-    argv.insert(1, "c.ein".to_string());
+    argv.push("c.ein".to_string());
     if args[0] == "solve" {
         argv.push("--json-summary".to_string());
         argv.push("s.json".to_string());
@@ -358,6 +359,79 @@ fn no_disjunction_and_no_compound_fact_is_a_conclusion() {
         assert!(
             first.starts_with("c.ein:") && first.contains("unexpected"),
             "{assert}: refused at the parse, at the connective: {first}"
+        );
+    }
+}
+
+/// **An hrule proposes one fact per match**, so its conclusion, read flat, is
+/// one conjunct, and one of more is refused at load, on every command, one
+/// line placed where the `:assert` is written (M1f S1f.6.37, Q-M1f.271's
+/// default, `defined_behaviour.md` § 4.29). Until then the hypothesis layer
+/// proposed the first conjunct alone and dropped the others in silence (E-65,
+/// W95). An `(and …)` of one conjunct is one conclusion, and loads.
+#[test]
+fn an_hrule_concludes_one_fact() {
+    let both = "(macro both (?x) (and (p ?x) (q ?x)) :why \"both p and q of {?x}\")\n";
+    let hrule = |assert: &str| {
+        // Its relations open: an hrule proposing a closed one is refused too
+        // (`defined_behaviour.md` § 4.27).
+        let decls = DECLS.lines().take(3).collect::<Vec<_>>().join("\n");
+        format!("{decls}\n{both}(hrule h () :match () :assert {assert} :why \"the guess\")\n")
+    };
+    let line = |written: &str, n: usize| {
+        format!(
+            "hrule 'h': its :assert writes {written}, {n} conclusions — an hrule proposes one \
+             fact per match, each a commitment of its own: write one hrule per conclusion"
+        )
+    };
+    for (assert, written, n) in [
+        ("(and (p a) (q a))", "(and (p a) (q a))", 2),
+        (
+            "(and (and (p a) (q a)) (r a))",
+            "(and (and (p a) (q a)) (r a))",
+            3,
+        ),
+        ("(both a)", "(and (p a) (q a))", 2),
+        ("(and (r a) (both a))", "(and (r a) (and (p a) (q a)))", 3),
+    ] {
+        let text = hrule(assert);
+        let want = line(written, n);
+        for args in [
+            &["saturate"][..],
+            &["saturate", "--dump"],
+            &["solve"],
+            &["solve", "--maximal"],
+            &["solve", "--count"],
+            &["oracle"],
+            &["render", "rules"],
+            &["render", "kb"],
+            &["test"],
+        ] {
+            let run = ein(&text, args);
+            let code = if args[0] == "test" { 2 } else { 1 };
+            assert_eq!(
+                run.code,
+                code,
+                "{assert}: `ein {}` refuses it",
+                args.join(" ")
+            );
+            let first = run.stderr.lines().next().unwrap_or("");
+            assert!(
+                first.starts_with("kb load error: c.ein:") && first.ends_with(&want),
+                "{assert}: `ein {}`'s first line: {first}",
+                args.join(" ")
+            );
+        }
+    }
+    // One conjunct, written bare or in an `(and …)`, proposes its fact.
+    for assert in ["(p a)", "(and (p a))", "(and (and (p a)))"] {
+        let run = ein(&hrule(assert), &["solve"]);
+        assert_eq!(run.code, 0, "{assert}: loads\n{}", run.stderr);
+        let s = run.summary.expect("solve writes its summary");
+        assert_eq!(
+            s["region"]["k_s"].as_u64(),
+            Some(2),
+            "{assert}: R is ∅ and {{(p a)}}"
         );
     }
 }

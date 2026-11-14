@@ -574,6 +574,12 @@ table, S1f.6.37's rows), and through a macro's expansion at load
 Until S1f.6.37 the compiler split the top `(and …)` alone, so an inner one,
 written or left by a macro's call written as one conjunct, was stored as one
 fact headed `and` and none of its members (E-63, W94).
+**An hrule proposes one fact per match**, each a commitment of its own, so its
+conclusion, read flat, is one conjunct: one of more is refused at load since
+S1f.6.37 ([`defined_behaviour.md` § 4.29](../../defined_behaviour.md#429-an-hrule-proposes-one-fact-per-match--m1f-s1f637),
+Q-M1f.271's default, the user's to revise), where the hypothesis layer proposed
+the first and dropped the others in silence (E-65, W95). Write one hrule per
+conclusion.
 
 **An activator binds each parameter to its argument, any value**: a name, or a
 nested fact, `(act (f a))` binding `?y` to `(f a)`, which the rule's patterns
