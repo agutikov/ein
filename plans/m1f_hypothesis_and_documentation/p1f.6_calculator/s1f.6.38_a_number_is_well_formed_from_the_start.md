@@ -444,8 +444,12 @@ and compiler, and before S1f.6.16's build.
 3. **T1f.6.38.3 — `std.math.decimal`, the representation.** A new module, `stdlib/math/decimal.ein`: it declares
    `n` and holds decimal's numeral check over `(written (n P A))` (§ 3: `numeral-digit`, the prefix rules,
    `not-decimal`, `not-decimal-is-false`; `check-digit` leaves `decimal-arith`). `std.math.decimal-arith` imports
-   it, as do `int`, `rat` and `num9` through it. Open in the build, each a default to file: where `z` is declared,
-   which both bases share (*"one `z`; a bare `z` is of no base"*, reply 15); how a prefix that is a named constant,
+   it, as do `int`, `rat` and `num9` through it. **`z` is `std.math.arith`'s** (the user, 2026-11-14: *"z is shared
+   by both bases, put it in std.math.arith"*): this build creates `stdlib/math/arith.ein`, arithmetic itself, with
+   `z` and, by the user's ruling of the same day on S1f.6.16 (*"division by zero is false in binary arithmetic too,
+   so it belongs to arithmetic itself"*), the relation `division-by-zero` and the rule `division-by-zero-is-false`,
+   moved out of `decimal-arith`, so every program's imports are rewritten once; `std.math.decimal` imports it, and
+   so will `std.math.binary`. Open in the build, a default to file: how a prefix that is a named constant,
    `(n price 1)`, is flagged from a module below `let` (§ 6, Q2 (b): by E-36's cost, or another way the build
    measures). Every program and generator that writes a numeral lists `n` from `std.math.decimal` (no re-export,
    S1f.6.35): a mechanical rewrite, counted.
