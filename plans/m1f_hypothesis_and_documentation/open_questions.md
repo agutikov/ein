@@ -222,7 +222,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.207](#q-m1f207--what-a-let-that-cannot-be-read-flags) | what a `let` that cannot be read flags | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: the `let`, `(malformed (let NAME NUMBER))`, whether or not a request uses it; each of the two where a name is stated twice; and the digit 0 as a name, which the investigation's set left out**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.208](#q-m1f208--how-the-theory-says-that-an-operand-is-a-name) | how the theory says that an operand is a name | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: two guards on a variable nothing else binds, `(neq ?v z) (eq ?v ?x)`, in that order; `z` and the digits left out so that a request has one flag; its cost, a comparison a name of the program, stated and pinned**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.209](#q-m1f209--the-binary-example-theory-and-the-check) | the binary example theory and the check | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: `gen_binary.py` leaves the check out, so `bin.ein` is unchanged and answers a malformed request by silence**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
-| [Q-M1f.210](#q-m1f210--stdint-and-stdrat-and-the-flags) | `std.int` and `std.rat`, and the flags | **open, shown**: neither module is changed, as the stage file has it; three rules in each would turn their tags into requests, and the table is in the record; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.210](#q-m1f210--stdint-and-stdrat-and-the-flags) | `std.int` and `std.rat`, and the flags | **ruled 2026-11-14, (c)**, with the principle that a malformed number is its representation's problem, detected as soon as it is written: [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md) builds it (Q-M1f.272 to .277); [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.211](#q-m1f211--which-fact-carries-the-flag-of-a-division-by-zero-at-the-call) | which fact carries the flag of a division by zero at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: (ii), the call, `(division-by-zero (div-call TAG X Y))` as it was asserted, and a public request's flag as it was, so a public division has two flags and `ein solve` reads as before; the three designs are shown on nine programs in the record**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.212](#q-m1f212--a-theorys-wrong-answer-and-the-register) | a theory's wrong answer and the register | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: not a register row. The register holds the engine's wrong answers, and a tagged call by zero that derived nothing was a rule of a theory, answered by the engine as written; the witness is a test program**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.213](#q-m1f213--the-binary-example-theory-and-the-flag-at-the-call) | the binary example theory and the flag at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: `gen_binary.py` carries the rule over, so `bin.ein` has 68 rules and flags `(div-call2 TAG X Y)` by zero as decimal does**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
@@ -268,12 +268,18 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.253](#q-m1f253--how-a-name-prints-under-as) | how a name prints under `:as` | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: the main file's alias spelling, `a.sum-of`, as today; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.261](#q-m1f261--the-decimal-theorys-module-name-after-the-user-wrote-stdmatharith-in-passing) | the decimal theory's module name, after the user wrote `std.math.arith` in passing | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: `std.math.decimal-arith`, entry `decimal-arith`, as replies 16 and 52 and round 2's confirmed layout name it; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-replies-re-read) |
 | [Q-M1f.262](#q-m1f262--a-records-link-to-a-file-the-layout-moved) | a record's link to a file the layout moved | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: the link's target re-pointed, its text and the record's prose as they were; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#t1f6314--testsstdlib-follows-moved) |
-| [Q-M1f.266](#q-m1f266--how-a-base-is-connected-to-the-shared-rules) | how a base is connected to the shared rules of `std.math.positional` | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (iii), one call of a macro, a rule of the base's own module; the base's module is the file that combines; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.266](#q-m1f266--how-a-base-is-connected-to-the-shared-rules) | how a base is connected to the shared rules of `std.math.positional` | **ruled 2026-11-14, (iii)**: one call of a macro, in the base's own module, which is the file that combines; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 | [Q-M1f.267](#q-m1f267--the-binary-theorys-names) | the binary theory's names | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: `b2` kept; every other name `bin-`, the tables `bin-fa`, `bin-fs`, `bin-cl`, `bin-nz` among them; the conversions `to-bin`, `bin-of`, `to-dec`, `dec-of`; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 | [Q-M1f.268](#q-m1f268--how-far-binary-flags-a-malformed-request) | how far binary flags a malformed request | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: as far as decimal: the shared check and two rules of binary's own over `0` and `1`; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
-| [Q-M1f.269](#q-m1f269--division-by-zero-is-false-stays-decimals) | `division-by-zero-is-false` stays decimal's | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (a), it stays `std.math.decimal-arith`'s, which `std.math.num9` names; binary has its own; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.269](#q-m1f269--division-by-zero-is-false-stays-decimals) | `division-by-zero-is-false` stays decimal's | **ruled 2026-11-14, neither (a) nor (b)**: the relation and the rule are arithmetic's own, in `std.math.arith` (with `z`), which both bases import; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) creates it; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 | [Q-M1f.270](#q-m1f270--the-connecting-macros-body-written-or-generated) | the connecting macro's body, written or generated | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (a), written by hand in `std.math.positional` and held by a test; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 | [Q-M1f.271](#q-m1f271--what-an-hrules-and--conclusion-proposes) | what an hrule's `(and …)` conclusion proposes | **defaulted 2026-11-14 (S1f.6.37), the user's to revise**: (a), refused at load: an hrule's conclusion, read flat, is one conjunct; [S1f.6.37](p1f.6_calculator/s1f.6.37_conclusion_shapes.md#record-2026-11-14), E-65, W95 |
+| [Q-M1f.272](#q-m1f272--how-a-representation-module-sees-a-numeral-right-away) | how a representation module sees a numeral, right away | **ruled 2026-11-14, (a)**: E1, the loader states every nested fact a file writes as `(written T)`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
+| [Q-M1f.273](#q-m1f273--where-decimals-numeral-check-lives) | where decimal's numeral check lives | **ruled 2026-11-14, (b)**, against the proposed default: a separate `std.math.decimal` declares `n` and holds the check; binary's numeral `std.math.binary`'s by the same ruling, a default; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
+| [Q-M1f.274](#q-m1f274--the-numerals-flag) | the numeral's flag | **accepted 2026-11-14**: (a), `(not-decimal NUMERAL THING)` on the smallest term at fault, binary's `(not-binary …)`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
+| [Q-M1f.275](#q-m1f275--what-the-loader-states-as-written) | what the loader states as written | **accepted 2026-11-14**: (a), the nested facts of every written fact and the ground ones of every rule's and hrule's conclusion; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
+| [Q-M1f.276](#q-m1f276--an-integers-and-a-rationals-own-shape) | an integer's and a rational's own shape | **accepted 2026-11-14**: (a), flagged, `(not-integer …)` and `(not-rational …)`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
+| [Q-M1f.277](#q-m1f277--an-operand-of-another-type-in-int-and-rat) | an operand of another type in int and rat | **accepted 2026-11-14**: (b), silent and named on the pages; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4160,6 +4166,14 @@ rational is not seen at all: the parts go to `std.arith`'s walks and never throu
 - **(c) (b), and each part of an integer and a rational handed to `std.arith`'s check,** a firing a digit
   of each part, as a natural number's operand costs.
 
+**Ruled 2026-11-14: (c), with a principle that places it.** The user: *"yes (c), but have to notice that
+malformed decimal numbers is a problem of decimal module, malformed binary numbers - of binary module, not
+arithmetic, integer or rationals or whatever else. If there is a malformed number, I expect it has to be detected
+right away, without need to start calculations with it."* So the (b) part, an undeclared name and a digit as an
+operand, is int's and rat's; a malformed numeral, wherever it is written, is its representation's, seen from what
+was written and not handed along by a calculation. [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md) designed it (T1, `6cca4406`) and builds it,
+on the user's rulings of the same day, Q-M1f.272 to .277.
+
 ### Q-M1f.211 — Which fact carries the flag of a division by zero at the call
 
 **Raised** 2026-11-13 by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13)'s T1, as the stage file's design question. The user's
@@ -5276,6 +5290,9 @@ over a module of the base's relations and rules, which would list the base's 63 
 the user took with (a); (ii) is the literal one fact at twice the saturation cost; a separate file buys nothing,
 since nothing uses the base's relations without the shared rules.
 
+**Ruled 2026-11-14: (iii).** The user: *"yes (iii); division by zero is false in binary arithmetic too, so it
+belongs to arithmetic itself, not even to positional one right?"* (the second half is Q-M1f.269's ruling).
+
 ### Q-M1f.267 — The binary theory's names
 
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). Reply 14 took a word prefix, `bin-add` answered by
@@ -5316,6 +5333,15 @@ parameterised one refuses `std.math.num9`.
 
 **Defaulted 2026-11-14: (a), the user's to revise.** One rule of one premise, and `std.math.num9` untouched.
 
+**Ruled 2026-11-14: neither; arithmetic's own.** The user, with Q-M1f.266: *"division by zero is false in binary
+arithmetic too, so it belongs to arithmetic itself, not even to positional one right?"*, and on S1f.6.38: *"z is
+shared by both bases, put it in std.math.arith"*. So the relation `division-by-zero` and the rule
+`division-by-zero-is-false` leave `std.math.decimal-arith` for a new module, `std.math.arith`, arithmetic itself,
+beside `z`, unparameterised; both bases import it, and `std.math.positional` does not hold it. The concern that
+raised the question does not arise: the rule has no parameter, so `std.math.num9`'s closing rule may go on naming
+it, by its new full name. [S1f.6.38's build](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) creates the module, so that every
+program's imports are rewritten once.
+
 ### Q-M1f.270 — The connecting macro's body, written or generated
 
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). The macro `positional` activates each of the module's 78 rules
@@ -5347,3 +5373,78 @@ hrules, which the refusal's line says, so a reading taken later moves no program
 conjunction as *each of these is a guess on its own*, where a reader may take it for *these together*, which no
 commitment states. (c) keeps the silent drop's answer.
 
+### Q-M1f.272 — How a representation module sees a numeral, right away
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1, the design
+(`6cca4406`), on Q-M1f.210's ruling: a malformed numeral is the representation's problem, detected as soon as it is
+written. No rule-level way is *right away* (the stage's § 2).
+
+- **(a) E1, an engine stage first:** the loader states every nested fact a program writes as `(written T)`, and
+  the representation's rules read it, so a malformed numeral is flagged as root's first or second firing, wherever
+  it is written.
+- **(b) E2:** a constructor's argument domain checked at load, a refusal; a malformed program a load error.
+- **(c) W1:** a rule-level walk of every fact by rules whose head is a parameter: two to three times the firings,
+  three to seven times the time, a trace of 2 081 steps, and a load error beside `std.algebra` (E-69).
+- **(d) None:** S1f.6.12's pass at a request's operand, which the ruling rules out.
+
+**Defaulted 2026-11-14: (a). Ruled the same day: (a).** The user: *"E1 yes, separate std.math.decimal module, other
+defaults fine"*.
+
+### Q-M1f.273 — Where decimal's numeral check lives
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
+
+- **(a) `std.math.decimal-arith`'s own rules,** beside `n` and `let`: no program's imports change.
+- **(b) A new `std.math.decimal`** that declares `n` and holds the check, `decimal-arith` importing it: the
+  representation apart from its arithmetic, and every program that writes a numeral lists `n` from it (S1f.6.35, no
+  re-export).
+- **(c) `std.math.digits`:** no, a library of generated facts.
+
+**Defaulted 2026-11-14: (a). Ruled the same day: (b),** against the default (the user, as Q-M1f.272 quotes). By
+the same ruling's symmetry binary's numeral is `std.math.binary`'s, built by S1f.6.16's build on this pattern: a
+default, the user's to revise. Open in the build, a default it files: how a prefix that is a named constant,
+`(n price 1)`, is flagged from the module below `let`.
+
+### Q-M1f.274 — The numeral's flag
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
+
+- **(a) `(not-decimal NUMERAL THING)`** on the smallest `n` term at fault, `(false)` from it by
+  `not-decimal-is-false`; binary's `(not-binary NUMERAL THING)`.
+- **(b) On the numeral as written,** the outermost `n`, which takes a walk down it again, a firing a place.
+- **(c) `(malformed NUMERAL)`,** the request flag's relation reused.
+
+**Defaulted 2026-11-14: (a); accepted by the user the same day** (*"other defaults fine"*).
+
+### Q-M1f.275 — What the loader states as written
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
+
+- **(a) The nested facts of every written fact, and the ground nested facts of every rule's and hrule's
+  conclusion:** a malformed numeral written whole in a rule's text is caught, and one a rule assembles from a
+  variable and a non-digit is silent and named so.
+- **(b) Written facts only:** both of those silent, two detections today's pass has, lost.
+- **(c) (a), and E2's static check of rule texts** for the assembled case.
+
+**Defaulted 2026-11-14: (a); accepted by the user the same day** (*"other defaults fine"*).
+
+### Q-M1f.276 — An integer's and a rational's own shape
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
+
+- **(a) Flagged:** int and rat flag a digit or a named constant where their own term's part goes, `(int 7 z)`,
+  `(int price z)`, `(rat (int …) 7)`, read off `written`: `(not-integer …)`, `(not-rational …)`, six rules and a
+  flag each.
+- **(b) Silent,** named on the page.
+
+**Defaulted 2026-11-14: (a); accepted by the user the same day** (*"other defaults fine"*).
+
+### Q-M1f.277 — An operand of another type in int and rat
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#6-the-open-choices-each-with-a-proposed-default)'s T1.
+
+- **(a) Flagged:** int and rat flag a natural where an integer goes, and an integer or a natural where a rational
+  goes, at their operand.
+- **(b) Silent,** as S1f.6.12 left it, and named on the pages: it is not in Q-M1f.210's ruling's list.
+
+**Defaulted 2026-11-14: (b); accepted by the user the same day** (*"other defaults fine"*).

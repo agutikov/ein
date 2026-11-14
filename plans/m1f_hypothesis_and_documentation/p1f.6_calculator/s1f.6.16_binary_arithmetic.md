@@ -15,7 +15,10 @@ and 1 to 4 ms more load, and decimal's states change in more than rule names
 ([§ Record, 2026-11-14](#record-2026-11-14-t1f6165-the-trial-and-the-stop)). Nothing built; the question is
 [there](#the-question-for-the-user). **The user ruled (a) the same day, the design first: shown in
 [§ The design](#the-design-after-the-users-ruling-of-2026-11-14)** (one call of a macro connects a base; the base's
-own module is the file that combines; the build waits for the user's word).
+own module is the file that combines; the build waits for the user's word). **The design ruled the same day**
+([§ The design ruled](#the-design-ruled-2026-11-14)): (iii), and division by zero arithmetic's own; the build runs
+after [S1f.6.38](s1f.6.38_a_number_is_well_formed_from_the_start.md)'s, which moves the numeral's check out of the
+shared rules.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
@@ -602,7 +605,8 @@ Filed defaulted, the user's to revise:
 - [Q-M1f.268](../open_questions.md#q-m1f268--how-far-binary-flags-a-malformed-request): how far binary flags a
   malformed request, **as far as decimal**: the shared check and two rules of its own over `0` and `1`.
 - [Q-M1f.269](../open_questions.md#q-m1f269--division-by-zero-is-false-stays-decimals): `division-by-zero-is-false`
-  **stays decimal's**, since `std.math.num9`'s closing rule names it; binary has its own.
+  **stays decimal's**, since `std.math.num9`'s closing rule names it; binary has its own. *(Ruled otherwise the
+  same day: [§ The design ruled](#the-design-ruled-2026-11-14).)*
 - [Q-M1f.270](../open_questions.md#q-m1f270--the-connecting-macros-body-written-or-generated): the macro's body
   **written by hand** in `std.math.positional` and held by a test that it activates each rule of the module once,
   with that rule's parameters.
@@ -634,3 +638,29 @@ On the defaults, after the user's word on this design:
 **E-63 first**, a wrong answer: its register row, witness and corpus entry in a commit of their own before any
 fix (`build/s1f.6.16/design/and_in_and.ein` is the witness); the build needs no fix of it under (iii) as
 designed, and needs one to put the call in the closing rule.
+
+### The design ruled (2026-11-14)
+
+The user, 2026-11-14, on the design above:
+
+> yes (iii); division by zero is false in binary arithmetic too, so it belongs to arithmetic itself, not even to
+> positional one right?
+
+and, on S1f.6.38's design the same day, *"z is shared by both bases, put it in std.math.arith"*. So:
+
+- **[Q-M1f.266](../open_questions.md#q-m1f266--how-a-base-is-connected-to-the-shared-rules) ruled (iii):** one call
+  of the macro `positional` connects a base, written in the base's own module.
+- **[Q-M1f.269](../open_questions.md#q-m1f269--division-by-zero-is-false-stays-decimals) ruled: neither (a) nor
+  (b).** The relation `division-by-zero` and the rule `division-by-zero-is-false` are arithmetic's own, in a new
+  `std.math.arith` beside `z`, unparameterised, imported by both bases; `std.math.positional` does not hold them,
+  and binary has no `bin-division-by-zero-is-false`. [S1f.6.38](s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14)'s
+  build creates `std.math.arith`, so this build finds it there.
+- **The numeral's check is no longer the shared rules'.** Q-M1f.210's ruling (S1f.6.38): a malformed numeral is its
+  representation's problem, seen from what was written. `std.math.positional` keeps the operand's and the `let`'s
+  faults; decimal's numeral check is `std.math.decimal`'s (S1f.6.38), and binary's is `std.math.binary`'s, which
+  declares `b2` and holds `(not-binary …)` over `written`, on S1f.6.38's pattern (a default, the user's to revise).
+  So § 6's T7 reads *the check as decimal's* in that sense, and Q-M1f.268 (*as far as decimal*) stands with it.
+- **[E-63](findings.md) is fixed** by [S1f.6.37](s1f.6.37_conclusion_shapes.md) (W94), so the call may stand in each
+  base's closing rule's `(and …)`, with no rule of its own.
+
+The build, T1f.6.16.6 to .11 as § 6 lists them with these changes, runs after S1f.6.38's build.

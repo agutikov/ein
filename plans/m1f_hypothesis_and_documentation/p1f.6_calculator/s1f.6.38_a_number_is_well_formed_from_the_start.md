@@ -109,9 +109,9 @@ rational, a `let` nobody asks about or a program's own fact is never read (E-38)
 every numeral a program writes only by a walk of every fact the program holds (rules whose head is a parameter,
 which Ein has), and that walk is not *right away*: it costs two to three times the firings and three to seven times
 the time of the computation it sits beside, buries the flag in a trace of 2 081 steps, and, with the closing rule naming its
-rules as every closing rule must, makes a program that also imports `std.algebra` a load error (E-68 below). Restricted
+rules as every closing rule must, makes a program that also imports `std.algebra` a load error (E-69 below). Restricted
 to what a program states, it needs an `absent`, which Ein decides after the whole positive closure, so the flag comes
-after every calculation (E-69). **What is right away is an engine change, E1: the loader states each nested fact a
+after every calculation (E-70). **What is right away is an engine change, E1: the loader states each nested fact a
 program writes, `(written T)`, as it states each declaration's mirror today.** Decimal's five rules over it flag a
 malformed numeral as the first or second firing of root, wherever it is written, with no request reading it, at
 fewer firings than today; emulated, it moves no well-formed program's answer in the corpus. What it leaves silent is
@@ -189,7 +189,7 @@ differs.
 | saturation, 1 000 sums / products | 63.1 / 812.5 ms | 413.4 / 5 781.6 ms | 65.0 / 831.4 ms | **39.5 / 808.7 ms** |
 | `--trace` of `(add (n (n z 1) x) (n z 5))`, root | 13 steps, the flag at 12 | 2 081 steps (16 674 lines) | — | **8 steps, the flag at 2** |
 | `unsat core` · `refuted by` | the request · `malformed-is-false` | the request · `not-decimal-is-false` | the same | the written fact holding the numeral (emulated: the stated fact) · `not-decimal-is-false` |
-| the corpus (§ 5) | — | `equation_two_unknowns.ein` refused at load (E-68); firings +369.6 % | refused at load (E-68); +41.5 % | R unmoved on all 114; firings −2.2 % |
+| the corpus (§ 5) | — | `equation_two_unknowns.ein` refused at load (E-69); firings +369.6 % | refused at load (E-69); +41.5 % | R unmoved on all 114; firings −2.2 % |
 
 **Which is right away, and which only looks like it.**
 
@@ -216,7 +216,7 @@ and reads every name written as an argument as a candidate. The closing rule nam
 be read as activating `walk-1` with a fact: `examples/beyond_arith/equation_two_unknowns.ein` is a `kb load error`
 of twenty such lines under W1 and W2. With the walk's names left out of the closing rule it loads and answers its 3
 states, at 91 768 facts beyond root where HEAD has 75 423 (`stdlib-w1n`). So a rule-level walk in the stdlib is an
-exception to the closing rule's test, or a load error for every program that imports `std.algebra` beside it (E-68).
+exception to the closing rule's test, or a load error for every program that imports `std.algebra` beside it (E-69).
 
 #### 2.2 E1, the engine change, described and not built
 
@@ -326,7 +326,7 @@ program's own fact beside a sum 12 where 14, an integer sum 35 and a rational su
   restores it. Firings −2.2 % in all (108 193 where 110 625), equal on 52 programs; two `work` rows move,
   `equation_two_unknowns.ein` 60 223 facts beyond root where 75 423 (the check's facts gone, the figure before
   S1f.6.12) and `boxes13.ein` 37 where 45.
-- **W1 and W2** move the same seven, and refuse `equation_two_unknowns.ein` at load (E-68); firings +369.6 % and
+- **W1 and W2** move the same seven, and refuse `equation_two_unknowns.ein` at load (E-69); firings +369.6 % and
   +41.5 %.
 
 **The batches,** S1f.6.12's (nine-digit operands, a four-digit divisor, its seed): firings a request and the
@@ -383,17 +383,22 @@ is no choice: the move needs it, or `32_malformed_name_for_a_name.ein` turns ali
 No wrong answer of the engine was met: the two below are a ruled refusal and the documented semantics of `absent`.
 
 - **A relation-parameterised rule a closing rule names makes every program that imports `std.algebra` beside it a
-  load error** (E-68 to file). S1f.5.18's check reads `(arith-rule walk-1)` as a name `imply1`'s `?R2` could bind,
+  load error** (E-69 to file). S1f.5.18's check reads `(arith-rule walk-1)` as a name `imply1`'s `?R2` could bind,
   so `(?R2 ?a)` could activate `walk-1` with a fact: `equation_two_unknowns.ein` refused under `stdlib-w1` and
   `-w2`, twenty lines; loaded, 3 states, under `stdlib-w1n`, the same walk unnamed. It bears on S1f.6.16's design
   too, whose `positional` is 78 parameterised rules: its closing rules name none of them, and its trial loaded all
   143 programs, `equation_two_unknowns.ein` among them; a build that named them in a closing rule would meet this.
-- **A check that reads an `absent` comes after every calculation** (E-69 to file). An `absent` is decided at the
+- **A check that reads an `absent` comes after every calculation** (E-70 to file). An `absent` is decided at the
   closure/world boundary, so a rule with one fires only when the positive closure has stalled: today's
   `operand-undeclared` (`(undeclared …)` is the last thing root derives, after every walk), and W2's walk, whose
   flag comes after all 19 of a rational sum's firings. A *right away* check cannot read an `absent`.
 
 ### To file
+
+**Filed 2026-11-14 by the coordinator**, after S1f.6.37's commits: Q-M1f.272 to .277 under these ids, each marked
+ruled or accepted ([§ The build, as ruled](#the-build-as-ruled-2026-11-14)); Q-M1f.210 marked ruled; the two
+findings as [E-69 and E-70](findings.md), since S1f.6.37 took E-68 (this record named them E-68 and E-69, the ids
+that were free when it was written, and `6cca4406`'s message still does).
 
 `open_questions.md` and `findings.md` were being edited by S1f.6.37's agent when this record was written, so the
 rows are here, under the ids that were the next free ones then (Q-M1f.271 and E-67 the last), for the coordinator
@@ -409,7 +414,8 @@ to file (and renumber if taken):
   only; (c) (a) and E2 for rule texts.
 - **Q-M1f.276 — an integer's and a rational's own shape** (Q5): (a) flagged, default; (b) silent.
 - **Q-M1f.277 — an operand of another type in int and rat** (Q6): (a) flagged; (b) silent, default.
-- **E-68** and **E-69**, as § 7 states them; neither a wrong answer.
+- **E-69** and **E-70** (filed under those ids; this list said E-68 and E-69 until S1f.6.37 took E-68), as § 7
+  states them; neither a wrong answer.
 
 ### What the build then does (T1f.6.38.2 onward, on the defaults)
 
@@ -426,8 +432,9 @@ The user, 2026-11-14, on T1: *"E1 yes, separate std.math.decimal module, other d
 each marked ruled or accepted). By the same ruling's symmetry, **binary's numeral is `std.math.binary`'s**, built by
 [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build on this stage's pattern (a default, the user's to revise).
 
-**Status:** ruled, not started. Runs after [S1f.6.37](s1f.6.37_conclusion_shapes.md), which edits the same loader
-and compiler, and before S1f.6.16's build.
+**Status:** ruled, not started; Q-M1f.272 to .277, E-69 and E-70 filed (2026-11-14). Runs after
+[S1f.6.37](s1f.6.37_conclusion_shapes.md) (done 2026-11-14), which edits the same loader and compiler, and before
+S1f.6.16's build.
 
 ### Tasks
 
