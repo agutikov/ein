@@ -11,7 +11,13 @@ into two phases and moved here as P1g.10 and P1g.11, and one more stage of P1g.6
 we will complete M1f"*). Specifically:
 [S1f.6.16](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md), binary
 arithmetic, and [S1f.6.17](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md),
-gates and truth tables, which are this milestone's starting point and stay stages of P1f.6; `std.math.decimal-arith`, the
+gates and truth tables, which are this milestone's starting point and stay stages of P1f.6. **That starting
+point is in the stdlib since 2026-11-14** (S1f.6.17's build): `std.bool.gates`, the sixteen functions of two
+inputs as a table and as a relation each; `std.bool.props`, thirty relations known of them, derived by rules;
+`std.bool.circuit` and `std.bool.inputs`, a circuit simulated and its inputs as hypotheses
+([`stdlib/README.md` § `std.bool`](../../stdlib/README.md#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)),
+with the six applications in [`examples/binary_logic/`](../../examples/binary_logic/README.md). `std.logic` is
+left free for this milestone. `std.math.decimal-arith`, the
 decimal calculator ([P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)), which P1g.5
 holds Peano's numbers to; and the language as P1f.5 and P1f.7 ruled it, the value rule above all
 ([`defined_behaviour.md` § 4.22](../../docs/kernel/defined_behaviour.md)).

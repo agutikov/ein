@@ -5188,6 +5188,69 @@ test directory the stage moved (`s1f.6.7`, `.8`, `.13`, `.16`, `.24`, `word_prob
 
 **Defaulted 2026-11-14: (a), the user's to revise.** The phase README's note maps every old name to the new.
 
+### Q-M1f.263 — The sixteen layout rules of `std.bool.gates`, now that an import brings every rule
+
+**Raised** 2026-11-14 by [S1f.6.17's build](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-14-the-build).
+The plan's table says the relation-per-function layout `(And 1 1 1)` is *"derived only in a program that selects
+them"*: written before S1f.6.35, when a selection brought only what it named. Since S1f.6.35 every import brings
+its module whole, so no import can select the sixteen rules apart from the table.
+
+- **(a) The sixteen rules in `std.bool.gates`, derived in every program that imports it**: 64 firings and 64 facts
+  at root, beside the 64 rows, in each of the six applications and in every program over `std.bool.props`. The
+  ruled module table as it stands; no answer moves (every application's R equal before and after, but for the
+  names).
+- **(b) Each rule gated by a fact a program writes**, `Xor-rows` with a premise `(layout-of Xor)`, say: the plan's
+  *"selects"* in S1f.6.35's terms, nothing paid where nothing is written, one fact a function to write.
+- **(c) A fifth module for the second layout.** Not as such: the relation `Xor` declared in another module would be
+  that module's `Xor`, a name the table's rows do not hold, so the rules would match nothing unless the table's
+  names were declared where the table is, which is (a).
+
+**Defaulted 2026-11-14: (a), the user's to revise.** The cost is measured in `stdlib/README.md` § `std.bool`; the
+change to (b) is sixteen premises and a relation, with the tests' claims unmoved.
+
+### Q-M1f.264 — A function's name a program writes and does not list (E-62)
+
+**Raised** 2026-11-14 by [S1f.6.17's build](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-14-the-build),
+its check of a name that is both a relation and a value (T1f.6.17.4). Each of the sixteen names is declared by
+`std.bool.gates` as the relation of the second layout (reply 19 (c)), so it is the module's in the table's rows too,
+`std.bool.gates.Xor`. A program that writes `(gate g1 Xor a b c)` without listing `Xor` writes its own `Xor`, a name
+no row has: the gate computes nothing, and nothing says so (S1f.6.35: *a short name no import lists is the file's
+own, shadowing in silence*). `knights.ein` with `Nfst` left out of its list answers four states where two, and its
+claims fail.
+
+- **(a) Keep it**, the resolver as S1f.6.35 ruled; `std.bool.gates`' header, `stdlib/README.md` and the examples'
+  README say a program lists every function's name it writes.
+- **(b) A guard in `std.bool.circuit`**: a gate whose function has no `column-name` is a contradiction,
+  `(absent (column-name ?f ?c))` over a closed, written table, so such a program is dead and its core names the
+  gate. One rule, one `absent`, the module no longer free of negation.
+- **(c) A loader note** where a file writes, unlisted, a short name a module it imports declares: an engine change,
+  for every module, against S1f.6.35's *in silence*.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** (b) is the cheapest remedy and changes no answer of the corpus;
+(c) reopens a ruling.
+
+### Q-M1f.265 — The names and file shapes `std.bool`'s build chose
+
+**Raised** 2026-11-14 by [S1f.6.17's build](p1f.6_calculator/s1f.6.17_binary_logic.md#record-2026-11-14-the-build).
+The rulings name the four modules and what each holds; these were the build's to choose:
+
+- **the entries** are the modules' last names, `gates`, `props`, `circuit`, `inputs`, as `std.math.decimal-arith`'s is
+  `decimal-arith`; the banked `props-derived` is `props`, and `require.ein`'s `requirements` is gone, the
+  requirement theory inside `std.bool.inputs` (the ruled table's *"with `require`"*);
+- **the sixteen layout rules** are `Zero-rows` to `One-rows`;
+- **`stdlib/bool/gates.ein` is written by hand but for its rows**, which `utils/gen_gates.py` writes between two
+  marked lines, so that the sixteen rules are hand-written as the ruled table says; every relation of the module,
+  the table's among them, is closed by its closing rule, where `std.math.digits` closes its tables by written facts;
+- **the expected property facts** are the claims of seven programs under `tests/stdlib/bool/props/`, a family of
+  relations each, and the second layout's of one under `tests/stdlib/bool/gates/`, all written by the generator,
+  rather than one program of thirty claims or a module of facts.
+
+- **(a) As built.**
+- **(b) Another name or shape**, named in the reply.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** A rename is a sweep of `tests/stdlib/bool/` and the six
+applications, held by their claims and by `ein-cli/tests/import_invariance.rs`.
+
 ### Q-M1f.266 — How a base is connected to the shared rules
 
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14), on the user's ruling of that day: *"(a), show me the design

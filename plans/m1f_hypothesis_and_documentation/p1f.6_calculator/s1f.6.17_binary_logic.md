@@ -9,8 +9,10 @@ of that day: [`examples/binary_logic/`](../../../examples/binary_logic/README.md
 [record](#record-2026-11-12-the-recommended-variants-banked-as-examples) is below. It is not T2: no stdlib module,
 and the questions stay open.
 **The modules are ruled and planned (2026-11-12):** the user's replies to the page's questions are in
-[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces task 2 below. Not started; it runs after
-the stdlib layout.
+[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces task 2 below. **Built 2026-11-14 but
+T1f.6.17.7**, which waits on S1f.6.16's build: the four modules `std.bool.gates`, `std.bool.props`,
+`std.bool.circuit` and `std.bool.inputs` under `stdlib/bool/`, their programs under `tests/stdlib/bool/`, the
+applications over them, every claim as it was; the [record](#record-2026-11-14-the-build) is below.
 **Depends on:** [S1f.6.16](s1f.6.16_binary_arithmetic.md), for the two digit names and the binary adder it
 rebuilds from gates.
 
@@ -344,3 +346,227 @@ fix. Findings go to [`findings.md`](findings.md) under the next free id; questio
 [`open_questions.md`](../open_questions.md) under the next free id. Config never changes an answer. The gate
 is `./run_tests.sh`, then `./run_tests.sh --nightly` after each code commit; `utils/ci_container.sh` is not
 needed unless a view of the new modules trips the DOT sweep, which S1f.6.21 makes skip big graphs.
+
+## Record, 2026-11-14: the build
+
+Run on the coordinator's word of 2026-11-14, after S1f.6.31, S1f.6.35 and S1f.6.36, on master at `6de252e3`, tasks
+T1f.6.17.4, .5, .6, .8 and .9. **T1f.6.17.7 waits on S1f.6.16**, whose build stopped at its trial for the user's
+choice (`6de252e3`, [its record](s1f.6.16_binary_arithmetic.md#record-2026-11-14-t1f6165-the-trial-and-the-stop)):
+no `std.math.*` module was made, `adder_against_table.ein` keeps its claim and reads `bits.ein`, the copy beside it,
+and only its imports moved, from the retired theory files to the stdlib's.
+
+**The commits:** `24f59537`, the build (T1f.6.17.4 to .6 and .8, the goldens, the module-facing pages); this record,
+`binary_logic.md`'s closing section, the findings, the questions and M1g's pointer in the commit after it.
+
+### The plan, read through what changed since it was written
+
+- **S1f.6.35, every import whole.** The plan's *"the per-function relations are derived only in a program that
+  selects them"* was written when a selection brought only what it named; now no import selects the sixteen layout
+  rules apart from the table, so every program that imports `std.bool.gates` derives the second layout
+  ([Q-M1f.263](../open_questions.md#q-m1f263--the-sixteen-layout-rules-of-stdboolgates-now-that-an-import-brings-every-rule),
+  defaulted). Every declared name has a full name, and T1f.6.17.4's check of a name that is both a relation and a
+  value was run under that resolver (below).
+- **S1f.6.31, the layout.** `stdlib/bool/<module>.ein` and `tests/stdlib/bool/<module>/`, read by the manifest, the
+  coverage gate, the census and the mutation sweep at every depth with no change to any of them.
+- **S1f.6.34 and S1f.6.36.** `std.bool.inputs` closes `is-a` and `require` and owes `in`, which nothing closes or
+  lists, so no mechanism conflicts with another (`defined_behaviour.md` § 4.27); its obligation is proposed by the
+  obligations rung, as banked. No program needs `:no-search`: the ones with no candidate are judged at root already.
+- **The gate cadence** (the user, 2026-11-13) replaces the stage file's last line: this stage ran the checks listed
+  below on its working tree, and not `./run_tests.sh`, which is the coordinator's, once a batch.
+
+### T1f.6.17.4 — the four modules, done
+
+**The check first: a name both a relation and a value.** No stdlib module had one. On the release binary, a module
+declaring a relation `And` whose table holds the value `And`, `(gate2 And 1 1 1)`, and a rule that reads the table
+through a gate's function: listed, `(import g :symbols (gate2 And))`, the program's `And` is the module's in both
+places and the claim holds, the relation's four rows derived beside it; whole, `g.And`, and by an alias, `h.And`,
+alike. **Unlisted, the program's `And` is its own**, a name no row has, and the gate computes nothing, with no line
+printed: S1f.6.35's *a short name no import lists is the file's own, shadowing in silence*. So the sixteen names may
+be relation names, as reply 19 (c) has them, and each becomes `std.bool.gates`', which every program that writes one
+lists. That is E-62 (`knights.ein` with `Nfst` unlisted answers four states where two) and
+[Q-M1f.264](../open_questions.md#q-m1f264--a-functions-name-a-program-writes-and-does-not-list-e-62), defaulted to
+the resolver as ruled, with the rule said in the module's header, `stdlib/README.md` and the examples' README.
+
+**The modules**, moved with `git mv` from `examples/binary_logic/` and restated to the rulings, each with a header
+that names what it occupies, an entry that is its closing rule, and a `:why` on every relation and rule:
+
+| module | from | what changed |
+|---|---|---|
+| [`std.bool.gates`](../../../stdlib/bool/gates.ein) | `gates.ein` | the sixteen relations of the second layout, `(And A B OUT)`, and sixteen hand-written rules `Zero-rows` to `One-rows` that derive them from the table (reply 19 (c)); the table's rows generated between two marked lines of a file otherwise hand-written; a closing rule, `gates`, where the banked file closed its tables by written facts |
+| [`std.bool.props`](../../../stdlib/bool/props.ein) | `props_rules.ein` | written by hand now, no longer by the generator: the same 31 rules, the one-sided identity and absorbing forms among them already: reply 21 (b) asked for what the prototype's rules derived, which the plan's *"plus"* did not know; the entry `props-derived` renamed `props` |
+| [`std.bool.circuit`](../../../stdlib/bool/circuit.ein) | `circuit.ein` | the entry names `gates`, the module below |
+| [`std.bool.inputs`](../../../stdlib/bool/inputs.ein) | `inputs.ein`, `require.ein` | `require` and its rule `required` inside it (the ruled table's *"with `require`"*), `requirements`, the banked entry, gone; the entry `inputs` closes `is-a` and `require` and names `circuit` |
+
+What a program pays at root for each, `ein saturate` on a program that imports it and writes nothing else
+(2026-11-14): `std.bool.gates` 65 firings, the sixteen layout rules' 64 and its entry; `std.bool.props` 470, 405 of
+them its own; `std.bool.circuit` 66; `std.bool.inputs` 67. The 405 is the prototype's 405 (`questions.md` 20): the
+one-sided forms were in it.
+
+### T1f.6.17.5 — the generated facts become the check, done
+
+`gen_gates.py` moved to [`utils/`](../../../utils/gen_gates.py) and turned round. It writes `std.bool.gates`' rows,
+and, from the sixteen columns, every relation `std.bool.props` derives as the **expected** facts: the claims of seven
+programs under `tests/stdlib/bool/props/`, a family of relations each, every relation claimed whole, and of
+`tests/stdlib/bool/gates/01_a_relation_a_function.ein`, the second layout's sixteen. `props.ein`, the facts, and
+`props_check.ein`, the program that held the rules to them, are gone from the examples: the rules ship and the facts
+check them. Its `--check` is in the gate through `ein-infer/tests/bool_theory.rs`, as `gen_arith_tables.py`'s is
+through `digit_tables.rs`; `--count` prints each relation's count, re-taken from the columns.
+
+The counts reply 22 confirmed, re-taken from the rows (`python3 utils/gen_gates.py --count`, 2026-11-14, and held by
+`bool_theory.rs` on the facts the rules derive): `swap-of` four pairs and eight functions their own swap, twelve
+functions up to the order of the inputs; `dual-of` with `Andn`/`Orn` and `Randn`/`Rorn`, `Andn`/`Rorn` and
+`Randn`/`Orn` the complements. And the one-sided forms: each holds **eight facts over seven functions**, `Fst` (or
+`Snd`) holding both bits on its free side, where `questions.md` 21 said *eight functions*; the two-sided four
+facts, four functions.
+
+### T1f.6.17.6 — the tests a stdlib module has, done
+
+- **Twelve programs under `tests/stdlib/bool/`**, a directory a module, eight written by the generator (`gates/01` and
+  `props/01` to `07`) and four by hand (`circuit/01_propagate`, `circuit/02_one_value`, `inputs/01_in_drives`,
+  `inputs/02_required`). Each states R, `(solve :expect …)`, and its relations whole; `one-value` and `required`, the
+  two rules that refute, each fire in one file and are loaded and silent in another. `tests/README.md` has the
+  table, and what would fail each.
+- **The harness in Rust**, [`ein-infer/tests/bool_theory.rs`](../../../ein.rs/crates/ein-infer/tests/bool_theory.rs),
+  eight tests: the table against the sixteen columns, none missing and none twice; the second layout against the
+  rows; **every property against its definition**, computed from the columns with `affine` as *some* `c0 ^ c1·a ^
+  c2·b` and not the parity the rule reads, `monotone` over every pair of points, `self-dual` as its own dual; the
+  three corrected counts and the one-sided forms on the derived facts; each closing rule; no `absent`, `not` or `or`
+  in any rule, `neq` and `(false)` in the two that refute alone; the generator's `--check`. Made to fail once on
+  purpose: `affine-r` reading `Or`'s rows for `Xor`'s, *affine: the rules miss [(affine Fst), …]*, then restored.
+- **The coverage gate**, `stdlib_coverage.rs`, with no change: every one of the 55 rules is activated by a program
+  under `tests/stdlib/bool/`.
+- **The mutation census** (`python3 utils/stdlib_mutants.py`, 2026-11-14): 458 of 547 mutants killed, where 431 of
+  502 were; of `std.bool`'s 45, 27 killed and **18 survive, each equivalent to its rule**: thirteen exchange an
+  `(inv …)` premise, and `inv` is its own converse; five exchange the conclusion of `swap`, `complement`, `dual`,
+  `left-neg` and `right-neg`, each relation an involution, so the rule's matches come in mirrored pairs and the
+  conclusion the other way round writes the same facts. No claim made of facts can tell either kind from its rule,
+  so none is a hole; `tests/README.md` says so, and the 18 are banked with the 71 before them, none of which moved.
+  Every mutant of `std.bool.circuit` and `std.bool.inputs` is killed, as is every one that exchanges an `le`, a
+  one-sided relation or a value of `val`.
+
+### T1f.6.17.8 — the six applications import the stdlib, done
+
+The eleven programs of `examples/binary_logic/` and `full_adder.ein` import `std.bool.*`, each listing the names it
+writes from the module that declares it, a function's name from `std.bool.gates` (E-62); `simplify.ein` and
+`post.ein` read `std.bool.props`' derived facts where they read the generated ones. Seven theory files are retired:
+`gates.ein`, `props_rules.ein`, `circuit.ein` and `inputs.ein` became the stdlib's, `require.ein` went into
+`std.bool.inputs`, `props.ein` and `props_check.ein` became the generator's expected facts. `full_adder.ein` and
+`bits.ein` stay, the adder an example's module and the table T1f.6.17.7's.
+
+**Every claim holds as it did, and R is equal** (`ein solve --json-summary` on each program before, from `HEAD`'s
+tree, and after, compared with every module prefix taken off; 2026-11-14):
+
+| program | R, the queries, the claims | saturations | facts beyond root | facts at root |
+|---|---|---:|---:|---|
+| `simulation` | equal | 1 | 0 | 127 → 260 |
+| `truth_table` | equal | 30 | 179 | 139 → 277 |
+| `adder_against_table` | equal | 1 | 0 | 257 → 390 |
+| `satisfiable` | equal | 30 | 178 | 146 → 276 |
+| `unsatisfiable` | equal | 28 | 156 | 147 → 277 |
+| `equivalent` | equal | 30 | 215 | 149 → 279 |
+| `not_equivalent` | equal | 30 | 197 | 147 → 277 |
+| `knights` | equal | 26 | 139 | 145 → 275 |
+| `synthesis` | equal | 18 | 169 | 242 → 374 |
+| `simplify` | equal | 1 | 0 | 395 → 764 |
+| `post` | equal | 1 | 0 | 407 → 776 |
+
+What grew is root, once: the second layout's 64 facts and the declarations, closures and rule names of the
+modules that now come whole (`simulation`: the sixteen relations' 64 facts, 17 more `__closed__`, 34 `relation`
+facts, 17 `gates-rule`, one `circuit-rule`), and in `simplify` and `post`, which read generated facts until now,
+the table and `assoc-at`'s 96 steps. The search is the same search: the same candidates, the same saturations, the
+same facts beyond root. `ein test examples/binary_logic`: 20 claims held of 20, the 30 of `props_check.ein` now
+the generated programs'. Each answers alike imported selectively, whole and by an alias
+(`ein-cli/tests/import_invariance.rs`, which reads every corpus program that imports). The sizes stay the
+corpus's, three inputs for every search.
+
+### T1f.6.17.9 — the pages, done
+
+[`binary_logic.md`](binary_logic.md) § What shipped, each of its eight questions with the reply and what it made;
+its table of banked files re-pointed to where they went, the text kept (Q-M1f.262's default);
+[`stdlib/README.md`](../../../stdlib/README.md) § `std.bool`, a subsection a module, the layout's and the module
+table's rows, and the coverage count re-taken (423 of 423, its command and date);
+[`examples/binary_logic/README.md`](../../../examples/binary_logic/README.md), rewritten for programs over the stdlib;
+`examples/README.md`'s line; [`tests/README.md`](../../../tests/README.md) § `stdlib/bool/`; `utils/README.md`'s
+line for the generator; `AGENTS.md`, the stdlib paragraph's `std.bool` locations and the generated-files rule, the
+generator now in the gate; [M1g's README](../../m1g_logic/README.md), where its starting point lives. `corpus/corpus.toml`:
+seven entries gone with their files, four stdlib modules and twelve tests added, four notes restated.
+
+### T1f.6.17.7 — the full adder against `std.math.bits`' table: waits on S1f.6.16
+
+Not this build's. `std.math.bits` is S1f.6.16's build, which stopped at its trial and, since, at its design
+(`1302db46`) for the user's choice; nothing here makes a `std.math.*` module. `adder_against_table.ein` stays the
+acceptance line's corpus program with its claim, 8 vectors agree and none differs, reading `fa2` from
+`examples/binary_logic/bits.ein`, the copy `examples/binary_arithmetic/gen_binary.py` writes; only its imports
+moved, from the retired `gates.ein` and `full_adder`'s re-export to `std.bool.gates`, `std.bool.circuit` and
+`full_adder` bare, its R and claims equal (T1f.6.17.8's table). When S1f.6.16 builds, T7 turns the program into a
+test against `std.math.bits` and the copy goes.
+
+### The goldens, named before the bless and counted after
+
+Named before: the exit table, the cells of the seven retired example files out and those of the four stdlib modules
+and twelve tests in, nothing else; the shape digests, every rendering of the seven retired files out, those of the
+sixteen new files in, and the renderings of the twelve `examples/binary_logic/` files that import `std.bool` moved,
+the imports and root's facts being new, `bits.ein`, which imports nothing, unmoved; nothing outside
+`examples/binary_logic/`, `stdlib/bool/` and `tests/stdlib/bool/`.
+
+- **`ein-cli/tests/golden/corpus_exits.txt`**: 19 cells out, the seven retired files'; 76 in, sixteen of the stdlib
+  modules and sixty of the tests, every one 0 but the twelve tests' `render rules`, 1, as every test program's is
+  (no rule of its own); no other cell moved, the rest of the diff the order of the blocks.
+- **`ein-render/tests/golden/corpus_shapes.md5`**: of 24 290 renderings, 287 out (the seven retired files, 41 each;
+  four of them are the moved modules' old paths), 656 in (the sixteen new files), and **371 moved, on exactly the
+  twelve files named**, `bits.ein` not among them: `dot` 144, `ir` 48, `cores` 33, `load`, `saturate`, `match`,
+  `plan`, `naf`, `hyp`, `hyp+closed`, `oracle`, `explain`, `explain-noalts` and `region-trace` 12 each, `states` 10,
+  `read-out` 3, `region-lattice` 1. The `states` renderings grew by root's facts. The four read-out and lattice
+  digests are `synthesis.ein`'s under `--maximal`, `--single` and `-n 2`: the same answer at another cost, since
+  the candidates' order follows their names' spelling and the program lists three of the sixteen (E-64); its
+  describe is unchanged, 18 saturations.
+- **`ein-render/tests/dot_wellformed.rs`'s `SKIPPING`**: two directories more, `stdlib/bool` and
+  `tests/stdlib/bool/props`, each view past 1 000 edges a `kb-since` of a program that holds `std.bool.props`' facts
+  (1 490 edges); `examples/binary_logic` was there already, for `props_rules.ein`, and holds four such views now.
+- **`tests/mutation_survivors.txt`**: 18 lines in, the equivalent mutants above, and none out; 89 survivors where 71.
+
+### The checks, on the working tree before the commit
+
+`cargo test --release --workspace`: every test but the three goldens above before their bless, and those after
+(`corpus_cli`, `corpus_shapes`, `dot_wellformed` re-run green); among them `import_invariance.rs`, every corpus
+program that imports answering alike selective, whole and by an alias, the new ones included; `stdlib_coverage.rs`;
+`answer_round_trip.rs`, every dump reloaded. `cargo fmt --check`, `cargo clippy --workspace --all-targets -D
+warnings`, `cargo doc --no-deps -D warnings`: clean. `python3 utils/doc_audit.py --links --check` over the gate's
+pages: no finding. `python3 utils/stdlib_manifest.py`: 16 modules match. `python3 utils/stdlib_census.py --check`:
+423 rules, none at zero, `std.bool`'s 55 among them. `python3 utils/stdlib_mutants.py`: 458 of 547, the 18 new survivors the equivalent ones, banked; `--check` against the bank, re-run after it: exit 0, no survivor new and none killed.
+`python3 utils/gen_gates.py --check`: exit 0, and inside the gate through `bool_theory.rs`. No other generator's
+input was touched. Not run, on the coordinator's word: `./run_tests.sh` and `--nightly`.
+
+### Acceptance
+
+- **The four modules are in the stdlib under `std.bool`**, each rule activated by a program under
+  `tests/stdlib/bool/` (`stdlib_coverage.rs`, and the census, 55 of 55), **every property held to an enumeration
+  written in Rust** (`bool_theory.rs`'s `every_property_is_its_definition`, thirty relations and the step). Done.
+- **Both layouts of the sixteen functions are available, the second derived from the first**: the table and the
+  sixteen rules of `std.bool.gates`, `each_relation_of_a_function_is_its_rows`. Done.
+- **The one-sided identity and absorbing facts are derived, and the three corrected counts are held by a test**:
+  `the_one_sided_forms_are_derived` and `the_three_corrected_counts`, on the facts the rules derive. Done.
+- **The gate-built full adder equals the binary adder's table, held by a test**: waits on S1f.6.16 (T1f.6.17.7);
+  until then the corpus program `adder_against_table.ein` holds it against the copied table, as before.
+- **Every application's claim holds as it did**: 20 of 20, R equal on all eleven programs but for the names. Done.
+
+What it must not do, not done: no cheaper search for inputs (reply 25), no change to what an unsatisfiable search
+reads as (question 24), nothing named `std.logic`, no formula as an object.
+
+### Defaults, findings, and what is the user's
+
+- [Q-M1f.263](../open_questions.md#q-m1f263--the-sixteen-layout-rules-of-stdboolgates-now-that-an-import-brings-every-rule):
+  the sixteen layout rules derived in every program that imports `std.bool.gates`, (a) as the ruled table has them,
+  where the plan's *"only in a program that selects them"* is S1f.6.35's to overrule. **Defaulted, the user's to
+  revise.**
+- [Q-M1f.264](../open_questions.md#q-m1f264--a-functions-name-a-program-writes-and-does-not-list-e-62): a
+  function's name written and not listed is the program's own, in silence (E-62); (a) kept as S1f.6.35 ruled, (b) a
+  guard in `std.bool.circuit` the cheapest remedy. **Defaulted, the user's to revise.**
+- [Q-M1f.265](../open_questions.md#q-m1f265--the-names-and-file-shapes-stdbools-build-chose): the entries
+  `gates`, `props`, `circuit`, `inputs`; the rules `Zero-rows` to `One-rows`; `gates.ein` hand-written but for its
+  rows; the expected facts as eight generated programs. **Defaulted, the user's to revise.**
+- **E-62** (a function's name unlisted computes nothing, in silence) and **E-64** (a route's cost follows the
+  names' spelling, so the import form), in [`findings.md`](findings.md); neither is a wrong answer. No wrong answer
+  of the engine was met: every application's R is the one before the build.
+- The count `questions.md` 21 gave, *the left and right forms hold of eight each*, is eight **facts** over seven
+  functions; recorded, not a question.
