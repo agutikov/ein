@@ -33,7 +33,11 @@
 //!   for, in each place a connective is written. S1f.7.7's, S1f.7.6's and
 //!   S1f.7.10's are the last (T1f.7.7.3): `absent` as a fact's, a value's and
 //!   a conclusion's relation, `false` with an argument, and `(eq …)` as a
-//!   value, each in every place the grammar takes the refusal.
+//!   value, each in every place the grammar takes the refusal. S1f.6.36's
+//!   `:no-search` follows them, and S1f.6.37's close the table (T1f.6.37.4):
+//!   what a rule may not conclude, a disjunction, whole or inside an `(and …)`
+//!   at any depth, and a connective as a conclusion's argument or under its
+//!   `not`, each refused at the parse already.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -2238,6 +2242,51 @@ const TABLE: &[Row] = &[
         "a solve's flag",
         &["solve-keyword"],
         "(relation p T) (solve :no-search (p))",
+    ),
+    // ── What a rule concludes (M1f S1f.6.37, T1f.6.37.4): a conjunction of
+    // facts and stored negations, `(false)` or a check, read flat at any depth;
+    // no disjunction, whole or inside an `(and …)` however deep, and no
+    // connective inside a fact or under a conclusion's `not`. Each was refused
+    // at the parse already; these rows pin the stage's table ──
+    row(
+        "a rule's :assert",
+        &[],
+        "(rule r () :match (n ?x) :assert (or (p ?x) (q ?x)))",
+    ),
+    row(
+        "an :assert's and",
+        &[],
+        "(rule r () :match (n ?x) :assert (and (p ?x) (or (q ?x) (hit ?x))))",
+    ),
+    row(
+        "an and inside an :assert's and",
+        &[],
+        "(rule r () :match (n ?x) :assert (and (hit ?x) (and (p ?x) (or (q ?x) (box ?x)))))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (n ?x) :assert (box (and (p ?x) (q ?x))))",
+    ),
+    row(
+        "a conclusion's argument",
+        &[],
+        "(rule r () :match (n ?x) :assert (box (or (p ?x) (q ?x))))",
+    ),
+    row(
+        "the pattern a conclusion's not negates",
+        &[],
+        "(rule r () :match (n ?x) :assert (not (and (p ?x) (q ?x))))",
+    ),
+    row(
+        "the pattern a conclusion's not negates",
+        &[],
+        "(rule r () :match (n ?x) :assert (not (or (p ?x) (q ?x))))",
+    ),
+    row(
+        "an hrule's :assert",
+        &[],
+        "(hrule h () :match (n ?x) :assert (or (p ?x) (q ?x)))",
     ),
 ];
 

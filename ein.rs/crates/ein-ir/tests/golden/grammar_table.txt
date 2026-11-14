@@ -2672,3 +2672,75 @@
   repair: Insert `:hypothesis-relations`
   repair: Insert `:hrules`
 
+## 391. a rule's :assert (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (or (p ?x) (q ?x)))
+<row>:3:35: unexpected `or`
+  repair: Insert a name, Delete `or`
+  repair: Insert a variable, Delete `or`
+  repair: Insert `and`, Delete `or`
+  and 1 more repair
+
+## 392. an :assert's and (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (and (p ?x) (or (q ?x) (hit ?x))))
+<row>:3:47: unexpected `or`
+  repair: Insert a name, Delete `or`
+  repair: Insert a variable, Delete `or`
+  repair: Insert `and`, Delete `or`
+  and 1 more repair
+
+## 393. an and inside an :assert's and (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (and (hit ?x) (and (p ?x) (or (q ?x) (box ?x)))))
+<row>:3:61: unexpected `or`
+  repair: Insert a name, Delete `or`
+  repair: Insert a variable, Delete `or`
+  repair: Insert `and`, Delete `or`
+  and 1 more repair
+
+## 394. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (box (and (p ?x) (q ?x))))
+<row>:3:40: unexpected `and`
+  repair: Insert a name, Delete `and`
+  repair: Insert a variable, Delete `and`
+
+## 395. a conclusion's argument (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (box (or (p ?x) (q ?x))))
+<row>:3:40: unexpected `or`
+  repair: Insert a name, Delete `or`
+  repair: Insert a variable, Delete `or`
+
+## 396. the pattern a conclusion's not negates (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (not (and (p ?x) (q ?x))))
+<row>:3:40: unexpected `and`
+  repair: Insert a name, Delete `and`
+  repair: Insert a variable, Delete `and`
+
+## 397. the pattern a conclusion's not negates (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (rule r () :match (n ?x) :assert (not (or (p ?x) (q ?x))))
+<row>:3:40: unexpected `or`
+  repair: Insert a name, Delete `or`
+  repair: Insert a variable, Delete `or`
+
+## 398. an hrule's :assert (was: —)
+    (relation n T) (relation p T) (relation q T) (relation hit T)
+    (relation box T) (relation tag T T)
+    (hrule h () :match (n ?x) :assert (or (p ?x) (q ?x)))
+<row>:3:36: unexpected `or`
+  repair: Insert a name, Delete `or`
+  repair: Insert a variable, Delete `or`
+  repair: Insert `and`, Delete `or`
+  and 1 more repair
+

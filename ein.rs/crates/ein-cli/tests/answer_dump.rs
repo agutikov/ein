@@ -176,12 +176,10 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
 /// writes as a fact line `(and (p a) (q a))`, and the parser refuses. Since
 /// then each entry says **how many** of its run's state files do not load,
 /// where W30's and W34's were every one: `hrule-and-in-and`'s ∅ holds no such
-/// fact and loads. S1f.6.37's fix takes the three off the list.
-const DO_NOT_LOAD: [(&str, usize); 3] = [
-    ("examples/ein-bugs/wrong-answers/and-in-and-macro.ein", 1),
-    ("examples/ein-bugs/wrong-answers/and-in-and.ein", 1),
-    ("examples/ein-bugs/wrong-answers/hrule-and-in-and.ein", 1),
-];
+/// fact and loads. S1f.6.37's fix (T1f.6.37.3, the same day) took the three
+/// off the list: a conclusion is read flat, and no state holds a fact headed
+/// `and`. Empty since.
+const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
 /// The programs the per-commit checks run on, with a question each: all of R
 /// on a program with a dead set and on an owing root, a line, a part, the

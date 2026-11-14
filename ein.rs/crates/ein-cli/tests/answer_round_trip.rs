@@ -123,13 +123,10 @@ fn reloaded(path: &Path) -> Result<(BTreeSet<String>, usize), String> {
 /// `W95/hrule-and-in-and`, each a state holding a fact headed `and`, which a
 /// state file writes as a fact line the parser refuses. Each entry says how
 /// many of its state files do not load: `hrule-and-in-and`'s ∅ loads, and is
-/// checked as any other. S1f.6.37's fix takes the three off the list, with
-/// `answer_dump.rs`' copy.
-const DO_NOT_LOAD: [(&str, usize); 3] = [
-    ("examples/ein-bugs/wrong-answers/and-in-and-macro.ein", 1),
-    ("examples/ein-bugs/wrong-answers/and-in-and.ein", 1),
-    ("examples/ein-bugs/wrong-answers/hrule-and-in-and.ein", 1),
-];
+/// checked as any other. S1f.6.37's fix (T1f.6.37.3, the same day) took the
+/// three off the list, with `answer_dump.rs`' copy: a conclusion is read flat,
+/// and no state holds a fact headed `and`. Empty since.
+const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
 /// **The state files that reload a fact with a provenance today**, each the
 /// witness of an open register row (M1f S1f.7.9, 2026-11-11): W87, a fact the

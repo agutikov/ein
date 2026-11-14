@@ -263,6 +263,38 @@ impl Ast {
         }
     }
 
+    /// **The conjuncts of a conclusion**: an `(and …)` at any depth read as
+    /// its members, in the order written, and any other node as one conjunct.
+    /// `(and (r a) (and (p a) (q a)))` is `[(r a), (p a), (q a)]`, as
+    /// `(and (r a) (p a) (q a))` is.
+    ///
+    /// **The one reading of a rule's `:assert`** since M1f
+    /// [S1f.6.37](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)
+    /// (the user's ruling of 2026-11-14, *"ok, flatten is fine, continue"*):
+    /// the compiler's templates (`ein_infer::compile`), the loader's checks
+    /// (`from_ir`) and every other reader that splits a conclusion call it,
+    /// so all read the same list. A premise flattens the same way where the
+    /// compiler reads it. Until S1f.6.37 the readers split the top `(and …)`
+    /// alone, and an `and` inside one, which the grammar's `Conclusion` takes
+    /// and a macro whose body is an `(and …)` writes when it is called as one
+    /// conjunct, was a template headed `and`: the rule stored one fact headed
+    /// `and` and none of its members (E-63, W94).
+    pub fn conjuncts(&self, id: NodeId) -> Vec<NodeId> {
+        let mut out = Vec::new();
+        self.push_conjuncts(id, &mut out);
+        out
+    }
+
+    fn push_conjuncts(&self, id: NodeId, out: &mut Vec<NodeId>) {
+        if self.head_name(id) == Some("and") {
+            for &c in self.form_args(id) {
+                self.push_conjuncts(c, out);
+            }
+        } else {
+            out.push(id);
+        }
+    }
+
     // ── Structural equality ────────────────────────────────────────
 
     /// Structural equality, ignoring positions.

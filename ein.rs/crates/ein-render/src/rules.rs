@@ -362,15 +362,15 @@ impl RuleRenderer {
         let Some(pattern) = pattern else {
             return (decls, body);
         };
-        let clauses: Vec<NodeId> = if head_name(ast, pattern) == Some("and") {
-            ast.form_args(pattern)
-                .iter()
-                .copied()
-                .filter(|c| is_sform(ast, *c))
-                .collect()
-        } else {
-            vec![pattern]
-        };
+        // The clause's conjuncts, an `(and …)` read flat at any depth
+        // (`ein_ir::Ast::conjuncts`): the compiler's reading of a premise, and
+        // since M1f S1f.6.37 of a conclusion too. Until then the top `(and …)`
+        // alone was split here, and an inner one was drawn by `clause_lines`.
+        let clauses: Vec<NodeId> = ast
+            .conjuncts(pattern)
+            .into_iter()
+            .filter(|c| is_sform(ast, *c))
+            .collect();
         let top: Vec<NodeId> = clauses
             .iter()
             .copied()

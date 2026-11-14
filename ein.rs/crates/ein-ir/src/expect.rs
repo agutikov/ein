@@ -128,18 +128,12 @@ impl Over {
     }
 }
 
-/// The goal's atoms: its conjuncts, `(and …)` flattened. A class is these
-/// atoms under its rows, so a query's `:expect` may list only facts one of
-/// them matches.
+/// The goal's atoms: its conjuncts, `(and …)` flattened at any depth
+/// ([`Ast::conjuncts`], which a conclusion is read by too since M1f
+/// S1f.6.37). A class is these atoms under its rows, so a query's `:expect`
+/// may list only facts one of them matches.
 pub fn goal_atoms(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
-    match ast.node(goal) {
-        Node::SForm { head, args } if ast.atom_name(head) == Some("and") => ast
-            .args(args)
-            .iter()
-            .flat_map(|&c| goal_atoms(ast, c))
-            .collect(),
-        _ => vec![goal],
-    }
+    ast.conjuncts(goal)
 }
 
 /// Whether the ground `fact` is an instance of the goal atom `pattern`: same

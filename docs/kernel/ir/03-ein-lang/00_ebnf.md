@@ -354,6 +354,15 @@ Derived ::= NestedFact | '(' 'not' NestedFact ')'
 ```
 <!-- /generated: ein.y -->
 
+**A `Conclusion` is a conjunction of literals, read flat**: `Conclusions` nests,
+and an `(and …)` inside an `(and …)` concludes each of its members, as the
+outer one does, at any depth (M1f
+[S1f.6.37](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md),
+`ein_ir::Ast::conjuncts`; until then an inner one was stored as one fact headed
+`and`, W94). No production takes `or` in a conclusion or a connective inside a
+`Term`, so a rule concludes no disjunction and no compound fact
+([`01_grammar.md` § Rules](01_grammar.md#rules)).
+
 A stored negative, `NotFact`, takes a fact's clauses, so a *derived*
 `(not …)` fact's provenance (`:rule type-exclusivity :using ((c10 a))`)
 attaches as a fact's does. A `(not …)` in a `:match` or an `:assert` is a

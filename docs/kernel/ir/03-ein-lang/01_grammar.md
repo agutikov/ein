@@ -556,6 +556,25 @@ synthetic `#empty`, which no fact holds, so such a rule never fired and such an
 hrule proposed nothing, in silence (W31), and `:assert ()` stored a fact under
 that head, whose name joined H (W34).
 
+**A rule concludes a conjunction of literals** (M1f
+[S1f.6.37](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md),
+the user's ruling of 2026-11-14, *"ok, flatten is fine, continue"*): facts and
+stored negations `(not P)`, with `(false)` and checks (`eq`, `neq`, `(not (eq
+…))`) among them, or `()`, or an obligation, `(open)` or `(open ?R)`, as the
+whole `:assert`; an `(and …)` is read flat at any depth, as a premise's is, so
+`(and (r a) (and (p a) (q a)))` concludes what `(and (r a) (p a) (q a))` does
+(`ein_ir::Ast::conjuncts`, which every reader of a conclusion calls). A rule
+concludes no disjunction, whole or inside an `(and …)`: *one of* is the
+hypothesis layer's, an hrule's proposals or an obligation and what discharges
+it, each alternative a state of R. Nor does it conclude a compound fact, a
+connective inside a fact or under a conclusion's `not`, since a value is a name
+or a fact a state could hold. Both are refused at the parse (the grammar's
+table, S1f.6.37's rows), and through a macro's expansion at load
+([`defined_behaviour.md` § 4.16](../../defined_behaviour.md#416-a-malformed-primitive-a-macros-expansion-writes-at-load--m1f-s1f524)).
+Until S1f.6.37 the compiler split the top `(and …)` alone, so an inner one,
+written or left by a macro's call written as one conjunct, was stored as one
+fact headed `and` and none of its members (E-63, W94).
+
 **An activator binds each parameter to its argument, any value**: a name, or a
 nested fact, `(act (f a))` binding `?y` to `(f a)`, which the rule's patterns
 match and its conclusions write as they would a name (M1f
@@ -641,8 +660,9 @@ retired the drop.
 #### Conclusion forms in `:assert`
 
 A conclusion is ordinarily a fact pattern, with `(and …)` concluding several
-at once (A13 multi-assert). Two heads are **verdicts about the state** rather
-than facts, and neither is stored as one:
+at once (A13 multi-assert), an `(and …)` inside one read flat since M1f
+S1f.6.37 ([§ Rules](#rules)). Two heads are **verdicts about the state**
+rather than facts, and neither is stored as one:
 
 | conclusion | semantics | added in |
 |---|---|---|

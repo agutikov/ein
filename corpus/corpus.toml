@@ -2950,13 +2950,13 @@ note   = "M1f W90 (`W90/import-directives-twice`), filed by S1f.6.25's T1f.6.25.
 path   = "examples/ein-bugs/wrong-answers/and-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
-note   = "M1f W94 (`W94/and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 of P1f.6's findings: a rule concluding `(and (r a) (and (p a) (q a)))`, which the grammar takes, stored `(r a)` and one fact headed `and`, and neither `(p a)` nor `(q a)`, so both queries' claims FAILED, exit 1."
+note   = "M1f W94 (`W94/and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 of P1f.6's findings: a rule concluding `(and (r a) (and (p a) (q a)))`, which the grammar takes, stored `(r a)` and one fact headed `and`, and neither `(p a)` nor `(q a)`, so both queries' claims FAILED, exit 1. Fixed by S1f.6.37's T1f.6.37.3: a conclusion is read flat at any depth, root holds the three facts and both claims hold."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/and-in-and-macro.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]
-note   = "M1f W94 (`W94/and-in-and-macro`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14): a macro whose body is `(and (p ?x) (q ?x))`, called as one conjunct of a rule's `(and …)` conclusion, which expands to `and-in-and.ein`'s conclusion and stored the same fact headed `and`."
+note   = "M1f W94 (`W94/and-in-and-macro`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14): a macro whose body is `(and (p ?x) (q ?x))`, called as one conjunct of a rule's `(and …)` conclusion, which expands to `and-in-and.ein`'s conclusion and stored the same fact headed `and`. Fixed by S1f.6.37's T1f.6.37.3, as its sibling."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/hrule-and.ein"
@@ -2968,7 +2968,7 @@ note   = "M1f W95 (`W95/hrule-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14)
 path   = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 and E-65: an hrule concluding `(and (and (p a) (q a)) (r a))`, which proposed `(and (p a) (q a))`, one candidate over the relation `and`."
+note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 and E-65: an hrule concluding `(and (and (p a) (q a)) (r a))`, which proposed `(and (p a) (q a))`, one candidate over the relation `and`; read flat since S1f.6.37's T1f.6.37.3, it proposes `(p a)` alone, `hrule-and.ein`'s defect."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

@@ -1537,6 +1537,15 @@ register rows, filed and fixed by the stage. The views and `kb save` accepted
 every such program. The compiler's two arms and the firing's line are
 invariants since (Q-M1f.84).
 
+**An `(and …)` a macro's call leaves inside a conclusion's `(and …)` is no
+malformed primitive**: the grammar's `Conclusion` nests, and since M1f
+[S1f.6.37](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)
+every reader of a conclusion reads it flat at any depth (`ein_ir::Ast::conjuncts`,
+the user's ruling of 2026-11-14), so `(and (r a) (both a))`, `both` writing
+`(and (p ?x) (q ?x))`, concludes `(r a)`, `(p a)` and `(q a)`. Until then the
+compiler split the top `(and …)` alone and stored the inner one as one fact
+headed `and` (E-63, W94; `ein-cli/tests/conclusion_shapes.rs`).
+
 Pinned by `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes`
 (each shape at each site, and every shape the grammar takes, written and through
 a macro, loading), `ein-cli`'s `macro_bodies.rs` (eighteen shapes at every site,

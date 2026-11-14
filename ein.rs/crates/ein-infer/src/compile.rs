@@ -442,9 +442,10 @@ impl<'a> Compiler<'a> {
             disjuncts.push(self.compile_disjunct(body)?);
         }
 
-        // The `:assert` clause: a top-level `(and …)` lowers to one template
-        // per conjunct (A13 multi-assert). Var slots stay unbound — `fire`
-        // fills them; Atom / nested slots stay literal.
+        // The `:assert` clause: an `(and …)` lowers to one template per
+        // conjunct (A13 multi-assert), at any depth since M1f S1f.6.37
+        // (`assert_conjuncts`). Var slots stay unbound — `fire` fills them;
+        // Atom / nested slots stay literal.
         //
         // `:assert ()`, the empty conclusion, asserts nothing (S1f.5.9): no
         // template, so an application derives nothing and is no firing, as one
@@ -567,13 +568,18 @@ impl<'a> Compiler<'a> {
         vec![expr]
     }
 
-    /// A top-level `(and c1 … ck)` `:assert` → `[c1, …, ck]`; else `[expr]`.
-    /// Every argument is a conjunct (`ein.y`'s `Conclusion`).
+    /// An `:assert`'s conjuncts, `(and …)` flattened at any depth:
+    /// [`ein_ir::Ast::conjuncts`], the one reading every reader of a
+    /// conclusion shares, so `(and (r a) (and (p a) (q a)))` is three
+    /// templates, as `(and (r a) (p a) (q a))` is, and none is headed `and`.
+    ///
+    /// **Until M1f S1f.6.37** this split the top `(and …)` alone, while the
+    /// grammar's `Conclusion` nests and [`premise`](Self::premise) flattens a
+    /// premise's at any depth: an `and` inside one, written or left by a
+    /// macro's call as one conjunct, was a template headed `and`, and the rule
+    /// stored one fact headed `and` and none of its members (E-63, W94).
     fn assert_conjuncts(&self, expr: NodeId) -> Vec<NodeId> {
-        if self.head_is(expr, "and") {
-            return self.ast.form_args(expr).to_vec();
-        }
-        vec![expr]
+        self.ast.conjuncts(expr)
     }
 
     fn head_is(&self, node: NodeId, name: &str) -> bool {

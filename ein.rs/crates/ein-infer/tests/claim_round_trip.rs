@@ -38,9 +38,10 @@ use ein_ir::{Ast, load, parse};
 /// at M1f S1f.5.9's T1f.5.9.2 (2026-11-09): `:assert ()` asserts nothing, so
 /// no `#empty` joins H. Empty from then until M1f S1f.6.37's T1f.6.37.1
 /// (2026-11-14): W95's `hrule-and-in-and`, whose hrule proposes a fact headed
-/// `and`, which its region prints and no claim can write. S1f.6.37's fix,
-/// which reads the conclusion flat, takes it off.
-const DO_NOT_READ_BACK: [&str; 1] = ["examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"];
+/// `and`, which its region prints and no claim can write. S1f.6.37's fix
+/// (T1f.6.37.3, the same day), which reads the conclusion flat, took it off.
+/// Empty since.
+const DO_NOT_READ_BACK: [&str; 0] = [];
 
 fn loaded(src: &str, dir: Option<&Path>) -> Option<(Kb, Terms, Ast)> {
     let mut ast = Ast::new();

@@ -1459,9 +1459,10 @@ fn ingest_rules(
             .iter()
             .map(|p| terms.intern_text(p))
             .collect::<Result<_, _>>()?;
-        // S1.8.A13 — a top-level `(or …)` `:match` and a top-level `(and …)`
-        // `:assert` stay as ordinary AST on ONE rule, which keeps its source
-        // name; the compiler lowers them to several plans and templates.
+        // S1.8.A13 — a top-level `(or …)` `:match` and an `(and …)` `:assert`
+        // stay as ordinary AST on ONE rule, which keeps its source name; the
+        // compiler lowers them to several plans and templates, an `(and …)` at
+        // any depth since M1f S1f.6.37 (`Ast::conjuncts`).
         let rule = Rule {
             name: name_sym,
             params: params.into_boxed_slice(),
@@ -1692,23 +1693,18 @@ fn refuse_no_fact_holds(
                 _ => self.out.push(Found::NotAForm(node, within)),
             }
         }
-        /// A conclusion: a top-level `(and …)`'s members, each a pattern.
-        fn conclusion(&mut self, node: NodeId, within: Option<NodeId>) {
+        /// A conclusion: its conjuncts (`Ast::conjuncts`, an `(and …)` read
+        /// flat at any depth since M1f S1f.6.37; the top one alone until
+        /// then, so an inner `(and …)` was read here as a pattern headed
+        /// `and`), each a pattern. A keyword pair beside them was skipped
+        /// until S1f.5.11's T1f.5.11.2, and none parses there since M1f
+        /// S1f.5.5's swap.
+        fn conclusion(&mut self, node: NodeId) {
             let ast = self.ast;
-            match ast.node(node) {
-                Node::SForm { args, .. }
-                    if within.is_none() && ast.head_name(node) == Some("and") =>
-                {
-                    // Each member, a conjunct (`ein.y`'s `Conclusion`): a
-                    // keyword pair beside them was skipped until S1f.5.11's
-                    // T1f.5.11.2, and none parses there since M1f S1f.5.5's
-                    // swap.
-                    for &a in ast.args(args) {
-                        self.conclusion(a, Some(node));
-                    }
+            for c in ast.conjuncts(node) {
+                if matches!(ast.node(c), Node::SForm { .. }) {
+                    self.pattern(c, None);
                 }
-                Node::SForm { .. } => self.pattern(node, None),
-                _ => {}
             }
         }
     }
@@ -1737,7 +1733,7 @@ fn refuse_no_fact_holds(
         let mut bound: Vec<String> = params.iter().map(|p| p.to_string()).collect();
         walk.premise(node, None, &mut bound);
     } else {
-        walk.conclusion(node, None);
+        walk.conclusion(node);
     }
     let dc = |n: NodeId| crate::dump::dump_compact(ast, n);
     const PREMISE: &str = "a premise is a pattern (relation argument …), a guard (eq a b) or \
@@ -1886,7 +1882,7 @@ fn refuse_unbound_conclusions(
         })
         .collect();
     let mut vars: Vec<String> = Vec::new();
-    for c in top_conjuncts(ast, assert_node) {
+    for c in ast.conjuncts(assert_node) {
         if !is_open_form(ast, c) {
             written(ast, c, &mut vars);
         }
@@ -2325,8 +2321,17 @@ impl<'a> Shapes<'a> {
         }
     }
 
-    /// A conclusion (`ein.y`'s `Assert` and `Conclusion`): a form.
+    /// A conclusion (`ein.y`'s `Assert` and `Conclusion`): its conjuncts
+    /// (`Ast::conjuncts`, an `(and …)` read flat at any depth, the reading
+    /// every reader of a conclusion shares since M1f S1f.6.37), each a form.
     fn conclusion(&mut self, node: NodeId) {
+        for c in self.ast.conjuncts(node) {
+            self.conjunct(c);
+        }
+    }
+
+    /// One conjunct of a conclusion: a form, and no `(and …)`.
+    fn conjunct(&mut self, node: NodeId) {
         let Shape::Form(head) = self.shape(node) else {
             let line = format!(
                 "{}{}: its :assert concludes {}, which is not a fact — a conclusion is a fact \
@@ -2340,11 +2345,6 @@ impl<'a> Shapes<'a> {
         };
         let args = self.args(node);
         match head {
-            Some("and") => {
-                for a in args {
-                    self.conclusion(a);
-                }
-            }
             Some("or") => self.refuse(
                 node,
                 "an (or …) is no conclusion — a rule concludes every conclusion it writes, and a \
@@ -2941,7 +2941,7 @@ fn refuse_derived_relation_activators(
                     }
                 }
             };
-            for c in top_conjuncts(ast, NodeId(assert.expr.0)) {
+            for c in ast.conjuncts(NodeId(assert.expr.0)) {
                 if is_open_form(ast, c) || !matches!(ast.node(c), Node::SForm { .. }) {
                     continue;
                 }
@@ -3471,7 +3471,7 @@ fn refuse_derived_relation_activators(
                         premises(c.ast, NodeId(m.expr.0), param, &mut forms, &mut values);
                     }
                     if let Some(a) = rule.assert_.as_ref() {
-                        for conclusion in top_conjuncts(c.ast, NodeId(a.expr.0)) {
+                        for conclusion in c.ast.conjuncts(NodeId(a.expr.0)) {
                             let conclusion = positive(c.ast, conclusion);
                             if matches!(c.ast.node(conclusion), Node::SForm { head, .. }
                                 if matches!(c.ast.node(head), Node::Var(s) if c.ast.sym(s) == param))
@@ -3808,7 +3808,7 @@ fn refuse_negated_names(
         let Some(assert) = site.rule.assert_.as_ref() else {
             return Vec::new();
         };
-        top_conjuncts(ast, NodeId(assert.expr.0))
+        ast.conjuncts(NodeId(assert.expr.0))
             .into_iter()
             .filter(|&c| {
                 matches!(ast.node(c), Node::SForm { .. }) && ast.head_name(c) == Some("not")
@@ -4121,7 +4121,7 @@ fn refuse_negated_names(
                 continue;
             };
             let who = format!("{} '{}'", site.head, site.name);
-            for c in top_conjuncts(ast, NodeId(assert.expr.0)) {
+            for c in ast.conjuncts(NodeId(assert.expr.0)) {
                 concluded(
                     ast,
                     &|form| relations_of(ast, terms, site, &passed, form),
@@ -4652,19 +4652,6 @@ fn open_forms(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
     if let Node::KwPair { value, .. } = ast.node(node) {
         open_forms(ast, value, out);
     }
-}
-
-/// The top-level `:assert` conjuncts — `(and c1 … ck)` → the `ci`, else `[expr]`.
-///
-/// Every argument of the `and` is a conjunct, and every argument of an
-/// `(open …)` one of its own: a term holds no keyword pair since M1f S1f.5.5's
-/// swap (S1f.5.11). Until S1f.5.11's T1f.5.11.2 both read a form's arguments
-/// with its keyword pairs filtered out (`pos_args`).
-fn top_conjuncts(ast: &Ast, expr: NodeId) -> Vec<NodeId> {
-    if matches!(ast.node(expr), Node::SForm { .. }) && ast.head_name(expr) == Some("and") {
-        return ast.form_args(expr).to_vec();
-    }
-    vec![expr]
 }
 
 /// Every variable name occurring under `node`.

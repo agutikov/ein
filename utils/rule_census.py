@@ -1747,7 +1747,7 @@ def main():
         f"holding {nb} rules the reader can read; files the reader cannot read: {len(unread)}"
         + (" (" + ", ".join(f"`{p}`" for p in unread) + ")" if unread else "") + ".")
     stdlib_rules = sum(1 for r in rules if r.root == "stdlib" and r.kind == "rule")
-    say(f"- `rule` forms in `stdlib/`: {stdlib_rules} (the check: `find stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '`, every depth).")
+    say(f"- `rule` forms in `stdlib/`: {stdlib_rules} (the check: `find stdlib -name '*.ein' -exec cat {{}} + | grep -c '^(rule '`, every depth).")
     notes = Counter(n.split(":")[0] for r in rules for n in r.notes)
     say("- rules with a clause missing or written twice: "
         + (", ".join(f"{k} {v}" for k, v in sorted(notes.items())) or "none") + ".")

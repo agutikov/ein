@@ -788,39 +788,38 @@ fn walk(
     }
 }
 
-/// The relations an `:assert` writes, `(false)` included; a head written as
-/// a parameter names nothing here.
+/// The relations an `:assert` writes, `(false)` included, one per conjunct
+/// ([`ein_ir::Ast::conjuncts`], the conclusion read flat at any depth, as the
+/// compiler reads it since M1f S1f.6.37); a head written as a parameter names
+/// nothing here.
 fn heads(ast: &Ast, terms: &Terms, node: NodeId, out: &mut Vec<Rel>) {
-    let Node::SForm { head, .. } = ast.node(node) else {
-        return;
-    };
-    match ast.atom_name(head) {
-        Some("and") => {
-            for &a in ast.form_args(node) {
-                heads(ast, terms, a, out);
-            }
-        }
-        Some("not") => {
-            for &a in ast.form_args(node) {
-                if let Some(name) = ast.head_name(a).and_then(|n| terms.syms.get(n)) {
-                    out.push(Rel {
-                        name,
-                        negated: true,
-                    });
-                } else {
-                    out.push(Rel {
-                        name: terms.kernel.not,
-                        negated: true,
-                    });
+    for c in ast.conjuncts(node) {
+        let Node::SForm { head, .. } = ast.node(c) else {
+            continue;
+        };
+        match ast.atom_name(head) {
+            Some("not") => {
+                for &a in ast.form_args(c) {
+                    if let Some(name) = ast.head_name(a).and_then(|n| terms.syms.get(n)) {
+                        out.push(Rel {
+                            name,
+                            negated: true,
+                        });
+                    } else {
+                        out.push(Rel {
+                            name: terms.kernel.not,
+                            negated: true,
+                        });
+                    }
                 }
             }
-        }
-        Some(name) => {
-            if let Some(name) = terms.syms.get(name) {
-                out.push(pos(name));
+            Some(name) => {
+                if let Some(name) = terms.syms.get(name) {
+                    out.push(pos(name));
+                }
             }
+            None => {}
         }
-        None => {}
     }
 }
 
