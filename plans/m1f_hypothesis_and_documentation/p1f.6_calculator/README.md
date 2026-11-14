@@ -187,6 +187,7 @@ makes x + 4567 = 127645, is a puzzle. Ein's search answers puzzles, and that sta
 | [S1f.6.33](s1f.6.33_lowest_terms_on_request.md) | `std.rat` reduces only when asked | S1f.6.32 | planned 2026-11-12 (round 2's item 54 (b)) |
 | [S1f.6.34](s1f.6.34_hypothesis_mechanisms_in_conflict.md) | A conflict between the hypothesis mechanisms is reported; an engine stage | — | **done 2026-11-14**: every command refuses at load, on root's fixpoint, a program two of whose hypothesis declarations contradict one another, one line per conflict, and notes a list that filters nothing or a name another declaration says (`defined_behaviour.md` § 4.27); *forbid*'s first remedy names the hrules where the program declares one; the corpus's 24 programs in conflict corrected or, one, the refusal's fixture; E-47 closed, E-51 and E-52 filed, Q-M1f.242 to .246 defaulted. Planned 2026-11-13 (the user's ruling on E-47: *"report conflict if any hypothesis mechanism constradicts itself"*) |
 | [S1f.6.35](s1f.6.35_imports_by_full_name.md) | Imports by full name: one copy of a module, short names local to a file; an engine stage and a language change | S1f.6.30's ruling, S1f.6.34 | planned 2026-11-13 (the user's model (h), [`import_clashes.md` § 7](import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names)); **T1 done 2026-11-14, stopped there for the coordinator**: on a prototype, (h) read literally moves R on 22 tracked programs and refuses the acceptance's own; read with a declared relation and a closing rule ([Q-M1f.247](../open_questions.md#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one), [.248](../open_questions.md#q-m1f248--a-closing-rule-under-the-closure-ii)) on 4, each by the ruling ([.249](../open_questions.md#q-m1f249--the-answers-h-moves-under-the-recommended-reading)); E-53 filed; no source moved. **The user ruled .247 and .248 the same day** (any relation, a closing rule concludes: the reading V2) and asked to see the moves first: five programs shown, two of them claims (`typing/03`, the E-20 witness), and E-53's fix to `std.algebra` tried three ways, F1 recommended; **stopped again there**, T2 not started |
+| [S1f.6.36](s1f.6.36_no_search.md) | Judging root without a search: `(solve … :no-search)` and `--no-search`; an engine stage | S1f.6.34, S1f.6.35 | planned 2026-11-14 (the user: *"some explicit flag in (solve ) ? instead of abusing bugs; or cmdline flag that disable search; or both"*, and *"flag that disables search doesn't change R, it disables discovering of R"*) |
 
 No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 18 and 19 are unassigned.
 
@@ -214,6 +215,8 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 18 a
     S1f.6.30, the last of the stages of 2026-11-12 that are, and before S1f.6.31's move.
 13. **S1f.6.35, imports by full name** (2026-11-13), after S1f.6.34 and **before S1f.6.31's move** (the user:
     *"6. before"*), so the move renames full names once.
+14. **S1f.6.36, `:no-search` and `--no-search`** (2026-11-14), after S1f.6.35 and before S1f.6.31: it revisits
+    S1f.6.34's corrected fixtures.
 
 ## Findings stay in the phase
 
