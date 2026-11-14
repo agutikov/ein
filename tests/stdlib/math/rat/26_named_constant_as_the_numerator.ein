@@ -1,0 +1,22 @@
+;;; `std.math.rat` — a named constant where a rational's integer goes. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `rat-z-named` reads `(named half)` and derives `(not-rational (rat half (n
+;;; z 2)) half)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.rat :symbols (rat-arith rat rat-add))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let half (int (n z 1) z))
+(rat-add (rat half (n z 2)) (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (false))

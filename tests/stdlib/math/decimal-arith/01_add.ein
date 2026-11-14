@@ -30,7 +30,9 @@
 ;;; the theory closes its own relations, so nothing is guessed and the answer
 ;;; is root's fixpoint.
 
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
 

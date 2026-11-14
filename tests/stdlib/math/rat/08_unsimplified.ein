@@ -19,7 +19,9 @@
 (import std.math.rat :symbols (rat-arith rat-add rat rat-sub rat-mul rat-div rat-cmp rat-sum-of
                           rat-diff-of rat-product-of rat-quot-of rat-cmp-of))
 (import std.math.int :symbols (int))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (rat-add (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))
 (rat-sub (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)))

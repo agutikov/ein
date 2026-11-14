@@ -93,7 +93,8 @@ const TOLERANCE: f64 = 1.05;
 
 /// What a request may cost in guard values at the smallest batch: a little
 /// above the measure, 992 for two nine-digit operands (2026-11-13). Ten for
-/// each digit, `check-digit`'s; and for each operand twice the program's
+/// each digit, `check-digit`'s until M1f S1f.6.38 and `std.math.decimal`'s
+/// `numeral-digit`'s since, read once a numeral; and for each operand twice the program's
 /// names, some two hundred in a program of the theory and numbers alone,
 /// which is `operand-undeclared` asking whether the operand is a name
 /// ([`a_number_operand_does_not_walk_the_lets`] holds how that grows).
@@ -115,12 +116,17 @@ fn number(rng: &mut u64, digits: u32) -> String {
 
 /// `count` requests of `op` over two nine-digit numbers, beside `lets` named
 /// constants nobody asks about. The requests are the same whatever `lets`
-/// is: the constants are drawn from a stream of their own.
+/// is: the constants are drawn from a stream of their own, and each is
+/// written with a high zero, `(n (n z 0) …)`, so that no numeral of a
+/// constant's is one of a request's. Since M1f S1f.6.38 the loader states a
+/// numeral once, `(written T)`, and `std.math.decimal` checks it once, so a
+/// numeral the two shared would cost the program less than the two apart.
 fn batch(op: &str, count: usize, lets: usize) -> String {
     let (mut rng, mut names) = (0x5146_0603_u64, 0x5146_0604_u64);
     let mut src = String::from(IMPORT);
     for i in 0..lets {
-        src.push_str(&format!("(let c{i} {})\n", number(&mut names, 9)));
+        let value = number(&mut names, 9).replacen("(n z ", "(n (n z 0) ", 1);
+        src.push_str(&format!("(let c{i} {value})\n"));
     }
     for _ in 0..count {
         let (x, y) = (number(&mut rng, 9), number(&mut rng, second_digits(op)));
@@ -282,7 +288,11 @@ fn a_batch_costs_in_proportion_to_its_count() {
 /// The stated exception costs a number operand one lookup: the same requests
 /// beside `lets` named constants cost what they cost beside none, plus what
 /// the constants cost themselves, a firing each, whatever the requests. Every
-/// operation looks its operands up the same way, and each is held.
+/// operation looks its operands up the same way, and each is held. Since M1f
+/// S1f.6.38 a program of neither costs something too, the loader stating the
+/// numerals the theory's own rules write and `std.math.decimal` checking them,
+/// which the two runs apart count twice: the program with no request and no
+/// `let` is added to the one with both.
 #[test]
 fn a_number_operand_does_not_walk_the_lets() {
     if !cfg!(feature = "counters") {
@@ -293,6 +303,7 @@ fn a_number_operand_does_not_walk_the_lets() {
         let without = saturate(&batch(op, requests, 0), result);
         let with = saturate(&batch(op, requests, lets), result);
         let alone = saturate(&batch(op, 0, lets), result);
+        let none = saturate(&batch(op, 0, 0), result);
         eprintln!(
             "{op}: {requests} requests: {} candidates beside no `let`, {} beside {lets}; \
              the {lets} `let`s alone, {}. Guard values: {}, {}, {}",
@@ -304,7 +315,7 @@ fn a_number_operand_does_not_walk_the_lets() {
             alone.guards
         );
         assert_eq!(
-            with.candidates,
+            with.candidates + none.candidates,
             without.candidates + alone.candidates,
             "{requests} `{op}` requests beside {lets} `let`s cost more than the requests \
              and the `let`s cost apart: a number operand is walking the `let` \
@@ -321,7 +332,7 @@ fn a_number_operand_does_not_walk_the_lets() {
         // over the names, or one inside the check's walk, a place a digit
         // (the investigation's b2), shows here as another multiple.
         assert_eq!(
-            with.guards,
+            with.guards + none.guards,
             without.guards + alone.guards + (2 * 2 * requests * lets) as u64,
             "{requests} `{op}` requests beside {lets} `let`s: the guards' values are the \
              requests' and the `let`s' apart, and two for each operand and each `let`'s name"

@@ -14,7 +14,9 @@
 ;;; product is 57 and that neither flag has a fact: naming a relation closes
 ;;; it, so `(model)` over `undeclared` says its extent is empty.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n add mul product-of undeclared malformed))
+(import std.math.decimal-arith :symbols (decimal-arith let add mul product-of undeclared malformed))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let price (n (n z 1) 9))
 (let rebate (n z 3))

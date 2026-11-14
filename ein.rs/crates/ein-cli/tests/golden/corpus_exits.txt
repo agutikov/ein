@@ -1727,10 +1727,18 @@
 1    stdlib/macro.ein :: render rules
 0    stdlib/macro.ein :: saturate
 0    stdlib/macro.ein :: solve
+0    stdlib/math/arith.ein :: render constraints
+0    stdlib/math/arith.ein :: render rules
+0    stdlib/math/arith.ein :: saturate
+0    stdlib/math/arith.ein :: solve
 0    stdlib/math/decimal-arith.ein :: render constraints
 0    stdlib/math/decimal-arith.ein :: render rules
 0    stdlib/math/decimal-arith.ein :: saturate
 0    stdlib/math/decimal-arith.ein :: solve
+0    stdlib/math/decimal.ein :: render constraints
+0    stdlib/math/decimal.ein :: render rules
+0    stdlib/math/decimal.ein :: saturate
+0    stdlib/math/decimal.ein :: solve
 0    stdlib/math/digits.ein :: render constraints
 1    stdlib/math/digits.ein :: render rules
 0    stdlib/math/digits.ein :: saturate
@@ -2256,6 +2264,76 @@
 0    tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein :: saturate
 0    tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein :: solve
 0    tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein :: test
+0    tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein :: render rules
+0    tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein :: saturate
+0    tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein :: solve
+0    tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein :: test
+0    tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein :: render rules
+0    tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein :: saturate
+0    tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein :: solve
+0    tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein :: test
+0    tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein :: render rules
+0    tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein :: saturate
+0    tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein :: solve
+0    tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein :: test
+0    tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein :: render rules
+0    tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein :: saturate
+0    tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein :: solve
+0    tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein :: test
+0    tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein :: render rules
+0    tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein :: saturate
+0    tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein :: solve
+0    tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein :: test
+0    tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein :: render rules
+0    tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein :: saturate
+0    tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein :: solve
+0    tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein :: test
+0    tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein :: render rules
+0    tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein :: saturate
+0    tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein :: solve
+0    tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein :: test
+0    tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein :: render rules
+0    tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein :: saturate
+0    tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein :: solve
+0    tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein :: test
+0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: render constraints
+1    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: render rules
+0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: saturate
+0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: solve
+0    tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein :: test
+0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: render constraints
+0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: render rules
+0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: saturate
+0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: solve
+0    tests/stdlib/math/decimal/01_well_formed_everywhere.ein :: test
+0    tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein :: render constraints
+1    tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein :: render rules
+0    tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein :: saturate
+0    tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein :: solve
+0    tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein :: test
+0    tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein :: render constraints
+1    tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein :: render rules
+0    tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein :: saturate
+0    tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein :: solve
+0    tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein :: test
+0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: render constraints
+0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: render rules
+0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: saturate
+0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: solve
+0    tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein :: test
+0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: render constraints
+0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: render rules
+0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: saturate
+0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: solve
+0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: test
 0    tests/stdlib/math/digits/01_tables.ein :: render constraints
 1    tests/stdlib/math/digits/01_tables.ein :: render rules
 0    tests/stdlib/math/digits/01_tables.ein :: saturate
@@ -2336,6 +2414,116 @@
 0    tests/stdlib/math/int/14_div_floor_by_zero.ein :: saturate
 0    tests/stdlib/math/int/14_div_floor_by_zero.ein :: solve
 0    tests/stdlib/math/int/14_div_floor_by_zero.ein :: test
+0    tests/stdlib/math/int/15_letter_in_a_part.ein :: render constraints
+1    tests/stdlib/math/int/15_letter_in_a_part.ein :: render rules
+0    tests/stdlib/math/int/15_letter_in_a_part.ein :: saturate
+0    tests/stdlib/math/int/15_letter_in_a_part.ein :: solve
+0    tests/stdlib/math/int/15_letter_in_a_part.ein :: test
+0    tests/stdlib/math/int/16_letter_in_a_negative_part.ein :: render constraints
+1    tests/stdlib/math/int/16_letter_in_a_negative_part.ein :: render rules
+0    tests/stdlib/math/int/16_letter_in_a_negative_part.ein :: saturate
+0    tests/stdlib/math/int/16_letter_in_a_negative_part.ein :: solve
+0    tests/stdlib/math/int/16_letter_in_a_negative_part.ein :: test
+0    tests/stdlib/math/int/17_letter_in_the_second_operand.ein :: render constraints
+1    tests/stdlib/math/int/17_letter_in_the_second_operand.ein :: render rules
+0    tests/stdlib/math/int/17_letter_in_the_second_operand.ein :: saturate
+0    tests/stdlib/math/int/17_letter_in_the_second_operand.ein :: solve
+0    tests/stdlib/math/int/17_letter_in_the_second_operand.ein :: test
+0    tests/stdlib/math/int/18_part_ends_in_a_digit.ein :: render constraints
+1    tests/stdlib/math/int/18_part_ends_in_a_digit.ein :: render rules
+0    tests/stdlib/math/int/18_part_ends_in_a_digit.ein :: saturate
+0    tests/stdlib/math/int/18_part_ends_in_a_digit.ein :: solve
+0    tests/stdlib/math/int/18_part_ends_in_a_digit.ein :: test
+0    tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein :: render constraints
+1    tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein :: render rules
+0    tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein :: saturate
+0    tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein :: solve
+0    tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein :: test
+0    tests/stdlib/math/int/20_undeclared_first_operand.ein :: render constraints
+1    tests/stdlib/math/int/20_undeclared_first_operand.ein :: render rules
+0    tests/stdlib/math/int/20_undeclared_first_operand.ein :: saturate
+0    tests/stdlib/math/int/20_undeclared_first_operand.ein :: solve
+0    tests/stdlib/math/int/20_undeclared_first_operand.ein :: test
+0    tests/stdlib/math/int/21_undeclared_second_operand.ein :: render constraints
+1    tests/stdlib/math/int/21_undeclared_second_operand.ein :: render rules
+0    tests/stdlib/math/int/21_undeclared_second_operand.ein :: saturate
+0    tests/stdlib/math/int/21_undeclared_second_operand.ein :: solve
+0    tests/stdlib/math/int/21_undeclared_second_operand.ein :: test
+0    tests/stdlib/math/int/22_digit_as_an_operand.ein :: render constraints
+1    tests/stdlib/math/int/22_digit_as_an_operand.ein :: render rules
+0    tests/stdlib/math/int/22_digit_as_an_operand.ein :: saturate
+0    tests/stdlib/math/int/22_digit_as_an_operand.ein :: solve
+0    tests/stdlib/math/int/22_digit_as_an_operand.ein :: test
+0    tests/stdlib/math/int/23_digit_as_a_part.ein :: render constraints
+1    tests/stdlib/math/int/23_digit_as_a_part.ein :: render rules
+0    tests/stdlib/math/int/23_digit_as_a_part.ein :: saturate
+0    tests/stdlib/math/int/23_digit_as_a_part.ein :: solve
+0    tests/stdlib/math/int/23_digit_as_a_part.ein :: test
+0    tests/stdlib/math/int/24_letter_through_a_name.ein :: render constraints
+1    tests/stdlib/math/int/24_letter_through_a_name.ein :: render rules
+0    tests/stdlib/math/int/24_letter_through_a_name.ein :: saturate
+0    tests/stdlib/math/int/24_letter_through_a_name.ein :: solve
+0    tests/stdlib/math/int/24_letter_through_a_name.ein :: test
+0    tests/stdlib/math/int/25_let_twice.ein :: render constraints
+1    tests/stdlib/math/int/25_let_twice.ein :: render rules
+0    tests/stdlib/math/int/25_let_twice.ein :: saturate
+0    tests/stdlib/math/int/25_let_twice.ein :: solve
+0    tests/stdlib/math/int/25_let_twice.ein :: test
+0    tests/stdlib/math/int/26_let_zero.ein :: render constraints
+1    tests/stdlib/math/int/26_let_zero.ein :: render rules
+0    tests/stdlib/math/int/26_let_zero.ein :: saturate
+0    tests/stdlib/math/int/26_let_zero.ein :: solve
+0    tests/stdlib/math/int/26_let_zero.ein :: test
+0    tests/stdlib/math/int/27_let_digit.ein :: render constraints
+1    tests/stdlib/math/int/27_let_digit.ein :: render rules
+0    tests/stdlib/math/int/27_let_digit.ein :: saturate
+0    tests/stdlib/math/int/27_let_digit.ein :: solve
+0    tests/stdlib/math/int/27_let_digit.ein :: test
+0    tests/stdlib/math/int/28_natural_where_an_integer_goes.ein :: render constraints
+1    tests/stdlib/math/int/28_natural_where_an_integer_goes.ein :: render rules
+0    tests/stdlib/math/int/28_natural_where_an_integer_goes.ein :: saturate
+0    tests/stdlib/math/int/28_natural_where_an_integer_goes.ein :: solve
+0    tests/stdlib/math/int/28_natural_where_an_integer_goes.ein :: test
+0    tests/stdlib/math/int/29_named_constant_as_a_part.ein :: render constraints
+1    tests/stdlib/math/int/29_named_constant_as_a_part.ein :: render rules
+0    tests/stdlib/math/int/29_named_constant_as_a_part.ein :: saturate
+0    tests/stdlib/math/int/29_named_constant_as_a_part.ein :: solve
+0    tests/stdlib/math/int/29_named_constant_as_a_part.ein :: test
+0    tests/stdlib/math/int/30_letter_in_a_division.ein :: render constraints
+1    tests/stdlib/math/int/30_letter_in_a_division.ein :: render rules
+0    tests/stdlib/math/int/30_letter_in_a_division.ein :: saturate
+0    tests/stdlib/math/int/30_letter_in_a_division.ein :: solve
+0    tests/stdlib/math/int/30_letter_in_a_division.ein :: test
+0    tests/stdlib/math/int/31_digit_as_the_negative_part.ein :: render constraints
+1    tests/stdlib/math/int/31_digit_as_the_negative_part.ein :: render rules
+0    tests/stdlib/math/int/31_digit_as_the_negative_part.ein :: saturate
+0    tests/stdlib/math/int/31_digit_as_the_negative_part.ein :: solve
+0    tests/stdlib/math/int/31_digit_as_the_negative_part.ein :: test
+0    tests/stdlib/math/int/32_digit_zero_as_a_part.ein :: render constraints
+1    tests/stdlib/math/int/32_digit_zero_as_a_part.ein :: render rules
+0    tests/stdlib/math/int/32_digit_zero_as_a_part.ein :: saturate
+0    tests/stdlib/math/int/32_digit_zero_as_a_part.ein :: solve
+0    tests/stdlib/math/int/32_digit_zero_as_a_part.ein :: test
+0    tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein :: render constraints
+1    tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein :: render rules
+0    tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein :: saturate
+0    tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein :: solve
+0    tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein :: test
+0    tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein :: render constraints
+1    tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein :: render rules
+0    tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein :: saturate
+0    tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein :: solve
+0    tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein :: test
+0    tests/stdlib/math/int/35_undeclared_divisor.ein :: render constraints
+1    tests/stdlib/math/int/35_undeclared_divisor.ein :: render rules
+0    tests/stdlib/math/int/35_undeclared_divisor.ein :: saturate
+0    tests/stdlib/math/int/35_undeclared_divisor.ein :: solve
+0    tests/stdlib/math/int/35_undeclared_divisor.ein :: test
+0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: render constraints
+1    tests/stdlib/math/int/36_undeclared_only_operand.ein :: render rules
+0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: saturate
+0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: solve
+0    tests/stdlib/math/int/36_undeclared_only_operand.ein :: test
 0    tests/stdlib/math/num9/01_add.ein :: render constraints
 1    tests/stdlib/math/num9/01_add.ein :: render rules
 0    tests/stdlib/math/num9/01_add.ein :: saturate
@@ -2466,6 +2654,91 @@
 0    tests/stdlib/math/rat/13_zero_denominator_one_operand.ein :: saturate
 0    tests/stdlib/math/rat/13_zero_denominator_one_operand.ein :: solve
 0    tests/stdlib/math/rat/13_zero_denominator_one_operand.ein :: test
+0    tests/stdlib/math/rat/14_letter_in_the_numerator.ein :: render constraints
+1    tests/stdlib/math/rat/14_letter_in_the_numerator.ein :: render rules
+0    tests/stdlib/math/rat/14_letter_in_the_numerator.ein :: saturate
+0    tests/stdlib/math/rat/14_letter_in_the_numerator.ein :: solve
+0    tests/stdlib/math/rat/14_letter_in_the_numerator.ein :: test
+0    tests/stdlib/math/rat/15_letter_in_the_denominator.ein :: render constraints
+1    tests/stdlib/math/rat/15_letter_in_the_denominator.ein :: render rules
+0    tests/stdlib/math/rat/15_letter_in_the_denominator.ein :: saturate
+0    tests/stdlib/math/rat/15_letter_in_the_denominator.ein :: solve
+0    tests/stdlib/math/rat/15_letter_in_the_denominator.ein :: test
+0    tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein :: render constraints
+1    tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein :: render rules
+0    tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein :: saturate
+0    tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein :: solve
+0    tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein :: test
+0    tests/stdlib/math/rat/17_undeclared_first_operand.ein :: render constraints
+1    tests/stdlib/math/rat/17_undeclared_first_operand.ein :: render rules
+0    tests/stdlib/math/rat/17_undeclared_first_operand.ein :: saturate
+0    tests/stdlib/math/rat/17_undeclared_first_operand.ein :: solve
+0    tests/stdlib/math/rat/17_undeclared_first_operand.ein :: test
+0    tests/stdlib/math/rat/18_undeclared_second_operand.ein :: render constraints
+1    tests/stdlib/math/rat/18_undeclared_second_operand.ein :: render rules
+0    tests/stdlib/math/rat/18_undeclared_second_operand.ein :: saturate
+0    tests/stdlib/math/rat/18_undeclared_second_operand.ein :: solve
+0    tests/stdlib/math/rat/18_undeclared_second_operand.ein :: test
+0    tests/stdlib/math/rat/19_digit_as_an_operand.ein :: render constraints
+1    tests/stdlib/math/rat/19_digit_as_an_operand.ein :: render rules
+0    tests/stdlib/math/rat/19_digit_as_an_operand.ein :: saturate
+0    tests/stdlib/math/rat/19_digit_as_an_operand.ein :: solve
+0    tests/stdlib/math/rat/19_digit_as_an_operand.ein :: test
+0    tests/stdlib/math/rat/20_letter_through_a_name.ein :: render constraints
+1    tests/stdlib/math/rat/20_letter_through_a_name.ein :: render rules
+0    tests/stdlib/math/rat/20_letter_through_a_name.ein :: saturate
+0    tests/stdlib/math/rat/20_letter_through_a_name.ein :: solve
+0    tests/stdlib/math/rat/20_letter_through_a_name.ein :: test
+0    tests/stdlib/math/rat/21_let_twice.ein :: render constraints
+1    tests/stdlib/math/rat/21_let_twice.ein :: render rules
+0    tests/stdlib/math/rat/21_let_twice.ein :: saturate
+0    tests/stdlib/math/rat/21_let_twice.ein :: solve
+0    tests/stdlib/math/rat/21_let_twice.ein :: test
+0    tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein :: render constraints
+1    tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein :: render rules
+0    tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein :: saturate
+0    tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein :: solve
+0    tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein :: test
+0    tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein :: render constraints
+1    tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein :: render rules
+0    tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein :: saturate
+0    tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein :: solve
+0    tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein :: test
+0    tests/stdlib/math/rat/24_digit_as_the_numerator.ein :: render constraints
+1    tests/stdlib/math/rat/24_digit_as_the_numerator.ein :: render rules
+0    tests/stdlib/math/rat/24_digit_as_the_numerator.ein :: saturate
+0    tests/stdlib/math/rat/24_digit_as_the_numerator.ein :: solve
+0    tests/stdlib/math/rat/24_digit_as_the_numerator.ein :: test
+0    tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein :: render constraints
+1    tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein :: render rules
+0    tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein :: saturate
+0    tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein :: solve
+0    tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein :: test
+0    tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein :: render constraints
+1    tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein :: render rules
+0    tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein :: saturate
+0    tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein :: solve
+0    tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein :: test
+0    tests/stdlib/math/rat/27_digit_as_the_denominator.ein :: render constraints
+1    tests/stdlib/math/rat/27_digit_as_the_denominator.ein :: render rules
+0    tests/stdlib/math/rat/27_digit_as_the_denominator.ein :: saturate
+0    tests/stdlib/math/rat/27_digit_as_the_denominator.ein :: solve
+0    tests/stdlib/math/rat/27_digit_as_the_denominator.ein :: test
+0    tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein :: render constraints
+1    tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein :: render rules
+0    tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein :: saturate
+0    tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein :: solve
+0    tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein :: test
+0    tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein :: render constraints
+1    tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein :: render rules
+0    tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein :: saturate
+0    tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein :: solve
+0    tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein :: test
+0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: render constraints
+1    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: render rules
+0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: saturate
+0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: solve
+0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

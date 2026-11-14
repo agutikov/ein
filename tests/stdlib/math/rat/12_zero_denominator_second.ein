@@ -15,7 +15,9 @@
 ;;; program has an answer.
 
 (import std.math.rat :symbols (rat-arith rat rat-add rat-mul))
-(import std.math.decimal-arith :symbols (let n))
+(import std.math.decimal-arith :symbols (let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 (import std.math.int :symbols (int))
 
 (let nothing (rat (int (n z 1) z) (n (n z 0) 0)))

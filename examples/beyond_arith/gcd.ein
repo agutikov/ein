@@ -3,7 +3,9 @@
 ;;; gcd(a, b) is gcd(b, a mod b), and gcd(a, 0) is a. Saturation alone.
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.math.decimal-arith :symbols (decimal-arith n div-call div-done mul-call done))
+(import std.math.decimal-arith :symbols (decimal-arith div-call div-done mul-call done))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation gcd Number Number :why "asked: the greatest common divisor of {?1} and {?2}")
 (relation euclid Tag Number Number :why "for {?1}: the divisor wanted is that of {?2} and {?3}")

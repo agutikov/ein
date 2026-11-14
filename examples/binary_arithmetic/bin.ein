@@ -35,6 +35,7 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md`.
 (import bits :symbols (fa2 fs2 cl2))
+(import std.math.arith :symbols (z))
 (relation b2 Number Digit
   :why "the number written {?1}, then the digit {?2}")
 (relation a2 Digit Digits

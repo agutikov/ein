@@ -5,9 +5,10 @@
 ;;; A request the theory cannot read is flagged, `(malformed REQUEST)`, the
 ;;; request as written, and `malformed-is-false` derives `(false)` from the
 ;;; flag, as for a division by zero (the user's rulings of 2026-11-11 and
-;;; 2026-11-12). Every operand that is found is checked a place a firing,
-;;; `check-step`, and the rule that finds the fault says `(bad-operand TAG
-;;; (not-a-number THING))`; the operand's tag is turned into the request by
+;;; 2026-11-12). The rule that finds an operand's fault says `(bad-operand
+;;; TAG FAULT)` (until S1f.6.38 a found operand was also checked a place a
+;;; firing, `check-step`, for a malformed numeral, which is
+;;; `std.math.decimal`'s since, where it is written); the operand's tag is turned into the request by
 ;;; one of ten rules, here `bad-mul-first`, and `bad-request-malformed`
 ;;; derives the flag.
 ;;;
@@ -22,7 +23,9 @@
 ;;; the unsat core, and `--trace` shows the flag and the contradiction as two
 ;;; steps.
 
-(import std.math.decimal-arith :symbols (decimal-arith add n mul))
+(import std.math.decimal-arith :symbols (decimal-arith add mul))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add (n z 2) (n z 2))
 (mul 0 (n z 5))

@@ -36,7 +36,9 @@
 ;;; a trial is a subtraction whose outcome the tables decide, and nothing is
 ;;; guessed.
 
-(import std.math.decimal-arith :symbols (decimal-arith div n quot-of))
+(import std.math.decimal-arith :symbols (decimal-arith div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))
 

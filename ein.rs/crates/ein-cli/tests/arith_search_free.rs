@@ -42,8 +42,9 @@ use ein_corpus::{Scratch, ein_files_under, repo_root};
 /// Where the arithmetic programs live: `std.math.decimal-arith`'s tests, `std.math.num9`'s
 /// (S1f.6.13), `std.math.int`'s (S1f.6.7), `std.math.rat`'s (S1f.6.8), and the examples
 /// of all.
-const ROOTS: [&str; 5] = [
+const ROOTS: [&str; 6] = [
     "tests/stdlib/math/decimal-arith",
+    "tests/stdlib/math/decimal",
     "tests/stdlib/math/num9",
     "tests/stdlib/math/int",
     "tests/stdlib/math/rat",
@@ -113,26 +114,43 @@ const DIVIDES: [&str; 5] = ["(div ", "(div9 ", "(rat-", "(int-div-", "(share "];
 const RESTS_ON: [&str; 5] = ["(let ", "(md ", "(cl ", "(fs ", "(nz "];
 
 /// The requests and the `let` a malformed program's flag can name, by the
-/// start of their text (S1f.6.12): `std.math.decimal-arith`'s five requests.
-const READS: [&str; 6] = ["(add ", "(sub ", "(cmp ", "(mul ", "(div ", "(let "];
+/// start of their text (S1f.6.12): `std.math.decimal-arith`'s five requests,
+/// and since S1f.6.38 `std.math.int`'s and `std.math.rat`'s, whose undeclared
+/// name or digit as an operand is flagged on the request.
+const READS: [&str; 8] = [
+    "(add ", "(sub ", "(cmp ", "(mul ", "(div ", "(let ", "(int-", "(rat-",
+];
 
-/// The three ways an arithmetic program is dead, by the rule that concludes
-/// `(false)`: the start of its flag's text, and what the flag names.
-const FLAGS: [(&str, &str, &[&str]); 3] = [
+/// The ways an arithmetic program is dead, by the rule that concludes
+/// `(false)`: the start of its flag's text, and what the flag names. The last
+/// three are a representation's (S1f.6.38): the term at fault, which the core
+/// does not name, naming the fact it was written in instead.
+const FLAGS: [(&str, &str, &[&str]); 6] = [
     ("division-by-zero-is-false", "(division-by-zero ", &DIVIDES),
     ("malformed-is-false", "(malformed ", &READS),
     ("undeclared-is-false", "(undeclared ", &READS),
+    ("not-decimal-is-false", "(not-decimal ", &[]),
+    ("not-integer-is-false", "(not-integer ", &[]),
+    ("not-rational-is-false", "(not-rational ", &[]),
 ];
 
 /// The rules that derive a malformed program's flag.
-const MALFORMED_BY: [&str; 6] = [
+const MALFORMED_BY: [&str; 9] = [
     "bad-request-malformed",
     "bad-request-undeclared",
     "let-twice",
     "let-zero",
     "let-digit",
     "let-digit-zero",
+    "let-to-name",
+    "let-to-digit",
+    "let-to-digit-zero",
 ];
+
+/// The rules that derive a representation's flag, by the start of their
+/// names (S1f.6.38): `std.math.decimal`'s numeral's, `std.math.int`'s and
+/// `std.math.rat`'s own shapes'.
+const REPRESENTED_BY: [&str; 5] = ["numeral-", "int-p-", "int-n-", "rat-z-", "rat-d-"];
 
 /// The rules that derive the flag, each with the start of the flag it
 /// derives. Since S1f.6.24 the first is the flag of a call, `std.math.decimal-arith`'s
@@ -274,6 +292,7 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         .find(|(rule, _, _)| *rule == refuted_by)
         .unwrap_or_else(|| panic!("{file}: refuted by {refuted_by}, which concludes no flag"));
     let division = *flag == "(division-by-zero ";
+    let representation = names.is_empty();
     // The core is the request, and what its divisor's zero rests on: nothing
     // where the divisor is written `z`; the `let` where it is a name; and the
     // rows of `md` that put a zero written with digits into normal form, since
@@ -284,7 +303,12 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         .iter()
         .map(|f| f.as_str().expect("a fact"))
         .collect();
-    if division {
+    if representation {
+        // A term a representation flags is checked where it is written: the
+        // core names the facts it was written in, or none where a rule's text
+        // writes it, and beside them only `let`s and table rows. The rest is
+        // read below, off the flag.
+    } else if division {
         assert_eq!(
             core.iter()
                 .filter(|f| DIVIDES.iter().any(|h| f.starts_with(h)))
@@ -301,8 +325,10 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         );
     }
     assert!(
-        core.iter()
-            .all(|f| names.iter().chain(&RESTS_ON).any(|h| f.starts_with(h))),
+        representation
+            || core
+                .iter()
+                .all(|f| names.iter().chain(&RESTS_ON).any(|h| f.starts_with(h))),
         "{file}: the core is the request, a `let` and table rows: {core:?}"
     );
     assert!(
@@ -327,7 +353,34 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         fact("(false", refuted_by),
         "{file}: (false), by the second rule"
     );
-    if division {
+    if representation {
+        // Every flag is by a rule of the representation's check, and names a
+        // term the core's facts write: the term at fault, or one it nests in.
+        let flags: Vec<&str> = saturate
+            .stdout
+            .lines()
+            .map(str::trim)
+            .filter(|l| l.starts_with(flag))
+            .collect();
+        assert!(!flags.is_empty(), "{file}: no flag in root's state");
+        for line in &flags {
+            assert!(
+                REPRESENTED_BY
+                    .iter()
+                    .any(|rule| line.contains(&format!(":rule {rule}"))),
+                "{file}: the flag, by the representation's check: {line}"
+            );
+            let term = balanced(&line[flag.len()..]);
+            let inner = &term[..term.len().saturating_sub(1)];
+            assert!(
+                core.is_empty()
+                    || core
+                        .iter()
+                        .any(|f| f.contains(inner) || RESTS_ON.iter().any(|h| f.starts_with(h))),
+                "{file}: the core names where {term} is written: {core:?}"
+            );
+        }
+    } else if division {
         // Every flag in root's state is by the rule that derives its shape.
         let flags: Vec<&str> = saturate
             .stdout

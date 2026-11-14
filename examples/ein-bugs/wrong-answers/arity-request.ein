@@ -23,7 +23,9 @@
 ;;; command, with no word.
 ;;; Refused at load since S1f.6.23 (T1f.6.23.3).
 
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add (n z 5))
 

@@ -1,0 +1,20 @@
+;;; `std.math.decimal-arith` — a `let` that names the digit 0. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Zero is `z`, and the digit `0` is no number: `let-to-digit-zero` derives
+;;; `(malformed (let none 0))`, and `(false)` follows, whether or not a
+;;; request names the constant.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let none 0)
+
+(solve :expect (false))

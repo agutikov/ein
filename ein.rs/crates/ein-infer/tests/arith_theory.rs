@@ -15,13 +15,13 @@
 //! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
 //! | **every answer is in normal form**, and each request has exactly one | all five, through [`hold`] |
 //! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
-//! | no `not`, no `or`, and **exactly one `absent`, over `let`**, which no rule derives; `eq` and `neq` in the checking rules alone; three rules conclude `(false)`, each from its flag | [`the_theory_writes_one_absent_over_let`] |
-//! | the closing rule closes every relation and names every rule | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
+//! | no `not`, no `or`, and **exactly one `absent`, over `let`**, which no rule derives; `eq` and `neq` in the checking rules alone; each rule that concludes `(false)` reads its flag alone, in each of the three modules | [`the_theory_writes_one_absent_over_let`] |
+//! | the closing rule closes every relation and names every rule, and so do `std.math.decimal`'s and `std.math.arith`'s (S1f.6.38) | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
 //! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
-//! | **a malformed request has exactly one flag and no answer**, and the flag derives `(false)`; a well-formed one has no flag (S1f.6.12) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
+//! | **a malformed numeral has exactly one flag where it is written, `std.math.decimal`'s, a malformed operand its request's, and neither an answer**, and each flag derives `(false)`; a well-formed one has no flag (S1f.6.12, S1f.6.38) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
 //! | **the tagged calls are an interface** (S1f.6.30): `std.math.decimal-arith`'s, `std.math.int`'s and `std.math.rat`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
@@ -571,10 +571,12 @@ fn a_tagged_call_by_zero_is_flagged_whoever_made_it() {
 const FINE: &str = "(n z 5)";
 
 /// Every flag, answer and contradiction of one program: the facts of
-/// `malformed`, of `undeclared`, of `division-by-zero` and of `false`, and
-/// the requests that have a result fact, as `(REQUEST X Y)`.
+/// `malformed`, of `undeclared`, of `std.math.decimal`'s `not-decimal`, of
+/// `division-by-zero` and of `false`, and the requests that have a result
+/// fact, as `(REQUEST X Y)`.
 struct Outcome {
     malformed: BTreeSet<String>,
+    not_decimal: BTreeSet<String>,
     undeclared: BTreeSet<String>,
     division_by_zero: Vec<String>,
     contradiction: Vec<String>,
@@ -591,6 +593,7 @@ fn outcome(body: &str) -> Outcome {
     }
     Outcome {
         malformed: run(body, "malformed").into_iter().collect(),
+        not_decimal: run(body, "not-decimal").into_iter().collect(),
         undeclared: run(body, "undeclared").into_iter().collect(),
         division_by_zero: run(body, "division-by-zero"),
         contradiction: run(body, "false"),
@@ -598,46 +601,57 @@ fn outcome(body: &str) -> Outcome {
     }
 }
 
-/// **A malformed request is flagged once, and never answered** (S1f.6.12,
-/// the user's rulings of 2026-11-11 and 2026-11-12). Every operation, either
-/// operand, every kind of the set the investigation called b1:
+/// **A malformed numeral is flagged where it is written, a malformed operand
+/// at its request, and neither is answered** (S1f.6.12, the user's rulings of
+/// 2026-11-11 and 2026-11-12; S1f.6.38, the user's ruling of 2026-11-14 on
+/// Q-M1f.210). Every operation, either operand, every kind of the set the
+/// investigation called b1:
 ///
 /// - a digit's place holding a name that is no digit, at the units and a
 ///   place up, `z` and the bound `10` among the names, or holding a fact;
-/// - a number that ends in a digit where `z` goes, or in a named constant;
-/// - a digit where a number goes;
-/// - the same through a name: a `let` whose number is malformed, and a name
-///   that stands for another name.
+/// - a numeral that ends in a digit where `z` goes, or in a named constant;
+/// - the same in a `let`'s value, `broken`.
 ///
-/// Each derives `(malformed REQUEST)`, the request as written, and nothing
-/// else flags; the flag derives `(false)`; and no malformed request has a
-/// result fact. The well-formed requests of the same program are answered
-/// and not flagged: the saturator runs root to its fixpoint whatever it
-/// derives.
+/// Each derives `std.math.decimal`'s `(not-decimal NUMERAL THING)`, on the
+/// smallest numeral at fault, once whatever request holds it: the numeral is
+/// checked as it is written, and no request is flagged for it. **A digit where
+/// a number goes** is the operand's fault, `std.math.decimal-arith`'s: `(malformed
+/// REQUEST)`, the request as written. **A name for a name**, `alias`, is the
+/// `let`'s: `(malformed (let alias price))`. Nothing else flags; the flags
+/// derive `(false)`; and no malformed request has a result fact. The
+/// well-formed requests of the same program are answered and not flagged: the
+/// saturator runs root to its fixpoint whatever it derives.
 #[test]
 fn a_malformed_request_is_flagged_once_and_never_answered() {
     let lets = "(let price (n z 5))\n(let broken (n (n z x) 1))\n(let alias price)\n";
-    let bad = [
-        "(n (n z 1) x)",
-        "(n (n z x) 1)",
-        "(n (n (n z 4) z) 2)",
-        "(n z 10)",
-        "(n z (n z 1))",
-        "(n (n z (pair 1 2)) 3)",
-        "(n 1 2)",
-        "(n 0 2)",
-        "(n (n 3 1) 2)",
-        "(n price 1)",
-        "(n (n price 0) 1)",
-        "7",
-        "0",
-        "broken",
-        "alias",
+    let numerals = [
+        ("(n (n z 1) x)", "(not-decimal (n (n z 1) x) x)"),
+        ("(n (n z x) 1)", "(not-decimal (n z x) x)"),
+        ("(n (n (n z 4) z) 2)", "(not-decimal (n (n z 4) z) z)"),
+        ("(n z 10)", "(not-decimal (n z 10) 10)"),
+        ("(n z (n z 1))", "(not-decimal (n z (n z 1)) (n z 1))"),
+        (
+            "(n (n z (pair 1 2)) 3)",
+            "(not-decimal (n z (pair 1 2)) (pair 1 2))",
+        ),
+        ("(n 1 2)", "(not-decimal (n 1 2) 1)"),
+        ("(n 0 2)", "(not-decimal (n 0 2) 0)"),
+        ("(n (n 3 1) 2)", "(not-decimal (n 3 1) 3)"),
+        ("(n price 1)", "(not-decimal (n price 1) price)"),
+        ("(n (n price 0) 1)", "(not-decimal (n price 0) price)"),
+        ("broken", "(not-decimal (n z x) x)"),
+        ("alias", ""),
     ];
+    let digits = ["7", "0"];
     for op in &OPS {
         let mut body = String::from(lets);
-        let mut want = BTreeSet::new();
-        for b in bad {
+        let mut want_numerals = BTreeSet::new();
+        let mut want_requests = BTreeSet::new();
+        want_requests.insert("(malformed (let alias price))".to_string());
+        for (b, flag) in numerals {
+            if !flag.is_empty() {
+                want_numerals.insert(flag.to_string());
+            }
             for request in [
                 format!("({} {b} {FINE})", op.request),
                 format!("({} {FINE} {b})", op.request),
@@ -645,7 +659,17 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
             ] {
                 body.push_str(&request);
                 body.push('\n');
-                want.insert(format!("(malformed {request})"));
+            }
+        }
+        for b in digits {
+            for request in [
+                format!("({} {b} {FINE})", op.request),
+                format!("({} {FINE} {b})", op.request),
+                format!("({} {b} {b})", op.request),
+            ] {
+                body.push_str(&request);
+                body.push('\n');
+                want_requests.insert(format!("(malformed {request})"));
             }
         }
         // Beside them, requests the theory can read.
@@ -660,8 +684,13 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
         }
         let got = outcome(&body);
         assert_eq!(
-            got.malformed, want,
-            "{}: the flags are the malformed requests, each once",
+            got.not_decimal, want_numerals,
+            "{}: the numerals' flags, each once, on the smallest numeral at fault",
+            op.request
+        );
+        assert_eq!(
+            got.malformed, want_requests,
+            "{}: the requests' and the `let`'s flags: a digit where a number goes, a name for a name",
             op.request
         );
         assert!(
@@ -674,7 +703,7 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
         assert_eq!(
             got.contradiction,
             ["(false)"],
-            "{}: the flag derives (false)",
+            "{}: the flags derive (false)",
             op.request
         );
         assert_eq!(
@@ -684,6 +713,16 @@ fn a_malformed_request_is_flagged_once_and_never_answered() {
             op.request
         );
     }
+    // **Where it is written does not matter**: the same numeral, asked about
+    // by no request, is flagged as it is written (S1f.6.38).
+    let got = outcome("(let unused (n (n z 1) x))\n");
+    assert_eq!(
+        got.not_decimal,
+        ["(not-decimal (n (n z 1) x) x)".to_string()]
+            .into_iter()
+            .collect::<BTreeSet<_>>()
+    );
+    assert_eq!(got.contradiction, ["(false)"]);
 }
 
 /// **A name no `let` states is undeclared** (the user's reply of 2026-11-12
@@ -735,7 +774,8 @@ fn an_undeclared_name_is_flagged_and_a_let_answers_it() {
 
 /// **A `let` that cannot be read** is flagged as the `let`, whether or not a
 /// request uses the name: a name stated twice with two numbers, each of the
-/// two; and `z` or a digit as a constant's name. Until S1f.6.12 each gave
+/// two; `z` or a digit as a constant's name; and, since S1f.6.38, a digit or
+/// another named constant as what it names. Until S1f.6.12 each gave
 /// two answers to one request. A name stated twice with one number is one
 /// fact, and fine.
 #[test]
@@ -743,7 +783,7 @@ fn a_let_that_cannot_be_read_is_flagged() {
     let body = "(let price (n z 5))\n(let price (n z 7))\n\
                 (let same (n z 4))\n(let same (n z 4))\n\
                 (let z (n z 5))\n(let 3 (n z 5))\n(let 0 (n z 5))\n\
-                (let fine (n (n z 1) 0))\n";
+                (let seven 7)\n(let none 0)\n(let fine (n (n z 1) 0))\n(let alias fine)\n";
     let got = outcome(body);
     let want: BTreeSet<String> = [
         "(malformed (let price (n z 5)))",
@@ -751,6 +791,9 @@ fn a_let_that_cannot_be_read_is_flagged() {
         "(malformed (let z (n z 5)))",
         "(malformed (let 3 (n z 5)))",
         "(malformed (let 0 (n z 5)))",
+        "(malformed (let seven 7))",
+        "(malformed (let none 0))",
+        "(malformed (let alias fine))",
     ]
     .into_iter()
     .map(str::to_string)
@@ -764,6 +807,9 @@ fn a_let_that_cannot_be_read_is_flagged() {
         ("(let z (n z 5))\n", 1),
         ("(let 3 (n z 5))\n", 1),
         ("(let 0 (n z 5))\n", 1),
+        ("(let seven 7)\n", 1),
+        ("(let none 0)\n", 1),
+        ("(let price (n z 5))\n(let alias price)\n", 1),
     ] {
         let got = outcome(one);
         assert_eq!(got.malformed.len(), flags, "{one}");
@@ -805,6 +851,7 @@ fn what_stays_silent() {
         let got = outcome(&body);
         assert!(
             got.malformed.is_empty()
+                && got.not_decimal.is_empty()
                 && got.undeclared.is_empty()
                 && got.division_by_zero.is_empty()
                 && got.contradiction.is_empty(),
@@ -831,7 +878,8 @@ fn what_stays_silent() {
 /// derives is one deeper than the deepest premise it read, and a written
 /// fact, a table row among them, is at depth 0.
 ///
-/// The closing rule's one firing is not the request's and is left out.
+/// The closing rules' firings are not the request's and are left out: the
+/// theory's and, since S1f.6.38, those of the two modules below it.
 fn circuit(body: &str) -> (usize, usize) {
     let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
@@ -841,10 +889,12 @@ fn circuit(body: &str) -> (usize, usize) {
     let mut events = Events::off();
     let mut depth_of: BTreeMap<ein_core::FactId, usize> = BTreeMap::new();
     let (mut firings, mut deepest) = (0usize, 0usize);
-    let closer = terms
-        .syms
-        .get("decimal-arith")
-        .expect("the closing rule's name");
+    let closers: Vec<ein_core::Symbol> = ["decimal-arith", "decimal", "arith"]
+        .iter()
+        .flat_map(|n| ein_corpus::spellings(n))
+        .filter_map(|n| terms.syms.get(&n))
+        .collect();
+    assert!(closers.len() >= 3, "the three closing rules' names");
     {
         let mut s = Session {
             kb: &mut kb,
@@ -855,7 +905,7 @@ fn circuit(body: &str) -> (usize, usize) {
         };
         let mut sat = Saturator::new(&mut s).expect("the theory compiles");
         sat.saturate(&mut s, None, &mut |f| {
-            if f.rule == closer {
+            if closers.contains(&f.rule) {
                 return;
             }
             firings += 1;
@@ -879,10 +929,11 @@ fn circuit(body: &str) -> (usize, usize) {
 /// (5 firings with the request's own), six columns, the end of the walk, the
 /// check for a high zero, six digits turned round, the hand-over and the
 /// answer: 21 firings, one chain, every call carrying its continuation.
-/// **And the check of its operands** (S1f.6.12), a firing a place, six and
-/// four: 31 firings. The check runs beside the walk and hands nothing on, so
-/// the depth is the chain's, 21, as it was. Every pin of the four tests
-/// below is its chain and the digits of the operands that are found.
+/// From S1f.6.12 until S1f.6.38 the check of the operands added a firing a
+/// place, six and four, 31 firings at the same depth; the check of a numeral
+/// is `std.math.decimal`'s since, read off what the loader states, and costs
+/// a well-formed numeral no firing, so every pin of the four tests below is
+/// its chain again, its size its depth but where walks run side by side.
 ///
 /// The numbers are pinned so that a change to the wiring shows as a change
 /// to them: `cargo test -p ein-infer --test arith_theory the_circuit` is the
@@ -893,7 +944,7 @@ fn the_circuit_of_one_addition() {
     let four = written("4567");
     assert_eq!(
         circuit(&format!("(add {six} {four})\n")),
-        (31, 21),
+        (21, 21),
         "123078 + 4567: (firings, depth)"
     );
     // The carry out of the top column goes straight to the turn: nine columns,
@@ -904,14 +955,14 @@ fn the_circuit_of_one_addition() {
             written("999999999"),
             written("1")
         )),
-        (37, 27),
+        (27, 27),
         "999999999 + 1: (firings, depth)"
     );
-    // Named operands cost what numbers cost, a lookup and a check either way,
-    // and each `let` one firing that says its name is one.
+    // Named operands cost what numbers cost, a lookup either way, and each
+    // `let` one firing that says its name is one.
     assert_eq!(
         circuit(&format!("(let a {six})\n(let b {four})\n(add a b)\n")),
-        (33, 21),
+        (23, 21),
         "the same sum by name"
     );
 }
@@ -930,24 +981,24 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
     let four = written("4567");
     assert_eq!(
         circuit(&format!("(sub {six} {four})\n")),
-        (38, 21),
+        (28, 21),
         "123078 - 4567: (firings, depth)"
     );
     assert_eq!(
         circuit(&format!("(sub {four} {six})\n")),
-        (38, 21),
+        (28, 21),
         "4567 - 123078: (firings, depth)"
     );
     // Equal numbers: both walks end with no borrow, each drops its six
     // zeros and hands over zero, and the two answer rules say the one fact.
     assert_eq!(
         circuit(&format!("(sub {six} {six})\n")),
-        (47, 20),
+        (35, 20),
         "123078 - 123078: (firings, depth)"
     );
     assert_eq!(
         circuit(&format!("(cmp {six} {four})\n")),
-        (23, 13),
+        (13, 13),
         "123078 against 4567: (firings, depth)"
     );
 }
@@ -957,30 +1008,30 @@ fn the_circuit_of_one_subtraction_and_one_comparison() {
 /// its digits is a row, a walk the length of the multiplicand with its strip
 /// and turn, and, after the first, an addition walk the length of the sum so
 /// far. So the size grows as the product of the two lengths, and the circuit
-/// is still one chain: its depth is its size less the check of the two
-/// operands, a firing a digit (S1f.6.12).
+/// is still one chain: its depth is its size (until S1f.6.38 its size less the
+/// check of the two operands, a firing a digit, S1f.6.12).
 #[test]
 fn the_circuit_of_one_multiplication() {
     let mul = |x: &str, y: &str| circuit(&format!("(mul {} {})\n", written(x), written(y)));
-    assert_eq!(mul("123", "456"), (78, 72), "123 x 456: (firings, depth)");
+    assert_eq!(mul("123", "456"), (72, 72), "123 x 456: (firings, depth)");
     assert_eq!(
         mul("123078", "123078"),
-        (239, 227),
+        (227, 227),
         "123078 x 123078: (firings, depth)"
     );
     // The two lengths: a multiplier of one digit is one row; each digit more
     // is a row and an addition.
-    assert_eq!(mul("999999", "9"), (35, 28), "six digits by one");
-    assert_eq!(mul("9", "999999"), (135, 128), "one digit by six");
-    assert_eq!(mul("999999", "999999"), (250, 238), "six digits by six");
+    assert_eq!(mul("999999", "9"), (28, 28), "six digits by one");
+    assert_eq!(mul("9", "999999"), (128, 128), "one digit by six");
+    assert_eq!(mul("999999", "999999"), (238, 238), "six digits by six");
     assert_eq!(
         mul("999999999999", "999999"),
-        (388, 370),
+        (370, 370),
         "twelve digits by six"
     );
     assert_eq!(
         mul("999999", "999999999999"),
-        (574, 556),
+        (556, 556),
         "six digits by twelve"
     );
 }
@@ -989,30 +1040,31 @@ fn the_circuit_of_one_multiplication() {
 /// multiples, each a row of two columns; the dividend's six digits turned
 /// round; then a step a digit, each three trials, and a trial a subtraction
 /// with its strip and turn where it fits. One chain, so its depth is its
-/// size less the check of the two operands, six firings and two (S1f.6.12).
+/// size (until S1f.6.38 its size less the check of the two operands, six
+/// firings and two, S1f.6.12).
 /// A divisor of one digit and a dividend of one are the two ends.
 #[test]
 fn the_circuit_of_one_division() {
     let div = |x: &str, y: &str| circuit(&format!("(div {} {})\n", written(x), written(y)));
     assert_eq!(
         div("127645", "25"),
-        (228, 220),
+        (220, 220),
         "127645 / 25: (firings, depth)"
     );
-    assert_eq!(div("7", "3"), (86, 84), "7 / 3");
-    assert_eq!(div("999999", "7"), (236, 229), "six digits by one");
-    assert_eq!(div("999999999999", "7"), (407, 394), "twelve digits by one");
+    assert_eq!(div("7", "3"), (84, 84), "7 / 3");
+    assert_eq!(div("999999", "7"), (229, 229), "six digits by one");
+    assert_eq!(div("999999999999", "7"), (394, 394), "twelve digits by one");
     assert_eq!(
         div("999999999999", "777777"),
-        (673, 655),
+        (655, 655),
         "twelve digits by six"
     );
     // A division by zero stops at the divisor's normal form: the operands,
-    // one row, its strip, the flag and the contradiction; and the dividend's
-    // six places are checked beside it. Since S1f.6.24 the call is flagged
-    // beside the request and is a contradiction too: two firings more, no
-    // deeper.
-    assert_eq!(div("127645", ""), (18, 10), "127645 / 0");
+    // one row, its strip, the flag and the contradiction. Since S1f.6.24 the
+    // call is flagged beside the request and is a contradiction too: two
+    // firings more, no deeper. Until S1f.6.38 the dividend's six places were
+    // checked beside it, six firings more.
+    assert_eq!(div("127645", ""), (12, 10), "127645 / 0");
 }
 
 // ── the module's text ──────────────────────────────────────────────
@@ -1047,33 +1099,75 @@ const PROBES: [&str; 1] = ["named"];
 /// The computed relations: a guard compares two values and looks nothing up.
 const GUARDS: [&str; 2] = ["eq", "neq"];
 
-/// The rules that write a guard, and no other may (S1f.6.12): the ten
-/// digits in `check-digit`; *a name, not `z` and not a digit* in
-/// `operand-undeclared`; two different numbers in `let-twice`.
-const GUARDED: [&str; 3] = ["check-digit", "operand-undeclared", "let-twice"];
+/// The rules that write a guard, and no other may (S1f.6.12): *a name, not
+/// `z` and not a digit* in `operand-undeclared`; two different numbers in
+/// `let-twice`. The ten digits' guards were `check-digit`'s until S1f.6.38,
+/// and are `std.math.decimal`'s `numeral-digit`'s since ([`DECIMAL`]).
+const GUARDED: [&str; 2] = ["operand-undeclared", "let-twice"];
 
 /// The one rule that reads an `absent`, and the relation it is over, which a
 /// program writes and no rule of the module derives.
 const ABSENT: (&str, &str) = ("operand-undeclared", "let");
 
 /// The rules that conclude `(false)`, each with the one premise it has: its
-/// flag.
-const FALSE_RULES: [(&str, &str); 3] = [
-    ("division-by-zero-is-false", "division-by-zero"),
+/// flag. A division by zero's is `std.math.arith`'s since S1f.6.38 ([`ARITH`]).
+const FALSE_RULES: [(&str, &str); 2] = [
     ("malformed-is-false", "malformed"),
     ("undeclared-is-false", "undeclared"),
 ];
+
+/// **The calculator's modules below `std.math.decimal-arith`** (S1f.6.38),
+/// each held to the same text rules as it: the file, its closing rule, the
+/// relation its closing rule names rules by, the rules that write a guard,
+/// and the rules that conclude `(false)` with their flag. Neither reads an
+/// `absent` or joins two facts.
+struct Spec {
+    file: &'static str,
+    closer: &'static str,
+    names_by: &'static str,
+    guarded: &'static [&'static str],
+    false_rules: &'static [(&'static str, &'static str)],
+}
+
+/// `std.math.decimal-arith` itself, as the constants above say.
+const DECIMAL_ARITH: Spec = Spec {
+    file: "stdlib/math/decimal-arith.ein",
+    closer: "decimal-arith",
+    names_by: "arith-rule",
+    guarded: &GUARDED,
+    false_rules: &FALSE_RULES,
+};
+
+/// `std.math.decimal`, the numeral and its check over `written`: the ten
+/// digits' guards in `numeral-digit`, *not `z`* in `numeral-prefix-named`.
+const DECIMAL: Spec = Spec {
+    file: "stdlib/math/decimal.ein",
+    closer: "decimal",
+    names_by: "decimal-rule",
+    guarded: &["numeral-digit", "numeral-prefix-named"],
+    false_rules: &[("not-decimal-is-false", "not-decimal")],
+};
+
+/// `std.math.arith`, arithmetic itself: `z`, and the division by zero's flag
+/// and its rule.
+const ARITH: Spec = Spec {
+    file: "stdlib/math/arith.ein",
+    closer: "arith",
+    names_by: "arith-module-rule",
+    guarded: &[],
+    false_rules: &[("division-by-zero-is-false", "division-by-zero")],
+};
 
 struct Module {
     ast: Ast,
     forms: Vec<NodeId>,
 }
 
-fn module() -> Module {
-    let path = repo_root().join("stdlib/math/decimal-arith.ein");
+fn module_of(spec: &Spec) -> Module {
+    let path = repo_root().join(spec.file);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, &text, path.to_str()).expect("std.math.decimal-arith parses");
+    let forms = parse(&mut ast, &text, path.to_str()).expect("the module parses");
     Module { ast, forms }
 }
 
@@ -1174,11 +1268,31 @@ impl Module {
 /// [`the_theory_writes_one_absent_over_let`] holds.
 #[test]
 fn no_rule_joins_two_facts_on_a_number() {
-    let m = module();
+    let mut exceptions_seen = 0;
+    for spec in [&DECIMAL_ARITH, &DECIMAL, &ARITH] {
+        exceptions_seen += no_rule_joins_two_facts_in(spec);
+    }
+    assert_eq!(
+        exceptions_seen, 2,
+        "an exception this file names is no longer in the module: {NAME_LOOKUP:?}, \
+         {NAME_TWICE:?}"
+    );
+}
+
+/// [`no_rule_joins_two_facts_on_a_number`] of one module: the exceptions it
+/// met, which only `std.math.decimal-arith` has.
+fn no_rule_joins_two_facts_in(spec: &Spec) -> usize {
+    let m = module_of(spec);
     let rules = m.declared("rule");
     assert!(
-        rules.len() >= 18,
-        "std.math.decimal-arith parsed to {} rules",
+        rules.len()
+            >= if spec.closer == "decimal-arith" {
+                18
+            } else {
+                2
+            },
+        "{} parsed to {} rules",
+        spec.file,
         rules.len()
     );
     let mut exceptions_seen = 0;
@@ -1249,18 +1363,14 @@ fn no_rule_joins_two_facts_on_a_number() {
         }
         assert!(
             state.len() <= 1,
-            "rule {name} joins {state:?}: a rule of std.math.decimal-arith has ONE premise \
+            "rule {name} joins {state:?}: a rule of the calculator has ONE premise \
              that holds numbers, and its other premises are rows of std.math.digits. \
              A second one changes no answer and makes every batch of requests \
              cost the square of its count (E-3 of P1f.6's findings.md); carry \
              what the rule needs in the call's tag instead"
         );
     }
-    assert_eq!(
-        exceptions_seen, 2,
-        "an exception this file names is no longer in the module: {NAME_LOOKUP:?}, \
-         {NAME_TWICE:?}"
-    );
+    exceptions_seen
 }
 
 /// **One `absent`, over `let`; no `not`, no `or`** (S1f.6.12; until then the
@@ -1281,7 +1391,22 @@ fn no_rule_joins_two_facts_on_a_number() {
 /// a division by zero, a malformed request, an undeclared name.
 #[test]
 fn the_theory_writes_one_absent_over_let() {
-    let m = module();
+    let mut absents = Vec::new();
+    for spec in [&DECIMAL_ARITH, &DECIMAL, &ARITH] {
+        absents.extend(absents_of(spec));
+    }
+    assert_eq!(
+        absents,
+        [(ABSENT.0.to_string(), ABSENT.1.to_string())],
+        "the theory reads exactly one `absent`, over `{}`",
+        ABSENT.1
+    );
+}
+
+/// [`the_theory_writes_one_absent_over_let`] of one module: its `absent`s,
+/// each with the relation it is over.
+fn absents_of(spec: &Spec) -> Vec<(String, String)> {
+    let m = module_of(spec);
     let mut absents = Vec::new();
     for (name, rule) in m.declared("rule") {
         let mut heads = Vec::new();
@@ -1302,8 +1427,10 @@ fn the_theory_writes_one_absent_over_let() {
         );
         assert_eq!(
             heads.iter().any(|h| GUARDS.contains(&h.as_str())),
-            GUARDED.contains(&name.as_str()),
-            "the rules that write a guard are {GUARDED:?}: {name}"
+            spec.guarded.contains(&name.as_str()),
+            "the rules of {} that write a guard are {:?}: {name}",
+            spec.file,
+            spec.guarded
         );
         // The `absent`s, each with the relation it is over.
         for premise in m.conjuncts(m.clause(rule, "match")) {
@@ -1333,11 +1460,13 @@ fn the_theory_writes_one_absent_over_let() {
             ABSENT.1
         );
         // `(false)` is concluded from a flag, by the flag's own rule.
-        let flag = FALSE_RULES.iter().find(|(r, _)| *r == name);
+        let flag = spec.false_rules.iter().find(|(r, _)| *r == name);
         assert_eq!(
             concluded.iter().any(|h| h == "false"),
             flag.is_some(),
-            "`(false)` is concluded by {FALSE_RULES:?} and by no other rule: {name}"
+            "`(false)` is concluded by {:?} and by no other rule of {}: {name}",
+            spec.false_rules,
+            spec.file
         );
         if let Some((_, flag)) = flag {
             let premises: Vec<&str> = m
@@ -1348,34 +1477,48 @@ fn the_theory_writes_one_absent_over_let() {
             assert_eq!(premises, [*flag], "{name} reads its flag and nothing else");
         }
     }
-    assert_eq!(
-        absents,
-        [(ABSENT.0.to_string(), ABSENT.1.to_string())],
-        "the theory reads exactly one `absent`, over `{}`",
-        ABSENT.1
-    );
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
-        "std.math.decimal-arith guesses nothing and expands nothing"
+        "{} guesses nothing and expands nothing",
+        spec.file
     );
+    absents
 }
 
 /// `decimal-arith` is the theory's one entry. A relation it does not close is one the
 /// search may guess facts of; a rule it does not name is one
 /// `(import std.math.decimal-arith :symbols (decimal-arith))` leaves behind, in silence. Both are
 /// easy to forget when a rule is added, and neither changes an answer the day
-/// it is forgotten.
+/// it is forgotten. So for `std.math.decimal` and `std.math.arith`, the
+/// modules below it since S1f.6.38, by their own closing rules: each closes
+/// every relation it declares and every table it imports, and names every
+/// other rule of its own and the entry of each calculator module it imports.
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
-    let m = module();
+    for spec in [&DECIMAL_ARITH, &DECIMAL, &ARITH] {
+        the_closing_rule_of(spec);
+    }
+}
+
+/// The entries of the calculator's modules, by module.
+const ENTRIES: [(&str, &str); 3] = [
+    ("std.math.arith", "arith"),
+    ("std.math.decimal", "decimal"),
+    ("std.math.decimal-arith", "decimal-arith"),
+];
+
+fn the_closing_rule_of(spec: &Spec) {
+    let m = module_of(spec);
+    let file = spec.file;
     let rules = m.declared("rule");
     let (_, closer) = rules
         .iter()
-        .find(|(n, _)| n == "decimal-arith")
-        .expect("the closing rule, `decimal-arith`");
+        .find(|(n, _)| n == spec.closer)
+        .unwrap_or_else(|| panic!("{file}: the closing rule, `{}`", spec.closer));
     assert!(
         m.conjuncts(m.clause(*closer, "match")).is_empty(),
-        "`decimal-arith` fires at root, on nothing"
+        "{file}: `{}` fires at root, on nothing",
+        spec.closer
     );
     let (mut closed, mut named) = (BTreeSet::new(), BTreeSet::new());
     for c in m.conjuncts(m.clause(*closer, "assert")) {
@@ -1388,22 +1531,29 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
             .to_string();
         match m.ast.head_name(c) {
             Some("__closed__") => assert!(closed.insert(arg.clone()), "closed twice: {arg}"),
-            Some("arith-rule") => assert!(named.insert(arg.clone()), "named twice: {arg}"),
-            other => panic!("`decimal-arith` asserts a {other:?}"),
+            Some(h) if h == spec.names_by => {
+                assert!(named.insert(arg.clone()), "named twice: {arg}")
+            }
+            other => panic!("{file}: `{}` asserts a {other:?}", spec.closer),
         }
     }
 
-    // The tables the module imports, read off its `(import std.math.digits …)`.
-    let mut tables = BTreeSet::new();
+    // The tables the module imports, read off its `(import std.math.digits …)`,
+    // and the entries of the calculator's modules it imports.
+    let (mut tables, mut entries) = (BTreeSet::new(), BTreeSet::new());
     for &f in &m.forms {
         if m.ast.head_name(f) != Some("import") {
             continue;
         }
         let args = m.ast.form_args(f);
+        let module = m.ast.atom_name(args[0]).expect("a module's name");
+        if let Some((_, entry)) = ENTRIES.iter().find(|(mm, _)| *mm == module) {
+            entries.insert(entry.to_string());
+            continue;
+        }
         assert_eq!(
-            m.ast.atom_name(args[0]),
-            Some("std.math.digits"),
-            "std.math.decimal-arith imports std.math.digits and nothing else"
+            module, "std.math.digits",
+            "{file} imports std.math.digits and the calculator's modules below it, and nothing else"
         );
         for &a in &args[1..] {
             if let Node::KwPair { key, value } = m.ast.node(a) {
@@ -1420,31 +1570,40 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         }
     }
     assert!(
-        tables.iter().all(|t| TABLES.contains(&t.as_str())) && !tables.is_empty(),
-        "the import lists tables of std.math.digits: {tables:?}"
+        tables.iter().all(|t| TABLES.contains(&t.as_str())),
+        "{file}: the import lists tables of std.math.digits: {tables:?}"
     );
 
-    let mut want_closed: BTreeSet<String> =
-        m.declared("relation").into_iter().map(|(n, _)| n).collect();
+    let mut want_closed: BTreeSet<String> = m
+        .declared("relation")
+        .into_iter()
+        .map(|(n, _)| n)
+        // `z`, a relation no fact is of and with no argument type, is no
+        // hypothesis target: nothing closes it.
+        .filter(|n| n != "z")
+        .collect();
     want_closed.extend(tables);
     assert_eq!(
         closed, want_closed,
-        "`decimal-arith` closes every relation the module declares and every table it imports"
+        "{file}: `{}` closes every relation the module declares and every table it imports",
+        spec.closer
     );
-    let want_named: BTreeSet<String> = rules
+    let mut want_named: BTreeSet<String> = rules
         .iter()
         .map(|(n, _)| n.clone())
-        .filter(|n| n != "decimal-arith")
+        .filter(|n| n != spec.closer)
         .collect();
+    want_named.extend(entries);
     assert_eq!(
         named, want_named,
-        "`decimal-arith` names every other rule of the module"
+        "{file}: `{}` names every other rule of the module, and the entries of the modules below",
+        spec.closer
     );
 
-    // Its own name is a written fact, the module's only one: what keeps the
-    // closing rule in a program that is inlined and tree-shaken, as a
-    // `--dump-answer` state file's is (E-11 of P1f.6's findings.md;
-    // `ein-cli`'s `answer_round_trip.rs` is what fails without it).
+    // `std.math.decimal-arith`'s own name is a written fact, the module's only
+    // one: what kept the closing rule in a program that is inlined and
+    // tree-shaken, as a `--dump-answer` state file's was (E-11 of P1f.6's
+    // findings.md). The modules below it write none.
     let facts: Vec<(String, Vec<String>)> = m
         .forms
         .iter()
@@ -1465,10 +1624,14 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
             )
         })
         .collect();
+    let want: Vec<(String, Vec<String>)> = if spec.closer == "decimal-arith" {
+        vec![("arith-rule".to_string(), vec!["decimal-arith".to_string()])]
+    } else {
+        Vec::new()
+    };
     assert_eq!(
-        facts,
-        [("arith-rule".to_string(), vec!["decimal-arith".to_string()])],
-        "the module writes one fact, the closing rule's own name"
+        facts, want,
+        "{file}: the module writes no fact but the closing rule's own name"
     );
 }
 

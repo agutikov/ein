@@ -13,7 +13,9 @@
 ;;; `of9`'s whole extent, eleven conversions, one for each rule and 100200.
 
 (import std.math.num9 :symbols (arith9 from9 num9 of9))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (from9 (num9 0 0 0 0 0 0 0 0 0))
 (from9 (num9 0 0 0 0 0 0 0 0 7))

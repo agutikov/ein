@@ -12,7 +12,9 @@
 ;;; A problem imports it beside `words`, `(import readings :symbols
 ;;; (readings))`, and names the hrule, `(solve :hrules (read-need))`.
 (import words :symbols (wanted value left-over needed over))
-(import std.math.decimal-arith :symbols (add n sum-of))
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation reading-of Word Reading
   :why "{?2} is a reading of the word {?1} that the theory holds")

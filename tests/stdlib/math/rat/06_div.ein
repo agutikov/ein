@@ -26,7 +26,9 @@
 
 (import std.math.rat :symbols (rat-arith rat-div rat rat-quot-of))
 (import std.math.int :symbols (int))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int (n z 3) z) (n z 4)))
 (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 4)))

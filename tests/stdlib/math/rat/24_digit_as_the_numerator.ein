@@ -1,0 +1,22 @@
+;;; `std.math.rat` — a digit where a rational's integer goes. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(rat Z D)` holds an integer and a natural number: `rat-z-digit` reads
+;;; `(written (rat 7 (n z 2)))` and derives `(not-rational (rat 7 (n z 2)) 7)`
+;;; (Q-M1f.276 (a)).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.rat :symbols (rat-arith rat rat-add))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(rat-add (rat 7 (n z 2)) (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (false))

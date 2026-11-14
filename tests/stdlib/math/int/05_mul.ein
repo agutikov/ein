@@ -26,7 +26,9 @@
 ;;; every zero is.
 
 (import std.math.int :symbols (int-arith int-mul int int-product-of))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (int-mul (int (n (n z 1) 2) z) (int (n (n z 3) 4) z))
 (int-mul (int z (n (n z 1) 2)) (int (n (n z 3) 5) z))

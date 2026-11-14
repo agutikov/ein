@@ -23,7 +23,9 @@
 ;;; zero written with digits, and `41_div_call_not_zero.ein` the same rules
 ;;; with no zero, alive and answered.
 
-(import std.math.decimal-arith :symbols (decimal-arith div-call div-done n))
+(import std.math.decimal-arith :symbols (decimal-arith div-call div-done))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation share Number Number
   :why "asked: {?1} shared among {?2}")

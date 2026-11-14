@@ -8,7 +8,9 @@
 ;;; supposes is one no rule reads.
 (import words :symbols (words has holds asked needed together value model-counts-only))
 (import readings :symbols (readings read-need reads-as pack-all whole-only))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (has Bob apples (n z 5) now    :source "Bob has 5 apples,")
 (has Alice apples (n z 7) now  :source "Alice has 7.")

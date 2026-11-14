@@ -583,7 +583,8 @@ fn fact_grain_on_programs_written_to_test_it() {
 /// site is one, the verdict the safe *not monotone*.
 #[test]
 fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side() {
-    const READING: &str = "(import std.math.decimal-arith :symbols (decimal-arith div n quot-of))
+    const READING: &str = "(import std.math.decimal-arith :symbols (decimal-arith div quot-of))
+         (import std.math.decimal :symbols (n)) (import std.math.arith :symbols (z))
          (relation reading T :why \"{?1} is a reading\") (relation read-as T :why \"read as {?1}\")
          (relation amount T T :why \"there are {?2} {?1}\") (relation answer T T :why \"the answer for {?1} is {?2}\")
          (relation counted T :why \"{?1} is counted\")

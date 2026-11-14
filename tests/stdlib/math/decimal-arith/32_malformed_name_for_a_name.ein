@@ -2,28 +2,31 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A request the theory cannot read is flagged, `(malformed REQUEST)`, the
-;;; request as written, and `malformed-is-false` derives `(false)` from the
-;;; flag, as for a division by zero (the user's rulings of 2026-11-11 and
-;;; 2026-11-12). Every operand that is found is checked a place a firing,
-;;; `check-step`, and the rule that finds the fault says `(bad-operand TAG
-;;; (not-a-number THING))`; the operand's tag is turned into the request by
-;;; one of ten rules, here `bad-div-second`, and `bad-request-malformed`
-;;; derives the flag.
+;;; A `let` that cannot be read is flagged, `(malformed (let NAME N))`, and
+;;; `malformed-is-false` derives `(false)` from the flag, whether or not a
+;;; request names the constant (the user's rulings of 2026-11-11 and
+;;; 2026-11-12).
 ;;;
 ;;; `(let alias price)`: a name stands for a number, not for another name.
-;;; The operand `alias` is found to be `price`, which is handed to the check;
-;;; `check-prefix-named` sees a named constant where a number goes.
+;;; `let-to-name` reads the `let` and `(named price)`, which `let-named`
+;;; writes for `price`'s own `let`, and flags `(malformed (let alias
+;;; price))`. Until S1f.6.38 it was found only where a request named
+;;; `alias`: the operand was found to be `price`, which was handed to the
+;;; check of a numeral, and `check-prefix-named` flagged the request. That
+;;; check is `std.math.decimal`'s since, of what is written, and a `let`'s
+;;; value is the `let`'s to read.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; `(solve :expect (false))`: root is dead and R is empty, the one claim
 ;;; such a program can make. The sum beside it was computed and is in root's
-;;; state, but a dead state is no answer. `ein solve` names the request and
-;;; the two `let`s in the unsat core, and `--trace` shows the flag and the
+;;; state, but a dead state is no answer. `ein solve` names the
+;;; two `let`s in the unsat core, and `--trace` shows the flag and the
 ;;; contradiction as two steps.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n add div))
+(import std.math.decimal-arith :symbols (decimal-arith let add div))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let price (n z 5))
 (let alias price)

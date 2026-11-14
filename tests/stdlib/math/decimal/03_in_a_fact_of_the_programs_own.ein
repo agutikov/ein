@@ -1,0 +1,24 @@
+;;; `std.math.decimal` — a malformed numeral in a fact of the program's own relation. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The numeral need not be the calculator's operand at all: `(price apple (n
+;;; 1 2))` is a fact of the program's own relation, and `(n 1 2)` ends in a
+;;; digit where `z` goes. `numeral-prefix-digit` derives `(not-decimal (n 1 2)
+;;; 1)`, and `(false)` follows.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+;;; `ein solve` names the program's fact, as written, in the unsat core.
+
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation price Item Amount :why "{?1} costs {?2}")
+(__closed__ price)
+(price apple (n 1 2))
+
+(solve :expect (false))

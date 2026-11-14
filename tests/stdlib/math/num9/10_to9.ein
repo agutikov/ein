@@ -17,7 +17,9 @@
 ;;; `big`'s, the one number of ten digits.
 
 (import std.math.num9 :symbols (arith9 to9 as9 num9 big))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (to9 z)
 (to9 (n z 7))

@@ -12,7 +12,9 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
 ;;; the prototype this program was banked from, its counts and its costs.
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 (import bin :symbols (bin add2 b2 sum-of2))
 
 (add  (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))

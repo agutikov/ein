@@ -9,20 +9,24 @@
 ;;; it and states requests the universe has no candidate, R is {∅}, and the
 ;;; answer is root's fixpoint. No `absent`, no `not` and no guard of its own;
 ;;; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the undeclared
-;;; name's, and so two strata (S1f.6.12). Nothing of an operand is flagged
-;;; here but a `let` that cannot be read: `std.math.decimal-arith`'s header says why.
+;;; name's, and so two strata (S1f.6.12). An operand's faults and a malformed
+;;; integer are flagged (S1f.6.38, below), a malformed numeral by
+;;; `std.math.decimal`, wherever it is written.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
 ;;;     (import std.math.int :symbols (int-arith int-add int int-sum-of))
-;;;     (import std.math.decimal-arith :symbols (n))
+;;;     (import std.math.decimal :symbols (n))
+;;;     (import std.math.arith :symbols (z))
 ;;;
-;;; An import brings the module whole, `std.math.decimal-arith` and the tables with it
-;;; (M1f S1f.6.35); a program lists the names it writes, from the module that
-;;; declares each: `int-add`, `int`, `int-sum-of` from this one, `n` from
-;;; `std.math.decimal-arith`. `int-arith` is the theory's entry, the closing rule at the end
-;;; of this file: it names every rule and closes every relation of the module,
-;;; and it names `decimal-arith`, `std.math.decimal-arith`'s entry.
+;;; An import brings the module whole, `std.math.decimal-arith`, the modules
+;;; below it and the tables with it (M1f S1f.6.35); a program lists the names
+;;; it writes, from the module that declares each: `int-add`, `int`,
+;;; `int-sum-of` from this one, `n` from `std.math.decimal` and `z` from
+;;; `std.math.arith`. `int-arith` is the theory's entry, the closing rule at
+;;; the end of this file: it names every rule and closes every relation of the
+;;; module, and it names `decimal-arith`, `decimal` and `arith`, the entries of
+;;; the modules it imports.
 ;;;
 ;;; ── The integer ────────────────────────────────────────────────────────────
 ;;;
@@ -78,9 +82,9 @@
 ;;;     -7 / -2      4, 1          3, -1          3, -1
 ;;;
 ;;; The three agree where neither operand is negative, and with `std.math.decimal-arith`'s
-;;; `div` there. A divisor that is zero by value derives `std.math.decimal-arith`'s flag,
-;;; `(division-by-zero REQUEST)`, the request as written, and `std.math.decimal-arith`'s
-;;; rule derives `(false)` from it: no rule of this module concludes `(false)`.
+;;; `div` there. A divisor that is zero by value derives `std.math.arith`'s flag,
+;;; `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s
+;;; rule derives `(false)` from it.
 ;;; The module sees the zero by the divisor's shape before it calls
 ;;; `std.math.decimal-arith`'s division, so it makes no call with a zero divisor and the
 ;;; request has one flag, its own; `std.math.decimal-arith` flags any such call, whoever
@@ -147,14 +151,17 @@
 ;;; `int-add-n`, `int-mul-pp`, `int-mul-nn`, `int-mul-pos`, `int-mul-pn`,
 ;;; `int-mul-np`, `int-mul-neg`, `int-cmp-l`, `int-cmp-r`, `int-div-of`,
 ;;; `int-div-a`, `int-div-b`, `int-div-m`, `int-div-q` and `int-div-r`; the
-;;; signs `pos` and `neg`, two names inside a division's tags; `int-rule`,
-;;; and the entry `int-arith`. Everything of `std.math.decimal-arith` comes with it. The
+;;; signs `pos` and `neg`, two names inside a division's tags; the flag
+;;; `not-integer`; `int-rule`, and the entry `int-arith`. Everything of `std.math.decimal-arith` comes with it. The
 ;;; interface is `int`, the requests, the results and the four calls; the
 ;;; tags are in the state for a query or a `--trace` to see, and are not a
 ;;; promise.
 
 (import std.math.decimal-arith :symbols (decimal-arith operand operand-is sub-walk done add-walk mul-call cmp-walk
-                            order-is division-by-zero n div-call div-done))
+                            order-is div-call div-done bad-operand bad-request))
+(import std.math.decimal :symbols (decimal n named))
+(import std.math.arith :symbols (arith z division-by-zero))
+(import std.math.digits :symbols (nz))
 
 ;; ── The integer ─────────────────────────────────────────────────────────────
 (relation int Number Number
@@ -654,10 +661,88 @@
   :assert (int-quot-floor-of ?x ?y ?q ?r)
   :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
 
+;; ── An operand's faults: from this module's tags to the request ────────────
+;; An operand is looked up through `std.math.decimal-arith`'s `operand`, which
+;; finds a name no `let` states and a digit where a number goes, and says so
+;; under the tag it was asked with, `(bad-operand TAG FAULT)`. These rules turn
+;; this module's three tags into the request, `(bad-request REQUEST FAULT)`,
+;; and `std.math.decimal-arith`'s flags and `(false)` follow, as they do for
+;; its own ten (S1f.6.38, the (b) part of the user's ruling on Q-M1f.210; E-38).
+;; A division's tag holds `(int-div-of REQUEST)`, which the three share, and
+;; `int-bad-div` takes it to the request as written: such a request holds two
+;; flags, its tag's and its own.
+(rule int-bad-only ()
+  :match  (bad-operand (int-only ?request) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the operand of {?request} is at fault: {?f}")
+
+(rule int-bad-first ()
+  :match  (bad-operand (int-first ?request ?y) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the first operand of {?request} is at fault: {?f}")
+
+(rule int-bad-second ()
+  :match  (bad-operand (int-second ?request ?p ?n) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the second operand of {?request} is at fault: {?f}")
+
+(rule int-bad-div ()
+  :match  (bad-request (int-div-of ?request) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the division {?request} is at fault: {?f}")
+
+;; ── An integer's own shape ──────────────────────────────────────────────────
+;; Each part of `(int P N)` is a natural number. A digit or a named constant
+;; where a part goes is the integer's fault, this module's, seen where the
+;; integer is written as a numeral's is (S1f.6.38, Q-M1f.276 (a)): read off
+;; `(written (int P N))`, which the loader states for every integer a file
+;; writes, wherever it sits. A part that is a malformed numeral is
+;; `std.math.decimal`'s, which flags it; a natural number where an integer
+;; goes is not flagged (Q-M1f.277, (b)). No guard: a program that names `z`
+;; with a `let` is flagged for the `let`, and an integer with a part `z` is
+;; flagged beside it.
+(relation not-integer Integer Thing
+  :why "{?1} is not an integer: {?2} stands where a natural number goes")
+
+(rule int-p-digit ()
+  :match  (and (written (int ?x ?n)) (nz ?x))
+  :assert (not-integer (int ?x ?n) ?x)
+  :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
+
+(rule int-p-zero ()
+  :match  (written (int 0 ?n))
+  :assert (not-integer (int 0 ?n) 0)
+  :why    "the digit 0 stands where a natural number goes: zero is z")
+
+(rule int-p-named ()
+  :match  (and (written (int ?x ?n)) (named ?x))
+  :assert (not-integer (int ?x ?n) ?x)
+  :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
+
+(rule int-n-digit ()
+  :match  (and (written (int ?p ?x)) (nz ?x))
+  :assert (not-integer (int ?p ?x) ?x)
+  :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
+
+(rule int-n-zero ()
+  :match  (written (int ?p 0))
+  :assert (not-integer (int ?p 0) 0)
+  :why    "the digit 0 stands where a natural number goes: zero is z")
+
+(rule int-n-named ()
+  :match  (and (written (int ?p ?x)) (named ?x))
+  :assert (not-integer (int ?p ?x) ?x)
+  :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
+
+(rule not-integer-is-false ()
+  :match  (not-integer ?x ?thing)
+  :assert (false)
+  :why    "{?x} is not an integer: the program cannot hold it")
+
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed, so the search has no candidate
-;; among them, and every rule is named. It names `decimal-arith` too, `std.math.decimal-arith`'s
-;; entry. Until M1f S1f.6.35 the names were what made `(import std.math.int
+;; among them, and every rule is named. It names `decimal-arith`, `decimal` and
+;; `arith` too, the entries of the modules it imports. Until M1f S1f.6.35 the names were what made `(import std.math.int
 ;; :symbols (int-arith))` bring the whole theory, the lower one's included, a
 ;; selection's closure following the names a kept declaration writes (E-20 of
 ;; P1f.6's `findings.md`); every import brings its module whole since, and the
@@ -674,7 +759,7 @@
 
 (rule int-arith ()
   :match  ()
-  :assert (and (__closed__ int)
+  :assert (and (__closed__ int) (__closed__ nz) (__closed__ not-integer)
                (__closed__ int-simplify) (__closed__ int-simple-of)
                (__closed__ int-neg) (__closed__ int-neg-of)
                (__closed__ int-add) (__closed__ int-sum-of)
@@ -700,7 +785,7 @@
                (__closed__ int-div-m) (__closed__ int-div-q)
                (__closed__ int-div-r)
                (__closed__ int-rule)
-               (int-rule decimal-arith)
+               (int-rule decimal-arith) (int-rule decimal) (int-rule arith)
                (int-rule int-operand) (int-rule int-operand-second)
                (int-rule int-norm-walks) (int-rule int-norm-plus)
                (int-rule int-norm-minus)
@@ -744,5 +829,10 @@
                (int-rule int-div-floor-np-exact)
                (int-rule int-div-floor-pn-more)
                (int-rule int-div-floor-np-more) (int-rule int-div-floor-neg)
-               (int-rule int-div-floor-pos) (int-rule int-div-floor-answer))
+               (int-rule int-div-floor-pos) (int-rule int-div-floor-answer)
+               (int-rule int-bad-only) (int-rule int-bad-first)
+               (int-rule int-bad-second) (int-rule int-bad-div)
+               (int-rule int-p-digit) (int-rule int-p-zero) (int-rule int-p-named)
+               (int-rule int-n-digit) (int-rule int-n-zero) (int-rule int-n-named)
+               (int-rule not-integer-is-false))
   :why    "integers are computed and never guessed: every relation of the theory is closed")

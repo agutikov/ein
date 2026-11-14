@@ -640,7 +640,8 @@ fn a_division_by_zero_is_the_flag_under_every_convention() {
 // ── the circuit's measure ──────────────────────────────────────────
 
 /// Firings and depth of one request, as `arith_theory.rs` measures them; the
-/// two closing rules' firings are left out.
+/// closing rules' firings are left out, the two theories' and, since
+/// S1f.6.38, those of `std.math.decimal` and `std.math.arith`.
 fn circuit(body: &str) -> (usize, usize) {
     let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
@@ -659,6 +660,14 @@ fn circuit(body: &str) -> (usize, usize) {
             .iter()
             .find_map(|n| terms.syms.get(n))
             .expect("std.math.int's closing rule"),
+        ein_corpus::spellings("decimal")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.math.decimal's closing rule"),
+        ein_corpus::spellings("arith")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.math.arith's closing rule"),
     ];
     {
         let mut s = Session {
@@ -847,6 +856,17 @@ impl Module {
 /// travels in the call's tag. A second premise that looks a fact up by a
 /// number would change no answer and make every batch cost the square of its
 /// count (E-3 of P1f.6's `findings.md`).
+/// The rules of the integer's own shape (S1f.6.38, Q-M1f.276 (a)): each
+/// reads `(written (int P N))` and probes what it binds, `nz` or `named`.
+const SHAPE_RULES: [&str; 6] = [
+    "int-p-digit",
+    "int-p-zero",
+    "int-p-named",
+    "int-n-digit",
+    "int-n-zero",
+    "int-n-named",
+];
+
 #[test]
 fn every_rule_has_one_premise() {
     let m = module();
@@ -862,6 +882,21 @@ fn every_rule_has_one_premise() {
             assert!(premises.is_empty(), "`int-arith` fires at root, on nothing");
             continue;
         }
+        if SHAPE_RULES.contains(&name.as_str()) {
+            // The integer's own shape (S1f.6.38): `(written (int P N))`, the
+            // one premise that holds numbers, and a probe of what it binds.
+            let heads: Vec<&str> = premises
+                .iter()
+                .filter_map(|&p| m.ast.head_name(p))
+                .collect();
+            assert!(
+                heads.first() == Some(&"written")
+                    && heads[1..].iter().all(|h| ["nz", "named"].contains(h))
+                    && heads.len() <= 2,
+                "rule {name}: `(written (int P N))` and at most a probe: {heads:?}"
+            );
+            continue;
+        }
         assert_eq!(
             premises.len(),
             1,
@@ -872,11 +907,12 @@ fn every_rule_has_one_premise() {
     }
 }
 
-/// No `absent`, no `not`, no `or`, no guard, and no `(false)`: the module is
-/// monotone, has one stratum, and never refutes. A contradiction in a
-/// program of integers is `std.math.decimal-arith`'s, a division by zero: since S1f.6.22
-/// the module derives that theory's flag, `(division-by-zero REQUEST)`, and
-/// `std.math.decimal-arith`'s rule concludes `(false)` from it.
+/// No `absent`, no `not`, no `or`, no guard, and one `(false)`: the module is
+/// monotone and has one stratum. A division by zero in a program of integers
+/// is `std.math.arith`'s: since S1f.6.22 the module derives its flag,
+/// `(division-by-zero REQUEST)`, and `std.math.arith`'s rule concludes
+/// `(false)` from it. The module's own refutation is its integer's shape's,
+/// `not-integer-is-false`, from its flag alone (S1f.6.38).
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();
@@ -884,6 +920,14 @@ fn the_theory_writes_no_negation_and_no_guard() {
         let mut heads = Vec::new();
         m.heads(m.clause(rule, "match"), &mut heads);
         m.heads(m.clause(rule, "assert"), &mut heads);
+        if name == "not-integer-is-false" {
+            assert_eq!(
+                heads,
+                ["not-integer", "false"],
+                "{name} reads its flag alone"
+            );
+            continue;
+        }
         for banned in ["absent", "not", "or", "neq", "false"] {
             assert!(
                 !heads.iter().any(|h| h == banned),
@@ -903,9 +947,10 @@ fn the_theory_writes_no_negation_and_no_guard() {
 }
 
 /// `int-arith` is the theory's one entry. It closes every relation the
-/// module declares, names every other rule, and names `decimal-arith`, `std.math.decimal-arith`'s
-/// entry, without which a selection leaves the lower theory's rules behind
-/// in silence (E-20 of P1f.6's `findings.md`).
+/// module declares and the table it reads, names every other rule, and names
+/// the entries of the modules it imports, `decimal-arith`, `decimal` and
+/// `arith`, without which a selection left the lower theory's rules behind in
+/// silence (E-20 of P1f.6's `findings.md`).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();
@@ -929,24 +974,27 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
             other => panic!("`int-arith` asserts a {other:?}"),
         }
     }
-    let want_closed: BTreeSet<String> =
+    let mut want_closed: BTreeSet<String> =
         m.declared("relation").into_iter().map(|(n, _)| n).collect();
+    want_closed.insert("nz".to_string());
     assert_eq!(
         closed, want_closed,
-        "`int-arith` closes every relation the module declares"
+        "`int-arith` closes every relation the module declares, and `nz`, which it reads"
     );
     let mut want_named: BTreeSet<String> = rules
         .iter()
         .map(|(n, _)| n.clone())
         .filter(|n| n != "int-arith")
         .collect();
-    want_named.insert("decimal-arith".to_string());
+    for entry in ["decimal-arith", "decimal", "arith"] {
+        want_named.insert(entry.to_string());
+    }
     assert_eq!(
         named, want_named,
-        "`int-arith` names every other rule of the module, and `decimal-arith`"
+        "`int-arith` names every other rule of the module, and the entries below"
     );
 
-    // The module imports `std.math.decimal-arith` by its entry and nothing else.
+    // The module imports the calculator's modules below it, and `nz`.
     let imports: Vec<String> = m
         .forms
         .iter()
@@ -958,7 +1006,15 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
                 .to_string()
         })
         .collect();
-    assert_eq!(imports, ["std.math.decimal-arith"]);
+    assert_eq!(
+        imports,
+        [
+            "std.math.decimal-arith",
+            "std.math.decimal",
+            "std.math.arith",
+            "std.math.digits"
+        ]
+    );
 
     // Its own name is a written fact, the module's only one (E-11).
     let facts: Vec<(String, Vec<String>)> = m
@@ -985,5 +1041,40 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         facts,
         [("int-rule".to_string(), vec!["int-arith".to_string()])],
         "the module writes one fact, the closing rule's own name"
+    );
+}
+
+/// **An integer's own malformation is its flag, as written, and `(false)`**
+/// (M1f S1f.6.38, Q-M1f.276 (a)); **an operand's fault is the request's**,
+/// and a division's is its request's beside its tag's (Q-M1f.282 (a)). A
+/// program here is dead, and a dead program's one claim, `(false)`, cannot say
+/// which flag killed it nor how the flag is written: the mutation census
+/// banks the mutants that exchange a flag's arguments, and this holds the text
+/// from outside the language.
+#[test]
+fn a_malformed_integer_and_an_operands_fault_are_flagged_as_written() {
+    let fine = "(int (n z 1) z)";
+    for (int, flag) in [
+        ("(int 7 z)", "(not-integer (int 7 z) 7)"),
+        ("(int 0 z)", "(not-integer (int 0 z) 0)"),
+        ("(int price z)", "(not-integer (int price z) price)"),
+        ("(int z 7)", "(not-integer (int z 7) 7)"),
+        ("(int (n z 1) 0)", "(not-integer (int (n z 1) 0) 0)"),
+        ("(int z price)", "(not-integer (int z price) price)"),
+    ] {
+        let body = format!("(let price (n z 5))\n(int-add {int} {fine})\n");
+        assert_eq!(run(&body, "not-integer"), [flag], "{int}");
+        assert_eq!(run(&body, "false"), ["(false)"], "{int}");
+    }
+    let body = format!("(int-div-trunc foo {fine})\n");
+    let mut flags = run(&body, "undeclared");
+    flags.sort();
+    assert_eq!(
+        flags,
+        [
+            "(undeclared foo (int-div-of (int-div-trunc foo (int (n z 1) z))))",
+            "(undeclared foo (int-div-trunc foo (int (n z 1) z)))",
+        ],
+        "a division's operand: its tag's flag and its request's"
     );
 }

@@ -1,0 +1,21 @@
+;;; `std.math.int` — a letter in a part of an integer, the second operand of a product. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Where the integer stands does not matter: here it is a product's second
+;;; operand, and `numeral-digit` flags `(n z x)` as it is written, before any
+;;; multiplication.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.int :symbols (int-arith int int-mul))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-mul (int (n z 1) z) (int (n z x) z))
+
+(solve :expect (false))

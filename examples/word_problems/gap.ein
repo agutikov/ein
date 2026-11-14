@@ -3,7 +3,9 @@
 ;;; it can, Bob's 3, gives no answer to *together*, and names the gap.
 (import words :symbols (words has gave asked together value amount))
 (import gaps :symbols (gaps unanswered))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (gave Bob Alice apples (n z 2) t0 t1  :source "He gave 2 to Alice.")

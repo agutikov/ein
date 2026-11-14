@@ -5,7 +5,9 @@
 ;;; bound it can count to. Saturation alone.
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.math.decimal-arith :symbols (decimal-arith n cmp-walk order-is div-call div-done add-walk mul-call done))
+(import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is div-call div-done add-walk mul-call done))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation collatz Number Number :why "asked: the trajectory of {?1}, at most {?2} steps")
 (relation cz Tag Number Number :why "for {?1}: at {?2} after {?3} steps")

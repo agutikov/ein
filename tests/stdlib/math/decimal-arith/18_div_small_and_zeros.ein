@@ -26,7 +26,9 @@
 ;;; `(n (n (n z 0) 2) 0)`, a remainder `(n z 0)`, or a second answer fails
 ;;; the file.
 
-(import std.math.decimal-arith :symbols (decimal-arith div n quot-of))
+(import std.math.decimal-arith :symbols (decimal-arith div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (div (n z 3) (n z 7))
 (div (n (n z 4) 2) (n (n z 4) 2))

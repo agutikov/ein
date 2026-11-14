@@ -14,7 +14,9 @@
 ;;; argument is the normal form. The claim is the relation's whole extent, so
 ;;; an answer `(n (n (n z 0) 1) 2)` fails the file.
 
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add (n (n (n z 0) 0) 5) (n (n z 0) 7))
 (add (n (n z 0) 0) (n (n (n z 0) 0) 0))

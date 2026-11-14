@@ -444,15 +444,18 @@ fn an_imported_declaration_is_held_too() {
     let cases: [(&str, &str, &str); 4] = [
         (
             "flat-stdlib",
-            "(import std.math.decimal-arith :symbols (decimal-arith add n))\n(add (n z 5))\n",
-            ":2:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand \
+            "(import std.math.decimal-arith :symbols (decimal-arith add))\n\
+             (import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\
+             (add (n z 5))\n",
+            ":4:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand \
              Operand) declares 2",
         ),
         (
             "qualified-stdlib",
-            "(import std.math.decimal-arith :as a)\n(a.add (a.n z 5) (a.n 5))\n",
-            ":2:19: the fact (a.add (a.n z 5) (a.n 5)) holds (a.n 5), which gives a.n 1 \
-             argument, and (relation a.n Number Digit) declares 2",
+            "(import std.math.decimal-arith :as a)\n(import std.math.decimal :as d)\n\
+             (import std.math.arith :as m)\n(a.add (d.n m.z 5) (d.n 5))\n",
+            ":4:21: the fact (a.add (d.n m.z 5) (d.n 5)) holds (d.n 5), which gives d.n 1 \
+             argument, and (relation d.n Number Digit) declares 2",
         ),
         (
             "flat-file",

@@ -3,7 +3,9 @@
 ;;; How many apples do they have together?
 ;;; The gap of gap.ein closed by a sentence: 3, 6 and 9.
 (import words :symbols (words has gave asked amount together value))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (has Bob apples (n z 5) t0            :source "Bob has 5 apples.")
 (has Alice apples (n z 4) t0          :source "Alice has 4 apples.")

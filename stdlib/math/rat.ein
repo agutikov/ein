@@ -8,22 +8,24 @@
 ;;; imports it and states requests the universe has no candidate, R is {∅},
 ;;; and the answer is root's fixpoint. No `absent`, no `not` and no guard of
 ;;; its own; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the
-;;; undeclared name's, and so two strata (S1f.6.12). Nothing of an operand is
-;;; flagged here but a `let` that cannot be read: `std.math.decimal-arith`'s header says
-;;; why.
+;;; undeclared name's, and so two strata (S1f.6.12). An operand's faults and a
+;;; malformed rational are flagged (S1f.6.38, below), a malformed integer by
+;;; `std.math.int` and a malformed numeral by `std.math.decimal`, wherever
+;;; each is written.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
 ;;;     (import std.math.rat :symbols (rat-arith rat-add rat rat-sum-of))
 ;;;     (import std.math.int :symbols (int))
-;;;     (import std.math.decimal-arith :symbols (n))
+;;;     (import std.math.decimal :symbols (n))
+;;;     (import std.math.arith :symbols (z))
 ;;;
-;;; An import brings the module whole, the two theories below and the tables
-;;; with it (M1f S1f.6.35); a program lists the names it writes, from the
-;;; module that declares each. `rat-arith` is the theory's entry, the closing
-;;; rule at the end of this file: it names every rule and closes every relation
-;;; of the module, and it names `int-arith` and `decimal-arith`, the entries of the two
-;;; theories below.
+;;; An import brings the module whole, the theories below and the tables with
+;;; it (M1f S1f.6.35); a program lists the names it writes, from the module
+;;; that declares each. `rat-arith` is the theory's entry, the closing rule at
+;;; the end of this file: it names every rule and closes every relation of the
+;;; module, and it names `int-arith`, `decimal-arith`, `decimal` and `arith`,
+;;; the entries of the modules it imports.
 ;;;
 ;;; ── The rational ───────────────────────────────────────────────────────────
 ;;;
@@ -59,10 +61,10 @@
 ;;; write 5 as `(rat (int (n z 5) z) (n z 1))`.
 ;;;
 ;;; **A zero denominator is a division by zero, and a contradiction,** as in
-;;; `std.math.decimal-arith` and by its rule. A request with an operand whose denominator
+;;; `std.math.decimal-arith`, and by `std.math.arith`'s rule. A request with an operand whose denominator
 ;;; is zero, however the zero is written, and a `rat-div` by a rational that
 ;;; is zero, derive the flag `(division-by-zero REQUEST)`, the request as
-;;; written, and `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)`
+;;; written, and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`
 ;;; from the flag. Root is dead and R is empty. A program that must not die
 ;;; compares its divisor with zero first, and asks only where it is not.
 ;;; These rules are the module's own and stay (S1f.6.24): `std.math.decimal-arith` flags a
@@ -133,16 +135,21 @@
 ;;; tags `rat-of`, `rat-den`, `rat-only`, `rat-first`, `rat-second`, `rat-x1`
 ;;; to `rat-x6`, `rat-sum-num`, `rat-sum-den`, `rat-cmp-num`, `rat-mul-num`,
 ;;; `rat-mul-den`, `rat-div-by`, `rat-num`, `rat-g`, `rat-gcd-rem`,
-;;; `rat-q-num` and `rat-q-den`; `rat-rule`, and the entry `rat-arith`.
-;;; Everything of `std.math.int` and `std.math.decimal-arith` comes with it, the flag
-;;; `division-by-zero` and the orders `lt`, `eq` and `gt` among them. The
-;;; interface is `rat`, the requests, the results, the flag and the three
+;;; `rat-q-num` and `rat-q-den`; the flag `not-rational`; `rat-rule`, and the
+;;; entry `rat-arith`.
+;;; Everything of `std.math.int` and `std.math.decimal-arith` comes with it,
+;;; `std.math.arith`'s flag `division-by-zero` and the orders `lt`, `eq` and
+;;; `gt` among them. The interface is `rat`, the requests, the results, the
+;;; flags and the three
 ;;; calls; the rest is in the state for a query or a `--trace` to see, and is
 ;;; not a promise.
 
-(import std.math.decimal-arith :symbols (decimal-arith operand operand-is cmp-walk order-is division-by-zero n div-call
-                            div-done mul-call done add-walk))
+(import std.math.decimal-arith :symbols (decimal-arith operand operand-is cmp-walk order-is div-call
+                            div-done mul-call done add-walk bad-operand bad-request))
 (import std.math.int :symbols (int-arith int int-norm int-done int-mul-call))
+(import std.math.decimal :symbols (decimal n named))
+(import std.math.arith :symbols (arith z division-by-zero))
+(import std.math.digits :symbols (nz))
 
 ;; ── The rational ────────────────────────────────────────────────────────────
 (relation rat Integer Number
@@ -276,7 +283,7 @@
   :assert (operand (rat-of (rat-second ?k ?p ?n ?d)) ?y)
   :why    "the first operand is {?p} less {?n}, over {?d}: now the rational {?y} stands for")
 
-;; ── A zero denominator: `std.math.decimal-arith`'s flag, and its rule to `(false)` ───────
+;; ── A zero denominator: `std.math.arith`'s flag, and its rule to `(false)` ───
 (rule rat-zero-only ()
   :match  (rat-zero-den (rat-only ?request))
   :assert (division-by-zero ?request)
@@ -562,9 +569,76 @@
   :assert (rat-quot-of ?x ?y ?s)
   :why    "{?x} divided by {?y} = {?s}")
 
+;; ── An operand's faults: from this module's tags to the request ────────────
+;; As `std.math.int`'s do: `std.math.decimal-arith`'s `operand` says what is
+;; wrong with an operand under the tag it was asked with, and these rules turn
+;; this module's three tags into the request, `(bad-request REQUEST FAULT)`,
+;; and `std.math.decimal-arith`'s flags and `(false)` follow (S1f.6.38, the
+;; (b) part of the user's ruling on Q-M1f.210; E-38).
+(rule rat-bad-only ()
+  :match  (bad-operand (rat-of (rat-only ?request)) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the operand of {?request} is at fault: {?f}")
+
+(rule rat-bad-first ()
+  :match  (bad-operand (rat-of (rat-first ?request ?y)) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the first operand of {?request} is at fault: {?f}")
+
+(rule rat-bad-second ()
+  :match  (bad-operand (rat-of (rat-second ?request ?p ?n ?d)) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the second operand of {?request} is at fault: {?f}")
+
+;; ── A rational's own shape ──────────────────────────────────────────────────
+;; `(rat Z D)` holds an integer and a natural number. A digit or a named
+;; constant where either goes is the rational's fault, this module's, seen
+;; where the rational is written (S1f.6.38, Q-M1f.276 (a)), off `(written (rat
+;; Z D))`. A malformed integer inside is `std.math.int`'s, a malformed numeral
+;; `std.math.decimal`'s; a natural number where the integer goes is not
+;; flagged (Q-M1f.277, (b)). No guard, as `std.math.int`'s.
+(relation not-rational Rational Thing
+  :why "{?1} is not a rational: {?2} stands where an integer or a natural number goes")
+
+(rule rat-z-digit ()
+  :match  (and (written (rat ?x ?d)) (nz ?x))
+  :assert (not-rational (rat ?x ?d) ?x)
+  :why    "the digit {?x} stands where an integer goes: it is (int (n z {?x}) z)")
+
+(rule rat-z-zero ()
+  :match  (written (rat 0 ?d))
+  :assert (not-rational (rat 0 ?d) 0)
+  :why    "the digit 0 stands where an integer goes: zero is (int z z)")
+
+(rule rat-z-named ()
+  :match  (and (written (rat ?x ?d)) (named ?x))
+  :assert (not-rational (rat ?x ?d) ?x)
+  :why    "the name {?x} stands where an integer goes: a name stands for a number as an operand, not inside one")
+
+(rule rat-d-digit ()
+  :match  (and (written (rat ?i ?x)) (nz ?x))
+  :assert (not-rational (rat ?i ?x) ?x)
+  :why    "the digit {?x} stands where a natural number goes: it is (n z {?x})")
+
+(rule rat-d-zero ()
+  :match  (written (rat ?i 0))
+  :assert (not-rational (rat ?i 0) 0)
+  :why    "the digit 0 stands where a natural number goes: zero is z")
+
+(rule rat-d-named ()
+  :match  (and (written (rat ?i ?x)) (named ?x))
+  :assert (not-rational (rat ?i ?x) ?x)
+  :why    "the name {?x} stands where a natural number goes: a name stands for a number as an operand, not inside one")
+
+(rule not-rational-is-false ()
+  :match  (not-rational ?x ?thing)
+  :assert (false)
+  :why    "{?x} is not a rational: the program cannot hold it")
+
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed and every rule named, with
-;; `int-arith` and `decimal-arith`, the entries of the theories below. Until M1f
+;; `int-arith`, `decimal-arith`, `decimal` and `arith`, the entries of the
+;; modules it imports. Until M1f
 ;; S1f.6.35 a selection's closure followed the names a kept declaration
 ;; writes (E-20 of P1f.6's `findings.md`); every import brings its module
 ;; whole since, and the names stay for a program and a trace to read. `ein-infer/tests/rat_theory.rs` holds that nothing is
@@ -579,7 +653,8 @@
 
 (rule rat-arith ()
   :match  ()
-  :assert (and (__closed__ rat) (__closed__ rat-simplify)
+  :assert (and (__closed__ rat) (__closed__ nz) (__closed__ not-rational)
+               (__closed__ rat-simplify)
                (__closed__ rat-simple-of) (__closed__ rat-neg)
                (__closed__ rat-neg-of) (__closed__ rat-add)
                (__closed__ rat-sum-of) (__closed__ rat-sub)
@@ -602,7 +677,7 @@
                (__closed__ rat-num) (__closed__ rat-g)
                (__closed__ rat-gcd-rem) (__closed__ rat-q-num)
                (__closed__ rat-q-den) (__closed__ rat-rule) (rat-rule decimal-arith)
-               (rat-rule int-arith) (rat-rule rat-operand)
+               (rat-rule int-arith) (rat-rule decimal) (rat-rule arith) (rat-rule rat-operand)
                (rat-rule rat-operand-check) (rat-rule rat-operand-found)
                (rat-rule rat-operand-zero) (rat-rule rat-operand-second)
                (rat-rule rat-zero-only) (rat-rule rat-zero-first)
@@ -630,5 +705,10 @@
                (rat-rule rat-mul-start) (rat-rule rat-mul-answer)
                (rat-rule rat-div-ask) (rat-rule rat-div-start)
                (rat-rule rat-div-pos) (rat-rule rat-div-neg)
-               (rat-rule rat-div-zero) (rat-rule rat-div-answer))
+               (rat-rule rat-div-zero) (rat-rule rat-div-answer)
+               (rat-rule rat-bad-only) (rat-rule rat-bad-first)
+               (rat-rule rat-bad-second)
+               (rat-rule rat-z-digit) (rat-rule rat-z-zero) (rat-rule rat-z-named)
+               (rat-rule rat-d-digit) (rat-rule rat-d-zero) (rat-rule rat-d-named)
+               (rat-rule not-rational-is-false))
   :why    "rationals are computed and never guessed: every relation of the theory is closed")

@@ -296,7 +296,7 @@ def theory(w: int) -> Theory:
            "the divisor of {?n} divided by zero is zero")
 
     # ── conversions ────────────────────────────────────────────────────────
-    t.section("Conversions to and from `std.math.decimal-arith`'s numbers, `z` and `(n PREFIX DIGIT)`: a request each\n"
+    t.section("Conversions to and from `std.math.decimal`'s numbers, `z` and `(n PREFIX DIGIT)`: a request each\n"
               ";;    way, one firing, a rule for each count of digits")
 
     def nested(vs: list[str], inner: str = "z") -> str:
@@ -335,7 +335,10 @@ def render(w: int) -> str:
     nm = t.nm
     entry, rule_rel = nm("arith#"), nm("num#-rule")
     tables = ["fa", "fs", "md", "cl", "nz", "adj"]
-    arith = ["n", "division-by-zero", "division-by-zero-is-false"]
+    # `n` is `std.math.decimal`'s, and `z`, the flag of a division by zero and its rule are
+    # `std.math.arith`'s, since M1f S1f.6.38; `std.math.decimal-arith` still comes whole with the module.
+    decimal = ["n"]
+    arith = ["z", "division-by-zero", "division-by-zero-is-false"]
     ex = lambda v: t.numl(list(str(v).rjust(w, "0")))
     out: list[str] = []
     emit = out.append
@@ -365,8 +368,9 @@ def render(w: int) -> str:
 ;;; under full names (M1f S1f.6.35); a program lists the names it writes.
 ;;; `{entry}` is the theory's entry, the closing rule at the end of this file:
 ;;; it names every rule and closes every relation of the theory and the tables
-;;; it reads. `n` and `division-by-zero` are `std.math.decimal-arith`'s, which this module
-;;; lists, and a program that writes them lists them from `std.math.decimal-arith`.
+;;; it reads. `n` is `std.math.decimal`'s, and `z` and `division-by-zero` are
+;;; `std.math.arith`'s (M1f S1f.6.38), which this module lists, and a program
+;;; that writes them lists them from those modules.
 ;;;
 ;;; ── The protocol: a request fact, answered by a result fact or by a flag ───
 ;;;
@@ -385,14 +389,14 @@ def render(w: int) -> str:
 ;;; result fact: never a truncated number. Root stays alive, so the program's
 ;;; other requests are answered, and a rule of the program may match the flag.
 ;;;
-;;; **Division by zero is a contradiction,** as in `std.math.decimal-arith` and by its
-;;; rule: the request derives `(division-by-zero ({nm('div#')} X ZERO))`, and
-;;; `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)` from the flag.
+;;; **Division by zero is a contradiction,** as in `std.math.decimal-arith`, and by
+;;; `std.math.arith`'s rule: the request derives `(division-by-zero ({nm('div#')} X ZERO))`,
+;;; and `std.math.arith`'s `division-by-zero-is-false` derives `(false)` from the flag.
 ;;; Root is dead and R is empty.
 ;;;
 ;;; ── Conversions: a request each way ────────────────────────────────────────
 ;;;
-;;;     ({nm('to#')} X)         ({nm('as#')} X W)   X a number of `std.math.decimal-arith`, `z` or `(n PREFIX DIGIT)`
+;;;     ({nm('to#')} X)         ({nm('as#')} X W)   X a number of `std.math.decimal`, `z` or `(n PREFIX DIGIT)`
 ;;;                      or (big X)   where X is written with more than {w} digits
 ;;;     ({nm('from#')} W)       ({nm('of#')} W X)   X in normal form, with no high zero
 ;;;
@@ -443,8 +447,8 @@ def render(w: int) -> str:
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Its own: {', '.join('`' + r[0] + '`' for r in t.rels)}, `{rule_rel}`, the entry
-;;; `{entry}`, and its rules' names. From `std.math.decimal-arith`: `n`, with `z`, for the
-;;; conversions, and `division-by-zero` with the rule from it to `(false)`.
+;;; `{entry}`, and its rules' names. From `std.math.decimal`: `n`, for the conversions;
+;;; from `std.math.arith`: `z`, and `division-by-zero` with the rule from it to `(false)`.
 ;;; From `std.math.digits`: {', '.join('`' + x + '`' for x in tables)}, with the orders `lt`, `eq`,
 ;;; `gt`. The interface is the number, the requests, the results, the two
 ;;; flags, the conversions and `big`; the states `{nm('mul#-at')}` and
@@ -452,7 +456,9 @@ def render(w: int) -> str:
 ;;; or a `--trace` to see, and are not a promise.
 """)
     emit(f"(import std.math.digits :symbols ({' '.join(tables)}))")
-    emit(f"(import std.math.decimal-arith :symbols ({' '.join(arith)}))")
+    emit("(import std.math.decimal-arith)")
+    emit(f"(import std.math.decimal :symbols ({' '.join(decimal)}))")
+    emit(f"(import std.math.arith :symbols ({' '.join(arith)}))")
     marks = t.sections + [("", len(t.rels), len(t.rules))]
     for (comment, r0, u0), (_, r1, u1) in zip(marks, marks[1:]):
         emit(f"\n;; ── {comment} ──")

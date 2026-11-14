@@ -1,0 +1,22 @@
+;;; `std.math.int` — a letter in a part of an integer. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A malformed numeral is `std.math.decimal`'s, wherever it is written: here
+;;; inside an integer, a request's operand. `(n z x)` holds `x` where a digit
+;;; goes, and `numeral-digit` flags it as it is written. Until S1f.6.38 an
+;;; integer's parts went straight to the walks and were never checked (E-38).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.int :symbols (int-arith int int-add))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-add (int (n z x) z) (int (n z 1) z))
+
+(solve :expect (false))

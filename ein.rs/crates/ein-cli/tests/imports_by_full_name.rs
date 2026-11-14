@@ -53,7 +53,8 @@ fn program(tag: &str, src: &str, modules: &[(&str, &str)]) -> Scratch {
 fn the_calculator_by_the_names_a_program_writes() {
     let s = program(
         "ein-full-acc",
-        "(import std.math.decimal-arith :symbols (add sum-of n))\n\
+        "(import std.math.decimal-arith :symbols (add sum-of))\n\
+         (import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\
          (add (n z 2) (n z 3))\n\
          (query :goal (sum-of ?x ?y ?s) :expect (model (sum-of (n z 2) (n z 3) (n z 5))))\n",
         &[],
@@ -92,7 +93,9 @@ fn a_programs_own_names_beside_the_calculator() {
          (query :goal (col ?c ?d ?k) :expect (model (col units 2 1)))\n",
     ] {
         let src = format!(
-            "(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))\n(add (n z 7) (n z 5))\n{own}\
+            "(import std.math.decimal-arith :symbols (decimal-arith add sum-of))\n\
+             (import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\
+             (add (n z 7) (n z 5))\n{own}\
              (query :goal (sum-of ?x ?y ?s) :expect (model (sum-of (n z 7) (n z 5) (n (n z 1) 2))))\n"
         );
         let s = program("ein-full-own", &src, &[]);
@@ -118,11 +121,14 @@ fn an_alias_makes_no_copy() {
             .to_string()
     };
     let once = facts(
-        "(import std.math.decimal-arith :symbols (decimal-arith add n))\n(add (n z 2) (n z 3))\n",
+        "(import std.math.decimal-arith :symbols (decimal-arith add))\n\
+         (import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\
+         (add (n z 2) (n z 3))\n",
     );
     let twice = facts(
-        "(import std.math.decimal-arith :symbols (decimal-arith add n))\n(import std.math.decimal-arith :as a)\n\
-         (add (n z 2) (n z 3))\n",
+        "(import std.math.decimal-arith :symbols (decimal-arith add))\n\
+         (import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\
+         (import std.math.decimal-arith :as a)\n(add (n z 2) (n z 3))\n",
     );
     assert_eq!(once, twice, "an alias brings no second calculator");
 }

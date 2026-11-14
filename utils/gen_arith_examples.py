@@ -100,21 +100,28 @@ OPS = ("add", "sub", "cmp", "mul", "div")
 ARITH_NAMES = None
 
 
+def declared(module: str) -> set:
+    """Every name `stdlib/math/<module>.ein` declares."""
+    text = (REPO / "stdlib" / "math" / f"{module}.ein").read_text()
+    return set(re.findall(r"^\((?:relation|rule|hrule|macro)\s+(\S+)", text, re.M))
+
+
 def arith_names() -> set:
     """Every name `stdlib/math/decimal-arith.ein` declares."""
     global ARITH_NAMES
     if ARITH_NAMES is None:
-        text = (REPO / "stdlib" / "math" / "decimal-arith.ein").read_text()
-        ARITH_NAMES = set(re.findall(r"^\((?:relation|rule|hrule|macro)\s+(\S+)", text, re.M))
+        ARITH_NAMES = declared("decimal-arith")
     return ARITH_NAMES
 
 
 def import_line(body: str) -> str:
     """`(import std.math.decimal-arith :symbols (decimal-arith …))`: the entry and the names `body` writes, wrapped at 100
-    columns under the list's first name."""
+    columns under the list's first name; then, since M1f S1f.6.38, `(import std.math.decimal :symbols (n))` and
+    `(import std.math.arith :symbols (z))` where `body` writes those, which are those modules' and not re-exported."""
     names = ["decimal-arith"]
     code = re.sub(r'"(?:\\.|[^"\\])*"|;[^\n]*', " ", body)
-    for tok in re.findall(r"[^\s()]+", code):
+    toks = re.findall(r"[^\s()]+", code)
+    for tok in toks:
         if tok in arith_names() and tok not in names:
             names.append(tok)
     head = "(import std.math.decimal-arith :symbols ("
@@ -125,7 +132,15 @@ def import_line(body: str) -> str:
             lines[-1] = last + ("" if last.endswith("(") else " ") + n
         else:
             lines.append(" " * len(head) + n)
-    return "\n".join(lines) + "))\n"
+    out = "\n".join(lines) + "))\n"
+    for module in ("decimal", "arith"):
+        listed = []
+        for tok in toks:
+            if tok in declared(module) and tok not in listed:
+                listed.append(tok)
+        if listed:
+            out += f"(import std.math.{module} :symbols ({' '.join(listed)}))\n"
+    return out
 NESTING_LIMIT = 1000  # `ein_ir::grammar::NESTING_LIMIT`: a `(` deeper than this is refused
 
 

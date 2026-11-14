@@ -1,0 +1,25 @@
+;;; `std.math.decimal-arith` — a digit as the first operand of `sub`. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A digit stands where a number goes: seven is `(n z 7)`. `operand-digit`
+;;; says `(bad-operand TAG (not-a-number 7))` under the operand's tag, `bad-
+;;; sub-first` turns the tag into the request, and `bad-request-malformed`
+;;; derives `(malformed (sub 7 (n z 5)))`, the request as written; `malformed-
+;;; is-false` derives `(false)`. The operand's fault, `std.math.decimal-
+;;; arith`'s: no numeral is malformed. One program a rule of the ten from a
+;;; tag to its request (S1f.6.38: the malformed numerals of `22` to `32`
+;;; reached them until the numeral's check became `std.math.decimal`'s).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.decimal-arith :symbols (decimal-arith sub))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(sub 7 (n z 5))
+
+(solve :expect (false))

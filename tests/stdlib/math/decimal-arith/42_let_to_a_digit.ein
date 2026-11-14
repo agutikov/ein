@@ -1,0 +1,22 @@
+;;; `std.math.decimal-arith` — a `let` that names a digit. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; What a `let` names is a number, and a digit is none: seven is `(n z 7)`.
+;;; `let-to-digit` derives `(malformed (let seven 7))` whether or not a
+;;; request names `seven`, and `malformed-is-false` derives `(false)`. Until
+;;; S1f.6.38 it was found only where a request named the constant, by the
+;;; check the request handed the value to.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let seven 7)
+
+(solve :expect (false))

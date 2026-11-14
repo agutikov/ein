@@ -5,7 +5,7 @@
 ;;; A division whose divisor is zero has no answer, under any convention. Both
 ;;; operands are simplified, the divisor's normal form is `(int z z)`, and
 ;;; `int-div-by-zero` derives the flag `(division-by-zero (int-div-euclid X
-;;; Y))`, the request as written; `std.math.decimal-arith`'s `division-by-zero-is-false`
+;;; Y))`, the request as written; `std.math.arith`'s `division-by-zero-is-false`
 ;;; derives `(false)` from the flag. The divisor is zero as written.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
@@ -16,7 +16,9 @@
 ;;; program has an answer. Here: -7 by zero.
 
 (import std.math.int :symbols (int-arith int-add int int-div-euclid))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (int-add (int (n z 2) z) (int z (n z 5)))
 (int-div-euclid (int z (n z 7)) (int z z))

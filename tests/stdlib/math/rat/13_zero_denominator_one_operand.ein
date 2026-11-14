@@ -15,7 +15,9 @@
 
 (import std.math.rat :symbols (rat-arith rat-add rat rat-neg))
 (import std.math.int :symbols (int))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))
 (rat-neg (rat (int (n z 5) z) z))

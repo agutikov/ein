@@ -10,7 +10,9 @@
 ;;; The claim is `sum-of`'s whole extent. An answer `(n z 0)` for the first
 ;;; sum, a zero that is not in normal form, fails the file.
 
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add z z)
 (add z (n z 5))

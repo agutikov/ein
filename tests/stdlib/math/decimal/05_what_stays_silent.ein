@@ -1,0 +1,48 @@
+;;; `std.math.decimal` — what the check does not flag: a flag means malformed, and no flag does not mean well-formed. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Four numerals are not flagged. One whose prefix is a name that is neither
+;;; a digit nor a named constant, `(n end 1)`: saying *a name* costs a walk of
+;;; the program's names. One whose prefix is a fact of another relation, `(n
+;;; (pair 1 2) 3)`: no rule can say *not of this shape*. One a rule assembles
+;;; from a variable, `(n ?p x)`, which is no term a file writes. And a top-
+;;; level fact of `n`, `(n alice bob)`, which is no numeral nested in
+;;; anything.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive, the sum beside them is answered, and no flag
+;;; has a fact.
+
+(import std.math.decimal-arith :symbols (decimal-arith let add sum-of))
+(import std.math.decimal :symbols (n not-decimal))
+(import std.math.arith :symbols (z))
+
+(relation price Item Amount :why "{?1} costs {?2}")
+(relation pair Thing Thing :why "the pair of {?1} and {?2}")
+(relation seed Thing :why "{?1} is a seed")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (and (__closed__ price) (__closed__ pair) (__closed__ seed))
+  :why    "the program's own relations are closed, as the theory's are")
+
+(seed z)
+(let far (n end 1))
+(price apple (n (pair 1 2) 3))
+(n alice bob)
+(rule assemble ()
+  :match  (seed ?p)
+  :assert (price pear (n ?p x))
+  :why    "a pear's price, assembled from {?p} and a letter")
+(add (n z 4) (n z 3))
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n z 4) (n z 3) (n z 7))))
+
+(query :goal (not-decimal ?numeral ?thing)
+       :goal-text "{?numeral} is not a decimal number"
+       :expect (model))

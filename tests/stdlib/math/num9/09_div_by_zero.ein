@@ -4,7 +4,7 @@
 ;;;
 ;;; As in `std.math.decimal-arith`, and by its rule (the user's ruling of 2026-11-11, two
 ;;; steps): `div9-by-zero` derives the flag `(division-by-zero (div9 X ZERO))`,
-;;; the request as written, and `std.math.decimal-arith`'s `division-by-zero-is-false`
+;;; the request as written, and `std.math.arith`'s `division-by-zero-is-false`
 ;;; derives `(false)` from the flag. Root is dead and R is empty: the sum
 ;;; beside the division loses its answer too, since the program asked for
 ;;; what does not exist.

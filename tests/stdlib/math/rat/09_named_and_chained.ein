@@ -21,7 +21,9 @@
 
 (import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of rat-mul rat-product-of rat-cmp
                           rat-cmp-of))
-(import std.math.decimal-arith :symbols (let n))
+(import std.math.decimal-arith :symbols (let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 (import std.math.int :symbols (int))
 
 (let half  (rat (int (n z 1) z) (n z 2)))

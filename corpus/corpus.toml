@@ -3366,10 +3366,22 @@ group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "stdlib/math/arith.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38 (2026-11-14): arithmetic itself, what every base shares: `z`, declared as a relation of no argument so that it has one full name, and the division by zero's flag `(division-by-zero REQUEST)` with `division-by-zero-is-false`, both moved from `std.math.decimal-arith`. `arith`, the closing rule, closes the flag and names the rule. The module alone states no request: its closing rule fires and nothing else."
+
+[[entry]]
+path   = "stdlib/math/decimal.ein"
+group  = "stdlib"
+runs   = ["solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38 (2026-11-14): the decimal numeral, `(n PREFIX DIGIT)`, moved from `std.math.decimal-arith`, with `named`, and its check where it is written: five rules over the loader's `(written (n P A))` flag a malformed numeral, `(not-decimal NUMERAL THING)`, and `(false)` from it, wherever a file writes it. `decimal`, the closing rule, closes every relation and `nz`, and names every rule and `arith`. The module alone states no request: its closing rules fire and nothing else."
+
+[[entry]]
 path   = "stdlib/math/decimal-arith.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.math.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. S1f.6.4 added `(sub X Y)`, answered by the two numbers of `(diff-of X Y D R)`, and `(cmp X Y)`, answered by `(cmp-of X Y lt|eq|gt)`. S1f.6.5 added `(mul X Y)`, answered by `(product-of X Y P)`, the school method from the multiplier's top digit. S1f.6.6 added `(div X Y)`, answered by `(quot-of X Y Q R)`, long division with the quotient's digit by bisection, and division by zero as a flag and `(false)` from it. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `decimal-arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
+note   = "M1f S1f.6.3 (2026-11-11): school arithmetic over `std.math.digits`' tables, computed by saturation alone; it begins with addition. A request fact `(add X Y)` is answered by `(sum-of X Y S)` over nested numbers `(n PREFIX DIGIT)`. S1f.6.4 added `(sub X Y)`, answered by the two numbers of `(diff-of X Y D R)`, and `(cmp X Y)`, answered by `(cmp-of X Y lt|eq|gt)`. S1f.6.5 added `(mul X Y)`, answered by `(product-of X Y P)`, the school method from the multiplier's top digit. S1f.6.6 added `(div X Y)`, answered by `(quot-of X Y Q R)`, long division with the quotient's digit by bisection, and division by zero as a flag and `(false)` from it, `std.math.arith`'s since S1f.6.38, which moved the numeral and its check to `std.math.decimal`. No rule joins two facts on a number (`ein-infer/tests/arith_theory.rs` on the text, `arith_batch.rs` on the matcher's count), and `decimal-arith`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
 
 [[entry]]
 path   = "stdlib/bijection.ein"
@@ -3420,7 +3432,7 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/math/int.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.7 (2026-11-11): integers as a positive and a negative part, `(int P N)`, over the natural numbers of `std.math.decimal-arith`, which the module calls and does not edit. Requests `int-simplify`, `int-neg`, `int-add`, `int-sub`, `int-mul` and `int-cmp`, answered by `int-simple-of`, `int-neg-of`, `int-sum-of`, `int-diff-of`, `int-product-of` and `int-cmp-of`, every answer in normal form, one part `z`. Every rule has one premise, and a call's tag is its request; `int-arith`, the closing rule, closes every relation, names every rule and names `decimal-arith`. Integer division names its convention since S1f.6.22 (2026-11-12): `int-div-euclid`, `int-div-trunc` and `int-div-floor`, answered by `int-quot-euclid-of` (the remainder a natural number), `int-quot-trunc-of` and `int-quot-floor-of`; a divisor that is zero derives `std.math.decimal-arith`'s flag. `ein-infer/tests/int_theory.rs` holds the module to Rust's signed integers. The module alone states no request: its closing rules fire and nothing else."
+note   = "M1f S1f.6.7 (2026-11-11): integers as a positive and a negative part, `(int P N)`, over the natural numbers of `std.math.decimal-arith`, which the module calls and does not edit. Requests `int-simplify`, `int-neg`, `int-add`, `int-sub`, `int-mul` and `int-cmp`, answered by `int-simple-of`, `int-neg-of`, `int-sum-of`, `int-diff-of`, `int-product-of` and `int-cmp-of`, every answer in normal form, one part `z`. Every rule has one premise, and a call's tag is its request; `int-arith`, the closing rule, closes every relation, names every rule and names `decimal-arith`. Integer division names its convention since S1f.6.22 (2026-11-12): `int-div-euclid`, `int-div-trunc` and `int-div-floor`, answered by `int-quot-euclid-of` (the remainder a natural number), `int-quot-trunc-of` and `int-quot-floor-of`; a divisor that is zero derives `std.math.arith`'s flag (S1f.6.38; `std.math.decimal-arith`'s until then); an undeclared name or a digit as an operand is flagged on the request, and a digit or a named constant in a part is `(not-integer …)`. `ein-infer/tests/int_theory.rs` holds the module to Rust's signed integers. The module alone states no request: its closing rules fire and nothing else."
 
 [[entry]]
 path   = "stdlib/macro.ein"
@@ -3431,13 +3443,13 @@ runs   = ["solve", "saturate", "render rules", "render constraints"]
 path   = "stdlib/math/num9.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.13 (2026-11-11): school arithmetic on numbers of nine digits, `(num9 d8 … d0)`, the calculator's second module, generated by `utils/gen_num9.py` (`--check` in the gate through `ein-infer/tests/num9_theory.rs`, which holds the theory to Rust's integers, exhaustively at width 2). Wide rules, a premise a column: `(add9 X Y)` answered by `(sum9-of X Y S)` in one firing, `sub9`, `cmp9`, `mul9` and `div9` likewise named; `(overflow REQUEST)` where a sum or a product does not fit, and no number; a division by zero is `std.math.decimal-arith`'s flag and `(false)`; `(to9 X)` and `(from9 W)` convert to and from `std.math.decimal-arith`'s numbers. No rule joins two facts on a number, and `arith9`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
+note   = "M1f S1f.6.13 (2026-11-11): school arithmetic on numbers of nine digits, `(num9 d8 … d0)`, the calculator's second module, generated by `utils/gen_num9.py` (`--check` in the gate through `ein-infer/tests/num9_theory.rs`, which holds the theory to Rust's integers, exhaustively at width 2). Wide rules, a premise a column: `(add9 X Y)` answered by `(sum9-of X Y S)` in one firing, `sub9`, `cmp9`, `mul9` and `div9` likewise named; `(overflow REQUEST)` where a sum or a product does not fit, and no number; a division by zero is `std.math.arith`'s flag and `(false)`; `(to9 X)` and `(from9 W)` convert to and from `std.math.decimal`'s numbers. No rule joins two facts on a number, and `arith9`, the closing rule, closes every relation and names every rule. The module alone states no request: its closing rule fires and nothing else."
 
 [[entry]]
 path   = "stdlib/math/rat.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8 (2026-11-12): rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith` that is not zero, in lowest terms; the module calls the two theories below it and edits neither. Requests `rat-simplify`, `rat-neg`, `rat-add`, `rat-sub`, `rat-mul`, `rat-div` and `rat-cmp`, answered by `rat-simple-of`, `rat-neg-of`, `rat-sum-of`, `rat-diff-of`, `rat-product-of`, `rat-quot-of` and `rat-cmp-of`. Lowest terms is Euclid's chain, each step a division of `std.math.decimal-arith`. A zero denominator, and a division by a rational that is zero, derive `std.math.decimal-arith`'s flag, `(division-by-zero REQUEST)`, and its rule derives `(false)`. Every rule has one premise; `rat-arith`, the closing rule, closes every relation, names every rule and names `int-arith` and `decimal-arith`. `ein-infer/tests/rat_theory.rs` holds the module to exact fractions. The module alone states no request: its closing rules fire and nothing else."
+note   = "M1f S1f.6.8 (2026-11-12): rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith` that is not zero, in lowest terms; the module calls the two theories below it and edits neither. Requests `rat-simplify`, `rat-neg`, `rat-add`, `rat-sub`, `rat-mul`, `rat-div` and `rat-cmp`, answered by `rat-simple-of`, `rat-neg-of`, `rat-sum-of`, `rat-diff-of`, `rat-product-of`, `rat-quot-of` and `rat-cmp-of`. Lowest terms is Euclid's chain, each step a division of `std.math.decimal-arith`. A zero denominator, and a division by a rational that is zero, derive `std.math.arith`'s flag, `(division-by-zero REQUEST)`, and its rule derives `(false)`; an operand's fault is flagged on the request, and the rational's own shape is `(not-rational …)` (S1f.6.38). Every rule has one premise; `rat-arith`, the closing rule, closes every relation, names every rule and names `int-arith` and `decimal-arith`. `ein-infer/tests/rat_theory.rs` holds the module to exact fractions. The module alone states no request: its closing rules fire and nothing else."
 
 [[entry]]
 path   = "stdlib/slots.ein"
@@ -3734,31 +3746,31 @@ note   = "M1f S1f.6.6, `std.math.decimal-arith`: division by zero, the zero writ
 path   = "tests/stdlib/math/decimal-arith/22_malformed_digit.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a name that is no digit in a digit's place, the first operand of a sum: `check-step`, `check-digit`, `bad-add-first`, `bad-request-malformed`, `malformed-is-false`; root is dead, `(solve :expect (false))`."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a name that is no digit in a digit's place, the first operand of a sum: `std.math.decimal`'s `numeral-digit`, where the numeral is written (S1f.6.38; until then `check-step`, `check-digit`, `bad-add-first`, `bad-request-malformed`), and `not-decimal-is-false`; root is dead, `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/23_malformed_fact_as_digit.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a fact in a digit's place, the second operand of a sum: `check-digit`, whose `neq` guards hold of a fact, and `bad-add-second`; root is dead."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a fact in a digit's place, the second operand of a sum: `std.math.decimal`'s `numeral-digit`, whose `neq` guards hold of a fact (S1f.6.38; until then `check-digit` and `bad-add-second`); root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/24_malformed_ends_in_digit.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a number that ends in a digit where `z` goes, `(n 1 2)`: `check-prefix-digit` and `bad-sub-first`; root is dead."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a number that ends in a digit where `z` goes, `(n 1 2)`: `std.math.decimal`'s `numeral-prefix-digit` (S1f.6.38; until then `check-prefix-digit` and `bad-sub-first`); root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/25_malformed_ends_in_zero.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a number that ends in the digit 0, `(n 0 2)`: `check-prefix-zero` and `bad-sub-second`; root is dead."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a number that ends in the digit 0, `(n 0 2)`: `std.math.decimal`'s `numeral-prefix-zero` (S1f.6.38; until then `check-prefix-zero` and `bad-sub-second`); root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/26_malformed_ends_in_a_name.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a number that ends in a named constant, `(n price 1)`: `check-prefix-named` and `bad-cmp-first`; root is dead."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a number that ends in a named constant, `(n price 1)`: `std.math.decimal`'s `numeral-prefix-named` (S1f.6.38; until then `check-prefix-named` and `bad-cmp-first`); root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/27_malformed_digit_as_number.ein"
@@ -3788,13 +3800,13 @@ note   = "M1f S1f.6.12, `std.math.decimal-arith`: 29 with the `let` stated: the 
 path   = "tests/stdlib/math/decimal-arith/31_malformed_through_a_name.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a malformed number behind a `let`: `operand-name` hands what it finds to the check; `bad-div-first`; a `let` nobody asks about is not checked; root is dead."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a malformed number behind a `let`: `std.math.decimal`'s `numeral-digit` flags it where the `let` writes it, and the `let` nobody asks about too (S1f.6.38; until then `operand-name` handed it to the check, `bad-div-first`, and the unused `let` was not checked); root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/32_malformed_name_for_a_name.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.12, `std.math.decimal-arith`: a name that stands for another name, `(let alias price)`: `check-prefix-named` on what the `let` gave, and `bad-div-second`; root is dead."
+note   = "M1f S1f.6.12, `std.math.decimal-arith`: a name that stands for another name, `(let alias price)`: `let-to-name`, whether or not a request names it (S1f.6.38; until then `check-prefix-named` on what the `let` gave, and `bad-div-second`); root is dead."
 
 [[entry]]
 path   = "tests/stdlib/math/decimal-arith/33_let_twice.ein"
@@ -3849,6 +3861,90 @@ path   = "tests/stdlib/math/decimal-arith/41_div_call_not_zero.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.24, `std.math.decimal-arith`: the rules of `39` and `40` with no zero divisor, one written with a high zero and one dividend zero: `div-call-by-zero` loaded and silent, each call answered, R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/42_let_to_a_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(let seven 7)`, a digit where a number goes: `let-to-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/43_let_to_the_digit_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(let none 0)`: `let-to-digit-zero`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/44_digit_as_the_first_operand_of_add.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(add 7 (n z 5))`, a digit as the first operand: `operand-digit`, `bad-add-first`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/45_digit_as_the_second_operand_of_add.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(add (n z 5) 7)`, a digit as the second operand: `operand-digit`, `bad-add-second`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/46_digit_as_the_first_operand_of_sub.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(sub 7 (n z 5))`, a digit as the first operand: `operand-digit`, `bad-sub-first`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/47_digit_as_the_second_operand_of_sub.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(sub (n z 5) 7)`, a digit as the second operand: `operand-digit`, `bad-sub-second`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/48_digit_as_the_first_operand_of_cmp.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(cmp 7 (n z 5))`, a digit as the first operand: `operand-digit`, `bad-cmp-first`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/49_digit_as_the_first_operand_of_div.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(div 7 (n z 5))`, a digit as the first operand: `operand-digit`, `bad-div-first`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal-arith/50_digit_as_the_second_operand_of_div.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal-arith`: `(div (n z 5) 7)`, a digit as the second operand: `operand-digit`, `bad-div-second`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal/01_well_formed_everywhere.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal`: a well-formed numeral in each place a file can write one, an operand, an unused `let`, a fact of the program's own, an integer's and a rational's part, a rule's conclusion; no `(not-decimal …)`, R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal`: `(let price (n (n z 1) x))` and no request: `numeral-digit` flags it where it is written, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal`: `(price apple (n 1 2))`, a numeral in the program's own fact: `numeral-prefix-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal`: `(n 0 3)` in a rule's conclusion that never fires, stated at load (Q-M1f.275 (a)): `numeral-prefix-zero`, core ∅, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/decimal/05_what_stays_silent.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.decimal`: what the check does not flag, `(n end 1)`, `(n (pair 1 2) 3)`, a numeral a rule assembles, `(n ?p x)`, and a top-level fact of `n`; R is {∅}."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"
@@ -4065,7 +4161,7 @@ note   = "M1f S1f.6.22, `std.math.int`: floored division, `(int-div-floor X Y)` 
 path   = "tests/stdlib/math/int/12_div_euclid_by_zero.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.22, `std.math.int`: a Euclidean division by `(int z z)`: the flag `(division-by-zero (int-div-euclid X Y))` by `int-div-by-zero` and `(false)` by `std.math.decimal-arith`'s rule; `(solve :expect (false))`."
+note   = "M1f S1f.6.22, `std.math.int`: a Euclidean division by `(int z z)`: the flag `(division-by-zero (int-div-euclid X Y))` by `int-div-by-zero` and `(false)` by `std.math.arith`'s rule; `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/math/int/13_div_trunc_by_zero.ein"
@@ -4078,6 +4174,138 @@ path   = "tests/stdlib/math/int/14_div_floor_by_zero.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.22, `std.math.int`: a floored division by a name whose integer is zero written with digits: flagged with the name; `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/15_letter_in_a_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i1`: `(int (n z x) z)` as an operand: `std.math.decimal`'s `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/16_letter_in_a_negative_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i1b`: a letter in an integer's negative part: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/17_letter_in_the_second_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i1c`: a letter in a product's second operand: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/18_part_ends_in_a_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i2`: `(int (n 1 2) z)`: `numeral-prefix-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i2b`: `(int (n price 2) z)`: `numeral-prefix-named`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/20_undeclared_first_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i3`: `(int-add foo Y)`: `int-bad-first`, `(undeclared foo …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/21_undeclared_second_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i3b`: `(int-add X foo)`: `int-bad-second`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/22_digit_as_an_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i4`: `(int-add 7 Y)`: `int-bad-first`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/23_digit_as_a_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i4b`: `(int 7 z)`: `int-p-digit`, `(not-integer …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/24_letter_through_a_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i5`: a `let` naming `(int (n z x) z)`: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/25_let_twice.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i6`: `p` stated twice: `let-twice`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/26_let_zero.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i6b`: `(let z …)`: `let-zero`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/27_let_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i6c`: `(let 3 …)`: `let-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/28_natural_where_an_integer_goes.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i7`: `(int-add (n z 5) Y)`: silent (Q-M1f.277 (b)), R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/int/29_named_constant_as_a_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i8`: `(int price z)`: `int-p-named`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/30_letter_in_a_division.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`, E-38's `i9`: a letter in a Euclidean division's dividend: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/31_digit_as_the_negative_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`: `(int z 7)`: `int-n-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/32_digit_zero_as_a_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`: `(int 0 z)`: `int-p-zero`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`: `(int (n z 1) 0)`: `int-n-zero`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`: `(int z price)`: `int-n-named`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/35_undeclared_divisor.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`: `(int-div-trunc foo Y)`: `int-bad-first` and `int-bad-div`, `(undeclared foo …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/int/36_undeclared_only_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.int`: `(int-neg foo)`: `int-bad-only`, `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/macro/01_forall.ein"
@@ -4141,7 +4369,7 @@ note   = "M1f S1f.6.13, `std.math.num9`: a quotient with every digit, 864197523 
 path   = "tests/stdlib/math/num9/09_div_by_zero.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.13, `std.math.num9`: a division by zero: `div9-by-zero` derives `std.math.decimal-arith`'s flag and `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)`; root is dead and the program claims `(solve :expect (false))`."
+note   = "M1f S1f.6.13, `std.math.num9`: a division by zero: `div9-by-zero` derives `std.math.arith`'s flag and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`; root is dead and the program claims `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/math/num9/10_to9.ein"
@@ -4225,7 +4453,7 @@ note   = "M1f S1f.6.8, `std.math.rat`: operands by name through `std.math.decima
 path   = "tests/stdlib/math/rat/10_div_by_zero_rational.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: a `rat-div` by a rational that is zero, 0 over 5: the flag `(division-by-zero (rat-div X Y))` and `(false)` by `std.math.decimal-arith`'s rule; `(solve :expect (false))`."
+note   = "M1f S1f.6.8, `std.math.rat`: a `rat-div` by a rational that is zero, 0 over 5: the flag `(division-by-zero (rat-div X Y))` and `(false)` by `std.math.arith`'s rule; `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/11_zero_denominator_first.ein"
@@ -4244,6 +4472,108 @@ path   = "tests/stdlib/math/rat/13_zero_denominator_one_operand.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.8, `std.math.rat`: a `rat-neg` of a rational written over nothing: flagged; `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/14_letter_in_the_numerator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r1`: a letter in a numerator: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/15_letter_in_the_denominator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r1b`: a letter in a denominator: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r2`: `(n 1 2)` as a denominator: `numeral-prefix-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/17_undeclared_first_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r3`: `(rat-add foo Y)`: `rat-bad-first`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/18_undeclared_second_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r3b`: `(rat-mul X foo)`: `rat-bad-second`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/19_digit_as_an_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r4`: `(rat-add 7 Y)`: `rat-bad-first`, `(malformed …)`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/20_letter_through_a_name.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r5`: a `let` naming a rational with a letter: `numeral-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/21_let_twice.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r6`: `p` stated twice: `let-twice`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r7`: `(rat-add (int …) Y)`: silent (Q-M1f.277 (b)), R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r7b`: `(rat-add (n z 5) Y)`: silent (Q-M1f.277 (b)), R is {∅}."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/24_digit_as_the_numerator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat 7 D)`: `rat-z-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat 0 D)`: `rat-z-zero`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/26_named_constant_as_the_numerator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat half D)`, a named constant: `rat-z-named`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/27_digit_as_the_denominator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat Z 2)`: `rat-d-digit`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat Z 0)`: `rat-d-zero`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat Z two)`, a named constant: `rat-d-named`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/30_undeclared_only_operand.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.38, `std.math.rat`: `(rat-simplify foo)`: `rat-bad-only`, `(solve :expect (false))`."
 
 [[entry]]
 path   = "tests/stdlib/slots/01_partition.ein"

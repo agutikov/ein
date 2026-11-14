@@ -21,7 +21,9 @@
 ;;; theory could read, and neither flag has a fact. The four other requests
 ;;; are in root's state, not refused and not answered.
 
-(import std.math.decimal-arith :symbols (decimal-arith n add b sum-of malformed undeclared))
+(import std.math.decimal-arith :symbols (decimal-arith add b sum-of malformed undeclared))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation likes Who Whom :why "{?1} likes {?2}")
      (relation pair Thing Thing :why "the pair of {?1} and {?2}")

@@ -235,16 +235,32 @@ MUL_REL_GONE = {"mul-walk", "mul-row-of"}
 TABLES = ["fa", "fs", "cl"]
 # S1f.6.12's check: the rules that flag a malformed number or an undeclared name, by the start of their names,
 # their relations, and the two rules of the operands as they were before they handed a number to the check.
-CHECK_RULES_GONE = ("check-", "bad-", "let-twice", "let-zero", "let-digit", "operand-digit", "operand-undeclared",
-                    "malformed-is-false", "undeclared-is-false")
+CHECK_RULES_GONE = ("check-", "bad-", "let-twice", "let-zero", "let-digit", "let-to-", "operand-digit",
+                    "operand-undeclared", "malformed-is-false", "undeclared-is-false")
 CHECK_REL_GONE = {"malformed", "undeclared", "check", "bad-operand", "bad-request", "not-a-number", "no-let"}
 UNCHECKED = {"operand-number": '"a number stands for itself"', "operand-name": '"{?x} names {?v}"'}
+
+# What left `std.math.decimal-arith` at S1f.6.38 and the binary theory still writes as its own, as it was there:
+# the number's shape, which `std.math.decimal` declares now, `named`, its relation since, and the flag of a
+# division by zero and its rule, `std.math.arith`'s. Each goes back where it stood, so `bin.ein` is the theory it
+# was; the binary theory's own module, its check and the shared `z` are S1f.6.16's build.
+MOVED = {
+    "b": parse('(relation n Number Digit :why "the number written {?1}, then the digit {?2}")'),
+    "operand": parse('(relation named Name :why "{?1} is a named constant")'),
+}
+MOVED_AFTER = {
+    "quot-of": parse('(relation division-by-zero Request :why "{?1} divides by zero")'),
+    "div-call-by-zero": parse('(rule division-by-zero-is-false () :match (division-by-zero ?request) '
+                              ':assert (false) :why "{?request} divides by zero: no number is the answer")'),
+}
 
 
 def core(shipped):
     """std.math.decimal-arith without its import, its closing rule, the division of base ten and the digit multiplier."""
     out = []
     for f in shipped:
+        if (is_rule(f) or is_rel(f)) and name(f) in MOVED:
+            out.extend(copy.deepcopy(MOVED[name(f)]))
         if f[0] in ("import", "arith-rule"):
             continue
         if (is_rule(f) and name(f) == "decimal-arith") or (is_rel(f) and name(f) == "arith-rule"):
@@ -263,12 +279,16 @@ def core(shipped):
             continue
         f = copy.deepcopy(f)
         if is_rule(f) and name(f) in UNCHECKED:
-            # `(and (operand-is …) (check …))` back to the one conclusion, and the sentence with it.
+            # The one conclusion, and the sentence with it: until S1f.6.38 the shipped rule also handed the
+            # operand to the check, `(and (operand-is …) (check …))`.
             i = f.index(":assert") + 1
-            assert f[i][0] == "and" and len(f[i]) == 3 and f[i][2][0] == "check", f
-            f[i] = f[i][1]
+            if f[i][0] == "and":
+                assert len(f[i]) == 3 and f[i][2][0] == "check", f
+                f[i] = f[i][1]
             f[f.index(":why") + 1] = Str(UNCHECKED[name(f)])
         out.append(f)
+        if (is_rule(f) or is_rel(f)) and name(f) in MOVED_AFTER:
+            out.extend(copy.deepcopy(MOVED_AFTER[name(f)]))
     return out
 
 
@@ -379,7 +399,10 @@ def build():
     m["b"] = "a2"
     m["arith"] = "bin"
     forms = rename(forms, m)
-    forms = [parse(f"(import bits :symbols ({' '.join(m[t] for t in TABLES)}))")[0]] + forms
+    # `z` is `std.math.arith`'s, which both bases share (the user, 2026-11-14): listed, so a program that holds
+    # both theories, and one that converts between them, has one zero.
+    forms = [parse(f"(import bits :symbols ({' '.join(m[t] for t in TABLES)}))")[0],
+             parse("(import std.math.arith :symbols (z))")[0]] + forms
     bin_text = BIN_HEADER + "\n".join(pretty(f) for f in forms) + "\n"
 
     t = tables()

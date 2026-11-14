@@ -1,0 +1,21 @@
+;;; `std.math.rat` — a second operand that is a name no `let` states. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `rat-bad-second` turns `(rat-of (rat-second REQUEST P N D))` into the
+;;; request.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.rat :symbols (rat-arith rat rat-mul))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(rat-mul (rat (int (n z 1) z) (n z 2)) foo)
+
+(solve :expect (false))

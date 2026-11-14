@@ -27,7 +27,9 @@
 ;;; with two orders, the order of the units beside the order of the whole,
 ;;; fails the file.
 
-(import std.math.decimal-arith :symbols (decimal-arith cmp n cmp-of))
+(import std.math.decimal-arith :symbols (decimal-arith cmp cmp-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (cmp (n (n z 2) 5) (n (n z 1) 9))
 (cmp (n (n z 1) 9) (n (n z 2) 5))

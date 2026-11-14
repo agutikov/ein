@@ -1,0 +1,31 @@
+;;; `std.math.int` — a natural number where an integer goes, which stays silent. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(n z 5)` is a natural number, and an operand of this module is an
+;;; integer: `(int (n z 5) z)`. An operand of another type is not flagged
+;;; (Q-M1f.277, (b), as S1f.6.12 left it): the request is neither answered nor
+;;; flagged.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive, the request is neither answered nor flagged,
+;;; and the well-formed one beside it is answered.
+
+(import std.math.int :symbols (int-arith int int-add int-sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith malformed))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-add (n z 5) (int (n z 1) z))
+(int-add (int (n z 5) z) (int (n z 1) z))
+
+(solve :expect (region (model)))
+
+(query :goal (int-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (int-sum-of (int (n z 5) z) (int (n z 1) z) (int (n z 6) z))))
+
+(query :goal (malformed ?request)
+       :goal-text "{?request} holds something that is not a number"
+       :expect (model))

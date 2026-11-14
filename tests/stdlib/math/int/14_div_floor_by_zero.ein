@@ -6,7 +6,7 @@
 ;;; A division whose divisor is zero has no answer, under any convention. Both
 ;;; operands are simplified, the divisor's normal form is `(int z z)`, and
 ;;; `int-div-by-zero` derives the flag `(division-by-zero (int-div-floor X
-;;; Y))`, the request as written; `std.math.decimal-arith`'s `division-by-zero-is-false`
+;;; Y))`, the request as written; `std.math.arith`'s `division-by-zero-is-false`
 ;;; derives `(false)` from the flag. The divisor is a name, looked up through
 ;;; `std.math.decimal-arith`'s `let`, and the integer it names is zero written with digits;
 ;;; the flag repeats the name.
@@ -19,7 +19,9 @@
 ;;; program has an answer. Here: 7 by a name for 0 less 00.
 
 (import std.math.int :symbols (int-arith int int-add int-div-floor))
-(import std.math.decimal-arith :symbols (let n))
+(import std.math.decimal-arith :symbols (let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let nothing (int (n z 0) (n (n z 0) 0)))
 (int-add (int (n z 2) z) (int z (n z 5)))

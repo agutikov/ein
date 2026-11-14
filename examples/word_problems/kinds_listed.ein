@@ -7,7 +7,9 @@
 (import words :symbols (words has asked together value amount assumed))
 (import gaps :symbols (gaps rests-on))
 (import listed_is_all :symbols (listed-is-all))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (has Bob apples (n z 5) now    :source "Bob has 5 apples,")
 (has Alice pears (n z 3) now   :source "Alice has 3 pears.")

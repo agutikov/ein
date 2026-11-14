@@ -1,0 +1,20 @@
+;;; `std.math.int` — a second operand that is a name no `let` states. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; As the first: `int-bad-second` turns `(int-second REQUEST P N)` into the
+;;; request, and the request is flagged `(undeclared foo REQUEST)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.int :symbols (int-arith int int-add))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-add (int (n z 1) z) foo)
+
+(solve :expect (false))

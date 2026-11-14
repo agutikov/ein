@@ -8,7 +8,9 @@
 ;;; and n is prime. Otherwise the next k is asked.
 ;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
-(import std.math.decimal-arith :symbols (decimal-arith n cmp-walk order-is add-walk done div-call div-done))
+(import std.math.decimal-arith :symbols (decimal-arith cmp-walk order-is add-walk done div-call div-done))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation count Number Number :why "counting: {?1}, on the way to {?2}")
 (relation cnt Number Number :why "is {?1} below {?2}?")

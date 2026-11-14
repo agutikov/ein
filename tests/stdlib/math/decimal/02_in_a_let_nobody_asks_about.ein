@@ -1,0 +1,24 @@
+;;; `std.math.decimal` — a malformed numeral in a `let` that no request names. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A numeral is checked as it is written, with no calculation started: here
+;;; it is a `let`'s value, and no request names the constant. `(n (n z 1) x)`
+;;; holds `x` where a digit goes, so `numeral-digit` derives `(not-decimal (n
+;;; (n z 1) x) x)` and `not-decimal-is-false` derives `(false)`. Until
+;;; S1f.6.38 the check ran at a request's operand, and a `let` nobody asked
+;;; about was never read.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+;;; `ein solve` names the `let` in the unsat core.
+
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let price (n (n z 1) x))
+
+(solve :expect (false))

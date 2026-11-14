@@ -117,12 +117,13 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// `kb-since` view, which holds what its rules derive) with the programs that
 /// import it, under `tests/stdlib/bool/props/` and `examples/binary_logic/`,
 /// where two more programs pass the bound by `std.bool.gates`' table and its
-/// second layout. 876 views of 154 files on 2026-11-14, the smallest of
-/// 1 020 edges (`cargo test -p ein-render --test dot_wellformed --
+/// second layout; and `tests/stdlib/math/decimal/` since M1f S1f.6.38, whose
+/// programs hold the tables. 1 195 views of 208 files on 2026-11-14 (876 of 154
+/// before S1f.6.38's tests; `cargo test -p ein-render --test dot_wellformed --
 /// --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
 /// what it used to check is noticed.
-const SKIPPING: [&str; 13] = [
+const SKIPPING: [&str; 14] = [
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
@@ -131,6 +132,7 @@ const SKIPPING: [&str; 13] = [
     "stdlib/bool",
     "stdlib/math",
     "tests/stdlib/bool/props",
+    "tests/stdlib/math/decimal",
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/digits",
     "tests/stdlib/math/int",

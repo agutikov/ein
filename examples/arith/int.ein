@@ -73,7 +73,9 @@
                           int-div-euclid int-div-trunc int-div-floor int-cmp int-cmp-of int-sum-of
                           int-diff-of int-product-of int-simple-of int-neg-of int-quot-euclid-of
                           int-quot-trunc-of int-quot-floor-of))
-(import std.math.decimal-arith :symbols (n let))
+(import std.math.decimal-arith :symbols (let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation morning Name
   :why "{?1} is a morning's temperature")

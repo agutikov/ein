@@ -16769,7 +16769,7 @@ derived   = "`(n 1)`, inside the request, has one argument and `n` is declared w
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-nested-fact.ein:29:7: the fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and (relation n Number Digit) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+refused = "kb load error: examples/ein-bugs/wrong-answers/arity-nested-fact.ein:31:7: the fact (add (n 1) (n z 5)) holds (n 1), which gives n 1 argument, and (relation n Number Digit) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
 
 [[case]]
 id       = "W89/request"
@@ -16802,7 +16802,7 @@ derived   = "`(add (n z 5))` has one argument and `add` is declared with two typ
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/arity-request.ein:28:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand Operand) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
+refused = "kb load error: examples/ein-bugs/wrong-answers/arity-request.ein:30:2: the fact (add (n z 5)) gives add 1 argument, and (relation add Operand Operand) declares 2 — a form headed by a declared relation has as many arguments as its declaration has types"
 
 [[case]]
 id       = "W89/num9-eight-digits"

@@ -1,0 +1,30 @@
+;;; `std.math.decimal` — a malformed numeral written whole in a rule's conclusion. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The loader states the facts nested in a rule's conclusion where they hold
+;;; no variable, so a numeral written whole in a rule's text is checked as a
+;;; fact's is, whether or not the rule fires (Q-M1f.275 (a)). Here the rule
+;;; never fires, nothing being a seed: `(n 0 3)` ends in the digit `0` where
+;;; `z` goes, and `numeral-prefix-zero` derives `(not-decimal (n 0 3) 0)` at
+;;; root.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+;;; The numeral rests on no fact, the rule's text holding it: the unsat core
+;;; is ∅.
+
+(import std.math.decimal-arith :symbols (decimal-arith add))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation seed Thing :why "{?1} is a seed")
+(__closed__ seed)
+(rule ask ()
+  :match  (seed ?s)
+  :assert (add (n 0 3) (n z 5))
+  :why    "{?s} asks for 3 + 5, the 3 written with a zero where z goes")
+
+(solve :expect (false))

@@ -1,0 +1,20 @@
+;;; `std.math.rat` — the digit 0 where a rational's integer goes. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `rat-z-zero` derives `(not-rational (rat 0 (n z 2)) 0)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.rat :symbols (rat-arith rat rat-add))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(rat-add (rat 0 (n z 2)) (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (false))

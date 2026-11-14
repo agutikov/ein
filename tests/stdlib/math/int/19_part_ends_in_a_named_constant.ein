@@ -1,0 +1,22 @@
+;;; `std.math.int` — a part of an integer that ends in a named constant. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(n price 2)` ends in the named constant `price` where `z` goes:
+;;; `std.math.decimal-arith`'s `let-named` says `(named price)`, and
+;;; `std.math.decimal`'s `numeral-prefix-named` flags the numeral.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.int :symbols (int-arith int int-add))
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let price (n z 5))
+(int-add (int (n price 2) z) (int (n z 1) z))
+
+(solve :expect (false))

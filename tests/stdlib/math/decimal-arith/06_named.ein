@@ -23,7 +23,9 @@
 ;;; The second claim reads one answer the way a program would, with the names
 ;;; in the goal and a variable in the result's place.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n add sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith let add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let price    (n (n (n z 2) 5) 0))
 (let shipping (n (n z 4) 9))

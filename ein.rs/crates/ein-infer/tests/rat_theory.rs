@@ -657,6 +657,14 @@ fn circuit(body: &str) -> (usize, usize) {
             .iter()
             .find_map(|n| terms.syms.get(n))
             .expect("std.math.rat's closing rule"),
+        ein_corpus::spellings("decimal")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.math.decimal's closing rule"),
+        ein_corpus::spellings("arith")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.math.arith's closing rule"),
     ];
     {
         let mut s = Session {
@@ -810,6 +818,17 @@ impl Module {
 /// rule of `std.math.rat` but the closing rule has exactly **one** premise. It
 /// reads no table itself and joins nothing: all it needs travels in the
 /// call's tag (E-3 of P1f.6's `findings.md` is why).
+/// The rules of the rational's own shape (S1f.6.38, Q-M1f.276 (a)): each
+/// reads `(written (rat Z D))` and probes what it binds, `nz` or `named`.
+const SHAPE_RULES: [&str; 6] = [
+    "rat-z-digit",
+    "rat-z-zero",
+    "rat-z-named",
+    "rat-d-digit",
+    "rat-d-zero",
+    "rat-d-named",
+];
+
 #[test]
 fn every_rule_has_one_premise() {
     let m = module();
@@ -825,6 +844,21 @@ fn every_rule_has_one_premise() {
             assert!(premises.is_empty(), "`rat-arith` fires at root, on nothing");
             continue;
         }
+        if SHAPE_RULES.contains(&name.as_str()) {
+            // The rational's own shape (S1f.6.38): `(written (rat Z D))`, the
+            // one premise that holds numbers, and a probe of what it binds.
+            let heads: Vec<&str> = premises
+                .iter()
+                .filter_map(|&p| m.ast.head_name(p))
+                .collect();
+            assert!(
+                heads.first() == Some(&"written")
+                    && heads[1..].iter().all(|h| ["nz", "named"].contains(h))
+                    && heads.len() <= 2,
+                "rule {name}: `(written (rat Z D))` and at most a probe: {heads:?}"
+            );
+            continue;
+        }
         assert_eq!(
             premises.len(),
             1,
@@ -836,9 +870,10 @@ fn every_rule_has_one_premise() {
 }
 
 /// No `absent`, no `not`, no `or` and no guard: the module is monotone and
-/// has one stratum. It concludes no `(false)` either: a zero denominator
-/// derives `std.math.decimal-arith`'s flag, by one of the four rules named here, and
-/// `std.math.decimal-arith`'s rule derives the contradiction.
+/// has one stratum. A zero denominator derives `std.math.arith`'s flag, by one
+/// of the four rules named here, and `std.math.arith`'s rule derives the
+/// contradiction; the module's own `(false)` is its rational's shape's,
+/// `not-rational-is-false`, from its flag alone (S1f.6.38).
 #[test]
 fn the_theory_writes_no_negation_and_no_guard() {
     let m = module();
@@ -852,6 +887,14 @@ fn the_theory_writes_no_negation_and_no_guard() {
             flaggers.insert(name.clone());
         }
         heads.extend(concluded);
+        if name == "not-rational-is-false" {
+            assert_eq!(
+                heads,
+                ["not-rational", "false"],
+                "{name} reads its flag alone"
+            );
+            continue;
+        }
         for banned in ["absent", "not", "or", "neq", "false"] {
             assert!(
                 !heads.iter().any(|h| h == banned),
@@ -881,9 +924,10 @@ fn the_theory_writes_no_negation_and_no_guard() {
 }
 
 /// `rat-arith` is the theory's one entry. It closes every relation the
-/// module declares, names every other rule, and names `int-arith` and
-/// `decimal-arith`, the entries of the theories below, without which a selection
-/// leaves their rules behind in silence (E-20 of P1f.6's `findings.md`).
+/// module declares and the table it reads, names every other rule, and names
+/// the entries of the modules it imports, `int-arith`, `decimal-arith`,
+/// `decimal` and `arith`, without which a selection left their rules behind in
+/// silence (E-20 of P1f.6's `findings.md`).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();
@@ -907,25 +951,27 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
             other => panic!("`rat-arith` asserts a {other:?}"),
         }
     }
-    let want_closed: BTreeSet<String> =
+    let mut want_closed: BTreeSet<String> =
         m.declared("relation").into_iter().map(|(n, _)| n).collect();
+    want_closed.insert("nz".to_string());
     assert_eq!(
         closed, want_closed,
-        "`rat-arith` closes every relation the module declares"
+        "`rat-arith` closes every relation the module declares, and `nz`, which it reads"
     );
     let mut want_named: BTreeSet<String> = rules
         .iter()
         .map(|(n, _)| n.clone())
         .filter(|n| n != "rat-arith")
         .collect();
-    want_named.insert("decimal-arith".to_string());
-    want_named.insert("int-arith".to_string());
+    for entry in ["decimal-arith", "int-arith", "decimal", "arith"] {
+        want_named.insert(entry.to_string());
+    }
     assert_eq!(
         named, want_named,
-        "`rat-arith` names every other rule of the module, `int-arith` and `decimal-arith`"
+        "`rat-arith` names every other rule of the module, and the entries below"
     );
 
-    // The module imports the two theories below it, each by its entry.
+    // The module imports the calculator's modules below it, and `nz`.
     let imports: Vec<String> = m
         .forms
         .iter()
@@ -937,7 +983,16 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
                 .to_string()
         })
         .collect();
-    assert_eq!(imports, ["std.math.decimal-arith", "std.math.int"]);
+    assert_eq!(
+        imports,
+        [
+            "std.math.decimal-arith",
+            "std.math.int",
+            "std.math.decimal",
+            "std.math.arith",
+            "std.math.digits"
+        ]
+    );
 
     // Its own name is a written fact, the module's only one (E-11).
     let facts: Vec<(String, Vec<String>)> = m
@@ -965,4 +1020,37 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         [("rat-rule".to_string(), vec!["rat-arith".to_string()])],
         "the module writes one fact, the closing rule's own name"
     );
+}
+
+/// **A rational's own malformation is its flag, as written, and `(false)`**
+/// (M1f S1f.6.38, Q-M1f.276 (a)), held from outside the language as
+/// `int_theory.rs` holds an integer's: a dead program's one claim cannot say
+/// how its flag is written.
+#[test]
+fn a_malformed_rational_is_flagged_as_written() {
+    let fine = "(rat (int (n z 1) z) (n z 2))";
+    for (rat, flag) in [
+        ("(rat 7 (n z 2))", "(not-rational (rat 7 (n z 2)) 7)"),
+        ("(rat 0 (n z 2))", "(not-rational (rat 0 (n z 2)) 0)"),
+        (
+            "(rat half (n z 2))",
+            "(not-rational (rat half (n z 2)) half)",
+        ),
+        (
+            "(rat (int (n z 1) z) 2)",
+            "(not-rational (rat (int (n z 1) z) 2) 2)",
+        ),
+        (
+            "(rat (int (n z 1) z) 0)",
+            "(not-rational (rat (int (n z 1) z) 0) 0)",
+        ),
+        (
+            "(rat (int (n z 1) z) half)",
+            "(not-rational (rat (int (n z 1) z) half) half)",
+        ),
+    ] {
+        let body = format!("(let half (n z 2))\n(rat-add {rat} {fine})\n");
+        assert_eq!(run(&body, "not-rational"), [flag], "{rat}");
+        assert_eq!(run(&body, "false"), ["(false)"], "{rat}");
+    }
 }

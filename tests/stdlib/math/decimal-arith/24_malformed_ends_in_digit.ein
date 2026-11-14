@@ -3,16 +3,17 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; A request the theory cannot read is flagged, `(malformed REQUEST)`, the
-;;; request as written, and `malformed-is-false` derives `(false)` from the
-;;; flag, as for a division by zero (the user's rulings of 2026-11-11 and
-;;; 2026-11-12). Every operand that is found is checked a place a firing,
-;;; `check-step`, and the rule that finds the fault says `(bad-operand TAG
-;;; (not-a-number THING))`; the operand's tag is turned into the request by
-;;; one of ten rules, here `bad-sub-first`, and `bad-request-malformed`
-;;; derives the flag.
+;;; A malformed numeral is `std.math.decimal`'s, flagged as it is written,
+;;; wherever it sits, with no request reading it (S1f.6.38, the user's ruling
+;;; of 2026-11-14 on Q-M1f.210): the loader states every fact nested in a fact
+;;; the program writes, `(written T)`, and the module's rules read each place
+;;; of each numeral off it. The flag is `(not-decimal NUMERAL THING)`, on the
+;;; smallest numeral at fault, and `not-decimal-is-false` derives `(false)`
+;;; from it. Until S1f.6.38 this was `std.math.decimal-arith`'s check at a
+;;; request's operand, `check-step` a place a firing, and its flag the
+;;; request's, `(malformed REQUEST)` (S1f.6.12); the claim is the one it was.
 ;;;
-;;; `check-prefix-digit`: a number ends in `z`, and `(n 1 2)` ends in the
+;;; `numeral-prefix-digit`: a numeral ends in `z`, and `(n 1 2)` ends in the
 ;;; digit 1. It is the slip of writing 12 with one `n` too few. The rule is
 ;;; one probe of the table `nz`, with the prefix bound.
 ;;;
@@ -24,7 +25,9 @@
 ;;; the unsat core, and `--trace` shows the flag and the contradiction as two
 ;;; steps.
 
-(import std.math.decimal-arith :symbols (decimal-arith add n sub))
+(import std.math.decimal-arith :symbols (decimal-arith add sub))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add (n z 2) (n z 2))
 (sub (n 1 2) (n z 5))

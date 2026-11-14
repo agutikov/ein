@@ -24,6 +24,7 @@
 ;;; listed is decided at root. Import it beside `words` and `gaps`:
 ;;; `(import listed_is_all :symbols (listed-is-all))`.
 (import words :symbols (has amount assumed))
+(import std.math.arith :symbols (z))
 
 (relation adopted Assumption Relation
   :why "ASSUMED, and not a sentence of the problem: {?1} is adopted for {?2}")

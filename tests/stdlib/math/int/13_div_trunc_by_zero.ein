@@ -6,7 +6,7 @@
 ;;; A division whose divisor is zero has no answer, under any convention. Both
 ;;; operands are simplified, the divisor's normal form is `(int z z)`, and
 ;;; `int-div-by-zero` derives the flag `(division-by-zero (int-div-trunc X
-;;; Y))`, the request as written; `std.math.decimal-arith`'s `division-by-zero-is-false`
+;;; Y))`, the request as written; `std.math.arith`'s `division-by-zero-is-false`
 ;;; derives `(false)` from the flag. The divisor is zero by value and not by
 ;;; its spelling: it is simplified first, 3 less 3, and what the rule reads is
 ;;; its normal form.
@@ -19,7 +19,9 @@
 ;;; program has an answer. Here: 7 by 3 less 3.
 
 (import std.math.int :symbols (int-arith int-add int int-div-trunc))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (int-add (int (n z 2) z) (int z (n z 5)))
 (int-div-trunc (int (n z 7) z) (int (n z 3) (n z 3)))

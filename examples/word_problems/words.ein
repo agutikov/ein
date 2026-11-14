@@ -19,6 +19,7 @@
 ;;; has at the moment t0. A number is the calculator's, `(n z 5)`.
 
 (import std.math.decimal-arith :symbols (decimal-arith sub diff-of add sum-of cmp cmp-of mul product-of div quot-of))
+(import std.math.arith :symbols (z))
 
 ;; ── What the model leaves out, stated once ──────────────────────────────────
 (relation model-counts-only

@@ -43,7 +43,9 @@
 ;;; This program has none. One that has is a contradiction, and
 ;;; `div_by_zero.ein` beside this file shows what Ein says of it.
 
-(import std.math.decimal-arith :symbols (decimal-arith div n mul product-of quot-of))
+(import std.math.decimal-arith :symbols (decimal-arith div mul product-of quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (div (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5) (n (n z 2) 5))
 

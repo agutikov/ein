@@ -1,0 +1,20 @@
+;;; `std.math.int` — a part of an integer that ends in a digit where `z` goes. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(n 1 2)` ends in `1` where `z` goes, and `numeral-prefix-digit` flags it
+;;; as it is written.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.int :symbols (int-arith int int-add))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-add (int (n 1 2) z) (int (n z 1) z))
+
+(solve :expect (false))

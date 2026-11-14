@@ -15,7 +15,9 @@
 ;;; `(solve :expect (false))`: root is dead and R is empty; the unsat core is
 ;;; the `let`.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n))
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let z (n z 5))
 

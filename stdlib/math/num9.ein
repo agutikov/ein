@@ -24,8 +24,9 @@
 ;;; under full names (M1f S1f.6.35); a program lists the names it writes.
 ;;; `arith9` is the theory's entry, the closing rule at the end of this file:
 ;;; it names every rule and closes every relation of the theory and the tables
-;;; it reads. `n` and `division-by-zero` are `std.math.decimal-arith`'s, which this module
-;;; lists, and a program that writes them lists them from `std.math.decimal-arith`.
+;;; it reads. `n` is `std.math.decimal`'s, and `z` and `division-by-zero` are
+;;; `std.math.arith`'s (M1f S1f.6.38), which this module lists, and a program
+;;; that writes them lists them from those modules.
 ;;;
 ;;; ── The protocol: a request fact, answered by a result fact or by a flag ───
 ;;;
@@ -44,14 +45,14 @@
 ;;; result fact: never a truncated number. Root stays alive, so the program's
 ;;; other requests are answered, and a rule of the program may match the flag.
 ;;;
-;;; **Division by zero is a contradiction,** as in `std.math.decimal-arith` and by its
-;;; rule: the request derives `(division-by-zero (div9 X ZERO))`, and
-;;; `std.math.decimal-arith`'s `division-by-zero-is-false` derives `(false)` from the flag.
+;;; **Division by zero is a contradiction,** as in `std.math.decimal-arith`, and by
+;;; `std.math.arith`'s rule: the request derives `(division-by-zero (div9 X ZERO))`,
+;;; and `std.math.arith`'s `division-by-zero-is-false` derives `(false)` from the flag.
 ;;; Root is dead and R is empty.
 ;;;
 ;;; ── Conversions: a request each way ────────────────────────────────────────
 ;;;
-;;;     (to9 X)         (as9 X W)   X a number of `std.math.decimal-arith`, `z` or `(n PREFIX DIGIT)`
+;;;     (to9 X)         (as9 X W)   X a number of `std.math.decimal`, `z` or `(n PREFIX DIGIT)`
 ;;;                      or (big X)   where X is written with more than 9 digits
 ;;;     (from9 W)       (of9 W X)   X in normal form, with no high zero
 ;;;
@@ -102,8 +103,8 @@
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
 ;;; Its own: `num9`, `add9`, `sum9-of`, `sub9`, `diff9-of`, `cmp9`, `cmp9-of`, `mul9`, `product9-of`, `div9`, `quot9-of`, `overflow`, `to9`, `as9`, `big`, `from9`, `of9`, `mul9-at`, `row9`, `multiples9`, `div9-at`, `num9-rule`, the entry
-;;; `arith9`, and its rules' names. From `std.math.decimal-arith`: `n`, with `z`, for the
-;;; conversions, and `division-by-zero` with the rule from it to `(false)`.
+;;; `arith9`, and its rules' names. From `std.math.decimal`: `n`, for the conversions;
+;;; from `std.math.arith`: `z`, and `division-by-zero` with the rule from it to `(false)`.
 ;;; From `std.math.digits`: `fa`, `fs`, `md`, `cl`, `nz`, `adj`, with the orders `lt`, `eq`,
 ;;; `gt`. The interface is the number, the requests, the results, the two
 ;;; flags, the conversions and `big`; the states `mul9-at` and
@@ -111,7 +112,9 @@
 ;;; or a `--trace` to see, and are not a promise.
 
 (import std.math.digits :symbols (fa fs md cl nz adj))
-(import std.math.decimal-arith :symbols (n division-by-zero division-by-zero-is-false))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z division-by-zero division-by-zero-is-false))
 
 ;; ── The number: 9 digits, the most significant first ──
 (relation num9 Digit Digit Digit Digit Digit Digit Digit Digit Digit
@@ -655,7 +658,7 @@
   :assert (division-by-zero (div9 ?n (num9 0 0 0 0 0 0 0 0 0)))
   :why    "the divisor of {?n} divided by zero is zero")
 
-;; ── Conversions to and from `std.math.decimal-arith`'s numbers, `z` and `(n PREFIX DIGIT)`: a request each
+;; ── Conversions to and from `std.math.decimal`'s numbers, `z` and `(n PREFIX DIGIT)`: a request each
 ;;    way, one firing, a rule for each count of digits ──
 (rule to9-zero ()
   :match  (to9 z)

@@ -145,8 +145,16 @@ fn run(src: &str, relations: &[&str], closer: &str) -> Run {
         .find_map(|n| terms.syms.get(n))
         .expect("the closing rule's name");
     // `std.math.decimal-arith`'s closing rule fires too since M1f S1f.6.35, the module
-    // coming whole with `std.math.num9`'s import of it; it is no request's either.
-    let lower = terms.syms.get("std.math.decimal-arith.decimal-arith");
+    // coming whole with `std.math.num9`'s import of it, and since S1f.6.38 those
+    // of `std.math.decimal` and `std.math.arith`; they are no request's either.
+    let lower: Vec<ein_core::Symbol> = [
+        "std.math.decimal-arith.decimal-arith",
+        "std.math.decimal.decimal",
+        "std.math.arith.arith",
+    ]
+    .iter()
+    .filter_map(|n| terms.syms.get(n))
+    .collect();
     let mut firings = 0usize;
     {
         let mut s = Session {
@@ -158,7 +166,7 @@ fn run(src: &str, relations: &[&str], closer: &str) -> Run {
         };
         let mut sat = Saturator::new(&mut s).expect("the theory compiles");
         sat.saturate(&mut s, None, &mut |f| {
-            if f.rule != closer && Some(f.rule) != lower {
+            if f.rule != closer && !lower.contains(&f.rule) {
                 firings += 1;
             }
         })
@@ -584,7 +592,18 @@ const TABLES: [&str; 6] = ["fa", "fs", "md", "cl", "nz", "adj"];
 
 /// What the module takes from `std.math.decimal-arith`: the number's relation, for the
 /// conversions, and the flag with the rule from it to `(false)`.
-const FROM_ARITH: [&str; 3] = ["n", "division-by-zero", "division-by-zero-is-false"];
+/// What the module takes from the modules below it, by module (M1f S1f.6.38:
+/// `n` is `std.math.decimal`'s, `z`, the flag of a division by zero and its
+/// rule `std.math.arith`'s; `std.math.decimal-arith` comes whole, its import
+/// bare).
+const FROM_ARITH: [(&str, &[&str]); 3] = [
+    ("std.math.decimal-arith", &[]),
+    ("std.math.decimal", &["n"]),
+    (
+        "std.math.arith",
+        &["z", "division-by-zero", "division-by-zero-is-false"],
+    ),
+];
 
 struct Module {
     ast: Ast,
@@ -754,9 +773,10 @@ fn the_theory_writes_no_negation() {
 }
 
 /// `arith9` is the theory's one entry: it closes every relation the module
-/// declares, every table it reads and the two relations it takes from
-/// `std.math.decimal-arith`, and names every other rule of the module and the one it
-/// takes. Its own name is the module's one written fact (E-11).
+/// declares, every table it reads and the two relations it takes from the
+/// modules below, `n` and `division-by-zero`, and names every other rule of
+/// the module and the one it takes. Its own name is the module's one written
+/// fact (E-11).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();
@@ -790,11 +810,13 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         TABLES.iter().map(|t| t.to_string()).collect(),
         "the tables the module imports"
     );
-    assert_eq!(
-        m.imported("std.math.decimal-arith"),
-        FROM_ARITH.iter().map(|t| t.to_string()).collect(),
-        "what the module takes from std.math.decimal-arith"
-    );
+    for (module, names) in FROM_ARITH {
+        assert_eq!(
+            m.imported(module),
+            names.iter().map(|t| t.to_string()).collect(),
+            "what the module takes from {module}"
+        );
+    }
 
     let mut want_closed: BTreeSet<String> =
         m.declared("relation").into_iter().map(|(n, _)| n).collect();
@@ -803,7 +825,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     assert_eq!(
         closed, want_closed,
         "`arith9` closes every relation the module declares, every table it \
-         imports, and the two relations it takes from std.math.decimal-arith"
+         imports, and the two relations it takes from the modules below"
     );
     let mut want_named: BTreeSet<String> = rules
         .iter()

@@ -19,7 +19,9 @@
 ;;; multiplier's table that the zero written 00 was put into normal form by.
 ;;; A table row is a premise like any other fact.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n div))
+(import std.math.decimal-arith :symbols (decimal-arith let div))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let none (n (n z 0) 0))
 

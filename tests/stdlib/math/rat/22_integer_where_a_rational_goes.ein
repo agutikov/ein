@@ -1,0 +1,28 @@
+;;; `std.math.rat` — an integer where a rational goes, which stays silent. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An operand of this module is a rational, `(rat (int (n z 1) z) (n z 1))`;
+;;; an integer of another type is not flagged (Q-M1f.277, (b)): the request is
+;;; neither answered nor flagged.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive, the request is neither answered nor flagged,
+;;; and the well-formed one beside it is answered.
+
+(import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(rat-add (int (n z 1) z) (rat (int (n z 1) z) (n z 2)))
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (region (model)))
+
+(query :goal (rat-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2))
+                                  (rat (int (n z 1) z) (n z 1)))))

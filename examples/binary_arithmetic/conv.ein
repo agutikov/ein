@@ -29,7 +29,9 @@
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md`
 ;;; § Conversion between decimal and binary.
-(import std.math.decimal-arith :symbols (decimal-arith n div-call div-done add-walk done arith-rule))
+(import std.math.decimal-arith :symbols (decimal-arith div-call div-done add-walk done arith-rule))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 (import bin :symbols (bin a2 strip2 done2 top-first2 top-first-is2 arith-rule2))
 
 (relation to-bin Number :why "asked: {?1} written in binary")

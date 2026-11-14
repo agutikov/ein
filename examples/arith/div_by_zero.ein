@@ -42,7 +42,9 @@
 ;;; customers z)`, and derives its `div` request by a rule that matches
 ;;; `(cmp-of customers z gt)`.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n add div))
+(import std.math.decimal-arith :symbols (decimal-arith let add div))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (let takings   (n (n (n z 1) 2) 0))
 (let customers z)

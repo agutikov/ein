@@ -183,9 +183,12 @@ pub fn listed(src: &str) -> String {
         let text = std::fs::read_to_string(repo_root().join("stdlib").join(format!("{rel}.ein")))
             .unwrap_or_default();
         for l in text.lines() {
+            // A bare import, `(import std.math.decimal-arith)`, closes on the
+            // module's name.
             if let Some(m) = l
                 .strip_prefix("(import ")
                 .and_then(|r| r.split_whitespace().next())
+                .map(|m| m.trim_end_matches(')'))
                 && !modules.iter().any(|(x, _)| x == m)
             {
                 modules.push((m.to_string(), Vec::new()));

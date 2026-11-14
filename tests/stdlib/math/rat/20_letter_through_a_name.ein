@@ -1,0 +1,22 @@
+;;; `std.math.rat` — a malformed numeral in a rational a `let` names. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The `let`'s value is written: `numeral-digit` flags `(n z x)` where it is,
+;;; whether or not a request names `a`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.rat :symbols (rat-arith rat rat-add))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let a (rat (int (n z x) z) (n z 2)))
+(rat-add a (rat (int (n z 1) z) (n z 2)))
+
+(solve :expect (false))

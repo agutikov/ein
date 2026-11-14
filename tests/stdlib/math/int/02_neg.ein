@@ -20,7 +20,9 @@
 ;;; by value and answered in normal form.
 
 (import std.math.int :symbols (int-arith int-neg int int-neg-of))
-(import std.math.decimal-arith :symbols (n))
+(import std.math.decimal-arith)
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (int-neg (int (n z 7) z))
 (int-neg (int z (n z 7)))

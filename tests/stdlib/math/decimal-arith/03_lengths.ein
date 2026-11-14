@@ -16,7 +16,9 @@
 ;;; Exchanging the two operand positions in either of the two column rules
 ;;; moves a digit of one of these four sums.
 
-(import std.math.decimal-arith :symbols (decimal-arith add n sum-of))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (add (n z 7) (n (n (n z 1) 2) 3))
 (add (n (n (n z 1) 2) 3) (n z 7))

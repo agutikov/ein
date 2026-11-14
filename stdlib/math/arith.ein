@@ -1,0 +1,69 @@
+;;; Ein stdlib — `std.math.arith`: arithmetic itself, what every base shares
+;;; (M1f P1f.6, S1f.6.38; the user's rulings of 2026-11-14).
+;;;
+;;; Two things are true of a number in any base, and so are no base's own:
+;;;
+;;;   - **`z`, zero, the number with no digit.** Every numeral ends in it:
+;;;     `(n (n z 4) 2)` is 42 in `std.math.decimal`, and a binary numeral ends
+;;;     in the same `z` (the user, 2026-11-14: *"z is shared by both bases,
+;;;     put it in std.math.arith"*; P1f.6's reply 15, *"one `z`; a bare `z`
+;;;     is of no base"*). It is declared here, a relation of no argument
+;;;     that no fact is ever of, so that it has one full name,
+;;;     `std.math.arith.z`, and a file that writes it lists it, as it lists
+;;;     any name a module declares (M1f S1f.6.35).
+;;;   - **Division by zero is a contradiction** (the user, 2026-11-14:
+;;;     *"division by zero is false in binary arithmetic too, so it belongs to
+;;;     arithmetic itself"*). A module that divides derives the flag
+;;;     `(division-by-zero REQUEST)`, the request or the call as it was
+;;;     asserted, and `division-by-zero-is-false` derives `(false)` from it:
+;;;     two steps, so that a trace shows the flag as a step of its own and the
+;;;     contradiction as the next. A theory in which division by zero is
+;;;     allowed, a wheel or a meadow, would be a module that does not import
+;;;     this one; none exists.
+;;;
+;;; Until S1f.6.38 both were `std.math.decimal-arith`'s.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.arith :symbols (z))
+;;;     (import std.math.decimal :symbols (n))
+;;;
+;;; A program imports a base, `std.math.decimal-arith` or a module over it,
+;;; which brings this one whole (M1f S1f.6.35), and lists from here the names
+;;; it writes: `z` in a numeral, and `division-by-zero` where a rule or a
+;;; claim reads the flag. `arith` is the module's entry, the closing rule at
+;;; the end of this file.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; `z`; the flag `division-by-zero` and its rule `division-by-zero-is-false`;
+;;; `arith-module-rule`, and the entry `arith`. All of them are the interface.
+
+;; ── Zero ────────────────────────────────────────────────────────────────────
+(relation z
+  :why "zero, the number with no digit")
+
+;; ── Division by zero ────────────────────────────────────────────────────────
+(relation division-by-zero Request
+  :why "{?1} divides by zero")
+
+(rule division-by-zero-is-false ()
+  :match  (division-by-zero ?request)
+  :assert (false)
+  :why    "{?request} divides by zero: no number is the answer")
+
+;; ── The closing rule, and the module's one entry ────────────────────────────
+;; The flag is computed and never guessed, so it is closed; `z` is a relation
+;; no fact is of, and declared with no argument type, so no search guesses
+;; one. The rule names every rule of the module, as each module of the
+;; calculator does. `ein-infer/tests/arith_theory.rs` holds that nothing is
+;; missing here.
+(relation arith-module-rule Rule
+  :why "{?1} is a rule of std.math.arith")
+
+(rule arith ()
+  :match  ()
+  :assert (and (__closed__ division-by-zero)
+               (__closed__ arith-module-rule)
+               (arith-module-rule division-by-zero-is-false))
+  :why    "arithmetic is computed and never guessed: its flag is closed")

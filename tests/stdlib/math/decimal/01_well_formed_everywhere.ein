@@ -1,0 +1,50 @@
+;;; `std.math.decimal` — a well-formed numeral, wherever it is written, is flagged nowhere. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The loader states every fact nested in a fact a file writes, and in a
+;;; rule's conclusion where it holds no variable, as `(written T)`, and the
+;;; module's five rules read every place of every numeral off it. Here a
+;;; numeral is written in each place it can be: a request's operand, a `let`
+;;; nobody asks about, a fact of the program's own relation, a part of an
+;;; integer and of a rational, and a rule's conclusion. Each is a decimal
+;;; number, so no rule of the check fires: `(not-decimal …)` has no fact, and
+;;; the sum is answered.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive, and the program's own relations are closed. The
+;;; sum is answered, and the flag's extent is empty.
+
+(import std.math.rat :symbols (rat-arith rat))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (decimal-arith add let sum-of))
+(import std.math.decimal :symbols (n not-decimal))
+(import std.math.arith :symbols (z))
+
+(relation price Item Amount :why "{?1} costs {?2}")
+(relation seed Thing :why "{?1} is a seed")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (and (__closed__ price) (__closed__ seed))
+  :why    "the program's own relations are closed, as the theory's are")
+
+(seed z)
+(add (n (n z 1) 2) (n z 5))
+(let unused (n (n z 4) 2))
+(price apple (n (n z 1) 0))
+(price half (rat (int (n z 1) z) (n z 2)))
+(rule ask-price ()
+  :match  (seed ?s)
+  :assert (price pear (n (n z 2) 0))
+  :why    "a pear costs 20: a numeral written in a rule's conclusion")
+
+(solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n (n z 1) 2) (n z 5) (n (n z 1) 7))))
+
+(query :goal (not-decimal ?numeral ?thing)
+       :goal-text "{?numeral} is not a decimal number"
+       :expect (model))

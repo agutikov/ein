@@ -44,7 +44,9 @@
 ;;; `factorial` is the program's own relation, and the program closes it:
 ;;; the theory closes its own relations and cannot close the importer's.
 
-(import std.math.decimal-arith :symbols (decimal-arith let n add cmp cmp-of sum-of mul product-of))
+(import std.math.decimal-arith :symbols (decimal-arith let add cmp cmp-of sum-of mul product-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
 
 (relation factorial Number Number
   :why "{?1}! = {?2}")

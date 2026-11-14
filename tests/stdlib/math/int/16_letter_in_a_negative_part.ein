@@ -1,0 +1,21 @@
+;;; `std.math.int` — a letter in the negative part of an integer. M1f S1f.6.38.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; As in the positive part: `(n (n z x) 1)` is the integer's negative part,
+;;; and `numeral-digit` flags `(n z x)` as it is written, the smallest numeral
+;;; at fault.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.int :symbols (int-arith int int-add))
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(int-add (int z (n (n z x) 1)) (int (n z 1) z))
+
+(solve :expect (false))
