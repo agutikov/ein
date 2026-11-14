@@ -273,6 +273,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.268](#q-m1f268--how-far-binary-flags-a-malformed-request) | how far binary flags a malformed request | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: as far as decimal: the shared check and two rules of binary's own over `0` and `1`; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 | [Q-M1f.269](#q-m1f269--division-by-zero-is-false-stays-decimals) | `division-by-zero-is-false` stays decimal's | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (a), it stays `std.math.decimal-arith`'s, which `std.math.num9` names; binary has its own; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
 | [Q-M1f.270](#q-m1f270--the-connecting-macros-body-written-or-generated) | the connecting macro's body, written or generated | **defaulted 2026-11-14 (S1f.6.16's design), the user's to revise**: (a), written by hand in `std.math.positional` and held by a test; [S1f.6.16](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14) |
+| [Q-M1f.271](#q-m1f271--what-an-hrules-and--conclusion-proposes) | what an hrule's `(and …)` conclusion proposes | **defaulted 2026-11-14 (S1f.6.37), the user's to revise**: (a), refused at load: an hrule's conclusion, read flat, is one conjunct; [S1f.6.37](p1f.6_calculator/s1f.6.37_conclusion_shapes.md#record-2026-11-14), E-65, W95 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -5326,3 +5327,23 @@ once with that rule's parameters, so its body repeats every rule's parameter lis
 
 **Defaulted 2026-11-14: (a), the user's to revise.** The module stays a file a reader can follow, as the plan's
 reply 16 wanted of `std.math.decimal-arith`; the test fails on the drift a generator would prevent.
+
+### Q-M1f.271 — What an hrule's `(and …)` conclusion proposes
+
+**Raised** 2026-11-14 by [S1f.6.37](p1f.6_calculator/s1f.6.37_conclusion_shapes.md#record-2026-11-14)'s
+inventory of what reads a conclusion (E-65, W95). An hrule proposes facts, each a commitment of its own, and the
+hypothesis layer read the first template of its plan alone: `(hrule h () :match () :assert (and (p a) (q a)))`
+proposed `(p a)` and dropped `(q a)` in silence, and the mechanisms check and the universe's scope took `p` alone
+for the relation it proposes. No tracked hrule writes an `(and …)`, as written or after a macro's expansion.
+
+- **(a) Refused at load**: an hrule proposes one fact per match, so its conclusion, read flat as every conclusion is
+  since S1f.6.37, is one conjunct; one of more is refused, one line, *write one hrule per conclusion*.
+- **(b) Each conjunct proposed**: `(and (p a) (q a))` proposes `(p a)` and `(q a)`, two candidates, as two hrules
+  propose them; the hypothesis layer, the mechanisms check and the scope read every conjunct.
+- **(c) As it was**, the first conjunct, and a `note:` naming the rest.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** It adds no meaning: what (b) would mean is written as two
+hrules, which the refusal's line says, so a reading taken later moves no program written meanwhile; (b) reads a
+conjunction as *each of these is a guess on its own*, where a reader may take it for *these together*, which no
+commitment states. (c) keeps the silent drop's answer.
+

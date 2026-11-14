@@ -17282,7 +17282,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 of P1f.6's `findings.md`, met by S1f.6.16's design: `build/s1f.6.16/design/and_in_and.ein` with a second query, over `q`. `ein saturate --dump` lists the derived `(and (p a) (q a) :rule nested)` and `(r a :rule nested)`. No tracked program writes the shape: no conclusion of the corpus, as written or after expansion, nests an `and` (S1f.6.37's census, `cargo run --release -p ein-infer --example conclusion_census`). Fixed by S1f.6.37's T1f.6.37.3 (2026-11-14): root holds `(r a)`, `(p a)` and `(q a)`, and both claims hold, exit 0"
 
 [case.fixed]
-commit = "00000000"
+commit = "0d144bef"
 by     = "S1f.6.37 (T1f.6.37.3, the user's ruling of 2026-11-14): a conclusion is read flat at any depth, through `ein_ir::Ast::conjuncts`, which the compiler's templates, the loader's checks and every other reader of a conclusion call, so an `and` inside an `and` is each of its members, as a premise's is"
 date   = "2026-11-14"
 
@@ -17336,7 +17336,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 of P1f.6's `findings.md`: `build/s1f.6.16/trial/m/m1.ein` with a second query, over `q`. The same call as the rule's whole conclusion, `m2.ein`, concludes each fact; S1f.6.16's design places such a call in a closing rule's `(and …)`. Fixed by S1f.6.37's T1f.6.37.3 (2026-11-14), as `W94/and-in-and`"
 
 [case.fixed]
-commit = "00000000"
+commit = "0d144bef"
 by     = "S1f.6.37 (T1f.6.37.3): a conclusion is read flat at any depth (`ein_ir::Ast::conjuncts`), so the `(and …)` a macro's call leaves as one conjunct is each of its members"
 date   = "2026-11-14"
 
@@ -17391,7 +17391,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-65 of P1f.6's `findings.md`, met taking T1f.6.37.2's inventory of what reads a conclusion. No tracked hrule writes an `(and …)`: every hrule conclusion of the corpus, as written and after expansion, is one conjunct (S1f.6.37's census). Fixed by S1f.6.37 (2026-11-14) under Q-M1f.271's default (a): refused at load, one line, on every command"
 
 [case.fixed]
-commit = "00000000"
+commit = "fc9bd066"
 by     = "S1f.6.37, under Q-M1f.271's default (a), the user's to revise: an hrule's conclusion, read flat (`ein_ir::Ast::conjuncts`), is one conjunct, and the loader refuses one of more, `defined_behaviour.md` § 4.29"
 date   = "2026-11-14"
 
@@ -17438,7 +17438,7 @@ look_at  = ["root", "summary"]
 note     = "Filed by S1f.6.37 (T1f.6.37.1, 2026-11-14) from E-63 and E-65 of P1f.6's `findings.md`. `ein solve -H` lists one candidate over the relation `and`. Read flat, which S1f.6.37's fix does, the conclusion is three conjuncts and the hrule proposes `(p a)` alone, `W95/hrule-and`'s answer, until the refusal. Fixed by S1f.6.37 (2026-11-14) under Q-M1f.271's default (a): refused at load, its conclusion three conjuncts"
 
 [case.fixed]
-commit = "00000000"
+commit = "fc9bd066"
 by     = "S1f.6.37: T1f.6.37.3 reads the conclusion flat (`ein_ir::Ast::conjuncts`), so no candidate is headed `and`, and under Q-M1f.271's default (a) the loader refuses an hrule whose conclusion is more than one conjunct, `defined_behaviour.md` § 4.29"
 date   = "2026-11-14"
 
