@@ -1,8 +1,10 @@
 # S1f.6.31 — The stdlib layout: `std.math.*` and `std.bool.*`
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-12; **running since 2026-11-14** ([§ Record](#record-2026-11-14)): the
-restatement after S1f.6.35, T1 and T2 recorded before the move. **Mechanical, and done once.** It runs after the stages that are
+**Status:** **done 2026-11-14** ([§ Record](#record-2026-11-14)); planned 2026-11-12. The restatement after
+S1f.6.35, T1 and T2 recorded before the move (`56941a77`); T3 to T7 in one commit (`ac620be0`), the sweep finding no difference
+but the names. Defaults Q-M1f.261 and .262, the user's to revise; E-58 and E-59 found and fixed. **Mechanical, and
+done once.** It runs after the stages that are
 independent of the layout ([`replies_2026-11-12.md` § The order](replies_2026-11-12.md#the-order)), which are
 written against today's names, and before the stages that add modules.
 **Depends on:** the user's reply to [round 2's layout item](questions_round2.md#layout)
@@ -303,3 +305,206 @@ By `git grep` on `bfdce135` (`build/s1f.6.31/inv_ein_imports.txt` holds the firs
 - **Commands pages quote that a subdirectory makes wrong in silence**: `cat stdlib/*.ein | grep -c '^(rule '` in
   `stdlib/README.md` and in `utils/rule_census.py` (so in `rule_census.md`); `tests/README.md`'s and
   `utils/README.md`'s *"parses `stdlib/*.ein`"*, which describe the coverage test, the census and the mutants.
+
+### T1f.6.31.3 — the move, done
+
+Committed with T4 to T7 as `ac620be0`; this record, the findings and the questions in the commit after it.
+
+`git mv` of the five modules, `stdlib/arith.ein` to `stdlib/math/decimal-arith.ein` and `digits`, `int`, `rat`,
+`num9` to `stdlib/math/<name>.ein`; then one mechanical rewrite, `build/s1f.6.31/move.py`, over every current file
+the inventory named (203 files; P1f.6's records, `docs/history/`, the register's filing notes and the generated
+files left out), and nothing else of it by hand but what the script lists for a reader:
+
+- `std.arith`, `std.digits`, `std.int`, `std.rat`, `std.num9` to `std.math.decimal-arith`, `std.math.digits`,
+  `std.math.int`, `std.math.rat`, `std.math.num9`, as a module's name and as a full name's prefix;
+  `stdlib/<m>.ein` to `stdlib/math/<new>.ein`; `tests/stdlib/<m>` to `tests/stdlib/math/<new>`;
+- the entry where it is that rule: `(rule arith ()`, its full name, an import list of the decimal module, and
+  the four facts that name it, `(arith-rule arith)` in the module, `(int-rule arith)` and `(rat-rule arith)`
+  in the two over it, `(words-uses arith)` in `examples/word_problems/words.ein`; and, by hand, the 30 lines of
+  prose that name the entry in backticks (the script's `--prose` list). `examples/binary_arithmetic/conv.ein`
+  writes `(arith-rule decimal-arith)` beside `(arith-rule2 bin)`.
+
+No module's text gained or lost a line (the script checks it), so every location into a module keeps its line.
+One generated example did: `many_calculations.ein`'s import list wraps to two lines at the generator's 100
+columns, and its forms sit one line lower.
+
+**The generators**, edited and re-run, never their outputs: `utils/gen_arith_tables.py` and `utils/gen_num9.py`
+write `stdlib/math/`, their headers name `std.math.*` (num9's `:why` of `num9-rule` too, `"{?1} is a rule of
+std.math.num9"`, as `arith-rule`'s and `int-rule`'s move with the mapping); `utils/gen_arith_examples.py` reads
+`stdlib/math/decimal-arith.ein` and lists `decimal-arith`; `examples/binary_arithmetic/gen_binary.py` reads the
+moved module and drops its closing rule by its new name, and writes `bin.ein` with its rules **byte for byte as
+before** (the two header lines that name the source move): the binary theory derived from the decimal one is the
+same theory. Every `--check` is green; `utils/stdlib_manifest.py --write` re-took the manifest.
+
+**The readers** (T2's list), each now reading every depth or the new name: `utils/stdlib_manifest.py`
+(`rglob`, the manifest's names paths from `stdlib/`, sorted as text, `math/decimal-arith.ein`);
+`ein_ir::stdlib::Source::modules()` (both the directory and the embedded tree walked; read by tests, no command);
+`stdlib_coverage.rs`' inventory (`ein_files_under`, a module's name a dot a directory); `ein-corpus`'s `spellings`
+(every depth) and `unprefixed` (a prefix of any number of segments, `std.math.decimal-arith.`);
+`ein-corpus/benches/engine.rs` and `ein-infer/examples/shared/census.rs`; `ein-cli`'s `einb_cli.rs` (the scratch
+stdlib copied at every depth, the size bound summed over every module) and `import_invariance.rs` (the prefixes it
+takes off); `arith_theory.rs`' interface table and closing-rule checks, `int_theory.rs`, `rat_theory.rs` (the entry
+by its new name); `utils/stdlib_census.py`, `stdlib_mutants.py` (a survivor keyed by its path,
+`math/decimal-arith.ein::…`), `nl_census.py`, `guard_split.py`, `rule_census.py` (a test file's group is its
+directory, `tests/stdlib/math/int`; the command it prints reads every depth); `utils/arith_cost.py`, broken since
+S1f.6.35 and fixed (E-58). `tests/mutation_survivors.txt`'s 13 `arith.ein::` keys re-keyed
+`math/decimal-arith.ein::`, nothing else of it.
+
+**No alias.** `(import std.arith :symbols (add))`: *kb load error: (import std.arith) — module not found at
+…/stdlib/arith.ein*, exit 1.
+
+### T1f.6.31.4 — `tests/stdlib/` follows: moved
+
+`tests/stdlib/arith/` is `tests/stdlib/math/decimal-arith/`, and `digits/`, `int/`, `rat/`, `num9/` are under
+`tests/stdlib/math/`: 83 programs, with their corpus entries. **Moved, because the suite then mirrors the
+library** (`std.math.x`'s programs in `tests/stdlib/math/x/`, which is where `stdlib_coverage.rs`'s message sends
+a reader for a rule with no program) and because the cost T2 counted is paid once either way: every golden key of
+those files is a path, and the digests of the same files move with the full names anyway (T5). What it costs
+besides: P1f.6's records cite `tests/stdlib/arith/NN_…` and its siblings in backticks on some 160 lines; the phase README's note
+maps the directories, and the three links among them are re-pointed (Q-M1f.262). Later modules are born where the
+mirror puts them, `tests/stdlib/math/gcd/` and `tests/stdlib/bool/…`.
+
+### T1f.6.31.5 — the sweep, done: no other difference
+
+`build/s1f.6.31/sweep.py`, 2026-11-14: **old**, the release binary of `bfdce135` in a detached worktree of that
+commit, resolving its own stdlib by the checkout walk; **new**, this stage's release binary on the working tree.
+Every tracked `.ein` (856 on each side, the old paths mapped to the new one to one), each under `ein solve` and
+`ein saturate --dump`, stdout, stderr and the exit code. The old side's text mapped, and nothing else: the old
+tree's path to the new; `std.<m>` to `std.math.<new>`, a module's name and a full name's prefix alike;
+`stdlib/<m>.ein` and `tests/stdlib/<m>/` to their new paths; the entry `arith` as a name, and
+`std.math.decimal-arith.arith` to `…decimal-arith.decimal-arith`. On both, a timing masked (`ms`, `µs`, `s`), the
+main file's character count masked (`ein saturate`'s `chars` line: its import lines are longer), and runs of
+blanks read as one (a column padded to a longer name).
+
+| | count |
+|---|---:|
+| tracked `.ein` files | 856 |
+| runs (`solve` and `saturate --dump`) | 1 712 |
+| exit code differs | **0** |
+| equal line for line after the mapping | **1 712** |
+| equal only as a set of lines | 0 |
+| differ | **0** |
+| streams that differ before the mapping (so the comparison is not vacuous) | 241, in 146 files |
+| lines compared, the new side | 580 163 |
+
+**No answer moved**, and no line moved but by the map: R, N, H, every claim's `holds`, every exit code, and every
+state's every fact. No line reordered either: no surface the two commands print sorts the calculator's names
+against the zebra modules' in one list. `ein test examples tests stdlib` on both sides: the same 1 292 lines once
+mapped, as a set (the walk reaches the moved directories in another order), exit 2 on both (the refused fixtures').
+The sweep was re-run on the new side after `gen_num9.py` learned the module's name (its `:why` and header), with the
+same result.
+
+### T1f.6.31.6 — the pages, done
+
+- [`stdlib/README.md`](../../../stdlib/README.md): **§ The layout** first, the five modules' table with their files,
+  sections and entries beside the zebra modules, the old names and *no alias*; every module's section under its new
+  name (the anchors move with the headings, and the two pages that link into them follow); the modules table's
+  links into `math/`; the rule count re-taken, 368, with the command that reads every depth (E-59).
+- [`tests/README.md`](../../../tests/README.md): the suite mirrors the library; the five directories' rows, links
+  and sections under `stdlib/math/`; the census *"parses every `.ein` under `stdlib/`, at any depth"*.
+- `utils/README.md`: the census and the mutants read every depth, a survivor keyed by its path.
+- `examples/README.md`, `examples/word_problems/README.md`, `examples/binary_arithmetic/README.md`: the names.
+- `docs/kernel/`: `07_stdlib_api.md` (the five sections, their imports, the entry, and the layout in the import
+  recap), `01_grammar.md`, `defined_behaviour.md` and `answer_dump.md` (their examples' full names);
+  `docs/install.md` unchanged, since T1 changed nothing it says.
+- This phase: one note at the top of [`README.md`](README.md) maps the old names to the new; the stage files are
+  records and are not rewritten, but for ten links in six of them whose target moved, re-pointed with their text
+  as it was ([Q-M1f.262](../open_questions.md#q-m1f262--a-records-link-to-a-file-the-layout-moved)).
+- `AGENTS.md`: § Where things live, `stdlib/`'s calculator sentence (the modules under `stdlib/math/`, their
+  programs under `tests/stdlib/math/`), and the standing rules that named the modules or their paths.
+- Later plans: M1g's (its README, P1g.5, P1g.8, P1g.10 and its stage files, P1g.11 and S1g.11.4, S1g.1.3) and
+  M1h's, and M12's README, under the new names; the *Names* notes that said *"read `std.arith` as
+  `std.math.decimal-arith` once that stage has run"* say it ran. Left as they were: P1g.10's `findings.md`, a
+  record, and three lines quoting what S1f.6.20's filter printed (*"116 steps of `std.arith`"*).
+  `plans/m12_rules_as_data/rule_census.md` is a generated page that was already 1 091 lines behind its generator
+  before this stage (`rule_census.py --page` on the tree at `bfdce135`), so it is not re-taken here: its tables are
+  a measurement of their day, and its generator now groups `tests/stdlib/math/<module>` and prints a command that
+  reads every depth.
+
+### T1f.6.31.7 — the checks that keep it, done
+
+- `ein-infer/tests/stdlib_coverage.rs`: the inventory reads every module at any depth (`module_files`,
+  `module_name`), and **`the_inventory_reads_every_module_the_manifest_lists`** fails on a `.ein` under `stdlib/`
+  that the inventory or the manifest does not see, and on a tree with no module under a subdirectory.
+- `ein-ir/src/stdlib.rs`: `Source::modules()` lists every depth of the directory and of the embedded tree, so
+  `the_embedded_copy_has_no_extra_modules` compares the whole embedded copy with the manifest, and
+  **`the_checkout_has_no_module_the_manifest_does_not_list`** compares the checkout's.
+- `utils/stdlib_manifest.py` writes and checks every depth; `utils/stdlib_census.py` and `utils/stdlib_mutants.py`
+  read every module.
+
+### The goldens, named before the bless and counted after
+
+- **`ein-cli/tests/golden/corpus_exits.txt`**, named: its keys are paths, so the map re-paths 435 of its lines
+  (the 88 moved files' cells), and no cell may move. It is `bfdce135`'s file with the map applied, byte for byte,
+  and `corpus_cli` was green on it before any bless: **no exit code of any declared run moved.**
+- **`ein-render/tests/golden/corpus_shapes.md5`**, named: the map re-paths 3 608 of its keys, and digests move
+  on the files whose text, path or printed output the move changed, 153 by the sweep (`predicted_moved_files.txt`).
+  Blessed (`EIN_BLESS=1 cargo test -p ein-render --test corpus_shapes`) and counted against the re-pathed file
+  (`build/s1f.6.31/shapes_moved.py`): **4 787 of 23 921 renderings moved, on 144 files, every one among the 153**;
+  none added and none gone. By view: `dot` 1 690, `ir` 566, `cores` 455, `read-out` 442, `load` 139, `hyp` and
+  `hyp+closed` 135 each, `oracle` 133, `saturate`, `plan`, `match` and `region-trace` 130 each, `naf` 129,
+  `explain` and `explain-noalts` 124 each, `states` 107, `region-lattice` 88. 299 of them changed their count of
+  lines, **every one an `ir` rendering**: the IR printer breaks a form that passes 80 columns
+  (`ein_ir::dump::DEFAULT_WIDTH`), and a full name eleven characters longer breaks more of them
+  (`examples/arith/add.ein`'s resolved IR, 4 666 lines to 4 722). That is the only thing besides the names, and it
+  is a line break.
+- **Unmoved, as named**: `docs/kernel/inference/read_out_examples.md` (`utils/read_out_examples.py` re-run, no
+  diff), `configuration.md`'s defaults block (`config_reference.rs`), `docs/api/rust.md`'s block
+  (`embedding.rs`), the dump goldens (`zebra*.golden`, `module_paths.txt`), the register (`wrong_answers.rs`).
+- **`tests/mutation_survivors.txt`**: its 13 `arith.ein::` keys re-keyed `math/decimal-arith.ein::`, and
+  `utils/stdlib_mutants.py --check` holds the re-keyed set: 431 of 502 mutants killed, 71 survivors, S1f.6.35's
+  numbers.
+- Not a golden, a list: `dot_wellformed.rs`' `SKIPPING` names `stdlib/math` where it named `stdlib`, so a view
+  past the bound in a zebra module now fails the sweep where it was skipped in silence.
+
+### The checks, on the working tree before the commit
+
+`cargo test --release --workspace` (TMPDIR under `build/`, nothing left in it): every target green but
+`corpus_shapes` and `dot_wellformed`, each re-run green after the bless and `SKIPPING` above; `cargo fmt --check`,
+`cargo clippy --workspace --all-targets -D warnings`, `cargo doc --no-deps` with `-D warnings`;
+`utils/check_hashmap_iteration.py`; `utils/doc_audit.py --links --check` over the gate's pages, no finding;
+`utils/stdlib_manifest.py`; `utils/stdlib_census.py --check` (368 of 368 rules activated, by module under the new
+names); `utils/stdlib_mutants.py --check` (above); every generator's `--check` (`gen_arith_tables.py`,
+`gen_num9.py`, `gen_arith_examples.py`, `examples/gen_zebra2_variants.py`, and, by hand,
+`examples/binary_arithmetic/gen_binary.py` and `examples/binary_logic/gen_gates.py`); by hand,
+`cargo test -p ein-infer --features counters --test arith_batch`, 5 of 5; `cargo bench --bench engine -- --test`
+(the bench set reads the stdlib at every depth). `./run_tests.sh` and the nightly are the coordinator's, once over
+the batch.
+
+### Acceptance
+
+- **The five resolve under their new names from the checkout, from `$EIN_STDLIB` and from the embedded copy, and
+  the old names do not**: T1's probe for the mechanism, and the sweep, `corpus_cli` and `ein test tests/` for the
+  checkout (`ein test tests/stdlib/math`, 83 files, 175 claims held); `$EIN_STDLIB` is how `stdlib_mutants.py`
+  runs every mutant, on a copy of the moved tree; the embedded copy: this stage's release binary copied outside any
+  checkout (`ein --version`: `embedded`, the manifest's digest), nine programs of `tests/stdlib/math/` that import
+  each of the five, 25 claims held, and held to the manifest at every depth by
+  `the_embedded_copy_matches_the_manifest` and `the_embedded_copy_has_no_extra_modules`. The old names:
+  `(import std.arith …)` is *module not found at …/stdlib/arith.ein* from the checkout and *at
+  `<embedded>/arith.ein`* from the embedded copy, `std.digits` likewise.
+- **No answer moved**: the sweep, 1 712 of 1 712 runs equal but for the names; every moved golden named first.
+- **Every stdlib rule is still activated** (`stdlib_coverage.rs`, and the census, 368 of 368); the mutation census
+  reads every module; every generator's `--check` is green.
+- **No page quotes a command that silently skips a subdirectory**: `stdlib/README.md`'s `cat stdlib/*.ein` is
+  `find stdlib -name '*.ein' -exec cat {} +`; `rule_census.py` prints the same; `tests/README.md` and
+  `utils/README.md` say *at any depth*. `rule_census.md`, generated and already behind, keeps its day's text.
+- **What it did not do**: no relation renamed, no entry but `arith`; the zebra modules where they were; no module of
+  a later stage created (`bits`, `positional`, `binary-arith`, `convert`, `gcd`, `std.bool.*`); `ein.rs/vendor/`
+  untouched; no engine change: of the engine's sources, `Source::modules()`, which no command calls, and two doc
+  comments.
+
+### Defaults, findings, and what is the user's
+
+- **[Q-M1f.261](../open_questions.md#q-m1f261--the-decimal-theorys-module-name-after-the-user-wrote-stdmatharith-in-passing)**,
+  defaulted: `std.math.decimal-arith`, the layout as replied and confirmed, against `std.math.arith`, which the user
+  wrote in passing on 2026-11-14. Another name is this stage again, mechanically, with its sweep.
+- **[Q-M1f.262](../open_questions.md#q-m1f262--a-records-link-to-a-file-the-layout-moved)**, defaulted: a record's
+  link to a moved file is re-pointed, its text kept.
+- **T4's choice**, the suite moved to mirror the library, is the stage file's to make and is recorded above.
+- **[E-58](findings.md)**, fixed: `utils/arith_cost.py` had not run since S1f.6.35. **[E-59](findings.md)**, fixed:
+  `stdlib/README.md`'s rule count was 27 behind and its pin a test that does not read it.
+- No wrong answer was met: the old and new layouts answer alike on every tracked program, and no module resolves
+  differently from two places. The register is unmoved.
+- **`utils/ci_container.sh` is not needed** on the stage file's ground: T1 changed neither what the release build
+  embeds (a tree, as it was) nor what CI installs. The DOT writers are unchanged; what they draw moved by names
+  only, and the DOT sweep is green on Graphviz here.

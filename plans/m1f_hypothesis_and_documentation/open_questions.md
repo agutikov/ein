@@ -267,6 +267,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.252](#q-m1f252--an-empty-segment-or-a--in-a-modules-name) | an empty segment or a `/` in a module's name | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.253](#q-m1f253--how-a-name-prints-under-as) | how a name prints under `:as` | **defaulted 2026-11-14 (S1f.6.35), the user's to revise**: the main file's alias spelling, `a.sum-of`, as today; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.261](#q-m1f261--the-decimal-theorys-module-name-after-the-user-wrote-stdmatharith-in-passing) | the decimal theory's module name, after the user wrote `std.math.arith` in passing | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: `std.math.decimal-arith`, entry `decimal-arith`, as replies 16 and 52 and round 2's confirmed layout name it; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#the-replies-re-read) |
+| [Q-M1f.262](#q-m1f262--a-records-link-to-a-file-the-layout-moved) | a record's link to a file the layout moved | **defaulted 2026-11-14 (S1f.6.31), the user's to revise**: the link's target re-pointed, its text and the record's prose as they were; [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#t1f6314--testsstdlib-follows-moved) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -5165,3 +5166,19 @@ and *"when import std.math.arith and use std.math.arith.sum must work identical 
 **Defaulted 2026-11-14: (a), the user's to revise.** The move is mechanical and held by a sweep (S1f.6.31's T5), so
 (b) or (c) is the same move again, with the same sweep, before S1f.6.16's build adds `std.math.binary-arith` beside
 it.
+
+### Q-M1f.262 — A record's link to a file the layout moved
+
+**Raised** 2026-11-14 by [S1f.6.31](p1f.6_calculator/s1f.6.31_the_stdlib_layout.md#t1f6314--testsstdlib-follows-moved).
+P1f.6's stage files are records and are not rewritten (the stage file's T6), and the link check, which the gate runs
+over `plans/`, fails on a link to a path that moved: ten links in six of the phase's records point at a module or a
+test directory the stage moved (`s1f.6.7`, `.8`, `.13`, `.16`, `.24`, `word_problems.md`), one of them at an anchor of
+`stdlib/README.md` § `std.num9`, which the section's new name moved.
+
+- **(a) Re-point the link's target**, `../../../stdlib/arith.ein` to `../../../stdlib/math/decimal-arith.ein`, and leave
+  its text (`` [`stdlib/arith.ein`] ``) and the record's prose as they were: the record still says what it said, and
+  the link reaches the file it meant.
+- **(b) Leave the records alone** and exempt them from the link check.
+- **(c) Rewrite the records to the new names.**
+
+**Defaulted 2026-11-14: (a), the user's to revise.** The phase README's note maps every old name to the new.
