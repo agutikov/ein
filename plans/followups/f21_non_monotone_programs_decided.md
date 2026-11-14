@@ -580,6 +580,16 @@ M1e2's close hands them over here:
 | S-9 | `absent_premises` (the dumps, `region.md`'s *rests on*, the detector's input) is read off the first contradiction's positive side, and follows neither the activator nor the negative side the core follows since S1e2.2.19 and S1e2.2.21. Library only | S1e2.2.19 § Notes; S1e2.2.21 § Notes |
 | S-11 | `features/01`'s activator site is a relation-grain name collision: the rule writes `unknown-feeling` at arity 2, its activator has arity 1. It cannot bite, and it keeps the program flagged | [`site_census.md` § 2](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md) |
 
+## Handed over by M1f, 2026-11-14
+
+One label more, [E-66](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) of M1f's P1f.6, moved here
+on the user's word of 2026-11-14 (*"Q-M1f.271 (a) is fine, E-66 and E-68 - to followups"*). Like S-6 to S-11 above it moves no answer and no command's output: it
+is a reading the static check makes of a program's rules, and it is decided with what that check labels.
+
+| id | what | source |
+|---|---|---|
+| E-66 | the static map of what rules derive, `ein_infer::compile::asserted_relation` and `negated_relation`, reads a plan's first conclusion alone (`plan.assert_template()`), so a relation a rule concludes only as its second or a later conjunct is not *producible* to it: `naf_deps::compute_naf_map` files an `(absent …)` over it as watching a declared-only relation, so the stratification advisory (*watches rule-derived relation(s)*) is not given for it, and `closed::emit_closed`, the auto-closure pass, closes it; `naf_deps::refuting_conclusion` reads every conclusion. No command prints either: the shape digests (`shape::naf_map`, `hyp_shape_with`) and tests read them. Reading every conclusion moves those digests on each program whose rule concludes two relations and reads the second under `absent` elsewhere | [S1f.6.37](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)'s T1f.6.37.2, the inventory of what reads a conclusion (2026-11-14) |
+
 ## Why it is parked
 
 - The user's direction, above.
