@@ -2,10 +2,14 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-13, on the user's ruling of that day. **T1 done 2026-11-14, and stopped for the
-coordinator there**: on the prototype, (h) as ruled moves R on tracked programs (§ Record, *The stop*);
+coordinator there**: on the prototype, (h) as ruled moves R on tracked programs (§ Record, *The stop*). The
+user ruled
 [Q-M1f.247](../open_questions.md#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one)
-to [Q-M1f.253](../open_questions.md#q-m1f253--how-a-name-prints-under-as) open. No engine source has moved.
-**An engine stage and a language change.**
+and [Q-M1f.248](../open_questions.md#q-m1f248--a-closing-rule-under-the-closure-ii) the same day, the reading
+V2, and asked to see the moves first
+([Q-M1f.249](../open_questions.md#q-m1f249--the-answers-h-moves-under-the-recommended-reading)): shown in §
+Record, *The moves under V2, shown*, with E-53's fix to `std.algebra`. **Stopped again there**, T2 not started;
+Q-M1f.249 to .253 open. No engine source has moved. **An engine stage and a language change.**
 **Depends on:** [S1f.6.30](s1f.6.30_name_clashes_between_imported_theories.md), whose page is its
 specification: [`import_clashes.md` § 7](import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names),
 the user's model (h) and the defaults taken for what it leaves open. It runs after
@@ -23,7 +27,12 @@ The user's words are quoted in full in `import_clashes.md` § 7. In one line eac
   re-exported;
 - a **selection** brings the listed names and what they require, following a relation to the rules that read or
   conclude it as well as a rule to its relations (*"1 - yes (ii)"*); a whole-module import, bare or `:as`,
-  brings everything; the program holds the union;
+  brings everything; the program holds the union. **Made precise 2026-11-14** (Q-M1f.247, .248): *"the
+  behaviour must not change - when import std.math.arith and use std.math.arith.sum must work identical to sum
+  from import std.math.arith :symbols (sum); So I guess that any touched relation must be pulled in, otherwise
+  semantic of imported symbold could be incomplete"*, and *"Yes, closing counts"*: **a selected short name
+  means exactly what its full name means under a whole-module import**, so the closure follows any relation, a
+  rule's activators' too, and a rule that closes a kept relation concludes it;
 - one short name bound to two full names in one file is a load error; a short name no import lists is the
   file's own, shadowing in silence;
 - the stdlib has one root, `std.`; every other module name is a path relative to **the program file's
@@ -475,3 +484,266 @@ prefixed name that names nothing), Q-M1f.252 (`..` and `/` in a module name), Q-
 under `:as`). Finding [E-53](findings.md): `std.algebra`'s converse lemma and the subtype-directional converse
 check do not compose, today, with the lemma listed. No register row: no answer of the engine is wrong; every
 move above is the language's.
+
+### The moves under V2, shown
+
+**The ruling, 2026-11-14**, on Q-M1f.247 and .248, quoted in § The ruling: the closure follows **any** relation
+and a closing rule concludes what it closes, the prototype's **V2**; the rule the closure satisfies is that **a
+selected short name means exactly what its full name means under a whole-module import**. On Q-M1f.249 the user
+asked *"Show me first"*: this section shows every program V2 moves, and nothing is restated or accepted.
+
+**Re-taken under V2 exactly** (`build/s1f.6.35/v2.sh`, 2026-11-14: `t1.py` with `H_II_RELATIONS_ONLY=0`, all
+854 tracked files, then `t1test.py`, `ein test` on every file today and on its (h) text). Of the 514 programs
+that load today, R or exit moves on **5**, the five of V2 above, and nothing else: R equal on 509, the
+read-out byte-equal on 477 and equal once module prefixes are off on 499. Under `ein test`, of the 267 files
+that load and state a claim, the verdicts move on **2**, the same two as in `ein solve`
+(`tests/imports/02_nested_import_left_behind.ein`, `tests/stdlib/typing/03_type_hierarchy_welltyped.ein`),
+and on none other. No file refused today loads.
+
+*Before* is `ein solve FILE` (and `ein test FILE`) in the checkout on the release binary of `4676a5de`;
+*after* is the same command on the same binary in `build/s1f.6.35/flat/`, where FILE is the program's (h)
+text, written by `h.py` under V2 from the program with its imports as (h) asks them. Each output is trimmed to
+the lines that differ, verbatim.
+
+| program | its imports today | under (h) | why it moves |
+|---|---|---|---|
+| `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` | `(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))` `(import std.typing :symbols (type-hierarchy-converse))` | `std.algebra` lists `converse` too, which the program writes; `std.typing` unchanged | `converse` brings the rules that read or conclude it, `converse-pair-symmetric` among them, which derives `(converse owned-by owns)`; `std.typing`'s knob checks that pair too, and its range check fails under the hierarchy: E-53, below |
+| `tests/imports/02_nested_import_left_behind.ein` | `(import upper_without_entry :symbols (upper))` | `(import upper_without_entry :symbols (upper wanted got))` | `upper_without_entry`'s own `(import lower :symbols (lower …))` is an edge of the program and brings `lower` whole, so the request is answered; E-20 dissolves |
+| `examples/word_problems/gaps.ein` | `(import words :symbols (asked wanted needs value assumed))` | the same | the five relations bring `words`' rules that read or write them and, by the closing, `words`' closing rule, which closes `asked` and `wanted`: the blind enumerator has nothing left to propose |
+| `examples/word_problems/listed_is_all.ein` | `(import words :symbols (has amount assumed))` | the same | the same: `assumed` closed by `words`' closing rule |
+| `examples/features/09_adjacent_via_same_house.ein` | `(import std.algebra :symbols (symmetric transitive includes))` `(import std.bijection :symbols (typecheck-arg-0 typecheck-arg-1))` | the same | R unmoved. `std.bijection`'s own `(import std.algebra :symbols (… total-owed surjective-owed))` is an edge of the program, so an obligation rule is loaded, and by E-51 the ladder takes the obligations rung, which owes nothing here |
+
+**`tests/stdlib/typing/03_type_hierarchy_welltyped.ein`.** `ein solve`, before and after:
+
+```text
+<   states (k_s)      1
+<   commitments (k_c) 1
+---
+>   states (k_s)      0
+>   commitments (k_c) 0
+<   ∅                 in R — root is alive and owes nothing
+<   minimal line      1 state — ∅
+<   maximal line      1 state
+<   components        1
+<   sub-cubes         1, of dimension 0
+<   merged            none — every state is reached by one commitment, so k_c = k_s
+<   N                 0 minimal dead sets
+---
+>   empty             every node is dead — root's own fixpoint derives (false)
+<   work              1 saturation · 0 facts beyond root · 2 layers
+---
+>   work              1 saturation · 0 facts beyond root · 1 layer
+<   (region
+<     ;; state 1 of 1 — ∅, root itself · minimal and maximal
+<     (model))
+---
+>   unsat core        (converse owns owned-by)
+>   unsat core        (relation owned-by Animal Person)
+>   unsat core        (relation owns Person Pet)
+>   refuted by        converse-illtyped-ran
+>
+>   (false)
+<   over              all of R — 1 state → 1 projection class
+<     class 1 of 1    1 state (1)
+<                       ?what = Rex · ?who = Ann
+<   as :expect        (model (owns Ann Rex))
+---
+>   over              all of R — R is empty, root is dead: no state to answer from
+>   as :expect        (false)
+<   (solve :expect)   holds
+---
+>   (solve :expect)   FAILED
+>                     the claim lists 1 state and R is empty
+> tests/stdlib/typing/03_type_hierarchy_welltyped.ein: (solve :expect) FAILED — the claim lists 1 state and R is empty
+```
+
+`ein test`, before (exit 0) and after (exit 1):
+
+```text
+ok           tests/stdlib/typing/03_type_hierarchy_welltyped.ein
+1 file, 1 expectation: 1 held, 0 FAILED, 0 not checked, 0 errors  (0.01 s)
+```
+
+```text
+FAILED       tests/stdlib/typing/03_type_hierarchy_welltyped.ein
+  solve · :expect (region …) — FAILED
+    the claim lists 1 state and R is empty
+1 file, 1 expectation: 0 held, 1 FAILED, 0 not checked, 0 errors  (0.00 s)
+```
+
+**`tests/imports/02_nested_import_left_behind.ein`.** `ein solve`, before and after:
+
+```text
+< note: tests/imports/02_nested_import_left_behind.ein:25:9: (import upper_without_entry :symbols (upper)) brings the declaration of double-of and no rule that derives it: upper_without_entry has such a rule, its own or one it imports, and the selection names none — a selection brings the names it lists and what their declarations write, so list the rule, or the entry that names it, if double-of is to be derived
+<     class 1 of 1    1 state (1) — the goal has no row: undetermined here
+<   as :expect        (model)
+<   :expect           holds
+---
+>     class 1 of 1    1 state (1)
+>                       ?x = a · ?y = aa
+>                         “a's double is aa”
+>   as :expect        (model (got a aa))
+>   :expect           FAILED — the claim lists 1 class, the query has 1: (model (got a aa)) is not listed
+>                     (model (got a aa)) is a class the claim does not list
+>                     the claim lists (model), which is no class
+> tests/imports/02_nested_import_left_behind.ein: query :expect FAILED — the claim lists 1 class, the query has 1: (model (got a aa)) is not listed
+```
+
+`ein test`, before (exit 0) and after (exit 1):
+
+```text
+note: tests/imports/02_nested_import_left_behind.ein:25:9: (import upper_without_entry :symbols (upper)) brings the declaration of double-of and no rule that derives it: upper_without_entry has such a rule, its own or one it imports, and the selection names none — a selection brings the names it lists and what their declarations write, so list the rule, or the entry that names it, if double-of is to be derived
+ok           tests/imports/02_nested_import_left_behind.ein
+1 file, 2 expectations: 2 held, 0 FAILED, 0 not checked, 0 errors  (0.01 s)
+```
+
+```text
+FAILED       tests/imports/02_nested_import_left_behind.ein
+  :goal (got ?x ?y) — FAILED
+    the claim lists 1 class, the query has 1: (model (got a aa)) is not listed
+    (model (got a aa)) is a class the claim does not list
+    the claim lists (model), which is no class
+1 file, 2 expectations: 1 held, 1 FAILED, 0 not checked, 0 errors  (0.01 s)
+```
+
+Its solve claim, `(region (model))`, holds before and after. The `note:` line goes because the prototype's
+text has no import left to note; whether the resolver keeps E-20's note at all is T2's (nothing is left behind
+of a module's own relations under V2).
+
+**`examples/word_problems/gaps.ein`.** No claim; its corpus entry runs `saturate` and `render rules`, no
+solve. `ein solve`, before and after:
+
+```text
+<   states (k_s)      4
+<   commitments (k_c) 4
+---
+>   states (k_s)      1
+>   commitments (k_c) 1
+<   maximal line      1 state — ⊤, the trivial line: no restriction bites
+---
+>   maximal line      1 state
+<   sub-cubes         1, of dimension 2
+---
+>   sub-cubes         1, of dimension 0
+<   universe          2 candidates, 0 dead alone
+---
+>   universe          no candidate: R is {∅} or empty, decided by root alone
+<   work              4 saturations · 7 facts beyond root · 4 layers
+---
+>   work              1 saturation · 0 facts beyond root · 2 layers
+<     ;; state 1 of 4 — ∅, root itself · minimal
+<     (model)
+<     ;; state 2 of 4 — 1 candidate · from {(asked __closed__)}
+<     (model (asked __closed__))
+<     ;; state 3 of 4 — 1 candidate · from {(wanted __closed__)}
+<     (model (wanted __closed__))
+<     ;; state 4 of 4 — 2 candidates · maximal · from {(asked __closed__), (wanted __closed__)}
+<     (model (asked __closed__) (wanted __closed__)))
+---
+>     ;; state 1 of 1 — ∅, root itself · minimal and maximal
+>     (model))
+```
+
+**`examples/word_problems/listed_is_all.ein`.** No claim; its corpus entry runs `saturate` and `render
+rules`, no solve. `ein solve`, before and after:
+
+```text
+<   states (k_s)      4
+<   commitments (k_c) 4
+---
+>   states (k_s)      1
+>   commitments (k_c) 1
+<   maximal line      1 state — ⊤, the trivial line: no restriction bites
+---
+>   maximal line      1 state
+<   sub-cubes         1, of dimension 2
+---
+>   sub-cubes         1, of dimension 0
+<   universe          2 candidates, 0 dead alone
+---
+>   universe          no candidate: R is {∅} or empty, decided by root alone
+<   work              4 saturations · 4 facts beyond root · 4 layers
+---
+>   work              1 saturation · 0 facts beyond root · 2 layers
+<     ;; state 1 of 4 — ∅, root itself · minimal
+<     (model)
+<     ;; state 2 of 4 — 1 candidate · from {(assumed __closed__ z)}
+<     (model (assumed __closed__ z))
+<     ;; state 3 of 4 — 1 candidate · from {(assumed z __closed__)}
+<     (model (assumed z __closed__))
+<     ;; state 4 of 4 — 2 candidates · maximal · from {(assumed __closed__ z), (assumed z __closed__)}
+<     (model (assumed __closed__ z) (assumed z __closed__)))
+---
+>     ;; state 1 of 1 — ∅, root itself · minimal and maximal
+>     (model))
+```
+
+**`examples/features/09_adjacent_via_same_house.ein`.** No claim. `ein solve`, before and after:
+
+```text
+<   universe          82 candidates, 82 dead alone
+---
+>   universe          no candidate: R is {∅} or empty, decided by root alone
+>     outside         pet-loc — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
+```
+
+### E-53 under the ruling: the fix to `std.algebra`
+
+**It is no longer hypothetical.** Under the rule the closure satisfies, a program that writes `(converse R1
+R2)` lists `converse`, and the selection holds every rule of `std.algebra` that reads or concludes it, as a
+whole-module import would: `converse-pair-symmetric` among them. So `tests/stdlib/typing/03`, a pair
+well-typed through the hierarchy, is refuted once (h) lands, as it is today by a program that lists the lemma
+(`build/s1f.6.35/e53/welltyped_with_lemma.ein`). **That is a wrong answer of the shipped `std.algebra`, and its
+register row is filed `open`, with its witness and corpus entry, in a commit of its own, before any fix: with
+T2, once the user has seen the moves.** Nothing in the stdlib or the register moves in this section.
+
+**Why the two rules do not compose.** The header reads `(converse R1 R2)` as an equality, *R2 = R1°*, and
+`converse-pair-symmetric` makes it one: `(converse R1 R2) ⟹ (converse R2 R1)`. The two checks read it one way:
+`converse-illtyped-dom` refutes unless `range(R1)` is `domain(R2)` or a subtype of it, `-ran` unless
+`domain(R1)` is `range(R2)` or a subtype of it, which is right for the rule `converse` alone, R2 ⊇ R1°. Under a
+proper subtype the pair passes and its mirror cannot: `owns : Person → Pet`, `owned-by : Animal → Person`,
+`(is-a* Pet Animal)`; the mirror asks `Animal ⊑ Pet`. `std.typing`'s knob derives the check's activators for
+every `(converse …)`, the lemma's mirror among them; the per-pair activators of `tests/stdlib/algebra/16` and
+`17` name one orientation and never meet the lemma.
+
+**Three ways, each tried on the prototype** (`build/s1f.6.35/e53/`, 2026-11-14: the stdlib of `tree/` with
+`algebra.ein` edited, `F1/` and `F3/`; the twins under V2 by `run.sh`; every tracked program that brings
+`std.algebra`, 104, by `sweep.py`, R against today's). The twins: `t03` is `typing/03`; `t03r` its mirror
+(`owns : Person → Animal`, `owned-by : Pet → Person`), well-typed only read backwards; `t03eq` exact both ways
+(`owned-by : Pet → Person`); `t02`, `a16`, `a17` the three ill-typed fixtures (`Pet` against `Place`, `Person`
+against `Place`).
+
+| | `t03` | `t03r` | `t03eq` | `t02`, `a16`, `a17` | the 104 programs that bring `std.algebra` |
+|---|---|---|---|---|---|
+| today | 1 state | refuted, `converse-illtyped-dom` | 1 state | refuted, each by its own check | — |
+| (h), the stdlib as shipped | **refuted, `converse-illtyped-ran`** | refuted, `-dom` | 1 state | refuted, each by its own check | R moves on `typing/03` (and `features/09`'s universe row, E-51's, not this) |
+| **F1**, the checks direction-free | 1 state | **1 state** | 1 state | refuted, each by its own check | **none moves** but `features/09`'s universe row |
+| F3, the lemma mirrors edges and derives no `(converse R2 R1)` | 1 state | refuted, `-dom` | 1 state | refuted, each by its own check | **`tests/stdlib/algebra/05_tag_lemmas.ein` fails**: its claim lists `(converse q p)`, which the lemma no longer derives |
+
+- **F1, the checks read the pair as the equality the header states.** Each check refutes only where the two
+  types are neither equal nor one a subtype of the other: `converse-illtyped-dom` gains `(absent (?isR* ?D2
+  ?Rn1))` beside `(absent (?isR* ?Rn1 ?D2))`, `-ran` gains `(absent (?isR* ?Rn2 ?D1))`, and each `:why` says
+  *neither equal nor one a subtype of the other*. A pair and its mirror check alike, so the lemma and the knob
+  compose, and *up to the supplied subtype relation* holds of both orientations. What it gives up: `t03r`, a
+  pair whose rule `converse` alone could put an `Animal` where `owns` takes a `Pet`, passes, where today's
+  one-way check refutes it; no tracked program is such a pair. Two rules' `:match` and `:why` move; no
+  fixture.
+- **F2, nothing in the library moves; `typing/03` is restated.** Under the equality the header states, a pair
+  is well-typed only where each signature is the other's reversed both ways, and the shipped checks with the
+  lemma say exactly that: `typing/03`'s claim was written for the rule `converse` without its lemma, which a
+  selection could leave out until (h). Its pair made exact (`t03eq`) or its claim `(false)`. The library's
+  *"up to the supplied subtype relation"* then holds of no pair with a proper subtype wherever the lemma is
+  loaded, which is every program that writes `converse` under (h).
+- **F3, the lemma mirrors the edges and not the pair.** `converse-pair-symmetric` derives the activator of a
+  new rule `converse-back (?R1 ?R2)`, `(?R2 ?b ?a) → (?R1 ?a ?b)`, and no `(converse R2 R1)`, so the knob checks
+  each pair as written, one way, as today (`t03r` still refuted). A parameterless rule cannot do it in one step:
+  a relation written as a variable must be a parameter its activator binds (the loader's refusal, tried). It
+  changes the lemma's own promise, *(converse R1 R2) ⟹ (converse R2 R1)*, and
+  `tests/stdlib/algebra/05_tag_lemmas.ein`, its conformance test, fails.
+
+**Recommended: F1.** It is the one that makes the library agree with itself — the header's equality, the lemma
+that states it and the checks' *up to the subtype relation* — without restating a fixture or a lemma's
+promise, and the one tracked answer it touches is `typing/03`'s, which it returns to today's. Its cost, `t03r`, is the mirror of a
+pair it accepts, which under an equality is the same pair. With T2: the register row `open` first (its witness
+`typing/03` under (h), or the lemma listed by hand, today), then F1 in the fixing commit, the row flipped, and
+the stdlib's manifest re-taken (`utils/stdlib_manifest.py --write`) and `utils/stdlib_mutants.py --check` run.

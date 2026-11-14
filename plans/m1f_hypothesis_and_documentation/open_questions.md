@@ -259,9 +259,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.244](#q-m1f244--o--c-beside-an-hrule) | O + C beside an hrule | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: a conflict whatever generates; O + HR and O + NH only with no hrule; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
 | [Q-M1f.245](#q-m1f245--where-the-conflict-check-runs) | where the conflict check runs | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: at load on every command, on root of a second load; `ein_infer::mechanisms::check` for a library caller, not in `region::prepare`; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
 | [Q-M1f.246](#q-m1f246--the-corpuss-twenty-four-programs-in-conflict) | the corpus's twenty-four programs in conflict | **defaulted 2026-11-14 (S1f.6.34), the user's to revise**: each corrected to say what it meant, one kept as the refusal's fixture; [S1f.6.34](p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md#record-2026-11-14) |
-| [Q-M1f.247](#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one) | what the closure (ii) follows: a relation of any kind, or a declared one | **open, raised 2026-11-14 by S1f.6.35's T1, the stage stopped for it**; recommended: (b), a relation the module declares; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
-| [Q-M1f.248](#q-m1f248--a-closing-rule-under-the-closure-ii) | a closing rule under the closure (ii) | **open, raised 2026-11-14 by S1f.6.35's T1, the stage stopped for it**; recommended: (a), a rule that closes a kept relation concludes it; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
-| [Q-M1f.249](#q-m1f249--the-answers-h-moves-under-the-recommended-reading) | the answers (h) moves under the recommended reading | **open, raised 2026-11-14 by S1f.6.35's T1, the stage stopped for it**; recommended: (a), accepted as the ruling's, each fixture or note restated; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.247](#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one) | what the closure (ii) follows: a relation of any kind, or a declared one | **ruled 2026-11-14: any relation, (a)**, the rule the closure satisfies being that a selected short name means exactly what its full name means under a whole-module import (recommended was (b)); [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.248](#q-m1f248--a-closing-rule-under-the-closure-ii) | a closing rule under the closure (ii) | **ruled 2026-11-14: (a)**, a rule that closes a kept relation concludes it; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
+| [Q-M1f.249](#q-m1f249--the-answers-h-moves-under-the-recommended-reading) | the answers (h) moves under the recommended reading | **open: the user asked to see them first (2026-11-14), shown in S1f.6.35's record under the reading ruled**; recommended: (a), accepted as the ruling's, each fixture or note restated; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.250](#q-m1f250--a-listed-name-a-module-states-facts-of-and-does-not-declare) | a listed name a module states facts of and does not declare | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: bound to the relation the module's facts are of, as the module reads it; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.251](#q-m1f251--a-prefixed-name-that-names-nothing-the-module-declares) | a prefixed name that names nothing the module declares | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
 | [Q-M1f.252](#q-m1f252--an-empty-segment-or-a--in-a-modules-name) | an empty segment or a `/` in a module's name | **raised 2026-11-14 by S1f.6.35's T1; the default T2 would take**: refused at load; [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-stop) |
@@ -4902,8 +4902,16 @@ named after the rule, which `std.algebra` and the other zebra modules never decl
 - **(c) A listed relation only**, not a kept one: a selection of `add` brings what reads `add`, and nothing
   follows from what that brings; the circuit's walks, read by no listed name, stay behind.
 
-**Recommended: (b).** **Open; the stage stopped for it** (the coordinator's instruction: a stop where (h) as
+**Recommended: (b).** Open; the stage stopped for it (the coordinator's instruction: a stop where (h) as
 ruled moves R).
+
+**Ruled 2026-11-14: (a), any relation**, against the recommendation. The user: *"the behaviour must not change - when import std.math.arith and use std.math.arith.sum must work identical to sum from import std.math.arith :symbols (sum); So I guess that any touched relation must be pulled in, otherwise semantic of imported symbold could be incomplete"*. **The rule the closure
+must satisfy**, read from those words: a short name a selection lists means exactly what its full name means
+under a whole-module import of the module, so the selection brings every rule of the module that touches, by
+reading or concluding, a relation it keeps, that relation a declared one or a rule's activators', and
+transitively; whatever would make the selected name's meaning incomplete is pulled in. The coordinator's relay
+of the ruling lettered it (b); the reading is this page's (a), with Q-M1f.248 (a) the prototype's V2. E-53
+moves from hypothetical to the shipped library's: [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-moves-under-v2-shown)'s record.
 
 ### Q-M1f.248 — A closing rule under the closure (ii)
 
@@ -4922,7 +4930,9 @@ the circuit and not its closure leaves `let` open, and *forbid* refuses the prog
 - **(c) The closures written as top-level facts** in each module, `(__closed__ let)`, which a kept relation's
   facts bring: every module's text moves, against Q-M1f.240's default.
 
-**Recommended: (a).** **Open; the stage stopped for it.**
+**Recommended: (a).** Open; the stage stopped for it.
+
+**Ruled 2026-11-14: (a).** The user: *"Yes, closing counts"*. With Q-M1f.247 (a) it is the prototype's V2.
 
 ### Q-M1f.249 — The answers (h) moves under the recommended reading
 
@@ -4943,7 +4953,12 @@ What moves, each by the ruling and not by a defect:
   what it shows; the two modules' notes say a solve now describes them; no register row.
 - **(b) Each a register row**, as a wrong answer would be.
 
-**Recommended: (a).** **Open; the stage stopped for it.**
+**Recommended: (a).** Open; the stage stopped for it.
+
+**2026-11-14: the user, *"Show me first"*.** Nothing is restated or accepted yet. Under the reading ruled (Q-M1f.247 (a),
+.248 (a)), the moves are re-taken and shown, each with its imports and its run before and after, in
+[S1f.6.35's record](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#the-moves-under-v2-shown); the list above,
+taken under the recommended reading, is superseded by it. **Open, the user's.**
 
 ### Q-M1f.250 — A listed name a module states facts of and does not declare
 

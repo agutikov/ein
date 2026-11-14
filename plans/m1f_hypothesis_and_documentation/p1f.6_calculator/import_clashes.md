@@ -862,6 +862,22 @@ the closure's direction, below. **The model, (h):**
   the circuit that answers `add` and nothing that no listed name needs: *"no background side effects"*. A
   whole-module import, bare or `:as`, brings everything (5). What a program holds is the union over its import
   edges, each by full name.
+
+  **Made precise by the user on 2026-11-14**, on [S1f.6.35](s1f.6.35_imports_by_full_name.md#t1f6351--the-examples-first-on-a-prototype-done-and-the-stop)'s prototype
+  ([Q-M1f.247](../open_questions.md#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one),
+  [Q-M1f.248](../open_questions.md#q-m1f248--a-closing-rule-under-the-closure-ii)):
+
+> the behaviour must not change - when import std.math.arith and use std.math.arith.sum must work identical to
+> sum from import std.math.arith :symbols (sum); So I guess that any touched relation must be pulled in,
+> otherwise semantic of imported symbold could be incomplete
+
+> Yes, closing counts
+
+  **The rule the closure satisfies:** a short name a selection lists means exactly what its full name means
+  under a whole-module import. So *a relation* above is **any relation**, one the module declares or the
+  relation of a rule's activators (`(converse owns owned-by)` is a fact of `converse`), and a rule that closes a
+  kept relation, `(__closed__ R)` in its `:assert`, **concludes it**: the selection brings the closing rule,
+  and with it what the closing rule names. The prototype's reading V2.
 - **`:as a`** is a second alias prefix: `a.add` is the full name `….add`; it makes no copy.
 - **Errors, in one file** (2): one short name bound to two full names, by two imports or by an import and the
   file's own declaration, is refused at load. Binding one short name to one full name twice is not an error.
