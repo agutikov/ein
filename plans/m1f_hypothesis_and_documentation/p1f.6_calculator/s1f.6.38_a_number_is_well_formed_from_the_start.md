@@ -6,7 +6,7 @@ before anything is built** (the user's standing rule: real programs with compute
 2026-11-14, stopped for the user:** [§ T1 record](#t1-record-2026-11-14-the-design-on-real-programs). No rule-level
 way is *right away*; the design is an engine stage first (the loader states every nested fact a program writes),
 decimal's check in `std.math.decimal-arith`'s own rules over it, int and rat with the (b) part. Nothing is built;
-its open choices and findings are under [§ To file](#to-file), for the coordinator. **Ruled 2026-11-14** ([§ The build, as ruled](#the-build-as-ruled-2026-11-14)): E1, a separate `std.math.decimal`, the other defaults.
+its open choices and findings are under [§ To file](#to-file), for the coordinator. **Ruled 2026-11-14** ([§ The build, as ruled](#the-build-as-ruled-2026-11-14)): E1, a separate `std.math.decimal`, the other defaults. **Built 2026-11-14** ([§ Build record](#build-record-2026-11-14)).
 **Depends on:** [S1f.6.12](s1f.6.12_malformed_numbers.md)'s build, whose checks it moves;
 [S1f.6.31](s1f.6.31_the_stdlib_layout.md)'s layout. **Runs before [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s
 build**, whose design ([§ The design](s1f.6.16_binary_arithmetic.md)) put the parameterised checks in
@@ -432,7 +432,7 @@ The user, 2026-11-14, on T1: *"E1 yes, separate std.math.decimal module, other d
 each marked ruled or accepted). By the same ruling's symmetry, **binary's numeral is `std.math.binary`'s**, built by
 [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build on this stage's pattern (a default, the user's to revise).
 
-**Status:** ruled, not started; Q-M1f.272 to .277, E-69 and E-70 filed (2026-11-14). Runs after
+**Status:** ruled; built 2026-11-14 ([§ Build record](#build-record-2026-11-14)); Q-M1f.272 to .277, E-69 and E-70 filed (2026-11-14). Runs after
 [S1f.6.37](s1f.6.37_conclusion_shapes.md) (done 2026-11-14), which edits the same loader and compiler, and before
 S1f.6.16's build.
 
@@ -479,3 +479,187 @@ S1f.6.16's build.
   operand.
 - No well-formed program's answer moves; the firings of a well-formed request are no more than today's.
 
+
+## Build record, 2026-11-14
+
+**Status: built.** T1f.6.38.2 to .5 done, on the user's rulings of 2026-11-14 (Q-M1f.272 to .277; Q-M1f.266's and
+Q-M1f.269's rulings for `std.math.arith`). Commits: `f555c7e0` (E1, the engine), `cbec9057` (the stdlib: the two
+new modules, the move, int and rat, the rewrite, the tests, the goldens; one commit, the move and int's and rat's
+rules sharing one tested state and one bless of the goldens), this record's, and the pages' (`stdlib/README.md`,
+`tests/README.md`, `07_stdlib_api.md`, AGENTS.md's calculator lines, the examples' READMEs). **No well-formed
+program's answer moved**, and every malformed program is dead with its claim as it was ([§ The sweep](#the-sweep)).
+
+### T1f.6.38.2 — E1, the engine, done (`f555c7e0`)
+
+The loader states `(written T)` for every fact nested at any depth in a fact a file writes, a program's, a local
+module's or a stdlib module's, once a value, the outer before the inner; for a stored negation, the facts nested in
+its denied fact's arguments; then the ground nested facts of every rule's and hrule's conclusion, in the registries'
+order (Q-M1f.275 (a)). `ein_ir::from_ir`'s `state_written`, after the facts' pass, from the fact ids the pass stored.
+Each is derived by the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`, one of `INTERNAL_NAMES`, now
+six) from the fact it was read in, its one premise, so every walk follows it to the written fact and **a core names
+the fact as written** with no case of its own; one stated from a rule's text rests on no fact, and its core is ∅
+([Q-M1f.279](../open_questions.md#q-m1f279--what-a-written-fact-is-derived-by-and-where-it-shows), defaulted).
+`written` is in `ein_core::RESERVED` (twelve names), categorised a relation, in no registry, never a hypothesis
+target; a fact, a negation or a conclusion of it a program writes is refused at load, on every command
+([Q-M1f.280](../open_questions.md#q-m1f280--a-program-that-writes-written), defaulted; `defined_behaviour.md`
+§ 4.30). It shows where the declarations' mirrors show: `ein saturate --dump` lists it, `DERIVED`, `:rule
+"#written"`; a KB view draws it; a `.einb` stores it; a `--dump-answer` state file, `ein render`'s KB text, `-P`'s
+blocks and a model's comparison leave it out, the loader stating it again on reload (a state file's header says so
+where its state holds any). The read-out prints none.
+
+**Verified by invariance**, with no rule reading `written` yet (`build/s1f.6.38/b/tools/sweep.py`, every
+`corpus/corpus.toml` entry, 762, the release binary of `8340baf7` against `f555c7e0`'s, 2026-11-14): `ein solve`'s exit,
+stdout and stderr identical on every program (four load-error lines differ by the tree's absolute path alone), its
+summary only in root's fact count and `facts_by_relation.written`, 156 programs, and `ein saturate --dump` only by
+the `written` lines and the counts, 161 programs, every other fact and every firing count equal. A dumped state
+reloaded states every `written` fact its state held, and one for each fact nested only in a fact the run derived,
+which the file writes as given (E-71): `answer_round_trip.rs` holds `written` apart, as a superset, and every other
+fact as before. New test: `ein-cli/tests/written_facts.rs`, what is stated and from what, the refusals on nine
+commands, the core, and an answer as it was.
+
+### T1f.6.38.3 — `std.math.arith` and `std.math.decimal`, done (`cbec9057`)
+
+| module | what it holds |
+|---|---|
+| `std.math.arith` (new, `stdlib/math/arith.ein`) | `z`, declared as a relation of no argument so that it has one full name; `division-by-zero` and `division-by-zero-is-false`, moved from `std.math.decimal-arith`; the closing rule `arith` |
+| `std.math.decimal` (new, `stdlib/math/decimal.ein`) | `n`, moved; `named`, moved; `not-decimal`; `numeral-digit`, `numeral-prefix-digit`, `numeral-prefix-zero`, `numeral-prefix-named`, `not-decimal-is-false`, each over `(written (n P A))`; the closing rule `decimal` |
+| `std.math.decimal-arith` | `check`, `check-step`, `check-digit`, `check-prefix-digit`, `-zero`, `-named` gone; `operand-number` and `operand-name` conclude `operand-is` alone; `let-to-name`, `let-to-digit`, `let-to-digit-zero` new; imports `std.math.arith :symbols (arith z division-by-zero)` and `std.math.decimal :symbols (decimal n named)`, and names both entries in its closing rule |
+| `std.math.num9` | its generator, `utils/gen_num9.py`: `n` from `std.math.decimal`, `z`, the flag and the rule from `std.math.arith`, and a bare import of `std.math.decimal-arith`, so its programs hold the modules they held |
+
+**`(n price 1)` from below `let`** ([Q-M1f.278](../open_questions.md#q-m1f278--how-a-module-below-let-flags-a-named-constant-inside-a-numeral),
+defaulted (a)): `named` is `std.math.decimal`'s, written by `std.math.decimal-arith`'s `let-named`, probed by
+`numeral-prefix-named`. Measured against (b), E-36's walk of the program's names (`build/s1f.6.38/b/stdlib-e36`):
+the same firings a request, the walk being guards, and two comparisons a name of the program for every
+numeral written, which shows in the saturator: a thousand sums 64.6 ms where (a) takes 40.2, a thousand
+differences 81.3 where 57.8, a thousand comparisons 56.1 where 32.5, against products and quotients whose walks
+dwarf it (the table in [§ The cost](#the-cost)). It also flags `(n end 1)`, which no rule flagged:
+`tests/stdlib/math/decimal/05_what_stays_silent.ein` fails under it, its three claims, so (b) is a change of what is
+flagged as well as a cost.
+
+**The rewrite, once and mechanically** (`build/s1f.6.38/b/tools/rewrite_imports.py --write`, 2026-11-14): 118
+tracked `.ein` files, 11 under `examples/arith/`, 9 `beyond_arith/`, 6 `binary_arithmetic/`, 19 `word_problems/`, 2
+`ein-bugs/` and 71 under `tests/stdlib/`; in 113 `n` (and `named` where listed) moves from a `std.math.decimal-arith`
+list to `(import std.math.decimal :symbols (…))`, and every one of the 118 lists `z` from `std.math.arith`, the
+file writing `z` in a program that loads it (a local module that writes `z`, `words.ein`, and the programs over
+`bin.ein` among them). A list left empty is a bare import. Generated, by their generators: `bin.ein`
+(`gen_binary.py`, now carrying back what left `std.math.decimal-arith` and listing `z` from `std.math.arith`, so
+that both bases share it), `num9.ein`, the three `examples/arith/` programs (`gen_arith_examples.py`'s `import_line`
+writes the two new lines). In Rust, nine inline programs in five test files (`declared_counts.rs` two, `imports_by_full_name.rs` four,
+`mechanism_conflicts.rs`, `refutation_under_absent.rs`, `region.rs`); `ein_corpus::listed` reads a bare import's
+module. Pages: `stdlib/README.md`, `07_stdlib_api.md`, AGENTS.md's calculator lines.
+
+### T1f.6.38.4 — the operand's faults, int and rat, done (`cbec9057`)
+
+`std.math.int`: `int-bad-only`, `-first`, `-second`, and `int-bad-div`, a division's tag holding `(int-div-of
+REQUEST)`, so the request as written holds a flag beside its tag's
+([Q-M1f.282](../open_questions.md#q-m1f282--the-flag-of-an-integer-division-whose-operand-is-at-fault), defaulted);
+`int-p-digit`, `-zero`, `-named`, `int-n-digit`, `-zero`, `-named` and `not-integer-is-false` over `(written (int P
+N))` (Q-M1f.276 (a)). `std.math.rat`: `rat-bad-only`, `-first`, `-second`; `rat-z-digit`, `-zero`, `-named`,
+`rat-d-digit`, `-zero`, `-named` and `not-rational-is-false` over `(written (rat Z D))`. Neither writes a guard: a
+program that names `z` with a `let` is flagged for the `let`, and an integer with a part `z` beside it. Another
+type stays silent (Q-M1f.277 (b)). E-38 closed.
+
+### T1f.6.38.5 — the tests, the sweep and the pages, done
+
+**Fifty-three programs**, each with its corpus entry: `tests/stdlib/math/decimal/` five (a well-formed numeral in
+every place; a malformed one in an unused `let`, in a fact of the program's own, in a rule's conclusion, core ∅; what
+stays silent); `decimal-arith/42` and `43` (`let-to-digit`, `-zero`), `44` to `50` (a digit as an operand through
+each of the seven rules from a tag to a request that `22` to `32` reached until the numeral's check moved, so that a
+mutant of each is still seen); `int/15` to `36`, E-38's sixteen probes and six of the integer's own shape;
+`rat/14` to `30`, E-38's ten and seven of the rational's. Every program's claim held as written; the malformed tests'
+claims are unchanged, `(solve :expect (false))`, their headers and corpus notes say which rule now flags them.
+
+#### The sweep
+
+**Old stdlib against new, on every tracked program**, by what a program answers and not by how it is printed
+(`build/s1f.6.38/b/tools/sweep.py record` under each binary, its own tree and `$EIN_STDLIB` named, then `compare
+--answers`, 2026-11-14): the release binary of `8340baf7` on its tree, against this build's on this one. For each
+of the 762 corpus entries both trees hold: the exit code, root's standing, R's states by value, every query's classes
+and the claims' verdicts, a module's prefix taken off every name (a full name moves with its module,
+`std.math.decimal-arith.n` to `std.math.decimal.n`). **756 answer alike.** The six that differ are load errors whose
+line differs alone: four by the tree's absolute path, and W89's two witnesses, whose refused line moved two lines
+down with the two import lines the rewrite added (their register rows restated). **Every malformed program is dead
+as before**: the 80 programs root is dead in under the old answer are dead under the new, each claim held as written.
+The 55 new entries (53 programs, 2 modules): 48 dead, as claimed, 7 alive.
+
+What `ein solve` prints moved on 22 programs, and on no well-formed one's answer: the 13 that divide by zero name
+`std.math.arith.division-by-zero-is-false` under `refuted by`, the rule having moved; the seven malformed tests of
+`stdlib/math/decimal-arith/` name `std.math.decimal.not-decimal-is-false`, or `let-to-name`'s `malformed-is-false`
+with the `let`s for core (`31`, `32`); and two `work` rows, `equation_two_unknowns.ein`, 60 223 facts beyond root
+where 75 423 (the check's facts gone, T1's prediction to the fact), and `boxes13.ein`, 37 where 45.
+
+**Firings** (`ein saturate`'s *total firings*, the same records): 125 985 over the 762 programs, 123 815 now
+(−1.7 %); equal on 414, fewer on 49 (the check at the operand gone), and more on 75, each by the closing rules of the
+two new modules alone, +2, or +1 where a program loads one of them (`bin.ein`'s, `std.math.arith` alone). No
+program's requests cost a firing more.
+
+#### The goldens
+
+Named before blessing and counted after (`git diff --numstat`, 2026-11-14):
+
+| commit | named | moved |
+|---|---|---|
+| `f555c7e0`, the engine | `corpus_shapes.md5`: every program that writes a nested fact, its load, saturation, explanations and KB views | 1 570 renderings of 157 programs: `load`, `saturate`, `explain`, `explain-noalts` 157 each, `dot` 942 (six KB views each); nothing else |
+| `cbec9057`, the stdlib | `corpus_exits.txt`: the 55 new entries' cells, and no other; `corpus_shapes.md5`: the new entries, and every program that loads the calculator, its stdlib's rules, facts and full names moved | `corpus_exits.txt` +273 lines, none moved; `corpus_shapes.md5` 2 255 new renderings of 55 programs, and 3 801 moved over 137 programs, every one of which loads the calculator (`dot` 1 560, `ir` 520, `load`, `saturate`, `plan`, `match`, `hyp`, `hyp+closed`, `naf`, `explain`, `explain-noalts`, `region-trace`, `oracle` 134 each or about, `cores` 110, `states` 105, `read-out` 30); nothing else |
+
+Besides the goldens, lists that name programs: `alive_invariant.rs`' `SEEDED` (six reasons at `f555c7e0`; 38 programs
+off and the rest's `z` lines at `cbec9057`, `z` being a declared relation now), `dot_wellformed.rs`' `SKIPPING`
+(`tests/stdlib/math/decimal`, whose views hold the tables), and the register's two W89 rows (the line numbers).
+
+#### The cost
+
+S1f.6.12's batches, nine-digit operands and a divisor of four digits, its seed: firings a request, the saturator's
+best of three, and the parse, load and compile beside it, one P-core (`utils/bench_env.sh --core 2 python3
+build/s1f.6.38/b/tools/cost.py 3 head build e36 -- 1000`, i9-14900HX, `powersave`, 2026-11-14; `head` the release
+binary of `8340baf7` on its stdlib, `build` this one, `e36` this one with Q-M1f.278's (b)):
+
+| operation | requests | HEAD: firings, saturate ms, load ms | the build | Q-M1f.278 (b), E-36's walk |
+|---|---:|---|---|---|
+| add | 1 000 | 45.0, 62.7, 102.4 | **27.0, 40.2, 104.9** | 27.0, 64.6, 106.2 |
+| sub | 1 000 | 55.0, 79.2, 103.4 | **37.0, 57.8, 105.9** | 37.0, 81.3, 105.4 |
+| cmp | 1 000 | 34.0, 55.6, 104.3 | **16.0, 32.5, 105.5** | 16.0, 56.1, 104.7 |
+| mul | 1 000 | 504.0, 821.5, 102.7 | **486.0, 790.7, 105.8** | 486.0, 818.3, 126.6 |
+| div | 1 000 | 460.3, 801.5, 81.9 | **447.3, 730.3, 83.8** | 447.3, 744.3, 85.1 |
+
+**The acceptance holds**: a well-formed request costs fewer firings than today's, by the check at the operand that
+is gone, a firing a place of each operand found, and its firings are T1's emulated E1's to the request (27, 37, 16,
+486, 447.3); the saturator is faster by as much. A well-formed numeral costs the check no firing, its ten `neq` and
+two probes a place, read once a numeral; the load pays the loader's statement of each nested fact, some 3 ms for a
+thousand sums. The arith batch, by hand, holds the proportion: `cargo test -p ein-infer --features counters --test
+arith_batch`, five of five, its `let`s written with a high zero so that no numeral of theirs is one of the
+requests', and the program of no request counted once (both since this stage, the loader stating a numeral once).
+
+#### Checks
+
+On the stdlib commit's tree, 2026-11-14: `cargo test --release --workspace` green, 1 199 tests in 143 binaries
+(`build/s1f.6.38/b/logs/final.log`); `cargo fmt --check`, clippy and rustdoc with `-D warnings` clean;
+`utils/doc_audit.py --links --check` over every page, 0 findings; `utils/check_hashmap_iteration.py` and
+`utils/stdlib_manifest.py` clean (18 modules); every generator's `--check` (`gen_arith_tables.py`, `gen_num9.py`,
+`gen_gates.py`, `gen_arith_examples.py`, `gen_zebra2_variants.py`, and `gen_binary.py` by hand); the arith batch by
+hand, five of five; `utils/stdlib_mutants.py --check`: 461 of 572 mutants killed, the 22 new survivors understood and
+banked (`tests/README.md` § `stdlib/math/decimal/` has each reason: a flag's arguments exchanged in a program that is
+dead either way, a rule's premise variables exchanged, `numeral-prefix-named`'s guard dropped in a program a `let` of
+`z` kills, `int-bad-div` beside its tag's flag), the flags' text held from outside the language by `arith_theory.rs`,
+`int_theory.rs` and `rat_theory.rs`. `ein_core::text::INTERNAL_NAMES` and `reserved_engine_strings.md` agree on
+`#written`, and `ein_core::RESERVED`, `06_reserved_names.md` and `utils/nl_census.py`'s `KERNEL` on `written`
+(`natural_language_page.rs`). `./run_tests.sh` was not run: the coordinator runs one gate over the batch.
+
+### Defaults and findings
+
+- [Q-M1f.278](../open_questions.md#q-m1f278--how-a-module-below-let-flags-a-named-constant-inside-a-numeral) (a),
+  `named` std.math.decimal's; [Q-M1f.279](../open_questions.md#q-m1f279--what-a-written-fact-is-derived-by-and-where-it-shows)
+  (a), derived by the loader's step; [Q-M1f.280](../open_questions.md#q-m1f280--a-program-that-writes-written) (a),
+  refused; [Q-M1f.281](../open_questions.md#q-m1f281--a-let-that-names-a-digit) (a), `let-to-digit`;
+  [Q-M1f.282](../open_questions.md#q-m1f282--the-flag-of-an-integer-division-whose-operand-is-at-fault) (a), two
+  flags; [Q-M1f.283](../open_questions.md#q-m1f283--the-two-new-modules-names-and-their-place), the new modules'
+  names, `z` a relation of no argument, the entries named, num9's bare import. Each defaulted, the user's to revise.
+- **E-38 closed.** **E-71**, a reloaded state states more `written` facts than its state held; not a wrong answer.
+  No wrong answer of the engine was met.
+- **The DOT views move**: a KB view draws the `written` facts (157 programs' six KB views, `f555c7e0`), so
+  `utils/ci_container.sh` is the coordinator's to run.
+
+### What the build did not do
+
+No binary numeral, no `std.math.binary`, no `std.math.positional`: S1f.6.16's build. `bin.ein` stays the example it
+was, with `z` listed from `std.math.arith`. E2 (a constructor's domain checked at load), a numeral a rule assembles
+from a variable, `(n end 1)` and another type in int and rat stay silent, as ruled.

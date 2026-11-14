@@ -222,7 +222,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.207](#q-m1f207--what-a-let-that-cannot-be-read-flags) | what a `let` that cannot be read flags | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: the `let`, `(malformed (let NAME NUMBER))`, whether or not a request uses it; each of the two where a name is stated twice; and the digit 0 as a name, which the investigation's set left out**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.208](#q-m1f208--how-the-theory-says-that-an-operand-is-a-name) | how the theory says that an operand is a name | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: two guards on a variable nothing else binds, `(neq ?v z) (eq ?v ?x)`, in that order; `z` and the digits left out so that a request has one flag; its cost, a comparison a name of the program, stated and pinned**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.209](#q-m1f209--the-binary-example-theory-and-the-check) | the binary example theory and the check | **defaulted 2026-11-13 (S1f.6.12's build), the user's to revise: `gen_binary.py` leaves the check out, so `bin.ein` is unchanged and answers a malformed request by silence**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
-| [Q-M1f.210](#q-m1f210--stdint-and-stdrat-and-the-flags) | `std.int` and `std.rat`, and the flags | **ruled 2026-11-14, (c)**, with the principle that a malformed number is its representation's problem, detected as soon as it is written: [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md) builds it (Q-M1f.272 to .277); [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
+| [Q-M1f.210](#q-m1f210--stdint-and-stdrat-and-the-flags) | `std.int` and `std.rat`, and the flags | **ruled 2026-11-14, (c)**, with the principle that a malformed number is its representation's problem, detected as soon as it is written: [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md) built it 2026-11-14 (Q-M1f.272 to .277), **closed**; [S1f.6.12](p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13) |
 | [Q-M1f.211](#q-m1f211--which-fact-carries-the-flag-of-a-division-by-zero-at-the-call) | which fact carries the flag of a division by zero at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: (ii), the call, `(division-by-zero (div-call TAG X Y))` as it was asserted, and a public request's flag as it was, so a public division has two flags and `ein solve` reads as before; the three designs are shown on nine programs in the record**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.212](#q-m1f212--a-theorys-wrong-answer-and-the-register) | a theory's wrong answer and the register | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: not a register row. The register holds the engine's wrong answers, and a tagged call by zero that derived nothing was a rule of a theory, answered by the engine as written; the witness is a test program**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
 | [Q-M1f.213](#q-m1f213--the-binary-example-theory-and-the-flag-at-the-call) | the binary example theory and the flag at the call | **defaulted 2026-11-13 (S1f.6.24), the user's to revise: `gen_binary.py` carries the rule over, so `bin.ein` has 68 rules and flags `(div-call2 TAG X Y)` by zero as decimal does**; [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13) |
@@ -280,6 +280,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.275](#q-m1f275--what-the-loader-states-as-written) | what the loader states as written | **accepted 2026-11-14**: (a), the nested facts of every written fact and the ground ones of every rule's and hrule's conclusion; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
 | [Q-M1f.276](#q-m1f276--an-integers-and-a-rationals-own-shape) | an integer's and a rational's own shape | **accepted 2026-11-14**: (a), flagged, `(not-integer …)` and `(not-rational …)`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
 | [Q-M1f.277](#q-m1f277--an-operand-of-another-type-in-int-and-rat) | an operand of another type in int and rat | **accepted 2026-11-14**: (b), silent and named on the pages; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) |
+| [Q-M1f.278](#q-m1f278--how-a-module-below-let-flags-a-named-constant-inside-a-numeral) | how a module below `let` flags a named constant inside a numeral | **defaulted 2026-11-14 (S1f.6.38's build), the user's to revise**: (a), `named` is `std.math.decimal`'s, written by `let-named`, probed by `numeral-prefix-named`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14) |
+| [Q-M1f.279](#q-m1f279--what-a-written-fact-is-derived-by-and-where-it-shows) | what a `written` fact is derived by, and where it shows | **defaulted 2026-11-14 (S1f.6.38's build), the user's to revise**: (a), the loader's step `#written` from the fact it was read in, shown where the mirrors show; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14) |
+| [Q-M1f.280](#q-m1f280--a-program-that-writes-written) | a program that writes `written` | **defaulted 2026-11-14 (S1f.6.38's build), the user's to revise**: (a), refused at load; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14) |
+| [Q-M1f.281](#q-m1f281--a-let-that-names-a-digit) | a `let` that names a digit | **defaulted 2026-11-14 (S1f.6.38's build), the user's to revise**: (a), the `let`'s fault, `let-to-digit`, `let-to-digit-zero`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14) |
+| [Q-M1f.282](#q-m1f282--the-flag-of-an-integer-division-whose-operand-is-at-fault) | the flag of an integer division whose operand is at fault | **defaulted 2026-11-14 (S1f.6.38's build), the user's to revise**: (a), two flags, the tag's and the request's (`int-bad-div`); [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14) |
+| [Q-M1f.283](#q-m1f283--the-two-new-modules-names-and-their-place) | the two new modules' names and their place | **defaulted 2026-11-14 (S1f.6.38's build), the user's to revise**: entries `arith`, `decimal`; `z` a relation of no argument; entries named in closing rules; num9's bare import of `std.math.decimal-arith`; [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -4174,6 +4180,12 @@ operand, is int's and rat's; a malformed numeral, wherever it is written, is its
 was written and not handed along by a calculation. [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md) designed it (T1, `6cca4406`) and builds it,
 on the user's rulings of the same day, Q-M1f.272 to .277.
 
+**Closed 2026-11-14 by S1f.6.38's build** ([record](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)):
+the loader states every fact nested in what a file writes as `(written T)`; `std.math.decimal`, a module of its own,
+declares `n` and flags a malformed numeral, `(not-decimal NUMERAL THING)` and `(false)`, wherever a file writes it,
+with no request reading it; `std.math.int` and `std.math.rat` flag an undeclared name and a digit as an operand on
+the request, and a digit or a named constant in their own terms; no well-formed program's answer moved.
+
 ### Q-M1f.211 — Which fact carries the flag of a division by zero at the call
 
 **Raised** 2026-11-13 by [S1f.6.24](p1f.6_calculator/s1f.6.24_division_by_zero_at_the_call.md#record-2026-11-13)'s T1, as the stage file's design question. The user's
@@ -5448,3 +5460,90 @@ default, the user's to revise. Open in the build, a default it files: how a pref
 - **(b) Silent,** as S1f.6.12 left it, and named on the pages: it is not in Q-M1f.210's ruling's list.
 
 **Defaulted 2026-11-14: (b); accepted by the user the same day** (*"other defaults fine"*).
+
+### Q-M1f.278 — How a module below `let` flags a named constant inside a numeral
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
+build, the item [Q-M1f.273](#q-m1f273--where-decimals-numeral-check-lives)'s ruling left open: `std.math.decimal` is
+below `std.math.decimal-arith`, which declares `let`, so it cannot read `let` to say that `price` in `(n price 1)` is a
+named constant.
+
+- **(a) `named` is `std.math.decimal`'s**, a name that stands for a number: `std.math.decimal-arith`'s `let-named`
+  writes it, as it did, and decimal's `numeral-prefix-named` probes it, `(and (written (n ?m ?a)) (neq ?m z) (named
+  ?m))`. One probe a place, a well-formed numeral costing it nothing; `(n end 1)` stays silent, as it was.
+- **(b) E-36's walk of the program's names** in `std.math.decimal`, *the prefix is a name, and no digit and not `z`*:
+  `(neq ?v z) (eq ?v ?m)` and ten `neq`. It flags `(n end 1)` too, which no rule flagged, and costs every written
+  numeral two comparisons a name of the program (measured in the stage's record).
+- **(c) The rule in `std.math.decimal-arith`**, deriving decimal's `not-decimal`: a module other than the
+  representation's names a numeral's fault, which the acceptance rules out.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** What makes a name a named constant stays the module's that
+declares `let`, the module below reads it by a relation of its own, and nothing is paid that the check at the
+operand did not pay.
+
+### Q-M1f.279 — What a `written` fact is derived by, and where it shows
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
+T1f.6.38.2. The ruled design: a core that rests on a stated fact names the fact as written, and `written` shows where
+the declarations' mirrors show.
+
+- **(a) Derived by the loader's step `#written`** (`ein_core::terms::WRITTEN_STEP`, one of the names the loader makes
+  up), from the fact it was read in, its one premise, or from no fact where a rule's text writes it: every walk
+  follows it to the written fact, so the core needs no case of its own. `ein saturate --dump` lists it under
+  `DERIVED`, `:rule "#written"`, and counts it so; a KB view draws it; a state file, `ein render`'s KB text, `-P`'s
+  blocks and a model's comparison leave it out, the loader stating it again.
+- **(b) A background fact, as a mirror is**, with no provenance, and the explanation mapping it to the fact it was
+  read in by a table of its own: the dump lists it with the mirrors, and every walk learns one case.
+
+**Defaulted 2026-11-14: (a), the user's to revise.**
+
+### Q-M1f.280 — A program that writes `written`
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
+T1f.6.38.2.
+
+- **(a) Refused at load**, a fact of it, a stored negation of one, and a rule's or an hrule's conclusion of one, one
+  line each, on every command (`defined_behaviour.md` § 4.30); no declarator binds the name (`ein_core::RESERVED`).
+  So `written` is decided at root, and holds what the files wrote.
+- **(b) A fact like any other**: written, it is one more statement; concluded, a commitment could extend it, and a
+  check that reads it would no longer be decided at root.
+
+**Defaulted 2026-11-14: (a), the user's to revise.**
+
+### Q-M1f.281 — A `let` that names a digit
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
+build. Until the stage a request that named `seven`, beside `(let seven 7)`, was flagged by the check its value was
+handed to, `check-prefix-digit`; with the numeral's check moved to `std.math.decimal`, nothing read the value.
+
+- **(a) The `let`'s fault**, `let-to-digit` and `let-to-digit-zero` beside `let-to-name`, `(malformed (let seven 7))`,
+  whether or not a request names it.
+- **(b) Silent**, a detection the stage would lose.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** A `let`'s value is the `let`'s to read, as `let-to-name`'s is.
+
+### Q-M1f.282 — The flag of an integer division whose operand is at fault
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
+T1f.6.38.4. `std.math.int`'s three divisions share their rules under the tag `(int-first (int-div-of REQUEST) Y)`,
+so `int-bad-first` takes an operand's fault to `(bad-request (int-div-of REQUEST) FAULT)`, a tag and no request.
+
+- **(a) Two flags, the tag's and the request's:** a fourth rule, `int-bad-div`, takes `(int-div-of REQUEST)` to the
+  request as written, as a public division by zero holds its request's flag and its call's (Q-M1f.211 (ii)).
+- **(b) The tag's alone**, the three rules of the design: the core still names the request.
+- **(c) The divisions' tags restructured**, so that their operand's tag holds the request: every division's state
+  respelt.
+
+**Defaulted 2026-11-14: (a), the user's to revise.**
+
+### Q-M1f.283 — The two new modules' names and their place
+
+**Raised** 2026-11-14 by [S1f.6.38](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#build-record-2026-11-14)'s
+T1f.6.38.3. Defaulted as built, each the user's to revise: the entries `arith` and `decimal`, and the relations their
+closing rules name rules by, `arith-module-rule` (`arith-rule` being `std.math.decimal-arith`'s) and `decimal-rule`;
+`z` declared in `std.math.arith` as a relation of no argument that no fact is of, the one way Ein declares a name,
+so that it has one full name, and no hypothesis target, its signature being empty; every closing rule of the
+calculator naming the entries of the calculator's modules it imports, `std.math.decimal-arith` naming `arith` and
+`decimal`; and `std.math.num9` keeping a bare import of `std.math.decimal-arith`, from which it lists nothing now,
+so that a program of nine digits holds the modules it held, beside its imports of `std.math.decimal` and
+`std.math.arith` for `n`, `z` and the division by zero.
