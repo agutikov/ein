@@ -8,8 +8,12 @@ with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruli
 [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the [record](#record-2026-11-12-way-b-banked-as-examples)
 is below. It is not T2: no stdlib module, no test of its own, and the questions stay open.
 **The module is ruled and planned (2026-11-12):** the user's replies to the page's questions are in
-[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces tasks 2 to 4 below. Not started; it runs
-after the stdlib layout.
+[§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces tasks 2 to 4 below. It runs after the
+stdlib layout. **Its trial, T1f.6.16.5, done 2026-11-14, and the build stopped for the user:** the shared rules
+can be written with parameters and do the shipped rules' work to the count, but take 3 to 5 % more saturation
+and 1 to 4 ms more load, and decimal's states change in more than rule names
+([§ Record, 2026-11-14](#record-2026-11-14-t1f6165-the-trial-and-the-stop)). Nothing built; the question is
+[there](#the-question-for-the-user).
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
@@ -132,7 +136,9 @@ open**; banking the recommended way is the instruction for the examples and not 
 
 ## The build, as ruled (2026-11-12)
 
-**Status:** planned 2026-11-12, not started. It replaces tasks 2 to 4 of [§ Tasks](#tasks).
+**Status:** planned 2026-11-12. It replaces tasks 2 to 4 of [§ Tasks](#tasks). **T1f.6.16.5 done 2026-11-14;
+stopped for the user** at the trial's own rule, the parameterised rules costing more
+([§ Record](#record-2026-11-14-t1f6165-the-trial-and-the-stop)); T1f.6.16.6 to .11 not started.
 **Depends on:** [S1f.6.31](s1f.6.31_the_stdlib_layout.md), the layout, which names the modules and moves
 `std.arith` to `std.math.decimal-arith`; and [S1f.6.24](s1f.6.24_division_by_zero_at_the_call.md), so the
 binary division is written once with the flag at the call.
@@ -249,4 +255,178 @@ A wrong answer of the engine met on the way is a row in `corpus/wrong_answers.to
 fix. Findings go to [`findings.md`](findings.md) under the next free id; questions to
 [`open_questions.md`](../open_questions.md) under the next free id. A design change shows real computed
 examples first (the trial). Config never changes an answer. The gate is `./run_tests.sh`, then `./run_tests.sh
---nightly` after each code commit; `utils/ci_container.sh` is not needed.
+--nightly` after each code commit; `utils/ci_container.sh` is not needed. *(That last sentence is superseded by
+the user's cadence of 2026-11-13: one gate per batch of code commits, the nightly only after a large engine
+change, a records-only commit the link check alone.)*
+
+### Record, 2026-11-14: T1f.6.16.5, the trial, and the stop
+
+**Stopped for the user, as the plan says where the parameterised rules cost more.** They can be written, and
+they do the shipped rules' work to the count, by every count the engine keeps; they take more time, 3 to 5 %
+more saturation and 1 to 4 ms more load a program; and decimal's states change in more than rule names. So
+T1f.6.16.6 to .11 are not started: no module, no test, no example, no golden moved. The choice is
+[§ The question for the user](#the-question-for-the-user).
+
+**What was run.** A copy of the stdlib under `build/s1f.6.16/trial/stdlib/` (gitignored), written by
+`python3 build/s1f.6.16/trial/mk_trial.py` from the checkout at `24a7fb34`:
+
+- `math/positional.ein`: the 78 rules both bases share, each written once from `std.math.decimal-arith`'s
+  text, every relation it names a parameter, in capitals as `std.algebra` writes `?R1`: `(rule add-column
+  (?ADD-WALK ?N ?FA ?B) :match (and (?ADD-WALK ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc) (?FA ?a ?c ?e ?s ?f))
+  :assert (?ADD-WALK ?k ?p ?q ?f (?B ?s ?acc)) …)`. 251 parameters, two to five a rule; every `:why` as
+  shipped;
+- `math/decimal-arith.ein`: the shipped module less those 78 rules, importing positional, listing them, and
+  activating each once with decimal's relations, `(add-column add-walk n fa b)`;
+- `math/bits.ein`: the binary tables `bin-fa`, `bin-fs`, `bin-cl` and `bin-nz`, the last one row, `1`;
+- `math/binary-arith.ein`: binary's 60 relations, `b2` and every other name `bin-`; the 78 rules activated
+  with them; and 16 rules of its own, the banked theory's multiplication by a bit and division by one
+  subtraction a bit, the divisor in normal form, the two checks that list the digits (`check-digit` and
+  `operand-undeclared` over `0` and `1`), and `division-by-zero-is-false` (point 3 below).
+
+The release binary at `24a7fb34` (sha256 `f9f9774c5c9ee47a…`) on an i9-14900HX; every time is taken under
+`utils/bench_env.sh --core 2` by `build/s1f.6.16/trial/lt_time.py`, the variants interleaved round by round,
+and the median of 11 to 61 rounds is quoted.
+
+**Which rules are shared:** 78 of decimal's 115, the closing rule aside. The operands and the named constants;
+the addition, subtraction and comparison walks; the normal form and both turns; the protocol of the five
+operations, each its ask, its second operand, its start and its answer; multiplication's call (`mul-turn`,
+`mul-begin`, `mul-next`, `mul-end`); division's `div-begin` and `div-end`; the two division-by-zero flags; and
+S1f.6.12's check but for the two rules that list the ten digits. Decimal keeps 37: the digit multiplier's walk
+(6), the division of base ten (28), `check-digit`, `operand-undeclared` and `division-by-zero-is-false`.
+
+**What it took to write them.**
+
+1. **A parameter heads a nested pattern wherever a walk needs one**, in a premise, `(?ADD-WALK ?k (?N ?p ?a)
+   …)`, and in a conclusion, `(… (?B ?s ?acc))`; under the operand look-up's join on a name, beside
+   `let-twice`'s guard, and inside a flag's request, `(?MALFORMED (?LET z ?v))`. No rule changed but in its
+   heads. That is the point the plan left open, and the answer for
+   [S1g.10.7](../../m1g_logic/p1g.10_school_algebra/s1g.10.7_compound_numbers_without_a_hardcoded_representation.md)
+   (round 2's question back): a parameter can stand everywhere the walks need it. *One fact* it is not: a
+   rule is activated by a fact of its own name, so a base is 78 activators.
+2. **The closing rule may not name a shared rule.** `(arith-rule add-end)` writes the rule's name as an
+   argument, and S1f.5.18's check then reads each parameterised conclusion of `add-end`'s arity,
+   `(?OPERAND-IS ?k z)` among them, as a possible activator of `add-end` that binds a parameter to a fact (a
+   tag): the program is refused at load, a line a pair. It is [E-55](findings.md)'s refusal, met by
+   `std.algebra` at S1f.6.35. So `decimal-arith` names its own 37 rules and not positional's 78.
+3. **`division-by-zero-is-false` stays decimal's**, for the same refusal: `std.math.num9`'s closing rule names
+   it, `(num9-rule division-by-zero-is-false)`. Binary has its own.
+4. **A parameter spelled as a relation's short name interns that name bare.** With `?sum-of`, the batch test's
+   lookup of the result by its bare spelling (`arith_batch.rs`'s `saturate`; `ein_corpus::spellings` reads
+   the same way) found the variable's empty relation, and counted 0 answers to 250 requests that were
+   answered. Capitals keep every parameter apart from every name.
+
+**Decimal's answers: unchanged on every program.** The 143 tracked programs that reach the calculator
+(`grep -rlE 'std\.math\.|\(import (bin|conv) ' --include='*.ein' examples tests`), each run on the shipped
+stdlib and on the trial's (`python3 build/s1f.6.16/trial/compare.py --solve`, 2026-11-14):
+
+- **`ein solve`'s read-out is the same on all 143**, read with a rule's module taken off its name
+  (`std.math.positional.` or `std.math.decimal-arith.`) and the times taken out; every exit code the same.
+- **Root's state** (`ein saturate --dump`, a set of facts, the deriving rule taken off each) **differs on 124
+  programs in two ways and nothing else**: the 78 `(arith-rule R)` facts that named a shared rule are gone
+  (point 2), and 78 activators are new, `(std.math.positional.add-column std.math.decimal-arith.add-walk n
+  std.math.digits.fa std.math.decimal-arith.b)` and the rest. The other 19 do not import decimal's module
+  (the digit tables' tests, the banked binary examples, `examples/beyond_arith/`'s eight) or are refused at
+  load on both (the three `arity-*` witnesses), and do not differ.
+- **A trace reads as today but for the module in a step's rule**, `### Step 9 — std.math.positional.add-column`
+  where `std.math.decimal-arith.add-column`, every `:why` and fact the same, and the closing step deriving 78
+  facts fewer. **`refuted by`** names `std.math.positional.malformed-is-false` for a malformed request where
+  `std.math.decimal-arith.malformed-is-false`, and `std.math.decimal-arith.division-by-zero-is-false` for a
+  division by zero, as today; the unsat core is the request in both.
+
+So decimal's states change in more than rule names: 78 facts out and 78 in, on every program that imports it;
+under the generated copy they do not change at all.
+
+**The work: equal, by every count.** The page's targets (`python3 build/s1f.6.16/trial/measure_trial.py`),
+firings / depth, the closing rule's left out, every answer right:
+
+| request | decimal, shipped | decimal, parameterised | binary, banked | binary, parameterised |
+|---|---:|---:|---:|---:|
+| 123078 + 4567 | 31 / 21 | 31 / 21 | 43 / 43 | 73 / 43 |
+| 123078 − 4567 | 38 / 21 | 38 / 21 | 61 / 43 | 91 / 43 |
+| 4567 − 123078 | 38 / 21 | 38 / 21 | 61 / 43 | 91 / 43 |
+| 123 × 456 | 78 / 72 | 78 / 72 | 120 / 120 | 136 / 120 |
+| 127645 ÷ 25 | 228 / 220 | 228 / 220 | 245 / 245 | 267 / 245 |
+| 123078 against 4567 | 23 / 13 | 23 / 13 | 24 / 24 | 54 / 24 |
+| 127645 ÷ 0 | 18 / 10 | 18 / 10 | 12 / 10 | 29 / 19 |
+
+Binary's extra firings are its operand check, a firing a bit of each operand, which the banked theory never
+had; its depths are the banked theory's but where the check's chain is the longest, the division by zero. 234
+sampled binary requests, the five operations, edges and random operands to nine decimal digits: each answered
+once and right against Python's integers.
+
+**A batch** (`EIN_STDLIB=build/s1f.6.16/trial/stdlib cargo test --release -p ein-infer --features counters
+--test arith_batch -- --nocapture a_batch_costs_in_proportion a_number_operand`, and the same without
+`EIN_STDLIB`): **candidates a request identical to the last digit** at 250, 1 000 and 4 000 requests, 181.38,
+362.00, 901.00, 9 603.87 and 6 033.98 at 250 for the five operations; firings a request identical, 45.00,
+55.00, 34.00, 504.84 and 458.85; **guard values a request 312 fewer**, 687.92 where 999.92 (660.86 where
+972.86 for division): `operand-undeclared` ranges over the program's names, and the 78 rule names the closing
+rule no longer writes are 78 names fewer, two comparisons each for each of two operands.
+
+**The time: more.** Parse, load and compile, then the saturation, in ms, medians:
+
+| program | shipped | parameterised | |
+|---|---:|---:|---|
+| one addition (`lt/t.ein`), 61 rounds | 23.49 · 0.48 | 25.68 · 0.48 | load +2.2 ms, +9 % |
+| 250 additions, 11 rounds | 43.34 · 15.60 | 45.64 · 15.96 | |
+| 1 000 additions, 11 rounds | 104.40 · 62.92 | 106.92 · 64.91 | |
+| 4 000 additions, 21 rounds | 346.97 · 267.59 | 350.67 · 275.78 | load +3.9 ms; saturation +3.1 % |
+| 250 products, 21 rounds | 43.50 · 188.11 | 45.76 · 195.94 | saturation +4.2 % |
+| 250 quotients, 21 rounds | 38.52 · 187.49 | 40.68 · 193.78 | saturation +3.4 % |
+
+Where it goes, as far as measured (each a stdlib under `build/s1f.6.16/trial/lt/`, timed beside the others):
+
+- **not the order**: the shipped module with its rules in the trial's order and no parameter (`lt/reorder`)
+  loads and saturates as shipped, 268.83 ms where 267.89 on 4 000 sums, 188.30 where 188.40 on 250 products;
+- **not the extra file**: an empty module imported beside the shipped one (`lt/emptymod`), 23.55 ms where
+  23.49;
+- **+1.15 ms of load is any parameterised rule at all**: one rule with a parameter and no activator added to
+  the shipped module (`lt/oneparam`) costs as much as positional's 78 without their activators (`lt/noact`),
+  24.61 and 24.64 where 23.46. S1f.5.18's check of derived activators returns at once on a program with no
+  parameterised rule, and otherwise reads every written fact's arguments, the 1 664 table rows among them
+  ([E-60](findings.md));
+- **the other 1 ms of load, with the activators,** and **the 3 to 5 % of saturation** are not attributed. No
+  count differs, so the saturation's share is time a firing or a plan; a parameterised firing's identity
+  carries its activator's arguments (`defined_behaviour.md` § 3.2) and a written rule's carries none, which is
+  a candidate and is not measured ([E-61](findings.md)).
+
+**The generated copy, the same rules** (`python3 build/s1f.6.16/trial/mk_gencopy.py`: positional's 78 rules
+written out with binary's relations, 95 rules, no parameter): the same firings, 18, 127 126 and 141 208; load
+and compile 7.05 ms where the parameterised theory takes 8.20 on one sum; saturation 172.61 where 178.97 on
+1 000 sums (+3.7 %) and 195.50 where 205.44 on 250 products (+5.1 %). Under the copy, decimal is the shipped
+module and costs what it costs today.
+
+**Both bases in one program** (`build/s1f.6.16/trial/p/both.ein`): decimal and binary imported flat, each
+shared rule activated twice; 123078 + 4567 and 101 + 111, 2 claims held, no candidate, 54 firings.
+
+**Defaults:** none taken; the names the trial used (`b2` kept, every other binary name `bin-`, the tables
+`bin-fa`, `bin-fs`, `bin-cl` and `bin-nz`) are the trial's, not the build's, and the build files its question
+when it runs. **Findings:** [E-60 and E-61](findings.md), neither a wrong answer; point 2 is E-55's. **The
+gate:** not run, a records-only commit (the user's cadence of 2026-11-13); the link check.
+
+### The question for the user
+
+Reply 16 asked for the common rules in a file both bases import, and round 2 planned this trial and this stop.
+Measured, the two ways to have the 78 shared rules:
+
+| | (a) one file, parameterised | (b) a generated copy, question 16's old (a) |
+|---|---|---|
+| what is written | `std.math.positional`, 78 rules once, each activated by a fact a base | `std.math.decimal-arith` as shipped; `std.math.binary-arith` written from it by a script, its `--check` in the gate |
+| decimal's answers | unchanged | unchanged |
+| decimal's states | 78 `(arith-rule R)` facts out, 78 activators in; 78 rules named `std.math.positional.*` in a trace, a dump and `refuted by` | unchanged |
+| work: firings, depth, candidates | the shipped ones | the shipped ones |
+| guard values a request | 312 fewer | as shipped |
+| load | +1 to 4 ms a program, +9 % on one request | as shipped |
+| saturation | +3 to 5 % | as shipped |
+| for S1g.10.7 | the mechanism it would build on, tried | nothing |
+
+- **(a)** the shared file, at that cost.
+- **(b)** the generated copy: nothing shared at run time, the binary module a generated file.
+- **(c)** an engine stage first, that makes a parameterised rule cost what a written one does (E-60's check
+  run only where it can refuse, E-61 attributed and removed), and then (a).
+
+**Recommended: (a).** The difference is time and not work: no count the engine keeps moved, the time is a few
+per cent, and a third of the load's share is a check any generic rule pays (E-60). (b) is the copy reply 16
+answered against; (c) is (a) with an engine stage in front, whose gain is not known until E-61 is attributed.
+
+**Meanwhile:** nothing of the build runs. S1f.6.17's T1f.6.17.7, the full adder against `std.math.bits`' table,
+waits with it.
