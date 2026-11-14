@@ -194,7 +194,8 @@ rule list (and the priority bands it had until M1f S1f.5.15).
 ## Worked rule library
 
 Neither encoding defines property rules of its own any more; both import
-them, which is what `:symbols` flat import is for
+them, the module whole, and `:symbols` lists the rules whose activators
+they write, so the names are written short
 ([`../../../../stdlib/README.md`](../../../../stdlib/README.md)):
 
 ```lisp

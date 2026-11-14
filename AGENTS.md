@@ -115,12 +115,13 @@ constrained-reasoning research.
   *ladder* — the puzzle's `(hrule …)` if it declares one, else the facts that
   would discharge what the state owes
   ([`oblgen.rs`](ein.rs/crates/ein-infer/src/oblgen.rs)), else the blind
-  combinatorial enumerator. **The calculator's modules**, each imported by one
-  entry name: `std.digits` (the digit tables, a library of *facts*, generated),
-  `std.arith` (`(import std.arith :symbols (arith))`), `std.num9` (generated,
-  `(import std.num9 :symbols (arith9))`), `std.int` (`(import std.int :symbols
-  (int-arith))`) and `std.rat` (`(import std.rat :symbols (rat-arith))`); a
-  module over a module names the lower one's entry in its own closing rule.
+  combinatorial enumerator. **The calculator's modules**, each with an entry
+  name a program may list beside the names it writes: `std.digits` (the digit
+  tables, a library of *facts*, generated), `std.arith` (`(import std.arith
+  :symbols (arith add n sum-of))`), `std.num9` (generated, entry `arith9`),
+  `std.int` (`int-arith`) and `std.rat` (`rat-arith`); a module over a module
+  names the lower one's entry in its own closing rule, and lists every name of
+  the lower one it writes.
   Their rules are in [§ Edits that go together](#edits-that-go-together), and
   [`stdlib/README.md`](stdlib/README.md) has a section for each.
 - **`tests/`** — **the ein-lang test suites**, a third corpus root beside
@@ -295,12 +296,19 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A form headed by a declared relation has as many arguments as its
   declaration has types.** It is no type check. A fixture that wants a
   relation at several counts leaves it undeclared.
-- **A flat import brings a module's facts**; a qualified one renames
-  declarations only, so a library of facts is imported flat. **No import
-  brings a module's `(query …)`, `(solve …)` or `(config …)`**: those are a
-  program's. Where a selection brings a relation's declaration through its
-  closure and no rule that derives it, the loader says so in one `note:`
-  line on stderr and refuses nothing (`ein-cli/tests/import_left_behind.rs`).
+- **Every import brings its module whole**, with its own imports, one copy
+  per program, every declared name under its **full name**, `std.arith.add`;
+  the three shapes differ only in names: `:symbols (…)` lets the file write
+  the listed names short, `:as a` writes `a.add`, a bare import writes full
+  names. **A file lists every short name it writes** from the module that
+  declares it (no re-export); one it writes and does not list is its own. One
+  short name bound to two full names in one file is refused. A module's name
+  is a path **from the program file's directory**, for a module's own imports
+  too; `..` is refused. A state prints the main file's spelling, else the full
+  name. **The answer does not depend on the import form**
+  (`ein-cli/tests/import_invariance.rs`, every corpus program selective
+  against whole against `:as`). **No import brings a module's `(query …)`,
+  `(solve …)` or `(config …)`**: those are a program's.
 - *Forbid*: a program whose refutation could rest on an `absent` over a
   relation a commitment can still extend is refused (`ein_infer::forbid`).
 - **The hypothesis mechanisms do not contradict one another**: an hrule, an
@@ -382,7 +390,10 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   the test names the program rather than read a narrower verdict (E-33,
   Q-M1f.225). An unflagged one costs it nothing: the closure runs only where
   a site reads it.
-- A file-relative import cannot reach a sibling directory (E-32).
+- A local module's name is a path from the **program** file's directory, for
+  a module's own imports too: no import reaches a sibling directory (E-32),
+  and a module that imports a neighbour is found from the program's
+  directory, not its own.
 
 ## Running the gate
 

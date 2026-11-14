@@ -60,7 +60,7 @@ hints, in context"*.
 zebra2's `:source` comments mark which part is which. **An import can carry
 either half of a context** since M1f S1f.6.11 (the user, 2026-11-11:
 *"together with theory libs that are rule libs we probably would want to have
-ontology libs that are facts libs"*): a flat import brings a library's facts
+ontology libs that are facts libs"*): an import brings a library's facts
 as it brings its rules
 ([`01_grammar.md` § Import](../ir/03-ein-lang/01_grammar.md#import)), and an
 imported fact is a fact of the program, its constants names of the program

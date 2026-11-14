@@ -1178,70 +1178,70 @@ the goal bindings, a projection class's sentence on the read-out.
 ### Import
 
 ```lisp
-(import onto)                        ; whole module, every declared name prefixed onto.
-(import onto :as o)                  ; the same, prefixed o.
-(import onto :symbols (is-a things)) ; flat: the listed names, their closure, and their facts
+(import onto)                        ; the module whole; the file writes its names in full, onto.is-a
+(import onto :as o)                  ; the module whole; o.is-a is onto.is-a
+(import onto :symbols (is-a things)) ; the module whole; the file writes is-a and things short
 ```
 
-A module is a `.ein` file: `std.x` resolves under the
-[stdlib](../../../../stdlib/README.md#importing), any other name against the
-importing file's directory. An import is replaced, before the loader runs, by
-forms of the module, and the three shapes differ in which forms and under
-which names. `:as` and `:symbols` are mutually exclusive.
+**Every import brings its module whole**, its declarations and its facts,
+with the module's own imports, all the way down, **one copy per program**,
+and the three shapes differ only in **names** (M1f
+[S1f.6.35](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md),
+the user's model (h) of 2026-11-13 and its ruling of 2026-11-14, *"in all
+cases we import everything, the difference only in names"*). An import is
+replaced, before the loader runs, by the program's one list of forms.
+`:as` and `:symbols` are mutually exclusive.
 
-**A flat import, `:symbols`, brings declarations and facts** (M1f
-[S1f.6.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md),
-the user's ruling of 2026-11-11, *"importing facts is mandatory"*; W88). The
-selection is a set of names, the **closure** of the list: every listed name,
-and every name a selected declaration writes, followed through the module's
-declarations. Of the module's top-level forms it keeps, unrenamed and in the
-module's order:
+**A full name is the name.** Every name a module declares — a relation, a
+rule, an hrule, a macro — has one **full name**, the module's name and the
+name, `std.arith.add`, `onto.is-a`: the same through every import path, so a
+module read by two imports, under two aliases or by none of the program's own
+is one copy. A full name is global: any file may write one of a module the
+program brings. The main file has no module name, so what it declares keeps
+its name. A name no file declares — `z`, a digit, a type, a relation a module
+states facts of and never declares — has no full name and is one name in every
+file.
 
-- every **declaration** (`relation`, `rule`, `hrule`, `macro`) whose name is
-  in the closure;
-- every **fact** whose relation is in the closure, with its `:source`. A
-  stored negation, `(not (likes Milk Tea))`, is a fact of `likes`.
+**A module's name is its path.** `std.x.y` is `x/y.ein` under the
+[stdlib](../../../../stdlib/README.md#importing); any other name is a path
+**from the program file's directory**, a dot per directory, for the imports a
+module writes too: from a program in `examples/word_problems/`,
+`(import word-theory.gaps :as gaps)` reads `word-theory/gaps.ein`, whose
+`gaps` is `word-theory.gaps.gaps`, and that module imports its sibling as
+`word-theory.words`. A name with an empty segment or a `/` is refused, so
+`..` is (Q-M1f.252): one file has one name. A cycle is refused.
 
-So `(import onto :symbols (is-a))` brings `is-a`'s declaration and the
-module's `is-a` facts, and `(import onto :symbols (things))`, where the rule
-`things` reads `is-a`, brings the rule, the declaration and the same facts. A
-relation needs no declaration, so a listed name may be a relation the module
-only states facts of. A listed name the module neither declares nor states a
-fact of is refused, *not provided by the module*.
+**A short name is local to the file that binds it.** A file writes short its
+own declarations, the names its imports' `:symbols` lists, and, under
+`:as o`, `o.` and a name the module declares; a bare `(import M)` binds no
+short name, and the file writes `M.x`. Nothing is re-exported: a module's
+short names are its own, and a name a module only imports is listed from the
+module that declares it. A listed name the module neither declares nor states
+a fact of is refused, *not provided by the module*; one it states facts of
+and does not declare names the relation those facts are of, as the module
+reads it (Q-M1f.250). **A short name a file writes that it neither declares
+nor imports is its own**, whatever a module of the program declares under it
+(the user: *"silent re-definition, like variables shadowing, it's a
+mistake"*).
 
-What a flat import does not bring: a declaration or a fact no name in the
-closure reaches, so a rule nobody names stays behind even where the imported
-facts would fire it; the names written *inside* a fact, which the closure
-does not follow (`(owns Ann cat)` brings no declaration of `cat`); and the
-module's `(query …)`, `(solve …)` and `(config …)`, which are the module's
-own as a program. `(__closed__ r)` is a fact of `__closed__` like another: a
-library that closes its own relations has the marker listed, or writes it in
-a rule the selection names.
+**One short name, one full name, in a file.** One short name bound to two
+full names in one file — by two imports, or by an import and the file's own
+declaration — is refused (*"if it happens in the same file - it's an error,
+not correct ein code, just like ordinary namespaces"*); one alias prefixing
+two modules too. Binding one name to one full name twice is not an error. A
+prefixed name that names nothing its module declares is refused
+(Q-M1f.251), and so is a full name of a module no import of the program
+brings (Q-M1f.238): a module enters a program by an import of it. The main
+file may not declare a name under the full name of a module it imports
+(Q-M1f.239); a `--dump-answer` state file, which imports nothing and declares
+the full names it was loaded with, is the main file's own declarations. A
+module's declared name holds no dot (Q-M1f.241), so a full name reads one way.
+Each refusal is `defined_behaviour.md` § 4.28.
 
-**One line where a selection leaves a relation's rules behind** (M1f
-[S1f.6.25](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
-E-20). The closure brings the *declaration* of every relation a kept rule
-writes or reads, and not the rules that derive it: a theory built on a
-theory, imported by its entry, brings the lower theory's relations and none
-of its rules unless its entry names the lower one's. That is the rule above
-and it is not changed. Where it happens the loader says so, on stderr, on
-every command that loads the program, once:
-
-```text
-note: p.ein:1:9: (import upper :symbols (upper)) brings the declaration of double-of and no rule that derives it: upper has such a rule, its own or one it imports, and the selection names none — a selection brings the names it lists and what their declarations write, so list the rule, or the entry that names it, if double-of is to be derived
-```
-
-It is a diagnostic, never a refusal: the program loads and answers as it
-would without the line, and no exit code moves. It is printed when all four
-hold: the relation's declaration came through the closure, **its name not
-listed** (a listed relation is asked for on purpose); the module, with what
-it imports, has a rule or an hrule whose `:assert` concludes a fact of it;
-the selection keeps none of them; and the resolved program holds no rule that
-concludes one either, another import's or its own. So a library of facts,
-`(import std.digits :symbols (fa nz __closed__))`, prints nothing, having no
-rule. The line and its condition are `ein-cli`'s
-[`import_left_behind.rs`](../../../../ein.rs/crates/ein-cli/tests/import_left_behind.rs);
-`defined_behaviour.md` § 4.25 states it.
+**What prints** is the main file's spelling: the short name it lists, else its
+first alias's, `o.is-a`, else the full name, `std.arith.strip` (Q-M1f.237,
+Q-M1f.253). A spelling another file writes as a name of its own is not taken,
+so that two names never print as one.
 
 **An imported fact is a fact of the program.** It is stored as if written
 where the import stands: background, or given where it carries a `:source`.
@@ -1249,37 +1249,37 @@ Its constants are names of the program, so they are among the objects the
 blind enumerator proposes facts about
 ([`solution_semantics.md` § 1.2](../../inference/solution_semantics.md#12-names));
 a program that wants no guesses about a library's relation closes it. A fact
-that arrives twice, through a diamond of flat imports or one module imported
-flat twice, is one fact. The same fact stated with two `:source`s keeps its
-first statement and loses the second in silence, as it does written twice in
-one file
+of a module arrives once, the module being one copy. The same fact stated
+with two `:source`s keeps its first statement and loses the second in
+silence, as it does written twice in one file
 ([F24](../../../../plans/followups/f24_written_provenance.md)'s question).
-
-**A qualified import, bare or `:as`, brings every declaration and every
-fact** and prefixes each name the module *declares*, wherever it stands, the
-relation heading a fact included: the module's `(is-a Tea Drink)` is `(o.is-a Tea Drink)`, a relation
-apart from the program's own `is-a`. A relation the module does not declare
-and every constant are left as written. So a library of facts, an ontology or
-a table, is imported flat, where its facts join the program's vocabulary; a
-qualified import keeps a library's theory apart under its own names.
 
 **No import brings a module's `(query …)`, `(solve …)`, `(config …)` or
 `(trace …)`** (M1f
 [S1f.6.25](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
 W90). They are what a *program* asks, how it is solved and how it is
 configured, and a module that is also a program of its own keeps them to
-itself: the importer states its own, or none. Until that stage a qualified
-import kept all of them, so the importer answered the module's queries,
-renamed, was solved under the module's lattice and configured by the module's
-flags, and two qualified imports of a module holding a `(solve …)` were
-refused, *2 (solve …) forms — a program states its lattice once*.
+itself: the importer states its own, or none.
 
-Every cell of this is `ein-ir`'s
-[`imports_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_semantics.rs)
-(`what_each_import_form_brings_of_a_module`), and `ein-cli`'s
+**Until M1f S1f.6.35** a flat import shared names: `:symbols` kept the listed
+names, the closure of what their declarations write and the facts of every
+relation in it, unrenamed (M1f
+[S1f.6.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md),
+W88), so a program's `done` met the calculator's and was refused, and a
+selection could leave a lower theory's rules behind, which the loader said in a
+`note:` line (S1f.6.25, E-20); and a qualified import renamed a copy of the
+module's whole subtree, so one module under two prefixes was two copies. The
+answer of every corpus program is the same under its selective, whole and
+`:as` imports since: `ein-cli`'s
+[`import_invariance.rs`](../../../../ein.rs/crates/ein-cli/tests/import_invariance.rs),
+the stage's acceptance. The resolver's cases are `ein-ir`'s
+[`imports_full_names.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_full_names.rs)
+and [`imports_semantics.rs`](../../../../ein.rs/crates/ein-ir/tests/imports_semantics.rs);
+`ein-cli`'s [`imports_by_full_name.rs`](../../../../ein.rs/crates/ein-cli/tests/imports_by_full_name.rs)
+holds the stage's acceptance through the binary, and
 [`import_facts.rs`](../../../../ein.rs/crates/ein-cli/tests/import_facts.rs)
-holds that a flat import of facts answers, on every command that loads a
-program, as the same forms written in place.
+that an import of facts answers, on every command, as the same forms written
+in place.
 
 ### Trace
 

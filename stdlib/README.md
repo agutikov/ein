@@ -1338,57 +1338,56 @@ a missing import rather than letting the rule silently never fire.)
 
 ## Importing
 
-Three tiers (Python-style — see the A1 decision record):
+Every import brings its module **whole**, with the module's own imports, one
+copy per program; the three forms differ only in **names** (M1f S1f.6.35, the
+user's ruling of 2026-11-14, *"in all cases we import everything, the
+difference only in names"*):
 
 ```lisp
-(import std.macro)                        ; → (std.macro.forall …)   fully qualified
-(import std.macro :as m)                  ; → (m.forall …)           aliased
-(import std.macro :symbols (forall unknown)) ; → (forall …)             flat-selective + auto-closure
+(import std.arith)                              ; the file writes std.arith.add, std.arith.sum-of
+(import std.arith :as a)                        ; the file writes a.add, a.sum-of
+(import std.arith :symbols (arith add n sum-of)) ; the file writes add, n, sum-of
 ```
 
-`:symbols` keeps the listed names **plus their dependency closure** (S1.8a.f20),
-following name references across the modules a symbol's own module imports; an
-entry rule pulls what it asserts/matches without the importer enumerating it.
-**It keeps facts too** (M1f S1f.6.11, 2026-11-11): every top-level fact of the
-module whose relation is a name of that closure comes with it, as written, so
-a library of facts, an ontology or a table, is imported flat like a library
-of rules, and a listed name may be a relation the module only states facts
-of. `std.digits` is the one `std.*` module that holds facts
-([§ `std.digits`](#stddigits-a-library-of-facts-m1f-s1f62)). The whole rule,
-and what a qualified import does with a module's facts, is
-[`01_grammar.md` § Import](../docs/kernel/ir/03-ein-lang/01_grammar.md#import).
-Importing the same declaration twice (the diamond a module's self-imports
-create) is idempotent — identical collapses, a same-name conflict errors.
-`:as` and `:symbols` are mutually exclusive. Names are logical and dotted
-(`.` is a normal atom character); the `.ein` suffix is implied. A
-file-relative import (a non-`std` name) resolves against the importing file's
-directory.
+Every name a module declares has one **full name**, `std.arith.add`, the same
+whoever imports the module; it is what a state prints where the program gives
+the name no spelling of its own (a circuit's step, `std.arith.strip`). **A
+program lists every short name it writes**, from the module that declares it:
+`std.int`'s programs list `int-add`, `int`, … from `std.int` and `n` from
+`std.arith`, since `std.int` only imports `n` and nothing is re-exported. A
+short name a program writes and lists from no import is the program's own,
+whatever a module calls the same (shadowing); one short name bound to two full
+names in one file is refused. A module's entry rule (`arith`, `int-arith`,
+`rat-arith`, `arith9`) may still be listed, and brings nothing a whole import
+does not. `std.digits` is the one `std.*` module that holds facts
+([§ `std.digits`](#stddigits-a-library-of-facts-m1f-s1f62)), which an import
+brings with the module. `:as` and `:symbols` are mutually exclusive. A
+module's name is its path: `std.x.y` under this directory, any other name a
+path from the **program file's** directory, a dot per directory, `..`
+refused. The whole rule, the refusals and what prints are
+[`01_grammar.md` § Import](../docs/kernel/ir/03-ein-lang/01_grammar.md#import)
+and `defined_behaviour.md` § 4.28.
 
-To inline a puzzle's imports into a single standalone file (resolving +
-tree-shaking unused library symbols) — **there is no CLI for this.** `ein ir
-parse --resolve` did it from P1.8 until **P1.11** (2026-06-16, `8378ad7`),
-which dropped the whole `ein ir` / `ein kb` inspection family; what survived is
-the library call, and it is three functions:
+To inline a puzzle's imports into a single standalone file — **there is no CLI
+for this.** `ein ir parse --resolve` did it from P1.8 until **P1.11**
+(2026-06-16, `8378ad7`), which dropped the whole `ein ir` / `ein kb`
+inspection family; what survived is the library call, and it is three
+functions:
 
 ```rust
 let forms = ein_ir::parse(&mut ast, &text, Some(path))?;
-let inlined = ein_ir::resolve_and_minimize(&mut ast, &forms, path.parent())?;
+let inlined = ein_ir::resolve_imports(&mut ast, &forms, path.parent())?;
 print!("{}", ein_ir::dump_canonical(&ast, &inlined));
 ```
 
-`resolve_and_minimize` keeps an imported declaration that a live name reaches
-*or* that a live match pattern activates — the `*-setup` glue rules are fired
-by their pattern and never by name, so keeping only what is named would drop a
-whole activator-driven module and leave a file that no longer solves. **A name
-an import's selection lists is live** (M1f S1f.6.25, W91): `(import lib
-:symbols (entry))` asks for `entry` by name, so an entry that is a rule with
-an empty `:match`, which no name in the program's own forms and no premise
-reaches, is kept, and with it everything a flat import brings. Until that
-stage it was dropped, and a library wrote its entry's name as a fact to keep
-it, `std.arith`'s `(arith-rule arith)`; the facts stay and are no longer
-needed for this.
-`dump_canonical` is the canonical `.ein` printer, and the parser's unescape is
-its inverse, so the text re-parses.
+The inlined text is the program as resolved, every module whole under its full
+names; a name the program declares keeps its name, so the text loads with
+nothing left to resolve against. Until M1f S1f.6.35 the route was
+`resolve_and_minimize`, which shook out an imported declaration no live name
+or premise reached (S1f.6.25's W91 kept a listed one); every import brings its
+module whole since, and nothing is shaken. `dump_canonical` is the canonical
+`.ein` printer, and the parser's unescape is its inverse, so the text
+re-parses.
 
 That the three compose into the **same program** is
 [`the_inlining_route_the_stdlib_readme_documents_round_trips`](../ein.rs/crates/ein-ir/tests/imports_semantics.rs):

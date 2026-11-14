@@ -2078,105 +2078,70 @@ body spells and no fact of the macro's name), `ein-ir`'s `from_ir` unit test
 `a_macros_call_written_as_a_fact_is_refused_at_load`, and
 `corpus/wrong_answers.toml`'s W86 rows.
 
-### 4.25 A flat import brings a module's facts — M1f S1f.6.11
+### 4.25 An import brings a module's facts — M1f S1f.6.11, S1f.6.35
 
 A stage of M1f
 [P1f.6](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md),
 [S1f.6.11](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md),
 on the user's ruling of 2026-11-11, *"importing facts is mandatory"*
-(Q-M1f.135 to .144, defaulted).
+(Q-M1f.135 to .144, defaulted); since
+[S1f.6.35](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md),
+on the user's ruling of 2026-11-14, *"in all cases we import everything, the
+difference only in names"* (§ 4.28).
 
-**`(import M :symbols (n …))` keeps, of `M`'s top-level forms, every
-declaration whose name is in the selection's closure and every fact whose
-relation is**, unrenamed and in the module's order (`ein_ir::imports`'
-`select`). The closure is the listed names and every name a selected
-declaration writes, followed through the module's declarations.
+**Every import brings every declaration and every fact of its module**, with
+the module's own imports, one copy per program, under full names
+([`01_grammar.md` § Import](ir/03-ein-lang/01_grammar.md#import)):
 
-| of the module | `(import M)`, `(import M :as o)` | `:symbols`, its name in the closure | `:symbols`, its name not in the closure |
+| of the module | `(import M)` | `(import M :as o)` | `(import M :symbols (n …))` |
 |---|---|---|---|
-| a declared relation, a rule, an hrule, a macro | kept, renamed `o.name`, and every reference to it | kept as written | dropped |
-| a fact of a declared relation | kept, **its relation renamed**: `(o.is-a Tea Drink)` | **kept as written**, with its `:source` | dropped |
-| a fact of a relation the module does not declare | kept as written | **kept as written**: the relation may be listed | dropped |
-| a stored negation, `(not (likes Milk Tea))` | kept, renamed as a fact is | kept: a fact of the relation it negates | dropped |
-| a constant in a fact | as written | as written | — |
-| `(query …)`, `(solve …)`, `(config …)`, `(trace …)` | **never brought** since M1f S1f.6.25 (W90); kept until then, the query renamed | never brought | never brought |
+| a declared relation, a rule, an hrule, a macro | kept, written `M.name` | kept, written `o.name` | kept, written `name` if listed and `M.name` if not |
+| a fact of a declared relation | kept: `(M.is-a Tea Drink)` | kept: `(o.is-a Tea Drink)` | kept: `(is-a Tea Drink)` where `is-a` is listed |
+| a fact of a relation no file declares | kept as written | kept as written | kept as written; the relation may be listed, a name only (Q-M1f.250) |
+| a stored negation, `(not (likes Milk Tea))` | kept, as a fact is | kept, as a fact is | kept, as a fact is |
+| a constant in a fact | as written | as written | as written |
+| `(query …)`, `(solve …)`, `(config …)`, `(trace …)` | **never brought** since M1f S1f.6.25 (W90) | never brought | never brought |
 
 - **No import brings what a module states as a program** (M1f
   [S1f.6.25](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
   E-8, W90;
   [Q-M1f.215](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f215--a-qualified-import-and-what-a-module-states-as-a-program)):
   its queries, its `(solve …)`, its `(config …)` and a `(trace …)` are
-  dropped where the module is imported, bare, `:as` or `:symbols`
-  (`ein_ir::imports`' `resolve`). The importer's lattice, flags and queries
-  are the ones it writes. Until that stage a qualified import kept them, so
-  the importer was solved under the module's lattice, and two qualified
-  imports of a module holding a `(solve …)` were refused, *2 (solve …)
-  forms*.
-- **A selection that brings a relation's declaration and no rule that
-  derives it is said, not refused** (M1f
-  [S1f.6.25](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.25_the_section_j_fixes.md),
-  E-20;
-  [Q-M1f.217](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f217--when-the-loader-says-that-a-selection-left-a-relations-rules-behind)):
-  `note: <file>:<line>:<col>: (import M :symbols (…)) brings the declaration
-  of r and no rule that derives it: M has such a rule, its own or one it
-  imports, and the selection names none — a selection brings the names it
-  lists and what their declarations write, so list the rule, or the entry
-  that names it, if r is to be derived`, on stderr, once, on every command
-  that loads the program, the position the form's first argument's. Two
-  relations read *the declarations of r and s … derives either*, more *of r
-  and n more relations … derives any of them*. The conditions, all four: `r`'s
-  declaration is kept and `r` is not listed; a rule or an hrule among the
-  module's resolved forms concludes a fact of `r`, the head of a conclusion
-  under `and` and `not`, a fact inside a conclusion being a value; the
-  selection keeps no such rule; and the program as resolved holds none
-  (`ein_ir::imports`' `LeftBehind`, `resolve_imports_noting`). The program
-  loads, and no answer and no exit code moves. A container says it when it is
-  saved and not when it is opened, the stored program having no import, and
-  `--json-summary` does not carry it (E-42 of P1f.6's findings).
+  dropped where the module is read. The importer's lattice, flags and queries
+  are the ones it writes.
 - **A listed name** is one the module declares or states a fact of. Any other
   is refused, on every command: `kb load error: (import M :symbols …) — not
   provided by the module: n at …`.
-- **The closure follows declarations, and not the names inside a fact**
-  ([Q-M1f.141](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f141--does-a-selections-closure-follow-the-names-inside-a-kept-fact)):
-  a kept rule that reads `is-a` brings `is-a`'s facts; a kept fact `(owns Ann
-  cat)` brings neither a declaration of `cat` nor its facts.
-- **A fact of a kernel relation comes as any fact does**
-  ([Q-M1f.142](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f142--a-stored-negation-and-a-fact-of-a-kernel-relation-under-a-selection)):
-  `(__closed__ r)` when `__closed__` is listed or a kept rule writes it.
-- **An unlisted rule is dropped** even where the imported facts would fire it:
-  a selection is a selection.
 - **An imported fact is a fact of the program**: its provenance is its own, a
   `:source` or none, with no stamp of the module; its constants are names of
   the program, and enter the blind enumerator's objects.
-- **A fact that arrives by two paths is one statement.** A module is parsed
-  once per resolution, so a diamond of flat imports of one library, or the
-  library imported flat twice, yields each fact once, where it first arrived
-  ([Q-M1f.143](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f143--a-fact-that-arrives-twice-through-flat-imports)).
-  The same fact stated twice with two `:source`s, by a module and the program
-  or by two modules, keeps its first statement and loses the second with no
-  word, as it does written twice in one file: stated here, not ruled, and
+- **A fact of a module arrives once**, the module being one copy, whoever and
+  however many import it. The same fact stated twice with two `:source`s, by a
+  module and the program or by two modules, keeps its first statement and
+  loses the second with no word, as it does written twice in one file: stated
+  here, not ruled, and
   [F24](../../plans/followups/f24_written_provenance.md)'s to decide.
-- **A qualified import is unmoved.** It renames what the module declares, so
-  its facts land in `o.is-a` and do not join the program's `is-a`: a library
-  of facts is imported flat.
 
-**Until this stage** a selection kept declarations alone. A module's facts
-were dropped with no word, so a program that imported a library of facts flat
-and asked a goal over it was answered *the goal has no row*, exit 0; a rule
-of the library that read its facts was kept and never fired; and a relation
-the module only stated facts of could not be listed, *not provided by the
-module*. No tracked program imported a module that holds a fact, and the
-stdlib's seven modules hold none (`python3
-build/s1f.6/prototype/scan_imports.py`, 2026-11-11), so no other answer
-moved. Four register rows, W88, filed and fixed by the stage.
+**From S1f.6.11 to S1f.6.35** a selection kept the listed names, the closure
+of what their declarations write and the facts of every relation in it,
+unrenamed, so an unlisted rule stayed behind even where the facts would fire
+it, and the loader said so in a `note:` line where a selection brought a
+relation's declaration and no rule that derives it (S1f.6.25, E-20,
+Q-M1f.217); a qualified import renamed a copy of the module's subtree under
+its prefix, so the facts of `o.is-a` never joined the program's `is-a`, and two
+prefixes were two copies. Nothing is left behind since, and the line is
+retired. **Until S1f.6.11** a selection kept declarations alone, and a
+module's facts were dropped with no word; four register rows, W88, filed and
+fixed by that stage.
 
 Pinned by `ein-ir`'s `imports_semantics.rs`
 (`what_each_import_form_brings_of_a_module`, a case per cell of the table;
-`a_selection_follows_declarations_and_not_the_names_inside_a_fact`;
+`a_selection_names_and_the_module_comes_whole`;
 `a_diamond_of_flat_imports_yields_each_fact_once`), `ein-cli`'s
 `import_facts.rs` (W88's four witnesses, each with a claim, on twelve
-commands: the import answers as the selected forms written in its place, and
-its saved container as the file), and `corpus/wrong_answers.toml`'s W88 rows.
+commands: the import answers as the forms written in its place, and its saved
+container as the file) and `imports_by_full_name.rs` (`nothing_is_left_behind`),
+and `corpus/wrong_answers.toml`'s W88 rows.
 
 ### 4.26 A form of a declared relation has the declared count of arguments — M1f S1f.6.23
 
@@ -2326,6 +2291,64 @@ Pinned by `ein-cli`'s `mechanism_conflicts.rs` (eleven refused shapes, each on t
 same on each, and no container; twelve that load, six silent and six with their note, under five commands and
 reopened from a container; E-47's witness and its twin, two lines each and none of *forbid*'s; the corpus's
 fixture), and by `ein-infer`'s `obligation_reports.rs`.
+
+### 4.28 An import is by full name, and a short name names one declaration in a file — M1f S1f.6.35
+
+A stage of M1f
+[P1f.6](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md),
+[S1f.6.35](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md),
+on the user's model (h) of 2026-11-13 and its ruling of 2026-11-14
+([`import_clashes.md` § 7](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names)).
+Every import brings its module whole (§ 4.25); a name a module declares has
+one full name, `M.name`, the module's name a path from the program file's
+directory or `std.x`; a file writes short the names it declares, lists or
+prefixes with an alias, and any other short name it writes is its own
+([`01_grammar.md` § Import](ir/03-ein-lang/01_grammar.md#import)). Each of
+the following is refused at load, on every command, one `kb load error:`
+line at the command's load-error exit (1; `ein test` 2), placed where the
+form or the name is written:
+
+| the program | the line |
+|---|---|
+| one short name bound to two full names in one file, by two imports or by an import and the file's own declaration (Q-M1f.234) | `p.ein:2:9: 'done' is bound to two full names in the program, m.done and n.done — one short name names one declaration in a file: list it from one module, or write the other by its full name`; `… infer-closure (its own declaration) and std.closure.infer-closure …` |
+| one alias prefixing two modules in one file | `p.ein:2:9: 'x' prefixes two modules in one file, m and n — one short name names one thing in a file` |
+| a prefixed or full name that names nothing its module declares (Q-M1f.251) | `p.ein:2:2: 'x.nope' names nothing: m declares no 'nope' — a prefixed name is a full name of a declaration of the module it names (Q-M1f.251)` |
+| a full name of a module no import of the program brings (Q-M1f.238), with an import of another module or with none | `p.ein:1:2: 'std.arith.add' is a full name of std.arith, which no import of the program brings — a module enters a program by an import of it: write (import std.arith …) (Q-M1f.238)` |
+| the main file declaring a name under the full name of a module the program imports (Q-M1f.239) | `p.ein:2:11: the program declares 'm.mine', a full name of m, which the program imports — a declaration's full name is its own file's, and a full name of m is one m declares (Q-M1f.239)` |
+| a module declaring a name with a dot (Q-M1f.241) | `d.ein:2:11: d declares 'y.z', a name with a dot — a module's declared name holds no dot, so that a full name such as d.x reads one way (Q-M1f.241)` |
+| a module's name with an empty segment or a `/`, `..` among them (Q-M1f.252) | `(import ..m) — a module's name is its path from the program's directory, a name per directory joined by dots, none empty and none holding a '/': no '..', no path (Q-M1f.252) at None` |
+| a module's own import of a file-relative module written from the module's directory | `(import words) — module not found at <program's directory>/words.ein (None)`: every module is found from the program file's directory |
+
+What is **not** refused: one short name bound to one full name twice; a
+short name the file writes that no import of it lists, which is the file's
+own whatever a module declares under it (the user: *"silent re-definition,
+like variables shadowing, it's a mistake"*, Q-M1f.236, E-49); a dotted name
+the main file declares where no module of the program has its prefix, which
+is how a `--dump-answer` state file declares the full names it was loaded
+with; and a dotted name whose prefix is no module at all, a name like another.
+
+**What prints** is the main file's listed short name, else its first alias's
+spelling, else the full name (Q-M1f.237, Q-M1f.253), every surface alike:
+a state, a trace, a core, `refuted by`, `--events`. A spelling another file
+writes as a name of its own is not taken.
+
+**Until S1f.6.35** a flat import shared names with the program and with every
+other flat import: a program's `done`, `b` or rule `add-column` beside the
+calculator was refused, *conflicting definitions of 'done': same name,
+different body (at None)* (E-21), where two bodies differed, and two equal
+ones were one; a program's undeclared `(done laundry today)` joined the
+calculator's `done`; an empty segment of a module's name was dropped, so
+`(import ..succ)` read `succ.ein`; and a module's own imports were found from
+its own directory.
+
+Pinned by `ein-ir`'s `imports_full_names.rs` (`the_refusals`, one case each;
+`the_users_dependency_graph`; `a_short_name_is_local_to_its_file`;
+`a_module_is_found_from_the_programs_directory`; `what_prints`),
+`imports_semantics.rs`'s `module_names_mangle_into_these_file_paths` and the
+`import_conflicting_definitions` fixture of `examples/broken/load/`, and
+`ein-cli`'s `imports_by_full_name.rs` (`a_refusal_is_one_line`) and
+`import_invariance.rs`, every corpus program alike under its selective, whole
+and `:as` imports.
 
 ## 5. The CLI surface
 

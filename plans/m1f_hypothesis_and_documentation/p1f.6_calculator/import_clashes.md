@@ -861,7 +861,7 @@ the closure's direction, below. **The model, (h):**
   rules that read it or conclude it**, transitively through M's own names, so `:symbols (add sum-of)` brings
   the circuit that answers `add` and nothing that no listed name needs: *"no background side effects"*. A
   whole-module import, bare or `:as`, brings everything (5). What a program holds is the union over its import
-  edges, each by full name.
+  edges, each by full name. *(Superseded 2026-11-14: every import brings everything, below.)*
 
   **Made precise by the user on 2026-11-14**, on [S1f.6.35](s1f.6.35_imports_by_full_name.md#t1f6351--the-examples-first-on-a-prototype-done-and-the-stop)'s prototype
   ([Q-M1f.247](../open_questions.md#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one),
@@ -878,6 +878,19 @@ the closure's direction, below. **The model, (h):**
   relation of a rule's activators (`(converse owns owned-by)` is a fact of `converse`), and a rule that closes a
   kept relation, `(__closed__ R)` in its `:assert`, **concludes it**: the selection brings the closing rule,
   and with it what the closing rule names. The prototype's reading V2.
+
+  **Superseded the same day.** After seeing the two stop probes of S1f.6.35's record traced (their forms' root
+  saturations equal; what moved was the hypothesis generator's rung, chosen by a loaded obligation rule, and the
+  blind enumerator's universe), the user:
+
+> Ok, just forget my intial ruling - in all cases we import everything, the difference only in names
+
+  **Every import brings its module whole**, with the module's own imports, all the way down, one copy per
+  program, under full names; `(import M :symbols (a b))` lets the file write `a` and `b` for M's full names,
+  `:as x` gives the prefix `x.`, a bare `(import M)` gives no short name. **No closure exists**: Q-M1f.247 and
+  .248 have no subject, and point 5 below, *"no background side effects"*, is superseded with them. The rest
+  stands: one short name bound to two full names in one file is an error; an unlisted short name the file writes
+  is its own; module names are paths from the program file's directory, `..` refused; full names are global.
 - **`:as a`** is a second alias prefix: `a.add` is the full name `….add`; it makes no copy.
 - **Errors, in one file** (2): one short name bound to two full names, by two imports or by an import and the
   file's own declaration, is refused at load. Binding one short name to one full name twice is not an error.

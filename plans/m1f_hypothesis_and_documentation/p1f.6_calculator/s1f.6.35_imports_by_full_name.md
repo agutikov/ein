@@ -1,15 +1,11 @@
 # S1f.6.35 — Imports by full name: one copy of a module, short names local to a file
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-13, on the user's ruling of that day. **T1 done 2026-11-14, and stopped for the
-coordinator there**: on the prototype, (h) as ruled moves R on tracked programs (§ Record, *The stop*). The
-user ruled
-[Q-M1f.247](../open_questions.md#q-m1f247--what-the-closure-ii-follows-a-relation-of-any-kind-or-a-declared-one)
-and [Q-M1f.248](../open_questions.md#q-m1f248--a-closing-rule-under-the-closure-ii) the same day, the reading
-V2, and asked to see the moves first
-([Q-M1f.249](../open_questions.md#q-m1f249--the-answers-h-moves-under-the-recommended-reading)): shown in §
-Record, *The moves under V2, shown*, with E-53's fix to `std.algebra`. **Stopped again there**, T2 not started;
-Q-M1f.249 to .253 open. No engine source has moved. **An engine stage and a language change.**
+**Status:** planned 2026-11-13, on the user's ruling of that day. T1 done 2026-11-14 on a prototype, stopped twice
+for the coordinator (§ Record, *The stop*, *The moves under V2, shown*, *Import invariance*); **the user ruled the
+same day that every import brings its module whole** (§ The ruling, *Superseded on the selection*), and the stage
+ran to its end: **T2 to T5 done 2026-11-14** (§ Record, *T1f.6.35.2 to .5*). W93 filed and fixed (E-53, F1 as a
+default). Defaults Q-M1f.250 to .253, the user's to revise. **An engine stage and a language change.**
 **Depends on:** [S1f.6.30](s1f.6.30_name_clashes_between_imported_theories.md), whose page is its
 specification: [`import_clashes.md` § 7](import_clashes.md#7-the-ruling-2026-11-13-h-full-names-and-short-names),
 the user's model (h) and the defaults taken for what it leaves open. It runs after
@@ -39,6 +35,18 @@ The user's words are quoted in full in `import_clashes.md` § 7. In one line eac
   directory**, a dot per directory, for the imports a module writes too: `(import word-theory.gaps :as gaps)`
   from `examples/word_problems/` names `word-theory/gaps.ein`, whose `gaps` is `word-theory.gaps.gaps` (the
   user, the same day); `..` stays refused; a declared short name holds no dot (Q-M1f.241, defaulted).
+
+**Superseded on the selection, 2026-11-14**, by the user, relayed by the coordinator after the record's *Import
+invariance*: first the criterion, *"the answer MUST be invarian of import type - write 2 same programs with
+different imports and check that both have equivalent solution (up to names prefixes)"*, then *"Ok, just forget my
+intial ruling - in all cases we import everything, the difference only in names"*. **Every import brings its
+module whole**, with the modules it imports, one copy per program, under full names; `:symbols (…)` binds the
+listed short names and brings nothing a bare import does not; `:as a` binds the prefix `a.`; a bare import binds
+none. There is no closure: the third point above, Q-M1f.247 and .248 as ruled, and `import_clashes.md` § 7's point
+5, *no background side effects*, are superseded. The rest stands. The acceptance's *no tracked program's R moves*
+is read through the criterion: R does not depend on the import form, held by `ein-cli/tests/import_invariance.rs`
+on every corpus program that imports; the moves against the engine before the stage are shown and were accepted
+(Q-M1f.249).
 
 ## Tasks
 
@@ -840,3 +848,206 @@ and fails, through those two readings, on programs written to reach them.
 Q-M1f.249: the five moves satisfy the criterion (today's whole import gives (h)'s answer on four, and on the
 fifth wherever `std.algebra` is whole and connected), so they are accepted on it **if the stop is answered so
 that the stage continues**; recorded there then.
+**Answered the same day** (§ The ruling, *Superseded on the selection*): every import brings its module whole, so
+there is no closure left to answer the stop with; the five moves are accepted, Q-M1f.249 (a), and the invariance
+check is the stage's acceptance and a gate test (`ein-cli/tests/import_invariance.rs`).
+
+### Whole modules, on the prototype
+
+`build/s1f.6.35/h.py` with every import whole (`H_ALL_WHOLE=1`, its default since): R and `ein test`'s verdicts
+move, against the release binary of `4676a5de` on the tree before the stage, on the four programs the record
+showed (`features/09`'s universe row, `gaps.ein`, `listed_is_all.ein`, the E-20 witness) and on `typing/03` before
+W93's fix. The three probes of *Import invariance* answer alike in both forms under it: `blind` 1 and 1 state,
+`names` 16 and 16, `hrule` 1 and 1 (`inv_probe/`). The prototype against the Rust resolver below: `ein solve`
+byte-identical on 835 of 839 programs, the four others the prototype's own Unicode reader
+(`build/s1f.6.35/cmp_rust.py`).
+
+### T1f.6.35.2 to .4 — the resolver, what prints, the corpus, done
+
+Committed as `d4332cd3`; the pages and this record in the commit after it.
+
+**The resolver** (`ein-ir/src/imports.rs`, rewritten). One `File` per module, found once by its canonical name
+and loaded once; a `Table` per file of the short names it binds, its own declarations, the names its imports
+list, the prefixes of its aliases; the forms emitted depth-first, every module before the file that imports it,
+each name rewritten to its full name and the module directives (`(import …)`, `(query …)`, `(solve …)`,
+`(config …)`) left out; identical declarations deduplicated; and the resolved list renamed once, full name to
+the main file's spelling, so every surface prints it. `Resolver::short_names` is the main file's bindings, which
+the invariance test reads. The refusals, each a paragraph of `defined_behaviour.md` § 4.28 and pinned by `ein-ir`'s
+`imports_full_names.rs` (`the_refusals`): one short name to two full names in a file (Q-M1f.234), a prefixed
+name its module does not declare (Q-M1f.251), a full name of a module no import brings (Q-M1f.238), a module's
+declared name holding a dot (Q-M1f.241), an empty segment or a `/` in a module's name (Q-M1f.252), an alias that
+prefixes two modules. **Gone**: `resolve_and_minimize` (the tree-shake a state file was written through, E-11,
+E-41), `resolve_imports_noting`, `LeftBehind` and `Program::notes` (E-20's line), and `ein-render`'s IR mode
+*minimize* in `corpus_ops`. The program a `--dump-answer` state file writes, and the one a `.einb` stores, are
+written through `resolve_imports`; a state file declares the full names it was loaded with, which § 4.28 reads as
+the program's own.
+
+**What prints** is Q-M1f.237's default and Q-M1f.253's: the main file's listed short name, else its alias
+spelling, else the full name, on every surface. A rule a program does not list traces as `std.arith.add-ask`,
+a core reads `(std.digits.fs 7 0 0 7 0)`, `refuted by std.arith.division-by-zero-is-false`; a program's own name
+keeps its name.
+
+**The corpus and the stdlib** (T4). `build/s1f.6.35/rewrite3.py` rewrote in place every program and module that
+writes a name it took from an import's closure or from a re-export: each import lists the short names its file
+writes, from the module that declares them, a name moved from a re-export listed from its declaring module
+(`std.int`'s and `std.rat`'s `n` from `std.arith`, `zebra2`'s `bijective-properties` dropped from
+`std.bijection`'s list, which `std.algebra` declares and zebra2 does not write); entry names stay. 161 files, and
+by hand: `std.closure` and `std.typing` import `std.algebra`, whose rules they write the activators of;
+`full_adder` imports `circuit`; `readings` imports `std.arith`; `adder_against_table` drops its own `gate`
+declaration, which `full_adder` brings. The generators were edited and re-run, never their outputs:
+`utils/gen_arith_examples.py`, `examples/binary_logic/gen_gates.py`, `utils/gen_num9.py`,
+`utils/gen_arith_tables.py` (the header) and, by hand, `examples/binary_arithmetic/gen_binary.py` (six files);
+`examples/gen_zebra2_variants.py` after zebra2's header. `utils/stdlib_manifest.py --write` after each stdlib
+edit.
+
+**R, before and after, on the real binaries** (`build/s1f.6.35/sweep_real.py`, 2026-11-14: the release binary of
+`4676a5de` on the tree at `dc94b947` with its own stdlib, against this stage's release binary on the working
+tree; every tracked `.ein`, `ein solve --json-summary` and `ein test`; R compared with every module prefix off):
+
+| | count |
+|---|---:|
+| tracked `.ein` files | 856 |
+| exit equal | 856 (516 load, 340 refused or refuted, both sides) |
+| **R equal** | **512 of 516** |
+| R moves | 4, the four shown: `features/09` (the universe row: *no candidate*, as today's whole import), `gaps.ein` and `listed_is_all.ein` (4 states to 1: `words`' closing rule now comes with the module and closes `asked` and `assumed`), the E-20 witness (`(got a aa)` answered) |
+| read-out byte-equal | 480 |
+| equal once prefixes are off | 502 |
+| the 14 others | the 4 movers; 7 whose lines are the same and sort by a text that now holds a full name (`contra.ein`, `arith/40`, `int/12` to `14`, `rat/10` and `12`); `kinds_full.ein` and `pencils.ein`, the order of an `as :expect`'s facts, by the same; `readings.ein`, whose `outside value` row goes: `words`' closing rule closes `value` |
+| `ein test` verdicts that differ | 0; 6 refused files' lines differ, five by the before tree's path and `import_conflicting_definitions.ein` by its restated line |
+
+`typing/03` is not among the movers: W93's fix is on both sides. No register row moves but W91's printed line
+(below); no answer of the engine is wrong.
+
+**What moved in printed output, and the goldens** (counted before each bless):
+
+- `ein-ir/tests/golden/module_paths.txt`, 3 rows; `zebra2.golden`, the canonical program's imports and names;
+- `ein-cli/tests/golden/corpus_exits.txt`, 7 cells added: the W93 witness's two and `tests/stdlib/algebra/27`'s
+  five, **which the two W93 commits (`50fe016e`, `dc94b947`) left unbanked**, so `corpus_cli` failed on both;
+- `ein-render/tests/golden/corpus_shapes.md5`: of the 23 839 renderings both sides have, 5 323 digests moved, on
+  278 files, every one a file that imports (`dot` 1 405, `ir` 884, `load` 274, `hyp` and `hyp+closed` 258 each,
+  `saturate` 255, `match` 252, `plan` 247, `oracle` 237, `naf` 236, `cores` 225, `explain` and `explain-noalts`
+  196 each, `region-trace` 184, `states` 150, `read-out` 64, `region-lattice` 2): the names a program does not
+  list, and the rules and facts of whole modules. The 640 `ir[minimize]` digests went with the mode, and 82 were
+  added, the W93 pair's, which the W93 commits left unbanked as well. A digest says that a rendering moved, not
+  why; that R did not is the sweep's above;
+- `ein-einb/tests/roundtrip.rs`: a saturated zebra2's container is 73 648 bytes, from 62 720, past design/10 §6's
+  64 KB, so the ceiling is restated to 80 KB (a default, the user's to revise): `std.algebra`, `std.bijection` and
+  `std.macro` whole, 142 stored forms where 111 were and 60 rules where 30 were (`Program` 17 920 bytes), and two
+  more facts, the lemmas', with their provenance (390). The cold open measured 4.68 ms against its 6 ms ceiling;
+- `ein-cli/tests/embedding.rs` and `docs/api/rust.md`'s output block: zebra2's trace is 581 steps, from 569, the
+  twelve steps of `std.algebra`'s lemmas that now come with the module (8 `converse`, `converse-pair-symmetric`,
+  `self-converse-is-symmetric`, `symmetric-is-self-converse`, `symmetric-negative-setup`); R unchanged;
+- `docs/kernel/ir/03-ein-lang/09_natural_language.md`'s state-file line, `rule std.slots.slot-fill`;
+- the register's W91 row: its right answer's line is `(relation dump-selection-library.color Thing …)`, the
+  program not listing `color`; the row stays fixed;
+- `examples/broken/load/import_conflicting_definitions.expected`, the refusal restated with its place;
+- `tests/mutation_survivors.txt`, 71 lines where 61, re-banked by `utils/stdlib_mutants.py --bless`: eleven new
+  (E-56), one killed since W93's fixture.
+
+**The tests.** New: `ein-ir/tests/imports_full_names.rs` (the user's dependency graph, one copy of each module;
+a short name local to its file; a module found from the program's directory; the refusals; what prints),
+`ein-cli/tests/imports_by_full_name.rs` (the acceptance through the binary: the calculator by the names a program
+writes; a program's own `done`, `b` and `add-column` beside it; `:as` makes no copy; nothing left behind; a
+refusal is one line), `ein-cli/tests/import_invariance.rs` (every corpus program that imports, S against W
+against A, R and every claim; the slow entries on the nightly and the dev host, a step of each). Deleted:
+`ein-cli/tests/import_left_behind.rs`. Restated, each for the names a program now lists or prints: `ein-ir`'s
+`imports_semantics.rs`, `kb_semantics.rs`, `digit_tables.rs`; `ein-infer`'s `region.rs`, `algebra_semantics.rs`,
+`arith_theory.rs`, `int_theory.rs`, `rat_theory.rs`, `num9_theory.rs` (`std.arith`'s closing rule no request's
+firing), `arith_batch.rs`, `explain_semantics.rs`, `alive_invariant.rs` (the seeded names, 156), `compile_limits.rs`,
+`stdlib_coverage.rs`, `stdlib_semantics.rs`, `naf_semantics.rs`, `obligation_reports.rs` (a program that loads
+`std.algebra` loads its two obligation rules; *states none* is *activates none*), `refutation_under_absent.rs`;
+`ein-cli`'s `arith_search_free.rs` (every program of the calculator reads `std.arith`'s one `absent`, `std.num9`
+importing it whole), `declared_counts.rs`, `goal_premises.rs`, `solve_lists.rs` (E-55), `import_facts.rs` (the
+twin is the module whole, in place), `mechanism_conflicts.rs`, `embedding.rs`, `wrong_answers.rs` (W91);
+`ein-render`'s `corpus_ops`. `ein-corpus` gains `import_lines`, `listed`, `spellings` and `unprefixed`, what a
+test that writes a program on the calculator, or reads one's output, needs. `utils/stdlib_census.py` reads full
+names.
+
+### The cost of whole modules
+
+Asked by the coordinator with the ruling: *what does loading whole modules cost?* Two measurements, each the
+release binary of `4676a5de` with the stdlib at `dc94b947` against this stage's release binary, under
+`utils/bench_env.sh` (one P-core, cpu4, i9-14900HX, governor powersave, turbo on; 2026-11-14).
+
+**Every tracked program that imports** (`build/s1f.6.35/cost.py`, `cost_report.py`; one run each of `ein
+saturate`, for the load lines and the rules and facts before saturation, and of `ein solve`, wall): 321
+programs, 289 that load on both sides.
+
+| summed over the 289 | before | after | ratio |
+|---|---:|---:|---:|
+| parse | 419.8 ms | 415.2 ms | 0.99 |
+| kb load | 3 934.5 ms | 4 196.0 ms | 1.07 |
+| compile | 45.8 ms | 51.8 ms | 1.13 |
+| rules before saturation | 19 134 | 25 111 | 1.31 |
+| facts before saturation | 250 615 | 271 285 | 1.08 |
+| `ein solve`, wall | 37.2 s | 42.6 s | 1.14 |
+
+The median program's `ein solve` is 1.03 times what it was, and its parse and load 1.05 times. **One program is
+slower by more than a quarter where it takes more than 50 ms: `send_more_money.ein`, 7.19 s to 11.81 s (1.64×)**,
+which imports one table of `std.digits` and three rules of `std.algebra` and now holds all seven tables (284 facts
+before saturation to 1 749) and every rule of `std.algebra` (11 rules to 47), across the 17 747 saturations its
+search makes; it is 4.6 s of the 5.3 s the sum grew by. A few small programs' load doubles or more, a few
+milliseconds each (`tests/stdlib/slots/03_fill.ein` 4.6 ms to 9.7 ms, 12 rules to 57; `stdlib/closure.ein` read
+as a program, 1.1 ms to 5.2 ms). Some rows:
+
+| program | rules | facts | parse + load + compile, ms | `ein solve`, ms |
+|---|---|---|---|---|
+| `examples/zebra2.ein` | 30 → 60 | 84 → 84 | 11.0 → 11.7 | 515 → 527 |
+| `examples/zebra.ein` | 22 → 56 | 71 → 71 | 11.1 → 12.2 | 916 → 947 |
+| `examples/zebra2-minus-15.ein` | 30 → 60 | 83 → 83 | 10.5 → 11.2 | 8 728 → 8 792 |
+| `examples/arith/add.ein` | 116 → 116 | 1 831 → 1 838 | 22.7 → 23.1 | 28 → 28 |
+| `examples/arith/many_calculations.ein` | 116 → 116 | 1 927 → 1 934 | 26.2 → 27.5 | 94 → 97 |
+| `examples/beyond_arith/send_more_money.ein` | 11 → 47 | 284 → 1 749 | 32.0 → 38.9 | 7 190 → 11 813 |
+| `examples/word_problems/readings.ein` | 5 → 158 | 21 → 1 898 | 46.4 → 52.4 | 49 → 57 |
+| `tests/stdlib/algebra/01_copiers.ein` | 5 → 38 | 28 → 28 | 3.1 → 5.8 | 6 → 9 |
+
+**Small selections, the coordinator's case** (`build/s1f.6.35/cost_small.py`, five probes in `cost_small/`, each
+the median of eleven runs):
+
+| probe | rules | facts | parse + load + compile, ms | `ein solve`, ms |
+|---|---|---|---|---|
+| `std.algebra :symbols (symmetric)` | 1 → 38 | 5 → 5 | 2.76 → 3.17 | 4.3 → 4.8 |
+| `std.bijection :symbols (bijective-setup typecheck-setup)` | 12 → 46 | 10 → 10 | 3.47 → 3.76 | 5.4 → 5.8 |
+| `std.slots` beside `std.algebra`, one partition | 12 → 56 | 12 → 12 | 4.35 → 4.87 | 6.0 → 6.6 |
+| `std.arith :symbols (arith add n sum-of)`, one sum | 116 → 116 | 1 828 → 1 835 | 22.30 → 22.93 | 25.6 → 26.7 |
+| `std.digits :symbols (fa)`, one lookup | 0 → 0 | 202 → 1 685 | 13.69 → 15.14 | 15.5 → 17.4 |
+
+The first probe's R moves, 2 states to 1: it is E-51's `blind` probe, the obligation rules a whole `std.algebra`
+loads. **No stop**: nothing is unusably slow. The price is a fraction of a millisecond to a few on a small
+program, and on a search over many saturations what the unactivated rules and the unread tables cost each one,
+1.64× on `send_more_money`; the container of a saturated zebra2 grows past design/10 §6's 64 KB (above). Each is
+the user's to weigh.
+
+### T1f.6.35.5 — the findings and the pages, done
+
+**Findings** ([`findings.md`](findings.md)): E-20 closed (nothing is left behind); E-21 restated (its witness is
+no conflict; `at None` stays F23's); E-32 restated as ruled; E-39 re-read (a program writes `std.arith`'s tags
+only by listing them); E-41 closed (a state file holds the whole module); E-48 re-read, closed; E-49 closed as
+ruled; E-50 closed (both pairs and `difference` coexist, the probes re-run); E-51 extended and **E-54** filed, both
+owned by [P1f.10](../p1f.10_hypothesis_structure/) on the coordinator's word; E-53 fixed (W93); **E-55** filed, open,
+shown: S1f.5.18's check reads every rule a program holds, so `std.algebra`'s generic `imply1` refuses a program
+that writes `injective` as an argument once the module comes whole, as today's whole import did; **E-56** filed,
+open, shown: eleven mutants of `std.algebra`'s and `std.typing`'s rules survive since the lemmas come with every
+import of the module and make good what each mutant drops (`utils/stdlib_mutants.py --bless`, 431 of 502 killed, 71
+survivors where 61; one killed, `converse-illtyped-dom` without its `neq`, by W93's fixture, which the W93 commits
+had not re-banked; `tests/README.md` says why). None is a wrong answer but E-53.
+
+**Pages**: `01_grammar.md` § Import, `defined_behaviour.md` § 4.25 (restated: nothing is left behind) and § 4.28
+(new: full names and short names, its refusals), `answer_dump.md` (the program a state file writes),
+`07_stdlib_api.md`'s import recap, `03_examples.md`, `09_natural_language.md`, `solution_semantics.md`,
+`docs/api/rust.md`, the guide's two import lines, `stdlib/README.md` § Importing, every module header that said how
+to import it (`arith`, `int`, `rat`, `num9` through its generator, `digits` through its generator, `algebra`,
+`bijection`, `elim`, `macro`, `typing`, `closure`), `tests/README.md`, `AGENTS.md` (the calculator's line, the
+import rule, E-32's), `.github/workflows/nightly.yml` and `run_tests.sh` (the invariance test's slow half).
+
+### Defaults, and what is the user's
+
+- **F1** for E-53 (the converse checks read a side's types as meeting either way), W93's fix.
+- **Q-M1f.250** (a listed name a module only states facts of: a name, bound as the module reads it), **.251** (a
+  prefixed name that names nothing: refused), **.252** (an empty segment or a `/`: refused), **.253** (`:as`
+  prints the alias spelling): defaults, each the user's to revise.
+- **E-55**: no owner; the check's *could* is Q-M1f.41's and .42's defaults.
+- **E-56**: no owner; eleven survivors banked, the suite's sensitivity to them gone under whole imports.
+- **The cost above**, which is the user's to weigh, and the container budget restated from 64 KB to 80 KB
+  (`ein-einb/tests/roundtrip.rs`), a default.
+- E-51 and E-54, P1f.10's: the generator's two program-wide readings, which no import form changes now.
