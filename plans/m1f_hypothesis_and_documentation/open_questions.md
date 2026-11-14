@@ -5029,3 +5029,110 @@ the full name otherwise). Under `(import std.arith :as a)` the program writes `a
 
 **Defaulted 2026-11-14 (S1f.6.35): (a)**: Q-M1f.237's *"it prints a program's facts as the program writes them"*.
 The user's to revise.
+
+### Q-M1f.254 — S1f.6.34's conflicts beside `(solve :no-search)`
+
+**Raised** 2026-11-14 by [S1f.6.36](p1f.6_calculator/s1f.6.36_no_search.md)'s T1. Under `:no-search` no rung runs,
+so an hrule proposes nothing and a list filters nothing. The stage keeps O + NH refused (*"`:no-hypothesis` over an
+owed relation stays refused"*); the H conflicts (an active hrule proposing a relation a list or a closure takes
+out) are about what an hrule proposes, which under `:no-search` is nothing.
+
+- **(a) Read as declared, every conflict stands**: H + HR, H + NH, H + C, O + HR, O + NH, O + C and HR + NH refuse
+  as S1f.6.34 refuses them, the hrule read as active and the obligation as its plans whatever the search does (as
+  Q-M1f.243 reads an obligation); `:no-search` adds a `note:` beside an hrule (*proposes no candidate*) and beside each
+  list (*filters no candidate*), and none beside a closure or an obligation. E-47's witness with `:no-search` in its
+  list's place stays refused for H + C (`has` closed by `words`).
+- **(b) The H conflicts dissolve under `:no-search`**, each a note that the hrule proposes nothing; the O conflicts
+  and HR + NH stand. E-47's witness with `:no-search` in its list's place loads, its hrule noted.
+
+**Defaulted 2026-11-14: (a), the user's to revise** — the stage's *"Not relax S1f.6.34's conflicts"*, and one reading
+of a declaration for every pair. No tracked program is in either case.
+
+### Q-M1f.255 — What `ein solve --no-search` prints
+
+**Raised** 2026-11-14 by S1f.6.36's T1, on the user's words of that day, *"flag that disables search doesn't change R,
+it disables discovering of R. R is not an output"*.
+
+- **(a) Root, and an `R` row that says it was not searched**: `asked` (*root alone*), `∅` and its `owed` block as
+  describe prints them, `R` (*not searched — --no-search builds no node past root*), `lattice` and `strata` (the static
+  check), `universe` (H built, *none visited*), `route` (*none*), `work` (one saturation); a dead root's core; the
+  queries read at ∅ where ∅ is in R; the claims. The `R` row reads the same on a dead root, where L0 decides R. Root's
+  facts are drawn by the forms (`-p`, `-P`, `-f`, `--models`, `--diff-models`), whatever root is, and written as
+  `root.ein` by `--dump-answer`; stdout does not list them.
+- **(b) The same, and root's facts beyond the program as loaded listed on stdout by default**, within its 100 lines.
+- **(c) On a dead root the `R` row says what L0 decides**, *every node is dead*.
+
+**Defaulted 2026-11-14: (a), the user's to revise.**
+
+### Q-M1f.256 — Which claims root decides under `--no-search`
+
+**Raised** 2026-11-14 by S1f.6.36's T1. A claim is about R, or a part of it, and `--no-search` builds no node past
+root.
+
+- **(a) What a description stopped after root decides**, under `ein test`'s refute rule (M1f S1f.6.27): on a dead
+  root every claim, as the full run decides it (it too reads root alone there, L0); on an alive root a `(solve :expect
+  (false))` refuted, and where ∅ is in R a query whose class at ∅ the claim does not list refuted; every other claim
+  NOT CHECKED, the line saying whether ∅ is in R. The corpus: 57 claims held (every one a `(false)` on a dead root),
+  one FAILED, 418 not checked, none other than the full run's (S1f.6.36's sweep).
+- **(b) (a), and the refute rule extended to the region claims ∅ in R refutes**: `(region)`, `(region (owing …))`,
+  and a `(region (model …))` none of whose models is root's state (E-57; it would hold of every partial run).
+- **(c) Nothing decided**: every claim NOT CHECKED, a dead root's `(false)` included.
+
+**Defaulted 2026-11-14: (a), the user's to revise.**
+
+### Q-M1f.257 — `ein test --no-search`'s exit code
+
+**Raised** 2026-11-14 by S1f.6.36's T1. `ein test` exits 1 where a claim is FAILED or NOT CHECKED; under
+`--no-search` most claims are not checked because the run was asked not to search.
+
+- **(a) A claim not checked moves no exit code under `--no-search`**: 0 unless a claim FAILED (1) or a file is
+  refused, aborted or states nothing (2). On the corpus no exit code moves from the run without the flag.
+- **(b) As without the flag**: 1 wherever a claim is not checked.
+
+**Defaulted 2026-11-14: (a), the user's to revise** (*"exit non-zero only on error"*, 2026-10-16).
+
+### Q-M1f.258 — Which commands and options take `--no-search`
+
+**Raised** 2026-11-14 by S1f.6.36's T1.
+
+- **(a) `ein solve` and `ein test`**; `ein oracle --no-search` refused, exit 2, with a sentence naming `ein solve FILE
+  --no-search` (the oracle is R by brute force, the reference every mode is held to); `ein saturate`, `ein render` and
+  `ein kb` never search and take no flag. Beside `-n`, `--single`, `--minimal`, `--maximal`, `--count` and
+  `--monotone`, each a question about R or about the program, refused by the parser; beside every artefact and form
+  flag (`--json-summary`, `--dump-answer`, `--dump-lattice`, `--trace`, `--events`, `-p`, `-P`, `-f`, `--models`,
+  `--diff-models`, `-H`, `-y`), each over root.
+- **(b) `ein oracle --no-search` reports root**, as `ein solve --no-search` does.
+- **(c) A mode beside it answers what root decides**: `--minimal --no-search` lists ∅ where ∅ is in R.
+
+**Defaulted 2026-11-14: (a), the user's to revise.**
+
+### Q-M1f.259 — `--json-summary` under `--no-search`
+
+**Raised** 2026-11-14 by S1f.6.36's T1. `ein-summary/2` has one key set on every arm, and a run that states no R has
+no `region` block to hold root's standing (`region.root`, `root_owes`, `root_owed`).
+
+- **(a) `asked.ask = "no-search"`, `region` and `verdict` `null`** (as `--monotone`'s), the queries and the claim as
+  checked, and **root's standing as three keys of the `root` block on every arm**, `dead`, `owes` and `owed`, read off
+  root's fixpoint where every route starts; additive, the schema id unchanged.
+- **(b) A `region` block holding root's three fields alone**, every other `null`.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** On the corpus the full run's `region.root`, `root_owes` and
+`root_owed` equal the new keys on every program that writes a summary (517).
+
+### Q-M1f.260 — Which of S1f.6.34's twenty-four say `:no-search`
+
+**Raised** 2026-11-14 by S1f.6.36's T1, revisiting Q-M1f.246.
+
+- **(a) The 21 whose question was root alone**, S1f.6.34's groups A and B, each back to its program and claim as
+  they were before S1f.6.34 with `:no-search` in place of its `:no-hypothesis (…)`: no `as-stated` hrule
+  (`tests/stdlib/bijection/01` to `03`), no fan-out written out (`tests/stdlib/slots/02`, `03`, `04`, `07`, `13`), no
+  negatives added (`tests/region/04`, `05`; `tests/stdlib/slots/09`, `11`), and `tests/stdlib/algebra/23`, `25` back
+  to their owing claim. `tests/stdlib/bijection/06` (the blind enumerator's), `tests/stdlib/closure/02` (O + C, which
+  `:no-search` does not relax) and `examples/ein-bugs/closed-and-owing.ein` (the refusal's fixture) stay.
+- **(b) (a), but `tests/stdlib/algebra/23` and `25` keep S1f.6.34's question**, both roles, the obligation proposing
+  and R the three states that pay: their text holds no workaround, and they are the suite's programs in which an
+  obligation's proposals are R.
+
+**Defaulted 2026-11-14: (a), the user's to revise.** Every claim of the 21 holds under `ein solve`, `ein test` and
+`ein oracle`, and `utils/stdlib_mutants.py` over `tests/` with the 20 of them it holds leaves the banked survivor set
+exactly, 71 (the prototype, 2026-11-14).
