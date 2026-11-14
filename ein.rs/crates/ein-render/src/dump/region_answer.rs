@@ -97,6 +97,7 @@ fn stopped(r: &ReadOut, d: Option<&Described>) -> Json {
             ("limit", Json::int(i64::from(*limit))),
         ]),
         Some(Stopped::Deadline) => Json::obj(vec![("why", Json::str("deadline"))]),
+        Some(Stopped::NoSearch) => Json::obj(vec![("why", Json::str("no-search"))]),
     }
 }
 
@@ -409,6 +410,7 @@ fn route(r: Route) -> &'static str {
         Route::Cube => "2",
         Route::States => "states",
         Route::Tree => "tree",
+        Route::Root => "root",
     }
 }
 
@@ -439,7 +441,11 @@ fn binding(v: &str) -> Json {
 pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
+    // `--no-search` (M1f S1f.6.36) asks root alone, and states no R: its
+    // `region` is `null`, as `--monotone`'s is, and root is the `root` block's.
+    let root_alone = a.route == Route::Root;
     let (ask, n) = match a.mode.ask {
+        _ if root_alone => ("no-search", Json::Null),
         Ask::Describe => ("describe", Json::Null),
         Ask::Find(n) => ("find", Json::int(n as i64)),
         Ask::Single => ("single", Json::Null),
@@ -541,7 +547,14 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
                 ("n", n),
             ]),
         ),
-        ("region", region(r, &cands)),
+        (
+            "region",
+            if root_alone {
+                Json::Null
+            } else {
+                region(r, &cands)
+            },
+        ),
         ("verdict", verdict),
         ("queries", Json::Array(queries)),
         ("claim", claim),
@@ -620,6 +633,53 @@ pub fn write_counted(dir: &Path, answer_txt: &str, summary: &str) -> Result<(), 
     }
     std::fs::write(dir.join("answer.txt"), answer_txt).map_err(io)?;
     std::fs::write(dir.join("answer.json"), summary).map_err(io)
+}
+
+/// `ein solve --no-search --dump-answer DIR` (M1f S1f.6.36): the read-out
+/// uncut as `answer.txt`, the summary as `answer.json`, root's state as
+/// `root.ein`, loadable, as a state file is, whatever root is, and each form
+/// asked for under `forms/`. No state of R is written, and no `index.json` or
+/// `nogoods.json`, which a previous `ein-answer/2` write's are removed with,
+/// as `--count`'s are: R was not searched.
+pub fn write_root(
+    dir: &Path,
+    r: &ReadOut,
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    inputs: &Inputs,
+) -> Result<(), String> {
+    let io = |e: std::io::Error| e.to_string();
+    write_counted(dir, inputs.answer_txt, inputs.summary)?;
+    let a = &r.answer;
+    let standing = match r.described().map(|d| &d.root) {
+        Some(x) if x.in_r() => "in R — alive, and owes nothing".to_string(),
+        Some(x) if x.alive => format!("not in R — owes {}", x.owes),
+        Some(_) => "dead — its own fixpoint derives (false)".to_string(),
+        None => "not read".to_string(),
+    };
+    let mut head = vec![
+        format!("root — written by `ein solve --no-search --dump-answer` ({ANSWER})."),
+        format!("source:     {}", inputs.source),
+        format!("root:       {standing}"),
+        "R:          not searched".to_string(),
+    ];
+    if let Some(d) = r.described() {
+        head.extend(d.root.owed.iter().map(|w| format!("  {w}")));
+    }
+    let mut nodes = ein_infer::region::Nodes::new(root, terms, ast, &a.candidates)
+        .map_err(|e| e.to_string())?;
+    let text = nodes
+        .with_fixpoint(&[], |kb, terms| state_file(terms, kb, inputs, &head))
+        .map_err(|e| e.to_string())?;
+    std::fs::write(dir.join("root.ein"), text).map_err(io)?;
+    if !inputs.forms.is_empty() {
+        std::fs::create_dir_all(dir.join("forms")).map_err(io)?;
+    }
+    for (form, text) in inputs.forms {
+        std::fs::write(dir.join(format!("forms/{form}.txt")), text).map_err(io)?;
+    }
+    Ok(())
 }
 
 fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> String {

@@ -107,6 +107,8 @@ rows! {
     Root => "∅", Row;
     /// An obligation instance root owes, where root is alive and not in R.
     Owed => "owed", Block;
+    /// `--no-search`'s word on R: not searched.
+    R => "R", Row;
     /// The minimal line, described or listed.
     MinimalLine => "minimal line", Row;
     /// The maximal line, described or listed.
@@ -281,6 +283,20 @@ impl Row {
             &[
                 Row::Asked,
                 Row::Monotone,
+                Row::Universe,
+                Row::Route,
+                Row::Work,
+            ],
+        ),
+        (
+            "no-search",
+            &[
+                Row::Asked,
+                Row::Root,
+                Row::Owed,
+                Row::R,
+                Row::Lattice,
+                Row::Strata,
                 Row::Universe,
                 Row::Route,
                 Row::Work,
@@ -649,6 +665,9 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         hint: dump_hint(o.command),
     };
     let a = &r.answer;
+    if a.route == Route::Root {
+        return render_root(r, o);
+    }
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
     let line = if a.mode.which == Which::All {
         "R"
@@ -1203,6 +1222,146 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     }
 }
 
+/// `--no-search`'s `route` row.
+const ROOT_ROUTE: &str = "none — --no-search: root's node, and no node past it";
+
+/// The read-out of `--no-search` (M1f S1f.6.36): root, and R not searched.
+/// The user's words of 2026-11-14, *"flag that disables search doesn't change
+/// R, it disables discovering of R. R is not an output, it is complete result
+/// when we do full R search"*: no row counts or lists R. What root is comes
+/// first, as describe's `∅` row and its `owed` block say it, then the `R` row
+/// that says it was not searched, the static check, `H` built and not
+/// visited, and root's one saturation; a dead root's core; each query read at
+/// root, and each claim as root alone decides it (`read_out.md` § 4.2).
+pub fn render_root(r: &ReadOut, o: &Options) -> Text {
+    let mut out = Out {
+        text: String::new(),
+        stderr: Vec::new(),
+        listed: 0,
+        uncut: o.uncut,
+        shown: Vec::new(),
+        hint: dump_hint(o.command),
+    };
+    let a = &r.answer;
+    out.line(format!("{} · {}", o.command, o.argv));
+    out.line(RULE);
+    out.row(
+        Row::Asked,
+        "root alone — --no-search: root's fixpoint, and R is not searched",
+    );
+    let Some(d) = r.described() else {
+        // `-T` before root's node.
+        out.row(Row::R, "not searched — the run stopped before root's node");
+        return Text {
+            stdout: out.text,
+            stderr: out.stderr,
+            code: 0,
+            shown: out.shown,
+            listed: out.listed,
+        };
+    };
+    let root = &d.root;
+    if root.in_r() {
+        out.row(Row::Root, "in R — root is alive and owes nothing");
+    } else if !root.alive {
+        out.row(Row::Root, "dead — root's own fixpoint derives (false)");
+    } else {
+        out.row(
+            Row::Root,
+            format!(
+                "not in R — root owes {}",
+                plural(root.owes as u64, "instance", "instances")
+            ),
+        );
+        owed_rows(&mut out, &root.owed);
+    }
+    out.row(
+        Row::R,
+        "not searched — --no-search builds no node past root: a bare `ein solve FILE` \
+         describes R",
+    );
+    lattice_block(&mut out, &d.monotonicity, a.warning.as_deref(), None, None);
+    let n = d.n() as u64;
+    if n == 0 {
+        let why = if a.root.hypgen.rung.mode == ein_infer::oblgen::Mode::NoSearch {
+            "no candidate: the program states :no-search"
+        } else {
+            "no candidate"
+        };
+        out.row(Row::Universe, why);
+    } else {
+        out.row(
+            Row::Universe,
+            format!(
+                "{}, none visited: R was not searched",
+                plural(n, "candidate", "candidates")
+            ),
+        );
+    }
+    outside_row(&mut out, &a.root.outside);
+    types_row(&mut out, &a.root.types_as_objects);
+    out.row(Row::Route, ROOT_ROUTE);
+    out.row(Row::Work, work_text(d.work.saturations, d.work.facts, None));
+    if !root.alive {
+        out.blank();
+        if root.core.is_empty() && root.core_status.is_some() {
+            out.row(
+                Row::UnsatCore,
+                format!(
+                    "{}, {}",
+                    ein_infer::explain::EMPTY_CORE,
+                    ein_infer::explain::EMPTY_CORE_GLOSS
+                ),
+            );
+        }
+        for c in &root.core {
+            out.row(Row::UnsatCore, c);
+        }
+        if let Some(q) = root.core_status.and_then(|c| c.qualifier()) {
+            out.row(Row::CoreSearch, q);
+        }
+        for c in &root.sources {
+            out.row(Row::Source, c);
+        }
+        if !root.refuted_by.is_empty() {
+            out.row(Row::RefutedBy, root.refuted_by.join(", "));
+        }
+    }
+    let mut code = queries(&mut out, r, o);
+    if let Some(claim) = &r.claim {
+        out.blank();
+        let label = match claim.outcome {
+            Outcome::Held => "holds",
+            Outcome::Failed => "FAILED",
+            Outcome::NotChecked => "NOT CHECKED",
+        };
+        out.row(Row::SolveExpect, label);
+        for l in &claim.lines {
+            out.more(l);
+        }
+        let why = claim.lines.first().cloned().unwrap_or_default();
+        match claim.outcome {
+            Outcome::Held => {}
+            Outcome::Failed => {
+                out.stderr
+                    .push(format!("{}: (solve :expect) FAILED — {why}", o.file));
+                code = 1;
+            }
+            Outcome::NotChecked => out.stderr.push(format!(
+                "note: {}: (solve :expect) NOT CHECKED — {why}",
+                o.file
+            )),
+        }
+    }
+    Text {
+        stdout: out.text,
+        stderr: out.stderr,
+        code,
+        shown: out.shown,
+        listed: out.listed,
+    }
+}
+
 fn licences(l: &[Licence]) -> String {
     l.iter().map(|l| l.label()).collect::<Vec<_>>().join(" · ")
 }
@@ -1636,7 +1795,14 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             );
         }
     }
-    if n == 0 {
+    if n == 0 && a.root.hypgen.rung.mode == ein_infer::oblgen::Mode::NoSearch {
+        // `(solve :no-search)` (M1f S1f.6.36): the program said so.
+        out.row(
+            Row::Universe,
+            "no candidate: the program states :no-search, so R is {∅} or empty, decided by \
+             root alone",
+        );
+    } else if n == 0 {
         out.row(
             Row::Universe,
             "no candidate: R is {∅} or empty, decided by root alone",
@@ -1675,6 +1841,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         (Route::Cube, _) => {
             "2, the cube — no licence: the static check flags the program".to_string()
         }
+        (Route::Root, _) => ROOT_ROUTE.to_string(),
     };
     out.row(Row::Route, route);
     out.row(
@@ -1865,6 +2032,8 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
             );
         }
         Some(Stopped::Deadline) => out.row(Row::Exhausted, "no — --max-time"),
+        // `render_root`'s, and never a mode's.
+        Some(Stopped::NoSearch) => out.row(Row::Exhausted, "no — --no-search"),
     }
     // A dead root leaves no node of R, so no hole (L0).
     let holes = if a
@@ -1899,6 +2068,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 // question needs (M1e2 S1e2.1c.4).
                 Route::States => "the state route, each state at most once",
                 Route::Tree => "the obligation tree, over states",
+                Route::Root => ROOT_ROUTE,
             },
             licences(&a.licences)
         ),
@@ -2246,7 +2416,11 @@ fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
 /// contradiction from a debt. The claim under it is not changed: `as :expect
 /// (false)` on both, as a query's `(false)` holds on both (Q-M1f.219).
 fn empty_words(a: &ein_infer::explore::Answer) -> String {
-    if a.root_dead {
+    if a.route == Route::Root && a.root_dead {
+        // `--no-search` (M1f S1f.6.36): what root says, and not R.
+        "root is dead, and a fork only adds, so every node is (L0): no state to answer from"
+            .to_string()
+    } else if a.root_dead {
         "R is empty, root is dead: no state to answer from".to_string()
     } else if a.root_owes > 0 {
         format!(
@@ -2290,8 +2464,31 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
             out.row(Row::AsExpect, "(false)");
             return;
         }
+        // `--no-search` (M1f S1f.6.36): root's state is the one read, where
+        // ∅ is in R and on the part asked, and no other.
+        if a.route == Route::Root && q.classes.is_empty() {
+            let why = match r.described().map(|d| &d.root) {
+                Some(root) if root.in_r() => {
+                    "--no-search read root alone, ∅ is in R and not on this part as far as root \
+                     shows, and R was not searched"
+                        .to_string()
+                }
+                Some(root) => format!(
+                    "--no-search read root alone, and root owes {}, so ∅ is not in R: no state \
+                     to answer from, and R was not searched",
+                    plural(root.owes as u64, "instance", "instances")
+                ),
+                None => "--no-search read root alone: no state to answer from".to_string(),
+            };
+            out.row(Row::Over, format!("{over} — {why}"));
+            return;
+        }
         let n_states = q.classes.iter().map(|c| c.states.len()).sum::<usize>() as u64;
-        let tail = if q.exact { "" } else { "  (a lower bound)" };
+        let tail = match (q.exact, a.route == Route::Root) {
+            (true, _) => "",
+            (false, true) => "  (∅ alone: R was not searched past it)",
+            (false, false) => "  (a lower bound)",
+        };
         out.row(
             Row::Over,
             format!(

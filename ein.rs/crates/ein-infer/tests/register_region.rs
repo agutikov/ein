@@ -143,6 +143,7 @@ fn route_word(r: Route) -> String {
         Route::Cube => "route 2",
         Route::States => "state route",
         Route::Tree => "obligation tree",
+        Route::Root => "root alone",
     }
     .to_string()
 }
@@ -184,6 +185,7 @@ fn stopped(a: &Answer) -> Result<Region, String> {
                 Some(Stopped::Limit { .. }) => "limit",
                 Some(Stopped::Budget { .. }) => "budget",
                 Some(Stopped::Deadline) => "deadline",
+                Some(Stopped::NoSearch) => "no-search",
                 None => "?",
             }
             .to_string(),

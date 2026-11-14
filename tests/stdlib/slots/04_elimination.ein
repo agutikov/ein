@@ -34,8 +34,7 @@
 ;;; and Rat from it, and there the chain stops: two pets with two seats each.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
-(import std.slots   :symbols (slot-locate slot-exclusive slot-occupied slot-negative
-                                 slot-elimination slot-fill slot-no-room slot-no-fill))
+(import std.slots   :symbols (slot-partition-setup))
 (import std.macro   :symbols (unknown))
 
 (relation type      T T :why "{?1} is a subtype of {?2}")
@@ -44,21 +43,7 @@
 (relation undecided Attribute Attribute :why "{?1} and {?2}: seat still open")
 
 (symmetric co-loc)
-;; `slot-partition-setup`'s fan-out, written out but for its two obligations
-;; (M1f S1f.6.34): with `slot-owed-room` and `slot-owed-fill` activated, root owed
-;; and `:no-hypothesis` kept them from proposing what they owe, R empty and the
-;; claim `(owing (model …))`; a list may not filter what an obligation owes since
-;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13).
-;; This file's question is root's saturation, and with no obligation it owes
-;; nothing: R is root, the same facts. `01_partition.ein` keeps the setup.
-(slot-locate      co-loc instance Seat)
-(slot-exclusive   co-loc instance type Attribute)
-(slot-occupied    co-loc instance type Attribute)
-(slot-negative    co-loc instance Seat)
-(slot-elimination co-loc instance type Attribute Seat)
-(slot-fill        co-loc instance type Attribute Seat)
-(slot-no-room     co-loc instance type Attribute Seat)
-(slot-no-fill     co-loc instance type Attribute Seat)
+(slot-partition co-loc instance type Attribute Seat)
 
 (type Attribute T)
 (type Seat Attribute) (type Who Attribute) (type Pet Attribute)
@@ -75,12 +60,19 @@
   :assert (undecided S1 Dog)
   :why    "S1 has one pet of three excluded — nothing may be filled into it")
 
+;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; nothing is guessed, and root, which owes, is the owing node R stops at.
+;; Until S1f.6.34 it said so with `:no-hypothesis (type instance co-loc
+;; undecided)`, keeping the obligation from proposing `co-loc`, which S1f.6.34
+;; refused (*"filtered obligations are nonsense by definition"*, the user,
+;; 2026-11-13); S1f.6.34 wrote `slot-partition`'s fan-out out without its two
+;; obligations instead. `:no-search` says what the list meant.
 (solve
-  :no-hypothesis (type instance co-loc undecided)
-  :expect (region (model (co-loc Cat S3) (co-loc S3 Cat)
-                         (not (co-loc Cat S1)) (not (co-loc Cat S2))
-                         (not (co-loc S3 Dog)) (not (co-loc S3 Rat))
-                         (undecided S1 Dog))))
+  :no-search
+  :expect (region (owing (model (co-loc Cat S3) (co-loc S3 Cat)
+                                (not (co-loc Cat S1)) (not (co-loc Cat S2))
+                                (not (co-loc S3 Dog)) (not (co-loc S3 Rat))
+                                (undecided S1 Dog)))))
 
 (query
   :goal (co-loc ?a ?b))

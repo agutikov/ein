@@ -27,7 +27,9 @@
 > macro with no `:why` loads and nothing else
 > (§ [3.4](#34-the-option-that-decides-loading)), so `ein solve` has 34:
 > `--require-why` until T1f.5.14.7 (2026-11-10) turned the requirement on by
-> default, `--no-require-why` since.
+> default, `--no-require-why` since. **Since M1f S1f.6.36 (2026-11-14)** `ein
+> solve` and `ein test` take `--no-search`, which declines to discover R (§ 3.3),
+> so `ein solve` has 35.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -61,7 +63,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **2** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fifteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **82** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **84** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **2** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -346,7 +348,9 @@ walk's, and flipped to `fixed` at the switch where R answers them
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). Under a region
 run every flag reads **no**, and so do `--jobs` (§ 3.3) and every
 presentation and artefact option: they change speed, or what is printed beside
-the answer, never the answer. `--no-require-why` (§ 3.4) is not a lever: it
+the answer, never the answer. So does `--no-search` (M1f S1f.6.36), which
+declines to discover R and states none: no complete search reports another R
+under it (§ 3.3). `--no-require-why` (§ 3.4) is not a lever: it
 decides whether a program loads, and a program loads to what it loads to with
 it or without it.
 
@@ -364,14 +368,14 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**82** options across fifteen parsers, in the default build (`einb`,
+**84** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 34 |
+| `ein solve` | 35 |
 | `ein oracle` | 11 |
-| `ein test` | 9 |
+| `ein test` | 10 |
 | `ein saturate` | 6 |
 | `ein render kb` | 5 |
 | `ein render lattice` | 3 |
@@ -384,7 +388,8 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb` and `ein render` take none — they are dispatchers. `ein kb
 save` exists only under the `einb` feature; a `--no-default-features` build
-has 80 and no `ein kb` at all. M1f T1f.5.14.6 added seven, `--require-why` on
+has 82 and no `ein kb` at all. M1f S1f.6.36 added two, `--no-search` on `ein solve` and on
+`ein test` (§ 3.3). M1f T1f.5.14.6 added seven, `--require-why` on
 each command that loads a program (§ 3.4), which T1f.5.14.7 turned into
 `--no-require-why`, seven for seven; M1f S1f.5.21 added four more, the views
 that draw a program as written, which read it through the loader first since
@@ -438,9 +443,9 @@ as any — a `(config …)` head that sets the flag, and `--dump-config` to see 
 
 ### 3.3 What an option can do to the answer
 
-Six classes. Only the first touches the answer, and then only by asking a
-different question or stopping early; the sixth decides whether there is a
-program to answer about.
+Seven classes. Only the first touches the answer, and then only by asking a
+different question or stopping early; the second declines to ask about R at all;
+the seventh decides whether there is a program to answer about.
 
 - **The question and its budget** — `--minimal`, `--maximal`, `--single`,
   `-n`/`--solutions`, `--count`, `--monotone`, `--region-budget`,
@@ -462,6 +467,27 @@ program to answer about.
   is never an answer. **`-n 0` is refused**, exit 2, since M1e
   [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7), and so
   is every negative.
+- **The question not asked** — `--no-search`, on `ein solve` and `ein test`
+  (M1f [S1f.6.36](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
+  the user's words of 2026-11-14, *"flag that disables search doesn't change R,
+  it disables discovering of R"*). **Does it change the answer: no — it declines
+  to discover it.** It saturates root and reports root, alive or dead, discharged
+  or what it owes, through the node function every route uses, and builds no
+  other node: `ein solve` prints root's standing, an `R` row that says R was not
+  searched and no row that counts or lists R
+  ([`read_out.md` § 4.2](inference/read_out.md#42---no-search)), and `ein test`
+  decides only what root decides, the rest NOT CHECKED with no exit code of its
+  own ([Q-M1f.256](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f256--which-claims-root-decides-under---no-search),
+  [.257](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f257--ein-test---no-searchs-exit-code)).
+  A run without it discovers the R it declined to; `lever_invariance.rs`'s
+  `no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r` holds,
+  on every corpus program, that what it reports of root is what the full run
+  reaches there and that it states no R. Beside a question flag (`-n`,
+  `--single`, `--minimal`, `--maximal`, `--count`) or `--monotone` it is a
+  usage error, exit 2, and `ein oracle` refuses it with the command that
+  answers ([Q-M1f.258](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f258--which-commands-and-options-take---no-search)).
+  The program's own `(solve :no-search)` is no option: it states the lattice,
+  root alone, and so R ([`01_grammar.md` § Solve](ir/03-ein-lang/01_grammar.md#solve)).
 - **The check** — `-y`, § [3.2](#32-the-option-that-shadows-a-flag): its own
   row, and on a monotone program a mismatch is an engine error, exit 2; never
   a different answer.

@@ -193,6 +193,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let Some(&b) = m.get_one::<i64>("region-budget") {
         opts.budget = b as u64;
     }
+    // Root alone (M1f S1f.6.36): no node past root is built.
+    opts.no_search = m.get_flag("no-search");
     opts.limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
     opts.jobs = crate::solve::resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1));
     let max_time = m.get_one::<f64>("max-time").copied();
@@ -452,6 +454,31 @@ pub fn run(m: &ArgMatches) -> i32 {
         if let Err(e) =
             ein_render::dump::region_answer::write_counted(Path::new(dir), &answer_txt, &summary)
         {
+            crate::solve::artefact_failed("dump-answer", dir, e);
+        }
+    } else if let Some(dir) = dump.as_deref()
+        && opts.no_search
+    {
+        // `--no-search`'s answer is root: its read-out, the summary, root's
+        // state as a loadable file and the forms; no state of R (M1f
+        // S1f.6.36).
+        let program = crate::solve::inlined_program(&file);
+        let answer_txt = uncut(&r, &file, opts.budget);
+        let inputs = ein_render::dump::region_answer::Inputs {
+            source: &file,
+            program: &program,
+            summary: &summary,
+            answer_txt: &answer_txt,
+            forms: &forms,
+        };
+        if let Err(e) = ein_render::dump::region_answer::write_root(
+            Path::new(dir),
+            &r,
+            &mut kb,
+            &mut terms,
+            &ast,
+            &inputs,
+        ) {
             crate::solve::artefact_failed("dump-answer", dir, e);
         }
     } else if let Some(dir) = dump.as_deref() {
@@ -782,22 +809,34 @@ pub(crate) fn extras(
         return Ok(uncut);
     }
     let a = &r.answer;
-    let listed: Vec<(usize, &ein_infer::read_out::Listed)> = r.listed().collect();
+    // `--no-search` (M1f S1f.6.36): the forms draw root, whatever it is, and
+    // nothing else: the one state the run read.
+    let root_only = a.route == ein_infer::explore::Route::Root;
+    let listed: Vec<(usize, &ein_infer::read_out::Listed)> = if root_only {
+        Vec::new()
+    } else {
+        r.listed().collect()
+    };
     // On an empty R of the owing kind there is no state, and the owing
     // frontier is what the read-out lists instead: the forms draw it, labelled
     // as what it is, and the diff has no state to compare.
     let frontier: &[ein_infer::read_out::OwingState] = match &r.listing {
+        _ if root_only => &[],
         ein_infer::read_out::Listing::Owing(f) if listed.is_empty() => f,
         _ => &[],
     };
     // Every listed state, and the ones stdout showed: a prefix of them, since
     // every listing is cut from its end. The frontier is never cut.
-    let all = if frontier.is_empty() {
+    let all = if root_only {
+        1
+    } else if frontier.is_empty() {
         listed.len()
     } else {
         frontier.len()
     };
-    let on_screen = if frontier.is_empty() {
+    let on_screen = if root_only {
+        1
+    } else if frontier.is_empty() {
         listed
             .iter()
             .take_while(|(i, _)| text.shown.contains(i))
@@ -805,7 +844,9 @@ pub(crate) fn extras(
     } else {
         all
     };
+    let root_words = "root, read alone — --no-search: R was not searched".to_string();
     let what_all = match (r.described().is_some(), &r.listing) {
+        _ if root_only => root_words.clone(),
         _ if !frontier.is_empty() => {
             "the owing frontier — R is empty, and every alive node owes".to_string()
         }
@@ -817,6 +858,7 @@ pub(crate) fn extras(
         ),
     };
     let what_shown = match (r.described().is_some(), &r.listing) {
+        _ if root_only => root_words,
         (true, ein_infer::read_out::Listing::Region) => format!(
             "the {} shown above, of R's {}",
             plural(on_screen, "state", "states"),
@@ -839,7 +881,9 @@ pub(crate) fn extras(
     // The states read: the ones stdout showed, or every listed one when the
     // dump writes the forms uncut. The first `on_screen` are stdout's.
     let reads = if dump { all } else { on_screen };
-    let sets: Vec<Vec<ein_core::FactId>> = if frontier.is_empty() {
+    let sets: Vec<Vec<ein_core::FactId>> = if root_only {
+        vec![Vec::new()]
+    } else if frontier.is_empty() {
         listed[..reads].iter().map(|(_, s)| of(&s.rep)).collect()
     } else {
         frontier.iter().map(|o| of(&o.node.set)).collect()
@@ -860,7 +904,13 @@ pub(crate) fn extras(
         ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates).map_err(|e| e.to_string())?;
     let written = nodes
         .with_fixpoints(&sets, |kbs, terms| {
+            let root_label = match r.described().map(|d| &d.root) {
+                Some(x) if x.in_r() => "root — in R, alive and owing nothing".to_string(),
+                Some(x) if x.alive => format!("root — not in R, owes {}", x.owes),
+                _ => "root — dead".to_string(),
+            };
             let label = |i: usize| match frontier.get(i) {
+                _ if root_only => root_label.clone(),
                 Some(o) => format!(
                     "owing node {} of {} — owes {}",
                     i + 1,
@@ -1189,6 +1239,7 @@ pub(crate) fn route_words(answer: &explore::Answer) -> &'static str {
         explore::Route::States if describe => "the state route, every alive state once",
         explore::Route::States => "the state route, each state at most once",
         explore::Route::Tree => "the obligation tree, over states",
+        explore::Route::Root => "none, root alone (--no-search)",
     }
 }
 

@@ -3875,7 +3875,9 @@ fn refuse_negated_names(
     // of the declared relations the `(solve …)` lists leave in
     // (`ein_infer::hypgen::eligible_relations`), over the program's names: a
     // state can hold a name at each of their positions. Not read where the
-    // program writes the closure marker, which takes a relation out of them.
+    // program writes the closure marker, which takes a relation out of them,
+    // nor where it states `(solve :no-search)`, whose lattice is root alone
+    // and holds no commitment (M1f S1f.6.36).
     let closes = |node: NodeId| {
         let mut forms = Vec::new();
         sforms_under(ast, node, &mut forms);
@@ -3890,7 +3892,13 @@ fn refuse_negated_names(
                 .as_ref()
                 .is_some_and(|a| closes(NodeId(a.expr.0)))
         });
-    if program.hrules.is_empty() && !closure_written {
+    let no_search = solve_blocks.iter().any(|&block| {
+        ast.form_args(block).iter().any(|&pair| {
+            matches!(ast.node(pair), Node::KwPair { key, .. }
+                if matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "no-search"))
+        })
+    });
+    if program.hrules.is_empty() && !closure_written && !no_search {
         let listed = |want: &str| -> Option<BTreeSet<String>> {
             let value = solve_blocks.iter().find_map(|&block| {
                 ast.form_args(block).iter().find_map(|&pair| match ast.node(pair) {

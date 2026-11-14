@@ -355,6 +355,8 @@ fn numbered_pattern(label: &str) -> String {
 fn question(s: &J) -> &'static str {
     if s["asked"]["ask"] == "monotone" {
         "monotone"
+    } else if s["asked"]["ask"] == "no-search" {
+        "no-search"
     } else if !s["region"]["k_s"].is_null() || s["asked"]["ask"] == "count" {
         "describe"
     } else {
@@ -415,7 +417,7 @@ fn every_row_is_printed_by_an_example() {
             // Order: within each table the row is in, its place never goes
             // back, but to the table's first row (the next query's block).
             for (name, rows) in Row::TABLES {
-                if ["describe", "mode", "monotone"].contains(name) && *name != table {
+                if ["describe", "mode", "monotone", "no-search"].contains(name) && *name != table {
                     continue;
                 }
                 let from = *last.get(name).unwrap_or(&0);
@@ -756,9 +758,9 @@ fn each_row_prints_its_summary_fields_number() {
                 .nth(1)
                 .and_then(|n| n.parse::<usize>().ok())
                 .map_or(0, |n| n - 1);
-            let name = tables_of(r)
-                .into_iter()
-                .find(|n| !["describe", "mode", "monotone"].contains(n) || *n == table);
+            let name = tables_of(r).into_iter().find(|n| {
+                !["describe", "mode", "monotone", "no-search"].contains(n) || *n == table
+            });
             let Some(paths) = name.and_then(|n| cell.get(&(n, r))) else {
                 continue;
             };

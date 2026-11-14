@@ -144,7 +144,12 @@ pub fn shown_char(c: char) -> String {
 /// The `(query …)` keywords that choose the lattice, which belong on
 /// `(solve …)` (M1e2 S1e2.1a.4): a query that writes one is refused at the
 /// keyword, with a note saying where it goes (the paper grammar's default 5).
-const LATTICE_KEYWORDS: [&str; 3] = [":hrules", ":hypothesis-relations", ":no-hypothesis"];
+const LATTICE_KEYWORDS: [&str; 4] = [
+    ":hrules",
+    ":hypothesis-relations",
+    ":no-hypothesis",
+    ":no-search",
+];
 
 /// One error of a refused file.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -484,6 +489,18 @@ fn notes(
             ));
         }
         Some(")") => out.extend(empty_connective(lexer, at)),
+        // A value after `(solve :no-search …)`, the one keyword that takes none
+        // (M1f S1f.6.36).
+        _ if !found.starts_with(':')
+            && found != ")"
+            && written_before(lexer, at, 1) == [":no-search"] =>
+        {
+            out.push(
+                ":no-search is a flag and takes no value: it states that the lattice is root \
+                 alone"
+                    .to_string(),
+            )
+        }
         Some("open") => out.push(OPEN_NOTE.to_string()),
         Some("absent") if written_before(lexer, at, 1) == ["("] => {
             out.push(ABSENT_NOTE.to_string())

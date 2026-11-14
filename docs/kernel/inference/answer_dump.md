@@ -288,12 +288,25 @@ pass wrote: 27 facts where root's fixpoint holds 22 on
 48. `summary_properties::the_description_is_coherent_on_every_corpus_cell`
 holds `root.facts` to root's fixpoint and `root.hypgen.emitted` to
 `region.universe.candidates` on every corpus cell, and `--monotone`'s block to
-the region run's.
+the region run's. Since M1f S1f.6.36 it holds root's standing too, `dead`,
+`owes` and `owed`, on every arm: `ein solve --no-search` states no R, so its
+`region` is `null` as `--monotone`'s is, and the block is where it says what
+root is ([Q-M1f.259](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f259----json-summary-under---no-search));
+`lever_invariance.rs`'s
+`no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r` holds the
+three to the full run's `region.root`, `root_owes` and `root_owed`, and the two
+blocks equal, on every corpus program. Under `--no-search`, `--dump-answer DIR`
+writes `answer.txt`, `answer.json`, root's state as `root.ein` (loadable, as a
+state file is, its head saying what root owes and *R: not searched*) and
+`forms/`, and no `index.json`, `nogoods.json` or state of R.
 
 | field | what it holds |
 |---|---|
 | `root.facts` | the facts of root's fixpoint, `sat(program)`: what `ein saturate FILE` prints as *facts (total)* after saturation, and what state ∅'s file holds when ∅ ∈ R. No route writes into root, so it is root before any commitment and after every one |
 | `root.facts_by_relation` | those facts by relation name, sorted, only the relations that have one. They sum to `root.facts` |
+| `root.dead` | root's own fixpoint derives `(false)`: root's standing, which every run reaches first and `ein solve --no-search` reports (M1f S1f.6.36, Q-M1f.259). It is `region.root` = `dead` on every description |
+| `root.owes` | the obligation instances root's fixpoint leaves undischarged, dead or not, as the node function counts them: `region.root_owes` on every description. With `root.dead`, whether ∅ is in R |
+| `root.owed` | those instances, each through its rule's `:why` (the rule's name where it has none), in the order the rules report them: `region.root_owed`, and the read-out's `owed` rows |
 | `root.plans` | the plans root's saturator compiled, the derived activators' included. Measured equal to `monotonicity.plans.saturation` on all 218 corpus programs that write a summary under `ein solve -n 1` (2026-11-03, S1e2.3.1's census) |
 | `root.saturator.naf_rounds` | how many times root's saturation reached the NAF boundary with candidates parked on an `absent` guard, and judged them against the quiesced world |
 | `root.saturator.naf_admitted` | parked candidates the boundary admitted: every guard passed, and the firing was queued |

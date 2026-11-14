@@ -317,6 +317,10 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   closure takes out, no obligation owes one (a list only with no hrule), and no
   relation is in both lists or listed and closed; a list an hrule leaves
   filtering nothing, or a redundant name, is a `note:` (`ein_infer::mechanisms`).
+  **`(solve :no-search)`**, a flag with no value, states that the lattice is
+  root alone: nothing is proposed, so R is {∅} or empty, and it is how a program
+  says *judge root alone*. It relaxes no conflict; beside an hrule or a list it
+  is a `note:`, beside an obligation or a closure silent.
 
 ### The answer
 
@@ -325,12 +329,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `--single`, `-n N` and `--count` each do the least work their question
   needs; **`ein oracle` is the reference every mode is held to**
   (`ein-infer/tests/explore.rs`). No two commands may disagree.
+  **`--no-search`** (`ein solve`, `ein test`) declines to discover R: it
+  reports root as the full run reaches it, states no R, and decides only the
+  claims root decides.
 - **Every answer exits 0.** Only a refuted claim exits 1; a load error takes
   each command's load-error exit (2 under `ein test`). A count of commitments
   is exact in the engine and reported up to 2^63 − 1, which every surface
   reads as *this many or more* (`ein_infer::count`).
 - **No config option, lever or flag changes R**, held per commit by
-  `ein-cli/tests/lever_invariance.rs`. The one exemption:
+  `ein-cli/tests/lever_invariance.rs`, which holds `--no-search` too: it
+  declines to search, and reports no other R. The one exemption:
   `:record-alternative-justifications false` may change a dead node's core.
 - **A core is an explanation**: it may vary with rule order, and F22 makes it
   canonical. A node that is not dead has no core (`null`); `[]` is the empty
@@ -340,7 +348,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   claims all over one part of R, describe for a `(solve … :expect …)` or
   for claims over more than one part; what that leaves undecided it asks the
   describing question, of the program loaded again. No option chooses the
-  question. A claim is held only by an answer that lists all of what it is
+  question; `--no-search` asks none about R, root alone, and what root does
+  not decide is NOT CHECKED with no exit code. A claim is held only by an answer that lists all of what it is
   about, and under `ein test` alone a state found whose class the claim does
   not list refutes it (`ein-infer/tests/claim_routes.rs` holds each question
   to the description and to the oracle). It never solves a query with no

@@ -36,6 +36,8 @@ page is frozen where it was, beside [`read_out.md`'s record](../../../plans/m1e2
 | [X15](#x15--features01_not_and_absentein-the-warning-past-four-rows) | `features/01_not_and_absent.ein` | 35 | the warning past four stale nodes |
 | [X16](#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) | `ein-bugs/zebra2-bad.ein`, `ein-bugs/wrong-answers/core-search-cut.ein` | 0 | why root is dead: its core, a fact's `:source`, and a core search cut at its budget |
 | [X17](#x17--ein-oracle-the-cubes-line) | `lattice/04_obligation_trigger_hole.ein`, `lattice/02_genuine_3set_death.ein` | 2, 3 | `ein oracle`: the read-out over the cube, and the cube's line |
+| [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
+| [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
 
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
@@ -735,8 +737,9 @@ exit 0
 
 ## X6 — `tests/region/04_owing.ein`: R empty, alive nodes owe
 
-Root owes one `total-owed` instance, Ann's Food, and both foods are stored as ones she does not like, so the
-obligation's two candidates are refuted before they are proposed: no candidate, and R is empty of the second kind.
+Root owes one `total-owed` instance, Ann's Food, and the program states `(solve :no-search)`, so nothing is proposed:
+no candidate, and R is empty of the second kind (between M1f S1f.6.34 and S1f.6.36 both foods were stored as ones Ann
+does not like, which refuted the obligation's two candidates; the keyword says it since).
 The `owing` rows are the frontier, the alive owing nodes with no alive node one fact up (here root itself), each with
 what it owes through the rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the
 printer closes the **candidates'** relations, which tell R's states apart, and this program has none. The query's
@@ -754,7 +757,7 @@ solve · tests/region/04_owing.ein
   exhausted         yes — every commitment is classified: this is all of R
   empty             every alive node owes — no commitment pays every debt
   lattice           monotone (the static check) — R is convex: no hole
-  universe          no candidate: R is {∅} or empty, decided by root alone
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              1 saturation · 0 facts beyond root · 2 layers
 
@@ -784,7 +787,7 @@ solve · --single tests/region/04_owing.ein
   decided           yes — R is empty
   lattice           monotone (the static check) — R is convex: no hole
   universe          0 candidates
-  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              1 saturation · 0 facts beyond root
 
   query             (likes ?who ?what)
@@ -2270,6 +2273,162 @@ oracle · examples/lattice/02_genuine_3set_death.ein
                         (model (a-prop X)))
 
 the cube   0 dead nodes with an alive superset · 0 discharged nodes with an owing superset — the static verdict holds
+
+exit 0
+```
+
+## X18 — `tests/region/04_owing.ein --no-search`: root alone
+
+`--no-search` (M1f S1f.6.36) declines to discover R: it saturates root, reports what root is, as describe's `∅` row
+and `owed` block say it, and says in the `R` row that R was not searched. No row counts or lists R. The program states
+`(solve :no-search)` itself, so a bare run would describe R by root alone, as X6 does; the flag reads root the same way
+on any program. Root owes Ann a Food, so ∅ is not in R, the query has no state to answer from, and the claim, which is
+about R, is not checked.
+
+`ein solve --no-search tests/region/04_owing.ein`
+
+```text
+solve · --no-search tests/region/04_owing.ein
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 not in R — root owes 1 instance
+    owed            likes owes Ann a Food.
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  query             (likes ?who ?what)
+  over              all of R — --no-search read root alone, and root owes 1 instance, so ∅ is not in R: no state to answer from, and R was not searched
+
+  (solve :expect)   NOT CHECKED
+                    the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so ∅ is not in R, and R was not searched
+
+stderr: note: tests/region/04_owing.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so ∅ is not in R, and R was not searched
+
+exit 0
+```
+
+**A dead root** (X7's program): every node is dead, a fork only adding (L0), so the claim `(false)` is decided as
+the full run decides it, and root's core is printed as describe prints it.
+
+`ein solve --no-search tests/stdlib/algebra/09_irreflexive_violated.ein`
+
+```text
+solve · --no-search tests/stdlib/algebra/09_irreflexive_violated.ein
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 dead — root's own fixpoint derives (false)
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  unsat core        (loops A A)
+  refuted by        irreflexive
+
+  query             (loops ?x ?y)
+  over              all of R — root is dead, and a fork only adds, so every node is (L0): no state to answer from
+  as :expect        (false)
+
+  (solve :expect)   holds
+
+exit 0
+```
+
+**The puzzle** (X10's program): root owes 36 instances, four of them named and the rest counted, and H holds 56
+candidates, none visited. The forms draw root whatever it is: `--models grid` draws what root alone deduced, five of
+the puzzle's facts placed, and `-p` its facts.
+
+`ein solve --no-search examples/zebra2.ein`
+
+```text
+solve · --no-search examples/zebra2.ein
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 not in R — root owes 36 instances
+    owed            color-loc owes Red a House.
+    owed            color-loc owes Green a House.
+    owed            color-loc owes Ivory a House.
+    owed            nation-loc owes Englishman a House.
+                    … 32 more instances: --dump-answer DIR writes every one, to DIR/answer.txt
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates, none visited: R was not searched
+    outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — --no-search read root alone, and root owes 36 instances, so ∅ is not in R: no state to answer from, and R was not searched
+
+exit 0
+```
+
+**A program that states `(solve :no-search)`**: its lattice is root alone, so a bare `ein solve` describes R, here
+empty of the owing kind, and the `universe` row says why it has no candidate.
+
+`ein solve tests/stdlib/bijection/01_setup_and_negatives.ein`
+
+```text
+solve · tests/stdlib/bijection/01_setup_and_negatives.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every alive node owes — no commitment pays every debt
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
+
+  owing             ∅ — owes 4
+                      wears owes Bob a Colour.
+                      wears owes Cid a Colour.
+                      wears owes Green a preimage in Agent.
+                      wears owes Blue a preimage in Agent.
+
+  (region (owing (model)))
+
+  query             (wears ?who ?colour)
+  over              all of R — R is empty, root is alive and owes 4 instances: no state to answer from
+  as :expect        (false)
+
+  (solve :expect)   holds
+
+exit 0
+```
+
+## X19 — `features/07_unstratifiable.ein --no-search`: flagged, and its strata
+
+X14's program under `--no-search`: the static check's rows and the strata are the program's, and print as describe
+prints them; the cube's `status` is not known, since no node past root was built.
+
+`ein solve --no-search examples/features/07_unstratifiable.ein`
+
+```text
+solve · --no-search examples/features/07_unstratifiable.ein
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 in R — root is alive and owes nothing
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           not monotone: 2 sites (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            derive-q: absent reads p at absent depth 1, concludes a positive fact — at stake: the state
+    cycle           even through an absent — derive-p: q →¬ p · derive-q: p →¬ q — several states with no stale fact can exist
+    order           derive-p and derive-q each read under an absent what the other concludes: which the boundary admits first is the order they are written in
+    status          not known — this run stopped before it read the cube's 2^1 nodes: `ein oracle FILE` reads them, and so does a bare `ein solve FILE`
+    state           no stale fact in the 1 node the run computed
+    paths           no state the read-out prints has an alive parent to check
+  strata            not stratifiable: 1 cycle through an absent — root's fixpoint may depend on the boundary's admission order, and need not be unique
+    negative cycle  p, q — derive-p: q →¬ p · derive-q: p →¬ q — even: several fixpoints may exist, and which one root reaches may depend on the order the boundary admits in
+  universe          1 candidate, none visited: R was not searched
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
 
 exit 0
 ```

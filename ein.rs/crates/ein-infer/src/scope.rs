@@ -93,6 +93,11 @@ pub(crate) fn outside(
     mode: Mode,
     plans: &[Arc<Plan>],
 ) -> Result<Vec<Outside>, CompileError> {
+    // `(solve :no-search)` (M1f S1f.6.36) scopes every relation out, and it is
+    // the program's own statement, clause 2's: nothing is named.
+    if mode == Mode::NoSearch {
+        return Ok(Vec::new());
+    }
     let program = s.kb.program_arc();
     let (allowed, excluded, closed) = crate::hypgen::scoping(s);
     let scoped_out = |r: Symbol| {
@@ -116,7 +121,7 @@ pub(crate) fn outside(
                 .filter_map(|p| crate::obligations::open_argument(p, s.terms))
                 .collect()
         }
-        Mode::Blind | Mode::Declined => declared
+        Mode::Blind | Mode::Declined | Mode::NoSearch => declared
             .iter()
             .filter(|&&(_, arity)| arity <= 2)
             .map(|&(r, _)| r)
@@ -140,7 +145,7 @@ pub(crate) fn outside(
     let why = match mode {
         Mode::Hrules => Why::NoHrule,
         Mode::Obligations | Mode::Stuck => Why::NotOwed,
-        Mode::Blind | Mode::Declined => Why::Arity,
+        Mode::Blind | Mode::Declined | Mode::NoSearch => Why::Arity,
     };
     let mut out: Vec<Outside> = declared
         .iter()

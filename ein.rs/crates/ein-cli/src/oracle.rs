@@ -21,7 +21,20 @@ use ein_infer::read_out;
 use ein_infer::region::{self, LOUD_FROM, Outcome, PROBE_NODES, Projection};
 use ein_ir::Ast;
 
+/// What `ein oracle` refuses, with the sentence its refusal prints (M1f
+/// S1f.6.36): `--no-search` declines to discover R, and the oracle is R by
+/// brute force, the reference every mode is held to, so the two ask opposite
+/// things. `ein solve FILE --no-search` reports root.
+pub(crate) const REFUSED: [(&str, &str); 1] = [(
+    "no-search",
+    "ein oracle computes R by brute force, every subset of the root candidates saturated, \
+     and --no-search declines to discover R: `ein solve FILE --no-search` reports root alone",
+)];
+
 pub fn run(m: &ArgMatches) -> i32 {
+    if crate::solve::refuse_retired(m, &REFUSED) {
+        return 2;
+    }
     let file = m.get_one::<String>("file").expect("required").clone();
     let limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
     let jobs = crate::solve::resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1));

@@ -29,7 +29,7 @@ use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 use ein_core::{Kb, Terms};
-use ein_corpus::repo_root;
+use ein_corpus::{Scratch, repo_root};
 use ein_infer::SharedMemo;
 use ein_infer::events::{Buffer, Events, Level};
 use ein_infer::explore::{self, Answer, Ask, Mode as Question, Which};
@@ -106,6 +106,52 @@ fn universe(rel: &str) -> Vec<String> {
         .collect()
 }
 
+/// The stuck state, as a program of its own: `tests/region/04_owing.ein` as
+/// M1f S1f.6.34 left it, Ann's two likings stored false so that every
+/// candidate that would pay her debt is refuted, and no `(solve :no-search)`.
+/// The fixture states `:no-search` since S1f.6.36, which runs no rung; the
+/// stuck rung is this program's. Written into a scratch directory the caller
+/// holds, as an absolute path, which `repo_root().join` keeps.
+fn stuck_program() -> (Scratch, String) {
+    let dir = Scratch::new("ein-obligation-rung-stuck");
+    let path = dir.path().join("stuck.ein");
+    std::fs::write(
+        &path,
+        "(import std.algebra :symbols (total-owed))\n\
+         (relation is-a  T T :why \"{?1} is a {?2}\")\n\
+         (relation likes Person Food :why \"{?1} likes {?2}\")\n\
+         (is-a Ann Person) (is-a Bob Person)\n\
+         (is-a Soup Food)  (is-a Stew Food)\n\
+         (total-owed likes is-a)\n\
+         (likes Bob Stew)\n\
+         (not (likes Ann Soup)) (not (likes Ann Stew))\n\
+         (solve :no-hypothesis (is-a))\n",
+    )
+    .expect("written");
+    let path = path.to_string_lossy().into_owned();
+    (dir, path)
+}
+
+/// `tests/stdlib/algebra/24_total_owed_satisfied.ein`'s program with no
+/// `(solve :no-search)`: rung 2 runs and owes nothing.
+fn discharged_program() -> (Scratch, String) {
+    let dir = Scratch::new("ein-obligation-rung-discharged");
+    let path = dir.path().join("discharged.ein");
+    std::fs::write(
+        &path,
+        "(import std.algebra :symbols (total-owed))\n\
+         (relation is-a  T T :why \"{?1} is a {?2}\")\n\
+         (relation likes Person Food :why \"{?1} likes {?2}\")\n\
+         (is-a Ann Person) (is-a Bob Person)\n\
+         (is-a Soup Food)  (is-a Stew Food)\n\
+         (total-owed likes is-a)\n\
+         (likes Ann Soup) (likes Bob Stew)\n",
+    )
+    .expect("written");
+    let path = path.to_string_lossy().into_owned();
+    (dir, path)
+}
+
 /// The distinct `rung` lines a run narrated, in first-seen order.
 fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
     let buffer = Buffer::new();
@@ -142,7 +188,8 @@ fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
 #[test]
 fn the_ladder_dispatches_by_what_the_program_declares() {
     // (file, the modes its generation calls report)
-    let cases: [(&str, &[&str]); 5] = [
+    let (_dir, stuck) = stuck_program();
+    let cases: [(&str, &[&str]); 6] = [
         // Rung 1 — and it narrates nothing, exactly as rung 3 does, which is
         // what keeps every pre-M1d stream byte-identical. The claim that this
         // is an *override* rather than an absence of debt is the assertion
@@ -152,8 +199,12 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         ("examples/zebra2-obligations.ein", &["obligations"]),
         // owes, and every candidate that would pay it is stored false. Until
         // M1f S1f.6.34 this was `23_total_owed.ein`, whose `:no-hypothesis`
-        // named the relation it owes, which is refused at load since.
-        ("tests/region/04_owing.ein", &["stuck"]),
+        // named the relation it owes, which is refused at load since; until
+        // S1f.6.36 `tests/region/04_owing.ein`, which states `:no-search` since.
+        (&stuck, &["stuck"]),
+        // `(solve :no-search)` (M1f S1f.6.36): no rung runs, and none narrates,
+        // though root owes.
+        ("tests/region/04_owing.ein", &[]),
         // an obligation whose guard scans a relation the rung proposes.
         (
             "tests/stdlib/bijection/06_blind_enumeration.ein",
@@ -191,8 +242,10 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// is not recorded as a model by the read-out at all; and since M1f S1f.6.34 a
 /// list that names a relation an obligation owes is refused at load (*"filtered
 /// obligations are nonsense by definition"*), so a state is stuck because
-/// every candidate that would pay it is already refuted, `04_owing.ein`'s Ann,
-/// who likes neither food: owed 1, branched on 1, declined 0.
+/// every candidate that would pay it is already refuted, Ann's of
+/// [`stuck_program`], who likes neither food: owed 1, branched on 1, declined
+/// 0 (`tests/region/04_owing.ein` until M1f S1f.6.36, which states
+/// `:no-search` since and runs no rung).
 ///
 /// **The word moved at [S1d.2.6]**, which is what this stage's evidence bought:
 /// a stuck state reports `Open`, not `Solution`. The two halves stay separate
@@ -204,7 +257,8 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn owing_and_unable_to_branch_is_stuck_and_says_so() {
-    let rel = "tests/region/04_owing.ein";
+    let (_dir, rel) = stuck_program();
+    let rel = rel.as_str();
     let rows = rungs(rel);
     assert_eq!(
         rows,
@@ -222,14 +276,16 @@ fn owing_and_unable_to_branch_is_stuck_and_says_so() {
 
 /// **A discharged state proposes nothing, and that is what completes it.**
 ///
-/// The other half of the same question: `24_total_owed_satisfied.ein` is
-/// `23_total_owed.ein`'s twin with the witness present. Rung 2 runs, owes nothing, proposes
+/// The other half of the same question: [`discharged_program`] is
+/// `24_total_owed_satisfied.ein`'s, `23_total_owed.ein`'s twin with the witness
+/// present, without the `:no-search` both state since M1f S1f.6.36. Rung 2 runs, owes nothing, proposes
 /// nothing — and *not* because anything was scoped out. The pair is what makes
 /// "complete means discharged" a distinction rather than a coincidence, since
 /// both files report `k = 1` and only one of them owes.
 #[test]
 fn a_discharged_state_owes_nothing_and_declines_nothing() {
-    let rows = rungs("tests/stdlib/algebra/24_total_owed_satisfied.ein");
+    let (_dir, rel) = discharged_program();
+    let rows = rungs(&rel);
     assert_eq!(rows, [("obligations".to_string(), 0, 0, 0)]);
 }
 

@@ -483,3 +483,184 @@ fn the_corpus_fixture_is_refused_on_every_command() {
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
+
+// ── `(solve :no-search)` beside each mechanism — M1f S1f.6.36 ───────────
+
+/// `text` with ` :no-search` written last in its `(solve …)`, which every
+/// position before it keeps; a `(solve …)` form is written where it has none.
+fn with_no_search(text: &str) -> String {
+    let Some(start) = text.find("(solve") else {
+        return text.replacen("(query", "(solve :no-search)\n(query", 1);
+    };
+    let mut depth = 0i32;
+    for (i, c) in text[start..].char_indices() {
+        match c {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    let at = start + i;
+                    return format!("{} :no-search{}", &text[..at], &text[at..]);
+                }
+            }
+            _ => {}
+        }
+    }
+    unreachable!("a (solve …) form closes")
+}
+
+/// **`:no-search` relaxes no conflict** (the stage's *must not*, Q-M1f.254):
+/// every shape S1f.6.34 refuses is refused beside it with the same line, the
+/// hrule read as declared as an obligation is.
+#[test]
+fn no_search_relaxes_no_conflict() {
+    let scratch = Scratch::new("ein-mechanism-no-search-conflicts");
+    let mut bad = Vec::new();
+    for (shape, text, _) in refused() {
+        let without = scratch.path().join(format!("{shape}.ein"));
+        let beside = scratch.path().join(format!("{shape}-ns.ein"));
+        std::fs::write(&without, &text).expect("written");
+        std::fs::write(&beside, with_no_search(&text)).expect("written");
+        for cmd in [&["solve"][..], &["test"], &["saturate"]] {
+            let w = ein(&[cmd, &[without.to_str().expect("utf-8")]].concat());
+            let b = ein(&[cmd, &[beside.to_str().expect("utf-8")]].concat());
+            let rename = |s: &str| s.replace(&format!("{shape}-ns.ein"), &format!("{shape}.ein"));
+            if w.code != b.code || w.err != rename(&b.err) || !b.err.starts_with("kb load error: ")
+            {
+                bad.push(format!(
+                    "{shape} {cmd:?}: exit {} beside :no-search, {} without\n  beside: {}\n  without: {}",
+                    b.code, w.code, b.err, w.err
+                ));
+            }
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
+/// The parts, with no claim: a claim is about R, which these state.
+fn bare(parts: &[&str]) -> String {
+    parts.concat()
+}
+
+/// **What `:no-search` makes dead is one note each, and beside an obligation
+/// or a closure it is silent**: an hrule *proposes no candidate*, a list
+/// *filters no candidate*, the notes S1f.6.34 prints beside an hrule replaced.
+/// Each answers R as root alone: {∅}, or empty where root owes.
+#[test]
+fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead() {
+    let scratch = Scratch::new("ein-mechanism-no-search-notes");
+    let h = "(solve :hrules (guess (at Color House)) :no-search)\n";
+    let hrule = "its :no-search states the lattice is root alone, so hrule 'guess' proposes no \
+                 candidate";
+    let list = |key: &str| {
+        format!(
+            "its :{key} filters no candidate — the program states :no-search, whose lattice is \
+             root alone"
+        )
+    };
+    let cases: Vec<(&str, String, Vec<String>, &str)> = vec![
+        (
+            "alone",
+            bare(&[DECL, "(solve :no-search)\n"]),
+            vec![],
+            "in R",
+        ),
+        (
+            "o",
+            bare(&[OWED, DECL, OWE_AT, "(solve :no-search)\n"]),
+            vec![],
+            "owes",
+        ),
+        (
+            "o-paid",
+            bare(&[
+                OWED,
+                DECL,
+                OWE_AT,
+                "(at Red H1) (at Blue H2)\n(solve :no-search)\n",
+            ]),
+            vec![],
+            "in R",
+        ),
+        (
+            "c",
+            bare(&[DECL, "(__closed__ at)\n(solve :no-search)\n"]),
+            vec![],
+            "in R",
+        ),
+        (
+            "h",
+            bare(&[DECL, GUESS, h]),
+            vec![hrule.to_string()],
+            "in R",
+        ),
+        (
+            "h-o",
+            bare(&[OWED, DECL, GUESS, OWE_AT, h]),
+            vec![hrule.to_string()],
+            "owes",
+        ),
+        (
+            "hr",
+            bare(&[DECL, "(solve :hypothesis-relations (at) :no-search)\n"]),
+            vec![list("hypothesis-relations")],
+            "in R",
+        ),
+        (
+            "nh",
+            bare(&[DECL, "(solve :no-hypothesis (near) :no-search)\n"]),
+            vec![list("no-hypothesis")],
+            "in R",
+        ),
+        (
+            "h-nh-dead",
+            bare(&[
+                DECL,
+                GUESS,
+                "(solve :hrules (guess (at Color House)) :no-hypothesis (near) :no-search)\n",
+            ]),
+            vec![hrule.to_string(), list("no-hypothesis")],
+            "in R",
+        ),
+    ];
+    let mut bad = Vec::new();
+    for (shape, text, notes, root) in cases {
+        let file = scratch.path().join(format!("ns-{shape}.ein"));
+        std::fs::write(&file, &text).expect("written");
+        let f = file.to_str().expect("utf-8");
+        let r = ein(&["solve", f]);
+        // `ein` keeps stderr; stdout, for the rows, is read again.
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(["solve", f])
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs");
+        let stdout = String::from_utf8_lossy(&out.stdout);
+        if r.code != 0 {
+            bad.push(format!("{shape}: exit {}: {}", r.code, r.err));
+            continue;
+        }
+        let got: Vec<&str> = r
+            .err
+            .lines()
+            .filter(|l| l.starts_with("note: ") && l.contains("solve: its :"))
+            .collect();
+        let ok = got.len() == notes.len() && notes.iter().zip(&got).all(|(w, g)| g.contains(w));
+        if !ok {
+            bad.push(format!("{shape}: notes {got:?}, want {notes:?}"));
+        }
+        if !stdout.contains("no candidate: the program states :no-search") {
+            bad.push(format!(
+                "{shape}: the universe row does not say :no-search:\n{stdout}"
+            ));
+        }
+        let standing = match root {
+            "in R" => stdout.contains("in R — root is alive and owes nothing"),
+            _ => stdout.contains("every alive node owes"),
+        };
+        if !standing {
+            bad.push(format!("{shape}: root is not {root}:\n{stdout}"));
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}

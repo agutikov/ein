@@ -105,6 +105,9 @@ pub enum Mode {
     /// M1e2 S1e2.2.15 over `D`, or a projection that will not resolve), so
     /// the call fell through to the blind enumerator.
     Declined,
+    /// The program states `(solve :no-search)` (M1f S1f.6.36): no rung ran,
+    /// and nothing was proposed. Never narrated, as rung 1 is not.
+    NoSearch,
 }
 
 impl Mode {
@@ -115,6 +118,7 @@ impl Mode {
             Mode::Obligations => "obligations",
             Mode::Stuck => "stuck",
             Mode::Declined => "declined",
+            Mode::NoSearch => "no-search",
         }
     }
 }

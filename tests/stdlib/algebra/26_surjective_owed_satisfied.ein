@@ -29,10 +29,14 @@
 (likes Ann Soup)             ; the line `25` does not have
 (likes Bob Stew)
 
-;; `likes` is not listed (M1f S1f.6.34): `surjective-owed` owes it, and a list may not
-;; filter what an obligation owes. Root owes nothing, so the rung proposes nothing.
+;; Root alone (M1f S1f.6.36): this file's question is root's verdict, and root
+;; owes nothing, so R is root alone. Until S1f.6.34 it said so with
+;; `:no-hypothesis (is-a likes)`, keeping the obligation from proposing
+;; `likes`, which S1f.6.34 refused (*"filtered obligations are nonsense by
+;; definition"*, the user, 2026-11-13); S1f.6.34 took `likes` out of the list,
+;; which then filtered nothing. `:no-search` says what the list meant.
 (solve
-  :no-hypothesis (is-a)
+  :no-search
   :expect (region (model (likes Ann Soup) (likes Bob Stew))))
 
 (query

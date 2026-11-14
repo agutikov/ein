@@ -225,7 +225,7 @@ fn past_row(path: &Path, n: usize, jobs: usize) -> Json {
         None
     };
     json!({
-        "route": match a.route { explore::Route::DownSet => 1, explore::Route::Cube => 2, explore::Route::States => 3, explore::Route::Tree => 4 },
+        "route": match a.route { explore::Route::DownSet => 1, explore::Route::Cube => 2, explore::Route::States => 3, explore::Route::Tree => 4, explore::Route::Root => 5 },
         "licences": a.licences.iter().map(|l| l.label()).collect::<Vec<_>>(),
         "exhausted": a.exhausted,
         "stopped": a.stopped.as_ref().map(|s| format!("{s:?}")),

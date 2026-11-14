@@ -43,15 +43,16 @@
 
 (likes Bob Stew)
 
-;; Since M1f S1f.6.34 the obligation proposes what would pay Soup's debt, a
-;; preimage from Ann or Bob, and R is the three states that do; root owes and is
-;; not in R. Until then `:no-hypothesis (is-a likes)` kept it from proposing
-;; them and the claim was `(owing (model (likes Bob Stew)))` (`23`'s note).
+;; Root alone (M1f S1f.6.36): this file's question is what root owes: nothing
+;; is guessed, so R is empty and root, which owes, is the owing node it stops
+;; at. Until S1f.6.34 it said so with `:no-hypothesis (is-a likes)`, keeping
+;; the obligation from proposing `likes`, which S1f.6.34 refused (*"filtered
+;; obligations are nonsense by definition"*, the user, 2026-11-13); S1f.6.34
+;; let the obligation propose instead, and the claim was the three states that
+;; pay. `:no-search` says what the list meant.
 (solve
-  :no-hypothesis (is-a)
-  :expect (region (model (likes Ann Soup) (likes Bob Stew))
-                  (model (likes Bob Soup) (likes Bob Stew))
-                  (model (likes Ann Soup) (likes Bob Soup) (likes Bob Stew))))
+  :no-search
+  :expect (region (owing (model (likes Bob Stew)))))
 
 (query
   :goal (likes ?who ?what))

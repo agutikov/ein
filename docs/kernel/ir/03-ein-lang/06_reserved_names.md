@@ -67,7 +67,7 @@ same set.
 | `rule` | `(rule N (?p…) :match … :assert …)` | declare a saturation rewrite rule | `kb.from_ir` |
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
 | `query` | `(query :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
-| `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect <claim>])` | the problem's lattice, at most one per file, and its expected region (M1e2 S1e2.1a.4) | `kb.from_ir` (`ein_core::Solve`); `hypgen`, `hrule`; `ein-ir/claim.rs`, `ein-infer/claim.rs` |
+| `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:no-search] [:expect <claim>])` | the problem's lattice, at most one per file, and its expected region (M1e2 S1e2.1a.4) | `kb.from_ir` (`ein_core::Solve`); `hypgen`, `hrule`; `ein-ir/claim.rs`, `ein-infer/claim.rs` |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation, and since M1f S1f.7.5 a query's `:goal`'s, expands to BODY before compilation (P1.8 S1.5.9); a fact headed by `N`, or holding such a form, is refused at load since M1f S1f.7.12, and so is a relation declared as `N` | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective (P1.8 S1.8.A1–A2) | `kb.from_ir` (grammar A2; resolve A3) |
@@ -238,7 +238,8 @@ where it read `Solution` before.
 [`tests/region/04_owing.ein`](../../../../tests/region/04_owing.ein)
 is that state with a number attached (`tests/stdlib/algebra/23_total_owed.ein`
 was until M1f S1f.6.34, which refuses the `:no-hypothesis` that kept its
-obligation from proposing; it was one of the twelve corpus entries the word
+obligation from proposing, and both state `(solve :no-search)` since S1f.6.36, which
+is how a program keeps it from proposing; it was one of the twelve corpus entries the word
 moved). The distinction it draws is *no model* against *not yet
 a model*, so `false` outranks it and a discharged model outranks it; it exits
 **0** like the other three. It is **scoped** — only a program that *states* an
@@ -347,6 +348,7 @@ and `not` does, a stored negation being a fact
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator and the obligations rung to the listed relations, never the hrule rung; every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are (M1f S1f.7.8, `defined_behaviour.md` § 4.20) | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire); read by the blind enumerator and the obligations rung, never the hrule rung | `hypgen` (`NO_HYPOTHESIS`) |
+| `no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, no rung runs and nothing is proposed, whatever else the program declares, so R is {∅} where root is alive and discharged and empty otherwise (M1f S1f.6.36); the way to say *judge root alone* | `hypgen` (`NO_SEARCH`, `declares_no_search`); `mechanisms` |
 | `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein.y`'s `Claim` (shape, at the parse) + `ein-ir/expect.rs` (its relations, at load) + `ein-infer/expect.rs` (the comparison) |
 | `expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region (M1e2 S1e2.1a.4): R's states, `(merged …)` generators, `(owing …)`, read only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a parse error since M1f S1f.5.5's swap, and was a load error until then; `model` stays a name | `ein.y`'s `RegionClaim` (shape, at the parse) + `ein-ir/claim.rs` (what the shape cannot say, at load) + `ein-infer/claim.rs` (against R) |
 
@@ -358,8 +360,9 @@ form takes the keywords its production in
 triggers in the same table are facts, not keywords); the obsolete `:mode`,
 accepted and ignored until the swap, is refused like any other. It was seven
 until M1e2 S1e2.1a.4 moved `:hrules`, `:hypothesis-relations` and
-`:no-hypothesis` to `(solve …)`, which takes those three and `:expect`; on a
-query each of them is a parse error whose note names `(solve …)`. Until
+`:no-hypothesis` to `(solve …)`, which takes those three and `:expect`, and
+`:no-search` since M1f S1f.6.36; on a query each of the four is a parse error
+whose note names `(solve …)`. Until
 T1f.5.5.5 the loader held the two lists, `QUERY_KEYWORDS` and `SOLVE_KEYWORDS`
 in [`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), which no
 program reached after the swap. The diagnostics are in
@@ -382,6 +385,7 @@ obligations rung declines, the blind enumerator. H is built once, at root.
 | HR | `(solve :hypothesis-relations …)` | a whitelist, *speculate only these*; `()` names none | rungs 2 and 3; the read-out's `outside` row |
 | NH | `(solve :no-hypothesis …)` | a blacklist, *never these* | rungs 2 and 3; the `outside` row |
 | C | `(__closed__ R)`, stated or derived | excludes R from rungs 2 and 3, and so keeps R out of `D`, which makes an `absent` over it closed-world | rungs 2 and 3; the `outside` row; no matcher |
+| NS | `(solve :no-search)` (M1f S1f.6.36) | no rung runs: H is empty, the lattice root alone; an obligation judges root and proposes nothing | the ladder, before rung 1 |
 
 No list and no closure filters an hrule's candidates. **The pairs** (the user's table of 2026-11-13, refused or noted
 at load on every command since S1f.6.34, [`defined_behaviour.md` §
@@ -402,6 +406,12 @@ at load on every command since S1f.6.34, [`defined_behaviour.md` §
 
 An obligation is read as declared, a plan root's activators compile, whether or not root owes it; a derived closure
 and a derived activator are read where they are derived, at root's fixpoint.
+
+**`:no-search` beside each** (M1f S1f.6.36): with O it is silent, the obligation judging root alone, which is its use,
+and with C silent too; with H one `note:`, *the hrule proposes no candidate*, and with HR or NH one, *the list filters
+no candidate*, which replace the notes above. It relaxes no conflict: H, O and the lists are read as declared, so
+every row of the table stands beside it
+([Q-M1f.254](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f254--s1f634s-conflicts-beside-solve-no-search)).
 
 ## Not reserved (removed)
 

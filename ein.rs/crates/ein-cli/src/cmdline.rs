@@ -510,6 +510,27 @@ fn solve_command() -> Command {
                      described; every verdict exits 0",
                 ),
         )
+        // M1f S1f.6.36, the user's words of 2026-11-14: a flag that declines
+        // to discover R, never one that changes it.
+        .arg(
+            Arg::new("no-search")
+                .long("no-search")
+                .action(ArgAction::SetTrue)
+                .conflicts_with_all([
+                    "solutions",
+                    "single",
+                    "minimal",
+                    "maximal",
+                    "count",
+                    "monotone",
+                ])
+                .help(
+                    "root alone: saturate root and report it, alive or dead, \
+                     discharged or what it owes, and do not search R. It changes no \
+                     R, and states none: a claim root does not decide is not \
+                     checked. A bare `ein solve FILE` describes R",
+                ),
+        )
         .arg(
             Arg::new("region-budget")
                 .long("region-budget")
@@ -819,6 +840,17 @@ fn test_command() -> Command {
                      established either way",
                 ),
         )
+        // M1f S1f.6.36: root alone, as `ein solve --no-search` reads it.
+        .arg(
+            Arg::new("no-search")
+                .long("no-search")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "ask each file root alone, as `ein solve --no-search` does: a \
+                     claim root decides is held or FAILED as the full run decides \
+                     it, and every other is NOT CHECKED. R is not searched",
+                ),
+        )
         // The walk's two, retired at M1e2 S1e2.1a.5's switch with `solve`'s.
         .arg(
             Arg::new("max-set-size")
@@ -890,6 +922,14 @@ fn oracle_command() -> Command {
         .about("the solution region by brute force: every subset of the root candidates saturated (M1e2)")
         .arg(Arg::new("file").required(true))
         .arg(no_require_why())
+        // Refused with a sentence (`crate::oracle::REFUSED`), as a retired
+        // option of `solve` is: the oracle's one question is R (M1f S1f.6.36).
+        .arg(
+            Arg::new("no-search")
+                .long("no-search")
+                .hide(true)
+                .action(ArgAction::SetTrue),
+        )
         .arg(
             Arg::new("region-limit")
                 .long("region-limit")

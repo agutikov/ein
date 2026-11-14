@@ -46,26 +46,17 @@
   :assert (undecided Ann Green)
   :why    "Green's column is only one-third excluded, so nothing may be forced into it")
 
-;; ── Nothing is guessed (M1f S1f.6.34) ─────────────────────────────────────
-;;
-;; This file's question is root's saturation. `bijective-setup` activates
-;; `total-owed` and `surjective-owed` on `wears`, so root owes, and until
-;; S1f.6.34 `:no-hypothesis (is-a wears undecided)` kept those obligations from proposing
-;; what they owe; a list may not filter what an obligation owes since
-;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13).
-;; The program says what it meant instead: its own generator, an hrule that
-;; proposes only the `wears` root already holds, so nothing new is guessed and
-;; the obligations judge root alone, which owes. R and the claim did not move.
-;; Letting the obligations propose would solve the bijection, and a state that
-;; holds all of it derives each negative two ways and each forced arrow by
-;; search as well as by elimination, so a defect in one of those rules would go
-;; unseen (`utils/stdlib_mutants.py`: six mutants survived it).
-(hrule as-stated ()
-  :match  (wears ?a ?c)
-  :assert (wears ?a ?c)
-  :why    "suppose {?a} wears {?c}, as stated")
-
+;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; nothing is guessed, and root, which owes, is the owing node R stops at.
+;; Until S1f.6.34 it said so with `:no-hypothesis (is-a wears undecided)`,
+;; keeping the obligation from proposing `wears`, which S1f.6.34 refused
+;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13);
+;; S1f.6.34 wrote an hrule `as-stated` instead, proposing only the `wears` root
+;; holds, since letting the obligations propose solves the bijection and six
+;; mutants of the negative-completion and elimination rules survive it.
+;; `:no-search` says what the list meant.
 (solve
+  :no-search
   :expect (region (owing (model (wears Cid Red)
                                 (not (wears Ann Red)) (not (wears Bob Red))
                                 (not (wears Cid Green)) (not (wears Cid Blue))

@@ -4886,6 +4886,13 @@ its question was root's saturation or root's verdict alone. None is an accident 
 printing as before too and the bijection fixtures `02` and `03` one `outside` line more; nine answer a different R,
 by their own edit and not the engine's, each claim restated and held; one is refused.
 
+**Restated 2026-11-14 by [S1f.6.36](p1f.6_calculator/s1f.6.36_no_search.md)**
+([Q-M1f.260](#q-m1f260--which-of-s1f634s-twenty-four-say-no-search)): `(solve :no-search)` is the sanctioned way to say
+what the twenty-four said with a list, so the 21 whose question was root alone are back to their program and claim as
+they were before S1f.6.34, `:no-search` in their list's place, and (a)'s workarounds are gone (the `as-stated` hrules,
+the fan-outs written out, the added negatives, `algebra/23` and `25`'s second question). `bijection/06`, `closure/02`
+and the refusal's fixture stay as (a) left them.
+
 ### Q-M1f.247 — What the closure (ii) follows: a relation of any kind, or a declared one
 
 **Raised** 2026-11-14 by [S1f.6.35](p1f.6_calculator/s1f.6.35_imports_by_full_name.md#t1f6351--the-examples-first-on-a-prototype-done-and-the-stop)'s T1, on its prototype of (h). The ruling: *"a listed or kept relation to

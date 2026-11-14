@@ -24,7 +24,7 @@ documentation split.
 |------------|--------------------------------|-----------------------------------------|---------------------------------------------------|
 | `NAME`     | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | atoms; a pattern's or a fact's relation; rule / type / step names. **The name rule** (M1f [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md), the user's ruling of 2026-11-06): a run of ASCII name characters, ASCII forever, each printed as written and reloading to itself, so `7` and `07` are two names; no character has a meaning of its own, `*` among them (the transitive-closure convention `R*`, S1.5.8c.2). A reserved word is never a name and a position word is one wherever a name goes ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 1); a token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused (fact 5), and `Жук` is refused at its `Ж`, a character that is not ASCII outside a string (fact 6, [below](#what-a-programs-text-may-hold)). Until S1f.5.5's swap this row was `SYMBOL`, `[A-Za-z][A-Za-z0-9_*-]*`, a letter first, a run of digits an `INT` and `=` a reserved head |
 | `VAR`      | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | pattern variables — bound by `:match`, reused in `:assert`: `?` and a name's characters. Until the swap `\?[A-Za-z][A-Za-z0-9_*-]*` |
-| `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:match`, `:rule`, `:source`             | a form's clause markers, each **always** followed by its value. **Each form takes a fixed set** ([§ 2's table](#the-keywords-each-form-takes)), each keyword a token of the forms that take it, and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact (M1f [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), the user's ruling of 2026-11-07, [Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)). Until S1f.5.5's swap a keyword was one token for every form: only `query`, `solve` and `config` refused one they did not know, and every other form, and every term, dropped one in silence (D-15, G-15, G-22; W32's seven rows); S1f.5.11's T1f.5.11.2 retired the compiler's and the macro expander's drops |
+| `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:match`, `:rule`, `:source`             | a form's clause markers, each **always** followed by its value but `(solve …)`'s `:no-search`, a flag (M1f S1f.6.36). **Each form takes a fixed set** ([§ 2's table](#the-keywords-each-form-takes)), each keyword a token of the forms that take it, and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact (M1f [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), the user's ruling of 2026-11-07, [Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)). Until S1f.5.5's swap a keyword was one token for every form: only `query`, `solve` and `config` refused one they did not know, and every other form, and every term, dropped one in silence (D-15, G-15, G-22; W32's seven rows); S1f.5.11's T1f.5.11.2 retired the compiler's and the macro expander's drops |
 | `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, Q-M1e2.13 (a)); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (Q-M1e2.14 (c), S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
 | `INT`      | —                              | —                                        | **none since M1f S1f.5.5's swap**: a run of digits is a `NAME` like any other (S1f.5.4's ruling, the user's of 2026-11-06), so `7`, `07` and `-7` are three names, each printed as written, and a fact of one is never a fact of another. Until the swap `INT`, `-?[0-9]+`, lexed *integer atoms*, `007` and `7` one value; `:priority 10`, the one keyword that took one, went with S1f.5.15. The int value kind went with [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 (2026-11-09): a value is a name or a nested fact |
 | `TEXT`     | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else since M1f S1f.5.5's swap**, where this row was `STRING` (S1f.5.2's ruling, the user's of 2026-11-06, [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)): the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, which the read-out, `--trace`, `saturate --dump`, a state file and `render program` carry byte for byte (`ein-cli/tests/natural_language_text.rs`). Written anywhere else, a fact's or a rule's argument, a name, a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact. A `\u{…}` names a Unicode scalar value ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 4). **Until the swap** a string was also a **fact's argument**, top-level or nested, the name its body spells: `"foo"` and `foo` were one value (M1e2 S1e2.2.16, 2026-11-04); and in a **rule** the symbol it names at any depth, a name of the program as that atom is (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04), where until then the rule compiler did not lower one (W18) |
@@ -120,7 +120,7 @@ key on it).
 | `rule` | a saturation rewrite rule | `(rule <name> (<param-vars>*) :match … :assert … …)` |
 | `hrule` | a hypothesis-generation rule (drives the blind enumerator) | same shape as `rule` |
 | `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:over …] [:expect …])`; several per file |
-| `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect …])`; at most one per file |
+| `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:no-search] [:expect …])`; at most one per file |
 | `config` | solver knobs | `(config [:lattice-sanity-check true\|false] [:record-alternative-justifications true\|false])` |
 | `import` | bring a module's declarations and facts into the program ([§ Import](#import)) | `(import <module> [:as <alias> \| :symbols (<name>+)])` |
 | `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace (step …)*)` |
@@ -152,6 +152,7 @@ Which keywords a form requires, and that each appears once, stay the loader's.
 | | `:over` | `all`, `minimal` or `maximal`: which states | no |
 | | `:expect` | a claim: the answer stated | no |
 | `solve` | `:hrules`, `:hypothesis-relations`, `:no-hypothesis` | what may be guessed: the lattice | no |
+| | `:no-search` | nothing: a flag, no value, the lattice root alone (M1f S1f.6.36) | no |
 | | `:expect` | a claim about the region | no |
 | `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags, `true` or `false` ([`configuration.md`](../../configuration.md)) | no |
 | `import` | `:symbols` | the names imported, flat: each selects the module's declaration of it and its facts of that relation ([§ Import](#import)) | no |
@@ -843,6 +844,7 @@ included, in silence.
   [:hrules (<activator> …)]                ; hypothesis-generator activators
   [:hypothesis-relations (<rel> …)]        ; speculate only these
   [:no-hypothesis (<rel> …)]               ; …or never these
+  [:no-search]                             ; nothing: the lattice is root alone
   [:expect <claim>])                       ; the expected region
 ```
 
@@ -858,10 +860,27 @@ region and about specific solutions"*.
 - **At most one per file.** A second is a load error. With none, the lattice is
   the default ladder's, unrestricted.
 - **`(solve)` is valid**, as `(config)` is: the default lattice, stated.
-- **It takes four keywords**, the three above and `:expect`, and any other is
-  refused at the parse (S1f.5.11), as a query's are. On a `(query …)` each of
-  the three is refused at the parse too, with a note that names `(solve …)`
-  (a load error until M1f S1f.5.5's swap).
+- **It takes five keywords**, the three above, `:no-search` and `:expect`, and
+  any other is refused at the parse (S1f.5.11), as a query's are. On a
+  `(query …)` each of the four that choose the lattice is refused at the parse
+  too, with a note that names `(solve …)` (a load error until M1f S1f.5.5's
+  swap).
+- **`:no-search` is a flag**, the one keyword that takes no value (M1f
+  [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
+  the user's words of 2026-11-13, *"some explicit flag in (solve ) ? instead of
+  abusing bugs"*): **the program states that its lattice is root alone**. No
+  rung runs, whatever hrules, obligations or lists it also declares, so no
+  candidate is proposed, H is empty, and R is {∅} where root is alive and
+  discharged and empty otherwise; an obligation judges root and proposes
+  nothing. It is part of the program, as the lists are, so every command reads
+  it, and a bare `ein solve` describes that R, its `universe` row saying *the
+  program states :no-search*. A value after it is refused at the parse, with a
+  note that it takes none. It is the way to say *judge root alone*: a list
+  that names what an obligation owes is refused
+  ([`defined_behaviour.md` § 4.27](../../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634)), and an hrule
+  that proposes only what root holds is a workaround. `ein solve --no-search`
+  is another thing, a command declining to discover R
+  ([`configuration.md` § 3.3](../../configuration.md#33-what-an-option-can-do-to-the-answer)).
 - **`solve` lexes as a keyword**, as `query` and `config` do, so it cannot be
   a relation name ([`00_ebnf.md`](00_ebnf.md)).
 - `:hrules` is read by the hrule rung, the other two by the candidate filter
@@ -876,7 +895,10 @@ region and about specific solutions"*.
   in both lists; and no listed relation is closed. An hrule's candidates are no
   closed relation's, and an obligation owes none. A list an hrule leaves
   filtering nothing, or a `:no-hypothesis` name `:hypothesis-relations` or a
-  closure already says, is one `note:` line on stderr.
+  closure already says, is one `note:` line on stderr. `:no-search` relaxes no
+  conflict: beside an obligation or a closure it is silent, and beside an
+  hrule or a list one `note:` says that the hrule proposes, or the list
+  filters, nothing (M1f S1f.6.36).
 - **Every name a list holds names something the program has** (M1f S1f.7.8,
   W76), or the program is refused at load, one line per name, on every
   command
@@ -1131,6 +1153,14 @@ preference:
 - **It runs only what the expectations need.** A query with no `:expect` states
   nothing and is never solved, so a directory of programs costs one load each
   plus a search for each claim.
+- **`--no-search` asks no question about R** (M1f
+  [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md)):
+  each file is read at root alone, as `ein solve --no-search` reads it, with no
+  fallback. A dead root decides every claim as the full run does (L0); an alive
+  root refutes `(false)`, and where ∅ is in R a query whose class at ∅ its claim
+  does not list; every other claim is `NOT CHECKED`, and moves no exit code, the
+  run having been asked not to search
+  ([Q-M1f.257](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f257--ein-test---no-searchs-exit-code)).
 - **Exit 1 means a claim is false**, so a *load* error takes **2** — the code
   that already means "this run is not a verdict". A runner that cannot tell a
   broken file from a false claim is the one failure a test runner must not

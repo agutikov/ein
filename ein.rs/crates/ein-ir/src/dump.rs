@@ -24,6 +24,10 @@ const INDENT: &str = "  ";
 /// The default column budget.
 pub const DEFAULT_WIDTH: usize = 80;
 
+/// The keywords that take no value, each a flag whose pair holds `()`:
+/// `(solve … :no-search)` (M1f S1f.6.36), the grammar's one.
+pub const FLAGS: [&str; 1] = ["no-search"];
+
 /// A synthetic head (`#params`, `#empty`, `#list`: [`ein_core::text::is_internal`])
 /// is printed without a head at all. Until T1f.5.5.8 the test was a leading
 /// `@`, which the name rule makes a name character, so a form a program wrote
@@ -72,8 +76,13 @@ fn compact_into(ast: &Ast, node: NodeId, out: &mut String) {
         Node::Str(s) => out.push_str(&escape_string_literal(ast.sym(s))),
         Node::KwPair { key, value } => {
             compact_into(ast, key, out);
-            out.push(' ');
-            compact_into(ast, value, out);
+            // A flag holds `()` for its value and is written without it (M1f
+            // S1f.6.36), so the text reads back as the program wrote it.
+            let flag = matches!(ast.node(key), Node::Keyword(k) if FLAGS.contains(&ast.sym(k)));
+            if !flag {
+                out.push(' ');
+                compact_into(ast, value, out);
+            }
         }
         Node::SForm { head, args } => {
             let args = ast.args(args).to_vec();
@@ -168,6 +177,14 @@ mod tests {
     /// :assert Y`, a name where a premise goes, and `(x ())`, `()` as a fact's
     /// argument, which the grammar refuses (`()` is a whole `:match` or
     /// `:assert`, the paper grammar's default 7).
+    #[test]
+    fn a_flag_prints_without_its_value() {
+        assert_eq!(
+            round("(solve :no-search :expect (false))"),
+            "(solve :no-search :expect (false))\n"
+        );
+    }
+
     #[test]
     fn synthetic_heads_print_without_one() {
         assert_eq!(

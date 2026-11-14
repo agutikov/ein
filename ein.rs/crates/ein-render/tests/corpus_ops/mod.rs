@@ -530,6 +530,7 @@ fn route_words(answer: &explore::Answer) -> &'static str {
         explore::Route::States if describe => "the state route, every alive state once",
         explore::Route::States => "the state route, each state at most once",
         explore::Route::Tree => "the obligation tree, over states",
+        explore::Route::Root => "none, root alone (--no-search)",
     }
 }
 

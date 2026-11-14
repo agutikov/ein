@@ -317,6 +317,7 @@ fn of_described(d: Described) -> Lattice {
             Route::Cube => "route 2",
             Route::States => "state route",
             Route::Tree => "obligation tree",
+            Route::Root => "root alone",
         },
         monotone: d.monotonicity.is_monotone(),
         any_alive: d.any_alive,

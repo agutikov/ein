@@ -64,6 +64,24 @@ pub const HYPOTHESIS_RELATIONS: &str = "hypothesis-relations";
 /// rules on them still fire. Reserved engine string.
 pub const NO_HYPOTHESIS: &str = "no-hypothesis";
 
+/// The `(solve …)` flag that states the lattice is root alone (M1f
+/// S1f.6.36): no rung runs, so no candidate is proposed whatever the program
+/// also declares, and `R` is {∅} where root is alive and discharged, empty
+/// otherwise. Reserved engine string.
+pub const NO_SEARCH: &str = "no-search";
+
+/// Does the program state `(solve … :no-search)`? Read off the `(solve …)`
+/// block as written, as the two lists are (`query_relations`): the flag is
+/// part of the program, and every command reads it.
+pub fn declares_no_search(program: &ein_core::Program, ast: &Ast) -> bool {
+    program.solve().is_some_and(|solve| {
+        solve.kw_pairs.iter().any(|&pair| {
+            matches!(ast.node(ein_ir::NodeId(pair.0)), ein_ir::Node::KwPair { key, .. }
+                if matches!(ast.node(key), ein_ir::Node::Keyword(k) if ast.sym(k) == NO_SEARCH))
+        })
+    })
+}
+
 /// A candidate-level filter — the name it bumps in `stats.filtered`, and the
 /// `verdict` a `hyp` event carries.
 ///
@@ -377,6 +395,14 @@ fn generate_with(
     opts: Option<GenOptions>,
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
+    // `(solve :no-search)` (M1f S1f.6.36): the program states that its
+    // lattice is root alone, so no rung runs and nothing is proposed, whatever
+    // hrules, obligations or lists it also declares. Before anything is
+    // compiled, so the call narrates nothing.
+    if rungs == Rungs::Ladder && declares_no_search(s.kb.program(), s.ast) {
+        stats.rung.mode = crate::oblgen::Mode::NoSearch;
+        return Ok(());
+    }
     let cfg = s.kb.program().config.clone().unwrap_or_default();
     // The rung order is pinned: `EIN_OBLIGATION_CHOICE`, which could set it,
     // was retired at M1e2 S1e2.3.1 (the user's ruling of 2026-11-03).
@@ -902,6 +928,10 @@ pub(crate) fn scoping(
 /// the guard is judged at a fixpoint. This one is about a *commitment*
 /// discharging the guard in a world the search never enters.
 pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, CompileError> {
+    // `(solve :no-search)`: no rung proposes anything (M1f S1f.6.36).
+    if declares_no_search(s.kb.program(), s.ast) {
+        return Ok(FxHashSet::default());
+    }
     if !s.kb.program().hrules.is_empty() {
         let hrules = Hrules::new(s)?;
         return Ok(hrules.asserted_relations(s.terms));

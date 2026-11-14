@@ -2119,7 +2119,7 @@
 0    tests/stdlib/arith/41_div_call_not_zero.ein :: solve
 0    tests/stdlib/arith/41_div_call_not_zero.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
-0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
+1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: solve
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: test

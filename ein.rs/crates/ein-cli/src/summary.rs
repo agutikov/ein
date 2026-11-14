@@ -63,6 +63,14 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
             "facts_by_relation",
             Json::Object(by_rel.into_iter().map(|(k, v)| (k, Json::int(v))).collect()),
         ),
+        // Root's standing (M1f S1f.6.36): what `--no-search` reports, and what
+        // every run reaches first.
+        ("dead", Json::Bool(stats.dead)),
+        ("owes", Json::int(i64::from(stats.owes))),
+        (
+            "owed",
+            Json::Array(stats.owed.iter().map(|w| Json::str(w.as_str())).collect()),
+        ),
         ("plans", Json::int(stats.plans as i64)),
         (
             "saturator",

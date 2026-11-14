@@ -48,20 +48,17 @@
 (instance Cat Pet) (instance Dog Pet)
 
 (co-loc S1 Ann)              ; S1 still owes a Pet; S2 owes both
-(not (co-loc S1 Dog)) (not (co-loc S2 Ann)) (not (co-loc S2 Dog))   ; one way left for each
 
-;; ── Both roles, since M1f S1f.6.34 ──────────────────────────────────────────
-;;
-;; Root owes three fillings and is not in R; the obligation proposes what would
-;; pay each, and with one candidate left for each the one state that pays all
-;; three is R. Until S1f.6.34 `:no-hypothesis (type instance co-loc)` kept it
-;; from proposing, R was empty and the claim `(owing (model (co-loc S1 Ann)))`;
-;; a list may not filter what an obligation owes since (the user, 2026-11-13).
-;; The three negatives keep R one state where it would be 27; they discharge
-;; nothing, so the count is root's three, unmoved.
+;; Root alone (M1f S1f.6.36): this file's question is what root owes: nothing
+;; is guessed, so R is empty and root, which owes, is the owing node it stops
+;; at. Until S1f.6.34 it said so with `:no-hypothesis (type instance co-loc)`,
+;; keeping the obligation from proposing `co-loc`, which S1f.6.34 refused
+;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13);
+;; S1f.6.34 let the obligation propose instead, three negatives keeping R one
+;; state. `:no-search` says what the list meant.
 (solve
-  :no-hypothesis (type instance)
-  :expect (region (model (co-loc S1 Ann) (co-loc S1 Cat) (co-loc S2 Bob) (co-loc S2 Cat))))
+  :no-search
+  :expect (region (owing (model (co-loc S1 Ann)))))
 
 (query
   :goal (co-loc ?a ?b))

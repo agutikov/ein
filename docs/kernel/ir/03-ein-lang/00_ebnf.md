@@ -87,6 +87,7 @@ string is natural-language text, and any Unicode (fact 4).
 ':hrules'    ::= :hrules    /* then AFTER_WORD */
 ':hypothesis-relations' ::= :hypothesis\-relations    /* then AFTER_WORD */
 ':no-hypothesis' ::= :no\-hypothesis    /* then AFTER_WORD */
+':no-search' ::= :no\-search    /* then AFTER_WORD */
 ':lattice-sanity-check' ::= :lattice\-sanity\-check    /* then AFTER_WORD */
 ':record-alternative-justifications' ::= :record\-alternative\-justifications    /* then AFTER_WORD */
 ':symbols'   ::= :symbols    /* then AFTER_WORD */
@@ -319,7 +320,7 @@ ClaimAtom ::= NestedFact | EqFact | '(' 'not' NestedFact ')' | '(' 'not' EqFact 
 ClaimFacts ::= /* empty */ | ClaimFacts ClaimFact
 Solve ::= '(' 'solve' SolveClauses ')'
 SolveClause ::= ':hrules' Hrules | ':hypothesis-relations' NameList | ':no-hypothesis' NameList
-              | ':expect' RegionClaim
+              | ':no-search' | ':expect' RegionClaim
 SolveClauses ::= /* empty */ | SolveClauses SolveClause
 Hrules ::= '(' ')' | '(' Name HruleItems ')'
 HruleItem ::= Name | NameListPlus

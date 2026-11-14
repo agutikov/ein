@@ -165,17 +165,19 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
             d.root.owes,
             got.join("\n  "),
         );
-        // An owing root is no state of R, and the obligation proposes what
-        // would pay it, so R is the states that do (since M1f S1f.6.34, which
-        // refuses the `:no-hypothesis` that kept it from proposing, and R was
-        // empty with root its owing frontier); a discharged root is R's one
-        // state.
+        // An owing root is no state of R; each fixture states `(solve
+        // :no-search)` since M1f S1f.6.36, so nothing pays it and R is empty,
+        // root the owing node it stops at (as it was until S1f.6.34 under the
+        // `:no-hypothesis` that stage refused; between the two the
+        // obligation proposed what would pay it, and R was the states that
+        // do); a discharged root is R's one state.
         if want > 0 {
             assert!(!d.root.in_r(), "{rel}: a root that owes is no state of R");
-            assert!(d.k_s() > 0, "{rel}: the obligation proposes what pays it");
-            assert!(
-                d.frontier.is_empty(),
-                "{rel}: no alive node owes with no alive node above it"
+            assert_eq!(d.k_s(), 0, "{rel}: nothing is proposed under :no-search");
+            assert_eq!(
+                d.frontier.iter().map(|f| f.set.len()).collect::<Vec<_>>(),
+                [0],
+                "{rel}: root is the owing node R stops at"
             );
         } else {
             assert!(d.root.in_r(), "{rel}: a discharged root is in R");

@@ -300,6 +300,15 @@ pub struct RootStats {
     /// M1e2 S1e2.2.10): the names on the right of an `is-a` that a candidate
     /// of the blind enumerator's H names.
     pub types_as_objects: crate::types_as_objects::TypesAsObjects,
+    /// Root's own fixpoint derives `(false)` (M1f S1f.6.36: root's standing,
+    /// which `--no-search` reports and every run reaches first).
+    pub dead: bool,
+    /// The obligation instances root's fixpoint leaves undischarged, dead or
+    /// not, as the node function counts them.
+    pub owes: u32,
+    /// Those instances, each through its rule's `:why`, or the rule's name
+    /// where it has none: the node function's `owed`.
+    pub owed: Vec<String>,
 }
 
 impl Region {
@@ -820,7 +829,21 @@ pub(crate) fn prepare_with(
     // The static check, over root's plans. Root's tally is what compiles the
     // obligation plans; a node can only compile one root lacks through an
     // activator a commitment derives, and that is a site of its own.
-    let root_owes = crate::obligations::tally(root, terms, ast, &memo, events)?.total();
+    let owes = crate::obligations::tally(root, terms, ast, &memo, events)?;
+    let root_owes = owes.total();
+    root_stats.dead = root_dead;
+    root_stats.owes = root_owes as u32;
+    root_stats.owed = owes
+        .instances()
+        .iter()
+        .map(|o| {
+            if o.why.is_empty() {
+                terms.sym(o.rule).to_string()
+            } else {
+                o.why.clone()
+            }
+        })
+        .collect();
     let hypothesised: FxHashSet<_> = candidates
         .iter()
         .map(|c| terms.facts.get(c.fact).0)

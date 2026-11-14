@@ -299,6 +299,9 @@ SolveClause -> b::Id:
     ":hrules" Hrules { b::pair(p, $lexer, $1, $2) }
   | ":hypothesis-relations" NameList { b::pair(p, $lexer, $1, $2) }
   | ":no-hypothesis" NameList { b::pair(p, $lexer, $1, $2) }
+  // A flag, the one keyword that takes no value (M1f S1f.6.36): the program
+  // states that its lattice is root alone. Its pair holds `()`.
+  | ":no-search" { b::pair(p, $lexer, $1, b::empty(p)) }
   | ":expect" RegionClaim { b::pair(p, $lexer, $1, $2) }
   ;
 SolveClauses -> Vec<b::Id>: { b::none() } | SolveClauses SolveClause { b::push($1, $2) } ;

@@ -2658,3 +2658,17 @@
   note: eq is computed and never stored, so (eq a b) is no value: write it as a premise or a conclusion of its own, where it is checked, and never inside another fact or pattern
   repair: Delete `eq`
 
+## 389. a query's keyword (was: query-keyword)
+    (query :goal (a ?x) :no-search)
+<row>:1:21: unexpected `:no-search`
+  note: :no-search chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice
+  repair: Delete `:no-search`
+
+## 390. a solve's flag (was: solve-keyword)
+    (relation p T) (solve :no-search (p))
+<row>:1:34: unexpected `(`
+  note: :no-search is a flag and takes no value: it states that the lattice is root alone
+  repair: Insert `:no-hypothesis`
+  repair: Insert `:hypothesis-relations`
+  repair: Insert `:hrules`
+

@@ -175,10 +175,15 @@ one node.
 
 ---
 
-## 4. `--monotone`
+## 4. `--monotone` and `--no-search`: no question about R
+
+Two runs build no node past root. `--monotone` asks about the program; `--no-search` declines to ask about R and reports
+root. The summary's `region` is `null` on both.
+
+### 4.1 `--monotone`
 
 A question about the program, answered by root's fixpoint and the static check: no node is built and no state is
-listed. The summary's `region` is `null`.
+listed.
 
 <!-- rows: monotone -->
 | label | printed when | says | kind | summary | example |
@@ -188,6 +193,42 @@ listed. The summary's `region` is `null`.
 | `universe` | always | H's size, and § 5.3's block | around R | `root.hypgen.emitted` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
 | `route` | always | none: a question about the program | the run | — | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
 | `work` | always | one saturation, root's | the run | `work.saturations`, `work.facts` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
+<!-- /rows -->
+
+### 4.2 `--no-search`
+
+Root alone, and R not searched (M1f
+[S1f.6.36](../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md), the user's words of
+2026-11-14: *"flag that disables search doesn't change R, it disables discovering of R. R is not an output, it is
+complete result when we do full R search"*). The run saturates root and reads root's node through the node function
+every route uses, and builds no other: it prints what root is, says that R was not searched, and prints **no row that
+counts or lists R** (none of § 2's from `states (k_s)` to `E`, and no listing). What root is is what the full run
+reaches there, the same `∅` row and `owed` block describe prints where it prints them, and the summary's `root.dead`,
+`root.owes` and `root.owed` are the full run's `region.root`, `region.root_owes` and `region.root_owed`
+(`lever_invariance.rs`, every corpus program). A dead root's core follows the rows, as describe prints it under
+`(false)`; each query is read at ∅ where ∅ is in R, its classes *∅ alone*, and says so where root owes or is dead; each
+claim is what root decides of it: on a dead root what the full run decides, every node being dead (L0); on an alive
+root a `(false)` refuted where `ein test` asks it, a query whose class at ∅ its claim does not list refuted, and every
+other NOT CHECKED, with whether ∅ is in R
+([Q-M1f.256](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f256--which-claims-root-decides-under---no-search)).
+`--json-summary` writes `asked.ask` = `no-search`, `region` and `verdict` `null`; `--dump-answer DIR` writes `root.ein`,
+root's state, beside `answer.txt` and `answer.json`; the forms (`-p`, `-P`, `-f`, `--models`, `--diff-models`) draw root
+whatever it is ([`answer_dump.md`](answer_dump.md)). A program whose `(solve …)` states `:no-search` is another thing:
+its lattice is root alone, so a bare `ein solve` describes R, {∅} or empty, its `universe` row saying *the program
+states :no-search*.
+
+<!-- rows: no-search -->
+| label | printed when | says | kind | summary | example |
+|---|---|---|---|---|---|
+| `asked` | first | the question: root alone, and R not searched | — | `asked.ask` | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `∅` | always | where root stands: in R, not in R and how many instances it owes, or dead | R | `root.owes` | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone), [X19](read_out_examples.md#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) |
+| `owed` | under `∅`, where root is alive and owes, up to four | an instance root owes, through its rule's `:why`, as describe's | around R | `root.owed[k]` | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `R` | always | *not searched*: no node past root was built, and a bare `ein solve FILE` describes R | — | — | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `lattice` | always | the static check's verdict and, on a flagged program, its sites; the cube's `status` not known | around R | `monotonicity.sites` | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `strata` | as describe's | as describe's | around R | — | [X19](read_out_examples.md#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) |
+| `universe` | always | H's size, built and *none visited*; *no candidate*, and *the program states :no-search* where it does | around R | `root.hypgen.emitted` | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `route` | always | none: root's node, and no node past it | the run | — | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
+| `work` | always | one saturation, root's | the run | `work.saturations`, `work.facts` | [X18](read_out_examples.md#x18--testsregion04_owingein---no-search-root-alone) |
 <!-- /rows -->
 
 ---
@@ -404,9 +445,9 @@ The shapes of the lines a question writes beside an answer; [`defined_behaviour.
 | line | when | exit |
 |---|---|---|
 | `note: FILE: partial — …` | a run the budget or `--region-limit` stopped | 0 |
-| `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, and every claim under `--count` | 0 |
+| `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, every claim under `--count`, and every claim root does not decide under `--no-search` | 0 |
 | `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 |
-| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :hypothesis-relations …` | at load, on every command: a list beside an hrule, which filters no candidate, or a name another declaration already says ([`defined_behaviour.md` § 4.27](../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634), since M1f S1f.6.34) | 0 |
+| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :hypothesis-relations …`, `… :no-search …` | at load, on every command: a list beside an hrule, which filters no candidate, or a name another declaration already says ([`defined_behaviour.md` § 4.27](../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634), since M1f S1f.6.34); since S1f.6.36 an hrule or a list beside `(solve :no-search)`, which proposes or filters nothing | 0 |
 | `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 |
 | `** aborted: --max-time S s reached before the question was decided **` | `-T` | 2, with nothing on stdout |
 

@@ -53,6 +53,16 @@
 //! dead note replaces a redundancy note about them. The lines carry no
 //! prefix: `ein-cli` prints a conflict as a load error and a note as `note:`,
 //! on every command, before the command reads anything else.
+//!
+//! **`(solve :no-search)`** (M1f
+//! [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md)),
+//! [`Mechanisms::no_search`], states that the lattice is root alone: no rung
+//! runs ([`crate::hypgen::declares_no_search`]). Beside an obligation it is
+//! silent, the obligation judging root alone, which is its use; beside a
+//! closure silent too. Beside an hrule it is one note, *the hrule proposes no
+//! candidate*, and beside each list one, *the list filters no candidate*,
+//! which replace the notes above. It relaxes no conflict: the table's are read
+//! as declared, as an obligation is, and stand (Q-M1f.254).
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
@@ -97,6 +107,9 @@ pub struct Mechanisms {
     pub excluded: FxHashSet<Symbol>,
     /// Every `R` with `(__closed__ R)` at this state.
     pub closed: FxHashSet<Symbol>,
+    /// `(solve :no-search)`: the program states its lattice is root alone,
+    /// so no rung runs (M1f S1f.6.36).
+    pub no_search: bool,
 }
 
 impl Mechanisms {
@@ -154,6 +167,7 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
         listed,
         excluded,
         closed,
+        no_search: crate::hypgen::declares_no_search(&program, s.ast),
     })
 }
 
@@ -190,6 +204,7 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
         !program.obligations.is_empty(),
         lists(crate::hypgen::HYPOTHESIS_RELATIONS),
         lists(crate::hypgen::NO_HYPOTHESIS),
+        lists(crate::hypgen::NO_SEARCH),
     ]
     .iter()
     .filter(|&&b| b)
@@ -403,6 +418,37 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
             .collect::<Vec<_>>()
             .join(", ")
     };
+    // `(solve :no-search)` (M1f S1f.6.36): no rung runs, so an hrule proposes
+    // nothing and a list filters nothing, each a note; beside an obligation
+    // it is silent, the obligation judging root alone, which is its use. The
+    // conflicts above are read as declared, as an obligation is, and stand.
+    if m.no_search {
+        let at = list(crate::hypgen::NO_SEARCH).map_or(String::new(), |(at, _)| w.at(at));
+        if h {
+            let (one, word) = if m.hrules.len() == 1 {
+                ("hrule", "proposes")
+            } else {
+                ("hrules", "propose")
+            };
+            out.notes.push(format!(
+                "{at}solve: its :no-search states the lattice is root alone, so {one} {} {word} \
+                 no candidate",
+                hrules(),
+            ));
+        }
+        for (key, l) in [
+            (crate::hypgen::HYPOTHESIS_RELATIONS, &hr),
+            (crate::hypgen::NO_HYPOTHESIS, &nh),
+        ] {
+            let Some((value, _)) = l else { continue };
+            out.notes.push(format!(
+                "{}solve: its :{key} filters no candidate — the program states :no-search, \
+                 whose lattice is root alone",
+                w.at(*value),
+            ));
+        }
+        return out;
+    }
     for (key, l) in [
         (crate::hypgen::HYPOTHESIS_RELATIONS, &hr),
         (crate::hypgen::NO_HYPOTHESIS, &nh),

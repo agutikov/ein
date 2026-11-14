@@ -501,15 +501,22 @@ The owe counts are still `obligation_reports.rs`'s. Eight mutants died of that
 word (below). **A list may not switch an obligation's generating role off**
 since M1f S1f.6.34 (*"filtered obligations are nonsense by definition"*, the
 user, 2026-11-13): a `:no-hypothesis` naming a relation an obligation owes is
-refused at load, and so is a closure of one. A fixture whose question is root's
-saturation writes the activators of the rules it tests and none of an
-obligation's (`slots/02` to `04`, `07`, `13`), or, where a setup rule's
-fan-out is the subject and the obligations come with it, declares an hrule
-that proposes only what root holds, so that nothing new is guessed and the
-obligations judge root alone (`bijection/01` to `03`); one whose question is
-the obligation lets it propose and claims R's states (`algebra/23`, `25`,
-`slots/09`, `11`); and an owing state that R leaves empty is one whose debt
-the program's own negatives make unpayable (`region/04_owing`, `05_empty`).
+refused at load, and so is a closure of one. **To judge root alone, write
+`(solve :no-search)`** (M1f S1f.6.36, the user's *"some explicit flag in (solve
+) ? instead of abusing bugs"*): the lattice is root alone, nothing is proposed
+whatever the program declares, and the obligations judge root, so R is root
+where it owes nothing and empty, root the owing node it stops at, where it
+owes. That is what the fixtures whose question is root's verdict or root's
+saturation say: `algebra/23` to `26`, `bijection/01` to `03`, `slots/01` to
+`04`, `07` to `13`, `region/04_owing` and `05_empty`. Between S1f.6.34 and
+S1f.6.36 they said it with workarounds, an hrule `as-stated` proposing only what
+root holds, `slot-partition`'s fan-out written out without its obligations,
+negatives that made a debt unpayable or R one state, or another question
+(`algebra/23`, `25` let the obligation propose); `:no-search` replaced every one,
+and `utils/stdlib_mutants.py`'s survivors are the banked set with it. An hrule
+or a list beside `:no-search` proposes or filters nothing, and says so in a
+`note:`; `ein test --no-search`, a flag of the runner, is another thing, a run
+that declines to search R and checks only what root decides.
 
 **157 of 217 on 2026-08-31, and it is an instrument now** —
 [`utils/stdlib_mutants.py`](../utils/stdlib_mutants.py), M1e S1e.3.6 T6, the

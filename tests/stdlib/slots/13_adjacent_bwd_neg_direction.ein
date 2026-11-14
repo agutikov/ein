@@ -64,17 +64,13 @@
 ;;; Priority 500 for the same reason the probe there has it: something that
 ;;; reads the world has to be the last thing to read it.
 ;;;
-;;; The seating is not determined, and that is deliberate. What is being
-;;; tested is one derivation, not a puzzle, and the claim is about the fact set
-;;; root reached. Until M1f S1f.6.34 the verdict was `Open`, `co-loc` owing
-;;; sixteen placements through `slot-partition`'s obligations, which the
-;;; program's `:no-hypothesis` kept from proposing; with them written out of the
-;;; activators below, root owes nothing and is R.
+;;; The verdict is `Open` — the seating is not determined and `co-loc` owes
+;;; sixteen placements — and that is deliberate. What is being tested is one
+;;; derivation, not a puzzle, and the claim is about the fact set the state
+;;; reached, which is what an `:expect` is about however the read-out words it.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
-(import std.slots   :symbols (slot-spatial-setup
-                                 slot-locate slot-exclusive slot-occupied slot-negative
-                                 slot-elimination slot-fill slot-no-room slot-no-fill))
+(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
 
 (relation type     T T :why "{?1} is a subtype of {?2}")
 (relation instance T T :why "{?1} is an instance of {?2}")
@@ -83,21 +79,7 @@
 (relation excluded Attribute Attribute :why "{?1} was ruled out of {?2}")
 
 (symmetric co-loc)
-;; `slot-partition-setup`'s fan-out, written out but for its two obligations
-;; (M1f S1f.6.34): with `slot-owed-room` and `slot-owed-fill` activated, root owed
-;; and `:no-hypothesis` kept them from proposing what they owe, R empty and the
-;; claim `(owing (model …))`; a list may not filter what an obligation owes since
-;; (*"filtered obligations are nonsense by definition"*, the user, 2026-11-13).
-;; This file's question is root's saturation, and with no obligation it owes
-;; nothing: R is root, the same facts. `01_partition.ein` keeps the setup.
-(slot-locate      co-loc instance Seat)
-(slot-exclusive   co-loc instance type Attribute)
-(slot-occupied    co-loc instance type Attribute)
-(slot-negative    co-loc instance Seat)
-(slot-elimination co-loc instance type Attribute Seat)
-(slot-fill        co-loc instance type Attribute Seat)
-(slot-no-room     co-loc instance type Attribute Seat)
-(slot-no-fill     co-loc instance type Attribute Seat)
+(slot-partition co-loc instance type Attribute Seat)
 (slot-spatial   co-loc right-of instance Seat)
 
 (type Attribute T)
@@ -118,9 +100,16 @@
   :assert (excluded Ann S4)
   :why    "slot-adjacent-bwd-neg reached ¬(co-loc Ann S4) from ¬(co-loc Cat S3)")
 
+;; Root alone (M1f S1f.6.36): this file's question is root's saturation:
+;; nothing is guessed, and root, which owes, is the owing node R stops at.
+;; Until S1f.6.34 it said so with `:no-hypothesis (type instance co-loc
+;; right-of excluded)`, keeping the obligation from proposing `co-loc`, which
+;; S1f.6.34 refused (*"filtered obligations are nonsense by definition"*, the
+;; user, 2026-11-13); S1f.6.34 wrote `slot-partition`'s fan-out out without its
+;; two obligations instead. `:no-search` says what the list meant.
 (solve
-  :no-hypothesis (type instance co-loc right-of excluded)
-  :expect (region (model (excluded Ann S4))))
+  :no-search
+  :expect (region (owing (model (excluded Ann S4)))))
 
 (query
   :goal (excluded ?x ?y))

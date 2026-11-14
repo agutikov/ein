@@ -32,10 +32,15 @@
 (co-loc S1 Ann) (co-loc S1 Cat)
 (co-loc S2 Bob) (co-loc S2 Dog)
 
-;; `co-loc` is not listed (M1f S1f.6.34): `slot-owed-fill` owes it, and a list may not filter
-;; what an obligation owes. Root owes nothing, so the rung proposes nothing.
+;; Root alone (M1f S1f.6.36): this file's question is root's verdict, and root
+;; owes nothing, so R is root alone. Until S1f.6.34 it said so with
+;; `:no-hypothesis (type instance co-loc)`, keeping the obligation from
+;; proposing `co-loc`, which S1f.6.34 refused (*"filtered obligations are
+;; nonsense by definition"*, the user, 2026-11-13); S1f.6.34 took `co-loc` out
+;; of the list, which then filtered nothing. `:no-search` says what the list
+;; meant.
 (solve
-  :no-hypothesis (type instance)
+  :no-search
   :expect (region (model (co-loc S1 Ann) (co-loc S1 Cat)
                          (co-loc S2 Bob) (co-loc S2 Dog))))
 

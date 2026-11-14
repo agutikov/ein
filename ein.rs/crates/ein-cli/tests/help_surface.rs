@@ -46,7 +46,8 @@ const EXPECTED: [(&str, usize); 12] = [
     // and `-K` the same day (hidden, refused with why). M1f T1f.5.14.6 added
     // `--require-why`, as it did to the six other commands that load a program,
     // and T1f.5.14.7 turned it into `--no-require-why`, the default flipped.
-    ("COMMAND ein solve\n", 34),
+    // M1f S1f.6.36 added `--no-search`, root alone, R not searched.
+    ("COMMAND ein solve\n", 35),
     // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
     // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
     // `--json-summary`, `--models`, `-p` and `-P`; and `--no-require-why`.
@@ -80,8 +81,10 @@ const EXPECTED: [(&str, usize); 12] = [
 /// command that loads a program takes. There is deliberately no `-n`, no line
 /// flag and no `--exhaustive`: a claim says what it is about, and `ein test`
 /// runs the mode that decides it, so a *missing* option is exactly the kind of
-/// thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 9)];
+/// thing this count exists to notice. **Ten** since M1f S1f.6.36's
+/// `--no-search`, which asks each file root alone: no question about R, and
+/// so no exception to the above.
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 10)];
 
 /// P1a.8's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
@@ -113,17 +116,18 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        71 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        72 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "71 options across the twelve parsers of `ein`, `solve`, `oracle`, \
-         `saturate` and `render`, plus `ein test`'s nine and `ein kb save`'s two"
+        "72 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+         `saturate` and `render`, plus `ein test`'s ten and `ein kb save`'s two"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 82 across fifteen since M1f S1f.5.21 (78 from
-/// T1f.5.14.6, the four views' `--no-require-why` since), the count
+/// Every option of every parser — 84 across fifteen since M1f S1f.6.36 (82
+/// from S1f.5.21, 78 from T1f.5.14.6; `solve`'s and `test`'s `--no-search`
+/// since), the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.

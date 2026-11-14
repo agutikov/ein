@@ -122,6 +122,8 @@ add("""---
 | [X15](#x15--features01_not_and_absentein-the-warning-past-four-rows) | `features/01_not_and_absent.ein` | 35 | the warning past four stale nodes |
 | [X16](#x16--ein-bugszebra2-badein-a-dead-roots-core-its-sources-and-a-cut-search) | `ein-bugs/zebra2-bad.ein`, `ein-bugs/wrong-answers/core-search-cut.ein` | 0 | why root is dead: its core, a fact's `:source`, and a core search cut at its budget |
 | [X17](#x17--ein-oracle-the-cubes-line) | `lattice/04_obligation_trigger_hole.ein`, `lattice/02_genuine_3set_death.ein` | 2, 3 | `ein oracle`: the read-out over the cube, and the cube's line |
+| [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
+| [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
 """)
 
 add("""## X1 — `branching/05_mini_zebra.ein`: everything at once
@@ -225,8 +227,9 @@ add(block(["examples/lattice/synth/merged_states.ein"]))
 
 add("""## X6 — `tests/region/04_owing.ein`: R empty, alive nodes owe
 
-Root owes one `total-owed` instance, Ann's Food, and both foods are stored as ones she does not like, so the
-obligation's two candidates are refuted before they are proposed: no candidate, and R is empty of the second kind.
+Root owes one `total-owed` instance, Ann's Food, and the program states `(solve :no-search)`, so nothing is proposed:
+no candidate, and R is empty of the second kind (between M1f S1f.6.34 and S1f.6.36 both foods were stored as ones Ann
+does not like, which refuted the obligation's two candidates; the keyword says it since).
 The `owing` rows are the frontier, the alive owing nodes with no alive node one fact up (here root itself), each with
 what it owes through the rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the
 printer closes the **candidates'** relations, which tell R's states apart, and this program has none. The query's
@@ -409,6 +412,36 @@ add("""On X2's monotone program the static verdict holds: no dead node has an al
 owing one.
 """)
 add(block(["examples/lattice/02_genuine_3set_death.ein"], cmd="oracle"))
+
+add("""## X18 — `tests/region/04_owing.ein --no-search`: root alone
+
+`--no-search` (M1f S1f.6.36) declines to discover R: it saturates root, reports what root is, as describe's `∅` row
+and `owed` block say it, and says in the `R` row that R was not searched. No row counts or lists R. The program states
+`(solve :no-search)` itself, so a bare run would describe R by root alone, as X6 does; the flag reads root the same way
+on any program. Root owes Ann a Food, so ∅ is not in R, the query has no state to answer from, and the claim, which is
+about R, is not checked.
+""")
+add(block(["--no-search", "tests/region/04_owing.ein"]))
+add("""**A dead root** (X7's program): every node is dead, a fork only adding (L0), so the claim `(false)` is decided as
+the full run decides it, and root's core is printed as describe prints it.
+""")
+add(block(["--no-search", "tests/stdlib/algebra/09_irreflexive_violated.ein"]))
+add("""**The puzzle** (X10's program): root owes 36 instances, four of them named and the rest counted, and H holds 56
+candidates, none visited. The forms draw root whatever it is: `--models grid` draws what root alone deduced, five of
+the puzzle's facts placed, and `-p` its facts.
+""")
+add(block(["--no-search", "examples/zebra2.ein"]))
+add("""**A program that states `(solve :no-search)`**: its lattice is root alone, so a bare `ein solve` describes R, here
+empty of the owing kind, and the `universe` row says why it has no candidate.
+""")
+add(block(["tests/stdlib/bijection/01_setup_and_negatives.ein"]))
+
+add("""## X19 — `features/07_unstratifiable.ein --no-search`: flagged, and its strata
+
+X14's program under `--no-search`: the static check's rows and the strata are the program's, and print as describe
+prints them; the cube's `status` is not known, since no node past root was built.
+""")
+add(block(["--no-search", "examples/features/07_unstratifiable.ein"]))
 
 OUT.write_text("\n".join(S))
 shutil.rmtree(SCRATCH)

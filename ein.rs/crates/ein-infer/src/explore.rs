@@ -204,6 +204,15 @@ pub struct Options {
     /// (`ein-infer/tests/explore.rs`). Route 1 and the cube read `N` off what
     /// they visited, and take it regardless.
     pub nogoods: bool,
+    /// `--no-search` (M1f S1f.6.36, the user's words of 2026-11-14: *"flag
+    /// that disables search doesn't change R, it disables discovering of
+    /// R"*): the run saturates root, reads root's node through the node
+    /// function every route uses, and builds no other node, whatever
+    /// [`Self::mode`] says. Its answer is a description of what root alone
+    /// establishes ([`Route::Root`]): ∅ in `R` or not, and, on a dead root,
+    /// that every node is dead (L0). It states no other part of `R`, and a
+    /// claim root does not decide is not checked.
+    pub no_search: bool,
 }
 
 impl Options {
@@ -218,6 +227,7 @@ impl Options {
             cores: Cores::ALL,
             refute: false,
             nogoods: true,
+            no_search: false,
         }
     }
 }
@@ -238,6 +248,9 @@ pub enum Route {
     /// over states on a monotone program, where an owing state branched on one
     /// owed instance's alternatives (L5).
     Tree,
+    /// No route: `--no-search` read root's node alone, and searched no
+    /// further (M1f S1f.6.36, [`Options::no_search`]).
+    Root,
 }
 
 /// A theorem a mode used to skip work —
@@ -355,6 +368,8 @@ pub enum Stopped {
     Limit { n: usize, limit: u32 },
     /// `-T`.
     Deadline,
+    /// `--no-search`: the run read root alone, by asking ([`Options::no_search`]).
+    NoSearch,
 }
 
 /// What [`run`] found.
@@ -479,6 +494,11 @@ pub fn run_with(
     }
     let t0 = Instant::now();
     let prepared = region::prepare_with(root, terms, ast, events)?;
+    if opts.no_search {
+        let mut answer = root_alone(root, terms, ast, prepared, opts, events)?;
+        answer.wall = t0.elapsed();
+        return Ok(answer);
+    }
     // A dead root is the whole answer on any program: every node is a fork of
     // root's fixpoint, and a fork only adds (L0). Route 1 visits root alone.
     let fork_only_adds = prepared.root_dead && !prepared.monotonicity.is_monotone();
@@ -521,6 +541,82 @@ pub fn run_with(
         }
     }
     answer.wall = t0.elapsed();
+    Ok(answer)
+}
+
+/// `--no-search`'s answer (M1f S1f.6.36): root's node, read through the node
+/// function every route uses, and nothing past it. What root alone
+/// establishes is described and no more: ∅ is in `R` exactly when root is
+/// alive and owes nothing, and so on the minimal line; a dead root leaves
+/// every node dead (L0), so `R` is empty and exhausted, as every route reads
+/// it on one saturation; otherwise the description is partial, stopped by
+/// asking ([`Stopped::NoSearch`]). The candidates are `H`, built and never
+/// visited.
+fn root_alone(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    prepared: Prepared,
+    opts: &Options,
+    events: &mut Events,
+) -> Result<Answer, SolveError> {
+    let mut sp = Space::open(root, terms, ast, prepared, opts, events);
+    if let Err(stop) = sp.eval(&[Box::default()])? {
+        // `-T` before root's node: no answer.
+        return Ok(sp.answer(
+            opts.mode,
+            Route::Root,
+            Found {
+                stopped: Some(stop),
+                ..Found::default()
+            },
+        ));
+    }
+    let dead = sp.root_dead;
+    let mut d = sp.partial_cube(false)?;
+    d.route = Route::Root;
+    d.exhausted = dead;
+    let mode = Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    };
+    let states: Vec<State> = d
+        .states
+        .iter()
+        .map(|st| State {
+            set: st.rep.clone(),
+            closure: st.closure.clone(),
+        })
+        .collect();
+    let mut answer = sp.answer(
+        mode,
+        Route::Root,
+        Found {
+            states,
+            exhausted: dead,
+            stopped: (!dead).then_some(Stopped::NoSearch),
+            licences: if dead {
+                vec![Licence::ForkOnlyAdds]
+            } else {
+                Vec::new()
+            },
+            members: d.k_c,
+            ..Found::default()
+        },
+    );
+    answer.counts = Some(Counts {
+        k_c: d.k_c,
+        k_s: d.k_s(),
+    });
+    // A dead root on a flagged program: every node is dead, as every route
+    // reads it (L0), and the warning says so as theirs does.
+    if dead && let Some(w) = answer.warning.as_mut() {
+        w.status = Status::RootDead {
+            n: answer.candidates.len(),
+            limit: opts.limit,
+        };
+    }
+    answer.described = Some(Box::new(d));
     Ok(answer)
 }
 

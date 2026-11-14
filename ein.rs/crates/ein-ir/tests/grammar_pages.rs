@@ -2225,6 +2225,20 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (query :goal (p ?x) :expect (model (p (eq a b))))",
     ),
+    // ── `(solve :no-search)`, a flag (M1f S1f.6.36) ──
+    // Before the swap each keyword a form did not know was its unknown
+    // keyword; `:no-search` is a token since S1f.6.36, a lattice keyword a
+    // query does not take, and a flag that takes no value.
+    row(
+        "a query's keyword",
+        &["query-keyword"],
+        "(query :goal (a ?x) :no-search)",
+    ),
+    row(
+        "a solve's flag",
+        &["solve-keyword"],
+        "(relation p T) (solve :no-search (p))",
+    ),
 ];
 
 /// A row's program: a rule row's declarations before it.

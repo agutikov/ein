@@ -1,18 +1,11 @@
 ;;; REGION CLAIM — R empty, and the alive node that owes. M1e2 S1e2.1a.4.
 ;;;
-;;; Ann likes neither food and every person owes a liking, so root owes, and
-;;; cannot pay: the obligation proposes Ann's two likings and each is stored as
-;;; false. Nothing is left to guess, so root is the only node: R is empty of
-;;; the second kind, and the one alive, owing node with no alive node above it
-;;; is root itself. Its `likes` extent is what `(owing …)` states; under R a
-;;; claim that listed it as a state of R would be false. The program is
-;;; tests/stdlib/algebra/23_total_owed.ein's with Ann's two negatives.
-;;;
-;;; Until M1f S1f.6.34 it had no negatives and wrote `:no-hypothesis (is-a
-;;; likes)`, keeping the obligation from proposing what it owes; a list may
-;;; not filter what an obligation owes since (*"filtered obligations are
-;;; nonsense by definition"*, the user, 2026-11-13), and the debt is made
-;;; unpayable by the program's own facts instead. R and the claim did not move.
+;;; Ann likes nothing and every person owes a liking, so root owes. Nothing is
+;;; guessed, so root is the only node: R is empty of the second kind, and the
+;;; one alive, owing node with no alive node above it is root itself. Its
+;;; `likes` extent is what `(owing …)` states; under R a claim that listed it
+;;; as a state of R would be false. The program is
+;;; tests/stdlib/algebra/23_total_owed.ein's.
 
 (import std.algebra :symbols (total-owed))
 (relation is-a  T T :why "{?1} is a {?2}")
@@ -21,10 +14,16 @@
 (is-a Soup Food)  (is-a Stew Food)
 (total-owed likes is-a)
 (likes Bob Stew)
-(not (likes Ann Soup)) (not (likes Ann Stew))
 
+;; Root alone (M1f S1f.6.36): this file's question is what root owes: nothing
+;; is guessed, so R is empty and root, which owes, is the owing node it stops
+;; at. Until S1f.6.34 it said so with `:no-hypothesis (is-a likes)`, keeping
+;; the obligation from proposing `likes`, which S1f.6.34 refused (*"filtered
+;; obligations are nonsense by definition"*, the user, 2026-11-13); S1f.6.34
+;; stored Ann's two likings false to make the debt unpayable instead.
+;; `:no-search` says what the list meant.
 (solve
-  :no-hypothesis (is-a)
+  :no-search
   :expect (region
             (owing (model (likes Bob Stew)))))
 

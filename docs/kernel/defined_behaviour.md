@@ -1050,7 +1050,7 @@ shape calls a state that has not yet decided `P` a contradiction, so `dead`
 is not upward-closed. [`ein_infer::forbid`](../../ein.rs/crates/ein-infer/src/forbid.rs)
 reads it after root's fixpoint, where the static check runs, so it refuses
 **every command that takes the universe**: `ein solve` in every mode
-(`--monotone` and `--count` too), every `(solve :expect)` check, `ein test`,
+(`--monotone`, `--count` and `--no-search` too), every `(solve :expect)` check, `ein test`,
 `ein oracle` and `ein render lattice`. `ein saturate` and `ein render
 rules|constraints|program|kb` take no universe and do not refuse. A plan has
 an activator when its rule has parameters, whatever the activator's
@@ -2287,10 +2287,22 @@ before, nine state the R their edit gives, and `tests/stdlib/closure/03_closed_a
 `examples/ein-bugs/closed-and-owing.ein`, the refusal's fixture (Q-M1f.246). No program that loads with no conflict
 moved.
 
+**`(solve :no-search)`** (M1f [S1f.6.36](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
+the user's words of 2026-11-13, *"maybe some explicit flag in (solve ) ? instead of abusing bugs"*) states that the
+lattice is root alone: no rung runs, so every generating mechanism proposes nothing, and an obligation judges root
+alone. It is the sanctioned way to say what the twenty-four programs said with a list; twenty-one of them say it with
+the keyword since (Q-M1f.260). Beside an obligation or a closure it is silent; beside an hrule, `:hypothesis-relations`
+or `:no-hypothesis` it is one `note:` each, *FILE:L:C: solve: its :no-search states the lattice is root alone, so hrule
+'guess' proposes no candidate* and *FILE:L:C: solve: its :no-hypothesis filters no candidate — the program states
+:no-search, whose lattice is root alone*, which replace the notes above. **It relaxes no conflict**: H, O and the lists
+are read as declared, so every refused pair is refused beside it with the same line, E-47's witness among them with
+`:no-search` in its list's place (H + C) ([Q-M1f.254](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f254--s1f634s-conflicts-beside-solve-no-search)).
+
 Pinned by `ein-cli`'s `mechanism_conflicts.rs` (eleven refused shapes, each on twenty commands with one line, the
 same on each, and no container; twelve that load, six silent and six with their note, under five commands and
 reopened from a container; E-47's witness and its twin, two lines each and none of *forbid*'s; the corpus's
-fixture), and by `ein-infer`'s `obligation_reports.rs`.
+fixture; since S1f.6.36 each refused shape with `:no-search` beside it, the same line, and `:no-search` beside each
+mechanism, silent or its note), and by `ein-infer`'s `obligation_reports.rs`.
 
 ### 4.28 An import is by full name, and a short name names one declaration in a file — M1f S1f.6.35
 
@@ -2368,13 +2380,23 @@ and its exit codes **deliberately differ** from the other three's:
 | code | `solve` / `oracle` / `render` / `saturate` | `test` |
 |---|---|---|
 | 0 | success | every expectation held, and at least one was checked |
-| 1 | a load error — or *forbid*'s refusal (§ 4.7), a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
+| 1 | a load error — or *forbid*'s refusal (§ 4.7), a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked (under `--no-search`, false only) |
 | 2 | a usage error, or `-T` | a load error or *forbid*'s refusal, a usage error, `-T` — or nothing to check |
 
 **An answer is never an exit code** on the other three: since M1e2
 S1e2.1a.5 a `solve --single` exits 0 whatever its word, and a run its budget
 stopped writes one `note:` to stderr and exits 0 (the user's ruling of
 2026-10-16, [`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#9-exit-codes)).
+
+**`--no-search` declines to discover R, and is no code either** (M1f
+[S1f.6.36](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md)).
+`ein solve --no-search` reports root and exits 0, or 1 where root decides a
+claim false; `ein test --no-search` decides what root decides, and a claim it
+leaves NOT CHECKED, having been asked not to search, moves no exit code
+([Q-M1f.257](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f257--ein-test---no-searchs-exit-code)).
+`ein oracle --no-search` and `ein solve --no-search` beside `-n`, `--single`,
+`--minimal`, `--maximal`, `--count` or `--monotone` are usage errors, exit 2
+([Q-M1f.258](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f258--which-commands-and-options-take---no-search)).
 
 **A closed stdout is no code either.** Since M1f S1f.5.25 a write to a pipe
 whose reader has gone ends any of the five subcommands by `SIGPIPE`, with

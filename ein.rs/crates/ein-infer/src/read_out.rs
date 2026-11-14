@@ -657,6 +657,9 @@ pub fn undecided_words(answer: &Answer) -> String {
              {limit}"
         ),
         Some(explore::Stopped::Deadline) => "stopped at --max-time".to_string(),
+        Some(explore::Stopped::NoSearch) => {
+            "read root alone (--no-search), and R was not searched".to_string()
+        }
         None => {
             let k = answer.states.len();
             format!(
@@ -803,6 +806,24 @@ fn sanity(root: &Kb, opts: &explore::Options) -> bool {
             .is_some_and(|c| c.lattice_sanity_check)
 }
 
+/// What root alone says of `R`, for a claim `--no-search` leaves unchecked
+/// (M1f S1f.6.36): ∅ is in it, or root owes and ∅ is not; past ∅, `R` was
+/// not searched.
+fn root_words(answer: &Answer) -> String {
+    match answer.described.as_deref().map(|d| &d.root) {
+        Some(r) if r.in_r() => "∅ is in R, and R was not searched past it".to_string(),
+        Some(r) if r.alive => format!(
+            "root owes {}, so ∅ is not in R, and R was not searched",
+            if r.owes == 1 {
+                "1 instance".to_string()
+            } else {
+                format!("{} instances", r.owes)
+            }
+        ),
+        _ => "R was not searched".to_string(),
+    }
+}
+
 /// What the run asked about R, for a claim it could not check.
 fn asked_words(answer: &Answer) -> String {
     match (answer.mode.which, answer.mode.ask) {
@@ -906,18 +927,31 @@ fn query_claim(
                     .skip(1)
                     .map(|m| format!("{} is a class the claim does not list", model(m))),
             );
-            lines.push(format!(
-                "the run asked {} and did not exhaust {}: what it found refutes the claim, and \
-                 is not every difference",
-                asked_words(answer),
-                over.words()
-            ));
+            lines.push(if answer.route == explore::Route::Root {
+                format!(
+                    "the run read root alone (--no-search) and did not search {}: root's \
+                     state refutes the claim, and is not every difference",
+                    over.words()
+                )
+            } else {
+                format!(
+                    "the run asked {} and did not exhaust {}: what it found refutes the claim, \
+                     and is not every difference",
+                    asked_words(answer),
+                    over.words()
+                )
+            });
             return Report {
                 outcome: Outcome::Failed,
                 lines,
             };
         }
         return not_checked(match answer.mode.ask {
+            _ if answer.route == explore::Route::Root => format!(
+                "the claim is about {}, and --no-search reads root alone: {}",
+                over.words(),
+                root_words(answer)
+            ),
             Ask::Describe => format!(
                 "the claim is about {}, and this run did not exhaust it",
                 over.words()
@@ -992,6 +1026,7 @@ fn check_claim(
         )));
     };
     if !d.exhausted {
+        let root_alone = answer.route == explore::Route::Root;
         // `(false)` says every node is dead, root among them: an alive root
         // refutes it, whatever of R the run did not reach (M1f S1f.6.27).
         if opts.refute && matches!(claim, ein_ir::claim::Claim::False) && d.root.alive {
@@ -999,15 +1034,26 @@ fn check_claim(
                 outcome: Outcome::Failed,
                 lines: vec![
                     "(false) says every node is dead, and root is alive".to_string(),
-                    "the run is partial: root's fixpoint refutes the claim, and what R holds is \
-                     not described"
-                        .to_string(),
+                    if root_alone {
+                        "the run read root alone (--no-search): root's fixpoint refutes the \
+                         claim, and R was not searched"
+                            .to_string()
+                    } else {
+                        "the run is partial: root's fixpoint refutes the claim, and what R holds \
+                         is not described"
+                            .to_string()
+                    },
                 ],
             });
         }
-        return Ok(not_checked(
-            "the claim is about all of R, and this run is partial".to_string(),
-        ));
+        return Ok(not_checked(if root_alone {
+            format!(
+                "the claim is about all of R, and --no-search reads root alone: {}",
+                root_words(answer)
+            )
+        } else {
+            "the claim is about all of R, and this run is partial".to_string()
+        }));
     }
     crate::claim::check_described(
         root,

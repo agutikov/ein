@@ -30,7 +30,10 @@
 //! `-v` and `--json-report` say which question that was. A claim neither
 //! question decided, a budget or a flagged program past the cube's limit, is
 //! `NOT CHECKED`, and says what was asked first and why it did not decide.
-//! No option chooses the question.
+//! No option chooses the question; `--no-search` (M1f S1f.6.36) asks none
+//! about R: each file is read at root alone, as `ein solve --no-search` reads
+//! it, with no fallback, and a claim root does not decide is `NOT CHECKED`
+//! and moves no exit code (Q-M1f.257).
 //!
 //! **It runs only what the expectations need.** A file whose queries state
 //! nothing, and that has no region claim, is never solved — the one load that
@@ -193,6 +196,10 @@ struct Tally {
     not_checked: usize,
     /// Load errors, budget aborts: the run did not happen.
     errors: usize,
+    /// `--no-search` (M1f S1f.6.36): a claim root does not decide is not
+    /// checked because the run was asked not to search, which is no failure
+    /// to check, so it moves no exit code.
+    no_search: bool,
 }
 
 impl Tally {
@@ -205,7 +212,8 @@ impl Tally {
         if self.errors > 0 || self.checked() == 0 {
             return 2;
         }
-        i32::from(self.failed + self.not_checked > 0)
+        let unchecked = if self.no_search { 0 } else { self.not_checked };
+        i32::from(self.failed + unchecked > 0)
     }
 
     fn line(&self, elapsed: f64) -> String {
@@ -633,7 +641,10 @@ pub fn run(m: &ArgMatches) -> i32 {
     }
 
     let t0 = Instant::now();
-    let mut tally = Tally::default();
+    let mut tally = Tally {
+        no_search: m.get_flag("no-search"),
+        ..Tally::default()
+    };
     // Accumulated whether or not anyone asked for it — 197 rows over the whole
     // corpus, and a flag that changed what the run *did* would not be additive.
     let mut rows: Vec<Row> = Vec::new();
@@ -771,7 +782,18 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
 
     // The question the claims are, and the describing one it falls back to
     // (the module header). One deadline for the file, whatever is asked.
-    let (least, describing) = (read_out::least(&kb, &ast), read_out::describing(&kb, &ast));
+    // Under `--no-search` (M1f S1f.6.36) one question, root alone, and no
+    // fallback: what root does not decide stays NOT CHECKED.
+    let no_search = m.get_flag("no-search");
+    let (least, describing) = if no_search {
+        let root = Mode {
+            which: explore::Which::All,
+            ask: explore::Ask::Describe,
+        };
+        (root, root)
+    } else {
+        (read_out::least(&kb, &ast), read_out::describing(&kb, &ast))
+    };
     let deadline = m
         .get_one::<f64>("max-time")
         .map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0)));
@@ -903,6 +925,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             explore::Route::Cube => "route 2",
             explore::Route::States => "state route",
             explore::Route::Tree => "obligation tree",
+            explore::Route::Root => "root alone",
         };
         rows[i].outcome = came.key();
         rows[i].region = Some(RegionRan {
@@ -920,7 +943,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             }),
         });
         rows[i].scope = Some(beside.scope.clone());
-        rows[i].route = Some(first.mode.flags());
+        rows[i].route = Some(first.flags());
         let shape = match claim {
             ein_ir::claim::Claim::False => "(false)",
             ein_ir::claim::Claim::Region(x) if x.models.is_empty() && x.owing.is_empty() => {
@@ -930,6 +953,11 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         };
         if volume == Volume::Verbose || came != Came::Held {
             lines.push(match volume {
+                // `--no-search` counts no state of R (M1f S1f.6.36).
+                Volume::Verbose if r.answer.route == explore::Route::Root => format!(
+                    "  solve · :expect {shape} — {} (--no-search: root alone)",
+                    came.verb()
+                ),
                 Volume::Verbose => format!(
                     "  solve · :expect {shape} — {} ({route}, k_s = {k_s}, k_c = {})",
                     came.verb(),
@@ -969,7 +997,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         row.scope = Some(beside.scope.clone());
         // A claim on a query with no :goal is answered by no run.
         if at.is_some() {
-            row.route = Some(run.mode.flags());
+            row.route = Some(run.flags());
             row.fell_back_from = fell_back.then(|| least.flags());
         }
         if volume == Volume::Verbose || came != Came::Held {
@@ -983,7 +1011,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 (Volume::Verbose, Some(q)) => format!(
                     "  {where_} — {} ({}{}: {}, {} over {} states)",
                     came.verb(),
-                    run.mode.flags(),
+                    run.flags(),
                     if fell_back {
                         format!(", after {}", least.flags())
                     } else {
@@ -1029,6 +1057,18 @@ struct Asked {
     file: String,
 }
 
+impl Asked {
+    /// The question as `ein solve`'s flags spell it: `--no-search` where the
+    /// run read root alone (M1f S1f.6.36), else the mode's.
+    fn flags(&self) -> String {
+        if self.r.answer.route == explore::Route::Root {
+            "--no-search".to_string()
+        } else {
+            self.mode.flags()
+        }
+    }
+}
+
 /// Ask `mode` of a **freshly loaded** program, deciding its claims
 /// ([`explore::Options::refute`]), within `--region-budget` and the file's
 /// deadline, narrating into `--events`. `Err` is why the run is no verdict.
@@ -1045,6 +1085,7 @@ fn ask(
     }
     opts.deadline = deadline;
     opts.refute = true;
+    opts.no_search = m.get_flag("no-search");
     // A claim states no core: the run takes one only where `--events` prints
     // it, at each node visited (M1e2 S1e2.2.21, the user's ruling of
     // 2026-11-05; M1f S1f.5.12). `ein test` prints no `N`.

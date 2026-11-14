@@ -1,9 +1,9 @@
 # S1f.6.36 — Judging root without a search: `(solve … :no-search)` and `--no-search`
 
 **Phase:** [P1f.6](README.md)
-**Status:** planned 2026-11-14, on the user's words of 2026-11-13 and 2026-11-14. **T1 done 2026-11-14, stopped
-there for the coordinator** ([§ Record](#record-2026-11-14)): the design on real programs, computed on a prototype;
-defaults Q-M1f.254 to .260; E-57 filed. **An engine stage and a language addition.**
+**Status:** **done 2026-11-14** ([§ Record](#record-2026-11-14)); planned 2026-11-14, on the user's words of 2026-11-13
+and 2026-11-14. T1 shown on a prototype and stopped for the coordinator (`2b9ea84a`), accepted as recorded the same
+day, defaults Q-M1f.254 to .260 kept; T2 to T5 built it. **An engine stage and a language addition.**
 **Depends on:** [S1f.6.34](s1f.6.34_hypothesis_mechanisms_in_conflict.md), whose conflict check it joins and
 whose corpus corrections (Q-M1f.246) it revisits; [S1f.6.35](s1f.6.35_imports_by_full_name.md), which it runs
 after, since both move corpus files. Independent of the stdlib layout; it runs before
@@ -292,3 +292,120 @@ checked, by asking) and Q-M1f.260 (four fixtures go back to their first question
 
 **T1's commit**: the records alone (this section, Q-M1f.254 to .260, E-57, the phase README's row); the prototype
 stays out of the tree until T2.
+
+### T1f.6.36.2 and .3 — the keyword and the flag, done
+
+The prototype of T1 (`build/s1f.6.36/proto.patch`), applied and finished; T1's coordinator review accepted Q-M1f.254
+to .260 as written.
+
+**The keyword.** `ein.l` and `ein.y`: `:no-search`, a flag, its pair holding `()`; `grammar.rs`: a lattice keyword
+(on a `(query …)` refused with the note the other three get), and a value after it refused with the note *:no-search
+is a flag and takes no value: it states that the lattice is root alone*; `dump.rs`: a flag prints without its value
+(`FLAGS`), so a program read back, a `.einb`'s stored text, an import-invariance rewrite and every `--dump-answer`
+state file load as written (the first full run found all four refusing `:no-search ()`). `hypgen::declares_no_search`
+and `NO_SEARCH`: under it the ladder runs no rung, before anything is compiled, `oblgen::Mode::NoSearch`
+(`no-search`), never narrated; `eligible_relations` is empty; `scope::outside` names nothing; `from_ir` reads no
+commitment's facts (S1f.7.4's W84 check: a rule concluding `(not ?x)` over a relation the blind enumerator would
+guess is refused without the keyword and loads with it). `mechanisms`: `Mechanisms::no_search`, `may_conflict` counts
+it, and `judge` writes, after the conflicts, which stand, one note beside the hrules and one beside each list, in
+place of S1f.6.34's notes; silent beside an obligation or a closure. The read-out's `universe` row on such a program:
+*no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone*.
+
+**The flag.** `explore::Options::no_search`, `Route::Root`, `Stopped::NoSearch` and `root_alone`: root's node through
+`Space::eval`, a description of what root alone establishes (`partial_cube`), exhausted on a dead root (L0) and partial
+otherwise. `region::RootStats` and the summary's `root` block carry root's standing on every arm, `dead`, `owes`,
+`owed`. `ein-render`: `Row::R`, the `no-search` table, `render_root`; the query block and the claims' lines say *root
+alone*; `region_answer::write_root` (`answer.txt`, `answer.json`, `root.ein`, `forms/`) and `summary_blocks`
+(`asked.ask` `no-search`, `region` `null`). `ein-cli`: the option on `solve` (refused beside `-n`, `--single`,
+`--minimal`, `--maximal`, `--count`, `--monotone`) and on `test` (one question, no fallback; a claim not checked moves
+no exit code); `ein oracle --no-search` refused with its sentence (`oracle::REFUSED`); the forms draw root.
+
+**Tests.** New: `ein-cli/tests/no_search.rs` (the oracle and the question flags refuse it; the read-out on a root in
+R, an owing one and a dead one, no row of R's; the summary and the dump, `root.ein` loading back; `ein test`'s
+decisions and exits; no commitment binds a name under the keyword); `lever_invariance.rs`'s
+`no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r` (every program `programs()` holds, at least 400
+compared: a refusal alike, root's standing and `root` block equal to the full run's, `region` null, no R row, no claim
+outcome but the full run's or not checked); `mechanism_conflicts.rs`'s `no_search_relaxes_no_conflict` (each of
+S1f.6.34's eleven refused shapes, `:no-search` beside it, the same line on `solve`, `test` and `saturate`) and
+`no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead` (nine shapes); `grammar_pages.rs`'s
+table, two rows; `dump.rs`'s `a_flag_prints_without_its_value`. Moved: `obligation_rung.rs` (its stuck and its
+discharged fixtures are programs of its own, the two corpus files stating `:no-search` since; `04_owing` is the
+ladder's case of no rung at all), `obligation_reports.rs` (an owing fixture's R is empty, root its owing node, as
+before S1f.6.34), `help_surface.rs` (35 and 10 options, 84 in all), `read_out_reference.rs` (the `no-search` table),
+`fuzz_properties.rs` (`solve`'s list), and the four matches over `Route` and `Stopped` in tests and examples.
+
+### T1f.6.36.4 — the corpus, done
+
+`build/s1f.6.36/t4_rewrite.py`: the 21 programs of Q-M1f.260 back to their text before S1f.6.34 (`e45c4c18^`), the
+`:no-hypothesis (…)` replaced by `:no-search`, and a comment above each `(solve …)` saying what it meant, what S1f.6.34
+refused and which workaround the keyword replaced; no `as-stated` hrule, no fan-out written out, no added negative
+remains. `ein test tests/` holds all 249 expectations, and every claim of the 21 holds under `ein solve`, `ein test`
+and `ein oracle`.
+
+**Goldens, counted before blessing** (`EIN_BLESS=1`, 2026-11-14):
+
+- `corpus_shapes.md5`: **506 digests moved, none new and none gone, over exactly the 21 programs** (13 to 39 each:
+  their text, so `ir[…]`, `load` and the IR views, 21 each; `hyp` and `hyp+closed`, the rung `no-search`, 21 each;
+  the read-out and the region trace, the `universe` row, 21; and where what a run visits moved, the modes' read-outs
+  and cores on 13, the oracle on 11, the states and the lattice dump on 9). No other program moved, so the stage is
+  behaviour-neutral outside the keyword and the flag.
+- `corpus_exits.txt`: one cell, `tests/stdlib/bijection/01`'s `render rules`, 0 to 1: with its `as-stated` hrule gone
+  the file holds no rule form again, as before S1f.6.34 (*no rule forms*), the cell S1f.6.34 moved the other way.
+- `trace_owing.md` (`04_owing`'s trace): one line, the `universe` row naming `:no-search`.
+- `grammar_table.txt`: two rows added (389, 390), the query's `:no-search` and a value after the flag.
+- `help_shape.txt`: two options added.
+- `docs/kernel/ir/03-ein-lang/00_ebnf.md` (blessed): one token and one production.
+- `read_out_examples.md` (`utils/read_out_examples.py`): X18 and X19 added; X6, `04_owing`, two lines and its prose
+  (the `universe` row; `--single`'s route the state route where it was the obligation tree, the state no longer
+  branching on Ann's two refuted candidates).
+
+**The mutants** (`utils/stdlib_mutants.py --check`, the release binary of this stage): 431 of 502 killed, 71 survivors, the banked set, exit 0 (`build/s1f.6.36/mutants-check.txt`), as T1's prototype measured it.
+
+**The invariance** (the user's rule of 2026-11-14, a change shown right by two equivalent forms): each rewritten
+fixture's claims hold under describe, `ein test` and the oracle; `--no-search`'s root equals the full run's on every
+corpus program (`lever_invariance.rs`); `:no-search` beside each refused shape refuses with the same line
+(`mechanism_conflicts.rs`); and no corpus digest moved outside the 21.
+
+### T1f.6.36.5 — the pages and the records, done
+
+- `01_grammar.md`: the token table (a keyword is followed by its value, but `:no-search`), the form table, the
+  keyword table's row, § Solve's form and two paragraphs (the flag; it relaxes no conflict).
+- `06_reserved_names.md`: the `solve` row, a `no-search` row, the query keywords' paragraph, the mechanisms table's
+  `NS` row and *`:no-search` beside each*, the `Open` paragraph's fixtures.
+- `defined_behaviour.md`: § 4.27's paragraph and pins; § 4.7's commands *forbid* refuses (`--no-search` too); § 5's
+  exit table and paragraph.
+- `configuration.md`: the counts (84; 35 and 10), the header's history line, § 3.3's class *The question not asked*
+  with *does it change the answer: no — it declines to discover it*, § 2.5's last paragraph.
+- `read_out.md`: § 4 is `--monotone` and `--no-search`, § 4.2 and its table, § 10's two stderr rows;
+  `read_out_examples.md` regenerated; `answer_dump.md`: the `root` block's three keys and `--no-search`'s directory.
+- `tests/README.md`: the idiom, *to judge root alone, write `(solve :no-search)`*.
+- `AGENTS.md`: the hypothesis-mechanisms bullet (`:no-search`), the answer bullet and the lever bullet
+  (`--no-search`).
+- Records: Q-M1f.246 restated; the phase README's row; this record.
+
+### The stage, closed
+
+**The commits**: T1, the records, `2b9ea84a`; T2 to T5, the keyword, the flag, the corpus, the tests, the goldens,
+the pages and this record, in the commit that follows it.
+
+**The acceptance, point by point.**
+
+- *A program with obligations and `(solve :no-search)` loads, proposes nothing, and is judged at root; the 24 fixtures
+  say what they meant with it, and none carries a workaround*: the 21 that meant root alone state it, R root or empty
+  as each claims; `bijection/06` means the blind enumerator, `closure/02` and the refusal's fixture are O + C, which
+  the keyword does not relax (Q-M1f.260).
+- *`--no-search` changes no R: on every corpus program, what it reports of root is what the full run reaches at root,
+  and it states no R*: `lever_invariance.rs`'s new test, and T1's sweep (517 programs).
+- *Every page that lists the `solve` keywords or the CLI's options lists the two*: the grammar's three tables and §
+  Solve, `06_reserved_names.md`, `configuration.md`'s counts and § 3.3, `defined_behaviour.md` § 5, `read_out.md`,
+  `AGENTS.md`.
+
+**What it must not do**: `--no-search` states no R and is no lever (the new test); `:no-hypothesis` over an owed
+relation stays refused, beside `:no-search` too (`no_search_relaxes_no_conflict`).
+
+**E-57 and the NOT CHECKED count.** `ein test --no-search` leaves more claims NOT CHECKED than root alone could
+decide: a state of R that root is refutes `(region)`, `(region (owing …))` and a `(region (model …))` that does not
+list it, and S1f.6.27's rule, which this stage keeps (the coordinator, out of scope), refutes none of them. E-57 stays
+filed, no owner.
+
+**Checks run, 2026-11-14**, on this tree: `cargo test --release --workspace` whole, 140 test binaries and doc-test runs, all green after the goldens above (the one run before them failed where T1 said it would, the pages' tests and the goldens, and found the flag printed with its `()`, fixed in `dump.rs`); `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings` and `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` (all in release), clean; the gate's link check over its paths, 558 pages, 0 findings; `utils/stdlib_mutants.py --check`, exit 0; `examples/gen_zebra2_variants.py --check` and `utils/stdlib_manifest.py`, unchanged. Not run: `./run_tests.sh` and the nightly, the coordinator's, over the batch.

@@ -958,3 +958,150 @@ fn the_core_exemption_is_one_flag_and_the_core_rows() {
          exemption has no witness — retire it from no_config_flag_moves_a_line_of_any_mode"
     );
 }
+
+// ── 3. `--no-search`: R not discovered, never another R ───────────────
+
+/// The rows that count or list R: none is printed under `--no-search`.
+const R_ROWS: [&str; 11] = [
+    "states (k_s)",
+    "commitments (k_c)",
+    "exhausted",
+    "empty",
+    "minimal line",
+    "maximal line",
+    "components",
+    "sub-cubes",
+    "merged",
+    "N",
+    "E",
+];
+
+/// One run's exit, stdout, stderr and summary (`Null` where it wrote none).
+fn run_json(file: &Path, flags: &[&str]) -> (i32, String, String, J) {
+    let dir = Scratch::new("ein-lever-no-search");
+    let json = dir.join("summary.json");
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .arg("solve")
+        .arg(file)
+        .args(flags)
+        .arg("--json-summary")
+        .arg(&json)
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    let summary = std::fs::read_to_string(&json)
+        .ok()
+        .map(|s| serde_json::from_str(&s).expect("the summary parses"))
+        .unwrap_or(J::Null);
+    (
+        out.status.code().unwrap_or(-1),
+        String::from_utf8_lossy(&out.stdout).into_owned(),
+        String::from_utf8_lossy(&out.stderr).into_owned(),
+        summary,
+    )
+}
+
+/// A claim's outcome in a summary: the `(solve :expect)`'s, then each query's.
+fn outcomes(s: &J) -> Vec<J> {
+    let mut v = vec![s["claim"]["outcome"].clone()];
+    if let Some(qs) = s["queries"].as_array() {
+        v.extend(qs.iter().map(|q| q["expect"]["outcome"].clone()));
+    }
+    v
+}
+
+/// **`--no-search` reports root as the full run reaches it, and states no
+/// R** — M1f
+/// [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
+/// the user's words of 2026-11-14, *"flag that disables search doesn't change
+/// R, it disables discovering of R"*. The flag is no lever that a complete
+/// search could answer another R under: it declines to search. So on every
+/// program [`programs`] holds, against a bare `ein solve`:
+///
+/// - a program the full run refuses is refused alike, the same exit and
+///   stderr;
+/// - otherwise the full run's `region.root`, `region.root_owes` and
+///   `region.root_owed` are the `--no-search` summary's `root.dead`,
+///   `root.owes` and `root.owed`, the two `root` blocks are equal, its
+///   `region` is `null` and `asked.ask` is `no-search`, and its stdout prints
+///   no row that counts or lists R ([`R_ROWS`]);
+/// - each claim's outcome is the full run's or `not-checked`, never another.
+#[test]
+fn no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r() {
+    let files = programs();
+    let compared = AtomicUsize::new(0);
+    let bad: Vec<String> = par_map(&files, |path| {
+        let at = path
+            .strip_prefix(repo_root())
+            .unwrap_or(path)
+            .display()
+            .to_string();
+        let mut bad = Vec::new();
+        let (fc, _, ferr, full) = run_json(path, &[]);
+        let (nc, nout, nerr, ns) = run_json(path, &["--no-search"]);
+        if full.is_null() {
+            if nc != fc || nerr != ferr || !ns.is_null() {
+                bad.push(format!(
+                    "{at}: refused by the full run (exit {fc}), and --no-search exits {nc}:\n{nerr}"
+                ));
+            }
+            return bad;
+        }
+        if ns.is_null() {
+            bad.push(format!("{at}: --no-search wrote no summary (exit {nc}): {nerr}"));
+            return bad;
+        }
+        compared.fetch_add(1, Ordering::Relaxed);
+        let r = &full["region"];
+        let n = &ns["root"];
+        let standing = if n["dead"] == J::Bool(true) {
+            "dead"
+        } else if n["owes"] == 0 {
+            "in-r"
+        } else {
+            "owing"
+        };
+        if r["root"] != standing || r["root_owes"] != n["owes"] || r["root_owed"] != n["owed"] {
+            bad.push(format!(
+                "{at}: root is ({}, {}, {}) to the full run and ({standing}, {}, {}) to --no-search",
+                r["root"], r["root_owes"], r["root_owed"], n["owes"], n["owed"]
+            ));
+        }
+        if full["root"] != ns["root"] {
+            bad.push(format!("{at}: the root blocks differ"));
+        }
+        if !ns["region"].is_null() || ns["asked"]["ask"] != "no-search" {
+            bad.push(format!(
+                "{at}: --no-search states a region, or asked {}",
+                ns["asked"]
+            ));
+        }
+        for label in R_ROWS {
+            let printed = nout.lines().any(|l| {
+                l.strip_prefix("  ")
+                    .and_then(|rest| rest.strip_prefix(label))
+                    .is_some_and(|rest| rest.starts_with(' '))
+            });
+            if printed {
+                bad.push(format!("{at}: --no-search prints the row {label}"));
+            }
+        }
+        for (want, got) in outcomes(&full).iter().zip(outcomes(&ns)) {
+            if got != *want && got != "not-checked" {
+                bad.push(format!(
+                    "{at}: a claim is {want} to the full run and {got} to --no-search"
+                ));
+            }
+        }
+        bad
+    })
+    .into_iter()
+    .flatten()
+    .collect();
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    // A floor, so that a sweep that compared nothing cannot pass: 517 of the
+    // 856 tracked programs wrote a summary on 2026-11-14 (S1f.6.36's T1),
+    // the slow tier among them.
+    let compared = compared.into_inner();
+    assert!(compared >= 400, "only {compared} programs compared");
+}
