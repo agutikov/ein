@@ -17213,3 +17213,51 @@ models    = [
   [],
   ["(chosen x1)", "(chosen x10)", "(chosen x100)", "(chosen x101)", "(chosen x102)", "(chosen x103)", "(chosen x104)", "(chosen x105)", "(chosen x106)", "(chosen x107)", "(chosen x108)", "(chosen x109)", "(chosen x11)", "(chosen x110)", "(chosen x111)", "(chosen x112)", "(chosen x113)", "(chosen x114)", "(chosen x115)", "(chosen x116)", "(chosen x117)", "(chosen x118)", "(chosen x119)", "(chosen x12)", "(chosen x120)", "(chosen x121)", "(chosen x122)", "(chosen x123)", "(chosen x124)", "(chosen x125)", "(chosen x126)", "(chosen x127)", "(chosen x128)", "(chosen x129)", "(chosen x13)", "(chosen x130)", "(chosen x14)", "(chosen x15)", "(chosen x16)", "(chosen x17)", "(chosen x18)", "(chosen x19)", "(chosen x2)", "(chosen x20)", "(chosen x21)", "(chosen x22)", "(chosen x23)", "(chosen x24)", "(chosen x25)", "(chosen x26)", "(chosen x27)", "(chosen x28)", "(chosen x29)", "(chosen x3)", "(chosen x30)", "(chosen x31)", "(chosen x32)", "(chosen x33)", "(chosen x34)", "(chosen x35)", "(chosen x36)", "(chosen x37)", "(chosen x38)", "(chosen x39)", "(chosen x4)", "(chosen x40)", "(chosen x41)", "(chosen x42)", "(chosen x43)", "(chosen x44)", "(chosen x45)", "(chosen x46)", "(chosen x47)", "(chosen x48)", "(chosen x49)", "(chosen x5)", "(chosen x50)", "(chosen x51)", "(chosen x52)", "(chosen x53)", "(chosen x54)", "(chosen x55)", "(chosen x56)", "(chosen x57)", "(chosen x58)", "(chosen x59)", "(chosen x6)", "(chosen x60)", "(chosen x61)", "(chosen x62)", "(chosen x63)", "(chosen x64)", "(chosen x65)", "(chosen x66)", "(chosen x67)", "(chosen x68)", "(chosen x69)", "(chosen x7)", "(chosen x70)", "(chosen x71)", "(chosen x72)", "(chosen x73)", "(chosen x74)", "(chosen x75)", "(chosen x76)", "(chosen x77)", "(chosen x78)", "(chosen x79)", "(chosen x8)", "(chosen x80)", "(chosen x81)", "(chosen x82)", "(chosen x83)", "(chosen x84)", "(chosen x85)", "(chosen x86)", "(chosen x87)", "(chosen x88)", "(chosen x89)", "(chosen x9)", "(chosen x90)", "(chosen x91)", "(chosen x92)", "(chosen x93)", "(chosen x94)", "(chosen x95)", "(chosen x96)", "(chosen x97)", "(chosen x98)", "(chosen x99)"],
 ]
+
+# ══ W93 — `std.algebra`'s converse lemma and its converse type checks refute a pair well-typed through the hierarchy ══
+[[case]]
+id       = "W93/converse-lemma-subtype"
+case     = "W93"
+title    = "`std.algebra`'s converse lemma and its converse type checks refute a pair well-typed through the hierarchy"
+class    = "model set"
+settings = "default"
+owner    = "S1f.6.35"
+question = ["P1f.6 findings.md E-53"]
+witness  = "examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein"
+status   = "open"
+open_because = "filed before its fix, as every wrong answer is: S1f.6.35 takes F1 of its record's *E-53 under the ruling* as a default, the two checks read direction-free, in the commit after this one"
+look_at  = ["root", "refuted", "summary"]
+note     = "Filed by S1f.6.35 (2026-11-14) from E-53 of P1f.6's `findings.md`. `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` with `converse-pair-symmetric` listed beside the two checks: what every program that writes `converse` holds once an import brings its module whole (the user's ruling of 2026-11-14), and what a program holding the whole of `std.algebra` flat holds today. The lemma derives `(converse owned-by owns)`, `std.typing`'s knob derives the checks' activators for it, and `converse-illtyped-ran` asks of the mirror whether `Animal` is `Pet` or a subtype of it."
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, release, at 4676a5de (2026-11-14): R empty, root dead, *refuted by converse-illtyped-ran*, exit 0"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(converse owns owned-by)", "(relation owned-by Animal Person)", "(relation owns Person Pet)"]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "`std.algebra`'s header: `(converse R1 R2)` is R2 = R1°, which `converse-pair-symmetric` states, and the two checks hold a pair well-typed *up to the supplied subtype relation*; `tests/stdlib/typing/03`'s claim. S1f.6.35's default (its record, *E-53 under the ruling*, F1): a pair is ill-typed where its two types are neither equal nor one a subtype of the other, so a pair and its mirror check alike"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+derived   = "The types meet: `Pet` is an `Animal`, `Person` is `Person`. No check refutes the pair or its mirror, nothing is guessed (`:no-hypothesis` names every relation), so R is {∅}, root alive and owing nothing, and its one state holds `(owns Ann Rex)`"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = []
+models    = []

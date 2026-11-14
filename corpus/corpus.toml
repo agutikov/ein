@@ -2959,6 +2959,12 @@ runs   = ["solve", "saturate"]
 note   = "M1f W91's library: a relation and one rule with an empty `:match`, its entry, which states two colours at root. `dump-selection` imports it by that rule's name. A program of its own too, R {∅}."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W93 (`W93/converse-lemma-subtype`), filed by S1f.6.35 (2026-11-14) from E-53 of P1f.6's findings: `tests/stdlib/typing/03`'s well-typed pair with `std.algebra`'s `converse-pair-symmetric` beside the two converse checks, which every program writing `converse` holds once an import brings its module whole. The lemma's mirror is checked one way under the hierarchy and refuted: root dead."
+
+[[entry]]
 path   = "examples/ein-bugs/wrong-answers/dump-selection.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "saturate --dump"]

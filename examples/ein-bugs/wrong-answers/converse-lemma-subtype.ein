@@ -1,0 +1,39 @@
+;;; W93 — `std.algebra`'s converse lemma and its converse type checks refute a
+;;; pair well-typed through the hierarchy.
+;;;
+;;; `owns : Person → Pet` and `owned-by : Animal → Person`, and a `Pet` is an
+;;; `Animal`: the pair is well-typed through the hierarchy, as
+;;; `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` says, and its one
+;;; state holds `(owns Ann Rex)`. This file is that one with
+;;; `converse-pair-symmetric` beside the two checks, which is what a program
+;;; that holds the whole of `std.algebra` holds — every program that writes
+;;; `converse` since M1f S1f.6.35, an import bringing its module whole.
+;;;
+;;; The lemma derives `(converse owned-by owns)`, `std.typing`'s knob derives
+;;; the checks' activators for it too, and `converse-illtyped-ran` asks of the
+;;; mirror whether `Animal` is `Pet` or a subtype of it: root dead, the pair
+;;; refuted. The header of `std.algebra` reads `(converse R1 R2)` as the
+;;; equality R2 = R1°, which the lemma states, and the checks read it one way,
+;;; *up to the supplied subtype relation*, which then holds of no pair with a
+;;; proper subtype. E-53 of P1f.6's `findings.md`; S1f.6.35's record, *E-53
+;;; under the ruling*, tried three fixes.
+
+(import std.algebra :symbols (converse converse-pair-symmetric converse-illtyped-dom converse-illtyped-ran))
+(import std.typing  :symbols (type-hierarchy-converse))
+
+(relation is-a*    T T           :why "{?1} is a subtype of {?2}")
+(relation owns     Person Pet    :why "{?1} owns {?2}")
+(relation owned-by Animal Person :why "{?1} is owned by {?2}")
+
+(is-a* Pet Animal)             ; a Pet is an Animal: the pair is well-typed
+
+(converse owns owned-by)
+(type-hierarchy is-a*)
+
+(owns Ann Rex)
+
+(solve
+  :no-hypothesis (is-a* owns owned-by))
+
+(query
+  :goal (owns ?who ?what))
