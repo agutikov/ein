@@ -19,43 +19,45 @@
 ;;; Search-free: no candidate, one state, one saturation.
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
-;;; the prototype this program was banked from, its counts and its costs.
-(import bin :symbols (bin add2 b2 sub2 mul2 div2 cmp2 sum-of2 diff-of2 product-of2 quot-of2
-                      cmp-of2))
+;;; the prototype this program was banked from, its counts and its costs; the
+;;; theory is the stdlib's `std.math.binary-arith` since the stage's build.
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sub bin-mul bin-div bin-cmp
+                                         bin-sum-of bin-diff-of bin-product-of bin-quot-of bin-cmp-of))
+(import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))
 
-(add2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+(bin-add (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
       (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
-(sub2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+(bin-sub (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
       (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
-(sub2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
+(bin-sub (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
       (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0))
-(mul2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 0) 0) 0))
-(div2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1))
-(cmp2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+(bin-mul (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 0) 0) 0))
+(bin-div (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1))
+(bin-cmp (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
       (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
 
-(query :goal (sum-of2 ?x ?y ?s)
-       :expect (model (sum-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+(query :goal (bin-sum-of ?x ?y ?s)
+       :expect (model (bin-sum-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1))))
 
-(query :goal (diff-of2 ?x ?y ?d ?short)
-       :expect (model (diff-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+(query :goal (bin-diff-of ?x ?y ?d ?short)
+       :expect (model (bin-diff-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
                                 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
                                 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 1) 1) 0) 1) 1) 1) 0) 1) 1) 1) 1) z)
-                      (diff-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
+                      (bin-diff-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1)
                                 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
                                 z (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 1) 1) 0) 1) 1) 1) 0) 1) 1) 1) 1))))
 
-(query :goal (product-of2 ?x ?y ?p)
-       :expect (model (product-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 0) 0) 0)
+(query :goal (bin-product-of ?x ?y ?p)
+       :expect (model (bin-product-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 0) 0) 0)
                                    (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 1) 1) 0) 1) 1) 0) 0) 0) 1) 1) 0) 0) 0))))
 
-(query :goal (quot-of2 ?x ?y ?q ?r)
-       :expect (model (quot-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1)
+(query :goal (bin-quot-of ?x ?y ?q ?r)
+       :expect (model (bin-quot-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1)
                                 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 1) 1) 1) 1) 1) 1) 0) 0) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 0) 1) 0) 0))))
 
-(query :goal (cmp-of2 ?x ?y ?o)
-       :expect (model (cmp-of2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
+(query :goal (bin-cmp-of ?x ?y ?o)
+       :expect (model (bin-cmp-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0)
                                (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1) gt)))

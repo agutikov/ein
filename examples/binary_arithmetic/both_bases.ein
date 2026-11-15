@@ -1,28 +1,31 @@
-;;; Decimal and binary in one program: 123078 + 4567 by `std.math.decimal-arith`, and
-;;; 101 + 111 by the binary theory, each imported flat by its one name.
+;;; Decimal and binary in one program: 123078 + 4567 by `std.math.decimal-arith`,
+;;; and 101 + 111 by `std.math.binary-arith`, each imported whole.
 ;;;
-;;; The two theories share no relation: a decimal number is (n PREFIX DIGIT)
-;;; and a binary one (b2 PREFIX BIT), so a number says which base it is in,
-;;; and `sum-of` and `sum-of2` cannot be confused. They share the names `0`,
-;;; `1` and `z`: zero is the one number whose numeral does not say its base.
+;;; A decimal number is (n PREFIX DIGIT) and a binary one (b2 PREFIX BIT), so a
+;;; number says which base it is in, and `sum-of` and `bin-sum-of` cannot be
+;;; confused. The two share the names `0`, `1` and `z`, zero being the one
+;;; number whose numeral does not say its base; `std.math.arith`, arithmetic
+;;; itself; and `std.math.positional`, the rules both bases share, each
+;;; activated once a base by the base's closing rule. No relation else.
 ;;;
-;;; This is why the plan page recommends a theory of its own: the same shape
-;;; and names over binary tables cannot be imported flat beside decimal, and
-;;; the conversions in `conv.ein` need both bases at once.
+;;; This is why the plan page recommended a theory of its own: the same shape
+;;; and names over binary tables could not be imported beside decimal, and the
+;;; conversions of `std.math.convert` need both bases at once.
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
 ;;; the prototype this program was banked from, its counts and its costs.
 (import std.math.decimal-arith :symbols (decimal-arith add sum-of))
 (import std.math.decimal :symbols (n))
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
+(import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))
-(import bin :symbols (bin add2 b2 sum-of2))
 
 (add  (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7))
-(add2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
 
 (query :goal (sum-of ?x ?y ?s)
        :expect (model (sum-of (n (n (n (n (n (n z 1) 2) 3) 0) 7) 8) (n (n (n (n z 4) 5) 6) 7)
                               (n (n (n (n (n (n z 1) 2) 7) 6) 4) 5))))
 
-(query :goal (sum-of2 ?x ?y ?s)
-       :expect (model (sum-of2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))))
+(query :goal (bin-sum-of ?x ?y ?s)
+       :expect (model (bin-sum-of (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))))

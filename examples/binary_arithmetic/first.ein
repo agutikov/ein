@@ -1,38 +1,41 @@
 ;;; A first binary sum, computed by saturation alone: 101 + 111 = 1100,
 ;;; which is 5 + 7 = 12.
 ;;;
-;;; Ein has no numbers. `bin.ein` beside this file is a theory written in Ein
-;;; that does school arithmetic on binary numbers, as `std.math.decimal-arith` does on
-;;; decimal ones: the two bits are the names `0` and `1`, what is known of
-;;; them is three small tables of facts (`bits.ein`), and the rules are the
-;;; wiring.
+;;; Ein has no numbers. `std.math.binary-arith` is a theory written in Ein that
+;;; does school arithmetic on binary numbers, as `std.math.decimal-arith` does
+;;; on decimal ones: the two bits are the names `0` and `1`, what is known of
+;;; them is four small tables of facts (`std.math.bits`), and the rules are the
+;;; wiring, most of them the ones decimal's walks are, written once in
+;;; `std.math.positional`.
 ;;;
-;;;   (b2 PREFIX BIT)     a binary number, in reading order: twice the prefix,
-;;;                       plus the bit; `z` is zero. 101 is (b2 (b2 (b2 z 1) 0) 1)
-;;;   (add2 X Y)          a request fact: X + Y is asked
-;;;   (sum-of2 X Y S)     the answer, repeating the operands as written
-;;;   (let2 NAME NUMBER)  a named constant; a request may name its operands
+;;;   (b2 PREFIX BIT)       a binary number, in reading order: twice the prefix,
+;;;                         plus the bit; `z` is zero. 101 is (b2 (b2 (b2 z 1) 0) 1)
+;;;   (bin-add X Y)         a request fact: X + Y is asked
+;;;   (bin-sum-of X Y S)    the answer, repeating the operands as written
+;;;   (bin-let NAME NUMBER) a named constant; a request may name its operands
 ;;;
-;;; Nothing is guessed: the theory's closing rule, `bin`, closes every
+;;; Nothing is guessed: the theory's closing rule, `binary-arith`, closes every
 ;;; relation, so `ein solve` reports no candidate and one state.
 ;;;
 ;;;   ein solve examples/binary_arithmetic/first.ein
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
-;;; the prototype this program was banked from, its counts and its costs.
-(import bin :symbols (bin add2 b2 let2 sub2 sum-of2 diff-of2))
+;;; the prototype this program was banked from, its counts and its costs; the
+;;; theory is the stdlib's since the stage's build.
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sub bin-sum-of bin-diff-of))
+(import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))
 
-(add2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
 
-(let2 left  (b2 (b2 (b2 z 1) 1) 0))
-(let2 right (b2 (b2 z 1) 1))
-(sub2 left right)
+(bin-let left  (b2 (b2 (b2 z 1) 1) 0))
+(bin-let right (b2 (b2 z 1) 1))
+(bin-sub left right)
 
-(query :goal (sum-of2 ?x ?y ?s)
+(query :goal (bin-sum-of ?x ?y ?s)
        :goal-text "{?x} + {?y} = {?s}"
-       :expect (model (sum-of2 (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))))
+       :expect (model (bin-sum-of (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))))
 
-(query :goal (diff-of2 left right ?d ?short)
+(query :goal (bin-diff-of left right ?d ?short)
        :goal-text "left - right = {?d}"
-       :expect (model (diff-of2 left right (b2 (b2 z 1) 1) z)))
+       :expect (model (bin-diff-of left right (b2 (b2 z 1) 1) z)))

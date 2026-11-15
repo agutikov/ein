@@ -4,10 +4,10 @@
 ;;; This is a truth table with no search. The 2^n inputs are written as test
 ;;; vectors, a value carries the vector it belongs to, `(at VECTOR WIRE
 ;;; BIT)`, and one rule propagates through the gates on every vector at once.
-;;; Each vector's two outputs are then set against the row of `fa2`, the
-;;; binary full adder of `examples/binary_arithmetic/` (`bits.ein` here is a
-;;; copy of that directory's, since an import cannot reach a sibling
-;;; directory).
+;;; Each vector's two outputs are then set against the row of `bin-fa`, the
+;;; binary full adder of `std.math.bits`, the table `std.math.binary-arith`
+;;; adds with (M1f S1f.6.16; until its build a copy beside this file,
+;;; `bits.ein`, since an import cannot reach a sibling directory).
 ;;;
 ;;; Eight vectors agree and none differs: the calculator's gate, derived
 ;;; from five smaller ones. The second claim, `(model)`, says that no
@@ -18,10 +18,15 @@
 ;;;
 ;;; The third claim, the table's rows, was computed in Python.
 ;;;
+;;; `ein-infer/tests/bool_theory.rs`'s `the_full_adder_from_gates_is_the_bits_table`
+;;; holds the same comparison as a test (S1f.6.17's T1f.6.17.7): the stage's
+;;; acceptance line, *the gate-built full adder equals the binary adder's
+;;; table*.
+;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
 (import std.bool.gates :symbols (gate2))
 (import std.bool.circuit :symbols (gate))   ; the relation full_adder's gates are facts of
-(import bits :symbols (fa2))
+(import std.math.bits :symbols (bin-fa))
 (import full_adder)
 
 (relation at Vector Wire Bit
@@ -51,20 +56,19 @@
   :assert (row ?v ?x ?y ?c ?s ?k)
   :why    "the gates on {?v}: sum bit {?s}, carry out {?k}")
 (rule compare ()
-  :match  (and (row ?v ?x ?y ?c ?s ?k) (fa2 ?x ?y ?c ?s ?k))
+  :match  (and (row ?v ?x ?y ?c ?s ?k) (bin-fa ?x ?y ?c ?s ?k))
   :assert (agrees ?v)
   :why    "the table's row for {?x}, {?y}, {?c} is digit {?s}, carry {?k}, as the gates say")
 (rule compare-sum ()
-  :match  (and (row ?v ?x ?y ?c ?s ?k) (fa2 ?x ?y ?c ?t ?j) (neq ?s ?t))
+  :match  (and (row ?v ?x ?y ?c ?s ?k) (bin-fa ?x ?y ?c ?t ?j) (neq ?s ?t))
   :assert (differs ?v)
   :why    "the gates' sum bit is {?s} and the table's {?t}")
 (rule compare-carry ()
-  :match  (and (row ?v ?x ?y ?c ?s ?k) (fa2 ?x ?y ?c ?t ?j) (neq ?k ?j))
+  :match  (and (row ?v ?x ?y ?c ?s ?k) (bin-fa ?x ?y ?c ?t ?j) (neq ?k ?j))
   :assert (differs ?v)
   :why    "the gates' carry is {?k} and the table's {?j}")
 
 (__closed__ gate) (__closed__ at) (__closed__ vector) (__closed__ row) (__closed__ agrees) (__closed__ differs)
-(__closed__ fa2)
 
 (query :goal (agrees ?v)
        :expect (model (agrees v000) (agrees v001) (agrees v010) (agrees v011)

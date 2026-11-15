@@ -43,7 +43,7 @@ use ein_corpus::{Scratch, ein_files_under, repo_root};
 /// Where the arithmetic programs live: `std.math.decimal-arith`'s tests, `std.math.num9`'s
 /// (S1f.6.13), `std.math.int`'s (S1f.6.7), `std.math.rat`'s (S1f.6.8), and the examples
 /// of all.
-const ROOTS: [&str; 9] = [
+const ROOTS: [&str; 10] = [
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/decimal",
     "tests/stdlib/math/num9",
@@ -53,6 +53,7 @@ const ROOTS: [&str; 9] = [
     "tests/stdlib/math/binary",
     "tests/stdlib/math/convert",
     "examples/arith",
+    "examples/binary_arithmetic",
 ];
 
 /// The relations an answer is a fact of: `std.math.decimal-arith`'s five results, and

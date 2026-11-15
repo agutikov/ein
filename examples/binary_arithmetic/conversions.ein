@@ -1,6 +1,6 @@
-;;; Decimal to binary and back, as requests of `conv.ein`, the first theory
-;;; built on the calculator: each conversion is a chain of the two theories'
-;;; own operations.
+;;; Decimal to binary and back, as requests of `std.math.convert`, the first
+;;; theory built on the calculator: each conversion is a chain of the two
+;;; theories' own operations.
 ;;;
 ;;;   (to-bin X)   answered by (bin-of X B): X halved by decimal's division
 ;;;                until nothing is left, each remainder a bit
@@ -20,12 +20,12 @@
 ;;; Every claim was computed in Python and is checked by `ein test`.
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
-;;; the prototype this program was banked from, its counts and its costs.
-(import conv :symbols (conv to-bin to-dec bin-of dec-of))
-(import std.math.decimal-arith)
+;;; the prototype this program was banked from, its counts and its costs; the
+;;; module is the stdlib's `std.math.convert` since the stage's build.
+(import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))
 (import std.math.decimal :symbols (n))
+(import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))
-(import bin :symbols (b2))
 
 (to-bin z)
 (to-bin (n z 1))

@@ -120,9 +120,10 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// second layout; `tests/stdlib/math/decimal/` since M1f S1f.6.38, whose
 /// programs hold the tables; and since S1f.6.16 `tests/stdlib/math/convert/`
 /// and `tests/stdlib/math/binary-arith/`, whose conversions and program of
-/// both bases hold decimal's. 1 234 views of 217 files on 2026-11-15 (1 195
-/// of 208 on 2026-11-14, before S1f.6.16's tests; `cargo test -p ein-render
-/// --test dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
+/// both bases hold decimal's. 1 228 views of 216 files on 2026-11-15 (1 195
+/// of 208 on 2026-11-14, before S1f.6.16's tests and its retiring the
+/// example theory; `cargo test -p ein-render --test dot_wellformed --
+/// --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
 /// what it used to check is noticed.
 const SKIPPING: [&str; 16] = [

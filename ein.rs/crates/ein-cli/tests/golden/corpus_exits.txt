@@ -118,17 +118,9 @@
 0    examples/beyond_arith/tables_backwards.ein :: saturate
 0    examples/beyond_arith/tables_backwards.ein :: solve
 0    examples/beyond_arith/tables_backwards.ein :: test
-0    examples/binary_arithmetic/bin.ein :: render rules
-0    examples/binary_arithmetic/bin.ein :: saturate
-0    examples/binary_arithmetic/bin.ein :: solve
-0    examples/binary_arithmetic/bits.ein :: saturate
-0    examples/binary_arithmetic/bits.ein :: solve
 0    examples/binary_arithmetic/both_bases.ein :: saturate
 0    examples/binary_arithmetic/both_bases.ein :: solve
 0    examples/binary_arithmetic/both_bases.ein :: test
-0    examples/binary_arithmetic/conv.ein :: render rules
-0    examples/binary_arithmetic/conv.ein :: saturate
-0    examples/binary_arithmetic/conv.ein :: solve
 0    examples/binary_arithmetic/conversions.ein :: saturate
 0    examples/binary_arithmetic/conversions.ein :: solve
 0    examples/binary_arithmetic/conversions.ein :: test
@@ -144,8 +136,6 @@
 0    examples/binary_logic/adder_against_table.ein :: saturate
 0    examples/binary_logic/adder_against_table.ein :: solve
 0    examples/binary_logic/adder_against_table.ein :: test
-0    examples/binary_logic/bits.ein :: saturate
-0    examples/binary_logic/bits.ein :: solve
 0    examples/binary_logic/equivalent.ein :: solve
 0    examples/binary_logic/equivalent.ein :: solve --single
 0    examples/binary_logic/equivalent.ein :: solve -n 1

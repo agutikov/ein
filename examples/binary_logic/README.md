@@ -25,10 +25,9 @@ phase's [`findings.md`](../../plans/m1f_hypothesis_and_documentation/p1f.6_calcu
 | file | what it shows | answer |
 |---|---|---|
 | [`full_adder.ein`](full_adder.ein) | the binary full adder from five gates, as facts of `std.bool.circuit`'s `gate`: a module the programs below import | alone, R {∅} |
-| [`bits.ein`](bits.ein) | a copy of [`../binary_arithmetic/bits.ein`](../binary_arithmetic/bits.ein), for the table `fa2`: an import cannot reach a sibling directory. Written by that directory's generator, and kept until `std.math.bits` exists ([S1f.6.16](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md)'s build) | a module of facts |
 | [`simulation.ein`](simulation.ein) | **1, simulation**: the adder at a = 1, b = 1, carry in = 0 | sum 0, carry 1; search-free |
 | [`truth_table.ein`](truth_table.ein) | **2, the truth table**, inputs as hypotheses | R is the 8 assignments, and the query's 8 classes are the rows; 30 saturations |
-| [`adder_against_table.ein`](adder_against_table.ein) | the truth table from written test vectors, and the gate-built adder against the calculator's table `fa2` | 8 of 8 agree, none differs; search-free |
+| [`adder_against_table.ein`](adder_against_table.ein) | the truth table from written test vectors, and the gate-built adder against the calculator's table, `std.math.bits`' `bin-fa` | 8 of 8 agree, none differs; search-free |
 | [`satisfiable.ein`](satisfiable.ein) | **3, satisfiability**: sum 1 and carry 1? | one state, a = b = carry in = 1 |
 | [`unsatisfiable.ein`](unsatisfiable.ein) | the same and not both a and b | R is empty, by owing: the claim is the owing frontier, eleven nodes |
 | [`equivalent.ein`](equivalent.ein) | **4, equivalence**: the adder's carry against the majority form, by a miter | R is empty, by owing: no input tells them apart |
@@ -88,6 +87,10 @@ ein solve examples/binary_logic/unsatisfiable.ein --dump-answer /tmp/unsat   # n
 ## The full adder against the binary table
 
 `adder_against_table.ein` is the stage file's acceptance line, *the gate-built full adder equals the
-table*, as a corpus program with a claim. Its turn into a test against `std.math.bits`' table is
-T1f.6.17.7, which waits on [S1f.6.16](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md)'s
-build: until then the program reads `bits.ein`, the copy here.
+table*, as a corpus program with a claim, and since T1f.6.17.7 also a test:
+`ein-infer/tests/bool_theory.rs`' `the_full_adder_from_gates_is_the_bits_table` drives this directory's
+`full_adder.ein` on all eight inputs and holds its sum and carry to `std.math.bits`' `bin-fa`, row for
+row, and both to Rust's sum. The table is the stdlib's since
+[S1f.6.16](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md)'s
+build (2026-11-15), where it was `fa2` of a copy here, `bits.ein`, which an import could not reach from
+`examples/binary_arithmetic/`; the copy is gone, and `synthesis.ein` reads `bin-fa` too.

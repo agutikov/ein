@@ -21,6 +21,7 @@
 //! | each module's closing rule closes its relations and names every rule and the entry of the module below it | [`each_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | the modules are monotone: no `absent`, no `not`, no `or`, no hrule and no macro; `neq` and `(false)` only in the two rules that refute | [`the_modules_write_no_negation`] |
 //! | the generated files are what `utils/gen_gates.py` writes — the script's `--check`, which is how that check is in the gate | [`the_files_are_what_the_generator_writes`] |
+//! | **the full adder built from five gates is the binary adder's table** (S1f.6.17's T1f.6.17.7): on every one of its eight inputs, its sum and carry are `std.math.bits`' `bin-fa` row, and both are Rust's sum | [`the_full_adder_from_gates_is_the_bits_table`] |
 //!
 //! The generator computes the same relations in Python, from the columns,
 //! and writes them as the claims of the programs under `tests/stdlib/bool/`;
@@ -761,5 +762,68 @@ fn the_files_are_what_the_generator_writes() {
          `python3 utils/stdlib_manifest.py --write`\n{}{}",
         String::from_utf8_lossy(&out.stdout),
         String::from_utf8_lossy(&out.stderr),
+    );
+}
+
+// ── the full adder from gates, against the calculator's table ──────
+
+/// **The full adder built from five gates is `std.math.bits`' `bin-fa`**
+/// (M1f S1f.6.17's T1f.6.17.7, the stage's acceptance line, which waited on
+/// S1f.6.16's build for the table): the five gates of
+/// `examples/binary_logic/full_adder.ein`, read off that file, are driven on
+/// all eight inputs at once, each value carrying the vector it belongs to, by
+/// `std.bool.gates`' table; the outputs on each vector are set against the
+/// table's row. Held three ways: the eight rows the gates give are exactly
+/// the eight rows of `bin-fa`, each is Rust's `a + b + c` as a bit and a
+/// carry, and no vector is missing. `adder_against_table.ein` beside the
+/// adder is the same comparison as a program with claims.
+#[test]
+fn the_full_adder_from_gates_is_the_bits_table() {
+    let adder = std::fs::read_to_string(repo_root().join("examples/binary_logic/full_adder.ein"))
+        .expect("the full adder");
+    let gates: String = adder
+        .lines()
+        .filter(|l| l.starts_with("(gate "))
+        .map(|l| format!("{}\n", l.split(';').next().unwrap_or(l).trim_end()))
+        .collect();
+    assert_eq!(gates.lines().count(), 5, "the adder's five gates");
+    let mut src = String::from(
+        "(import std.bool.gates :symbols (gate2 Xor And Or))\n\
+         (import std.bool.circuit :symbols (gate))\n\
+         (import std.math.bits :symbols (bin-fa))\n\
+         (relation at Vector Wire Bit :why \"on {?1}, {?2} carries {?3}\")\n\
+         (relation vector Vector Bit Bit Bit :why \"{?1}: a = {?2}, b = {?3}, carry in = {?4}\")\n\
+         (relation row Bit Bit Bit Bit Bit :why \"{?1} + {?2} + {?3}: bit {?4}, carry {?5}\")\n\
+         (rule drive () :match (vector ?v ?x ?y ?c)\n\
+           :assert (and (at ?v a ?x) (at ?v b ?y) (at ?v cin ?c)) :why \"the inputs of {?v}\")\n\
+         (rule propagate-at ()\n\
+           :match (and (gate ?g ?f ?a ?b ?o) (at ?v ?a ?x) (at ?v ?b ?y) (gate2 ?f ?x ?y ?z))\n\
+           :assert (at ?v ?o ?z) :why \"{?g} on {?v}\")\n\
+         (rule row-of () :match (and (vector ?v ?x ?y ?c) (at ?v sum ?s) (at ?v cout ?k))\n\
+           :assert (row ?x ?y ?c ?s ?k) :why \"the gates on {?v}\")\n",
+    );
+    src.push_str(&gates);
+    let mut want = BTreeSet::new();
+    for a in BITS {
+        for b in BITS {
+            for c in BITS {
+                src.push_str(&format!("(vector v{a}{b}{c} {a} {b} {c})\n"));
+                let s = a + b + c;
+                want.insert(format!("(row {a} {b} {c} {} {})", s % 2, s / 2));
+            }
+        }
+    }
+    let got = derive(&src, &["row", "bin-fa"]);
+    assert_eq!(
+        got["row"], want,
+        "the gates' eight rows are Rust's sum, a bit and a carry"
+    );
+    let table: BTreeSet<String> = got["bin-fa"]
+        .iter()
+        .map(|f| f.replacen("(bin-fa ", "(row ", 1))
+        .collect();
+    assert_eq!(
+        got["row"], table,
+        "the full adder from gates is std.math.bits' table, row for row"
     );
 }

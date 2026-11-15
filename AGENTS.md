@@ -391,8 +391,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 
 - **Generated, never edited by hand** (edit the generator and re-run):
   `00_ebnf.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
-  `stdlib/math/digits.ein` (`utils/gen_arith_tables.py`, then
-  `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
+  `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
+  (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
   (`utils/gen_num9.py`); `stdlib/bool/gates.ein`'s rows and the programs
   under `tests/stdlib/bool/gates/` and `props/` (`utils/gen_gates.py`, then
   `utils/stdlib_manifest.py --write`);
@@ -400,9 +400,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   zebra2 variants (`examples/gen_zebra2_variants.py`);
   `read_out_examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
   defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
-  `--check` or a test in the gate. **Not in the gate, run by hand**:
-  `examples/binary_arithmetic/gen_binary.py` (after any edit to
-  `stdlib/math/decimal-arith.ein`).
+  `--check` or a test in the gate.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `read_out.md` in the same

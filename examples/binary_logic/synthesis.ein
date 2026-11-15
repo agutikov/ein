@@ -13,15 +13,14 @@
 ;;; never 1 together, so the gate that joins them may be Or or Xor, which is
 ;;; what a textbook's two drawings of the adder show.
 ;;;
-;;; The table is `fa2`, the binary full adder of
-;;; `examples/binary_arithmetic/`; `bits.ein` here is a copy of that
-;;; directory's, since an import cannot reach a sibling directory.
+;;; The table is `bin-fa`, the binary full adder of `std.math.bits` (M1f
+;;; S1f.6.16; until its build `fa2`, of a copy beside this file).
 ;;;
 ;;; The claim was computed in Python by enumeration.
 ;;;
 ;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.6.
 (import std.bool.gates :symbols (gate2 column-name Xor And Or))
-(import bits :symbols (fa2))
+(import std.math.bits :symbols (bin-fa))
 (import std.algebra :symbols (total-owed functional))
 
 (relation is-a Thing Type
@@ -63,11 +62,11 @@
   :assert (at ?v ?o ?z)
   :why    "{?g}, supposed a {?f}, on {?v}: {?f} of {?x} and {?y} is {?z}")
 (rule wrong-carry ()
-  :match  (and (vector ?v ?x ?y ?c) (at ?v cout ?k) (fa2 ?x ?y ?c ?s ?t) (neq ?k ?t))
+  :match  (and (vector ?v ?x ?y ?c) (at ?v cout ?k) (bin-fa ?x ?y ?c ?s ?t) (neq ?k ?t))
   :assert (false)
   :why    "on {?v} the carry is {?k} and the table says {?t}")
 
-(__closed__ is-a) (__closed__ gate) (__closed__ hole) (__closed__ at) (__closed__ vector) (__closed__ fa2)
+(__closed__ is-a) (__closed__ gate) (__closed__ hole) (__closed__ at) (__closed__ vector)
 
 (query :goal (kind o1 ?f)
        :goal-text "the missing gate can be {?f}"

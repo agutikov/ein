@@ -1,23 +1,25 @@
 ;;; A division by zero in binary is a contradiction, as it is in decimal.
 ;;;
-;;; The divisor is zero by value, so the theory derives the flag
-;;; (division-by-zero2 (div2 X Y)), the request as written, and from the flag
+;;; The divisor is zero by value, so the theory derives `std.math.arith`'s flag
+;;; (division-by-zero (bin-div X Y)), the request as written, and from the flag
 ;;; (false): two steps. Root is dead and R is empty. `ein solve` names the
-;;; request in the unsat core and `division-by-zero-is-false2` under
-;;; `refuted by`, and exits 0: an empty R is an answer. Root's state holds a
-;;; second flag, the request's tagged call, (division-by-zero2 (div-call2 …)):
-;;; a division by zero is flagged at the call, whoever made it, as in decimal
-;;; (M1f S1f.6.24).
+;;; request in the unsat core and `std.math.arith.division-by-zero-is-false`
+;;; under `refuted by`, and exits 0: an empty R is an answer. Root's state
+;;; holds a second flag, the request's tagged call, (division-by-zero
+;;; (bin-div-call …)): a division by zero is flagged at the call, whoever made
+;;; it, as in decimal (M1f S1f.6.24). The flag and its rule are arithmetic's
+;;; own, whatever the base (the user's ruling of 2026-11-14).
 ;;;
 ;;; The sum beside it is a good request. It loses its answer with the rest of
 ;;; the program, so the only claim such a program can make is this one.
 ;;;
 ;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
 ;;; the prototype this program was banked from, its counts and its costs.
-(import bin :symbols (bin add2 b2 div2))
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-div))
+(import std.math.binary :symbols (b2))
 (import std.math.arith :symbols (z))
 
-(add2 (b2 (b2 z 1) 0) (b2 (b2 z 1) 0))
-(div2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) z)
+(bin-add (b2 (b2 z 1) 0) (b2 (b2 z 1) 0))
+(bin-div (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) z)
 
 (solve :expect (false))
