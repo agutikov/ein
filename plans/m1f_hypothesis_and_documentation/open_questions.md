@@ -5648,8 +5648,10 @@ T6, from [E-72](p1f.6_calculator/findings.md). `id_order_invariance`'s plain run
   two at about 65 s here, where they are 96 s.
 - **(b) Keep both.**
 
-**Not ruled: the user's** (T6 stops here). Probe: `id-leak` moved 273 renderings of the golden and 483 pairs of the
-permuted sweep; a merged test asserts both.
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7: `id_order_invariance`
+digests its plain run against `corpus_shapes.md5`, its floors, the checkout's stdlib and `EIN_BLESS` with it, and
+`corpus_shapes.rs` is gone; every check it made is made by the merged pass. Probe (T6, before the ruling): `id-leak`
+moved 273 renderings of the golden and 483 pairs of the permuted sweep; a merged test asserts both.
 
 ### Q-M1f.288 — `jobs_invariance` over the programs that search
 
@@ -5662,8 +5664,11 @@ to fan out only in a program that searches: the 188 corpus programs whose descri
   20.2 s.
 - **(b) Every program**, as now.
 
-**Not ruled: the user's.** Five other binaries catch the same leak on fixed programs at four and eight jobs
-(`explore`, `region`, `register_region`, `region_modes`, `line_modes_past_the_limit`).
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7, with Q-M1f.290 (a): per commit
+the programs outside `tests/` that search, `corpus_ops::searches` (describe at the sweep's budget saturates more than
+root), asked of each program; under `EIN_CORPUS_SLOW=1` every corpus program, the nightly's. Five other binaries catch
+the same leak on fixed programs at four and eight jobs (`explore`, `region`, `register_region`, `region_modes`,
+`line_modes_past_the_limit`).
 
 ### Q-M1f.289 — `id_order_invariance` over the programs that search
 
@@ -5675,7 +5680,9 @@ to fan out only in a program that searches: the 188 corpus programs whose descri
 - **(b) Every program, the region outputs over the 188 only.**
 - **(c) Every program**, as now.
 
-**Not ruled: the user's.**
+**Ruled 2026-11-15: (a), the full-corpus sweep moved to the nightly** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7, with
+Q-M1f.290 (a): per commit the permutation runs over the programs outside `tests/` that search, the golden over every
+program outside `tests/`; the nightly runs both over every corpus program, in shards (Q-M1f.293).
 
 ### Q-M1f.290 — `tests/` out of the render and determinism sweeps
 
@@ -5691,7 +5698,11 @@ checked by `ein test` (`corpus_cli`'s and `test_cli`'s cells), the coverage cens
 - **(b) With Q-M1f.288 and .289**: the determinism sweeps over the 179 programs that search outside `tests/`.
 - **(c) As now.**
 
-**Not ruled: the user's.**
+**Ruled 2026-11-15: (a), the same way** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): `tests/` leaves `corpus_shapes`' golden (now
+`id_order_invariance`'s), the two determinism sweeps and `dot_wellformed` per commit; the nightly runs them over the
+full corpus. Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7: the golden is one file, held per commit over the lines of the programs a run reads and
+in the nightly over all of them, so nothing was re-banked; `dot_wellformed`'s skip list per commit is its entries
+outside `tests/`. A corpus program with no golden line fails per commit.
 
 ### Q-M1f.291 — The five sweeps that set modes and routes against one another
 
@@ -5710,9 +5721,10 @@ six, its claim, that no config moves an answer, being held by no other sweep.
   sweeps' claim.
 - **(c) As now.**
 
-**Not ruled: the user's.** No probe here argues for removing `explore`, `region_modes` or `claim_routes`: each was one
-of four to catch the state-route bug, so the overlap is real, but no single probe shows which one a fault would reach
-alone.
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): keep the five; `route_invariance`'s `slow` entries go to its slow half,
+the nightly's. Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7 (where its 2²⁵ half runs: the record). No probe here argues for removing
+`explore`, `region_modes` or `claim_routes`: each was one of four to catch the state-route bug, so the overlap is real,
+but no single probe shows which one a fault would reach alone.
 
 ### Q-M1f.292 — One load a program, shared by the outputs that do not change it
 
@@ -5728,7 +5740,10 @@ about 61 % of each of the three A sweeps' work.
   cooperation, which is the engine's.
 - **(c) As now.**
 
-**Not ruled: the user's.**
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): one load a program, cloned for each output, `Clone` on `Ast` and `Terms` (and
+`Kb`), an engine source change under which no output may move. Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7 (`corpus_ops::Loads`), and
+verified by invariance: `corpus_shapes.md5` reproduced byte for byte from the copies, every other golden unchanged, and
+the gate green (the run at one worker stopped after 99 binaries, every one `ok`, as redundant: T4 holds the count).
 
 ### Q-M1f.293 — The nightly's steps against five minutes
 
@@ -5749,7 +5764,11 @@ minutes at the runner's 1.13 to 1.34 times (Q-M1f.103). The deep-corpus job is 4
   three slow halves to (a) or (b).
 - **(d) As now**, past the rule.
 
-**Not ruled: the user's.**
+**Ruled 2026-11-15: split into parallel nightly jobs (shards), staying in CI** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). The nightly steps over five
+minutes at the runner's four threads (the mutation census, `corpus_cores`' and `answer_round_trip`'s slow halves,
+`region`'s slow half) and the full sweeps Q-M1f.289 and .290 add are sharded into parallel nightly jobs, each shard
+at most five minutes measured as T6 did (`taskset -c 0-3`, `EIN_TEST_JOBS=4`, on AC). Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7:
+`EIN_TEST_SHARD=k/n`, `ein_corpus::shard` and `stdlib_mutants.py --shard`; the shards and their times are the record's.
 
 ### Q-M1f.294 — `answer_dump`'s `heavy_dump` witness, and the feature tests the pool does not reach
 
@@ -5762,7 +5781,11 @@ minutes at the runner's 1.13 to 1.34 times (Q-M1f.103). The deep-corpus job is 4
   65.5, 36.0, 23.3, 18.7 and 16.4 s here, 160 s of the gate's 887: **(a)** their loops on the pool (no check moves);
   **(b)** their long halves to the nightly; **(c)** as now.
 
-**Not ruled: the user's.** Neither is a corpus sweep of § Today's 31.
+**Ruled 2026-11-15: (a) and (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): the `heavy_dump` witness to the nightly, and the five feature tests
+on the pool where their loops allow it. Built by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s T7: `answer_dump` per commit leaves the `heavy_dump`
+entries' runs, `EIN_CORPUS_SLOW=1` reads them; `int_theory`'s, `arith_theory`'s and `arith_batch`'s loops over
+operations, `read_out_reference`'s example runs and `read_out_examples`' blocks are units of the pool. Neither is a
+corpus sweep of § Today's 31.
 
 ### Q-M1f.295 — Binary's numeral is `std.math.binary`'s
 
@@ -5899,5 +5922,29 @@ one division more.
 
 - **(a) A first**, as before: the before-and-after measures of this stage compare step for step.
 - **(b) D first**, the cheaper on a proper fraction and the dearer on an improper one.
+
+**Defaulted 2026-11-15: (a), the user's to revise.**
+
+### Q-M1f.304 — `route_invariance` past the default budget, past any shard's five minutes
+
+**Raised** 2026-11-15 by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled)'s
+T7, applying [Q-M1f.291](#q-m1f291--the-five-sweeps-that-set-modes-and-routes-against-one-another) (a) and
+[.293](#q-m1f293--the-nightlys-steps-against-five-minutes): `route_invariance`'s `slow` entries go to its slow half,
+the nightly's, each nightly step in shards of at most five minutes on the runner. Its slow half was two things: the
+`slow` entries at the default budget, and every program route 1 finishes only past it (the zebra family, the six
+`square-*` cubes) at `--region-budget` 2²⁵. Measured as T6 measured (`taskset -c 0-3`, `EIN_TEST_JOBS=4`, AC,
+2026-11-15, `build/s1f.6.39/t7/slow-4.log`), the slow half ran 29 min unfinished, three workers busy throughout its
+last 20, and was stopped there; and route 1 alone took 495 s at `-j 16` to reach a 2²² ceiling on `zebra2-minus-15`
+([`alive_set_reach.md`](../m1e2_correctness/p1e2.1c_the_region_search/alive_set_reach.md) § 2.3, 2026-11-03), where the
+test asks 2²⁵ of one unit, one program. No sharding by program fits it.
+
+- **(a) The default-budget half in the nightly, the 2²⁵ half on the dev host**: the test split in two,
+  `the_state_route_and_route_1_print_one_read_out` (per commit the programs but the `slow` entries, under
+  `EIN_CORPUS_SLOW=1` every one), which the nightly runs by name, and
+  `route_1_and_the_state_route_agree_past_the_default_budget`, which `--dev-host` runs with the target whole
+  (`DEV_HOST_ONLY`), as the whole slow half ran there since S1f.5.27.
+- **(b) The 2²⁵ half in the nightly past the rule**, a step of its own over five minutes.
+- **(c) A larger budget that fits**, between 2²⁰ and 2²⁵: the zebra family's route equality at a budget route 1
+  does not exhaust is no comparison, so it holds of fewer programs.
 
 **Defaulted 2026-11-15: (a), the user's to revise.**

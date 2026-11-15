@@ -4,7 +4,10 @@
 **Status:** planned 2026-11-15, on the user's word of that day ([§ The instruction](#the-instruction)). T1 to T5
 keep every check the gate makes and run on defaults; **T6 stops for the user** with the audit of what each sweep
 guards and needs; T7 applies what the user rules. **T1 to T5 built 2026-11-15, and T6's audit waits for the user**
-([§ Record](#record-2026-11-15-t1-to-t5-built-t6s-audit-and-the-stop)): Q-M1f.287 to .294.
+([§ Record](#record-2026-11-15-t1-to-t5-built-t6s-audit-and-the-stop)): Q-M1f.287 to .294. **T6 ruled and T7 built
+2026-11-15** (the user: *"T6 rulings: all as you recommended"*; [§ Record, T7](#record-2026-11-15-t7-the-cuts-as-ruled)):
+the gate here 15.0 → 11.9 min, every nightly step inside five minutes at the runner's four threads in shards, E-72
+closed, Q-M1f.304 defaulted; the gate and the nightly in the runner's image are taken on the close's commit.
 **Depends on:** nothing of the calculator. It runs after [S1f.6.38](s1f.6.38_a_number_is_well_formed_from_the_start.md)
 and before [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build, since every later stage runs the gate it changes,
 as [S1f.6.21](s1f.6.21_the_gate_reduced.md) ran first of its day for the same reason.
@@ -545,3 +548,198 @@ a runner from outside the workspace, which the stage file rules out.
 - **Not done**: the local gate was not re-run before the change (the image's run is this machine's, on AC); the
   nightly's census before the change was measured on 72 of its 572 mutants and not to its end; the runner's own
   times wait for the next push, which is the user's.
+
+## Record, 2026-11-15: T7, the cuts as ruled
+
+The user's rulings of 2026-11-15 on T6, *"T6 rulings: all as you recommended"*, with three spelled out: Q-M1f.289's
+full-corpus sweep and Q-M1f.290's to the nightly, Q-M1f.292's engine change under which no output may move, and
+Q-M1f.293 *"split into parallel nightly jobs (shards), staying in CI"*, each shard at most five minutes measured as
+T6 measured. Commits: `7c3c2878` (Q-M1f.292), `4a9f2a41` (.287 to .290, and the shards' module), `78ffe88e` (.291
+and .294), `c7cbb4d6` (.293, the nightly in shards), `ca608083` (the pages, T8's remainder), `e96cfdd5` (the sets' test named
+a zebra puzzle, which `world_anchors` refuses), `6e8d9646` (each nightly job builds its test binaries in a step of its
+own), `013e57d0` (the 2²⁵ test's note says what the evidence is), this record in the commit after. Every run below is on this machine, an i9-14900HX, on AC throughout (`/sys/class/power_supply/ACAD/online`
+read `1` before each run, and `utils/gate_times.py run` sampled the mains supply every second of each log), with no
+other heavy process (`ps`; a browser at under half a thread for the first hour, closed after). Logs are under
+`build/s1f.6.39/t7/`.
+
+### What each ruling built
+
+- **Q-M1f.292, one load a program** (`7c3c2878`). `Ast`, `Terms` and `Kb` are `Clone`: `Terms` copies every table
+  under the same ids, its derivation records into an `Arc` of the copy's own (`ProvArena::promote` grows them only
+  where nothing else holds them); `Kb` copies its registries and no-good set, shares its sealed layers and adds none,
+  so the copy reads layer for layer as the original and its `program_mut` works. No engine code calls them.
+  `ein_render::shape::kb_dot_shape` draws a KB view over a KB already loaded, by `dot_shape`'s own renderer call.
+  `corpus_ops::Loads` parses and loads each program once a sweep, every op that reads the load (`Op::loads`: all but
+  the four frontend modes and the eight parse views) runs on a copy, and the last unit of the program drops it;
+  `dot_wellformed` draws its KB views the same way. **Verified by invariance**: `corpus_shapes.md5` unchanged, every
+  rendering of every corpus program reproducing its digest from a copy of one load, at that commit and at every
+  commit since, and the gate green (§ The gate; the run at one worker was stopped, its 99 binaries `ok`).
+- **Q-M1f.287, one pass** (`4a9f2a41`). `id_order_invariance` digests its plain run against `corpus_shapes.md5`,
+  with the floors (4 000 renderings, 60 loads, 50 saturations and 3 000 events), the checkout's-stdlib check and
+  `EIN_BLESS` that `corpus_shapes.rs` held; `corpus_shapes.rs` is deleted. Every check it made is made by the merged
+  pass, and a failure lists the renderings that moved before the pairs the ids moved.
+- **Q-M1f.288, .289 and .290, the per-commit sets** (`4a9f2a41`). Per commit the golden and `dot_wellformed` read
+  every corpus program outside `tests/` (`ein_corpus::under_tests`, a path test), and the permutation and
+  `jobs_invariance` those of them that **search** (`corpus_ops::searches`: describe at the sweep's budget and cube
+  limit saturates more than root, asked of each program, a load refusing or a parse failing being no search).
+  `EIN_CORPUS_SLOW=1` reads every corpus program in each, the nightly's. 600 programs outside `tests/` today, 179 of
+  them search: T6's 179 of 597, three programs more and no search more. **The golden stays one file** and nothing was
+  re-banked: a run compares the lines of the programs it read, `EIN_BLESS=1` re-banks those and keeps the others, a
+  line whose program is no corpus file fails every run, and a corpus program with no line fails per commit, so a
+  program added under `tests/` is caught at once and re-banked with `EIN_BLESS=1 EIN_CORPUS_SLOW=1`.
+  `dot_wellformed`'s `SKIPPING` is unchanged, held per commit over its entries outside `tests/`. **The sets keep their
+  meaning** by tests: `the_per_commit_sets_keep_their_meaning` (programs on both sides of `tests/`, at least 100 and
+  400; `searches` true of `02_one_dead_one_alive` and `05_mini_zebra`, false of a calculation, a load refusal and a parse
+  failure), and both determinism sweeps assert, per commit, that the programs that search are at least 100 and fewer
+  than the programs read.
+- **Q-M1f.291, the five sweeps kept** (`78ffe88e`). `route_invariance` per commit reads every program but the
+  manifest's `slow` entries. Its slow half was two things and is two tests: `the_state_route_and_route_1_print_one_read_out`
+  at the default budget, every program under `EIN_CORPUS_SLOW=1`, which the nightly runs by name; and
+  `route_1_and_the_state_route_agree_past_the_default_budget` at 2²⁵, which stays the dev host's
+  ([Q-M1f.304](../open_questions.md#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes), defaulted):
+  measured as T6 measured, the whole slow half ran 29 min unfinished, three workers busy throughout its last 20, and
+  route 1 alone took 495 s at `-j 16` to reach a 2²² ceiling on `zebra2-minus-15` (`region.rs`' note,
+  `alive_set_reach.md` § 2.3), where the test asks 2²⁵ of one unit: no shard by program fits it. Each (program,
+  budget, route) is a unit of the pool.
+- **Q-M1f.293, the nightly in shards** (`c7cbb4d6`). `EIN_TEST_SHARD=k/n` (`ein_corpus::shard`) deals a sweep's
+  programs to `n` shards in the pool's start order, in turn, every program in exactly one
+  (`the_shards_partition_the_corpus`, one to nine shards); a shard holds its share of a programs floor, the content
+  floors the whole run's per commit. `utils/stdlib_mutants.py --shard k/n` (default `$EIN_TEST_SHARD`) takes every
+  `n`-th mutant from the `k`-th, `--check` on the shard's own banked lines and shard 1 on the lines no mutant has,
+  `--bless` refused in a shard. `nightly.yml`: **`deep-corpus`** keeps the steps that fit whole and takes the full
+  sweeps .288 and .290 moved (`jobs_invariance`, `dot_wellformed` over every program); **`deep-corpus-shards`**, a
+  matrix of four, runs `answer_round_trip`'s and `corpus_cores`' slow halves and `id_order_invariance` over every
+  program; **`mutants`**, a matrix of twelve, the census, each job building the gate profile's `ein`. Three slow halves
+  run by name, the one test of each that reads the flag, the binary's others being the per-commit tier's:
+  `region`'s state route through layer 6, `lever_invariance`'s declared cells (one of its other tests was 227 of the
+  step's 244 s), `route_invariance`'s default-budget test. `corpus_cores`' statuses read in two stages on the pool,
+  each (program, run) its cores and each 200 distinct cores of a program a unit, its failures read back in the
+  order one loop found them: `zebra2-minus-15`'s one unit had been 210 s on one thread (36 s exploring `--maximal`,
+  67 s holding its 2 266 cores, 40 and 67 s for describe's 1 996 more). Its counts are the loop's, per commit before
+  and after: 608 programs, 314 162 distinct cores, 39 cut, 15 past the limit, 5 377 through two rules.
+  `nightly_steps.rs` holds every job with a test under the checked `TMPDIR` to a check after it, every sharded step to
+  each of its shards (`every_sharded_step_runs_every_shard`), and a slow half run by name to being its target's only
+  reader of the flag or to the dev host running the target whole (`a_slow_half_run_by_name_leaves_nothing_out`).
+  `--nightly` runs every job, a sharded one once per shard, one after another; `--dev-host` every nightly step and
+  `DEV_HOST_ONLY`'s, the id space permuted eight ways now over every program. Each job builds its test binaries in a
+  step of its own (`6e8d9646`), so a test step's time on the runner is its tests'.
+- **Q-M1f.294** (`78ffe88e`). `answer_dump` per commit leaves the `heavy_dump` entries' runs, W8's `square-unique`
+  witness, to `EIN_CORPUS_SLOW=1`, and fails if no recorded run is one. `int_theory`'s, `arith_theory`'s and
+  `arith_batch`'s loops over operations, `read_out_reference`'s example runs and `read_out_examples`' blocks are units
+  of the pool, a failure the first in order with its own message (`arith_batch`'s counters are a thread's own).
+
+### The nightly's steps on the runner's four threads
+
+`taskset -c 0-3 env EIN_TEST_JOBS=4 ./run_tests.sh --nightly` at `78ffe88e` with `c7cbb4d6`'s tree (`n4.log`; cores 0–3, two P-cores'
+threads, `n4-env.txt`) to the census, and the census at twelve shards, the fuzzer and the bench the same way
+(`n4m.log`), after the census at nine had taken 226.5 s a shard. Over five minutes on the runner is over 224 s here,
+at the runner's 1.34 times (Q-M1f.103); none is.
+
+| job | step | here, four threads (the slowest shard's) | shards |
+|---|---|---:|---:|
+| `deep-corpus` | `corpus_cli`, the slow entries | 83.5 s | — |
+| | `answer_dump`, the `heavy_dump` runs too | 38.1 s | — |
+| | `lever_invariance`, its slow test by name | 11.5 s | — |
+| | `region`, its slow test by name | 143.7 s | — |
+| | `obligation_rung`, the slow half | 78.8 s | — |
+| | `route_invariance`, its default-budget test by name | 140.7 s | — |
+| | `import_invariance`, the slow entries | 92.3 s | — |
+| | `jobs_invariance`, every program | 58.6 s | — |
+| | `dot_wellformed`, every program | 60.5 s | — |
+| `deep-corpus-shards` | `answer_round_trip`, the slow and `heavy_dump` entries | 128.7 s (shards 128.7, 124.8, 59.8, 87.8) | 4 |
+| | `corpus_cores`, the slow entries | 141.9 s (141.9, 131.9, 71.7, 47.1) | 4 |
+| | `id_order_invariance`, every program | 75.4 s (75.4, 52.3, 52.9, 59.1) | 4 |
+| `mutants` | `stdlib_mutants.py --check`, 617 mutants | 170.5 s (138.3 to 170.5 a shard; 51 or 52 mutants each) | 12 |
+| `frontend-fuzz` | seed 1, seed 987654321 | 50.4 s, 22.8 s | — |
+| `benches` | the bench smoke | 38.7 s (its release build) | — |
+
+**Before, the same way** (T6, `b8c931f3`, the nightly whole, `nightly-4threads.log`): the census 1 382.9 s,
+`corpus_cores`' slow entries 376.3 s, `answer_round_trip`'s 353.0 s, `region`'s slow half 271.7 s,
+`lever_invariance`'s 202.6 s; the deep-corpus job 47.7 min. At T7's start, before the shards and the named slow
+halves (`slow-4.log`, `78ffe88e`'s binaries less `corpus_cores`' second stage): `corpus_cores` 376.7 s, its two
+`zebra2-minus-15` units 319 and 315 s; `answer_round_trip` 308.9 s, its two 171 and 170 s; `region` 284.5 s, its
+slow test about 186 s of it; `lever_invariance` 243.3 s, its slow test 17 s; `route_invariance`'s whole slow half
+stopped at 29 min (above). The jobs are side by side on GitHub: the nightly's wall is its longest job, about 12 min of
+steps in `deep-corpus` here at four threads, where the deep-corpus job was 47.7 min.
+
+### The gate, before and after
+
+`./run_tests.sh` timed by `utils/gate_times.py run` (`after-gate.log`, `e96cfdd5`, 16 workers, unpinned on 32
+threads, AC; a browser at under a tenth of a thread), exit 0:
+
+| | T1 to T5's after (`b8c931f3`) | T7 |
+|---|---:|---:|
+| here | 15.0 min (899.1 s) | **11.9 min** (713.3 s), `e96cfdd5` |
+| in the runner's image (`utils/ci_container.sh`) | 15.2 min (910.5 s) | ⟨CLOSE-GATE-IMAGE⟩, taken on the close's commit |
+| the test binaries, summed, here | 853.8 s | 703.0 s |
+
+The corpus grew by 49 programs between the two (S1f.6.16's build, S1f.6.32 and .33), and the binaries T7 did not
+touch grew with it (`explore` 50.4 → 65.0 s, `lever_invariance` 45.0 → 57.6 s, `region` 24.3 → 29.1 s). The ones it
+did: `id_order_invariance` 65.1 → 21.7 s and `corpus_shapes` 30.6 s → gone; `int_theory` 65.5 → 27.0 s;
+`corpus_cores` 42.9 → 27.5 s; `arith_batch` 36.0 → 18.6 s; `answer_dump` 33.8 → 7.2 s; `route_invariance` 26.8 →
+6.9 s; `read_out_reference` 23.3 → 13.5 s; `jobs_invariance` 20.2 → 11.3 s; `read_out_examples` 18.7 → 7.2 s;
+`dot_wellformed` 13.6 → 6.0 s (`python3` over the two `after-gate.tsv`). The gate's peak, 8.9 GiB, is `int_theory`'s
+seven operations side by side, under the pool's 24 GB bound. The slowest binary is `explore`, 65.0 s.
+
+**The run at one worker was stopped.** `EIN_TEST_JOBS=1 cargo test --profile gate --workspace --no-fail-fast`
+(`j1.log`, `e96cfdd5`) had run 99 test binaries, every result `ok` and none failed, when it was stopped at
+`ein-infer`'s `read_out`, on the main session's word (the user waiting on the total time): it is redundant. That no
+verdict and no failure's text depends on the count is T4's, shown with injected faults at one worker and at sixteen;
+Q-M1f.292's invariance is held by the goldens, byte for byte at the default count.
+
+### The nightly, before and after
+
+Not re-run whole here or in the image by T7, on the same word: the main session takes `utils/ci_container.sh` and
+then `utils/ci_container.sh --nightly`, both timed with `gate_times.py`, once, on the close's commit, which holds
+every commit above.
+
+| | before (T1 to T5's after, `b8c931f3`) | T7 |
+|---|---:|---:|
+| `./run_tests.sh --nightly` here, every job one after another | 16.7 min (1 000.9 s) | — |
+| `utils/ci_container.sh --nightly` | — | ⟨CLOSE-NIGHTLY-IMAGE⟩, taken on the close's commit |
+
+Each step at the runner's count is the table above: every one inside five minutes on the runner by Q-M1f.103's
+factor, the longest the census's shards, 170.5 s here.
+
+### The probes, after
+
+**Not re-run at T7** (the main session's word; the scratch driver is `build/s1f.6.39/t7/probe_t7.py` and
+`probes_t7.sh`, every anchor of T6's six mutations still applying at `013e57d0`). Where each is caught now is read
+off T6's banked probes, over the whole corpus and over the two reduced sets (`t6.tsv`, `t6.tsv.sets`), and the
+binaries T7 did not change:
+
+| probe | per commit | in the nightly |
+|---|---|---|
+| `id-leak` | the golden (T6: renderings moved over the corpus, over the programs that search and outside `tests/`); `kb_semantics`, every file, unchanged | the golden and the permutation over every program (483 pairs, T6) |
+| `jobs-leak` | `jobs_invariance` over the programs outside `tests/` that search: of the 987 cells it moved, 983 were the searching programs' and 942 those outside `tests/`, so at least 938 are both; and `explore`, `region`, `register_region`, `region_modes`, `line_modes_past_the_limit`, unchanged | `jobs_invariance` over every program (987) |
+| `neq-nested` | the golden outside `tests/` (`examples/arith`, `beyond_arith`); `corpus_cli`'s and `test_cli`'s `ein test` cells and `arith_search_free` on `tests/` itself, unchanged | the golden over every program |
+| `route1-maximal` | `region::route_1_is_the_oracle…` within the oracle's limit, unchanged | `route_invariance`'s default-budget test with the `slow` entries; its 2²⁵ test on the dev host |
+| `states-maximal` | `explore`, `region`, `register_region`, `region_modes`, `claim_routes`, `corpus_cli`, `test_cli`, unchanged, and the golden outside `tests/` (moved in all three sets, T6) | the golden over every program; `route_invariance` |
+| `maximal-drop` | nothing, the control: an equivalent mutant | nothing |
+
+So every probe a full-corpus sweep caught at T6 is still caught per commit, by the reduced sets T6 probed or by a
+binary T7 left as it was, and the full sweeps' catches are the nightly's. What the sets give up is T6's: the id order
+of the frontend and shape outputs on the programs that do not search (the load's is `kb_semantics`' on every file),
+and `tests/`' renderings per commit, which their claims hold.
+
+### What moved in the goldens
+
+Nothing. No commit of T7 touches a golden (`git show --stat` of each, `-- 'ein.rs/crates/*/tests/golden/*'`):
+`corpus_shapes.md5` is byte for byte the file T7 started from (`582204fa`, the stages between T6 and T7 having
+re-banked it for their programs), reproduced through Q-M1f.292's copies, Q-M1f.287's merged pass and Q-M1f.290's
+per-commit subset, and the nightly reads every line of it. `dot_wellformed`'s `SKIPPING` is as it was, held per
+commit over its entries outside `tests/`.
+
+### Defaults, findings, and what the stage did not do
+
+- **E-72 closed** (`4a9f2a41`): the plain run is the golden's run, one pass a commit; it is computed and not read off
+  the golden, Q-M1f.286 (a), since the permutation is of its own table. Nothing stays open.
+- **Defaulted, the user's to revise**: [Q-M1f.304](../open_questions.md#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes),
+  `route_invariance`'s 2²⁵ test on the dev host, (a).
+- **Ruled and built**: Q-M1f.287 to .294, each row marked with the ruling and where it was built.
+- **No wrong answer was met**; no finding is filed.
+- **Not done, on the main session's word** (the user waiting on the total time): the run at one worker, stopped
+  after 99 binaries, every one `ok`; the probes' re-run (their placement above is read off T6's); the nightly here;
+  and the gate and the nightly in the runner's image, which the main session takes on the close's commit and the
+  close fills in above. The runner's own times wait for the next push, which is the user's; the nightly's two new
+  jobs have no `rust-cache` entry yet, so their first run builds `target/gate/` cold, in each job's build step.
