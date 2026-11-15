@@ -19,9 +19,49 @@ after [P1f.5](../p1f.5_the_no_owner_items/README.md), which edits kernel pages t
 [M1e2](../../m1e2_correctness/README.md), so this phase runs on the tree M1e2 leaves
 ([§ What moved since it was written](#what-moved-since-it-was-written)).
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on it.
-**Source:** the user's note of 2026-08-28, restated in [§ The instruction](#the-instruction).
+**Source:** the user's note of 2026-08-28, restated in [§ The instruction](#the-instruction), and the user's
+rulings of 2026-11-15 ([§ The user's rulings](#the-users-rulings-2026-11-15)), which add the history sweep,
+[S1f.20.8](s1f.20.8_decisions.md) and [S1f.20.9](s1f.20.9_the_history_sweep.md), and override this page and
+every stage file where they differ.
 
 ---
+
+## The user's rulings (2026-11-15)
+
+The user, 2026-11-15, verbatim:
+
+> add history sweep into the phase and take those rulings into account while reworking docs
+>
+> remove complete milestones and docs/history;
+> leave only information about current state of the project;
+> We don't need development history in docs, it present in git, and we don't need to refer to ususally;
+> decisions (questions with answers) - yes and move to doc/decisions;
+> only the final one, no decision history;
+> decisions grouped logically into files and folders, keep reasonable files size or just put every one into separate file;
+> decision and questions may preserve numbering, despite plans removed: Q-M1f.304 remain while M1f completely gone;
+> docs and comments may refer decisions, but not dates and not plans;
+> plans are only work scheduling, while work may include investigations, analysis and any other work together with development;
+> so resulting code+comment+docs(with decisions) must be closed and not connected to plans, because plans are gone after finished
+
+What they change in this plan:
+
+- **Two stages are added, the history sweep.** [S1f.20.8](s1f.20.8_decisions.md) writes every decision, the
+  final one only, into **`docs/decisions/`**, ids kept, before the pages are rewritten, so that a page cites a
+  decision and not a plan. [S1f.20.9](s1f.20.9_the_history_sweep.md), last, deletes `docs/history/` and every
+  finished plan (closed milestones, closed phases, done followups), and brings to 0 every reference outside
+  `plans/` to a plan or to a dated development event. It takes over [S1f.20.6](s1f.20.6_dehistoricise_the_code.md)'s
+  dissolve of `docs/history/`.
+- **A decision id may be cited**; a plan, a stage id or a date may not. [S1f.20.1](s1f.20.1_the_two_checks.md)'s
+  release-voice check is built to that rule: decision ids pass, plan paths, plan ids and dated events fail.
+- **Only the current state is documented.** [§ The collision](#the-collision-stated-once)'s disposition (b),
+  *evidence … with their date*, now keeps a measurement only as a re-takable command and what it gives on
+  today's engine; a page superseded with a banner is deleted or rewritten, not kept.
+- **Plans are work scheduling only**, investigations and analysis included, and are deleted when finished: no
+  page, comment or test may need one to be read.
+
+Each stage's defaults under these rulings are listed in [S1f.20.8](s1f.20.8_decisions.md#the-defaults-each-the-users-to-revise-at-s1f202s-review)
+and [S1f.20.9](s1f.20.9_the_history_sweep.md#the-defaults-each-the-users-to-revise-at-s1f202s-review), and are
+shown to the user at [S1f.20.2](s1f.20.2_the_disposition_table.md)'s stop.
 
 ## The instruction
 
@@ -102,10 +142,10 @@ is not. The rule this phase applies — and it is the repo's own, from
   with the milestone scaffolding removed — the design contracts, and the M1d
   pages the engine is built on;
 - **(b) becomes evidence** under `docs/ein/ein.rs/benchmarks/` — the
-  re-takable censuses and the measurements, which stay *as measurements* with
-  their date and their machine;
-- **(c) is deleted**, and lives in git — the phase/stage records, the open-question
-  ledgers.
+  re-takable censuses and the measurements, **as a command and what it gives on today's engine**, on a named
+  machine (the user's rulings of 2026-11-15: a measurement of an engine that no longer exists is deleted);
+- **(c) is deleted**, and lives in git — the phase/stage records; the open-question ledgers, **once their
+  decisions are files under `docs/decisions/`** ([S1f.20.8](s1f.20.8_decisions.md)).
 
 After it, `docs/history/` does not exist, no `docs/ein/` page says *M1d P1d.2*,
 and no crate links to a file that is gone. That is the user's instruction
@@ -152,6 +192,7 @@ The user's outline, with the pages of 2026-08-28 mapped onto it. `→` is *rewri
 
 ```text
 docs/
+  decisions/                      ← S1f.20.8: every decision, the final one, ids kept; by subject
   ein/
     README.md                     ← new: the three perspectives, and how to read them
     user/                         "problem → [solve as a black box] → result"
@@ -242,11 +283,15 @@ meets that only by two rules, which the single stage did not need:
 | [S1f.20.5](s1f.20.5_ein_rs.md) | `docs/ein/ein.rs/` — the concrete implementation | 3 d | the concrete one, `rust.md`'s marked region intact |
 | [S1f.20.6](s1f.20.6_dehistoricise_the_code.md) | De-historicise the code, and dissolve `docs/history/` | 5 d | 0 ids outside `plans/`; `docs/history/` gone; `cargo doc` green |
 | [S1f.20.7](s1f.20.7_the_two_empty_homes.md) | The two empty homes | 1 d | `overview/` and `demo/`, indexed and owned |
+| [S1f.20.8](s1f.20.8_decisions.md) | The decisions, in `docs/decisions/` (the history sweep, first half; 2026-11-15) | — | every decision a file, the final one, ids kept; every cited id resolves |
+| [S1f.20.9](s1f.20.9_the_history_sweep.md) | The history sweep: finished plans and `docs/history/` removed, nothing outside `plans/` refers to a plan or a date (2026-11-15) | — | 0 such references, the check with no baseline; only unfinished work under `plans/` |
 
-**The order.** S1f.20.1, then S1f.20.2, before anything moves. Then S1f.20.3, S1f.20.4 and S1f.20.5, in any
-order, each moving its pages with their links. S1f.20.4's `analysis-of-rules.md` is sequenced with
+**The order.** S1f.20.1, then S1f.20.2, before anything moves; S1f.20.2's review shows the decisions' layout
+and the sweep's defaults too. Then **S1f.20.8**, the decisions, so the rewritten pages cite them. Then
+S1f.20.3, S1f.20.4 and S1f.20.5, in any order, each moving its pages with their links. S1f.20.4's `analysis-of-rules.md` is sequenced with
 [S1f.5.15](../p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md), so the page is written once. S1f.20.6
 runs after all three. S1f.20.7 can run any time after S1f.20.2, since it moves `05_inspirations.md`.
+**S1f.20.9 runs last**: the deletions, and the references brought to 0.
 
 The stage's own § Ordering said to run after M1e's S1e.2.2, S1e.3.7 and S1e.3.8. Those three triaged 38 kernel
 pages into current, bannered or history and fixed what drifted; this phase moves and rewrites the survivors.
@@ -258,6 +303,10 @@ twice. That is satisfied. The same rule holds for M1e2's edits to kernel pages: 
 - **`docs/history/` does not exist**, and no reference to it does — not in a
   `.md`, not in a Rust doc comment, not in a `.ein` comment, not in
   `corpus.toml`, not in `AGENTS.md`.
+- **`docs/decisions/` holds every decision, the final one only**, ids kept, and every decision id cited
+  outside `plans/` resolves to it ([S1f.20.8](s1f.20.8_decisions.md)).
+- **Nothing outside `plans/` refers to a plan, a plan id or a dated development event**, and `plans/` holds
+  only unfinished work ([S1f.20.9](s1f.20.9_the_history_sweep.md)).
 - **`docs/ein/` exists with the three perspectives**, every page reachable from
   `docs/ein/README.md`, and every source page accounted for in the disposition
   table by exactly one of *rewritten into / evidence / deleted*.

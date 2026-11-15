@@ -24,16 +24,18 @@ Four substitutions, in decreasing frequency:
    **rewritten as statements about the code** (*"A fork that resumes root's saturation does not re-derive
    root's closure, so the givens are told first"*), and the history is dropped. There are on the order of a
    hundred, and they are the only slow ones.
-4. **A reference to a question that is still open**: 13 links to `m1a_rust/open_questions.md` and 2 to
-   `m1d`'s on 2026-08-28. An open question is a development artefact by definition. It moves to
-   [`plans/open_questions.md`](../../open_questions.md), and the code comment states the *behaviour* and its
-   uncertainty, without the id.
+4. **A reference to a question.** Since the user's rulings of 2026-11-15 a decision may be cited: a question
+   with an answer, ruled or a standing default, is a file under `docs/decisions/`
+   ([S1f.20.8](s1f.20.8_decisions.md)), and the comment cites its id, linked. A question still open is a work
+   item: it stays in `plans/`, and the code comment states the *behaviour* and its uncertainty, without the id.
+5. **A date that dates a development event** (*"since 2026-11-03"*): deleted, the sentence restated as what
+   is true now (the same rulings).
 
 `AGENTS.md` and `README.md` are the last pair touched. They are exempt from the release-voice check, but not
 from the link check, so every link they hold into `docs/history/` is rewritten.
 
-**Then `docs/history/` dissolves.** Each page the table marks *deleted* is deleted; it lives in git.
-`m1d_satisfiability/ideas.md` moves to `plans/ideas/`. The directory goes.
+**The dissolve of `docs/history/` is [S1f.20.9](s1f.20.9_the_history_sweep.md)'s** since 2026-11-15, with the
+finished plans, once every decision is a file: this stage rewrites the references, that one deletes.
 
 ## The method
 
@@ -46,16 +48,15 @@ lowered as each file reaches 0.
 
 The same, over the corpus.
 
-### Task T1f.20.6.3 — `AGENTS.md`, `README.md`, and the dissolve
+### Task T1f.20.6.3 — `AGENTS.md` and `README.md`
 
-The pair's links rewritten, `ideas.md` moved, the deleted pages deleted, `docs/history/` gone. The release-voice
-baseline is empty, and is deleted.
+The pair's links rewritten. The deletions and the empty baseline are [S1f.20.9](s1f.20.9_the_history_sweep.md)'s.
 
 ## Acceptance
 
-- **0 history-referencing lines outside `plans/`**, by S1f.20.1's census.
-- `docs/history/` does not exist, and no reference to it does: not in a `.md`, a Rust doc comment, a `.ein`
+- **0 history-referencing lines outside `plans/`**, by S1f.20.1's census, but for those S1f.20.9's deletions
+  resolve; a decision id is not one.
+- No reference into `docs/history/` is left for S1f.20.9 to break: not in a `.md`, a Rust doc comment, a `.ein`
   comment, `corpus.toml` or `AGENTS.md`.
-- The release-voice check passes with no baseline.
 - `RUSTDOCFLAGS="-D warnings" cargo doc` is green: 464 doc comments change.
 - `./run_tests.sh` is green.

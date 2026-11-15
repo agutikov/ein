@@ -33,8 +33,12 @@ check.
 
 `utils/check_release_voice.py` (default name). No file under `docs/ein/`, and no doc comment in a shipped
 crate, may contain:
-- a milestone, phase, stage, task or question id: `M1x`, `P1x.y`, `S1x.y.z`, `T…`, `Q-M1x.n`;
-- a path into `plans/`.
+- a milestone, phase, stage or task id: `M1x`, `P1x.y`, `S1x.y.z`, `T…`;
+- a path into `plans/`;
+- a date that dates a development event (the user's rulings of 2026-11-15).
+
+**A decision id passes** (`Q-M1x.n`): the user's rulings of 2026-11-15 let docs and comments cite a decision,
+which [S1f.20.8](s1f.20.8_decisions.md) makes a file under `docs/decisions/`.
 
 By default it also reads `.ein` header comments and `corpus.toml`, which
 [S1f.20.6](s1f.20.6_dehistoricise_the_code.md) brings to 0 as well. It is the user's rule (2) turned into a
@@ -43,12 +47,13 @@ gate; without it the voice comes back one commit at a time.
 - **Its escape.** A line marked `release-voice-ok:` passes, as `check_hashmap_iteration.py` lets
   `determinism-ok:` pass. Expect its first finding to be the check itself: that is what happened to
   `check_hashmap_iteration.py`.
-- **Its exemptions.** `AGENTS.md` (and so `CLAUDE.md`) and `README.md` are addressed to someone working *on*
-  the repo, not to someone using the released system, and the user's rule is about code, tests and docs.
+- **Its exemption**, narrowed by the user's rulings of 2026-11-15 (*"code+comment+docs … must be closed and not
+  connected to plans"*): `AGENTS.md` (and so `CLAUDE.md`) and `README.md` are held to it too, but for
+  `AGENTS.md`'s § Where the work is, which points at the current milestone's plan.
 - **It is a ratchet** ([P1f.20 § Two rules](README.md#two-rules-across-the-stages)). It reads a banked
   baseline, each file's count (default `utils/release_voice_baseline.txt`). It fails where a count rises or a
-  new file appears. Each later stage lowers the baseline in the commit that lowers a count, and S1f.20.6
-  empties it and deletes it.
+  new file appears. Each later stage lowers the baseline in the commit that lowers a count, and
+  [S1f.20.9](s1f.20.9_the_history_sweep.md) empties it and deletes it.
 
 ### The census
 

@@ -29,6 +29,12 @@ The phase's contract. One row per source page, with:
   user-facing reference still under `plans/`. M1e2's `read_out.md` and `read_out_examples.md` are records from
   S1f.5.16 on, and get no row.
 - `docs/history/m1d_satisfiability/ideas.md`, whose row is decided: it moves to `plans/ideas/`.
+- **Every question ledger** (the user's rulings of 2026-11-15): its decisions go to `docs/decisions/`
+  ([S1f.20.8](s1f.20.8_decisions.md)), the ledger itself is *deleted* with its folder.
+- **Every finished plan folder** (closed milestones and phases, done followups): *deleted* by
+  [S1f.20.9](s1f.20.9_the_history_sweep.md), once its decisions are files and nothing outside `plans/` links it.
+- **A page superseded with a banner** has no *kept as record* disposition any more: it is rewritten to the
+  current state or deleted (only the current state is documented).
 
 The inbound counts are produced mechanically, by S1f.20.1's checker. The destinations are chosen by hand.
 
@@ -56,7 +62,10 @@ Every source page, its inbound count, and its destination and disposition.
 ### Task T1f.20.2.2 — the tree redrawn, and the review
 
 The target tree redrawn and written into `docs/ein/README.md` with the table. **Stop and show the user** the
-table and the tree. Nothing moves until the user has read both.
+table and the tree, with `docs/decisions/`' layout ([S1f.20.8](s1f.20.8_decisions.md)'s T2) and the defaults
+[S1f.20.8](s1f.20.8_decisions.md#the-defaults-each-the-users-to-revise-at-s1f202s-review) and
+[S1f.20.9](s1f.20.9_the_history_sweep.md#the-defaults-each-the-users-to-revise-at-s1f202s-review) take under
+the user's rulings of 2026-11-15. Nothing moves until the user has read them.
 
 ## Acceptance
 
