@@ -64,7 +64,7 @@ mod corpus_ops;
 
 use std::path::{Path, PathBuf};
 
-use corpus_ops::{Op, ops, run};
+use corpus_ops::{Loads, Op, ops, run};
 use ein_core::{FactId, Symbol, Tag, Terms, Value};
 use ein_corpus::{corpus_files, ein_files_under, pool, repo_root};
 use ein_infer::mt19937::Mt19937;
@@ -246,10 +246,11 @@ fn pair(
     rel: &Path,
     op: Op,
     seeds: &[i64],
+    plain: (Option<String>, Terms),
     run: &dyn Fn(&mut Terms, &Path, Op) -> Option<String>,
 ) -> Option<Vec<SeedRun>> {
-    let mut base_terms = Terms::new();
-    let base = run(&mut base_terms, path, op)?;
+    let (base, base_terms) = plain;
+    let base = base?;
     let mut out = Vec::new();
     for &seed in seeds {
         let mut terms = permuted(&base_terms, seed);
@@ -320,12 +321,16 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
             .unwrap_or(&files[f])
             .to_path_buf()
     };
+    // The plain run on a copy of the program's one load (M1f S1f.6.39,
+    // Q-M1f.292); the permuted ones load into their own id space.
+    let loads = Loads::new(&files, &vec![ops.len(); files.len()]);
     let pairs = pool::map(
         "id_order_invariance",
         &units,
         |&(f, o)| (rel(f).display().to_string(), ops[o].to_string()),
         |&(f, o)| {
-            pair(&files[f], &rel(f), ops[o], &seeds, &|t, p, op| {
+            let plain = loads.unit(f).run(ops[o], 1);
+            pair(&files[f], &rel(f), ops[o], &seeds, plain, &|t, p, op| {
                 run(t, p, op)
             })
         },
@@ -543,13 +548,18 @@ fn an_id_order_that_reaches_an_output_is_caught() {
         run(t, p, op).map(|text| format!("{text}\n--- first name {}", t.syms.text(first)))
     };
     let honest = |t: &mut Terms, p: &Path, op: Op| run(t, p, op);
-    let runs = pair(&path, &rel, op, &[1], &honest).expect("the program loads");
+    let plain = |run: &dyn Fn(&mut Terms, &Path, Op) -> Option<String>| {
+        let mut t = Terms::new();
+        let out = run(&mut t, &path, op);
+        (out, t)
+    };
+    let runs = pair(&path, &rel, op, &[1], plain(&honest), &honest).expect("the program loads");
     assert!(
         runs.iter()
             .all(|r| matches!(r.outcome, Outcome::Cut(Moved::No, _))),
         "the honest run moved: {runs:?}"
     );
-    let runs = pair(&path, &rel, op, &[1], &leaky).expect("the program loads");
+    let runs = pair(&path, &rel, op, &[1], plain(&leaky), &leaky).expect("the program loads");
     assert!(
         runs.iter()
             .any(|r| matches!(r.outcome, Outcome::Cut(Moved::Answer(..), Some(_)))),

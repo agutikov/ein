@@ -14,7 +14,9 @@ use crate::entities::{Macro, NameCategory, Query, Registry, Relation, Rule, Solv
 use crate::intern::Symbol;
 use crate::terms::Terms;
 
-#[derive(Default, Debug)]
+/// `Clone` is for [`Kb`](crate::Kb)'s, which copies the registries rather
+/// than sharing them (M1f S1f.6.39, Q-M1f.292).
+#[derive(Clone, Default, Debug)]
 pub struct Program {
     pub relations: Registry<Relation>,
     pub rules: Registry<Rule>,

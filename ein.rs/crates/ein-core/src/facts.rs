@@ -70,7 +70,7 @@ pub const INLINE_ARGS: usize = 2;
 
 /// Rows, a flat argument arena, and the lookup that makes interning
 /// injective.
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct FactStore {
     rows: Vec<Row>,
     args: Vec<Value>,

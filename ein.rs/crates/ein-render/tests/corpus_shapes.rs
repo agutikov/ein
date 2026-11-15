@@ -54,8 +54,7 @@
 
 mod corpus_ops;
 
-use corpus_ops::{manifest_line, ops, pair_name, portable, run};
-use ein_core::Terms;
+use corpus_ops::{Loads, manifest_line, ops, pair_name, portable};
 use ein_corpus::{corpus_files, golden, golden_path, pool, repo_root};
 
 /// What one (file, op) pair contributes to the manifest and to the floors.
@@ -105,14 +104,17 @@ fn every_corpus_rendering_reproduces_its_digest() {
             .unwrap_or(&files[f])
             .to_path_buf()
     };
+    // Each program loaded once, every op on a copy (M1f S1f.6.39,
+    // Q-M1f.292).
+    let programs = Loads::new(&files, &vec![ops.len(); files.len()]);
     let rendered = pool::map(
         "corpus_shapes",
         &units,
         |&(f, o)| (rel(f).display().to_string(), ops[o].to_string()),
         |&(f, o)| {
             let op = ops[o];
-            let mut terms = Terms::new();
-            let text = run(&mut terms, &files[f], op)?;
+            let (text, _) = programs.unit(f).run(op, 1);
+            let text = text?;
             Some(Rendered {
                 loaded: matches!(op, corpus_ops::Op::Load) && !text.starts_with("<refused>"),
                 events: matches!(op, corpus_ops::Op::Saturate).then(|| text.lines().count()),

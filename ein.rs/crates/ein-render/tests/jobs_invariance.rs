@@ -80,7 +80,7 @@ mod corpus_ops;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use corpus_ops::{Op, digest, golden_digests, ops, pair_name, portable, run_with};
+use corpus_ops::{Loads, Op, digest, golden_digests, ops, pair_name, portable, run_with};
 use ein_core::Terms;
 use ein_corpus::{corpus_files, pool, repo_root};
 
@@ -148,16 +148,14 @@ enum Cell {
 /// `run` is `corpus_ops::run_with` in the sweep; a test passes a run with a
 /// job count leaked into it ([`a_job_count_that_reaches_an_output_is_caught`]).
 fn cell(
-    path: &Path,
     rel: &Path,
     op: Op,
     jobs: usize,
     golden: &BTreeMap<String, String>,
     root: &str,
-    run: &dyn Fn(&mut Terms, &Path, Op, usize) -> Option<String>,
+    run: &dyn Fn(Op, usize) -> Option<String>,
 ) -> Cell {
-    let mut terms = Terms::new();
-    let got = run(&mut terms, path, op, jobs);
+    let got = run(op, jobs);
     if let Some(g) = &got
         && golden
             .get(&pair_name(rel, op))
@@ -165,8 +163,7 @@ fn cell(
     {
         return Cell::Same { by_golden: true };
     }
-    let mut base_terms = Terms::new();
-    let Some(base) = run(&mut base_terms, path, op, 1) else {
+    let Some(base) = run(op, 1) else {
         return Cell::Skipped;
     };
     let Some(got) = got else {
@@ -221,6 +218,9 @@ fn jobs_does_not_move_any_observable() {
             .unwrap_or(&files[f])
             .to_path_buf()
     };
+    // Each program loaded once, every cell on a copy (M1f S1f.6.39,
+    // Q-M1f.292).
+    let loads = Loads::new(&files, &vec![ops.len() * n_counts; files.len()]);
     let cells = pool::map(
         "jobs_invariance",
         &units,
@@ -231,15 +231,10 @@ fn jobs_does_not_move_any_observable() {
             )
         },
         |&(f, o, j)| {
-            cell(
-                &files[f],
-                &rel(f),
-                ops[o],
-                counts[j],
-                &golden,
-                &root_str,
-                &|t, p, op, n| run_with(t, p, op, n),
-            )
+            let unit = loads.unit(f);
+            cell(&rel(f), ops[o], counts[j], &golden, &root_str, &|op, n| {
+                unit.run(op, n).0
+            })
         },
     );
     for c in cells {
@@ -369,10 +364,10 @@ fn a_job_count_that_reaches_an_output_is_caught() {
         .into_iter()
         .find(|o| o.to_string() == "read-out[describe]")
         .expect("the describe read-out");
-    let leaky = |t: &mut Terms, p: &Path, op: Op, n: usize| {
-        run_with(t, p, op, n).map(|text| format!("{text}--- jobs {n}\n"))
+    let leaky = |op: Op, n: usize| {
+        run_with(&mut Terms::new(), &path, op, n).map(|text| format!("{text}--- jobs {n}\n"))
     };
-    let honest = |t: &mut Terms, p: &Path, op: Op, n: usize| run_with(t, p, op, n);
+    let honest = |op: Op, n: usize| run_with(&mut Terms::new(), &path, op, n);
     let golden = golden_digests();
     assert!(
         golden.contains_key(&pair_name(&rel, op)),
@@ -384,17 +379,14 @@ fn a_job_count_that_reaches_an_output_is_caught() {
         ("without it", BTreeMap::new()),
     ] {
         assert_eq!(
-            cell(&path, &rel, op, 2, &g, &root_str, &honest),
+            cell(&rel, op, 2, &g, &root_str, &honest),
             Cell::Same {
                 by_golden: what == "with the golden"
             },
             "{what}: the honest run"
         );
         assert!(
-            matches!(
-                cell(&path, &rel, op, 2, &g, &root_str, &leaky),
-                Cell::Answer(_)
-            ),
+            matches!(cell(&rel, op, 2, &g, &root_str, &leaky), Cell::Answer(_)),
             "{what}: a job count in the rendering is not reported as an answer"
         );
     }

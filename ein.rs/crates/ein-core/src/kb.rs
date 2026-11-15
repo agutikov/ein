@@ -793,6 +793,32 @@ pub struct Kb {
     saturated_facts: usize,
 }
 
+/// **A copy of the KB**, as it stands: the registries and the no-good set
+/// copied, the sealed layers shared (immutable once sealed, as a fork shares
+/// them), the top layer, the indexes and the classes copied, the clean mark
+/// kept. Unlike [`Kb::fork`] and [`Kb::snapshot`] it seals nothing and adds
+/// no layer, so the copy reads, layer for layer, as the KB it was taken from,
+/// and the copy's [`Kb::program_mut`] works as the original's did. For a
+/// caller that loads a program once and runs several things over it, each on
+/// its own copy (M1f S1f.6.39, the corpus sweeps' one load a program,
+/// Q-M1f.292); the engine forks.
+impl Clone for Kb {
+    fn clone(&self) -> Kb {
+        Kb {
+            program: Arc::new((*self.program).clone()),
+            sealed: self.sealed.clone(),
+            top: self.top.clone(),
+            rules_by_relation: Arc::clone(&self.rules_by_relation),
+            n_by_rel: self.n_by_rel.clone(),
+            classes: self.classes.clone(),
+            nogoods: Arc::new(RwLock::new(
+                self.nogoods.read().expect("no writer panicked").clone(),
+            )),
+            saturated_facts: self.saturated_facts,
+        }
+    }
+}
+
 /// `<KnowledgeBase relations=17 rules=30 facts=84>` — the most useful thing
 /// a failing test can show.
 impl std::fmt::Debug for Kb {

@@ -104,7 +104,7 @@ pub enum Node {
 /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9),
 /// and it may therefore be hashed by whatever is fastest. SipHash was **7 %**
 /// of a `parse/zebra2` profile for a table of 157 entries (T1a.6.5.2).
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 struct StrTable {
     strings: Vec<String>,
     index: FxHashMap<Box<str>, SymId>,
@@ -135,7 +135,12 @@ impl StrTable {
 /// `(import …)` pulls in — so structural comparison across files
 /// ([`Ast::eq_nodes`], which import de-duplication needs) is a comparison of
 /// interned ids rather than of strings.
-#[derive(Default, Debug)]
+///
+/// `Clone` is a copy of the whole arena, for a caller that loads a program
+/// once and runs several things over it, each on its own copy (M1f
+/// S1f.6.39, the corpus sweeps' one load a program, Q-M1f.292): a copy reads
+/// as the arena it was taken from, ids and all.
+#[derive(Clone, Default, Debug)]
 pub struct Ast {
     nodes: Vec<Node>,
     locs: Vec<Option<Loc>>,

@@ -17,9 +17,10 @@ use ein_ir::dump::{dump_canonical, dump_compact};
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
 use ein_ir::{Ast, parse};
-use ein_render::shape::{all_views, dot_shape};
-use std::path::Path;
-use std::sync::{Arc, Mutex};
+use ein_render::shape::{PARSE_VIEWS, all_views, dot_shape, kb_dot_shape};
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Mutex, OnceLock};
 
 /// Every observable surface the engine has. One op is one `(surface, mode)`
 /// pair.
@@ -257,30 +258,44 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
 ///
 /// It is a parameter and not a global because `jobs_invariance` runs the same
 /// op at two job counts inside one process. **Only an op [`Op::takes_jobs`]
-/// receives it** (M1f S1f.6.39 T1f.6.39.2): the dispatch below is on that
-/// predicate, and every other op is [`run_frontend`], which has no job count
-/// to read, so the set the count reaches is read off this code and not
-/// written down beside it.
+/// receives it** (M1f S1f.6.39 T1f.6.39.2): [`run_loaded`] dispatches on that
+/// predicate, and every other op is rendered by code that has no job count to
+/// read, so the set the count reaches is read off this code and not written
+/// down beside it.
+///
+/// This parses and loads the file into `terms`, every time: what a permuted
+/// id space needs, whose point is the load into it. A sweep that runs many
+/// ops over one program in the ordinary id space loads it once instead,
+/// through [`Loads`].
 pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<String> {
-    if !op.takes_jobs() {
-        return run_frontend(terms, path, op);
+    if !op.loads() {
+        return run_unloaded(path, op);
     }
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
-    let base = path.parent();
     let forms = parse(&mut ast, &text, path.to_str()).ok()?;
-    let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
-    Some(match region_op(&ast, terms, &mut kb, path, op, jobs) {
-        Ok(text) => text,
-        Err(msg) => format!("<refused> {msg}"),
-    })
+    let kb = ein_ir::load(&mut ast, terms, &forms, path.parent());
+    run_loaded(&ast, terms, kb, path, op, jobs)
 }
 
-/// Every op that takes no job count: the frontend modes, the load, root's
-/// saturation and the shapes over it, and the DOT views. No `jobs` here, so
-/// none of them can depend on one.
-fn run_frontend(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
-    debug_assert!(!op.takes_jobs(), "{op} takes a job count: run_with's");
+impl Op {
+    /// **Whether the op reads the loaded program**: every op but the frontend
+    /// modes and the DOT views drawn off the parse. These are what [`Loads`]
+    /// runs on a copy of one load (M1f S1f.6.39, Q-M1f.292); the others never
+    /// load, and touch no `Terms`.
+    pub fn loads(self) -> bool {
+        match self {
+            Op::Ir(_) => false,
+            Op::Dot(view) => !PARSE_VIEWS.contains(&view),
+            _ => true,
+        }
+    }
+}
+
+/// The ops that do not load: the frontend modes and the DOT views drawn off
+/// the parse, each over a parse of its own.
+fn run_unloaded(path: &Path, op: Op) -> Option<String> {
+    debug_assert!(!op.loads(), "{op} loads: run_loaded's");
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
     let base = path.parent();
@@ -293,49 +308,68 @@ fn run_frontend(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
             return matches!(op, Op::Ir("parse")).then(|| format!("<refused> {e}"));
         }
     };
-    if let Op::Ir(mode) = op {
-        return Some(ir_op(&mut ast, &forms, base, mode));
-    }
-    // `Load` is the one op whose *failure* is its answer: the load-negative
-    // corpus is a third of the files, and their messages are the answer.
-    // Every other op below treats a load failure as "nothing here".
-    if let Op::Load = op {
-        return Some(match ein_ir::load(&mut ast, terms, &forms, base) {
-            Ok(kb) => ein_core::shape(&kb, terms),
-            Err(e) => format!("<refused> {}", e.0),
-        });
-    }
     let outcome = match op {
-        Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
-        Op::ReadOut(_)
-        | Op::RegionTrace
-        | Op::States
-        | Op::RegionLattice
-        | Op::Cores(_)
-        | Op::Oracle => unreachable!("{op} takes a job count: run_with dispatches it"),
+        Op::Ir(mode) => return Some(ir_op(&mut ast, &forms, base, mode)),
+        Op::Dot(view) => dot_shape(&mut ast, &mut Terms::new(), &forms, base, view),
+        _ => unreachable!("{op} loads: run_loaded's"),
+    };
+    Some(match outcome {
+        Ok(text) => text,
+        Err(msg) => format!("<refused> {msg}"),
+    })
+}
+
+/// **Every op that reads the loaded program**, over a load already made: the
+/// AST and `Terms` the load left, and its KB or its refusal. The region ops
+/// take the job count, through [`region_op`]; nothing else can read it.
+fn run_loaded(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: Result<ein_core::Kb, ein_ir::KbLoadError>,
+    path: &Path,
+    op: Op,
+    jobs: usize,
+) -> Option<String> {
+    debug_assert!(op.loads(), "{op} does not load: run_unloaded's");
+    // `Load` is the one op whose *failure* is its answer: the load-negative
+    // corpus is a third of the files, and their messages are the answer. The
+    // KB views say why they have no KB in the loader's words too. Every other
+    // op below treats a load failure as "nothing here".
+    let outcome = match op {
+        Op::Load => {
+            return Some(match kb {
+                Ok(kb) => ein_core::shape(&kb, terms),
+                Err(e) => format!("<refused> {}", e.0),
+            });
+        }
+        Op::Dot(view) => match kb {
+            Ok(mut kb) => kb_dot_shape(ast, terms, &mut kb, view),
+            Err(e) => Err(e.to_string()),
+        },
         _ => {
-            let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
-            match op {
-                Op::Plan => ein_infer::plan_shape(&ast, terms, &kb).map_err(|e| e.to_string()),
-                Op::Match => ein_infer::match_shape(&ast, terms, &kb).map_err(|e| e.to_string()),
-                Op::Hyp(closed) => ein_infer::hyp_shape_with(&ast, terms, &mut kb, closed),
-                Op::Naf => ein_infer::naf_map(&ast, terms, &mut kb).map_err(|e| e.to_string()),
-                Op::Saturate => {
-                    ein_infer::saturate_events(&ast, terms, &mut kb).map_err(|e| e.to_string())
-                }
-                Op::Explain(alts) => {
-                    ein_infer::explain_shape(&ast, terms, &mut kb, alts).map_err(|e| e.to_string())
-                }
-                Op::Ir(_)
-                | Op::Load
-                | Op::Dot(_)
-                | Op::ReadOut(_)
-                | Op::RegionTrace
-                | Op::States
-                | Op::RegionLattice
-                | Op::Cores(_)
-                | Op::Oracle => {
-                    unreachable!("handled above")
+            let mut kb = kb.ok()?;
+            if op.takes_jobs() {
+                region_op(ast, terms, &mut kb, path, op, jobs)
+            } else {
+                match op {
+                    Op::Plan => ein_infer::plan_shape(ast, terms, &kb).map_err(|e| e.to_string()),
+                    Op::Match => ein_infer::match_shape(ast, terms, &kb).map_err(|e| e.to_string()),
+                    Op::Hyp(closed) => ein_infer::hyp_shape_with(ast, terms, &mut kb, closed),
+                    Op::Naf => ein_infer::naf_map(ast, terms, &mut kb).map_err(|e| e.to_string()),
+                    Op::Saturate => {
+                        ein_infer::saturate_events(ast, terms, &mut kb).map_err(|e| e.to_string())
+                    }
+                    Op::Explain(alts) => ein_infer::explain_shape(ast, terms, &mut kb, alts)
+                        .map_err(|e| e.to_string()),
+                    Op::Ir(_)
+                    | Op::Load
+                    | Op::Dot(_)
+                    | Op::ReadOut(_)
+                    | Op::RegionTrace
+                    | Op::States
+                    | Op::RegionLattice
+                    | Op::Cores(_)
+                    | Op::Oracle => unreachable!("handled above"),
                 }
             }
         }
@@ -344,6 +378,166 @@ fn run_frontend(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
         Ok(text) => text,
         Err(msg) => format!("<refused> {msg}"),
     })
+}
+
+/// One corpus program as one load left it: what [`Loads`] keeps, and copies
+/// for each op. `None` where the file could not be read or did not parse: no
+/// op that loads has anything there.
+type Loaded = Option<Parsed>;
+
+/// The AST and `Terms` after the load, and the load's KB or refusal.
+struct Parsed {
+    ast: Ast,
+    terms: Terms,
+    kb: Result<ein_core::Kb, ein_ir::KbLoadError>,
+}
+
+fn load_once(path: &Path) -> Loaded {
+    let text = std::fs::read_to_string(path).ok()?;
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
+    let mut terms = Terms::new();
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent());
+    Some(Parsed { ast, terms, kb })
+}
+
+/// One program's place in [`Loads`]: its load while a unit still needs it,
+/// and whether it searches, once asked.
+struct Slot {
+    /// Units of this program not yet finished.
+    left: AtomicUsize,
+    loaded: Mutex<Option<Arc<Loaded>>>,
+    searches: OnceLock<bool>,
+}
+
+/// **Each program loaded once, for every op a sweep runs over it** (M1f
+/// S1f.6.39, the user's ruling on Q-M1f.292): the first unit of a program
+/// that needs the load makes it, every op runs on a copy of it (`Ast`,
+/// `Terms` and `Kb` are `Clone` for this), and the last unit of the program
+/// drops it, so the sweep holds the loads of the programs in flight and no
+/// more. A copy reads as the load it was taken from, ids and all, so every op
+/// renders what it rendered over a load of its own; the golden is the proof,
+/// unchanged by the change, and `id_order_invariance`'s permuted runs, which
+/// load afresh into the permuted id space, compare against a run made this
+/// way.
+///
+/// Import resolution, which reads and parses every stdlib module a program
+/// imports, was most of each op's cost: about 30 of the 41 ops resolved
+/// again (S1f.6.39 § T6).
+pub struct Loads {
+    files: Vec<PathBuf>,
+    slots: Vec<Slot>,
+}
+
+impl Loads {
+    /// The sweep's programs, and how many units of each it runs: a unit takes
+    /// its program with [`Loads::unit`] once, and the program's load is
+    /// dropped when the last one is done.
+    pub fn new(files: &[PathBuf], units_of: &[usize]) -> Loads {
+        assert_eq!(files.len(), units_of.len(), "one count a program");
+        Loads {
+            files: files.to_vec(),
+            slots: units_of
+                .iter()
+                .map(|&n| Slot {
+                    left: AtomicUsize::new(n),
+                    loaded: Mutex::new(None),
+                    searches: OnceLock::new(),
+                })
+                .collect(),
+        }
+    }
+
+    /// The program `f`, for one unit: dropping it is the unit's end.
+    pub fn unit(&self, f: usize) -> Unit<'_> {
+        Unit { loads: self, f }
+    }
+}
+
+/// One unit's hold on its program in [`Loads`].
+pub struct Unit<'a> {
+    loads: &'a Loads,
+    f: usize,
+}
+
+impl Unit<'_> {
+    fn slot(&self) -> &Slot {
+        &self.loads.slots[self.f]
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.loads.files[self.f]
+    }
+
+    /// The program's load: made by the first unit that asks, and made again
+    /// only if a unit asks after the last one was done.
+    fn loaded(&self) -> Arc<Loaded> {
+        let mut held = self.slot().loaded.lock().unwrap_or_else(|e| e.into_inner());
+        held.get_or_insert_with(|| Arc::new(load_once(self.path())))
+            .clone()
+    }
+
+    /// **[`run_with`] at `jobs`, on a copy of the program's one load**, in
+    /// the ordinary id space: the rendering, and the `Terms` the op left,
+    /// which a permutation is built from. An op that does not load runs as
+    /// [`run_with`] runs it, on a `Terms` of its own.
+    pub fn run(&self, op: Op, jobs: usize) -> (Option<String>, Terms) {
+        let mut fresh = Terms::new();
+        if !op.loads() {
+            let out = run_with(&mut fresh, self.path(), op, jobs);
+            return (out, fresh);
+        }
+        let loaded = self.loaded();
+        let Some(Parsed { ast, terms, kb }) = &*loaded else {
+            return (None, fresh);
+        };
+        let (ast, mut terms, kb) = (ast.clone(), terms.clone(), kb.clone());
+        drop(loaded);
+        let out = run_loaded(&ast, &mut terms, kb, self.path(), op, jobs);
+        (out, terms)
+    }
+
+    /// **Whether the program searches**: its describe, at the sweep's budget
+    /// and cube limit, saturates more than root ([`searches`]). Asked once a
+    /// program.
+    pub fn searches(&self) -> bool {
+        *self.slot().searches.get_or_init(|| {
+            let loaded = self.loaded();
+            let Some(Parsed {
+                ast,
+                terms,
+                kb: Ok(kb),
+            }) = &*loaded
+            else {
+                return false;
+            };
+            searches(ast, &mut terms.clone(), &mut kb.clone())
+        })
+    }
+}
+
+impl Drop for Unit<'_> {
+    fn drop(&mut self) {
+        if self.slot().left.fetch_sub(1, Ordering::AcqRel) == 1 {
+            *self.slot().loaded.lock().unwrap_or_else(|e| e.into_inner()) = None;
+        }
+    }
+}
+
+/// **A program searches when its describe saturates more than root**, at the
+/// sweep's budget and cube limit ([`SWEEP_BUDGET`], [`SWEEP_LIMIT`]), one
+/// job: the programs whose region routes have more than one node to fan out
+/// and more than one fixpoint to intern into, which is where a job count and
+/// an id order can reach an output past root's. The determinism sweeps run
+/// over these per commit (M1f S1f.6.39, the user's rulings on Q-M1f.288 and
+/// .289); computed from the program, never a list. A program that does not
+/// load does not search.
+pub fn searches(ast: &Ast, terms: &mut Terms, kb: &mut ein_core::Kb) -> bool {
+    let mut opts = explore::Options::new(READ_OUT_MODES[0].1);
+    opts.budget = SWEEP_BUDGET;
+    opts.limit = SWEEP_LIMIT;
+    opts.jobs = 1;
+    ein_infer::read_out::run(kb, terms, ast, &opts).is_ok_and(|r| r.answer.saturations > 1)
 }
 
 /// A watch that keeps what a route visits, for `RegionLattice`.

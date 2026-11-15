@@ -6,7 +6,9 @@
 //! `--trace` ([S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)).
 //! So the renderers are pinned the way the loader and the compiler are: every
 //! view is rendered over the whole corpus and the texts are digested
-//! (`ein-render/tests/corpus_shapes.rs`).
+//! (`ein-render/tests/golden/corpus_shapes.md5`, which
+//! `ein-render/tests/id_order_invariance.rs` holds every rendering to since
+//! M1f S1f.6.39).
 //!
 //! Unlike `plan-shape` or `kb-shape` this invents no rendering of its own.
 //! Every view calls a renderer entry point exactly as a CLI subcommand or the
@@ -187,8 +189,21 @@ pub fn dot_shape(
         return parse_view(ast, forms, view);
     }
     let mut kb = ein_ir::load(ast, terms, forms, base_dir).map_err(|e| e.to_string())?;
+    kb_dot_shape(ast, terms, &mut kb, view)
+}
+
+/// One of [`KB_VIEWS`] over a KB already loaded from the file, by the same
+/// renderer call as [`dot_shape`]'s, so the same text: for a caller that
+/// loads a program once and draws each view from a copy of the load (M1f
+/// S1f.6.39, the corpus sweeps' one load a program, Q-M1f.292).
+pub fn kb_dot_shape(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    view: &str,
+) -> Result<String, String> {
     if KB_VIEWS.contains(&view) {
-        return kb_view(ast, terms, &mut kb, view);
+        return kb_view(ast, terms, kb, view);
     }
     Err(format!("unknown dot view {view:?}"))
 }

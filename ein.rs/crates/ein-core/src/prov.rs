@@ -275,7 +275,7 @@ impl Prov {
 /// Keeping the base *with* the records is what makes that safe: an id means
 /// something only against the region it was issued from, and the two cannot be
 /// separated.
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct Region {
     records: Vec<Prov>,
     /// The fork sequence number of `records[0]`.
@@ -328,6 +328,21 @@ pub struct ProvArena {
     /// has rendered the fork's justifications, so routing has to stop one step
     /// earlier than reclamation does.
     forking: bool,
+}
+
+/// A copy of the whole arena, its records in an `Arc` of the copy's own
+/// (M1f S1f.6.39, Q-M1f.292): `ProvArena::promote` grows the arena only
+/// where nothing else holds it, so a copy that shared the original's records
+/// could not be grown.
+impl Clone for ProvArena {
+    fn clone(&self) -> ProvArena {
+        ProvArena {
+            records: Arc::new((*self.records).clone()),
+            fork: self.fork.clone(),
+            promoted: self.promoted,
+            forking: self.forking,
+        }
+    }
 }
 
 impl ProvArena {

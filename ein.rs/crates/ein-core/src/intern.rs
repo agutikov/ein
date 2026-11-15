@@ -147,7 +147,7 @@ pub struct Symbol(pub u32);
 /// One per process. `.einb`
 /// ([design/10](../../../../docs/history/m1a_rust/design/10_binary_format.md) §3) is
 /// the only thing that crosses interner boundaries, and it remaps on open.
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct Interner {
     /// All text, one allocation family.
     arena: String,
