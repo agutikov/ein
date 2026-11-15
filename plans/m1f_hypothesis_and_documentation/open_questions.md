@@ -309,6 +309,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.302](#q-m1f302--what-stdmathrats-unreduced-answer-fixes-and-rat-norm-under-b) | what `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b) | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator in normal form, D with no high zero, nothing reduced; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.303](#q-m1f303--rat-simplify-asks-stdmathgcd-the-numerator-first) | `rat-simplify` asks `std.math.gcd` the numerator first | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator first, as before; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.304](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) | `route_invariance` past the default budget, past any shard's five minutes | **ruled 2026-11-15: (d)**, no test runs past the default budget (the user: *"(d)"*); defaulted (a) the same day by T7; built at P1f.6's close; [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled) |
+| [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (b) for E-1, (a) for E-7, (d) for E-54, is not acted on before the reply; the witnesses and the census are on [S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s record |
+| [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (A) where a static reading gives the control's R on the witness and moves no other corpus program's R, otherwise (C), is not acted on before the reply; the census selects its (A) branch; the probes, the census and (A)'s price are on [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s record |
+| [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's recommendation, (b), restates a ruling of M1d's, so it is not a default and is not acted on; the census does not speak against it, and what it puts beside it is in the entry; the witnesses and the census are on [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s record |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6006,3 +6009,356 @@ and that they are independent. What the re-plan decided beyond it, each without 
     longer name `docs/history/` as their destination (the user's rulings of 2026-11-15 on the docs).
 
 **Defaulted 2026-11-15: all ten as written, the user's to revise.**
+
+### Q-M1f.306 — What the blind enumerator takes for an object
+
+**Raised** 2026-11-15 by
+[S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s
+tasks 1 to 3, for E-1, E-7 and E-54 of the calculator's [`findings.md`](p1f.6_calculator/findings.md), which
+P1f.10 owns. **It is put at P1f.10's one stop**
+([S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)), with the phase's other three
+questions. Removing a candidate changes H, and H is part of the answer, so this is one of the three places in
+the phase where an answer would move.
+
+**What the engine does** (the record's § What the code does). The blind enumerator's objects are the names
+index at root's fixpoint, which holds every fact's head beside its arguments, and the program's names
+(`invariant::program_names`: every constant in an argument position of a fact or a rule, Q-M1e2.9 (a)); less
+the names a signature declares, seven reserved words, and every name the registry calls a relation or a rule.
+The registry holds a relation a `(relation …)` declares and the head of every fact **a file writes**. So a head
+only a rule derives is an object, and that is E-1 where the head is a kernel dunder and E-7 where it is an
+undeclared relation: one mechanism. Every relation with a signature that nothing scopes out is proposed about,
+over every object, wherever either was loaded from: E-54.
+
+**The witnesses**, each by `ein oracle` on the release binary of `d7050ccf`, R without the marked candidates
+counted in the oracle's cube and, where the language has a means, again by `ein oracle` on a copy of the
+program in which they do not arise (`build/s1f.10.9/run.sh`, 2026-11-15; every program is in the record):
+
+| | witness | H | marked | R | R without them |
+|---|---|---:|---|---:|---:|
+| E-1 | ten digits closed by a rule, `total` open | 11 | `(total __closed__)` | 2 048 | 1 024, and 1 024 on the copy that writes `(__closed__ digit)` as a fact |
+| E-1 | `(import std.math.arith)`, `total` open | 1 | `(total __closed__)` | 2 | 1 |
+| E-1 | `(import std.math.decimal-arith)`, `total` open | 13 | none: `std.math.digits` writes its closures as facts | 8 192 | 8 192 |
+| E-1 | a dunder written as a value, as `(imply1 functional __closed__)` | 2 | `(total __closed__)` | 4 | 2 |
+| E-7 | the import probe, `tasty` alone open | 5 | `(tasty liquid)`, `(tasty thing)` | 32 | 8, and 8 on the copy that declares both |
+| E-7 | the same in one file | 3 | `(tasty liquid)` | 8 | 4, and 4 on the copy that declares it |
+| E-54 | a library of `colour` and `shape`, imported for `colour`, `near` declared | 4 | all 4: each names `red` or `square`, the library's | 16 | 1; without the one of `lib.shape` alone, 8 |
+
+- **E-1 as worded does not reproduce on the shipped calculator**: a written `(__closed__ R)` fact registers
+  the dunder as a relation, so it is an object only where every closure is derived by a rule (the prototype's
+  shape, `std.math.arith` alone), or where it is written as a value. **One closure stated two ways gives two
+  answers today**, 2 048 states and 1 024.
+- **E-7's names are heads, never values.** No rule *asserts them as values*, and `program_names`, which built
+  Q-M1e2.9 (a), does not list them. A relation's name that a program does write as a value is **not** an
+  object where a file declares the relation or writes a fact of it (the record's control).
+
+**The census** (`cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example object_census`,
+2026-11-15, the oracle's default limit of 16; rows in `build/s1f.10.9/census/rows.tsv`). Of 867 corpus files
+644 load. The blind enumerator built H on 470; 115 of them have a candidate, 2 190 candidates in all.
+
+| the candidate names | programs | candidates | R differs without them |
+|---|---:|---:|---|
+| **E-1**, a kernel dunder | 0 | 0 | — |
+| **E-7**, a relation's name | 1, `examples/features/01_not_and_absent.ein` | 16 of its 35 | **not reached by the oracle**, 2³⁵; a default-budget describe computes 64 655 nodes, all in R, and 58 966 of them hold one, so R would differ |
+| **E-54**, a name only an imported module writes | 2, `examples/ein-bugs/wrong-answers/import-directives-as.ein` and `-twice.ein` | 2 of 2 each | **yes, both**, by the oracle's cube: 4 states to 1 |
+| E-54, a candidate of a relation the main file does not spell | 0 | 0 | — |
+
+On the 174 programs another rung builds H for, the blind enumerator is not asked. Were it, it would name
+`__closed__` on 8 of them and a derived relation's name on 4 (the record's last table): the corpus's answers
+are clear of E-1 and E-7 by the rung those programs take.
+
+**The options**, as the stage states them, each with what it would change:
+
+- **(a) Leave E-1 and E-7, and the read-out names such candidates** as it names types bound as objects
+  (Q-M1e.12 (a)). No answer moves. The `universe` row and `root.hypgen` gain a count, which today would print
+  on one corpus program (`features/01`, 16 candidates naming `explicitly-dislikes`) and on the witnesses.
+- **(b) A kernel dunder is never an object**, which is a wrong answer today and a register row before its
+  fix. The witnesses: 2 048 → 1 024, which is what the same program answers with its closure written as a
+  fact; 2 → 1; and for `__symmetric__` 8 → 4. **No corpus program's H holds a dunder, so no corpus
+  answer, golden or expectation moves.** The user would say whether *never* covers a dunder a program writes
+  as a value (4 → 2 on that witness), which Q-M1f.7 (b) keeps legal and Q-M1e2.9 (a) reads as a name.
+- **(c) (b), and a relation's name is not an object either.** The witnesses: 32 → 8 and 8 → 4, each equal to
+  its declaring copy; the original probe, whose R `ein solve` reads as the whole cube of 39 candidates, would be
+  the whole cube of 17. **One corpus program moves**, `features/01`: H 35 → 19, its R, and with it the goldens
+  that hold its renderings and its measured cost; it states no `:expect`. The stage says
+  this *narrows Q-M1e2.9 and needs the user to say so*. On the evidence it narrows nothing of that ruling as
+  built: it would treat a head only a rule derives as every head a file declares or writes is treated already.
+- **(d) Leave E-54**: the universe is the program's names wherever they were written.
+- **(e) A name or a relation only an import brings is not guessed about unless the program writes it**, which
+  makes what is guessed depend on what the main file spells and needs the user to say so. The witness: 16 → 1
+  under both import forms for the names; for the relation alone 16 → 8 where the main file lists `colour` in
+  `:symbols` and 16 → 4 where it imports the module whole, **if a listing counts as writing**, which is an
+  answer that depends on the import form (`ein-cli/tests/import_invariance.rs` holds that none does). **Two
+  corpus programs move**, 4 states → 1, and both are register witnesses of W90 whose `fixed` rows state the
+  four states as the right answer, by hand, over the module's names: those two rows' `right` would be
+  restated. A program that imports the calculator beside an open relation of its own is left with no candidate
+  (the third E-1 witness, 8 192 → 1).
+
+**The default, as the stage names it: (a) for E-7**, *since it is the ruling as written*; **(b) for E-1**,
+*since no program means a dunder as an object*; **(d) for E-54**, *since every import brings its module whole
+and the answer does not depend on the import form*.
+
+**What the census says of those three reasons**, for the user to weigh; it changes no default:
+
+- **E-7's reason does not hold of its witness.** The ruling as written makes names of the constants in
+  argument positions, and the witness's names are in none. What does speak for (a) is the cost of (c): one
+  corpus program's answer, by a register row. What speaks for (c) is that E-1 and E-7 are one mechanism, so (b)
+  alone is a rule about two names inside a behaviour that stays, and that declaring a derived relation already
+  removes its name today.
+- **E-1's reason holds**, and the census adds that (b) moves nothing in the corpus and makes the two ways of
+  stating a closure agree.
+- **E-54's reason holds**, and the census adds that (e) would restate two answers the register holds as right
+  and, in its relation half, break the import invariance on the witness pair.
+
+**Not defaulted. The question is put at the phase's one stop, and no default is acted on before the user
+replies**: no candidate is removed, no register row filed, no read-out row added. As ruled, it is
+[T1f.10.9.4](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#tasks).
+
+### Q-M1f.307 — A debt root was not told of: what H holds
+
+**Raised** 2026-11-15 by
+[S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s
+tasks 1 to 3, for the register's `W26/oblig-derived-activator`, `open` and owned by that stage, and for
+[Q-M1e.11](../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+*what happens to an obligation derived under a hypothesis*, which P1f.10 owns. **Q-M1e.11 stays open**: this
+entry restates it over R, with what was measured, and the ruling given here is recorded there by the stage's
+task 4. **It is put at P1f.10's one stop**
+([S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)), with the phase's other three
+questions. Three of its four answers change H or refuse a program, so this is one of the three places in the
+phase where an answer would move.
+
+**What the engine does** (the record's § What the engine does). H is the generator's list at root's fixpoint
+and is taken nowhere else. On the obligations rung it is what would pay the debts **root** owes. A node's
+debts are read over the activator facts the **node** holds, so a rule that derives an obligation's activator
+from a guess gives a node a debt whose payment was never a candidate. The static check flags such a program
+(an activator site), so it takes the cube; `check_owed`, which refuses a run where a node owes what root did
+not, runs only on a program the check calls monotone and so never on this one.
+
+**The witness and its control, and the same pair on the other two rungs** (`ein solve` and `ein oracle` on
+the release binary of `14063474`, 2026-11-15, `build/s1f.10.6/run.sh`; every program is in the record):
+
+| rung | the activator derived by a rule | the activator also stated |
+|---|---|---|
+| obligations: the witness and the control | H 1, **R empty**, every alive node owing | H 2, R 1 state, `{(drinks Ann Tea) (likes Ann Soup)}` |
+| hrule, each hrule proposing a relation where its activator holds | H 1, **R empty** | H 2, R 1 state, the control's |
+| hrule, the hrules reading `is-a` alone | H 2, R 1 state, the control's | the same |
+| blind, the obligations rung declined by a bare `(open)` | H 12, R 1 024 states, the minimal line the control's state | the same |
+
+**The question is not the obligations rung's alone, and it is not the blind rung's at all.** It is the
+question of a generator that reads the state. And it does not need a derived activator: a program with both
+debts stated and an hrule that proposes a drink for whoever likes a food has H 1 and **R empty**, where its
+twin that states the liking has a model; the static check calls it monotone and nothing flags it
+([H6-1](p1f.10_hypothesis_structure/findings.md#h6-1--an-hrule-that-reads-what-a-commitment-can-change-proposes-at-a-node-what-it-did-not-at-root-and-nothing-flags-it)).
+
+**The census** (`cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example owed_census --
+--jobs 12`, 2026-11-15, the oracle's default limit of 16; rows in `build/s1f.10.6/census/rows.tsv`). Of 867
+corpus files 644 load, and 127 of them declare an obligation rule.
+
+| | programs | which |
+|---|---:|---|
+| statically: an obligation rule's activator relation is one a commitment can change (`D`) | 3 | the witness, the control, `examples/lattice/09_activator_hole.ein` |
+| statically: … only through a rule root has no plan of (`D⁺`) | 1 | `examples/lattice/12_activator_chain_hole.ein` |
+| by the cube: an alive node owes an instance of a plan root never compiled | 3 of the 582 the oracle reaches | the witness, `lattice/09`, `lattice/12` |
+| by the cube: an alive node owes an instance root did not, of a plan root has (a trigger site; on the obligations rung Q-M1e2.10 (a) declines for one) | 4 | `lattice/04`, `lattice/synth/{local_not_global,maximal_not_top}`, `tests/region/07_cube` |
+| by the cube: any of that on a program the static check calls monotone | 0 of 560 | |
+| **by the cube: the generator would propose at an alive node a fact that is not in H** | **1** | **the witness** |
+
+On `lattice/09` and `/12` an hrule proposes every meal from `is-a` alone, so the new debt's payment is in H:
+their R is 3 states with a hole, and what R is on them is F21's. **Not reached**: the 43 programs past the
+oracle's limit, named in the record; none has an obligation rule's activator relation in `D` or `D⁺`, and the
+one that has an hrule reading `D` was read at `--limit 17` and proposes nothing outside H. 19 more are refused
+by *forbid* and have no R.
+
+**The four answers**, each on the four programs the census finds:
+
+| | the witness | the control | `lattice/09` | `lattice/12` |
+|---|---|---|---|---|
+| today | H 1, R empty | H 2, R 1 state | H 2, R 3 states | H 2, R 3 states |
+| **(A)** H holds what a node's debt would propose | H 2, **R 1 state, the control's** | unmoved | unmoved | unmoved |
+| **(B)** decline: such a program's H is the blind enumerator's, as Q-M1e2.10 (a) took for W14 | H 12, R 1 024 states; the minimal line is the control's state | **moves**, H 12, R 1 024 states: the decline is at relation grain | unmoved, an hrule builds H | unmoved |
+| **(C)** refuse at load: every obligation activator must hold at root | refused | **refused** by the static check's site, which is at relation grain; accepted only by a test that reads the fact | **refused** | refused only by a test that follows `D⁺`, as *forbid* does |
+| **(D)** the answer stands, and the read-out says why | R empty; the row `not-wrong`; a new line, since no row of the read-out says today that nothing in H pays the debt | unmoved | unmoved, no line | unmoved |
+
+- **(A)** changes one corpus answer, the witness's, by its register row.
+- **(B)** changes two, and restates the row's control, as Q-M1e2.10 (a) restated two of W14's. It is the move
+  the user ruled there for a *domain* a commitment can change. `object_census` marks none of the twelve
+  candidates, so Q-M1f.306 moves nothing on them
+  ([H6-2](p1f.10_hypothesis_structure/findings.md#h6-2--under-b-q-m1f306-bears-on-two-more-programs-and-marks-nothing-on-them)).
+- **(C)** turns three or four corpus programs into refusals. Two of them, `lattice/09` and `/12`, are not
+  wrong in H today: they are the corpus's two exercised activator sites, which
+  [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md) and `ein-infer`'s detector tests read by
+  name, and F21's examples of the third cause of a non-monotone program.
+- **(D)** changes no answer and keeps an empty R where a model exists.
+
+**(A) priced, under its two readings.** Neither was built; each universe was stated by hrules on a copy of
+the program, which changes no node, and R read by `ein oracle`.
+
+- **Reading 1, static**: the ground activators of an obligation rule that a rule reading `D⁺` writes in its
+  `:assert`, with the rung's own scan run for them at root, repeated until it adds nothing. No saturation.
+- **Reading 2, over nodes**: the least set that holds H and what the generator proposes at every alive node
+  over it. `owed_census --iterate` computes it, a round a cube.
+
+On the corpus they agree: the witness gains `(drinks Ann Tea)` and answers the control's R; the control,
+`lattice/09` and `lattice/12` gain nothing; no other program can gain under reading 1, which adds only where
+an activator relation is in `D⁺` (computed on all 644), and none of the 582 the cube read gains under
+reading 2. Off the corpus, on six programs written for it, each the witness with one thing changed:
+
+| probe | today | reading 1 | reading 2 |
+|---|---|---|---|
+| `arm` fires on one food of two | R 1 state | R 4 states | R 4 states. The control's is 3: **(A) is not *state the activator*** |
+| no alive node derives the activator | R 2 states | **over**: R 4 states, two holding a tea no alive node owes | R 2 states, today's |
+| the rule writes the owed relation as a variable | R empty | **under**: no ground activator, R stays empty | R 1 state |
+| the tea that pays switches on a second debt | R empty | R 1 state, in two passes | R 1 state, in two rounds |
+| `lattice/12`'s chain on the obligations rung | R empty | R 1 state over `D⁺`; nothing over `D` | R 1 state |
+| the new debt's domain is one a commitment can change | R empty | the rung's existing decline: **(B)** | the node's rung declines: **(B)** |
+| H6-1's program, no activator derived | R empty | **nothing** | R 1 state |
+
+Reading 1 reads rules and root alone, costs a closure and a scan, and is inexact both ways on shapes no
+corpus program has. Reading 2 is exact by its definition, costs a generator pass on every alive node of every
+round's cube, which no route but the cube can take today, and is a function of nodes: **what a node is on a
+flagged program is F21's**, so its universe would move with that ruling. Under either, every program (A)
+touches stays flagged, and a region with a hole stays one.
+
+**The default, as the stage states it: (A) where T2 shows a static reading that gives the control's R on the
+witness and moves no other corpus program's R; otherwise (C).** *Both name a wrong answer today; (B) trades
+it for a different H, and (D) keeps an empty R where a model exists.*
+
+**The census selects the first branch, (A)**, by reading 1: it gives the control's R on the witness and moves
+no other corpus program's R.
+
+**What the census says beside that**, for the user to weigh; it changes no default:
+
+- **The branch is selected by the corpus, and reading 1 is exact only there.** The two probes on which it is
+  over and under are each the witness with one rule changed.
+- **(A) by reading 1 leaves H6-1 as it is**, and so do (B), (C) and (D) as worded: that program derives no
+  activator and is monotone. Only reading 2 answers it.
+- **The row's `right`, *the control's R*, is (A)'s answer on the witness and not (A)'s definition**: where a
+  member of R need not derive the activator, (A) and the control differ.
+- **(A) is a *widen*, as Q-M1e2.10 (b) was for a domain**, and there the user ruled (a), *decline*, which is
+  (B) here. The two cases differ in one respect the census can state: under (B) the control moves too, to
+  1 024 states of free facts, and under (A) nothing but the witness moves.
+- **The default's fallback, (C), costs more of the corpus than any other answer**, and two of the programs it
+  refuses are right in H today.
+- **A static reading has to follow `D⁺`**, which today only *forbid* reads; the static check's `D` and the
+  rung's own decline do not see `lattice/12`'s shape.
+
+**Not defaulted. The question is put at the phase's one stop, and no default is acted on before the user
+replies**: H is unchanged, `check_owed` untouched, no register row filed or flipped, no read-out row added,
+no program refused. As ruled, it is
+[T1f.10.6.4](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#tasks).
+
+### Q-M1f.308 — The rung a loaded obligation rule chooses
+
+**Raised** 2026-11-15 by
+[S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s
+tasks 1 to 3, for E-51 of the calculator's [`findings.md`](p1f.6_calculator/findings.md), which P1f.10 owns.
+**It is put at P1f.10's one stop**
+([S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)), with the phase's other three
+questions. Two of its three options change which rung builds H, and H is part of the answer, so this is one
+of the three places in the phase where an answer would move.
+
+**What the engine does** (the record's § What the engine does). Hypothesis generation is a ladder: an
+hrule's proposals if the program declares one, else what would pay the debts root owes, else the blind
+enumerator. With no hrule, the second rung is taken wherever the program **loads** an obligation rule
+(`hypgen::generate_with`, `!program.obligations.is_empty()`), activated or not, and a second rung that owes
+nothing proposes nothing: H is empty and the blind enumerator does not run. Since every import brings its
+module whole, a program loads `std.algebra`'s two obligation rules by importing `std.algebra`,
+`std.bijection`, `std.closure`, `std.typing` or `std.bool.inputs` for anything at all, and `std.slots` brings
+its own two. `mechanisms.rs` reads the same declaration the other way: an obligation is a plan root's
+activators compile, and a rule nothing activates is not among a program's mechanisms.
+
+**What M1d ruled.** Its decision table has *obligations supersede `:hrules` as the generator, as a ladder*
+(user, 2026-08-24) and *the read-out is scoped — discharge where stated, exhaustion where not* (2026-08-25).
+The second was a rule about the verdict, and under R it is gone:
+[`solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md) has *one definition for every
+program*. What is left of *where stated* is this switch, and its reason is `oblgen.rs`'s: *falling back to the
+blind enumerator whenever nothing was owed would put exhaustion back in charge of completeness*. That is said
+of a discharged state under a stated obligation. In M1d a program loaded an obligation rule only by naming
+it, so *loaded* and *stated* were one thing.
+
+**The witnesses** (`ein solve` and `ein oracle` on the release binary of `c6251db3`, 2026-11-15,
+`build/s1f.10.15/run.sh`; every program is in the record). E-51's three reproduce, the third to the state.
+
+| program | at root | (a) today | (b) | (c) |
+|---|---|---|---|---|
+| 1: `(total-owed at is-a)` stated and paid, beside an open `near` | discharged | H 0, R {∅} | as today | H 22, R the whole cube, at least 110 057 states at the budget |
+| 2: the same with the activator deleted, the import kept | unactivated | H 0, R {∅} | H 22, the whole cube: program 3's read-out, row for row | as (b) |
+| 3: the import deleted too | no rule loaded | H 22, the whole cube, at least 110 057 states at the budget | as today | as today |
+| the re-plan's: `std.algebra` for `connex`, over `lt` | unactivated | H 0; `outside lt — no candidate: no obligation owes it` | **refused at load** by *forbid*: the blind enumerator proposes `lt`, and `connex` rests on an `absent` over it | as (b) |
+| the fourth: `std.algebra` for `symmetric`, beside an open `likes` | unactivated | H 0, R {∅}; the read-out names `near` as outside and says nothing of `likes` | H 4, **R 16 commitments, 8 states**, what the program answers with the import deleted and `symmetric` written out | as (b) |
+
+Twins of 1 to 3 over fewer names put the same rows within the oracle's limit: H 11, R 2 048 states.
+
+**The census** (`cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example rung_census --
+--jobs 8 --check`, 2026-11-15, the oracle's default limit of 16; rows in `build/s1f.10.15/census/rows.tsv`).
+An option's H is the blind enumerator's own list at the program's root, and its R the cube over that list by
+`region`'s node function, held node for node to `region::compute` on the 437 programs where the blind list is
+H today; past the limit, `ein solve` on a copy with one obligation rule added that nothing owes and that
+declines the rung. Of 867 corpus files 644 load, and 127 load an obligation rule.
+
+| at root | programs | on the second rung today | where the blind enumerator would propose a candidate |
+|---|---:|---:|---|
+| a rule loaded, none activated | 45 | 41; the other 4 declare an hrule | 1 of the 41, `examples/features/09_adjacent_via_same_house.ein`, 82 candidates |
+| activated, root owes nothing | 16 | 1; of the other 15, 7 say `(solve :no-search)`, 7 declare an hrule, 1 declines on purpose | that 1, `stdlib/bool/inputs.ein`, 342 candidates |
+| root owes | 66 | 23 | not moved by any option |
+
+**Each option, on the witnesses and on each corpus program it moves:**
+
+- **(a) as it is**: the rung is chosen by a rule loaded. The read-out says so where it bites: a `universe`
+  row that names the rule which took the program off the blind enumerator, and `(solve :no-search)` remains
+  the way to say *judge root alone* on purpose.
+  *No answer moves.* The row would print on the witnesses 2, the re-plan's and the fourth, and on one corpus
+  program, `features/09`; printed wherever an unactivated rule chose the rung, on 41. Kept, the ladder has no
+  declared way from the second rung to the third: one corpus program gets there by an obligation nothing
+  owes ([H15-5](p1f.10_hypothesis_structure/findings.md#h15-5--from-the-second-rung-the-only-way-to-the-blind-enumerator-is-an-obligation-nothing-owes)).
+- **(b) by an obligation activated at root**: the second rung where root's activators compile a plan of an
+  obligation rule, the reading `mechanisms.rs` has. A program that imports a module for something else is on
+  the third rung again. A discharged state under an activated obligation still proposes nothing and is
+  complete, so *complete means discharged* is untouched.
+  *Witnesses*: 1 and 3 unmoved; 2 answers as 3; the fourth gains its 4 candidates and 8 states; the re-plan's
+  is refused at load. *Corpus*: **41 programs change rung, 1 changes H, none changes R.** On 40 the blind
+  enumerator's list is empty, 35 of them by a `:no-hypothesis` list that names every relation it would fill,
+  and the read-out is the same row for row. On `features/09` H goes from 0 to 82, all dead with a dead root,
+  and R is empty before and after; two rows of its read-out change.
+- **(c) by a debt owed at root**: the second rung only where root owes. Rejected by M1d for a reason that
+  stands, that a discharged root would fall to the blind enumerator and exhaustion would be back in charge of
+  completeness; listed so that the reply can say so.
+  *Witnesses*: as (b), and witness 1, whose one obligation is paid, gains 22 untyped candidates. *Corpus*:
+  (b)'s 41 and one more, **`stdlib/bool/inputs.ein`: R from {∅} to at least 55 747 states over 342
+  candidates of `in`**, describe not exhausted at the default budget, on a module that states its obligation
+  and has no input to owe for. That is M1d's reason on a corpus program.
+
+**Recommended, as the stage states it: (b).** *It makes the two readers agree and makes an import of one
+name not change what is guessed.* **It restates a ruling of M1d's, so it is the user's to take: it is not a
+default and is not acted on.**
+
+**The census does not speak against (b).** It moves no corpus program's R, changes one program's H, lands no
+corpus program on a refusal, and leaves every discharged root where it is. **What it puts beside the
+recommendation**, for the user to weigh; it changes no wording above:
+
+- **No tracked program's answer shows the change.** The finding moves answers on probes only. Under (b) task
+  4 would file no register row, and the switch would land with nothing in the corpus that fails if it is
+  undone, unless a witness is added: the fourth, or `features/09` with its guard put back, which answers one
+  state today and nine on the third rung
+  ([H15-3](p1f.10_hypothesis_structure/findings.md#h15-3--the-corpus-was-written-for-the-third-rung-one-header-and-35-lists-say-so)).
+- **(b) turns a program that loads today into a load error**, where a refutation reads an `absent` over a
+  relation the blind enumerator comes back to. Two probes, no corpus program; the refusal names its remedy,
+  `(solve :no-hypothesis (lt))`
+  ([H15-2](p1f.10_hypothesis_structure/findings.md#h15-2--under-b-a-program-that-loads-today-is-refused-forbids-premise-depends-on-the-rung)).
+- **What a program comes back to is the blind enumerator as it is**: untyped, so witness 2's R is 4 194 304
+  commitments that hold facts such as `(at Blue Red)`. And
+  [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) then bears on it: 44 of
+  `features/09`'s 82 new candidates name `adjacent-via-fwd` or `adjacent-via-bwd`, a derived relation's name
+  (E-7); under (c), 340 of `stdlib/bool/inputs.ein`'s 342 are marked, 36 naming `__closed__`
+  ([H15-1](p1f.10_hypothesis_structure/findings.md#h15-1--under-b-q-m1f306-bears-on-one-more-corpus-program-and-under-c-on-two)).
+- **The corpus already reads as (b).** `features/09`'s header describes the hypothesis space the blind
+  enumerator gives it, and 35 programs keep the lists that only the third rung reads (H15-3).
+- **The switch is written twice** (`hypgen::generate_with`, `hypgen::eligible_relations`), and the ladder's
+  sentence is in five places, three of which read as (c)
+  ([H15-4](p1f.10_hypothesis_structure/findings.md#h15-4--the-ladder-is-stated-in-five-places-and-three-of-them-read-as-option-c)).
+- **Not measured**: under (b) the 41 programs' narration changes, the `rung` event and the generator's
+  counters, and with it their shape digests, on 40 of them with H, R and the read-out as they are.
+
+**Not defaulted. The question is put at the phase's one stop, and nothing is acted on before the user
+replies**: the ladder is unchanged, no register row filed, no read-out row added, no page restated, and E-51
+is open. As ruled, it is
+[T1f.10.15.4](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#tasks).

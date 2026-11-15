@@ -1,8 +1,12 @@
 # S1f.10.15 — The rung a loaded rule chooses
 
 **Phase:** [P1f.10](README.md), track H (what H is)
-**Status:** planned 2026-11-15, at the re-plan. Not started. **Its question is put at the phase's one stop**
-([S1f.10.12](s1f.10.12_the_structure_shown.md)), and nothing changes before the user replies.
+**Status:** planned 2026-11-15, at the re-plan. **Tasks 1 to 3 ran on 2026-11-15**
+([§ Record](#record-2026-11-15-tasks-1-to-3)): the witnesses rebuilt and banked, the census taken, the
+question written as [Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses).
+**Stopped at the question**, which is put at the phase's one stop
+([S1f.10.12](s1f.10.12_the_structure_shown.md)); task 4 waits for the ruling, and nothing changes before the
+user replies.
 **Depends on:** nothing in the phase.
 **Owns:** E-51 of the calculator's [`findings.md`](../p1f.6_calculator/findings.md), given to this phase on
 2026-11-14 and until the re-plan in no stage file.
@@ -81,3 +85,559 @@ anywhere. Its read-out: *universe — no candidate: R is {∅} or empty, decided
 
 A wrong answer is a row in `corpus/wrong_answers.toml`, filed `open` before its fix. Config never changes an
 answer. The gate is `./run_tests.sh`, once on the last commit of the batch.
+
+## Record, 2026-11-15: tasks 1 to 3
+
+**No engine behaviour changed, the ladder is what it was, no register row was filed, no expectation was
+edited, no corpus program was added.** What was added: one measurement example,
+`ein-infer/examples/rung_census.rs`, and `examples/shared/marks.rs`, the marks of `object_census` moved to
+where both examples read them (`object_census` prints over the corpus what it printed, byte for byte, against
+`build/s1f.10.9/census/rows.tsv`); this record;
+[Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses); five findings in the
+phase's [`findings.md`](findings.md#from-s1f1015) (H15-1 to H15-5).
+
+**The binary.** The release build in the lane's worktree at `c6251db3` (`cargo build --release -p ein-cli`;
+no file under `ein.rs/crates/*/src` or `stdlib/` differs from `dbedc535`), on AC. The census example is
+`e432b657`'s, built against the same sources. `ein --version`, under the script's `$EIN_STDLIB`:
+
+```
+ein 0.1.0
+protocol   ein-events/1
+container  einb/2.0
+features   einb, parallel, snmalloc
+stdlib     sha256:3ed7f9d0f377124b7b8d8a723deaa85931bce8a41c8f597d9e957abe5aa3de8e  $EIN_STDLIB …/stdlib
+```
+
+**The artefacts** are under the untracked `build/s1f.10.15/`: `w/`, the witnesses, and `b/` and `c/`, the
+copies that stand for options (b) and (c), each program with its `ein solve` read-out (`X.solve.txt`), its
+`ein oracle` read-out (`X.oracle.txt`) and dump (`X.oracle/`); `b/corpus/` and `c/corpus/`, for every corpus
+program an option moves, the copy, the original's read-out (`X.today.txt`), the copy's (`X.solve.txt`) and
+its summary (`X.json`); `census/rows.tsv`, the census's row for every corpus program, `census/witnesses.tsv`,
+the same over `w/`, `census/readouts.txt`, `census/object.tsv` and `census/mechanisms.json`; `run.sh` and
+`run.txt`, the script that writes all of it and what it printed; `skips.py` and `line.py`. `build/` is not
+tracked, so every program this stage wrote and every command is below; the copies are written by `run.sh`'s
+`declined` and its `sed` from those programs and from tracked files. `run.sh` was run again after the census
+example's last build and printed what it had, and `rows.tsv` came out the same byte for byte.
+
+### What the engine does, which is what the three options differ on
+
+Each premise of [§ The finding](#the-finding) was read against the sources and holds.
+
+- **The switch** is `hypgen::generate_with`: with no hrule, `!s.kb.program().obligations.is_empty()` sends the
+  call to `oblgen::generate`, and only its `Mode::Declined` falls through to the blind enumerator. With no
+  activator at root `obligations::plans_for` returns no plan, so nothing is owed, nothing is emitted and the
+  mode is `Obligations`: H is empty. The same switch is written a second time, in
+  `hypgen::eligible_relations`, which `shape.rs` reads ([§ What contradicts the plan](#what-contradicts-the-plan)).
+- **`(solve :no-search)` and an hrule come first**, so the switch is read only on a program that declares
+  neither.
+- **`mechanisms::read` reads an obligation as a plan root's activators compile**
+  (`Mechanisms::obligations`, from `obligations::plans_for`), and keeps the loaded rules beside it
+  (`Mechanisms::obligation_rules`). `mechanism_census` prints the difference as `O(no activator)`: 45
+  programs.
+- **Every import brings its module whole**, so `std.algebra`'s `total-owed` and `surjective-owed` are loaded
+  by every program that imports `std.algebra`, `std.bijection`, `std.closure`, `std.typing` or
+  `std.bool.inputs`, and `std.slots` brings its own two (the census's `rules` column on the stdlib's files).
+- **What M1d ruled.** The decision table of
+  [M1d's README](../../../docs/history/m1d_satisfiability/README.md#the-decisions-and-who-took-them) has two
+  rows: *obligations supersede `:hrules` as the generator, as a ladder* (user, 2026-08-24), and *the read-out
+  is scoped — discharge where stated, exhaustion where not* (2026-08-25, with no name in its *taken* column).
+  The second was a rule about the verdict, and
+  [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) records that under R it is
+  gone: *under R there is one definition for every program*. What is left of *where stated* is the switch
+  above, and its reason is `oblgen.rs`'s header: *falling back to the blind enumerator whenever nothing was
+  owed would put exhaustion back in charge of completeness*. That reason is about a rung that owes nothing
+  **under a stated obligation**, which is option (c)'s case. It does not speak of a rule nothing activates,
+  which in M1d a program loaded only by naming it.
+
+### How an option's H and R were taken
+
+The ladder was not changed. Under (b) or (c) a program an option moves has, for H, the blind enumerator's
+list at its own root, and R is the commitments over that list whose node is alive and discharged. That was
+computed three ways, which agree wherever more than one reaches:
+
+1. **In process**, by `rung_census`: `hypgen::generate_blind` at root's fixpoint for the list; over it, the
+   static check and *forbid* as a load would read them (`monotone::classify`, `forbid::check`, over root's
+   plans); then every node of the cube by the calls `region`'s node function makes, within the oracle's limit
+   of 16. With `--check` the same cube is run on every program whose H the blind enumerator builds today and
+   held, node for node, to `region::compute`'s two bits and its count of debts: **437 programs, all agree**;
+   7 more are refused by the engine and have no region, and 26 are past the limit.
+2. **By `ein solve` and `ein oracle` on a copy** that differs from the program by one added rule:
+
+   ```
+   (rule s15-off () :match (and (s15-on) (absent (s15-paid))) :assert (open) :why "never owed: a bare (open) takes the obligations rung to the blind enumerator")
+   ```
+
+   It is an obligation rule without parameters, so its plan is compiled at every root; `(s15-on)` holds in no
+   state, so no state owes it; and its `(open)` names no relation, so `oblgen::generate` declines and the
+   ladder falls through to the blind enumerator, as it does on
+   [`tests/stdlib/bijection/06_blind_enumeration.ein`](../../../tests/stdlib/bijection/06_blind_enumeration.ein),
+   which earns the blind enumerator back the same way. The rule's two heads are written in no fact and in no
+   argument position, so they are no object and no relation with a signature, and add no candidate: on every
+   copy the read-out's `universe` count is the census's `blind:n` (4, 11, 22, 82, 342). This form reaches
+   past the oracle's limit, by describe at the default `--region-budget`.
+3. **By deleting the import**, where the program does not use it (witness 3 is witness 2 so; the fourth
+   witness has a twin with `symmetric` written out).
+
+### T1f.10.15.1: the witnesses
+
+Ten programs under `build/s1f.10.15/w/`. `o_satisfied.ein`, witness 1:
+
+```
+;; S1f.10.15, T1, witness 1 (E-51's o_satisfied_blind.ein): an obligation
+;; stated and discharged at root. `at` is total and owed, and both colours
+;; have a house; `near` is the program's own open relation.
+(import std.algebra :symbols (total-owed))
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)
+(total-owed at is-a)
+(at Red H1) (at Blue H2)
+(solve)
+```
+
+`o_unactivated.ein`, witness 2:
+
+```
+;; S1f.10.15, T1, witness 2 (E-51's o_unactivated_blind.ein): witness 1 with
+;; its activator deleted and the import kept. The program states no
+;; obligation; std.algebra's two obligation rules are loaded with the module.
+(import std.algebra :symbols (total-owed))
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)
+(at Red H1) (at Blue H2)
+(solve)
+```
+
+`no_o.ein`, witness 3:
+
+```
+;; S1f.10.15, T1, witness 3 (E-51's no_o_blind.ein): witness 2 with the
+;; import deleted too. No obligation rule is loaded.
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)
+(at Red H1) (at Blue H2)
+(solve)
+```
+
+The blind enumerator's list on those three is 22 candidates, past the oracle's limit, so each has a twin over
+one colour and two houses, 11 candidates. `o_satisfied_small.ein`:
+
+```
+;; S1f.10.15, T1: witness 1 over one colour and two houses, so that the
+;; blind enumerator's list is within the oracle's limit.
+(import std.algebra :symbols (total-owed))
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a H1 House) (is-a H2 House)
+(total-owed at is-a)
+(at Red H1)
+(solve)
+```
+
+`o_unactivated_small.ein`:
+
+```
+;; S1f.10.15, T1: witness 2 over one colour and two houses.
+(import std.algebra :symbols (total-owed))
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a H1 House) (is-a H2 House)
+(at Red H1)
+(solve)
+```
+
+`no_o_small.ein`:
+
+```
+;; S1f.10.15, T1: witness 3 over one colour and two houses.
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a H1 House) (is-a H2 House)
+(at Red H1)
+(solve)
+```
+
+`connex_lt.ein`, the re-plan's witness. Its program was not kept, so this is rebuilt from the four things
+[§ The finding](#the-finding) says of it, and its read-out has the two rows quoted there:
+
+```
+;; S1f.10.15, T1, the re-plan's witness, rebuilt from its description:
+;; std.algebra imported for `connex`, `lt` declared over three nodes, two
+;; `lt` facts stated, and no obligation named anywhere. A and C are not
+;; compared, so root is dead.
+(import std.algebra :symbols (connex))
+(relation lt Node Node :why "{?1} is less than {?2}")
+(instance A Node) (instance B Node) (instance C Node)
+(connex lt instance Node)
+(lt A B) (lt B C)
+(query :goal (lt ?x ?y))
+```
+
+`connex_lt_alive.ein`:
+
+```
+;; S1f.10.15, T1: the re-plan's witness with the third pair stated, so root
+;; is alive.
+(import std.algebra :symbols (connex))
+(relation lt Node Node :why "{?1} is less than {?2}")
+(instance A Node) (instance B Node) (instance C Node)
+(connex lt instance Node)
+(lt A B) (lt B C) (lt A C)
+(query :goal (lt ?x ?y))
+```
+
+`symmetric_own.ein`, the fourth witness:
+
+```
+;; S1f.10.15, T1, the fourth witness: std.algebra imported for `symmetric`,
+;; beside a declared relation of the program's own that nothing closes.
+(import std.algebra :symbols (symmetric))
+(relation near Thing Thing :why "{?1} is near {?2}")
+(relation likes Thing Thing :why "{?1} likes {?2}")
+(thing A) (thing B)
+(symmetric near)
+(solve)
+```
+
+`symmetric_own_no_import.ein`:
+
+```
+;; S1f.10.15, T1: the fourth witness with the import deleted and the one
+;; rule it used, std.algebra's `symmetric`, written in its place. No
+;; obligation rule is loaded.
+(relation near Thing Thing :why "{?1} is near {?2}")
+(relation likes Thing Thing :why "{?1} likes {?2}")
+(thing A) (thing B)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
+(symmetric near)
+(solve)
+```
+
+**All three witnesses of 2026-11-14 reproduce**, the third to the state: *110 057 … a lower bound*. What each
+answers, today and under each option (`ein solve`, and `ein oracle` where H is within its limit; (a) is
+today):
+
+| program | class at root | (a) today | (b) | (c) |
+|---|---|---|---|---|
+| witness 1, `o_satisfied` | discharged | H 0, R {∅} | as today | H 22: R the whole cube, 4 194 304 commitments, at least 110 057 states at the budget |
+| its twin, `o_satisfied_small` | discharged | H 0, R {∅} | as today | H 11: R 2 048 commitments, 2 048 states |
+| witness 2, `o_unactivated` | unactivated | H 0, R {∅} | H 22: the whole cube, at least 110 057 states at the budget; **witness 3's read-out, row for row** | as (b) |
+| its twin, `o_unactivated_small` | unactivated | H 0, R {∅} | H 11: R 2 048 commitments, 2 048 states, `no_o_small`'s | as (b) |
+| witness 3, `no_o` | none | H 22: the whole cube, at least 110 057 states at the budget | as today | as today |
+| the re-plan's, `connex_lt` | unactivated | H 0, root dead, R empty; `outside lt — no candidate: no obligation owes it` | **refused at load** by *forbid*, exit 1: the blind enumerator proposes `lt`, 4 candidates, and `connex` rests on an `absent` over it | as (b) |
+| `connex_lt_alive` | unactivated | H 0, R {∅}; the same `outside` row | **refused at load**, 3 candidates | as (b) |
+| the fourth, `symmetric_own` | unactivated | H 0, R {∅}; `outside near — no candidate: no obligation owes it` | H 4, `(likes A B) (likes B A) (near A B) (near B A)`: **R 16 commitments, 8 states**, its twin's without the import | as (b) |
+| `symmetric_own_no_import` | none | H 4, R 16 commitments, 8 states | as today | as today |
+
+- **The fourth witness is the finding in four candidates.** The program names no obligation and closes
+  nothing, and of `likes`, its own relation, R holds nothing. With the import deleted and the one rule it
+  used written out, R is 8 states. The `outside` row names `near` and not `likes`: it names a relation a rule
+  concludes or a query asks about, and nothing does either of `likes`. So the read-out says nothing at all
+  about the relation the program left open.
+- **Under (b) the two `connex` programs stop loading.** Today the import is what makes them legal: nothing
+  proposes `lt`, so `connex`'s `absent` is over a relation no commitment extends. The refusal names its
+  remedy, `(solve :no-hypothesis (lt))`
+  ([H15-2](findings.md#h15-2--under-b-a-program-that-loads-today-is-refused-forbids-premise-depends-on-the-rung)).
+- **(b) and (c) differ on witness 1 alone**, and there (c) gives 22 untyped candidates, `(at Blue Red)`
+  among them, to a program whose one obligation is paid. That is the case `oblgen.rs`'s header rules out.
+- **What the blind enumerator proposes is untyped** on every row: `(at H1 H2)` and `(near Red H2)` are
+  candidates. That is its own, ruled, behaviour, and not this stage's.
+
+### T1f.10.15.2: the census
+
+`ein.rs/crates/ein-infer/examples/rung_census.rs`; its module docs define each column.
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example rung_census -- --jobs 8 --check > build/s1f.10.15/census/rows.tsv
+```
+
+2026-11-15, the oracle's default limit of 16. Of 867 corpus files 644 load (35 `load-negative`, 30
+`parse-negative` and 158 `regression` entries do not), and **127 load an obligation rule**. By what is true
+at root's fixpoint and by the rung the ladder takes today:
+
+| class | programs | on the second rung | under an hrule | `:no-search` | declined, the blind enumerator | no obligation rule: blind / hrule |
+|---|---:|---:|---:|---:|---:|---:|
+| none: no obligation rule loaded | 517 | | | | | 461 / 56 |
+| **unactivated**: a rule loaded, no plan at root | **45** | **41** | 4 | | | |
+| **discharged**: a plan at root, root owes nothing | **16** | **1** | 7 | 7 | 1 | |
+| owing: root owes | 66 | 23 (3 of them stuck) | 21 | 14 | 8 | |
+
+The three counts the task asks for:
+
+- **The corpus programs that load an obligation rule no fact of root activates: 45.** 41 are on the second
+  rung, with H empty; 4 declare an hrule (`examples/zebra2-hints.ein`, `examples/ein-bugs/zebra2-hints.ein`,
+  `examples/lattice/09_activator_hole.ein`, `examples/lattice/12_activator_chain_hole.ein`), which builds
+  their H under every option.
+- **Of those, the ones with a relation the blind enumerator would propose about: 5**, the 4 under an hrule
+  (16 565 candidates between them, which no option makes H) and **1 of the 41**,
+  `examples/features/09_adjacent_via_same_house.ein`, 82 candidates of `colour-loc` and `pet-loc`. On the
+  other 40 the blind enumerator's list is empty: the five stdlib modules read as programs state no fact, and
+  the 35 others name every relation it would fill in a `:no-hypothesis` list, two of them closing some as
+  well (`census/readouts.txt` has the generator's counters on each copy; on the three whose root is dead the
+  summary carries none, and their lists name each of their three relations).
+- **The programs whose obligation is activated and whose root owes nothing: 16, and 1 of them is on the
+  second rung**, `stdlib/bool/inputs.ein`, the module read as a program with no input wire. That one program
+  is the whole difference between (b) and (c) on the corpus. Seven of the other fifteen say
+  `(solve :no-search)`, among them the stdlib's own tests of a satisfied debt
+  (`tests/stdlib/algebra/24_total_owed_satisfied.ein`, `26_surjective_owed_satisfied.ein`,
+  `tests/stdlib/slots/{01,08,10,12}`), seven declare an hrule, and one declines on purpose
+  (`tests/stdlib/bijection/06_blind_enumeration.ein`).
+
+**R under each option, for every program an option moves.** (a) is today's binary. Under (b) the 41 are on
+the third rung, under (c) the 41 and `stdlib/bool/inputs.ein`. This is the list task 4 needs, made before any
+change:
+
+| programs | (a) today | (b) | (c) |
+|---|---|---|---|
+| **40**: `examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein`, `examples/features/10_expect.ein`, `stdlib/{algebra,bijection,closure,slots,typing}.ein`, `tests/region/06_false.ein`, `tests/stdlib/algebra/{01…22,27}` (23 files), `tests/stdlib/bijection/{04,05}`, `tests/stdlib/closure/{01,02}`, `tests/stdlib/slots/{05,06}`, `tests/stdlib/typing/{01,02,03}` | H 0 | **H 0, R the same; the read-out the same, row for row** (each copy against the original, `ein solve`) | as (b) |
+| `examples/features/09_adjacent_via_same_house.ein` | H 0, root dead, R empty; `universe  no candidate …` and `outside  pet-loc — no candidate: no obligation owes it …` | **H 82, 82 dead alone, R empty**: root is dead. Two rows of the read-out change, `universe  82 candidates, 82 dead alone`, and the `outside` row goes | as (b) |
+| `stdlib/bool/inputs.ein` | H 0, R {∅} | as today | **H 342, R at least 55 747 states**, describe not exhausted at the default budget (it stops before the states of two candidates), N at least 2 907 |
+
+- **Under (b) no corpus program's R moves.** One program's H moves, and R is empty over both.
+- **Under (c) one corpus program's R moves**, from one state to an unexhausted region over 342 candidates of
+  `in`, on a module that states `(total-owed in is-a)` and has no input to owe for.
+- **Not reached by the cube**: `features/09` (82 candidates) and `stdlib/bool/inputs.ein` (342), both read
+  instead by `ein solve` on the copy, the first to exhaustion, the second to the default budget. No other
+  program an option moves has a candidate.
+- **Refused at load under an option**: none in the corpus. The two corpus programs that activate `connex`,
+  `tests/stdlib/algebra/08_checks_satisfied.ein` and `12_connex_violated.ein`, name its relation in a
+  `:no-hypothesis` list.
+
+**The corpus has no program on which the finding moves an answer**, and the reason is in the files: the 35
+lists say what must not be guessed, which only the third rung would guess.
+`features/09`'s header says so of itself: *"Argument typing, so the blind hypothesis generator stays inside
+the declared signatures"*, and of its whitelist, *"if the guard comes back, root is consistent and the engine
+goes looking … Four candidates is enough to report a verdict and stop."* So the program was put through
+that: `w/features09_guard_back.ein` is the tracked file with `(neq ?h_other ?h1)` put back before the
+`absent` of each of its two pruners (`run.sh`'s `sed`), the regression the fixture exists to fail on.
+
+| `features/09` with the guard back | H | R |
+|---|---|---|
+| (a) today | 0; `outside pet-loc — no candidate: no obligation owes it` | {∅}, one state; the query answers `?h = House-2` |
+| (b), and (c) | 82, 78 dead alone: the four the header counts are alive | 9 commitments, 9 states, 4 maximal, N 80 |
+
+Today the fixture would still fail on the regression, root alive where it was dead, and it would not show
+what its header describes
+([H15-3](findings.md#h15-3--the-corpus-was-written-for-the-third-rung-one-header-and-35-lists-say-so)).
+
+**The candidates `object_census` would mark**, on the programs an option gives a new H
+(`census/object.tsv`, and `rung_census`'s own columns, which read the same marks and add `IN` and `IR`):
+
+| program | moved by | new candidates | marked | which |
+|---|---|---:|---:|---|
+| `examples/features/09_adjacent_via_same_house.ein` | (b), (c) | 82 | 44, `R1` | name `adjacent-via-bwd` or `adjacent-via-fwd`, the heads of facts only a rule derives: E-7 |
+| `stdlib/bool/inputs.ein` | (c) | 342 | 340: 36 `K1`, 336 `IN` | 36 name `__closed__`: E-1. 336 name one of the sixteen functions, `f0000` … `f1111`, which `std.bool.gates` writes and this file does not: E-54, on a module read as a program |
+
+Those are 2 of the 12 programs of
+[H9-3](findings.md#h9-3--e-1-and-e-7-are-absent-from-the-corpuss-answers-by-the-rung-twelve-programs-take);
+the other ten keep their rung under every option, seven owing on the second and three under an hrule. So a
+ruling of (b) makes Q-M1f.306 bear on one more corpus program, on which every candidate is dead with root,
+and a ruling of (c) on two
+([H15-1](findings.md#h15-1--under-b-q-m1f306-bears-on-one-more-corpus-program-and-under-c-on-two)).
+Neither bears on [H6-2](findings.md#h6-2--under-b-q-m1f306-bears-on-two-more-programs-and-marks-nothing-on-them)'s
+pair: `oblig-derived-activator.ein` and its control owe at root and keep their rung here.
+
+### T1f.10.15.3: the question, and the stop
+
+[Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses): the three options
+with what each does on the witnesses and on each corpus program it moves, and the recommendation as
+[§ Tasks](#tasks) states it, (b), **which restates a ruling of M1d's, is not a default and is not acted on**.
+The census does not speak against (b): it moves no corpus answer, and the one H it changes is all dead. What
+it puts beside the recommendation is in the question: the corpus cannot show what (b) changes, since no
+tracked program's answer moves; (b) refuses a program that loads today; and the blind enumerator a program
+comes back to is untyped and, on one corpus program, proposes 44 candidates that name a relation.
+
+### `run.sh`, `skips.py` and `line.py`
+
+`EIN_REPO=/path/to/checkout sh build/s1f.10.15/run.sh > build/s1f.10.15/run.txt`, with the ten programs of T1
+in place under `w/`. `line.py` is [S1f.10.6's](s1f.10.6_obligations_under_hypothesis.md#runsh-and-linepy),
+byte for byte.
+
+`run.sh`:
+
+```sh
+#!/bin/sh
+# S1f.10.15, tasks 1 and 2: the witnesses under `ein solve` and `ein oracle
+# --dump`, today and as options (b) and (c) would have them; the census over
+# the corpus; and, for every corpus program an option moves to the blind
+# enumerator, its read-out today beside its read-out under the option. It
+# writes beside the programs; $EIN_REPO is the checkout (default: two
+# directories up), $EIN_BIN the binary and $EIN_RUNG, $EIN_OBJECT and
+# $EIN_MECH the census examples (defaults: the checkout's release builds,
+# `cargo build --release -p ein-cli` and `cargo build --release -p ein-infer
+# --example rung_census --example object_census --example mechanism_census`).
+# $EIN_JOBS is the census's --jobs (default 8).
+cd "$(dirname "$0")" || exit 1
+REPO=${EIN_REPO:-$(cd ../.. && pwd)}
+EIN=${EIN_BIN:-$REPO/ein.rs/target/release/ein}
+RUNG=${EIN_RUNG:-$REPO/ein.rs/target/release/examples/rung_census}
+OBJECT=${EIN_OBJECT:-$REPO/ein.rs/target/release/examples/object_census}
+MECH=${EIN_MECH:-$REPO/ein.rs/target/release/examples/mechanism_census}
+JOBS=${EIN_JOBS:-8}
+# The copies are outside the checkout: the stdlib is named.
+export EIN_STDLIB=$REPO/stdlib
+$EIN --version | sed "s|$REPO|…|" > version.txt
+mkdir -p b c census
+one() {  # FILE
+    b=${1%.ein}
+    $EIN solve "$1" > "$b.solve.txt" 2>&1; echo "exit $?" >> "$b.solve.txt"
+    rm -rf "$b.oracle"
+    $EIN oracle "$1" --dump "$b.oracle" > "$b.oracle.txt" 2>&1; x=$?; echo "exit $x" >> "$b.oracle.txt"
+    printf '%-30s ' "$1"
+    if [ -f "$b.oracle/region.json" ]; then python3 line.py "$b.oracle"
+    else printf 'no dump, exit %s: %s\n' $x "$(head -1 "$b.oracle.txt" | cut -c1-150)"; fi
+}
+# `declined SRC OUT`: SRC with one obligation rule added that no state owes
+# and that names no relation. Its plan is compiled at root, a rule without
+# parameters having no activator to wait for, and a bare `(open)` makes the
+# obligations rung decline, so the ladder falls through to the blind
+# enumerator: the copy's H is the blind enumerator's list at SRC's root. The
+# rule's two heads are written in no fact and no argument position, so they
+# are no object and no relation of the registry, and they add no candidate.
+declined() {
+    {
+        echo ";; $(basename "$1") taken off the obligations rung (S1f.10.15's run.sh)."
+        cat "$1"
+        echo '(rule s15-off () :match (and (s15-on) (absent (s15-paid))) :assert (open) :why "never owed: a bare (open) takes the obligations rung to the blind enumerator")'
+    } > "$2"
+}
+
+echo '== T1: the witnesses today'
+for f in w/o_satisfied.ein w/o_unactivated.ein w/no_o.ein \
+         w/o_satisfied_small.ein w/o_unactivated_small.ein w/no_o_small.ein \
+         w/connex_lt.ein w/connex_lt_alive.ein \
+         w/symmetric_own.ein w/symmetric_own_no_import.ein; do
+    one "$f"
+done
+echo '== T1: the witnesses as (b) would have them, (c) the same on each'
+for f in o_unactivated o_unactivated_small connex_lt connex_lt_alive symmetric_own; do
+    declined w/$f.ein b/$f.ein; one b/$f.ein
+done
+echo '== T1: witness 1 as (c) alone would have it'
+for f in o_satisfied o_satisfied_small; do
+    declined w/$f.ein c/$f.ein; one c/$f.ein
+done
+
+echo '== T2: the corpus program (b) gives a new H, with the regression its header names put back'
+# examples/features/09_adjacent_via_same_house.ein with `(neq ?h_other ?h1)`
+# before the `absent` of each of its two pruners.
+{
+    echo ';; S1f.10.15, T2: examples/features/09_adjacent_via_same_house.ein with the'
+    echo ';; (neq ?h_other ?h1) premise put back in both pruners, the regression its'
+    echo ';; header says the fixture exists to fail on (S1f.10.15'"'"'s run.sh).'
+    sed -e 's/^\( *\)(absent (?S ?h_other ?h1)))$/\1(neq ?h_other ?h1)\n\1(absent (?S ?h_other ?h1)))/' \
+        -e 's/^\( *\)(absent (?S ?h1 ?h_other)))$/\1(neq ?h_other ?h1)\n\1(absent (?S ?h1 ?h_other)))/' \
+        "$REPO/examples/features/09_adjacent_via_same_house.ein"
+} > w/features09_guard_back.ein
+echo "$(grep -c '(neq ?h_other ?h1)$' w/features09_guard_back.ein) premises put back"
+one w/features09_guard_back.ein
+declined w/features09_guard_back.ein b/features09_guard_back.ein; one b/features09_guard_back.ein
+grep -E '^  (states|commitments|universe|    outside)' w/features09_guard_back.solve.txt b/features09_guard_back.solve.txt
+
+echo '== T2: the census over the witnesses'
+$RUNG --check w/*.ein > census/witnesses.tsv
+cut -f1,4,5,12-17,33-44 census/witnesses.tsv | grep -v '^#' | sed "s|$PWD/||"
+echo '== T2: the census over the corpus'
+$MECH --json > census/mechanisms.json
+$RUNG --jobs "$JOBS" --check > census/rows.tsv
+grep '^#' census/rows.tsv | grep -v 'H the same:'
+echo "and $(grep -c '^# (b) H the same:' census/rows.tsv) lines '(b) H the same', $(grep -c '^# (c) H the same:' census/rows.tsv) lines '(c) H the same'"
+
+echo '== T2: every corpus program an option moves, today and under the option'
+: > census/readouts.txt
+grep -v '^#' census/rows.tsv | awk -F'\t' '$15 == "b,c" || $15 == "c" { print $1, $15, $16 }' |
+while read -r f option n; do
+    case $option in b,c) d=b ;; *) d=c ;; esac
+    name=$(echo "${f%.ein}" | tr '/' '.')
+    mkdir -p $d/corpus
+    declined "$REPO/$f" "$d/corpus/$name.ein"
+    ( cd "$REPO" && $EIN solve "$f" ) > "$d/corpus/$name.today.txt" 2>&1; echo "exit $?" >> "$d/corpus/$name.today.txt"
+    $EIN solve "$d/corpus/$name.ein" --json-summary "$d/corpus/$name.json" > "$d/corpus/$name.solve.txt" 2>&1; echo "exit $?" >> "$d/corpus/$name.solve.txt"
+    # The two read-outs less the line that echoes the path.
+    tail -n +2 "$d/corpus/$name.today.txt" > census/.today
+    tail -n +2 "$d/corpus/$name.solve.txt" > census/.option
+    if cmp -s census/.today census/.option; then same=same; else same=differs; fi
+    rm -f census/.today census/.option
+    printf '%s\t(%s)\tblind:n %s\tread-out %s\t%s\t%s\n' "$f" "$option" "$n" "$same" \
+        "$(grep -m1 -E '^  universe' "$d/corpus/$name.solve.txt" | sed 's/^  universe *//')" \
+        "$(python3 skips.py "$d/corpus/$name.json")" >> census/readouts.txt
+done
+cut -f2-4 census/readouts.txt | sort | uniq -c
+echo 'why the blind enumerator proposes nothing, on the programs whose H is the same:'
+grep 'blind:n 0' census/readouts.txt | cut -f6 | sort | uniq -c
+grep 'differs' census/readouts.txt
+echo '== T2: the candidates object_census marks, on the programs whose H an option changes'
+grep 'differs' census/readouts.txt | cut -f1 | sed "s|^|$REPO/|" | xargs $OBJECT > census/object.tsv
+cut -f1,4,21-29 census/object.tsv | grep -v '^#'
+```
+
+`skips.py`:
+
+```python
+#!/usr/bin/env python3
+"""What the generator counted on one `ein solve --json-summary FILE`: the
+raw candidates, those emitted, and, by relation-level skip, how many
+(object, relation, slot) fills were skipped.
+
+    python3 skips.py FILE
+"""
+import json, sys
+
+h = json.load(open(sys.argv[1]))["root"]["hypgen"]
+skips = " ".join("%s:%d" % kv for kv in sorted(h.get("pre_candidate", {}).items()))
+print("raw %d emitted %d skipped %s" % (h["raw"], h["emitted"], skips or "none"))
+```
+
+### What contradicts the plan
+
+1. **The switch is written twice.** Task 4 names `hypgen::generate_with`. `hypgen::eligible_relations`
+   repeats `!program.obligations.is_empty()` to say which relations the active rung proposes, and
+   `shape::naf_map` reads it, a shape the corpus digests. A ruling of (b) or (c) changes both or the two disagree.
+   `forbid::Proposers::of` and the L5 table (`oblgen::alternatives`, `explore.rs`) read the same test and
+   are indifferent to it where no plan is compiled; `scope::outside` reads the rung the pass took and
+   follows.
+2. **The ladder's sentence is in more pages than task 4 lists.** Beside `06_reserved_names.md` and the two
+   module headers it is in [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+   § 1.4 and in `AGENTS.md`, and there, as in `hypgen.rs`'s header, it reads *else the facts that would
+   discharge what root owes, else the blind enumerator*, which is option (c)'s wording and not the engine's
+   ([H15-4](findings.md#h15-4--the-ladder-is-stated-in-five-places-and-three-of-them-read-as-option-c)).
+3. ***(b) … a program that imports a module for something else is on the third rung again*, and it may then
+   not load.** The re-plan's own witness is refused under (b) (H15-2). Task 4's acceptance, *every moved R on
+   the list*, has no line for a program that goes from an answer to a refusal; the corpus has none.
+4. **Under (b), task 4 files no register row and flips none**: no corpus program's R moves, so *each a
+   register row filed `open` before the fix* is an empty list, and the change would land with no tracked
+   program whose answer shows it. The fourth witness and `features09_guard_back.ein` are the two candidates
+   for one.
+5. **(a)'s read-out row would print on one corpus program.** *A `universe` row that names the rule which
+   took the program off the blind enumerator* bites where the blind enumerator would have proposed, which in
+   the corpus is `features/09` alone; printed wherever an unactivated rule chose the rung, it is 41 rows.
+6. ***M1d's scope rule* was the read-out's**, and R has replaced it (the fourth bullet of
+   [§ What the engine does](#what-the-engine-does-which-is-what-the-three-options-differ-on)). The ruling
+   (b) restates is the ladder's middle row as `oblgen.rs`'s header words it; its table in
+   [`hypotheses_from_obligations.md`](../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
+   has no row for a rule loaded and nothing owed.
+7. **The re-plan's witness could not be rebuilt to the letter**: its program is nowhere, and a program of its
+   description with `connex` activated has a dead root.
+
+### Not done
+
+- Task 4, by instruction: the ladder is unchanged, nothing is restated, no row is filed, and E-51 is open in
+  the calculator's `findings.md`.
+- No option was built. (b) and (c) are read by the three forms of
+  [§ How an option's H and R were taken](#how-an-options-h-and-r-were-taken), none of which is the engine
+  under the option. **What the narration would be was not taken**: under (b) the 41 programs' `rung` event,
+  their `root.hypgen` counters and with them their shape digests move, on 40 of them with H, R and the
+  read-out unchanged. The copies narrate `declined`, which is not what (b) would.
+- (a)'s read-out row was not prototyped.
+- The 26 programs on the blind rung past the oracle's limit were not held to `region::compute` by `--check`.
+- `import_invariance` was not run against any option; activation is read off facts at root, which no import
+  form changes, and that is an argument and not a run.
+- No probe was made a tracked witness. The phase README's status line and stage table are not edited.
+- `./run_tests.sh` was not run, by instruction. Run: `cargo fmt --all --check`, `cargo clippy --workspace
+  --all-targets -- -D warnings` (both as `run_tests.sh` runs them), `python3 utils/check_hashmap_iteration.py`
+  and `python3 utils/doc_audit.py --links --check`.
