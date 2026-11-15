@@ -565,6 +565,22 @@ pub fn pair_layer(
     with_space(root, terms, ast, opts, None, pair_layer_in)
 }
 
+/// [`pair_layer`], with every node the layer computes handed to `events`'
+/// watch ([`crate::events::Watch`]) as a route's nodes are: root's node,
+/// each single's and each pair's the licences leave, in the order read, each
+/// with its closure and its facts beyond root. For a reader that prices the
+/// layer node by node. The layer is the one [`pair_layer`] returns: a watch
+/// sees a node and changes none.
+pub fn pair_layer_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &Options,
+    events: &mut Events,
+) -> Result<PairLayer, SolveError> {
+    with_space_watched(root, terms, ast, opts, None, events, pair_layer_in)
+}
+
 /// `read` over the prepared space of `root`, a freshly loaded program: the
 /// routes' node cache, at the layer's budget, keeping no node's record. Over
 /// the universe root's generator builds, or over the one the caller names
@@ -577,11 +593,23 @@ fn with_space<R>(
     universe: Option<&[Candidate]>,
     read: impl FnOnce(&mut Space<'_>) -> Result<R, SolveError>,
 ) -> Result<R, SolveError> {
+    with_space_watched(root, terms, ast, opts, universe, &mut Events::off(), read)
+}
+
+/// [`with_space`], the space's nodes narrated into `events`.
+fn with_space_watched<R>(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &Options,
+    universe: Option<&[Candidate]>,
+    events: &mut Events,
+    read: impl FnOnce(&mut Space<'_>) -> Result<R, SolveError>,
+) -> Result<R, SolveError> {
     let prepared = match universe {
         None => region::prepare(root, terms, ast)?,
         Some(named) => region::prepare_over(root, terms, ast, named)?,
     };
-    let mut events = Events::off();
     let space = explore::Options {
         budget: opts.budget,
         limit: 0,
@@ -593,7 +621,7 @@ fn with_space<R>(
             ask: Ask::Describe,
         })
     };
-    let mut sp = Space::open(root, terms, ast, prepared, &space, &mut events);
+    let mut sp = Space::open(root, terms, ast, prepared, &space, events);
     read(&mut sp)
 }
 

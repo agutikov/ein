@@ -27,7 +27,14 @@ were finer than R on six programs, each by a debt; **the default taken on it by 
 revise at the stop: every debt root owes is an edge of its own kind, licensed by L5 or not**, and R is then the
 product of its parts over the components on every compared program
 ([its record](s1f.10.11_coupling.md#the-stop-and-the-default-taken-on-it)).
-Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
+[S1f.10.13](s1f.10.13_the_price_list.md#record-2026-11-16) ran on 2026-11-16: every question's work on the 188
+programs that search is split against the structure, each object is priced and each way of spending it simulated
+on the nodes the routes visited, no route changed. By the rule written first the pair layer whole, the theory's
+pairs paid per program, the cover and the coupling are each *no* for all six questions, sunk by a layer dearer
+than the question; the layer asked by need or after a death is *go* for some; and two ways that add no saturation
+are *go* for all six, a death's core and **what a state's own fixpoint denies**, which no route reads today
+([`findings.md`](findings.md)'s K-13).
+Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
