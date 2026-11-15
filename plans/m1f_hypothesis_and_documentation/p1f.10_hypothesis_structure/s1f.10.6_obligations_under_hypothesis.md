@@ -4,13 +4,16 @@
 **Status:** re-planned 2026-11-15. **Tasks 1 to 3 ran on 2026-11-15** ([§ Record](#record-2026-11-15-tasks-1-to-3)):
 the witness and the control re-taken, the pair written for the hrule rung and for the blind rung, the census
 taken, answer (A) priced under its two readings, the question written as
-[Q-M1f.307](../open_questions.md#q-m1f307--a-debt-root-was-not-told-of-what-h-holds). **Stopped at the
-question**, which is put at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_shown.md)); task 4 waits
-for the ruling, and nothing changes before the user replies.
+[Q-M1f.307](../open_questions.md#q-m1f307--a-debt-root-was-not-told-of-what-h-holds), and the stage stopped at
+the question, put at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_shown.md)). **Ruled 2026-11-16:
+(A), by the static reading** (the user: *"all defaults ok"*). **Task 4 ran that day**
+([§ Record](#record-2026-11-16-task-4)): the obligations rung proposes at root what a debt a commitment can
+bring would, the register's row is `fixed`, the witness alone moved, the read-out has a `later debt` row,
+Q-M1e.11 is recorded as ruled. **The stage is done**, but for the gate the main session runs on the batch.
 **Depends on:** nothing in the phase.
 **Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
-*what happens to an obligation derived under a hypothesis*, and the register row
-**`W26/oblig-derived-activator`**, `open`, reviewed `deferred`, with this stage as its `owner`
+*what happens to an obligation derived under a hypothesis*, ruled 2026-11-16, and the register row
+**`W26/oblig-derived-activator`**, `fixed` that day by this stage, `open` and reviewed `deferred` until then
 ([`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml)).
 **Was:** *obligations derived under a hypothesis, the review's `Q6`*: a probe of the walk's tree, whose rung
 mode could flip at a node. The tree and its guard were deleted on 2026-11-03. The question was never about the
@@ -791,3 +794,249 @@ print("%s | %d nodes, %d owing, %d dead | R %d commitments, %d states%s | %s" % 
 - `./run_tests.sh` was not run, by instruction. Run: `cargo fmt --all --check`, `cargo clippy --workspace
   --all-targets -- -D warnings` (both as `run_tests.sh` runs them), `python3 utils/check_hashmap_iteration.py`
   and `python3 utils/doc_audit.py --links --check`.
+
+## Record (2026-11-16): task 4
+
+**The ruling.** The user, on 2026-11-16, shown the phase's four questions with their defaults at the stop:
+*"all defaults ok"*. For [Q-M1f.307](../open_questions.md#q-m1f307--a-debt-root-was-not-told-of-what-h-holds)
+that is **(A), by the static reading**: H holds what a node's debt would propose, the ground activators of an
+obligation rule that a rule reading `D⁺` writes in its `:assert`, with the obligations rung's own scan run for
+them at root, repeated until it adds nothing, and no saturation. This task built that and nothing beside it.
+
+**The base.** The worktree's branch was cut at `dbedc535` and fast-forwarded to `a3c719bf`, the commit that
+records the ruling, before anything was changed; every *before* below is the release binary of `a3c719bf`.
+
+### What was built, and where
+
+- **The reading**, `forbid::derivable_activators` (`ein-infer/src/forbid.rs`): `D⁺` from a seed, by the one
+  reading *forbid* has of the rules (root's saturation plans read by `monotone::reads_of`, every rule with
+  parameters read from its pattern, closed by `monotone::through_activators`), and then each conclusion that
+  holds no variable, heads an obligation rule with parameters and has that rule's count of arguments, in the
+  `:assert` of a rule of which a root plan reads a relation of `D⁺` or which has parameters and its own name in
+  `D⁺`. In the rules' load order, a rule's conclusions as written. It reads; it interns, compiles and narrates
+  nothing.
+- **What it shares with *forbid***: `extendable_over`, `bodies_of`, `Body` and the AST walk are *forbid*'s, as
+  they were, and `monotone::through_activators` and `extendable_over` now take the seed where they took the
+  static check's verdict and read `m.dynamic` off it. *forbid* passes `m.dynamic`, so its set, its refusals and
+  its messages are what they were; the rung passes the relations of its own candidates. The closure of a
+  closure being the closure, the two seeds give one `D⁺` on one H. There is no second copy of the closure or
+  of the reading of a rule's pattern.
+- **The rung**, `oblgen::generate` (`ein-infer/src/oblgen.rs`), restructured so that every plan it reads is
+  settled before the first candidate is emitted (a decline must come before any emission, and a later plan can
+  decline the call): root's plans are admitted and scanned as before (`admit`, `scan`, cut out of the old body
+  unchanged); then, in rounds, the seed is the relations of the candidates the call would emit with every
+  switch off (a fact root neither holds nor denies), the reading names the activators, each one root does not
+  hold is interned (`compile::ground_fact`) and its plan compiled by `compile_rule` **beside the memo**, the
+  new plans are admitted and scanned at root, and the round repeats until it names nothing new. Every round
+  holds every plan, root's and later, to the rung's two C4 declines together. Then the accounting and the
+  emission: root's as before, in the same order, and the later debts' candidates after them.
+- **Beside the memo, and why**: the memo is what the static check, the detector and `scope` read as *the plans
+  root compiled*. A later plan in it would have changed the verdict's `D`, its sites and the summaries of the
+  program. So a later plan is compiled for the scan and dropped.
+- **What is counted**: `RungReport` gains `later_debts` and `later_candidates`; `owed`, `branches`, `declined`
+  and `candidates` are root's, as they were. `HypGenStats::later` holds each later debt with the candidates the
+  call emitted for it (`oblgen::LaterDebt`), and `region::RootStats::later` the ones H gained a candidate from,
+  as text.
+- **`scope::outside`** takes the later debts' relations as proposed, so the `outside` row does not name a
+  relation H holds a candidate of.
+
+### The surfaces
+
+- **The read-out**: a `later debt` row under `universe`, one per later debt H holds a candidate for, in every
+  question (describe, the modes, `--count`, `--monotone`, `--no-search`, `ein oracle`), since each is over the
+  same H: the activator, the rules that conclude it, how many candidates would pay it, and the candidates, at
+  most four named and the rest counted unless the read-out is uncut (`--dump-answer`'s `answer.txt`). On the
+  witness: *`later debt      (total-owed drinks is-a) — a debt root does not owe: rule 'arm' concludes it from
+  what a commitment can change. H holds what would pay it, 1 candidate: (drinks Ann Tea)`*. A program whose H
+  gains nothing prints no such row, and its `universe` row is what it was.
+- **`--json-summary`**: `root.hypgen.later_debts`, one `{obligation, activator, relation, by, added,
+  candidates}` each, **written only where there is one**. `outside` and `types_as_objects` are written on every
+  run, empty when nothing; this key is not, because the summary is in the shape golden's `cores[…]` lines and
+  an always-present key would have moved every corpus program's.
+- **`ein oracle --dump`**: `region.json`'s `later_debts`, the same and under the same rule, and a line in
+  `region.md`.
+- **`--events`**: the `rung` line gains `later_debts` and `later_candidates`, optional, written only where the
+  call read a later debt, so `ein-events/1` stays; `--hyp-stats`' report lines the same two, under the same
+  rule.
+
+### The corpus diff: the witness alone
+
+Taken three ways, each over every corpus program.
+
+1. **`ein solve FILE -H` and `ein solve FILE --json-summary`**, the release binary of `a3c719bf` against the
+   fixing commit's, on all 868 `.ein` files under `examples/`, `tests/` and `stdlib/` (624 write a summary;
+   the others are load refusals): the stdout, stderr, exit code and summary differ on **one** program,
+   `examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`. (A second file's stderr differs by a path:
+   the load error of `broken/load/import_module_not_found.ein` names where the stdlib was looked for, and the
+   two binaries were run from two places.)
+2. **The shape golden**, `ein-render/tests/golden/corpus_shapes.md5`, per commit: **The shape golden**, `ein-render/tests/golden/corpus_shapes.md5` (`cargo test … --profile gate -p ein-render
+   --test id_order_invariance`, per commit, unblessed): *15 of the 17768 renderings of the 600 programs read
+   moved*, every one a line of the witness: `hyp`, the five `read-out[…]`, `region-trace`, `states`,
+   `region-lattice`, the five `cores[…]` and `oracle`. The witness's other 26 lines did not move (`load`,
+   `saturate`, `plan`, `match`, `hyp+closed`, `naf`, the two `explain`, the four `ir[…]`, the fourteen
+   `dot[…]`). Re-banked with `EIN_BLESS=1`, per commit: the file's diff is those 15 lines. Then unblessed again
+   under `EIN_CORPUS_SLOW=1`, which reads every corpus program, `tests/` and the slow entries too: no line moved,
+   and no rendering depends on the id order, the witness's among them.
+3. **`read_out_examples.md`**, the read-out's golden page: 46 lines added, X20, and no line of X1 to X19
+   changed.
+
+The witness, before and after:
+
+| | H | R | the rung's line |
+|---|---|---|---|
+| before | `(likes Ann Soup)` | empty, every alive node owing: `{(likes Ann Soup)}` owes *drinks owes Ann a Drink* | `owed 1, branches 1, candidates 1, uncovered 1` |
+| after | `(drinks Ann Tea)`, `(likes Ann Soup)` | 1 state, `{(drinks Ann Tea) (likes Ann Soup)}`, the control's | the same four, `uncovered 0`, `later_debts 1, later_candidates 1` |
+
+The control, `oblig-derived-activator-declared.ein`: H 2, R 1 state, unmoved, and no `later debt` row, the
+activator being at root. `lattice/09_activator_hole.ein` and `lattice/12_activator_chain_hole.ein` are on the
+hrule rung, which the reading does not touch: unmoved.
+
+### The probes, as built against the entry's table
+
+`ein-infer/tests/later_debts.rs` holds each as a program written in the test, by `ein oracle`'s library
+(`region::compute`) and by describe (`explore::run`). The same seven files under `build/s1f.10.6/` give the
+same lines by `ein oracle --dump` and `line.py` on the fixing commit's binary.
+
+| probe | the entry's reading 1 | built |
+|---|---|---|
+| the witness | H 2, R 1 state, the control's | H 2, R 1 state, `{(drinks Ann Tea) (likes Ann Soup)}`; one later debt, by `arm` |
+| the control | unmoved | H 2, R 1 state; no later debt |
+| `partial`: `arm` fires on one food of two | R 4 states | H 3, R 4 states, `{(likes Ann Stew)}` among them |
+| `dead_arm`: no alive node derives the activator | **over**: R 4 states, two holding a tea no alive node owes | H 3, R 4 states, the two with the tea among them: **over**, held as that |
+| `var_arm`: the rule writes the owed relation as a variable | **under**: no ground activator, R stays empty | H 1, R empty, no later debt: **under**, held as that |
+| `two_steps`: the tea that pays switches on a second debt | R 1 state, in two passes | H 3, R 1 state; two later debts, by `arm` and by `arm-2` |
+| `chain`: `lattice/12`'s chain on the obligations rung | R 1 state over `D⁺` | H 2, R 1 state; the later debt is by `serves`, the rule root has no plan of |
+| `flip`: the new debt's domain is one a commitment can change | the rung's existing decline: (B) | the rung declines, H is the blind enumerator's 24; R not taken, 2²⁴ nodes being past the oracle's limit and the default budget |
+| H6-1's program, no activator derived | **nothing** | H 1, R empty, the hrule rung, monotone: unchanged |
+
+A tenth program, the witness under two hrules that propose a relation where its activator holds
+(`hr/derived.ein`), is held too: H 1, R empty, as before. The hrule rung is as it was.
+
+### The docs
+
+- [`solution_semantics.md` § 1.4](../../../docs/kernel/inference/solution_semantics.md#14-candidate-and-universe)
+  says what H is on the obligations rung, with the three steps, the declines a later plan is held to, where
+  the reading is over and under, and that it is not *the program with the activator stated*. (The stage file's
+  task 4 says § 1.2, which is *Names*; the universe is § 1.4, as task 3's record noted.)
+- [`events.md`](../../../docs/kernel/inference/events.md): the `rung` row and its section name the two optional
+  fields, and the paragraph that pointed here says what the engine does. The section it sits in is the record
+  of the walk's tree, and stays one.
+- [`read_out.md` § 5.3](../../../docs/kernel/inference/read_out.md#53-under-universe) has the `later debt`
+  row; `read_out_examples.md` has X20, written by `utils/read_out_examples.py`;
+  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) and
+  [`region_dump.md`](../../../docs/kernel/inference/region_dump.md) the JSON key;
+  [`implementation.md`](../../../docs/kernel/inference/implementation.md), the glossary and
+  `06_reserved_names.md`'s ladder sentence say the rung proposes for a later debt too.
+- **Q-M1e.11 is recorded as ruled** in
+  [`open_questions.md`](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+  its table row and its entry, in the form Q-M1e.12's ruling took there: *Ruled 2026-11-16*, the user's words,
+  then *Built 2026-11-16*.
+- `AGENTS.md`, in place: the ladder sentence, and the register's owners (no open row is a stage's).
+
+### The register
+
+`W26/oblig-derived-activator` is `fixed`: `[case.now]` is one state, `{(drinks Ann Tea) (likes Ann Soup)}`,
+which is `[case.right]`; `[case.region]` is route 2, flagged, `k_s = k_c = 1`; its review, `deferred` since
+2026-11-05, is `confirmed`, the ruling's, a deferred review being an open row's by the register's own check.
+`[case.control]` is as it was. Neither the witness nor the control states an `:expect`, so no expectation
+moved. `[case.fixed]` carries the null id in the fixing commit and the next commit writes the hash, the
+register's convention.
+
+### Tests and verification
+
+All on the gate profile (`cargo test --manifest-path ein.rs/Cargo.toml --profile gate …`), in the worktree, on
+AC, beside the main tree's nightly.
+
+| what | result |
+|---|---|
+| `-p ein-infer -p ein-corpus`, whole, before the last formatting pass | 51 test binaries, 568 tests, 0 failed |
+| `-p ein-infer --lib --test later_debts --test obligation_rung --test region --test register_region --test explore --test claim_routes --test stdlib_coverage`, on the final tree | 129 tests, 0 failed |
+| `-p ein-render`, whole: `id_order_invariance` unblessed after the re-bank, `jobs_invariance`, `dot_wellformed`, the goldens | 65 tests, 0 failed |
+| `EIN_CORPUS_SLOW=1 … -p ein-render --test id_order_invariance`, unblessed | 4 tests, 0 failed |
+| `-p ein-cli`, whole: `wrong_answers`, `import_invariance`, `lever_invariance`, `read_out_reference`, `read_out_examples`, `corpus_cli`, `config_reference`, `answer_dump`, `region_dump`, `summary_properties`, `route_invariance` and the rest | 61 test binaries, 382 tests, 0 failed |
+| `-p ein-core -p ein-ir -p ein-einb -p ein-narration -p ein-corpus` | 339 tests, 0 failed |
+| `cargo fmt --all --check`; `cargo clippy --workspace --all-targets -- -D warnings`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | clean |
+| `python3 utils/check_hashmap_iteration.py`; `python3 utils/doc_audit.py --links --check …`; `python3 utils/stdlib_manifest.py` | clean |
+
+What each of the named invariances holds of this change:
+
+- **`wrong_answers.rs`** runs the row's `[case.now]`, `ein solve` on the witness, and holds its summary to the
+  one state; `ein-corpus`'s `the_register_is_well_formed` holds `now` to `right` as data, and
+  `register_region.rs` recomputes `[case.region]` by `explore`.
+- **The answer does not depend on the import form** (`import_invariance.rs`): the witness under `:symbols`,
+  whole and `:as`. The reading resolves an activator's head through the names the loader resolved.
+- **Nor on the id order** (`id_order_invariance`): the witness searches, so every rendering of it is taken again
+  under a permuted interner. The reading's order is the rules' load order and each rule's conclusions as
+  written; the one hash set it builds is read by membership.
+- **Nor on any lever** (`lever_invariance.rs`): the seed of the reading is the candidates the call would emit
+  with every switch off, read before any filter runs, so the lookahead and its kill cache cannot reach it.
+- **Every mode agrees with the oracle** (`explore.rs`, `claim_routes.rs`) on the witness as on every corpus
+  program; on the probes `later_debts.rs` holds describe and `--single` to the cube.
+- **`read_out_reference.rs`**: the `later debt` label is a row of § 5.3's table, printed by X20, and prints its
+  summary fields' values. **`answer_dump.rs`**: the page's `root.hypgen.later_debts` row is a key a summary
+  writes, read off the witness's, and the puzzle's summary writes none.
+
+### Defaults taken
+
+Where the ruling left a choice, the one that changes fewer answers.
+
+1. **An activator is read where the `:assert` writes it with no variable, as written.** A conclusion that
+   holds a parameter of its own rule is not read, though a plan root compiled of that rule has the parameter
+   bound and writes a ground fact. Reading the plans would add candidates on more programs; the entry's words
+   are *writes in its `:assert`*. It is the *under* case's rule, and the corpus and the probes do not tell the
+   two apart.
+2. **`D⁺` is seeded with the relations of the candidates**, the facts the call would emit config-free, as the
+   entry says (*a candidate added adds its relation to H and so to `D`*), and not with the relations the rung's
+   plans name, which seed the rung's own decline over `D`. The decline's seed is unchanged. A plan that owes a
+   relation and proposes no fact of it at root does not make that relation one a commitment can change.
+3. **A later plan is held to every decline of the rung**, with root's plans, each round: a bare `(open)`, a
+   projection that does not resolve, a scan of a relation the rung proposes, a read of a relation in `D`. The
+   entry's `flip` row. The reasons are the existing sentences.
+4. **A later debt is not counted as owed.** `owed`, `branches`, `declined`, `candidates`, the `hypskip` line
+   and the *stuck* verdict are about what the state owes, as before; a later debt counts in two fields of its
+   own. A later debt whose relation a list or a closure takes out proposes nothing and is narrated by no
+   `hypskip` ([H6-3](findings.md#h6-3--the-mechanisms-check-reads-roots-activators-so-a-list-that-takes-out-what-a-later-debt-owes-is-accepted)).
+5. **`uncovered` is over every plan the rung read**, a later debt's relation among the covered. It moves on
+   the witness alone, 1 to 0.
+6. **The later candidates are emitted after root's**, so a call that reads no later debt emits what it emitted
+   in the order it did, and H's own order is by text either way.
+7. **`one_branch` takes no later candidate.** It asks for one instance the state owes; no route calls it
+   (S1f.10.16's subject).
+8. **A later plan that does not compile under its activator proposes nothing**, silently; the node that
+   derives the activator is where the error is made, as today. The loader refuses every shape that could reach
+   this but a rule's relation variable bound to a fact, which a direct caller of `compile_rule` alone reaches.
+9. **The summary's and the dump's `later_debts` is written only where there is one**, against the block's
+   convention of an empty value, so that no other program's golden moves; and only the debts H gained a
+   candidate from are listed there and in the read-out, so that a row pairs with an entry. The `rung` line
+   counts every later debt the rung read.
+10. **The row's review is `confirmed`**, dated the ruling, its bundle the commit at which the stop was
+    prepared, `51fe98b0`.
+11. **The probes are programs in the test's source**, not corpus files: `ein-infer`'s tests keep such probes
+    that way (`oblgen`'s, `scope`'s, `region.rs`'s written programs), and a corpus file would have been a
+    second program whose goldens this commit creates.
+
+### Findings
+
+[H6-3](findings.md#h6-3--the-mechanisms-check-reads-roots-activators-so-a-list-that-takes-out-what-a-later-debt-owes-is-accepted):
+the mechanisms check reads root's activators, so a list that takes out the relation a later debt owes is
+accepted, and the node that derives the activator is stuck; the twin that states the activator is refused at
+load. The same before and after.
+[H6-4](findings.md#h6-4--hypgeneligible_relations-does-not-name-a-later-debts-relation):
+`hypgen::eligible_relations` does not name a later debt's relation. No corpus program differs. Neither is
+fixed.
+
+### Not done
+
+- **Reading 2 was not built, and reading 1 was not improved toward it**: the *over* and *under* cases are held
+  as the reading gives them, and H6-1's shape is untouched. `check_owed` is untouched.
+- **No probe is a corpus file** (default 11), so the invariance sweeps over the corpus read the witness and
+  the control, and the probes are held by their own test.
+- **`flip`'s R is not held**: its universe is, and that the rung declines.
+- **`owed_census` was not re-run over the corpus.** Its generator is the engine's, so its `grow` column on the
+  witness is now empty; its doc says so. Tasks 1 to 3's rows under `build/s1f.10.6/census/` are the census of
+  the engine before this task.
+- **The structure track's census was not re-taken.** [§ The order](README.md#the-order) says a ruling of track
+  H that changes H re-takes it for the programs it names: that is the witness, one program, whose H went from
+  one candidate to two; `build/structure/` is the main tree's and was not written here.
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh` were not run, by instruction: the main session
+  runs one gate for the batch.

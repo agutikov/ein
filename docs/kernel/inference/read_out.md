@@ -274,6 +274,7 @@ Every question prints these, since every question is over the same H.
 <!-- rows: universe -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
+| `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H is on the obligations rung is [`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](read_out_examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
 | `outside` | when H leaves out a relation the program can conclude or ask about | the relations, why no rung proposes their facts, and what every state of R holds of them | around R | `root.hypgen.outside[].relation` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 | `types` | when the blind enumerator binds a type as an object | the objects, how many candidates of which relations name them, and why | around R | `root.hypgen.types_as_objects.objects`, `root.hypgen.types_as_objects.candidates` | [X13](read_out_examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) |
 <!-- /rows -->

@@ -28,7 +28,7 @@ records which question became which id.
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](README.md#s1e51--the-configuration-reference); owner unassigned. **Open, unowned on purpose** at the close: the next change to `ein-core/src/config.rs` decides |
 | [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned**. **Worked around 2026-10-14** by [M1e2's case register](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.1_the_case_register.md); the language gap stays open, unowned |
 | [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | **ruled 2026-11-03: (a)**, the fixture is under-specified (the user, at M1e2 S1e2.1.7); **built 2026-11-04** by M1e2 S1e2.2.10, the fixtures typed and a `types` row on every read-out — raised by [D8](search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded. **Owned 2026-10-14** by [M1e2 S1e2.2.10](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md) (C1) |
-| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)** 2026-08-28 by the user. The guard **shipped** 2026-08-29 in [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 — the mode is re-read at every node the tree expands — and its regression test is owed to that stage, because no corpus program can flip the mode |
+| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | **ruled 2026-11-16: (A)**, by the static reading (the user, at M1f P1f.10's stop, shown [Q-M1f.307](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) with its default: *"all defaults ok"*); **built 2026-11-16** by M1f [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md), the obligations rung proposing at root what a debt a commitment can bring would, and a `later debt` row on the read-out. Handed to that stage 2026-08-28 by the user; the guard **shipped** 2026-08-29 in [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 and went with the walk's tree on 2026-11-03 |
 | [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden. **Open, unowned on purpose** at the close: the next change to the parallel fan-out owns it |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | **closed 2026-11-04** by [M1e2 S1e2.2.11](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md): fix (3), a full list keeps beside it the arrival with the smallest closure, and W10's `alt-cap-core` row is fixed; on the user's rulings of that day on [Q-M1e2.11](../../../plans/m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it), the promise is every derivation the program records, the residual no bounded list keeps (a saving between two facts) is `W10/alt-cap-shared`, deferred to [F22](../../../plans/followups/f22_exact_core_past_the_cap.md), and `:record-alternative-justifications false` may change the core and nothing else — raised 2026-08-29 by [S1e.1.3](README.md#s1e13--what-the-core-promises-q2), which is the review's `Q2` answered **yes**; witnessed by a fixture pair. **Owned 2026-10-14** by M1e2 S1e2.2.11 (W10) |
 | [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | **closed 2026-11-04** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md): fix (1), the binding key's activator half is the compile key's every argument, and W7 is fixed — raised 2026-08-29 by [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it. **Owned 2026-10-14** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md) (W7) |
@@ -900,6 +900,42 @@ property Q6 found the tree's rung probe lacks"*. A derived obligation is
 exactly the case where the set is **not** fixed. So the phase either says what
 its groups mean when the set can grow, or states that its structure is
 computed only for programs where it cannot — and either is an answer.
+
+**Ruled 2026-11-16: (A), by the static reading** — the user, at M1f P1f.10's
+one stop, shown the phase's four questions with their defaults: *"all defaults
+ok"*. The question was put there as
+[Q-M1f.307](../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f307--a-debt-root-was-not-told-of-what-h-holds),
+which restates this one over R: the walk and its tree were deleted on
+2026-11-03, and what was left of the question is what H holds where a node
+derives an obligation's activator. Its default, which the stage's census
+selected, is (A) of the table above, read over R as *H holds what a node's debt
+would propose*, by the static reading: the activators of an obligation rule
+that a rule reading a relation a commitment can change concludes, with the
+obligations rung's own scan run for them at root, repeated until it adds
+nothing, and no saturation. The caveats the entry records stand with the
+ruling: the reading is exact on the corpus and inexact both ways on two
+written probes, and it leaves an hrule that reads what a commitment can change
+as it is. (B), (C) and (D) were not taken: (B) would have moved the witness's
+control too, (C) refused two corpus programs that are right in H, and (D) kept
+an empty R where a model exists.
+
+**Built 2026-11-16** by M1f
+[S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
+task 4. The obligations rung
+([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)) reads the
+activators a commitment can derive off the rules and root's plans, through the
+one function *forbid* reads the same relations by
+([`forbid.rs`](../../../ein.rs/crates/ein-infer/src/forbid.rs)), and proposes
+for each what its plan matches at root. The register's
+`W26/oblig-derived-activator` is `fixed`: the witness's H gains
+`(drinks Ann Tea)` and it answers its control's R, one state; no other corpus
+program's answer moves. Every question prints a `later debt` row under
+`universe` where H holds a candidate for such a debt, and the summary carries
+`root.hypgen.later_debts`. Of the three shapes above: (a) and (b) are one case
+to the reading, a plan scanned at root whatever its relation; (c) is what
+makes the program one the static check flags, before the ruling and after it,
+and what a node is on such a program stays
+[F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s.
 
 ---
 

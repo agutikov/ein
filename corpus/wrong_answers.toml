@@ -1183,6 +1183,20 @@
 # line can be read in a state file the run writes, `models/NN.ein`, and a
 # line recorded empty says that no line of the file begins with the label.
 #
+# **S1f.10.6 fixed W26 on 2026-11-16** (T1f.10.6.4), on the user's ruling of
+# that day on Q-M1f.307, *"all defaults ok"*: (A), H holds what a node's debt
+# would propose, by the static reading, which answers Q-M1e.11. The
+# obligations rung reads the activators of an obligation rule that a rule
+# reading what a commitment can change concludes, scans each one's plan at
+# root as it scans a plan of a debt root owes, and repeats until nothing is
+# added; the witness's H gains `(drinks Ann Tea)` and it answers its control's
+# R, one state. The control's answer is unchanged, and no other corpus
+# program's is. The row's review, `deferred` until then, is the ruling's. Its
+# `[case.fixed]` carried the null id in the flipping commit, and the stage's
+# next commit wrote the hash. No open row is owned by a stage of M1f's phase
+# 10 any more: the open rows are the followups' (`grep '^status'
+# corpus/wrong_answers.toml | sort | uniq -c`).
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -1211,7 +1225,8 @@
 #              (schema /21).
 #   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #   An open row whose review is `deferred` waits on a followup, its `owner`,
-#   or since schema /10 on another milestone's stage (W26's, S1f.10.6).
+#   or since schema /10 on another milestone's stage (W26's, S1f.10.6, until
+#   that stage fixed it).
 #
 # Rows whose walk answer was visible only under a permuted interner (W11) keep
 # `wrong.id_order` as the record of it; `ein-render/tests/id_order_invariance.rs`
@@ -7941,12 +7956,16 @@ title    = "an obligation whose activator a node derives is owed, and what disch
 class    = "model set"
 settings = "default"
 owner    = "S1f.10.6"
-question = ["Q-M1e.11", "Q-M1e2.10", "Q-M1e2.16"]
+question = ["Q-M1e.11", "Q-M1e2.10", "Q-M1e2.16", "Q-M1f.307"]
 witness  = "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"
-status   = "open"
-open_because = "deferred to M1f's S1f.10.6, Q-M1e.11 (Q-M1e2.16 (5), the user, 2026-11-05): the obligations rung builds H from the debts root owes, so the drinks fact that would discharge the debt a node is told about, through an activator it derives, is never a candidate, and R is empty where a model exists. Q-M1e2.10's decline reads an obligation's guard over D, and root has no plan of this one"
+status   = "fixed"
 look_at  = ["root", "answer"]
-note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) for the inventory of 2026-11-05's W-15, which had no witness: the stage's nine-line probe shows it. The control, oblig-derived-activator-declared.ein, states the activator too. The program is flagged (total-owed's activator relation is one a commitment can change). Schema /10: a deferred row may wait on another milestone's stage"
+note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) for the inventory of 2026-11-05's W-15, which had no witness: the stage's nine-line probe shows it. The control, oblig-derived-activator-declared.ein, states the activator too. The program is flagged (total-owed's activator relation is one a commitment can change), before the fix and after it. Open and deferred to M1f's S1f.10.6 until that stage fixed it (schema /10: a deferred row may wait on another milestone's stage)"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.6 (T1f.10.6.4), Q-M1f.307 (A) by the static reading: the obligations rung proposes at root what a debt root does not owe would, for each activator of an obligation rule that a rule reading what a commitment can change concludes, its own scan run for the activator's plan at root and repeated until it adds nothing"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -7972,14 +7991,13 @@ models    = [["(drinks Ann Tea)", "(likes Ann Soup)"]]
 [case.region]
 route    = "route 2"
 monotone = false
-k_s      = 0
-k_c      = 0
-empty    = "all-owe"
-minimal  = []
-maximal  = []
+k_s      = 1
+k_c      = 1
+minimal  = [["(drinks Ann Tea)", "(likes Ann Soup)"]]
+maximal  = [["(drinks Ann Tea)", "(likes Ann Soup)"]]
 
 [case.right]
-reading   = "Q-M1e.11 (A): re-derive the branch at the node where the set grew (S1f.10.6's recommendation where the flip is constructible)"
+reading   = "Q-M1e.11 (A), as the user ruled it on 2026-11-16 (Q-M1f.307, by the static reading): H holds what a node's debt would propose"
 verdict   = "Solution"
 k         = 1
 exhausted = true
@@ -8006,20 +8024,19 @@ open      = [["(likes Ann Soup)"]]
 derived   = "today's answer, with a read-out that says the debt's discharge is outside H"
 
 [case.review]
-verdict = "deferred"
-date    = "2026-11-05"
-bundle  = "cdcc3994"
-note    = "The user's ruling of 2026-11-05 on Q-M1e2.16 (5), on the inventory of 2026-11-05 taken at cdcc3994: W-15's owner is M1f's S1f.10.6 (Q-M1e.11), and a live wrong answer with an owner and no row is filed open, reviewed deferred, with its owner, where a probe shows it; this one does."
+verdict = "confirmed"
+date    = "2026-11-16"
+bundle  = "51fe98b0"
+note    = "The user's ruling of 2026-11-16 on Q-M1f.307, put at P1f.10's stop with the census and the four answers on the witness, its control and the two other programs the census finds (the stop as prepared at 51fe98b0): *all defaults ok*, so (A), H holds what a node's debt would propose, by the static reading, the row's `right`. It replaces the deferral of 2026-11-05 (Q-M1e2.16 (5), on the inventory taken at cdcc3994), which filed the row open with S1f.10.6 as its owner."
 
 [case.now]
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 0
-empty     = "owing"
-relations = ["likes"]
+k         = 1
+relations = ["drinks", "likes"]
 models    = [
-  ["(likes Ann Soup)"],
+  ["(drinks Ann Tea)", "(likes Ann Soup)"],
 ]
 
 # ══ W27 — past the limit, a line mode labels every member met as on its line ═══

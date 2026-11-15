@@ -1733,7 +1733,7 @@ note   = "M1e2 W10's control for `closure-shared-given.ein`, banked by S1e2.2.25
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e2 W26 (`W26/oblig-derived-activator`), banked by S1e2.2.25 for the inventory of 2026-11-05's W-15 (Q-M1e.11): a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`, and the obligations rung, which builds H from the debts root owes, never proposes the `drinks` fact that pays it, so R is empty, every alive node owing, where the control's R is one state. Open, deferred to M1f's S1f.10.6 (Q-M1e2.16 (5))."
+note   = "M1e2 W26 (`W26/oblig-derived-activator`), banked by S1e2.2.25 for the inventory of 2026-11-05's W-15 (Q-M1e.11): a rule derives an obligation's activator, `(total-owed drinks is-a)`, from a hypothesised `likes`. Fixed by M1f's S1f.10.6 (Q-M1f.307 (A), by the static reading): the obligations rung reads the activator off the rule and proposes at root what the debt it brings would, so H holds `(drinks Ann Tea)` beside `(likes Ann Soup)` and R is the control's one state. Until then the rung built H from the debts root owes alone and R was empty, every alive node owing."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/oblig-derived-activator-declared.ein"

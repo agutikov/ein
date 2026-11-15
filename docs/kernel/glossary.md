@@ -337,8 +337,10 @@ by the search, which today writes forced positives and negatives into it.
 ### Hypothesis (candidate)
 A fact the generator proposes at root, with no config switch applied. Which
 ones exist is the **generation ladder**'s answer — the program's own
-`(hrule …)`, else the facts that would discharge what root owes, else the
-blind enumerator. Scoping (`:hypothesis-relations`, `:no-hypothesis`,
+`(hrule …)`, else the facts that would discharge what root owes and what a
+rule can bring a commitment to owe
+([`solution_semantics.md` § 1.4](inference/solution_semantics.md#14-candidate-and-universe)),
+else the blind enumerator. Scoping (`:hypothesis-relations`, `:no-hypothesis`,
 `(__closed__ R)`) decides eligibility, so a fact of an excluded relation is
 not a hypothesis at all.
 

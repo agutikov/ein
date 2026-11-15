@@ -403,7 +403,9 @@ What a commitment may be about is steered by five declarations, and a sixth mech
 where none of the generating ones does. `hypgen`'s ladder: the hrules if the program declares any, and then the other
 two rungs never run; otherwise the obligations while root owes something they may branch on (a loaded obligation rule
 that owes nothing at root proposes nothing, and the blind enumerator does not run); otherwise, or where the
-obligations rung declines, the blind enumerator. H is built once, at root.
+obligations rung declines, the blind enumerator. H is built once, at root. The obligations rung proposes there too
+what would pay a debt root does not owe, where a rule that reads a relation a commitment can change concludes the
+debt's activator ([`solution_semantics.md` § 1.4](../../inference/solution_semantics.md#14-candidate-and-universe)).
 
 | | mechanism | what it does | read by |
 |---|---|---|---|

@@ -19,15 +19,19 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The obligations rung builds H from the debts root owes, so H is
-;;; `{(likes Ann Soup)}`: the facts that would discharge the debt a node is
-;;; told about are never candidates. The one node, `{(likes Ann Soup)}`, owes
-;;; `drinks`, and R is empty, every alive node owing (`ein solve FILE` and
-;;; `ein oracle FILE` at `94c75204`, release and debug alike). The static
-;;; check flags the program (`total-owed`'s activator relation is one a
-;;; commitment can change), and Q-M1e2.10's decline, which reads an
-;;; obligation's guard over D, does not see a plan root does not have. What
-;;; the search should do here is Q-M1e.11, M1f S1f.10.6's.
+;;; The by-hand answer, since M1f S1f.10.6 (Q-M1f.307 (A), by the static
+;;; reading, which answers Q-M1e.11): the obligations rung reads the activator
+;;; off `arm`'s `:assert` and proposes at root what the debt it brings would,
+;;; so H is `{(drinks Ann Tea), (likes Ann Soup)}`, the read-out's
+;;; `later debt` row says which candidate is there for which activator, and R
+;;; is the one state that holds both. The static check flags the program
+;;; (`total-owed`'s activator relation is one a commitment can change), so
+;;; the cube answers it.
+;;;
+;;; Until then the rung built H from the debts root owes alone, H was
+;;; `{(likes Ann Soup)}`, the one node that holds it owed `drinks`, and R was
+;;; empty, every alive node owing (`ein solve FILE` and `ein oracle FILE` at
+;;; `94c75204`, release and debug alike).
 
 (import std.algebra :symbols (total-owed))
 (relation is-a   T T :why "{?1} is a {?2}")

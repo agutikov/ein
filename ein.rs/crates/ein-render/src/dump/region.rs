@@ -404,6 +404,41 @@ pub fn types_json(t: &ein_infer::types_as_objects::TypesAsObjects) -> Json {
     ])
 }
 
+/// What H holds for debts root does not owe, as data: one object per debt
+/// the obligations rung read that H holds a candidate for
+/// ([`ein_infer::oblgen::LaterDebt`]), in the rung's order.
+/// `--json-summary`'s `root.hypgen.later_debts` and `region.json`'s
+/// `later_debts`, each **written only where there is one**: a program whose
+/// H gains nothing from such a debt writes the document it wrote.
+pub fn later_json(later: &[ein_infer::oblgen::LaterDebtText]) -> Json {
+    Json::Array(
+        later
+            .iter()
+            .map(|l| {
+                Json::obj(vec![
+                    ("obligation", Json::str(&l.rule)),
+                    ("activator", Json::str(&l.activator)),
+                    ("relation", Json::str(&l.relation)),
+                    ("by", Json::Array(l.by.iter().map(Json::str).collect())),
+                    ("added", Json::int(l.added.len() as i64)),
+                    (
+                        "candidates",
+                        Json::Array(l.added.iter().map(Json::str).collect()),
+                    ),
+                ])
+            })
+            .collect(),
+    )
+}
+
+/// What H holds for debts root does not owe, whichever arm the cube took.
+fn later_of(oracle: &Outcome) -> &[ein_infer::oblgen::LaterDebtText] {
+    match oracle {
+        Outcome::Region(r) => &r.root.later,
+        Outcome::Refused { later, .. } => later,
+    }
+}
+
 /// What the untyped rung bound as an object, whichever arm the cube took.
 fn types_of(oracle: &Outcome) -> &ein_infer::types_as_objects::TypesAsObjects {
     match oracle {
@@ -449,7 +484,7 @@ pub fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Js
         }
         pairs.push(("absents".to_string(), absents_json(monotonicity, terms)));
     }
-    let head = vec![
+    let mut head = vec![
         ("schema", Json::str(REGION_SCHEMA)),
         ("source", Json::str(inputs.source)),
         ("n", Json::int(candidates.len() as i64)),
@@ -458,10 +493,16 @@ pub fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Js
             "candidates",
             Json::Array(candidates.iter().map(|c| Json::str(&c.text)).collect()),
         ),
+    ];
+    // Only where H gained a candidate from a debt root does not owe.
+    if !later_of(oracle).is_empty() {
+        head.push(("later_debts", later_json(later_of(oracle))));
+    }
+    head.extend([
         ("outside", outside_json(outside_of(oracle))),
         ("types_as_objects", types_json(types_of(oracle))),
         ("monotonicity", m),
-    ];
+    ]);
     let mut pairs = head;
     match oracle {
         Outcome::Refused { n, limit, .. } => {
@@ -698,6 +739,12 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
          fixpoint with no config switch applied (`docs/kernel/inference/region_dump.md`).\n\n",
         candidates.len()
     ));
+    for l in later_of(oracle) {
+        out.push_str(&format!(
+            "**A later debt**: {}.\n\n",
+            crate::read_out::later_text(l, true, "")
+        ));
+    }
     if let Some(t) = crate::read_out::outside_text(outside_of(oracle)) {
         out.push_str(&format!("**Outside it**: {t}.\n\n"));
     }

@@ -41,6 +41,10 @@ artefact raw and rendered, a sortable survey, the price list, every default and 
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
+[S1f.10.6](s1f.10.6_obligations_under_hypothesis.md#record-2026-11-16-task-4)'s task 4 ran on 2026-11-16, on the
+user's ruling of that day on Q-M1f.307, (A) by the static reading: the obligations rung proposes at root what a
+debt a commitment can bring would, `W26/oblig-derived-activator` is fixed, and Q-M1e.11 is ruled; **it is the
+phase's one exception so far to *no answer changes***, the witness's answer alone, by its register row.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.
@@ -49,9 +53,10 @@ user's ruling of 2026-11-15); `std.math.crypt`, the cryptarithm theory, which wa
 [S1f.10.5](s1f.10.5_ordering.md); M1g's
 [S1g.6.6](../../m1g_logic/p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md), which starts from
 the groups.
-**Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
-and the register's one row with a stage for an owner, `W26/oblig-derived-activator`
-([S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)); and five findings of the calculator's
+**Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+ruled 2026-11-16, and the register's `W26/oblig-derived-activator`, fixed that day
+([S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)): no open row of the register has a stage of this phase
+for an owner; and five findings of the calculator's
 [`findings.md`](../p1f.6_calculator/findings.md): E-29 (S1f.10.5), E-1, E-7 and E-54
 ([S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md)), E-51
 ([S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md)).
@@ -250,8 +255,13 @@ R spends nothing on it.
 
 **And H does not grow, of debts.** A node that owes an instance root did not already refuses the run on a
 monotone program (`tree.rs`, `check_owed`), so that premise is enforced by something that fails when it stops
-being true. What a program outside it should answer is Q-M1e.11,
-[S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)'s. **Of an hrule's proposals nothing enforces it**: an hrule
+being true. A program outside it, one in which a rule derives an obligation's activator from a commitment, is
+flagged by the static check, and what it answers was Q-M1e.11, ruled on 2026-11-16 as Q-M1f.307 (A) by the static
+reading and built by [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md#record-2026-11-16-task-4): **H holds,
+built at root, what such a debt would propose**, read off the rules with no saturation. So H is still built once
+and does not grow under a node, and the structure reads it as root builds it; the reading is inexact both ways off
+the corpus, and where it is under, a node of a flagged program owes what no candidate pays, as before.
+**Of an hrule's proposals nothing enforces it**: an hrule
 whose `:match` reads a relation a commitment can change would propose more at a node than at root, the static
 check calls such a program monotone, and no guard refuses it (S1f.10.6's record, and
 [`findings.md`](findings.md)'s H6-1; four corpus programs have such an hrule and none grows).
@@ -286,7 +296,7 @@ group forms. Every stage reports it, and S1f.10.11 is where its triple has to ap
 | [S1f.10.11](s1f.10.11_coupling.md) | S | Coupling: what ties the groups together | the groups' hypergraph with a reason on every edge, or a written account of what no cheap reading finds; I-L02's triple and I-SEND's columns the controls |
 | [S1f.10.13](s1f.10.13_the_price_list.md) | R | The price list | per program and per question: the work, the part of it the structure explains, what each way of getting the structure costs, and a *go* or a *no* for each by a rule stated first |
 | [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | What the blind enumerator takes for an object | E-1, E-7 and E-54 with witnesses and a census; a question |
-| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | A debt root was not told of | W26 re-taken over R, the census of who derives an activator at a node, Q-M1e.11's four answers priced; a question |
+| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | A debt root was not told of | W26 re-taken over R, the census of who derives an activator at a node, Q-M1e.11's four answers priced; a question; **ruled (A) by the static reading and built, 2026-11-16**: W26 fixed, the read-out's `later debt` row |
 | [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | The rung a loaded rule chooses | E-51 with witnesses and a census; a question |
 | [S1f.10.12](s1f.10.12_the_structure_shown.md) | S | The structure shown, and its surface | `build/structure/`, every instance raw and rendered; **the phase's one stop**, with the surface's question, the three H questions and the price list; then the surface as ruled |
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | At most one, spent: the extension step | where S1f.10.13 says *go*: a set holding an excluded pair is not saturated, on every route through one owner; R identical everywhere; the work delta per program, the losers named |
@@ -362,7 +372,8 @@ A ruling of track H that changes H re-takes the census for the programs it names
 
 - Each finding has its witness, its census and the user's ruling; where an answer moves, it moves by a
   register row filed `open` before its fix, and this README names the stage as an exception to *no answer
-  changes*.
+  changes*. **S1f.10.6 is one** (2026-11-16): `W26/oblig-derived-activator`, filed `open` by M1e2's S1e2.2.25,
+  answers its control's R, and no other corpus program's H, R, read-out or golden moved.
 
 **The phase**
 

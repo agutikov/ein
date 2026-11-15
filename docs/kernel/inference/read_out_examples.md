@@ -38,6 +38,7 @@ page is frozen where it was, beside [`read_out.md`'s record](../../../plans/m1e2
 | [X17](#x17--ein-oracle-the-cubes-line) | `lattice/04_obligation_trigger_hole.ein`, `lattice/02_genuine_3set_death.ein` | 2, 3 | `ein oracle`: the read-out over the cube, and the cube's line |
 | [X18](#x18--testsregion04_owingein---no-search-root-alone) | `tests/region/04_owing.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `zebra2.ein`, `tests/stdlib/bijection/01_setup_and_negatives.ein` | 0, 0, 56, 0 | `--no-search`: root alone, an owing root, a dead one and the puzzle's, R not searched; and a program that states `(solve :no-search)` |
 | [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
+| [X20](#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) | `ein-bugs/wrong-answers/oblig-derived-activator.ein` | 2 | a debt root does not owe and a commitment can bring: the `later debt` row, and what H holds for it |
 
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
@@ -2429,6 +2430,51 @@ solve · --no-search examples/features/07_unstratifiable.ein
   universe          1 candidate, none visited: R was not searched
   route             none — --no-search: root's node, and no node past it
   work              1 saturation · 0 facts beyond root
+
+exit 0
+```
+
+## X20 — `ein-bugs/wrong-answers/oblig-derived-activator.ein`: a debt root does not owe
+
+Ann owes a Food at root. The rule `arm` concludes `(total-owed drinks is-a)`, the activator of a second obligation,
+from any `likes` fact, so the node that holds `(likes Ann Soup)` owes Ann a Drink, a debt root was never told of. The
+obligations rung reads the activator off `arm`'s `:assert` and proposes at root what would pay the debt it brings: H
+holds `(drinks Ann Tea)` beside `(likes Ann Soup)`, the `later debt` row under `universe` says which candidate is there
+for which activator, and R is the one state that pays both debts. The program is one the static check flags, the
+activator's relation being one a commitment can change, so the cube answers it.
+
+`ein solve examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`
+
+```text
+solve · examples/ein-bugs/wrong-answers/oblig-derived-activator.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 not in R — root owes 1 instance
+    owed            likes owes Ann a Food.
+  minimal line      1 state, from 1 commitment — the least guess is 2 candidates
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            total-owed: its activator relation is one a commitment can change; a plan root compiled of it concludes a positive fact — at stake: the status: owes, through a plan a node compiles
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 2 parents of 1 printed state
+  universe          2 candidates, 0 dead alone
+    later debt      (total-owed drinks is-a) — a debt root does not owe: rule 'arm' concludes it from what a commitment can change. H holds what would pay it, 1 candidate: (drinks Ann Tea)
+  route             2, the cube — no licence: the static check flags the program
+  work              4 saturations · 6 facts beyond root
+
+  (region
+    ;; state 1 of 1 — 2 candidates · minimal and maximal · from {(drinks Ann Tea), (likes Ann Soup)}
+    (model (drinks Ann Tea) (likes Ann Soup)))
 
 exit 0
 ```

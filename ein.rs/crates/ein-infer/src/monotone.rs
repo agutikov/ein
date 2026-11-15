@@ -122,7 +122,7 @@ pub struct Rel {
 }
 
 impl Rel {
-    fn pos(name: Symbol) -> Rel {
+    pub(crate) fn pos(name: Symbol) -> Rel {
         Rel {
             name,
             negated: false,
@@ -548,25 +548,31 @@ pub(crate) fn dynamic(
 
 /// `D` followed through the rules root has no plan of — M1e2
 /// [S1e2.2.17](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.17_forbid_activator_chain.md),
-/// W17: the relations *forbid* calls extendable.
+/// W17: the relations *forbid* calls extendable, `D⁺`.
 ///
 /// `D` is closed over the plans root compiled. A rule with parameters whose
 /// activator relation is in `D` is an activator site: a node compiles a plan
 /// of it root never had, and what that plan writes a commitment can change
 /// too, though `D` does not hold it, nor what a rule activated by it writes.
 /// `open` is every rule with parameters, as *its activator relation, the
-/// relations its pattern writes*; the result is `m`'s `D` closed under
+/// relations its pattern writes*; the result is `seed` closed under
 /// `saturation` (root's plans, `D`'s own rule) and under each such rule whose
-/// activator relation it holds. It is `D` on a program with no activator site.
-/// [`crate::forbid`] reads it; the static check and every other reader of `D`
-/// do not, so no site, no rung decline and no summary moves with it.
+/// activator relation it holds. `seed` is a `D` or what a `D` is seeded with:
+/// the closure of a closure is the closure, so the two give one set. It is
+/// `D` on a program with no activator site.
+///
+/// Two readers, through [`crate::forbid`]'s one reading of the rules: *forbid*
+/// itself, over the static check's `D`, and the obligations rung, over the
+/// relations of what it proposes, for the activators a commitment can derive
+/// ([`crate::oblgen`]). The static check and every other reader of `D` do
+/// not read it, so no site, no rung decline and no summary moves with it.
 pub(crate) fn through_activators(
-    m: &Monotonicity,
+    seed: impl IntoIterator<Item = Rel>,
     saturation: &[(&Plan, &[(Rel, u32)])],
     open: &[(Rel, &[Rel])],
     terms: &Terms,
 ) -> FxHashSet<Rel> {
-    close(m.dynamic.iter().copied(), saturation, open, terms)
+    close(seed, saturation, open, terms)
 }
 
 /// The one closure of `D`: `seed`, closed under *a saturation plan that reads
