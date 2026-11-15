@@ -248,6 +248,9 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 18 a
     2026-11-15.**
 19. **The close** (2026-11-15), prepared once every stage but S1f.6.39's T7 was built:
     [§ The close, prepared](#the-close-prepared-2026-11-15).
+20. **After the close, P1f.10 and then P1f.20** (the user's ruling of 2026-11-15,
+    [`close.md` § The user's rulings](close.md#the-users-rulings-2026-11-15), 4): P1f.20 rewrites the pages, so it
+    describes the engine after P1f.10's changes.
 
 ## Findings stay in the phase
 
@@ -329,5 +332,8 @@ with no owner, the 81 defaults still the user's to revise, § Acceptance re-take
 held but the last, *no row without a ruling, a fix or an owner*, which the proposals would hold), and the mutation
 survivors the phase banked, two of which a probe kills. S1f.6.39's T6 was ruled by the user on 2026-11-15, all
 eight as recommended, and its T7 applies the rulings. **The phase is not closed:**
-[`close.md` § What the user is asked](close.md#what-the-user-is-asked) lists what it waits for, the dispositions,
-the survivor pair, any default to revise, and the order of P1f.10 and P1f.20.
+[`close.md` § What the user is asked](close.md#what-the-user-is-asked) listed what it waited for, the dispositions,
+the survivor pair, any default to revise, and the order of P1f.10 and P1f.20, and **the user ruled on 2026-11-15**
+(*"all as you recommended"*, [`close.md` § The user's rulings](close.md#the-users-rulings-2026-11-15)): the dispositions confirmed, the
+survivor pair killed by banked probes, the defaults standing, P1f.10 before P1f.20. It closes once T7 is committed
+on a green gate, E-37's and E-45's fixes are in and the pair's two tests are banked.

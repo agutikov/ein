@@ -4,7 +4,8 @@
 Not started as a milestone; its first phase, the census of rules, was run the same day and its results are
 [`rule_census.md`](rule_census.md). It carries no estimate (the user's ruling of 2026-11-08). **This README
 is the whole plan today:** it gathers what the repository already says about rules as data, names the one
-phase the instruction defines, and leaves every later phase to the user.
+phase the instruction defines, and leaves every later phase to the user. **Since 2026-11-15 it also owns three
+findings of M1f's calculator phase** ([§ Handed over by M1f](#handed-over-by-m1f-2026-11-15)).
 **Depends on:** the corpus of theories that exists when it starts. The instruction expects one of *"hundreds
 and thousands of rules"*, which the calculator ([P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)),
 school algebra and geometry ([P1g.10](../m1g_logic/p1g.10_school_algebra/README.md) and [P1g.11](../m1g_logic/p1g.11_school_geometry/README.md), M1f's P1f.8 until 2026-11-13),
@@ -116,6 +117,24 @@ plans/m12_rules_as_data/rule_census.md` rewrites the page's tables.
 **Not defined.** The user said *"No specific goals right now, want to see analyze results"*: what M12
 builds, in what order, and which of the sources above it takes up is the user's to say once the results
 are read. Nothing is planned here ahead of that.
+
+## Handed over by M1f, 2026-11-15
+
+Three findings of M1f's [P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/README.md), moved here on the
+user's ruling of 2026-11-15 at that phase's close (*"all as you recommended"*,
+[`close.md` § The user's rulings](../m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#the-users-rulings-2026-11-15)).
+Each is a reading the loader makes, or does not make, of what a relation parameter can hold, which is a rule read as
+data. None is a wrong answer: E-35's half loads a fact no check holds to its relation's declared count, and E-55 and
+E-69 refuse at load a program in which S1f.5.18's check reads a rule's name, written as an argument, as a target a
+derived activator *could* bind, where nothing does (Q-M1f.41, Q-M1f.42). Their rows in
+[`findings.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md) link here. Nothing is planned for
+them ahead of [§ Later phases](#later-phases).
+
+| id | what | source | re-taken |
+|---|---|---|---|
+| E-35, its second half | **a rule derives a fact of a declared relation at another count through a parameter.** `(rule widen (?R) :match (?R ?a ?b) :assert (?R ?a ?b ?a))` with `(widen likes)` derives `(likes Ann Tea Ann)` beside `(relation likes Person Drink)`: S1f.6.23's count check reads written forms, and a relation written as a variable is not read ([Q-M1f.202](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f202--a-relation-written-through-a-parameter-and-the-declared-count), defaulted). Holding it needs the loader to read what a relation parameter can hold, as S1f.5.18's check does, or the firing to refuse the fact. Its first half, a kernel marker's fact at another count, went to [F23's D-16](../followups/f23_diagnostics_in_eins_words.md#the-items) | [S1f.6.23](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md)'s T1 | live: `build/s1f.6.23/p/param3.ein` under `ein saturate --dump` holds `(likes Ann Tea Ann :rule widen)`, exit 0 (the gate binary of `7c3c2878`, 2026-11-15) |
+| E-55 | **a generic rule of a module that comes whole makes S1f.5.18's check refuse a program that writes one of the module's rule names as an argument.** `std.algebra`'s `imply1 (?R1 ?R2)`, `(?R1 ?a) ⟹ (?R2 ?a)`, is a conclusion whose `?a` may hold a fact, so a program that writes `injective` as an argument is refused at load, though nothing activates `imply1`: *rule 'std.algebra.imply1': its :assert writes (?R2 ?a), whose ?a is rule 'injective''s parameter ?R, which names a relation, and (?R1 ?a) can bind ?a to a fact, as an argument of the relation ?R1 names — a relation is named by a symbol, not a fact*. It loaded until S1f.6.35, whose selection left `imply1` out; a whole import refused it before and after, so the import invariance holds, and no tracked program reaches it | [S1f.6.35](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md)'s T2; `ein-cli/tests/solve_lists.rs`' fixture `an-imported-rules-conclusion`, whose list names `functional` alone since | live: `(import std.algebra :symbols (bijective-properties functional injective))`, `(relation r A B …)`, `(is-a a A) (is-a b B)`, `(bijective r)`, `(solve :no-hypothesis (functional injective is-a))`: `kb load error`, the line above, exit 1 (2026-11-15) |
+| E-69 | **a relation-parameterised rule that a closing rule names makes every program that also imports `std.algebra` a load error.** The same reading as E-55, of a closing rule's `(arith-rule walk-1)`: a name `std.algebra`'s `imply1` could bind to `?R2`, so its conclusion `(?R2 ?a)` could activate `walk-1` with a derived fact | [S1f.6.38](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#7-findings)'s T1, on its prototypes `stdlib-w1` and `-w2` (`build/s1f.6.38/`) | no tracked program: no shipped closing rule names a parameterised rule, S1f.6.16's build connecting `std.math.positional` by activators; re-taken at P1f.6's close, `examples/beyond_arith/equation_two_unknowns.ein`, `std.algebra` beside the calculator, loads and holds its claim (`ein test`, 2026-11-15) |
 
 ## Open questions
 

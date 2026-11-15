@@ -77,6 +77,19 @@ programs:
 - **Not built before the user reads it.** Every stage below ends in programs with computed answers shown
   first; the second and third change what a surface prints or what a word means, and wait for a ruling.
 
+## Handed over by M1f, 2026-11-15
+
+One finding of the calculator's
+[`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md), moved here on the user's
+ruling of 2026-11-15 at P1f.6's close (*"all as you recommended"*,
+[`close.md` § The user's rulings](../../m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#the-users-rulings-2026-11-15)).
+It is E-23's neighbour, the read-out of an R that is empty by owing, and [S1g.7.2](#s1g72--the-open-states-core)'s
+rows are where it is decided; no answer moves.
+
+| id | what | source | re-taken |
+|---|---|---|---|
+| E-44 | **on an R that is empty by owing, root's own debts are on no stdout row where root is not on the frontier.** The `owing` rows name the frontier, the alive owing nodes with no alive node one fact up, each with its instances. Where an alive node sits above root, root is not among them, the `empty` row stands in place of `∅`, and nothing on stdout names what root itself owes, though a query's row counts it, *root is alive and owes 3 instances*, and the summary's `region.root_owed` lists them (M1f S1f.6.26) | [S1f.6.26](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.26_what_root_owes.md#t1f6261--the-rows-shown-first-done)'s T1 | live on four tracked programs, none with `[]` among `region.frontier[].set`: `examples/binary_logic/unsatisfiable.ein` and `equivalent.ein`, three instances each in `region.root_owed`, `examples/beyond_arith/equation_no_solution.ein`, two, and `examples/ein-bugs/wrong-answers/oblig-derived-activator.ein`, one (`ein solve FILE --json-summary`, the gate binary of `7c3c2878`, 2026-11-15) |
+
 ## The stages
 
 ### S1g.7.1 — The witnesses, on one page

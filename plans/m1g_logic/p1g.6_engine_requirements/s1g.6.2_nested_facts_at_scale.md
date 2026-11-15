@@ -20,7 +20,8 @@ it: `ein solve` writes every fact of a state as text, so a long computation's re
 the computation, and a stored fact costs about a kilobyte while a computation stores every step. E-24 and
 E-26 are a fourth part of the stage, **the size of a state**, taken up in T1g.6.2.7 below. E-12's
 calculator witness, the comparison table's column order (question 47), was explained to the user in round 2
-and left as it is.
+and left as it is. **Since 2026-11-15 it also owns E-36**, handed over at P1f.6's close
+([§ Handed over by M1f](#handed-over-by-m1f-2026-11-15)).
 
 ## Why the logic needs it
 
@@ -71,6 +72,19 @@ number n nests n; a context of assumptions; an assignment; a proof term), so the
 them, and the read-out or the dump says so when a state holds a fact a program could not write back, instead
 of producing a file that fails to load.
 
+## Handed over by M1f, 2026-11-15
+
+One finding more of the calculator's
+[`findings.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md), moved here on the user's
+ruling of 2026-11-15 at P1f.6's close (*"all as you recommended"*,
+[`close.md` § The user's rulings](../../m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#the-users-rulings-2026-11-15)).
+It is a cost of the matcher beside E-3 and E-12, so it joins C-2, and T1g.6.2.6 closes it with them; like them it
+moves no answer.
+
+| id | what | source | re-taken |
+|---|---|---|---|
+| E-36 | **saying that a value is a name costs the program's names, each time it is asked.** The one way a rule says *a name, and not a fact* is two guards on a variable nothing else binds, `(neq ?v z) (eq ?v ?x)`, in that order ([`01_grammar.md` § Premise order around a guard](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#premise-order-around-a-guard), restated for E-37 at the close): the matcher ranges `?v` over `predicates::domain`, a sorted list, and tests each, with no lookup by the value it is compared with. `std.math.decimal-arith`'s `operand-undeclared` and `std.math.binary-arith`'s `bin-operand-undeclared` ask it of every operand of every request, a number too. 1 000 sums of nine-digit numbers took 69.7 ms beside no named constant and 140.7 ms beside 4 000, against 36.6 and 41.3 before the check; by the guards' own count, `2 × 2 × requests × lets` values more beside `lets` named constants. The remedy is the engine's, not a theory's: the matcher deciding `(eq ?v ?x)` after a guard that ranged `?v` over the names by one probe of that list, or a kernel *is a name* test; either keeps what the two guards mean in their order | [S1f.6.12](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.12_malformed_numbers.md#build-record-2026-11-13)'s build, T1f.6.12.3 and .7 (`utils/bench_env.sh python3 build/s1f.6.12/build/cost3.py`, 2026-11-13) | pinned by `ein-infer/tests/arith_batch.rs`' `a_number_operand_does_not_walk_the_lets` (`cargo test -p ein-infer --features counters --test arith_batch a_number_operand -- --nocapture`); the times not re-taken at the close |
+
 ## Tasks
 
 1. **T1g.6.2.1 — the witnesses, counted:** each natural rule and its continuation twin from the theory
@@ -84,7 +98,7 @@ of producing a file that fails to load.
    designs; a recommendation. Built only if a theory of the milestone is dominated by load.
 5. **T1g.6.2.5 — the nesting limit, checked** against M1g's theories under S1f.6.9's ruling; a dump that
    cannot reload says so.
-6. **T1g.6.2.6 — the findings closed:** E-3 and E-12 marked with what was done, in the calculator's
+6. **T1g.6.2.6 — the findings closed:** E-3, E-12 and E-36 marked with what was done, in the calculator's
    `findings.md` if that file is still open, or here.
 7. **T1g.6.2.7 — the size of a state (E-24, E-26), priced before anything is built:** what a read-out
    that listed a state's facts only on request, or wrote a number shared between facts once, would save on
