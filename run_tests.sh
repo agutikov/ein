@@ -112,10 +112,10 @@
 # S1f.5.27): every step of the nightly, at full budget (the fuzzer at P1a.1's
 # million inputs a seed), and the steps that left the nightly or never ran
 # in it, each over 5 min on the runner or a measurement: the id space
-# permuted eight ways over every program, `route_invariance` whole with its
-# 2^25 half (its default-budget half, the slow entries included, is the
-# nightly's since S1f.6.39), `stdlib_census.py --check`, and the whole review
-# bundle with its link check. It runs a sharded step's shards one after
+# permuted eight ways over every program, `stdlib_census.py --check`, and the
+# whole review bundle with its link check (`route_invariance`'s 2^25 half left
+# every tier with Q-M1f.304's (d): no test runs past the default budget). It
+# runs a sharded step's shards one after
 # another, as `--nightly` does. Nothing
 # schedules it; the user runs it, here or in the runner's image
 # (`utils/ci_container.sh --dev-host`). It takes no other argument, runs from
@@ -442,9 +442,6 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "dev host: id_order_invariance, eight seeds, every program"
     EIN_ID_SEEDS="8" EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
-
-    dev_host_step "dev host: route_invariance, the slow half at 2^25 too"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance
 
     dev_host_step "deep-corpus: answer_dump, the heavy_dump runs too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_dump

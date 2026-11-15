@@ -7,7 +7,7 @@ guards and needs; T7 applies what the user rules. **T1 to T5 built 2026-11-15, a
 ([§ Record](#record-2026-11-15-t1-to-t5-built-t6s-audit-and-the-stop)): Q-M1f.287 to .294. **T6 ruled and T7 built
 2026-11-15** (the user: *"T6 rulings: all as you recommended"*; [§ Record, T7](#record-2026-11-15-t7-the-cuts-as-ruled)):
 the gate here 15.0 → 11.9 min, every nightly step inside five minutes at the runner's four threads in shards, E-72
-closed, Q-M1f.304 defaulted; the gate and the nightly in the runner's image are taken on the close's commit.
+closed, Q-M1f.304 defaulted and then ruled (d), built at the close; the gate and the nightly in the runner's image are taken on the close's commit.
 **Depends on:** nothing of the calculator. It runs after [S1f.6.38](s1f.6.38_a_number_is_well_formed_from_the_start.md)
 and before [S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build, since every later stage runs the gate it changes,
 as [S1f.6.21](s1f.6.21_the_gate_reduced.md) ran first of its day for the same reason.
@@ -601,6 +601,11 @@ other heavy process (`ps`; a browser at under half a thread for the first hour, 
   route 1 alone took 495 s at `-j 16` to reach a 2²² ceiling on `zebra2-minus-15` (`region.rs`' note,
   `alive_set_reach.md` § 2.3), where the test asks 2²⁵ of one unit: no shard by program fits it. Each (program,
   budget, route) is a unit of the pool.
+- **Q-M1f.304 ruled (d) after T7** (the user, 2026-11-15, *"(d)"*), built at P1f.6's close: no test runs past the
+  default budget. The 2²⁵ test is deleted, with the dev host's step and its `DEV_HOST_ONLY` entry; the
+  default-budget test holds a program route 1 does not finish and the state route does by the cut, its read-outs
+  not compared, and names those programs and the ones neither route finishes on stderr
+  ([the row](../open_questions.md#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes)).
 - **Q-M1f.293, the nightly in shards** (`c7cbb4d6`). `EIN_TEST_SHARD=k/n` (`ein_corpus::shard`) deals a sweep's
   programs to `n` shards in the pool's start order, in turn, every program in exactly one
   (`the_shards_partition_the_corpus`, one to nine shards); a shard holds its share of a programs floor, the content
@@ -713,7 +718,7 @@ binaries T7 did not change:
 | `id-leak` | the golden (T6: renderings moved over the corpus, over the programs that search and outside `tests/`); `kb_semantics`, every file, unchanged | the golden and the permutation over every program (483 pairs, T6) |
 | `jobs-leak` | `jobs_invariance` over the programs outside `tests/` that search: of the 987 cells it moved, 983 were the searching programs' and 942 those outside `tests/`, so at least 938 are both; and `explore`, `region`, `register_region`, `region_modes`, `line_modes_past_the_limit`, unchanged | `jobs_invariance` over every program (987) |
 | `neq-nested` | the golden outside `tests/` (`examples/arith`, `beyond_arith`); `corpus_cli`'s and `test_cli`'s `ein test` cells and `arith_search_free` on `tests/` itself, unchanged | the golden over every program |
-| `route1-maximal` | `region::route_1_is_the_oracle…` within the oracle's limit, unchanged | `route_invariance`'s default-budget test with the `slow` entries; its 2²⁵ test on the dev host |
+| `route1-maximal` | `region::route_1_is_the_oracle…` within the oracle's limit, unchanged | `route_invariance`'s default-budget test with the `slow` entries (its 2²⁵ test on the dev host until Q-M1f.304 was ruled (d)) |
 | `states-maximal` | `explore`, `region`, `register_region`, `region_modes`, `claim_routes`, `corpus_cli`, `test_cli`, unchanged, and the golden outside `tests/` (moved in all three sets, T6) | the golden over every program; `route_invariance` |
 | `maximal-drop` | nothing, the control: an equivalent mutant | nothing |
 
@@ -734,8 +739,9 @@ commit over its entries outside `tests/`.
 
 - **E-72 closed** (`4a9f2a41`): the plain run is the golden's run, one pass a commit; it is computed and not read off
   the golden, Q-M1f.286 (a), since the permutation is of its own table. Nothing stays open.
-- **Defaulted, the user's to revise**: [Q-M1f.304](../open_questions.md#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes),
-  `route_invariance`'s 2²⁵ test on the dev host, (a).
+- **Defaulted** [Q-M1f.304](../open_questions.md#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes),
+  `route_invariance`'s 2²⁵ test on the dev host, (a); **ruled (d) the same day**, no test past the default budget,
+  and built at P1f.6's close.
 - **Ruled and built**: Q-M1f.287 to .294, each row marked with the ruling and where it was built.
 - **No wrong answer was met**; no finding is filed.
 - **Not done, on the main session's word** (the user waiting on the total time): the run at one worker, stopped

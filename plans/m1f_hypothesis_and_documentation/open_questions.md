@@ -308,6 +308,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.301](#q-m1f301--what-gcd-call-does-before-euclids-chain) | what `gcd-call` does before Euclid's chain | **defaulted 2026-11-15 (S1f.6.32), the user's to revise**: (a), each number put into normal form first; [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15) |
 | [Q-M1f.302](#q-m1f302--what-stdmathrats-unreduced-answer-fixes-and-rat-norm-under-b) | what `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b) | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator in normal form, D with no high zero, nothing reduced; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.303](#q-m1f303--rat-simplify-asks-stdmathgcd-the-numerator-first) | `rat-simplify` asks `std.math.gcd` the numerator first | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator first, as before; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
+| [Q-M1f.304](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) | `route_invariance` past the default budget, past any shard's five minutes | **ruled 2026-11-15: (d)**, no test runs past the default budget (the user: *"(d)"*); defaulted (a) the same day by T7; built at P1f.6's close; [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -5946,5 +5947,23 @@ test asks 2²⁵ of one unit, one program. No sharding by program fits it.
 - **(b) The 2²⁵ half in the nightly past the rule**, a step of its own over five minutes.
 - **(c) A larger budget that fits**, between 2²⁰ and 2²⁵: the zebra family's route equality at a budget route 1
   does not exhaust is no comparison, so it holds of fewer programs.
+- **(d) No test past the default budget.** Describe on a monotone program always takes the state route, and no
+  option routes one to route 1, so the 2²⁵ half ran an internal route, `explore::describe_by`, at 32 times the
+  default `--region-budget` of 2²⁰ the user ruled on 2026-11-03 after 2²⁴ ran the gate out of memory, on inputs no
+  command sends it. The 2²⁵ test goes. In the default-budget test, a program the state route finishes and route 1
+  does not is held by the cut, the state route's saturations and facts no more than route 1 spent before it
+  stopped, and its read-outs are not compared; each is named on stderr. One neither route finishes is skipped, as
+  before.
 
 **Defaulted 2026-11-15: (a), the user's to revise.**
+
+**Ruled 2026-11-15: (d).** The user: *"(d)"*, after the main session set out the default budget's ruling and what
+the 2²⁵ half ran. Built at P1f.6's close: `route_1_and_the_state_route_agree_past_the_default_budget` deleted, and
+with it the per-budget fold; `the_state_route_and_route_1_print_one_read_out` holds the cut's premise and names the
+programs it holds by the cut and those it skips, and reads `EIN_CORPUS_SLOW` itself, so the nightly's step that
+names it runs the target's whole slow half. Under `EIN_CORPUS_SLOW=1` (2026-11-15, the gate profile): 582 programs
+compared; 5 held by the cut, `examples/zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` and the register's
+`count-past-2-64.ein` and `count-past-2-128.ein`; 9 skipped, neither route finishing, the six `square-bwd` and
+`square-fwd` programs, `send_more_money.ein` and `zebra2-minus-15.ein` with its `-obligations` twin. The dev
+host's step and its `DEV_HOST_ONLY` entry are gone (`nightly_steps.rs`, `run_tests.sh`), and the pages that named
+the half (`corpus/README.md`'s table, the workflow's comments).

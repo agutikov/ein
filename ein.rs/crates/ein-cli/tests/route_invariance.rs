@@ -21,24 +21,37 @@
 //!   is revisited, which is what lets the rule rest on a measurement
 //!   (`standard_of_proof.md`).
 //!
+//! **Where route 1 is cut and the state route is not**, at the default
+//! budget, the read-outs are not compared and the premise is held by the
+//! cut: the state route finished in no more saturations and facts than route
+//! 1 spent before it stopped, so no more than route 1 would have spent to
+//! finish. The test names each such program on stderr with its counts:
+//! `examples/zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` and the
+//! register's `count-past-2-64.ein` and `count-past-2-128.ein`
+//! (`EIN_CORPUS_SLOW=1 cargo test -p ein-cli --profile gate --test
+//! route_invariance -- --nocapture`, 2026-11-15). Where neither route
+//! finishes nothing is read, and the test names those too: the six
+//! `square-bwd` and `square-fwd` programs, `send_more_money.ein`, and
+//! `zebra2-minus-15.ein` with its `-obligations` twin, the same day.
+//! `syntax/arg-kinds`, skipped so until S1f.6.39 for a cube of 41 candidates
+//! no budget described, is compared: its R is {∅} today.
+//!
+//! **No run here passes the default budget** (Q-M1f.304 ruled (d), the user,
+//! 2026-11-15). Until then a second test, the dev host's, compared the
+//! programs route 1 describes only past the default at `--region-budget` 2²⁵:
+//! `explore::describe_by` at 32 times the 2²⁰ the user ruled on 2026-11-03,
+//! after 2²⁴ ran the gate out of memory, on a route no command sends a
+//! monotone program.
+//!
 //! **Per commit, every program but the manifest's `slow` entries** (M1f
 //! S1f.6.39, the user's ruling of 2026-11-15 on Q-M1f.291): the zebra family
-//! and `send_more_money` were most of the per-commit half's time.
-//! `EIN_CORPUS_SLOW=1`, the slow half, reads them too, and a second test adds
-//! the programs route 1 describes only past the default budget — the zebra
-//! family and the six `square-*` cubes — at `--region-budget` 2²⁵, where both
-//! finish. `syntax/arg-kinds` was one until M1e2 S1e2.2.14: its R is the
-//! whole cube of 41 candidates since, 2⁴¹ commitments, which no budget of
-//! 2²⁵ facts describes, so it is skipped. Since S1f.6.39 the CI nightly runs
-//! the first test with the flag, by name, the `slow` entries at the default
-//! budget; the second, the 2²⁵ half, stays the dev host's, as the whole slow
-//! half was from M1f S1f.5.27 (Q-M1f.51): one program's route 1 there is
-//! past any shard's five minutes (Q-M1f.304).
+//! and `send_more_money` were most of the per-commit time.
+//! `EIN_CORPUS_SLOW=1` reads them too; the CI nightly runs the test with the
+//! flag, by name.
 //!
 //! ```text
 //! cargo test -p ein-cli --profile gate --test route_invariance
 //! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --profile gate --test route_invariance   # + 2^25, the dev host's
 //! ```
 
 use std::path::{Path, PathBuf};
@@ -52,10 +65,6 @@ const DESCRIBE: Mode = Mode {
     which: Which::All,
     ask: Ask::Describe,
 };
-
-fn slow_too() -> bool {
-    std::env::var_os("EIN_CORPUS_SLOW").is_some()
-}
 
 /// What one route printed, and what it cost.
 struct Printed {
@@ -126,10 +135,10 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
 }
 
 /// Every corpus file and register witness, once, but the manifest's `slow`
-/// entries unless `EIN_CORPUS_SLOW` is set; this run's shard of them. A debug
+/// entries unless `slow`; this run's shard of them. A debug
 /// build left out W7's two witnesses, which it aborted on, until M1e2
 /// S1e2.2.7 fixed W7, and W16's order pair until M1e2 S1e2.2.16 fixed W16.
-fn programs() -> Vec<PathBuf> {
+fn programs(slow_too: bool) -> Vec<PathBuf> {
     let root = repo_root();
     let slow: std::collections::BTreeSet<PathBuf> = ein_corpus::corpus()
         .entry
@@ -145,7 +154,7 @@ fn programs() -> Vec<PathBuf> {
     }
     files.sort();
     files.dedup();
-    files.retain(|f| slow_too() || !slow.contains(f));
+    files.retain(|f| slow_too || !slow.contains(f));
     ein_corpus::shard::keep(files, |f| {
         f.strip_prefix(&root).unwrap_or(f).display().to_string()
     })
@@ -164,13 +173,37 @@ fn first_difference(a: &str, b: &str) -> String {
 /// **The state route and route 1 print one read-out, and the state route
 /// never does more**, on every monotone program both finish at the default
 /// budget: per commit every program but the `slow` entries, under
-/// `EIN_CORPUS_SLOW=1` every one, the nightly's.
+/// `EIN_CORPUS_SLOW=1` every one, the nightly's. Where the state route finishes
+/// and route 1 does not, the premise is held by the cut and the read-outs are
+/// not compared; those programs are counted and named on stderr.
 #[test]
 fn the_state_route_and_route_1_print_one_read_out() {
-    let (bad, compared) = compare(&[ein_infer::downset::DEFAULT_BUDGET]);
+    let budget = ein_infer::downset::DEFAULT_BUDGET;
+    // Read here, in the one test, so the nightly's step that names it runs
+    // all of the target's slow half (`nightly_steps.rs`).
+    let slow = std::env::var_os("EIN_CORPUS_SLOW").is_some();
+    let Compared {
+        bad,
+        compared,
+        cut,
+        neither,
+    } = compare(budget, slow);
+    let shard = ein_corpus::shard::current().map_or(String::new(), |s| format!(" [shard {s}]"));
+    eprintln!("{compared} programs compared{shard}");
     eprintln!(
-        "{compared} programs compared{}",
-        ein_corpus::shard::current().map_or(String::new(), |s| format!(" [shard {s}]"))
+        "{} programs the state route describes and route 1 does not at --region-budget \
+         {budget}, held by the cut, their read-outs not compared{}",
+        cut.len(),
+        cut.iter().map(|c| format!("\n  {c}")).collect::<String>()
+    );
+    eprintln!(
+        "{} monotone programs neither route describes at --region-budget {budget}, \
+         skipped{}",
+        neither.len(),
+        neither
+            .iter()
+            .map(|c| format!("\n  {c}"))
+            .collect::<String>()
     );
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     // 2026-11-03: 171 monotone programs route 1 describes at the default
@@ -181,43 +214,27 @@ fn the_state_route_and_route_1_print_one_read_out() {
     );
 }
 
-/// **The same where route 1 finishes only past the default budget**, at
-/// `--region-budget` 2²⁵: the zebra family and the six `square-*` cubes.
-/// `EIN_CORPUS_SLOW=1` only, and the dev host's: route 1 alone took 495 s at
-/// `-j 16` to reach a 2²² ceiling on `zebra2-minus-15`
-/// (`alive_set_reach.md` § 2.3, 2026-11-03), where this asks 2²⁵ of one
-/// unit, and the whole slow half had not finished after 29 minutes on four
-/// threads (M1f S1f.6.39, 2026-11-15); no shard by program fits the
-/// nightly's five minutes (Q-M1f.304). The nightly runs the test above, by
-/// name.
-#[test]
-fn route_1_and_the_state_route_agree_past_the_default_budget() {
-    if !slow_too() {
-        return;
-    }
-    let (bad, compared) = compare(&[ein_infer::downset::DEFAULT_BUDGET, 1 << 25]);
-    eprintln!("{compared} programs compared at the first budget route 1 exhausts");
-    assert!(bad.is_empty(), "{}", bad.join("\n"));
-    assert!(
-        compared >= ein_corpus::shard::share(160),
-        "compared {compared} programs"
-    );
+/// What [`compare`] found: the failures, how many programs it compared, the
+/// programs held by the cut alone, each with its counts, and those it skipped.
+struct Compared {
+    bad: Vec<String>,
+    compared: usize,
+    cut: Vec<String>,
+    neither: Vec<String>,
 }
 
-/// The comparison over [`programs`], at each budget in turn until route 1
-/// exhausts: the failures, and how many programs were compared.
+/// The comparison over [`programs`] at one budget, the `slow` entries too if
+/// `slow`.
 ///
-/// Each (program, budget, route) is a unit of its own on the pool since M1f
-/// S1f.6.39, so a program's two routes run side by side; the fold reads
-/// them as the loop did, budget by budget, and compares at the first budget
-/// route 1 exhausts. A unit no budget reaches is computed and not read.
-fn compare(budgets: &[u64]) -> (Vec<String>, usize) {
-    let files = programs();
+/// Each (program, route) is a unit of its own on the pool since M1f
+/// S1f.6.39, so a program's two routes run side by side; the fold reads them
+/// in the programs' order. A program on which neither route finishes is
+/// skipped.
+fn compare(budget: u64, slow: bool) -> Compared {
+    let files = programs(slow);
     let routes = [Route::DownSet, Route::States];
-    let units: Vec<(usize, usize, usize)> = (0..files.len())
-        .flat_map(|f| {
-            (0..budgets.len()).flat_map(move |b| (0..routes.len()).map(move |r| (f, b, r)))
-        })
+    let units: Vec<(usize, usize)> = (0..files.len())
+        .flat_map(|f| (0..routes.len()).map(move |r| (f, r)))
         .collect();
     let rel = |f: usize| {
         files[f]
@@ -232,59 +249,79 @@ fn compare(budgets: &[u64]) -> (Vec<String>, usize) {
     let mut done = ein_corpus::pool::map(
         "route_invariance",
         &units,
-        |&(f, b, r)| (rel(f), format!("{:?} at {}", routes[r], budgets[b])),
-        |&(f, b, r)| printed(&files[f], routes[r], budgets[b]),
+        |&(f, r)| (rel(f), format!("{:?} at {budget}", routes[r])),
+        |&(f, r)| printed(&files[f], routes[r], budget),
     )
     .into_iter();
-    let mut bad: Vec<String> = Vec::new();
-    let mut compared = 0usize;
+    let mut out = Compared {
+        bad: Vec::new(),
+        compared: 0,
+        cut: Vec::new(),
+        neither: Vec::new(),
+    };
     for f in 0..files.len() {
-        let runs: Vec<(Option<Printed>, Option<Printed>)> = (0..budgets.len())
-            .map(|_| {
-                let one = done.next().expect("a unit per route");
-                let states = done.next().expect("a unit per route");
-                (one, states)
-            })
-            .collect();
+        let one = done.next().expect("a unit per route");
+        let states = done.next().expect("a unit per route");
         let rel = rel(f);
-        for (b, (one, states)) in runs.into_iter().enumerate() {
-            let budget = budgets[b];
-            let Some(one) = one else {
-                break;
-            };
-            if !one.monotone {
-                break;
-            }
-            if !one.exhausted {
+        let Some(one) = one else {
+            continue;
+        };
+        if !one.monotone {
+            continue;
+        }
+        if !one.exhausted {
+            // Route 1 is cut. Where the state route finished, the premise
+            // holds by the cut: it describes R within the budget route 1
+            // spent without finishing, so it saturated no more nodes and
+            // derived no more facts than route 1 would have. Where neither
+            // finishes, nothing is read.
+            let Some(states) = states.filter(|s| s.exhausted) else {
+                out.neither.push(rel);
                 continue;
-            }
-            let Some(states) = states else {
-                bad.push(format!(
-                    "{rel}: route 1 describes R and the state route does not run"
-                ));
-                break;
             };
-            compared += 1;
-            if !states.exhausted {
-                bad.push(format!(
-                    "{rel}: route 1 exhausts R at --region-budget {budget} and the \
-                     state route does not"
-                ));
-            } else if one.text != states.text {
-                bad.push(format!(
-                    "{rel}: {}",
-                    first_difference(&one.text, &states.text)
-                ));
-            }
-            if states.saturations > one.saturations || states.facts > one.facts {
-                bad.push(format!(
-                    "{rel}: the state route did more, {} saturations and {} facts \
-                     against route 1's {} and {}",
+            if states.facts > budget
+                || states.facts > one.facts
+                || states.saturations > one.saturations
+            {
+                out.bad.push(format!(
+                    "{rel}: route 1 is cut at --region-budget {budget} and the state \
+                     route finished past what it spent: {} saturations and {} facts \
+                     against route 1's {} and {} at the cut",
                     states.saturations, states.facts, one.saturations, one.facts
                 ));
             }
-            break;
+            out.cut.push(format!(
+                "{rel}: the state route {} saturations and {} facts, route 1 cut at {} \
+                 and {}",
+                states.saturations, states.facts, one.saturations, one.facts
+            ));
+            continue;
+        }
+        let Some(states) = states else {
+            out.bad.push(format!(
+                "{rel}: route 1 describes R and the state route does not run"
+            ));
+            continue;
+        };
+        out.compared += 1;
+        if !states.exhausted {
+            out.bad.push(format!(
+                "{rel}: route 1 exhausts R at --region-budget {budget} and the state \
+                 route does not"
+            ));
+        } else if one.text != states.text {
+            out.bad.push(format!(
+                "{rel}: {}",
+                first_difference(&one.text, &states.text)
+            ));
+        }
+        if states.saturations > one.saturations || states.facts > one.facts {
+            out.bad.push(format!(
+                "{rel}: the state route did more, {} saturations and {} facts \
+                 against route 1's {} and {}",
+                states.saturations, states.facts, one.saturations, one.facts
+            ));
         }
     }
-    (bad, compared)
+    out
 }

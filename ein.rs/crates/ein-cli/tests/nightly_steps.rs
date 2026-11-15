@@ -99,16 +99,6 @@ const DEV_HOST_ONLY: &[(&str, &str)] = &[
          outside tests/ that searches (S1f.6.39, Q-M1f.289)",
     ),
     (
-        "EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-cli --profile gate --test route_invariance",
-        "its 2^25 half, `route_1_and_the_state_route_agree_past_the_default_budget`: \
-         route 1 alone took 495 s at -j 16 to reach a 2^22 ceiling on \
-         zebra2-minus-15 (alive_set_reach.md § 2.3, 2026-11-03), one unit of a \
-         program, and the whole slow half had not finished after 29 min on four \
-         threads (S1f.6.39, 2026-11-15), so no shard fits five minutes on the \
-         runner (Q-M1f.304); the nightly runs its default-budget half, the slow \
-         entries included, by name",
-    ),
-    (
         "python3 utils/stdlib_census.py --check",
         "left the nightly at S1f.5.27: a measurement, 380 s on the runner; \
          `stdlib_coverage` is its per-commit gate",
@@ -555,10 +545,12 @@ fn every_dev_host_test_step_runs_under_the_checked_tmpdir() {
 /// **A slow half run by name leaves nothing out in silence** (M1f
 /// S1f.6.39): a nightly step that names the test it runs, `-- NAME`, names a
 /// test of its target, and either that test is the one place the target's
-/// code reads `EIN_CORPUS_SLOW` (`region`'s), or the dev host runs the whole
-/// target with the flag, a step [`DEV_HOST_ONLY`] names with why
-/// (`route_invariance`'s 2²⁵ half). So a second test that reads the flag runs
-/// on some tier.
+/// code reads `EIN_CORPUS_SLOW` (`region`'s, `route_invariance`'s), or the
+/// dev host runs the whole target with the flag, a step [`DEV_HOST_ONLY`]
+/// names with why. So a second test that reads the flag runs on some tier.
+/// The second way had one instance, `route_invariance`'s 2²⁵ half, until
+/// Q-M1f.304 was ruled (d), no test past the default budget (the user,
+/// 2026-11-15).
 #[test]
 fn a_slow_half_run_by_name_leaves_nothing_out() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));

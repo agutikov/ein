@@ -9,9 +9,8 @@
 # over 5 min on the runner, or one that measures rather than checks, runs on
 # the dev host instead, `./run_tests.sh --dev-host`, which runs every step here
 # at full budget and the steps that left: the id space permuted eight ways,
-# `route_invariance`'s 2^25 half, `stdlib_census.py` and the whole review
-# bundle. Nothing schedules the dev host; the user runs it. The jobs run side
-# by side.
+# `stdlib_census.py` and the whole review bundle. Nothing schedules the dev
+# host; the user runs it. The jobs run side by side.
 #
 # **The shards** (M1f S1f.6.39, the user's ruling of 2026-11-15 on
 # Q-M1f.293, *"split into parallel nightly jobs (shards), staying in CI"*). A
@@ -111,9 +110,8 @@ jobs:
       # M1e2 S1e2.1c.2 — route 1 and the state route print one read-out, the
       # state route never doing more: the test at the default budget, by name,
       # with the `slow` entries the per-commit half leaves here since M1f
-      # S1f.6.39 (Q-M1f.291). Its other test, the 2^25 budget, stays the dev
-      # host's: one zebra-family program's route 1 there runs past any shard's
-      # five minutes (Q-M1f.304).
+      # S1f.6.39 (Q-M1f.291). Its 2^25 test is gone: no test runs past the
+      # default budget (Q-M1f.304 ruled (d), 2026-11-15).
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
         env: { EIN_CORPUS_SLOW: "1" }
       # M1f S1f.6.35 — every corpus program that imports answers alike with its
