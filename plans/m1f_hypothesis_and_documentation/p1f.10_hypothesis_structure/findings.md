@@ -199,3 +199,128 @@ build/s1f.10.6/blind/declared.ein`, 2026-11-15).
 
 **Today:** not a wrong answer and nothing to fix. A ruling of (B) re-takes S1f.10.9's census by its own
 command, as H9-3 says of S1f.10.15's.
+
+## From S1f.10.15
+
+Met by [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s tasks 1 to
+3, 2026-11-15, on the release binary of `c6251db3`. The programs are under the untracked `build/s1f.10.15/`
+and verbatim in the stage's record; `build/s1f.10.15/run.sh`, which the record carries, runs them. None is
+fixed, and no register row is filed: the stage was told to file none.
+
+### H15-1 — Under (b), Q-M1f.306 bears on one more corpus program, and under (c) on two
+
+[H9-3](#h9-3--e-1-and-e-7-are-absent-from-the-corpuss-answers-by-the-rung-twelve-programs-take)'s dependency,
+measured. Q-M1f.308's options (b) and (c) send programs from the obligations rung to the blind enumerator,
+and Q-M1f.306's question is then asked of them. Of H9-3's twelve programs (b) moves one and (c) two; the
+other ten keep their rung under every option, seven owing at root and three under an hrule
+(`cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example rung_census -- --jobs 8
+--check`, the columns `K1` to `any`, and `object_census` on the two files, 2026-11-15):
+
+| program | moved by | new candidates | marked | what the marks name |
+|---|---|---:|---:|---|
+| `examples/features/09_adjacent_via_same_house.ein` | (b), (c) | 82 | 44, `R1` | `adjacent-via-bwd`, `adjacent-via-fwd`, a derived relation's name: E-7 |
+| `stdlib/bool/inputs.ein` | (c) | 342 | 340: 36 `K1`, 336 `IN` | `__closed__`: E-1; the sixteen functions `std.bool.gates` writes: E-54 |
+
+On the first, root is dead, so every candidate is dead alone and R is empty with the marked ones or without.
+On the second, R goes from {∅} to an unexhausted region over the 342. No other corpus program an option moves
+gains a candidate.
+
+**Today:** not a wrong answer and nothing to fix. A ruling of (b) or (c) re-takes S1f.10.9's census by its
+own command, as H9-3 says.
+
+### H15-2 — Under (b), a program that loads today is refused: *forbid*'s premise depends on the rung
+
+*Forbid* refuses a program whose refutation could rest on an `absent` over a relation a commitment can still
+extend, and which relations those are is read off H. So what a loaded and unactivated obligation rule takes
+off the blind enumerator, it also makes legal to read closed-world. `w/connex_lt_alive.ein`, the re-plan's
+witness with its third pair stated:
+
+```
+;; S1f.10.15, T1: the re-plan's witness with the third pair stated, so root
+;; is alive.
+(import std.algebra :symbols (connex))
+(relation lt Node Node :why "{?1} is less than {?2}")
+(instance A Node) (instance B Node) (instance C Node)
+(connex lt instance Node)
+(lt A B) (lt B C) (lt A C)
+(query :goal (lt ?x ?y))
+```
+
+Today: it loads, H is empty, R is {∅}, and `connex` is read over `lt` as stated. With the rung chosen by an
+obligation activated, the blind enumerator proposes `(lt B A)`, `(lt C A)` and `(lt C B)`, and the program is
+refused at load, exit 1: *rule 'connex' [activator lt instance Node]: concludes (false) from (absent …) over
+lt, a relation a commitment can still extend … close the relation, (solve :no-hypothesis (lt))* (`ein solve`
+on the stage's copy `b/connex_lt_alive.ein`, and `rung_census`'s `refusals` column, which reads
+`forbid::check` over the blind list in process). The witness as described, with two pairs stated and a dead
+root, is refused the same way.
+
+**The corpus**: none. Its two programs that activate `connex`,
+`tests/stdlib/algebra/08_checks_satisfied.ein` and `12_connex_violated.ein`, name `lt` in a `:no-hypothesis`
+list; `rung_census` finds no program (b) or (c) moves that a load would then refuse.
+
+**How it reads against the rulings.** Neither answer is wrong: today no commitment extends `lt`, so the
+closed-world reading is the legal one by *forbid*'s own rule, and under (b) the refusal is that rule applied
+to another H. What it shows is that an import decides today whether a program's `absent` is closed-world.
+
+**Today:** open, to be shown with Q-M1f.308. No owner. Under (b), task 4's list of moved answers has to hold
+programs that stop loading, of which the corpus has none.
+
+### H15-3 — The corpus was written for the third rung: one header and 35 lists say so
+
+`examples/features/09_adjacent_via_same_house.ein` imports `std.algebra` for `symmetric`, `transitive` and
+`includes` and `std.bijection` for its two typechecks, activates no obligation, and has been on the second
+rung, with no candidate, since every import brings its module whole. Its header still describes the third:
+*"Argument typing, so the blind hypothesis generator stays inside the declared signatures"*, and of its
+`:hypothesis-relations` list, *"if the guard comes back, root is consistent and the engine goes looking …
+Four candidates is enough to report a verdict and stop."* Its corpus note says *with the guard back it
+answers Ambiguity k=4*. With the guard put back (`w/features09_guard_back.ein`, the stage's `sed` over the
+tracked file): today H is empty and R is {∅}, one state; on the third rung H is 82 candidates, 78 dead alone
+and the four the header counts alive, and R is 9 states. The fixture still fails on the regression, a dead
+root turned alive, and no longer shows what it says it would.
+
+And 35 programs an unactivated rule holds on the second rung, 32 of them under `tests/stdlib/`, carry a
+`:no-hypothesis` list that names every relation the blind enumerator would fill. On the second rung with
+nothing owed the list filters nothing, and nothing notes it: the `note:` for a list that filters nothing is
+written for a list beside an hrule.
+
+**Today:** not a wrong answer. Under Q-M1f.308 (b) the header and the lists are true again as written; under
+(a) the header and the corpus note are stale and task 4 restates them.
+
+### H15-4 — The ladder is stated in five places, and three of them read as option (c)
+
+Two say what the engine does.
+[`06_reserved_names.md` § Hypothesis / query control](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md#hypothesis--query-control),
+since S1f.6.34 corrected it: *a loaded obligation rule that owes nothing at root proposes nothing, and the
+blind enumerator does not run*. And `oblgen.rs`'s header: *the middle row is about what the program declares,
+not about what this state happens to owe*.
+
+Three do not. [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 1.4 and
+`AGENTS.md` say *the program's own `(hrule …)` if it declares one, else the facts that would discharge what
+root owes, else the blind combinatorial enumerator*, and `hypgen.rs`'s header *obligation-driven while the
+state owes something it may branch on, otherwise blind combinatorial*. Read as written, they send a program
+that owes nothing to the blind enumerator, which is Q-M1f.308's option (c) and what the engine does not do:
+`w/o_satisfied.ein` owes nothing and has no candidate.
+
+**Today:** a documentation finding, no answer concerned. Whatever Q-M1f.308 rules, the sentence is restated
+in all five; task 4 names `06_reserved_names.md` and the two module headers.
+
+### H15-5 — From the second rung, the only way to the blind enumerator is an obligation nothing owes
+
+`(solve :no-search)` is how a program says *judge root alone*. A program that imports `std.algebra`,
+`std.bijection`, `std.closure`, `std.typing`, `std.slots` or `std.bool.inputs` and wants its own open
+relations guessed about has no declaration for that: an hrule is the first rung and not the third, and the
+two lists only take relations out. What reaches the third rung is the second rung declining, which a program
+can cause by writing an obligation rule with a bare `(open)` that no state owes.
+[`tests/stdlib/bijection/06_blind_enumeration.ein`](../../../tests/stdlib/bijection/06_blind_enumeration.ein)
+does so on purpose, by `sorted-somewhere`, *"the file has to earn it back"*, and the stage's copies for
+options (b) and (c) are made the same way, with one rule:
+
+```
+(rule s15-off () :match (and (s15-on) (absent (s15-paid))) :assert (open) :why "never owed: a bare (open) takes the obligations rung to the blind enumerator")
+```
+
+On each of the stage's programs the copy's H is the blind enumerator's list at the original's root, and its R
+is the cube `rung_census` computes over that list in process.
+
+**Today:** not a wrong answer. It bears on Q-M1f.308 (a): kept as it is, the ladder has a declared way down
+to root alone and none across to the third rung.
