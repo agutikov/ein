@@ -1731,6 +1731,10 @@
 0    stdlib/math/arith.ein :: render rules
 0    stdlib/math/arith.ein :: saturate
 0    stdlib/math/arith.ein :: solve
+0    stdlib/math/bits.ein :: render constraints
+1    stdlib/math/bits.ein :: render rules
+0    stdlib/math/bits.ein :: saturate
+0    stdlib/math/bits.ein :: solve
 0    stdlib/math/decimal-arith.ein :: render constraints
 0    stdlib/math/decimal-arith.ein :: render rules
 0    stdlib/math/decimal-arith.ein :: saturate
@@ -2063,6 +2067,11 @@
 0    tests/stdlib/macro/02_unknown.ein :: saturate
 0    tests/stdlib/macro/02_unknown.ein :: solve
 0    tests/stdlib/macro/02_unknown.ein :: test
+0    tests/stdlib/math/bits/01_tables.ein :: render constraints
+1    tests/stdlib/math/bits/01_tables.ein :: render rules
+0    tests/stdlib/math/bits/01_tables.ein :: saturate
+0    tests/stdlib/math/bits/01_tables.ein :: solve
+0    tests/stdlib/math/bits/01_tables.ein :: test
 0    tests/stdlib/math/decimal-arith/01_add.ein :: render constraints
 1    tests/stdlib/math/decimal-arith/01_add.ein :: render rules
 0    tests/stdlib/math/decimal-arith/01_add.ein :: saturate

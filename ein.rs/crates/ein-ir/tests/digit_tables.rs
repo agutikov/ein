@@ -1,8 +1,11 @@
-//! **`std.math.digits`, every row held to the integers** — M1f
-//! [S1f.6.2](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md).
+//! **`std.math.digits` and `std.math.bits`, every row held to the integers** — M1f
+//! [S1f.6.2](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md),
+//! and [S1f.6.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md)
+//! for the bits.
 //!
 //! `stdlib/math/digits.ein` is the calculator's gates: seven tables of plain facts,
-//! written by `utils/gen_arith_tables.py`. Ein has no numbers, so nothing in
+//! written by `utils/gen_arith_tables.py`, which since S1f.6.16 also writes
+//! `stdlib/math/bits.ein`, binary's four. Ein has no numbers, so nothing in
 //! the engine can say whether `(fa 7 5 0 2 1)` is true; a wrong row would be a
 //! wrong answer in every program that adds 7 and 5, and no golden would know.
 //! What holds the rows is this file, in three claims:
@@ -12,6 +15,7 @@
 //! | every row agrees with Rust's integers, **none missing and none twice** | [`every_row_agrees_with_the_integers`] |
 //! | the module is a library of facts: seven declarations, a `(__closed__ R)` fact for each, the rows, and nothing else | [`the_module_is_seven_closed_tables_and_nothing_else`] |
 //! | the file is what the generator writes — the script's `--check`, which is how that check is in the gate | [`the_file_is_what_the_generator_writes`] |
+//! | **`std.math.bits`**: every row agrees with Rust's integers at base two, none missing and none twice, and the module is four closed tables and nothing else (S1f.6.16) | [`every_bit_row_agrees_with_the_integers`], [`the_bits_are_four_closed_tables_and_nothing_else`] |
 //! | a flat import brings a listed table's rows, and the closing facts when `__closed__` is listed, from the **embedded** copy too | [`a_flat_import_brings_a_table_from_the_embedded_copy`] |
 //!
 //! The rows are computed twice, in Python by the generator and in Rust here,
@@ -105,8 +109,58 @@ fn expected() -> BTreeMap<&'static str, Vec<Row>> {
 }
 
 fn module_text() -> String {
-    let path = repo_root().join("stdlib/math/digits.ein");
+    text_of("stdlib/math/digits.ein")
+}
+
+fn text_of(file: &str) -> String {
+    let path = repo_root().join(file);
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
+}
+
+/// `std.math.bits`' four tables, in the order the module declares them.
+const BITS: [&str; 4] = ["bin-fa", "bin-fs", "bin-cl", "bin-nz"];
+
+/// What each of `std.math.bits`' tables must hold, from Rust's integers
+/// alone, at base two: the full adder, the full subtractor, the comparator
+/// and *not zero*, as [`expected`]'s at base ten.
+fn expected_bits() -> BTreeMap<&'static str, Vec<Row>> {
+    let mut t: BTreeMap<&'static str, Vec<Row>> = BTreeMap::new();
+    for a in 0..2 {
+        for b in 0..2 {
+            for c in 0..2 {
+                let s = a + b + c;
+                t.entry("bin-fa")
+                    .or_default()
+                    .push(row([d(a), d(b), d(c), d(s % 2), d(s / 2)]));
+                let m: i32 = a - b - c;
+                t.entry("bin-fs").or_default().push(row([
+                    d(a),
+                    d(b),
+                    d(c),
+                    d(m.rem_euclid(2)),
+                    d(i32::from(m < 0)),
+                ]));
+            }
+            for below in ["lt", "eq", "gt"] {
+                let order = match a.cmp(&b) {
+                    std::cmp::Ordering::Less => "lt",
+                    std::cmp::Ordering::Greater => "gt",
+                    std::cmp::Ordering::Equal => below,
+                };
+                t.entry("bin-cl").or_default().push(row([
+                    below.to_string(),
+                    d(a),
+                    d(b),
+                    order.to_string(),
+                ]));
+            }
+        }
+    }
+    t.entry("bin-nz").or_default().push(row([d(1)]));
+    for rows in t.values_mut() {
+        rows.sort();
+    }
+    t
 }
 
 /// A top-level form as `(head, atom arguments)`; `None` for an argument that
@@ -186,6 +240,62 @@ fn every_row_agrees_with_the_integers() {
     }
 }
 
+/// **`std.math.bits`' rows, held to the integers at base two** (S1f.6.16):
+/// 29 rows, none missing and none twice.
+#[test]
+fn every_bit_row_agrees_with_the_integers() {
+    let mut ast = Ast::new();
+    let forms = parse(
+        &mut ast,
+        &text_of("stdlib/math/bits.ein"),
+        Some("stdlib/math/bits.ein"),
+    )
+    .expect("std.math.bits parses");
+    let got = by_head(&ast, &forms);
+    let want = expected_bits();
+    let sizes: Vec<(&str, usize)> = BITS.iter().map(|t| (*t, want[t].len())).collect();
+    assert_eq!(
+        sizes,
+        [("bin-fa", 8), ("bin-fs", 8), ("bin-cl", 12), ("bin-nz", 1)],
+        "the integers' own table sizes at base two"
+    );
+    for table in BITS {
+        let mut rows = got.get(table).cloned().unwrap_or_default();
+        rows.sort();
+        assert_eq!(
+            rows, want[table],
+            "std.math.bits' `{table}` against the integers at base two"
+        );
+    }
+}
+
+/// `std.math.bits` is a library of facts as `std.math.digits` is: four
+/// declarations, a written `(__closed__ R)` for each, the rows, and nothing
+/// else.
+#[test]
+fn the_bits_are_four_closed_tables_and_nothing_else() {
+    let mut ast = Ast::new();
+    let forms = parse(
+        &mut ast,
+        &text_of("stdlib/math/bits.ein"),
+        Some("stdlib/math/bits.ein"),
+    )
+    .expect("std.math.bits parses");
+    let got = by_head(&ast, &forms);
+    let tables: Vec<Row> = BITS.iter().map(|t| vec![(*t).to_string()]).collect();
+    assert_eq!(got["relation"], tables, "the declarations, in order");
+    assert_eq!(
+        got["__closed__"], tables,
+        "one written `(__closed__ R)` per table"
+    );
+    let mut heads: Vec<&str> = got.keys().map(String::as_str).collect();
+    heads.sort_unstable();
+    let mut want: Vec<&str> = BITS.to_vec();
+    want.extend(["relation", "__closed__"]);
+    want.sort_unstable();
+    assert_eq!(heads, want, "a library of facts and nothing else");
+}
+
 #[test]
 fn the_module_is_seven_closed_tables_and_nothing_else() {
     let mut ast = Ast::new();
@@ -210,7 +320,8 @@ fn the_module_is_seven_closed_tables_and_nothing_else() {
     );
 }
 
-/// `utils/gen_arith_tables.py --check`, run here so that it is in the gate:
+/// `utils/gen_arith_tables.py --check`, run here so that it is in the gate,
+/// for both of its files, `std.math.digits` and, since S1f.6.16, `std.math.bits`:
 /// the per-commit tier runs `cargo test --workspace`, and its job installs a
 /// `python3` for `cli_semantics.rs`'s `gen_zebra2_variants.py --check`, the
 /// same shape (Q-M1f.145).
@@ -234,7 +345,7 @@ fn the_file_is_what_the_generator_writes() {
         .expect("python3 ran a moment ago");
     assert!(
         out.status.success(),
-        "stdlib/math/digits.ein is stale — run `python3 utils/gen_arith_tables.py` and \
+        "stdlib/math/digits.ein or bits.ein is stale — run `python3 utils/gen_arith_tables.py` and \
          `python3 utils/stdlib_manifest.py --write`\n{}{}",
         String::from_utf8_lossy(&out.stdout),
         String::from_utf8_lossy(&out.stderr),

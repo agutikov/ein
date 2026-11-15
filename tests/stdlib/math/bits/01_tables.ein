@@ -1,0 +1,43 @@
+;;; `std.math.bits` — the bit tables, imported and listed, a row of each claimed.
+;;; M1f S1f.6.16.
+;;;
+;;; ── What the module promises ───────────────────────────────────────────────
+;;;
+;;; `std.math.bits` is a library of **facts** and holds no rule: binary's four
+;;; tables, 29 rows, which `std.math.binary-arith` and the shared rules of
+;;; `std.math.positional` activated for binary look up. Its rows are held to
+;;; Rust's integers, every one, by `ein-ir/tests/digit_tables.rs`; this program
+;;; is the module seen from a program. An import brings every table and its
+;;; written `(__closed__ R)` facts, so no row is a hypothesis: the universe
+;;; has no candidate and R is {∅}, which the `(solve …)` form claims.
+;;;
+;;; ── The claims ─────────────────────────────────────────────────────────────
+;;;
+;;; A goal with constants where a table reads and variables where it gives is
+;;; a lookup, and its claim closes the goal: exactly one row answers.
+;;;
+;;;   bin-fa  1 + 1 + carry 1 = 11      bit 1, carry 1
+;;;   bin-fs  0 - 1 - borrow 1 = -10    bit 0, borrow 1
+;;;   bin-cl  equal below, 0 against 1  lt: a differing bit overrules
+;;;   bin-cl  gt below, 1 against 1     gt: equal bits keep the order
+;;;
+;;; `bin-nz` is claimed whole: `1` is not zero, and `0` is not among it.
+
+(import std.math.bits :symbols (bin-fa bin-fs bin-cl bin-nz))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-fa 1 1 1 ?bit ?carry)
+       :expect (model (bin-fa 1 1 1 1 1)))
+
+(query :goal (bin-fs 0 1 1 ?bit ?borrow)
+       :expect (model (bin-fs 0 1 1 0 1)))
+
+(query :goal (bin-cl eq 0 1 ?order)
+       :expect (model (bin-cl eq 0 1 lt)))
+
+(query :goal (bin-cl gt 1 1 ?order)
+       :expect (model (bin-cl gt 1 1 gt)))
+
+(query :goal (bin-nz ?bit)
+       :expect (model (bin-nz 1)))

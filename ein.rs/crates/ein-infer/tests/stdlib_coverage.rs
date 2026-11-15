@@ -89,9 +89,9 @@ const STDLIB: &str = "stdlib";
 /// `open`, which are *macros*, and `std.math.digits` (M1f S1f.6.2) is a library of
 /// **facts**, the calculator's digit tables, with no rule for this gate to ask
 /// about: what holds its rows is `ein-ir/tests/digit_tables.rs`, every one
-/// against Rust's integers. A day when `algebra.ein` parses to zero rules must
-/// not read the same as either.
-const RULE_FREE_MODULES: [&str; 2] = ["std.math.digits", "std.macro"];
+/// against Rust's integers, and so `std.math.bits` (S1f.6.16), binary's. A day
+/// when `algebra.ein` parses to zero rules must not read the same as any.
+const RULE_FREE_MODULES: [&str; 3] = ["std.math.digits", "std.math.bits", "std.macro"];
 
 // ── the declaration inventory ──────────────────────────────────────
 
