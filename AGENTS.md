@@ -266,15 +266,16 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  P1f.5 and P1f.7 are closed. **P1f.6, the calculator, is running**: its
+  P1f.5 and P1f.7 are closed. **P1f.6, the calculator, is at its close**: its
   [README](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)
   has the stage table, and
-  [`replies_2026-11-12.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md)
-  the order the remaining stages (S1f.6.24 to S1f.6.33) run in and which
-  reply or default each rests on.
+  [`close.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md)
+  the close prepared for the user. P1f.10 and P1f.20 follow it, in the
+  order the user chooses there.
 - **What waits for the user** in P1f.6:
-  [`questions.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md)
-  and `questions_round2.md`; the phase keeps what it finds in its own
+  [`close.md` § What the user is asked](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#what-the-user-is-asked);
+  `questions.md` and `questions_round2.md` are answered. The phase keeps
+  what it finds in its own
   [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
   (E-n) and shows it. Milestone-wide questions, with every default taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
