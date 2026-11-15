@@ -1,9 +1,14 @@
 # S1f.10.10 — The theory's share: rules, ontology and the two facts
 
 **Phase:** [P1f.10](README.md), track S (the structure)
-**Status:** planned 2026-11-15, at the re-plan. Not started.
+**Status:** planned 2026-11-15, at the re-plan. Not started. **Re-scoped 2026-11-15, after
+[S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-stopped-at-the-control) stopped at its control**: it runs before
+S1f.10.2, the small-KB check reads **every pair of H** and not only the pairs root excludes (a pair with a member
+dead alone at root has a row and a column too), and the theory's exclusions are computed by the owner module,
+`ein_infer::structure`, in process, since S1f.10.2's groups are their cliques. `theory.ein` under `build/` is
+that small KB written out for review, not the instrument.
 **Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md), the excluded pairs at root.
-**Read by:** [S1f.10.12](s1f.10.12_the_structure_shown.md); [S1f.10.13](s1f.10.13_the_price_list.md), which
+**Read by:** [S1f.10.2](s1f.10.2_groups.md), whose groups are the cliques of what this stage finds; [S1f.10.12](s1f.10.12_the_structure_shown.md); [S1f.10.13](s1f.10.13_the_price_list.md), which
 prices the small-KB check as one way of getting the pairs.
 
 ## Context

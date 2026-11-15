@@ -2,9 +2,11 @@
 
 **Phase:** [P1f.10](README.md), track S (the structure)
 **Status:** **stopped at its control, 2026-11-15**: [§ Record](#record-2026-11-15-stopped-at-the-control). On I-Z2 no
-declared row or column is a maximal clique of the exclusion graph. No cover was built and the definition in
-§ Context is not adopted: what a group is waits for a ruling.
-**Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md), the excluded pairs.
+declared row or column is a maximal clique of root's exclusion graph, and no cover was built. **To be run again
+after S1f.10.10, under [§ Defaults taken](#defaults-taken)'s third entry**: a group is a maximal clique of the
+theory's exclusions.
+**Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md), the excluded pairs; and, since the control,
+[S1f.10.10](s1f.10.10_the_theorys_share.md), the theory's exclusions over every pair of H.
 **Read by:** [S1f.10.4](s1f.10.4_bounded_groups.md), [S1f.10.11](s1f.10.11_coupling.md),
 [S1f.10.12](s1f.10.12_the_structure_shown.md), and of track R [S1f.10.5](s1f.10.5_ordering.md) and
 [S1f.10.14](s1f.10.14_exactly_one_spent.md).
@@ -227,7 +229,7 @@ what each needs.
 
 ### Defaults taken
 
-Both are the coordinator's, taken on 2026-11-15, and the user's to revise at the phase's stop.
+All are the coordinator's, taken on 2026-11-15, and the user's to revise at the phase's stop.
 
 1. **A group is over the candidates alive alone.** *Excludes* is defined of two candidates each alive alone, so a
    maximal clique of the exclusion graph holds no candidate dead alone: such a candidate is in no group and is
@@ -246,6 +248,20 @@ Both are the coordinator's, taken on 2026-11-15, and the user's to revise at the
    (`EIN_CORPUS_SLOW=1 EIN_TEST_JOBS=4 utils/bench_env.sh --cores PT:4 --require-ac cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer --test pair_layer -- the_excluded_pairs_are_the_pairs_of_n --nocapture`,
    2026-11-15). It was applied though the stage stopped: it does not depend on what a group is, and `706f9b47`
    fails `nightly_steps.rs`'s `every_slow_half_runs_on_a_tier` without it.
+
+3. **A group is a maximal clique of the exclusions the theory makes alone** (reading 2 of
+   [§ What is to be ruled](#what-is-to-be-ruled)), over all of H. Taken after the control, for three reasons. It
+   is the founding instruction's own wording: *checked on small fact set of this 2 facts, without the rest of KB
+   — taking rules, ontology and this 2 facts … So hyp set can be split into groups*. It is the one reading under
+   which the control holds, on the one measurement there is (the probe: 36 cliques on I-Z2's H, every row and
+   column, every candidate in two). And it needs nothing that was not planned: S1f.10.10 computes the theory's
+   exclusions anyway, and now runs first and over every pair of H. **It supersedes the first entry**: a
+   candidate dead alone is in the groups of its row and its column, marked dead alone there, and a group's
+   *open* members are those alive alone. Reading 1's object, the maximal cliques of root's exclusion graph, is
+   still counted per program beside the cover, since what the clues add to the theory's edges is information
+   and [S1f.10.11](s1f.10.11_coupling.md)'s input; it is not called a group. The risk taken with it is
+   S1f.10.10's, named in the phase's Risks: *rules and ontology* has no syntactic mark, and where the small KB
+   has no definition the corpus leaves standing, a program has no groups by this reading and says so.
 
 ## What it must not do
 

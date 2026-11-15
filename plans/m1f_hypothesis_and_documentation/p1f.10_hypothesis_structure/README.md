@@ -3,7 +3,11 @@
 **Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands.
 [S1f.10.1](s1f.10.1_exclusion_census.md#record-2026-11-15) ran that day, and
 [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-stopped-at-the-control) stopped at its control: on I-Z2 no declared row or
-column is a maximal clique of the exclusion graph, and what a group is waits for a ruling. No other stage has run.
+column is a maximal clique of root's exclusion graph. **The default taken on it, the user's to revise at the stop:
+a group is a maximal clique of the exclusions the theory makes alone**, the instruction's own *rules, ontology and
+this 2 facts*, so S1f.10.10 runs before S1f.10.2 ([§ The order](#the-order),
+[S1f.10.2 § Defaults taken](s1f.10.2_groups.md#defaults-taken)). Of track H,
+S1f.10.9's tasks 1 to 3 ran that day.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.
@@ -182,7 +186,7 @@ lattice, so each is a fact about R's lattice and not a second semantics.
 | **dead alone**, **implies**, **equivalent** | a candidate whose own node is dead; `b` in the closure of `{a}`; two candidates with one closure | [S1f.10.1](s1f.10.1_exclusion_census.md) |
 | **excludes** | `a` and `b` each alive alone, `{a, b}` dead | S1f.10.1 |
 | **of the theory, of the puzzle** | whether an exclusion holds with *rules, ontology and the two facts* alone, and if not, which stated facts it rests on | [S1f.10.10](s1f.10.10_the_theorys_share.md) |
-| **group** | a maximal set of pairwise excluding candidates: *pick at most one*. A cover of H, not a partition | [S1f.10.2](s1f.10.2_groups.md) |
+| **group** | a maximal set of candidates that pairwise exclude **by the theory alone**: *pick at most one*. A cover of H, not a partition. (As planned, of root's exclusions; the control falsified that on I-Z2, and the cliques of root's graph are kept beside as a count) | [S1f.10.2](s1f.10.2_groups.md) |
 | **owed group**, **grid** | a group some member of which must hold, *exactly one*; two families of groups over one member set, a bijection | [S1f.10.4](s1f.10.4_bounded_groups.md) |
 | **coupling** | what ties groups together that no pair shows: a conflict or a derivation that needs members of three groups or more | [S1f.10.11](s1f.10.11_coupling.md) |
 | **in no group**, **junk** | a candidate nothing excludes; a candidate that is a kernel name or a relation's name | S1f.10.2, [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) |
@@ -247,8 +251,10 @@ group forms. Every stage reports it, and S1f.10.11 is where its triple has to ap
 
 **Part 1 reads and measures. It changes no answer, no route and no surface.**
 
-1. S1f.10.1, then S1f.10.2.
-2. S1f.10.10, S1f.10.4 and S1f.10.11, which share S1f.10.1's census and no file with each other's result.
+1. S1f.10.1; then S1f.10.10, over every pair of H and not only the pairs root excludes; then S1f.10.2, whose
+   groups are cliques of the theory's exclusions. (Re-ordered 2026-11-15, after S1f.10.2 stopped at its control:
+   as planned it was S1f.10.1, S1f.10.2, and S1f.10.10 in step 2.)
+2. S1f.10.4 and S1f.10.11, which share the census and no file with each other's result.
 3. S1f.10.13, which needs S1f.10.1 only and may run beside step 2.
 4. The three H stages up to their questions: S1f.10.9, S1f.10.6, S1f.10.15, tasks 1 to 3 of each.
 5. S1f.10.12's bundle, and **the one stop**: the structure on real programs, the price list, and four
