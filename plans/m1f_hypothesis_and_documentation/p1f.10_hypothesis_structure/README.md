@@ -6,7 +6,11 @@
 column is a maximal clique of root's exclusion graph. **The default taken on it, the user's to revise at the stop:
 a group is a maximal clique of the exclusions the theory makes alone**, the instruction's own *rules, ontology and
 this 2 facts*, so S1f.10.10 runs before S1f.10.2 ([§ The order](#the-order),
-[S1f.10.2 § Defaults taken](s1f.10.2_groups.md#defaults-taken)). Of track H,
+[S1f.10.2 § Defaults taken](s1f.10.2_groups.md#defaults-taken)).
+[S1f.10.10](s1f.10.10_the_theorys_share.md#record-2026-11-15) ran that day: the theory's share is computed by the
+owner, over every pair of H, and on I-Z2 the theory excludes exactly the 128 row and column pairs; the rule that
+says which statements are the puzzle's was restated from the one planned, which the corpus falsified, and is a
+default. Of track H,
 S1f.10.9's tasks 1 to 3 ran that day.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.

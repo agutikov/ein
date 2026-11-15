@@ -795,6 +795,53 @@ impl<'a> Space<'a> {
         out
     }
 
+    /// Root's fixpoint, sealed: what every node is a fork of.
+    pub(crate) fn root(&self) -> &Kb {
+        self.root
+    }
+
+    /// Root's plans, as the static check read them.
+    pub(crate) fn plans(&self) -> &[std::sync::Arc<crate::plan::Plan>] {
+        &self.plans
+    }
+
+    pub(crate) fn terms(&self) -> &Terms {
+        self.terms
+    }
+
+    /// The rung of the ladder that built the universe.
+    pub(crate) fn rung(&self) -> crate::oblgen::Mode {
+        self.root_stats.hypgen.rung.mode
+    }
+
+    /// What the death of each of `sets` rests on among `stated`, the facts
+    /// the program states ([`crate::explain::support_frontier`]), in `sets`'
+    /// order; `None` for a set whose node is alive. Each is the node
+    /// function's own fork of root, saturated again as a core taken after a
+    /// walk is ([`region::cores_after`]): the cache keeps no fixpoint, so a
+    /// support costs its node a second time, and the count is the caller's
+    /// to report. Nothing here is remembered, and no step is charged to the
+    /// budget.
+    pub(crate) fn supports(
+        &mut self,
+        sets: &[Box<[u32]>],
+        stated: &FxHashSet<FactId>,
+    ) -> Result<Vec<Option<region::Support>>, SolveError> {
+        let mut reader = region::Nodes::of_parts(
+            self.root,
+            self.snapshot.clone(),
+            self.memo.clone(),
+            self.terms,
+            self.ast,
+        );
+        let mut out = Vec::with_capacity(sets.len());
+        for set in sets {
+            let facts: Vec<FactId> = set.iter().map(|&b| self.facts[b as usize]).collect();
+            out.push(reader.support(&facts, stated)?);
+        }
+        Ok(out)
+    }
+
     fn answer(self, mode: Mode, route: Route, found: Found) -> Answer {
         let route = found.route.unwrap_or(route);
         let (n, nodes, stale) = (self.n(), self.saturations, self.stale);

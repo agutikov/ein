@@ -768,6 +768,32 @@ pub(crate) fn prepare_with(
     ast: &Ast,
     events: &mut Events,
 ) -> Result<Prepared, SolveError> {
+    prepare_as(root, terms, ast, events, None)
+}
+
+/// [`prepare`] over a universe the caller names, in the order it names it,
+/// where the generator's list would be: root is saturated and the static
+/// check read as [`prepare`] reads them, *forbid* included, and the
+/// generator is not run, so [`RootStats::hypgen`], [`RootStats::outside`]
+/// and [`RootStats::types_as_objects`] say nothing. For a reader that asks
+/// what a program over fewer of its statements decides of the candidates
+/// another root proposed ([`crate::structure`]); no route calls it.
+pub(crate) fn prepare_over(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    universe: &[Candidate],
+) -> Result<Prepared, SolveError> {
+    prepare_as(root, terms, ast, &mut Events::off(), Some(universe))
+}
+
+fn prepare_as(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+    universe: Option<&[Candidate]>,
+) -> Result<Prepared, SolveError> {
     let memo = SharedMemo::default();
 
     // Root's fixpoint, and the snapshot every node resumes from.
@@ -796,35 +822,40 @@ pub(crate) fn prepare_with(
     // The universe, config-free, in rendered-text order. Narrated, so the
     // stream says how H was built — the rung and each candidate — as the
     // walk's narrated its own generator (M1e2 S1e2.1a.5).
-    let mut proposed: Vec<FactId> = Vec::new();
-    {
-        let mut s = Session {
-            kb: root,
-            terms,
-            ast,
-            events,
-            memo: memo.clone(),
-        };
-        crate::hypgen::generate_config_free(&mut s, &mut root_stats.hypgen, &mut |f| {
-            proposed.push(f);
-            std::ops::ControlFlow::Continue(())
-        })?;
-    }
-    let mut candidates: Vec<(String, Candidate)> = proposed
-        .into_iter()
-        .map(|fact| {
-            (
-                order_key(terms, fact),
-                Candidate {
-                    fact,
-                    text: sexpr(terms, fact),
-                },
-            )
-        })
-        .collect();
-    candidates.sort_by(|a, b| a.0.cmp(&b.0));
-    candidates.dedup_by(|a, b| a.1.fact == b.1.fact);
-    let candidates: Vec<Candidate> = candidates.into_iter().map(|(_, c)| c).collect();
+    let candidates: Vec<Candidate> = match universe {
+        Some(named) => named.to_vec(),
+        None => {
+            let mut proposed: Vec<FactId> = Vec::new();
+            {
+                let mut s = Session {
+                    kb: root,
+                    terms,
+                    ast,
+                    events,
+                    memo: memo.clone(),
+                };
+                crate::hypgen::generate_config_free(&mut s, &mut root_stats.hypgen, &mut |f| {
+                    proposed.push(f);
+                    std::ops::ControlFlow::Continue(())
+                })?;
+            }
+            let mut candidates: Vec<(String, Candidate)> = proposed
+                .into_iter()
+                .map(|fact| {
+                    (
+                        order_key(terms, fact),
+                        Candidate {
+                            fact,
+                            text: sexpr(terms, fact),
+                        },
+                    )
+                })
+                .collect();
+            candidates.sort_by(|a, b| a.0.cmp(&b.0));
+            candidates.dedup_by(|a, b| a.1.fact == b.1.fact);
+            candidates.into_iter().map(|(_, c)| c).collect()
+        }
+    };
 
     // The static check, over root's plans. Root's tally is what compiles the
     // obligation plans; a node can only compile one root lacks through an
@@ -851,24 +882,27 @@ pub(crate) fn prepare_with(
     let plans = crate::monotone::plans_of(&memo);
     let monotonicity = crate::monotone::classify(root, terms, &plans, &hypothesised);
     // What the universe leaves out, read off the rung the pass took and the
-    // plans root compiled: no event, since nothing is generated.
-    root_stats.outside = {
-        let mut silent = Events::off();
-        let mut s = Session {
-            kb: root,
-            terms,
-            ast,
-            events: &mut silent,
-            memo: memo.clone(),
+    // plans root compiled: no event, since nothing is generated. A universe
+    // the caller named was built by no rung of this root's.
+    if universe.is_none() {
+        root_stats.outside = {
+            let mut silent = Events::off();
+            let mut s = Session {
+                kb: root,
+                terms,
+                ast,
+                events: &mut silent,
+                memo: memo.clone(),
+            };
+            crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans)?
         };
-        crate::scope::outside(&mut s, root_stats.hypgen.rung.mode, &plans)?
-    };
-    // What the untyped rung bound as an object (M1e2 S1e2.2.10): read off H
-    // and root's fixpoint, no event, and nothing it decides.
-    root_stats.types_as_objects = {
-        let facts: Vec<FactId> = candidates.iter().map(|c| c.fact).collect();
-        crate::types_as_objects::of(root, terms, root_stats.hypgen.rung.mode, &facts)
-    };
+        // What the untyped rung bound as an object (M1e2 S1e2.2.10): read off
+        // H and root's fixpoint, no event, and nothing it decides.
+        root_stats.types_as_objects = {
+            let facts: Vec<FactId> = candidates.iter().map(|c| c.fact).collect();
+            crate::types_as_objects::of(root, terms, root_stats.hypgen.rung.mode, &facts)
+        };
+    }
     // *Forbid* (M1e2 S1e2.2.5): a refutation resting on an `absent` over a
     // relation a commitment can still extend refuses the program, here, after
     // root's fixpoint and the static check, so every question about a
@@ -1184,6 +1218,21 @@ impl AfterWalk {
     }
 }
 
+/// What a dead node's refutation rests on among the facts the program states,
+/// as [`Nodes::support`] reads it.
+#[derive(Clone, Debug)]
+pub(crate) struct Support {
+    /// The search labelled the contradiction. `false` where its closure
+    /// passed the budget's fact count before it did: no support is read, and
+    /// [`Self::frontier`] is empty.
+    pub read: bool,
+    /// The stated facts and the commitments the derivation rests on.
+    pub frontier: Vec<FactId>,
+    /// The rules whose firing ends the derivation, as a core's `refuted by`.
+    pub rules: Vec<String>,
+    pub status: crate::explain::CoreStatus,
+}
+
 /// The node function, for a reader that needs a state itself and not its two
 /// bits: the read-out's `(model …)`s and its query classes (M1e2
 /// T1e2.1a.5.2). Root is prepared once; each fixpoint is a fork of it,
@@ -1404,6 +1453,47 @@ impl<'a> Nodes<'a> {
                 core_status: Some(crate::explain::CoreStatus::of(&e)),
                 refuted_by: rules_of(self.terms, &e.steps),
             }
+        });
+        self.terms.provs.discard_fork();
+        out
+    }
+
+    /// What the death of root plus `facts` rests on among `stated`, the facts
+    /// the program states ([`crate::explain::support_frontier`]): the node
+    /// function's own fork, as [`Self::refutation`] reads it, with the
+    /// support's search where the core's is. `None` where the fixpoint is
+    /// alive.
+    pub(crate) fn support(
+        &mut self,
+        facts: &[FactId],
+        stated: &FxHashSet<FactId>,
+    ) -> Result<Option<Support>, SolveError> {
+        self.terms.provs.open_fork();
+        let out = fixpoint(
+            self.root,
+            &self.snapshot,
+            self.terms,
+            self.ast,
+            &self.memo,
+            facts,
+        )
+        .map(|fork| {
+            let contradictions = crate::contradiction::detect(&fork, self.terms);
+            (!contradictions.is_empty()).then(|| {
+                let e = crate::explain::support_frontier(
+                    &fork,
+                    self.terms,
+                    &contradictions,
+                    &crate::explain::ExplanationBudget::default(),
+                    stated,
+                );
+                Support {
+                    read: e.target.is_some(),
+                    status: crate::explain::CoreStatus::of(&e),
+                    rules: rules_of(self.terms, &e.steps),
+                    frontier: e.frontier,
+                }
+            })
         });
         self.terms.provs.discard_fork();
         out

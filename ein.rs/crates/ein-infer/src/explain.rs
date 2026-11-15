@@ -468,7 +468,25 @@ fn fact_id_repr(terms: &Terms, id: FactId) -> String {
     ]))
 }
 
-fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationBudget) -> Graph {
+/// What a search grounds out on, and which activators it follows.
+#[derive(Clone, Copy)]
+enum Reach<'a> {
+    /// A core's: the engine's givens and a node's commitments, and the
+    /// activator a node derived or committed
+    /// ([`ein_core::walks::node_activator`]).
+    Core,
+    /// A support's ([`support_frontier`]): those, every fact of the set,
+    /// and the activator of every firing, root's among them.
+    Support(&'a FxHashSet<FactId>),
+}
+
+fn build_graph(
+    kb: &Kb,
+    terms: &Terms,
+    targets: &[FactId],
+    budget: &ExplanationBudget,
+    reach: Reach<'_>,
+) -> Graph {
     let mut g = Graph {
         just: FxHashMap::default(),
         consumers: FxHashMap::default(),
@@ -496,7 +514,8 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
             g.just.remove(&fid);
             continue;
         }
-        if ein_core::walks::is_frontier(kb, terms, fid) {
+        let stated = matches!(reach, Reach::Support(stated) if stated.contains(&fid));
+        if stated || ein_core::walks::is_frontier(kb, terms, fid) {
             // A placeholder env; the rank it holds is filled in below, once
             // every node has one.
             g.seed.insert(fid, vec![vec![u32::MAX]]);
@@ -512,7 +531,11 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
             // Its premises, and the activator its plan was compiled from
             // where a node derived or committed it (M1e2 S1e2.2.19).
             let mut facts = prov.premises.to_vec();
-            if let Some(a) = ein_core::walks::node_activator(kb, prov)
+            let activator = match reach {
+                Reach::Core => ein_core::walks::node_activator(kb, prov),
+                Reach::Support(_) => prov.activator,
+            };
+            if let Some(a) = activator
                 && !facts.contains(&a)
             {
                 facts.push(a);
@@ -760,7 +783,7 @@ pub fn explain(
     budget: &ExplanationBudget,
 ) -> Explanation {
     let groups: Vec<Vec<FactId>> = targets.iter().map(|&t| vec![t]).collect();
-    explain_groups(kb, terms, &groups, budget)
+    explain_groups(kb, terms, &groups, budget, Reach::Core)
 }
 
 /// The smallest explanation of any of `contradictions` — **a contradiction's
@@ -786,7 +809,39 @@ pub fn contradiction_frontier(
     budget: &ExplanationBudget,
 ) -> Explanation {
     let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
-    explain_groups(kb, terms, &groups, budget)
+    explain_groups(kb, terms, &groups, budget, Reach::Core)
+}
+
+/// **The support of a death**: [`contradiction_frontier`]'s search, grounded
+/// out on what the program **states** and following every activator.
+///
+/// A core stops at root's activators, stated or derived: they are the
+/// program's, as the plans root compiles from them are its rules, and a core
+/// names what a node committed. A support asks the other question, which of
+/// the program's own statements a death rests on, so here the activator of
+/// every firing is an AND-node's fact beside its premises, root's among
+/// them, and a fact of `stated`, the facts the loaded program held before any
+/// saturation, is a leaf whatever its record says (a fact written with
+/// `:rule` is stated all the same). The frontier is then the stated facts
+/// and the commitments from which, with the program's rules and nothing else
+/// it states, the recorded derivation reaches the contradiction.
+///
+/// It is an explanation as a core is one: sufficient, the smallest over the
+/// derivations the store holds within the budget, not the least over every
+/// derivation, and it may vary with rule order. An `absent` a derivation
+/// passed is recorded and not followed, here as in a core: a support says
+/// which statements a death needs, not which it needs to be missing. Past
+/// [`ExplanationBudget::max_facts`] no support is read ([`Cut::facts`], an
+/// empty frontier): the walk a core degrades to follows no root activator.
+pub fn support_frontier(
+    kb: &Kb,
+    terms: &Terms,
+    contradictions: &[crate::contradiction::Contradiction],
+    budget: &ExplanationBudget,
+    stated: &FxHashSet<FactId>,
+) -> Explanation {
+    let groups: Vec<Vec<FactId>> = contradictions.iter().map(|c| c.sides()).collect();
+    explain_groups(kb, terms, &groups, budget, Reach::Support(stated))
 }
 
 /// [`explain`] over **groups**, each a conjunction of facts explained
@@ -796,6 +851,7 @@ fn explain_groups(
     terms: &Terms,
     groups: &[Vec<FactId>],
     budget: &ExplanationBudget,
+    reach: Reach<'_>,
 ) -> Explanation {
     if groups.is_empty() {
         return Explanation::empty();
@@ -806,7 +862,7 @@ fn explain_groups(
     // truncation can see the order.
     let mut roots: Vec<FactId> = groups.iter().flat_map(|g| g[1..].iter().copied()).collect();
     roots.extend(groups.iter().map(|g| g[0]));
-    let g = build_graph(kb, terms, &roots, budget);
+    let g = build_graph(kb, terms, &roots, budget, reach);
     let (labels, rounds, mut cut) = propagate(&g, budget);
 
     let mut best: Option<((usize, Env, u32), usize, Env)> = None;
@@ -836,10 +892,11 @@ fn explain_groups(
     }
     let considered = g.just.len() + g.seed.len();
     let Some((_, gi, env)) = best else {
-        if g.truncated {
+        if g.truncated && matches!(reach, Reach::Core) {
             // The closure blew the `max_facts` valve before any target got a
             // label. Degrade to the pre-S1.21.7 answer rather than returning
-            // nothing or, worse, passing derived facts off as givens.
+            // nothing or, worse, passing derived facts off as givens. A
+            // support has no such walk to degrade to and says it was cut.
             return fallback_groups(kb, terms, groups, rounds, considered);
         }
         return Explanation {

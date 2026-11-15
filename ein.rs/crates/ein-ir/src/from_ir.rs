@@ -1352,32 +1352,40 @@ fn state_written(
 ) -> Result<(), Overflow> {
     let written = terms.kernel.written;
     let step = terms.kernel.written_step;
-    let not = terms.kernel.not;
     let mut seen: rustc_hash::FxHashSet<Value> = rustc_hash::FxHashSet::default();
     for &(form, id) in stored {
-        let (rel, args) = terms.fact(id);
-        let mut found: Vec<Value> = Vec::new();
-        if rel == not {
-            for &a in args {
-                denied(terms, a, &mut found, &mut seen);
-            }
-        } else {
-            nested(terms, args.to_vec(), &mut found, &mut seen);
-        }
-        for t in found {
+        for t in written_in(terms, id, &mut seen) {
             let prov = terms
                 .provs
                 .push(Prov::from_rule(step, Box::new([id]), core_loc(ast, form)));
             kb.add_fact(terms, written, &[t], Some(prov))?;
         }
     }
-    let conclusions: Vec<(NodeId, Option<Loc>)> = kb
-        .program()
+    for (t, loc) in written_in_conclusions(ast, terms, kb.program(), &mut seen)? {
+        let prov = terms.provs.push(Prov::from_rule(step, Box::new([]), loc));
+        kb.add_fact(terms, written, &[t], Some(prov))?;
+    }
+    Ok(())
+}
+
+/// The terms the loader states `(written T)` for from **the rules' text**:
+/// the ground nested facts of every rule's and hrule's conclusion, in the
+/// registries' order, that `seen` does not hold yet, each with its rule's
+/// place. The second half of the loader's statement, after
+/// [`written_in`] over the facts a file writes, and with the same `seen`.
+pub fn written_in_conclusions(
+    ast: &Ast,
+    terms: &mut Terms,
+    program: &Program,
+    seen: &mut rustc_hash::FxHashSet<Value>,
+) -> Result<Vec<(Value, Option<Loc>)>, Overflow> {
+    let conclusions: Vec<(NodeId, Option<Loc>)> = program
         .rules
         .values()
-        .chain(kb.program().hrules.values())
+        .chain(program.hrules.values())
         .filter_map(|r| r.assert_.as_ref().map(|p| (NodeId(p.expr.0), r.loc)))
         .collect();
+    let mut out: Vec<(Value, Option<Loc>)> = Vec::new();
     for (assert_node, loc) in conclusions {
         let mut ground: Vec<NodeId> = Vec::new();
         for c in ast.conjuncts(assert_node) {
@@ -1396,14 +1404,38 @@ fn state_written(
         let mut found: Vec<Value> = Vec::new();
         for node in ground {
             let values = fact_args(ast, terms, &[node])?;
-            nested(terms, values, &mut found, &mut seen);
+            nested(terms, values, &mut found, seen);
         }
-        for t in found {
-            let prov = terms.provs.push(Prov::from_rule(step, Box::new([]), loc));
-            kb.add_fact(terms, written, &[t], Some(prov))?;
-        }
+        out.extend(found.into_iter().map(|t| (t, loc)));
     }
-    Ok(())
+    Ok(out)
+}
+
+/// The terms the stored fact `fact` has the loader state `(written T)` for:
+/// each fact nested among its arguments, at any depth, that `seen` does not
+/// hold yet, in the order written; for a stored negation, the facts nested in
+/// the arguments of the fact it denies. `seen` is what makes each term stated
+/// once a program: a caller that reads several facts hands the same set to
+/// each, in the order the facts are written.
+///
+/// It is the loader's own reading, and a caller that states a program over
+/// fewer of its facts (`ein_infer::structure`) asks it rather than read a
+/// fact's arguments a second way.
+pub fn written_in(
+    terms: &Terms,
+    fact: FactId,
+    seen: &mut rustc_hash::FxHashSet<Value>,
+) -> Vec<Value> {
+    let (rel, args) = terms.fact(fact);
+    let mut found: Vec<Value> = Vec::new();
+    if rel == terms.kernel.not {
+        for &a in args {
+            denied(terms, a, &mut found, seen);
+        }
+    } else {
+        nested(terms, args.to_vec(), &mut found, seen);
+    }
+    found
 }
 
 /// Each fact among `args` and nested in them, at any depth, in the order

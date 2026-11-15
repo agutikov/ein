@@ -343,6 +343,7 @@ workflow and the dev host's to the nightly's.
 | `answer_dump` | every entry | the same | as the nightly |
 | `region`, `obligation_rung` | the fast halves | the slow halves too, since S1f.5.27 | as the nightly |
 | `pair_layer` | every entry but the `slow` ones, and three named instances | the `slow` ones too | as the nightly |
+| `theory_share` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half | as the nightly |
 | `route_invariance` | every monotone program both routes describe at the default budget, but the `slow` entries | the `slow` ones too | as the nightly; nothing past the default budget since Q-M1f.304's (d) (2026-11-15), where the 2²⁵ half ran |
 | `id_order_invariance` | one permutation of the id space | — | eight |
 | `fuzz_properties` | 2 000 inputs | 20 000 a seed, two seeds | 1 000 000 a seed |
