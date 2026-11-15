@@ -13,7 +13,13 @@ says which statements are the puzzle's was restated from the one planned, which 
 default. [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-the-cover-under-the-theorys-exclusions) then ran again
 under that default: the cover is computed by the owner, on I-Z2 its 36 groups are exactly the rows and columns of
 the five declared bijections over all 56 candidates of H, every candidate in two, and the structure's two
-invariances, a permuted id space and every import form, are tests. Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
+invariances, a permuted id space and every import form, are tests.
+[S1f.10.4](s1f.10.4_bounded_groups.md#record-2026-11-15) ran that day: *exactly one* is computed by the owner, an
+owed group being a group whose members are exactly the alternatives of an instance L5 licenses and a grid being
+found from the cover alone; on I-Z2 the five grids are the five declared relations and all 36 of their rows and
+columns are owed, on I-Z1 one family of each grid is owed and the other is the subject of 18 instances L5 does not
+license, and where the *must* is missing the record says what a program would have to state.
+Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;

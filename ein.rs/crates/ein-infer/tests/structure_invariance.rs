@@ -3,9 +3,11 @@
 //!
 //! The structure is what [`ein_infer::structure`] reads of `H`: root's pair
 //! layer, the theory's share of it (the small KB's layer over the same
-//! candidates, and which statements the small KB keeps), and the cover, the
+//! candidates, and which statements the small KB keeps), the cover, the
 //! groups with their two maps, the marks, the components and the maximal
-//! cliques of root's own exclusion graph. Each is a statement about nodes of
+//! cliques of root's own exclusion graph, and *exactly one*: what root owes
+//! with each instance's witnesses, how each instance stands to the cover,
+//! which groups are owed, and the grids. Each is a statement about nodes of
 //! the program's lattice, so two things that are not the program must not
 //! move it:
 //!
@@ -52,7 +54,9 @@ use std::path::{Path, PathBuf};
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
-use ein_infer::structure::{self, Cliques, Cover, PairLayer, Theory, TheoryOptions};
+use ein_infer::structure::{
+    self, Cliques, Cover, ExactlyOne, Owing, PairLayer, Theory, TheoryOptions, WitnessIs,
+};
 use ein_ir::{Ast, load, parse};
 
 fn rel_of(p: &Path) -> String {
@@ -100,6 +104,7 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
 struct Read {
     theory: Theory,
     cover: Cover,
+    exact: ExactlyOne,
     terms: Terms,
 }
 
@@ -113,11 +118,12 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
     Some(
         match structure::theory(&mut kb, &mut terms, &ast, &TheoryOptions::default()) {
             Err(e) => Err(e.to_string()),
-            Ok(theory) => match theory.cover() {
+            Ok(theory) => match theory.exactly_one() {
                 None => Err(format!("the small KB has no layer: {:?}", theory.small)),
-                Some(cover) => Ok(Read {
+                Some((cover, exact)) => Ok(Read {
                     theory,
                     cover,
+                    exact,
                     terms,
                 }),
             },
@@ -245,6 +251,15 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                 )
             ),
         ),
+        (
+            "what root owes, and its witnesses",
+            format!("{:?}", r.exact.owed),
+        ),
+        (
+            "the owed groups",
+            format!("{:?}", (&r.exact.owing, &r.exact.owed_by, &r.exact.about)),
+        ),
+        ("the grids", format!("{:?}", r.exact.grids)),
     ]
 }
 
@@ -315,6 +330,88 @@ fn as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> Vec<(&'static str, Strin
         .iter()
         .zip(t.of_the_theory())
         .map(|(&(a, b), theory)| (BTreeSet::from([name(a), name(b)]), theory))
+        .collect();
+    // What root owes, as a bag: each instance by its text, with its
+    // alternatives or the reason, its witnesses, and how it stands. A group
+    // is its members.
+    let x = &r.exact;
+    let group = |g: u32| one(c.members(g));
+    // A name after `=` or inside backticks starts a name too.
+    let strip = |s: &str| strip(&s.replace('=', " = ").replace('`', " ` "));
+    let mut owed: BTreeMap<String, usize> = BTreeMap::new();
+    for (i, owing) in x.owed.table().iter().zip(&x.owing) {
+        let witnesses = i.witnesses.as_ref().map_err(|e| strip(e)).map(|ws| {
+            ws.iter()
+                .map(|w| {
+                    let is = match w.is {
+                        WitnessIs::Candidate(b) => format!("the candidate {}", name(b)),
+                        other => other.as_str().to_string(),
+                    };
+                    (
+                        strip(&w.text),
+                        is,
+                        one(&w.held_at_root),
+                        one(&w.held_in_theory),
+                    )
+                })
+                .collect::<BTreeSet<_>>()
+        });
+        let stands = match owing {
+            Owing::Group(g) => format!("the group {:?}", group(*g)),
+            Owing::Inside(groups) => format!(
+                "inside {:?}",
+                groups.iter().map(|&g| group(g)).collect::<BTreeSet<_>>()
+            ),
+            Owing::NotExcluding { alive, holds } => format!(
+                "not excluding, {alive} alive, holding {:?}",
+                holds.iter().map(|&g| group(g)).collect::<BTreeSet<_>>()
+            ),
+            Owing::One(b) => format!("one alternative, {}", name(*b)),
+            Owing::None => "no alternative".to_string(),
+            Owing::Unlicensed { payers, about } => format!(
+                "unlicensed, paid by {:?}, about {:?}",
+                payers.as_ref().map(|p| one(p)),
+                about.map(group)
+            ),
+        };
+        let said = format!(
+            "{:?}",
+            (
+                strip(&i.rule),
+                strip(&i.text),
+                i.alternatives
+                    .as_ref()
+                    .map(|a| one(a))
+                    .map_err(|e| strip(e)),
+                i.denied,
+                witnesses,
+                stands
+            )
+        );
+        *owed.entry(said).or_default() += 1;
+    }
+    // Each group with how many instances owe it and are about it.
+    let owed_groups: BTreeMap<BTreeSet<String>, (usize, usize)> = (0..c.groups.len())
+        .map(|g| (group(g as u32), (x.owed_by[g].len(), x.about[g].len())))
+        .collect();
+    // A grid is its two families, in either order; a component that is none
+    // is its members and the reason.
+    let grids: BTreeSet<BTreeSet<BTreeSet<BTreeSet<String>>>> = x
+        .grids
+        .grids
+        .iter()
+        .map(|g| {
+            g.families
+                .iter()
+                .map(|f| f.iter().map(|&g| group(g)).collect())
+                .collect()
+        })
+        .collect();
+    let not_grids: BTreeSet<(BTreeSet<String>, String)> = x
+        .grids
+        .not
+        .iter()
+        .map(|&(k, why)| (one(&c.components[k as usize]), format!("{why:?}")))
         .collect();
     // Each candidate with its mark and the groups that hold it.
     let members: BTreeMap<String, (&str, BTreeSet<BTreeSet<String>>)> = (0..c.n() as u32)
@@ -403,6 +500,21 @@ fn as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> Vec<(&'static str, Strin
                 )
             ),
         ),
+        (
+            "what root owes, and its witnesses",
+            format!(
+                "{:?}",
+                (
+                    x.owed.root_owes,
+                    x.owed.instances.as_ref().err(),
+                    x.owed.singles_read,
+                    x.owed.theory_read,
+                    owed
+                )
+            ),
+        ),
+        ("the owed groups", format!("{owed_groups:?}")),
+        ("the grids", format!("{:?}", (grids, not_grids))),
     ]
 }
 
@@ -763,6 +875,7 @@ fn a_form_that_reorders_the_universe_moves_no_set() {
             let mut cut = Read {
                 theory: r.theory.clone(),
                 cover: r.cover.clone(),
+                exact: r.exact.clone(),
                 terms: Terms::new(),
             };
             cut.cover.groups.truncate(2);
@@ -802,6 +915,7 @@ fn a_structure_that_moves_is_caught() {
     let mut moved = Read {
         theory: r.theory.clone(),
         cover: r.cover.clone(),
+        exact: r.exact.clone(),
         terms: Terms::new(),
     };
     moved.cover.member_of.swap(0, 1);
@@ -813,7 +927,32 @@ fn a_structure_that_moves_is_caught() {
     let d = difference(&said, &as_it_is(&moved)).expect("a difference");
     assert!(d.starts_with("root's pair layer"), "{d}");
 
+    // What root owes in another order, a group owed by another instance, a
+    // grid's families exchanged: each is caught place for place.
+    moved.theory = r.theory.clone();
+    let instances = moved.exact.owed.instances.as_mut().expect("a table");
+    instances.swap(0, 1);
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("what root owes"), "{d}");
+    moved.exact = r.exact.clone();
+    moved.exact.owed_by.swap(0, 1);
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("the owed groups"), "{d}");
+    moved.exact = r.exact.clone();
+    moved.exact.grids.grids[0].families.swap(0, 1);
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("the grids"), "{d}");
+    // As sets a grid is its two families in either order, and a group that
+    // loses the instance that owes it is caught.
     let plain = |s: &str| s.to_string();
+    assert_eq!(
+        difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)),
+        None
+    );
+    moved.exact.owed_by[0].clear();
+    let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
+    assert!(d.starts_with("the owed groups"), "{d}");
+
     let renamed = |s: &str| s.replace("color-loc", "m.color-loc");
     let d = difference(&as_sets(&r, &plain), &as_sets(&r, &renamed)).expect("a difference");
     assert!(d.starts_with("the candidates"), "{d}");

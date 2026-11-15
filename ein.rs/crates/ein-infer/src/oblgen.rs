@@ -757,29 +757,8 @@ pub(crate) fn alternatives(
                 Some(p) => static_premises(&p, monotonicity, terms).map(|()| p),
             },
         };
-        // The instances, as `obligations::tally` finds them: one per distinct
-        // bindings, judged by the first disjunct that reached them.
-        // (disjunct, registers, bindings) per match.
-        type Hit = (usize, Box<[Value]>, Box<[(Symbol, Value)]>);
-        let mut hits: Vec<Hit> = Vec::new();
-        let mut seen: FxHashSet<Box<[(Symbol, Value)]>> = FxHashSet::default();
-        matcher.run(kb, terms, ast, &plan, &mut |m| {
-            let bindings: Box<[(Symbol, Value)]> =
-                m.bindings().collect::<Vec<_>>().into_boxed_slice();
-            if seen.insert(bindings.clone()) {
-                hits.push((m.disjunct, m.regs().into(), bindings));
-            }
-            ControlFlow::Continue(())
-        });
-        for (disjunct, regs, bindings) in hits {
-            let span = plan.disjuncts[disjunct].guards;
-            if plan
-                .guards(span)
-                .iter()
-                .any(|g| guards.holds(kb, terms, ast, &plan, g, &regs))
-            {
-                continue;
-            }
+        for (disjunct, regs, bindings) in owed_by(kb, terms, ast, &plan, &mut matcher, &mut guards)
+        {
             let (alternatives, excluded) = match &premise {
                 Err(why) => (Err(why.clone()), 0),
                 Ok(p) => {
@@ -795,6 +774,128 @@ pub(crate) fn alternatives(
                 key,
                 alternatives,
                 excluded,
+            });
+        }
+    }
+    Ok(out)
+}
+
+/// One match of an obligation plan: the disjunct that reached it, its
+/// registers and its bindings.
+type Hit = (usize, Box<[Value]>, Box<[(Symbol, Value)]>);
+
+/// The instances `plan` owes at `kb`, as `obligations::tally` finds them:
+/// one per distinct bindings, judged by the first disjunct that reached
+/// them, and owed where none of that disjunct's guards holds.
+fn owed_by(
+    kb: &ein_core::Kb,
+    terms: &ein_core::Terms,
+    ast: &ein_ir::Ast,
+    plan: &Arc<Plan>,
+    matcher: &mut Matcher,
+    guards: &mut Matcher,
+) -> Vec<Hit> {
+    let mut hits: Vec<Hit> = Vec::new();
+    let mut seen: FxHashSet<Box<[(Symbol, Value)]>> = FxHashSet::default();
+    matcher.run(kb, terms, ast, plan, &mut |m| {
+        let bindings: Box<[(Symbol, Value)]> = m.bindings().collect::<Vec<_>>().into_boxed_slice();
+        if seen.insert(bindings.clone()) {
+            hits.push((m.disjunct, m.regs().into(), bindings));
+        }
+        ControlFlow::Continue(())
+    });
+    hits.retain(|(disjunct, regs, _)| {
+        let span = plan.disjuncts[*disjunct].guards;
+        !plan
+            .guards(span)
+            .iter()
+            .any(|g| guards.holds(kb, terms, ast, plan, g, regs))
+    });
+    hits
+}
+
+/// One fact that can witness an instance: its relation and its arguments,
+/// as the witness step's scan finds them at root. It need not be a fact
+/// anything has interned.
+pub type WitnessRow = (Symbol, Box<[Value]>);
+
+/// What can witness one instance root owes ([`witness_rows`]).
+pub(crate) struct Witnesses {
+    pub key: InstanceKey,
+    /// L5's static premise of its rule: the trigger and every guard beside
+    /// the witness step read no relation a commitment can change, or which
+    /// one does, in [`alternatives`]' own words.
+    pub premise: Result<(), String>,
+    /// Every fact that can witness it, each once, in the scan's order; why
+    /// none is known where the rule names no witness: the bare `(open)`, a
+    /// witness step that does not resolve, a slot nothing binds.
+    pub rows: Result<Vec<WitnessRow>, String>,
+}
+
+/// **Every fact that can witness each instance root owes**, in
+/// [`alternatives`]' order and by its scan, whether or not L5 licenses the
+/// instance: the rows [`alternatives`] asks of each whether it is a
+/// candidate or denied, before it asks.
+///
+/// For the reader that asks what an unlicensed instance's witnesses are
+/// ([`crate::structure`]); no route reads it.
+pub(crate) fn witness_rows(
+    kb: &ein_core::Kb,
+    terms: &mut ein_core::Terms,
+    ast: &ein_ir::Ast,
+    memo: &crate::compile::SharedMemo,
+    monotonicity: &crate::monotone::Monotonicity,
+) -> Result<Vec<Witnesses>, CompileError> {
+    let mut out = Vec::new();
+    if kb.program().obligations.is_empty() {
+        return Ok(out);
+    }
+    let plans = crate::obligations::plans_for(kb, terms, ast, memo)?;
+    let terms: &ein_core::Terms = terms;
+    let mut matcher = Matcher::new();
+    let mut guards = Matcher::new();
+    for plan in plans {
+        let projected: Result<Proj, String> = match crate::obligations::open_argument(&plan, terms)
+        {
+            None => Err("a bare `(open)` names no relation, so no fact witnesses it".into()),
+            Some(_) => project(&plan, terms).ok_or("its witness step does not resolve".into()),
+        };
+        let premise = match &projected {
+            Ok(p) => static_premises(p, monotonicity, terms),
+            Err(_) => Ok(()),
+        };
+        for (disjunct, regs, bindings) in owed_by(kb, terms, ast, &plan, &mut matcher, &mut guards)
+        {
+            let rows = projected.as_ref().map_err(Clone::clone).and_then(|p| {
+                let (gi, at) = p.witness[disjunct];
+                let guard = &p.plan.guards(p.plan.disjuncts[disjunct].guards)[gi];
+                let Step::Rel(step) = p.plan.steps(guard.sub)[at] else {
+                    return Err("its witness step is not a relation".into());
+                };
+                let mut scanned: Vec<Box<[Value]>> = Vec::new();
+                guards.scan_without(kb, terms, ast, &p.plan, guard, &regs, at, &mut |sub| {
+                    scanned.push(sub.into());
+                    ControlFlow::Continue(())
+                });
+                let mut rows: Vec<WitnessRow> = Vec::with_capacity(scanned.len());
+                for row in &scanned {
+                    let Some(args) = witness_args(&p.plan, step.slots, row) else {
+                        return Err(format!(
+                            "a `{}` witness has a slot nothing binds",
+                            terms.sym(step.rel)
+                        ));
+                    };
+                    rows.push((step.rel, args.into_boxed_slice()));
+                }
+                // One fact once, in the scan's order.
+                let mut seen: FxHashSet<WitnessRow> = FxHashSet::default();
+                rows.retain(|r| seen.insert(r.clone()));
+                Ok(rows)
+            });
+            out.push(Witnesses {
+                key: (plan.rule, plan.activator_args.clone(), bindings),
+                premise: premise.clone(),
+                rows,
             });
         }
     }

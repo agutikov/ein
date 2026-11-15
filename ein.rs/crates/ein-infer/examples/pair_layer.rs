@@ -115,16 +115,47 @@
 //!   closures take out (`closed`), by [`ein_infer::mechanisms::read`] at
 //!   root's fixpoint, and the groups `of_a_proposed_relation`,
 //!   `of_an_owable_relation`, `of_a_closed_relation`, `of_none_of_them`;
-//! - `owed`, the instances root owes with their alternatives
-//!   ([`ein_infer::oblgen::alternatives_of`]), each read against the cover
-//!   ([`ein_infer::structure::Cover::standing`]): `a_group`,
-//!   `inside_a_group`, `not_excluding` (and `holding_a_group` among them),
-//!   `one_alternative`, `no_alternative`, and `unlicensed` by `why`, an
-//!   instance whose alternatives the engine does not know: a fact can
-//!   witness it that is no candidate of `H`. `groups_owed` are the groups
-//!   that are some instance's alternatives and `groups_nothing_owes` the
-//!   rest. `table` is `null` on a program the static check flags and on one
-//!   that states no obligation, where no table is read.
+//! - `owed`, the instances root owes with their alternatives, each read
+//!   against the cover, as the owner reads them
+//!   ([`ein_infer::structure::ExactlyOne`]): `a_group`, `inside_a_group`,
+//!   `not_excluding` (and `holding_a_group` among them), `one_alternative`,
+//!   `no_alternative`, and `unlicensed` by `why`, an instance whose
+//!   alternatives the engine does not know: a fact can witness it that is no
+//!   candidate of `H`. `groups_owed` are the groups that are some instance's
+//!   alternatives and `groups_nothing_owes` the rest. `table` is `null` on a
+//!   program the static check flags and on one that states no obligation,
+//!   where no table is read.
+//!
+//! ### Exactly one
+//!
+//! With the cover each program gets `exactly_one.json`, raw, and
+//! `exactly_one.md`, the same as tables, and the line an `exactly_one`
+//! object inside `cover`:
+//!
+//! - `owed_groups`, the groups whose members are exactly a licensed
+//!   instance's alternatives; `groups_nothing_owes`, the others (`all`,
+//!   `with_an_open_member`, `an_unlicensed_instance_is_about`);
+//!   `owed_sets_not_a_group`, the licensed instances whose alternatives do
+//!   not pairwise exclude;
+//! - `unlicensed`, the instances L5 does not license: `all`, by `why`,
+//!   `about_a_group`, and what is true of their witnesses:
+//!   `witnesses_no_candidate_and_not_denied`, of them
+//!   `of_them_brought_by_a_candidate_at_root` (in the closure of a candidate
+//!   alive alone), those not brought whose bringers by the theory are all
+//!   dead alone at root, and those nothing brings, at root or in the small
+//!   KB; and by instance `every_such_witness_brought`,
+//!   `some_such_witness_not_brought`, `no_such_witness`;
+//! - `grids`, one object a grid: the `relations` of its members (read off
+//!   the candidates here, for the reader; the owner reads none), its
+//!   `members`, the `groups` of its two families, how many of each are
+//!   `owed` and how many of the others an unlicensed instance is `about`,
+//!   and `bijection`, every group owed and as many in each family;
+//!   `bijections`, `grid_kinds`; and
+//!   `not_grids`, the components that are no grid by why.
+//!
+//! `exactly_one.json` lists every instance with every fact that can witness
+//! it, what root says of each, and the candidates whose own node holds it at
+//! root and in the small KB.
 //!
 //! `--rule NAME` reads the small KB by another rule than the owner's,
 //! `small-kb`: `proposed`, `objects`, `relates`, `layout` or `h-alone`, the
@@ -141,7 +172,8 @@ use ein_corpus::repo_root;
 use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::region::Cores;
 use ein_infer::structure::{
-    self, Cliques, Cover, Deaths, Mark, Origin, PairLayer, Standing, Stated, Theory, Verdict,
+    self, Cliques, Cover, Deaths, ExactlyOne, Mark, NotAGrid, Origin, Owing, PairLayer, Stated,
+    Theory, Verdict, WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
 use rustc_hash::FxHashSet;
@@ -1237,22 +1269,24 @@ fn kind_of(why: &str) -> String {
 /// What the program declares, read beside the cover: the mechanisms at
 /// root's fixpoint and the instances root owes with their alternatives, of
 /// the program loaded again.
-fn declared_beside(path: &Path, cover: &Cover, terms: &Terms) -> (Value, Value, Vec<Value>) {
-    use ein_infer::events::{Events, sexpr_value};
+fn declared_beside(
+    path: &Path,
+    cover: &Cover,
+    exact: &ExactlyOne,
+    terms: &Terms,
+) -> (Value, Value, Vec<Value>) {
+    use ein_infer::events::Events;
     let Some((mut kb, mut again, ast)) = loaded(path) else {
         return (Value::Null, Value::Null, Vec::new());
     };
-    // L5's table prepares root as every route does; `None` on a flagged
-    // program and on one that states no obligation.
-    let table = match ein_infer::oblgen::alternatives_of(&mut kb, &mut again, &ast) {
-        Ok(t) => t,
-        Err(e) => return (Value::Null, json!({"error": e.to_string()}), Vec::new()),
-    };
+    // The mechanisms are read at root's fixpoint. This call prepares root
+    // as every route does; the table it returns is the one the owner read
+    // (`exact.owed`) and is not read again here.
+    if let Err(e) = ein_infer::oblgen::alternatives_of(&mut kb, &mut again, &ast) {
+        return (Value::Null, json!({"error": e.to_string()}), Vec::new());
+    }
     let mut off = Events::off();
     let memo = ein_infer::compile::SharedMemo::default();
-    let root_owes = ein_infer::obligations::tally(&kb, &mut again, &ast, &memo, &mut off)
-        .map(|o| o.total())
-        .ok();
     let mechanisms = {
         let mut s = ein_infer::saturator::Session {
             kb: &mut kb,
@@ -1316,32 +1350,17 @@ fn declared_beside(path: &Path, cover: &Cover, terms: &Terms) -> (Value, Value, 
         },
     });
 
-    // The owed instances, each against the cover.
+    // The owed instances, each against the cover: the owner's reading.
     let mut rows: Vec<Value> = Vec::new();
-    let mut owed_groups: BTreeSet<u32> = BTreeSet::new();
     let (mut a_group, mut inside, mut not_excluding, mut holding) = (0usize, 0usize, 0usize, 0);
     let (mut one, mut none, mut licensed) = (0usize, 0usize, 0usize);
     let mut unlicensed: BTreeMap<String, usize> = BTreeMap::new();
     let mut by_rule: BTreeMap<String, BTreeMap<&'static str, usize>> = BTreeMap::new();
-    let instances = table.as_ref().map_or(&[][..], |t| &t.instances[..]);
-    for i in instances {
-        let (rule, activator, bindings) = &i.key;
-        let rule = again.sym(*rule).to_string();
-        let text = format!(
-            "({rule}{}){}",
-            activator
-                .iter()
-                .map(|&v| format!(" {}", sexpr_value(&again, v)))
-                .collect::<String>(),
-            bindings
-                .iter()
-                .map(|&(x, v)| format!(" {}={}", again.sym(x), sexpr_value(&again, v)))
-                .collect::<String>(),
-        );
-        let (standing, detail): (&'static str, Value) = match &i.alternatives {
+    for (i, owing) in exact.owed.table().iter().zip(&exact.owing) {
+        let detail: Value = match &i.alternatives {
             Err(why) => {
                 *unlicensed.entry(kind_of(why)).or_default() += 1;
-                ("unlicensed", json!({"why": why}))
+                json!({"why": why})
             }
             Ok(alts) => {
                 licensed += 1;
@@ -1350,21 +1369,20 @@ fn declared_beside(path: &Path, cover: &Cover, terms: &Terms) -> (Value, Value, 
                     .iter()
                     .map(|&b| cover.marks[b as usize].as_str())
                     .collect();
-                let (word, more) = match cover.standing(alts) {
-                    Standing::Fewer if alts.is_empty() => {
+                let more = match owing {
+                    Owing::None => {
                         none += 1;
-                        ("no alternative", json!({}))
+                        json!({})
                     }
-                    Standing::Fewer => {
+                    Owing::One(_) => {
                         one += 1;
-                        ("one alternative", json!({}))
+                        json!({})
                     }
-                    Standing::Group(g) => {
+                    Owing::Group(g) => {
                         a_group += 1;
-                        owed_groups.insert(g);
-                        ("a group", json!({"group": g}))
+                        json!({"group": g})
                     }
-                    Standing::Inside(groups) => {
+                    Owing::Inside(groups) => {
                         inside += 1;
                         let beyond: Vec<Vec<&str>> = groups
                             .iter()
@@ -1377,41 +1395,37 @@ fn declared_beside(path: &Path, cover: &Cover, terms: &Terms) -> (Value, Value, 
                                     .collect()
                             })
                             .collect();
-                        (
-                            "inside a group",
-                            json!({"groups": groups, "the_groups_other_members": beyond}),
-                        )
+                        json!({"groups": groups, "the_groups_other_members": beyond})
                     }
-                    Standing::NotExcluding { alive, holds } => {
+                    Owing::NotExcluding { alive, holds } => {
                         not_excluding += 1;
                         holding += usize::from(!holds.is_empty());
-                        (
-                            "not pairwise excluding",
-                            json!({"pairs_the_theory_does_not_exclude": alive, "holds_groups": holds}),
-                        )
+                        json!({"pairs_the_theory_does_not_exclude": alive, "holds_groups": holds})
                     }
+                    Owing::Unlicensed { .. } => unreachable!("licensed"),
                 };
-                (
-                    word,
-                    json!({
-                        "alternatives": texts,
-                        "marks": marks,
-                        "witnesses_denied_at_root": i.excluded,
-                        "detail": more,
-                    }),
-                )
+                json!({
+                    "alternatives": texts,
+                    "marks": marks,
+                    "witnesses_denied_at_root": i.denied,
+                    "detail": more,
+                })
             }
         };
+        let standing = owing.as_str();
         *by_rule
-            .entry(rule.clone())
+            .entry(i.rule.clone())
             .or_default()
             .entry(standing)
             .or_default() += 1;
-        rows.push(json!({"instance": text, "rule": rule, "standing": standing, "read": detail}));
+        rows.push(
+            json!({"instance": i.text, "rule": i.rule, "standing": standing, "read": detail}),
+        );
     }
+    let owed_groups = exact.owed_groups().len();
     let owed = json!({
-        "root_owes": root_owes,
-        "table": table.as_ref().map(|t| t.instances.len()),
+        "root_owes": exact.owed.root_owes,
+        "table": exact.owed.instances.as_ref().ok().map(Vec::len),
         "licensed": licensed,
         "unlicensed": unlicensed.values().sum::<usize>(),
         "unlicensed_why": unlicensed,
@@ -1421,17 +1435,478 @@ fn declared_beside(path: &Path, cover: &Cover, terms: &Terms) -> (Value, Value, 
         "holding_a_group": holding,
         "one_alternative": one,
         "no_alternative": none,
-        "groups_owed": owed_groups.len(),
-        "groups_nothing_owes": cover.groups.len() - owed_groups.len(),
+        "groups_owed": owed_groups,
+        "groups_nothing_owes": cover.groups.len() - owed_groups,
         "by_rule": by_rule,
     });
     (declared, owed, rows)
 }
 
+/// *Exactly one*, of one program: `exactly_one.json` and `exactly_one.md`
+/// written under `dir`, and the census line's `exactly_one` object. The
+/// relations of a grid's members are read here off the candidates, for the
+/// reader and for the comparison with what a program declares by name; the
+/// owner reads none.
+fn exactly_one_row(rel: &str, dir: &Path, c: &Cover, x: &ExactlyOne, terms: &Terms) -> Value {
+    let one = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| c.text(b)).collect() };
+    let relation_of = |b: u32| -> String {
+        let (r, args) = terms.fact(c.candidates[b as usize].fact);
+        let r = match args.first().and_then(|a| a.as_fact()) {
+            Some(inner) if r == terms.kernel.not => terms.fact(inner).0,
+            _ => r,
+        };
+        terms.sym(r).to_string()
+    };
+    let open = |g: u32| c.open(g).count();
+    let table = x.owed.table();
+
+    // The instances.
+    let mut unlicensed_why: BTreeMap<String, usize> = BTreeMap::new();
+    let (mut about_a_group, mut unknown, mut unproposed, mut brought) = (0usize, 0usize, 0u32, 0);
+    let (mut all_brought, mut none_unproposed, mut some_not_brought) = (0usize, 0usize, 0usize);
+    // Of the witnesses no candidate brings at root: those the theory's
+    // bringers of which are all dead alone at root, and those nothing
+    // brings in the small KB either.
+    let (mut bringers_dead, mut brought_nowhere) = (0usize, 0usize);
+    let mut instances: Vec<Value> = Vec::new();
+    for (k, (i, owing)) in table.iter().zip(&x.owing).enumerate() {
+        let witnesses = match &i.witnesses {
+            Err(why) => json!({"unknown": why}),
+            Ok(ws) => json!(
+                ws.iter()
+                    .map(|w| json!({
+                        "fact": w.text,
+                        "is": w.is.as_str(),
+                        "held_at_root_by": one(&w.held_at_root),
+                        "held_in_the_theory_by": one(&w.held_in_theory),
+                    }))
+                    .collect::<Vec<_>>()
+            ),
+        };
+        let mut row = json!({
+            "instance": i.text,
+            "rule": i.rule,
+            "standing": owing.as_str(),
+            "licensed": i.alternatives.is_ok(),
+            "witnesses_denied_at_root": i.witnesses.as_ref().ok().map(|ws| {
+                ws.iter().filter(|w| w.is == WitnessIs::Denied).count()
+            }),
+            "witnesses": witnesses,
+        });
+        match (&i.alternatives, owing) {
+            (Ok(alts), _) => {
+                row["alternatives"] = json!(one(alts));
+                match owing {
+                    Owing::Group(g) => row["group"] = json!(g),
+                    Owing::Inside(groups) => row["inside"] = json!(groups),
+                    Owing::NotExcluding { alive, holds } => {
+                        row["pairs_the_theory_does_not_exclude"] = json!(alive);
+                        row["holds_groups"] = json!(holds);
+                    }
+                    _ => {}
+                }
+            }
+            (Err(why), Owing::Unlicensed { payers, about }) => {
+                *unlicensed_why.entry(kind_of(why)).or_default() += 1;
+                row["why"] = json!(why);
+                row["pay_by_the_theory_alone"] = json!(payers.as_ref().map(|p| one(p)));
+                row["about_group"] = json!(about);
+                about_a_group += usize::from(about.is_some());
+                for w in i.witnesses.iter().flatten() {
+                    if w.is == WitnessIs::Unproposed && w.held_at_root.is_empty() {
+                        if w.held_in_theory.is_empty() {
+                            brought_nowhere += 1;
+                        } else if w
+                            .held_in_theory
+                            .iter()
+                            .all(|&b| c.marks[b as usize] == Mark::DeadAlone)
+                        {
+                            bringers_dead += 1;
+                        }
+                    }
+                }
+                match x.brought(k as u32) {
+                    None => unknown += 1,
+                    Some((all, by)) => {
+                        row["witnesses_no_candidate_and_not_denied"] = json!(all);
+                        row["of_them_brought_by_a_candidate_at_root"] = json!(by);
+                        unproposed += all;
+                        brought += by;
+                        if all == 0 {
+                            none_unproposed += 1;
+                        } else if all == by {
+                            all_brought += 1;
+                        } else {
+                            some_not_brought += 1;
+                        }
+                    }
+                }
+            }
+            (Err(_), _) => unreachable!("an unlicensed instance stands as one"),
+        }
+        instances.push(row);
+    }
+
+    // The groups, each with who owes it.
+    let grid_of = |g: u32| x.grids.of_group[g as usize];
+    let groups: Vec<Value> = (0..c.groups.len() as u32)
+        .map(|g| {
+            json!({
+                "group": g,
+                "members": one(c.members(g)),
+                "open": c.open(g).map(|b| c.text(b)).collect::<Vec<_>>(),
+                "owed_by": x.owed_by[g as usize].iter().map(|&k| &table[k as usize].text).collect::<Vec<_>>(),
+                "an_unlicensed_instance_is_about_it": x.about[g as usize].iter().map(|&k| &table[k as usize].text).collect::<Vec<_>>(),
+                "grid": grid_of(g).map(|(grid, family)| json!({"grid": grid, "family": family})),
+            })
+        })
+        .collect();
+    let unowed = x.unowed();
+    let unowed_open = unowed.iter().filter(|&&g| open(g) > 0).count();
+    let unowed_about = unowed
+        .iter()
+        .filter(|&&g| !x.about[g as usize].is_empty())
+        .count();
+
+    // The grids.
+    let members_of = |component: u32| &c.components[component as usize];
+    let relations_of =
+        |members: &[u32]| -> BTreeSet<String> { members.iter().map(|&b| relation_of(b)).collect() };
+    let mut kinds: BTreeMap<&'static str, usize> = BTreeMap::new();
+    let mut grid_rows: Vec<Value> = Vec::new();
+    let mut grid_counts: Vec<Value> = Vec::new();
+    for (k, g) in x.grids.grids.iter().enumerate() {
+        let share = x.share(k as u32);
+        let members = members_of(g.component);
+        let kind = if x.is_bijection(k as u32) {
+            "a bijection: every group owed"
+        } else if share.iter().all(|s| s.owed == s.groups) {
+            "every group owed, and the families differ in number"
+        } else if share.iter().any(|s| s.owed == s.groups) {
+            "one family owed whole"
+        } else if share.iter().any(|s| s.owed > 0) {
+            "owed in part"
+        } else {
+            "owed nowhere"
+        };
+        *kinds.entry(kind).or_default() += 1;
+        let family = |f: usize| {
+            json!({
+                "groups": g.families[f],
+                "owed": share[f].owed,
+                "an_unlicensed_instance_is_about": share[f].about,
+            })
+        };
+        grid_rows.push(json!({
+            "grid": k,
+            "component": g.component,
+            "members": members.len(),
+            "open": members.iter().filter(|&&b| c.marks[b as usize] == Mark::AliveAlone).count(),
+            "cells": g.families[0].len() * g.families[1].len(),
+            "relations": relations_of(members),
+            "families": [family(0), family(1)],
+            "kind": kind,
+            "bijection": x.is_bijection(k as u32),
+        }));
+        grid_counts.push(json!({
+            "relations": relations_of(members),
+            "members": members.len(),
+            "groups": [share[0].groups, share[1].groups],
+            "owed": [share[0].owed, share[1].owed],
+            "about": [share[0].about, share[1].about],
+            "bijection": x.is_bijection(k as u32),
+        }));
+    }
+    let mut not_why: BTreeMap<&'static str, usize> = BTreeMap::new();
+    let not_grids: Vec<Value> = x
+        .grids
+        .not
+        .iter()
+        .map(|&(component, why)| {
+            *not_why.entry(why.as_str()).or_default() += 1;
+            let members = members_of(component);
+            let mut groups: Vec<u32> = members
+                .iter()
+                .flat_map(|&b| c.groups_of(b).iter().copied())
+                .collect();
+            groups.sort_unstable();
+            groups.dedup();
+            json!({
+                "component": component,
+                "members": members.len(),
+                "groups": groups,
+                "owed": groups.iter().filter(|&&g| x.is_owed(g)).count(),
+                "relations": relations_of(members),
+                "why": why.as_str(),
+                "detail": match why {
+                    NotAGrid::MoreThanTwo { most } => json!({"most": most}),
+                    NotAGrid::InOne { members } => json!({"members_in_one_group": members}),
+                    _ => Value::Null,
+                },
+            })
+        })
+        .collect();
+
+    let no_table = x.owed.instances.as_ref().err().map(|e| e.as_str());
+    let raw = json!({
+        "program": rel,
+        "n": c.n(),
+        "domain": c.domain(),
+        "root_owes": x.owed.root_owes,
+        "no_table": no_table,
+        "singles_read": x.owed.singles_read,
+        "theory_read": x.owed.theory_read,
+        "instances": instances,
+        "groups": groups,
+        "owed_groups": x.owed_groups(),
+        "groups_nothing_owes": unowed,
+        "owed_sets_not_a_group": x.not_groups(),
+        "unlicensed": x.unlicensed(),
+        "grids": grid_rows,
+        "components_that_are_no_grid": not_grids,
+    });
+    let file = dir.join("exactly_one.json");
+    let text = serde_json::to_string_pretty(&raw).expect("JSON");
+    std::fs::write(&file, text + "\n").expect("exactly_one.json");
+
+    // The same as tables.
+    let mut md = format!("# Exactly one, on `{rel}`\n\n");
+    if let Some(d) = c.domain() {
+        md.push_str(&format!("**{d}.**\n\n"));
+    }
+    match no_table {
+        Some(why) => md.push_str(&format!(
+            "Root owes {} instance(s) and no table of alternatives is read: {why}.\n\n",
+            x.owed.root_owes
+        )),
+        None => md.push_str(&format!(
+            "Root owes {} instance(s); the table lists {}.\n\n",
+            x.owed.root_owes,
+            table.len()
+        )),
+    }
+    md.push_str("| | |\n|---|---:|\n");
+    let mut line = |what: &str, n: usize| md.push_str(&format!("| {what} | {n} |\n"));
+    line("groups", c.groups.len());
+    line("**owed groups**: exactly one", x.owed_groups().len());
+    line("**groups nothing owes**: at most one", unowed.len());
+    line("… with an open member", unowed_open);
+    line("… an unlicensed instance is about", unowed_about);
+    line(
+        "**owed sets that are not a group**: at least one",
+        x.not_groups().len(),
+    );
+    line("instances L5 does not license", x.unlicensed().len());
+    line("grids", x.grids.grids.len());
+    line(
+        "… bijections",
+        (0..x.grids.grids.len() as u32)
+            .filter(|&k| x.is_bijection(k))
+            .count(),
+    );
+    line("components that are no grid", x.grids.not.len());
+    let shown = |b: u32| {
+        format!(
+            "`{}`{}",
+            c.text(b),
+            match c.marks[b as usize] {
+                Mark::DeadAlone => "†",
+                Mark::AtRoot => "‡",
+                _ => "",
+            }
+        )
+    };
+    let listed = |v: &[u32]| v.iter().map(|&b| shown(b)).collect::<Vec<_>>().join(" ");
+    md.push_str(
+        "\n## The groups\n\nA member dead alone at root is marked †. *Owed by* is the licensed \
+         instance whose alternatives are exactly the members; *about* an unlicensed instance \
+         whose witnesses the members, and no other candidate, bring by the theory alone.\n\n\
+         | # | grid, family | open | owed by | about | members |\n|---:|---|---:|---|---|---|\n",
+    );
+    for g in 0..c.groups.len() as u32 {
+        let by = |v: &[u32]| {
+            v.iter()
+                .map(|&k| format!("`{}`", table[k as usize].text))
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        md.push_str(&format!(
+            "| {g} | {} | {} | {} | {} | {} |\n",
+            grid_of(g).map_or(String::new(), |(grid, f)| format!("{grid}, {f}")),
+            open(g),
+            by(&x.owed_by[g as usize]),
+            by(&x.about[g as usize]),
+            listed(c.members(g)),
+        ));
+    }
+    if !table.is_empty() {
+        md.push_str(
+            "\n## What root owes\n\n| # | instance | stands as | alternatives, or why none is \
+             known | witnesses: candidates, denied at root, neither (of them brought by a \
+             candidate at root) |\n|---:|---|---|---|---|\n",
+        );
+        for (k, (i, owing)) in table.iter().zip(&x.owing).enumerate() {
+            let stands = match owing {
+                Owing::Group(g) => format!("group {g}: exactly one"),
+                Owing::Unlicensed { about: Some(g), .. } => format!("unlicensed, about group {g}"),
+                other => other.as_str().to_string(),
+            };
+            let what = match &i.alternatives {
+                Ok(alts) => listed(alts),
+                Err(why) => why.clone(),
+            };
+            let ws = match &i.witnesses {
+                Err(why) => why.clone(),
+                Ok(ws) => {
+                    let count =
+                        |is: fn(&WitnessIs) -> bool| ws.iter().filter(|w| is(&w.is)).count();
+                    let neither: Vec<&structure::Witness> = ws
+                        .iter()
+                        .filter(|w| w.is == WitnessIs::Unproposed)
+                        .collect();
+                    format!(
+                        "{}, {}, {} ({})",
+                        count(|w| matches!(w, WitnessIs::Candidate(_))),
+                        count(|w| *w == WitnessIs::Denied),
+                        neither.len(),
+                        neither
+                            .iter()
+                            .filter(|w| !w.held_at_root.is_empty())
+                            .count()
+                    )
+                }
+            };
+            md.push_str(&format!(
+                "| {k} | `{}` | {stands} | {what} | {ws} |\n",
+                i.text
+            ));
+        }
+    }
+    let unlicensed = x.unlicensed();
+    if !unlicensed.is_empty() {
+        md.push_str(
+            "\n## The witnesses of the instances L5 does not license\n\n| instance | witness | \
+             it is | held at root by the node of | held in the small KB by the node of |\n\
+             |---:|---|---|---|---|\n",
+        );
+        for &k in &unlicensed {
+            if let Ok(ws) = &table[k as usize].witnesses {
+                for w in ws {
+                    md.push_str(&format!(
+                        "| {k} | `{}` | {} | {} | {} |\n",
+                        w.text,
+                        w.is.as_str(),
+                        listed(&w.held_at_root),
+                        listed(&w.held_in_theory)
+                    ));
+                }
+            }
+        }
+    }
+    if !x.grids.grids.is_empty() {
+        md.push_str(
+            "\n## The grids\n\nA family's groups, then how many of them are owed, and of the \
+             others how many an unlicensed instance is about.\n\n| # | members | open | \
+             relations | family 0 | owed | about | family 1 | owed | about | |\n\
+             |---:|---:|---:|---|---|---:|---:|---|---:|---:|---|\n",
+        );
+        for row in &grid_rows {
+            let f = |k: usize, name: &str| row["families"][k][name].to_string();
+            let groups = |k: usize| {
+                let n = row["families"][k]["groups"].as_array().map_or(0, Vec::len);
+                format!("{n}: {}", f(k, "groups"))
+            };
+            md.push_str(&format!(
+                "| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n",
+                row["grid"],
+                row["members"],
+                row["open"],
+                row["relations"]
+                    .as_array()
+                    .map(|r| r
+                        .iter()
+                        .map(|x| format!("`{}`", x.as_str().unwrap_or("")))
+                        .collect::<Vec<_>>()
+                        .join(" "))
+                    .unwrap_or_default(),
+                groups(0),
+                f(0, "owed"),
+                f(0, "an_unlicensed_instance_is_about"),
+                groups(1),
+                f(1, "owed"),
+                f(1, "an_unlicensed_instance_is_about"),
+                row["kind"].as_str().unwrap_or(""),
+            ));
+        }
+    }
+    if !not_grids.is_empty() {
+        md.push_str(
+            "\n## The components that are no grid\n\n| component | members | groups | owed | \
+             relations | why |\n|---:|---:|---:|---:|---|---|\n",
+        );
+        for row in &not_grids {
+            md.push_str(&format!(
+                "| {} | {} | {} | {} | {} | {}{} |\n",
+                row["component"],
+                row["members"],
+                row["groups"].as_array().map_or(0, Vec::len),
+                row["owed"],
+                row["relations"]
+                    .as_array()
+                    .map(|r| r
+                        .iter()
+                        .map(|x| format!("`{}`", x.as_str().unwrap_or("")))
+                        .collect::<Vec<_>>()
+                        .join(" "))
+                    .unwrap_or_default(),
+                row["why"].as_str().unwrap_or(""),
+                match &row["detail"] {
+                    Value::Null => String::new(),
+                    d => format!(" ({d})"),
+                }
+            ));
+        }
+    }
+    std::fs::write(dir.join("exactly_one.md"), md).expect("exactly_one.md");
+
+    json!({
+        "table": x.owed.instances.as_ref().ok().map(Vec::len),
+        "no_table": no_table,
+        "root_owes": x.owed.root_owes,
+        "groups": c.groups.len(),
+        "owed_groups": x.owed_groups().len(),
+        "groups_nothing_owes": {
+            "all": unowed.len(),
+            "with_an_open_member": unowed_open,
+            "an_unlicensed_instance_is_about": unowed_about,
+        },
+        "owed_sets_not_a_group": x.not_groups().len(),
+        "unlicensed": {
+            "all": x.unlicensed().len(),
+            "why": unlicensed_why,
+            "about_a_group": about_a_group,
+            "witnesses_not_read": unknown,
+            "witnesses_no_candidate_and_not_denied": unproposed,
+            "of_them_brought_by_a_candidate_at_root": brought,
+            "not_brought_and_the_theorys_bringers_all_dead_alone_at_root": bringers_dead,
+            "not_brought_and_brought_by_nothing_in_the_theory": brought_nowhere,
+            "every_such_witness_brought": all_brought,
+            "some_such_witness_not_brought": some_not_brought,
+            "no_such_witness": none_unproposed,
+        },
+        "grids": grid_counts,
+        "bijections": (0..x.grids.grids.len() as u32).filter(|&k| x.is_bijection(k)).count(),
+        "grid_kinds": kinds,
+        "components": c.components.len(),
+        "not_grids": not_why,
+        "lists": file.strip_prefix(repo_root()).unwrap_or(&file).to_string_lossy(),
+    })
+}
+
 /// The cover of one program: its files written under `dir`, and the census
 /// line's `cover` object.
 fn cover_row(path: &Path, rel: &str, dir: &Path, t: &Theory, terms: &Terms) -> Value {
-    let Some(c) = t.cover() else {
+    let Some((c, exact)) = t.exactly_one() else {
         return json!({"error": t.small.as_ref().err()});
     };
     let n = c.n();
@@ -1444,7 +1919,8 @@ fn cover_row(path: &Path, rel: &str, dir: &Path, t: &Theory, terms: &Terms) -> V
         .map(|g| c.open(g).collect())
         .collect();
     let components_are_groups = c.components == c.groups;
-    let (declared, owed, instances) = declared_beside(path, &c, terms);
+    let (declared, owed, instances) = declared_beside(path, &c, &exact, terms);
+    let exactly_one = exactly_one_row(rel, dir, &c, &exact, terms);
 
     let raw = json!({
         "program": rel,
@@ -1648,6 +2124,7 @@ fn cover_row(path: &Path, rel: &str, dir: &Path, t: &Theory, terms: &Terms) -> V
         "root_cliques": c.root_cliques.as_ref().map(|r| clique_counts(r, n)),
         "declared": declared,
         "owed": owed,
+        "exactly_one": exactly_one,
         "lists": file.strip_prefix(repo_root()).unwrap_or(&file).to_string_lossy(),
     })
 }

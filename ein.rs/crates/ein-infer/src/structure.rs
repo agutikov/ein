@@ -212,6 +212,62 @@
 //! then the route's own nodes, and the small KB's are read in a space of
 //! their own. [`cover`] is the same for a reader that has only the freshly
 //! loaded program. No route reads the cover.
+//!
+//! ### Exactly one: owed groups and grids
+//!
+//! A group says *at most one*. *Exactly one* needs a *must*, and the engine
+//! has one source of it, an **obligation**: a state that owes an instance
+//! is not in `R` until a fact witnesses it, and L5's table
+//! ([`crate::oblgen::Alternatives`]) reads at root the candidates that can
+//! witness each instance root owes, where its premise holds of the
+//! instance. [`Owed`] is that table with every instance's witnesses
+//! beside, and [`ExactlyOne`] reads it against the cover:
+//!
+//! - **an owed group** is a group whose members are exactly the
+//!   alternatives of an instance L5 licenses ([`Owing::Group`]). Every fact
+//!   that can witness the instance is then a member or denied at root, so a
+//!   state of `R`, which has paid the instance, holds a member, and holds
+//!   no two. A member dead alone at root is an alternative like any other
+//!   and is in no alive state, so **every state of `R` holds exactly one of
+//!   the group's open members**. That rests on L5's premise, which the
+//!   obligation tree checks at every node it reads, and on the group's
+//!   pairs being dead at root ([`Cover::alive_at_root`]);
+//! - **an owed set that is not a group** is a licensed instance whose
+//!   alternatives do not pairwise exclude ([`Owing::NotExcluding`]): *at
+//!   least one*;
+//! - **a group nothing owes** has no such instance ([`ExactlyOne::unowed`]):
+//!   *at most one*, and nothing the engine reads says a member must hold;
+//! - **an instance L5 does not license** has no alternatives, only the
+//!   reason. Its witnesses are read all the same ([`Witness`]): which is a
+//!   candidate, which root denies, and for each the candidates whose own
+//!   node holds it, at root and in the small KB. Where the candidates that
+//!   bring a witness by the theory alone are exactly a group's members, and
+//!   every witness root does not deny is so brought, the instance is
+//!   **about** that group ([`Owing::Unlicensed`]). The group is not owed by
+//!   it: nothing is concluded from a witness a candidate brings.
+//!
+//! **A grid** is found from the groups and their members alone
+//! ([`Cover::grids`]): a connected component of the theory's exclusion
+//! graph in which every candidate is in exactly two groups, the groups are
+//! two families no two groups of one of which share a member, and two
+//! groups share at most one member. Each family then holds every member of
+//! the component once, as rows and columns do, and a member is one cell. No
+//! relation is read: one relation's candidates may be several grids, and a
+//! component that is no grid says why ([`NotAGrid`]). The grid is over all
+//! of the component's candidates, those dead alone at root among them, as
+//! a group is.
+//!
+//! **A bijection** is a grid with as many groups in one family as in the
+//! other, every one of them owed ([`ExactlyOne::is_bijection`]): every
+//! state of `R` holds exactly one member of each row and of each column.
+//! Where one family is owed whole and the other is not, or the families
+//! differ in number, [`ExactlyOne::share`] says how many groups each family
+//! has and how many of them are owed, which is what a count would read;
+//! **nothing here concludes *exactly one*, or anything else, from a
+//! count**, and a group nothing owes stays *at most one*.
+//!
+//! **Nothing is synthesised.** No rule, obligation or closure is added, the
+//! table is not handed to the node function, and no route reads any of it.
 
 use std::collections::BTreeMap;
 use std::time::Instant;
@@ -1131,6 +1187,10 @@ pub struct Theory {
     /// by name, sorted. The small KB keeps every rule, so what such a rule
     /// says of that object is the theory's whatever it is.
     pub rules_naming_objects: Vec<String>,
+    /// What root owes, read beside the two layers: L5's table, each
+    /// instance with the facts that can witness it and the candidates whose
+    /// own node holds each, at root and in the small KB.
+    pub owed: Owed,
 }
 
 /// How the two readings of one root-excluded pair meet.
@@ -1345,7 +1405,11 @@ fn theory_in(
         root_pairs && opts.supports,
         root_pairs && opts.supports && opts.check,
     );
-    let (root_layer, read, supports, nodes) = {
+    let (root_layer, read, supports, nodes, owing, root_owes, held_at_root) = {
+        // What root owes, read before any node, as a route reads L5's
+        // table: a reason of the table's names a fact only where something
+        // has interned it, and a node interns what it derives.
+        let owing = sp.owed()?;
         let l = match reading {
             Reading::Pairs => pair_layer_in(sp)?,
             Reading::Singles => {
@@ -1355,6 +1419,12 @@ fn theory_in(
             Reading::Universe => universe_alone(sp),
         };
         let read = RootRead::of(sp);
+        // Which singles hold each fact that can witness an instance: the
+        // cache has the singles where the layer read them.
+        let held_at_root = match &owing {
+            Some((_, rows)) if l.singles_left == 0 => holders(sp, rows)?,
+            _ => None,
+        };
         let sets: Vec<Box<[u32]>> = l.excluded.iter().map(|&(a, b)| Box::from([a, b])).collect();
         let supports = if want && !sets.is_empty() {
             sp.supports(&sets, &stated_set)?
@@ -1375,7 +1445,15 @@ fn theory_in(
         } else {
             Vec::new()
         };
-        (l, read, supports, nodes)
+        (
+            l,
+            read,
+            supports,
+            nodes,
+            owing,
+            sp.root_owes(),
+            held_at_root,
+        )
     };
     // The space is not asked again: the rest reads root's fixpoint, sealed,
     // and builds its programs over the space's terms.
@@ -1504,9 +1582,18 @@ fn theory_in(
         Some(&root_layer.candidates),
         |sp| {
             let licensed = sp.is_monotone();
-            layer(sp, licensed, true)
+            let l = layer(sp, licensed, true)?;
+            let held = match &owing {
+                Some((_, rows)) if l.singles_left == 0 => holders(sp, rows)?,
+                _ => None,
+            };
+            Ok((l, held))
         },
     );
+    let (small, held_in_theory) = match small {
+        Ok((l, held)) => (Ok(l), held),
+        Err(e) => (Err(e), None),
+    };
     let small_beyond_root = match &small {
         Ok(_) => small_kb.facts().filter(|&f| !root.contains(f)).count() as u64,
         Err(_) => 0,
@@ -1680,6 +1767,16 @@ fn theory_in(
         }
     }
 
+    let owed = Owed::read(
+        root,
+        terms,
+        &candidate,
+        root_layer.monotone,
+        root_owes,
+        owing,
+        held_at_root,
+        held_in_theory,
+    );
     Ok(Theory {
         root: root_layer,
         stated,
@@ -1690,8 +1787,63 @@ fn theory_in(
         support_work,
         rung: read.rung.as_str(),
         rules_naming_objects,
+        owed,
     })
 }
+
+/// For each instance's witnesses, the candidates alive alone whose own
+/// node holds each, ascending: `rows` are L5's table's instances in its
+/// order, each with the facts that can witness it. The singles are read
+/// through the cache, which has them once a layer has read its singles; a
+/// fact nothing has interned is held by no node. `None` where a single is
+/// not to be had.
+fn holders(
+    sp: &mut Space<'_>,
+    rows: &[crate::oblgen::Witnesses],
+) -> Result<Option<Held>, SolveError> {
+    let n = sp.n() as u32;
+    let empty = |rows: &[crate::oblgen::Witnesses]| -> Held {
+        rows.iter()
+            .map(|r| vec![Vec::new(); r.rows.as_ref().map_or(0, Vec::len)])
+            .collect()
+    };
+    if sp.root_is_dead() || n == 0 {
+        // Under a dead root no candidate is alive alone.
+        return Ok(Some(empty(rows)));
+    }
+    let sets: Vec<Box<[u32]>> = (0..n).map(|b| Box::from([b])).collect();
+    let singles = match sp.eval(&sets)? {
+        Ok(seen) => seen,
+        Err(_) => return Ok(None),
+    };
+    let states = sp.states();
+    let terms = sp.terms();
+    Ok(Some(
+        rows.iter()
+            .map(|r| {
+                let Ok(witnesses) = &r.rows else {
+                    return Vec::new();
+                };
+                witnesses
+                    .iter()
+                    .map(|(rel, args)| match terms.probe_fact(*rel, args) {
+                        None => Vec::new(),
+                        Some(fact) => (0..n)
+                            .filter(|&a| {
+                                let single = &singles[a as usize];
+                                !single.dead
+                                    && states[single.class as usize].binary_search(&fact).is_ok()
+                            })
+                            .collect(),
+                    })
+                    .collect()
+            })
+            .collect(),
+    ))
+}
+
+/// Per instance, per witness: the candidates whose own node holds it.
+type Held = Vec<Vec<Vec<u32>>>;
 
 /// Root's layer read as far as its universe: the candidates, the static
 /// verdict and whether root is dead, with every single and every pair left
@@ -2368,25 +2520,682 @@ pub(crate) fn cover_in(
     loaded: &Loaded,
     opts: &CoverOptions,
 ) -> Result<Cover, SolveError> {
-    let (reading, asked) = (
-        if opts.root_pairs {
-            Reading::Pairs
-        } else {
-            Reading::Singles
-        },
-        TheoryOptions {
-            layer: opts.layer,
-            root_pairs: opts.root_pairs,
-            supports: false,
-            check: false,
-        },
-    );
-    let t = theory_in(sp, loaded, reading, &asked, &small_kb)?;
+    let t = theory_in(sp, loaded, reading_of(opts), &theory_asked(opts), &small_kb)?;
     match &t.small {
         Ok(small) => Ok(Cover::of(&t.root, small)),
         Err(e) => Err(SolveError::Unsupported(format!(
             "the small KB has no layer, so the program has no groups: {e}"
         ))),
+    }
+}
+
+// ── Exactly one: owed groups and grids ────────────────────────────────
+
+/// Why L5 does not license an instance one of whose witnesses is
+/// [`WitnessIs::Unproposed`], where its static premise holds.
+pub const UNPROPOSED: &str =
+    "a fact can witness it that is no candidate and that root does not deny";
+
+/// What root says of one fact that can witness an owed instance.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum WitnessIs {
+    /// It is this candidate of `H`.
+    Candidate(u32),
+    /// Root's fixpoint stores its negative: no alive state holds it.
+    Denied,
+    /// Neither: no commitment names it, and root does not rule it out.
+    Unproposed,
+}
+
+impl WitnessIs {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            WitnessIs::Candidate(_) => "a candidate",
+            WitnessIs::Denied => "denied at root",
+            WitnessIs::Unproposed => "no candidate, not denied",
+        }
+    }
+}
+
+/// One fact that can witness an owed instance.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Witness {
+    /// As the program writes it. It need not be a fact any node holds.
+    pub text: String,
+    pub is: WitnessIs,
+    /// The candidates alive alone at root whose own node holds it,
+    /// ascending: it is in the closure of each. A candidate alive alone
+    /// holds itself. Empty where no single's node does, and where
+    /// [`Owed::singles_read`] is `false`.
+    pub held_at_root: Vec<u32>,
+    /// The same of the small KB's nodes: the candidates that bring it by
+    /// the theory alone. Empty where [`Owed::theory_read`] is `false`.
+    pub held_in_theory: Vec<u32>,
+}
+
+/// One instance root owes, as L5's table has it, with its witnesses.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct OwedInstance {
+    /// Its obligation rule, by the name the program gives it.
+    pub rule: String,
+    /// The instance as text: the rule with its activator's arguments, then
+    /// the match's bindings.
+    pub text: String,
+    /// **L5's reading**: the candidates that can witness it, ascending,
+    /// where its premise holds of the instance
+    /// ([`crate::oblgen::Instance::alternatives`]); why not where it does
+    /// not, in L5's own words, but that [`UNPROPOSED`] stands for the two
+    /// sentences in which it names a witness, since which of the two it
+    /// says depends on whether anything has interned the fact.
+    pub alternatives: Result<Vec<u32>, String>,
+    /// Witnesses L5 left out of the alternatives because root denies them.
+    pub denied: u32,
+    /// **Every fact that can witness it**, in the order root's scan finds
+    /// them, licensed or not; why none is known where the rule names no
+    /// witness.
+    pub witnesses: Result<Vec<Witness>, String>,
+}
+
+/// Why [`Owed`] has no table.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NoTable {
+    /// The static check flags the program: L5 is read on a monotone one.
+    Flagged,
+    /// The program states no obligation rule.
+    NoObligation,
+}
+
+impl NoTable {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            NoTable::Flagged => "the static check flags the program",
+            NoTable::NoObligation => "the program states no obligation",
+        }
+    }
+}
+
+/// **What root owes**, as the engine reads it: L5's table
+/// ([`crate::oblgen::Alternatives`]), which the obligation tree branches on,
+/// with every instance's witnesses beside. Read once a program, of root's
+/// fixpoint; nothing here is handed to a node.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Owed {
+    /// Instances root's fixpoint owes, by the node function's own count,
+    /// with or without a table.
+    pub root_owes: u32,
+    /// The table's instances, in its order.
+    pub instances: Result<Vec<OwedInstance>, NoTable>,
+    /// Root's singles were read: [`Witness::held_at_root`] says something.
+    pub singles_read: bool,
+    /// The small KB's singles were read: [`Witness::held_in_theory`] does.
+    pub theory_read: bool,
+}
+
+impl Owed {
+    #[allow(clippy::too_many_arguments)]
+    fn read(
+        root: &Kb,
+        terms: &Terms,
+        candidate: &FxHashMap<FactId, u32>,
+        monotone: bool,
+        root_owes: u32,
+        owing: Option<explore::Owed>,
+        held_at_root: Option<Held>,
+        held_in_theory: Option<Held>,
+    ) -> Owed {
+        let Some((table, rows)) = owing else {
+            return Owed {
+                root_owes,
+                instances: Err(if monotone {
+                    NoTable::NoObligation
+                } else {
+                    NoTable::Flagged
+                }),
+                singles_read: false,
+                theory_read: false,
+            };
+        };
+        let instances = table
+            .instances
+            .iter()
+            .zip(rows)
+            .enumerate()
+            .map(|(k, (i, read))| {
+                let (premise, rows) = (read.premise, read.rows);
+                let (rule, activator, bindings) = &i.key;
+                let rule = terms.sym(*rule).to_string();
+                let text = format!(
+                    "({rule}{}){}",
+                    activator
+                        .iter()
+                        .map(|&v| format!(" {}", terms.display(v)))
+                        .collect::<String>(),
+                    bindings
+                        .iter()
+                        .map(|&(x, v)| format!(" {}={}", terms.sym(x), terms.display(v)))
+                        .collect::<String>(),
+                );
+                let held = |h: &Option<Held>, w: usize| -> Vec<u32> {
+                    h.as_ref()
+                        .and_then(|h| h[k].get(w))
+                        .cloned()
+                        .unwrap_or_default()
+                };
+                let witnesses: Result<Vec<Witness>, String> = rows.map(|rows| {
+                    rows.iter()
+                        .enumerate()
+                        .map(|(w, (rel, args))| {
+                            let fact = terms.probe_fact(*rel, args);
+                            let shown: Vec<String> =
+                                args.iter().map(|&a| terms.display(a)).collect();
+                            Witness {
+                                text: ein_core::text::form(terms.sym(*rel), &shown),
+                                is: match fact {
+                                    Some(f) if candidate.contains_key(&f) => {
+                                        WitnessIs::Candidate(candidate[&f])
+                                    }
+                                    Some(f) if root.is_negated(f) => WitnessIs::Denied,
+                                    _ => WitnessIs::Unproposed,
+                                },
+                                held_at_root: held(&held_at_root, w),
+                                held_in_theory: held(&held_in_theory, w),
+                            }
+                        })
+                        .collect()
+                });
+                // L5's verdict, and where it does not license, why, as a
+                // function of the program: its own words but where they
+                // name a witness, which they do by what has been interned.
+                let alternatives = match &i.alternatives {
+                    Ok(a) => Ok(a.to_vec()),
+                    Err(said) => Err(match (&witnesses, premise) {
+                        (Err(why), _) => why.clone(),
+                        (Ok(_), Err(why)) => why,
+                        (Ok(ws), Ok(())) if ws.iter().any(|w| w.is == WitnessIs::Unproposed) => {
+                            UNPROPOSED.to_string()
+                        }
+                        (Ok(_), Ok(())) => said.clone(),
+                    }),
+                };
+                OwedInstance {
+                    rule,
+                    text,
+                    alternatives,
+                    denied: i.excluded,
+                    witnesses,
+                }
+            })
+            .collect();
+        Owed {
+            root_owes,
+            instances: Ok(instances),
+            singles_read: held_at_root.is_some(),
+            theory_read: held_in_theory.is_some(),
+        }
+    }
+
+    /// The table's instances; none where there is no table.
+    pub fn table(&self) -> &[OwedInstance] {
+        self.instances.as_ref().map_or(&[], |i| &i[..])
+    }
+}
+
+/// **A grid**: a connected component of the theory's exclusion graph whose
+/// groups are two families, every member of the component in exactly one
+/// group of each. A member is one cell, the group of one family its row and
+/// the group of the other its column.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Grid {
+    /// The component it is, a place in [`Cover::components`]: its members.
+    pub component: u32,
+    /// Its two families of groups, each ascending. The first is the family
+    /// of the grid's lowest group, which says nothing of which is rows.
+    pub families: [Vec<u32>; 2],
+}
+
+/// Why a component of the theory's exclusion graph is no [`Grid`], by the
+/// first of these that holds of it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NotAGrid {
+    /// The bound cut the cover: its groups are not all listed.
+    Cut,
+    /// A member is in more than two groups, `most` of them: something ties
+    /// its lines together.
+    MoreThanTwo { most: u32 },
+    /// It is one group: one line, and no second family.
+    OneGroup,
+    /// `members` of its members are in one group only: their other line
+    /// holds one candidate, and is no group.
+    InOne { members: u32 },
+    /// Every member is in two groups, and the groups do not split into two
+    /// families with no member shared inside one.
+    NoTwoFamilies,
+    /// Two of its groups share two members or more: two cells in one row
+    /// and one column.
+    SharedTwice,
+}
+
+impl NotAGrid {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            NotAGrid::Cut => "the bound cut the cover",
+            NotAGrid::MoreThanTwo { .. } => "a member is in more than two groups",
+            NotAGrid::OneGroup => "it is one group",
+            NotAGrid::InOne { .. } => "a member is in one group only",
+            NotAGrid::NoTwoFamilies => "its groups are not two families",
+            NotAGrid::SharedTwice => "two groups share two members",
+        }
+    }
+}
+
+/// The grids of a cover, and why each other component is none
+/// ([`Cover::grids`]).
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Grids {
+    /// In the order of their components.
+    pub grids: Vec<Grid>,
+    /// Each component that is no grid, a place in [`Cover::components`],
+    /// with why.
+    pub not: Vec<(u32, NotAGrid)>,
+    /// **Group to grid**: for each group, its grid and which of the grid's
+    /// two families it is in; `None` for a group of a component that is no
+    /// grid.
+    pub of_group: Vec<Option<(u32, u8)>>,
+}
+
+impl Cover {
+    /// **The grids**, found from the groups and their members alone: each
+    /// connected component of the theory's exclusion graph in which every
+    /// member is in exactly two groups, the groups split into two families
+    /// no two groups of which share a member, and two groups share at most
+    /// one member. No relation is read, and no declaration.
+    pub fn grids(&self) -> Grids {
+        let mut out = Grids {
+            of_group: vec![None; self.groups.len()],
+            ..Grids::default()
+        };
+        for (c, members) in self.components.iter().enumerate() {
+            match self.grid_of(members) {
+                Ok(families) => {
+                    let grid = out.grids.len() as u32;
+                    for (family, groups) in families.iter().enumerate() {
+                        for &g in groups {
+                            out.of_group[g as usize] = Some((grid, family as u8));
+                        }
+                    }
+                    out.grids.push(Grid {
+                        component: c as u32,
+                        families,
+                    });
+                }
+                Err(why) => out.not.push((c as u32, why)),
+            }
+        }
+        out
+    }
+
+    /// The two families of the component `members`, or why it has none.
+    fn grid_of(&self, members: &[u32]) -> Result<[Vec<u32>; 2], NotAGrid> {
+        if self.cut.is_some() {
+            return Err(NotAGrid::Cut);
+        }
+        let in_groups = |b: u32| self.member_of[b as usize].len() as u32;
+        let most = members.iter().map(|&b| in_groups(b)).max().unwrap_or(0);
+        if most > 2 {
+            return Err(NotAGrid::MoreThanTwo { most });
+        }
+        let mut groups: Vec<u32> = members
+            .iter()
+            .flat_map(|&b| self.member_of[b as usize].iter().copied())
+            .collect();
+        groups.sort_unstable();
+        groups.dedup();
+        if groups.len() < 2 {
+            return Err(NotAGrid::OneGroup);
+        }
+        let ones = members.iter().filter(|&&b| in_groups(b) == 1).count() as u32;
+        if ones > 0 {
+            return Err(NotAGrid::InOne { members: ones });
+        }
+        // Two groups are joined where they share a member: every member
+        // joins its two.
+        let place = |g: u32| groups.binary_search(&g).expect("a group of the component");
+        let mut joined: Vec<Vec<usize>> = vec![Vec::new(); groups.len()];
+        let mut pairs: Vec<(usize, usize)> = Vec::with_capacity(members.len());
+        for &b in members {
+            let of = &self.member_of[b as usize];
+            let (x, y) = (place(of[0]), place(of[1]));
+            joined[x].push(y);
+            joined[y].push(x);
+            pairs.push((x, y));
+        }
+        // The lowest group's family is the first; the component is
+        // connected, so one walk colours every group.
+        let mut family: Vec<Option<u8>> = vec![None; groups.len()];
+        family[0] = Some(0);
+        let mut queue = vec![0usize];
+        let mut at = 0;
+        while at < queue.len() {
+            let x = queue[at];
+            at += 1;
+            let other = 1 - family[x].expect("coloured");
+            for &y in &joined[x] {
+                match family[y] {
+                    None => {
+                        family[y] = Some(other);
+                        queue.push(y);
+                    }
+                    Some(f) if f != other => return Err(NotAGrid::NoTwoFamilies),
+                    Some(_) => {}
+                }
+            }
+        }
+        pairs.sort_unstable();
+        if pairs.windows(2).any(|w| w[0] == w[1]) {
+            return Err(NotAGrid::SharedTwice);
+        }
+        let of = |f: u8| -> Vec<u32> {
+            (0..groups.len())
+                .filter(|&k| family[k] == Some(f))
+                .map(|k| groups[k])
+                .collect()
+        };
+        Ok([of(0), of(1)])
+    }
+}
+
+/// How one instance root owes stands to the cover ([`ExactlyOne::owing`]).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Owing {
+    /// **An owed group**: L5 licenses the instance and its alternatives are
+    /// exactly this group's members. *Exactly one.*
+    Group(u32),
+    /// Licensed, its alternatives pairwise excluding and strictly inside
+    /// each of these groups: exactly one of the alternatives, and the
+    /// groups' other members witness nothing.
+    Inside(Vec<u32>),
+    /// **An owed set that is not a group**: licensed, and `alive` pairs of
+    /// its alternatives are not excluded by the theory. *At least one.*
+    /// `holds` are the groups it holds whole.
+    NotExcluding { alive: u64, holds: Vec<u32> },
+    /// Licensed, with one alternative: every state of `R` holds it.
+    One(u32),
+    /// Licensed, with no alternative: nothing can pay it.
+    None,
+    /// **L5 does not license it**, for the reason
+    /// [`OwedInstance::alternatives`] gives. `payers` are the candidates
+    /// whose own node in the small KB holds one of its witnesses, where
+    /// those nodes and the witnesses were read. The instance is `about` a
+    /// group where the payers are exactly that group's members and every
+    /// witness root does not deny is held by a payer's node. It does not
+    /// owe that group: nothing is concluded from a witness a candidate
+    /// brings.
+    Unlicensed {
+        payers: Option<Vec<u32>>,
+        about: Option<u32>,
+    },
+}
+
+impl Owing {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Owing::Group(_) => "a group",
+            Owing::Inside(_) => "inside a group",
+            Owing::NotExcluding { .. } => "not pairwise excluding",
+            Owing::One(_) => "one alternative",
+            Owing::None => "no alternative",
+            Owing::Unlicensed { .. } => "unlicensed",
+        }
+    }
+}
+
+/// What a family of a grid's groups is owed.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Share {
+    /// The family's groups.
+    pub groups: u32,
+    /// Of them, owed groups.
+    pub owed: u32,
+    /// Of the others, those an unlicensed instance is about.
+    pub about: u32,
+}
+
+/// **Exactly one**: what root owes read against the cover, and the grids.
+///
+/// *At most one* is a group's, and free. *Exactly one* is an **owed
+/// group**'s: a group whose members are exactly a licensed instance's
+/// alternatives, so that every state of `R` holds one of its open members
+/// and no state two. Nothing here is synthesised: an instance is the
+/// program's obligation as L5 reads it, and a group nothing owes stays *at
+/// most one* whatever a count would suggest.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ExactlyOne {
+    /// What root owes.
+    pub owed: Owed,
+    /// How each instance of [`Owed::table`] stands to the cover, in its
+    /// order.
+    pub owing: Vec<Owing>,
+    /// **Group to the instances that owe it**: for each group, the licensed
+    /// instances whose alternatives are exactly its members, ascending.
+    /// Empty for a group nothing owes.
+    pub owed_by: Vec<Vec<u32>>,
+    /// For each group, the unlicensed instances that are about it.
+    pub about: Vec<Vec<u32>>,
+    /// The grids of the cover.
+    pub grids: Grids,
+}
+
+impl ExactlyOne {
+    /// `owed` read against `cover`, both of one program.
+    pub fn of(cover: &Cover, owed: Owed) -> ExactlyOne {
+        let mut owed_by: Vec<Vec<u32>> = vec![Vec::new(); cover.groups.len()];
+        let mut about: Vec<Vec<u32>> = vec![Vec::new(); cover.groups.len()];
+        let owing = owed
+            .table()
+            .iter()
+            .enumerate()
+            .map(|(k, i)| match &i.alternatives {
+                Ok(alternatives) => match cover.standing(alternatives) {
+                    Standing::Group(g) => {
+                        owed_by[g as usize].push(k as u32);
+                        Owing::Group(g)
+                    }
+                    Standing::Inside(groups) => Owing::Inside(groups),
+                    Standing::NotExcluding { alive, holds } => Owing::NotExcluding { alive, holds },
+                    Standing::Fewer => match alternatives.first() {
+                        Some(&b) => Owing::One(b),
+                        None => Owing::None,
+                    },
+                },
+                Err(_) => {
+                    let payers = match (&i.witnesses, owed.theory_read) {
+                        (Ok(witnesses), true) => {
+                            let mut payers: Vec<u32> = witnesses
+                                .iter()
+                                .flat_map(|w| w.held_in_theory.iter().copied())
+                                .collect();
+                            payers.sort_unstable();
+                            payers.dedup();
+                            Some(payers)
+                        }
+                        _ => None,
+                    };
+                    // Every witness root does not deny is brought by a
+                    // payer, and the payers are a group's members.
+                    let all_brought = i.witnesses.as_ref().is_ok_and(|ws| {
+                        ws.iter()
+                            .all(|w| w.is == WitnessIs::Denied || !w.held_in_theory.is_empty())
+                    });
+                    let group = payers.as_ref().filter(|_| all_brought).and_then(|p| {
+                        match cover.standing(p) {
+                            Standing::Group(g) => Some(g),
+                            _ => None,
+                        }
+                    });
+                    if let Some(g) = group {
+                        about[g as usize].push(k as u32);
+                    }
+                    Owing::Unlicensed {
+                        payers,
+                        about: group,
+                    }
+                }
+            })
+            .collect();
+        ExactlyOne {
+            owed,
+            owing,
+            owed_by,
+            about,
+            grids: cover.grids(),
+        }
+    }
+
+    /// Group `g` is an owed group: *exactly one*.
+    pub fn is_owed(&self, g: u32) -> bool {
+        !self.owed_by[g as usize].is_empty()
+    }
+
+    /// The owed groups, ascending.
+    pub fn owed_groups(&self) -> Vec<u32> {
+        (0..self.owed_by.len() as u32)
+            .filter(|&g| self.is_owed(g))
+            .collect()
+    }
+
+    /// **The groups nothing owes**, ascending: *at most one*, and no
+    /// instance L5 licenses says a member must hold.
+    pub fn unowed(&self) -> Vec<u32> {
+        (0..self.owed_by.len() as u32)
+            .filter(|&g| !self.is_owed(g))
+            .collect()
+    }
+
+    /// **The owed sets that are not a group**: the licensed instances whose
+    /// alternatives do not pairwise exclude, as places in [`Owed::table`].
+    pub fn not_groups(&self) -> Vec<u32> {
+        (0..self.owing.len() as u32)
+            .filter(|&k| matches!(self.owing[k as usize], Owing::NotExcluding { .. }))
+            .collect()
+    }
+
+    /// The instances L5 does not license, as places in [`Owed::table`].
+    pub fn unlicensed(&self) -> Vec<u32> {
+        (0..self.owing.len() as u32)
+            .filter(|&k| matches!(self.owing[k as usize], Owing::Unlicensed { .. }))
+            .collect()
+    }
+
+    /// Of instance `k`'s witnesses that are no candidate and that root does
+    /// not deny: how many there are, and how many of them some candidate
+    /// alive alone at root brings, its own node holding the witness.
+    /// `None` where the witnesses or root's singles were not read.
+    pub fn brought(&self, k: u32) -> Option<(u32, u32)> {
+        let witnesses = self.owed.table()[k as usize].witnesses.as_ref().ok()?;
+        if !self.owed.singles_read {
+            return None;
+        }
+        let unproposed = witnesses.iter().filter(|w| w.is == WitnessIs::Unproposed);
+        let (mut all, mut brought) = (0, 0);
+        for w in unproposed {
+            all += 1;
+            brought += u32::from(!w.held_at_root.is_empty());
+        }
+        Some((all, brought))
+    }
+
+    /// What each family of grid `grid` is owed.
+    pub fn share(&self, grid: u32) -> [Share; 2] {
+        let of = |groups: &Vec<u32>| {
+            let mut s = Share {
+                groups: groups.len() as u32,
+                ..Share::default()
+            };
+            for &g in groups {
+                if self.is_owed(g) {
+                    s.owed += 1;
+                } else if !self.about[g as usize].is_empty() {
+                    s.about += 1;
+                }
+            }
+            s
+        };
+        let families = &self.grids.grids[grid as usize].families;
+        [of(&families[0]), of(&families[1])]
+    }
+
+    /// **A bijection**: grid `grid` has as many groups in one family as in
+    /// the other and every one of them is an owed group, so every state of
+    /// `R` holds exactly one member in each row and in each column. A grid
+    /// every group of which is owed and whose families differ in number is
+    /// none: its share says so, and nothing is concluded from the count.
+    pub fn is_bijection(&self, grid: u32) -> bool {
+        let share = self.share(grid);
+        share[0].groups == share[1].groups && share.iter().all(|s| s.owed == s.groups)
+    }
+}
+
+impl Theory {
+    /// The cover, and what root owes read against it. `None` where the
+    /// small KB has no layer.
+    pub fn exactly_one(&self) -> Option<(Cover, ExactlyOne)> {
+        let cover = self.cover()?;
+        let exact = ExactlyOne::of(&cover, self.owed.clone());
+        Some((cover, exact))
+    }
+}
+
+/// The cover of `root`, a **freshly loaded, unsaturated** program nothing
+/// else will use, and what root owes read against it:
+/// `exactly_one_in` over a space opened for it, at `opts.layer`'s budget.
+pub fn exactly_one(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &CoverOptions,
+) -> Result<(Cover, ExactlyOne), SolveError> {
+    let loaded = Loaded::of(root, terms, ast)?;
+    with_space(root, terms, ast, &opts.layer, None, |sp| {
+        exactly_one_in(sp, &loaded, opts)
+    })
+}
+
+/// **The cover, the owed groups and the grids over a program's prepared
+/// space**, computed once a program, as `cover_in` computes the cover:
+/// one reading of root's layer through `sp` and of the small KB's in a
+/// space of its own. L5's table is read of root's fixpoint and is not
+/// handed to the node function, so a route that takes the table itself
+/// reads the same one and nothing a node reports changes.
+pub(crate) fn exactly_one_in(
+    sp: &mut Space<'_>,
+    loaded: &Loaded,
+    opts: &CoverOptions,
+) -> Result<(Cover, ExactlyOne), SolveError> {
+    let t = theory_in(sp, loaded, reading_of(opts), &theory_asked(opts), &small_kb)?;
+    t.exactly_one().ok_or_else(|| {
+        SolveError::Unsupported(format!(
+            "the small KB has no layer, so the program has no groups: {}",
+            t.small.as_ref().err().map_or("", String::as_str)
+        ))
+    })
+}
+
+/// How far a cover's options read root.
+fn reading_of(opts: &CoverOptions) -> Reading {
+    if opts.root_pairs {
+        Reading::Pairs
+    } else {
+        Reading::Singles
+    }
+}
+
+/// The theory's share a cover asks: no support and no check.
+fn theory_asked(opts: &CoverOptions) -> TheoryOptions {
+    TheoryOptions {
+        layer: opts.layer,
+        root_pairs: opts.root_pairs,
+        supports: false,
+        check: false,
     }
 }
 
@@ -2777,6 +3586,233 @@ mod tests {
         assert!(c.marks.iter().all(|&m| m == Mark::Unread));
         assert!(c.root_cliques.is_none() && c.alive_at_root.is_none());
         assert_eq!(c.groups.len(), 5);
+    }
+
+    /// L5's reading of one instance: its alternatives, or why not.
+    type Alternatives = Result<Vec<u32>, String>;
+
+    /// What root owes over a hand-made cover: each instance its
+    /// alternatives or a reason, with the witnesses given.
+    fn owed_of(instances: Vec<(Alternatives, Vec<Witness>)>) -> Owed {
+        Owed {
+            root_owes: instances.len() as u32,
+            instances: Ok(instances
+                .into_iter()
+                .enumerate()
+                .map(|(k, (alternatives, witnesses))| OwedInstance {
+                    rule: "owe".to_string(),
+                    text: format!("(owe) k={k}"),
+                    alternatives,
+                    denied: 0,
+                    witnesses: Ok(witnesses),
+                })
+                .collect()),
+            singles_read: true,
+            theory_read: true,
+        }
+    }
+
+    fn witness(is: WitnessIs, at_root: &[u32], in_theory: &[u32]) -> Witness {
+        Witness {
+            text: "(w)".to_string(),
+            is,
+            held_at_root: at_root.to_vec(),
+            held_in_theory: in_theory.to_vec(),
+        }
+    }
+
+    /// **A grid is found from the groups alone, and a component that is none
+    /// says why.** Two rows of three over three columns, a candidate alone,
+    /// and beside them each shape the definition turns away: one group, a
+    /// path, a ring of five, two cells in one row and one column, and a
+    /// member in three groups.
+    #[test]
+    fn a_grid_is_two_families_and_every_other_component_says_why() {
+        // 0 1 2
+        // 3 4 5      a grid: rows {0,1,2} {3,4,5}, columns {0,3} {1,4} {2,5}.
+        let mut edges = vec![
+            (0, 1),
+            (0, 2),
+            (1, 2),
+            (3, 4),
+            (3, 5),
+            (4, 5),
+            (0, 3),
+            (1, 4),
+            (2, 5),
+        ];
+        // 6, alone. 7 8 9: one group.
+        edges.extend([(7, 8), (7, 9), (8, 9)]);
+        // 10 - 11 - 12: a path, whose ends are in one group each.
+        edges.extend([(10, 11), (11, 12)]);
+        // 13 .. 17: a ring of five, every member in two groups of two, and
+        // no two families.
+        edges.extend([(13, 14), (14, 15), (15, 16), (16, 17), (13, 17)]);
+        // 18 19 with 20, and with 21; 20 - 22 - 21: every member in two
+        // groups, two families, and {18, 19, 20} and {18, 19, 21} share two.
+        edges.extend([
+            (18, 19),
+            (18, 20),
+            (19, 20),
+            (18, 21),
+            (19, 21),
+            (20, 22),
+            (21, 22),
+        ]);
+        // 23 with 24, 25 and 26, no two of which exclude: 23 is in three.
+        edges.extend([(23, 24), (23, 25), (23, 26)]);
+        let small = layer_over(27, &edges, &[]);
+        let root = layer_over(27, &edges, &[1]);
+        let c = Cover::of(&root, &small);
+        let g = c.grids();
+        assert_eq!(c.components.len(), 6);
+        assert_eq!(
+            g.grids,
+            [Grid {
+                component: 0,
+                families: [vec![0, 4], vec![1, 2, 3]],
+            }]
+        );
+        assert_eq!(c.groups[0], [0, 1, 2]);
+        assert_eq!(c.groups[4], [3, 4, 5]);
+        assert_eq!(g.of_group[..5], [0, 1, 1, 1, 0].map(|f| Some((0, f))));
+        assert!(g.of_group[5..].iter().all(Option::is_none));
+        assert_eq!(
+            g.not,
+            [
+                (1, NotAGrid::OneGroup),
+                (2, NotAGrid::InOne { members: 2 }),
+                (3, NotAGrid::NoTwoFamilies),
+                (4, NotAGrid::SharedTwice),
+                (5, NotAGrid::MoreThanTwo { most: 3 }),
+            ]
+        );
+
+        // The rows owed, one of them by an instance whose alternatives are
+        // the row; a column with a strict subset; a set across two rows; an
+        // instance with one alternative, one with none; and two L5 does not
+        // license, the first's witnesses brought by the middle column's
+        // members and by no other, the second's by one member of it.
+        let unproposed =
+            |at_root: &[u32], in_theory: &[u32]| witness(WitnessIs::Unproposed, at_root, in_theory);
+        let why = || Err("a `w` fact can witness it that no candidate proposes".to_string());
+        let x = ExactlyOne::of(
+            &c,
+            owed_of(vec![
+                (Ok(vec![0, 1, 2]), vec![]),
+                (Ok(vec![3, 4, 5]), vec![]),
+                (Ok(vec![8, 9]), vec![]),
+                (Ok(vec![0, 4]), vec![]),
+                (Ok(vec![6]), vec![]),
+                (Ok(vec![]), vec![]),
+                (
+                    why(),
+                    vec![
+                        unproposed(&[], &[1]),
+                        unproposed(&[4], &[4]),
+                        witness(WitnessIs::Denied, &[], &[]),
+                    ],
+                ),
+                (why(), vec![unproposed(&[4], &[4]), unproposed(&[], &[])]),
+            ]),
+        );
+        assert_eq!(
+            x.owing,
+            [
+                Owing::Group(0),
+                Owing::Group(4),
+                Owing::Inside(vec![5]),
+                Owing::NotExcluding {
+                    alive: 1,
+                    holds: vec![]
+                },
+                Owing::One(6),
+                Owing::None,
+                Owing::Unlicensed {
+                    payers: Some(vec![1, 4]),
+                    about: Some(2),
+                },
+                Owing::Unlicensed {
+                    payers: Some(vec![4]),
+                    about: None,
+                },
+            ]
+        );
+        assert_eq!(x.owed_groups(), [0, 4]);
+        assert_eq!(x.unowed().len(), c.groups.len() - 2);
+        assert_eq!(x.owed_by[0], [0]);
+        assert_eq!(x.about[2], [6]);
+        assert_eq!(x.not_groups(), [3]);
+        assert_eq!(x.unlicensed(), [6, 7]);
+        // The first has two witnesses that are no candidate and not denied,
+        // one of them brought by a candidate alive alone at root.
+        assert_eq!(x.brought(6), Some((2, 1)));
+        assert_eq!(x.brought(7), Some((2, 1)));
+        // One family owed whole, the other not: no bijection, and the
+        // column an unlicensed instance is about is not owed by it.
+        assert_eq!(
+            x.share(0),
+            [
+                Share {
+                    groups: 2,
+                    owed: 2,
+                    about: 0
+                },
+                Share {
+                    groups: 3,
+                    owed: 0,
+                    about: 1
+                },
+            ]
+        );
+        assert!(!x.is_bijection(0) && !x.is_owed(2));
+
+        // Every group owed, of two rows and three columns: no bijection,
+        // the families differing in number.
+        let all = ExactlyOne::of(
+            &c,
+            owed_of(
+                [
+                    vec![0, 1, 2],
+                    vec![3, 4, 5],
+                    vec![0, 3],
+                    vec![1, 4],
+                    vec![2, 5],
+                ]
+                .into_iter()
+                .map(|a| (Ok(a), vec![]))
+                .collect(),
+            ),
+        );
+        assert_eq!(all.share(0).map(|s| (s.groups, s.owed)), [(2, 2), (3, 3)]);
+        assert!(!all.is_bijection(0));
+        // Two rows and two columns, every one owed: a bijection.
+        let square = layer_over(4, &[(0, 1), (2, 3), (0, 2), (1, 3)], &[]);
+        let c2 = Cover::of(&square, &square);
+        let x2 = ExactlyOne::of(
+            &c2,
+            owed_of(
+                [vec![0, 1], vec![2, 3], vec![0, 2], vec![1, 3]]
+                    .into_iter()
+                    .map(|a| (Ok(a), vec![]))
+                    .collect(),
+            ),
+        );
+        assert_eq!(x2.grids.grids.len(), 1);
+        assert!(x2.is_bijection(0));
+        // And with no table nothing is owed, whatever the groups.
+        let none = ExactlyOne::of(
+            &c,
+            Owed {
+                root_owes: 0,
+                instances: Err(NoTable::NoObligation),
+                singles_read: false,
+                theory_read: false,
+            },
+        );
+        assert!(none.owing.is_empty() && none.owed_groups().is_empty());
+        assert_eq!(none.grids, g);
+        assert_eq!(none.share(0).map(|s| s.owed), [0, 0]);
     }
 
     /// **The licences decide a pair as its node does.** A monotone program's

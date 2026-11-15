@@ -26,7 +26,15 @@
 //!    group dead at root;
 //! 7. **one cover by every entry**: over a program's prepared space with
 //!    root's pairs and without them, and off a theory's share read whole;
-//!    and at any job count.
+//!    and at any job count;
+//! 8. **what *exactly one* is**, on the same programs in the same reading:
+//!    what root owes is L5's table as a route reads it, of the program
+//!    loaded again; an instance stands as [`Cover::standing`] reads its
+//!    alternatives; a group is owed by exactly the instances whose
+//!    alternatives are its members; and a grid is a component whose two
+//!    families each hold every member once
+//!    ([`ein_infer::structure::ExactlyOne`]; its controls are
+//!    `ein-infer/tests/exactly_one.rs`).
 //!
 //! The corpus's `slow` entries are not read by the sweep, but for the
 //! instances named here, which every run reads.
@@ -40,7 +48,9 @@ use std::path::{Path, PathBuf};
 
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
-use ein_infer::structure::{self, Cover, CoverOptions, Mark, Standing, TheoryOptions};
+use ein_infer::structure::{
+    self, Cover, CoverOptions, ExactlyOne, Mark, Owing, Standing, TheoryOptions,
+};
 use ein_ir::{Ast, load, parse};
 
 fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
@@ -343,6 +353,215 @@ struct Held {
     flagged: bool,
     steps: u64,
     root_steps: u64,
+    /// Instances of L5's table, those of them that owe a group, grids, and
+    /// the grids every group of which is owed.
+    instances: usize,
+    owed_groups: usize,
+    grids: usize,
+    bijections: usize,
+}
+
+/// **What *exactly one* is**, of one program: `x` read against `c`, and
+/// the table against the one a route reads of the program loaded again.
+/// `obligations` says whether the program loads an obligation rule: one
+/// that loads none has no table, and is not loaded a second time to say so.
+fn exactly_one_held(
+    path: &Path,
+    obligations: bool,
+    c: &Cover,
+    x: &ExactlyOne,
+    fail: &mut dyn FnMut(String),
+) {
+    // The table is the routes'.
+    let table = if obligations {
+        loaded(path)
+            .and_then(|(mut kb, mut terms, ast)| {
+                ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast).ok()
+            })
+            .flatten()
+    } else {
+        None
+    };
+    match (&table, &x.owed.instances) {
+        (None, Err(_)) => {}
+        (Some(t), Ok(mine)) => {
+            if t.instances.len() != mine.len() {
+                fail(format!(
+                    "L5's table has {} instances and the owner's {}",
+                    t.instances.len(),
+                    mine.len()
+                ));
+            }
+            for (k, (theirs, mine)) in t.instances.iter().zip(mine).enumerate() {
+                let same = match (&theirs.alternatives, &mine.alternatives) {
+                    (Ok(a), Ok(b)) => a[..] == b[..],
+                    (Err(_), Err(_)) => true,
+                    _ => false,
+                };
+                if !same || theirs.excluded != mine.denied {
+                    fail(format!("instance {k} is not L5's: {}", mine.text));
+                }
+            }
+        }
+        (t, mine) => fail(format!(
+            "a table is read by one and not the other: {:?} / {:?}",
+            t.as_ref().map(|t| t.instances.len()),
+            mine.as_ref().map(Vec::len)
+        )),
+    }
+    let table = x.owed.table();
+    if x.owing.len() != table.len() {
+        fail("not one standing an instance".to_string());
+        return;
+    }
+    let mut owed_by: Vec<Vec<u32>> = vec![Vec::new(); c.groups.len()];
+    for (k, (i, owing)) in table.iter().zip(&x.owing).enumerate() {
+        let agrees = match (&i.alternatives, owing) {
+            (Ok(a), Owing::Group(g)) => {
+                owed_by[*g as usize].push(k as u32);
+                c.standing(a) == Standing::Group(*g) && c.members(*g) == &a[..]
+            }
+            (Ok(a), Owing::Inside(groups)) => c.standing(a) == Standing::Inside(groups.clone()),
+            (Ok(a), Owing::NotExcluding { .. }) => {
+                matches!(c.standing(a), Standing::NotExcluding { .. })
+            }
+            (Ok(a), Owing::One(b)) => a[..] == [*b],
+            (Ok(a), Owing::None) => a.is_empty(),
+            (Err(_), Owing::Unlicensed { payers, about }) => match (payers, about) {
+                (Some(p), Some(g)) => {
+                    c.members(*g) == &p[..] && x.about[*g as usize].contains(&(k as u32))
+                }
+                (None, Some(_)) => false,
+                _ => true,
+            },
+            _ => false,
+        };
+        if !agrees {
+            fail(format!(
+                "instance {k} does not stand as it is said to: {} as {owing:?}",
+                i.text
+            ));
+        }
+        // A licensed instance's witnesses are its alternatives and what
+        // root denies, and no other fact.
+        if let (Ok(a), Ok(ws)) = (&i.alternatives, &i.witnesses) {
+            use structure::WitnessIs;
+            let mut candidates: Vec<u32> = ws
+                .iter()
+                .filter_map(|w| match w.is {
+                    WitnessIs::Candidate(b) => Some(b),
+                    _ => None,
+                })
+                .collect();
+            candidates.sort_unstable();
+            let denied = ws.iter().filter(|w| w.is == WitnessIs::Denied).count();
+            if candidates != *a
+                || denied != i.denied as usize
+                || candidates.len() + denied != ws.len()
+            {
+                fail(format!(
+                    "instance {k}'s witnesses are not its alternatives and what root denies"
+                ));
+            }
+        }
+        // An unlicensed one has a witness that is neither, or a reason that
+        // names none.
+        if let (Err(why), Ok(ws)) = (&i.alternatives, &i.witnesses) {
+            use structure::WitnessIs;
+            let unproposed = ws.iter().any(|w| w.is == WitnessIs::Unproposed);
+            if why == structure::UNPROPOSED && !unproposed {
+                fail(format!(
+                    "instance {k} is said to have a witness no candidate proposes, and has none"
+                ));
+            }
+        }
+    }
+    if owed_by != x.owed_by {
+        fail("a group is not owed by the instances whose alternatives are its members".to_string());
+    }
+    let owed: Vec<u32> = (0..c.groups.len() as u32)
+        .filter(|&g| x.is_owed(g))
+        .collect();
+    let mut both = owed.clone();
+    both.extend(x.unowed());
+    both.sort_unstable();
+    if owed != x.owed_groups() || both != (0..c.groups.len() as u32).collect::<Vec<_>>() {
+        fail(
+            "the owed groups and the groups nothing owes are not all the groups, once".to_string(),
+        );
+    }
+    // The grids: each a component, its two families each holding every
+    // member exactly once, and two groups sharing at most one member.
+    let grids = &x.grids;
+    if *grids != c.grids() {
+        fail("the grids are not the cover's".to_string());
+    }
+    let mut seen: BTreeSet<u32> = BTreeSet::new();
+    for (k, g) in grids.grids.iter().enumerate() {
+        let members = &c.components[g.component as usize];
+        seen.insert(g.component);
+        for (f, family) in g.families.iter().enumerate() {
+            let mut held: Vec<u32> = family
+                .iter()
+                .flat_map(|&g| c.members(g).iter().copied())
+                .collect();
+            held.sort_unstable();
+            if family.is_empty() || held != *members {
+                fail(format!(
+                    "grid {k}'s family {f} does not hold every member once"
+                ));
+            }
+            if family
+                .iter()
+                .any(|&g| grids.of_group[g as usize] != Some((k as u32, f as u8)))
+            {
+                fail(format!(
+                    "grid {k}'s family {f} holds a group that does not name it"
+                ));
+            }
+        }
+        for &a in &g.families[0] {
+            for &b in &g.families[1] {
+                let shared = c
+                    .members(a)
+                    .iter()
+                    .filter(|m| c.members(b).contains(m))
+                    .count();
+                if shared > 1 {
+                    fail(format!(
+                        "grid {k}'s groups {a} and {b} share {shared} members"
+                    ));
+                }
+            }
+        }
+        if g.families[0].first() > g.families[1].first() {
+            fail(format!("grid {k}'s first family is not its lowest group's"));
+        }
+        let share = x.share(k as u32);
+        for (f, family) in g.families.iter().enumerate() {
+            let owed = family.iter().filter(|&&g| x.is_owed(g)).count() as u32;
+            if share[f].groups != family.len() as u32 || share[f].owed != owed {
+                fail(format!(
+                    "grid {k}'s family {f} is not owed what it is said to be"
+                ));
+            }
+        }
+    }
+    for &(component, _) in &grids.not {
+        if !seen.insert(component) {
+            fail(format!("component {component} is a grid and is not one"));
+        }
+    }
+    if seen.len() != c.components.len() {
+        fail("a component is neither a grid nor said not to be".to_string());
+    }
+    for (g, of) in grids.of_group.iter().enumerate() {
+        if let Some((k, f)) = of
+            && !grids.grids[*k as usize].families[*f as usize].contains(&(g as u32))
+        {
+            fail(format!("group {g} names a grid that does not hold it"));
+        }
+    }
 }
 
 /// `None` where the program does not load or the engine refuses it: it has
@@ -350,9 +569,17 @@ struct Held {
 fn held(path: &Path) -> Option<Held> {
     let rel = rel_of(path);
     let (mut kb, mut terms, ast) = loaded(path)?;
-    let c = structure::cover(&mut kb, &mut terms, &ast, &CoverOptions::default()).ok()?;
+    let obligations = !kb.program().obligations.is_empty();
+    let (c, x) =
+        structure::exactly_one(&mut kb, &mut terms, &ast, &CoverOptions::default()).ok()?;
     let n = c.n() as u32;
     let mut out = Held {
+        instances: x.owed.table().len(),
+        owed_groups: x.owed_groups().len(),
+        grids: x.grids.grids.len(),
+        bijections: (0..x.grids.grids.len() as u32)
+            .filter(|&k| x.is_bijection(k))
+            .count(),
         candidates: c.n(),
         groups: c.groups.len(),
         in_none: c.in_no_group().len(),
@@ -459,6 +686,7 @@ fn held(path: &Path) -> Option<Held> {
     if c.killed_alone.iter().any(|b| with_pair.contains(b)) {
         fail("a candidate the theory kills alone is in a pair of it".to_string());
     }
+    exactly_one_held(path, obligations, &c, &x, &mut fail);
     Some(out)
 }
 
@@ -467,6 +695,12 @@ fn held(path: &Path) -> Option<Held> {
 /// clique of the theory's pairs, and every pair of the theory is inside
 /// one; the two maps are each other's inverse; and no pair of the theory is
 /// alive at root.
+///
+/// **And what *exactly one* is**, of the same reading: what root owes is
+/// L5's table as a route reads it; each instance stands as its alternatives
+/// stand to the cover; a group is owed by the instances whose alternatives
+/// are exactly its members; and each grid is a component whose two families
+/// each hold every member once.
 #[test]
 fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
     let files = files();
@@ -479,7 +713,12 @@ fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
     let mut failures: Vec<String> = Vec::new();
     let (mut read, mut with_groups, mut groups, mut overlapping) = (0usize, 0usize, 0usize, 0);
     let (mut in_none, mut flagged, mut steps) = (0usize, 0usize, 0u64);
+    let (mut instances, mut owed, mut grids, mut bijections) = (0usize, 0usize, 0usize, 0usize);
     for h in results.into_iter().flatten() {
+        instances += h.instances;
+        owed += h.owed_groups;
+        grids += h.grids;
+        bijections += h.bijections;
         failures.extend(h.failures);
         read += 1;
         with_groups += usize::from(h.groups > 0);
@@ -498,7 +737,9 @@ fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
     eprintln!(
         "cover: {read} programs read, {with_groups} with a group ({groups} groups), \
          {overlapping} with a candidate in two or more, {in_none} with a candidate in none, \
-         {flagged} flagged; the longest enumeration {steps} calls of {}",
+         {flagged} flagged; the longest enumeration {steps} calls of {}; exactly one: \
+         {instances} instances root owes, {owed} owed groups, {grids} grids, {bijections} of \
+         them bijections",
         structure::CLIQUE_STEPS
     );
     // Not vacuous, and nowhere near the bound.
@@ -513,6 +754,10 @@ fn every_cover_is_whole_and_its_groups_are_the_maximal_cliques() {
     );
     assert!(flagged >= 10, "only {flagged} flagged programs read");
     assert!(steps * 16 < structure::CLIQUE_STEPS, "{steps} calls");
+    assert!(instances >= 150, "only {instances} instances root owes");
+    assert!(owed >= 60, "only {owed} owed groups");
+    assert!(grids >= 20, "only {grids} grids");
+    assert!(bijections >= 5, "only {bijections} bijections");
 }
 
 // ── One cover by every entry ──────────────────────────────────────────

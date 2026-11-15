@@ -694,6 +694,10 @@ pub(crate) struct Space<'a> {
 /// `Ok(Err(stop))`: the step was not taken.
 pub(crate) type Step<T> = Result<Result<T, Stopped>, SolveError>;
 
+/// L5's table, and for each of its instances, in its order, what can
+/// witness it ([`Space::owed`]).
+pub(crate) type Owed = (crate::oblgen::Alternatives, Vec<crate::oblgen::Witnesses>);
+
 impl<'a> Space<'a> {
     pub(crate) fn open(
         root: &'a mut Kb,
@@ -1127,6 +1131,16 @@ impl<'a> Space<'a> {
     pub(crate) fn alternatives(
         &mut self,
     ) -> Result<Option<std::sync::Arc<crate::oblgen::Alternatives>>, SolveError> {
+        let Some(table) = self.table()? else {
+            return Ok(None);
+        };
+        let table = std::sync::Arc::new(table);
+        self.axes = self.axes.clone().owing_of(table.clone());
+        Ok(Some(table))
+    }
+
+    /// L5's table, read and handed to nothing.
+    fn table(&mut self) -> Result<Option<crate::oblgen::Alternatives>, SolveError> {
         if !self.monotonicity.is_monotone() || self.root.program().obligations.is_empty() {
             return Ok(None);
         }
@@ -1136,16 +1150,50 @@ impl<'a> Space<'a> {
             .enumerate()
             .map(|(i, &f)| (f, i as u32))
             .collect();
-        let table = std::sync::Arc::new(crate::oblgen::alternatives(
+        Ok(Some(crate::oblgen::alternatives(
             self.root,
             self.terms,
             self.ast,
             &self.memo,
             &self.monotonicity,
             &candidates,
-        )?);
-        self.axes = self.axes.clone().owing_of(table.clone());
-        Ok(Some(table))
+        )?))
+    }
+
+    /// **What root owes, for a reader**: L5's table as [`Self::alternatives`]
+    /// reads it, and beside each instance every fact that can witness it
+    /// ([`crate::oblgen::witness_rows`]), licensed or not. The table is
+    /// **not** handed to the node function, so nothing a node reports
+    /// changes. `None` where [`Self::alternatives`] reads none.
+    pub(crate) fn owed(&mut self) -> Result<Option<Owed>, SolveError> {
+        let Some(table) = self.table()? else {
+            return Ok(None);
+        };
+        let rows = crate::oblgen::witness_rows(
+            self.root,
+            self.terms,
+            self.ast,
+            &self.memo,
+            &self.monotonicity,
+        )?;
+        // One enumeration, twice: the two lists name the same instances in
+        // the same order.
+        if rows.len() != table.instances.len()
+            || rows
+                .iter()
+                .zip(&table.instances)
+                .any(|(r, i)| r.key != i.key)
+        {
+            return Err(SolveError::Unsupported(
+                "L5's table and its witnesses name different instances".to_string(),
+            ));
+        }
+        Ok(Some((table, rows)))
+    }
+
+    /// What root's fixpoint owes, as the node function counts it.
+    pub(crate) fn root_owes(&self) -> u32 {
+        self.root_owes
     }
 
     /// A flagged program's cube in layer order, for the questions it can
