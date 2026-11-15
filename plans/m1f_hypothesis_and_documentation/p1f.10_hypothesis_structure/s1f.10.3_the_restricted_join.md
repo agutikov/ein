@@ -91,3 +91,71 @@ is spent here is what remains after them: a node the route would have built only
 **The saving compounds with depth**: a set is known dead if *any* pair in it excludes, so the share removed
 grows with the size of the states a route extends, which is where the `--maximal` run's 24-candidate deaths
 are.
+
+## Record (2026-11-16)
+
+### T1: the inventory, written before any route changed
+
+**The scope, from [S1f.10.13](s1f.10.13_the_price_list.md#t3-the-verdicts).** First *what a state denies*, for
+every route and question, at no saturation. Then the pair of a death and the layer by need, re-priced on top of
+it and built only where still *go*. The death's core is re-priced and not built. Committed at `a3c719bf` plus
+this section, before `ein.rs/` is touched.
+
+**Where a death is remembered today.** Two copies of one memory, and one cache beside them:
+
+| where | what it holds | who asks it |
+|---|---|---|
+| `tree.rs`, `Search::dead_under` | per candidate `b`, the states `S` whose `S ∪ {b}` a saturation found dead | `extend` (an extension), `pruned` (any set: the dualisation's transversals and `eval_set`), `branch_rest` (how many of an instance's alternatives are not known dead, which chooses the instance), `climb` (a top's every extension must be known dead, or the run refuses) |
+| `states.rs`, `dead_under` | the same, a local of `compute_resumable` | the layer loop, before an extension is saturated |
+| `explore.rs`, `Space::seen` | every node computed, by commitment | `eval`: a set asked twice is saturated once. It is no licence: it answers for the set itself |
+
+Route 1 (`downset.rs`) keeps its own frontier and is reached by `ein solve` only where root is dead, one
+saturation; the cube (`region.rs`, `Space::cube_in_order`) skips nothing. `structure.rs` reads pairs through
+`Space::eval` and decides them by its own L1 and L3; no route reads it.
+
+**Every reader of a dead node**, checked against the code:
+
+| reader | what it reads of a dead node | what a dead node that is known and not saturated owes it |
+|---|---|---|
+| `states.rs`, `StateRoute::dead` | every dead extension saturated: its set, its debts, its core where the walk takes cores | a record of the set, with no core and no debts |
+| `states::describe_with`, `nogoods_met` | on a run its budget stopped, or under `--count`: the members of `N` met, each a dead set of `StateRoute::dead` whose one-down subsets are all known alive | the record above, or `N … met` loses members on a partial run |
+| `described::of_states`, `dead_alone_set` | root's extensions among `StateRoute::dead` | the record above, were root ever to deny a candidate (it does not: a candidate root denies is not in `H`) |
+| `described::of_states`, `dead` | `N`'s members, each with the core of the record of the same set where the walk took one | nothing new: a member the walk did not saturate has no core today, and `explore::describe_states` takes it after the walk where a surface prints `N`'s cores (`--dump-answer`, `--trace`). More members take that path |
+| `described::of_states`, `owing_met`, `dead_met` | whether any dead node owes; whether any node is dead | a dead node's debts are its alive subsets' on a monotone program, so `owing_met` holds from the states; `dead_met` reads the count of what was known dead |
+| `tree.rs`, `climb`, `shrink`, `next_top` | that a top's extensions are known dead; that no subset of a commitment of `R` is dead | the same memory, so the same answer |
+| `events::Watch`, the `enter` line (`--events`, `--dump-lattice`, `-v`) | each node **visited**, its core where cores are taken | nothing: a node not saturated is not visited, and is in neither. `region_modes.rs` holds a dump's `visited` to the `work` row's saturations |
+| `ein render region … --visited` (`ein-render/src/region_doc.rs`, `Unvisited`) | **infers** why a node of the cube was not visited: *above a dead node* the run visited (L1), else *the run stopped first* or *not needed* | a second inference: the cube's own `excluded` mask of a visited alive node says the node above it was denied. Without it such a node reads *not needed* |
+| the read-out's `N`, `universe … dead alone`, `k_s`, `k_c`, the lines, the shape | read off the states | nothing, held by the acceptance |
+| the read-out's `route` and `work` rows, the summary's `region.licences` and `work` | the licences used; saturations and facts | the licence named when a run rested on it; fewer saturations |
+| `detector.rs`, `Space::partial_cube`, `explore::of_cube` | a flagged program's nodes | nothing: a flagged program gets no licence |
+
+**The programs that can move.** A run changes only where an alive node it visits denies a candidate, so the
+price list's count of such nodes names them
+(`jq 'select([.cells[] | .ways.denials.counts["alive nodes that deny a candidate"]] | add > 0) | .path'
+/home/user/work/ein/build/structure/prices/prices.jsonl`): **ten of the 188 programs that search**:
+`examples/zebra.ein`, `zebra2.ein`, `zebra2-hints.ein`, `zebra2-obligations.ein`, `zebra2-minus-15.ein`,
+`zebra2-minus-15-obligations.ein`, `branching/12_typed_blind_solve.ein` and
+`saturation/type-exclusivity/{colors,nationalities,pets}.ein`. A program outside them has the same nodes, rows
+and bytes with the step and without.
+
+**The goldens that will move**, each with what re-banks it. One not on this list that moves is a stop.
+
+| golden | which part | re-banked by |
+|---|---|---|
+| [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) | X10 (`zebra2.ein`) and X13 (`type-exclusivity/colors.ein`): the `route` and `work` rows, the summary's `licences` and `work`, a partial run's rows where the budget now reaches further | `python3 utils/read_out_examples.py` |
+| `ein-render/tests/golden/corpus_shapes.md5` | the ten programs' lines `read-out[…]`, `region-trace`, `states`, `region-lattice` and `cores[…]`; no other program's line and none of their other ops | `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance` |
+| `ein-render/tests/golden/trace_one-hypothesis.md`, `trace_ambiguous.md` | `branching/12_typed_blind_solve.ein` under `--maximal` and described: the `route` and `work` rows | `EIN_BLESS=1 cargo test … -p ein-render --test golden_trace` |
+| `README.md` and `docs/guide/04_solving_the_whole_puzzle.md`, the marked transcript | `ein solve examples/zebra2.ein --single`: the `route` and `work` rows | `EIN_BLESS=1 cargo test … -p ein-cli --test guide_transcripts` |
+| `docs/api/rust.md`'s output block and `ein-cli/tests/embedding.rs`'s expected text | `saturations: 45` of the same run | the test's text edited, the page's block pasted from it |
+| `ein-cli/tests/region_modes.rs`, `the_count_question_is_describes_counts` | `type-exclusivity/pets.ein --count`: the block's `route` and `work` rows (`11 351 saturations`) | the expected block edited |
+| `corpus/corpus.toml`, `cost_ms`; `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen` | only if one of the ten crosses 1 s: `zebra.ein` is the nearest, at 2 074 ms | `utils/bench_env.sh --cores PT python3 utils/corpus_cost.py` |
+
+**Not goldens, and stale after the step** (prose with a date or a command, which nothing checks): `README.md`'s
+*374 saturations, 0.54 s* (2026-11-03); `ein-infer/tests/obligation_rung.rs`'s doc comment, *45 saturations* and
+*2 346 a side*; `corpus.toml`'s notes. `examples/beyond_arith/send_more_money.ein`'s *17 747 saturations* stands
+unless the pair of a death is built for `--single`.
+
+**Tests that state a count and do not move**: `explore.rs`'s `max.saturations <= 21` and `region.rs`'s
+`the_state_route_never_does_more_than_route_1` are upper bounds; `arith_search_free.rs`, `no_search.rs` and
+`region_modes.rs`' *1 saturation* are root alone; `acceptance_cli.rs`' control, `zebra2.ein --region-budget
+4096` is not exhausted, stays so while a describe of it costs more than 4 096 facts.
