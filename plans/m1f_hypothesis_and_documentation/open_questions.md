@@ -310,6 +310,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.303](#q-m1f303--rat-simplify-asks-stdmathgcd-the-numerator-first) | `rat-simplify` asks `std.math.gcd` the numerator first | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator first, as before; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.304](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) | `route_invariance` past the default budget, past any shard's five minutes | **ruled 2026-11-15: (d)**, no test runs past the default budget (the user: *"(d)"*); defaulted (a) the same day by T7; built at P1f.6's close; [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled) |
 | [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (b) for E-1, (a) for E-7, (d) for E-54, is not acted on before the reply; the witnesses and the census are on [S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s record |
+| [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (A) where a static reading gives the control's R on the witness and moves no other corpus program's R, otherwise (C), is not acted on before the reply; the census selects its (A) branch; the probes, the census and (A)'s price are on [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s record |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6110,3 +6111,136 @@ and the answer does not depend on the import form*.
 **Not defaulted. The question is put at the phase's one stop, and no default is acted on before the user
 replies**: no candidate is removed, no register row filed, no read-out row added. As ruled, it is
 [T1f.10.9.4](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#tasks).
+
+### Q-M1f.307 — A debt root was not told of: what H holds
+
+**Raised** 2026-11-15 by
+[S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s
+tasks 1 to 3, for the register's `W26/oblig-derived-activator`, `open` and owned by that stage, and for
+[Q-M1e.11](../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+*what happens to an obligation derived under a hypothesis*, which P1f.10 owns. **Q-M1e.11 stays open**: this
+entry restates it over R, with what was measured, and the ruling given here is recorded there by the stage's
+task 4. **It is put at P1f.10's one stop**
+([S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)), with the phase's other three
+questions. Three of its four answers change H or refuse a program, so this is one of the three places in the
+phase where an answer would move.
+
+**What the engine does** (the record's § What the engine does). H is the generator's list at root's fixpoint
+and is taken nowhere else. On the obligations rung it is what would pay the debts **root** owes. A node's
+debts are read over the activator facts the **node** holds, so a rule that derives an obligation's activator
+from a guess gives a node a debt whose payment was never a candidate. The static check flags such a program
+(an activator site), so it takes the cube; `check_owed`, which refuses a run where a node owes what root did
+not, runs only on a program the check calls monotone and so never on this one.
+
+**The witness and its control, and the same pair on the other two rungs** (`ein solve` and `ein oracle` on
+the release binary of `14063474`, 2026-11-15, `build/s1f.10.6/run.sh`; every program is in the record):
+
+| rung | the activator derived by a rule | the activator also stated |
+|---|---|---|
+| obligations: the witness and the control | H 1, **R empty**, every alive node owing | H 2, R 1 state, `{(drinks Ann Tea) (likes Ann Soup)}` |
+| hrule, each hrule proposing a relation where its activator holds | H 1, **R empty** | H 2, R 1 state, the control's |
+| hrule, the hrules reading `is-a` alone | H 2, R 1 state, the control's | the same |
+| blind, the obligations rung declined by a bare `(open)` | H 12, R 1 024 states, the minimal line the control's state | the same |
+
+**The question is not the obligations rung's alone, and it is not the blind rung's at all.** It is the
+question of a generator that reads the state. And it does not need a derived activator: a program with both
+debts stated and an hrule that proposes a drink for whoever likes a food has H 1 and **R empty**, where its
+twin that states the liking has a model; the static check calls it monotone and nothing flags it
+([H6-1](p1f.10_hypothesis_structure/findings.md#h6-1--an-hrule-that-reads-what-a-commitment-can-change-proposes-at-a-node-what-it-did-not-at-root-and-nothing-flags-it)).
+
+**The census** (`cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example owed_census --
+--jobs 12`, 2026-11-15, the oracle's default limit of 16; rows in `build/s1f.10.6/census/rows.tsv`). Of 867
+corpus files 644 load, and 127 of them declare an obligation rule.
+
+| | programs | which |
+|---|---:|---|
+| statically: an obligation rule's activator relation is one a commitment can change (`D`) | 3 | the witness, the control, `examples/lattice/09_activator_hole.ein` |
+| statically: … only through a rule root has no plan of (`D⁺`) | 1 | `examples/lattice/12_activator_chain_hole.ein` |
+| by the cube: an alive node owes an instance of a plan root never compiled | 3 of the 582 the oracle reaches | the witness, `lattice/09`, `lattice/12` |
+| by the cube: an alive node owes an instance root did not, of a plan root has (a trigger site; on the obligations rung Q-M1e2.10 (a) declines for one) | 4 | `lattice/04`, `lattice/synth/{local_not_global,maximal_not_top}`, `tests/region/07_cube` |
+| by the cube: any of that on a program the static check calls monotone | 0 of 560 | |
+| **by the cube: the generator would propose at an alive node a fact that is not in H** | **1** | **the witness** |
+
+On `lattice/09` and `/12` an hrule proposes every meal from `is-a` alone, so the new debt's payment is in H:
+their R is 3 states with a hole, and what R is on them is F21's. **Not reached**: the 43 programs past the
+oracle's limit, named in the record; none has an obligation rule's activator relation in `D` or `D⁺`, and the
+one that has an hrule reading `D` was read at `--limit 17` and proposes nothing outside H. 19 more are refused
+by *forbid* and have no R.
+
+**The four answers**, each on the four programs the census finds:
+
+| | the witness | the control | `lattice/09` | `lattice/12` |
+|---|---|---|---|---|
+| today | H 1, R empty | H 2, R 1 state | H 2, R 3 states | H 2, R 3 states |
+| **(A)** H holds what a node's debt would propose | H 2, **R 1 state, the control's** | unmoved | unmoved | unmoved |
+| **(B)** decline: such a program's H is the blind enumerator's, as Q-M1e2.10 (a) took for W14 | H 12, R 1 024 states; the minimal line is the control's state | **moves**, H 12, R 1 024 states: the decline is at relation grain | unmoved, an hrule builds H | unmoved |
+| **(C)** refuse at load: every obligation activator must hold at root | refused | **refused** by the static check's site, which is at relation grain; accepted only by a test that reads the fact | **refused** | refused only by a test that follows `D⁺`, as *forbid* does |
+| **(D)** the answer stands, and the read-out says why | R empty; the row `not-wrong`; a new line, since no row of the read-out says today that nothing in H pays the debt | unmoved | unmoved, no line | unmoved |
+
+- **(A)** changes one corpus answer, the witness's, by its register row.
+- **(B)** changes two, and restates the row's control, as Q-M1e2.10 (a) restated two of W14's. It is the move
+  the user ruled there for a *domain* a commitment can change. `object_census` marks none of the twelve
+  candidates, so Q-M1f.306 moves nothing on them
+  ([H6-2](p1f.10_hypothesis_structure/findings.md#h6-2--under-b-q-m1f306-bears-on-two-more-programs-and-marks-nothing-on-them)).
+- **(C)** turns three or four corpus programs into refusals. Two of them, `lattice/09` and `/12`, are not
+  wrong in H today: they are the corpus's two exercised activator sites, which
+  [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md) and `ein-infer`'s detector tests read by
+  name, and F21's examples of the third cause of a non-monotone program.
+- **(D)** changes no answer and keeps an empty R where a model exists.
+
+**(A) priced, under its two readings.** Neither was built; each universe was stated by hrules on a copy of
+the program, which changes no node, and R read by `ein oracle`.
+
+- **Reading 1, static**: the ground activators of an obligation rule that a rule reading `D⁺` writes in its
+  `:assert`, with the rung's own scan run for them at root, repeated until it adds nothing. No saturation.
+- **Reading 2, over nodes**: the least set that holds H and what the generator proposes at every alive node
+  over it. `owed_census --iterate` computes it, a round a cube.
+
+On the corpus they agree: the witness gains `(drinks Ann Tea)` and answers the control's R; the control,
+`lattice/09` and `lattice/12` gain nothing; no other program can gain under reading 1, which adds only where
+an activator relation is in `D⁺` (computed on all 644), and none of the 582 the cube read gains under
+reading 2. Off the corpus, on six programs written for it, each the witness with one thing changed:
+
+| probe | today | reading 1 | reading 2 |
+|---|---|---|---|
+| `arm` fires on one food of two | R 1 state | R 4 states | R 4 states. The control's is 3: **(A) is not *state the activator*** |
+| no alive node derives the activator | R 2 states | **over**: R 4 states, two holding a tea no alive node owes | R 2 states, today's |
+| the rule writes the owed relation as a variable | R empty | **under**: no ground activator, R stays empty | R 1 state |
+| the tea that pays switches on a second debt | R empty | R 1 state, in two passes | R 1 state, in two rounds |
+| `lattice/12`'s chain on the obligations rung | R empty | R 1 state over `D⁺`; nothing over `D` | R 1 state |
+| the new debt's domain is one a commitment can change | R empty | the rung's existing decline: **(B)** | the node's rung declines: **(B)** |
+| H6-1's program, no activator derived | R empty | **nothing** | R 1 state |
+
+Reading 1 reads rules and root alone, costs a closure and a scan, and is inexact both ways on shapes no
+corpus program has. Reading 2 is exact by its definition, costs a generator pass on every alive node of every
+round's cube, which no route but the cube can take today, and is a function of nodes: **what a node is on a
+flagged program is F21's**, so its universe would move with that ruling. Under either, every program (A)
+touches stays flagged, and a region with a hole stays one.
+
+**The default, as the stage states it: (A) where T2 shows a static reading that gives the control's R on the
+witness and moves no other corpus program's R; otherwise (C).** *Both name a wrong answer today; (B) trades
+it for a different H, and (D) keeps an empty R where a model exists.*
+
+**The census selects the first branch, (A)**, by reading 1: it gives the control's R on the witness and moves
+no other corpus program's R.
+
+**What the census says beside that**, for the user to weigh; it changes no default:
+
+- **The branch is selected by the corpus, and reading 1 is exact only there.** The two probes on which it is
+  over and under are each the witness with one rule changed.
+- **(A) by reading 1 leaves H6-1 as it is**, and so do (B), (C) and (D) as worded: that program derives no
+  activator and is monotone. Only reading 2 answers it.
+- **The row's `right`, *the control's R*, is (A)'s answer on the witness and not (A)'s definition**: where a
+  member of R need not derive the activator, (A) and the control differ.
+- **(A) is a *widen*, as Q-M1e2.10 (b) was for a domain**, and there the user ruled (a), *decline*, which is
+  (B) here. The two cases differ in one respect the census can state: under (B) the control moves too, to
+  1 024 states of free facts, and under (A) nothing but the witness moves.
+- **The default's fallback, (C), costs more of the corpus than any other answer**, and two of the programs it
+  refuses are right in H today.
+- **A static reading has to follow `D⁺`**, which today only *forbid* reads; the static check's `D` and the
+  rung's own decline do not see `lattice/12`'s shape.
+
+**Not defaulted. The question is put at the phase's one stop, and no default is acted on before the user
+replies**: H is unchanged, `check_owed` untouched, no register row filed or flipped, no read-out row added,
+no program refused. As ruled, it is
+[T1f.10.6.4](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#tasks).

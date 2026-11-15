@@ -102,3 +102,100 @@ columns, 2026-11-15):
 [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) asks which rung a program takes, and a ruling there
 that sends a program to the blind enumerator makes Q-M1f.306's (a) to (c) bear on programs they do not bear on
 today. The census is re-taken by the same command after such a ruling.
+
+## From S1f.10.6
+
+Met by [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s tasks 1 to 3,
+2026-11-15, on the release binary of `14063474`. The programs are under the untracked `build/s1f.10.6/` and
+verbatim below and in the stage's record; `build/s1f.10.6/run.sh`, which the record carries, runs them. None is
+fixed, and no register row is filed: the stage was told to file none.
+
+### H6-1 — An hrule that reads what a commitment can change proposes at a node what it did not at root, and nothing flags it
+
+Q-M1e.11's loss without an obligation derived at a node. H is the generator's list at root's fixpoint, and an
+hrule is matched there and nowhere else. Where an hrule's `:match` reads a relation another hrule proposes, the
+facts it would propose once a commitment holds one are never candidates.
+
+`hr/reads_h.ein`:
+
+```
+;; S1f.10.6, T1, the hrule rung with no derived activator: both debts are
+;; stated, there is no rule `arm`, and the hrule that proposes a drink reads
+;; `likes`, which the other hrule proposes.
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation likes  Person Food :why "{?1} likes {?2}")
+(relation drinks Person Drink :why "{?1} drinks {?2}")
+(is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
+(total-owed likes is-a)
+(total-owed drinks is-a)
+(hrule guess-likes  () :match (and (is-a ?a Person) (is-a ?b Food))  :assert (likes ?a ?b)  :why "guess: (likes {?a} {?b})?")
+(hrule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (drinks ?p ?d) :why "{?p} likes {?f}; guess: (drinks {?p} {?d})?")
+```
+
+`hr/reads_h_stated.ein`:
+
+```
+;; S1f.10.6, T1: hr/reads_h.ein with the fact its second hrule reads stated.
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T :why "{?1} is a {?2}")
+(relation likes  Person Food :why "{?1} likes {?2}")
+(relation drinks Person Drink :why "{?1} drinks {?2}")
+(is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
+(total-owed likes is-a)
+(total-owed drinks is-a)
+(likes Ann Soup)
+(hrule guess-likes  () :match (and (is-a ?a Person) (is-a ?b Food))  :assert (likes ?a ?b)  :why "guess: (likes {?a} {?b})?")
+(hrule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (drinks ?p ?d) :why "{?p} likes {?f}; guess: (drinks {?p} {?d})?")
+```
+
+`ein solve` and `ein oracle` on the first: H is `(likes Ann Soup)`, one candidate; the node that holds it owes
+*drinks owes Ann a Drink*; **R is empty, every alive node owing**. On the second, which states the fact the
+second hrule reads: H is `(drinks Ann Tea)` and R one state. `owed_census --iterate` on the first: the
+generator at `{(likes Ann Soup)}` proposes `(drinks Ann Tea)`, and R over the two candidates is one state,
+`{(drinks Ann Tea) (likes Ann Soup)}`, which `ein oracle` answers on the copy that states both
+(`price/reads_h_r2.ein`).
+
+**Nothing detects it.** No rule concludes an activator and the static check does not read an hrule's plan, so
+the program is *monotone*: `ein solve` takes the state route and `--single` the obligation tree with L5. Root
+owes both instances, so `check_owed` has nothing to refuse. The read-out's `outside` row is silent: no
+saturation rule writes `drinks`, no query reads it, and an hrule asserts it.
+
+**The corpus** (`owed_census`, 2026-11-15, the command in the stage's record). Four programs have an active
+hrule whose `:match` reads a relation in `D`: `examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein`
+(`paid`), and `examples/ein-bugs/wrong-answers/past-limit-lines.ein`,
+`examples/lattice/04_obligation_trigger_hole.ein` and `tests/region/07_cube.ein` (`is-a`). On none does a node
+propose a fact outside H: three by the cube at the oracle's default limit, the second at `--limit 17`. Of the
+88 programs on the hrule rung the cube read 61, and **no corpus answer is known to be concerned**.
+
+**How it reads against the rulings.**
+[`solution_semantics.md` § 1.4](../../../docs/kernel/inference/solution_semantics.md) defines a candidate as
+*a fact the generator proposes at root*, so R is right by the definition. The same section holds that *H must
+contain every fact a model needs* (ruling (h)), and that where it does not *either the program is wrong … or
+the engine is*: which of the two an hrule conditioned on a guess is, is the user's. **Not filed as a register
+row.**
+
+**What it bears on.**
+
+- **Q-M1f.307.** Answer (A) read over nodes (the record's reading 2) gives the twin's model here. Read
+  statically from activators (reading 1) it does not reach this program, and (B), (C) and (D) as worded do
+  not either: no activator is derived, and the program is monotone.
+- **[README § The domain](README.md#the-domain)'s second paragraph**, *H does not grow*, is enforced for
+  debts on a monotone program and for nothing an hrule proposes. Track S reads H as root builds it either way;
+  what is not enforced is that no node would propose more.
+
+**Today:** open, to be shown with Q-M1f.307. No owner.
+
+### H6-2 — Under (B), Q-M1f.306 bears on two more programs, and marks nothing on them
+
+[H9-3](#h9-3--e-1-and-e-7-are-absent-from-the-corpuss-answers-by-the-rung-twelve-programs-take)'s dependency,
+met from this side. Q-M1f.307's answer (B) sends `oblig-derived-activator.ein` and its `-declared` control from
+the obligations rung to the blind enumerator, so Q-M1f.306's options (a) to (c) would bear on them. The
+stage's stand-ins for that H, `build/s1f.10.6/blind/derived.ein` and `blind/declared.ein`, hold twelve
+candidates each, `likes` and `drinks` over `Ann`, `Soup` and `Tea`, and `object_census` marks none of them: no
+kernel dunder, no relation's name, no name only an import writes (`cargo run --release --manifest-path
+ein.rs/Cargo.toml -p ein-infer --example object_census -- build/s1f.10.6/blind/derived.ein
+build/s1f.10.6/blind/declared.ein`, 2026-11-15).
+
+**Today:** not a wrong answer and nothing to fix. A ruling of (B) re-takes S1f.10.9's census by its own
+command, as H9-3 says of S1f.10.15's.
