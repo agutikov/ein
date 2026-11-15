@@ -25,6 +25,7 @@ direction-sensitive rules and the fewest programs per rule.
     utils/stdlib_mutants.py --bless          # re-bank tests/mutation_survivors.txt
     utils/stdlib_mutants.py -k slot-adjacent # one rule's mutants
     utils/stdlib_mutants.py --keep DIR       # leave the mutant trees behind
+    utils/stdlib_mutants.py --jobs 1         # one mutant at a time
 
 ## What a mutation is
 
@@ -46,6 +47,18 @@ insensitive to (an argument-symmetric premise). What it is always is a
 *question*, and the point of the script is that the questions are enumerated
 rather than remembered.
 
+## How many at once (M1f S1f.6.39)
+
+`--jobs N` runs N mutants at once, each in its own copy of `stdlib/` under
+the work directory and its own `ein test` process; the default is
+`$EIN_TEST_JOBS`, else 16, never more than the machine's threads — the
+corpus sweeps' pool's count (`ein-corpus/src/pool.rs`). The results are put
+back in the mutants' order before anything is printed or compared, so the
+report, the survivor set and `--check`'s verdict are the same text at any N.
+`ein test` runs one program at a time, so N processes are N threads of work.
+Until S1f.6.39 it ran one mutant at a time: 572 mutants, about 49 min, in
+gate #3's nightly (2026-11-15).
+
 ## Why it is not the gate
 
 `ein-infer/tests/stdlib_coverage.rs` is the gate and asks a cheaper question —
@@ -63,6 +76,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -280,7 +294,15 @@ def main() -> int:
     ap.add_argument("--keep", type=Path, help="leave the mutant trees in this directory")
     ap.add_argument("--targets", nargs="*", default=["tests/"],
                     help="what to run (default: tests/)")
+    ap.add_argument("--jobs", type=int, default=None,
+                    help="mutants at once (default: $EIN_TEST_JOBS, else 16; "
+                         "never more than the machine's threads)")
     args = ap.parse_args()
+    jobs = args.jobs if args.jobs is not None else int(os.environ.get("EIN_TEST_JOBS", "16"))
+    if jobs < 1:
+        print(f"--jobs {jobs}: a count of one or more", file=sys.stderr)
+        return 2
+    jobs = min(jobs, os.cpu_count() or 1)
 
     if not args.bin.is_file():
         print(f"no binary at {args.bin} — build with ./build.sh", file=sys.stderr)
@@ -310,8 +332,10 @@ def main() -> int:
 
     workdir = Path(args.keep) if args.keep else Path(tempfile.mkdtemp(prefix="ein-mutants-"))
     workdir.mkdir(parents=True, exist_ok=True)
-    results: list[Result] = []
-    for i, m in enumerate(muts):
+
+    def one(i: int) -> Result:
+        """Mutant `i` in its own tree, run past the suite; nothing shared."""
+        m = muts[i]
         tree = workdir / f"m{i:03d}"
         if tree.exists():
             shutil.rmtree(tree)
@@ -320,11 +344,20 @@ def main() -> int:
         text = modules[m.module]
         (tree / m.module).write_text(text[:start] + repl + text[end:])
         code, line = run_suite(args.bin, tree, args.targets)
-        results.append(Result(m, code != 0, code, line))
         if not args.keep:
             shutil.rmtree(tree)
-    if not args.keep:
-        shutil.rmtree(workdir, ignore_errors=True)
+        return Result(m, code != 0, code, line)
+
+    # In the mutants' order whatever order they finish in: `map` yields by
+    # input, so everything below reads the list a serial loop built. The work
+    # directory goes however the sweep ends: an exception in one mutant's run
+    # left it in the temp directory, a tmpfs here, until S1f.6.39.
+    try:
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            results: list[Result] = list(pool.map(one, range(len(muts))))
+    finally:
+        if not args.keep:
+            shutil.rmtree(workdir, ignore_errors=True)
 
     killed = sum(1 for r in results if r.killed)
     print(f"stdlib mutants: {killed} of {len(results)} killed by `ein test {' '.join(args.targets)}`\n")

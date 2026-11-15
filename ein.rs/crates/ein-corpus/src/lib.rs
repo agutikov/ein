@@ -9,6 +9,7 @@
 //! | [`manifest`] | `corpus/corpus.toml` — one entry per `.ein` file, the runs it is exercised under, and the completeness check that fails on a file with no entry |
 //! | [`plan`] | a run name → an `ein` argv, which is what makes a manifest row executable |
 //! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one (M1e2 S1e2.1.1) |
+//! | [`pool`] | the corpus sweeps' worker pool: a sweep's units on `EIN_TEST_JOBS` workers, the results in the units' order, so no verdict depends on the count (M1f S1f.6.39) |
 //! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere; and [`Scratch`], the one way a test makes a directory it does not keep |
 //!
 //! What is *not* here is a `skip` helper. A skip that prints to stderr —
@@ -19,6 +20,7 @@
 pub mod manifest;
 pub mod mutants;
 pub mod plan;
+pub mod pool;
 pub mod register;
 
 use std::path::{Path, PathBuf};

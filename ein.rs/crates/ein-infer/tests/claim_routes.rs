@@ -75,10 +75,6 @@ fn jobs() -> usize {
     1
 }
 
-fn threads() -> usize {
-    std::thread::available_parallelism().map_or(1, |n| n.get().min(16))
-}
-
 // ── The program, less what it claims ──────────────────────────────────
 
 /// The byte after the s-expression that starts at `i`: a parenthesised form,
@@ -595,33 +591,29 @@ fn sweep(path: &Path) -> Swept {
 #[test]
 fn every_claim_is_decided_as_the_oracle_decides_it() {
     let files = corpus_and_register();
-    let next = std::sync::atomic::AtomicUsize::new(0);
-    let found: std::sync::Mutex<Vec<(usize, Swept, std::time::Duration)>> =
-        std::sync::Mutex::new(Vec::new());
-    std::thread::scope(|scope| {
-        for _ in 0..threads() {
-            scope.spawn(|| {
-                loop {
-                    let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    let Some(path) = files.get(i) else {
-                        break;
-                    };
-                    let t0 = std::time::Instant::now();
-                    let swept = sweep(path);
-                    found.lock().expect("no sweep panics holding it").push((
-                        i,
-                        swept,
-                        t0.elapsed(),
-                    ));
-                }
-            });
-        }
-    });
-    let mut found = found.into_inner().expect("every sweep is done");
-    found.sort_by_key(|(i, _, _)| *i);
+    // On the corpus sweeps' pool (M1f S1f.6.39; sixteen threads of its own
+    // until then), a program a unit, read back in order.
+    let found = ein_corpus::pool::map(
+        "claim_routes",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(ein_corpus::repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let t0 = std::time::Instant::now();
+            let swept = sweep(path);
+            (swept, t0.elapsed())
+        },
+    );
     let mut failures: Vec<String> = Vec::new();
     let mut counted: BTreeMap<&str, usize> = BTreeMap::new();
-    for (i, swept, took) in found {
+    for (i, (swept, took)) in found.into_iter().enumerate() {
         failures.extend(swept.failures);
         for (k, v) in swept.counted {
             *counted.entry(k).or_default() += v;

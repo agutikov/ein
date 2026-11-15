@@ -481,63 +481,91 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
     };
     let mut failures: Vec<String> = Vec::new();
     let mut cubes = 0usize;
-    let mut check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| {
-        let Some((mut kb, mut terms, ast)) = load() else {
-            return;
-        };
-        let Some((flagged, monotone, _, gave_up)) = fact_grain_of(&mut kb, &mut terms, &ast) else {
-            return;
-        };
-        if gave_up {
-            failures.push(format!(
-                "{name}: the fact-grain closure gave up past {} shapes (E-33), so its verdict \
+    // One program's findings and whether its cube was read: a unit of the
+    // corpus sweeps' pool (M1f S1f.6.39), and the written programs after.
+    let check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| -> (Vec<String>, usize) {
+        let mut failures: Vec<String> = Vec::new();
+        let mut cubes = 0usize;
+        'unit: {
+            let Some((mut kb, mut terms, ast)) = load() else {
+                break 'unit;
+            };
+            let Some((flagged, monotone, _, gave_up)) = fact_grain_of(&mut kb, &mut terms, &ast)
+            else {
+                break 'unit;
+            };
+            if gave_up {
+                failures.push(format!(
+                    "{name}: the fact-grain closure gave up past {} shapes (E-33), so its verdict \
                  is the safe one and no cube of it is read here",
-                fact_grain::MAX_SHAPES
-            ));
-            return;
-        }
-        if !monotone {
-            return;
-        }
-        let (mut kb, mut terms, ast) = load().expect("loaded once already");
-        let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-        else {
-            return;
-        };
-        cubes += 1;
-        // The shipped check reads at relation grain, which flags a superset
-        // of fact grain's programs, so every cube it calls monotone is read
-        // here too: **a Monotone verdict implies no cube violation** — M1e2
-        // S1e2.1b.5's test (c) 1, on every corpus file and register witness
-        // within the limit (`region_synth.py --random`'s check holds it on
-        // random programs).
-        if !flagged && violated(&r) {
-            failures.push(format!(
-                "{name}: the static check says monotone, and the cube has a violation"
-            ));
-        }
-        if violated(&r) {
-            let t = &r.topology;
-            failures.push(format!(
+                    fact_grain::MAX_SHAPES
+                ));
+                break 'unit;
+            }
+            if !monotone {
+                break 'unit;
+            }
+            let (mut kb, mut terms, ast) = load().expect("loaded once already");
+            let Ok(Outcome::Region(r)) =
+                region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+            else {
+                break 'unit;
+            };
+            cubes += 1;
+            // The shipped check reads at relation grain, which flags a superset
+            // of fact grain's programs, so every cube it calls monotone is read
+            // here too: **a Monotone verdict implies no cube violation** — M1e2
+            // S1e2.1b.5's test (c) 1, on every corpus file and register witness
+            // within the limit (`region_synth.py --random`'s check holds it on
+            // random programs).
+            if !flagged && violated(&r) {
+                failures.push(format!(
+                    "{name}: the static check says monotone, and the cube has a violation"
+                ));
+            }
+            if violated(&r) {
+                let t = &r.topology;
+                failures.push(format!(
                 "{name}: fact grain says monotone, and the cube has {} holes, {} dead nodes with an \
                  alive superset, {} discharged nodes with an owing superset",
                 t.holes.len(),
                 t.dead_not_upward_closed.count,
                 t.discharged_not_upward_closed.count
             ));
+            }
         }
+        (failures, cubes)
     };
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        check(&rel, &|| loaded(&path));
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "region::fact_grain",
+        &paths,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let rel = path
+                .strip_prefix(repo_root())
+                .unwrap_or(path)
+                .to_string_lossy()
+                .to_string();
+            check(&rel, &|| loaded(path))
+        },
+    );
+    for (f, c) in found {
+        failures.extend(f);
+        cubes += c;
     }
     for (name, text, ..) in FACT_GRAIN_PROGRAMS {
-        check(name, &|| Some(loaded_text(name, text)));
+        let (f, c) = check(name, &|| Some(loaded_text(name, text)));
+        failures.extend(f);
+        cubes += c;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // 146 monotone cubes on 2026-10-16, all of them monotone at fact grain
@@ -740,33 +768,60 @@ fn a_monotone_verdict_makes_saturation_a_closure_operator() {
     };
     let mut failures: Vec<String> = Vec::new();
     let (mut cubes, mut moving) = (0usize, 0usize);
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
-            continue;
-        };
-        let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-        else {
-            continue;
-        };
-        if !r.monotonicity.is_monotone() {
-            continue;
-        }
-        cubes += 1;
-        if (0..r.nodes.len() as u64).any(|m| r.nodes[m as usize].closure != m) {
-            moving += 1;
-        }
-        failures.extend(
-            closure_operator_breaks(&r)
-                .into_iter()
-                .take(3)
-                .map(|b| format!("{rel}: {b}")),
-        );
+    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
+    // with its own tallies, folded back in the programs' order.
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "region::closure_operator",
+        &paths,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut failures = Vec::<String>::new();
+            let mut cubes = 0usize;
+            let mut moving = 0usize;
+            'unit: {
+                let rel = path
+                    .strip_prefix(repo_root())
+                    .unwrap_or(path)
+                    .to_string_lossy()
+                    .to_string();
+                let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                    break 'unit;
+                };
+                let Ok(Outcome::Region(r)) =
+                    region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+                else {
+                    break 'unit;
+                };
+                if !r.monotonicity.is_monotone() {
+                    break 'unit;
+                }
+                cubes += 1;
+                if (0..r.nodes.len() as u64).any(|m| r.nodes[m as usize].closure != m) {
+                    moving += 1;
+                }
+                failures.extend(
+                    closure_operator_breaks(&r)
+                        .into_iter()
+                        .take(3)
+                        .map(|b| format!("{rel}: {b}")),
+                );
+            }
+            (failures, cubes, moving)
+        },
+    );
+    for (u_failures, u_cubes, u_moving) in found {
+        failures.extend(u_failures);
+        cubes += u_cubes;
+        moving += u_moving;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     eprintln!("{cubes} monotone cubes; saturation moves a node on {moving}");
@@ -1441,50 +1496,80 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
         jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
         ..Options::default()
     };
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
-            continue;
-        };
-        let t0 = std::time::Instant::now();
-        let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-        else {
-            continue;
-        };
-        let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
-        let opts = downset::Options::unbounded(1);
-        let d = downset::compute(&mut kb1, &mut terms1, &ast1, &opts)
-            .unwrap_or_else(|e| panic!("{rel}: {e}"));
-        if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
-            failures.push(format!("{rel}: route 1's root is not sat(program)"));
-        }
-        if !r.monotonicity.is_monotone() {
-            flagged += 1;
-            // A dead root decides a flagged program too (L0, a fork only
-            // adds: `downset::compute` since the switch), and route 1 reads
-            // root alone. No program the oracle answers has the shape: W16's
-            // second-shape witnesses had it from their banking until W16's
-            // fix the same day (M1e2 S1e2.2.16), and *forbid* refuses them
-            // since. This expected a decline there until that banking.
-            if d.root_dead {
+    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
+    // with its own tallies, folded back in the programs' order.
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "region::route_1_is_the_oracle",
+        &paths,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut failures = Vec::<String>::new();
+            let mut monotone = 0usize;
+            let mut flagged = 0usize;
+            let mut saved = (0u64, 0u64);
+            'unit: {
+                let rel = path
+                    .strip_prefix(repo_root())
+                    .unwrap_or(path)
+                    .to_string_lossy()
+                    .to_string();
+                let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                    break 'unit;
+                };
+                let t0 = std::time::Instant::now();
+                let Ok(Outcome::Region(r)) =
+                    region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+                else {
+                    break 'unit;
+                };
+                let (mut kb1, mut terms1, ast1) = loaded(path).expect("loaded once already");
+                let opts = downset::Options::unbounded(1);
+                let d = downset::compute(&mut kb1, &mut terms1, &ast1, &opts)
+                    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+                if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
+                    failures.push(format!("{rel}: route 1's root is not sat(program)"));
+                }
+                if !r.monotonicity.is_monotone() {
+                    flagged += 1;
+                    // A dead root decides a flagged program too (L0, a fork only
+                    // adds: `downset::compute` since the switch), and route 1 reads
+                    // root alone. No program the oracle answers has the shape: W16's
+                    // second-shape witnesses had it from their banking until W16's
+                    // fix the same day (M1e2 S1e2.2.16), and *forbid* refuses them
+                    // since. This expected a decline there until that banking.
+                    if d.root_dead {
+                        failures.extend(route_1_against_oracle(&rel, &r, &d));
+                    } else if d.declined != Some(Declined::NotMonotone) {
+                        failures.push(format!("{rel}: flagged, and route 1 did not decline"));
+                    }
+                    break 'unit;
+                }
+                monotone += 1;
+                saved.0 += d.points.len() as u64;
+                saved.1 += 1u64 << r.n();
                 failures.extend(route_1_against_oracle(&rel, &r, &d));
-            } else if d.declined != Some(Declined::NotMonotone) {
-                failures.push(format!("{rel}: flagged, and route 1 did not decline"));
+                if std::env::var_os("EIN_ROUTE1_TIMES").is_some() {
+                    eprintln!("{:.3} {rel}", t0.elapsed().as_secs_f64());
+                }
             }
-            continue;
-        }
-        monotone += 1;
-        saved.0 += d.points.len() as u64;
-        saved.1 += 1u64 << r.n();
-        failures.extend(route_1_against_oracle(&rel, &r, &d));
-        if std::env::var_os("EIN_ROUTE1_TIMES").is_some() {
-            eprintln!("{:.3} {rel}", t0.elapsed().as_secs_f64());
-        }
+            (failures, monotone, flagged, saved)
+        },
+    );
+    for (u_failures, u_monotone, u_flagged, u_saved) in found {
+        failures.extend(u_failures);
+        monotone += u_monotone;
+        flagged += u_flagged;
+        saved.0 += u_saved.0;
+        saved.1 += u_saved.1;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // The census of 2026-10-16 (`region_census.md`): 146 monotone cubes and
@@ -1757,58 +1842,87 @@ fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
         jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
         ..Options::default()
     };
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
-            continue;
-        };
-        let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-        else {
-            continue;
-        };
-        let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
-        let s = states::compute(
-            &mut kb1,
-            &mut terms1,
-            &ast1,
-            &downset::Options::unbounded(1),
-        )
-        .unwrap_or_else(|e| panic!("{rel}: {e}"));
-        if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
-            failures.push(format!("{rel}: the state route's root is not sat(program)"));
-        }
-        if !r.monotonicity.is_monotone() {
-            flagged += 1;
-            if s.declined != Some(Declined::NotMonotone) {
-                failures.push(format!(
-                    "{rel}: flagged, and the state route did not decline"
-                ));
+    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
+    // with its own tallies, folded back in the programs' order.
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "region::the_state_route_is_the_oracle",
+        &paths,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut failures = Vec::<String>::new();
+            let mut monotone = 0usize;
+            let mut flagged = 0usize;
+            let mut fewer = 0usize;
+            'unit: {
+                let rel = path
+                    .strip_prefix(repo_root())
+                    .unwrap_or(path)
+                    .to_string_lossy()
+                    .to_string();
+                let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                    break 'unit;
+                };
+                let Ok(Outcome::Region(r)) =
+                    region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+                else {
+                    break 'unit;
+                };
+                let (mut kb1, mut terms1, ast1) = loaded(path).expect("loaded once already");
+                let s = states::compute(
+                    &mut kb1,
+                    &mut terms1,
+                    &ast1,
+                    &downset::Options::unbounded(1),
+                )
+                .unwrap_or_else(|e| panic!("{rel}: {e}"));
+                if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
+                    failures.push(format!("{rel}: the state route's root is not sat(program)"));
+                }
+                if !r.monotonicity.is_monotone() {
+                    flagged += 1;
+                    if s.declined != Some(Declined::NotMonotone) {
+                        failures.push(format!(
+                            "{rel}: flagged, and the state route did not decline"
+                        ));
+                    }
+                    break 'unit;
+                }
+                monotone += 1;
+                failures.extend(state_route_against_oracle(&rel, &r, &s));
+                let (mut kb2, mut terms2, ast2) = loaded(path).expect("loaded once already");
+                let d = downset::compute(
+                    &mut kb2,
+                    &mut terms2,
+                    &ast2,
+                    &downset::Options::unbounded(1),
+                )
+                .unwrap_or_else(|e| panic!("{rel}: {e}"));
+                let route_1: u64 = d.layers.iter().map(|l| l.visited).sum();
+                if s.saturations() > route_1 {
+                    failures.push(format!(
+                        "{rel}: the state route saturated {} where route 1 saturates {route_1}",
+                        s.saturations()
+                    ));
+                }
+                fewer += usize::from(s.saturations() < route_1);
             }
-            continue;
-        }
-        monotone += 1;
-        failures.extend(state_route_against_oracle(&rel, &r, &s));
-        let (mut kb2, mut terms2, ast2) = loaded(&path).expect("loaded once already");
-        let d = downset::compute(
-            &mut kb2,
-            &mut terms2,
-            &ast2,
-            &downset::Options::unbounded(1),
-        )
-        .unwrap_or_else(|e| panic!("{rel}: {e}"));
-        let route_1: u64 = d.layers.iter().map(|l| l.visited).sum();
-        if s.saturations() > route_1 {
-            failures.push(format!(
-                "{rel}: the state route saturated {} where route 1 saturates {route_1}",
-                s.saturations()
-            ));
-        }
-        fewer += usize::from(s.saturations() < route_1);
+            (failures, monotone, flagged, fewer)
+        },
+    );
+    for (u_failures, u_monotone, u_flagged, u_fewer) in found {
+        failures.extend(u_failures);
+        monotone += u_monotone;
+        flagged += u_flagged;
+        fewer += u_fewer;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // 2026-11-04: 158 monotone and 9 flagged, as route 1's sweep above.
@@ -1921,102 +2035,139 @@ fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
         jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
         ..Options::default()
     };
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
-            continue;
-        };
-        let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-        else {
-            continue;
-        };
-        if !r.monotonicity.is_monotone() {
-            continue;
-        }
-        let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
-        let Some(table) = ein_infer::oblgen::alternatives_of(&mut kb1, &mut terms1, &ast1)
-            .unwrap_or_else(|e| panic!("{rel}: {e}"))
-        else {
-            continue;
-        };
-        programs += 1;
-        let lic: Vec<(usize, u64)> = table
-            .instances
-            .iter()
-            .enumerate()
-            .filter_map(|(i, x)| {
-                let alts = x.alternatives.as_ref().ok()?;
-                Some((i, alts.iter().fold(0u64, |m, &b| m | 1 << b)))
-            })
-            .collect();
-        licensed += usize::from(!lic.is_empty());
-        let n = r.n();
-        let alive = |m: u64| r.status[m as usize] & region::DEAD == 0;
-        let in_r: Vec<u64> = (0..1u64 << n).filter(|&m| r.in_r(m)).collect();
-        // Every alive state: an alive mask that is its own closure.
-        let states: Vec<u64> = (0..1u64 << n)
-            .filter(|&m| alive(m) && r.nodes[m as usize].closure == m)
-            .collect();
-        let memo = ein_infer::SharedMemo::default();
-        let mut nodes = region::Nodes::new(&mut kb1, &mut terms1, &ast1, &r.candidates)
-            .unwrap_or_else(|e| panic!("{rel}: {e}"));
-        for m in states {
-            let facts: Vec<_> = (0..n)
-                .filter(|b| m >> b & 1 == 1)
-                .map(|b| r.candidates[b].fact)
-                .collect();
-            let owed: Vec<Option<u32>> = nodes
-                .with_fixpoint(&facts, |kb, terms| {
-                    ein_infer::obligations::tally(kb, terms, &ast1, &memo, &mut Events::off())
-                        .expect("the tally compiles")
-                        .instances()
-                        .iter()
-                        .map(|o| {
-                            let key = (o.rule, o.activator.clone(), o.bindings.clone());
-                            table.index.get(&key).copied()
+    // One unit per program on the corpus sweeps' pool (M1f S1f.6.39), each
+    // with its own tallies, folded back in the programs' order.
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "region::l5_is_the_oracle",
+        &paths,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut failures = Vec::<String>::new();
+            let mut programs = 0usize;
+            let mut licensed = 0usize;
+            let mut checked = 0usize;
+            let mut owing = 0usize;
+            'unit: {
+                let rel = path
+                    .strip_prefix(repo_root())
+                    .unwrap_or(path)
+                    .to_string_lossy()
+                    .to_string();
+                let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                    break 'unit;
+                };
+                let Ok(Outcome::Region(r)) =
+                    region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+                else {
+                    break 'unit;
+                };
+                if !r.monotonicity.is_monotone() {
+                    break 'unit;
+                }
+                let (mut kb1, mut terms1, ast1) = loaded(path).expect("loaded once already");
+                let Some(table) = ein_infer::oblgen::alternatives_of(&mut kb1, &mut terms1, &ast1)
+                    .unwrap_or_else(|e| panic!("{rel}: {e}"))
+                else {
+                    break 'unit;
+                };
+                programs += 1;
+                let lic: Vec<(usize, u64)> = table
+                    .instances
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        let alts = x.alternatives.as_ref().ok()?;
+                        Some((i, alts.iter().fold(0u64, |m, &b| m | 1 << b)))
+                    })
+                    .collect();
+                licensed += usize::from(!lic.is_empty());
+                let n = r.n();
+                let alive = |m: u64| r.status[m as usize] & region::DEAD == 0;
+                let in_r: Vec<u64> = (0..1u64 << n).filter(|&m| r.in_r(m)).collect();
+                // Every alive state: an alive mask that is its own closure.
+                let states: Vec<u64> = (0..1u64 << n)
+                    .filter(|&m| alive(m) && r.nodes[m as usize].closure == m)
+                    .collect();
+                let memo = ein_infer::SharedMemo::default();
+                let mut nodes = region::Nodes::new(&mut kb1, &mut terms1, &ast1, &r.candidates)
+                    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+                for m in states {
+                    let facts: Vec<_> = (0..n)
+                        .filter(|b| m >> b & 1 == 1)
+                        .map(|b| r.candidates[b].fact)
+                        .collect();
+                    let owed: Vec<Option<u32>> = nodes
+                        .with_fixpoint(&facts, |kb, terms| {
+                            ein_infer::obligations::tally(
+                                kb,
+                                terms,
+                                &ast1,
+                                &memo,
+                                &mut Events::off(),
+                            )
+                            .expect("the tally compiles")
+                            .instances()
+                            .iter()
+                            .map(|o| {
+                                let key = (o.rule, o.activator.clone(), o.bindings.clone());
+                                table.index.get(&key).copied()
+                            })
+                            .collect()
                         })
-                        .collect()
-                })
-                .unwrap_or_else(|e| panic!("{rel}: {e}"));
-            checked += 1;
-            if owed.contains(&None) {
-                failures.push(format!(
-                    "{rel}: {} owes an instance root did not",
-                    r.name(m)
-                ));
-            }
-            for &(i, alts) in &lic {
-                let witnessed = m & alts != 0;
-                let is_owed = owed.contains(&Some(i as u32));
-                if witnessed == is_owed {
-                    failures.push(format!(
-                        "{rel}: {} {} instance {i}, with {} alternative in it",
-                        r.name(m),
-                        if is_owed { "owes" } else { "has paid" },
-                        if witnessed { "an" } else { "no" }
-                    ));
-                }
-                if !is_owed {
-                    continue;
-                }
-                owing += 1;
-                for &d in &in_r {
-                    if d & m == m && r.nodes[d as usize].closure & alts == 0 {
+                        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+                    checked += 1;
+                    if owed.contains(&None) {
                         failures.push(format!(
+                            "{rel}: {} owes an instance root did not",
+                            r.name(m)
+                        ));
+                    }
+                    for &(i, alts) in &lic {
+                        let witnessed = m & alts != 0;
+                        let is_owed = owed.contains(&Some(i as u32));
+                        if witnessed == is_owed {
+                            failures.push(format!(
+                                "{rel}: {} {} instance {i}, with {} alternative in it",
+                                r.name(m),
+                                if is_owed { "owes" } else { "has paid" },
+                                if witnessed { "an" } else { "no" }
+                            ));
+                        }
+                        if !is_owed {
+                            continue;
+                        }
+                        owing += 1;
+                        for &d in &in_r {
+                            if d & m == m && r.nodes[d as usize].closure & alts == 0 {
+                                failures.push(format!(
                             "{rel}: {} is in R above {}, which owes instance {i}, and holds \
                              none of its alternatives",
                             r.name(d),
                             r.name(m)
                         ));
+                            }
+                        }
                     }
                 }
             }
-        }
+            (failures, programs, licensed, checked, owing)
+        },
+    );
+    for (u_failures, u_programs, u_licensed, u_checked, u_owing) in found {
+        failures.extend(u_failures);
+        programs += u_programs;
+        licensed += u_licensed;
+        checked += u_checked;
+        owing += u_owing;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // Not vacuous: the licence binds on real programs and real debts — 40

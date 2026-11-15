@@ -263,13 +263,23 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     }
     runs.sort();
     runs.dedup();
-    for (i, (file, run, code)) in runs.iter().enumerate() {
-        let dir = root.join(format!("r{i}"));
-        let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
-        let r = dump(file, &flags, &[], &dir);
-        assert_eq!(r.code, *code, "{file} {run}: exit {}\n{}", r.code, r.err);
-        let mut found = Vec::new();
-        let n = check_states(&dir, &format!("{file} :: {run}"), &mut found);
+    // One unit per run on the pool (M1f S1f.6.39), read back in order.
+    let indexed: Vec<(usize, &(String, String, i32))> = runs.iter().enumerate().collect();
+    let checked = ein_corpus::pool::map(
+        "answer_dump",
+        &indexed,
+        |(_, (file, run, _))| (file.clone(), run.clone()),
+        |&(i, (file, run, code))| {
+            let dir = root.join(format!("r{i}"));
+            let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
+            let r = dump(file, &flags, &[], &dir);
+            assert_eq!(r.code, *code, "{file} {run}: exit {}\n{}", r.code, r.err);
+            let mut found = Vec::new();
+            let n = check_states(&dir, &format!("{file} :: {run}"), &mut found);
+            (n, found)
+        },
+    );
+    for (&(_, (file, run, _)), (n, found)) in indexed.iter().zip(checked) {
         states += n;
         if let Some(&(_, k)) = DO_NOT_LOAD.iter().find(|(f, _)| *f == file.as_str()) {
             let unloaded = found

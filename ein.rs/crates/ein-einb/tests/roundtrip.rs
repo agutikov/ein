@@ -81,46 +81,63 @@ fn saved(kb: &Kb, terms: &Terms, ast: &mut Ast, forms: &[ein_ir::NodeId], path: 
 #[test]
 fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
     let (mut checked, mut remapped) = (0usize, 0usize);
-    for path in &corpus_files() {
-        let Some((mut ast, terms, kb, forms)) = load(path) else {
-            continue;
-        };
-        let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
-        let bytes = saved(&kb, &terms, &mut ast, &forms, path);
+    // On the corpus sweeps' pool (M1f S1f.6.39): a file a unit, its
+    // `Some(remapped)` or `None` where it does not load, read back in order.
+    let files = corpus_files();
+    let done = ein_corpus::pool::map(
+        "einb::roundtrip",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let (mut ast, terms, kb, forms) = load(path)?;
+            let name = path.strip_prefix(repo_root()).unwrap_or(path).display();
+            let bytes = saved(&kb, &terms, &mut ast, &forms, path);
 
-        let mut fresh = Terms::new();
-        let opened = ein_einb::open_bytes(&bytes, &mut fresh, &OpenOptions::default())
-            .unwrap_or_else(|e| panic!("{name}: open: {e}"));
-        assert!(
-            !opened.remapped,
-            "{name}: an empty interner should have taken the identity fast path"
-        );
-        if let Err(why) = kb.diff(&opened.kb) {
-            panic!("{name}: {why}");
-        }
-        if let Err(why) = same_shape(&shape(&kb, &terms), &shape(&opened.kb, &fresh)) {
-            panic!("{name}: {why}");
-        }
+            let mut fresh = Terms::new();
+            let opened = ein_einb::open_bytes(&bytes, &mut fresh, &OpenOptions::default())
+                .unwrap_or_else(|e| panic!("{name}: open: {e}"));
+            assert!(
+                !opened.remapped,
+                "{name}: an empty interner should have taken the identity fast path"
+            );
+            if let Err(why) = kb.diff(&opened.kb) {
+                panic!("{name}: {why}");
+            }
+            if let Err(why) = same_shape(&shape(&kb, &terms), &shape(&opened.kb, &fresh)) {
+                panic!("{name}: {why}");
+            }
 
-        let mut shared = crowded();
-        let opened = ein_einb::open_bytes(&bytes, &mut shared, &OpenOptions::default())
-            .unwrap_or_else(|e| panic!("{name}: open (shared): {e}"));
-        // The crowd is interned *after* the kernel names, so a file whose
-        // tables are the bare kernel prefix — `examples/syntax/config.ein` is
-        // one: a `(config …)` block and nothing else — still re-interns to its
-        // own ids and takes the fast path honestly.
-        let bare = terms.syms.len() == Terms::new().syms.len() && terms.facts.is_empty();
-        assert_eq!(
-            opened.remapped,
-            !bare,
-            "{name}: remapped={} for a file whose tables are {}the kernel prefix",
-            opened.remapped,
-            if bare { "" } else { "not " }
-        );
-        remapped += usize::from(opened.remapped);
-        if let Err(why) = same_shape(&shape(&kb, &terms), &shape(&opened.kb, &shared)) {
-            panic!("{name} (remapped): {why}");
-        }
+            let mut shared = crowded();
+            let opened = ein_einb::open_bytes(&bytes, &mut shared, &OpenOptions::default())
+                .unwrap_or_else(|e| panic!("{name}: open (shared): {e}"));
+            // The crowd is interned *after* the kernel names, so a file whose
+            // tables are the bare kernel prefix — `examples/syntax/config.ein` is
+            // one: a `(config …)` block and nothing else — still re-interns to its
+            // own ids and takes the fast path honestly.
+            let bare = terms.syms.len() == Terms::new().syms.len() && terms.facts.is_empty();
+            assert_eq!(
+                opened.remapped,
+                !bare,
+                "{name}: remapped={} for a file whose tables are {}the kernel prefix",
+                opened.remapped,
+                if bare { "" } else { "not " }
+            );
+            if let Err(why) = same_shape(&shape(&kb, &terms), &shape(&opened.kb, &shared)) {
+                panic!("{name} (remapped): {why}");
+            }
+            Some(opened.remapped)
+        },
+    );
+    for r in done.into_iter().flatten() {
+        remapped += usize::from(r);
         checked += 1;
     }
     // The floor `corpus_shapes` holds `load` to: a sweep that loaded nothing

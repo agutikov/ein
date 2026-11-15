@@ -30,7 +30,6 @@
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Mutex;
 
 use ein_corpus::{Scratch, corpus, repo_root};
 use ein_ir::{Ast, Node, parse};
@@ -58,7 +57,12 @@ fn summary(dir: &Path, file: &str) -> Result<serde_json::Value, i32> {
 }
 
 /// A name with every prefix of `prefixes` taken off where it starts a name.
-fn strip(s: &str, prefixes: &[String]) -> String {
+///
+/// The prefixes come as characters, split once by the caller: until M1f
+/// S1f.6.39 each was split again at every boundary of every string, and
+/// `features/04_open.ein`'s summary took 127 of this test's 129 s on the pool
+/// (`EIN_TEST_UNITS`, the stage's record).
+fn strip(s: &str, prefixes: &[Vec<char>]) -> String {
     let mut out = String::with_capacity(s.len());
     let bytes: Vec<char> = s.chars().collect();
     let mut i = 0;
@@ -66,14 +70,13 @@ fn strip(s: &str, prefixes: &[String]) -> String {
     while i < bytes.len() {
         let at_start = i == 0 || boundary(bytes[i - 1]);
         if at_start
-            && let Some(p) = prefixes.iter().find(|p| {
-                let pc: Vec<char> = p.chars().collect();
+            && let Some(pc) = prefixes.iter().find(|pc| {
                 bytes.len() > i + pc.len()
                     && bytes[i..i + pc.len()] == pc[..]
                     && bytes[i + pc.len()] == '.'
             })
         {
-            i += p.chars().count() + 1;
+            i += pc.len() + 1;
             continue;
         }
         out.push(bytes[i]);
@@ -84,7 +87,8 @@ fn strip(s: &str, prefixes: &[String]) -> String {
 
 /// R, the queries and the claims of a summary, names normalized.
 fn signature(v: &serde_json::Value, prefixes: &[String]) -> String {
-    let n = |s: &str| strip(s, prefixes);
+    let prefixes: Vec<Vec<char>> = prefixes.iter().map(|p| p.chars().collect()).collect();
+    let n = |s: &str| strip(s, &prefixes);
     let strs = |v: &serde_json::Value| -> Vec<String> {
         let mut out: Vec<String> = v
             .as_array()
@@ -355,31 +359,33 @@ fn programs() -> Vec<PathBuf> {
 
 #[test]
 fn every_corpus_program_answers_alike_under_every_import_form() {
-    let todo = Mutex::new(programs());
-    let total = todo.lock().expect("lock").len();
-    let failures = Mutex::new(Vec::new());
-    let compared = Mutex::new(0usize);
-    let threads = std::thread::available_parallelism()
-        .map_or(4, |n| n.get())
-        .min(16);
-    std::thread::scope(|s| {
-        for _ in 0..threads {
-            s.spawn(|| {
-                loop {
-                    let Some(path) = todo.lock().expect("lock").pop() else {
-                        return;
-                    };
-                    match check(&path) {
-                        Ok(n) => *compared.lock().expect("lock") += n,
-                        Err(e) => failures.lock().expect("lock").push(e),
-                    }
-                }
-            });
+    // On the pool (M1f S1f.6.39), one unit per program, read back in the
+    // manifest's order: until S1f.6.39 this test ran its own sixteen threads
+    // and listed its failures in the order they finished.
+    let todo = programs();
+    let total = todo.len();
+    let root = repo_root();
+    let results = ein_corpus::pool::map(
+        "import_invariance",
+        &todo,
+        |p| {
+            (
+                p.strip_prefix(&root).unwrap_or(p).display().to_string(),
+                String::new(),
+            )
+        },
+        |p| check(p),
+    );
+    let mut failures = Vec::new();
+    let mut compared = 0usize;
+    for r in results {
+        match r {
+            Ok(n) => compared += n,
+            Err(e) => failures.push(e),
         }
-    });
-    let failures = failures.into_inner().expect("lock");
+    }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
     // Not vacuous: the corpus's importing programs, every one in two forms.
     assert!(total >= 250, "{total} programs that import");
-    assert_eq!(compared.into_inner().expect("lock"), 2 * total);
+    assert_eq!(compared, 2 * total);
 }

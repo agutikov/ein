@@ -894,43 +894,68 @@ fn the_kb_shape_does_not_move_when_the_id_space_is_permuted() {
     let (mut loaded, mut rejected, mut bad) = (0usize, 0usize, Vec::new());
     let mut weakest: Option<(usize, usize)> = None;
 
-    for path in &files {
-        let mut terms = Terms::new();
-        let base = load_file(&mut Ast::new(), &mut terms, path)
-            .map(|kb| shape(&kb, &terms))
-            .map_err(|e| e.0);
+    // A file a unit on the corpus sweeps' pool (M1f S1f.6.39): its plain
+    // and permuted loads, what they came to, and its permutation's size,
+    // folded back in the files' order.
+    let found = ein_corpus::pool::map(
+        "kb_semantics::permuted",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut terms = Terms::new();
+            let base = load_file(&mut Ast::new(), &mut terms, path)
+                .map(|kb| shape(&kb, &terms))
+                .map_err(|e| e.0);
 
-        let mut shuffled = permuted(&terms);
-        let kernel = Terms::new().syms.len();
-        let permutable = terms.syms.len() - kernel;
-        let stayed = (kernel..terms.syms.len())
-            .filter(|&i| {
-                shuffled.syms.get(terms.syms.text(Symbol(i as u32))) == Some(Symbol(i as u32))
-            })
-            .count();
+            let mut shuffled = permuted(&terms);
+            let kernel = Terms::new().syms.len();
+            let permutable = terms.syms.len() - kernel;
+            let stayed = (kernel..terms.syms.len())
+                .filter(|&i| {
+                    shuffled.syms.get(terms.syms.text(Symbol(i as u32))) == Some(Symbol(i as u32))
+                })
+                .count();
+
+            let again = load_file(&mut Ast::new(), &mut shuffled, path)
+                .map(|kb| shape(&kb, &shuffled))
+                .map_err(|e| e.0);
+            // `Some(true)` loaded, `Some(false)` rejected, `None` neither.
+            let (kind, line) = match (&base, &again) {
+                (Ok(a), Ok(b)) => (
+                    Some(true),
+                    (a != b).then(|| format!("{}\n{}", path.display(), first_difference(a, b))),
+                ),
+                (Err(a), Err(b)) => (
+                    Some(false),
+                    (a != b).then(|| format!("{}\n  plain: {a}\n  permuted: {b}", path.display())),
+                ),
+                _ => (
+                    None,
+                    Some(format!("{}: loaded in only one id space", path.display())),
+                ),
+            };
+            (permutable, stayed, kind, line)
+        },
+    );
+    for (permutable, stayed, kind, line) in found {
         if permutable > 0 && weakest.is_none_or(|(m, p)| (permutable - stayed) * p < m * permutable)
         {
             weakest = Some((permutable - stayed, permutable));
         }
-
-        let again = load_file(&mut Ast::new(), &mut shuffled, path)
-            .map(|kb| shape(&kb, &shuffled))
-            .map_err(|e| e.0);
-        match (&base, &again) {
-            (Ok(a), Ok(b)) => {
-                loaded += 1;
-                if a != b {
-                    bad.push(format!("{}\n{}", path.display(), first_difference(a, b)));
-                }
-            }
-            (Err(a), Err(b)) => {
-                rejected += 1;
-                if a != b {
-                    bad.push(format!("{}\n  plain: {a}\n  permuted: {b}", path.display()));
-                }
-            }
-            _ => bad.push(format!("{}: loaded in only one id space", path.display())),
+        match kind {
+            Some(true) => loaded += 1,
+            Some(false) => rejected += 1,
+            None => {}
         }
+        bad.extend(line);
     }
     assert!(
         bad.is_empty(),

@@ -72,42 +72,51 @@ fn options() -> explore::Options {
 fn the_search_interns_no_names() {
     let mut grew: Vec<String> = Vec::new();
     let (mut solved, mut skipped) = (0usize, 0usize);
-    for path in corpus_files() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_path_buf();
-        let Ok(text) = std::fs::read_to_string(&path) else {
-            skipped += 1;
-            continue;
-        };
-        let mut ast = Ast::new();
-        let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
-            skipped += 1;
-            continue;
-        };
-        let mut terms = Terms::new();
-        let Ok(mut kb) = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) else {
-            skipped += 1;
-            continue;
-        };
-        // Root saturation, then the mark. Everything after it is the search:
-        // H built at root's fixpoint, and every node the route saturates.
-        if ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off()).is_err() {
-            skipped += 1;
-            continue;
-        }
-        let syms = terms.syms.len();
-        if explore::run(&mut kb, &mut terms, &ast, &options()).is_err() {
-            skipped += 1;
-            continue;
-        }
-        solved += 1;
-        if terms.syms.len() != syms {
-            let names: Vec<&str> = (syms..terms.syms.len())
-                .map(|i| terms.syms.text(ein_core::Symbol(i as u32)))
-                .collect();
-            grew.push(format!("{} interned {names:?}", rel.display()));
+    // On the corpus sweeps' pool (M1f S1f.6.39), a program a unit: whether it
+    // was solved or skipped, and what its search interned, read in order.
+    let files = corpus_files();
+    let found = ein_corpus::pool::map(
+        "interning",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| -> Result<Option<String>, ()> {
+            let rel = path.strip_prefix(repo_root()).unwrap_or(path).to_path_buf();
+            let text = std::fs::read_to_string(path).map_err(|_| ())?;
+            let mut ast = Ast::new();
+            let forms = parse(&mut ast, &text, path.to_str()).map_err(|_| ())?;
+            let mut terms = Terms::new();
+            let mut kb =
+                ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).map_err(|_| ())?;
+            // Root saturation, then the mark. Everything after it is the
+            // search: H built at root's fixpoint, and every node the route
+            // saturates.
+            ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+                .map_err(|_| ())?;
+            let syms = terms.syms.len();
+            explore::run(&mut kb, &mut terms, &ast, &options()).map_err(|_| ())?;
+            Ok((terms.syms.len() != syms).then(|| {
+                let names: Vec<&str> = (syms..terms.syms.len())
+                    .map(|i| terms.syms.text(ein_core::Symbol(i as u32)))
+                    .collect();
+                format!("{} interned {names:?}", rel.display())
+            }))
+        },
+    );
+    for r in found {
+        match r {
+            Err(()) => skipped += 1,
+            Ok(g) => {
+                solved += 1;
+                grew.extend(g);
+            }
         }
     }
 

@@ -72,8 +72,53 @@ fn oracle_model(r: &Region, root: &BTreeSet<String>, m: u64) -> Vec<String> {
     v
 }
 
+/// What one program contributed: its failures, in the order the serial loop
+/// found them, and its counts.
+#[derive(Default)]
+struct Found {
+    failures: Vec<String>,
+    models: usize,
+    claims: usize,
+    classes: usize,
+}
+
 #[test]
 fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
+    let mut failures: Vec<String> = Vec::new();
+    let mut models = 0usize;
+    let mut claims = 0usize;
+    let mut classes = 0usize;
+    // One unit per program on the pool (M1f S1f.6.39), read back in order.
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "read_out",
+        &paths,
+        |p| (rel_of(p), String::new()),
+        |p| one_program(p),
+    );
+    for f in found {
+        failures.extend(f.failures);
+        models += f.models;
+        claims += f.claims;
+        classes += f.classes;
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // Not vacuous: 17 130 models, 7 claims and 359 classes on 2026-10-16.
+    assert!(
+        models >= 15_000 && claims >= 7 && classes >= 300,
+        "{models} {claims} {classes}"
+    );
+}
+
+fn rel_of(path: &Path) -> String {
+    path.strip_prefix(repo_root())
+        .unwrap_or(path)
+        .to_string_lossy()
+        .to_string()
+}
+
+/// The loop's body, for one program.
+fn one_program(path: &Path) -> Found {
     let mut failures: Vec<String> = Vec::new();
     let mut models = 0usize;
     let mut claims = 0usize;
@@ -82,19 +127,16 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
         keep_states: true,
         ..region::Options::default()
     };
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
+    {
+        let path = path.to_path_buf();
+        let rel = rel_of(&path);
         let Some((mut kb, mut terms, ast)) = loaded(&path) else {
-            continue;
+            return Found::default();
         };
         let Ok(Outcome::Region(r)) =
             region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
         else {
-            continue;
+            return Found::default();
         };
         let root: BTreeSet<String> = kb
             .facts()
@@ -194,10 +236,10 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
             }
         }
     }
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // Not vacuous: 17 130 models, 7 claims and 359 classes on 2026-10-16.
-    assert!(
-        models >= 15_000 && claims >= 7 && classes >= 300,
-        "{models} {claims} {classes}"
-    );
+    Found {
+        failures,
+        models,
+        claims,
+        classes,
+    }
 }

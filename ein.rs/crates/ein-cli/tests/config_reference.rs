@@ -40,6 +40,9 @@
 //!    row names every key of `--json-summary`'s `leftover` block, and the
 //!    block is what the row says, with the variable and without (M1f
 //!    S1f.5.28's item 2: the row named none of them until then).
+//! 9. [`the_dev_crates_environment_is_in_the_harness_class`] — every `EIN_*`
+//!    name the two dev-only crates read has a row in the page's harness
+//!    class: the worker pool's `EIN_TEST_JOBS` among them (M1f S1f.6.39).
 //!
 //! [`docs/kernel/configuration.md`]: ../../../../docs/kernel/configuration.md
 
@@ -390,8 +393,14 @@ fn rust_files(dir: &Path, out: &mut Vec<PathBuf>) {
 /// `EIN_STDLIB` appears in a doc comment three lines above the call that reads
 /// it, and `EIN_BLESS` appears in a `cargo test` invocation inside one.
 fn env_names_read_by_shipping_crates() -> Vec<String> {
+    env_names_read_by(&SHIPPING)
+}
+
+/// Every `EIN_*` name the `src/` of `crates` reads from the process
+/// environment, by the lookback [`env_names_read_by_shipping_crates`] states.
+fn env_names_read_by(crates: &[&str]) -> Vec<String> {
     let mut names: Vec<String> = Vec::new();
-    for crate_name in SHIPPING {
+    for crate_name in crates {
         let mut files = Vec::new();
         rust_files(
             &repo_root()
@@ -469,6 +478,38 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
         assert!(
             read.contains(&name),
             "the page lists {name} as read by the shipped binary; no shipping crate reads it"
+        );
+    }
+}
+
+/// The two dev-only crates, whose environment is the harness's.
+const DEV_ONLY: [&str; 2] = ["ein-corpus", "ein-narration"];
+
+/// **What the dev-only crates read is in the page's harness class** (M1f
+/// S1f.6.39): every `EIN_*` name `ein-corpus` or `ein-narration` reads from
+/// the process environment — `EIN_BLESS`, `EIN_NARRATION_STRICT`, and since
+/// S1f.6.39 the worker pool's `EIN_TEST_JOBS` and `EIN_TEST_UNITS` — has a
+/// row under *Read by the test harness*. One direction only: that class also
+/// lists names a `tests/` target reads, which no `src/` scan sees.
+#[test]
+fn the_dev_crates_environment_is_in_the_harness_class() {
+    let text = page();
+    let read = env_names_read_by(&DEV_ONLY);
+    assert!(
+        read.len() >= 4,
+        "the scanner found only {read:?} in the dev-only crates — it stopped seeing the call sites"
+    );
+    let class_b = text
+        .split_once("### Read by the test harness")
+        .expect("the page has no `Read by the test harness` section")
+        .1
+        .split_once("\n### ")
+        .expect("that section has no successor")
+        .0;
+    for name in &read {
+        assert!(
+            class_b.contains(&format!("| `{name}` |")),
+            "{name} is read by a dev-only crate and has no row under `Read by the test harness`"
         );
     }
 }

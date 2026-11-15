@@ -1047,56 +1047,85 @@ fn no_run_reaches_a_name_the_program_does_not_have() {
     let mut r1: Vec<(String, String)> = Vec::new();
     let mut r2: Vec<(String, String)> = Vec::new();
     let mut solved = 0usize;
-    for path in &corpus_files() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(path)
-            .display()
-            .to_string();
-        let mut ast = Ast::new();
-        let mut terms = Terms::new();
-        let Ok(mut kb) = load_file(&mut ast, &mut terms, path) else {
-            continue;
-        };
-        let loaded = Universe::of(&kb, &terms, &ast);
-        let at_load = kb.n_facts();
-        // The route saturates root in place, once, and writes nothing else
-        // into it: what root holds after the run is root's fixpoint.
-        let Ok(answer) = explore::run(&mut kb, &mut terms, &ast, &describe_options()) else {
-            continue;
-        };
-        let at_root = kb.n_facts();
-        let root_universe = Universe::of(&kb, &terms, &ast);
+    // On the corpus sweeps' pool (M1f S1f.6.39): a program a unit, its rows
+    // named by the program, so no unit's rows meet another's.
+    let files = corpus_files();
+    let found = ein_corpus::pool::map(
+        "alive_invariant::no_run_reaches",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut r1: Vec<(String, String)> = Vec::new();
+            let mut r2: Vec<(String, String)> = Vec::new();
+            let mut solved = 0usize;
+            'unit: {
+                let rel = path
+                    .strip_prefix(repo_root())
+                    .unwrap_or(path)
+                    .display()
+                    .to_string();
+                let mut ast = Ast::new();
+                let mut terms = Terms::new();
+                let Ok(mut kb) = load_file(&mut ast, &mut terms, path) else {
+                    break 'unit;
+                };
+                let loaded = Universe::of(&kb, &terms, &ast);
+                let at_load = kb.n_facts();
+                // The route saturates root in place, once, and writes nothing else
+                // into it: what root holds after the run is root's fixpoint.
+                let Ok(answer) = explore::run(&mut kb, &mut terms, &ast, &describe_options())
+                else {
+                    break 'unit;
+                };
+                let at_root = kb.n_facts();
+                let root_universe = Universe::of(&kb, &terms, &ast);
 
-        let collect = |u: &Universe,
-                       k: &ein_core::Kb,
-                       terms: &Terms,
-                       from: usize,
-                       into: &mut Vec<(String, String)>| {
-            let mut b = Vec::new();
-            u.breaches(k, terms, from, &mut b);
-            for x in b {
-                let row = (rel.clone(), x.render(terms));
-                if !into.contains(&row) {
-                    into.push(row);
-                }
+                let collect = |u: &Universe,
+                               k: &ein_core::Kb,
+                               terms: &Terms,
+                               from: usize,
+                               into: &mut Vec<(String, String)>| {
+                    let mut b = Vec::new();
+                    u.breaches(k, terms, from, &mut b);
+                    for x in b {
+                        let row = (rel.clone(), x.render(terms));
+                        if !into.contains(&row) {
+                            into.push(row);
+                        }
+                    }
+                };
+                collect(&loaded, &kb, &terms, at_load, &mut r1);
+
+                solved += 1;
+                let sets = reached(&answer);
+                let Ok(mut nodes) = Nodes::new(&mut kb, &mut terms, &ast, &answer.candidates)
+                else {
+                    break 'unit;
+                };
+                nodes
+                    .with_fixpoints(&sets, |kbs: &mut [Kb], terms: &mut Terms| {
+                        for k in kbs.iter() {
+                            collect(&loaded, k, terms, at_load, &mut r1);
+                            collect(&root_universe, k, terms, at_root, &mut r2);
+                        }
+                    })
+                    .unwrap_or_else(|e| panic!("{rel}: {e}"));
             }
-        };
-        collect(&loaded, &kb, &terms, at_load, &mut r1);
-
-        solved += 1;
-        let sets = reached(&answer);
-        let Ok(mut nodes) = Nodes::new(&mut kb, &mut terms, &ast, &answer.candidates) else {
-            continue;
-        };
-        nodes
-            .with_fixpoints(&sets, |kbs: &mut [Kb], terms: &mut Terms| {
-                for k in kbs.iter() {
-                    collect(&loaded, k, terms, at_load, &mut r1);
-                    collect(&root_universe, k, terms, at_root, &mut r2);
-                }
-            })
-            .unwrap_or_else(|e| panic!("{rel}: {e}"));
+            (r1, r2, solved)
+        },
+    );
+    for (a, b, n) in found {
+        r1.extend(a);
+        r2.extend(b);
+        solved += n;
     }
     assert!(
         solved >= 155,

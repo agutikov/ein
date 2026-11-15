@@ -82,7 +82,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use ein_core::SolverConfig;
@@ -127,32 +126,25 @@ fn questions(k_s: u64) -> Vec<(Vec<String>, Mode)> {
     out
 }
 
-fn workers() -> usize {
-    std::thread::available_parallelism().map_or(1, |n| n.get().min(8))
+/// Run `work` over `items` on the corpus sweeps' pool, `ein_corpus::pool`
+/// (M1f S1f.6.39; its own eight threads until then); the results in `items`'
+/// order. `name` names an item as `(program, output)` for the pool's
+/// instrument.
+fn par_map<T: Sync, R: Send>(
+    sweep: &str,
+    items: &[T],
+    name: impl Fn(&T) -> (String, String) + Sync,
+    work: impl Fn(&T) -> R + Sync,
+) -> Vec<R> {
+    ein_corpus::pool::map(sweep, items, name, work)
 }
 
-/// Run `work` over `items` on [`workers`] threads; the results in `items`'
-/// order.
-fn par_map<T: Sync, R: Send>(items: &[T], work: impl Fn(&T) -> R + Sync) -> Vec<R> {
-    let next = AtomicUsize::new(0);
-    let out: Mutex<Vec<Option<R>>> = Mutex::new((0..items.len()).map(|_| None).collect());
-    std::thread::scope(|s| {
-        for _ in 0..workers() {
-            s.spawn(|| {
-                loop {
-                    let i = next.fetch_add(1, Ordering::Relaxed);
-                    let Some(item) = items.get(i) else { break };
-                    let r = work(item);
-                    out.lock().expect("a worker panicked")[i] = Some(r);
-                }
-            });
-        }
-    });
-    out.into_inner()
-        .expect("a worker panicked")
-        .into_iter()
-        .map(|r| r.expect("every item ran"))
-        .collect()
+/// A program's path from the repo root, as the pool's instrument names it.
+fn rel(p: &Path) -> String {
+    p.strip_prefix(repo_root())
+        .unwrap_or(p)
+        .display()
+        .to_string()
 }
 
 fn slow_too() -> bool {
@@ -293,7 +285,12 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     let cells = declared();
     // Each file's describe at the default, for its k_s and whether R is known.
     let files: Vec<String> = cells.keys().cloned().collect();
-    let bases = par_map(&files, |f| solve(f, &[]));
+    let bases = par_map(
+        "lever_invariance::declared",
+        &files,
+        |f| (f.clone(), "solve".to_string()),
+        |f| solve(f, &[]),
+    );
     let mut known = 0usize;
     let mut cut = Vec::new();
     let mut jobs: Vec<(String, Vec<String>, Option<String>)> = Vec::new();
@@ -317,14 +314,28 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
             }
         }
     }
-    let got = par_map(&jobs, |(file, flags, lever)| match lever {
-        None => solve(file, flags),
-        Some(l) => {
-            let mut argv = flags.clone();
-            argv.push(l.clone());
-            solve(file, &argv)
-        }
-    });
+    let got = par_map(
+        "lever_invariance::declared",
+        &jobs,
+        |(file, flags, lever)| {
+            (
+                file.clone(),
+                format!(
+                    "solve {} {}",
+                    flags.join(" "),
+                    lever.as_deref().unwrap_or("")
+                ),
+            )
+        },
+        |(file, flags, lever)| match lever {
+            None => solve(file, flags),
+            Some(l) => {
+                let mut argv = flags.clone();
+                argv.push(l.clone());
+                solve(file, &argv)
+            }
+        },
+    );
     let mut defaults: BTreeMap<(&str, &[String]), &Got> = BTreeMap::new();
     for ((file, flags, lever), g) in jobs.iter().zip(&got) {
         if lever.is_none() {
@@ -673,7 +684,12 @@ fn reach(path: &Path) -> Reach {
 #[test]
 fn no_config_flag_moves_a_line_of_any_mode() {
     let files = programs();
-    let reached = par_map(&files, |p| reach(p));
+    let reached = par_map(
+        "lever_invariance::reach",
+        &files,
+        |p| (rel(p), "reach".to_string()),
+        |p| reach(p),
+    );
     let (mut partial, mut none) = (0usize, 0usize);
     let mut known: Vec<Known> = Vec::new();
     for r in reached {
@@ -691,17 +707,27 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         items.push((i, None));
         items.extend(FLAGS.iter().map(|(f, _)| (i, Some(*f))));
     }
-    let outputs = par_map(&items, |&(i, flag)| {
-        let k = &known[i];
-        let text = match flag {
-            None => k.text.clone(),
-            Some(f) => format!("{}{}", k.text, flipped(&k.resolved, f)),
-        };
-        k.questions
-            .iter()
-            .map(|(flags, mode)| printed(&k.path, &text, flags, *mode))
-            .collect::<Vec<String>>()
-    });
+    let outputs = par_map(
+        "lever_invariance::flags",
+        &items,
+        |&(i, flag)| {
+            (
+                rel(&known[i].path),
+                flag.unwrap_or("as written").to_string(),
+            )
+        },
+        |&(i, flag)| {
+            let k = &known[i];
+            let text = match flag {
+                None => k.text.clone(),
+                Some(f) => format!("{}{}", k.text, flipped(&k.resolved, f)),
+            };
+            k.questions
+                .iter()
+                .map(|(flags, mode)| printed(&k.path, &text, flags, *mode))
+                .collect::<Vec<String>>()
+        },
+    );
     let mut defaults: BTreeMap<usize, &Vec<String>> = BTreeMap::new();
     for (&(i, flag), out) in items.iter().zip(&outputs) {
         if flag.is_none() {
@@ -1030,7 +1056,11 @@ fn outcomes(s: &J) -> Vec<J> {
 fn no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r() {
     let files = programs();
     let compared = AtomicUsize::new(0);
-    let bad: Vec<String> = par_map(&files, |path| {
+    let bad: Vec<String> = par_map(
+        "lever_invariance::no_search",
+        &files,
+        |p| (rel(p), "--no-search".to_string()),
+        |path| {
         let at = path
             .strip_prefix(repo_root())
             .unwrap_or(path)

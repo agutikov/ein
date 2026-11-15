@@ -1269,140 +1269,147 @@ fn one_verdict_on_every_corpus_program() {
                 .to_string()
         })
         .collect();
-    let failures = std::sync::Mutex::new(Vec::<String>::new());
+    let failures = std::sync::Mutex::new(Vec::<(usize, String)>::new());
     let unread = std::sync::Mutex::new(Vec::<String>::new());
     let (checked, flagged, refused) = (
         std::sync::atomic::AtomicUsize::new(0),
         std::sync::atomic::AtomicUsize::new(0),
         std::sync::atomic::AtomicUsize::new(0),
     );
-    let jobs = std::thread::available_parallelism().map_or(1, |n| n.get().min(8));
-    std::thread::scope(|scope| {
-        for w in 0..jobs {
-            let (files, dir, tested) = (&files, &dir, &tested);
-            let (failures, checked, flagged, unread, refused) =
-                (&failures, &checked, &flagged, &unread, &refused);
-            scope.spawn(move || {
-                for (i, file) in files.iter().enumerate().skip(w).step_by(jobs) {
-                    let (a, b) = (
-                        dir.join(format!("{i}-m.json")),
-                        dir.join(format!("{i}-d.json")),
-                    );
-                    let asked = ein(&[
-                        "solve",
-                        file,
-                        "--monotone",
-                        "--json-summary",
-                        a.to_str().unwrap(),
-                    ]);
-                    if asked.code != 0 {
-                        // A file that does not load: no verdict to compare.
-                        // A refused one (M1e2 S1e2.2.5) is refused alike by
-                        // the read-out, with the same lines.
-                        if asked.err.starts_with("rule '") {
-                            let d = ein(&["solve", file, "--region-limit", "0"]);
-                            if (d.code, &d.err) != (asked.code, &asked.err) {
-                                failures.lock().expect("one writer at a time").push(format!(
+    // On the corpus sweeps' pool (M1f S1f.6.39; eight threads of its own until
+    // then, which listed its failures in the order they were found), a file a
+    // unit; each failure carries its file's index and the list is read in it.
+    let indexed: Vec<(usize, &String)> = files.iter().enumerate().collect();
+    ein_corpus::pool::map(
+        "region_modes::one_verdict",
+        &indexed,
+        |(_, file)| ((*file).clone(), "--monotone".to_string()),
+        |&(i, file)| {
+            {
+                let (a, b) = (
+                    dir.join(format!("{i}-m.json")),
+                    dir.join(format!("{i}-d.json")),
+                );
+                let asked = ein(&[
+                    "solve",
+                    file,
+                    "--monotone",
+                    "--json-summary",
+                    a.to_str().unwrap(),
+                ]);
+                if asked.code != 0 {
+                    // A file that does not load: no verdict to compare.
+                    // A refused one (M1e2 S1e2.2.5) is refused alike by
+                    // the read-out, with the same lines.
+                    if asked.err.starts_with("rule '") {
+                        let d = ein(&["solve", file, "--region-limit", "0"]);
+                        if (d.code, &d.err) != (asked.code, &asked.err) {
+                            failures.lock().expect("one writer at a time").push((
+                                i,
+                                format!(
                                     "{file}: `--monotone` refuses and the read-out exits {}: {}",
                                     d.code, d.err
-                                ));
-                            }
-                            refused.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                                ),
+                            ));
                         }
-                        continue;
+                        refused.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                     }
-                    let described = ein(&[
-                        "solve",
-                        file,
-                        "--region-limit",
-                        "0",
-                        "--region-budget",
-                        "1",
-                        "--json-summary",
-                        b.to_str().unwrap(),
-                    ]);
-                    // A refuted claim exits 1 and prints its read-out
-                    // whole (W28's witnesses, M1e2 S1e2.3.8), so it is read.
-                    if described.code != 0 && !described.out.contains("\n  lattice ") {
-                        // A read-out that errs prints none: a goal the
-                        // compiler rejected ended the run where a state is
-                        // answered from it (`read_out.rs`), and `--monotone`
-                        // answers no query; the loader refuses such a goal
-                        // since M1f S1f.5.21, so none does.
-                        unread
-                            .lock()
-                            .expect("one writer at a time")
-                            .push(file.clone());
-                        continue;
-                    }
-                    let mut bad = Vec::new();
-                    let monotone = line(&asked.out, "monotone").starts_with("yes");
-                    let Some(lattice) = described
-                        .out
-                        .lines()
-                        .find_map(|l| l.strip_prefix("  lattice "))
-                        .map(str::trim_start)
-                    else {
-                        failures.lock().expect("one writer at a time").push(format!(
+                    return;
+                }
+                let described = ein(&[
+                    "solve",
+                    file,
+                    "--region-limit",
+                    "0",
+                    "--region-budget",
+                    "1",
+                    "--json-summary",
+                    b.to_str().unwrap(),
+                ]);
+                // A refuted claim exits 1 and prints its read-out
+                // whole (W28's witnesses, M1e2 S1e2.3.8), so it is read.
+                if described.code != 0 && !described.out.contains("\n  lattice ") {
+                    // A read-out that errs prints none: a goal the
+                    // compiler rejected ended the run where a state is
+                    // answered from it (`read_out.rs`), and `--monotone`
+                    // answers no query; the loader refuses such a goal
+                    // since M1f S1f.5.21, so none does.
+                    unread
+                        .lock()
+                        .expect("one writer at a time")
+                        .push(file.clone());
+                    return;
+                }
+                let mut bad = Vec::new();
+                let monotone = line(&asked.out, "monotone").starts_with("yes");
+                let Some(lattice) = described
+                    .out
+                    .lines()
+                    .find_map(|l| l.strip_prefix("  lattice "))
+                    .map(str::trim_start)
+                else {
+                    failures.lock().expect("one writer at a time").push((
+                        i,
+                        format!(
                             "{file}: the read-out has no lattice row (exit {}): {}",
                             described.code, described.err
-                        ));
-                        continue;
-                    };
-                    if lattice.starts_with("monotone") != monotone {
-                        bad.push(format!(
-                            "verdict: `--monotone` {monotone}, lattice row `{lattice}`"
-                        ));
-                    }
-                    if !monotone {
-                        flagged.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                        let sites = line(&asked.out, "monotone").trim_start_matches("no — ");
-                        if !lattice
-                            .starts_with(&format!("not monotone: {sites} (the static check)"))
-                        {
-                            bad.push(format!("sites: `{sites}` against `{lattice}`"));
-                        }
-                    }
-                    if static_rows(&asked.out) != static_rows(&described.out) {
-                        bad.push(format!(
-                            "static rows:\n{}\nagainst\n{}",
-                            static_rows(&asked.out).join("\n"),
-                            static_rows(&described.out).join("\n")
-                        ));
-                    }
-                    let block = |p: &std::path::Path| -> serde_json::Value {
-                        let s: serde_json::Value =
-                            serde_json::from_str(&std::fs::read_to_string(p).expect("a summary"))
-                                .expect("JSON");
-                        let m = &s["monotonicity"];
-                        serde_json::json!([
-                            m["monotone"],
-                            m["sites"],
-                            m["assumes"],
-                            m["cycles"],
-                            m["order"]
-                        ])
-                    };
-                    if block(&a) != block(&b) {
-                        bad.push("the summaries' monotonicity blocks differ".to_string());
-                    }
-                    if let Some(&m) = tested.get(file.as_str())
-                        && m != monotone
-                    {
-                        bad.push(format!("`ein test`'s row says monotone = {m}"));
-                    }
-                    checked.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    if !bad.is_empty() {
-                        failures
-                            .lock()
-                            .expect("one writer at a time")
-                            .push(format!("{file}: {}", bad.join("; ")));
+                        ),
+                    ));
+                    return;
+                };
+                if lattice.starts_with("monotone") != monotone {
+                    bad.push(format!(
+                        "verdict: `--monotone` {monotone}, lattice row `{lattice}`"
+                    ));
+                }
+                if !monotone {
+                    flagged.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    let sites = line(&asked.out, "monotone").trim_start_matches("no — ");
+                    if !lattice.starts_with(&format!("not monotone: {sites} (the static check)")) {
+                        bad.push(format!("sites: `{sites}` against `{lattice}`"));
                     }
                 }
-            });
-        }
-    });
-    let failures = failures.into_inner().expect("joined");
+                if static_rows(&asked.out) != static_rows(&described.out) {
+                    bad.push(format!(
+                        "static rows:\n{}\nagainst\n{}",
+                        static_rows(&asked.out).join("\n"),
+                        static_rows(&described.out).join("\n")
+                    ));
+                }
+                let block = |p: &std::path::Path| -> serde_json::Value {
+                    let s: serde_json::Value =
+                        serde_json::from_str(&std::fs::read_to_string(p).expect("a summary"))
+                            .expect("JSON");
+                    let m = &s["monotonicity"];
+                    serde_json::json!([
+                        m["monotone"],
+                        m["sites"],
+                        m["assumes"],
+                        m["cycles"],
+                        m["order"]
+                    ])
+                };
+                if block(&a) != block(&b) {
+                    bad.push("the summaries' monotonicity blocks differ".to_string());
+                }
+                if let Some(&m) = tested.get(file.as_str())
+                    && m != monotone
+                {
+                    bad.push(format!("`ein test`'s row says monotone = {m}"));
+                }
+                checked.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                if !bad.is_empty() {
+                    failures
+                        .lock()
+                        .expect("one writer at a time")
+                        .push((i, format!("{file}: {}", bad.join("; "))));
+                }
+            }
+        },
+    );
+    let mut failures = failures.into_inner().expect("joined");
+    failures.sort();
+    let failures: Vec<String> = failures.into_iter().map(|(_, f)| f).collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     let mut unread = unread.into_inner().expect("joined");
     unread.sort();

@@ -36,8 +36,6 @@
 //! ```
 
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 use ein_corpus::{register, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Route, Which};
@@ -156,65 +154,75 @@ fn the_state_route_and_route_1_print_one_read_out() {
     } else {
         vec![ein_infer::downset::DEFAULT_BUDGET]
     };
-    let next = AtomicUsize::new(0);
-    let bad: Mutex<Vec<String>> = Mutex::new(Vec::new());
-    let compared = AtomicUsize::new(0);
-    let workers = std::thread::available_parallelism().map_or(1, |n| n.get().min(8));
-    std::thread::scope(|s| {
-        for _ in 0..workers {
-            s.spawn(|| {
-                loop {
-                    let i = next.fetch_add(1, Ordering::Relaxed);
-                    let Some(path) = files.get(i) else { break };
-                    let rel = path
-                        .strip_prefix(repo_root())
-                        .unwrap_or(path)
-                        .display()
-                        .to_string();
-                    for &budget in &budgets {
-                        let Some(one) = printed(path, Route::DownSet, budget) else {
-                            break;
-                        };
-                        if !one.monotone {
-                            break;
-                        }
-                        if !one.exhausted {
-                            continue;
-                        }
-                        let Some(states) = printed(path, Route::States, budget) else {
-                            bad.lock().unwrap().push(format!(
-                                "{rel}: route 1 describes R and the state route does not run"
-                            ));
-                            break;
-                        };
-                        compared.fetch_add(1, Ordering::Relaxed);
-                        let mut b = bad.lock().unwrap();
-                        if !states.exhausted {
-                            b.push(format!(
-                                "{rel}: route 1 exhausts R at --region-budget {budget} and the \
-                                 state route does not"
-                            ));
-                        } else if one.text != states.text {
-                            b.push(format!(
-                                "{rel}: {}",
-                                first_difference(&one.text, &states.text)
-                            ));
-                        }
-                        if states.saturations > one.saturations || states.facts > one.facts {
-                            b.push(format!(
-                                "{rel}: the state route did more, {} saturations and {} facts \
-                                 against route 1's {} and {}",
-                                states.saturations, states.facts, one.saturations, one.facts
-                            ));
-                        }
-                        break;
-                    }
+    // On the corpus sweeps' pool (M1f S1f.6.39; eight threads of its own
+    // until then, its failures in the order they finished): one unit per
+    // program, the failures read back in the programs' order.
+    let found = ein_corpus::pool::map(
+        "route_invariance",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut b: Vec<String> = Vec::new();
+            let mut compared = 0usize;
+            let rel = path
+                .strip_prefix(repo_root())
+                .unwrap_or(path)
+                .display()
+                .to_string();
+            for &budget in &budgets {
+                let Some(one) = printed(path, Route::DownSet, budget) else {
+                    break;
+                };
+                if !one.monotone {
+                    break;
                 }
-            });
-        }
-    });
-    let bad = bad.into_inner().unwrap();
-    let compared = compared.into_inner();
+                if !one.exhausted {
+                    continue;
+                }
+                let Some(states) = printed(path, Route::States, budget) else {
+                    b.push(format!(
+                        "{rel}: route 1 describes R and the state route does not run"
+                    ));
+                    break;
+                };
+                compared += 1;
+                if !states.exhausted {
+                    b.push(format!(
+                        "{rel}: route 1 exhausts R at --region-budget {budget} and the \
+                         state route does not"
+                    ));
+                } else if one.text != states.text {
+                    b.push(format!(
+                        "{rel}: {}",
+                        first_difference(&one.text, &states.text)
+                    ));
+                }
+                if states.saturations > one.saturations || states.facts > one.facts {
+                    b.push(format!(
+                        "{rel}: the state route did more, {} saturations and {} facts \
+                         against route 1's {} and {}",
+                        states.saturations, states.facts, one.saturations, one.facts
+                    ));
+                }
+                break;
+            }
+            (b, compared)
+        },
+    );
+    let mut bad: Vec<String> = Vec::new();
+    let mut compared = 0usize;
+    for (b, n) in found {
+        bad.extend(b);
+        compared += n;
+    }
     eprintln!("{compared} programs compared");
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     // 2026-11-03: 171 monotone programs route 1 describes at the default

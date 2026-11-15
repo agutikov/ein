@@ -619,17 +619,32 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
 
 #[test]
 fn every_arithmetic_program_is_search_free() {
-    let scratch = Scratch::new("ein-arith-search-free");
     let programs = programs();
-    for path in &programs {
-        let text = std::fs::read_to_string(path).expect("readable");
-        assert!(
-            THEORIES.iter().any(|t| text.contains(t)),
-            "{}: under an arithmetic root and imports no theory of the calculator",
-            path.display()
-        );
-        search_free(path, &text, &scratch, text.contains(DEAD));
-    }
+    let root = repo_root();
+    // On the corpus sweeps' pool (M1f S1f.6.39), a program a unit, each with
+    // a scratch of its own: the files are named by the program's stem, and
+    // two programs of one stem in two directories took turns at one name
+    // while the loop was serial.
+    ein_corpus::pool::map(
+        "arith_search_free",
+        &programs,
+        |p| {
+            (
+                p.strip_prefix(&root).unwrap_or(p).display().to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let scratch = Scratch::new("ein-arith-search-free");
+            let text = std::fs::read_to_string(path).expect("readable");
+            assert!(
+                THEORIES.iter().any(|t| text.contains(t)),
+                "{}: under an arithmetic root and imports no theory of the calculator",
+                path.display()
+            );
+            search_free(path, &text, &scratch, text.contains(DEAD));
+        },
+    );
 }
 
 /// `utils/gen_arith_examples.py --check`, run here so that it is in the

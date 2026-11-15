@@ -298,202 +298,233 @@ fn the_description_is_coherent_on_every_corpus_cell() {
     ];
 
     let mut rooted = 0usize;
-    for path in &corpus_files() {
-        let rel = path.strip_prefix(repo_root()).unwrap_or(path);
-        let root = root_of(path);
-        for (regime, mode) in REGIMES {
-            let Some(s) = summary(path, mode, BUDGET) else {
-                continue;
-            };
-            cells += 1;
-            let at = format!("{} [{regime}]", rel.display());
-            let mut check = |name: &str, ok: bool| {
-                if !ok {
-                    bad.push(format!("{at}: {name}"));
-                }
-            };
-            let r = &s["region"];
-            let states = r["states"].as_array().cloned().unwrap_or_default();
-            let listed = states.iter().filter(|x| x["listed"] == true).count() as i64;
-            let exhausted = r["exhausted"] == true;
-
-            // ── what root owes (M1f S1f.6.26, E-19) ────────────────────
-            // The instances are named where the count is stated, one a
-            // count: on a description, and `null` with it under a mode.
-            check(
-                "region.root_owed names region.root_owes instances, and is null with it",
-                match (&r["root_owes"], &r["root_owed"]) {
-                    (J::Null, J::Null) => true,
-                    (n, J::Array(a)) => {
-                        n.as_u64() == Some(a.len() as u64) && a.iter().all(J::is_string)
-                    }
-                    _ => false,
-                },
-            );
-            check(
-                "a root in R owes nothing",
-                r["root"] != "in-r" || r["root_owes"] == 0,
-            );
-
-            // ── what a description of R is made of ─────────────────────
-            if regime == "describe" && exhausted {
-                described += 1;
-                let (k_s, k_c) = (u(&s, "region.k_s"), u(&s, "region.k_c"));
-                check("k_c >= k_s", k_c >= k_s);
-                check("one state per k_s", states.len() as i64 == k_s);
-                check("an exhausted description lists every state", listed == k_s);
-                check(
-                    "R is empty exactly when k_s = 0",
-                    (k_s == 0) == !r["empty"].is_null(),
-                );
-                check(
-                    "R is empty of the dead kind exactly when root is dead",
-                    (r["empty"] == "dead") == (r["root"] == "dead"),
-                );
-                if k_s > 0 {
-                    let (mn, mx) = (
-                        u(&s, "region.minimal.states"),
-                        u(&s, "region.maximal.states"),
-                    );
-                    check("each line holds a state, and no more than R", {
-                        (1..=k_s).contains(&mn) && (1..=k_s).contains(&mx)
-                    });
-                    check(
-                        "the components sum to k_c",
-                        r["components"].as_array().map(|c| {
-                            c.iter()
-                                .filter_map(J::as_i64)
-                                .fold(0i64, i64::saturating_add)
-                        }) == Some(k_c),
-                    );
-                    check(
-                        "∅ in R makes the minimal line {∅}",
-                        r["root"] != "in-r" || mn == 1,
-                    );
-                    let merged = states
-                        .iter()
-                        .filter(|x| x["commitments"].as_i64().unwrap_or(1) > 1)
-                        .count() as i64;
-                    check(
-                        "merged counts the states reached by more than one commitment",
-                        u(&s, "region.merged.states") == merged,
-                    );
-                    // A count is reported up to 2^63 − 1, `i64::MAX`, which
-                    // reads *or more* (M1f S1f.6.25, W92): the sums stop there.
-                    let commitments: i64 = states
-                        .iter()
-                        .filter_map(|x| x["commitments"].as_i64())
-                        .fold(0i64, i64::saturating_add);
-                    check("the states' commitments sum to k_c", commitments == k_c);
-                }
-            }
-            // ── what a mode answered ───────────────────────────────────
-            match regime {
-                "n3" => check("-n 3 lists at most three states", listed <= 3),
-                "single" => {
-                    check("--single lists at most two states", listed <= 2);
-                    check(
-                        "a decided --single carries its word",
-                        !exhausted || s["verdict"].is_object(),
-                    );
-                }
-                "maximal" | "minimal" => {
-                    let line = if regime == "maximal" {
-                        "maximal"
-                    } else {
-                        "minimal"
+    // One unit per program on the pool (M1f S1f.6.39), folded in order.
+    let files = corpus_files();
+    let found = ein_corpus::pool::map(
+        "summary_properties",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut bad: Vec<String> = Vec::new();
+            let (mut cells, mut described, mut rooted) = (0usize, 0usize, 0usize);
+            let mut peak: std::collections::BTreeMap<&str, i64> = Default::default();
+            {
+                let rel = path.strip_prefix(repo_root()).unwrap_or(path);
+                let root = root_of(path);
+                for (regime, mode) in REGIMES {
+                    let Some(s) = summary(path, mode, BUDGET) else {
+                        continue;
                     };
-                    // Its listed states, and only those: past `--region-limit`
-                    // on a flagged program a line mode lists the line members
-                    // describe certifies and reports the other members met
-                    // unlisted, on no line (M1e2 S1e2.2.26, W27). Until then
-                    // this held every state on the line, which was the defect.
+                    cells += 1;
+                    let at = format!("{} [{regime}]", rel.display());
+                    let mut check = |name: &str, ok: bool| {
+                        if !ok {
+                            bad.push(format!("{at}: {name}"));
+                        }
+                    };
+                    let r = &s["region"];
+                    let states = r["states"].as_array().cloned().unwrap_or_default();
+                    let listed = states.iter().filter(|x| x["listed"] == true).count() as i64;
+                    let exhausted = r["exhausted"] == true;
+
+                    // ── what root owes (M1f S1f.6.26, E-19) ────────────────────
+                    // The instances are named where the count is stated, one a
+                    // count: on a description, and `null` with it under a mode.
                     check(
-                        "a line mode's listed states are on its line, and the others on none",
-                        states.iter().all(|x| {
-                            x["lines"]
-                                .as_array()
-                                .is_some_and(|l| l.iter().any(|w| w == line))
-                                == (x["listed"] == true)
-                        }),
+                        "region.root_owed names region.root_owes instances, and is null with it",
+                        match (&r["root_owes"], &r["root_owed"]) {
+                            (J::Null, J::Null) => true,
+                            (n, J::Array(a)) => {
+                                n.as_u64() == Some(a.len() as u64) && a.iter().all(J::is_string)
+                            }
+                            _ => false,
+                        },
                     );
-                }
-                _ => {}
-            }
-            // ── the queries, over the states the run reached ───────────
-            for q in s["queries"].as_array().cloned().unwrap_or_default() {
-                let classes = q["classes"].as_array().cloned().unwrap_or_default();
-                let mut seen: Vec<i64> = classes
-                    .iter()
-                    .flat_map(|c| {
-                        c["states"]
-                            .as_array()
-                            .cloned()
-                            .unwrap_or_default()
-                            .into_iter()
-                            .filter_map(|i| i.as_i64())
-                    })
-                    .collect();
-                let n = seen.len();
-                seen.sort_unstable();
-                seen.dedup();
-                check("a state is in one class of a query", seen.len() == n);
-                if q["over"] == "all" && q["exact"] == true && regime == "describe" {
                     check(
-                        "the classes over all of R partition it",
-                        n as i64 == states.len() as i64,
+                        "a root in R owes nothing",
+                        r["root"] != "in-r" || r["root_owes"] == 0,
                     );
+
+                    // ── what a description of R is made of ─────────────────────
+                    if regime == "describe" && exhausted {
+                        described += 1;
+                        let (k_s, k_c) = (u(&s, "region.k_s"), u(&s, "region.k_c"));
+                        check("k_c >= k_s", k_c >= k_s);
+                        check("one state per k_s", states.len() as i64 == k_s);
+                        check("an exhausted description lists every state", listed == k_s);
+                        check(
+                            "R is empty exactly when k_s = 0",
+                            (k_s == 0) == !r["empty"].is_null(),
+                        );
+                        check(
+                            "R is empty of the dead kind exactly when root is dead",
+                            (r["empty"] == "dead") == (r["root"] == "dead"),
+                        );
+                        if k_s > 0 {
+                            let (mn, mx) = (
+                                u(&s, "region.minimal.states"),
+                                u(&s, "region.maximal.states"),
+                            );
+                            check("each line holds a state, and no more than R", {
+                                (1..=k_s).contains(&mn) && (1..=k_s).contains(&mx)
+                            });
+                            check(
+                                "the components sum to k_c",
+                                r["components"].as_array().map(|c| {
+                                    c.iter()
+                                        .filter_map(J::as_i64)
+                                        .fold(0i64, i64::saturating_add)
+                                }) == Some(k_c),
+                            );
+                            check(
+                                "∅ in R makes the minimal line {∅}",
+                                r["root"] != "in-r" || mn == 1,
+                            );
+                            let merged = states
+                                .iter()
+                                .filter(|x| x["commitments"].as_i64().unwrap_or(1) > 1)
+                                .count() as i64;
+                            check(
+                                "merged counts the states reached by more than one commitment",
+                                u(&s, "region.merged.states") == merged,
+                            );
+                            // A count is reported up to 2^63 − 1, `i64::MAX`, which
+                            // reads *or more* (M1f S1f.6.25, W92): the sums stop there.
+                            let commitments: i64 = states
+                                .iter()
+                                .filter_map(|x| x["commitments"].as_i64())
+                                .fold(0i64, i64::saturating_add);
+                            check("the states' commitments sum to k_c", commitments == k_c);
+                        }
+                    }
+                    // ── what a mode answered ───────────────────────────────────
+                    match regime {
+                        "n3" => check("-n 3 lists at most three states", listed <= 3),
+                        "single" => {
+                            check("--single lists at most two states", listed <= 2);
+                            check(
+                                "a decided --single carries its word",
+                                !exhausted || s["verdict"].is_object(),
+                            );
+                        }
+                        "maximal" | "minimal" => {
+                            let line = if regime == "maximal" {
+                                "maximal"
+                            } else {
+                                "minimal"
+                            };
+                            // Its listed states, and only those: past `--region-limit`
+                            // on a flagged program a line mode lists the line members
+                            // describe certifies and reports the other members met
+                            // unlisted, on no line (M1e2 S1e2.2.26, W27). Until then
+                            // this held every state on the line, which was the defect.
+                            check(
+                                "a line mode's listed states are on its line, and the others on none",
+                                states.iter().all(|x| {
+                                    x["lines"]
+                                        .as_array()
+                                        .is_some_and(|l| l.iter().any(|w| w == line))
+                                        == (x["listed"] == true)
+                                }),
+                            );
+                        }
+                        _ => {}
+                    }
+                    // ── the queries, over the states the run reached ───────────
+                    for q in s["queries"].as_array().cloned().unwrap_or_default() {
+                        let classes = q["classes"].as_array().cloned().unwrap_or_default();
+                        let mut seen: Vec<i64> = classes
+                            .iter()
+                            .flat_map(|c| {
+                                c["states"]
+                                    .as_array()
+                                    .cloned()
+                                    .unwrap_or_default()
+                                    .into_iter()
+                                    .filter_map(|i| i.as_i64())
+                            })
+                            .collect();
+                        let n = seen.len();
+                        seen.sort_unstable();
+                        seen.dedup();
+                        check("a state is in one class of a query", seen.len() == n);
+                        if q["over"] == "all" && q["exact"] == true && regime == "describe" {
+                            check(
+                                "the classes over all of R partition it",
+                                n as i64 == states.len() as i64,
+                            );
+                        }
+                    }
+                    // ── the work, root, and the config ─────────────────────────
+                    check("a run saturates", u(&s, "work.saturations") >= 1);
+                    let by_rel: i64 = s["root"]["facts_by_relation"]
+                        .as_object()
+                        .map(|m| m.values().filter_map(J::as_i64).sum())
+                        .unwrap_or(-1);
+                    check(
+                        "root.facts == sum(root.facts_by_relation)",
+                        u(&s, "root.facts") == by_rel,
+                    );
+                    let filtered: i64 = s["root"]["hypgen"]["filtered"]
+                        .as_object()
+                        .map(|m| m.values().filter_map(J::as_i64).sum())
+                        .unwrap_or(0);
+                    check(
+                        "hypgen.raw == emitted + sum(filtered)",
+                        u(&s, "root.hypgen.raw") == u(&s, "root.hypgen.emitted") + filtered,
+                    );
+                    // ── the root block against what it describes (S1e2.3.1) ─────
+                    check(
+                        "root.hypgen.emitted == region.universe.candidates",
+                        u(&s, "root.hypgen.emitted") == u(&s, "region.universe.candidates"),
+                    );
+                    if let Some((facts, h, mono)) = &root {
+                        rooted += 1;
+                        check(
+                            "root.facts is root's fixpoint, as every route starts from it",
+                            u(&s, "root.facts") == *facts,
+                        );
+                        check(
+                            "root.hypgen.emitted is H, as every route starts from it",
+                            u(&s, "root.hypgen.emitted") == *h,
+                        );
+                        check(
+                            "--monotone's root block is the region run's",
+                            s["root"] == *mono,
+                        );
+                    }
+                    let keys: Vec<&str> = s["config"]
+                        .as_object()
+                        .map(|m| m.keys().map(String::as_str).collect())
+                        .unwrap_or_default();
+                    check("the config block reports every flag", keys == CONFIG_KEYS);
+                    for name in counters {
+                        let v = u(&s, name);
+                        check(&format!("{name} is not negative"), v >= 0);
+                        let e = peak.entry(name).or_insert(0);
+                        *e = (*e).max(v);
+                    }
                 }
             }
-            // ── the work, root, and the config ─────────────────────────
-            check("a run saturates", u(&s, "work.saturations") >= 1);
-            let by_rel: i64 = s["root"]["facts_by_relation"]
-                .as_object()
-                .map(|m| m.values().filter_map(J::as_i64).sum())
-                .unwrap_or(-1);
-            check(
-                "root.facts == sum(root.facts_by_relation)",
-                u(&s, "root.facts") == by_rel,
-            );
-            let filtered: i64 = s["root"]["hypgen"]["filtered"]
-                .as_object()
-                .map(|m| m.values().filter_map(J::as_i64).sum())
-                .unwrap_or(0);
-            check(
-                "hypgen.raw == emitted + sum(filtered)",
-                u(&s, "root.hypgen.raw") == u(&s, "root.hypgen.emitted") + filtered,
-            );
-            // ── the root block against what it describes (S1e2.3.1) ─────
-            check(
-                "root.hypgen.emitted == region.universe.candidates",
-                u(&s, "root.hypgen.emitted") == u(&s, "region.universe.candidates"),
-            );
-            if let Some((facts, h, mono)) = &root {
-                rooted += 1;
-                check(
-                    "root.facts is root's fixpoint, as every route starts from it",
-                    u(&s, "root.facts") == *facts,
-                );
-                check(
-                    "root.hypgen.emitted is H, as every route starts from it",
-                    u(&s, "root.hypgen.emitted") == *h,
-                );
-                check(
-                    "--monotone's root block is the region run's",
-                    s["root"] == *mono,
-                );
-            }
-            let keys: Vec<&str> = s["config"]
-                .as_object()
-                .map(|m| m.keys().map(String::as_str).collect())
-                .unwrap_or_default();
-            check("the config block reports every flag", keys == CONFIG_KEYS);
-            for name in counters {
-                let v = u(&s, name);
-                check(&format!("{name} is not negative"), v >= 0);
-                let e = peak.entry(name).or_insert(0);
-                *e = (*e).max(v);
-            }
+            (bad, cells, described, rooted, peak)
+        },
+    );
+    for (b, c, d, r, p) in found {
+        bad.extend(b);
+        cells += c;
+        described += d;
+        rooted += r;
+        for (name, v) in p {
+            let e = peak.entry(name).or_insert(0);
+            *e = (*e).max(v);
         }
     }
 

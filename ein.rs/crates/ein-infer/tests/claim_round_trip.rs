@@ -108,73 +108,104 @@ fn every_printed_region_holds_as_its_own_claim() {
     let mut checked = 0usize;
     let mut kinds = [0usize; 3]; // (false), (region (owing …)), (region …)
     let mut bad = Vec::new();
-    for path in corpus_files() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .display()
-            .to_string();
-        if rel.contains("/broken/") {
-            continue;
-        }
-        let Ok(src) = std::fs::read_to_string(&path) else {
-            continue;
-        };
-        let Some((mut kb, mut terms, ast)) = loaded(&src, path.parent()) else {
-            continue;
-        };
-        // A program that states its own claim is held by `ein test` already.
-        if kb
-            .program()
-            .solve()
-            .is_some_and(|s| ein_infer::solve_value(&ast, s, "expect").is_some())
-        {
-            continue;
-        }
-        let printed = match claim::print(&mut kb, &mut terms, &ast, &opts) {
-            Ok(Some(p)) => p,
-            Ok(None) => continue, // no route described R
-            Err(_) => continue,   // the program does not compile or saturate
-        };
-        let spliced = match solve_span(&src) {
-            Some((_, close)) => format!("{} :expect {printed}{}", &src[..close], &src[close..]),
-            None => format!("{src}\n(solve :expect {printed})\n"),
-        };
-        let Some((mut kb, mut terms, ast)) = loaded(&spliced, path.parent()) else {
-            if !DO_NOT_READ_BACK.contains(&rel.as_str()) {
-                bad.push(format!(
-                    "{rel}: the printed claim does not load:\n  {printed}"
-                ));
-            }
-            continue;
-        };
-        if DO_NOT_READ_BACK.contains(&rel.as_str()) {
-            bad.push(format!(
-                "{rel}: listed as not reading back, and its printed claim loads — \
+    // On the corpus sweeps' pool (M1f S1f.6.39), a program a unit, its
+    // findings read back in order.
+    let files = corpus_files();
+    let found = ein_corpus::pool::map(
+        "claim_round_trip",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let mut checked = 0usize;
+            let mut kinds = [0usize; 3];
+            let mut bad: Vec<String> = Vec::new();
+            'unit: {
+                let rel = path
+                    .strip_prefix(repo_root())
+                    .unwrap_or(path)
+                    .display()
+                    .to_string();
+                if rel.contains("/broken/") {
+                    break 'unit;
+                }
+                let Ok(src) = std::fs::read_to_string(path) else {
+                    break 'unit;
+                };
+                let Some((mut kb, mut terms, ast)) = loaded(&src, path.parent()) else {
+                    break 'unit;
+                };
+                // A program that states its own claim is held by `ein test` already.
+                if kb
+                    .program()
+                    .solve()
+                    .is_some_and(|s| ein_infer::solve_value(&ast, s, "expect").is_some())
+                {
+                    break 'unit;
+                }
+                let printed = match claim::print(&mut kb, &mut terms, &ast, &opts) {
+                    Ok(Some(p)) => p,
+                    Ok(None) => break 'unit, // no route described R
+                    Err(_) => break 'unit,   // the program does not compile or saturate
+                };
+                let spliced = match solve_span(&src) {
+                    Some((_, close)) => {
+                        format!("{} :expect {printed}{}", &src[..close], &src[close..])
+                    }
+                    None => format!("{src}\n(solve :expect {printed})\n"),
+                };
+                let Some((mut kb, mut terms, ast)) = loaded(&spliced, path.parent()) else {
+                    if !DO_NOT_READ_BACK.contains(&rel.as_str()) {
+                        bad.push(format!(
+                            "{rel}: the printed claim does not load:\n  {printed}"
+                        ));
+                    }
+                    break 'unit;
+                };
+                if DO_NOT_READ_BACK.contains(&rel.as_str()) {
+                    bad.push(format!(
+                        "{rel}: listed as not reading back, and its printed claim loads — \
                  its row is fixed; take it off `DO_NOT_READ_BACK`:\n  {printed}"
-            ));
+                    ));
+                }
+                let node = kb
+                    .program()
+                    .solve()
+                    .and_then(|s| ein_infer::solve_value(&ast, s, "expect"))
+                    .expect("spliced");
+                let c = ein_ir::claim::parse(&ast, node).expect("loaded");
+                let got = claim::check(&mut kb, &mut terms, &ast, &c, &opts).expect("checks");
+                checked += 1;
+                kinds[if printed == "(false)" {
+                    0
+                } else if printed.starts_with("(region (owing") {
+                    1
+                } else {
+                    2
+                }] += 1;
+                if got.report.outcome != Outcome::Held {
+                    bad.push(format!(
+                        "{rel}: its printed region does not hold:\n  {printed}\n  {}",
+                        got.report.lines.join("\n  ")
+                    ));
+                }
+            }
+            (checked, kinds, bad)
+        },
+    );
+    for (c, k, b) in found {
+        checked += c;
+        for (x, y) in kinds.iter_mut().zip(k) {
+            *x += y;
         }
-        let node = kb
-            .program()
-            .solve()
-            .and_then(|s| ein_infer::solve_value(&ast, s, "expect"))
-            .expect("spliced");
-        let c = ein_ir::claim::parse(&ast, node).expect("loaded");
-        let got = claim::check(&mut kb, &mut terms, &ast, &c, &opts).expect("checks");
-        checked += 1;
-        kinds[if printed == "(false)" {
-            0
-        } else if printed.starts_with("(region (owing") {
-            1
-        } else {
-            2
-        }] += 1;
-        if got.report.outcome != Outcome::Held {
-            bad.push(format!(
-                "{rel}: its printed region does not hold:\n  {printed}\n  {}",
-                got.report.lines.join("\n  ")
-            ));
-        }
+        bad.extend(b);
     }
     assert!(
         bad.is_empty(),

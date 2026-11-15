@@ -688,12 +688,32 @@ fn shard(k: usize) {
         .into_iter()
         .filter(|e| slow || !e.heavy_dump)
         .collect();
-    for (i, e) in selected.iter().enumerate() {
-        if i % SHARDS != k {
-            continue;
-        }
-        let dir = root.join(format!("e{i}"));
-        let wrote = check(&e.path, &dir, &mut bad, &mut eager, &mut held);
+    // The shard's entries on the corpus sweeps' pool (M1f S1f.6.39), which
+    // the eight shards share, each entry with its own tallies, folded back in
+    // the entries' order.
+    let mine: Vec<(usize, &ein_corpus::Entry)> = selected
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| i % SHARDS == k)
+        .map(|(i, e)| (i, *e))
+        .collect();
+    let done = ein_corpus::pool::map(
+        "answer_round_trip",
+        &mine,
+        |(_, e)| (e.path.clone(), "--dump-answer".to_string()),
+        |&(i, e)| {
+            let dir = root.join(format!("e{i}"));
+            let (mut bad, mut eager, mut held) = (Vec::new(), 0, Held::default());
+            let wrote = check(&e.path, &dir, &mut bad, &mut eager, &mut held);
+            // A dump past the limit is tens of thousands of files.
+            let _ = std::fs::remove_dir_all(&dir);
+            (wrote, bad, eager, held)
+        },
+    );
+    for ((_, e), (wrote, b, n, h)) in mine.iter().zip(done) {
+        bad.extend(b);
+        eager += n;
+        held.add(h);
         bad.extend(heavy_dump_flag(e, wrote));
         match wrote {
             Some(n) => {
@@ -706,8 +726,6 @@ fn shard(k: usize) {
             None if list => eprintln!("  none {}", e.path),
             None => {}
         }
-        // A dump past the limit is tens of thousands of files.
-        let _ = std::fs::remove_dir_all(&dir);
     }
     assert!(
         programs > 20 && states > programs && eager > 0 && held.dead > 0 && held.not_dead > 0,

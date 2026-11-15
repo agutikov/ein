@@ -108,8 +108,12 @@ fn files() -> Vec<PathBuf> {
     files
 }
 
-fn jobs() -> usize {
-    std::thread::available_parallelism().map_or(1, |n| n.get().min(8))
+/// A program's path from the repo root, for the pool's instrument.
+fn rel_of(p: &Path) -> String {
+    p.strip_prefix(ein_corpus::repo_root())
+        .unwrap_or(p)
+        .display()
+        .to_string()
 }
 
 /// What a check found on one program: the failures, how many cores were
@@ -270,26 +274,16 @@ fn check(path: &Path) -> Option<Checked> {
 #[test]
 fn every_core_names_its_commitment_and_derives_its_contradiction() {
     let files = files();
-    let next = std::sync::atomic::AtomicUsize::new(0);
-    let results: std::sync::Mutex<Vec<(usize, Option<Checked>)>> =
-        std::sync::Mutex::new(Vec::new());
-    std::thread::scope(|scope| {
-        for _ in 0..jobs() {
-            scope.spawn(|| {
-                loop {
-                    let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    let Some(path) = files.get(i) else { break };
-                    let got = check(path);
-                    results.lock().expect("no checker panicked").push((i, got));
-                }
-            });
-        }
-    });
-    let mut results = results.into_inner().expect("no checker panicked");
-    results.sort_by_key(|(i, _)| *i);
+    // On the corpus sweeps' pool (M1f S1f.6.39; its own threads until then).
+    let results = ein_corpus::pool::map(
+        "corpus_cores::check",
+        &files,
+        |p| (rel_of(p), String::new()),
+        |p| check(p),
+    );
     let mut failures: Vec<String> = Vec::new();
     let (mut programs, mut cores, mut cube) = (0usize, 0usize, 0usize);
-    for (_, got) in results {
+    for got in results {
         let Some((bad, n, c)) = got else { continue };
         programs += 1;
         cores += n;
@@ -802,26 +796,16 @@ fn statuses(path: &Path) -> Option<Statuses> {
 #[test]
 fn no_core_is_printed_unqualified_from_a_cut_search() {
     let files = files();
-    let next = std::sync::atomic::AtomicUsize::new(0);
-    let results: Mutex<Vec<(usize, Option<Statuses>)>> = Mutex::new(Vec::new());
-    std::thread::scope(|scope| {
-        for _ in 0..jobs() {
-            scope.spawn(|| {
-                loop {
-                    let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    let Some(path) = files.get(i) else { break };
-                    let got = statuses(path);
-                    results.lock().expect("no checker panicked").push((i, got));
-                }
-            });
-        }
-    });
-    let mut results = results.into_inner().expect("no checker panicked");
-    results.sort_by_key(|(i, _)| *i);
+    let results = ein_corpus::pool::map(
+        "corpus_cores::statuses",
+        &files,
+        |p| (rel_of(p), String::new()),
+        |p| statuses(p),
+    );
     let mut failures: Vec<String> = Vec::new();
     let (mut programs, mut cores, mut cut, mut past_limit, mut two_rules) =
         (0usize, 0usize, 0usize, 0usize, 0usize);
-    for (_, got) in results {
+    for got in results {
         let Some((bad, n, c, k, t)) = got else {
             continue;
         };

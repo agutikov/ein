@@ -642,7 +642,9 @@ or by one of the two dev-only crates (`ein-corpus`, `ein-narration`, both
 | `EIN_ID_SEEDS` | how many interner permutations `id_order_invariance` sweeps, default 1; the dev host sets 8 (M1f S1f.5.27) | `ein-render/tests/id_order_invariance.rs` |
 | `EIN_ID_FILES` | point that sweep at a directory instead of the corpus — the fuzzer's seam | `ein-render/tests/id_order_invariance.rs` |
 | `EIN_ID_REPORT` | print the sweep's per-file report | `ein-render/tests/id_order_invariance.rs` |
-| `EIN_JOBS_SWEEP` | the job counts `jobs_invariance` runs, e.g. `2,4,8,16` | `ein-render/tests/jobs_invariance.rs` |
+| `EIN_JOBS_SWEEP` | the job counts `jobs_invariance` runs, e.g. `2,4,8,16`; each runs only the ops a job count reaches, against `corpus_shapes`' golden (M1f S1f.6.39) | `ein-render/tests/jobs_invariance.rs` |
+| `EIN_TEST_JOBS` | the corpus sweeps' worker count, default 16, never more than the machine's threads: the units of every pooled sweep, and `utils/stdlib_mutants.py`'s mutants at once. **No verdict depends on it** — the results are read back in the units' order, and a failure reads the same at any count (M1f S1f.6.39, `ein-corpus/src/pool.rs`'s tests) | `ein-corpus/src/pool.rs`; `utils/stdlib_mutants.py` |
+| `EIN_TEST_UNITS` | a file each pooled sweep appends one line per unit to — sweep, program, output, milliseconds, and at `EIN_TEST_JOBS=1` the unit's peak resident memory in kB: the instrument the sweeps' costs are read with (M1f S1f.6.39) | `ein-corpus/src/pool.rs` |
 | `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000, the per-commit tier's; the CI nightly sets 20 000 a seed and the dev host 1 000 000 (M1f S1f.5.27, `nightly_steps.rs`' `the_fuzzer_runs_at_each_tiers_budget`) | `ein-ir/tests/fuzz_properties.rs` |
 | `EIN_FUZZ_SEED` | moves that fuzzer's stream | `ein-ir/tests/fuzz_properties.rs` |
 | `EIN_NARRATION_STRICT` | `=1` runs the id-order, jobs and corpus-shape comparisons with no narration cut — a fork's derivation compared byte for byte, which is how the cut is measured | `ein-narration/src/lib.rs` |

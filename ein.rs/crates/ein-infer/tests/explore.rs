@@ -47,6 +47,14 @@ fn corpus_and_register() -> Vec<PathBuf> {
     files
 }
 
+/// A program's path from the repo root, as the failures name it.
+fn rel_of(path: &Path) -> String {
+    path.strip_prefix(repo_root())
+        .unwrap_or(path)
+        .to_string_lossy()
+        .to_string()
+}
+
 fn facts_text(kb: &Kb, terms: &Terms) -> BTreeSet<String> {
     kb.facts()
         .map(|f| ein_infer::events::sexpr(terms, f))
@@ -467,141 +475,165 @@ fn every_mode_is_the_oracle() {
         jobs: jobs(),
         ..region::Options::default()
     };
-    for path in corpus_and_register() {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
-            continue;
-        };
-        let out = region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {});
-        // A refusal is the whole answer, and every path gives it alike.
-        if let Err(ein_infer::SolveError::Refused(m)) = &out {
-            refused += 1;
-            for mode in cells(1) {
-                let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
-                match explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode)) {
-                    Err(ein_infer::SolveError::Refused(n)) if n == *m => {}
-                    other => failures.push(format!(
-                        "{rel} {mode:?}: the oracle refuses and the mode answers {:?}",
-                        other.map(|a| a.route)
-                    )),
-                }
-            }
-            continue;
-        }
-        let Ok(Outcome::Region(r)) = out else {
-            continue;
-        };
-        let root = facts_text(&kb, &terms);
-        let monotone = r.monotonicity.is_monotone();
-        // The cube's own description, on every program: a flagged one prints
-        // it, and the claim check reads it.
-        failures.extend(described_against(
-            &format!("{rel} the cube"),
-            &r,
-            &ein_infer::described::of_cube(&r),
-        ));
-        *counted
-            .entry(if monotone { "monotone" } else { "flagged" })
-            .or_default() += 1;
-        let k_s = part(&r, Which::All).classes.len();
-        // Describe's answer, unbudgeted and at the C3 budget, for `--count`'s
-        // to be held to.
-        let mut described: [Option<String>; 2] = [None, None];
-        for mode in cells(k_s) {
-            let mut opts = explore::Options::new(mode);
-            opts.jobs = jobs();
-            opts.budget = u64::MAX;
-            let (a, after) = ask(&path, &opts);
-            match mode.ask {
-                Ask::Describe if mode.which == Which::All => described[0] = Some(said(&a)),
-                Ask::Count if described[0].as_deref() != Some(said(&a).as_str()) => {
-                    failures.push(format!("{rel} --count: not describe's answer"));
-                }
-                _ => {}
-            }
-            if after != root {
-                failures.push(format!(
-                    "{rel} {mode:?}: root afterwards is not sat(program)"
-                ));
-            }
-            if a.route == explore::Route::DownSet && !monotone && !a.root_dead {
-                failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
-            }
-            // Each mode's route (S1e2.1c.4): a flagged program keeps the cube
-            // and its warning, but where its root is dead, which decides it
-            // (L0, a fork only adds: `explore::run` since the switch), and
-            // route 1 reads root alone, with the warning; a monotone one whose
-            // root is alive takes the state route for describe and the modes'
-            // routes over states otherwise, naming L5 exactly when the
-            // obligation tree used it. No program the oracle answers has a
-            // flagged dead root: W16's second-shape witnesses had one from
-            // their banking until W16's fix the same day (M1e2 S1e2.2.16), and
-            // *forbid* refuses them since. This expected the cube there until
-            // that banking.
-            let describe =
-                mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
-            let route_ok = if !monotone && a.root_dead {
-                a.route == explore::Route::DownSet && a.warning.is_some()
-            } else if !monotone {
-                a.route == explore::Route::Cube && a.warning.is_some()
-            } else if describe {
-                a.route == explore::Route::States
-            } else if a.root_dead {
-                a.route == explore::Route::DownSet
-            } else {
-                matches!(a.route, explore::Route::States | explore::Route::Tree)
-            };
-            if !route_ok {
-                failures.push(format!(
-                    "{rel} {mode:?}: route {:?} (warning {}) on a {} program",
-                    a.route,
-                    a.warning.is_some(),
-                    if monotone { "monotone" } else { "flagged" }
-                ));
-            }
-            let l5 = a.licences.contains(&explore::Licence::Exhaustive);
-            if l5 != (a.route == explore::Route::Tree) {
-                failures.push(format!(
-                    "{rel} {mode:?}: route {:?} with licences {:?}",
-                    a.route, a.licences
-                ));
-            }
-            *counted
-                .entry(if l5 { "tree" } else { "other" })
-                .or_default() += 1;
-            failures.extend(against(&rel, &r, &a, false));
-            failures.extend(empty_rule(&rel, &r, mode, &a));
-            if mode.which == Which::Minimal && r.in_r(0) {
-                *counted
-                    .entry(if monotone {
-                        "∅ rule, monotone"
-                    } else {
-                        "∅ rule, flagged"
-                    })
-                    .or_default() += 1;
-            }
-            // C3: a budget that stops many runs on the way. The cube is
-            // bounded by the limit and not by the budget, so a flagged
-            // program answers as above.
-            if monotone {
-                opts.budget = 8;
-                let (b, _) = ask(&path, &opts);
-                stopped += usize::from(b.stopped.is_some());
-                failures.extend(against(&rel, &r, &b, true));
-                failures.extend(empty_rule(&rel, &r, mode, &b));
-                match mode.ask {
-                    Ask::Describe if mode.which == Which::All => described[1] = Some(said(&b)),
-                    Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
-                        failures.push(format!("{rel} --count at budget 8: not describe's answer"));
+    // One unit per program on the pool (M1f S1f.6.39), each with its own
+    // tallies, folded back in the programs' order.
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "explore::every_mode_is_the_oracle",
+        &paths,
+        |p| (rel_of(p), String::new()),
+        |path| {
+            let mut failures: Vec<String> = Vec::new();
+            let mut counted: BTreeMap<&str, usize> = BTreeMap::new();
+            let mut stopped = 0usize;
+            let mut refused = 0usize;
+            'unit: {
+                let rel = rel_of(path);
+                let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                    break 'unit;
+                };
+                let out = region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {});
+                // A refusal is the whole answer, and every path gives it alike.
+                if let Err(ein_infer::SolveError::Refused(m)) = &out {
+                    refused += 1;
+                    for mode in cells(1) {
+                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
+                        match explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode))
+                        {
+                            Err(ein_infer::SolveError::Refused(n)) if n == *m => {}
+                            other => failures.push(format!(
+                                "{rel} {mode:?}: the oracle refuses and the mode answers {:?}",
+                                other.map(|a| a.route)
+                            )),
+                        }
                     }
-                    _ => {}
+                    break 'unit;
+                }
+                let Ok(Outcome::Region(r)) = out else {
+                    break 'unit;
+                };
+                let root = facts_text(&kb, &terms);
+                let monotone = r.monotonicity.is_monotone();
+                // The cube's own description, on every program: a flagged one prints
+                // it, and the claim check reads it.
+                failures.extend(described_against(
+                    &format!("{rel} the cube"),
+                    &r,
+                    &ein_infer::described::of_cube(&r),
+                ));
+                *counted
+                    .entry(if monotone { "monotone" } else { "flagged" })
+                    .or_default() += 1;
+                let k_s = part(&r, Which::All).classes.len();
+                // Describe's answer, unbudgeted and at the C3 budget, for `--count`'s
+                // to be held to.
+                let mut described: [Option<String>; 2] = [None, None];
+                for mode in cells(k_s) {
+                    let mut opts = explore::Options::new(mode);
+                    opts.jobs = jobs();
+                    opts.budget = u64::MAX;
+                    let (a, after) = ask(path, &opts);
+                    match mode.ask {
+                        Ask::Describe if mode.which == Which::All => described[0] = Some(said(&a)),
+                        Ask::Count if described[0].as_deref() != Some(said(&a).as_str()) => {
+                            failures.push(format!("{rel} --count: not describe's answer"));
+                        }
+                        _ => {}
+                    }
+                    if after != root {
+                        failures.push(format!(
+                            "{rel} {mode:?}: root afterwards is not sat(program)"
+                        ));
+                    }
+                    if a.route == explore::Route::DownSet && !monotone && !a.root_dead {
+                        failures.push(format!("{rel} {mode:?}: route 1 on a flagged program"));
+                    }
+                    // Each mode's route (S1e2.1c.4): a flagged program keeps the cube
+                    // and its warning, but where its root is dead, which decides it
+                    // (L0, a fork only adds: `explore::run` since the switch), and
+                    // route 1 reads root alone, with the warning; a monotone one whose
+                    // root is alive takes the state route for describe and the modes'
+                    // routes over states otherwise, naming L5 exactly when the
+                    // obligation tree used it. No program the oracle answers has a
+                    // flagged dead root: W16's second-shape witnesses had one from
+                    // their banking until W16's fix the same day (M1e2 S1e2.2.16), and
+                    // *forbid* refuses them since. This expected the cube there until
+                    // that banking.
+                    let describe =
+                        mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
+                    let route_ok = if !monotone && a.root_dead {
+                        a.route == explore::Route::DownSet && a.warning.is_some()
+                    } else if !monotone {
+                        a.route == explore::Route::Cube && a.warning.is_some()
+                    } else if describe {
+                        a.route == explore::Route::States
+                    } else if a.root_dead {
+                        a.route == explore::Route::DownSet
+                    } else {
+                        matches!(a.route, explore::Route::States | explore::Route::Tree)
+                    };
+                    if !route_ok {
+                        failures.push(format!(
+                            "{rel} {mode:?}: route {:?} (warning {}) on a {} program",
+                            a.route,
+                            a.warning.is_some(),
+                            if monotone { "monotone" } else { "flagged" }
+                        ));
+                    }
+                    let l5 = a.licences.contains(&explore::Licence::Exhaustive);
+                    if l5 != (a.route == explore::Route::Tree) {
+                        failures.push(format!(
+                            "{rel} {mode:?}: route {:?} with licences {:?}",
+                            a.route, a.licences
+                        ));
+                    }
+                    *counted
+                        .entry(if l5 { "tree" } else { "other" })
+                        .or_default() += 1;
+                    failures.extend(against(&rel, &r, &a, false));
+                    failures.extend(empty_rule(&rel, &r, mode, &a));
+                    if mode.which == Which::Minimal && r.in_r(0) {
+                        *counted
+                            .entry(if monotone {
+                                "∅ rule, monotone"
+                            } else {
+                                "∅ rule, flagged"
+                            })
+                            .or_default() += 1;
+                    }
+                    // C3: a budget that stops many runs on the way. The cube is
+                    // bounded by the limit and not by the budget, so a flagged
+                    // program answers as above.
+                    if monotone {
+                        opts.budget = 8;
+                        let (b, _) = ask(path, &opts);
+                        stopped += usize::from(b.stopped.is_some());
+                        failures.extend(against(&rel, &r, &b, true));
+                        failures.extend(empty_rule(&rel, &r, mode, &b));
+                        match mode.ask {
+                            Ask::Describe if mode.which == Which::All => {
+                                described[1] = Some(said(&b))
+                            }
+                            Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
+                                failures.push(format!(
+                                    "{rel} --count at budget 8: not describe's answer"
+                                ));
+                            }
+                            _ => {}
+                        }
+                    }
                 }
             }
+            (failures, counted, stopped, refused)
+        },
+    );
+    for (f, c, s, r) in found {
+        failures.extend(f);
+        for (k, n) in c {
+            *counted.entry(k).or_default() += n;
         }
+        stopped += s;
+        refused += r;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // C3 binds only where the budget stopped a run; a budget nothing reached
@@ -932,156 +964,191 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
         .map(|p| (p, false))
         .chain(studied.into_iter().map(|p| (p, true)))
         .collect();
-    for (path, studying) in all {
-        if slow.contains(&path) || loaded(&path).is_none() {
-            continue;
-        }
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let modes = [
-            (Which::All, Ask::Describe),
-            (Which::Minimal, Ask::Describe),
-            (Which::Maximal, Ask::Describe),
-            (Which::All, Ask::Find(2)),
-            (Which::All, Ask::Single),
-        ];
-        for (which, ask) in modes {
-            let mode = Mode { which, ask };
-            let mut eager = explore::Options::new(mode);
-            eager.jobs = jobs();
-            let mut lazy = eager;
-            lazy.cores = ein_infer::region::Cores::READ_OUT;
-            let mut nogoods = eager;
-            nogoods.cores = ein_infer::region::Cores {
-                visited: false,
-                nogoods: true,
-            };
-            let run = |o: &explore::Options| {
-                let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
-                let mut go =
-                    || explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string());
-                if studying {
-                    ein_infer::forbid::studying(go)
+    let found = ein_corpus::pool::map(
+        "explore::a_run_that_prints_no_core_takes_none_and_answers_alike",
+        &all,
+        |(p, studying)| {
+            (
+                rel_of(p),
+                if *studying {
+                    "studying".into()
                 } else {
-                    go()
+                    String::new()
+                },
+            )
+        },
+        |(path, studying)| {
+            let studying = *studying;
+            let mut failures = Vec::new();
+            let mut runs = 0usize;
+            let mut holes = 0usize;
+            let mut dead_holes = 0usize;
+            let mut after_walk = 0usize;
+            let mut walk_dead = 0usize;
+            'unit: {
+                if slow.contains(path) || loaded(path).is_none() {
+                    break 'unit;
                 }
-            };
-            let (a, b) = match (run(&eager), run(&lazy)) {
-                (Ok(a), Ok(b)) => (a, b),
-                (Err(x), Err(y)) if x == y => continue,
-                (x, y) => {
-                    failures.push(format!(
-                        "{rel} {mode:?}: {:?} against {:?}",
-                        x.err(),
-                        y.err()
-                    ));
-                    continue;
-                }
-            };
-            runs += 1;
-            let strip = |a: &Answer| -> Answer {
-                let mut a = a.clone();
-                if let Some(d) = a.described.as_mut() {
-                    for x in d.dead.iter_mut() {
-                        x.core.clear();
-                        // A core's status goes with it (M1e2 S1e2.2.23).
-                        x.core_status = None;
-                        x.refuted_by.clear();
-                    }
-                }
-                a
-            };
-            if said(&strip(&a)) != said(&strip(&b)) {
-                failures.push(format!("{rel} {mode:?}: the answer differs without cores"));
-            }
-            if mode.which == Which::All && mode.ask == Ask::Describe {
-                let walked = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
-                let watched = |o: &explore::Options| {
-                    let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
-                    let mut events = ein_infer::events::Events::off()
-                        .watched(Box::new(DeadCores(walked.clone())));
-                    let mut go = || {
-                        explore::run_with(&mut kb, &mut terms, &ast, o, &mut events)
-                            .map_err(|e| e.to_string())
+                let rel = rel_of(path);
+                let modes = [
+                    (Which::All, Ask::Describe),
+                    (Which::Minimal, Ask::Describe),
+                    (Which::Maximal, Ask::Describe),
+                    (Which::All, Ask::Find(2)),
+                    (Which::All, Ask::Single),
+                ];
+                for (which, ask) in modes {
+                    let mode = Mode { which, ask };
+                    let mut eager = explore::Options::new(mode);
+                    eager.jobs = jobs();
+                    let mut lazy = eager;
+                    lazy.cores = ein_infer::region::Cores::READ_OUT;
+                    let mut nogoods = eager;
+                    nogoods.cores = ein_infer::region::Cores {
+                        visited: false,
+                        nogoods: true,
                     };
-                    if studying {
-                        ein_infer::forbid::studying(go)
-                    } else {
-                        go()
+                    let run = |o: &explore::Options| {
+                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
+                        let mut go = || {
+                            explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
+                        };
+                        if studying {
+                            ein_infer::forbid::studying(go)
+                        } else {
+                            go()
+                        }
+                    };
+                    let (a, b) = match (run(&eager), run(&lazy)) {
+                        (Ok(a), Ok(b)) => (a, b),
+                        (Err(x), Err(y)) if x == y => continue,
+                        (x, y) => {
+                            failures.push(format!(
+                                "{rel} {mode:?}: {:?} against {:?}",
+                                x.err(),
+                                y.err()
+                            ));
+                            continue;
+                        }
+                    };
+                    runs += 1;
+                    let strip = |a: &Answer| -> Answer {
+                        let mut a = a.clone();
+                        if let Some(d) = a.described.as_mut() {
+                            for x in d.dead.iter_mut() {
+                                x.core.clear();
+                                // A core's status goes with it (M1e2 S1e2.2.23).
+                                x.core_status = None;
+                                x.refuted_by.clear();
+                            }
+                        }
+                        a
+                    };
+                    if said(&strip(&a)) != said(&strip(&b)) {
+                        failures.push(format!("{rel} {mode:?}: the answer differs without cores"));
                     }
-                };
-                let answered = watched(&nogoods);
-                for (commitment, taken) in walked.lock().expect("the run is done").drain(..) {
-                    walk_dead += 1;
-                    if taken && !commitment.is_empty() {
-                        failures.push(format!(
+                    if mode.which == Which::All && mode.ask == Ask::Describe {
+                        let walked = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+                        let watched = |o: &explore::Options| {
+                            let (mut kb, mut terms, ast) =
+                                loaded(path).expect("loaded once already");
+                            let mut events = ein_infer::events::Events::off()
+                                .watched(Box::new(DeadCores(walked.clone())));
+                            let mut go = || {
+                                explore::run_with(&mut kb, &mut terms, &ast, o, &mut events)
+                                    .map_err(|e| e.to_string())
+                            };
+                            if studying {
+                                ein_infer::forbid::studying(go)
+                            } else {
+                                go()
+                            }
+                        };
+                        let answered = watched(&nogoods);
+                        for (commitment, taken) in walked.lock().expect("the run is done").drain(..)
+                        {
+                            walk_dead += 1;
+                            if taken && !commitment.is_empty() {
+                                failures.push(format!(
                             "{rel}: the walk took a core at {commitment:?}, asked for N's alone"
                         ));
-                    }
-                }
-                match answered {
-                    Ok(c) => {
-                        if said(&strip(&a)) != said(&strip(&c)) {
-                            failures.push(format!(
-                                "{rel} {mode:?}: the answer differs with N's cores alone"
-                            ));
+                            }
                         }
-                        if let (Some(x), Some(z)) = (a.described.as_ref(), c.described.as_ref()) {
-                            for (dx, dz) in x.dead.iter().zip(&z.dead) {
-                                after_walk += 1;
-                                if dz.core_status.is_none() {
+                        match answered {
+                            Ok(c) => {
+                                if said(&strip(&a)) != said(&strip(&c)) {
                                     failures.push(format!(
-                                        "{rel}: N's {} carries no core",
-                                        c.name(&dz.set)
+                                        "{rel} {mode:?}: the answer differs with N's cores alone"
                                     ));
-                                } else if (&dz.core, dz.core_status, &dz.refuted_by)
-                                    != (&dx.core, dx.core_status, &dx.refuted_by)
+                                }
+                                if let (Some(x), Some(z)) =
+                                    (a.described.as_ref(), c.described.as_ref())
                                 {
-                                    failures.push(format!(
+                                    for (dx, dz) in x.dead.iter().zip(&z.dead) {
+                                        after_walk += 1;
+                                        if dz.core_status.is_none() {
+                                            failures.push(format!(
+                                                "{rel}: N's {} carries no core",
+                                                c.name(&dz.set)
+                                            ));
+                                        } else if (&dz.core, dz.core_status, &dz.refuted_by)
+                                            != (&dx.core, dx.core_status, &dx.refuted_by)
+                                        {
+                                            failures.push(format!(
                                         "{rel}: N's {} has another core taken after the walk",
                                         c.name(&dz.set)
                                     ));
+                                        }
+                                    }
                                 }
+                            }
+                            Err(e) => failures.push(format!("{rel}: with N's cores alone: {e}")),
+                        }
+                    }
+                    if let (Some(x), Some(y)) = (a.described.as_ref(), b.described.as_ref()) {
+                        if (&x.root.core, x.root.core_status) != (&y.root.core, y.root.core_status)
+                        {
+                            failures.push(format!("{rel} {mode:?}: root's core differs"));
+                        }
+                        if let (Some(hx), Some(hy)) = (
+                            x.shape.as_ref().and_then(|s| s.holes.as_ref()),
+                            y.shape.as_ref().and_then(|s| s.holes.as_ref()),
+                        ) {
+                            holes += hx.1.len();
+                            dead_holes += hx.1.iter().filter(|h| h.dead).count();
+                            let cores = |h: &(u64, Vec<ein_infer::described::Hole>)| {
+                                h.1.iter()
+                                    .map(|h| (h.core.clone(), h.core_status))
+                                    .collect::<Vec<_>>()
+                            };
+                            if cores(hx) != cores(hy) {
+                                failures
+                                    .push(format!("{rel} {mode:?}: a minimal hole's core differs"));
+                            }
+                        }
+                        for (dx, dy) in x.dead.iter().zip(&y.dead) {
+                            if !dy.core.is_empty()
+                                && (&dy.core, dy.core_status) != (&dx.core, dx.core_status)
+                            {
+                                failures.push(format!(
+                                    "{rel} {mode:?}: {} reports another core taken lazily",
+                                    b.name(&dy.set)
+                                ));
                             }
                         }
                     }
-                    Err(e) => failures.push(format!("{rel}: with N's cores alone: {e}")),
                 }
             }
-            if let (Some(x), Some(y)) = (a.described.as_ref(), b.described.as_ref()) {
-                if (&x.root.core, x.root.core_status) != (&y.root.core, y.root.core_status) {
-                    failures.push(format!("{rel} {mode:?}: root's core differs"));
-                }
-                if let (Some(hx), Some(hy)) = (
-                    x.shape.as_ref().and_then(|s| s.holes.as_ref()),
-                    y.shape.as_ref().and_then(|s| s.holes.as_ref()),
-                ) {
-                    holes += hx.1.len();
-                    dead_holes += hx.1.iter().filter(|h| h.dead).count();
-                    let cores = |h: &(u64, Vec<ein_infer::described::Hole>)| {
-                        h.1.iter()
-                            .map(|h| (h.core.clone(), h.core_status))
-                            .collect::<Vec<_>>()
-                    };
-                    if cores(hx) != cores(hy) {
-                        failures.push(format!("{rel} {mode:?}: a minimal hole's core differs"));
-                    }
-                }
-                for (dx, dy) in x.dead.iter().zip(&y.dead) {
-                    if !dy.core.is_empty()
-                        && (&dy.core, dy.core_status) != (&dx.core, dx.core_status)
-                    {
-                        failures.push(format!(
-                            "{rel} {mode:?}: {} reports another core taken lazily",
-                            b.name(&dy.set)
-                        ));
-                    }
-                }
-            }
-        }
+            (failures, [runs, holes, dead_holes, after_walk, walk_dead])
+        },
+    );
+    for (f, [r, h, d, a, w]) in found {
+        failures.extend(f);
+        runs += r;
+        holes += h;
+        dead_holes += d;
+        after_walk += a;
+        walk_dead += w;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // Not vacuous: the cube's dead holes are read, the ones whose core the
@@ -1118,73 +1185,86 @@ fn a_description_asked_without_n_is_the_description_less_n() {
         .collect();
     let mut failures = Vec::new();
     let (mut runs, mut skipped, mut sets) = (0usize, 0usize, 0u64);
-    for path in corpus_and_register() {
-        if slow.contains(&path) || loaded(&path).is_none() {
-            continue;
-        }
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        for ask in [Ask::Describe, Ask::Count] {
-            let mut with = explore::Options::new(Mode {
-                which: Which::All,
-                ask,
-            });
-            with.jobs = jobs();
-            let mut without = with;
-            without.nogoods = false;
-            let run = |o: &explore::Options| {
-                let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
-                explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
-            };
-            let (a, b) = match (run(&with), run(&without)) {
-                (Ok(a), Ok(b)) => (a, b),
-                (Err(x), Err(y)) if x == y => continue,
-                (x, y) => {
-                    failures.push(format!("{rel}: {:?} against {:?}", x.err(), y.err()));
-                    continue;
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "explore::a_description_asked_without_n_is_the_description_less_n",
+        &paths,
+        |p| (rel_of(p), String::new()),
+        |path| {
+            let mut failures = Vec::new();
+            let (mut runs, mut skipped, mut sets) = (0usize, 0usize, 0u64);
+            'unit: {
+                if slow.contains(path) || loaded(path).is_none() {
+                    break 'unit;
                 }
-            };
-            runs += 1;
-            let less_n = |a: &Answer| -> Answer {
-                let mut a = a.clone();
-                if let Some(d) = a.described.as_mut() {
-                    d.dead.clear();
-                    d.nogoods = 0;
-                    d.nogoods_skipped = false;
+                let rel = rel_of(path);
+                for ask in [Ask::Describe, Ask::Count] {
+                    let mut with = explore::Options::new(Mode {
+                        which: Which::All,
+                        ask,
+                    });
+                    with.jobs = jobs();
+                    let mut without = with;
+                    without.nogoods = false;
+                    let run = |o: &explore::Options| {
+                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
+                        explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
+                    };
+                    let (a, b) = match (run(&with), run(&without)) {
+                        (Ok(a), Ok(b)) => (a, b),
+                        (Err(x), Err(y)) if x == y => continue,
+                        (x, y) => {
+                            failures.push(format!("{rel}: {:?} against {:?}", x.err(), y.err()));
+                            continue;
+                        }
+                    };
+                    runs += 1;
+                    let less_n = |a: &Answer| -> Answer {
+                        let mut a = a.clone();
+                        if let Some(d) = a.described.as_mut() {
+                            d.dead.clear();
+                            d.nogoods = 0;
+                            d.nogoods_skipped = false;
+                        }
+                        if let Some(s) = a.shape.as_mut() {
+                            s.nogoods = 0;
+                        }
+                        a
+                    };
+                    if said(&less_n(&a)) != said(&less_n(&b)) {
+                        failures.push(format!("{rel} {ask:?}: the description differs beyond N"));
+                    }
+                    let (da, db) = (
+                        a.described.as_ref().expect("described"),
+                        b.described.as_ref().expect("described"),
+                    );
+                    if da.nogoods_skipped {
+                        failures.push(format!("{rel} {ask:?}: N skipped where it was asked for"));
+                    }
+                    if db.nogoods_skipped {
+                        skipped += 1;
+                        sets += da.nogoods;
+                        if !(db.exhausted && b.route == explore::Route::States) {
+                            failures.push(format!(
+                                "{rel} {ask:?}: N skipped on route {:?}, exhausted {}",
+                                b.route, db.exhausted
+                            ));
+                        }
+                    } else if said(&a) != said(&b) {
+                        failures.push(format!(
+                            "{rel} {ask:?}: N was not skipped and the answer differs"
+                        ));
+                    }
                 }
-                if let Some(s) = a.shape.as_mut() {
-                    s.nogoods = 0;
-                }
-                a
-            };
-            if said(&less_n(&a)) != said(&less_n(&b)) {
-                failures.push(format!("{rel} {ask:?}: the description differs beyond N"));
             }
-            let (da, db) = (
-                a.described.as_ref().expect("described"),
-                b.described.as_ref().expect("described"),
-            );
-            if da.nogoods_skipped {
-                failures.push(format!("{rel} {ask:?}: N skipped where it was asked for"));
-            }
-            if db.nogoods_skipped {
-                skipped += 1;
-                sets += da.nogoods;
-                if !(db.exhausted && b.route == explore::Route::States) {
-                    failures.push(format!(
-                        "{rel} {ask:?}: N skipped on route {:?}, exhausted {}",
-                        b.route, db.exhausted
-                    ));
-                }
-            } else if said(&a) != said(&b) {
-                failures.push(format!(
-                    "{rel} {ask:?}: N was not skipped and the answer differs"
-                ));
-            }
-        }
+            (failures, runs, skipped, sets)
+        },
+    );
+    for (f, r, k, n) in found {
+        failures.extend(f);
+        runs += r;
+        skipped += k;
+        sets += n;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // Not vacuous: N is skipped on programs that have one.

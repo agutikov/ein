@@ -472,41 +472,64 @@ fn the_default_requires_a_why_and_false_loads_without() {
 #[test]
 fn require_why_decides_loading_only() {
     let (mut same, mut refused) = (0, 0);
-    for path in &corpus_files() {
-        let text = std::fs::read_to_string(path).expect("reads");
-        let load = |require_why: bool| {
-            let mut ast = Ast::new();
-            let mut terms = Terms::new();
-            let forms = ein_ir::parse(&mut ast, &text, path.to_str()).map_err(|e| e.to_string())?;
-            let opts = ein_ir::LoadOptions { require_why };
-            ein_ir::load_with(&mut ast, &mut terms, &forms, path.parent(), &opts)
-                .map(|kb| shape(&kb, &terms))
-                .map_err(|e| e.0)
-        };
-        let rel = path.strip_prefix(repo_root()).unwrap_or(path).display();
-        let Ok(without) = load(false) else {
-            assert!(load(true).is_err(), "{rel}");
-            continue;
-        };
-        match load(true) {
-            Ok(with) => {
-                assert!(with == without, "{rel}: the flag moved the KB it loads");
-                same += 1;
-            }
-            Err(e) => {
-                for line in e.split("; ") {
-                    assert!(
-                        line.contains(" has no :why \"…\", which this load requires of every "),
-                        "{rel}: the flag refused with {line}"
-                    );
+    // A file a unit on the corpus sweeps' pool (M1f S1f.6.39); a unit's
+    // `(same, refused)`, summed in order.
+    let files = corpus_files();
+    let found = ein_corpus::pool::map(
+        "load_semantics::require_why",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| -> (usize, usize) {
+            let (mut same, mut refused) = (0usize, 0usize);
+            let text = std::fs::read_to_string(path).expect("reads");
+            let load = |require_why: bool| {
+                let mut ast = Ast::new();
+                let mut terms = Terms::new();
+                let forms =
+                    ein_ir::parse(&mut ast, &text, path.to_str()).map_err(|e| e.to_string())?;
+                let opts = ein_ir::LoadOptions { require_why };
+                ein_ir::load_with(&mut ast, &mut terms, &forms, path.parent(), &opts)
+                    .map(|kb| shape(&kb, &terms))
+                    .map_err(|e| e.0)
+            };
+            let rel = path.strip_prefix(repo_root()).unwrap_or(path).display();
+            let Ok(without) = load(false) else {
+                assert!(load(true).is_err(), "{rel}");
+                return (same, refused);
+            };
+            match load(true) {
+                Ok(with) => {
+                    assert!(with == without, "{rel}: the flag moved the KB it loads");
+                    same += 1;
                 }
-                eprintln!("{rel}: {e}");
-                refused += 1;
+                Err(e) => {
+                    for line in e.split("; ") {
+                        assert!(
+                            line.contains(" has no :why \"…\", which this load requires of every "),
+                            "{rel}: the flag refused with {line}"
+                        );
+                    }
+                    eprintln!("{rel}: {e}");
+                    refused += 1;
+                }
             }
-        }
-        if path.starts_with(repo_root().join("stdlib")) {
-            assert!(load(true).is_ok(), "{rel}: a stdlib module is refused");
-        }
+            if path.starts_with(repo_root().join("stdlib")) {
+                assert!(load(true).is_ok(), "{rel}: a stdlib module is refused");
+            }
+            (same, refused)
+        },
+    );
+    for (s, r) in found {
+        same += s;
+        refused += r;
     }
     // Every corpus program carries its `:why`s (T1f.5.14.7), and the sweep
     // is looking at something.
