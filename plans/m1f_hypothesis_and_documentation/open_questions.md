@@ -5547,3 +5547,173 @@ calculator naming the entries of the calculator's modules it imports, `std.math.
 `decimal`; and `std.math.num9` keeping a bare import of `std.math.decimal-arith`, from which it lists nothing now,
 so that a program of nine digits holds the modules it held, beside its imports of `std.math.decimal` and
 `std.math.arith` for `n`, `z` and the division by zero.
+
+### Q-M1f.284 — The worker pool's count, its heavy lane and its memory bound
+
+**Raised** 2026-11-15 by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md)'s T4. The stage file set the
+count, `EIN_TEST_JOBS`, at 16 by default and at most the machine's threads, and left the lane and the bound to T1's
+measurement: no corpus program's process went past 529 MB through the CLI or 272 MB in-process, and no pooled binary
+past 1.80 GiB at sixteen workers (the stage's record).
+
+- **(a) 16, a quarter of them for the heavy lane, the bound 24 GB**: the P-cores' sixteen threads' worth here, the
+  runner's four by the cap; a program on `ein_corpus::pool::HEAVY` (T1's 256 MB or more: `send_more_money`,
+  `features/04_open`) runs at most four at once.
+- **(b) Every thread, 32**: the E-cores beside the P-cores, each E-core 1.7 times slower a thread (§ Today).
+- **(c) The P-cores alone, by `taskset`**: no unit on an E-core.
+
+**Defaulted 2026-11-15: (a), the user's to revise.**
+
+### Q-M1f.285 — The nightly's and the dev host's test steps on the gate profile
+
+**Raised** 2026-11-15 by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md)'s T5. The nightly ran its test
+steps `--release` (release codegen, no debug checks), the per-commit tier the dev profile (`opt-level = 1`, the checks
+on); the gate profile is release codegen with the checks.
+
+- **(a) Every test step of every tier on the gate profile**: the debug assertions and the overflow checks run on the
+  slow cells too, which no tier checked them on; `corpus_cli`'s cost band reads release codegen as before; the
+  mutation census runs the gate profile's `ein`, which the nightly's steps built.
+- **(b) The per-commit tier on the gate profile, the nightly and the dev host `--release`**, as they were.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** `release.yml`, the release tier, is unchanged: it tests the
+binary that ships.
+
+### Q-M1f.286 — `id_order_invariance` keeps its plain run
+
+**Raised** 2026-11-15 by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md)'s T3,
+[E-72](p1f.6_calculator/findings.md). The stage file had the shuffled run held to `corpus_shapes`' golden and the
+plain run computed only on a mismatch; the shuffled id space is a permutation of the plain run's own table, so the
+plain run cannot be skipped.
+
+- **(a) As built**: the plain run, then the shuffled one, on the pool; the sweep checks what it checked.
+- **(b) A permutation of a smaller table** (the load's), the plain run on a mismatch only: the facts a run derives keep
+  their derivation order under it, the perturbation the file's own note calls none, where M1e2 S1e2.2.12's leak was.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** Removing a pass is T6's
+[Q-M1f.287](#q-m1f287--one-pass-for-corpus_shapes-and-id_order_invariance).
+
+### Q-M1f.287 — One pass for `corpus_shapes` and `id_order_invariance`
+
+**Raised** 2026-11-15 by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#t6--the-audit-of-what-each-sweep-guards-and-what-it-needs)'s
+T6, from [E-72](p1f.6_calculator/findings.md). `id_order_invariance`'s plain run of every (file, output) is the run
+`corpus_shapes` digests: the same bytes, computed twice a commit, 30.6 s of `corpus_shapes` here (`b8c931f3`).
+
+- **(a) Merge**: `id_order_invariance` digests its plain run against the golden, its floors and `EIN_BLESS` with it,
+  and `corpus_shapes`' own pass goes; the re-bless command and the pages that name `corpus_shapes` follow. Leaves the
+  two at about 65 s here, where they are 96 s.
+- **(b) Keep both.**
+
+**Not ruled: the user's** (T6 stops here). Probe: `id-leak` moved 273 renderings of the golden and 483 pairs of the
+permuted sweep; a merged test asserts both.
+
+### Q-M1f.288 — `jobs_invariance` over the programs that search
+
+**Raised** 2026-11-15 by S1f.6.39's T6. A job count reaches only a region route's fan-out, which has more than one node
+to fan out only in a program that searches: the 188 corpus programs whose describe saturates more than root
+(`probes/sets.py`).
+
+- **(a) The 188**, the list computed by the test from the program (a describe that saturates past root) rather than
+  banked. `jobs-leak` moved 983 cells over them, of 987 over all (`t6.tsv.sets`). Leaves 7.5 s here, where it is
+  20.2 s.
+- **(b) Every program**, as now.
+
+**Not ruled: the user's.** Five other binaries catch the same leak on fixed programs at four and eight jobs
+(`explore`, `region`, `register_region`, `region_modes`, `line_modes_past_the_limit`).
+
+### Q-M1f.289 — `id_order_invariance` over the programs that search
+
+**Raised** 2026-11-15 by S1f.6.39's T6.
+
+- **(a) The 188 programs that search**: `id-leak` moved 144 pairs over them (483 over all); the 33 frontend and shape
+  outputs of the 629 others are no longer permuted, the load's shape and refusals still being `kb_semantics`' on every
+  file. Leaves 14.6 s here, where it is 65.1 s.
+- **(b) Every program, the region outputs over the 188 only.**
+- **(c) Every program**, as now.
+
+**Not ruled: the user's.**
+
+### Q-M1f.290 — `tests/` out of the render and determinism sweeps
+
+**Raised** 2026-11-15 by S1f.6.39's T6, § Today's candidate. The 220 programs under `tests/` are each written for one
+stdlib rule's claim, and are 48 % of `corpus_shapes`' work and 52 % of `id_order_invariance`'s; their claims are
+checked by `ein test` (`corpus_cli`'s and `test_cli`'s cells), the coverage census and the mutants.
+
+- **(a) `corpus_shapes`, `id_order_invariance`, `jobs_invariance` and `dot_wellformed` over the 597 programs outside
+  `tests/`**, the golden and `dot_wellformed`'s skip list re-banked for them. Every probe each caught over the corpus
+  it still caught (`id-leak` 269 pairs, `jobs-leak` 942 cells, `neq-nested` and `states-maximal` renderings moved
+  outside `tests/`); `neq-nested` is caught on `tests/` itself by `corpus_cli`, `test_cli` and `arith_search_free`.
+  Leaves the four at 66.5 s here, where they are 129.5 s.
+- **(b) With Q-M1f.288 and .289**: the determinism sweeps over the 179 programs that search outside `tests/`.
+- **(c) As now.**
+
+**Not ruled: the user's.**
+
+### Q-M1f.291 — The five sweeps that set modes and routes against one another
+
+**Raised** 2026-11-15 by S1f.6.39's T6, § Today's candidate: `explore`, `lever_invariance`, `route_invariance`,
+`region_modes`, `claim_routes`. The probes: a state-route bug (`states-maximal`) was caught by `explore`,
+`route_invariance`, `region_modes` and `claim_routes`, and by `region`'s, `register_region`'s and the golden's own
+checks; a route-1 bug (`route1-maximal`) only by `region::route_1_is_the_oracle…` (within the oracle's limit) and by
+`route_invariance`, on programs past the limit where nothing else holds route 1; `lever_invariance` caught none of the
+six, its claim, that no config moves an answer, being held by no other sweep.
+
+- **(a) Keep the five**; `route_invariance` per commit without the `slow` entries (the zebra family and
+  `send_more_money`, 127.8 of its 165.0 s at one worker, `units-gate-j1.tsv`), which its slow half on the dev host
+  runs at both budgets. Leaves it at about 8 s here, where it is 26.8 s; the zebra family's route equality leaves CI
+  unless the nightly takes the slow half (Q-M1f.293).
+- **(b) `route_invariance` over the programs past the oracle's limit only**, the rest being `region`'s two oracle
+  sweeps' claim.
+- **(c) As now.**
+
+**Not ruled: the user's.** No probe here argues for removing `explore`, `region_modes` or `claim_routes`: each was one
+of four to catch the state-route bug, so the overlap is real, but no single probe shows which one a fault would reach
+alone.
+
+### Q-M1f.292 — One load a program, shared by the outputs that do not change it
+
+**Raised** 2026-11-15 by S1f.6.39's T6, § Today's candidate. Of a `corpus_shapes` pass at the gate profile, 6.2 s is
+`ir[resolve]` alone, reading and parsing the program's stdlib modules, and about 30 of the 41 outputs resolve again:
+about 61 % of each of the three A sweeps' work.
+
+- **(a) Load once a program and clone the loaded state for each output**: `Ast`, `Terms` and `Kb` would need
+  `Clone`, which `Terms` and `Ast` do not derive — a change under `ein.rs/crates/*/src` beyond a test helper, so the
+  user's to allow. Proven by invariance: `corpus_shapes`' golden reproduced byte for byte, and `id_order_invariance`'s
+  permuted runs from the clone. Would leave the A sweeps at roughly half their 116 s here.
+- **(b) Cache the resolved stdlib modules in the test helper** without a clone: not possible without the resolver's
+  cooperation, which is the engine's.
+- **(c) As now.**
+
+**Not ruled: the user's.**
+
+### Q-M1f.293 — The nightly's steps against five minutes
+
+**Raised** 2026-11-15 by [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#t6--the-audit-of-what-each-sweep-guards-and-what-it-needs)'s
+T6, against [Q-M1f.102](#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)'s rule that a nightly step fits
+in five minutes on the runner. On four P-core threads with four workers, the runner's count (`taskset -c 0-3 env
+EIN_TEST_JOBS=4 ./run_tests.sh --nightly`, 2026-11-15): the mutation census 1 382.9 s, `corpus_cores`' slow entries
+376.3 s, `answer_round_trip`'s slow and `heavy_dump` entries 353.0 s, and `region`'s slow half 271.7 s here, over five
+minutes at the runner's 1.13 to 1.34 times (Q-M1f.103). The deep-corpus job is 47.7 min at that count.
+
+- **(a) The four to the dev host**, each named in `DEV_HOST_ONLY` with why; the nightly keeps the slow cells, the
+  levers', the imports' and `obligation_rung`'s slow halves, the fuzzer and the bench, about 8 min; the census and
+  the four slow halves run where nothing schedules them.
+- **(b) The census by shards**: a seventh of the mutants a night, the shard named by the weekday, `--check` on the
+  shard's banked survivors, the week covering all 572; about 3.3 min a night. The three slow halves split by program
+  the same way, or (a) for them.
+- **(c) The rule relaxed for the census** (it guards the suite's sensitivity, which no per-commit step guards), the
+  three slow halves to (a) or (b).
+- **(d) As now**, past the rule.
+
+**Not ruled: the user's.**
+
+### Q-M1f.294 — `answer_dump`'s `heavy_dump` witness, and the feature tests the pool does not reach
+
+**Raised** 2026-11-15 by S1f.6.39's T6. Two per-commit costs no sweep's program set explains:
+
+- `answer_dump` dumps W8's witness `square-unique/corner-house.ein`, a `heavy_dump` entry, 33.2 s of its 33.8 s here;
+  `answer_round_trip` left the `heavy_dump` entries to the nightly on the user's ruling of 2026-11-08 (P-16). **(a)**
+  the same for `answer_dump` (leaves about 5 s); **(b)** as now.
+- `int_theory`, `arith_batch`, `read_out_reference`, `read_out_examples` and `arith_theory`, feature tests, are
+  65.5, 36.0, 23.3, 18.7 and 16.4 s here, 160 s of the gate's 887: **(a)** their loops on the pool (no check moves);
+  **(b)** their long halves to the nightly; **(c)** as now.
+
+**Not ruled: the user's.** Neither is a corpus sweep of § Today's 31.
