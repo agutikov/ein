@@ -604,13 +604,19 @@ const REQUESTS_RAT: [(&str, &str, f64); 5] = [
     ("rat-div", "rat-quot-of", BOUND_RAT_MUL),
     ("rat-cmp", "rat-cmp-of", BOUND_RAT_CMP),
 ];
-const BOUND_RAT_ADD: f64 = 10000.0;
-const BOUND_RAT_MUL: f64 = 9500.0;
+// Since M1f S1f.6.33 an operation divides nothing: a sum or a difference is
+// some 670 candidates a request at 100, a product 502 and a quotient 549, where
+// lowest terms made them 7 511, 7 470, 6 957 and 6 942 (2026-11-12).
+const BOUND_RAT_ADD: f64 = 750.0;
+const BOUND_RAT_MUL: f64 = 650.0;
 const BOUND_RAT_CMP: f64 = 900.0;
 
-/// The batches of `std.math.rat`. Smaller than the others': lowest terms is a
-/// chain of divisions, some hundreds of firings a request, and a stored fact
-/// costs about a kilobyte (E-26 of P1f.6's `findings.md`).
+/// The batches of `std.math.rat`. Smaller than the others': until M1f S1f.6.33
+/// every request was put in lowest terms, a chain of divisions, some hundreds
+/// of firings a request, and a stored fact costs about a kilobyte (E-26 of
+/// P1f.6's `findings.md`). An operation divides nothing since, and the sizes
+/// are kept, so that the measures compare; `std.math.gcd`'s batch, which the
+/// chain is now, uses them too.
 const SIZES_RAT: [usize; 3] = [100, 400, 1200];
 
 /// A rational of the batch: a numerator from 1 to 9 and either sign, never
@@ -653,10 +659,11 @@ fn batch_rat(op: &str, count: usize) -> String {
 
 /// **The rationals keep the rule of the theory.** Every rule of `std.math.rat`
 /// has one premise (`rat_theory.rs` holds that on the text): the cross
-/// products, Euclid's chain and the two divisions by what it finds are each
-/// a call of `std.math.decimal-arith` or `std.math.int` under a tag. Here: a request of each
-/// operation costs the same `candidates` and the same firings at 400 and at
-/// 1 200 requests as at 100.
+/// products and the products of the parts are each a call of
+/// `std.math.decimal-arith` or `std.math.int` under a tag, and since M1f
+/// S1f.6.33 an operation divides nothing. Here: a request of each operation
+/// costs the same `candidates` and the same firings at 400 and at 1 200
+/// requests as at 100.
 #[test]
 fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
     let sizes = SIZES_RAT;
@@ -709,10 +716,11 @@ fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
 }
 
 /// What a request of `std.math.rat` costs depends on its operands more than a sum
-/// of two nine-digit numbers does: the length of Euclid's chain varies from
-/// request to request. A hundred requests are a small sample of that, so the
-/// per-request work at a larger batch may exceed the smallest's by this
-/// factor; a join on a number multiplies it by the batches' ratio, 4 and 12.
+/// of two nine-digit numbers does: the lengths of the cross products vary, and
+/// until M1f S1f.6.33 the length of Euclid's chain did, as `std.math.gcd`'s
+/// does. A hundred requests are a small sample of that, so the per-request
+/// work at a larger batch may exceed the smallest's by this factor; a join on
+/// a number multiplies it by the batches' ratio, 4 and 12.
 const TOLERANCE_RAT: f64 = 1.15;
 
 // ── std.math.binary-arith (S1f.6.16) ────────────────────────────────────

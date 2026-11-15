@@ -9,7 +9,8 @@
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; R is {∅}: root is alive, the request is neither answered nor flagged,
-;;; and the well-formed one beside it is answered.
+;;; and the well-formed one beside it is answered, 1/2 + 1/2 = 4/4, not
+;;; reduced (S1f.6.33).
 
 (import std.math.rat :symbols (rat-arith rat rat-add rat-sum-of))
 (import std.math.int :symbols (int))
@@ -25,4 +26,4 @@
 (query :goal (rat-sum-of ?x ?y ?s)
        :goal-text "{?x} + {?y} = {?s}"
        :expect (model (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2))
-                                  (rat (int (n z 1) z) (n z 1)))))
+                                  (rat (int (n z 4) z) (n z 4)))))

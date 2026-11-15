@@ -2865,7 +2865,7 @@
 0    tests/stdlib/math/rat/07_cmp.ein :: solve
 0    tests/stdlib/math/rat/07_cmp.ein :: test
 0    tests/stdlib/math/rat/08_unsimplified.ein :: render constraints
-1    tests/stdlib/math/rat/08_unsimplified.ein :: render rules
+0    tests/stdlib/math/rat/08_unsimplified.ein :: render rules
 0    tests/stdlib/math/rat/08_unsimplified.ein :: saturate
 0    tests/stdlib/math/rat/08_unsimplified.ein :: solve
 0    tests/stdlib/math/rat/08_unsimplified.ein :: test
@@ -2979,6 +2979,11 @@
 0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: saturate
 0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: solve
 0    tests/stdlib/math/rat/30_undeclared_only_operand.ein :: test
+0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: render constraints
+0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: render rules
+0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: saturate
+0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: solve
+0    tests/stdlib/math/rat/31_equal_values_two_facts.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

@@ -1,10 +1,11 @@
 ;;; Ein stdlib — `std.math.rat`: rational numbers, an integer over a natural
-;;; number, in lowest terms, computed by saturation alone (M1f P1f.6,
-;;; S1f.6.8).
+;;; number, computed by saturation alone and reduced only when asked (M1f
+;;; P1f.6, S1f.6.8; S1f.6.33, round 2's item 54, the user's *"(b)"*).
 ;;;
 ;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
-;;; This module is a theory written in Ein over `std.math.int` and `std.math.decimal-arith`,
-;;; which it calls and does not edit. Nothing is guessed: on a program that
+;;; This module is a theory written in Ein over `std.math.int`,
+;;; `std.math.decimal-arith` and `std.math.gcd`, which it calls and does not
+;;; edit. Nothing is guessed: on a program that
 ;;; imports it and states requests the universe has no candidate, R is {∅},
 ;;; and the answer is root's fixpoint. No `absent`, no `not` and no guard of
 ;;; its own; a program that imports it holds `std.math.decimal-arith`'s one `absent`, the
@@ -24,8 +25,8 @@
 ;;; it (M1f S1f.6.35); a program lists the names it writes, from the module
 ;;; that declares each. `rat-arith` is the theory's entry, the closing rule at
 ;;; the end of this file: it names every rule and closes every relation of the
-;;; module, and it names `int-arith`, `decimal-arith`, `decimal` and `arith`,
-;;; the entries of the modules it imports.
+;;; module, and it names `int-arith`, `decimal-arith`, `decimal`, `arith` and
+;;; `gcd`, the entries of the modules it imports.
 ;;;
 ;;; ── The rational ───────────────────────────────────────────────────────────
 ;;;
@@ -38,15 +39,23 @@
 ;;;     0        (rat (int z z) (n z 1))
 ;;;     2/4      (rat (int (n z 2) z) (n z 4))       not in lowest terms
 ;;;
-;;; The **normal form** is in lowest terms: the numerator in `std.math.int`'s
-;;; normal form, the denominator with no high zero, the two with no common
-;;; divisor but 1, and zero written 0 over 1. Every rational has exactly one.
-;;; An operand may be written any way that has its value, and is read by
-;;; value; every answer is in normal form.
+;;; **An answer is not reduced** (S1f.6.33; round 2's item 54, the user's
+;;; *"(b)"*: *"I think we don't need to reduce every rational, can ask
+;;; explicitely for it?"*). An operation answers its numerator in
+;;; `std.math.int`'s normal form, one part `z`, and its denominator with no
+;;; high zero, and divides nothing: only a common factor of the two stays, so
+;;; 1/2 + 1/2 is 4/4, and zero is 0 over any denominator, 0/6. **An answer is
+;;; not canonical:** two equal rationals may be two different facts, and a rule
+;;; that wants *the same number* asks `rat-cmp`, which compares by cross
+;;; products and needs no lowest terms. **Lowest terms is asked for**:
+;;; `rat-simplify` answers the one normal form every rational has, the two
+;;; with no common divisor but 1 and zero written 0 over 1. An operand may be
+;;; written any way that has its value, and is read by value.
 ;;;
 ;;; ── The protocol: a request fact, answered by a result fact ────────────────
 ;;;
-;;;     (rat-simplify X)   (rat-simple-of X S)      X in lowest terms
+;;;     (rat-simplify X)   (rat-simple-of X S)      X in lowest terms: the one
+;;;                                                 request that reduces
 ;;;     (rat-neg X)        (rat-neg-of X S)         0 - X
 ;;;     (rat-add X Y)      (rat-sum-of X Y S)       X + Y
 ;;;     (rat-sub X Y)      (rat-diff-of X Y S)      X - Y
@@ -70,9 +79,10 @@
 ;;; These rules are the module's own and stay (S1f.6.24): `std.math.decimal-arith` flags a
 ;;; division at its tagged call, whoever made it, but a request with a
 ;;; denominator of zero performs no division, and a `rat-div` by a rational
-;;; that is zero is seen before any call. The module's own calls, Euclid's
-;;; chain and lowest terms, divide by numbers that are not zero, so a
-;;; request has one flag. A `let` that names a rational over zero and that
+;;; that is zero is seen before any call. The module's own calls, `rat-simplify`'s
+;;; greatest common divisor by `std.math.gcd`, which divides by nothing that is
+;;; zero, and its two divisions by what that finds, divide by numbers that are
+;;; not zero, so a request has one flag. A `let` that names a rational over zero and that
 ;;; no request uses is not flagged.
 ;;;
 ;;; ── How it computes ────────────────────────────────────────────────────────
@@ -90,21 +100,29 @@
 ;;;   - **A product** is the numerators' product, `std.math.int`'s, over the
 ;;;     denominators'. **A quotient** is a product with the divisor turned
 ;;;     over, its sign kept in the numerator.
-;;;   - **Lowest terms.** The numerator is simplified by `std.math.int`. The
-;;;     greatest common divisor of its size and the denominator is Euclid's
-;;;     chain: gcd(A, B) is gcd(B, A mod B) until the remainder is zero, each
-;;;     step a division of `std.math.decimal-arith`. Then both are divided by it.
+;;;   - **Unreduced.** Each operation's numerator is simplified by
+;;;     `std.math.int`, and its denominator put into normal form by an addition
+;;;     walk to zero, or is a product's, which has no high zero; nothing is
+;;;     divided.
+;;;   - **Lowest terms, on request.** `rat-simplify` simplifies the numerator,
+;;;     takes its sign off, asks `std.math.gcd`'s tagged call for the greatest
+;;;     common divisor of its size and the denominator, Euclid's chain, and
+;;;     divides both by it, two divisions of `std.math.decimal-arith`. The
+;;;     module holds no chain of its own (S1f.6.33).
 ;;;
 ;;; **A call's tag is its request,** as in `std.math.int`. **The tagged calls a
 ;;; later theory makes are an interface,** as `std.math.decimal-arith`'s are (P1f.6's
 ;;; question 41, round 2, the user's *"(a)"*), held to these shapes by
 ;;; `ein-infer/tests/arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`:
 ;;;
-;;;     (rat-norm TAG P N D)                  P less N over D, in lowest
-;;;                                           terms; answered by
+;;;     (rat-norm TAG P N D)                  P less N over D, the numerator
+;;;                                           in normal form and D with no
+;;;                                           high zero, not reduced;
+;;;                                           answered by
 ;;;                                           (rat-done TAG RATIONAL)
 ;;;     (rat-mul-call TAG P1 N1 D1 P2 N2 D2)  P1 less N1 over D1, times P2
-;;;                                           less N2 over D2; answered by
+;;;                                           less N2 over D2, not reduced;
+;;;                                           answered by
 ;;;                                           (rat-done TAG RATIONAL)
 ;;;     (rat-cross TAG P1 N1 D1 P2 N2 D2)     P1 x D2 + P2 x D1, and
 ;;;                                           N1 x D2 + N2 x D1; answered by
@@ -117,11 +135,15 @@
 ;;; one premise. `ein-infer/tests/rat_theory.rs` holds that on this file's
 ;;; text, and holds the answers to exact fractions.
 ;;;
-;;; **What it costs.** Lowest terms is a chain of divisions, and a division
-;;; computes its divisor's nine multiples first: a sum of two fractions of
-;;; one digit is some hundreds of firings (`stdlib/README.md` § `std.math.rat`
-;;; has them measured). Nothing limits the length: cross products are as
-;;; long as their operands together, and nested numbers hold them.
+;;; **What it costs.** An operation divides nothing: a sum of two fractions
+;;; of one digit is some hundred firings, the cross products and a product of
+;;; the denominators. Lowest terms is a chain of divisions, and a division
+;;; computes its divisor's nine multiples first: some hundreds of firings
+;;; more, paid where `rat-simplify` is asked (`stdlib/README.md` §
+;;; `std.math.rat` has them measured). Nothing limits the length: cross
+;;; products are as long as their operands together, and nested numbers hold
+;;; them; **a chain of operations grows**, the denominators multiplying at
+;;; every step unless the program asks `rat-simplify`.
 ;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;
@@ -130,14 +152,16 @@
 ;;; `rat-simple-of`, `rat-neg-of`, `rat-sum-of`, `rat-diff-of`,
 ;;; `rat-product-of`, `rat-quot-of` and `rat-cmp-of`; the calls `rat-norm`,
 ;;; `rat-mul-call`, `rat-cross`, and their hand-overs `rat-done` and
-;;; `rat-cross-is`; the circuit's own `rat-operand-is`, `rat-zero-den`,
-;;; `rat-reduce`, `rat-gcd` and `rat-gcd-is`; the signs `pos` and `neg`; the
-;;; tags `rat-of`, `rat-den`, `rat-only`, `rat-first`, `rat-second`, `rat-x1`
-;;; to `rat-x6`, `rat-sum-num`, `rat-sum-den`, `rat-cmp-num`, `rat-mul-num`,
-;;; `rat-mul-den`, `rat-div-by`, `rat-num`, `rat-g`, `rat-gcd-rem`,
-;;; `rat-q-num` and `rat-q-den`; the flag `not-rational`; `rat-rule`, and the
-;;; entry `rat-arith`.
-;;; Everything of `std.math.int` and `std.math.decimal-arith` comes with it,
+;;; `rat-cross-is`; the circuit's own `rat-operand-is` and `rat-zero-den`;
+;;; the signs `pos` and `neg`; the tags `rat-of`, `rat-den`, `rat-only`,
+;;; `rat-first`, `rat-second`, `rat-x1` to `rat-x6`, `rat-sum-num`,
+;;; `rat-sum-den`, `rat-cmp-num`, `rat-mul-num`, `rat-mul-den`, `rat-div-by`,
+;;; `rat-num`, `rat-den-norm`, `rat-low`, `rat-g`, `rat-q-num` and
+;;; `rat-q-den`; the flag `not-rational`; `rat-rule`, and the entry
+;;; `rat-arith`. Until S1f.6.33 it held Euclid's chain of its own, `rat-reduce`,
+;;; `rat-gcd`, `rat-gcd-is` and `rat-gcd-rem`.
+;;; Everything of `std.math.int`, `std.math.decimal-arith` and `std.math.gcd`
+;;; comes with it,
 ;;; `std.math.arith`'s flag `division-by-zero` and the orders `lt`, `eq` and
 ;;; `gt` among them. The interface is `rat`, the requests, the results, the
 ;;; flags and the three
@@ -150,6 +174,7 @@
 (import std.math.decimal :symbols (decimal n named))
 (import std.math.arith :symbols (arith z division-by-zero))
 (import std.math.digits :symbols (nz))
+(import std.math.gcd :symbols (gcd gcd-call gcd-done))
 
 ;; ── The rational ────────────────────────────────────────────────────────────
 (relation rat Integer Number
@@ -197,13 +222,7 @@
 (relation rat-mul-call Tag Number Number Number Number Number Number
   :why "wanted, for {?1}: {?2} less {?3} over {?4}, times {?5} less {?6} over {?7}")
 (relation rat-norm Tag Number Number Number
-  :why "wanted, for {?1}: {?2} less {?3}, over {?4}, in lowest terms")
-(relation rat-reduce Tag Integer Number
-  :why "wanted, for {?1}: {?2} over {?3}, in lowest terms")
-(relation rat-gcd Tag Number Number
-  :why "wanted, for {?1}: the greatest common divisor of {?2} and {?3}")
-(relation rat-gcd-is Tag Number
-  :why "the greatest common divisor for {?1} is {?2}")
+  :why "wanted, for {?1}: {?2} less {?3}, over {?4}, the numerator simplified and nothing divided")
 (relation rat-done Tag Rational
   :why "the answer for {?1} is {?2}")
 
@@ -244,10 +263,12 @@
   :why "the divisor's numerator simplified, for {?1}, which divides {?2} less {?3} over {?4}; the divisor's denominator is {?5}")
 (relation rat-num Tag Number
   :why "the numerator simplified, for {?1}, over {?2}")
+(relation rat-den-norm Tag Integer
+  :why "the denominator in normal form, for {?1}, whose numerator is {?2}")
+(relation rat-low Tag Number
+  :why "the numerator simplified, for {?1}, over {?2}, to be put in lowest terms")
 (relation rat-g Tag Sign Number Number
   :why "the greatest common divisor, for {?1}: the numerator is {?2}, of size {?3}, over {?4}")
-(relation rat-gcd-rem Tag Number
-  :why "a step of Euclid's chain, for {?1}: the remainder of a division by {?2}")
 (relation rat-q-num Tag Sign Number Number
   :why "the numerator's size divided by the common divisor {?4}, for {?1}")
 (relation rat-q-den Tag Sign Number
@@ -299,50 +320,42 @@
   :assert (division-by-zero ?request)
   :why    "the second operand of {?request} has a denominator of zero")
 
-;; ── Lowest terms ────────────────────────────────────────────────────────────
-;; `(rat-norm TAG P N D)`: the numerator simplified by `std.math.int`, then
-;; `(rat-reduce TAG INTEGER D)`, which takes the sign off, finds the greatest
-;; common divisor of the numerator's size and D, and divides both by it.
+;; ── The numerator simplified, and nothing divided ───────────────────────────
+;; `(rat-norm TAG P N D)`: the numerator simplified by `std.math.int`, and D put
+;; into normal form by an addition walk to zero, so that an answer has no high
+;; zero; nothing is divided, and a common factor of the two stays (S1f.6.33).
 (rule rat-norm-numerator ()
   :match  (rat-norm ?k ?p ?n ?d)
   :assert (int-norm (rat-num ?k ?d) ?p ?n)
   :why    "first the numerator, {?p} less {?n}, simplified")
 
-(rule rat-norm-reduce ()
+(rule rat-norm-denominator ()
   :match  (int-done (rat-num ?k ?d) ?i)
-  :assert (rat-reduce ?k ?i ?d)
-  :why    "the numerator is {?i}: now {?i} over {?d} in lowest terms")
+  :assert (add-walk (rat-den-norm ?k ?i) ?d z 0 z)
+  :why    "the numerator is {?i}: now {?d} with no high zero")
 
-(rule rat-reduce-pos ()
-  :match  (rat-reduce ?k (int ?a z) ?d)
-  :assert (rat-gcd (rat-g ?k pos ?a ?d) ?a ?d)
+(rule rat-norm-done ()
+  :match  (done (rat-den-norm ?k ?i) ?e)
+  :assert (rat-done ?k (rat ?i ?e))
+  :why    "{?i} over {?e}, not reduced")
+
+;; ── Lowest terms, on request ────────────────────────────────────────────────
+;; `rat-simplify` alone reduces (S1f.6.33): the numerator simplified, its sign
+;; taken off, the greatest common divisor of its size and the denominator by
+;; `std.math.gcd`'s tagged call, and both divided by it. A zero numerator is
+;; `(int z z)`, whose size is `z`: gcd(0, D) is D, and the answer 0 over 1.
+(rule rat-simplify-pos ()
+  :match  (int-done (rat-low ?k ?d) (int ?a z))
+  :assert (gcd-call (rat-g ?k pos ?a ?d) ?a ?d)
   :why    "the numerator is not negative: the greatest common divisor of {?a} and {?d}")
 
-(rule rat-reduce-neg ()
-  :match  (rat-reduce ?k (int z (n ?b ?c)) ?d)
-  :assert (rat-gcd (rat-g ?k neg (n ?b ?c) ?d) (n ?b ?c) ?d)
+(rule rat-simplify-neg ()
+  :match  (int-done (rat-low ?k ?d) (int z (n ?b ?c)))
+  :assert (gcd-call (rat-g ?k neg (n ?b ?c) ?d) (n ?b ?c) ?d)
   :why    "the numerator is negative: the greatest common divisor of its size and {?d}")
 
-;; Euclid's chain: the greatest common divisor of A and B is that of B and
-;; the remainder of A divided by B, and of A and zero it is A. Each step is a
-;; division of `std.math.decimal-arith`; the remainders get smaller, so the chain ends.
-(rule rat-gcd-step ()
-  :match  (rat-gcd ?k ?a (n ?b ?c))
-  :assert (div-call (rat-gcd-rem ?k (n ?b ?c)) ?a (n ?b ?c))
-  :why    "divide {?a} by {?b}{?c}: the remainder is what goes on")
-
-(rule rat-gcd-next ()
-  :match  (div-done (rat-gcd-rem ?k ?b) ?q ?r)
-  :assert (rat-gcd ?k ?b ?r)
-  :why    "the remainder is {?r}: now the greatest common divisor of {?b} and {?r}")
-
-(rule rat-gcd-end ()
-  :match  (rat-gcd ?k ?a z)
-  :assert (rat-gcd-is ?k ?a)
-  :why    "nothing is left over: the greatest common divisor is {?a}")
-
 (rule rat-lowest-numerator ()
-  :match  (rat-gcd-is (rat-g ?k ?s ?a ?d) ?g)
+  :match  (gcd-done (rat-g ?k ?s ?a ?d) ?g)
   :assert (div-call (rat-q-num ?k ?s ?d ?g) ?a ?g)
   :why    "the common divisor is {?g}: divide the numerator's size, {?a}, by it")
 
@@ -408,8 +421,8 @@
 
 (rule rat-simplify-start ()
   :match  (rat-operand-is (rat-only (rat-simplify ?x)) ?p ?n ?d)
-  :assert (rat-norm (rat-simplify ?x) ?p ?n ?d)
-  :why    "{?p} less {?n}, over {?d}, in lowest terms")
+  :assert (int-norm (rat-low (rat-simplify ?x) ?d) ?p ?n)
+  :why    "{?p} less {?n}, over {?d}, in lowest terms: first the numerator, simplified")
 
 (rule rat-simplify-answer ()
   :match  (rat-done (rat-simplify ?x) ?s)
@@ -432,8 +445,8 @@
   :why    "{?x} negated is {?s}")
 
 ;; ── Addition, and subtraction ───────────────────────────────────────────────
-;; The cross products are the numerator; the denominator is the product of
-;; the two; and the whole is put in lowest terms. The two rules after the
+;; The cross products are the numerator, simplified, and the denominator is the
+;; product of the two; nothing is reduced (S1f.6.33). The two rules after the
 ;; cross products serve a difference too, whose tag is its own request.
 (rule rat-sum-denominator ()
   :match  (rat-cross-is (rat-sum-num ?k ?d ?e) ?s ?t)
@@ -443,7 +456,7 @@
 (rule rat-sum-norm ()
   :match  (done (rat-sum-den ?k ?s ?t) ?f)
   :assert (rat-norm ?k ?s ?t ?f)
-  :why    "the denominator is {?f}: now lowest terms")
+  :why    "the denominator is {?f}: now the numerator, {?s} less {?t}, simplified")
 
 (rule rat-add-ask ()
   :match  (rat-add ?x ?y)
@@ -502,7 +515,8 @@
 ;; ── Multiplication ──────────────────────────────────────────────────────────
 ;; `(rat-mul-call TAG P1 N1 D1 P2 N2 D2)`: the numerators' product by
 ;; `std.math.int`, which hands over an integer in normal form; the denominators'
-;; by `std.math.decimal-arith`; then lowest terms.
+;; by `std.math.decimal-arith`, which has no high zero; nothing is reduced
+;; (S1f.6.33).
 (rule rat-mul-numerator ()
   :match  (rat-mul-call ?k ?p ?n ?d ?q ?m ?e)
   :assert (int-mul-call (rat-mul-num ?k ?d ?e) ?p ?n ?q ?m)
@@ -513,10 +527,10 @@
   :assert (mul-call (rat-mul-den ?k ?i) ?d ?e)
   :why    "the numerator is {?i}: the denominator is {?d} x {?e}")
 
-(rule rat-mul-reduce ()
+(rule rat-mul-done ()
   :match  (done (rat-mul-den ?k ?i) ?f)
-  :assert (rat-reduce ?k ?i ?f)
-  :why    "the denominator is {?f}: now lowest terms")
+  :assert (rat-done ?k (rat ?i ?f))
+  :why    "the denominator is {?f}: {?i} over {?f}, not reduced")
 
 (rule rat-mul-ask ()
   :match  (rat-mul ?x ?y)
@@ -637,8 +651,8 @@
 
 ;; ── The closing rule, and the theory's one entry ────────────────────────────
 ;; Every relation of the module is closed and every rule named, with
-;; `int-arith`, `decimal-arith`, `decimal` and `arith`, the entries of the
-;; modules it imports. Until M1f
+;; `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`, the entries of
+;; the modules it imports. Until M1f
 ;; S1f.6.35 a selection's closure followed the names a kept declaration
 ;; writes (E-20 of P1f.6's `findings.md`); every import brings its module
 ;; whole since, and the names stay for a program and a trace to read. `ein-infer/tests/rat_theory.rs` holds that nothing is
@@ -664,8 +678,7 @@
                (__closed__ rat-cmp-of) (__closed__ rat-operand-is)
                (__closed__ rat-zero-den) (__closed__ rat-cross)
                (__closed__ rat-cross-is) (__closed__ rat-mul-call)
-               (__closed__ rat-norm) (__closed__ rat-reduce)
-               (__closed__ rat-gcd) (__closed__ rat-gcd-is)
+               (__closed__ rat-norm)
                (__closed__ rat-done) (__closed__ rat-of) (__closed__ rat-den)
                (__closed__ rat-only) (__closed__ rat-first)
                (__closed__ rat-second) (__closed__ rat-x1)
@@ -674,17 +687,17 @@
                (__closed__ rat-sum-num) (__closed__ rat-sum-den)
                (__closed__ rat-cmp-num) (__closed__ rat-mul-num)
                (__closed__ rat-mul-den) (__closed__ rat-div-by)
-               (__closed__ rat-num) (__closed__ rat-g)
-               (__closed__ rat-gcd-rem) (__closed__ rat-q-num)
+               (__closed__ rat-num) (__closed__ rat-den-norm)
+               (__closed__ rat-low) (__closed__ rat-g) (__closed__ rat-q-num)
                (__closed__ rat-q-den) (__closed__ rat-rule) (rat-rule decimal-arith)
-               (rat-rule int-arith) (rat-rule decimal) (rat-rule arith) (rat-rule rat-operand)
+               (rat-rule int-arith) (rat-rule decimal) (rat-rule arith) (rat-rule gcd)
+               (rat-rule rat-operand)
                (rat-rule rat-operand-check) (rat-rule rat-operand-found)
                (rat-rule rat-operand-zero) (rat-rule rat-operand-second)
                (rat-rule rat-zero-only) (rat-rule rat-zero-first)
                (rat-rule rat-zero-second) (rat-rule rat-norm-numerator)
-               (rat-rule rat-norm-reduce) (rat-rule rat-reduce-pos)
-               (rat-rule rat-reduce-neg) (rat-rule rat-gcd-step)
-               (rat-rule rat-gcd-next) (rat-rule rat-gcd-end)
+               (rat-rule rat-norm-denominator) (rat-rule rat-norm-done)
+               (rat-rule rat-simplify-pos) (rat-rule rat-simplify-neg)
                (rat-rule rat-lowest-numerator)
                (rat-rule rat-lowest-denominator) (rat-rule rat-lowest-pos)
                (rat-rule rat-lowest-neg) (rat-rule rat-cross-first)
@@ -701,7 +714,7 @@
                (rat-rule rat-cmp-sides) (rat-rule rat-cmp-ask)
                (rat-rule rat-cmp-start) (rat-rule rat-cmp-answer)
                (rat-rule rat-mul-numerator) (rat-rule rat-mul-denominator)
-               (rat-rule rat-mul-reduce) (rat-rule rat-mul-ask)
+               (rat-rule rat-mul-done) (rat-rule rat-mul-ask)
                (rat-rule rat-mul-start) (rat-rule rat-mul-answer)
                (rat-rule rat-div-ask) (rat-rule rat-div-start)
                (rat-rule rat-div-pos) (rat-rule rat-div-neg)

@@ -274,7 +274,7 @@ note   = "M1f S1f.6.3 — the calculator's first program, the addition program o
 path   = "examples/arith/rat.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "solve --trace {out}/trace.md"]
-note   = "M1f S1f.6.8 — `std.math.rat`, fractions: a rational is `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, every answer in lowest terms. 1/2 + 1/3 = 5/6, 1/3 - 1/2 = -1/6, 1/2 divided by -3/4 = -2/3, 2/4 is 1/2, and a recipe scaled, 3/4 x 6/4 = 9/8, compared with a cup by two rules of the program's own. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
+note   = "M1f S1f.6.8 — `std.math.rat`, fractions: a rational is `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero; since S1f.6.33 an answer is not reduced, and `rat-simplify` is asked for lowest terms. 1/2 + 1/3 = 5/6, 1/3 - 1/2 = -1/6, 1/2 divided by -3/4 = -4/6, which is -2/3, 2/4 is 1/2, and a recipe scaled, 3/4 x 6/4 = 18/16, compared with a cup by two rules of the program's own and said as 9/8 by a third. Search-free, as every program of this directory (`ein-cli/tests/arith_search_free.rs`)."
 
 [[entry]]
 path   = "examples/arith/sub.ein"
@@ -3467,7 +3467,7 @@ note   = "M1f S1f.6.16 (2026-11-15): the rules every positional base shares, wri
 path   = "stdlib/math/rat.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8 (2026-11-12): rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith` that is not zero, in lowest terms; the module calls the two theories below it and edits neither. Requests `rat-simplify`, `rat-neg`, `rat-add`, `rat-sub`, `rat-mul`, `rat-div` and `rat-cmp`, answered by `rat-simple-of`, `rat-neg-of`, `rat-sum-of`, `rat-diff-of`, `rat-product-of`, `rat-quot-of` and `rat-cmp-of`. Lowest terms is Euclid's chain, each step a division of `std.math.decimal-arith`. A zero denominator, and a division by a rational that is zero, derive `std.math.arith`'s flag, `(division-by-zero REQUEST)`, and its rule derives `(false)`; an operand's fault is flagged on the request, and the rational's own shape is `(not-rational …)` (S1f.6.38). Every rule has one premise; `rat-arith`, the closing rule, closes every relation, names every rule and names `int-arith` and `decimal-arith`. `ein-infer/tests/rat_theory.rs` holds the module to exact fractions. The module alone states no request: its closing rules fire and nothing else."
+note   = "M1f S1f.6.8 (2026-11-12): rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith` that is not zero, reduced only on request since S1f.6.33; the module calls the two theories below it and edits neither. Requests `rat-simplify`, `rat-neg`, `rat-add`, `rat-sub`, `rat-mul`, `rat-div` and `rat-cmp`, answered by `rat-simple-of`, `rat-neg-of`, `rat-sum-of`, `rat-diff-of`, `rat-product-of`, `rat-quot-of` and `rat-cmp-of`. Since S1f.6.33 (round 2's item 54, the user's (b)) an operation answers unreduced, and `rat-simplify` alone reduces, by `std.math.gcd`'s tagged call; the module holds no chain of its own. A zero denominator, and a division by a rational that is zero, derive `std.math.arith`'s flag, `(division-by-zero REQUEST)`, and its rule derives `(false)`; an operand's fault is flagged on the request, and the rational's own shape is `(not-rational …)` (S1f.6.38). Every rule has one premise; `rat-arith`, the closing rule, closes every relation, names every rule and names `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`. `ein-infer/tests/rat_theory.rs` holds the module to exact fractions. The module alone states no request: its closing rules fire and nothing else."
 
 [[entry]]
 path   = "stdlib/slots.ein"
@@ -4681,37 +4681,37 @@ note   = "M1f S1f.6.13, `std.math.num9`: a chain, a rule of the program's own fr
 path   = "tests/stdlib/math/rat/01_simplify.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: lowest terms: `(rat-simplify X)` answered by `(rat-simple-of X S)`, eleven operands: 2/4, -6/8, zero as 0/1, a numerator not simplified, a denominator with high zeros, and 1071/462 = 51/22 by a chain of three divisions."
+note   = "M1f S1f.6.8, `std.math.rat`: lowest terms: `(rat-simplify X)` answered by `(rat-simple-of X S)`, the one request that reduces since S1f.6.33, by `std.math.gcd`'s tagged call; eleven operands: 2/4, -6/8, zero as 0/1, a numerator not simplified, a denominator with high zeros, and 1071/462 = 51/22 by a chain of three divisions."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/02_neg.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: negation, the numerator's parts exchanged and the whole in lowest terms: five operands."
+note   = "M1f S1f.6.8, `std.math.rat`: negation, the numerator's parts exchanged, not reduced since S1f.6.33: five operands, -(2/4) = -2/4 and -(0/5) = 0/5."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/03_add.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: addition, the cross products over the product of the denominators: eight sums in every combination of signs, 1/2 + 1/3 = 5/6, a sum that reduces and a sum of zero; no pair asked both ways round."
+note   = "M1f S1f.6.8, `std.math.rat`: addition, the cross products over the product of the denominators, not reduced since S1f.6.33: eight sums in every combination of signs, 1/2 + 1/3 = 5/6, 1/6 + 1/3 = 9/18 and a sum of zero, 0/49; no pair asked both ways round."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/04_sub.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: subtraction: seven differences in every combination of signs."
+note   = "M1f S1f.6.8, `std.math.rat`: subtraction: seven differences in every combination of signs, not reduced since S1f.6.33."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/05_mul.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: multiplication, the numerators' product by `std.math.int` over the denominators': seven products, by zero and to 1/1 among them."
+note   = "M1f S1f.6.8, `std.math.rat`: multiplication, the numerators' product by `std.math.int` over the denominators', not reduced since S1f.6.33: seven products, by zero and to 7/7 among them."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/06_div.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: division, exact, one rational and no remainder: six quotients, by a positive divisor, by a negative one, and by one whose numerator is not simplified."
+note   = "M1f S1f.6.8, `std.math.rat`: division, exact, one rational and no remainder, not reduced since S1f.6.33: six quotients, by a positive divisor, by a negative one, and by one whose numerator is not simplified."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/07_cmp.ein"
@@ -4723,13 +4723,13 @@ note   = "M1f S1f.6.8, `std.math.rat`: comparison by value, the cross products o
 path   = "tests/stdlib/math/rat/08_unsimplified.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: an operand that is not in lowest terms answers as its normal form does: 2/4 and 1/2 under each of the five operations."
+note   = "M1f S1f.6.8, `std.math.rat`: an operand that is not in lowest terms is read by value: 2/4 and 1/2 under each of the five operations; since S1f.6.33 the two answers are two facts of one value, and four rules of the program's own ask `rat-simplify` of each, one lowest terms for the two."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/09_named_and_chained.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.8, `std.math.rat`: operands by name through `std.math.decimal-arith`'s `let`, and two rules of the program's own, each deriving a request from an answer the theory computed."
+note   = "M1f S1f.6.8, `std.math.rat`: operands by name through `std.math.decimal-arith`'s `let`, and two rules of the program's own, each deriving a request from an answer the theory computed; the chain carries 15/24, not reduced since S1f.6.33."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/10_div_by_zero_rational.ein"
@@ -4807,13 +4807,13 @@ note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r6`: `p` stated twice: `let-twic
 path   = "tests/stdlib/math/rat/22_integer_where_a_rational_goes.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r7`: `(rat-add (int …) Y)`: silent (Q-M1f.277 (b)), R is {∅}."
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r7`: `(rat-add (int …) Y)`: silent (Q-M1f.277 (b)), R is {∅}; the request beside it answered, 1/2 + 1/2 = 4/4 (S1f.6.33)."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/23_natural_where_a_rational_goes.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r7b`: `(rat-add (n z 5) Y)`: silent (Q-M1f.277 (b)), R is {∅}."
+note   = "M1f S1f.6.38, `std.math.rat`, E-38's `r7b`: `(rat-add (n z 5) Y)`: silent (Q-M1f.277 (b)), R is {∅}; the request beside it answered, 1/2 + 1/2 = 4/4 (S1f.6.33)."
 
 [[entry]]
 path   = "tests/stdlib/math/rat/24_digit_as_the_numerator.ein"
@@ -4856,6 +4856,12 @@ path   = "tests/stdlib/math/rat/30_undeclared_only_operand.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 note   = "M1f S1f.6.38, `std.math.rat`: `(rat-simplify foo)`: `rat-bad-only`, `(solve :expect (false))`."
+
+[[entry]]
+path   = "tests/stdlib/math/rat/31_equal_values_two_facts.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "M1f S1f.6.33, `std.math.rat`: an answer is not canonical: 1/2 + 1/2 = 4/4, 1/4 + 3/4 = 16/16 and 3/2 x 2/3 = 6/6, three facts of one value; a rule of the program's own asks `rat-cmp` of each against one, `eq`, and `rat-simplify` of each, 1/1."
 
 [[entry]]
 path   = "tests/stdlib/slots/01_partition.ein"

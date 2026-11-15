@@ -1,23 +1,38 @@
-;;; `std.math.rat` — an operand that is not in lowest terms answers as its normal
-;;; form does. M1f S1f.6.8.
+;;; `std.math.rat` — an operand that is not in lowest terms is read by value:
+;;; its answer has the value its normal form's has, and the same lowest terms.
+;;; M1f S1f.6.8; S1f.6.33.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; An operand is read by value. 2/4 and 1/2 are the one rational, and every
-;;; operation gives the two the same answer, in lowest terms; the request is
-;;; repeated as it was written, so they are two requests with two result
-;;; facts.
+;;; An operand is read by value. 2/4 and 1/2 are the one rational. **An
+;;; operation answers unreduced** since S1f.6.33 (round 2's item 54, the
+;;; user's *"(b)"*), so the two answers are two values' spellings, two
+;;; different facts of one value: the cross products of 2/4 carry its factor
+;;; 2 into the answer. `rat-simplify` is the request that reduces, and it
+;;; gives the two answers one lowest terms. The request is repeated as it was
+;;; written, so they are two requests with two result facts.
 ;;;
-;;;   1/2 + -3/5 = -1/10     1/2 - -3/5 = 11/10     1/2 x -3/5 = -3/10
-;;;   1/2 / -3/5 = -5/6      1/2 against -3/5: gt
+;;;   2/4 + -3/5 = -2/20      1/2 + -3/5 = -1/10      both -1/10
+;;;   2/4 - -3/5 = 22/20      1/2 - -3/5 = 11/10      both 11/10
+;;;   2/4 x -3/5 = -6/20      1/2 x -3/5 = -3/10      both -3/10
+;;;   2/4 / -3/5 = -10/12     1/2 / -3/5 = -5/6       both -5/6
+;;;   2/4 against -3/5: gt    1/2 against -3/5: gt
+;;;
+;;; ── The program's own rules ────────────────────────────────────────────────
+;;;
+;;; Each of the four rules asks `rat-simplify` of an answer: the program's
+;;; point, that a half spelt either way is one rational, is the lowest terms
+;;; of the two answers, which are one (the choice of S1f.6.33's T1 table).
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; Five claims, each a result relation's whole extent: two facts, one for
-;;; each spelling of a half, with the same last argument.
+;;; Six claims, each a result relation's whole extent: two facts, one for
+;;; each spelling of a half, of one value; and `rat-simple-of`'s, the eight
+;;; answers in lowest terms, the two of each operation alike.
 
 (import std.math.rat :symbols (rat-arith rat-add rat rat-sub rat-mul rat-div rat-cmp rat-sum-of
-                          rat-diff-of rat-product-of rat-quot-of rat-cmp-of))
+                          rat-diff-of rat-product-of rat-quot-of rat-cmp-of rat-simplify
+                          rat-simple-of))
 (import std.math.int :symbols (int))
 (import std.math.decimal-arith)
 (import std.math.decimal :symbols (n))
@@ -34,29 +49,60 @@
 (rat-div (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
 (rat-cmp (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)))
 
+(rule sum-in-lowest-terms ()
+  :match  (rat-sum-of ?x ?y ?s)
+  :assert (rat-simplify ?s)
+  :why    "{?x} + {?y} = {?s}: in lowest terms?")
+
+(rule difference-in-lowest-terms ()
+  :match  (rat-diff-of ?x ?y ?s)
+  :assert (rat-simplify ?s)
+  :why    "{?x} - {?y} = {?s}: in lowest terms?")
+
+(rule product-in-lowest-terms ()
+  :match  (rat-product-of ?x ?y ?s)
+  :assert (rat-simplify ?s)
+  :why    "{?x} x {?y} = {?s}: in lowest terms?")
+
+(rule quotient-in-lowest-terms ()
+  :match  (rat-quot-of ?x ?y ?s)
+  :assert (rat-simplify ?s)
+  :why    "{?x} divided by {?y} = {?s}: in lowest terms?")
+
 (solve :expect (region (model)))
 
 (query :goal (rat-sum-of ?x ?y ?s)
        :goal-text "{?x} + {?y} = {?s}"
-       :expect (model (rat-sum-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 1)) (n (n z 1) 0)))
+       :expect (model (rat-sum-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 2)) (n (n z 2) 0)))
                       (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 1)) (n (n z 1) 0)))))
 
 (query :goal (rat-diff-of ?x ?y ?s)
        :goal-text "{?x} - {?y} = {?s}"
-       :expect (model (rat-diff-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int (n (n z 1) 1) z) (n (n z 1) 0)))
+       :expect (model (rat-diff-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int (n (n z 2) 2) z) (n (n z 2) 0)))
                       (rat-diff-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int (n (n z 1) 1) z) (n (n z 1) 0)))))
 
 (query :goal (rat-product-of ?x ?y ?s)
        :goal-text "{?x} x {?y} = {?s}"
-       :expect (model (rat-product-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 3)) (n (n z 1) 0)))
+       :expect (model (rat-product-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 6)) (n (n z 2) 0)))
                       (rat-product-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 3)) (n (n z 1) 0)))))
 
 (query :goal (rat-quot-of ?x ?y ?s)
        :goal-text "{?x} divided by {?y} = {?s}"
-       :expect (model (rat-quot-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 5)) (n z 6)))
+       :expect (model (rat-quot-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n (n z 1) 0)) (n (n z 1) 2)))
                       (rat-quot-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) (rat (int z (n z 5)) (n z 6)))))
 
 (query :goal (rat-cmp-of ?x ?y ?o)
        :goal-text "{?x} against {?y}: {?o}"
        :expect (model (rat-cmp-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 3)) (n z 5)) gt)
                       (rat-cmp-of (rat (int (n z 1) z) (n z 2)) (rat (int z (n z 3)) (n z 5)) gt)))
+
+(query :goal (rat-simple-of ?x ?s)
+       :goal-text "{?x} is {?s}"
+       :expect (model (rat-simple-of (rat (int z (n z 2)) (n (n z 2) 0)) (rat (int z (n z 1)) (n (n z 1) 0)))
+                      (rat-simple-of (rat (int z (n z 1)) (n (n z 1) 0)) (rat (int z (n z 1)) (n (n z 1) 0)))
+                      (rat-simple-of (rat (int (n (n z 2) 2) z) (n (n z 2) 0)) (rat (int (n (n z 1) 1) z) (n (n z 1) 0)))
+                      (rat-simple-of (rat (int (n (n z 1) 1) z) (n (n z 1) 0)) (rat (int (n (n z 1) 1) z) (n (n z 1) 0)))
+                      (rat-simple-of (rat (int z (n z 6)) (n (n z 2) 0)) (rat (int z (n z 3)) (n (n z 1) 0)))
+                      (rat-simple-of (rat (int z (n z 3)) (n (n z 1) 0)) (rat (int z (n z 3)) (n (n z 1) 0)))
+                      (rat-simple-of (rat (int z (n (n z 1) 0)) (n (n z 1) 2)) (rat (int z (n z 5)) (n z 6)))
+                      (rat-simple-of (rat (int z (n z 5)) (n z 6)) (rat (int z (n z 5)) (n z 6)))))

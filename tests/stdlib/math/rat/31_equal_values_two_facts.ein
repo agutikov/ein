@@ -1,0 +1,93 @@
+;;; `std.math.rat` — two answers of one value are two facts, and `rat-cmp` is
+;;; the equality. M1f S1f.6.33.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; **An answer is not canonical** since S1f.6.33 (round 2's item 54, the
+;;; user's *"(b)"*): an operation answers unreduced, so two requests whose
+;;; values are equal answer two different facts. A rule that wants *the same
+;;; number* asks `rat-cmp`, which compares by cross products and needs no
+;;; lowest terms, or `rat-simplify`, which gives every rational of one value
+;;; one fact.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   1/2 + 1/2 = 4/4       1/4 + 3/4 = 16/16       3/2 x 2/3 = 6/6
+;;;
+;;; Three facts, one value. The program's rule `is-it-whole` asks `rat-cmp` of
+;;; each answer against `one`, 1/1, and `one-by-value` reads `eq`: each is
+;;; whole.
+;;; `in-lowest-terms` asks `rat-simplify` of each: all three are 1/1.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `rat-sum-of` and `rat-product-of` whole, three answers in three
+;;; spellings; `rat-cmp-of` whole, each `eq` against `one`; `whole`, the three
+;;; answers; `rat-simple-of`, the three answers' one lowest terms, 1/1.
+
+(import std.math.rat :symbols (rat-arith rat rat-add rat-mul rat-cmp rat-simplify rat-sum-of
+                          rat-product-of rat-cmp-of rat-simple-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal-arith :symbols (let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation whole Rational
+  :why "{?1} is a whole one")
+(relation answer Rational
+  :why "{?1} is an answer")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (and (__closed__ whole) (__closed__ answer))
+  :why    "the program's own relations are closed, as the theory's are")
+
+(let one (rat (int (n z 1) z) (n z 1)))
+
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2)))
+(rat-add (rat (int (n z 1) z) (n z 4)) (rat (int (n z 3) z) (n z 4)))
+(rat-mul (rat (int (n z 3) z) (n z 2)) (rat (int (n z 2) z) (n z 3)))
+
+(rule a-sum-is-an-answer ()
+  :match  (rat-sum-of ?x ?y ?s)
+  :assert (answer ?s)
+  :why    "{?x} + {?y} = {?s}")
+
+(rule a-product-is-an-answer ()
+  :match  (rat-product-of ?x ?y ?s)
+  :assert (answer ?s)
+  :why    "{?x} x {?y} = {?s}")
+
+(rule is-it-whole ()
+  :match  (answer ?s)
+  :assert (and (rat-cmp ?s one) (rat-simplify ?s))
+  :why    "is {?s} one? and what is it in lowest terms?")
+
+(rule one-by-value ()
+  :match  (rat-cmp-of ?s one eq)
+  :assert (whole ?s)
+  :why    "{?s} is one, by value")
+
+(solve :expect (region (model)))
+
+(query :goal (rat-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (rat-sum-of (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2)) (rat (int (n z 4) z) (n z 4)))
+                      (rat-sum-of (rat (int (n z 1) z) (n z 4)) (rat (int (n z 3) z) (n z 4)) (rat (int (n (n z 1) 6) z) (n (n z 1) 6)))))
+(query :goal (rat-product-of ?x ?y ?s)
+       :goal-text "{?x} x {?y} = {?s}"
+       :expect (model (rat-product-of (rat (int (n z 3) z) (n z 2)) (rat (int (n z 2) z) (n z 3)) (rat (int (n z 6) z) (n z 6)))))
+(query :goal (rat-cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (rat-cmp-of (rat (int (n z 4) z) (n z 4)) one eq)
+                      (rat-cmp-of (rat (int (n (n z 1) 6) z) (n (n z 1) 6)) one eq)
+                      (rat-cmp-of (rat (int (n z 6) z) (n z 6)) one eq)))
+(query :goal (whole ?s)
+       :goal-text "{?s} is whole"
+       :expect (model (whole (rat (int (n z 4) z) (n z 4)))
+                      (whole (rat (int (n (n z 1) 6) z) (n (n z 1) 6)))
+                      (whole (rat (int (n z 6) z) (n z 6)))))
+(query :goal (rat-simple-of ?x ?s)
+       :goal-text "{?x} is {?s}"
+       :expect (model (rat-simple-of (rat (int (n z 4) z) (n z 4)) (rat (int (n z 1) z) (n z 1)))
+                      (rat-simple-of (rat (int (n (n z 1) 6) z) (n (n z 1) 6)) (rat (int (n z 1) z) (n z 1)))
+                      (rat-simple-of (rat (int (n z 6) z) (n z 6)) (rat (int (n z 1) z) (n z 1)))))

@@ -1,5 +1,6 @@
-;;; `std.math.rat` — a rational is an integer over a natural number, and its normal
-;;; form is in lowest terms. M1f S1f.6.8.
+;;; `std.math.rat` — a rational is an integer over a natural number, and its
+;;; lowest terms are asked for by `rat-simplify`, the one request that
+;;; reduces. M1f S1f.6.8; S1f.6.33.
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
@@ -7,16 +8,18 @@
 ;;; number of `std.math.decimal-arith` that is not zero. A request fact `(rat-simplify X)`
 ;;; is answered by `(rat-simple-of X S)`: S is X's one normal form, the
 ;;; numerator simplified, the two with no common divisor but 1, the
-;;; denominator with no high zero, and zero written 0 over 1.
+;;; denominator with no high zero, and zero written 0 over 1. Since S1f.6.33
+;;; no other request reduces (round 2's item 54, the user's *"(b)"*).
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────
 ;;;
 ;;; The operand stands for itself (`rat-simplify-ask`, `rat-operand`), and its
 ;;; denominator is compared with zero (`rat-operand-check`,
-;;; `rat-operand-found`, `rat-simplify-start`). The numerator is simplified by
-;;; `std.math.int` (`rat-norm-numerator`, `rat-norm-reduce`) and its sign taken off
-;;; (`rat-reduce-pos`, `rat-reduce-neg`). Then Euclid's chain, each step a
-;;; division of `std.math.decimal-arith` (`rat-gcd-step`, `rat-gcd-next`, `rat-gcd-end`):
+;;; `rat-operand-found`). The numerator is simplified by `std.math.int`
+;;; (`rat-simplify-start`) and its sign taken off (`rat-simplify-pos`,
+;;; `rat-simplify-neg`), and the greatest common divisor of its size and the
+;;; denominator is `std.math.gcd`'s tagged call, `(gcd-call TAG A D)`: Euclid's
+;;; chain, each step a division of `std.math.decimal-arith`:
 ;;;
 ;;;   gcd(1071, 462):  1071 = 2 x 462 + 147;  462 = 3 x 147 + 21;
 ;;;                    147 = 7 x 21 + 0;  so 21, and 1071/462 is 51/22

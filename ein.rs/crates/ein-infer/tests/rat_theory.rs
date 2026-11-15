@@ -3,9 +3,13 @@
 //!
 //! `stdlib/math/rat.ein` is the calculator's second extension: a rational is
 //! `(rat Z D)`, an integer of `std.math.int` over a natural number of `std.math.decimal-arith`
-//! that is not zero, and its normal form is in lowest terms. The module calls
-//! the two theories below it and edits neither. Ein has no numbers, so what
-//! holds the theory's answers is here.
+//! that is not zero. **An operation answers unreduced** since M1f
+//! [S1f.6.33](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md)
+//! (round 2's item 54, the user's *"(b)"*): the numerator in `std.math.int`'s
+//! normal form and the denominator with no high zero, a common factor of the
+//! two left where it is; `rat-simplify` alone answers in lowest terms, by
+//! `std.math.gcd`. The module calls the theories below it and edits none. Ein
+//! has no numbers, so what holds the theory's answers is here.
 //!
 //! | claim | where |
 //! |---|---|
@@ -15,22 +19,27 @@
 //! | simplification and negation are right | [`simplification_and_negation_are_right`] |
 //! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
 //! | an integer or a natural number is not a rational operand | [`an_integer_is_not_a_rational_operand`] |
-//! | **every answer is in lowest terms**, and each request has exactly one | all of them, through [`hold`] |
+//! | **every answer is right by value**, cross-multiplied against the oracle, in the module's form (the numerator with one part `z`, the denominator with no high zero, not zero), and each request has exactly one | all of them, through [`hold`] |
+//! | **`rat-simplify`'s answers, and they alone, are in lowest terms** | [`simplification_and_negation_are_right`], [`only_rat_simplify_reduces`] |
+//! | two requests whose values are equal answer two different facts, and `rat-cmp` says `eq` of them | [`equal_values_are_two_facts_and_rat_cmp_says_eq`] |
 //! | **a zero denominator, and a division by zero, derive the flag and `(false)`**, the request as written, and never a number | [`a_zero_denominator_is_flagged_and_false`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_each_operation`] |
 //! | **the rule of the theory**, on the module's text: every rule has one premise | [`every_rule_has_one_premise`] |
 //! | no `absent`, `not`, `or` or guard, and no rule of the module concludes `(false)` | [`the_theory_writes_no_negation_and_no_guard`] |
-//! | the closing rule closes every relation and names every rule, and names the two entries below | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
+//! | the closing rule closes every relation and names every rule, and names the entries below, `std.math.gcd`'s among them | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //!
 //! The oracle is a pair of `i128` reduced by Euclid's algorithm, written out
-//! below. The *measured* half of the rule of the theory is `arith_batch.rs`;
+//! below; an unreduced answer is compared with it by cross products. The *measured* half of the rule of the theory is `arith_batch.rs`;
 //! the search-free claim, on the binary, is
 //! `ein-cli/tests/arith_search_free.rs`.
 //!
-//! **The sizes are small on purpose.** Lowest terms is a chain of divisions,
-//! so one request of two one-digit fractions is some 450 firings, and a
-//! stored fact costs about a kilobyte (E-26 of P1f.6's `findings.md`).
-//! [`hold`] asks its cases in programs of [`CHUNK`] requests.
+//! **The sizes are small on purpose.** A stored fact costs about a kilobyte
+//! (E-26 of P1f.6's `findings.md`). Lowest terms was a chain of divisions in
+//! every request, some 450 firings for two one-digit fractions; since S1f.6.33
+//! only `rat-simplify` pays for it, and a sum of two one-digit fractions is
+//! some hundred firings, so the exhausting set could grow fivefold for the
+//! same facts. It is kept, so that the record's measures compare. [`hold`]
+//! asks its cases in programs of [`CHUNK`] requests.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -101,6 +110,63 @@ fn normal(f: Frac) -> String {
 
 /// An operand as written, and its value.
 type Operand = (String, Frac);
+
+/// A natural number as the theory writes it in an answer: `z` or `(n P D)`,
+/// **with no high zero**; `None` for anything else.
+fn read_natural(text: &str) -> Option<u128> {
+    if text == "z" {
+        return Some(0);
+    }
+    let mut digits = String::new();
+    let mut rest = text;
+    while let Some(inner) = rest.strip_prefix("(n ").and_then(|r| r.strip_suffix(')')) {
+        let (prefix, digit) = inner.rsplit_once(' ')?;
+        if digit.len() != 1 || !digit.chars().all(|c| c.is_ascii_digit()) {
+            return None;
+        }
+        digits.insert_str(0, digit);
+        rest = prefix;
+    }
+    (rest == "z" && !digits.starts_with('0') && !digits.is_empty())
+        .then(|| digits.parse().ok())
+        .flatten()
+}
+
+/// An answer, read: `(rat (int P N) D)` **in the module's form**, the
+/// numerator with one part `z`, both parts and D with no high zero, D not
+/// zero; its value, unreduced, as numerator and denominator. `None` for any
+/// other spelling, so that an answer out of form fails as a wrong one does.
+fn read_rational(text: &str) -> Option<(i128, i128)> {
+    let p = parts(text);
+    if p.len() != 3 || p[0] != "rat" {
+        return None;
+    }
+    let i = parts(&p[1]);
+    if i.len() != 3 || i[0] != "int" || (i[1] != "z" && i[2] != "z") {
+        return None;
+    }
+    let (pos, neg, den) = (
+        read_natural(&i[1])?,
+        read_natural(&i[2])?,
+        read_natural(&p[2])?,
+    );
+    (den != 0).then(|| (pos as i128 - neg as i128, den as i128))
+}
+
+/// Whether an answer is `value`, by value: in the module's form, and its
+/// cross products with the oracle's equal. An unreduced answer of two
+/// twelve-digit operands has a numerator of twenty-four digits, whose product
+/// with the oracle's denominator `i128` does not hold: where it overflows,
+/// the answer is reduced by Euclid's algorithm first, which leaves the cross
+/// products' equality as it was.
+fn is_value(text: &str, value: Frac) -> bool {
+    read_rational(text).is_some_and(|(n, d)| {
+        match (n.checked_mul(value.1), value.0.checked_mul(d)) {
+            (Some(a), Some(b)) => a == b,
+            _ => frac(n, d) == value,
+        }
+    })
+}
 
 /// `n` over `d` as written, with `n`'s sign in the numerator's parts and
 /// nothing reduced.
@@ -206,66 +272,81 @@ fn run(body: &str, relation: &str) -> Vec<String> {
         .collect()
 }
 
+/// What exact fractions say a request's answer is: a rational's value,
+/// which an answer is held to by cross products, or an order, held as
+/// written.
+#[derive(Clone, Debug)]
+enum Want {
+    Value(Frac),
+    Order(&'static str),
+}
+
+impl Want {
+    fn holds(&self, text: &str) -> bool {
+        match self {
+            Want::Value(v) => is_value(text, *v),
+            Want::Order(o) => text == *o,
+        }
+    }
+}
+
 /// One operation over two rationals: its request and result relations, and
-/// what exact fractions say the result's last argument is, in the theory's
-/// spelling; `None` where the request has no answer, a division by zero.
+/// what exact fractions say the result's last argument is; `None` where the
+/// request has no answer, a division by zero.
 struct Op {
     request: &'static str,
     result: &'static str,
-    answer: fn(Frac, Frac) -> Option<String>,
+    answer: fn(Frac, Frac) -> Option<Want>,
 }
 
 const OPS: [Op; 5] = [
     Op {
         request: "rat-add",
         result: "rat-sum-of",
-        answer: |a, b| Some(normal(frac(a.0 * b.1 + b.0 * a.1, a.1 * b.1))),
+        answer: |a, b| Some(Want::Value(frac(a.0 * b.1 + b.0 * a.1, a.1 * b.1))),
     },
     Op {
         request: "rat-sub",
         result: "rat-diff-of",
-        answer: |a, b| Some(normal(frac(a.0 * b.1 - b.0 * a.1, a.1 * b.1))),
+        answer: |a, b| Some(Want::Value(frac(a.0 * b.1 - b.0 * a.1, a.1 * b.1))),
     },
     Op {
         request: "rat-mul",
         result: "rat-product-of",
-        answer: |a, b| Some(normal(frac(a.0 * b.0, a.1 * b.1))),
+        answer: |a, b| Some(Want::Value(frac(a.0 * b.0, a.1 * b.1))),
     },
     // A divisor that is zero has no answer and is a contradiction, so one
     // such request would kill the whole program.
     Op {
         request: "rat-div",
         result: "rat-quot-of",
-        answer: |a, b| (b.0 != 0).then(|| normal(frac(a.0 * b.1, a.1 * b.0))),
+        answer: |a, b| (b.0 != 0).then(|| Want::Value(frac(a.0 * b.1, a.1 * b.0))),
     },
     Op {
         request: "rat-cmp",
         result: "rat-cmp-of",
         answer: |a, b| {
-            Some(
-                match (a.0 * b.1).cmp(&(b.0 * a.1)) {
-                    std::cmp::Ordering::Less => "lt",
-                    std::cmp::Ordering::Equal => "eq",
-                    std::cmp::Ordering::Greater => "gt",
-                }
-                .to_string(),
-            )
+            Some(Want::Order(match (a.0 * b.1).cmp(&(b.0 * a.1)) {
+                std::cmp::Ordering::Less => "lt",
+                std::cmp::Ordering::Equal => "eq",
+                std::cmp::Ordering::Greater => "gt",
+            }))
         },
     },
 ];
 
 /// Ask every pair, [`CHUNK`] requests a program, and hold every answer:
 /// **exactly one** result fact per request, repeating the operands as
-/// written, its last argument what the fractions say, in lowest terms. No
-/// program derives `(false)`.
+/// written, its last argument what the fractions say **by value**, in the
+/// module's form (S1f.6.33: not reduced). No program derives `(false)`.
 fn hold(op: &Op, cases: &[(Operand, Operand)]) {
-    let mut want: BTreeMap<(String, String), String> = BTreeMap::new();
+    let mut want: BTreeMap<(String, String), Want> = BTreeMap::new();
     for ((x, a), (y, b)) in cases {
         if let Some(answer) = (op.answer)(*a, *b) {
             want.insert((x.clone(), y.clone()), answer);
         }
     }
-    let requests: Vec<(&(String, String), &String)> = want.iter().collect();
+    let requests: Vec<(&(String, String), &Want)> = want.iter().collect();
     for chunk in requests.chunks(CHUNK) {
         let body: String = chunk
             .iter()
@@ -281,10 +362,9 @@ fn hold(op: &Op, cases: &[(Operand, Operand)]) {
         }
         for (request, answer) in chunk {
             let answers = got.remove(*request).unwrap_or_default();
-            assert_eq!(
-                answers,
-                std::slice::from_ref(*answer),
-                "({} {} {}): the fractions say {answer}",
+            assert!(
+                matches!(answers.as_slice(), [one] if answer.holds(one)),
+                "({} {} {}): the fractions say {answer:?}, the theory {answers:?}",
                 op.request,
                 request.0,
                 request.1,
@@ -400,7 +480,9 @@ fn an_operand_is_read_by_value() {
     }
 }
 
-/// The two requests with one operand: `(rat-simplify X)` and `(rat-neg X)`.
+/// The two requests with one operand: `(rat-simplify X)`, held to its one
+/// normal form **in lowest terms**, as written, and `(rat-neg X)`, held by
+/// value, since it reduces nothing (S1f.6.33).
 #[test]
 fn simplification_and_negation_are_right() {
     let mut rng = Rng(0x5146_0628);
@@ -433,17 +515,17 @@ fn simplification_and_negation_are_right() {
             v,
         ));
     }
-    type Unary = (&'static str, &'static str, fn(Frac) -> Frac);
+    type Unary = (&'static str, &'static str, fn(Frac) -> Frac, bool);
     let unary: [Unary; 2] = [
-        ("rat-simplify", "rat-simple-of", |v| v),
-        ("rat-neg", "rat-neg-of", |v| Frac(-v.0, v.1)),
+        ("rat-simplify", "rat-simple-of", |v| v, true),
+        ("rat-neg", "rat-neg-of", |v| Frac(-v.0, v.1), false),
     ];
-    for (request, result, f) in unary {
-        let mut want: BTreeMap<String, String> = BTreeMap::new();
+    for (request, result, f, lowest) in unary {
+        let mut want: BTreeMap<String, Frac> = BTreeMap::new();
         for (x, v) in &operands {
-            want.insert(x.clone(), normal(f(*v)));
+            want.insert(x.clone(), f(*v));
         }
-        let requests: Vec<(&String, &String)> = want.iter().collect();
+        let requests: Vec<(&String, &Frac)> = want.iter().collect();
         for chunk in requests.chunks(CHUNK) {
             let body: String = chunk
                 .iter()
@@ -456,11 +538,19 @@ fn simplification_and_negation_are_right() {
                 got.entry(p[1].clone()).or_default().push(p[2].clone());
             }
             for (x, answer) in chunk {
-                assert_eq!(
-                    got.remove(*x).unwrap_or_default(),
-                    std::slice::from_ref(*answer),
-                    "({request} {x})"
-                );
+                let answers = got.remove(*x).unwrap_or_default();
+                if lowest {
+                    assert_eq!(
+                        answers,
+                        [normal(**answer)],
+                        "({request} {x}): in lowest terms"
+                    );
+                } else {
+                    assert!(
+                        matches!(answers.as_slice(), [one] if is_value(one, **answer)),
+                        "({request} {x}): the fractions say {answer:?}, the theory {answers:?}"
+                    );
+                }
             }
             assert!(got.is_empty(), "{result}: answers nobody asked for");
         }
@@ -504,7 +594,22 @@ fn named_operands_work_for_every_request() {
                 "two answers: {fact}"
             );
         }
-        assert_eq!(got, want, "{} by name", op.request);
+        assert_eq!(
+            got.keys().collect::<Vec<_>>(),
+            want.keys().collect::<Vec<_>>(),
+            "{} by name: the requests answered",
+            op.request
+        );
+        for (request, answer) in &want {
+            assert!(
+                answer.holds(&got[request]),
+                "({} {} {}) by name: the fractions say {answer:?}, the theory {}",
+                op.request,
+                request.0,
+                request.1,
+                got[request]
+            );
+        }
     }
 }
 
@@ -521,14 +626,163 @@ fn an_integer_is_not_a_rational_operand() {
          (rat-add n5 {half})\n(rat-neg {five})\n(rat-mul {half} {five})\n\
          (rat-add {half} {half})\n"
     );
+    // 1/2 + 1/2 is 4/4: not reduced (S1f.6.33).
     assert_eq!(
         run(&body, "rat-sum-of"),
-        [format!("(rat-sum-of {half} {half} {})", normal(frac(1, 1)))]
+        [format!("(rat-sum-of {half} {half} {})", spelt(4, 0, 4))]
     );
     assert!(run(&body, "rat-neg-of").is_empty());
     assert!(run(&body, "rat-product-of").is_empty());
     assert!(run(&body, "division-by-zero").is_empty());
     assert!(run(&body, "false").is_empty());
+}
+
+// ── unreduced answers, and lowest terms on request (S1f.6.33) ──────
+
+/// **No request reduces but `rat-simplify`.** Over every pair of the
+/// exhausting set, an operation's answer is the cross products, or the
+/// numerators' product, over the product of the denominators, **as
+/// computed**: its numerator in `std.math.int`'s normal form, its denominator
+/// the product of the two as written, read by value, with nothing divided.
+/// Held exactly, spelling and all: a common factor stays.
+#[test]
+fn only_rat_simplify_reduces() {
+    // The operand as written, unreduced: `over` writes n over d as given.
+    let raw = |n: i128, d: i128| -> String {
+        if n >= 0 {
+            spelt(n.unsigned_abs(), 0, d.unsigned_abs())
+        } else {
+            spelt(0, n.unsigned_abs(), d.unsigned_abs())
+        }
+    };
+    type Raw = (
+        &'static str,
+        &'static str,
+        fn(i128, i128, i128, i128) -> Option<(i128, i128)>,
+    );
+    let ops: [Raw; 4] = [
+        ("rat-add", "rat-sum-of", |a, b, c, d| {
+            Some((a * d + c * b, b * d))
+        }),
+        ("rat-sub", "rat-diff-of", |a, b, c, d| {
+            Some((a * d - c * b, b * d))
+        }),
+        ("rat-mul", "rat-product-of", |a, b, c, d| {
+            Some((a * c, b * d))
+        }),
+        // To divide by c/d is to multiply by d/c, its sign kept in the
+        // numerator: the denominator is b times c's size.
+        ("rat-div", "rat-quot-of", |a, b, c, d| {
+            (c != 0).then(|| (a * d * c.signum(), b * c.abs()))
+        }),
+    ];
+    let mut values = Vec::new();
+    for n in -NUM..=NUM {
+        for d in 1..=DEN {
+            values.push((n, d));
+        }
+    }
+    for (request, result, f) in ops {
+        let mut want: BTreeMap<(String, String), String> = BTreeMap::new();
+        for &(a, b) in &values {
+            for &(c, d) in &values {
+                if let Some((n, e)) = f(a, b, c, d) {
+                    want.insert((raw(a, b), raw(c, d)), raw(n, e));
+                }
+            }
+        }
+        let requests: Vec<_> = want.iter().collect();
+        for chunk in requests.chunks(CHUNK) {
+            let body: String = chunk
+                .iter()
+                .map(|((x, y), _)| format!("({request} {x} {y})\n"))
+                .collect();
+            let mut got = BTreeMap::new();
+            for fact in run(&body, result) {
+                let p = parts(&fact);
+                got.insert((p[1].clone(), p[2].clone()), p[3].clone());
+            }
+            for (key, answer) in chunk {
+                assert_eq!(
+                    got.get(*key),
+                    Some(*answer),
+                    "({request} {} {}): the unreduced answer",
+                    key.0,
+                    key.1
+                );
+            }
+        }
+    }
+}
+
+/// **Two requests whose values are equal answer two different facts, and
+/// `rat-cmp` says `eq` of them** (S1f.6.33's T3): an answer is not canonical,
+/// and the equality is the comparison, which reads by cross products.
+#[test]
+fn equal_values_are_two_facts_and_rat_cmp_says_eq() {
+    let r = |n: i128, d: i128| over(n, d).0;
+    let pairs = [
+        (
+            "rat-add",
+            "rat-sum-of",
+            (r(1, 2), r(1, 2)),
+            (r(1, 4), r(3, 4)),
+        ),
+        (
+            "rat-add",
+            "rat-sum-of",
+            (r(1, 6), r(1, 3)),
+            (r(1, 4), r(1, 4)),
+        ),
+        (
+            "rat-mul",
+            "rat-product-of",
+            (r(2, 3), r(3, 4)),
+            (r(1, 4), r(2, 1)),
+        ),
+        (
+            "rat-sub",
+            "rat-diff-of",
+            (r(5, 6), r(1, 3)),
+            (r(3, 4), r(1, 4)),
+        ),
+        (
+            "rat-div",
+            "rat-quot-of",
+            (r(1, 2), r(3, 4)),
+            (r(1, 3), r(1, 2)),
+        ),
+    ];
+    for (request, result, (x1, y1), (x2, y2)) in pairs {
+        let body = format!("({request} {x1} {y1})\n({request} {x2} {y2})\n");
+        let answers: Vec<String> = run(&body, result)
+            .iter()
+            .map(|f| parts(f)[3].clone())
+            .collect();
+        assert_eq!(answers.len(), 2, "{request}: two answers");
+        let (a, b) = (read_rational(&answers[0]), read_rational(&answers[1]));
+        let ((n1, d1), (n2, d2)) = (a.expect("in form"), b.expect("in form"));
+        assert_eq!(n1 * d2, n2 * d1, "{request}: the two are equal by value");
+        assert_ne!(answers[0], answers[1], "{request}: and two different facts");
+        let cmp = run(
+            &format!("(rat-cmp {} {})\n", answers[0], answers[1]),
+            "rat-cmp-of",
+        );
+        assert_eq!(
+            cmp,
+            [format!("(rat-cmp-of {} {} eq)", answers[0], answers[1])],
+            "{request}: rat-cmp is the equality"
+        );
+        let simple = run(
+            &format!(
+                "(rat-simplify {})\n(rat-simplify {})\n",
+                answers[0], answers[1]
+            ),
+            "rat-simple-of",
+        );
+        let lowest: BTreeSet<String> = simple.iter().map(|f| parts(f)[2].clone()).collect();
+        assert_eq!(lowest.len(), 1, "{request}: one lowest terms: {simple:?}");
+    }
 }
 
 // ── a zero denominator, and a division by zero ─────────────────────
@@ -546,8 +800,8 @@ fn an_integer_is_not_a_rational_operand() {
 /// None of this module's rules is replaced by it: a request with a
 /// denominator of zero performs no division, and a `rat-div` by a rational
 /// that is zero is seen at the divisor's numerator, before any call; the
-/// module's own calls, Euclid's chain and lowest terms, divide by numbers
-/// that are not zero. So the set below holds no `(division-by-zero
+/// module's own calls, `rat-simplify`'s greatest common divisor by
+/// `std.math.gcd` and its two divisions, divide by numbers that are not zero. So the set below holds no `(division-by-zero
 /// (div-call …))`, and the equality is exact.
 ///
 /// The saturator here runs root to its fixpoint whatever it derives; what a
@@ -615,12 +869,10 @@ fn a_zero_denominator_is_flagged_and_false() {
     }
     assert!(run(&body, "rat-simple-of").is_empty());
     assert!(run(&body, "rat-neg-of").is_empty());
+    // 1/2 divided by 1/2 is 2/2: not reduced (S1f.6.33).
     assert_eq!(
         run(&body, "rat-quot-of"),
-        [format!(
-            "(rat-quot-of {half} {half} {})",
-            normal(frac(1, 1))
-        )],
+        [format!("(rat-quot-of {half} {half} {})", spelt(2, 0, 2))],
         "the one division whose divisor is not zero"
     );
     assert_eq!(run(&body, "rat-sum-of").len(), zeros.len());
@@ -634,7 +886,8 @@ fn a_zero_denominator_is_flagged_and_false() {
 // ── the circuit's measure ──────────────────────────────────────────
 
 /// Firings and depth of one request, as `arith_theory.rs` measures them; the
-/// three closing rules' firings are left out.
+/// closing rules' firings are left out, `std.math.gcd`'s among them since
+/// S1f.6.33.
 fn circuit(body: &str) -> (usize, usize) {
     let src = ein_corpus::listed(&format!("{IMPORT}{body}"));
     let mut ast = Ast::new();
@@ -665,6 +918,10 @@ fn circuit(body: &str) -> (usize, usize) {
             .iter()
             .find_map(|n| terms.syms.get(n))
             .expect("std.math.arith's closing rule"),
+        ein_corpus::spellings("gcd")
+            .iter()
+            .find_map(|n| terms.syms.get(n))
+            .expect("std.math.gcd's closing rule"),
     ];
     {
         let mut s = Session {
@@ -696,11 +953,15 @@ fn circuit(body: &str) -> (usize, usize) {
     (firings, deepest)
 }
 
-/// **Each operation as a circuit.** Lowest terms is most of every request
-/// but a comparison: the numerator simplified, Euclid's chain, a division a
-/// step, each computing its divisor's nine multiples first, and two more
-/// divisions by what the chain finds. A comparison is the cross products
-/// and one walk, and builds nothing.
+/// **Each operation as a circuit.** Since S1f.6.33 an operation divides
+/// nothing: a sum is the cross products, a product of the denominators and
+/// the numerator simplified, about a fifth of what it was when lowest terms
+/// followed (round 2's item 54: 1/2 + 1/3 was 492 firings, and is 101).
+/// Lowest terms is `rat-simplify`'s alone: the numerator simplified,
+/// `std.math.gcd`'s call, Euclid's chain, a division a step, each computing
+/// its divisor's nine multiples first, and two more divisions by what the
+/// chain finds. A comparison is the cross products and one walk, and builds
+/// nothing.
 ///
 /// `cargo test -p ein-infer --test rat_theory the_circuit` re-takes them.
 #[test]
@@ -727,15 +988,15 @@ fn the_circuit_of_each_operation() {
 
 /// The pinned measures, in the order [`the_circuit_of_each_operation`] asks.
 const CIRCUITS: [(usize, usize); 10] = [
-    (334, 332),
-    (867, 862),
-    (435, 433),
-    (492, 490),
-    (417, 415),
-    (459, 457),
-    (494, 490),
+    (345, 343),
+    (888, 883),
+    (25, 23),
+    (101, 99),
+    (104, 102),
+    (81, 79),
+    (91, 87),
     (76, 76),
-    (2640, 2633),
+    (386, 379),
     (270, 270),
 ];
 
@@ -926,8 +1187,8 @@ fn the_theory_writes_no_negation_and_no_guard() {
 /// `rat-arith` is the theory's one entry. It closes every relation the
 /// module declares and the table it reads, names every other rule, and names
 /// the entries of the modules it imports, `int-arith`, `decimal-arith`,
-/// `decimal` and `arith`, without which a selection left their rules behind in
-/// silence (E-20 of P1f.6's `findings.md`).
+/// `decimal`, `arith` and, since S1f.6.33, `gcd`, without which a selection
+/// left their rules behind in silence (E-20 of P1f.6's `findings.md`).
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
     let m = module();
@@ -963,7 +1224,7 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
         .map(|(n, _)| n.clone())
         .filter(|n| n != "rat-arith")
         .collect();
-    for entry in ["decimal-arith", "int-arith", "decimal", "arith"] {
+    for entry in ["decimal-arith", "int-arith", "decimal", "arith", "gcd"] {
         want_named.insert(entry.to_string());
     }
     assert_eq!(
@@ -990,7 +1251,8 @@ fn the_closing_rule_names_every_rule_and_closes_every_relation() {
             "std.math.int",
             "std.math.decimal",
             "std.math.arith",
-            "std.math.digits"
+            "std.math.digits",
+            "std.math.gcd"
         ]
     );
 

@@ -176,6 +176,12 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// calculator: the 38 programs listed for `z` alone left the list, and the
 /// others lost their `z` line.
 ///
+/// **Joined at M1f S1f.6.33**: `tests/stdlib/math/rat/31_equal_values_two_facts.ein`,
+/// as every program of its directory, `pos` and `neg` in `std.math.int`'s
+/// division's rules. Its siblings' lines did not move: `std.math.rat`'s own
+/// `pos` and `neg`, in `rat-simplify-pos` and `-neg` since that stage, are met
+/// after `std.math.int`'s.
+///
 /// **Joined at M1f S1f.6.32**: `tests/stdlib/math/gcd/12_what_stays_silent.ein`,
 /// which imports `std.math.int` beside `std.math.gcd` for an integer where a
 /// number goes, and so meets `pos` and `neg` where every program that brings
@@ -195,7 +201,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `readings`, hold the calculator whole and meet `z` first in
 /// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
 /// `0` and `1` in its `domain-elimination`.
-const SEEDED: [(&str, &[&str]); 125] = [
+const SEEDED: [(&str, &[&str]); 126] = [
     (
         "examples/arith/int.ein",
         &[
@@ -993,6 +999,13 @@ const SEEDED: [(&str, &[&str]); 125] = [
     ),
     (
         "tests/stdlib/math/rat/30_undeclared_only_operand.ein",
+        &[
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/rat/31_equal_values_two_facts.ein",
         &[
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
             "`pos`, asserted by rule `std.math.int.int-div-pp`",

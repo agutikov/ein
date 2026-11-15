@@ -2,22 +2,26 @@
 ;;;
 ;;; ── What the theory promises ───────────────────────────────────────────────
 ;;;
-;;; `(rat-neg X)` is answered by `(rat-neg-of X S)`: S is 0 - X, in lowest
-;;; terms.
+;;; `(rat-neg X)` is answered by `(rat-neg-of X S)`: S is 0 - X, its
+;;; numerator simplified and its denominator with no high zero, **not
+;;; reduced** (S1f.6.33): a common factor stays, and zero is 0 over the
+;;; operand's denominator.
 ;;;
 ;;; ── By hand ────────────────────────────────────────────────────────────────
 ;;;
-;;; `rat-neg-ask` asks what the operand stands for, `rat-neg-start` puts it in
-;;; lowest terms with its numerator's parts exchanged, and `rat-neg-answer`
-;;; hands the answer over.
+;;; `rat-neg-ask` asks what the operand stands for, `rat-neg-start` hands it to
+;;; `rat-norm` with its numerator's parts exchanged, which simplifies the
+;;; numerator and walks the denominator to normal form (`rat-norm-numerator`,
+;;; `-denominator`, `-done`), and `rat-neg-answer` hands the answer over.
 ;;;
-;;;   3/4 → -3/4     -3/4 → 3/4     0/5 → 0/1     2/4 → -1/2
-;;;   (1 less 4)/6 → 1/2
+;;;   3/4 → -3/4     -3/4 → 3/4     0/5 → 0/5     2/4 → -2/4
+;;;   (1 less 4)/6 → 3/6
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; `rat-neg-of`'s whole extent. An operand that is not in lowest terms is
-;;; negated by value and answered in lowest terms.
+;;; negated by value and answered with its common factor: in lowest terms is
+;;; `rat-simplify`'s, `01_simplify.ein`.
 
 (import std.math.rat :symbols (rat-arith rat-neg rat rat-neg-of))
 (import std.math.int :symbols (int))
@@ -37,6 +41,6 @@
        :goal-text "{?x} negated is {?s}"
        :expect (model (rat-neg-of (rat (int (n z 3) z) (n z 4)) (rat (int z (n z 3)) (n z 4)))
                       (rat-neg-of (rat (int z (n z 3)) (n z 4)) (rat (int (n z 3) z) (n z 4)))
-                      (rat-neg-of (rat (int z z) (n z 5)) (rat (int z z) (n z 1)))
-                      (rat-neg-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 1)) (n z 2)))
-                      (rat-neg-of (rat (int (n z 1) (n z 4)) (n z 6)) (rat (int (n z 1) z) (n z 2)))))
+                      (rat-neg-of (rat (int z z) (n z 5)) (rat (int z z) (n z 5)))
+                      (rat-neg-of (rat (int (n z 2) z) (n z 4)) (rat (int z (n z 2)) (n z 4)))
+                      (rat-neg-of (rat (int (n z 1) (n z 4)) (n z 6)) (rat (int (n z 3) z) (n z 6)))))
