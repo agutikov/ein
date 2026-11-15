@@ -63,12 +63,13 @@ fn the_calculator_by_the_names_a_program_writes() {
     assert_eq!(t.code, 0, "{}{}", t.stdout, t.stderr);
     assert!(t.stdout.contains("1 held"), "{}", t.stdout);
     // The circuit's own steps print by their full names, the program's by
-    // its short ones.
+    // its short ones; a shared rule's is `std.math.positional`'s since
+    // S1f.6.16, whichever base activated it.
     let r = ein_in(s.path(), &["solve", "p.ein", "--trace", "trace.md"]);
     assert_eq!(r.code, 0, "{}", r.stderr);
     let trace = std::fs::read_to_string(s.path().join("trace.md")).expect("a trace");
     assert!(
-        trace.contains("`std.math.decimal-arith.add-ask`"),
+        trace.contains("`std.math.positional.add-ask`"),
         "the circuit's rule"
     );
     assert!(

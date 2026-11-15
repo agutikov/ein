@@ -1751,6 +1751,10 @@
 0    stdlib/math/num9.ein :: render rules
 0    stdlib/math/num9.ein :: saturate
 0    stdlib/math/num9.ein :: solve
+0    stdlib/math/positional.ein :: render constraints
+0    stdlib/math/positional.ein :: render rules
+0    stdlib/math/positional.ein :: saturate
+0    stdlib/math/positional.ein :: solve
 0    stdlib/math/rat.ein :: render constraints
 0    stdlib/math/rat.ein :: render rules
 0    stdlib/math/rat.ein :: saturate

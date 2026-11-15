@@ -176,13 +176,19 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// calculator: the 38 programs listed for `z` alone left the list, and the
 /// others lost their `z` line.
 ///
+/// **Joined at M1f S1f.6.16**: `stdlib/math/positional.ein` alone, the rules
+/// both bases share with every relation a parameter, so no table and no fact
+/// of its own: `0` and `1`, a carry, are names only its rules' premises
+/// write. `eq`, which its `cmp-start` writes, is a kernel word and never an
+/// object (E-74), and is not listed.
+///
 /// **Moved at M1f S1f.6.35**, imports by full name: a rule a program does not
 /// list is named by its full name, `std.math.int.int-div-pn` (66 lines); the
 /// sixteen programs that bring `std.math.num9`, and `gaps`, `listed_is_all` and
 /// `readings`, hold the calculator whole and meet `z` first in
 /// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
 /// `0` and `1` in its `domain-elimination`.
-const SEEDED: [(&str, &[&str]); 120] = [
+const SEEDED: [(&str, &[&str]); 121] = [
     (
         "examples/arith/int.ein",
         &[
@@ -414,6 +420,13 @@ const SEEDED: [(&str, &[&str]); 120] = [
         &[
             "`neg`, asserted by rule `int-div-pn`",
             "`pos`, asserted by rule `int-div-pp`",
+        ],
+    ),
+    (
+        "stdlib/math/positional.ein",
+        &[
+            "`0`, matched by rule `add-column-first`",
+            "`1`, matched by rule `add-carry-out`",
         ],
     ),
     (
@@ -993,7 +1006,17 @@ fn every_name_of_the_program_is_a_candidate_object() {
             continue;
         }
         let objects = ein_infer::candidate_objects(&kb, &terms, &ast);
+        // The kernel's own words are never an object, whatever a program
+        // writes them as: `candidate_objects` leaves them out by name (M1f
+        // S1f.6.16; E-74 of P1f.6's findings.md). `std.math.positional` alone
+        // writes `eq`, the comparison's start, in a rule's conclusion and in
+        // no fact, where every program until it wrote it in a fact too.
+        let k = &terms.kernel;
+        let kernel = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
         for c in invariant::seeded(&kb, &terms, &ast) {
+            if kernel.contains(&c.name) {
+                continue;
+            }
             assert!(
                 objects.contains(&c.name),
                 "{rel}: {} is a name of the program and not among the blind \

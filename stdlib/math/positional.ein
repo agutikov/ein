@@ -1,0 +1,690 @@
+;;; Ein stdlib — `std.math.positional`: the rules every positional base shares,
+;;; written once (M1f P1f.6, S1f.6.16; the user's rulings of 2026-11-12, reply
+;;; 16, *"extract common rules into separate file the both import"*, and of
+;;; 2026-11-14, (a) and then (iii)).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; School arithmetic is a theory over numerals written a digit at a time,
+;;; `std.math.decimal`'s `(n PREFIX DIGIT)` and `std.math.binary`'s `(b2 PREFIX
+;;; BIT)`, and most of it does not know its base: a walk takes a column a
+;;; firing and looks it up in a table, and nothing in it says *ten* or *two*.
+;;; Those rules are here, once. Every relation a rule names is a **parameter**,
+;;; in capitals, `(rule add-column (?ADD-WALK ?N ?FA ?B) …)`, and a base
+;;; activates each rule with its own relations, so each base gets the rules as
+;;; if written for it: decimal's `add-column` walks `add-walk` over `n` and the
+;;; table `fa`; binary's walks `bin-add-walk` over `b2` and `bin-fa`. What is
+;;; a base's own, its digit multiplier, how its division finds a digit, and
+;;; which names are its digits, is in its own module.
+;;;
+;;; ── Import: one call connects a base ───────────────────────────────────────
+;;;
+;;; A module that is a base imports this one and calls the macro `positional`
+;;; once, with its 61 relations in the macro's order, inside its closing rule's
+;;; conclusion:
+;;;
+;;;     (import std.math.positional :symbols (positional))
+;;;     (rule decimal-arith ()
+;;;       :match  ()
+;;;       :assert (and (__closed__ …) … (arith-rule …) …
+;;;                    (positional operand operand-is n let named …))
+;;;       :why    "…")
+;;;
+;;; The call expands to one activator a rule, 77 facts, which the closing rule
+;;; derives at root in the firing it closes the base's relations in, so a base
+;;; costs no firing more; each activated rule compiles when its activator
+;;; appears (Q-M1f.266, ruled (iii)). A program imports a base,
+;;; `std.math.decimal-arith` or `std.math.binary-arith`, and never this module:
+;;; it comes with the base, one copy a program, so a program that imports both
+;;; bases holds each rule once, activated twice.
+;;;
+;;; **Why a macro and not 77 written facts:** a rule with parameters fires for
+;;; a fact headed by its own name, one plan a fact, and nothing lets one fact
+;;; activate several rules; a call of a macro is the one hand-written form that
+;;; stands for 77 (S1f.6.16 § The design). **Why the closing rule does not name
+;;; these rules:** a rule's name written as an argument, `(arith-rule
+;;; add-end)`, makes every parameterised conclusion of the rule's arity a
+;;; possible activator that binds a parameter to a fact, which the loader
+;;; refuses (S1f.5.18; E-55 of P1f.6's `findings.md`). So a base's closing rule
+;;; names its own rules, and these are named by their activators.
+;;;
+;;; ── What it holds ──────────────────────────────────────────────────────────
+;;;
+;;;   - the operands, a number or a name a `let` states, and the `let`'s name
+;;;     probe, `named`;
+;;;   - the addition, subtraction and comparison walks, a column a firing;
+;;;   - the normal form, high zeros dropped, and both turns;
+;;;   - the protocol of the five operations: each its ask, its second operand,
+;;;     its start and its answer;
+;;;   - multiplication's call, its turn and its end, and division's;
+;;;   - a division by zero, flagged at the request and at the call with
+;;;     `std.math.arith`'s `division-by-zero`, whose rule derives `(false)`;
+;;;   - an operand's faults and a `let`'s: a digit where a number goes, a `let`
+;;;     stated twice, of `z` or of a digit, or naming a digit or a name; the ten
+;;;     routes from an operand's tag to its request; and the request flags,
+;;;     `MALFORMED` and `UNDECLARED`, each with its rule to `(false)`.
+;;;
+;;; A numeral's own faults are no rule here: whether `(n (n z 1) x)` is a
+;;; number is the representation's question (Q-M1f.210, the user's ruling of
+;;; 2026-11-14), asked where the numeral is written, by `std.math.decimal` and
+;;; `std.math.binary`.
+;;;
+;;; ── The parameters ─────────────────────────────────────────────────────────
+;;;
+;;; A parameter is the relation a base names for it, spelled in capitals: `?N`
+;;; the numeral's constructor, `?B` the accumulator, `?FA`, `?FS`, `?CL` and
+;;; `?NZ` the tables of the full adder, the full subtractor, the comparator and
+;;; *not zero*; the rest are named as decimal names them, `?ADD-WALK` for
+;;; `add-walk`. Capitals, because a parameter spelled as a relation's short name
+;;; would intern that name bare, and a reader that looks a relation up by its
+;;; bare spelling would find the empty one (S1f.6.16's trial, point 4). What a
+;;; parameter must be is what the base's relation of that name is in
+;;; `std.math.decimal-arith`'s header.
+;;;
+;;; The digits `0` and `1`, which every base has, are written as themselves:
+;;; the carry and the borrow in and out, the high zero, the digit `0` as no
+;;; number. So are `z`, `std.math.arith`'s zero, and `eq`, the comparison's
+;;; start.
+;;;
+;;; ── The rule of the calculator ─────────────────────────────────────────────
+;;;
+;;; No rule joins two facts on a number: each rule has one premise that holds
+;;; numbers, and its others are rows of the base's tables, looked up by digits,
+;;; guards, which compare and look nothing up, or a probe with its argument
+;;; bound, `(?NZ ?m)` or `(?NAMED ?x)`. Two rules join on a **name**,
+;;; `operand-name` and `let-twice`. `ein-infer/tests/arith_theory.rs` holds the
+;;; rule on this file's text read with each base's call in its parameters'
+;;; places, and `arith_batch.rs` the proportion it buys on the matcher's count.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Its 77 rules, each under its full name, `std.math.positional.add-column`,
+;;; which a trace, a core and `refuted by` print, whichever base activated it;
+;;; and the macro `positional`, the interface. It declares no relation, and so
+;;; has no closing rule: the base's closes the relations it activates the rules
+;;; with.
+
+(import std.math.arith :symbols (z division-by-zero))
+
+;; ── The operands ────────────────────────────────────────────────────────────
+;; A number stands for itself, whatever high zeros it is written with; the
+;; walk reads it by value. Two rules, because "is a number" has two shapes
+;; and no negation is used to tell a number from a name. Whether it is a
+;; number is the representation's, which checked it when it was written
+;; (`std.math.decimal`, `std.math.binary`).
+(rule operand-zero (?OPERAND ?OPERAND-IS)
+  :match  (?OPERAND ?k z)
+  :assert (?OPERAND-IS ?k z)
+  :why    "zero stands for itself")
+
+(rule operand-number (?OPERAND ?N ?OPERAND-IS)
+  :match  (?OPERAND ?k (?N ?p ?a))
+  :assert (?OPERAND-IS ?k (?N ?p ?a))
+  :why    "a number stands for itself")
+
+(rule let-named (?LET ?NAMED)
+  :match  (?LET ?x ?v)
+  :assert (?NAMED ?x)
+  :why    "{?x} is the name of a number")
+
+;; The stated exception to the rule of the calculator (the header): a join on
+;; the NAME. `(?NAMED ?x)` comes first and must: every argument of it is
+;; bound, so it is one lookup, and an operand that is a number stops there and
+;; never walks the `let` facts. `arith_theory.rs` holds the order. A base's
+;; `named` is its representation's, which reads it too, and the rule above
+;; writes it.
+(rule operand-name (?OPERAND ?NAMED ?LET ?OPERAND-IS)
+  :match  (and (?OPERAND ?k ?x) (?NAMED ?x) (?LET ?x ?v))
+  :assert (?OPERAND-IS ?k ?v)
+  :why    "{?x} names {?v}")
+
+;; ── The walk shared by every circuit that adds ──────────────────────────────
+;; `(ADD-WALK TAG X Y CARRY ACC)`: one column a firing, from the units. A
+;; number that has run out counts as zeros, so the two operands need not be of
+;; one length.
+(rule add-column (?ADD-WALK ?N ?FA ?B)
+  :match  (and (?ADD-WALK ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
+               (?FA ?a ?c ?e ?s ?f))
+  :assert (?ADD-WALK ?k ?p ?q ?f (?B ?s ?acc))
+  :why    "{?a} + {?c} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
+
+(rule add-column-first (?ADD-WALK ?N ?FA ?B)
+  :match  (and (?ADD-WALK ?k (?N ?p ?a) z ?e ?acc)
+               (?FA ?a 0 ?e ?s ?f))
+  :assert (?ADD-WALK ?k ?p z ?f (?B ?s ?acc))
+  :why    "the second number has run out: {?a} + carry {?e} is {?s}, carry {?f}")
+
+(rule add-column-second (?ADD-WALK ?N ?FA ?B)
+  :match  (and (?ADD-WALK ?k z (?N ?q ?c) ?e ?acc)
+               (?FA 0 ?c ?e ?s ?f))
+  :assert (?ADD-WALK ?k z ?q ?f (?B ?s ?acc))
+  :why    "the first number has run out: {?c} + carry {?e} is {?s}, carry {?f}")
+
+(rule add-end (?ADD-WALK ?STRIP)
+  :match  (?ADD-WALK ?k z z 0 ?acc)
+  :assert (?STRIP ?k ?acc)
+  :why    "no column is left and no carry: the digits are {?acc}")
+
+;; A carry out of the top column is the top digit, and it is not zero, so the
+;; digits go straight to the turn.
+(rule add-carry-out (?ADD-WALK ?TURN ?B)
+  :match  (?ADD-WALK ?k z z 1 ?acc)
+  :assert (?TURN ?k (?B 1 ?acc) z)
+  :why    "no column is left: the carry is the top digit, in front of {?acc}")
+
+;; ── The normal form: high zeros dropped, then the turn ──────────────────────
+;; The accumulator has its most significant digit outermost, so a high zero is
+;; the first thing a rule sees.
+(rule strip-zero (?STRIP ?B)
+  :match  (?STRIP ?k (?B 0 ?r))
+  :assert (?STRIP ?k ?r)
+  :why    "a high zero is dropped")
+
+(rule strip-top (?STRIP ?B ?NZ ?TURN)
+  :match  (and (?STRIP ?k (?B ?a ?r)) (?NZ ?a))
+  :assert (?TURN ?k (?B ?a ?r) z)
+  :why    "the top digit {?a} is not zero: no high zero is left")
+
+(rule strip-none (?STRIP ?DONE)
+  :match  (?STRIP ?k z)
+  :assert (?DONE ?k z)
+  :why    "no digit is left: the answer is zero")
+
+(rule turn-step (?TURN ?B ?N)
+  :match  (?TURN ?k (?B ?a ?r) ?acc)
+  :assert (?TURN ?k ?r (?N ?acc ?a))
+  :why    "the digit {?a} goes after {?acc}")
+
+(rule turn-end (?TURN ?DONE)
+  :match  (?TURN ?k z ?acc)
+  :assert (?DONE ?k ?acc)
+  :why    "turned round: the answer is {?acc}")
+
+;; ── Addition ────────────────────────────────────────────────────────────────
+(rule add-ask (?ADD ?OPERAND ?ADD-FIRST)
+  :match  (?ADD ?x ?y)
+  :assert (?OPERAND (?ADD-FIRST ?x ?y) ?x)
+  :why    "{?x} + {?y} is asked: first, the number {?x} stands for")
+
+(rule add-ask-second (?OPERAND-IS ?ADD-FIRST ?OPERAND ?ADD-SECOND)
+  :match  (?OPERAND-IS (?ADD-FIRST ?x ?y) ?u)
+  :assert (?OPERAND (?ADD-SECOND ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule add-start (?OPERAND-IS ?ADD-SECOND ?ADD-WALK ?SUM)
+  :match  (?OPERAND-IS (?ADD-SECOND ?x ?y ?u) ?v)
+  :assert (?ADD-WALK (?SUM ?x ?y) ?u ?v 0 z)
+  :why    "add {?u} and {?v} from the units, with no carry in")
+
+(rule add-answer (?DONE ?SUM ?SUM-OF)
+  :match  (?DONE (?SUM ?x ?y) ?s)
+  :assert (?SUM-OF ?x ?y ?s)
+  :why    "{?x} + {?y} = {?s}")
+
+;; ── Subtraction ─────────────────────────────────────────────────────────────
+;; `(SUB-WALK TAG X Y BORROW ACC)`: X - Y, one column a firing, from the
+;; units, as the addition's walk goes. A walk that ends with a borrow has no
+;; answer.
+(rule sub-column (?SUB-WALK ?N ?FS ?B)
+  :match  (and (?SUB-WALK ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
+               (?FS ?a ?c ?e ?s ?f))
+  :assert (?SUB-WALK ?k ?p ?q ?f (?B ?s ?acc))
+  :why    "{?a} - {?c} - borrow {?e} is {?s}, borrow {?f}: {?s} goes in front of the digits so far")
+
+(rule sub-column-first (?SUB-WALK ?N ?FS ?B)
+  :match  (and (?SUB-WALK ?k (?N ?p ?a) z ?e ?acc)
+               (?FS ?a 0 ?e ?s ?f))
+  :assert (?SUB-WALK ?k ?p z ?f (?B ?s ?acc))
+  :why    "the number taken away has run out: {?a} - borrow {?e} is {?s}, borrow {?f}")
+
+(rule sub-column-second (?SUB-WALK ?N ?FS ?B)
+  :match  (and (?SUB-WALK ?k z (?N ?q ?c) ?e ?acc)
+               (?FS 0 ?c ?e ?s ?f))
+  :assert (?SUB-WALK ?k z ?q ?f (?B ?s ?acc))
+  :why    "the number taken from has run out: 0 - {?c} - borrow {?e} is {?s}, borrow {?f}")
+
+(rule sub-end (?SUB-WALK ?STRIP)
+  :match  (?SUB-WALK ?k z z 0 ?acc)
+  :assert (?STRIP ?k ?acc)
+  :why    "no column is left and no borrow: the digits are {?acc}")
+
+(rule sub-borrow-out (?SUB-WALK ?SHORT)
+  :match  (?SUB-WALK ?k z z 1 ?acc)
+  :assert (?SHORT ?k)
+  :why    "no column is left and a borrow is: the number taken from is the smaller")
+
+;; Both ways at once: which number is the smaller is known at the top column
+;; and not before, and the theory does not guess.
+(rule sub-ask (?SUB ?OPERAND ?SUB-FIRST)
+  :match  (?SUB ?x ?y)
+  :assert (?OPERAND (?SUB-FIRST ?x ?y) ?x)
+  :why    "{?x} - {?y} is asked: first, the number {?x} stands for")
+
+(rule sub-ask-second (?OPERAND-IS ?SUB-FIRST ?OPERAND ?SUB-SECOND)
+  :match  (?OPERAND-IS (?SUB-FIRST ?x ?y) ?u)
+  :assert (?OPERAND (?SUB-SECOND ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule sub-start (?OPERAND-IS ?SUB-SECOND ?SUB-WALK ?DIFFERENCE ?SHORTFALL)
+  :match  (?OPERAND-IS (?SUB-SECOND ?x ?y ?u) ?v)
+  :assert (and (?SUB-WALK (?DIFFERENCE ?x ?y) ?u ?v 0 z)
+               (?SUB-WALK (?SHORTFALL ?x ?y) ?v ?u 0 z))
+  :why    "take {?v} from {?u}, and {?u} from {?v}, from the units, with no borrow in: one of the two has an answer")
+
+(rule sub-answer (?DONE ?DIFFERENCE ?DIFF-OF)
+  :match  (?DONE (?DIFFERENCE ?x ?y) ?d)
+  :assert (?DIFF-OF ?x ?y ?d z)
+  :why    "{?x} - {?y} = {?d}, and nothing is short")
+
+(rule sub-answer-short (?DONE ?SHORTFALL ?DIFF-OF)
+  :match  (?DONE (?SHORTFALL ?x ?y) ?r)
+  :assert (?DIFF-OF ?x ?y z ?r)
+  :why    "{?x} is short of {?y} by {?r}: the difference is zero")
+
+;; ── Comparison ──────────────────────────────────────────────────────────────
+;; `(CMP-WALK TAG X Y ORDER)`: one column a firing, from the units; ORDER is
+;; the order of the digits already passed, `eq` before the first. A higher
+;; digit overrules it, which is the comparator's table. A number that has run
+;; out counts as zeros, so the order is by value.
+(rule cmp-column (?CMP-WALK ?N ?CL)
+  :match  (and (?CMP-WALK ?k (?N ?p ?a) (?N ?q ?c) ?o)
+               (?CL ?o ?a ?c ?t))
+  :assert (?CMP-WALK ?k ?p ?q ?t)
+  :why    "the order below is {?o}; {?a} against {?c} above it makes it {?t}")
+
+(rule cmp-column-first (?CMP-WALK ?N ?CL)
+  :match  (and (?CMP-WALK ?k (?N ?p ?a) z ?o)
+               (?CL ?o ?a 0 ?t))
+  :assert (?CMP-WALK ?k ?p z ?t)
+  :why    "the second number has run out: the order below is {?o}, and {?a} against nothing makes it {?t}")
+
+(rule cmp-column-second (?CMP-WALK ?N ?CL)
+  :match  (and (?CMP-WALK ?k z (?N ?q ?c) ?o)
+               (?CL ?o 0 ?c ?t))
+  :assert (?CMP-WALK ?k z ?q ?t)
+  :why    "the first number has run out: the order below is {?o}, and nothing against {?c} makes it {?t}")
+
+(rule cmp-end (?CMP-WALK ?ORDER-IS)
+  :match  (?CMP-WALK ?k z z ?o)
+  :assert (?ORDER-IS ?k ?o)
+  :why    "no column is left: the order is {?o}")
+
+(rule cmp-ask (?CMP ?OPERAND ?CMP-FIRST)
+  :match  (?CMP ?x ?y)
+  :assert (?OPERAND (?CMP-FIRST ?x ?y) ?x)
+  :why    "{?x} compared with {?y} is asked: first, the number {?x} stands for")
+
+(rule cmp-ask-second (?OPERAND-IS ?CMP-FIRST ?OPERAND ?CMP-SECOND)
+  :match  (?OPERAND-IS (?CMP-FIRST ?x ?y) ?u)
+  :assert (?OPERAND (?CMP-SECOND ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule cmp-start (?OPERAND-IS ?CMP-SECOND ?CMP-WALK ?ORDER)
+  :match  (?OPERAND-IS (?CMP-SECOND ?x ?y ?u) ?v)
+  :assert (?CMP-WALK (?ORDER ?x ?y) ?u ?v eq)
+  :why    "compare {?u} with {?v} from the units: equal so far")
+
+(rule cmp-answer (?ORDER-IS ?ORDER ?CMP-OF)
+  :match  (?ORDER-IS (?ORDER ?x ?y) ?o)
+  :assert (?CMP-OF ?x ?y ?o)
+  :why    "{?x} against {?y}: {?o}")
+
+;; ── Multiplication: the call ────────────────────────────────────────────────
+;; The school method from the multiplier's top digit: the sum so far times the
+;; base, plus the multiplicand times the next digit. How a row is made is the
+;; base's own (`std.math.decimal-arith` walks the digit multiplier's table; in
+;; binary a row is nothing or the multiplicand), and so is how the sum so far
+;; is added to it; the call, the multiplier turned round and the end are here.
+;;
+;; `(TOP-FIRST TAG NUMBER DIGITS)`: a number turned round, so that its most
+;; significant digit is outermost: the other turn. It hands its digits over
+;; as `(TOP-FIRST-IS TAG DIGITS)`.
+(rule top-first-step (?TOP-FIRST ?N ?B)
+  :match  (?TOP-FIRST ?k (?N ?p ?a) ?acc)
+  :assert (?TOP-FIRST ?k ?p (?B ?a ?acc))
+  :why    "the digit {?a} goes in front of {?acc}")
+
+(rule top-first-end (?TOP-FIRST ?TOP-FIRST-IS)
+  :match  (?TOP-FIRST ?k z ?acc)
+  :assert (?TOP-FIRST-IS ?k ?acc)
+  :why    "turned round: the digits, the top one first, are {?acc}")
+
+;; `(MUL-CALL TAG X Y)`: X times Y for whoever TAG says, answered by
+;; `(DONE TAG PRODUCT)`. `(MUL-STEP TAG X DIGITS SUM)`: the multiplier's
+;; digits still to come, the top one first, and the sum so far.
+(rule mul-turn (?MUL-CALL ?TOP-FIRST ?MUL-DIGITS)
+  :match  (?MUL-CALL ?k ?u ?v)
+  :assert (?TOP-FIRST (?MUL-DIGITS ?k ?u) ?v z)
+  :why    "to multiply {?u} by {?v}: first {?v}'s digits, the top one first")
+
+(rule mul-begin (?TOP-FIRST-IS ?MUL-DIGITS ?MUL-STEP)
+  :match  (?TOP-FIRST-IS (?MUL-DIGITS ?k ?u) ?t)
+  :assert (?MUL-STEP ?k ?u ?t z)
+  :why    "nothing is summed yet")
+
+(rule mul-next (?DONE ?MUL-SUM ?MUL-STEP)
+  :match  (?DONE (?MUL-SUM ?k ?u ?rest) ?s)
+  :assert (?MUL-STEP ?k ?u ?rest ?s)
+  :why    "the sum so far is {?s}")
+
+(rule mul-end (?MUL-STEP ?DONE)
+  :match  (?MUL-STEP ?k ?u z ?acc)
+  :assert (?DONE ?k ?acc)
+  :why    "no digit of the multiplier is left: the product is {?acc}")
+
+(rule mul-ask (?MUL ?OPERAND ?MUL-FIRST)
+  :match  (?MUL ?x ?y)
+  :assert (?OPERAND (?MUL-FIRST ?x ?y) ?x)
+  :why    "{?x} x {?y} is asked: first, the number {?x} stands for")
+
+(rule mul-ask-second (?OPERAND-IS ?MUL-FIRST ?OPERAND ?MUL-SECOND)
+  :match  (?OPERAND-IS (?MUL-FIRST ?x ?y) ?u)
+  :assert (?OPERAND (?MUL-SECOND ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule mul-start (?OPERAND-IS ?MUL-SECOND ?MUL-CALL ?PRODUCT)
+  :match  (?OPERAND-IS (?MUL-SECOND ?x ?y ?u) ?v)
+  :assert (?MUL-CALL (?PRODUCT ?x ?y) ?u ?v)
+  :why    "multiply {?u} by {?v}")
+
+(rule mul-answer (?DONE ?PRODUCT ?PRODUCT-OF)
+  :match  (?DONE (?PRODUCT ?x ?y) ?p)
+  :assert (?PRODUCT-OF ?x ?y ?p)
+  :why    "{?x} x {?y} = {?p}")
+
+;; ── Division: the call ──────────────────────────────────────────────────────
+;; School long division: X divided by Y is a quotient Q and a remainder R, X =
+;; Q x Y + R, and R less than Y. How a digit of the quotient is found is the
+;; base's own (decimal bisects the divisor's nine multiples; in binary one
+;; subtraction decides a bit), and so is how the divisor is put into normal
+;; form, `(DONE (DIV-M1 TAG X Y) DIVISOR)`; the call's start, its end and the
+;; division by zero are here.
+;;
+;; `(DIV-STEP TAG DIVISOR DIGITS LEFT QUOTIENT)`: the dividend's digits still
+;; to come, the top one first, what is left over so far, and the quotient so
+;; far; DIVISOR is what the base's step reads of the divisor.
+(rule div-begin (?TOP-FIRST-IS ?DIV-DIGITS ?DIV-STEP)
+  :match  (?TOP-FIRST-IS (?DIV-DIGITS ?k ?ms) ?t)
+  :assert (?DIV-STEP ?k ?ms ?t z z)
+  :why    "start at the top digit: nothing is left over yet, and the quotient is zero")
+
+(rule div-end (?DIV-STEP ?DIV-DONE)
+  :match  (?DIV-STEP ?k ?ms z ?t ?w)
+  :assert (?DIV-DONE ?k ?w ?t)
+  :why    "no digit is left: the quotient is {?w} and the remainder {?t}")
+
+(rule div-ask (?DIV ?OPERAND ?DIV-FIRST)
+  :match  (?DIV ?x ?y)
+  :assert (?OPERAND (?DIV-FIRST ?x ?y) ?x)
+  :why    "{?x} divided by {?y} is asked: first, the number {?x} stands for")
+
+(rule div-ask-second (?OPERAND-IS ?DIV-FIRST ?OPERAND ?DIV-SECOND)
+  :match  (?OPERAND-IS (?DIV-FIRST ?x ?y) ?u)
+  :assert (?OPERAND (?DIV-SECOND ?x ?y ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule div-start (?OPERAND-IS ?DIV-SECOND ?DIV-CALL ?QUOTIENT)
+  :match  (?OPERAND-IS (?DIV-SECOND ?x ?y ?u) ?v)
+  :assert (?DIV-CALL (?QUOTIENT ?x ?y) ?u ?v)
+  :why    "divide {?u} by {?v}")
+
+(rule div-answer (?DIV-DONE ?QUOTIENT ?QUOT-OF)
+  :match  (?DIV-DONE (?QUOTIENT ?x ?y) ?q ?r)
+  :assert (?QUOT-OF ?x ?y ?q ?r)
+  :why    "{?x} divided by {?y} = {?q}, remainder {?r}")
+
+;; ── Division by zero, in two steps, at the call ─────────────────────────────
+;; A division whose divisor is zero has no answer. It is flagged with
+;; `std.math.arith`'s `division-by-zero`, arithmetic's own whatever the base,
+;; whose rule derives `(false)` from it (the user's ruling of 2026-11-14).
+;; **The flag is raised at the call, whoever made it** (S1f.6.24): every
+;; division passes through `(DIV-CALL TAG X Y)`, and `div-call-by-zero` flags
+;; the call as it was asserted, for a Y that is zero by value. A public request
+;; is flagged as it always was too, the request as written, by `div-by-zero`,
+;; which is written first so that the request's flag is the first derived: two
+;; flags for one public division, and the contradiction from each.
+(rule div-by-zero (?DONE ?DIV-M1 ?QUOTIENT ?DIV)
+  :match  (?DONE (?DIV-M1 (?QUOTIENT ?x ?y) ?u ?v) z)
+  :assert (division-by-zero (?DIV ?x ?y))
+  :why    "the divisor of {?x} divided by {?y} is zero")
+
+(rule div-call-by-zero (?DONE ?DIV-M1 ?DIV-CALL)
+  :match  (?DONE (?DIV-M1 ?k ?u ?v) z)
+  :assert (division-by-zero (?DIV-CALL ?k ?u ?v))
+  :why    "the divisor of {?u} divided by {?v}, wanted for {?k}, is zero")
+
+;; ── An operand's faults, and a `let`'s (S1f.6.12, S1f.6.38) ─────────────────
+;; A request the theory cannot read is flagged, and the flag is a
+;; contradiction, as a division by zero is (the user's rulings of 2026-11-11
+;; and 2026-11-12). **A flag means malformed; no flag does not mean
+;; well-formed.** A malformed numeral is its representation's, flagged where it
+;; is written (S1f.6.38); what is here is what is wrong with an operand or a
+;; `let`. Whether an operand that is a name is one no `let` states reads an
+;; `absent` and a guard over the base's digits, and is the base's own
+;; (`operand-undeclared`, `bin-operand-undeclared`).
+;;
+;; `(MALFORMED REQUEST)`: an operand of the request holds something that is not
+;; a number, the request as written. `(MALFORMED (LET NAME NUMBER))`: the
+;; `let` cannot be read. `(UNDECLARED NAME REQUEST)`: the request names an
+;; operand that no `let` states. `(BAD-OPERAND TAG FAULT)` and `(BAD-REQUEST
+;; REQUEST FAULT)`: what is wrong, first by the operand's tag and then by the
+;; request; FAULT is `(NOT-A-NUMBER THING)` or `(NO-LET NAME)`.
+;;
+;; A digit where a number goes: seven is a number of one digit.
+(rule operand-digit (?OPERAND ?NZ ?BAD-OPERAND ?NOT-A-NUMBER ?N)
+  :match  (and (?OPERAND ?k ?x) (?NZ ?x))
+  :assert (?BAD-OPERAND ?k (?NOT-A-NUMBER ?x))
+  :why    "the digit {?x} is not a number: the number is ({?N} z {?x})")
+
+(rule operand-digit-zero (?OPERAND ?BAD-OPERAND ?NOT-A-NUMBER)
+  :match  (?OPERAND ?k 0)
+  :assert (?BAD-OPERAND ?k (?NOT-A-NUMBER 0))
+  :why    "the digit 0 is not a number: zero is z")
+
+;; A `let` that cannot be read. Each is a second meaning for a name, and gave
+;; two answers to one request: a name stated twice with two numbers, and `z`
+;; or a digit as a constant's name. `let-twice` joins two `let`s **on the
+;; name**, which the fact index keys, as `operand-name` does.
+(rule let-twice (?LET ?MALFORMED)
+  :match  (and (?LET ?x ?v) (?LET ?x ?w) (neq ?v ?w))
+  :assert (?MALFORMED (?LET ?x ?v))
+  :why    "{?x} is named twice: {?v}, and {?w}")
+
+(rule let-zero (?LET ?MALFORMED)
+  :match  (?LET z ?v)
+  :assert (?MALFORMED (?LET z ?v))
+  :why    "z is zero, and cannot name another number")
+
+(rule let-digit (?LET ?NZ ?MALFORMED)
+  :match  (and (?LET ?x ?v) (?NZ ?x))
+  :assert (?MALFORMED (?LET ?x ?v))
+  :why    "{?x} is a digit, and cannot name a number")
+
+(rule let-digit-zero (?LET ?MALFORMED)
+  :match  (?LET 0 ?v)
+  :assert (?MALFORMED (?LET 0 ?v))
+  :why    "0 is a digit, and cannot name a number")
+
+;; What a `let` names must be a number: not another named constant, nor a
+;; digit, which is no number. Flagged whether or not a request uses it.
+(rule let-to-name (?LET ?NAMED ?MALFORMED)
+  :match  (and (?LET ?x ?v) (?NAMED ?v))
+  :assert (?MALFORMED (?LET ?x ?v))
+  :why    "{?v} is a named constant: a let names a number, not another name")
+
+(rule let-to-digit (?LET ?NZ ?MALFORMED ?N)
+  :match  (and (?LET ?x ?v) (?NZ ?v))
+  :assert (?MALFORMED (?LET ?x ?v))
+  :why    "{?v} is a digit, not a number: the number is ({?N} z {?v})")
+
+(rule let-to-digit-zero (?LET ?MALFORMED)
+  :match  (?LET ?x 0)
+  :assert (?MALFORMED (?LET ?x 0))
+  :why    "0 is a digit, not a number: zero is z")
+
+;; From the operand's tag to the request as written: ten rules, one a tag,
+;; alike but for the operation.
+(rule bad-add-first (?BAD-OPERAND ?ADD-FIRST ?BAD-REQUEST ?ADD)
+  :match  (?BAD-OPERAND (?ADD-FIRST ?x ?y) ?f)
+  :assert (?BAD-REQUEST (?ADD ?x ?y) ?f)
+  :why    "the first operand of {?x} + {?y} is at fault: {?f}")
+
+(rule bad-add-second (?BAD-OPERAND ?ADD-SECOND ?BAD-REQUEST ?ADD)
+  :match  (?BAD-OPERAND (?ADD-SECOND ?x ?y ?u) ?f)
+  :assert (?BAD-REQUEST (?ADD ?x ?y) ?f)
+  :why    "the second operand of {?x} + {?y} is at fault: {?f}")
+
+(rule bad-sub-first (?BAD-OPERAND ?SUB-FIRST ?BAD-REQUEST ?SUB)
+  :match  (?BAD-OPERAND (?SUB-FIRST ?x ?y) ?f)
+  :assert (?BAD-REQUEST (?SUB ?x ?y) ?f)
+  :why    "the first operand of {?x} - {?y} is at fault: {?f}")
+
+(rule bad-sub-second (?BAD-OPERAND ?SUB-SECOND ?BAD-REQUEST ?SUB)
+  :match  (?BAD-OPERAND (?SUB-SECOND ?x ?y ?u) ?f)
+  :assert (?BAD-REQUEST (?SUB ?x ?y) ?f)
+  :why    "the second operand of {?x} - {?y} is at fault: {?f}")
+
+(rule bad-cmp-first (?BAD-OPERAND ?CMP-FIRST ?BAD-REQUEST ?CMP)
+  :match  (?BAD-OPERAND (?CMP-FIRST ?x ?y) ?f)
+  :assert (?BAD-REQUEST (?CMP ?x ?y) ?f)
+  :why    "the first operand of {?x} compared with {?y} is at fault: {?f}")
+
+(rule bad-cmp-second (?BAD-OPERAND ?CMP-SECOND ?BAD-REQUEST ?CMP)
+  :match  (?BAD-OPERAND (?CMP-SECOND ?x ?y ?u) ?f)
+  :assert (?BAD-REQUEST (?CMP ?x ?y) ?f)
+  :why    "the second operand of {?x} compared with {?y} is at fault: {?f}")
+
+(rule bad-mul-first (?BAD-OPERAND ?MUL-FIRST ?BAD-REQUEST ?MUL)
+  :match  (?BAD-OPERAND (?MUL-FIRST ?x ?y) ?f)
+  :assert (?BAD-REQUEST (?MUL ?x ?y) ?f)
+  :why    "the first operand of {?x} x {?y} is at fault: {?f}")
+
+(rule bad-mul-second (?BAD-OPERAND ?MUL-SECOND ?BAD-REQUEST ?MUL)
+  :match  (?BAD-OPERAND (?MUL-SECOND ?x ?y ?u) ?f)
+  :assert (?BAD-REQUEST (?MUL ?x ?y) ?f)
+  :why    "the second operand of {?x} x {?y} is at fault: {?f}")
+
+(rule bad-div-first (?BAD-OPERAND ?DIV-FIRST ?BAD-REQUEST ?DIV)
+  :match  (?BAD-OPERAND (?DIV-FIRST ?x ?y) ?f)
+  :assert (?BAD-REQUEST (?DIV ?x ?y) ?f)
+  :why    "the first operand of {?x} divided by {?y} is at fault: {?f}")
+
+(rule bad-div-second (?BAD-OPERAND ?DIV-SECOND ?BAD-REQUEST ?DIV)
+  :match  (?BAD-OPERAND (?DIV-SECOND ?x ?y ?u) ?f)
+  :assert (?BAD-REQUEST (?DIV ?x ?y) ?f)
+  :why    "the second operand of {?x} divided by {?y} is at fault: {?f}")
+
+;; The two flags, each from its fault, and each a contradiction by a rule of
+;; its own, so that a trace shows the flag as one step and `(false)` as the
+;; next.
+(rule bad-request-malformed (?BAD-REQUEST ?NOT-A-NUMBER ?MALFORMED)
+  :match  (?BAD-REQUEST ?request (?NOT-A-NUMBER ?thing))
+  :assert (?MALFORMED ?request)
+  :why    "an operand of {?request} is not a number: it holds {?thing}")
+
+(rule bad-request-undeclared (?BAD-REQUEST ?NO-LET ?UNDECLARED)
+  :match  (?BAD-REQUEST ?request (?NO-LET ?x))
+  :assert (?UNDECLARED ?x ?request)
+  :why    "{?request} uses the name {?x}, and no let states it")
+
+(rule malformed-is-false (?MALFORMED)
+  :match  (?MALFORMED ?request)
+  :assert (false)
+  :why    "{?request} holds something that is not a number: the theory cannot read it")
+
+(rule undeclared-is-false (?UNDECLARED)
+  :match  (?UNDECLARED ?x ?request)
+  :assert (false)
+  :why    "{?request} uses the name {?x}, which names no number")
+
+;; ── The connection: one call of this macro is every activator ───────────────
+;; A base calls it once, inside its closing rule's conclusion, with its 61
+;; relations in this order; each line of the body is one rule's activator, its
+;; parameters in the rule's own order. Written by hand, and held by
+;; `ein-infer/tests/arith_theory.rs` to name each rule of this module once, with
+;; that rule's parameters (Q-M1f.270).
+(macro positional (?OPERAND ?OPERAND-IS ?N ?LET ?NAMED ?ADD-WALK ?FA ?B ?STRIP ?TURN ?NZ
+                   ?DONE ?ADD ?ADD-FIRST ?ADD-SECOND ?SUM ?SUM-OF ?SUB-WALK ?FS ?SHORT ?SUB
+                   ?SUB-FIRST ?SUB-SECOND ?DIFFERENCE ?SHORTFALL ?DIFF-OF ?CMP-WALK ?CL
+                   ?ORDER-IS ?CMP ?CMP-FIRST ?CMP-SECOND ?ORDER ?CMP-OF ?TOP-FIRST
+                   ?TOP-FIRST-IS ?MUL-CALL ?MUL-DIGITS ?MUL-STEP ?MUL-SUM ?MUL ?MUL-FIRST
+                   ?MUL-SECOND ?PRODUCT ?PRODUCT-OF ?DIV-DIGITS ?DIV-STEP ?DIV-DONE ?DIV
+                   ?DIV-FIRST ?DIV-SECOND ?DIV-CALL ?QUOTIENT ?QUOT-OF ?DIV-M1 ?BAD-OPERAND
+                   ?NOT-A-NUMBER ?MALFORMED ?BAD-REQUEST ?NO-LET ?UNDECLARED)
+  (and (operand-zero ?OPERAND ?OPERAND-IS)
+       (operand-number ?OPERAND ?N ?OPERAND-IS)
+       (let-named ?LET ?NAMED)
+       (operand-name ?OPERAND ?NAMED ?LET ?OPERAND-IS)
+       (add-column ?ADD-WALK ?N ?FA ?B)
+       (add-column-first ?ADD-WALK ?N ?FA ?B)
+       (add-column-second ?ADD-WALK ?N ?FA ?B)
+       (add-end ?ADD-WALK ?STRIP)
+       (add-carry-out ?ADD-WALK ?TURN ?B)
+       (strip-zero ?STRIP ?B)
+       (strip-top ?STRIP ?B ?NZ ?TURN)
+       (strip-none ?STRIP ?DONE)
+       (turn-step ?TURN ?B ?N)
+       (turn-end ?TURN ?DONE)
+       (add-ask ?ADD ?OPERAND ?ADD-FIRST)
+       (add-ask-second ?OPERAND-IS ?ADD-FIRST ?OPERAND ?ADD-SECOND)
+       (add-start ?OPERAND-IS ?ADD-SECOND ?ADD-WALK ?SUM)
+       (add-answer ?DONE ?SUM ?SUM-OF)
+       (sub-column ?SUB-WALK ?N ?FS ?B)
+       (sub-column-first ?SUB-WALK ?N ?FS ?B)
+       (sub-column-second ?SUB-WALK ?N ?FS ?B)
+       (sub-end ?SUB-WALK ?STRIP)
+       (sub-borrow-out ?SUB-WALK ?SHORT)
+       (sub-ask ?SUB ?OPERAND ?SUB-FIRST)
+       (sub-ask-second ?OPERAND-IS ?SUB-FIRST ?OPERAND ?SUB-SECOND)
+       (sub-start ?OPERAND-IS ?SUB-SECOND ?SUB-WALK ?DIFFERENCE ?SHORTFALL)
+       (sub-answer ?DONE ?DIFFERENCE ?DIFF-OF)
+       (sub-answer-short ?DONE ?SHORTFALL ?DIFF-OF)
+       (cmp-column ?CMP-WALK ?N ?CL)
+       (cmp-column-first ?CMP-WALK ?N ?CL)
+       (cmp-column-second ?CMP-WALK ?N ?CL)
+       (cmp-end ?CMP-WALK ?ORDER-IS)
+       (cmp-ask ?CMP ?OPERAND ?CMP-FIRST)
+       (cmp-ask-second ?OPERAND-IS ?CMP-FIRST ?OPERAND ?CMP-SECOND)
+       (cmp-start ?OPERAND-IS ?CMP-SECOND ?CMP-WALK ?ORDER)
+       (cmp-answer ?ORDER-IS ?ORDER ?CMP-OF)
+       (top-first-step ?TOP-FIRST ?N ?B)
+       (top-first-end ?TOP-FIRST ?TOP-FIRST-IS)
+       (mul-turn ?MUL-CALL ?TOP-FIRST ?MUL-DIGITS)
+       (mul-begin ?TOP-FIRST-IS ?MUL-DIGITS ?MUL-STEP)
+       (mul-next ?DONE ?MUL-SUM ?MUL-STEP)
+       (mul-end ?MUL-STEP ?DONE)
+       (mul-ask ?MUL ?OPERAND ?MUL-FIRST)
+       (mul-ask-second ?OPERAND-IS ?MUL-FIRST ?OPERAND ?MUL-SECOND)
+       (mul-start ?OPERAND-IS ?MUL-SECOND ?MUL-CALL ?PRODUCT)
+       (mul-answer ?DONE ?PRODUCT ?PRODUCT-OF)
+       (div-begin ?TOP-FIRST-IS ?DIV-DIGITS ?DIV-STEP)
+       (div-end ?DIV-STEP ?DIV-DONE)
+       (div-ask ?DIV ?OPERAND ?DIV-FIRST)
+       (div-ask-second ?OPERAND-IS ?DIV-FIRST ?OPERAND ?DIV-SECOND)
+       (div-start ?OPERAND-IS ?DIV-SECOND ?DIV-CALL ?QUOTIENT)
+       (div-answer ?DIV-DONE ?QUOTIENT ?QUOT-OF)
+       (div-by-zero ?DONE ?DIV-M1 ?QUOTIENT ?DIV)
+       (div-call-by-zero ?DONE ?DIV-M1 ?DIV-CALL)
+       (operand-digit ?OPERAND ?NZ ?BAD-OPERAND ?NOT-A-NUMBER ?N)
+       (operand-digit-zero ?OPERAND ?BAD-OPERAND ?NOT-A-NUMBER)
+       (let-twice ?LET ?MALFORMED)
+       (let-zero ?LET ?MALFORMED)
+       (let-digit ?LET ?NZ ?MALFORMED)
+       (let-digit-zero ?LET ?MALFORMED)
+       (let-to-name ?LET ?NAMED ?MALFORMED)
+       (let-to-digit ?LET ?NZ ?MALFORMED ?N)
+       (let-to-digit-zero ?LET ?MALFORMED)
+       (bad-add-first ?BAD-OPERAND ?ADD-FIRST ?BAD-REQUEST ?ADD)
+       (bad-add-second ?BAD-OPERAND ?ADD-SECOND ?BAD-REQUEST ?ADD)
+       (bad-sub-first ?BAD-OPERAND ?SUB-FIRST ?BAD-REQUEST ?SUB)
+       (bad-sub-second ?BAD-OPERAND ?SUB-SECOND ?BAD-REQUEST ?SUB)
+       (bad-cmp-first ?BAD-OPERAND ?CMP-FIRST ?BAD-REQUEST ?CMP)
+       (bad-cmp-second ?BAD-OPERAND ?CMP-SECOND ?BAD-REQUEST ?CMP)
+       (bad-mul-first ?BAD-OPERAND ?MUL-FIRST ?BAD-REQUEST ?MUL)
+       (bad-mul-second ?BAD-OPERAND ?MUL-SECOND ?BAD-REQUEST ?MUL)
+       (bad-div-first ?BAD-OPERAND ?DIV-FIRST ?BAD-REQUEST ?DIV)
+       (bad-div-second ?BAD-OPERAND ?DIV-SECOND ?BAD-REQUEST ?DIV)
+       (bad-request-malformed ?BAD-REQUEST ?NOT-A-NUMBER ?MALFORMED)
+       (bad-request-undeclared ?BAD-REQUEST ?NO-LET ?UNDECLARED)
+       (malformed-is-false ?MALFORMED)
+       (undeclared-is-false ?UNDECLARED))
+  :why "the rules every positional base shares, each activated once with this base's relations: {?N} the numeral, {?ADD-WALK} the addition's walk, {?FA} its table, and the rest")

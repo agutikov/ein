@@ -14,9 +14,10 @@
 //! | operands written with high zeros are read by value | [`high_zeros_are_read_by_value`] |
 //! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
 //! | **every answer is in normal form**, and each request has exactly one | all five, through [`hold`] |
-//! | **the rule of the theory**, on the module's text: no rule joins two facts on a number | [`no_rule_joins_two_facts_on_a_number`] |
+//! | **the rule of the theory**, on the module's text: no rule joins two facts on a number, in every module of the base, `std.math.positional`'s rules read as the base activates them (S1f.6.16) | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `not`, no `or`, and **exactly one `absent`, over `let`**, which no rule derives; `eq` and `neq` in the checking rules alone; each rule that concludes `(false)` reads its flag alone, in each of the three modules | [`the_theory_writes_one_absent_over_let`] |
 //! | the closing rule closes every relation and names every rule, and so do `std.math.decimal`'s and `std.math.arith`'s (S1f.6.38) | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
+//! | **one call of `std.math.positional`'s macro connects each base** (S1f.6.16): the macro activates each shared rule once with its parameters, and each base's closing rule calls it with its relations in the macro's order | [`one_call_of_the_macro_connects_each_base`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
 //! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
@@ -1069,8 +1070,17 @@ fn the_circuit_of_one_division() {
 
 // ── the module's text ──────────────────────────────────────────────
 
-/// The seven tables of `std.math.digits`: a premise over one is a lookup by digits.
-const TABLES: [&str; 7] = ["fa", "fs", "md", "cl", "nz", "mid", "adj"];
+/// The tables a premise looks a row up in by digits: the seven of
+/// `std.math.digits` and, since S1f.6.16, the four of `std.math.bits`.
+const TABLES: [&str; 11] = [
+    "fa", "fs", "md", "cl", "nz", "mid", "adj", "bin-fa", "bin-fs", "bin-cl", "bin-nz",
+];
+
+/// The modules of tables, which a theory imports and its closing rule closes.
+const TABLE_MODULES: [&str; 2] = ["std.math.digits", "std.math.bits"];
+
+/// A rule that may join two facts **on a name**, and its premises, in order.
+type Exception = (&'static str, &'static [&'static str]);
 
 /// The one rule that may join other facts, and the premises it has, **in
 /// this order**: `operand-name` looks a `(let NAME NUMBER)` up by its name.
@@ -1080,92 +1090,260 @@ const TABLES: [&str; 7] = ["fa", "fs", "md", "cl", "nz", "mid", "adj"];
 /// name. With the two exchanged, or `named` left out, every number operand
 /// walks every `let` (`arith_batch.rs` measures it). The module's header
 /// states the exception; adding a rule here is a decision about the theory's
-/// cost, not a way to make a test pass.
-const NAME_LOOKUP: (&str, [&str; 3]) = ("operand-name", ["operand", "named", "let"]);
+/// cost, not a way to make a test pass. `std.math.positional`'s since
+/// S1f.6.16, read here with decimal's relations in its parameters' places.
+const NAME_LOOKUP: Exception = ("operand-name", &["operand", "named", "let"]);
 
 /// The second rule that joins two facts, **on a name** as the first does
 /// (S1f.6.12): a constant named twice is two `let`s of one name, which the
 /// fact index finds by the name; the numbers are compared by a guard and
 /// looked up by nothing.
-const NAME_TWICE: (&str, [&str; 3]) = ("let-twice", ["let", "let", "neq"]);
+const NAME_TWICE: Exception = ("let-twice", &["let", "let", "neq"]);
 
 /// A premise that is **one probe**: a relation of one argument, asked with
 /// its argument bound by the premise that holds the numbers, which the
 /// engine answers by one interned lookup whatever the argument is, a number
-/// too (E-3's note). `nz` is a table and is held as one; `named` is the
-/// theory's own.
-const PROBES: [&str; 1] = ["named"];
+/// too (E-3's note). `nz` and `bin-nz` are tables and are held as such;
+/// `named` and `bin-named` are the representations'.
+const PROBES: [&str; 2] = ["named", "bin-named"];
 
 /// The computed relations: a guard compares two values and looks nothing up.
 const GUARDS: [&str; 2] = ["eq", "neq"];
 
-/// The rules that write a guard, and no other may (S1f.6.12): *a name, not
-/// `z` and not a digit* in `operand-undeclared`; two different numbers in
-/// `let-twice`. The ten digits' guards were `check-digit`'s until S1f.6.38,
-/// and are `std.math.decimal`'s `numeral-digit`'s since ([`DECIMAL`]).
-const GUARDED: [&str; 2] = ["operand-undeclared", "let-twice"];
-
-/// The one rule that reads an `absent`, and the relation it is over, which a
-/// program writes and no rule of the module derives.
-const ABSENT: (&str, &str) = ("operand-undeclared", "let");
-
-/// The rules that conclude `(false)`, each with the one premise it has: its
-/// flag. A division by zero's is `std.math.arith`'s since S1f.6.38 ([`ARITH`]).
-const FALSE_RULES: [(&str, &str); 2] = [
-    ("malformed-is-false", "malformed"),
-    ("undeclared-is-false", "undeclared"),
-];
-
-/// **The calculator's modules below `std.math.decimal-arith`** (S1f.6.38),
-/// each held to the same text rules as it: the file, its closing rule, the
-/// relation its closing rule names rules by, the rules that write a guard,
-/// and the rules that conclude `(false)` with their flag. Neither reads an
-/// `absent` or joins two facts.
+/// **A module of the calculator, held to the text rules** (S1f.6.38 for the
+/// modules below `std.math.decimal-arith`; S1f.6.16 for `std.math.positional`
+/// and binary's): the file, how it is read, its closing rule, the relation
+/// its closing rule names rules by, the rules that write a guard, the rules
+/// that conclude `(false)` with their flag, the one `absent` it may read and
+/// the rules that may join on a name.
 struct Spec {
     file: &'static str,
-    closer: &'static str,
+    /// **`std.math.positional` is read as a base reads it**: the base's call
+    /// of its macro, in the base's closing rule, puts the base's relations in
+    /// the parameters' places, so every rule is held as if written for that
+    /// base (`None` for a module read as written).
+    instance: Option<&'static str>,
+    /// The closing rule; `std.math.positional` declares no relation and has
+    /// none.
+    closer: Option<&'static str>,
     names_by: &'static str,
     guarded: &'static [&'static str],
     false_rules: &'static [(&'static str, &'static str)],
+    /// The rule that reads the module's one `absent`, and the relation it is
+    /// over, which a program writes and no rule of the theory derives.
+    absent: Option<(&'static str, &'static str)>,
+    exceptions: &'static [Exception],
 }
 
-/// `std.math.decimal-arith` itself, as the constants above say.
+/// `std.math.decimal-arith`, decimal's own rules: the digit multiplier, the
+/// division of base ten and the operand that is a name; since S1f.6.16 the
+/// shared rules are [`POSITIONAL_DECIMAL`]'s.
 const DECIMAL_ARITH: Spec = Spec {
     file: "stdlib/math/decimal-arith.ein",
-    closer: "decimal-arith",
+    instance: None,
+    closer: Some("decimal-arith"),
     names_by: "arith-rule",
-    guarded: &GUARDED,
-    false_rules: &FALSE_RULES,
+    guarded: &["operand-undeclared"],
+    false_rules: &[],
+    absent: Some(("operand-undeclared", "let")),
+    exceptions: &[],
+};
+
+/// `std.math.positional` as decimal activates it.
+const POSITIONAL_DECIMAL: Spec = Spec {
+    file: "stdlib/math/positional.ein",
+    instance: Some("stdlib/math/decimal-arith.ein"),
+    closer: None,
+    names_by: "",
+    guarded: &["let-twice"],
+    false_rules: &[
+        ("malformed-is-false", "malformed"),
+        ("undeclared-is-false", "undeclared"),
+    ],
+    absent: None,
+    exceptions: &[NAME_LOOKUP, NAME_TWICE],
 };
 
 /// `std.math.decimal`, the numeral and its check over `written`: the ten
 /// digits' guards in `numeral-digit`, *not `z`* in `numeral-prefix-named`.
 const DECIMAL: Spec = Spec {
     file: "stdlib/math/decimal.ein",
-    closer: "decimal",
+    instance: None,
+    closer: Some("decimal"),
     names_by: "decimal-rule",
     guarded: &["numeral-digit", "numeral-prefix-named"],
     false_rules: &[("not-decimal-is-false", "not-decimal")],
+    absent: None,
+    exceptions: &[],
 };
 
 /// `std.math.arith`, arithmetic itself: `z`, and the division by zero's flag
 /// and its rule.
 const ARITH: Spec = Spec {
     file: "stdlib/math/arith.ein",
-    closer: "arith",
+    instance: None,
+    closer: Some("arith"),
     names_by: "arith-module-rule",
     guarded: &[],
     false_rules: &[("division-by-zero-is-false", "division-by-zero")],
+    absent: None,
+    exceptions: &[],
 };
+
+/// Every module of the calculator's decimal base, each held to the same text
+/// rules.
+const SPECS: [&Spec; 4] = [&DECIMAL_ARITH, &POSITIONAL_DECIMAL, &DECIMAL, &ARITH];
 
 struct Module {
     ast: Ast,
     forms: Vec<NodeId>,
 }
 
+/// A base's call of `std.math.positional`'s macro: the relations it names,
+/// in the macro's order, as the base writes them. The call is a conjunct of
+/// the base's closing rule.
+fn call_of(base: &str) -> Vec<String> {
+    let m = module_of(&Spec {
+        file: Box::leak(base.to_string().into_boxed_str()),
+        instance: None,
+        closer: None,
+        names_by: "",
+        guarded: &[],
+        false_rules: &[],
+        absent: None,
+        exceptions: &[],
+    });
+    let mut calls = Vec::new();
+    for (_, rule) in m.declared("rule") {
+        for c in m.conjuncts(m.clause(rule, "assert")) {
+            if m.ast.head_name(c) == Some("positional") {
+                calls.push(
+                    m.ast
+                        .form_args(c)
+                        .iter()
+                        .map(|&a| {
+                            m.ast
+                                .atom_name(a)
+                                .expect("the call names relations")
+                                .to_string()
+                        })
+                        .collect::<Vec<_>>(),
+                );
+            }
+        }
+    }
+    assert_eq!(calls.len(), 1, "{base} calls `positional` once");
+    calls.pop().expect("one call")
+}
+
+/// The variables of a form whose head may be a variable, `(?A ?B ?C)`, in
+/// order: the macro's parameters and a rule's.
+fn form_vars(ast: &Ast, form: NodeId) -> Vec<String> {
+    let mut out = Vec::new();
+    if let Node::SForm { head, .. } = ast.node(form) {
+        if let Node::Var(v) = ast.node(head) {
+            out.push(ast.sym(v).to_string());
+        }
+        for &a in ast.form_args(form) {
+            if let Node::Var(v) = ast.node(a) {
+                out.push(ast.sym(v).to_string());
+            }
+        }
+    }
+    out
+}
+
+/// `std.math.positional`'s macro: its parameters, and its body's conjuncts
+/// as `(rule, its arguments)`, each argument a parameter's name.
+fn the_macro() -> (Vec<String>, Vec<(String, Vec<String>)>) {
+    let path = repo_root().join(POSITIONAL_DECIMAL.file);
+    let text = std::fs::read_to_string(&path).expect("std.math.positional");
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, &text, path.to_str()).expect("the module parses");
+    let macros: Vec<NodeId> = forms
+        .iter()
+        .copied()
+        .filter(|&f| ast.head_name(f) == Some("macro"))
+        .collect();
+    assert_eq!(macros.len(), 1, "std.math.positional holds one macro");
+    let args = ast.form_args(macros[0]);
+    assert_eq!(ast.atom_name(args[0]), Some("positional"));
+    let params = form_vars(&ast, args[1]);
+    let body = ast
+        .conjuncts(args[2])
+        .into_iter()
+        .map(|c| {
+            (
+                ast.head_name(c)
+                    .expect("an activator is headed by a rule's name")
+                    .to_string(),
+                ast.form_args(c)
+                    .iter()
+                    .map(|&a| match ast.node(a) {
+                        Node::Var(v) => ast.sym(v).to_string(),
+                        _ => panic!("an activator's argument is a parameter"),
+                    })
+                    .collect(),
+            )
+        })
+        .collect();
+    (params, body)
+}
+
 fn module_of(spec: &Spec) -> Module {
     let path = repo_root().join(spec.file);
-    let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+    let mut text =
+        std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+    if let Some(base) = spec.instance {
+        // The macro is the connection and not a rule: cut, and every
+        // parameter, a variable in capitals, read as the relation the base
+        // puts in its place, so each rule reads as written for the base.
+        let cut = text
+            .find("\n(macro positional ")
+            .expect("std.math.positional's macro");
+        text.truncate(cut);
+        let (params, _) = the_macro();
+        let call = call_of(base);
+        assert_eq!(
+            params.len(),
+            call.len(),
+            "{base}: the call against the macro"
+        );
+        let mut by: Vec<(String, String)> = params
+            .iter()
+            .zip(&call)
+            .map(|(p, a)| (format!("?{p}"), a.clone()))
+            .collect();
+        // The longest first, so that `?ADD-FIRST` is not read as `?ADD`.
+        by.sort_by_key(|(p, _)| std::cmp::Reverse(p.len()));
+        let mut out = String::with_capacity(text.len());
+        let mut rest = text.as_str();
+        'scan: while let Some(i) = rest.find("(rule ") {
+            // A rule's parameter list is dropped: `(rule add-column ()`.
+            out.push_str(&rest[..i]);
+            rest = &rest[i..];
+            let name_end = rest[6..].find(' ').expect("a rule's name") + 6;
+            out.push_str(&rest[..name_end]);
+            rest = &rest[name_end..];
+            let close = rest.find(')').expect("a parameter list");
+            out.push_str(" ()");
+            rest = &rest[close + 1..];
+            let end = rest.find("\n(rule ").unwrap_or(rest.len());
+            let mut body = rest[..end].to_string();
+            for (p, a) in &by {
+                body = body.replace(p.as_str(), a);
+            }
+            out.push_str(&body);
+            rest = &rest[end..];
+            if rest.is_empty() {
+                break 'scan;
+            }
+            out.push('\n');
+            rest = &rest[1..];
+        }
+        out.push_str(rest);
+        text = out;
+    }
     let mut ast = Ast::new();
     let forms = parse(&mut ast, &text, path.to_str()).expect("the module parses");
     Module { ast, forms }
@@ -1209,13 +1387,12 @@ impl Module {
         }
     }
 
-    /// A clause's conjuncts: `(and a b)` is `a`, `b`; `()` is none; anything
-    /// else is itself.
+    /// A clause's conjuncts: `(and a b)` is `a`, `b`, at any depth; `()` is
+    /// none; anything else is itself.
     fn conjuncts(&self, clause: NodeId) -> Vec<NodeId> {
         match self.ast.head_name(clause) {
-            Some("and") => self.ast.form_args(clause).to_vec(),
             Some(h) if h == ein_core::text::EMPTY_HEAD => Vec::new(),
-            _ => vec![clause],
+            _ => self.ast.conjuncts(clause),
         }
     }
 
@@ -1256,41 +1433,30 @@ impl Module {
 }
 
 /// **The rule of the theory, on the text.** Every rule has at most one
-/// premise that is not a row of `std.math.digits`; that premise holds the numbers,
-/// and a table row holds none: its arguments are digits, names or variables,
-/// never a form. The two exceptions join on a **name** and are named in
-/// [`NAME_LOOKUP`] and [`NAME_TWICE`].
+/// premise that is not a row of a table; that premise holds the numbers, and
+/// a table row holds none: its arguments are digits, names or variables,
+/// never a form. The two exceptions join on a **name** and are each spec's
+/// [`Spec::exceptions`], `std.math.positional`'s.
 ///
 /// Since S1f.6.12 a rule may also hold guards, which compare and look
 /// nothing up, and whose arguments are variables or names, never a form; a
 /// probe of [`PROBES`], on a variable the state premise binds; and, in the
-/// one rule [`ABSENT`] names, the `absent`, which
-/// [`the_theory_writes_one_absent_over_let`] holds.
+/// one rule a spec's [`Spec::absent`] names, the `absent`, which
+/// [`the_theory_writes_one_absent_over_let`] holds. Since S1f.6.16 the
+/// shared rules are read as each base activates them.
 #[test]
 fn no_rule_joins_two_facts_on_a_number() {
-    let mut exceptions_seen = 0;
-    for spec in [&DECIMAL_ARITH, &DECIMAL, &ARITH] {
-        exceptions_seen += no_rule_joins_two_facts_in(spec);
+    for spec in SPECS {
+        no_rule_joins_two_facts_in(spec);
     }
-    assert_eq!(
-        exceptions_seen, 2,
-        "an exception this file names is no longer in the module: {NAME_LOOKUP:?}, \
-         {NAME_TWICE:?}"
-    );
 }
 
-/// [`no_rule_joins_two_facts_on_a_number`] of one module: the exceptions it
-/// met, which only `std.math.decimal-arith` has.
-fn no_rule_joins_two_facts_in(spec: &Spec) -> usize {
+/// [`no_rule_joins_two_facts_on_a_number`] of one module.
+fn no_rule_joins_two_facts_in(spec: &Spec) {
     let m = module_of(spec);
     let rules = m.declared("rule");
     assert!(
-        rules.len()
-            >= if spec.closer == "decimal-arith" {
-                18
-            } else {
-                2
-            },
+        rules.len() >= 2,
         "{} parsed to {} rules",
         spec.file,
         rules.len()
@@ -1298,14 +1464,14 @@ fn no_rule_joins_two_facts_in(spec: &Spec) -> usize {
     let mut exceptions_seen = 0;
     for (name, rule) in &rules {
         let mut state = Vec::new();
-        if let Some((_, want)) = [NAME_LOOKUP, NAME_TWICE].iter().find(|(n, _)| n == name) {
+        if let Some((_, want)) = spec.exceptions.iter().find(|(n, _)| n == name) {
             let premises: Vec<String> = m
                 .conjuncts(m.clause(*rule, "match"))
                 .iter()
                 .map(|&p| m.ast.head_name(p).unwrap_or("?").to_string())
                 .collect();
             assert_eq!(
-                premises, want,
+                &premises, want,
                 "rule {name}: the stated exception has these premises in this order"
             );
             exceptions_seen += 1;
@@ -1328,9 +1494,10 @@ fn no_rule_joins_two_facts_in(spec: &Spec) -> usize {
                 }
             } else if head == "absent" {
                 assert_eq!(
-                    name, ABSENT.0,
-                    "rule {name} reads an `absent`: {} alone does",
-                    ABSENT.0
+                    Some(name.as_str()),
+                    spec.absent.map(|a| a.0),
+                    "rule {name} of {} reads an `absent`",
+                    spec.file
                 );
             } else if PROBES.contains(&head.as_str()) {
                 // One argument, a variable, and the premise that holds the
@@ -1363,45 +1530,60 @@ fn no_rule_joins_two_facts_in(spec: &Spec) -> usize {
         }
         assert!(
             state.len() <= 1,
-            "rule {name} joins {state:?}: a rule of the calculator has ONE premise \
-             that holds numbers, and its other premises are rows of std.math.digits. \
+            "rule {name} of {} joins {state:?}: a rule of the calculator has ONE premise \
+             that holds numbers, and its other premises are rows of a table. \
              A second one changes no answer and makes every batch of requests \
              cost the square of its count (E-3 of P1f.6's findings.md); carry \
-             what the rule needs in the call's tag instead"
+             what the rule needs in the call's tag instead",
+            spec.file
         );
     }
-    exceptions_seen
-}
-
-/// **One `absent`, over `let`; no `not`, no `or`** (S1f.6.12; until then the
-/// module wrote no `absent` at all). The one is `operand-undeclared`'s: an
-/// operand that is a name and that no `let` states. `let` is a relation a
-/// program writes and no rule of the module concludes, and the closing rule
-/// closes it, so no commitment can add the fact the premise found absent:
-/// the loader's *forbid* does not refuse the theory, the static check calls
-/// a program that imports it monotone, and `ein saturate --dump`'s
-/// `;; Strata` line says *stratified, 2 strata*, the rule that reads the
-/// `absent` above the rest (`arith_search_free.rs` holds all three on the
-/// binary).
-///
-/// **Guards in the checking rules alone:** `eq` and `neq` are computed and
-/// monotone, and only the rules of [`GUARDED`] write one.
-///
-/// **Three rules conclude `(false)`**, each from its flag and nothing else:
-/// a division by zero, a malformed request, an undeclared name.
-#[test]
-fn the_theory_writes_one_absent_over_let() {
-    let mut absents = Vec::new();
-    for spec in [&DECIMAL_ARITH, &DECIMAL, &ARITH] {
-        absents.extend(absents_of(spec));
-    }
     assert_eq!(
-        absents,
-        [(ABSENT.0.to_string(), ABSENT.1.to_string())],
-        "the theory reads exactly one `absent`, over `{}`",
-        ABSENT.1
+        exceptions_seen,
+        spec.exceptions.len(),
+        "{}: an exception this file names is no longer in the module: {:?}",
+        spec.file,
+        spec.exceptions
     );
 }
+
+/// **One `absent` a base, over its `let`; no `not`, no `or`** (S1f.6.12;
+/// until then the module wrote no `absent` at all). Decimal's is
+/// `operand-undeclared`'s: an operand that is a name and that no `let`
+/// states. `let` is a relation a program writes and no rule of the theory
+/// concludes, and the closing rule closes it, so no commitment can add the
+/// fact the premise found absent: the loader's *forbid* does not refuse the
+/// theory, the static check calls a program that imports it monotone, and
+/// `ein saturate --dump`'s `;; Strata` line says *stratified, 2 strata*, the
+/// rule that reads the `absent` above the rest (`arith_search_free.rs` holds
+/// all three on the binary). Since S1f.6.16 binary has its own,
+/// `bin-operand-undeclared` over `bin-let`, and the shared rules read none.
+///
+/// **Guards in the checking rules alone:** `eq` and `neq` are computed and
+/// monotone, and only a spec's [`Spec::guarded`] write one.
+///
+/// **The rules that conclude `(false)`**, each from its flag and nothing
+/// else: a division by zero (`std.math.arith`), a malformed request and an
+/// undeclared name (`std.math.positional`), a malformed numeral (the
+/// representation's).
+#[test]
+fn the_theory_writes_one_absent_over_let() {
+    for spec in SPECS {
+        assert_eq!(
+            absents_of(spec),
+            spec.absent
+                .map(|(r, over)| (r.to_string(), over.to_string()))
+                .into_iter()
+                .collect::<Vec<_>>(),
+            "{} reads exactly the `absent` its spec names",
+            spec.file
+        );
+    }
+}
+
+/// The relations a theory's `absent` is over, which no rule of any module
+/// derives.
+const LETS: [&str; 2] = ["let", "bin-let"];
 
 /// [`the_theory_writes_one_absent_over_let`] of one module: its `absent`s,
 /// each with the relation it is over.
@@ -1445,19 +1627,18 @@ fn absents_of(spec: &Spec) -> Vec<(String, String)> {
         }
         assert_eq!(
             heads.iter().filter(|h| *h == "absent").count(),
-            usize::from(name == ABSENT.0),
-            "rule {name}: `absent` is read by {} alone, once, as a premise of its own",
-            ABSENT.0
+            usize::from(spec.absent.is_some_and(|a| a.0 == name)),
+            "rule {name}: `absent` is read by {:?} alone, once, as a premise of its own",
+            spec.absent
         );
-        // No rule derives the relation the `absent` is over: a conclusion's
+        // No rule derives a relation an `absent` is over: a conclusion's
         // own head, not a fact it holds, as `(malformed (let …))` does.
         assert!(
             !m.conjuncts(m.clause(rule, "assert"))
                 .iter()
-                .any(|&c| m.ast.head_name(c) == Some(ABSENT.1)),
-            "rule {name} concludes `{}`, which the theory's `absent` is over: \
-             a program writes it and no rule derives it",
-            ABSENT.1
+                .any(|&c| m.ast.head_name(c).is_some_and(|h| LETS.contains(&h))),
+            "rule {name} concludes one of {LETS:?}, which a theory's `absent` is over: \
+             a program writes it and no rule derives it"
         );
         // `(false)` is concluded from a flag, by the flag's own rule.
         let flag = spec.false_rules.iter().find(|(r, _)| *r == name);
@@ -1479,7 +1660,7 @@ fn absents_of(spec: &Spec) -> Vec<(String, String)> {
     }
     assert!(
         m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
-        "{} guesses nothing and expands nothing",
+        "{} guesses nothing, and expands nothing but std.math.positional's macro",
         spec.file
     );
     absents
@@ -1493,35 +1674,46 @@ fn absents_of(spec: &Spec) -> Vec<(String, String)> {
 /// modules below it since S1f.6.38, by their own closing rules: each closes
 /// every relation it declares and every table it imports, and names every
 /// other rule of its own and the entry of each calculator module it imports.
+/// **A base that imports `std.math.positional` calls its macro** in the same
+/// conclusion, once, and names none of its rules (S1f.6.16; E-55):
+/// [`one_call_of_the_macro_connects_each_base`] holds the call.
 #[test]
 fn the_closing_rule_names_every_rule_and_closes_every_relation() {
-    for spec in [&DECIMAL_ARITH, &DECIMAL, &ARITH] {
+    for spec in SPECS {
         the_closing_rule_of(spec);
     }
 }
 
 /// The entries of the calculator's modules, by module.
-const ENTRIES: [(&str, &str); 3] = [
+const ENTRIES: [(&str, &str); 5] = [
     ("std.math.arith", "arith"),
     ("std.math.decimal", "decimal"),
     ("std.math.decimal-arith", "decimal-arith"),
+    ("std.math.binary", "binary"),
+    ("std.math.binary-arith", "binary-arith"),
 ];
 
 fn the_closing_rule_of(spec: &Spec) {
+    let Some(closer_name) = spec.closer else {
+        return;
+    };
     let m = module_of(spec);
     let file = spec.file;
     let rules = m.declared("rule");
     let (_, closer) = rules
         .iter()
-        .find(|(n, _)| n == spec.closer)
-        .unwrap_or_else(|| panic!("{file}: the closing rule, `{}`", spec.closer));
+        .find(|(n, _)| n == closer_name)
+        .unwrap_or_else(|| panic!("{file}: the closing rule, `{closer_name}`"));
     assert!(
         m.conjuncts(m.clause(*closer, "match")).is_empty(),
-        "{file}: `{}` fires at root, on nothing",
-        spec.closer
+        "{file}: `{closer_name}` fires at root, on nothing"
     );
-    let (mut closed, mut named) = (BTreeSet::new(), BTreeSet::new());
+    let (mut closed, mut named, mut calls) = (BTreeSet::new(), BTreeSet::new(), 0usize);
     for c in m.conjuncts(m.clause(*closer, "assert")) {
+        if m.ast.head_name(c) == Some("positional") {
+            calls += 1;
+            continue;
+        }
         let arg = m
             .ast
             .form_args(c)
@@ -1534,13 +1726,14 @@ fn the_closing_rule_of(spec: &Spec) {
             Some(h) if h == spec.names_by => {
                 assert!(named.insert(arg.clone()), "named twice: {arg}")
             }
-            other => panic!("{file}: `{}` asserts a {other:?}", spec.closer),
+            other => panic!("{file}: `{closer_name}` asserts a {other:?}"),
         }
     }
 
-    // The tables the module imports, read off its `(import std.math.digits …)`,
-    // and the entries of the calculator's modules it imports.
-    let (mut tables, mut entries) = (BTreeSet::new(), BTreeSet::new());
+    // The tables the module imports, read off its import of a module of
+    // tables, the entries of the calculator's modules it imports, and whether
+    // it imports the shared rules.
+    let (mut tables, mut entries, mut shares) = (BTreeSet::new(), BTreeSet::new(), false);
     for &f in &m.forms {
         if m.ast.head_name(f) != Some("import") {
             continue;
@@ -1551,9 +1744,14 @@ fn the_closing_rule_of(spec: &Spec) {
             entries.insert(entry.to_string());
             continue;
         }
-        assert_eq!(
-            module, "std.math.digits",
-            "{file} imports std.math.digits and the calculator's modules below it, and nothing else"
+        if module == "std.math.positional" {
+            shares = true;
+            continue;
+        }
+        assert!(
+            TABLE_MODULES.contains(&module),
+            "{file} imports the modules of tables, the calculator's modules below it and \
+             std.math.positional, and nothing else: {module}"
         );
         for &a in &args[1..] {
             if let Node::KwPair { key, value } = m.ast.node(a) {
@@ -1571,7 +1769,13 @@ fn the_closing_rule_of(spec: &Spec) {
     }
     assert!(
         tables.iter().all(|t| TABLES.contains(&t.as_str())),
-        "{file}: the import lists tables of std.math.digits: {tables:?}"
+        "{file}: the import lists tables: {tables:?}"
+    );
+    assert_eq!(
+        calls,
+        usize::from(shares),
+        "{file}: `{closer_name}` calls std.math.positional's macro once where the module \
+         imports it, and never otherwise"
     );
 
     let mut want_closed: BTreeSet<String> = m
@@ -1585,25 +1789,23 @@ fn the_closing_rule_of(spec: &Spec) {
     want_closed.extend(tables);
     assert_eq!(
         closed, want_closed,
-        "{file}: `{}` closes every relation the module declares and every table it imports",
-        spec.closer
+        "{file}: `{closer_name}` closes every relation the module declares and every table it imports"
     );
     let mut want_named: BTreeSet<String> = rules
         .iter()
         .map(|(n, _)| n.clone())
-        .filter(|n| n != spec.closer)
+        .filter(|n| n != closer_name)
         .collect();
     want_named.extend(entries);
     assert_eq!(
         named, want_named,
-        "{file}: `{}` names every other rule of the module, and the entries of the modules below",
-        spec.closer
+        "{file}: `{closer_name}` names every other rule of the module, and the entries of the modules below"
     );
 
     // `std.math.decimal-arith`'s own name is a written fact, the module's only
     // one: what kept the closing rule in a program that is inlined and
     // tree-shaken, as a `--dump-answer` state file's was (E-11 of P1f.6's
-    // findings.md). The modules below it write none.
+    // findings.md). The other modules write none.
     let facts: Vec<(String, Vec<String>)> = m
         .forms
         .iter()
@@ -1624,7 +1826,7 @@ fn the_closing_rule_of(spec: &Spec) {
             )
         })
         .collect();
-    let want: Vec<(String, Vec<String>)> = if spec.closer == "decimal-arith" {
+    let want: Vec<(String, Vec<String>)> = if closer_name == "decimal-arith" {
         vec![("arith-rule".to_string(), vec!["decimal-arith".to_string()])]
     } else {
         Vec::new()
@@ -1635,17 +1837,117 @@ fn the_closing_rule_of(spec: &Spec) {
     );
 }
 
+/// The bases that connect to `std.math.positional`, each with how its
+/// relation for a parameter is spelt: decimal's is the parameter in lower
+/// case, `?ADD-WALK` is `add-walk`.
+const BASES: [(&str, fn(&str) -> String); 1] =
+    [("stdlib/math/decimal-arith.ein", |p| p.to_ascii_lowercase())];
+
+/// **One call of the macro connects a base** (S1f.6.16, Q-M1f.266 ruled
+/// (iii); Q-M1f.270: the macro's body written by hand, and held here).
+///
+/// - **The macro activates each rule of `std.math.positional` once, with
+///   that rule's parameters**: its body is one activator a rule, in the
+///   file's order, each the rule's name with the rule's own parameter list;
+/// - **its parameters are the rules' parameters**, each once, in the order a
+///   reader of the file meets them, and none another: a parameter no rule
+///   reads would be a relation a base names for nothing;
+/// - **every parameter is in capitals**, so that none interns a relation's
+///   short name bare (the trial's point 4);
+/// - **each base calls it once, in its closing rule**, with a relation for
+///   each parameter, spelt as [`BASES`] says, each one the base declares or
+///   lists from a module it imports.
+#[test]
+fn one_call_of_the_macro_connects_each_base() {
+    let m = module_of(&Spec {
+        instance: None,
+        ..POSITIONAL_DECIMAL
+    });
+    let rules: Vec<(String, Vec<String>)> = m
+        .declared("rule")
+        .into_iter()
+        .map(|(name, rule)| {
+            let params = form_vars(&m.ast, m.ast.form_args(rule)[1]);
+            (name, params)
+        })
+        .collect();
+    assert_eq!(rules.len(), 77, "std.math.positional's rules");
+    let (params, body) = the_macro();
+    assert_eq!(
+        body, rules,
+        "the macro's body: one activator a rule, in the file's order, each with the rule's \
+         own parameters"
+    );
+    let mut met: Vec<String> = Vec::new();
+    for (_, ps) in &rules {
+        for p in ps {
+            if !met.contains(p) {
+                met.push(p.clone());
+            }
+        }
+    }
+    assert_eq!(
+        params, met,
+        "the macro's parameters are the rules', each once, in the order they are met"
+    );
+    for p in &params {
+        assert!(
+            p.chars()
+                .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || c == '-'),
+            "a parameter in capitals: ?{p}"
+        );
+    }
+    for (base, spelt) in BASES {
+        let call = call_of(base);
+        let want: Vec<String> = params.iter().map(|p| spelt(p)).collect();
+        assert_eq!(
+            call, want,
+            "{base}: the call names its relations in the macro's order"
+        );
+        // Each one the base declares or lists from a module it imports.
+        let b = module_of(&Spec {
+            file: base,
+            ..DECIMAL_ARITH
+        });
+        let mut known: BTreeSet<String> =
+            b.declared("relation").into_iter().map(|(n, _)| n).collect();
+        for &f in &b.forms {
+            if b.ast.head_name(f) != Some("import") {
+                continue;
+            }
+            for &a in &b.ast.form_args(f)[1..] {
+                if let Node::KwPair { value, .. } = b.ast.node(a) {
+                    known.extend(b.ast.head_name(value).map(str::to_string));
+                    known.extend(
+                        b.ast
+                            .form_args(value)
+                            .iter()
+                            .filter_map(|&t| b.ast.atom_name(t).map(str::to_string)),
+                    );
+                }
+            }
+        }
+        for r in &call {
+            assert!(
+                known.contains(r),
+                "{base}: the call names `{r}`, which the base neither declares nor lists"
+            );
+        }
+    }
+}
+
 /// **The ten rules from an operand's tag to its request are one rule
 /// written ten times** (S1f.6.12): `bad-OP-first` and `bad-OP-second` for
 /// each of the five operations, alike but for the operation's name, its
-/// sign in the sentence, and the second tag's third argument.
+/// sign in the sentence, and the second tag's third argument. Since S1f.6.16
+/// they are `std.math.positional`'s, every relation a parameter.
 #[test]
 fn the_rules_from_a_tag_to_its_request_are_alike() {
-    let path = repo_root().join("stdlib/math/decimal-arith.ein");
-    let text = std::fs::read_to_string(&path).expect("std.math.decimal-arith");
+    let path = repo_root().join("stdlib/math/positional.ein");
+    let text = std::fs::read_to_string(&path).expect("std.math.positional");
     let rule = |name: &str| -> String {
         let start = text
-            .find(&format!("(rule {name} ()"))
+            .find(&format!("(rule {name} ("))
             .unwrap_or_else(|| panic!("no rule {name}"));
         let end = text[start..].find("\n\n").map_or(text.len(), |e| start + e);
         text[start..end].to_string()
@@ -1658,10 +1960,11 @@ fn the_rules_from_a_tag_to_its_request_are_alike() {
         ("div", "divided by"),
     ] {
         for (place, tag) in [("first", "?x ?y"), ("second", "?x ?y ?u")] {
+            let (o, p) = (op.to_ascii_uppercase(), place.to_ascii_uppercase());
             let want = format!(
-                "(rule bad-{op}-{place} ()\n  \
-                 :match  (bad-operand ({op}-{place} {tag}) ?f)\n  \
-                 :assert (bad-request ({op} ?x ?y) ?f)\n  \
+                "(rule bad-{op}-{place} (?BAD-OPERAND ?{o}-{p} ?BAD-REQUEST ?{o})\n  \
+                 :match  (?BAD-OPERAND (?{o}-{p} {tag}) ?f)\n  \
+                 :assert (?BAD-REQUEST (?{o} ?x ?y) ?f)\n  \
                  :why    \"the {place} operand of {{?x}} {sign} {{?y}} is at fault: {{?f}}\")"
             );
             assert_eq!(rule(&format!("bad-{op}-{place}")), want);
