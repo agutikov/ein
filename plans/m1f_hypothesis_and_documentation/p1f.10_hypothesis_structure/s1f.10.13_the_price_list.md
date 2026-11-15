@@ -16,8 +16,9 @@ phase's stop, [S1f.10.12](s1f.10.12_the_structure_shown.md), where the user sees
 ## Context
 
 The user's second idea is a question with a *maybe* in it: *maybe hyp structure investigation is cheap and can
-improve search of R*. This stage answers both halves with numbers before any route changes, and a *no* is a
-full result.
+improve search of R*. This stage answers both halves with numbers before any route changes. A *no* is a
+result about one way of spending the structure for one question; the track is required and goes on to the next
+way.
 
 **What the re-plan's probe found**, 2026-11-15, the release binary at `dbedc535`, on AC
 ([README § What was measured at the re-plan](README.md#what-was-measured-at-the-re-plan)): between 0 % and 95 %
@@ -53,9 +54,9 @@ root, and the saturations split four ways:
 
 | part | what would remove it |
 |---|---|
-| dead, and the commitment with the closures under it holds an **excluded pair** of S1f.10.1 | *at most one*, [S1f.10.3](s1f.10.3_the_restricted_join.md) |
-| dead otherwise | nothing in this phase; a conflict of three or more, [S1f.10.11](s1f.10.11_coupling.md)'s subject |
-| alive and owing | *exactly one*, [S1f.10.14](s1f.10.14_exactly_one_spent.md), or an order that reaches a leaf sooner, [S1f.10.5](s1f.10.5_ordering.md) |
+| dead, and the commitment with the closures under it holds an **excluded pair** of S1f.10.1, split in two: a pair **of the theory**, two members of one group ([S1f.10.10](s1f.10.10_the_theorys_share.md), [S1f.10.2](s1f.10.2_groups.md)), and a pair **of the puzzle** | *at most one*, [S1f.10.3](s1f.10.3_the_restricted_join.md); the theory's pairs are known for every puzzle over one ontology, the puzzle's are paid per program |
+| dead otherwise, split in two: inside one hyperedge of [S1f.10.11](s1f.10.11_coupling.md)'s coupling, and not | an order that keeps a coupling's groups together, [S1f.10.5](s1f.10.5_ordering.md); the rest nothing in this phase |
+| alive and owing, split in two: owing an instance whose alternatives are an **owed group** ([S1f.10.4](s1f.10.4_bounded_groups.md)), and owing otherwise | *exactly one*, [S1f.10.14](s1f.10.14_exactly_one_spent.md), or an order that reaches a leaf sooner, [S1f.10.5](s1f.10.5_ordering.md) |
 | in R | nothing: it is the answer |
 
 **The cost of having the pairs**, by each way of getting them:
@@ -66,6 +67,12 @@ root, and the saturations split four ways:
 | **the pair layer by need** | one saturation per pair first asked about: the pair `{a, b}` is saturated when a route is about to extend a state holding `a` by `b` | during the run; never more than the layer whole |
 | **the pair of a death** | when a set dies, the pair in it that is dead, found from the death's support with no saturation, or by saturating the pairs of the last candidate added with the members of the state | at each death |
 | **the small KB** | [S1f.10.10](s1f.10.10_the_theorys_share.md)'s check, a saturation of a smaller KB per pair | before the run, and reusable across puzzles over one ontology |
+
+**The cost of every other object of the structure**, each as its stage's record counts it and re-taken here on
+one binary, per program: the cover (the small KB's pair layer, then the cliques, which saturate nothing), the
+owed groups and grids (L5's table and its witnesses beside the cover), and the coupling (the reading
+S1f.10.11 took). A way of spending is priced with the cost of **every object it reads**, not of the pairs
+alone.
 
 **Why not a saturation rule instead.**
 [`domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md) measured the
@@ -104,8 +111,9 @@ number and the user's to revise at the stop.
 - The rule for *go* above is committed before T1's table is.
 - Every corpus program that searches has its cells, or is named as stopped.
 - Each source has a verdict per question, and each *no* names its losers.
-- **A table of *no* everywhere closes track R's spending of pairs**: S1f.10.3 is then recorded as not built,
-  with this table as the reason, and track S is untouched.
+- **A *no* names the way of spending and the question it is about, and closes nothing else.** Track R is
+  required: where a way does not pay, the record says which object's cost sank it and on which programs, and
+  what the next way to try is, for S1f.10.3, S1f.10.5 and S1f.10.14 to start from. Track S is untouched.
 - No answer, route or surface changes. The stage measures.
 
 ## What it must not do
