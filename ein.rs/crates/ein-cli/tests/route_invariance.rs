@@ -26,7 +26,7 @@
 //! cut: the state route finished in no more saturations and facts than route
 //! 1 spent before it stopped, so no more than route 1 would have spent to
 //! finish. The test names each such program on stderr with its counts:
-//! `examples/zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` and the
+//! `zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` and the
 //! register's `count-past-2-64.ein` and `count-past-2-128.ein`
 //! (`EIN_CORPUS_SLOW=1 cargo test -p ein-cli --profile gate --test
 //! route_invariance -- --nocapture`, 2026-11-15). Where neither route
