@@ -183,10 +183,13 @@ fn the_state_route_and_route_1_print_one_read_out() {
 
 /// **The same where route 1 finishes only past the default budget**, at
 /// `--region-budget` 2²⁵: the zebra family and the six `square-*` cubes.
-/// `EIN_CORPUS_SLOW=1` only, and the dev host's: route 1 on the zebra family
-/// at 2²⁵ ran past 25 minutes a program on four threads (M1f S1f.6.39,
-/// 2026-11-15), so no shard of it fits the nightly's five minutes
-/// (Q-M1f.304). The nightly runs the test above, by name.
+/// `EIN_CORPUS_SLOW=1` only, and the dev host's: route 1 alone took 495 s at
+/// `-j 16` to reach a 2²² ceiling on `zebra2-minus-15`
+/// (`alive_set_reach.md` § 2.3, 2026-11-03), where this asks 2²⁵ of one
+/// unit, and the whole slow half had not finished after 29 minutes on four
+/// threads (M1f S1f.6.39, 2026-11-15); no shard by program fits the
+/// nightly's five minutes (Q-M1f.304). The nightly runs the test above, by
+/// name.
 #[test]
 fn route_1_and_the_state_route_agree_past_the_default_budget() {
     if !slow_too() {

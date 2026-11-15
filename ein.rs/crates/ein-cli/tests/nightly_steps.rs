@@ -101,7 +101,9 @@ const DEV_HOST_ONLY: &[(&str, &str)] = &[
     (
         "EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-cli --profile gate --test route_invariance",
         "its 2^25 half, `route_1_and_the_state_route_agree_past_the_default_budget`: \
-         route 1 on the zebra family at 2^25 ran past 25 min a program on four \
+         route 1 alone took 495 s at -j 16 to reach a 2^22 ceiling on \
+         zebra2-minus-15 (alive_set_reach.md § 2.3, 2026-11-03), one unit of a \
+         program, and the whole slow half had not finished after 29 min on four \
          threads (S1f.6.39, 2026-11-15), so no shard fits five minutes on the \
          runner (Q-M1f.304); the nightly runs its default-budget half, the slow \
          entries included, by name",
