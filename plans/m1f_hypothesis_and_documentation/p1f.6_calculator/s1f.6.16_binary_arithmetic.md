@@ -18,7 +18,9 @@ and 1 to 4 ms more load, and decimal's states change in more than rule names
 own module is the file that combines; the build waits for the user's word). **The design ruled the same day**
 ([§ The design ruled](#the-design-ruled-2026-11-14)): (iii), and division by zero arithmetic's own; the build runs
 after [S1f.6.38](s1f.6.38_a_number_is_well_formed_from_the_start.md)'s, which moves the numeral's check out of the
-shared rules.
+shared rules. **Built 2026-11-15** ([§ Build record](#build-record-2026-11-15)): `std.math.positional`, decimal
+re-cut onto it, `std.math.bits`, `std.math.binary`, `std.math.binary-arith`, `std.math.convert`, their tests, the
+examples on the stdlib; no program answers otherwise.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations in decimal, which it is compared with.
 
 ## The instruction
@@ -664,3 +666,174 @@ and, on S1f.6.38's design the same day, *"z is shared by both bases, put it in s
   base's closing rule's `(and …)`, with no rule of its own.
 
 The build, T1f.6.16.6 to .11 as § 6 lists them with these changes, runs after S1f.6.38's build.
+
+## Build record, 2026-11-15
+
+**Status: built.** T1f.6.16.6 to .11 as § 6 lists them with [§ The design ruled](#the-design-ruled-2026-11-14)'s
+changes, on S1f.6.38's and S1f.6.39's trees, and S1f.6.17's T1f.6.17.7 beside it. Commits: `a2f9ca5a` (§ 6, 2:
+`std.math.positional` and decimal re-cut), `29f32a9e` (T6, `std.math.bits`), `c5f7a317` (T7 to T9: `std.math.binary`,
+`std.math.binary-arith`, `std.math.convert` and their tests), `c2902aca` (T10 and T1f.6.17.7), `c1c5ddb0` (the
+pages), `954e4001` (clippy), and this record's. **No claim and no exit moved; no program answers otherwise.**
+
+### § 6, 2 — `std.math.positional`, and decimal re-cut (`a2f9ca5a`)
+
+The 77 rules both bases share leave `std.math.decimal-arith` for `stdlib/math/positional.ein`, written once from
+decimal's text by a script (`build/s1f.6.16/build/tools/mk_positional.py`; the module is hand-kept from here): every
+relation a rule names a parameter in capitals, every `:why` as shipped but two, whose text wrote decimal's numeral,
+`(n z {?x})`, now `({?N} z {?x})` ([Q-M1f.298](../open_questions.md#q-m1f298--the-two-shared-sentences-that-wrote-decimals-numeral),
+defaulted). 77, not the trial's 78: S1f.6.38 took the four rules of the numeral's check out and gave decimal three
+`let` rules, which are shared. The macro `positional` of their 61 parameters (63 less `?CHECK`, and less
+`?DIVISION-BY-ZERO`, `std.math.arith`'s flag written as itself, Q-M1f.269 ruled) is written by hand and held by
+`arith_theory.rs`' `one_call_of_the_macro_connects_each_base` (Q-M1f.270 (a)). Decimal's closing rule ends with
+the call, inside its `(and …)` (Q-M1f.266 ruled (iii), E-63 fixed), and names its own 35 rules and not the 77
+(E-55). Decimal keeps 35: the digit multiplier's walk and rows (6), the division's multiples, trials and digits (28),
+`operand-undeclared`.
+
+**Verified by invariance**, the release binary of `53cfaf81` on that tree (`git archive`) against the re-cut's on
+this one, every `corpus/corpus.toml` entry, 817 (`python3 build/s1f.6.16/build/tools/sweep.py record` and `compare
+--answers`, S1f.6.38's tool, 2026-11-15):
+
+- **812 programs answer alike** by exit, root, R's states, the queries' classes and the claims, a module's prefix
+  taken off; the five others are load errors whose line differs by the tree's path alone.
+- **Firings equal on every program**, 125 991 in all.
+- **`ein solve`'s read-out moved on 30 programs, in `refuted by` alone**: the malformed ones name
+  `std.math.positional.malformed-is-false` or `undeclared-is-false` where `std.math.decimal-arith.…`.
+- **Root's state** (`ein saturate --dump`, 183 programs): the 77 `(arith-rule R)` facts of the shared rules gone, the
+  77 activators derived in their place, the rules listed with their parameters, and one `written` fact fewer,
+  `(written (not-a-number 0))`, which `operand-digit-zero`'s conclusion stated while it had no parameter (E-75).
+
+**The goldens**, named before blessing: `corpus_exits.txt` +4 cells, positional's; `corpus_shapes.md5` its 41
+renderings new and **3 444 moved over 186 programs, exactly the corpus programs that load
+`std.math.decimal-arith`** (a script read every corpus file's imports through local modules: 187 load it, 186
+moved and the module itself new). Lists: `alive_invariant.rs`' `SEEDED` gains positional's `0` and `1`, and the
+test skips the kernel's own words, `eq` among them, which `candidate_objects` leaves out by name (E-74);
+`imports_by_full_name.rs` reads `std.math.positional.add-ask`.
+
+### T1f.6.16.6 — `std.math.bits` (`29f32a9e`)
+
+`utils/gen_arith_tables.py` writes `stdlib/math/bits.ein` beside `digits.ein` (Q-M1f.296, defaulted): `bin-fa` 8 rows,
+`bin-fs` 8, `bin-cl` 12, `bin-nz` 1, each closed by a written `(__closed__ R)`; `--check` covers both and is in the gate
+through `ein-ir/tests/digit_tables.rs`, which holds every bit row to Rust's integers at base two and the module to four
+closed tables and nothing else. `digits.ein` byte for byte as it was. Goldens: +9 cells, +82 renderings, none moved.
+
+### T1f.6.16.7 to .9 — `std.math.binary`, `std.math.binary-arith`, `std.math.convert`, and the tests (`c5f7a317`)
+
+| module | holds |
+|---|---|
+| `std.math.binary` | `b2`, `bin-named`, `not-binary`; `bin-numeral-bit`, `bin-numeral-prefix-bit`, `-zero`, `-named` over `(written (b2 P A))`, and `not-binary-is-false`; entry `binary` ([Q-M1f.295](../open_questions.md#q-m1f295--binarys-numeral-is-stdmathbinarys), defaulted) |
+| `std.math.binary-arith` | 57 relations; 14 rules: `bin-mul-one`, `-one-first`, `-zero`, `-zero-first` (a row nothing or the multiplicand), `bin-div-multiples` (the divisor in normal form by an addition to `z`), `bin-div-turn`, `bin-div-bring`, `-first`, `-zero`, `-zero-none`, `bin-div-fits`, `bin-div-too-big`, `-none` (one subtraction a bit), `bin-operand-undeclared` (its one `absent`, over `bin-let`); the call of the macro in `binary-arith`, its closing rule; no rule of its own for a division by zero |
+| `std.math.convert` | `examples/binary_arithmetic/conv.ein`'s eleven rules under the stdlib's names, `to-bin`/`bin-of`, `to-dec`/`dec-of`; entry `convert`, naming `decimal-arith` and `binary-arith` |
+
+Binary's names are Q-M1f.267's default throughout, its malformed requests flagged as far as decimal's
+(Q-M1f.268), its tagged calls an interface beside decimal's and `std.math.convert` reading binary's strip and turn
+([Q-M1f.297](../open_questions.md#q-m1f297--binarys-tagged-calls-an-interface-what-stdmathconvert-reads), defaulted).
+
+**Held to the integers** (`ein-infer/tests/binary_theory.rs`, new): the five operations over every pair to 64, lengths
+around every power of two to 64 bits (60 for a product), a carry or a borrow through every column, high zeros, names;
+a division by zero, its two flags and `(false)`; every malformed kind and what stays silent; every number to 300 and
+a sample to 2^40 to binary and back, and the round trip; both bases in one program, 60 sums and products each way,
+equal by value. **The circuits**, pinned: 123078 + 4567 43 / 43, the subtraction 61 / 43 both ways, the comparison
+24, 123 × 456 120, 127645 ÷ 25 245, ÷ 0 12 / 10 — the example theory's of 2026-11-12 to the firing, the trial's
+operand check gone with S1f.6.38. `arith_theory.rs` reads binary's three modules and positional as binary activates
+it, and holds binary's eleven tagged calls; `arith_search_free.rs` takes binary's and convert's programs and
+`examples/binary_arithmetic/` (each program one `absent` a base it holds); `arith_batch.rs` a binary batch, its
+products of twenty bits a side and 100 to 1 200 of them, so that it costs the gate about what decimal's does.
+
+**31 programs** under `tests/stdlib/math/binary-arith/` (22), `binary/` (6) and `convert/` (3), one rule or tight
+family each, every claim computed from Python's integers, and `bits/01_tables.ein`; `stdlib_coverage.rs`: **482 of
+482 rules activated** (`every_stdlib_rule_is_activated_by_a_program`; the count `find stdlib -name '*.ein' -exec cat
+{} + | grep -c '^(rule '`, 2026-11-15); `python3 utils/stdlib_census.py --check`: every module at zero rules
+unactivated, 8 min 38 s, 2026-11-15.
+
+Goldens: +167 cells, +1 394 renderings of the 34 new files, none moved. `SEEDED` gains three binary programs and
+`dot_wellformed.rs`' `SKIPPING` `tests/stdlib/math/binary-arith` and `convert`, whose programs hold decimal's tables.
+
+### T1f.6.16.10 and T1f.6.17.7 — the examples (`c2902aca`)
+
+`examples/binary_arithmetic/`'s five programs import the stdlib, every request renamed and no claim changed; R, the
+queries' classes and the claims equal the old ones by value with the names mapped (`ein solve --json-summary`, the
+old binary on the old tree against this one, 2026-11-15), 12 of 12 held. `bin.ein`, `bits.ein`, `conv.ein` and
+`gen_binary.py` retired, with AGENTS.md's *run by hand* line; `examples/binary_logic/bits.ein` retired, its two
+readers on `std.math.bits`' `bin-fa`, 20 of 20 held, R equal. T1f.6.17.7's test is
+[S1f.6.17's record](s1f.6.17_binary_logic.md#t1f6177--the-full-adder-against-stdmathbits-table-done-2026-11-15).
+Goldens: the four retired files' 10 cells and 164 renderings out, 221 renderings moved on exactly the seven
+rewritten programs.
+
+### The cost
+
+**Decimal, before and after the re-cut, and binary** (medians of 11 interleaved rounds, cpu2, a P-core, `powersave`,
+**on AC** (ACAD online=1); `utils/bench_env.sh --core 2 python3 build/s1f.6.16/build/tools/cost.py 11`, 2026-11-15;
+`head` the release binary of `53cfaf81` on its stdlib, `recut` the re-cut's on its stdlib, `build` this tree's):
+parse, load and compile ms · saturation ms · firings, the closing rules' included; nine decimal digits a side,
+thirty bits in binary.
+
+| program | head | recut | build | binary |
+|---|---|---|---|---|
+| one sum | 24.06 · 0.49 · 30 | 26.00 · 0.58 · 30 | 26.08 · 0.58 · 30 | 8.93 · 0.48 · 72 |
+| one product | 23.87 · 1.12 · 490 | 25.90 · 1.22 · 490 | 26.11 · 1.21 · 490 | 8.98 · 2.26 · 1 493 |
+| 1 000 sums | 105.86 · 40.93 · 27 003 | 108.93 · 41.31 · 27 003 | 109.16 · 41.46 · 27 003 | 264.61 · 105.55 · 69 003 |
+| 250 products | 44.37 · 185.60 · 121 587 | 46.87 · 192.50 · 121 587 | 46.88 · 192.84 · 121 587 | 73.18 · 551.09 · 372 209 |
+
+**The re-cut costs what the trial and the design said:** firings equal; load +2.0 to 3.3 ms (+8 % on one request);
+saturation +0.9 % on 1 000 sums and +3.7 % on 250 products, the (iii) design's +3.9 and +4.0 % within the noise of
+a busier machine then. **Binary** loads a small program in a third of decimal's time (no decimal row) and a large one
+slower (its numerals three times as long, each place stated as written); a request of the same magnitude takes 2.4 to
+3.0 times decimal's firings and 2.6 to 2.9 times its saturation.
+
+**The batch, by hand** (`cargo test -p ein-infer --features counters --test arith_batch -- --nocapture`, 2026-11-15):
+7 of 7, **both bases in proportion** at 1 000 and 4 000 requests against 250 (binary's products and quotients at 400
+and 1 200 against 100). At the smallest batch, decimal's sum, difference, comparison, product and quotient: 27.0,
+37.0, 16.0, 486.9 and 445.9 firings a request, 223.0, 403.7, 942.7, 9 645.5 and 6 060.7 candidates; binary's: 69.0,
+100.0, 37.0, 717.1 and 698.0 firings, 247.7, 368.7, 247.7, 1 335.7 and 1 730.3 candidates, its products of twenty
+bits a side and its quotients of thirty by thirteen. A number operand beside 200 `let`s or `bin-let`s costs what it
+costs beside none, in either base. Decimal's on `53cfaf81`'s stdlib, the same test binary
+(`EIN_STDLIB=…/head/stdlib`): **firings and candidates the same, 4 candidates fewer a batch, and 1 018.4 guard values
+a request where 710.4** now, 308 fewer: the 77 rule names the closing rule no longer writes, two comparisons each
+for each of two operands in `operand-undeclared` (the trial's 312 for 78).
+
+### The mutation census
+
+`python3 utils/stdlib_mutants.py --jobs 16` (2026-11-15, 6 min on the release binary of `c2902aca`): **475 of 594
+mutants killed**, where S1f.6.38 left 461 of 572. **Eight new survivors, each understood and banked**, and three
+moved: `std.math.decimal-arith`'s banked `bad-request-undeclared` (its conclusion exchanged), `div-by-zero` and
+`undeclared-is-false` (their premises exchanged) are the same mutants of the same rules, `std.math.positional`'s
+now. The eight are binary's twins of decimal's banked ones: `std.math.binary`'s four flags with their arguments
+exchanged, `not-binary-is-false` with its premise's variables exchanged, and `bin-numeral-prefix-named` without its
+`(neq ?m z)`, each in programs dead either way; `bin-operand-undeclared` without `(neq ?x 0)` or `(neq ?x 1)`, which
+flags a bit as undeclared beside the `(bin-malformed …)` that kills the program, as decimal's ten digits' do.
+`tests/mutation_survivors.txt` written from the run's survivor set (the text `--bless` writes), 119 lines;
+`tests/README.md` § the second base has each reason. No mutant of `std.math.positional` survives that did not as
+decimal's, and none of `std.math.convert`.
+
+### Defaults, findings, and what is the user's
+
+- [Q-M1f.266](../open_questions.md#q-m1f266--how-a-base-is-connected-to-the-shared-rules) and
+  [Q-M1f.269](../open_questions.md#q-m1f269--division-by-zero-is-false-stays-decimals), ruled, built;
+  [Q-M1f.267](../open_questions.md#q-m1f267--the-binary-theorys-names),
+  [Q-M1f.268](../open_questions.md#q-m1f268--how-far-binary-flags-a-malformed-request) and
+  [Q-M1f.270](../open_questions.md#q-m1f270--the-connecting-macros-body-written-or-generated), defaulted, built so.
+- **New, each defaulted, the user's to revise:** [Q-M1f.295](../open_questions.md#q-m1f295--binarys-numeral-is-stdmathbinarys)
+  (binary's numeral `std.math.binary`'s, the coordinator's brief), [Q-M1f.296](../open_questions.md#q-m1f296--the-bit-tables-by-the-digit-tables-generator)
+  (the bit tables by the digit tables' generator), [Q-M1f.297](../open_questions.md#q-m1f297--binarys-tagged-calls-an-interface-what-stdmathconvert-reads)
+  (binary's tagged calls an interface; what `std.math.convert` reads; no `(bin-arith-rule binary-arith)` fact),
+  [Q-M1f.298](../open_questions.md#q-m1f298--the-two-shared-sentences-that-wrote-decimals-numeral) (the two shared
+  sentences that wrote decimal's numeral).
+- **[E-74](findings.md) and [E-75](findings.md)**, neither a wrong answer; E-74 closed by the build. No wrong answer of
+  the engine was met: every program answers as it did.
+
+### What the build did not do
+
+No generic theory whose every request carries its base (13 (c)); decimal's division unchanged (reply 18); no compound
+number generic in its representation (S1g.10.7's; under this mechanism a module of int's or rat's rules with every
+relation a parameter would connect to binary by one call, as § The design's § 4 says). `std.math.int`, `std.math.rat`
+and `std.math.num9` unchanged: every name they list is still decimal's.
+
+### The gate
+
+`./run_tests.sh` once over the batch, on `954e4001` (the code; the records uncommitted beside it), here, **on AC**
+(ACAD online=1): **exit 0, 16 min 46 s**; the six static checks clean (the manifest, 23 modules; the hash-map
+check; the link check over 563 pages, no finding; `cargo fmt --check`; clippy and rustdoc with `-D warnings`),
+`cargo test --profile gate --workspace` 1 227 tests in 144 binaries, none failing, the scratch check, the review
+bundle's smoke and the bench smoke (`build/s1f.6.16/build/gate.log`). A first run stopped at clippy's
+`type_complexity` on `arith_theory.rs`' `BASES`, fixed in `954e4001`. `utils/ci_container.sh` was not run: the
+build changes no DOT writer, nor the review bundle, nor what CI installs (Q-M1f.77). No nightly: no engine change.

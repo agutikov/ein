@@ -10,7 +10,7 @@ of that day: [`examples/binary_logic/`](../../../examples/binary_logic/README.md
 and the questions stay open.
 **The modules are ruled and planned (2026-11-12):** the user's replies to the page's questions are in
 [§ The build, as ruled](#the-build-as-ruled-2026-11-12), which replaces task 2 below. **Built 2026-11-14 but
-T1f.6.17.7**, which waits on S1f.6.16's build: the four modules `std.bool.gates`, `std.bool.props`,
+T1f.6.17.7**, which waited on S1f.6.16's build (**done 2026-11-15** with it, [§ T1f.6.17.7](#t1f6177--the-full-adder-against-stdmathbits-table-done-2026-11-15)): the four modules `std.bool.gates`, `std.bool.props`,
 `std.bool.circuit` and `std.bool.inputs` under `stdlib/bool/`, their programs under `tests/stdlib/bool/`, the
 applications over them, every claim as it was; the [record](#record-2026-11-14-the-build) is below.
 **Depends on:** [S1f.6.16](s1f.6.16_binary_arithmetic.md), for the two digit names and the binary adder it
@@ -501,6 +501,18 @@ moved, from the retired `gates.ein` and `full_adder`'s re-export to `std.bool.ga
 `full_adder` bare, its R and claims equal (T1f.6.17.8's table). When S1f.6.16 builds, T7 turns the program into a
 test against `std.math.bits` and the copy goes.
 
+### T1f.6.17.7 — the full adder against `std.math.bits`' table, done 2026-11-15
+
+Run with [S1f.6.16's build](s1f.6.16_binary_arithmetic.md#build-record-2026-11-15), which made `std.math.bits`
+(`c2902aca`). **The acceptance line is a test**: `ein-infer/tests/bool_theory.rs`'
+`the_full_adder_from_gates_is_the_bits_table` reads the five gates of `examples/binary_logic/full_adder.ein` off
+that file, drives them on all eight inputs at once through `std.bool.gates`' table, each value carrying its vector,
+and holds the eight rows they give to `std.math.bits`' `bin-fa`, row for row, and each to Rust's `a + b + c` as a bit
+and a carry. `adder_against_table.ein` keeps its three claims, 8 agree, none differs, the rows, reading `bin-fa` where
+it read `fa2`; `synthesis.ein`, the other reader of the copy, reads `bin-fa` too, its two states as before; the copy,
+`examples/binary_logic/bits.ein`, is retired with the generator that wrote it. Both programs' R and query classes
+equal before and after (`ein solve --json-summary`, 2026-11-15); `ein test examples/binary_logic`, 20 of 20.
+
 ### The goldens, named before the bless and counted after
 
 Named before: the exit table, the cells of the seven retired example files out and those of the four stdlib modules
@@ -547,7 +559,8 @@ input was touched. Not run, on the coordinator's word: `./run_tests.sh` and `--n
 - **The one-sided identity and absorbing facts are derived, and the three corrected counts are held by a test**:
   `the_one_sided_forms_are_derived` and `the_three_corrected_counts`, on the facts the rules derive. Done.
 - **The gate-built full adder equals the binary adder's table, held by a test**: waits on S1f.6.16 (T1f.6.17.7);
-  until then the corpus program `adder_against_table.ein` holds it against the copied table, as before.
+  until then the corpus program `adder_against_table.ein` holds it against the copied table, as before. **Done
+  2026-11-15** with S1f.6.16's build: `bool_theory.rs`' `the_full_adder_from_gates_is_the_bits_table`.
 - **Every application's claim holds as it did**: 20 of 20, R equal on all eleven programs but for the names. Done.
 
 What it must not do, not done: no cheaper search for inputs (reply 25), no change to what an unsatisfiable search

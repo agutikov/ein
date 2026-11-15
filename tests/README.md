@@ -390,6 +390,22 @@ to 2^40 both ways, and the two bases in one program against each other;
 `std.math.positional` read as each base activates it, and the macro's body and
 each base's call. Every claim here was computed from Python's integers.
 
+**S1f.6.16's rules have 8 new survivors, each banked with its reason**, and 3
+moved: 475 of 594 mutants killed over the stdlib (`python3
+utils/stdlib_mutants.py --jobs 16`, 2026-11-15, 6 min). The three of
+`std.math.decimal-arith` that S1f.6.12 banked (`bad-request-undeclared`'s
+conclusion exchanged, `div-by-zero`'s and `undeclared-is-false`'s premise) are
+`std.math.positional`'s now, the same mutants of the same rules. The eight are
+binary's twins of decimal's banked ones, for the same reasons: every program
+`std.math.binary` flags is dead, so its four flags with their arguments
+exchanged, `not-binary-is-false` with its premise's variables exchanged, and
+`bin-numeral-prefix-named` without its `(neq ?m z)`, which flags more only in a
+program a `bin-let` of `z` already kills, are not seen by a claim made of
+facts; and `bin-operand-undeclared` without `(neq ?x 0)` or `(neq ?x 1)` flags a
+bit as an operand undeclared beside the `(bin-malformed …)` that kills the
+program, as decimal's ten digits' do. `binary_theory.rs` holds every flag's text
+from outside the language.
+
 ### `stdlib/math/num9/`: wide rules, and a generated module
 
 M1f [S1f.6.13](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.13_num9.md).
