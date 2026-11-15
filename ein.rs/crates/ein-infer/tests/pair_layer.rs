@@ -21,11 +21,12 @@
 //!
 //! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, as the
 //! other corpus sweeps read them, but for the instances the tests below name,
-//! which every run reads.
+//! which every run reads. One test reads the flag, the sweep, and the nightly
+//! runs it by name.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test pair_layer
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --profile gate --test pair_layer
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --profile gate --test pair_layer -- the_excluded_pairs_are_the_pairs_of_n
 //! ```
 
 use std::collections::BTreeSet;
@@ -54,10 +55,6 @@ fn rel_of(p: &Path) -> String {
         .to_string()
 }
 
-fn slow_too() -> bool {
-    std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
-}
-
 /// The instances every run reads, `slow` or not: the declared control, its
 /// one-relation twin, and the negative control for pairs.
 const INSTANCES: [&str; 3] = [
@@ -67,8 +64,8 @@ const INSTANCES: [&str; 3] = [
 ];
 
 /// Every corpus file and register witness, once; the `slow` entries that are
-/// not [`INSTANCES`] under `EIN_CORPUS_SLOW=1` only.
-fn files() -> Vec<PathBuf> {
+/// not [`INSTANCES`] where `slow_too` only.
+fn files(slow_too: bool) -> Vec<PathBuf> {
     let slow: BTreeSet<PathBuf> = ein_corpus::corpus()
         .entry
         .iter()
@@ -83,7 +80,7 @@ fn files() -> Vec<PathBuf> {
     }
     files.sort();
     files.dedup();
-    files.retain(|f| slow_too() || !slow.contains(f));
+    files.retain(|f| slow_too || !slow.contains(f));
     files
 }
 
@@ -229,7 +226,9 @@ fn held(path: &Path) -> Option<Held> {
 /// describe exhausts at the default budget.
 #[test]
 fn the_excluded_pairs_are_the_pairs_of_n() {
-    let files = files();
+    // The corpus's `slow` entries too, where the run asks for them.
+    let slow_too = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
+    let files = files(slow_too);
     let results = ein_corpus::pool::map(
         "pair_layer::held",
         &files,

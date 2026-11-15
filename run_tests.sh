@@ -249,6 +249,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: obligation_rung, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test obligation_rung
 
+    nightly_step "deep-corpus: pair_layer, held to N on the slow entries too"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test pair_layer -- the_excluded_pairs_are_the_pairs_of_n
+
     nightly_step "deep-corpus: route_invariance, the slow entries at the default budget"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
 
@@ -454,6 +457,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus: obligation_rung, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test obligation_rung
+
+    dev_host_step "deep-corpus: pair_layer, held to N on the slow entries too"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test pair_layer -- the_excluded_pairs_are_the_pairs_of_n
 
     dev_host_step "deep-corpus: route_invariance, the slow entries at the default budget"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
