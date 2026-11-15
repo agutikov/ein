@@ -1,0 +1,31 @@
+;;; `std.math.decimal` — `z` named by the program itself, beside a numeral that ends in it. M1f P1f.6's close.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `numeral-prefix-named` flags a numeral whose prefix is a named constant,
+;;; and its `(neq ?m z)` keeps `z` out: every numeral ends in `z`, and a
+;;; program that names `z` is flagged for the naming, not for its numerals.
+;;; Through the protocol `(named z)` comes only from a `(let z …)`, which
+;;; `let-zero` flags already, so that program is dead with the guard or
+;;; without it. A program may also list `named` from `std.math.decimal` and
+;;; write `(named z)` itself. Then nothing flags the naming, and the guard is
+;;; what keeps `(price apple (n z 3))`, a well-formed numeral, from being
+;;; flagged as `(not-decimal (n z 3) z)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
+;;; nothing, so no flag has a fact. Without the guard root is dead and R is
+;;; empty, which is how this program kills that mutant (the user's ruling of
+;;; 2026-11-15 on P1f.6's close, (a)).
+
+(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal :symbols (n named))
+(import std.math.arith :symbols (z))
+
+(relation price Item Amount :why "{?1} costs {?2}")
+(__closed__ price)
+(price apple (n z 3))
+(named z)
+
+(solve :expect (region (model)))

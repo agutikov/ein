@@ -1,0 +1,32 @@
+;;; `std.math.binary` — `z` named by the program itself, beside a numeral that ends in it. M1f P1f.6's close.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `bin-numeral-prefix-named` flags a numeral whose prefix is a named
+;;; constant, and its `(neq ?m z)` keeps `z` out: every numeral ends in `z`,
+;;; and a program that names `z` is flagged for the naming, not for its
+;;; numerals. Through the protocol `(bin-named z)` comes only from a
+;;; `(bin-let z …)`, which is flagged already, so that program is dead with
+;;; the guard or without it. A program may also list `bin-named` from
+;;; `std.math.binary` and write `(bin-named z)` itself. Then nothing flags the
+;;; naming, and the guard is what keeps `(price apple (b2 z 1))`, a
+;;; well-formed numeral, from being flagged as `(not-binary (b2 z 1) z)`.
+;;; Decimal's twin is `tests/stdlib/math/decimal/06_a_programs_own_named_z.ein`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
+;;; nothing, so no flag has a fact. Without the guard root is dead and R is
+;;; empty, which is how this program kills that mutant (the user's ruling of
+;;; 2026-11-15 on P1f.6's close, (a)).
+
+(import std.math.binary-arith :symbols (binary-arith))
+(import std.math.binary :symbols (b2 bin-named))
+(import std.math.arith :symbols (z))
+
+(relation price Item Amount :why "{?1} costs {?2}")
+(__closed__ price)
+(price apple (b2 z 1))
+(bin-named z)
+
+(solve :expect (region (model)))

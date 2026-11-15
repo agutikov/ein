@@ -2219,6 +2219,11 @@
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: saturate
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: solve
 0    tests/stdlib/math/binary/06_what_stays_silent.ein :: test
+0    tests/stdlib/math/binary/07_a_programs_own_named_z.ein :: render constraints
+1    tests/stdlib/math/binary/07_a_programs_own_named_z.ein :: render rules
+0    tests/stdlib/math/binary/07_a_programs_own_named_z.ein :: saturate
+0    tests/stdlib/math/binary/07_a_programs_own_named_z.ein :: solve
+0    tests/stdlib/math/binary/07_a_programs_own_named_z.ein :: test
 0    tests/stdlib/math/bits/01_tables.ein :: render constraints
 1    tests/stdlib/math/bits/01_tables.ein :: render rules
 0    tests/stdlib/math/bits/01_tables.ein :: saturate
@@ -2514,6 +2519,11 @@
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: saturate
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: solve
 0    tests/stdlib/math/decimal/05_what_stays_silent.ein :: test
+0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: render constraints
+1    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: render rules
+0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: saturate
+0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: solve
+0    tests/stdlib/math/decimal/06_a_programs_own_named_z.ein :: test
 0    tests/stdlib/math/digits/01_tables.ein :: render constraints
 1    tests/stdlib/math/digits/01_tables.ein :: render rules
 0    tests/stdlib/math/digits/01_tables.ein :: saturate
