@@ -279,3 +279,21 @@ banked. Whether to kill the pair, or keep it banked with the reason made exact, 
    [P1f.20](../p1f.20_docs_refactor/README.md), the documentation tree.
 5. **The close itself**: the default is that P1f.6 closes once T7 is committed on a green gate and what item 1
    confirms as *fix before close* is in, with no `docs/history/` record, as P1f.5 and P1f.7 closed.
+
+## The user's rulings (2026-11-15)
+
+The user, 2026-11-15, on [§ What the user is asked](#what-the-user-is-asked), after the five were put with a
+recommendation each: *"all as you recommended"*. So:
+
+1. **The 19 dispositions are confirmed** as [§ Proposed dispositions](#proposed-dispositions-the-users-to-confirm)
+   proposes them. Each owned row goes into its owner's plan (*handed over by M1f, 2026-11-15*), as F21's did; the
+   seven *ruled as it stands* are closed with that ruling; **E-37 and E-45 are fixed before the close**.
+2. **(a), the two survivors are killed**: the probe that writes `(named z)` beside `(n z 3)`, and its binary twin
+   `(bin-named z)` beside `(b2 z 1)`, are banked as tests under `tests/stdlib/math/decimal/` and `binary/`, and the
+   two lines leave `tests/mutation_survivors.txt`. (The prep run had recommended (b); the user took (a), on the ground
+   that the program loads, the guard changes its answer, and a banked probe is the standard of proof.)
+3. **The 81 defaults stand** as [§ The defaults](#the-defaults) tables them; **the five moot rows**, Q-M1f.191, .192,
+   .209, .213 and .217, are marked *superseded* in [`open_questions.md`](../open_questions.md).
+4. **P1f.10 runs before P1f.20**: P1f.20 rewrites the pages, so it describes the engine after P1f.10's changes.
+5. **The close**: P1f.6 closes once S1f.6.39's T7 is committed on a green gate and items 1's two fixes and 2's two
+   tests are in, with no `docs/history/` record.
