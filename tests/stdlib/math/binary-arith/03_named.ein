@@ -1,0 +1,34 @@
+;;; `std.math.binary-arith` — named operands: `bin-let`. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(bin-let NAME NUMBER)` names a number, and a request may name an operand:
+;;; with `(bin-let mask …)`, `(bin-add mask mask)` is answered by `(bin-sum-of
+;;; mask mask S)`, the names repeated as written. `let-named` writes
+;;; `(bin-named mask)`, and `operand-name` asks it first, so an operand that
+;;; is a number never walks the `bin-let` facts.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-let mask (b2 (b2 (b2 z 1) 1) 0))
+(bin-let low (b2 z 1))
+(bin-add mask mask)
+(bin-add mask (b2 (b2 z 1) 1))
+(bin-add low mask)
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of mask mask (b2 (b2 (b2 (b2 z 1) 1) 0) 0))
+                      (bin-sum-of mask (b2 (b2 z 1) 1) (b2 (b2 (b2 (b2 z 1) 0) 0) 1))
+                      (bin-sum-of low mask (b2 (b2 (b2 z 1) 1) 1))))

@@ -1,0 +1,27 @@
+;;; `std.math.binary-arith` — a name that no `bin-let` states: undeclared. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request that names an operand no `bin-let` states is flagged,
+;;; `(bin-undeclared NAME REQUEST)`, and `undeclared-is-false` derives
+;;; `(false)`. `bin-operand-undeclared`, binary's own, reads the theory's one
+;;; `absent`, over `bin-let`, which a program writes and no rule derives: the
+;;; operand is a name, not `z` and neither bit. A decimal digit is a name in
+;;; binary: `7` is one here. `bad-request-undeclared` derives the flag.
+;;; `13_declared_name.ein` is this program with the `bin-let`s stated.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The requests beside it are computed in root's state,
+;;; but a dead state is no answer.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-let mask (b2 (b2 (b2 z 1) 1) 0))
+(bin-add mask rebate)
+(bin-add mask 7)
+
+(solve :expect (false))

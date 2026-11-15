@@ -1,0 +1,47 @@
+;;; `std.math.binary` — a well-formed numeral, wherever it is written, is flagged nowhere. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; As `std.math.decimal`'s check: the loader states every fact nested in a
+;;; fact a file writes, and in a rule's conclusion where it holds no variable,
+;;; as `(written T)`, and the module's rules read every place of every `b2`
+;;; numeral off it. Here a numeral is written in each place it can be: a
+;;; request's operand, a `bin-let` nobody asks about, a fact of the program's
+;;; own relation, and a rule's conclusion. Each is a binary number, so no rule
+;;; of the check fires: `(not-binary …)` has no fact, and the sum is answered.
+;;; `not-binary-is-false` is loaded and activated here, and satisfied.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive, and the program's own relations are closed. The
+;;; sum, 101 + 11 = 1000, is answered, and the flag's extent is empty.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sum-of))
+(import std.math.binary :symbols (b2 not-binary))
+(import std.math.arith :symbols (z))
+
+(relation mask Item Bits :why "{?1} is masked by {?2}")
+(relation seed Thing :why "{?1} is a seed")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (and (__closed__ mask) (__closed__ seed))
+  :why    "the program's own relations are closed, as the theory's are")
+
+(seed z)
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1))
+(bin-let unused (b2 (b2 z 1) 0))
+(mask low (b2 (b2 (b2 z 1) 1) 1))
+(rule ask-mask ()
+  :match  (seed ?s)
+  :assert (mask high (b2 (b2 z 1) 0))
+  :why    "a mask written in a rule's conclusion")
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 z 1) 1) (b2 (b2 (b2 (b2 z 1) 0) 0) 0))))
+
+(query :goal (not-binary ?numeral ?thing)
+       :goal-text "{?numeral} is not a binary number"
+       :expect (model))

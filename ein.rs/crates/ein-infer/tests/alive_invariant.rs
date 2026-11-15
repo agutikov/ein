@@ -176,7 +176,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// calculator: the 38 programs listed for `z` alone left the list, and the
 /// others lost their `z` line.
 ///
-/// **Joined at M1f S1f.6.16**: `stdlib/math/positional.ein` alone, the rules
+/// **Joined at M1f S1f.6.16**: three programs of `tests/stdlib/math/binary/`,
+/// on the pattern of decimal's (a letter or a decimal digit in a numeral, a
+/// name only a rule writes); and `stdlib/math/positional.ein` alone, the rules
 /// both bases share with every relation a parameter, so no table and no fact
 /// of its own: `0` and `1`, a carry, are names only its rules' premises
 /// write. `eq`, which its `cmp-start` writes, is a kernel word and never an
@@ -188,7 +190,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `readings`, hold the calculator whole and meet `z` first in
 /// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
 /// `0` and `1` in its `domain-elimination`.
-const SEEDED: [(&str, &[&str]); 121] = [
+const SEEDED: [(&str, &[&str]); 124] = [
     (
         "examples/arith/int.ein",
         &[
@@ -460,6 +462,23 @@ const SEEDED: [(&str, &[&str]); 121] = [
         &[
             "`0`, matched by rule `std.elim.domain-elimination`",
             "`1`, matched by rule `std.elim.domain-elimination`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/binary/01_well_formed_everywhere.ein",
+        &["`high`, asserted by rule `ask-mask`"],
+    ),
+    (
+        "tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein",
+        &["`2`, in (bin-add (b2 (b2 z 1) 2) (b2 z 1))"],
+    ),
+    (
+        "tests/stdlib/math/binary/06_what_stays_silent.ein",
+        &[
+            "`2`, asserted by rule `assemble`",
+            "`7`, in (bin-let seven (b2 7 1))",
+            "`end`, in (bin-let far (b2 end 1))",
+            "`high`, asserted by rule `assemble`",
         ],
     ),
     (

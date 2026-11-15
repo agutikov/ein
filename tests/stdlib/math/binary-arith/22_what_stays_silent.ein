@@ -1,0 +1,38 @@
+;;; `std.math.binary-arith` — what is not flagged: a flag means malformed, and no flag does not mean well-formed. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Answered by silence, neither flagged nor answered, as in decimal: a fact
+;;; of another relation where a number goes, `(pair 1 0)`; a decimal number,
+;;; `(n z 5)`, which is such a fact in binary's eyes; the theory's own
+;;; accumulator, `(bin-b 1 z)`; and a name that stands for one of them. A
+;;; request beside them that the theory can read is answered.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: no flag, no contradiction; the one request the theory can read
+;;; is answered, and the others have no result fact, which the claim, the
+;;; relation's whole extent, holds.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+(import std.math.decimal :symbols (n))
+
+(relation pair Thing Thing :why "the pair of {?1} and {?2}")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (__closed__ pair)
+  :why    "the program's own relation is closed, as the theory's are")
+(bin-let odd (pair 1 0))
+(bin-add (pair 1 0) (b2 z 1))
+(bin-add (n z 5) (b2 z 1))
+(bin-add (bin-b 1 z) (b2 z 1))
+(bin-add odd (b2 z 1))
+(bin-add (b2 z 1) (b2 z 1))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of (b2 z 1) (b2 z 1) (b2 (b2 z 1) 0))))

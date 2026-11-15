@@ -1,0 +1,33 @@
+;;; `std.math.binary-arith` — the names stated: no flag, and the requests answered. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `12_undeclared_name.ein` with a `bin-let` for each name, the decimal digit
+;;; `7` among them, which is a name in binary and so may be one a `bin-let`
+;;; states. `bin-operand-undeclared` is loaded and activated, and the `absent`
+;;; it reads finds the `bin-let`: it is satisfied, and the requests are
+;;; answered.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-let mask (b2 (b2 (b2 z 1) 1) 0))
+(bin-let rebate (b2 z 1))
+(bin-let 7 (b2 (b2 (b2 z 1) 1) 1))
+(bin-add mask rebate)
+(bin-add mask 7)
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of mask rebate (b2 (b2 (b2 z 1) 1) 1))
+                      (bin-sum-of mask 7 (b2 (b2 (b2 (b2 z 1) 1) 0) 1))))

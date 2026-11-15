@@ -1,0 +1,28 @@
+;;; `std.math.binary` — a malformed numeral: a name in a bits place. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A malformed numeral is `std.math.binary`'s, flagged as it is written,
+;;; wherever it sits, with no request reading it, on `std.math.decimal`'s
+;;; pattern (S1f.6.38). The flag is `(not-binary NUMERAL THING)`, on the
+;;; smallest numeral at fault, and `not-binary-is-false` derives `(false)`.
+;;;
+;;; `bin-numeral-bit`: a bit's place holds `2`, a decimal digit and no bit, in
+;;; `(b2 (b2 z 1) 2)`. The rule has two `neq` guards and no table: `neq` holds
+;;; of every other name. The flag is `(not-binary (b2 (b2 z 1) 2) 2)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The request beside it is computed in root's state, but
+;;; a dead state is no answer; `ein solve` names the fact the numeral was
+;;; written in in the unsat core.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 z 1) (b2 z 1))
+(bin-add (b2 (b2 z 1) 2) (b2 z 1))
+
+(solve :expect (false))

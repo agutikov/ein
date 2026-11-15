@@ -14,16 +14,16 @@
 //! | operands written with high zeros are read by value | [`high_zeros_are_read_by_value`] |
 //! | a request of every operation may name its operands | [`named_operands_work_for_every_request`] |
 //! | **every answer is in normal form**, and each request has exactly one | all five, through [`hold`] |
-//! | **the rule of the theory**, on the module's text: no rule joins two facts on a number, in every module of the base, `std.math.positional`'s rules read as the base activates them (S1f.6.16) | [`no_rule_joins_two_facts_on_a_number`] |
+//! | **the rule of the theory**, on the module's text: no rule joins two facts on a number, in every module of the two bases, `std.math.positional`'s rules read as each base activates them (S1f.6.16) | [`no_rule_joins_two_facts_on_a_number`] |
 //! | no `not`, no `or`, and **exactly one `absent`, over `let`**, which no rule derives; `eq` and `neq` in the checking rules alone; each rule that concludes `(false)` reads its flag alone, in each of the three modules | [`the_theory_writes_one_absent_over_let`] |
-//! | the closing rule closes every relation and names every rule, and so do `std.math.decimal`'s and `std.math.arith`'s (S1f.6.38) | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
+//! | the closing rule closes every relation and names every rule, and so do `std.math.decimal`'s and `std.math.arith`'s (S1f.6.38), and binary's (S1f.6.16) | [`the_closing_rule_names_every_rule_and_closes_every_relation`] |
 //! | **one call of `std.math.positional`'s macro connects each base** (S1f.6.16): the macro activates each shared rule once with its parameters, and each base's closing rule calls it with its relations in the macro's order | [`one_call_of_the_macro_connects_each_base`] |
 //! | what one request costs as a circuit: its firings and its depth | [`the_circuit_of_one_addition`], [`the_circuit_of_one_subtraction_and_one_comparison`], [`the_circuit_of_one_multiplication`], [`the_circuit_of_one_division`] |
 //! | a division by zero derives the flag, and the flag `(false)`, each by its own rule, and never a number | [`a_division_by_zero_is_flagged_and_false`] |
 //! | **a division by zero is flagged at the call, whoever made it** (S1f.6.24): `(div-call TAG X Y)` with a Y that is zero by value derives `(division-by-zero (div-call TAG X Y))` and `(false)`, under every shape of tag; a public request holds its flag and its call's | [`a_tagged_call_by_zero_is_flagged_whoever_made_it`] |
 //! | division's two families of nine rules are alike but for the digit, and the ten rules from an operand's tag to its request but for the operation | [`the_rules_of_a_family_differ_by_their_digit_alone`], [`the_rules_from_a_tag_to_its_request_are_alike`] |
 //! | **a malformed numeral has exactly one flag where it is written, `std.math.decimal`'s, a malformed operand its request's, and neither an answer**, and each flag derives `(false)`; a well-formed one has no flag (S1f.6.12, S1f.6.38) | [`a_malformed_request_is_flagged_once_and_never_answered`], [`an_undeclared_name_is_flagged_and_a_let_answers_it`], [`a_let_that_cannot_be_read_is_flagged`], [`what_stays_silent`] |
-//! | **the tagged calls are an interface** (S1f.6.30): `std.math.decimal-arith`'s, `std.math.int`'s and `std.math.rat`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
+//! | **the tagged calls are an interface** (S1f.6.30): `std.math.decimal-arith`'s, `std.math.int`'s, `std.math.rat`'s and, since S1f.6.16, `std.math.binary-arith`'s are declared with the shapes of [`TAGGED`], their headers and `stdlib/README.md` write them so, and every caller in the stdlib, `examples/` and `tests/` writes them so | [`the_tagged_calls_keep_their_shapes`] |
 //!
 //! The oracle is `u128`, which holds 38 decimal digits; the sampled operands
 //! have up to [`MAX_DIGITS`] = 30, so no sum leaves it. The sample is drawn
@@ -1100,6 +1100,10 @@ const NAME_LOOKUP: Exception = ("operand-name", &["operand", "named", "let"]);
 /// looked up by nothing.
 const NAME_TWICE: Exception = ("let-twice", &["let", "let", "neq"]);
 
+/// The same two, read with binary's relations (S1f.6.16).
+const BIN_NAME_LOOKUP: Exception = ("operand-name", &["bin-operand", "bin-named", "bin-let"]);
+const BIN_NAME_TWICE: Exception = ("let-twice", &["bin-let", "bin-let", "neq"]);
+
 /// A premise that is **one probe**: a relation of one argument, asked with
 /// its argument bound by the premise that holds the numbers, which the
 /// engine answers by one interned lookup whatever the argument is, a number
@@ -1190,9 +1194,59 @@ const ARITH: Spec = Spec {
     exceptions: &[],
 };
 
-/// Every module of the calculator's decimal base, each held to the same text
-/// rules.
-const SPECS: [&Spec; 4] = [&DECIMAL_ARITH, &POSITIONAL_DECIMAL, &DECIMAL, &ARITH];
+/// `std.math.binary-arith`, binary's own rules: a product's row, the division
+/// of base two and the operand that is a name (S1f.6.16).
+const BINARY_ARITH: Spec = Spec {
+    file: "stdlib/math/binary-arith.ein",
+    instance: None,
+    closer: Some("binary-arith"),
+    names_by: "bin-arith-rule",
+    guarded: &["bin-operand-undeclared"],
+    false_rules: &[],
+    absent: Some(("bin-operand-undeclared", "bin-let")),
+    exceptions: &[],
+};
+
+/// `std.math.positional` as binary activates it.
+const POSITIONAL_BINARY: Spec = Spec {
+    file: "stdlib/math/positional.ein",
+    instance: Some("stdlib/math/binary-arith.ein"),
+    closer: None,
+    names_by: "",
+    guarded: &["let-twice"],
+    false_rules: &[
+        ("malformed-is-false", "bin-malformed"),
+        ("undeclared-is-false", "bin-undeclared"),
+    ],
+    absent: None,
+    exceptions: &[BIN_NAME_LOOKUP, BIN_NAME_TWICE],
+};
+
+/// `std.math.binary`, the binary numeral and its check over `written`, on
+/// `std.math.decimal`'s pattern: the two bits' guards in `bin-numeral-bit`,
+/// *not `z`* in `bin-numeral-prefix-named`.
+const BINARY: Spec = Spec {
+    file: "stdlib/math/binary.ein",
+    instance: None,
+    closer: Some("binary"),
+    names_by: "binary-rule",
+    guarded: &["bin-numeral-bit", "bin-numeral-prefix-named"],
+    false_rules: &[("not-binary-is-false", "not-binary")],
+    absent: None,
+    exceptions: &[],
+};
+
+/// Every module of the calculator's two bases, each held to the same text
+/// rules. Binary's join at S1f.6.16.
+const SPECS: [&Spec; 7] = [
+    &DECIMAL_ARITH,
+    &POSITIONAL_DECIMAL,
+    &DECIMAL,
+    &ARITH,
+    &BINARY_ARITH,
+    &POSITIONAL_BINARY,
+    &BINARY,
+];
 
 struct Module {
     ast: Ast,
@@ -1839,9 +1893,16 @@ fn the_closing_rule_of(spec: &Spec) {
 
 /// The bases that connect to `std.math.positional`, each with how its
 /// relation for a parameter is spelt: decimal's is the parameter in lower
-/// case, `?ADD-WALK` is `add-walk`.
-const BASES: [(&str, fn(&str) -> String); 1] =
-    [("stdlib/math/decimal-arith.ein", |p| p.to_ascii_lowercase())];
+/// case, `?ADD-WALK` is `add-walk`; binary's is that with `bin-`, but for
+/// its numeral, `b2`, and its representation's `bin-named`.
+const BASES: [(&str, fn(&str) -> String); 2] = [
+    ("stdlib/math/decimal-arith.ein", |p| p.to_ascii_lowercase()),
+    ("stdlib/math/binary-arith.ein", |p| match p {
+        "N" => "b2".to_string(),
+        "NAMED" => "bin-named".to_string(),
+        _ => format!("bin-{}", p.to_ascii_lowercase()),
+    }),
+];
 
 /// **One call of the macro connects a base** (S1f.6.16, Q-M1f.266 ruled
 /// (iii); Q-M1f.270: the macro's body written by hand, and held here).
@@ -2034,10 +2095,10 @@ fn the_rules_of_a_family_differ_by_their_digit_alone() {
 /// capital stands where a caller writes a value of its own, and a name where
 /// every caller writes that name: a walk starts at `z`, a subtraction at `0`
 /// and a comparison at `eq`; an addition's carry in is the caller's, a bit
-/// in `examples/binary_arithmetic/conv.ein`. Each module's calls come first
-/// and then the facts that answer them; `std.math.int`'s comparison is answered
-/// by `std.math.decimal-arith`'s `order-is`.
-const TAGGED: [(&str, &str, &str); 21] = [
+/// in `std.math.convert`. Each module's calls come first and then the facts
+/// that answer them; `std.math.int`'s comparison is answered by
+/// `std.math.decimal-arith`'s `order-is`. Binary's twins join at S1f.6.16.
+const TAGGED: [(&str, &str, &str); 32] = [
     (
         "decimal-arith",
         "(add-walk TAG X Y C z)",
@@ -2095,6 +2156,41 @@ const TAGGED: [(&str, &str, &str); 21] = [
         "(rat-cross-is TAG POSITIVE NEGATIVE)",
         "Tag Number Number",
     ),
+    (
+        "binary-arith",
+        "(bin-add-walk TAG X Y C z)",
+        "Tag Number Number Bit Bits",
+    ),
+    (
+        "binary-arith",
+        "(bin-sub-walk TAG X Y 0 z)",
+        "Tag Number Number Bit Bits",
+    ),
+    (
+        "binary-arith",
+        "(bin-cmp-walk TAG X Y eq)",
+        "Tag Number Number Order",
+    ),
+    (
+        "binary-arith",
+        "(bin-mul-call TAG X Y)",
+        "Tag Number Number",
+    ),
+    (
+        "binary-arith",
+        "(bin-div-call TAG X Y)",
+        "Tag Number Number",
+    ),
+    ("binary-arith", "(bin-operand TAG X)", "Tag Operand"),
+    ("binary-arith", "(bin-done TAG S)", "Tag Number"),
+    ("binary-arith", "(bin-short TAG)", "Tag"),
+    ("binary-arith", "(bin-order-is TAG O)", "Tag Order"),
+    (
+        "binary-arith",
+        "(bin-div-done TAG Q R)",
+        "Tag Number Number",
+    ),
+    ("binary-arith", "(bin-operand-is TAG N)", "Tag Number"),
 ];
 
 /// A tagged call as written: its relation, and each argument's place, `None`
@@ -2164,7 +2260,7 @@ fn the_tagged_calls_keep_their_shapes() {
     let readme = std::fs::read_to_string(root.join("stdlib/README.md")).expect("stdlib/README.md");
     // ── the declarations, and the pages ──
     let mut declared: BTreeMap<&str, Vec<String>> = BTreeMap::new();
-    for module in ["decimal-arith", "int", "rat"] {
+    for module in ["decimal-arith", "int", "rat", "binary-arith"] {
         let path = root.join(format!("stdlib/math/{module}.ein"));
         let text = std::fs::read_to_string(&path).expect("a module");
         let mut ast = Ast::new();
@@ -2359,11 +2455,18 @@ fn the_tagged_calls_keep_their_shapes() {
         "stdlib/math/int.ein",
         "stdlib/math/rat.ein",
         "examples/beyond_arith/casting_out_nines.ein",
-        "examples/binary_arithmetic/conv.ein",
+        "stdlib/math/binary-arith.ein",
+        "stdlib/math/convert.ein",
     ] {
         assert!(read.contains_key(caller), "{caller} was not read: {read:?}");
     }
-    for walk in ["add-walk", "sub-walk", "cmp-walk"] {
+    for walk in [
+        "add-walk",
+        "sub-walk",
+        "cmp-walk",
+        "bin-add-walk",
+        "bin-sub-walk",
+    ] {
         assert!(
             started.get(walk).is_some_and(|&n| n > 0),
             "no start of {walk} was read"

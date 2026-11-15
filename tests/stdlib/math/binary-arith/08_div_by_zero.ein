@@ -1,0 +1,26 @@
+;;; `std.math.binary-arith` — a division by zero: the flag, and `(false)` from it. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request whose divisor is zero, written with bits, derives
+;;; `std.math.arith`'s flag `(division-by-zero (bin-div X Y))`, the request as
+;;; written (`div-by-zero`), and its call's, `(division-by-zero (bin-div-call
+;;; TAG X Y))` (`div-call-by-zero`), each read off the divisor's normal form,
+;;; `z`. `std.math.arith`'s `division-by-zero-is-false` derives `(false)` from
+;;; each: division by zero is arithmetic's own, whatever the base (the user's
+;;; ruling of 2026-11-14).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The requests beside it are computed in root's state,
+;;; but a dead state is no answer.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-div))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 z 1) 1))
+(bin-div (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 z 0) 0))
+
+(solve :expect (false))

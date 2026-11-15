@@ -1,0 +1,163 @@
+;;; Ein stdlib — `std.math.binary`: the binary numeral, and whether a written
+;;; one is one (M1f P1f.6, S1f.6.16; on `std.math.decimal`'s pattern, S1f.6.38,
+;;; by the user's ruling of 2026-11-14 on Q-M1f.210, *"malformed binary numbers
+;;; - of binary module"*).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; This module is the binary **representation**: the constructor `b2` and what
+;;; a numeral written with it must be. It computes nothing;
+;;; `std.math.binary-arith` is the arithmetic over it, and imports it.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
+;;;     (import std.math.binary :symbols (b2))
+;;;     (import std.math.arith :symbols (z))
+;;;
+;;; A program imports the arithmetic, which brings this module and
+;;; `std.math.arith` whole (M1f S1f.6.35), and lists `b2` from here and `z`
+;;; from `std.math.arith`, since it writes them: nothing is re-exported.
+;;; `binary` is the module's entry, the closing rule at the end of this file.
+;;;
+;;; ── The numeral ────────────────────────────────────────────────────────────
+;;;
+;;; A natural number is `z`, zero, `std.math.arith`'s, which both bases share
+;;; (the user, 2026-11-14), or `(b2 PREFIX BIT)`: twice the prefix, plus the
+;;; bit. It reads in the order it is written:
+;;;
+;;;     1        (b2 z 1)
+;;;     5, 101   (b2 (b2 (b2 z 1) 0) 1)
+;;;     12, 1100 (b2 (b2 (b2 (b2 z 1) 1) 0) 0)
+;;;
+;;; A bit is one of the two names `0` and `1`, which are decimal's digits too,
+;;; and a prefix is `z` or a numeral. Any length; high zeros are allowed in
+;;; what a program writes, `(b2 (b2 z 0) 1)` is 1, and the arithmetic answers
+;;; in normal form. The shape is its own, `b2` and not decimal's `n` (P1f.6's
+;;; reply 13, way (b)), so a number says which base it is in and the two bases
+;;; stand in one program; the name `b2` is the prototype's, kept
+;;; (Q-M1f.267, defaulted).
+;;;
+;;; ── A numeral is well-formed from the start ────────────────────────────────
+;;;
+;;; As `std.math.decimal`'s check, of what was written and of nothing a
+;;; calculation does: the loader states every fact nested in a fact a file
+;;; writes, and in a rule's conclusion where it holds no variable, as
+;;; `(written T)` (`defined_behaviour.md` § 4.30), and five rules over
+;;; `(written (b2 P A))` see every place of every numeral a file writes,
+;;; wherever it sits. A well-formed place costs no firing; a malformed one
+;;; derives the flag on the smallest `b2` term at fault, and the flag derives
+;;; `(false)`:
+;;;
+;;;     (not-binary NUMERAL THING)    THING stands in NUMERAL where a bit or a
+;;;                                   prefix goes, and is neither:
+;;;                                   - a bit's place holds a name that is no
+;;;                                     bit, `(b2 (b2 z 1) 2)`, a letter, or a
+;;;                                     fact, `(b2 z (b2 z 1))`;
+;;;                                   - the prefix is a bit, `(b2 1 0)`,
+;;;                                     `(b2 0 1)`: a numeral ends in `z`;
+;;;                                   - the prefix is a named constant,
+;;;                                     `(b2 mask 1)`
+;;;
+;;; Root is dead from its first layer, R is empty, every command exits 0, and
+;;; `ein solve` names, in the unsat core, the fact the numeral was written in
+;;; and, in `refuted by`, `not-binary-is-false`.
+;;;
+;;; **A flag means malformed; no flag does not mean well-formed.** Silent, as
+;;; `std.math.decimal` is silent on their like:
+;;;
+;;;   - a prefix that is a name neither `z`, a bit nor a named constant,
+;;;     `(b2 end 1)`, and so a decimal digit as a prefix, `(b2 7 1)`, which
+;;;     is a name in binary's eyes: saying *a name* costs a walk of the
+;;;     program's names (E-36 of P1f.6's `findings.md`);
+;;;   - a prefix that is a fact of another relation, `(b2 (pair 1 0) 1)`;
+;;;   - a numeral a rule assembles from a variable, `(b2 ?p 2)`;
+;;;   - a numeral written as a top-level fact of `b2`, which is no term.
+;;;
+;;; A wrong count of arguments, `(b2 1)`, is refused when the program is loaded
+;;; (S1f.6.23). What is not a numeral's fault is not this module's: a name no
+;;; `bin-let` states, a bit where a number goes, `(bin-add 1 X)`, and a
+;;; `bin-let` that cannot be read are `std.math.binary-arith`'s, flagged on the
+;;; request (`(bin-malformed REQUEST)`, `(bin-undeclared NAME REQUEST)`).
+;;;
+;;; **A named constant** is a name that stands for a number: `bin-named` is
+;;; declared here, and `std.math.binary-arith`, which declares `bin-let`,
+;;; writes `(bin-named NAME)` for every name a `bin-let` states.
+;;;
+;;; ── The rule of the calculator ─────────────────────────────────────────────
+;;;
+;;; No rule joins two facts on a number: each rule here has one premise that
+;;; holds a numeral, `(written (b2 P A))`, and its others are guards or a probe
+;;; with every argument bound, `(bin-nz ?m)` and `(bin-named ?m)`.
+;;; `ein-infer/tests/arith_theory.rs` holds it.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; `b2`, `bin-named`, the flag `not-binary`, its rules `bin-numeral-bit`,
+;;; `bin-numeral-prefix-bit`, `bin-numeral-prefix-zero`,
+;;; `bin-numeral-prefix-named` and `not-binary-is-false`, `binary-rule`, and
+;;; the entry `binary`. The interface is `b2`, `bin-named` and the flag.
+
+(import std.math.arith :symbols (arith z))
+(import std.math.bits :symbols (bin-nz))
+
+;; ── The numeral ─────────────────────────────────────────────────────────────
+(relation b2 Number Bit
+  :why "the number written {?1}, then the bit {?2}")
+
+;; ── A named constant, which the module that declares `bin-let` writes ───────
+(relation bin-named Name
+  :why "{?1} is a named constant")
+
+;; ── The check: every place of every numeral a file writes ───────────────────
+(relation not-binary Number Thing
+  :why "{?1} is not a binary number: {?2} stands where a bit or a number goes")
+
+;; Neither of the two bits: `neq` holds of every other name, and of a fact.
+(rule bin-numeral-bit ()
+  :match  (and (written (b2 ?p ?a)) (neq ?a 0) (neq ?a 1))
+  :assert (not-binary (b2 ?p ?a) ?a)
+  :why    "{?a} stands where a bit goes and is neither of the two")
+
+;; A numeral ends in `z`. One whose prefix is a bit, `(b2 1 0)`, or a named
+;; constant, `(b2 mask 1)`, is flagged; one whose prefix is any other name is
+;; not, since saying *a name* costs a walk of the program's names.
+(rule bin-numeral-prefix-bit ()
+  :match  (and (written (b2 ?m ?a)) (bin-nz ?m))
+  :assert (not-binary (b2 ?m ?a) ?m)
+  :why    "the bit {?m} stands where a number goes: a number ends in z")
+
+(rule bin-numeral-prefix-zero ()
+  :match  (written (b2 0 ?a))
+  :assert (not-binary (b2 0 ?a) 0)
+  :why    "the bit 0 stands where a number goes: a number ends in z")
+
+;; `(neq ?m z)`: a program that names `z` with a `bin-let` is flagged for the
+;; `bin-let`, and its numerals, which end in `z`, are not.
+(rule bin-numeral-prefix-named ()
+  :match  (and (written (b2 ?m ?a)) (neq ?m z) (bin-named ?m))
+  :assert (not-binary (b2 ?m ?a) ?m)
+  :why    "the name {?m} stands where a number goes: a name stands for a number as an operand, not inside one")
+
+(rule not-binary-is-false ()
+  :match  (not-binary ?x ?thing)
+  :assert (false)
+  :why    "{?x} is not a binary number: the program cannot hold it")
+
+;; ── The closing rule, and the module's one entry ────────────────────────────
+;; Every relation of the module is closed, and the table it reads; every rule
+;; is named, and `arith`, the entry of the module below. `ein-infer/tests/
+;; arith_theory.rs` holds that nothing is missing here.
+(relation binary-rule Rule
+  :why "{?1} is a rule of std.math.binary")
+
+(rule binary ()
+  :match  ()
+  :assert (and (__closed__ bin-nz)
+               (__closed__ b2) (__closed__ bin-named) (__closed__ not-binary)
+               (__closed__ binary-rule)
+               (binary-rule arith)
+               (binary-rule bin-numeral-bit) (binary-rule bin-numeral-prefix-bit)
+               (binary-rule bin-numeral-prefix-zero)
+               (binary-rule bin-numeral-prefix-named)
+               (binary-rule not-binary-is-false))
+  :why    "a numeral is written, and never guessed: every relation of the module is closed")

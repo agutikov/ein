@@ -1,0 +1,24 @@
+;;; `std.math.binary-arith` — a `bin-let` that cannot be read: `z` as a constant's name. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A `bin-let` that cannot be read is flagged as the `bin-let`,
+;;; `(bin-malformed (bin-let NAME N))`, whether or not a request uses the
+;;; name, and `malformed-is-false` derives `(false)`. `let-zero`: `z` is zero,
+;;; and cannot name another number. The rule is `std.math.positional`'s,
+;;; activated with binary's relations.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The requests beside it are computed in root's state,
+;;; but a dead state is no answer.
+
+(import std.math.binary-arith :symbols (binary-arith bin-let bin-add))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-let z (b2 z 1))
+(bin-add (b2 z 1) (b2 z 1))
+
+(solve :expect (false))

@@ -1,0 +1,167 @@
+;;; Ein stdlib — `std.math.convert`: decimal to binary and back, as requests
+;;; (M1f P1f.6, S1f.6.16; P1f.6's reply 17, *"(b)"*: a module of its own, so
+;;; that a program that only computes in binary does not load decimal's
+;;; tables).
+;;;
+;;; A theory built on two others, `std.math.decimal-arith` and
+;;; `std.math.binary-arith`, which it calls and edits neither of. Eleven rules,
+;;; each a step in a chain of those theories' own operations, and no rule joins
+;;; two facts on a number.
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))
+;;;     (import std.math.decimal :symbols (n))
+;;;     (import std.math.binary :symbols (b2))
+;;;     (import std.math.arith :symbols (z))
+;;;
+;;; The import brings both bases whole and every module below them; a program
+;;; lists `n`, `b2` and `z` where it writes them. `convert` is the module's
+;;; entry, the closing rule at the end of this file.
+;;;
+;;; ── The protocol ───────────────────────────────────────────────────────────
+;;;
+;;;     (to-bin X)     a request: the decimal number X written in binary
+;;;     (bin-of X B)   the answer, B in `std.math.binary`'s normal form
+;;;     (to-dec B)     a request: the binary number B written in decimal
+;;;     (dec-of B X)   the answer, X in `std.math.decimal`'s normal form
+;;;
+;;; The names are Q-M1f.267's default. An operand is a number as its
+;;; representation writes it, high zeros allowed; a name, a `let` of decimal's
+;;; or a `bin-let` of binary's, is not looked up, and a request over one is
+;;; answered by silence. A malformed numeral is its representation's, flagged
+;;; where it is written.
+;;;
+;;; ── How it computes ────────────────────────────────────────────────────────
+;;;
+;;; **Decimal to binary:** X is divided by two with decimal's tagged division,
+;;; `(div-call TAG X (n z 2))`, until nothing is left; each remainder is a bit,
+;;; put in front of the bits so far, `(bin-b BIT BITS)`, and binary's own
+;;; strip and turn make the number, `(bin-strip TAG BITS)` answered by
+;;; `(bin-done TAG B)`.
+;;;
+;;; **Binary to decimal:** B's bits from the top, `(bin-top-first TAG B z)`
+;;; answered by `(bin-top-first-is TAG BITS)`; the number so far is doubled
+;;; and the bit added by one decimal addition walk, the number plus itself with
+;;; the bit as the carry in, `(add-walk TAG X X BIT z)`.
+;;;
+;;; The two directions do not cost the same: a halving is a whole decimal
+;;; division, where a doubling is one addition walk: 255 to binary is 826
+;;; firings and 1111101000 to decimal 100 (`stdlib/README.md` §
+;;; `std.math.convert` has the command).
+;;;
+;;; It reaches into both theories: decimal's `div-call`, `div-done`,
+;;; `add-walk` and `done` are its interface (the tagged calls), and binary's
+;;; `bin-strip`, `bin-done`, `bin-top-first`, `bin-top-first-is` and `bin-b`
+;;; are binary's circuit, which this module, a module of the stdlib, may read:
+;;; `ein-infer/tests/binary_theory.rs` holds every conversion to Rust's
+;;; integers both ways.
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; The requests and answers `to-bin`, `bin-of`, `to-dec` and `dec-of`; the
+;;; circuit's own `to-bin-go`, `to-dec-go`, `halving`, `bits`, `dec-bits` and
+;;; `doubling`; `convert-rule`, and the entry `convert`.
+
+(import std.math.arith :symbols (z))
+(import std.math.decimal :symbols (n))
+(import std.math.decimal-arith :symbols (decimal-arith div-call div-done add-walk done))
+(import std.math.binary-arith :symbols (binary-arith bin-b bin-strip bin-done bin-top-first bin-top-first-is))
+
+(relation to-bin Number
+  :why "asked: {?1} written in binary")
+(relation bin-of Number Binary
+  :why "{?1} is {?2} in binary")
+(relation to-dec Binary
+  :why "asked: {?1} written in decimal")
+(relation dec-of Binary Number
+  :why "{?1} in binary is {?2}")
+(relation to-bin-go Number Number Bits
+  :why "converting {?1}: {?2} is still to halve, and the bits so far are {?3}")
+(relation to-dec-go Binary Bits Number
+  :why "converting {?1}: the bits {?2} are still to come, and the number so far is {?3}")
+(relation halving Number Bits
+  :why "a halving for {?1}, the bits so far being {?2}")
+(relation bits Number
+  :why "the bits of {?1}")
+(relation dec-bits Binary
+  :why "the bits of {?1}, the top one first")
+(relation doubling Binary Bits
+  :why "a doubling for {?1}, the bits {?2} still to come")
+
+;; ── Decimal to binary: halve until nothing is left ──────────────────────────
+;; Each remainder is a bit, the units first, put in front of the bits so far.
+(rule to-bin-ask ()
+  :match  (to-bin ?x)
+  :assert (to-bin-go ?x ?x z)
+  :why    "{?x} in binary is asked: halve it until nothing is left")
+
+(rule to-bin-halve ()
+  :match  (to-bin-go ?x (n ?p ?a) ?acc)
+  :assert (div-call (halving ?x ?acc) (n ?p ?a) (n z 2))
+  :why    "divide {?p}{?a} by two: the remainder is the next bit")
+
+(rule to-bin-bit-0 ()
+  :match  (div-done (halving ?x ?acc) ?q z)
+  :assert (to-bin-go ?x ?q (bin-b 0 ?acc))
+  :why    "the remainder is nothing: the bit 0 goes in front of the bits so far")
+
+(rule to-bin-bit-1 ()
+  :match  (div-done (halving ?x ?acc) ?q (n z 1))
+  :assert (to-bin-go ?x ?q (bin-b 1 ?acc))
+  :why    "the remainder is 1: the bit 1 goes in front of the bits so far")
+
+(rule to-bin-end ()
+  :match  (to-bin-go ?x z ?acc)
+  :assert (bin-strip (bits ?x) ?acc)
+  :why    "nothing is left to halve: the bits are {?acc}, the top one first")
+
+(rule to-bin-answer ()
+  :match  (bin-done (bits ?x) ?b)
+  :assert (bin-of ?x ?b)
+  :why    "{?x} is {?b} in binary")
+
+;; ── Binary to decimal: from the top bit, twice the number so far plus the
+;;    bit, one decimal addition ──────────────────────────────────────────────
+(rule to-dec-ask ()
+  :match  (to-dec ?b)
+  :assert (bin-top-first (dec-bits ?b) ?b z)
+  :why    "{?b} in decimal is asked: first its bits, the top one first")
+
+(rule to-dec-begin ()
+  :match  (bin-top-first-is (dec-bits ?b) ?t)
+  :assert (to-dec-go ?b ?t z)
+  :why    "start from the top bit: the number so far is zero")
+
+(rule to-dec-double ()
+  :match  (to-dec-go ?b (bin-b ?bit ?rest) ?acc)
+  :assert (add-walk (doubling ?b ?rest) ?acc ?acc ?bit z)
+  :why    "the next bit is {?bit}: the number so far, plus itself, plus the bit as the carry in")
+
+(rule to-dec-next ()
+  :match  (done (doubling ?b ?rest) ?s)
+  :assert (to-dec-go ?b ?rest ?s)
+  :why    "the number so far is {?s}")
+
+(rule to-dec-answer ()
+  :match  (to-dec-go ?b z ?acc)
+  :assert (dec-of ?b ?acc)
+  :why    "{?b} in binary is {?acc}")
+
+;; ── The closing rule, and the module's one entry ────────────────────────────
+;; A conversion is computed and never guessed: every relation of the module is
+;; closed, every rule named, and the entries of the two theories below.
+(relation convert-rule Rule
+  :why "{?1} is a rule of std.math.convert")
+
+(rule convert ()
+  :match  ()
+  :assert (and (__closed__ to-bin) (__closed__ bin-of) (__closed__ to-dec) (__closed__ dec-of)
+               (__closed__ to-bin-go) (__closed__ to-dec-go) (__closed__ halving) (__closed__ bits)
+               (__closed__ dec-bits) (__closed__ doubling) (__closed__ convert-rule)
+               (convert-rule decimal-arith) (convert-rule binary-arith)
+               (convert-rule to-bin-ask) (convert-rule to-bin-halve) (convert-rule to-bin-bit-0)
+               (convert-rule to-bin-bit-1) (convert-rule to-bin-end) (convert-rule to-bin-answer)
+               (convert-rule to-dec-ask) (convert-rule to-dec-begin) (convert-rule to-dec-double)
+               (convert-rule to-dec-next) (convert-rule to-dec-answer))
+  :why    "a conversion is computed and never guessed: every relation of the module is closed")

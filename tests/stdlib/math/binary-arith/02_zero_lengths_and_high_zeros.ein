@@ -1,0 +1,41 @@
+;;; `std.math.binary-arith` — zero, operands of two lengths, and high zeros. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; Zero is `z` and stands for itself (`operand-zero`); 0 + 0 drops no bit and
+;;; answers `z` (`strip-none`). Operands of different lengths, each pair asked
+;;; both ways round, run out one before the other (`add-column-first`,
+;;; `add-column-second`). An operand written with high zeros, `(b2 (b2 (b2 (b2
+;;; z 0) 0) 1) 1)`, is 3 and is read by value; the answer is in normal form,
+;;; its high zeros dropped (`strip-zero`) where 11 + 101 leaves none.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add z z)
+(bin-add z (b2 (b2 (b2 z 1) 0) 1))
+(bin-add (b2 (b2 (b2 z 1) 0) 1) z)
+(bin-add (b2 z 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0))
+(bin-add (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) (b2 z 1))
+(bin-add (b2 (b2 (b2 (b2 z 0) 0) 1) 1) (b2 (b2 (b2 (b2 z 0) 1) 0) 1))
+(bin-add (b2 z 0) (b2 (b2 z 0) 0))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of z z z)
+                      (bin-sum-of z (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 0) 1))
+                      (bin-sum-of (b2 (b2 (b2 z 1) 0) 1) z (b2 (b2 (b2 z 1) 0) 1))
+                      (bin-sum-of (b2 z 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1))
+                      (bin-sum-of (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) (b2 z 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1))
+                      (bin-sum-of (b2 (b2 (b2 (b2 z 0) 0) 1) 1) (b2 (b2 (b2 (b2 z 0) 1) 0) 1) (b2 (b2 (b2 (b2 z 1) 0) 0) 0))
+                      (bin-sum-of (b2 z 0) (b2 (b2 z 0) 0) z)))

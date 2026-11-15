@@ -1,0 +1,33 @@
+;;; `std.math.binary-arith` — a tagged division by zero, made by a rule of the program's own. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A division by zero is flagged at the call, whoever made it (S1f.6.24): a
+;;; rule of the program calls `(bin-div-call (share A B) A B)`, a tagged call
+;;; of the interface, under a tag of its own, and the call is flagged
+;;; `(division-by-zero (bin-div-call (share A B) A B))` by `div-call-by-zero`,
+;;; and `(false)` follows. No public request is made, so the call's is the one
+;;; flag.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The requests beside it are computed in root's state,
+;;; but a dead state is no answer.
+
+(import std.math.binary-arith :symbols (binary-arith bin-div-call bin-div-done))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(relation share Number Number :why "{?1} shared among {?2}")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (__closed__ share)
+  :why    "the program's own relation is closed, as the theory's are")
+(share (b2 (b2 (b2 z 1) 1) 0) z)
+(rule divide-the-share ()
+  :match  (share ?a ?b)
+  :assert (bin-div-call (share ?a ?b) ?a ?b)
+  :why    "{?a} is divided among {?b}")
+
+(solve :expect (false))

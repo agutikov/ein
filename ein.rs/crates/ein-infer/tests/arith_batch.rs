@@ -50,8 +50,11 @@
 //! and its bound to [`BOUND`]. Each operation is measured in batches of its
 //! own (S1f.6.4).
 //!
-//! `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7) and `std.math.rat` (S1f.6.8) have a
-//! test of their own each, below, of the same shape.
+//! `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7), `std.math.rat` (S1f.6.8) and
+//! `std.math.binary-arith` (S1f.6.16) have a test of their own each, below, of the
+//! same shape; binary's holds the rule of the theory where most of its rules
+//! are `std.math.positional`'s, activated with binary's relations, and the
+//! stated exception where its `bin-let` is.
 
 use ein_core::Terms;
 use ein_core::counters;
@@ -180,6 +183,7 @@ fn saturate(src: &str, result: &str) -> Work {
         .or_else(|| {
             [
                 "std.math.decimal-arith",
+                "std.math.binary-arith",
                 "std.math.num9",
                 "std.math.int",
                 "std.math.rat",
@@ -709,3 +713,175 @@ fn a_batch_of_rational_requests_costs_in_proportion_to_its_count() {
 /// per-request work at a larger batch may exceed the smallest's by this
 /// factor; a join on a number multiplies it by the batches' ratio, 4 and 12.
 const TOLERANCE_RAT: f64 = 1.15;
+
+// ── std.math.binary-arith (S1f.6.16) ────────────────────────────────────
+
+const IMPORT_BIN: &str = "(import std.math.binary-arith :symbols (binary-arith))\n";
+
+/// Binary's requests, each with its result relation and what a request may
+/// cost at the smallest batch, in `candidates`, a little above the measure:
+/// thirty-bit operands, about nine decimal digits, as the prototype's batches
+/// had them (S1f.6.16's T1); a divisor of thirteen bits, about four; and a
+/// product of two twenty-bit numbers.
+const REQUESTS_BIN: [(&str, &str, f64, [usize; 3]); 5] = [
+    ("bin-add", "bin-sum-of", 600.0, SIZES_BIN),
+    ("bin-sub", "bin-diff-of", 1200.0, SIZES_BIN),
+    ("bin-cmp", "bin-cmp-of", 500.0, SIZES_BIN),
+    ("bin-mul", "bin-product-of", 30000.0, SIZES_BIN_LONG),
+    ("bin-div", "bin-quot-of", 30000.0, SIZES_BIN_LONG),
+];
+
+/// The batches of a walk: as decimal's.
+const SIZES_BIN: [usize; 3] = [250, 1000, 4000];
+
+/// The batches of a product and a quotient, a walk a bit of the multiplier
+/// or the dividend: a batch of 4 000 of either took most of a minute of the
+/// gate; the ratios, 4 and 12, are what a join would multiply by.
+const SIZES_BIN_LONG: [usize; 3] = [100, 400, 1200];
+
+/// A number of exactly `bits` bits in binary's spelling, its top bit 1.
+fn number_bin(rng: &mut u64, bits: u32) -> String {
+    let mut out = String::from("z");
+    for i in 0..bits {
+        *rng = rng
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
+        let b = if i == 0 { 1 } else { (*rng >> 33) % 2 };
+        out = format!("(b2 {out} {b})");
+    }
+    out
+}
+
+/// `count` requests of `op` over binary numbers, beside `lets` named
+/// constants nobody asks about, each written with a high zero so that no
+/// numeral of a constant's is one of a request's, as [`batch`] writes
+/// decimal's.
+fn batch_bin(op: &str, count: usize, lets: usize) -> String {
+    let (mut rng, mut names) = (0x5146_1616_u64, 0x5146_1617_u64);
+    let mut src = String::from(IMPORT_BIN);
+    for i in 0..lets {
+        let value = number_bin(&mut names, 30).replacen("(b2 z ", "(b2 (b2 z 0) ", 1);
+        src.push_str(&format!("(bin-let c{i} {value})\n"));
+    }
+    // A product of two thirty-bit numbers is thirty walks of up to sixty bits
+    // a request, and its facts hold numbers as long: twenty bits a side keeps
+    // the batch of products in proportion to the others' time.
+    let (first, second) = match op {
+        "bin-mul" => (20, 20),
+        "bin-div" => (30, 13),
+        _ => (30, 30),
+    };
+    for _ in 0..count {
+        let (x, y) = (number_bin(&mut rng, first), number_bin(&mut rng, second));
+        src.push_str(&format!("({op} {x} {y})\n"));
+    }
+    src
+}
+
+#[test]
+fn a_batch_of_binary_requests_costs_in_proportion_to_its_count() {
+    for (op, result, bound, sizes) in REQUESTS_BIN {
+        let work: Vec<Work> = sizes
+            .iter()
+            .map(|&n| saturate(&batch_bin(op, n, 0), result))
+            .collect();
+        for (n, w) in sizes.iter().zip(&work) {
+            assert_eq!(w.answers, *n, "{n} `{op}` requests, each answered");
+            eprintln!(
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request; \
+                 {} guard values, {:.2} a request",
+                w.firings,
+                per_request(w.firings, *n),
+                w.candidates,
+                per_request(w.candidates, *n),
+                w.guards,
+                per_request(w.guards, *n)
+            );
+        }
+        let base_firings = per_request(work[0].firings, sizes[0]);
+        let base = per_request(work[0].candidates, sizes[0]);
+        let base_guards = per_request(work[0].guards, sizes[0]);
+        for (n, w) in sizes.iter().zip(&work).skip(1) {
+            let firings = per_request(w.firings, *n);
+            assert!(
+                firings <= base_firings * TOLERANCE,
+                "`{op}`: firings per request grew with the batch: {base_firings:.1} at {} \
+                 and {firings:.1} at {n}",
+                sizes[0]
+            );
+            if cfg!(feature = "counters") {
+                let c = per_request(w.candidates, *n);
+                assert!(
+                    c <= base * TOLERANCE,
+                    "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
+                     candidates a request at {} and {c:.1} at {n}. A rule of \
+                     std.math.binary-arith or of std.math.positional joins two facts on a \
+                     number (E-3 of P1f.6's findings.md); `arith_theory.rs` names the rule",
+                    sizes[0]
+                );
+                let g = per_request(w.guards, *n);
+                assert!(
+                    g <= base_guards * TOLERANCE,
+                    "`{op}`: the guards' work per request grew with the batch: \
+                     {base_guards:.1} values a request at {} and {g:.1} at {n}",
+                    sizes[0]
+                );
+            }
+        }
+        if cfg!(feature = "counters") {
+            assert!(base > 0.0, "the counters are on and counted nothing");
+            assert!(
+                base < bound,
+                "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
+                sizes[0]
+            );
+            assert!(
+                base_guards < GUARD_BOUND,
+                "`{op}`: {base_guards:.1} guard values a request at {} requests, over \
+                 {GUARD_BOUND}",
+                sizes[0]
+            );
+        }
+    }
+}
+
+/// The stated exception in binary: `operand-name`, `std.math.positional`'s,
+/// asks `(bin-named ?x)` first, so the same requests beside `bin-let`s cost
+/// what they cost beside none, plus the constants' own; and
+/// `bin-operand-undeclared` costs two guard values a name of the program for
+/// each operand, as decimal's does.
+#[test]
+fn a_binary_number_operand_does_not_walk_the_lets() {
+    if !cfg!(feature = "counters") {
+        return;
+    }
+    let (requests, lets) = (500usize, 200usize);
+    for (op, result, _, _) in REQUESTS_BIN {
+        let without = saturate(&batch_bin(op, requests, 0), result);
+        let with = saturate(&batch_bin(op, requests, lets), result);
+        let alone = saturate(&batch_bin(op, 0, lets), result);
+        let none = saturate(&batch_bin(op, 0, 0), result);
+        eprintln!(
+            "{op}: {requests} requests: {} candidates beside no `bin-let`, {} beside {lets}; \
+             the {lets} `bin-let`s alone, {}. Guard values: {}, {}, {}",
+            without.candidates,
+            with.candidates,
+            alone.candidates,
+            without.guards,
+            with.guards,
+            alone.guards
+        );
+        assert_eq!(
+            with.candidates + none.candidates,
+            without.candidates + alone.candidates,
+            "{requests} `{op}` requests beside {lets} `bin-let`s cost more than the requests \
+             and the `bin-let`s cost apart: a number operand is walking the `bin-let` facts"
+        );
+        assert_eq!(
+            with.guards + none.guards,
+            without.guards + alone.guards + (2 * 2 * requests * lets) as u64,
+            "{requests} `{op}` requests beside {lets} `bin-let`s: two guard values for each \
+             operand and each `bin-let`'s name"
+        );
+    }
+}

@@ -1,0 +1,48 @@
+;;; `std.math.binary-arith` — quotients: one subtraction a bit. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(bin-div X Y)` is answered by `(bin-quot-of X Y Q R)`, X = Q x Y + R and
+;;; R less than Y. The divisor is put into normal form by an addition walk to
+;;; `z` (`bin-div-multiples`), the dividend turned round (`bin-div-turn`,
+;;; `div-begin`), and each bit brought down beside what is left over
+;;; (`bin-div-bring`, `bin-div-bring-first`), where one subtraction of the
+;;; divisor decides the quotient's bit: it fits, 1 (`bin-div-fits`), or it is
+;;; short, 0 (`bin-div-too-big`, `bin-div-too-big-none`). A 0 brought down
+;;; beside nothing needs no trial (`bin-div-bring-zero`), and where the
+;;; quotient is still zero, at a dividend written with a high zero, `0101`, no
+;;; bit is written (`bin-div-bring-zero-none`). `div-end` and `div-answer`
+;;; hand the answer over.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-div bin-quot-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-div (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1))
+(bin-div (b2 (b2 (b2 (b2 z 1) 1) 0) 1) (b2 (b2 z 1) 1))
+(bin-div (b2 (b2 z 1) 0) (b2 (b2 (b2 z 1) 1) 1))
+(bin-div z (b2 (b2 (b2 z 1) 0) 1))
+(bin-div (b2 (b2 (b2 (b2 z 1) 0) 0) 0) (b2 (b2 z 1) 0))
+(bin-div (b2 (b2 (b2 (b2 z 1) 0) 0) 1) (b2 (b2 (b2 (b2 z 1) 0) 0) 1))
+(bin-div (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 0) (b2 z 1))
+(bin-div (b2 (b2 (b2 (b2 z 0) 1) 0) 1) (b2 (b2 z 1) 1))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-quot-of ?x ?y ?q ?r)
+       :goal-text "{?x} divided by {?y} = {?q}, remainder {?r}"
+       :expect (model (bin-quot-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 1) 0) 0) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 1) 1) 1) 1) 1) 1) 0) 0) 0) 1) (b2 (b2 (b2 (b2 (b2 z 1) 0) 1) 0) 0))
+                      (bin-quot-of (b2 (b2 (b2 (b2 z 1) 1) 0) 1) (b2 (b2 z 1) 1) (b2 (b2 (b2 z 1) 0) 0) (b2 z 1))
+                      (bin-quot-of (b2 (b2 z 1) 0) (b2 (b2 (b2 z 1) 1) 1) z (b2 (b2 z 1) 0))
+                      (bin-quot-of z (b2 (b2 (b2 z 1) 0) 1) z z)
+                      (bin-quot-of (b2 (b2 (b2 (b2 z 1) 0) 0) 0) (b2 (b2 z 1) 0) (b2 (b2 (b2 z 1) 0) 0) z)
+                      (bin-quot-of (b2 (b2 (b2 (b2 z 1) 0) 0) 1) (b2 (b2 (b2 (b2 z 1) 0) 0) 1) (b2 z 1) z)
+                      (bin-quot-of (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 0) (b2 z 1) (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 0) z)
+                      (bin-quot-of (b2 (b2 (b2 (b2 z 0) 1) 0) 1) (b2 (b2 z 1) 1) (b2 z 1) (b2 (b2 z 1) 0))))

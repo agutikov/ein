@@ -52,6 +52,11 @@ mirrors it, `tests/stdlib/math/<module>/` and `tests/stdlib/bool/<module>/`.
 | `std.math.arith` | [`math/arith.ein`](math/arith.ein) | arithmetic itself, what every base shares: `z`, and the division by zero's flag and its rule ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638)) | `arith` |
 | `std.math.decimal` | [`math/decimal.ein`](math/decimal.ein) | the decimal numeral `(n PREFIX DIGIT)`, and its check where it is written ([§](#stdmatharith-and-stdmathdecimal-arithmetic-itself-and-the-decimal-numeral-m1f-s1f638)) | `decimal` |
 | `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | natural numbers of any length, school arithmetic over `std.math.decimal`'s numerals ([§](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | `decimal-arith` |
+| `std.math.positional` | [`math/positional.ein`](math/positional.ein) | the 77 rules every positional base shares, every relation a parameter, and the macro `positional` whose one call connects a base ([§](#stdmathpositional-the-rules-every-positional-base-shares-m1f-s1f616)) | the macro |
+| `std.math.bits` | [`math/bits.ein`](math/bits.ein) | the binary tables, facts and no rule, generated ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | none |
+| `std.math.binary` | [`math/binary.ein`](math/binary.ein) | the binary numeral `(b2 PREFIX BIT)`, and its check where it is written ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | `binary` |
+| `std.math.binary-arith` | [`math/binary-arith.ein`](math/binary-arith.ein) | binary arithmetic, decimal's twin under `bin-` names ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | `binary-arith` |
+| `std.math.convert` | [`math/convert.ein`](math/convert.ein) | decimal to binary and back, as requests ([§](#stdmathconvert-decimal-to-binary-and-back-m1f-s1f616)) | `convert` |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers over it, `(int P N)` ([§](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)) | `int-arith` |
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rationals over both, `(rat Z D)` ([§](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)) | `rat-arith` |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | nine digits in one fact, by wide rules, generated ([§](#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613)) | `arith9` |
@@ -65,7 +70,9 @@ Until S1f.6.31 the five were `std.digits`, `std.arith` (entry `arith`),
 `std.int`, `std.rat` and `std.num9`, at the top. No alias is kept: an old name
 is the loader's *module not found*. No relation was renamed. `std.math.arith`
 and `std.math.decimal` joined at S1f.6.38, taking `z`, the division by zero's
-flag and rule, `n` and `named` from `std.math.decimal-arith`.
+flag and rule, `n` and `named` from `std.math.decimal-arith`; `std.math.positional`
+at S1f.6.16, taking the 77 rules both bases share, with binary's three modules
+and `std.math.convert`.
 
 ## The obligation duals (M1d S1d.2.4)
 
@@ -219,8 +226,11 @@ numbers (the user's ruling of 2026-11-06): nothing in the engine knows what
 **Addition** (S1f.6.3), **subtraction and comparison** (S1f.6.4),
 **multiplication** (S1f.6.5) and **division** (S1f.6.6): the four operations
 and comparison; the check of what a program wrote (S1f.6.12); and the
-division by zero flagged at the call (S1f.6.24): 115 rules and the closing
-rule (`grep -c '^(rule ' stdlib/math/decimal-arith.ein`, less one, 2026-11-13).
+division by zero flagged at the call (S1f.6.24). Since S1f.6.16 the rules
+every base shares are [`std.math.positional`](#stdmathpositional-the-rules-every-positional-base-shares-m1f-s1f616)'s,
+activated by one call in the closing rule: 35 rules of decimal's own and the
+closing rule here, and the 77 it activates there (`grep -c '^(rule '
+stdlib/math/decimal-arith.ein stdlib/math/positional.ein`, 2026-11-15).
 
 ```lisp
 (import std.math.decimal-arith :symbols (decimal-arith))
@@ -274,7 +284,7 @@ integer stands for itself and a name goes through `let`). A walk starts with `z`
 digits yet; a subtraction with `0`, no borrow, and a comparison with `eq`,
 nothing yet decided; those are the values a caller writes. An addition's
 carry in is the caller's: `0` for X + Y, or a bit, as
-[`conv.ein`](../examples/binary_arithmetic/conv.ein) doubles a number and adds
+[`std.math.convert`](math/convert.ein) doubles a number and adds
 a bit in one walk, `(add-walk TAG X X BIT z)`. The tag is a fact of the caller's own
 relation, `(cnt K M)` in
 [`casting_out_nines.ein`](../examples/beyond_arith/casting_out_nines.ein); a
@@ -898,6 +908,170 @@ build/s1f.6.12/build/cost3.py`, 2026-11-13).
 `arith_batch.rs` pins it by the guards' own count, and E-36 of the phase's
 `findings.md` says what would remove it.
 
+## `std.math.positional`: the rules every positional base shares (M1f S1f.6.16)
+
+Most of school arithmetic does not know its base: a walk takes a column a
+firing and looks it up in a table, and nothing in it says *ten* or *two*. Those
+rules are written once, here, for decimal and binary alike (the user's reply
+16 of 2026-11-12, *"extract common rules into separate file the both import"*;
+the trial and the design of
+[S1f.6.16](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md),
+ruled (a) and then (iii) on 2026-11-14). **Every relation a rule names is a
+parameter**, in capitals, and a base activates each rule with its own
+relations:
+
+```lisp
+(rule add-column (?ADD-WALK ?N ?FA ?B)
+  :match  (and (?ADD-WALK ?k (?N ?p ?a) (?N ?q ?c) ?e ?acc)
+               (?FA ?a ?c ?e ?s ?f))
+  :assert (?ADD-WALK ?k ?p ?q ?f (?B ?s ?acc))
+  :why    "{?a} + {?c} + carry {?e} is {?s}, carry {?f}: {?s} goes in front of the digits so far")
+```
+
+decimal's `add-column` walks `add-walk` over `n` and the table `fa`, binary's
+`bin-add-walk` over `b2` and `bin-fa`. 77 rules (`grep -c '^(rule '
+stdlib/math/positional.ein`, 2026-11-15): the operands and the `let`'s name
+probe; the addition, subtraction and comparison walks; the normal form and
+both turns; the five operations' ask, second operand, start and answer;
+multiplication's and division's calls; the division by zero at the request
+and at the call, with `std.math.arith`'s flag; and an operand's and a `let`'s
+faults, the ten routes from a tag to its request, and the two request flags
+with their rules to `(false)`. A numeral's own faults are no rule here: they
+are the representation's, `std.math.decimal`'s and `std.math.binary`'s.
+
+**One call connects a base** (Q-M1f.266, ruled (iii)). A rule with parameters
+fires for a fact headed by its own name, so 77 rules take 77 activators; the
+module's macro `positional`, of the rules' 61 parameters, expands to them, and
+a base calls it once inside its closing rule's conclusion, with its relations
+in the macro's order:
+
+```lisp
+(rule decimal-arith ()
+  :match  ()
+  :assert (and (__closed__ fa) … (arith-rule mul-column) …
+               (positional operand operand-is n let named add-walk fa b strip turn nz done …))
+  :why    "…")
+```
+
+The activators are derived in the closing rule's own firing, so connecting a
+base costs no firing; each activated rule compiles when its activator appears.
+A program never imports this module: it comes with a base, one copy a program,
+and a program that imports both bases holds each rule once, activated twice. A
+shared rule prints by its own full name whichever base activated it,
+`std.math.positional.add-column` in a trace, `std.math.positional.malformed-is-false`
+under `refuted by`. A base's closing rule does not name these rules, as it
+names its own: a rule's name written as an argument makes every
+parameterised conclusion of the rule's arity a possible activator that binds a
+parameter to a fact, which the loader refuses (S1f.5.18, E-55).
+[`arith_theory.rs`](../ein.rs/crates/ein-infer/tests/arith_theory.rs) holds the
+macro to activating each rule once with that rule's parameters (Q-M1f.270), each
+base's call to its order, and the rule of the calculator on this module's text
+read as each base activates it.
+
+**What it cost decimal** (the re-cut, S1f.6.16; old binary and stdlib against
+new on every corpus entry, `build/s1f.6.16/build/tools/sweep.py`, 2026-11-15):
+every program answers alike and every program's firings are equal; `ein
+solve`'s read-out moves only in `refuted by` on the 30 malformed programs, which
+name `std.math.positional.malformed-is-false` or `undeclared-is-false`; root's
+state trades the 77 `(arith-rule R)` facts of the shared rules for their 77
+activators, and holds one `written` fact fewer, `(written (not-a-number 0))`,
+which `operand-digit-zero`'s conclusion stated while it had no parameter. The
+time is the record's ([S1f.6.16 § Build record](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15)).
+
+## Binary: `std.math.bits`, `std.math.binary` and `std.math.binary-arith` (M1f S1f.6.16)
+
+Binary arithmetic as a theory of its own, beside decimal (P1f.6's reply 13,
+way (b)): its own numeral, its own names, the same rules where they are the
+same. The user, 2026-11-11: *"arithmetic with binary numbers, I suspect simpler
+rules"*; what got simpler is
+[`binary_arithmetic.md` § What shipped](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md#what-shipped-2026-11-15).
+
+| module | what it is |
+|---|---|
+| `std.math.bits` | the tables, **facts and no rule**, generated by `utils/gen_arith_tables.py` beside `std.math.digits` and held to Rust's integers by `ein-ir/tests/digit_tables.rs`: `bin-fa` 8 rows, `bin-fs` 8, `bin-cl` 12, `bin-nz` 1, where decimal's seven tables have 1 664. No digit multiplier and no bisection: a row of a product is nothing or the multiplicand, and one subtraction decides a bit of a quotient |
+| `std.math.binary` | the numeral `(b2 PREFIX BIT)`, twice the prefix plus the bit, and its check where it is written, on `std.math.decimal`'s pattern: four rules over the loader's `(written (b2 P A))` flag `(not-binary NUMERAL THING)`, a bit's place holding no bit, a bit or a named constant as the prefix, and `not-binary-is-false` derives `(false)`; `bin-named`. Entry `binary` |
+| `std.math.binary-arith` | the arithmetic, `std.math.decimal-arith`'s twin: 57 relations and 14 rules of its own (`grep -c '^(rule ' stdlib/math/binary-arith.ein`, less the closing rule, 2026-11-15), and `std.math.positional`'s 77 activated by one call in its closing rule. Entry `binary-arith` |
+
+```lisp
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-mul bin-sum-of bin-product-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))   ; 101 + 111: (bin-sum-of … (b2 (b2 (b2 (b2 z 1) 1) 0) 0))
+(bin-mul (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))   ; 101 x 111: 100011
+```
+
+**The protocol** is decimal's with `bin-` before every name (reply 14;
+Q-M1f.267, defaulted, the shape's head `b2` kept): `bin-add`/`bin-sum-of`,
+`bin-sub`/`bin-diff-of`, `bin-cmp`/`bin-cmp-of`, `bin-mul`/`bin-product-of`,
+`bin-div`/`bin-quot-of`, and `bin-let`. Zero is `std.math.arith`'s `z`, of no
+base (reply 15). A division by zero is `std.math.arith`'s flag,
+`(division-by-zero (bin-div X Y))` and its call's, and `(false)` from each by
+that module's rule: arithmetic's own, whatever the base (the user, 2026-11-14,
+Q-M1f.269). **Nothing of decimal is loaded**: a program that imports only the
+binary theory holds no row of `std.math.digits` and no name of
+`std.math.decimal-arith`. A program that imports both holds both, sharing `z`,
+`0`, `1`, `std.math.arith` and the shared rules, and no relation else.
+
+**The tagged calls**, binary's twins of decimal's interface, held to their
+shapes as decimal's are:
+
+```text
+(bin-add-walk TAG X Y C z)    asked: X + Y + C     answered by (bin-done TAG S)
+(bin-sub-walk TAG X Y 0 z)    asked: X − Y         answered by (bin-done TAG D), or (bin-short TAG)
+(bin-cmp-walk TAG X Y eq)     asked: X against Y   answered by (bin-order-is TAG O)
+(bin-mul-call TAG X Y)        asked: X × Y         answered by (bin-done TAG P)
+(bin-div-call TAG X Y)        asked: X ÷ Y         answered by (bin-div-done TAG Q R); flagged where Y is zero
+(bin-operand TAG X)           wanted: what X is    answered by (bin-operand-is TAG N)
+```
+
+**Malformed requests, as far as decimal flags its own** (Q-M1f.268, defaulted):
+a malformed numeral is `std.math.binary`'s, `(not-binary …)`, flagged where it
+is written; a bit where a number goes, `(bin-add 1 X)`, and a `bin-let` that
+cannot be read are `(bin-malformed …)`; a name no `bin-let` states is
+`(bin-undeclared NAME REQUEST)`, by `bin-operand-undeclared`, the theory's one
+`absent`, over `bin-let`. A decimal digit is a name in binary: `(bin-add 7 X)`
+is undeclared, and `(b2 7 1)`, a prefix that is such a name, is silent, as
+`(n end 1)` is in decimal. A fact of another relation where a number goes, a
+decimal number among them, is answered by silence.
+
+**What it costs** (`ein-infer/tests/binary_theory.rs`' `the_circuit_of_each_operation`,
+which pins it, 2026-11-15), firings and depth, at decimal's example operands:
+123078 + 4567, 43 and 43 (decimal 21); 123078 − 4567, 61 and 43 (28); against,
+24 (13); 123 × 456, 120 (72); 127645 ÷ 25, 245 (220); 127645 ÷ 0, 12 and 10 (12).
+A walk is three times as long; a product's row and a quotient's bit are
+cheaper. `binary_theory.rs` holds every answer to Rust's integers, every pair
+to 64 and lengths around every power of two to 64 bits; `arith_batch.rs`, by
+hand, holds a batch to cost in proportion to its count.
+
+## `std.math.convert`: decimal to binary and back (M1f S1f.6.16)
+
+A theory built on both bases, a module of its own so that a program that only
+computes in binary does not load decimal's tables (reply 17):
+
+```lisp
+(import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))
+(import std.math.decimal :symbols (n))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(to-bin (n (n (n z 2) 5) 5))         ; (bin-of 255 11111111)
+(to-dec (b2 (b2 (b2 (b2 z 1) 0) 1) 0))   ; (dec-of 1010 10)
+```
+
+`(to-bin X)` halves X by decimal's tagged division until nothing is left, each
+remainder a bit, and binary's strip and turn make the number; `(to-dec B)`
+reads B's bits from the top and doubles the number so far by one decimal
+addition walk, the bit as the carry in. Eleven rules, each a step in a chain
+of the two theories' own calls, and no rule joins two facts on a number. The
+two directions do not cost the same: 255 to binary is 826 firings and
+1111101000 to decimal 100, a halving being a whole division and a doubling one
+addition walk (`ein saturate` of each request alone, the closing rules' six
+firings left out, 2026-11-15).
+An operand is a number; a name is not looked up. `binary_theory.rs` holds
+every number to 300, and a sample to 2^40, both ways and round trip. Moved from
+`examples/binary_arithmetic/conv.ein`.
+
 ## `std.math.num9`: nine digits in one fact, and wide rules (M1f S1f.6.13)
 
 The calculator's second module, and the user's own number (the instruction of
@@ -1395,11 +1569,13 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — some seconds, and **423 of 423** on 2026-11-14 since
+them activated — some seconds, and **482 of 482** on 2026-11-15 since
 `std.math.decimal-arith`'s 116 (M1f S1f.6.3 to S1f.6.6, S1f.6.12's checks and
 S1f.6.24's call), `std.math.num9`'s 47 (S1f.6.13), `std.math.int`'s 71
 (S1f.6.7, and S1f.6.22's division), `std.math.rat`'s 57 (S1f.6.8) and
-`std.bool`'s 55 (S1f.6.17) joined the 77. *Of 423* is the command's, `find
+`std.bool`'s 55 (S1f.6.17) joined the 77, S1f.6.38 moved the numeral's check
+and S1f.6.16 cut the calculator into `std.math.positional` and the two bases.
+*Of 482* is the command's, `find
 stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '`, which reads every
 depth (the calculator's modules are under `stdlib/math/` since S1f.6.31 and
 `std.bool`'s under `stdlib/bool/`, and `cat stdlib/*.ein` would count 77);
@@ -1447,6 +1623,11 @@ install-relative import could not find it.
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.math.decimal-arith`'s division; a zero denominator is a division by zero, `std.math.arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int` and `std.math.decimal-arith` too | M1f S1f.6.8 |
 | `std.bool.gates`, `std.bool.props`, `std.bool.circuit`, `std.bool.inputs` | [`bool/`](bool/) | the sixteen Boolean functions of two inputs as a table and as a relation each; thirty relations known of them, derived by rules; a circuit simulated by saturation; inputs as hypotheses that each owe one value, and required values ([§ `std.bool`](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | M1f S1f.6.17 |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.math.digits`](#stdmathdigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
+| `std.math.bits` | [`math/bits.ein`](math/bits.ein) | **facts, no rule**: binary's four tables, `bin-fa` / `bin-fs` / `bin-cl` / `bin-nz`, 29 rows, each closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` beside `std.math.digits` ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | M1f S1f.6.16 |
+| `std.math.positional` | [`math/positional.ein`](math/positional.ein) | the 77 rules every positional base shares, every relation a parameter in capitals, and the macro `positional` of their 61 parameters, whose one call in a base's closing rule activates them all; division by zero's flag is `std.math.arith`'s ([§](#stdmathpositional-the-rules-every-positional-base-shares-m1f-s1f616)) | M1f S1f.6.16 |
+| `std.math.binary` | [`math/binary.ein`](math/binary.ein) | the binary numeral `(b2 PREFIX BIT)`, `bin-named`, and the numeral's check over `(written (b2 P A))`, `(not-binary NUMERAL THING)` and `(false)` from it; entry `binary` ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | M1f S1f.6.16 |
+| `std.math.binary-arith` | [`math/binary-arith.ein`](math/binary-arith.ein) | school arithmetic on binary numerals, **computed by saturation alone** over `std.math.bits`' tables: `bin-add`/`bin-sum-of`, `bin-sub`/`bin-diff-of`, `bin-cmp`/`bin-cmp-of`, `bin-mul`/`bin-product-of`, `bin-div`/`bin-quot-of`, `bin-let`; 14 rules of its own and `std.math.positional`'s 77; one entry, `binary-arith` ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | M1f S1f.6.16 |
+| `std.math.convert` | [`math/convert.ein`](math/convert.ein) | decimal to binary and back as requests, `to-bin`/`bin-of` and `to-dec`/`dec-of`, over both bases' calls; entry `convert` ([§](#stdmathconvert-decimal-to-binary-and-back-m1f-s1f616)) | M1f S1f.6.16 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
 | `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), cardinality checks (`functional` / `injective` / `total` / `surjective` + the `bijective` fan-out — S1.8a.f20; `total`/`surjective` need `forall`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), property **closures** (`symmetric` (+ its `symmetric-negative` mirror via `symmetric-negative-setup`, S1.9) / `transitive` / `includes` — the universal kernel rules, S1.8.A5), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 + A5 + f20 |

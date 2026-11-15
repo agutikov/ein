@@ -13,12 +13,13 @@
 //! | H is empty: the universe has no candidate, and nothing is left outside it | `--json-summary`'s `region.universe` and `root.hypgen` |
 //! | k_s is 1 and R is {∅}: one state, root itself, alive and owing nothing | `region.k_s`, `k_c`, `root`, `states` |
 //! | one saturation, no fork | `work.saturations` |
-//! | monotone: **one `absent` read where the program imports `std.math.decimal-arith`**, statically, over `let`, which nothing derives, and none dynamically; two strata there, and none and one elsewhere (S1f.6.12) | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
+//! | monotone: **one `absent` read a base the program imports**, statically, over the base's `let`, which nothing derives, and none dynamically; two strata there, and none and one elsewhere (S1f.6.12; binary's since S1f.6.16) | `monotonicity`, and `ein saturate --dump`'s `;; Strata` line |
 //! | **the same answer under `ein solve`, `ein saturate` and `ein test`** | the result facts of the solve's one state file, the saturation's dump, and the claims `ein test` holds |
 //!
 //! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
-//! theories, `std.math.decimal-arith`, `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7) and
-//! `std.math.rat` (S1f.6.8), and their examples. A
+//! theories, `std.math.decimal-arith`, `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7),
+//! `std.math.rat` (S1f.6.8), `std.math.binary-arith` and `std.math.convert` (S1f.6.16),
+//! and their examples. A
 //! program joins by being put there, and an operation by adding its result
 //! relation to [`RESULTS`]; nothing else here names a file.
 //!
@@ -42,12 +43,15 @@ use ein_corpus::{Scratch, ein_files_under, repo_root};
 /// Where the arithmetic programs live: `std.math.decimal-arith`'s tests, `std.math.num9`'s
 /// (S1f.6.13), `std.math.int`'s (S1f.6.7), `std.math.rat`'s (S1f.6.8), and the examples
 /// of all.
-const ROOTS: [&str; 6] = [
+const ROOTS: [&str; 9] = [
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/decimal",
     "tests/stdlib/math/num9",
     "tests/stdlib/math/int",
     "tests/stdlib/math/rat",
+    "tests/stdlib/math/binary-arith",
+    "tests/stdlib/math/binary",
+    "tests/stdlib/math/convert",
     "examples/arith",
 ];
 
@@ -55,9 +59,17 @@ const ROOTS: [&str; 6] = [
 /// `std.math.num9`'s five, its overflow flag and its conversions' answers, and
 /// `std.math.int`'s six and `std.math.rat`'s seven; and `div-done`, the hand-over of
 /// `std.math.decimal-arith`'s tagged division, which is the answer a rule of a program's
-/// own reads where it calls the division itself (S1f.6.24's `41`).
-const RESULTS: [&str; 31] = [
+/// own reads where it calls the division itself (S1f.6.24's `41`). Since S1f.6.16
+/// `std.math.binary-arith`'s five and `std.math.convert`'s two.
+const RESULTS: [&str; 38] = [
     "div-done",
+    "bin-sum-of",
+    "bin-diff-of",
+    "bin-cmp-of",
+    "bin-product-of",
+    "bin-quot-of",
+    "bin-of",
+    "dec-of",
     "sum-of",
     "diff-of",
     "cmp-of",
@@ -91,11 +103,27 @@ const RESULTS: [&str; 31] = [
 ];
 
 /// The theories: a program under [`ROOTS`] imports one, or several.
-const THEORIES: [&str; 4] = [
+const THEORIES: [&str; 6] = [
     "(import std.math.decimal-arith ",
     "(import std.math.num9 ",
     "(import std.math.int ",
     "(import std.math.rat ",
+    "(import std.math.binary-arith ",
+    "(import std.math.convert ",
+];
+
+/// The theories that bring decimal's base and binary's, each reading one
+/// `absent`, over its `let`: a program reads one a base it holds.
+const DECIMAL_BASE: [&str; 5] = [
+    "(import std.math.decimal-arith ",
+    "(import std.math.num9 ",
+    "(import std.math.int ",
+    "(import std.math.rat ",
+    "(import std.math.convert ",
+];
+const BINARY_BASE: [&str; 2] = [
+    "(import std.math.binary-arith ",
+    "(import std.math.convert ",
 ];
 
 /// What a division by zero can come from, by the start of its text: a dead
@@ -103,35 +131,73 @@ const THEORIES: [&str; 4] = [
 /// S1f.6.24 flags a division at the call whoever made it, the fact a rule of
 /// the program's own makes its tagged call from: `(share A B)`, of
 /// `tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein` and `40`.
-const DIVIDES: [&str; 5] = ["(div ", "(div9 ", "(rat-", "(int-div-", "(share "];
+const DIVIDES: [&str; 6] = [
+    "(div ",
+    "(div9 ",
+    "(rat-",
+    "(int-div-",
+    "(share ",
+    "(bin-div ",
+];
 
 /// What else such a core may hold: the `let` of a named operand, and the
 /// table rows a zero written with digits was read through, `md` where
 /// `std.math.decimal-arith` puts a divisor into normal form, `cl` where `std.math.rat`
 /// compares a denominator with zero, `fs` where `std.math.int` simplifies a
 /// divisor's numerator, or both operands of a division of integers, and `nz`
-/// where that simplification drops no high zero.
-const RESTS_ON: [&str; 5] = ["(let ", "(md ", "(cl ", "(fs ", "(nz "];
+/// where that simplification drops no high zero; in binary, the `bin-let` of a
+/// named operand, the rows of `bin-fa`, where the divisor is put into normal
+/// form by an addition, and `bin-nz`, where a bit stands for an operand
+/// (S1f.6.16).
+const RESTS_ON: [&str; 8] = [
+    "(let ",
+    "(md ",
+    "(cl ",
+    "(fs ",
+    "(nz ",
+    "(bin-let ",
+    "(bin-fa ",
+    "(bin-nz ",
+];
 
 /// The requests and the `let` a malformed program's flag can name, by the
 /// start of their text (S1f.6.12): `std.math.decimal-arith`'s five requests,
 /// and since S1f.6.38 `std.math.int`'s and `std.math.rat`'s, whose undeclared
 /// name or digit as an operand is flagged on the request.
-const READS: [&str; 8] = [
-    "(add ", "(sub ", "(cmp ", "(mul ", "(div ", "(let ", "(int-", "(rat-",
+const READS: [&str; 14] = [
+    "(add ",
+    "(sub ",
+    "(cmp ",
+    "(mul ",
+    "(div ",
+    "(let ",
+    "(int-",
+    "(rat-",
+    "(bin-add ",
+    "(bin-sub ",
+    "(bin-cmp ",
+    "(bin-mul ",
+    "(bin-div ",
+    "(bin-let ",
 ];
 
 /// The ways an arithmetic program is dead, by the rule that concludes
 /// `(false)`: the start of its flag's text, and what the flag names. The last
 /// three are a representation's (S1f.6.38): the term at fault, which the core
-/// does not name, naming the fact it was written in instead.
-const FLAGS: [(&str, &str, &[&str]); 6] = [
+/// does not name, naming the fact it was written in instead. Since S1f.6.16 a
+/// rule may conclude `(false)` from one flag of two, decimal's or binary's,
+/// `std.math.positional`'s rules being activated once a base: the one whose
+/// flag root holds is read.
+const FLAGS: [(&str, &str, &[&str]); 9] = [
     ("division-by-zero-is-false", "(division-by-zero ", &DIVIDES),
     ("malformed-is-false", "(malformed ", &READS),
     ("undeclared-is-false", "(undeclared ", &READS),
+    ("malformed-is-false", "(bin-malformed ", &READS),
+    ("undeclared-is-false", "(bin-undeclared ", &READS),
     ("not-decimal-is-false", "(not-decimal ", &[]),
     ("not-integer-is-false", "(not-integer ", &[]),
     ("not-rational-is-false", "(not-rational ", &[]),
+    ("not-binary-is-false", "(not-binary ", &[]),
 ];
 
 /// The rules that derive a malformed program's flag.
@@ -150,15 +216,24 @@ const MALFORMED_BY: [&str; 9] = [
 /// The rules that derive a representation's flag, by the start of their
 /// names (S1f.6.38): `std.math.decimal`'s numeral's, `std.math.int`'s and
 /// `std.math.rat`'s own shapes'.
-const REPRESENTED_BY: [&str; 5] = ["numeral-", "int-p-", "int-n-", "rat-z-", "rat-d-"];
+const REPRESENTED_BY: [&str; 6] = [
+    "numeral-",
+    "int-p-",
+    "int-n-",
+    "rat-z-",
+    "rat-d-",
+    "bin-numeral-",
+];
 
 /// The rules that derive the flag, each with the start of the flag it
 /// derives. Since S1f.6.24 the first is the flag of a call, `std.math.decimal-arith`'s
 /// `(div-call TAG X Y)` with a divisor that is zero, whoever asserted it; a
 /// public `(div X Y)` has that flag beside its own, and the modules' rules
 /// below flag their request before any call is made, so theirs is one flag.
-const FLAGGERS: [(&str, &str); 8] = [
+const FLAGGERS: [(&str, &str); 10] = [
     ("(division-by-zero (div-call ", "div-call-by-zero"),
+    ("(division-by-zero (bin-div-call ", "div-call-by-zero"),
+    ("(division-by-zero (bin-div ", "div-by-zero"),
     ("(division-by-zero (int-div-", "int-div-by-zero"),
     ("(division-by-zero (div ", "div-by-zero"),
     ("(division-by-zero (div9 ", "div9-by-zero"),
@@ -171,8 +246,9 @@ const FLAGGERS: [(&str, &str); 8] = [
 /// The relations a division's answer is a fact of: a dead program stores
 /// none for the request that killed it. A program of rationals is asked one
 /// other request, a sum, so that its state is seen to be computed.
-const QUOTIENTS: [&str; 6] = [
+const QUOTIENTS: [&str; 7] = [
     "(quot-of ",
+    "(bin-quot-of ",
     "(quot9-of ",
     "(rat-quot-of ",
     "(int-quot-euclid-of ",
@@ -287,10 +363,19 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
             _ => None,
         })
         .unwrap_or_else(|| panic!("{file}: refuted by one rule: {}", region["refuted_by"]));
+    let saturate = ein(&["saturate", "--dump", file]);
+    assert_eq!(
+        saturate.code, 0,
+        "{file}: ein saturate\n{}",
+        saturate.stderr
+    );
     let (_, flag, names) = FLAGS
         .iter()
-        .find(|(rule, _, _)| *rule == refuted_by)
-        .unwrap_or_else(|| panic!("{file}: refuted by {refuted_by}, which concludes no flag"));
+        .filter(|(rule, _, _)| *rule == refuted_by)
+        .find(|(_, flag, _)| saturate.stdout.lines().any(|l| l.trim().starts_with(flag)))
+        .unwrap_or_else(|| {
+            panic!("{file}: refuted by {refuted_by}, which concludes no flag root holds")
+        });
     let division = *flag == "(division-by-zero ";
     let representation = names.is_empty();
     // The core is the request, and what its divisor's zero rests on: nothing
@@ -337,12 +422,6 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         "{file}: a dead root has no state file"
     );
 
-    let saturate = ein(&["saturate", "--dump", file]);
-    assert_eq!(
-        saturate.code, 0,
-        "{file}: ein saturate\n{}",
-        saturate.stderr
-    );
     let fact = |start: &str, rule: &str| {
         saturate.stdout.lines().any(|l| {
             let l = l.trim();
@@ -403,25 +482,30 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
         // and no call.
         let calls = flags
             .iter()
-            .filter(|l| l.starts_with("(division-by-zero (div-call "))
+            .filter(|l| {
+                l.starts_with("(division-by-zero (div-call ")
+                    || l.starts_with("(division-by-zero (bin-div-call ")
+            })
             .count();
         let named = core
             .iter()
             .find(|f| DIVIDES.iter().any(|h| f.starts_with(h)))
             .expect("the core names what divided");
-        let (want_calls, want_flags) = if named.starts_with("(div ") {
-            assert!(
-                flags
-                    .iter()
-                    .any(|l| l.starts_with("(division-by-zero (div-call (quotient ")),
-                "{file}: a request's call is under the tag (quotient X Y)"
-            );
-            (1, 2)
-        } else if named.starts_with("(share ") {
-            (1, 1)
-        } else {
-            (0, 1)
-        };
+        let (want_calls, want_flags) =
+            if named.starts_with("(div ") || named.starts_with("(bin-div ") {
+                assert!(
+                    flags.iter().any(|l| {
+                        l.starts_with("(division-by-zero (div-call (quotient ")
+                            || l.starts_with("(division-by-zero (bin-div-call (bin-quotient ")
+                    }),
+                    "{file}: a request's call is under the tag (quotient X Y)"
+                );
+                (1, 2)
+            } else if named.starts_with("(share ") {
+                (1, 1)
+            } else {
+                (0, 1)
+            };
         assert_eq!(
             (calls, flags.len()),
             (want_calls, want_flags),
@@ -465,7 +549,7 @@ fn dead(file: &str, json: &serde_json::Value, dump: &Path) {
                 .strip_suffix(')')
                 .and_then(|r| r.split_once(' '))
                 .map(|(_, o)| o)
-                .filter(|_| !named.starts_with("(let "))
+                .filter(|_| !named.starts_with("(let ") && !named.starts_with("(bin-let "))
             {
                 assert!(
                     !saturate.stdout.lines().map(str::trim).any(|l| RESULTS
@@ -562,9 +646,11 @@ fn search_free(path: &Path, text: &str, scratch: &Scratch, dead: bool) {
         THEORIES.iter().any(|t| text.contains(t)),
         "{file}: imports none"
     );
+    let bases = u64::from(DECIMAL_BASE.iter().any(|t| text.contains(t)))
+        + u64::from(BINARY_BASE.iter().any(|t| text.contains(t)));
     assert_eq!(
-        absents, 1,
-        "{file}: the theory reads one `absent`, the undeclared name's"
+        absents, bases,
+        "{file}: each base the program holds reads one `absent`, the undeclared name's"
     );
     for kind in ["dynamic_monotone", "dynamic_non_monotone"] {
         assert_eq!(

@@ -117,13 +117,15 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// `kb-since` view, which holds what its rules derive) with the programs that
 /// import it, under `tests/stdlib/bool/props/` and `examples/binary_logic/`,
 /// where two more programs pass the bound by `std.bool.gates`' table and its
-/// second layout; and `tests/stdlib/math/decimal/` since M1f S1f.6.38, whose
-/// programs hold the tables. 1 195 views of 208 files on 2026-11-14 (876 of 154
-/// before S1f.6.38's tests; `cargo test -p ein-render --test dot_wellformed --
-/// --nocapture`). A view skipped anywhere else fails the sweep until its
+/// second layout; `tests/stdlib/math/decimal/` since M1f S1f.6.38, whose
+/// programs hold the tables; and since S1f.6.16 `tests/stdlib/math/convert/`
+/// and `tests/stdlib/math/binary-arith/`, whose conversions and program of
+/// both bases hold decimal's. 1 234 views of 217 files on 2026-11-15 (1 195
+/// of 208 on 2026-11-14, before S1f.6.16's tests; `cargo test -p ein-render
+/// --test dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
 /// what it used to check is noticed.
-const SKIPPING: [&str; 14] = [
+const SKIPPING: [&str; 16] = [
     "examples/arith",
     "examples/beyond_arith",
     "examples/binary_arithmetic",
@@ -132,6 +134,8 @@ const SKIPPING: [&str; 14] = [
     "stdlib/bool",
     "stdlib/math",
     "tests/stdlib/bool/props",
+    "tests/stdlib/math/binary-arith",
+    "tests/stdlib/math/convert",
     "tests/stdlib/math/decimal",
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/digits",

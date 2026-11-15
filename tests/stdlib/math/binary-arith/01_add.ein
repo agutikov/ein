@@ -1,0 +1,36 @@
+;;; `std.math.binary-arith` — a sum, bit by bit: 101 + 111 = 1100, and 123078 + 4567 in binary. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(bin-add X Y)` is answered by a result fact `(bin-sum-of X
+;;; Y S)` that repeats the operands. A number is `z` or `(b2 PREFIX BIT)`, in
+;;; reading order: `(b2 (b2 (b2 z 1) 0) 1)` is 5.
+;;;
+;;; The walk is `std.math.positional`'s, activated with binary's relations:
+;;; two columns hold a bit of each number (`add-column`), a carry runs out of
+;;; the top (`add-carry-out`) in 5 + 7, and in 123078 + 4567 four columns have
+;;; the first number's bit alone (`add-column-first`), no carry leaves the top
+;;; (`add-end`), and no high zero is there to drop (`strip-top`). The bits are
+;;; turned round (`turn-step`, `turn-end`) into the answer (`add-answer`).
+;;; Both operands are numbers (`operand-number`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))
+(bin-add (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))
+                      (bin-sum-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 0) 1) 0) 1) 0) 0) 1) 1) 1) 0) 1))))

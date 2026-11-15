@@ -1,0 +1,42 @@
+;;; `std.math.convert` — binary to decimal: 0, 1, 1010, 11111111, 100000000 and 1111101000. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(to-dec B)` is answered by `(dec-of B X)`, X decimal's normal form. B's
+;;; bits from the top (`to-dec-ask`, `to-dec-begin`); the number so far is
+;;; doubled and the bit added by one decimal addition walk, the number plus
+;;; itself with the bit as the carry in (`to-dec-double`, `to-dec-next`), and
+;;; the last is the answer (`to-dec-answer`). A binary number written with a
+;;; high zero is read by value.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.convert :symbols (convert to-dec dec-of))
+(import std.math.decimal :symbols (n))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(to-dec z)
+(to-dec (b2 z 1))
+(to-dec (b2 (b2 (b2 (b2 z 1) 0) 1) 0))
+(to-dec (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 1) 1) 1))
+(to-dec (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 0) 0) 0) 0) 0))
+(to-dec (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 1) 0) 0) 0))
+(to-dec (b2 (b2 (b2 (b2 z 0) 1) 0) 1))
+
+(solve :expect (region (model)))
+
+(query :goal (dec-of ?b ?x)
+       :goal-text "{?b} in binary is {?x}"
+       :expect (model (dec-of z z)
+                      (dec-of (b2 z 1) (n z 1))
+                      (dec-of (b2 (b2 (b2 (b2 z 1) 0) 1) 0) (n (n z 1) 0))
+                      (dec-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 1) 1) 1) (n (n (n z 2) 5) 5))
+                      (dec-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 0) 0) 0) 0) 0) (n (n (n z 2) 5) 6))
+                      (dec-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 1) 0) 1) 0) 0) 0) (n (n (n (n z 1) 0) 0) 0))
+                      (dec-of (b2 (b2 (b2 (b2 z 0) 1) 0) 1) (n z 5))))

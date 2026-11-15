@@ -1,0 +1,34 @@
+;;; `std.math.binary-arith` — a bit where a number goes, as either operand of every request. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A bit is no number: one is `(b2 z 1)`. `operand-digit` reads it through
+;;; `bin-nz` and says `(bin-bad-operand TAG (bin-not-a-number 1))`; the ten
+;;; rules from an operand's tag to its request, `bad-add-first` to
+;;; `bad-div-second`, each turn it into the request as written, here once
+;;; each, and `bad-request-malformed` derives `(bin-malformed REQUEST)`, from
+;;; which `malformed-is-false` derives `(false)`. Every rule of the route is
+;;; `std.math.positional`'s, activated with binary's relations.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The requests beside it are computed in root's state,
+;;; but a dead state is no answer.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sub bin-cmp bin-mul bin-div))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add 1 (b2 (b2 z 1) 0))
+(bin-add (b2 (b2 z 1) 0) 1)
+(bin-sub 1 (b2 (b2 z 1) 0))
+(bin-sub (b2 (b2 z 1) 0) 1)
+(bin-cmp 1 (b2 (b2 z 1) 0))
+(bin-cmp (b2 (b2 z 1) 0) 1)
+(bin-mul 1 (b2 (b2 z 1) 0))
+(bin-mul (b2 (b2 z 1) 0) 1)
+(bin-div 1 (b2 (b2 z 1) 0))
+(bin-div (b2 (b2 z 1) 0) 1)
+
+(solve :expect (false))

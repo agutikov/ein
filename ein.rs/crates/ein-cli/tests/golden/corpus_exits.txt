@@ -1731,10 +1731,22 @@
 0    stdlib/math/arith.ein :: render rules
 0    stdlib/math/arith.ein :: saturate
 0    stdlib/math/arith.ein :: solve
+0    stdlib/math/binary-arith.ein :: render constraints
+0    stdlib/math/binary-arith.ein :: render rules
+0    stdlib/math/binary-arith.ein :: saturate
+0    stdlib/math/binary-arith.ein :: solve
+0    stdlib/math/binary.ein :: render constraints
+0    stdlib/math/binary.ein :: render rules
+0    stdlib/math/binary.ein :: saturate
+0    stdlib/math/binary.ein :: solve
 0    stdlib/math/bits.ein :: render constraints
 1    stdlib/math/bits.ein :: render rules
 0    stdlib/math/bits.ein :: saturate
 0    stdlib/math/bits.ein :: solve
+0    stdlib/math/convert.ein :: render constraints
+0    stdlib/math/convert.ein :: render rules
+0    stdlib/math/convert.ein :: saturate
+0    stdlib/math/convert.ein :: solve
 0    stdlib/math/decimal-arith.ein :: render constraints
 0    stdlib/math/decimal-arith.ein :: render rules
 0    stdlib/math/decimal-arith.ein :: saturate
@@ -2067,11 +2079,166 @@
 0    tests/stdlib/macro/02_unknown.ein :: saturate
 0    tests/stdlib/macro/02_unknown.ein :: solve
 0    tests/stdlib/macro/02_unknown.ein :: test
+0    tests/stdlib/math/binary-arith/01_add.ein :: render constraints
+1    tests/stdlib/math/binary-arith/01_add.ein :: render rules
+0    tests/stdlib/math/binary-arith/01_add.ein :: saturate
+0    tests/stdlib/math/binary-arith/01_add.ein :: solve
+0    tests/stdlib/math/binary-arith/01_add.ein :: test
+0    tests/stdlib/math/binary-arith/02_zero_lengths_and_high_zeros.ein :: render constraints
+1    tests/stdlib/math/binary-arith/02_zero_lengths_and_high_zeros.ein :: render rules
+0    tests/stdlib/math/binary-arith/02_zero_lengths_and_high_zeros.ein :: saturate
+0    tests/stdlib/math/binary-arith/02_zero_lengths_and_high_zeros.ein :: solve
+0    tests/stdlib/math/binary-arith/02_zero_lengths_and_high_zeros.ein :: test
+0    tests/stdlib/math/binary-arith/03_named.ein :: render constraints
+1    tests/stdlib/math/binary-arith/03_named.ein :: render rules
+0    tests/stdlib/math/binary-arith/03_named.ein :: saturate
+0    tests/stdlib/math/binary-arith/03_named.ein :: solve
+0    tests/stdlib/math/binary-arith/03_named.ein :: test
+0    tests/stdlib/math/binary-arith/04_sub.ein :: render constraints
+1    tests/stdlib/math/binary-arith/04_sub.ein :: render rules
+0    tests/stdlib/math/binary-arith/04_sub.ein :: saturate
+0    tests/stdlib/math/binary-arith/04_sub.ein :: solve
+0    tests/stdlib/math/binary-arith/04_sub.ein :: test
+0    tests/stdlib/math/binary-arith/05_cmp.ein :: render constraints
+1    tests/stdlib/math/binary-arith/05_cmp.ein :: render rules
+0    tests/stdlib/math/binary-arith/05_cmp.ein :: saturate
+0    tests/stdlib/math/binary-arith/05_cmp.ein :: solve
+0    tests/stdlib/math/binary-arith/05_cmp.ein :: test
+0    tests/stdlib/math/binary-arith/06_mul.ein :: render constraints
+1    tests/stdlib/math/binary-arith/06_mul.ein :: render rules
+0    tests/stdlib/math/binary-arith/06_mul.ein :: saturate
+0    tests/stdlib/math/binary-arith/06_mul.ein :: solve
+0    tests/stdlib/math/binary-arith/06_mul.ein :: test
+0    tests/stdlib/math/binary-arith/07_div.ein :: render constraints
+1    tests/stdlib/math/binary-arith/07_div.ein :: render rules
+0    tests/stdlib/math/binary-arith/07_div.ein :: saturate
+0    tests/stdlib/math/binary-arith/07_div.ein :: solve
+0    tests/stdlib/math/binary-arith/07_div.ein :: test
+0    tests/stdlib/math/binary-arith/08_div_by_zero.ein :: render constraints
+1    tests/stdlib/math/binary-arith/08_div_by_zero.ein :: render rules
+0    tests/stdlib/math/binary-arith/08_div_by_zero.ein :: saturate
+0    tests/stdlib/math/binary-arith/08_div_by_zero.ein :: solve
+0    tests/stdlib/math/binary-arith/08_div_by_zero.ein :: test
+0    tests/stdlib/math/binary-arith/09_div_call_by_zero.ein :: render constraints
+0    tests/stdlib/math/binary-arith/09_div_call_by_zero.ein :: render rules
+0    tests/stdlib/math/binary-arith/09_div_call_by_zero.ein :: saturate
+0    tests/stdlib/math/binary-arith/09_div_call_by_zero.ein :: solve
+0    tests/stdlib/math/binary-arith/09_div_call_by_zero.ein :: test
+0    tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein :: render constraints
+1    tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein :: render rules
+0    tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein :: saturate
+0    tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein :: solve
+0    tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein :: test
+0    tests/stdlib/math/binary-arith/11_the_bit_zero_as_an_operand.ein :: render constraints
+1    tests/stdlib/math/binary-arith/11_the_bit_zero_as_an_operand.ein :: render rules
+0    tests/stdlib/math/binary-arith/11_the_bit_zero_as_an_operand.ein :: saturate
+0    tests/stdlib/math/binary-arith/11_the_bit_zero_as_an_operand.ein :: solve
+0    tests/stdlib/math/binary-arith/11_the_bit_zero_as_an_operand.ein :: test
+0    tests/stdlib/math/binary-arith/12_undeclared_name.ein :: render constraints
+1    tests/stdlib/math/binary-arith/12_undeclared_name.ein :: render rules
+0    tests/stdlib/math/binary-arith/12_undeclared_name.ein :: saturate
+0    tests/stdlib/math/binary-arith/12_undeclared_name.ein :: solve
+0    tests/stdlib/math/binary-arith/12_undeclared_name.ein :: test
+0    tests/stdlib/math/binary-arith/13_declared_name.ein :: render constraints
+1    tests/stdlib/math/binary-arith/13_declared_name.ein :: render rules
+0    tests/stdlib/math/binary-arith/13_declared_name.ein :: saturate
+0    tests/stdlib/math/binary-arith/13_declared_name.ein :: solve
+0    tests/stdlib/math/binary-arith/13_declared_name.ein :: test
+0    tests/stdlib/math/binary-arith/14_let_twice.ein :: render constraints
+1    tests/stdlib/math/binary-arith/14_let_twice.ein :: render rules
+0    tests/stdlib/math/binary-arith/14_let_twice.ein :: saturate
+0    tests/stdlib/math/binary-arith/14_let_twice.ein :: solve
+0    tests/stdlib/math/binary-arith/14_let_twice.ein :: test
+0    tests/stdlib/math/binary-arith/15_let_zero.ein :: render constraints
+1    tests/stdlib/math/binary-arith/15_let_zero.ein :: render rules
+0    tests/stdlib/math/binary-arith/15_let_zero.ein :: saturate
+0    tests/stdlib/math/binary-arith/15_let_zero.ein :: solve
+0    tests/stdlib/math/binary-arith/15_let_zero.ein :: test
+0    tests/stdlib/math/binary-arith/16_let_bit.ein :: render constraints
+1    tests/stdlib/math/binary-arith/16_let_bit.ein :: render rules
+0    tests/stdlib/math/binary-arith/16_let_bit.ein :: saturate
+0    tests/stdlib/math/binary-arith/16_let_bit.ein :: solve
+0    tests/stdlib/math/binary-arith/16_let_bit.ein :: test
+0    tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein :: render constraints
+1    tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein :: render rules
+0    tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein :: saturate
+0    tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein :: solve
+0    tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein :: test
+0    tests/stdlib/math/binary-arith/18_let_to_a_name.ein :: render constraints
+1    tests/stdlib/math/binary-arith/18_let_to_a_name.ein :: render rules
+0    tests/stdlib/math/binary-arith/18_let_to_a_name.ein :: saturate
+0    tests/stdlib/math/binary-arith/18_let_to_a_name.ein :: solve
+0    tests/stdlib/math/binary-arith/18_let_to_a_name.ein :: test
+0    tests/stdlib/math/binary-arith/19_let_to_a_bit.ein :: render constraints
+1    tests/stdlib/math/binary-arith/19_let_to_a_bit.ein :: render rules
+0    tests/stdlib/math/binary-arith/19_let_to_a_bit.ein :: saturate
+0    tests/stdlib/math/binary-arith/19_let_to_a_bit.ein :: solve
+0    tests/stdlib/math/binary-arith/19_let_to_a_bit.ein :: test
+0    tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein :: render constraints
+1    tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein :: render rules
+0    tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein :: saturate
+0    tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein :: solve
+0    tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein :: test
+0    tests/stdlib/math/binary-arith/21_both_bases.ein :: render constraints
+1    tests/stdlib/math/binary-arith/21_both_bases.ein :: render rules
+0    tests/stdlib/math/binary-arith/21_both_bases.ein :: saturate
+0    tests/stdlib/math/binary-arith/21_both_bases.ein :: solve
+0    tests/stdlib/math/binary-arith/21_both_bases.ein :: test
+0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: render constraints
+0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: render rules
+0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: saturate
+0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: solve
+0    tests/stdlib/math/binary-arith/22_what_stays_silent.ein :: test
+0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: render constraints
+0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: render rules
+0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: saturate
+0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: solve
+0    tests/stdlib/math/binary/01_well_formed_everywhere.ein :: test
+0    tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein :: render constraints
+1    tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein :: render rules
+0    tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein :: saturate
+0    tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein :: solve
+0    tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein :: test
+0    tests/stdlib/math/binary/03_ends_in_a_bit.ein :: render constraints
+1    tests/stdlib/math/binary/03_ends_in_a_bit.ein :: render rules
+0    tests/stdlib/math/binary/03_ends_in_a_bit.ein :: saturate
+0    tests/stdlib/math/binary/03_ends_in_a_bit.ein :: solve
+0    tests/stdlib/math/binary/03_ends_in_a_bit.ein :: test
+0    tests/stdlib/math/binary/04_ends_in_zero.ein :: render constraints
+1    tests/stdlib/math/binary/04_ends_in_zero.ein :: render rules
+0    tests/stdlib/math/binary/04_ends_in_zero.ein :: saturate
+0    tests/stdlib/math/binary/04_ends_in_zero.ein :: solve
+0    tests/stdlib/math/binary/04_ends_in_zero.ein :: test
+0    tests/stdlib/math/binary/05_ends_in_a_name.ein :: render constraints
+1    tests/stdlib/math/binary/05_ends_in_a_name.ein :: render rules
+0    tests/stdlib/math/binary/05_ends_in_a_name.ein :: saturate
+0    tests/stdlib/math/binary/05_ends_in_a_name.ein :: solve
+0    tests/stdlib/math/binary/05_ends_in_a_name.ein :: test
+0    tests/stdlib/math/binary/06_what_stays_silent.ein :: render constraints
+0    tests/stdlib/math/binary/06_what_stays_silent.ein :: render rules
+0    tests/stdlib/math/binary/06_what_stays_silent.ein :: saturate
+0    tests/stdlib/math/binary/06_what_stays_silent.ein :: solve
+0    tests/stdlib/math/binary/06_what_stays_silent.ein :: test
 0    tests/stdlib/math/bits/01_tables.ein :: render constraints
 1    tests/stdlib/math/bits/01_tables.ein :: render rules
 0    tests/stdlib/math/bits/01_tables.ein :: saturate
 0    tests/stdlib/math/bits/01_tables.ein :: solve
 0    tests/stdlib/math/bits/01_tables.ein :: test
+0    tests/stdlib/math/convert/01_to_binary.ein :: render constraints
+1    tests/stdlib/math/convert/01_to_binary.ein :: render rules
+0    tests/stdlib/math/convert/01_to_binary.ein :: saturate
+0    tests/stdlib/math/convert/01_to_binary.ein :: solve
+0    tests/stdlib/math/convert/01_to_binary.ein :: test
+0    tests/stdlib/math/convert/02_to_decimal.ein :: render constraints
+1    tests/stdlib/math/convert/02_to_decimal.ein :: render rules
+0    tests/stdlib/math/convert/02_to_decimal.ein :: saturate
+0    tests/stdlib/math/convert/02_to_decimal.ein :: solve
+0    tests/stdlib/math/convert/02_to_decimal.ein :: test
+0    tests/stdlib/math/convert/03_round_trip.ein :: render constraints
+0    tests/stdlib/math/convert/03_round_trip.ein :: render rules
+0    tests/stdlib/math/convert/03_round_trip.ein :: saturate
+0    tests/stdlib/math/convert/03_round_trip.ein :: solve
+0    tests/stdlib/math/convert/03_round_trip.ein :: test
 0    tests/stdlib/math/decimal-arith/01_add.ein :: render constraints
 1    tests/stdlib/math/decimal-arith/01_add.ein :: render rules
 0    tests/stdlib/math/decimal-arith/01_add.ein :: saturate

@@ -1,0 +1,30 @@
+;;; `std.math.binary` — a malformed numeral: ends in a name. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A malformed numeral is `std.math.binary`'s, flagged as it is written,
+;;; wherever it sits, with no request reading it, on `std.math.decimal`'s
+;;; pattern (S1f.6.38). The flag is `(not-binary NUMERAL THING)`, on the
+;;; smallest numeral at fault, and `not-binary-is-false` derives `(false)`.
+;;;
+;;; `bin-numeral-prefix-named`: the prefix of `(b2 mask 1)` is `mask`, a named
+;;; constant: a name stands for a number as an operand, and not inside one.
+;;; `std.math.binary-arith`'s `let-named` writes `(bin-named mask)`, and the
+;;; probe reads it. The flag is `(not-binary (b2 mask 1) mask)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The request beside it is computed in root's state, but
+;;; a dead state is no answer; `ein solve` names the fact the numeral was
+;;; written in in the unsat core.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-let))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add (b2 z 1) (b2 z 1))
+(bin-let mask (b2 z 1))
+(bin-add (b2 mask 1) (b2 z 1))
+
+(solve :expect (false))

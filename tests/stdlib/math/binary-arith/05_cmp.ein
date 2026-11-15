@@ -1,0 +1,38 @@
+;;; `std.math.binary-arith` — comparisons, every order. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(bin-cmp X Y)` is answered by `(bin-cmp-of X Y O)`, O one of `lt`, `eq`,
+;;; `gt`, by value. One walk from the units over the comparator's table
+;;; `bin-cl` (`cmp-column`, `cmp-column-first`, `cmp-column-second`), a higher
+;;; bit overruling the order below; no number is built (`cmp-end`,
+;;; `cmp-answer`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-cmp bin-cmp-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-cmp (b2 (b2 (b2 z 1) 1) 0) (b2 (b2 z 1) 1))
+(bin-cmp (b2 (b2 z 1) 1) (b2 (b2 (b2 z 1) 1) 0))
+(bin-cmp (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 0) 1))
+(bin-cmp (b2 (b2 (b2 (b2 z 1) 0) 0) 0) (b2 (b2 (b2 z 1) 1) 1))
+(bin-cmp z (b2 z 1))
+(bin-cmp (b2 (b2 z 1) 0) z)
+
+(solve :expect (region (model)))
+
+(query :goal (bin-cmp-of ?x ?y ?o)
+       :goal-text "{?x} against {?y}: {?o}"
+       :expect (model (bin-cmp-of (b2 (b2 (b2 z 1) 1) 0) (b2 (b2 z 1) 1) gt)
+                      (bin-cmp-of (b2 (b2 z 1) 1) (b2 (b2 (b2 z 1) 1) 0) lt)
+                      (bin-cmp-of (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 0) 1) eq)
+                      (bin-cmp-of (b2 (b2 (b2 (b2 z 1) 0) 0) 0) (b2 (b2 (b2 z 1) 1) 1) gt)
+                      (bin-cmp-of z (b2 z 1) lt)
+                      (bin-cmp-of (b2 (b2 z 1) 0) z gt)))

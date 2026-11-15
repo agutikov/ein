@@ -1,0 +1,21 @@
+;;; `std.math.binary-arith` — the bit 0 where a number goes. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The bit `0` is no number either: zero is `z`. `operand-digit-zero` says
+;;; `(bin-bad-operand TAG (bin-not-a-number 0))`, and the request is flagged
+;;; `(bin-malformed (bin-add 0 (b2 z 1)))`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root is dead and R is empty, the one claim such
+;;; a program can make. The requests beside it are computed in root's state,
+;;; but a dead state is no answer.
+
+(import std.math.binary-arith :symbols (binary-arith bin-add))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-add 0 (b2 z 1))
+
+(solve :expect (false))

@@ -1,0 +1,38 @@
+;;; `std.math.binary-arith` — differences, both ways, and equal numbers. M1f S1f.6.16.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(bin-sub X Y)` is answered by `(bin-diff-of X Y D R)`: D is X - Y where X
+;;; is not the smaller and `z` otherwise, R what X is short by and `z`
+;;; otherwise. Both walks are taken (`sub-start`), X - Y and Y - X; the one
+;;; that ends with a borrow says so (`sub-borrow-out`) and the other answers
+;;; (`sub-answer`, `sub-answer-short`). 8 - 1 borrows through every zero
+;;; (`sub-column`, `sub-column-first`, `sub-column-second`), and 12 - 12 drops
+;;; every bit (`strip-zero`, `strip-none`).
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: the theory closes its own relations, so nothing is guessed and
+;;; the answer is root's fixpoint. Each claim names its result relation, so it
+;;; is the relation's whole extent: one answer a request, and a second answer,
+;;; a wrong bit or a high zero, fails the file.
+
+(import std.math.binary-arith :symbols (binary-arith bin-sub bin-diff-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+
+(bin-sub (b2 (b2 (b2 z 1) 1) 0) (b2 (b2 z 1) 1))
+(bin-sub (b2 (b2 z 1) 1) (b2 (b2 (b2 z 1) 1) 0))
+(bin-sub (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1))
+(bin-sub (b2 (b2 (b2 (b2 z 1) 1) 0) 0) (b2 (b2 (b2 (b2 z 1) 1) 0) 0))
+(bin-sub (b2 (b2 (b2 (b2 z 1) 0) 0) 0) (b2 z 1))
+
+(solve :expect (region (model)))
+
+(query :goal (bin-diff-of ?x ?y ?d ?r)
+       :goal-text "{?x} - {?y} = {?d}, short by {?r}"
+       :expect (model (bin-diff-of (b2 (b2 (b2 z 1) 1) 0) (b2 (b2 z 1) 1) (b2 (b2 z 1) 1) z)
+                      (bin-diff-of (b2 (b2 z 1) 1) (b2 (b2 (b2 z 1) 1) 0) z (b2 (b2 z 1) 1))
+                      (bin-diff-of (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 1) 0) 0) 0) 0) 0) 1) 1) 0) 0) 0) 1) 1) 0) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 0) 0) 0) 1) 1) 1) 0) 1) 0) 1) 1) 1) (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 (b2 z 1) 1) 1) 0) 0) 1) 1) 1) 0) 1) 1) 1) 0) 1) 1) 1) 1) z)
+                      (bin-diff-of (b2 (b2 (b2 (b2 z 1) 1) 0) 0) (b2 (b2 (b2 (b2 z 1) 1) 0) 0) z z)
+                      (bin-diff-of (b2 (b2 (b2 (b2 z 1) 0) 0) 0) (b2 z 1) (b2 (b2 (b2 z 1) 1) 1) z)))
