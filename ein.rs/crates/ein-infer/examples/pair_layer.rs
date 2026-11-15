@@ -41,8 +41,8 @@
 //! budget, a describe, a `--single` and a `--maximal`, and adds each one's
 //! `saturations`, `facts`, `wall` and whether it finished under `routes`;
 //! and `searches`, whether the program's describe saturates more than root at
-//! the determinism sweeps' budget and cube limit, as
-//! `ein-render/tests/corpus_ops`' `searches` reads it.
+//! the determinism sweeps' budget and cube limit: the sweeps' own function,
+//! `ein-render/tests/corpus_ops/searches.rs`, included here.
 //!
 //! ### The theory's share
 //!
@@ -86,6 +86,46 @@
 //! (`theory_both`, `theory_by_another_way`, `puzzle_both`, `disagree`), the
 //! `check`'s outcomes and its `work`; `theory_ein`.
 //!
+//! ### The cover
+//!
+//! With the theory's share each program also gets its **cover**
+//! ([`ein_infer::structure::Cover`]): the groups, the maximal sets of two or
+//! more candidates that pairwise exclude by the theory alone. Two files
+//! more, `cover.json`, raw, and `cover.md`, the same as tables, and a
+//! `cover` object on the line:
+//!
+//! - `groups`, their `sizes` and their `open` sizes (the members alive alone
+//!   at root), each a list of `[size, groups]`; `one_relation`, the groups
+//!   whose members are all of one relation;
+//! - `membership`, a list of `[k, candidates in exactly k groups]`, with
+//!   `most` and `mean` (over all of `H`);
+//! - `in_no_group`, by what root says of each candidate alone
+//!   (`alive_alone`, `dead_alone`, `at_root`, `unread`), and
+//!   `killed_by_the_theory_alone` among them;
+//! - `components` of the theory's exclusion graph, and
+//!   `components_are_groups`, whether every one is a clique;
+//! - `steps`, the calls the enumeration made, against `bound`, and `cut`,
+//!   what the bound cut, `null` where it cut nothing;
+//! - `pairs_alive_at_root`, the theory's pairs whose node is alive at root;
+//! - `root_cliques`, the maximal cliques of **root's** exclusion graph,
+//!   counted beside and not groups: `cliques`, `sizes`, `most`, `mean`,
+//!   `steps`, `cut`;
+//! - `declared`, what the program declares, beside: the relations its active
+//!   hrules propose (`proposed`), its obligations owe (`owable`) and its
+//!   closures take out (`closed`), by [`ein_infer::mechanisms::read`] at
+//!   root's fixpoint, and the groups `of_a_proposed_relation`,
+//!   `of_an_owable_relation`, `of_a_closed_relation`, `of_none_of_them`;
+//! - `owed`, the instances root owes with their alternatives
+//!   ([`ein_infer::oblgen::alternatives_of`]), each read against the cover
+//!   ([`ein_infer::structure::Cover::standing`]): `a_group`,
+//!   `inside_a_group`, `not_excluding` (and `holding_a_group` among them),
+//!   `one_alternative`, `no_alternative`, and `unlicensed` by `why`, an
+//!   instance whose alternatives the engine does not know: a fact can
+//!   witness it that is no candidate of `H`. `groups_owed` are the groups
+//!   that are some instance's alternatives and `groups_nothing_owes` the
+//!   rest. `table` is `null` on a program the static check flags and on one
+//!   that states no obligation, where no table is read.
+//!
 //! `--rule NAME` reads the small KB by another rule than the owner's,
 //! `small-kb`: `proposed`, `objects`, `relates`, `layout` or `h-alone`, the
 //! alternatives the corpus falsified, kept here so that each falsification
@@ -100,15 +140,18 @@ use ein_core::{FactId, Symbol, Terms};
 use ein_corpus::repo_root;
 use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::region::Cores;
-use ein_infer::structure::{self, Deaths, Origin, PairLayer, Stated, Theory, Verdict};
+use ein_infer::structure::{
+    self, Cliques, Cover, Deaths, Mark, Origin, PairLayer, Standing, Stated, Theory, Verdict,
+};
 use ein_ir::{Ast, load, parse};
 use rustc_hash::FxHashSet;
 use serde_json::{Value, json};
 
-/// The determinism sweeps' budget and cube limit, `corpus_ops`' `SWEEP_BUDGET`
-/// and `SWEEP_LIMIT`: what *searches* is read at.
-const SWEEP_BUDGET: u64 = 1 << 14;
-const SWEEP_LIMIT: u32 = 10;
+// What *a program searches* means, by the determinism sweeps' one
+// definition.
+#[allow(dead_code)]
+#[path = "../../ein-render/tests/corpus_ops/searches.rs"]
+mod searching;
 
 fn loaded(path: &Path) -> Option<(ein_core::Kb, Terms, Ast)> {
     let text = std::fs::read_to_string(path).ok()?;
@@ -159,20 +202,12 @@ fn route(path: &Path, mode: Mode, facts: u64, jobs: usize) -> Value {
     }
 }
 
-/// `corpus_ops`' `searches`, by the same call.
+/// Whether the program at `path` searches, loaded again.
 fn searches(path: &Path) -> bool {
     let Some((mut kb, mut terms, ast)) = loaded(path) else {
         return false;
     };
-    let mut opts = explore::Options::new(Mode {
-        which: Which::All,
-        ask: Ask::Describe,
-    });
-    opts.budget = SWEEP_BUDGET;
-    opts.limit = SWEEP_LIMIT;
-    opts.jobs = 1;
-    ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
-        .is_ok_and(|r| r.answer.saturations > 1)
+    searching::searches(&ast, &mut terms, &mut kb)
 }
 
 /// The lists, as rendered text.
@@ -278,7 +313,8 @@ fn main() {
             match structure::theory_by(&mut kb, &mut terms, &ast, &asked, &rule) {
                 Ok(t) => {
                     std::fs::create_dir_all(&dir).expect("the program's directory");
-                    let share = theory_row(&path, &rel, &dir, &t, &terms, (rule, &opts));
+                    let mut share = theory_row(&path, &rel, &dir, &t, &terms, (rule, &opts));
+                    share["cover"] = cover_row(&path, &rel, &dir, &t, &terms);
                     (t.root, Some(share))
                 }
                 Err(e) => {
@@ -1144,6 +1180,474 @@ fn theory_row(
             },
         },
         "theory_ein": written,
+        "lists": file.strip_prefix(repo_root()).unwrap_or(&file).to_string_lossy(),
+    })
+}
+
+// ── The cover ─────────────────────────────────────────────────────────
+
+/// `[size, how many]`, ascending.
+fn histogram(sizes: impl Iterator<Item = usize>) -> Vec<[usize; 2]> {
+    let mut by: BTreeMap<usize, usize> = BTreeMap::new();
+    for k in sizes {
+        *by.entry(k).or_default() += 1;
+    }
+    by.into_iter().map(|(k, n)| [k, n]).collect()
+}
+
+fn cut_of(c: &Option<structure::Cut>) -> Value {
+    match c {
+        None => Value::Null,
+        Some(c) => json!({"pairs": c.pairs, "candidates": c.candidates}),
+    }
+}
+
+/// The counts of one list of cliques over `n` candidates.
+fn clique_counts(c: &Cliques, n: usize) -> Value {
+    let per = c.memberships(n);
+    json!({
+        "cliques": c.cliques.len(),
+        "sizes": histogram(c.cliques.iter().map(Vec::len)),
+        "most": per.iter().max().copied().unwrap_or(0),
+        "mean": if n > 0 { json!(per.iter().sum::<u32>() as f64 / n as f64) } else { Value::Null },
+        "in_none": per.iter().filter(|&&k| k == 0).count(),
+        "steps": c.steps,
+        "cut": cut_of(&c.cut),
+    })
+}
+
+/// Why the engine does not know an instance's alternatives, with the fact
+/// or the relation it names left out: the kind of reason.
+fn kind_of(why: &str) -> String {
+    let mut out = String::new();
+    let mut quoted = false;
+    for c in why.chars() {
+        if c == '`' {
+            quoted = !quoted;
+            if quoted {
+                out.push('…');
+            }
+        } else if !quoted {
+            out.push(c);
+        }
+    }
+    out
+}
+
+/// What the program declares, read beside the cover: the mechanisms at
+/// root's fixpoint and the instances root owes with their alternatives, of
+/// the program loaded again.
+fn declared_beside(path: &Path, cover: &Cover, terms: &Terms) -> (Value, Value, Vec<Value>) {
+    use ein_infer::events::{Events, sexpr_value};
+    let Some((mut kb, mut again, ast)) = loaded(path) else {
+        return (Value::Null, Value::Null, Vec::new());
+    };
+    // L5's table prepares root as every route does; `None` on a flagged
+    // program and on one that states no obligation.
+    let table = match ein_infer::oblgen::alternatives_of(&mut kb, &mut again, &ast) {
+        Ok(t) => t,
+        Err(e) => return (Value::Null, json!({"error": e.to_string()}), Vec::new()),
+    };
+    let mut off = Events::off();
+    let memo = ein_infer::compile::SharedMemo::default();
+    let root_owes = ein_infer::obligations::tally(&kb, &mut again, &ast, &memo, &mut off)
+        .map(|o| o.total())
+        .ok();
+    let mechanisms = {
+        let mut s = ein_infer::saturator::Session {
+            kb: &mut kb,
+            terms: &mut again,
+            ast: &ast,
+            events: &mut off,
+            memo: memo.clone(),
+        };
+        ein_infer::mechanisms::read(&mut s).ok()
+    };
+
+    // The relations, as text: the two loads intern alike and are not
+    // assumed to.
+    let names = |set: &FxHashSet<Symbol>| -> BTreeSet<String> {
+        // determinism-ok: collected into a sorted set of texts.
+        set.iter().map(|&r| again.sym(r).to_string()).collect()
+    };
+    let (proposed, owable, closed) = match &mechanisms {
+        Some(m) => (names(&m.proposed()), names(&m.owable()), names(&m.closed)),
+        None => Default::default(),
+    };
+    let relation_of = |b: u32| -> String {
+        let fact = cover.candidates[b as usize].fact;
+        let (rel, args) = terms.fact(fact);
+        let rel = match args.first().and_then(|a| a.as_fact()) {
+            Some(inner) if rel == terms.kernel.not => terms.fact(inner).0,
+            _ => rel,
+        };
+        terms.sym(rel).to_string()
+    };
+    let group_relations: Vec<BTreeSet<String>> = cover
+        .groups
+        .iter()
+        .map(|g| g.iter().map(|&b| relation_of(b)).collect())
+        .collect();
+    let all_in = |set: &BTreeSet<String>| {
+        group_relations
+            .iter()
+            .filter(|r| r.iter().all(|x| set.contains(x)))
+            .count()
+    };
+    let declared = json!({
+        "hrules": mechanisms.as_ref().map(|m| m.hrules.len()),
+        "active_hrule_plans": mechanisms.as_ref().map(|m| m.proposals.len()),
+        "obligation_rules": mechanisms.as_ref().map(|m| m.obligation_rules.len()),
+        "obligation_plans": mechanisms.as_ref().map(|m| m.obligations.len()),
+        "proposed": proposed,
+        "owable": owable,
+        "closed": closed,
+        "listed": mechanisms.as_ref().and_then(|m| m.listed.as_ref().map(&names)),
+        "excluded": mechanisms.as_ref().map(|m| names(&m.excluded)),
+        "groups": {
+            "one_relation": group_relations.iter().filter(|r| r.len() == 1).count(),
+            "of_a_proposed_relation": all_in(&proposed),
+            "of_an_owable_relation": all_in(&owable),
+            "of_a_closed_relation": all_in(&closed),
+            "of_none_of_them": group_relations
+                .iter()
+                .filter(|r| !r.iter().all(|x| proposed.contains(x)) && !r.iter().all(|x| owable.contains(x)))
+                .count(),
+        },
+    });
+
+    // The owed instances, each against the cover.
+    let mut rows: Vec<Value> = Vec::new();
+    let mut owed_groups: BTreeSet<u32> = BTreeSet::new();
+    let (mut a_group, mut inside, mut not_excluding, mut holding) = (0usize, 0usize, 0usize, 0);
+    let (mut one, mut none, mut licensed) = (0usize, 0usize, 0usize);
+    let mut unlicensed: BTreeMap<String, usize> = BTreeMap::new();
+    let mut by_rule: BTreeMap<String, BTreeMap<&'static str, usize>> = BTreeMap::new();
+    let instances = table.as_ref().map_or(&[][..], |t| &t.instances[..]);
+    for i in instances {
+        let (rule, activator, bindings) = &i.key;
+        let rule = again.sym(*rule).to_string();
+        let text = format!(
+            "({rule}{}){}",
+            activator
+                .iter()
+                .map(|&v| format!(" {}", sexpr_value(&again, v)))
+                .collect::<String>(),
+            bindings
+                .iter()
+                .map(|&(x, v)| format!(" {}={}", again.sym(x), sexpr_value(&again, v)))
+                .collect::<String>(),
+        );
+        let (standing, detail): (&'static str, Value) = match &i.alternatives {
+            Err(why) => {
+                *unlicensed.entry(kind_of(why)).or_default() += 1;
+                ("unlicensed", json!({"why": why}))
+            }
+            Ok(alts) => {
+                licensed += 1;
+                let texts: Vec<&str> = alts.iter().map(|&b| cover.text(b)).collect();
+                let marks: Vec<&str> = alts
+                    .iter()
+                    .map(|&b| cover.marks[b as usize].as_str())
+                    .collect();
+                let (word, more) = match cover.standing(alts) {
+                    Standing::Fewer if alts.is_empty() => {
+                        none += 1;
+                        ("no alternative", json!({}))
+                    }
+                    Standing::Fewer => {
+                        one += 1;
+                        ("one alternative", json!({}))
+                    }
+                    Standing::Group(g) => {
+                        a_group += 1;
+                        owed_groups.insert(g);
+                        ("a group", json!({"group": g}))
+                    }
+                    Standing::Inside(groups) => {
+                        inside += 1;
+                        let beyond: Vec<Vec<&str>> = groups
+                            .iter()
+                            .map(|&g| {
+                                cover
+                                    .members(g)
+                                    .iter()
+                                    .filter(|b| !alts.contains(b))
+                                    .map(|&b| cover.text(b))
+                                    .collect()
+                            })
+                            .collect();
+                        (
+                            "inside a group",
+                            json!({"groups": groups, "the_groups_other_members": beyond}),
+                        )
+                    }
+                    Standing::NotExcluding { alive, holds } => {
+                        not_excluding += 1;
+                        holding += usize::from(!holds.is_empty());
+                        (
+                            "not pairwise excluding",
+                            json!({"pairs_the_theory_does_not_exclude": alive, "holds_groups": holds}),
+                        )
+                    }
+                };
+                (
+                    word,
+                    json!({
+                        "alternatives": texts,
+                        "marks": marks,
+                        "witnesses_denied_at_root": i.excluded,
+                        "detail": more,
+                    }),
+                )
+            }
+        };
+        *by_rule
+            .entry(rule.clone())
+            .or_default()
+            .entry(standing)
+            .or_default() += 1;
+        rows.push(json!({"instance": text, "rule": rule, "standing": standing, "read": detail}));
+    }
+    let owed = json!({
+        "root_owes": root_owes,
+        "table": table.as_ref().map(|t| t.instances.len()),
+        "licensed": licensed,
+        "unlicensed": unlicensed.values().sum::<usize>(),
+        "unlicensed_why": unlicensed,
+        "a_group": a_group,
+        "inside_a_group": inside,
+        "not_excluding": not_excluding,
+        "holding_a_group": holding,
+        "one_alternative": one,
+        "no_alternative": none,
+        "groups_owed": owed_groups.len(),
+        "groups_nothing_owes": cover.groups.len() - owed_groups.len(),
+        "by_rule": by_rule,
+    });
+    (declared, owed, rows)
+}
+
+/// The cover of one program: its files written under `dir`, and the census
+/// line's `cover` object.
+fn cover_row(path: &Path, rel: &str, dir: &Path, t: &Theory, terms: &Terms) -> Value {
+    let Some(c) = t.cover() else {
+        return json!({"error": t.small.as_ref().err()});
+    };
+    let n = c.n();
+    let one = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| c.text(b)).collect() };
+    let none = c.in_no_group();
+    let marked = |m: Mark| none.iter().filter(|&&b| c.marks[b as usize] == m).count();
+    let killed = |b: &u32| c.killed_alone.binary_search(b).is_ok();
+    let per: Vec<usize> = c.member_of.iter().map(Vec::len).collect();
+    let open: Vec<Vec<u32>> = (0..c.groups.len() as u32)
+        .map(|g| c.open(g).collect())
+        .collect();
+    let components_are_groups = c.components == c.groups;
+    let (declared, owed, instances) = declared_beside(path, &c, terms);
+
+    let raw = json!({
+        "program": rel,
+        "n": n,
+        "complete": c.complete(),
+        "monotone": c.monotone,
+        "small_monotone": c.small_monotone,
+        "domain": c.domain(),
+        "stopped": stopped(&c.stopped),
+        "bound": structure::CLIQUE_STEPS,
+        "steps": c.steps,
+        "cut": cut_of(&c.cut),
+        "candidates": (0..n as u32).map(|b| json!({
+            "candidate": c.text(b),
+            "at_root": c.marks[b as usize].as_str(),
+            "killed_by_the_theory_alone": killed(&b),
+            "groups": c.groups_of(b),
+        })).collect::<Vec<_>>(),
+        "groups": c.groups.iter().zip(&open).map(|(g, o)| json!({
+            "members": one(g),
+            "open": one(o),
+        })).collect::<Vec<_>>(),
+        "in_no_group": one(&none),
+        "components": c.components.iter().map(|x| one(x)).collect::<Vec<_>>(),
+        "pairs_alive_at_root": c.alive_at_root.as_ref().map(|v| {
+            v.iter().map(|&(a, b)| [c.text(a), c.text(b)]).collect::<Vec<_>>()
+        }),
+        "root_cliques": c.root_cliques.as_ref().map(|r| json!({
+            "steps": r.steps,
+            "cut": cut_of(&r.cut),
+            "cliques": r.cliques.iter().map(|x| one(x)).collect::<Vec<_>>(),
+        })),
+        "declared": declared,
+        "owed": owed,
+        "owed_instances": instances,
+    });
+    let file = dir.join("cover.json");
+    let text = serde_json::to_string_pretty(&raw).expect("JSON");
+    std::fs::write(&file, text + "\n").expect("cover.json");
+
+    // The same as tables.
+    let mut md = format!("# The cover of `{rel}`\n\n");
+    if let Some(d) = c.domain() {
+        md.push_str(&format!("**{d}.**\n\n"));
+    }
+    md.push_str("| | |\n|---|---:|\n");
+    let mut line = |what: &str, n: String| md.push_str(&format!("| {what} | {n} |\n"));
+    line("candidates, H", n.to_string());
+    line("pairs the theory excludes", c.excluded.len().to_string());
+    line("groups", c.groups.len().to_string());
+    line(
+        "their sizes (size × groups)",
+        histogram(c.groups.iter().map(Vec::len))
+            .iter()
+            .map(|[k, g]| format!("{k} × {g}"))
+            .collect::<Vec<_>>()
+            .join(", "),
+    );
+    line(
+        "candidates by the number of groups they are in (groups × candidates)",
+        histogram(per.iter().copied())
+            .iter()
+            .map(|[k, g]| format!("{k} × {g}"))
+            .collect::<Vec<_>>()
+            .join(", "),
+    );
+    line("candidates in no group", none.len().to_string());
+    line(
+        "… alive alone at root",
+        marked(Mark::AliveAlone).to_string(),
+    );
+    line("… dead alone at root", marked(Mark::DeadAlone).to_string());
+    line(
+        "… the theory kills alone",
+        none.iter().filter(|b| killed(b)).count().to_string(),
+    );
+    line(
+        "components of the theory's exclusion graph",
+        c.components.len().to_string(),
+    );
+    line(
+        "calls of the enumeration, of the bound",
+        format!("{} of {}", c.steps, structure::CLIQUE_STEPS),
+    );
+    line(
+        "what the bound cut",
+        match &c.cut {
+            None => "nothing".to_string(),
+            Some(x) => format!("{} pairs, {} candidates", x.pairs, x.candidates),
+        },
+    );
+    line(
+        "the theory's pairs alive at root",
+        c.alive_at_root
+            .as_ref()
+            .map_or("root's pairs not read".to_string(), |v| v.len().to_string()),
+    );
+    line(
+        "maximal cliques of root's exclusion graph, beside",
+        c.root_cliques
+            .as_ref()
+            .map_or("root's pairs not read".to_string(), |r| {
+                r.cliques.len().to_string()
+            }),
+    );
+    md.push_str(
+        "\n## The groups\n\nA member dead alone at root is marked †, one root's own fixpoint \
+         holds ‡.\n\n| # | members | open | the members |\n|---:|---:|---:|---|\n",
+    );
+    let shown = |b: u32| {
+        format!(
+            "`{}`{}",
+            c.text(b),
+            match c.marks[b as usize] {
+                Mark::DeadAlone => "†",
+                Mark::AtRoot => "‡",
+                _ => "",
+            }
+        )
+    };
+    for (g, members) in c.groups.iter().enumerate() {
+        md.push_str(&format!(
+            "| {g} | {} | {} | {} |\n",
+            members.len(),
+            open[g].len(),
+            members
+                .iter()
+                .map(|&b| shown(b))
+                .collect::<Vec<_>>()
+                .join(" ")
+        ));
+    }
+    md.push_str("\n## The candidates\n\n| candidate | at root | groups |\n|---|---|---|\n");
+    for b in 0..n as u32 {
+        md.push_str(&format!(
+            "| `{}` | {}{} | {} |\n",
+            c.text(b),
+            c.marks[b as usize].as_str(),
+            if killed(&b) {
+                ", killed by the theory alone"
+            } else {
+                ""
+            },
+            c.groups_of(b)
+                .iter()
+                .map(u32::to_string)
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
+    }
+    if !instances.is_empty() {
+        md.push_str(
+            "\n## What root owes, beside\n\n| instance | its alternatives are | alternatives |\n|---|---|---|\n",
+        );
+        for i in &instances {
+            let read = &i["read"];
+            let what = match read["alternatives"].as_array() {
+                Some(a) => a
+                    .iter()
+                    .map(|x| format!("`{}`", x.as_str().unwrap_or("")))
+                    .collect::<Vec<_>>()
+                    .join(" "),
+                None => read["why"].as_str().unwrap_or("").to_string(),
+            };
+            let standing = match (i["standing"].as_str(), read["detail"]["group"].as_u64()) {
+                (Some("a group"), Some(g)) => format!("group {g}"),
+                (Some(s), _) => s.to_string(),
+                _ => String::new(),
+            };
+            md.push_str(&format!(
+                "| `{}` | {standing} | {what} |\n",
+                i["instance"].as_str().unwrap_or("")
+            ));
+        }
+    }
+    std::fs::write(dir.join("cover.md"), md).expect("cover.md");
+
+    json!({
+        "complete": c.complete(),
+        "pairs": c.excluded.len(),
+        "groups": c.groups.len(),
+        "sizes": histogram(c.groups.iter().map(Vec::len)),
+        "open": histogram(open.iter().map(Vec::len)),
+        "membership": histogram(per.iter().copied()),
+        "most": per.iter().max().copied().unwrap_or(0),
+        "mean": if n > 0 { json!(per.iter().sum::<usize>() as f64 / n as f64) } else { Value::Null },
+        "in_no_group": {
+            "all": none.len(),
+            "alive_alone": marked(Mark::AliveAlone),
+            "dead_alone": marked(Mark::DeadAlone),
+            "at_root": marked(Mark::AtRoot),
+            "unread": marked(Mark::Unread),
+            "killed_by_the_theory_alone": none.iter().filter(|b| killed(b)).count(),
+        },
+        "components": c.components.len(),
+        "components_are_groups": components_are_groups,
+        "bound": structure::CLIQUE_STEPS,
+        "steps": c.steps,
+        "cut": cut_of(&c.cut),
+        "pairs_alive_at_root": c.alive_at_root.as_ref().map(Vec::len),
+        "root_cliques": c.root_cliques.as_ref().map(|r| clique_counts(r, n)),
+        "declared": declared,
+        "owed": owed,
         "lists": file.strip_prefix(repo_root()).unwrap_or(&file).to_string_lossy(),
     })
 }

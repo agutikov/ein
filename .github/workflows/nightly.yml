@@ -116,6 +116,13 @@ jobs:
       # others are the per-commit tier's.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test pair_layer -- the_excluded_pairs_are_the_pairs_of_n
         env: { EIN_CORPUS_SLOW: "1" }
+      # The structure of the hypothesis set, which is root's pair layer, the
+      # theory's share of it and the cover by groups, held to a permuted id
+      # space and to every import form on the `slow` entries too. The
+      # per-commit tier reads every program that searches but the `slow`
+      # ones, and three named instances.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test structure_invariance
+        env: { EIN_CORPUS_SLOW: "1" }
       # M1e2 S1e2.1c.2 — route 1 and the state route print one read-out, the
       # state route never doing more: the test at the default budget, by name,
       # with the `slow` entries the per-commit half leaves here since M1f

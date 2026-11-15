@@ -809,6 +809,15 @@ impl<'a> Space<'a> {
         self.terms
     }
 
+    /// Root's fixpoint, the terms and the program's text together, for a
+    /// reader that builds a second program over the same terms while this
+    /// space is open ([`crate::structure`]'s small KB). Root is sealed and
+    /// is not written; a fact the reader interns is a fact of this space's
+    /// terms from then on, as one a node interns is.
+    pub(crate) fn parts(&mut self) -> (&'a Kb, &mut Terms, &'a Ast) {
+        (self.root, self.terms, self.ast)
+    }
+
     /// The rung of the ladder that built the universe.
     pub(crate) fn rung(&self) -> crate::oblgen::Mode {
         self.root_stats.hypgen.rung.mode

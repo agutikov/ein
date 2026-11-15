@@ -10,7 +10,10 @@ this 2 facts*, so S1f.10.10 runs before S1f.10.2 ([§ The order](#the-order),
 [S1f.10.10](s1f.10.10_the_theorys_share.md#record-2026-11-15) ran that day: the theory's share is computed by the
 owner, over every pair of H, and on I-Z2 the theory excludes exactly the 128 row and column pairs; the rule that
 says which statements are the puzzle's was restated from the one planned, which the corpus falsified, and is a
-default. Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
+default. [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-the-cover-under-the-theorys-exclusions) then ran again
+under that default: the cover is computed by the owner, on I-Z2 its 36 groups are exactly the rows and columns of
+the five declared bijections over all 56 candidates of H, every candidate in two, and the structure's two
+invariances, a permuted id space and every import form, are tests. Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;

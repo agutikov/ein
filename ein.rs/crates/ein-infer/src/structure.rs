@@ -148,6 +148,70 @@
 //! firing that passed an `absent` rests on the whole of what the program
 //! states of that relation, no premise records it, and a program that
 //! states half a row of houses derives what the program does not.
+//!
+//! ### The cover: *pick at most one*
+//!
+//! [`Cover`] is `H` as the groups the theory makes of it. **A group is a
+//! maximal set of two or more candidates that pairwise exclude by the
+//! theory alone**: a maximal clique of the graph whose vertices are the
+//! candidates of `H`, all of them, and whose edges are the pairs
+//! [`Theory::small`] excludes. A state holds at most one member of a group.
+//! The groups overlap, a candidate of a bijection being in a row and in a
+//! column, so they are a **cover** of the candidates they hold and no
+//! partition; and a candidate no pair of the theory holds is in no group
+//! ([`Cover::in_no_group`]), which says that no group says anything of it.
+//!
+//! **The graph is the theory's and not root's.** At root a pair two
+//! declarations exclude and a pair two clues exclude are one thing, and
+//! once the clues have decided part of a puzzle some candidate outside a
+//! row excludes every member of it: the row is a clique and not a maximal
+//! one. The maximal cliques of root's exclusion graph are kept beside the
+//! groups ([`Cover::root_cliques`]), as what the clues add, and are not
+//! called groups.
+//!
+//! **A candidate dead alone at root is a member like any other**: the
+//! small KB drops what killed it, so it has its row and its column there.
+//! Each candidate carries what root says of it alone ([`Mark`]), and a
+//! group's **open** members are those alive alone at root
+//! ([`Cover::open`]). A candidate the theory itself kills alone
+//! ([`Cover::killed_alone`]) is in no pair of it and so in no group.
+//!
+//! **No relation is read to form a group**: not what it is called, not its
+//! arguments, not a declaration of it. What a program declares stands
+//! beside the cover, and [`Cover::standing`] reads any set of candidates
+//! against it: an owed instance's alternatives are a group, are strictly
+//! inside one, or do not pairwise exclude.
+//!
+//! **What *at most one* rests on.** A group's pairs are dead in the small
+//! KB. They are dead at root, and so at every node above it on a monotone
+//! program, where the small KB derives no more than the program:
+//! [`Cover::alive_at_root`] lists the pairs of which that fails, and is
+//! empty where the small KB's rule fits the program. On a program the
+//! static check flags nothing above root follows ([`Cover::domain`]).
+//!
+//! **The enumeration is bounded** by [`CLIQUE_STEPS`], 2^20 calls of the
+//! search for the cliques of one graph, a constant of this module and no
+//! lever: no `(config …)` field, no option and no environment name reaches
+//! it. A graph the search stops on has the cliques found so far, each
+//! maximal, and says what the bound cut ([`Cut`]): the excluded pairs
+//! inside no clique listed, and the candidates of such a pair that no
+//! clique listed holds.
+//!
+//! **The order is canonical.** A group is its members ascending, which is
+//! the universe's rendered-text order, and the groups are in the order of
+//! those sequences. So a cover the bound did not cut is a function of the
+//! program: the same under a permutation of the interner's ids and at any
+//! job count, and, as sets of candidates with the module prefixes taken
+//! off, under every import form
+//! (`ein-infer/tests/structure_invariance.rs`).
+//!
+//! **Once a program, from its prepared space.** `cover_in` takes the
+//! space a route has open and the program as it was loaded (`Loaded::of`,
+//! taken before root is saturated, since a prepared space holds root's
+//! fixpoint and not what the files wrote). Root's singles and pairs are
+//! then the route's own nodes, and the small KB's are read in a space of
+//! their own. [`cover`] is the same for a reader that has only the freshly
+//! loaded program. No route reads the cover.
 
 use std::collections::BTreeMap;
 use std::time::Instant;
@@ -410,12 +474,15 @@ fn before(singles: &[Single], a: u32, b: u32) -> Before {
 /// the layer added to the space's.
 pub(crate) fn pair_layer_in(sp: &mut Space<'_>) -> Result<PairLayer, SolveError> {
     let licensed = sp.is_monotone();
-    layer(sp, licensed)
+    layer(sp, licensed, true)
 }
 
 /// The layer over `sp`, L1 and L3 deciding the pairs they can when
-/// `licensed` and every pair saturated otherwise.
-fn layer(sp: &mut Space<'_>, licensed: bool) -> Result<PairLayer, SolveError> {
+/// `licensed` and every pair saturated otherwise. Without `pairs` it is read
+/// as far as its singles: root's node and every candidate's, the
+/// implications and the classes, and no pair's node, which the layer says
+/// it stopped before by asking ([`Stopped::NoSearch`]).
+fn layer(sp: &mut Space<'_>, licensed: bool, pairs: bool) -> Result<PairLayer, SolveError> {
     let n = sp.n();
     let monotone = sp.is_monotone();
     let (saturations, facts) = sp.work();
@@ -440,7 +507,7 @@ fn layer(sp: &mut Space<'_>, licensed: bool) -> Result<PairLayer, SolveError> {
         work: Work::default(),
         stopped: None,
     };
-    read(sp, &mut out, licensed)?;
+    read(sp, &mut out, licensed, pairs)?;
     let (s, f) = sp.work();
     out.work = Work {
         saturations: s - saturations,
@@ -449,7 +516,12 @@ fn layer(sp: &mut Space<'_>, licensed: bool) -> Result<PairLayer, SolveError> {
     Ok(out)
 }
 
-fn read(sp: &mut Space<'_>, out: &mut PairLayer, licensed: bool) -> Result<(), SolveError> {
+fn read(
+    sp: &mut Space<'_>,
+    out: &mut PairLayer,
+    licensed: bool,
+    with_pairs: bool,
+) -> Result<(), SolveError> {
     let n = out.n() as u32;
     if out.root_dead {
         // A fork only adds: every node holds root's contradiction.
@@ -523,6 +595,24 @@ fn read(sp: &mut Space<'_>, out: &mut PairLayer, licensed: bool) -> Result<(), S
     // first, then the node of each pair they leave.
     let mut pairs = (0..n).flat_map(|a| (a + 1..n).map(move |b| (a, b)));
     let mut skipped = [false; 2];
+    if !with_pairs {
+        // The singles alone: the licences decide what they decide, and no
+        // pair's node is read.
+        for (a, b) in pairs.by_ref() {
+            match before(&singles, a, b) {
+                Before::DeadMember if licensed => {
+                    out.pairs.dead_member += 1;
+                    skipped[0] = true;
+                }
+                Before::Implied if licensed => {
+                    out.pairs.implied += 1;
+                    skipped[1] = true;
+                }
+                _ => out.pairs.left += 1,
+            }
+        }
+        out.stopped = Some(Stopped::NoSearch);
+    }
     loop {
         let want = step(sp, BATCH);
         let mut chunk: Vec<(u32, u32, Before)> = Vec::with_capacity(want);
@@ -763,8 +853,10 @@ fn names_of(terms: &Terms, fact: FactId, out: &mut Vec<Symbol>) {
 }
 
 /// The program as loaded: what [`Loaded::over`] states a program over fewer
-/// of its facts from.
-struct Loaded {
+/// of its facts from. A prepared space holds root's fixpoint and not the
+/// facts the files wrote, so a reader that wants the small KB of a program
+/// it is about to prepare takes this first.
+pub(crate) struct Loaded {
     /// The registries, copied, with nothing computed from them.
     program: Program,
     /// Every fact the loaded program holds, in the order the loader stored
@@ -776,7 +868,7 @@ struct Loaded {
 
 impl Loaded {
     /// Of `root`, **before** anything saturates it.
-    fn of(root: &Kb, terms: &mut Terms, ast: &Ast) -> Result<Loaded, SolveError> {
+    pub(crate) fn of(root: &Kb, terms: &mut Terms, ast: &Ast) -> Result<Loaded, SolveError> {
         let mut program = root.program().clone();
         program.domain.take();
         let conclusions =
@@ -1209,46 +1301,85 @@ pub fn theory_by(
     rule: &dyn Fn(&Stated<'_>, FactId) -> Verdict,
 ) -> Result<Theory, SolveError> {
     let loaded = Loaded::of(root, terms, ast)?;
+    let reading = if opts.root_pairs {
+        Reading::Pairs
+    } else {
+        Reading::Universe
+    };
+    with_space(root, terms, ast, &opts.layer, None, |sp| {
+        theory_in(sp, &loaded, reading, opts, rule)
+    })
+}
+
+/// How far root's own layer is read beside the small KB's.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Reading {
+    /// As far as its universe: no node.
+    Universe,
+    /// Root's node and every single's.
+    Singles,
+    /// The whole layer.
+    Pairs,
+}
+
+/// [`theory_by`] over **the program's prepared space** and the program as
+/// it was loaded: root's layer is read through `sp`, the routes' node
+/// cache, as far as `reading` says, so a node the space has computed is not
+/// saturated again and the layer's nodes are the space's from then on; the
+/// small KB is built over the space's own terms and read in a space of its
+/// own, at `opts.layer`'s budget. `loaded` is [`Loaded::of`] the same
+/// program, taken before its root was saturated.
+fn theory_in(
+    sp: &mut Space<'_>,
+    loaded: &Loaded,
+    reading: Reading,
+    opts: &TheoryOptions,
+    rule: &dyn Fn(&Stated<'_>, FactId) -> Verdict,
+) -> Result<Theory, SolveError> {
     let stated_set: FxHashSet<FactId> = loaded.facts.iter().map(|&(f, _)| f).collect();
 
     // Root's layer, what only its space holds, the supports, and for a
     // check each excluded pair's own node.
-    let (root_pairs, want, check) = (
-        opts.root_pairs,
-        opts.root_pairs && opts.supports,
-        opts.root_pairs && opts.supports && opts.check,
+    let root_pairs = reading == Reading::Pairs;
+    let (want, check) = (
+        root_pairs && opts.supports,
+        root_pairs && opts.supports && opts.check,
     );
-    let (root_layer, read, supports, nodes) =
-        with_space(root, terms, ast, &opts.layer, None, |sp| {
-            let l = if root_pairs {
-                pair_layer_in(sp)?
-            } else {
-                universe_alone(sp)
-            };
-            let read = RootRead::of(sp);
-            let sets: Vec<Box<[u32]>> =
-                l.excluded.iter().map(|&(a, b)| Box::from([a, b])).collect();
-            let supports = if want && !sets.is_empty() {
-                sp.supports(&sets, &stated_set)?
-            } else {
-                Vec::new()
-            };
-            // Each a node the layer read, so the cache answers.
-            let nodes: Vec<FxHashSet<FactId>> = if check && !sets.is_empty() {
-                match sp.eval(&sets)? {
-                    Ok(read) => {
-                        let states = sp.states();
-                        read.iter()
-                            .map(|s| states[s.class as usize].iter().copied().collect())
-                            .collect()
-                    }
-                    Err(_) => Vec::new(),
+    let (root_layer, read, supports, nodes) = {
+        let l = match reading {
+            Reading::Pairs => pair_layer_in(sp)?,
+            Reading::Singles => {
+                let licensed = sp.is_monotone();
+                layer(sp, licensed, false)?
+            }
+            Reading::Universe => universe_alone(sp),
+        };
+        let read = RootRead::of(sp);
+        let sets: Vec<Box<[u32]>> = l.excluded.iter().map(|&(a, b)| Box::from([a, b])).collect();
+        let supports = if want && !sets.is_empty() {
+            sp.supports(&sets, &stated_set)?
+        } else {
+            Vec::new()
+        };
+        // Each a node the layer read, so the cache answers.
+        let nodes: Vec<FxHashSet<FactId>> = if check && !sets.is_empty() {
+            match sp.eval(&sets)? {
+                Ok(read) => {
+                    let states = sp.states();
+                    read.iter()
+                        .map(|s| states[s.class as usize].iter().copied().collect())
+                        .collect()
                 }
-            } else {
-                Vec::new()
-            };
-            Ok((l, read, supports, nodes))
-        })?;
+                Err(_) => Vec::new(),
+            }
+        } else {
+            Vec::new()
+        };
+        (l, read, supports, nodes)
+    };
+    // The space is not asked again: the rest reads root's fixpoint, sealed,
+    // and builds its programs over the space's terms.
+    let (root, terms, ast) = sp.parts();
 
     // What the rule reads.
     let mut hypothesised: FxHashSet<Symbol> = root_layer
@@ -1261,9 +1392,12 @@ pub fn theory_by(
         crate::oblgen::Mode::Hrules | crate::oblgen::Mode::Obligations
     );
     let generator_reads = {
+        // The generator's readers take a session, and read root through
+        // it: a branch of the sealed fixpoint, which nothing is written to.
+        let mut scratch = root.branch();
         let mut events = Events::off();
         let mut s = crate::saturator::Session {
-            kb: root,
+            kb: &mut scratch,
             terms,
             ast,
             events: &mut events,
@@ -1370,7 +1504,7 @@ pub fn theory_by(
         Some(&root_layer.candidates),
         |sp| {
             let licensed = sp.is_monotone();
-            layer(sp, licensed)
+            layer(sp, licensed, true)
         },
     );
     let small_beyond_root = match &small {
@@ -1640,6 +1774,622 @@ pub fn small_kb(p: &Stated<'_>, fact: FactId) -> Verdict {
     Verdict::theory("names one of the candidates' objects and no candidates' relation")
 }
 
+// ── The cover ─────────────────────────────────────────────────────────
+
+/// **The bound on one enumeration of maximal cliques**: the calls its
+/// search makes, each of which lists at most one clique. A constant of the
+/// module and no lever. A graph the search stops on says what was cut
+/// ([`Cut`]).
+pub const CLIQUE_STEPS: u64 = 1 << 20;
+
+/// What [`Cover::domain`] says of a program the static check flags.
+pub const COVER_FLAGGED: &str = "the static check flags this program: the members of a group \
+                                 exclude pairwise at the small KB's root, and nothing above \
+                                 root follows from that";
+
+/// What root says of one candidate alone.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Mark {
+    /// Root's own fixpoint holds it: committing it is committing nothing.
+    AtRoot,
+    /// Its own node is dead at root.
+    DeadAlone,
+    /// Its own node is alive at root: it is open.
+    AliveAlone,
+    /// Root's singles were not read.
+    Unread,
+}
+
+impl Mark {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Mark::AtRoot => "at root",
+            Mark::DeadAlone => "dead alone",
+            Mark::AliveAlone => "alive alone",
+            Mark::Unread => "unread",
+        }
+    }
+}
+
+/// What [`CLIQUE_STEPS`] cut of one enumeration.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Cut {
+    /// Excluded pairs inside no clique listed.
+    pub pairs: u64,
+    /// Candidates of such a pair that no clique listed holds.
+    pub candidates: u64,
+}
+
+/// The maximal cliques of one exclusion graph.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Cliques {
+    /// Each maximal clique of two or more candidates, ascending, and the
+    /// list in the order of those sequences.
+    pub cliques: Vec<Vec<u32>>,
+    /// Calls the search made.
+    pub steps: u64,
+    /// What the bound cut, where it stopped the search: [`Self::cliques`]
+    /// are then the cliques found before it, each maximal, and not all.
+    pub cut: Option<Cut>,
+}
+
+impl Cliques {
+    /// How many of the cliques each of `n` candidates is in.
+    pub fn memberships(&self, n: usize) -> Vec<u32> {
+        let mut out = vec![0u32; n];
+        for c in &self.cliques {
+            for &b in c {
+                out[b as usize] += 1;
+            }
+        }
+        out
+    }
+}
+
+/// A set of candidates, a bit each.
+#[derive(Clone, PartialEq, Eq)]
+struct Bits(Vec<u64>);
+
+impl Bits {
+    fn new(n: usize) -> Bits {
+        Bits(vec![0; n.div_ceil(64)])
+    }
+
+    fn set(&mut self, b: u32) {
+        self.0[b as usize / 64] |= 1 << (b % 64);
+    }
+
+    fn clear(&mut self, b: u32) {
+        self.0[b as usize / 64] &= !(1 << (b % 64));
+    }
+
+    fn has(&self, b: u32) -> bool {
+        self.0[b as usize / 64] >> (b % 64) & 1 == 1
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.iter().all(|&w| w == 0)
+    }
+
+    fn and(&self, other: &Bits) -> Bits {
+        Bits(self.0.iter().zip(&other.0).map(|(a, b)| a & b).collect())
+    }
+
+    fn count_and(&self, other: &Bits) -> u32 {
+        self.0
+            .iter()
+            .zip(&other.0)
+            .map(|(a, b)| (a & b).count_ones())
+            .sum()
+    }
+
+    /// Its members, ascending.
+    fn iter(&self) -> impl Iterator<Item = u32> + '_ {
+        self.0.iter().enumerate().flat_map(|(k, &w)| {
+            let mut w = w;
+            std::iter::from_fn(move || {
+                (w != 0).then(|| {
+                    let b = w.trailing_zeros();
+                    w &= w - 1;
+                    k as u32 * 64 + b
+                })
+            })
+        })
+    }
+}
+
+/// An exclusion graph over `n` candidates: who excludes whom.
+#[derive(Clone)]
+struct Graph {
+    adjacent: Vec<Bits>,
+}
+
+impl Graph {
+    fn of(n: usize, edges: &[(u32, u32)]) -> Graph {
+        let mut adjacent = vec![Bits::new(n); n];
+        for &(a, b) in edges {
+            if a != b {
+                adjacent[a as usize].set(b);
+                adjacent[b as usize].set(a);
+            }
+        }
+        Graph { adjacent }
+    }
+
+    fn n(&self) -> usize {
+        self.adjacent.len()
+    }
+
+    fn joins(&self, a: u32, b: u32) -> bool {
+        self.adjacent[a as usize].has(b)
+    }
+
+    /// Every pair of `set` is an edge.
+    fn is_clique(&self, set: &[u32]) -> bool {
+        set.iter()
+            .enumerate()
+            .all(|(k, &a)| set[k + 1..].iter().all(|&b| self.joins(a, b)))
+    }
+
+    /// The connected components of two or more candidates, each ascending,
+    /// in the order of their first members.
+    fn components(&self) -> Vec<Vec<u32>> {
+        let n = self.n();
+        let mut seen = vec![false; n];
+        let mut out = Vec::new();
+        for a in 0..n as u32 {
+            if seen[a as usize] || self.adjacent[a as usize].is_empty() {
+                continue;
+            }
+            let mut component = vec![a];
+            seen[a as usize] = true;
+            let mut at = 0;
+            while at < component.len() {
+                let v = component[at];
+                at += 1;
+                for b in self.adjacent[v as usize].iter() {
+                    if !seen[b as usize] {
+                        seen[b as usize] = true;
+                        component.push(b);
+                    }
+                }
+            }
+            component.sort_unstable();
+            out.push(component);
+        }
+        out
+    }
+
+    /// The maximal cliques of two or more candidates, by at most `bound`
+    /// calls of the search: Bron and Kerbosch's, with the pivot that leaves
+    /// the fewest branches, the lowest candidate among equals. Every clique
+    /// it lists is maximal; where the bound stopped it the list is short and
+    /// [`Cliques::cut`] says by what.
+    fn maximal_cliques(&self, bound: u64) -> Cliques {
+        struct Search<'g> {
+            graph: &'g Graph,
+            found: Vec<Vec<u32>>,
+            steps: u64,
+            bound: u64,
+            stopped: bool,
+        }
+        impl Search<'_> {
+            /// Every maximal clique that holds `r`, some of `p` and none of
+            /// `x`: `p` the candidates joined to all of `r` and not yet
+            /// branched on, `x` those already branched on.
+            fn extend(&mut self, r: &mut Vec<u32>, mut p: Bits, mut x: Bits) {
+                if self.steps == self.bound {
+                    self.stopped = true;
+                    return;
+                }
+                self.steps += 1;
+                if p.is_empty() {
+                    if x.is_empty() {
+                        let mut clique = r.clone();
+                        clique.sort_unstable();
+                        self.found.push(clique);
+                    }
+                    return;
+                }
+                let adjacent = &self.graph.adjacent;
+                let mut pivot = (0u32, u32::MAX);
+                for u in p.iter().chain(x.iter()) {
+                    let joined = p.count_and(&adjacent[u as usize]);
+                    if pivot.1 == u32::MAX || joined > pivot.0 || (joined == pivot.0 && u < pivot.1)
+                    {
+                        pivot = (joined, u);
+                    }
+                }
+                let branches: Vec<u32> = p
+                    .iter()
+                    .filter(|&v| !adjacent[pivot.1 as usize].has(v))
+                    .collect();
+                for v in branches {
+                    let near = &adjacent[v as usize];
+                    r.push(v);
+                    self.extend(r, p.and(near), x.and(near));
+                    r.pop();
+                    if self.stopped {
+                        return;
+                    }
+                    p.clear(v);
+                    x.set(v);
+                }
+            }
+        }
+
+        let n = self.n();
+        let mut start = Bits::new(n);
+        for a in 0..n as u32 {
+            if !self.adjacent[a as usize].is_empty() {
+                start.set(a);
+            }
+        }
+        let mut search = Search {
+            graph: self,
+            found: Vec::new(),
+            steps: 0,
+            bound,
+            stopped: false,
+        };
+        if !start.is_empty() {
+            search.extend(&mut Vec::new(), start, Bits::new(n));
+        }
+        let mut cliques = search.found;
+        cliques.sort();
+        let cut = search.stopped.then(|| {
+            let mut covered = vec![Bits::new(n); n];
+            let mut held = Bits::new(n);
+            for c in &cliques {
+                for &a in c {
+                    held.set(a);
+                    for &b in c {
+                        covered[a as usize].set(b);
+                    }
+                }
+            }
+            let mut cut = Cut::default();
+            for a in 0..n as u32 {
+                let near = &self.adjacent[a as usize];
+                let left = near.iter().filter(|&b| !covered[a as usize].has(b)).count() as u64;
+                // Each pair is met from both of its members.
+                cut.pairs += left;
+                cut.candidates += u64::from(left > 0 && !held.has(a));
+            }
+            cut.pairs /= 2;
+            cut
+        });
+        Cliques {
+            cliques,
+            steps: search.steps,
+            cut,
+        }
+    }
+}
+
+/// How a set of candidates stands to the cover ([`Cover::standing`]).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Standing {
+    /// Fewer than two candidates: there is no pair to exclude.
+    Fewer,
+    /// It is this group.
+    Group(u32),
+    /// Pairwise excluding and not maximal: it is strictly inside each of
+    /// these groups. None where the bound cut the cover before one of them.
+    Inside(Vec<u32>),
+    /// **Not pairwise excluding**: `alive` of its pairs the theory does not
+    /// exclude. `holds` are the groups it holds whole, of each of which it
+    /// is a strict superset.
+    NotExcluding { alive: u64, holds: Vec<u32> },
+}
+
+/// How [`cover`] is asked.
+#[derive(Clone, Copy, Debug)]
+pub struct CoverOptions {
+    /// The budget, the jobs and the deadline of the small KB's layer, and
+    /// of root's where [`cover`] opens the space itself.
+    pub layer: Options,
+    /// Read root's pairs too: the cover then has [`Cover::root_cliques`]
+    /// and [`Cover::alive_at_root`]. Without them root is read as far as
+    /// its singles, which the marks need.
+    pub root_pairs: bool,
+}
+
+impl Default for CoverOptions {
+    fn default() -> Self {
+        CoverOptions {
+            layer: Options::default(),
+            root_pairs: true,
+        }
+    }
+}
+
+/// **The cover of `H` by its groups**: the maximal sets of two or more
+/// candidates that pairwise exclude by the theory alone, *pick at most
+/// one*. Not a partition: a candidate is in as many groups as hold it, and
+/// in none where the theory excludes no pair of it.
+///
+/// Every candidate is its index in [`Self::candidates`], the universe in
+/// rendered-text order; a group is its place in [`Self::groups`]. Each
+/// list is ascending, so a cover the bound did not cut does not depend on
+/// the interner's ids or on the job count.
+#[derive(Clone, Debug)]
+pub struct Cover {
+    pub candidates: Vec<Candidate>,
+    /// What root says of each candidate alone.
+    pub marks: Vec<Mark>,
+    /// The candidates the theory kills alone, dead alone in the small KB:
+    /// no pair of the theory holds one, so each is in no group.
+    pub killed_alone: Vec<u32>,
+    /// The pairs the theory excludes: the graph the groups are cliques of.
+    pub excluded: Vec<(u32, u32)>,
+    /// **Group to members**: each group's candidates, ascending, and the
+    /// groups in the order of those sequences.
+    pub groups: Vec<Vec<u32>>,
+    /// **Member to groups**: for each candidate, the groups that hold it,
+    /// ascending; empty for a candidate in none.
+    pub member_of: Vec<Vec<u32>>,
+    /// The connected components of the same graph, of two or more
+    /// candidates each: what a group is not, wherever one of them is not a
+    /// clique.
+    pub components: Vec<Vec<u32>>,
+    /// Calls the enumeration made, against [`CLIQUE_STEPS`].
+    pub steps: u64,
+    /// What the bound cut of the groups, where it did.
+    pub cut: Option<Cut>,
+    /// The static verdict on the program, and on its small KB.
+    pub monotone: bool,
+    pub small_monotone: bool,
+    /// Why the small KB's layer stopped before its last pair, where it
+    /// did: the groups are then cliques of the pairs it read.
+    pub stopped: Option<Stopped>,
+    /// **The theory's pairs whose node is alive at root.** Empty where the
+    /// small KB derives no more than the program, which is what makes *at
+    /// most one* of a group true of the program's own lattice. `None` where
+    /// root's pairs were not all read.
+    pub alive_at_root: Option<Vec<(u32, u32)>>,
+    /// **The maximal cliques of root's exclusion graph**, beside the
+    /// groups and not groups: what the clues add to the theory's edges.
+    /// `None` where root's pairs were not all read.
+    pub root_cliques: Option<Cliques>,
+    /// What reading root's layer added to its space's work, and what the
+    /// small KB's layer cost in its own root's terms.
+    pub root_work: Work,
+    pub small_work: Work,
+    graph: Graph,
+}
+
+impl std::fmt::Debug for Graph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Graph({} candidates)", self.n())
+    }
+}
+
+impl Cover {
+    /// The cover of the universe `root` and `small` share: `root` the
+    /// program's own layer, read at least as far as its singles for the
+    /// marks, and `small` the small KB's ([`Theory::small`]).
+    pub fn of(root: &PairLayer, small: &PairLayer) -> Cover {
+        Cover::bounded(root, small, CLIQUE_STEPS)
+    }
+
+    fn bounded(root: &PairLayer, small: &PairLayer, bound: u64) -> Cover {
+        let n = root.n();
+        let mut marks = vec![
+            if root.singles_left == 0 {
+                Mark::AliveAlone
+            } else {
+                Mark::Unread
+            };
+            n
+        ];
+        if root.singles_left == 0 {
+            for &b in &root.at_root {
+                marks[b as usize] = Mark::AtRoot;
+            }
+            for &b in &root.dead_alone {
+                marks[b as usize] = Mark::DeadAlone;
+            }
+        }
+        let graph = Graph::of(n, &small.excluded);
+        let found = graph.maximal_cliques(bound);
+        let mut member_of: Vec<Vec<u32>> = vec![Vec::new(); n];
+        for (g, members) in found.cliques.iter().enumerate() {
+            for &b in members {
+                member_of[b as usize].push(g as u32);
+            }
+        }
+        let whole = root.complete();
+        let alive_at_root = whole.then(|| {
+            let at_root = Deaths::of(root);
+            small
+                .excluded
+                .iter()
+                .copied()
+                .filter(|&(a, b)| !at_root.pair(a, b))
+                .collect()
+        });
+        let root_cliques = whole.then(|| Graph::of(n, &root.excluded).maximal_cliques(bound));
+        Cover {
+            candidates: root.candidates.clone(),
+            marks,
+            killed_alone: small.dead_alone.clone(),
+            excluded: small.excluded.clone(),
+            components: graph.components(),
+            groups: found.cliques,
+            member_of,
+            steps: found.steps,
+            cut: found.cut,
+            monotone: root.monotone,
+            small_monotone: small.monotone,
+            stopped: small.stopped.clone(),
+            alive_at_root,
+            root_cliques,
+            root_work: root.work,
+            small_work: small.work,
+            graph,
+        }
+    }
+
+    pub fn n(&self) -> usize {
+        self.candidates.len()
+    }
+
+    /// Candidate `b`, as the program writes it.
+    pub fn text(&self, b: u32) -> &str {
+        &self.candidates[b as usize].text
+    }
+
+    /// Group `g`'s members.
+    pub fn members(&self, g: u32) -> &[u32] {
+        &self.groups[g as usize]
+    }
+
+    /// The groups that hold candidate `b`.
+    pub fn groups_of(&self, b: u32) -> &[u32] {
+        &self.member_of[b as usize]
+    }
+
+    /// Group `g`'s **open** members: those alive alone at root.
+    pub fn open(&self, g: u32) -> impl Iterator<Item = u32> + '_ {
+        self.groups[g as usize]
+            .iter()
+            .copied()
+            .filter(|&b| self.marks[b as usize] == Mark::AliveAlone)
+    }
+
+    /// The theory excludes the pair: the two share a group, wherever the
+    /// bound did not cut the cover.
+    pub fn excludes(&self, a: u32, b: u32) -> bool {
+        a != b && self.graph.joins(a, b)
+    }
+
+    /// The candidates in no group, ascending: those the theory kills alone
+    /// among them, and every candidate no pair of the theory holds.
+    pub fn in_no_group(&self) -> Vec<u32> {
+        (0..self.n() as u32)
+            .filter(|&b| self.member_of[b as usize].is_empty())
+            .collect()
+    }
+
+    /// Every group was listed and every pair of the small KB's layer read:
+    /// the cover is the program's and not what a bound left of it.
+    pub fn complete(&self) -> bool {
+        self.cut.is_none() && self.stopped.is_none()
+    }
+
+    /// What the cover's statements are about, where that is not the whole
+    /// lattice: [`COVER_FLAGGED`] on a program the static check flags.
+    pub fn domain(&self) -> Option<&'static str> {
+        (!self.monotone).then_some(COVER_FLAGGED)
+    }
+
+    /// **How a set of candidates stands to the cover**: an owed instance's
+    /// alternatives, a declared key's class, any set a reader has from what
+    /// the program declares. `set` is read as a set, in any order.
+    pub fn standing(&self, set: &[u32]) -> Standing {
+        let mut set = set.to_vec();
+        set.sort_unstable();
+        set.dedup();
+        if set.len() < 2 {
+            return Standing::Fewer;
+        }
+        let inside = |g: &Vec<u32>| g.iter().all(|b| set.binary_search(b).is_ok());
+        if self.graph.is_clique(&set) {
+            // The groups that hold its first member and every other.
+            let holds: Vec<u32> = self.member_of[set[0] as usize]
+                .iter()
+                .copied()
+                .filter(|&g| {
+                    let members = &self.groups[g as usize];
+                    set.iter().all(|b| members.binary_search(b).is_ok())
+                })
+                .collect();
+            return match holds
+                .iter()
+                .find(|&&g| self.groups[g as usize].len() == set.len())
+            {
+                Some(&g) => Standing::Group(g),
+                None => Standing::Inside(holds),
+            };
+        }
+        let mut alive = 0u64;
+        for (k, &a) in set.iter().enumerate() {
+            alive += set[k + 1..]
+                .iter()
+                .filter(|&&b| !self.graph.joins(a, b))
+                .count() as u64;
+        }
+        let mut holds: Vec<u32> = set
+            .iter()
+            .flat_map(|&b| self.member_of[b as usize].iter().copied())
+            .filter(|&g| inside(&self.groups[g as usize]))
+            .collect();
+        holds.sort_unstable();
+        holds.dedup();
+        Standing::NotExcluding { alive, holds }
+    }
+}
+
+impl Theory {
+    /// The cover of `H` by the groups this theory makes of it. `None`
+    /// where the small KB has no layer: the program has no groups by this
+    /// reading.
+    pub fn cover(&self) -> Option<Cover> {
+        self.small.as_ref().ok().map(|s| Cover::of(&self.root, s))
+    }
+}
+
+/// The cover of `root`, a **freshly loaded, unsaturated** program nothing
+/// else will use, under [`small_kb`]: `cover_in` over a space opened for
+/// it, at `opts.layer`'s budget.
+pub fn cover(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &CoverOptions,
+) -> Result<Cover, SolveError> {
+    let loaded = Loaded::of(root, terms, ast)?;
+    with_space(root, terms, ast, &opts.layer, None, |sp| {
+        cover_in(sp, &loaded, opts)
+    })
+}
+
+/// **The cover over a program's prepared space**, computed once a program:
+/// root's singles, and its pairs where [`CoverOptions::root_pairs`] asks,
+/// are read through `sp`, the routes' node cache, so a node the space has
+/// computed is not saturated again and the nodes read are the space's from
+/// then on; the small KB is built from `loaded`, [`Loaded::of`] the same
+/// program taken before its root was saturated, and its layer read in a
+/// space of its own at `opts.layer`'s budget. Nothing is written that a
+/// node reads. An error where the small KB has no layer.
+pub(crate) fn cover_in(
+    sp: &mut Space<'_>,
+    loaded: &Loaded,
+    opts: &CoverOptions,
+) -> Result<Cover, SolveError> {
+    let (reading, asked) = (
+        if opts.root_pairs {
+            Reading::Pairs
+        } else {
+            Reading::Singles
+        },
+        TheoryOptions {
+            layer: opts.layer,
+            root_pairs: opts.root_pairs,
+            supports: false,
+            check: false,
+        },
+    );
+    let t = theory_in(sp, loaded, reading, &asked, &small_kb)?;
+    match &t.small {
+        Ok(small) => Ok(Cover::of(&t.root, small)),
+        Err(e) => Err(SolveError::Unsupported(format!(
+            "the small KB has no layer, so the program has no groups: {e}"
+        ))),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1648,7 +2398,7 @@ mod tests {
     fn layer_of(rel: &str, licensed: bool) -> PairLayer {
         let (mut kb, mut terms, ast) = fresh(rel);
         with_space(&mut kb, &mut terms, &ast, &Options::default(), None, |sp| {
-            layer(sp, licensed)
+            layer(sp, licensed, true)
         })
         .expect("the layer")
     }
@@ -1793,6 +2543,240 @@ mod tests {
             })
             .count();
         assert!(activators > 0, "no support names an activator");
+    }
+
+    /// A layer of `n` candidates named `c0`, `c1`, … whose every single is
+    /// alive alone but `dead`, and whose excluded pairs are `edges`.
+    fn layer_over(n: u32, edges: &[(u32, u32)], dead: &[u32]) -> PairLayer {
+        let mut excluded: Vec<(u32, u32)> =
+            edges.iter().map(|&(a, b)| (a.min(b), a.max(b))).collect();
+        excluded.sort_unstable();
+        excluded.dedup();
+        PairLayer {
+            candidates: (0..n)
+                .map(|b| Candidate {
+                    fact: FactId(b),
+                    text: format!("(c{b})"),
+                })
+                .collect(),
+            monotone: true,
+            root_dead: false,
+            singles_left: 0,
+            at_root: Vec::new(),
+            dead_alone: dead.to_vec(),
+            implies: Vec::new(),
+            equivalent: Vec::new(),
+            excluded,
+            interacting: Vec::new(),
+            against_l1: Vec::new(),
+            against_l3: Vec::new(),
+            pairs: Pairs::default(),
+            licences: Vec::new(),
+            work: Work::default(),
+            stopped: None,
+        }
+    }
+
+    /// Every maximal clique of two or more, by trying every set: for a
+    /// graph small enough to.
+    fn by_every_set(n: u32, graph: &Graph) -> Vec<Vec<u32>> {
+        let mut out = Vec::new();
+        for bits in 0u32..1 << n {
+            let set: Vec<u32> = (0..n).filter(|b| bits >> b & 1 == 1).collect();
+            if set.len() < 2 || !graph.is_clique(&set) {
+                continue;
+            }
+            let grows = (0..n)
+                .filter(|b| bits >> b & 1 == 0)
+                .any(|b| set.iter().all(|&a| graph.joins(a, b)));
+            if !grows {
+                out.push(set);
+            }
+        }
+        out.sort();
+        out
+    }
+
+    /// **The enumeration lists every maximal clique, once, in one order.**
+    /// On 400 graphs of up to twelve candidates it is held to the cliques
+    /// found by trying every set; and the same graph with its candidates
+    /// renumbered has the same cliques under the renumbering, so nothing in
+    /// the list is the search's.
+    #[test]
+    fn the_enumeration_lists_every_maximal_clique() {
+        let mut rng = crate::mt19937::Mt19937::seeded(20);
+        let (mut graphs, mut cliques, mut overlapping) = (0, 0, 0);
+        for round in 0..400u32 {
+            let n = 2 + round % 11;
+            let mut pairs: Vec<(u32, u32)> = (0..n)
+                .flat_map(|a| (a + 1..n).map(move |b| (a, b)))
+                .collect();
+            rng.shuffle(&mut pairs);
+            // From sparse to nearly complete.
+            pairs.truncate(pairs.len() * (1 + round as usize % 7) / 8);
+            let graph = Graph::of(n as usize, &pairs);
+            let found = graph.maximal_cliques(CLIQUE_STEPS);
+            assert!(found.cut.is_none());
+            assert_eq!(found.cliques, by_every_set(n, &graph), "{pairs:?}");
+            graphs += 1;
+            cliques += found.cliques.len();
+            overlapping += usize::from(found.memberships(n as usize).iter().any(|&k| k > 2));
+
+            let mut to: Vec<u32> = (0..n).collect();
+            rng.shuffle(&mut to);
+            let renumbered: Vec<(u32, u32)> = pairs
+                .iter()
+                .map(|&(a, b)| (to[a as usize], to[b as usize]))
+                .collect();
+            let mut again: Vec<Vec<u32>> = Graph::of(n as usize, &renumbered)
+                .maximal_cliques(CLIQUE_STEPS)
+                .cliques;
+            let mut moved: Vec<Vec<u32>> = found
+                .cliques
+                .iter()
+                .map(|c| {
+                    let mut c: Vec<u32> = c.iter().map(|&b| to[b as usize]).collect();
+                    c.sort_unstable();
+                    c
+                })
+                .collect();
+            moved.sort();
+            again.sort();
+            assert_eq!(again, moved, "{pairs:?} under {to:?}");
+        }
+        // Not vacuous: graphs with cliques, and with a candidate in three.
+        assert!(graphs == 400 && cliques > 1000 && overlapping > 50);
+    }
+
+    /// **The bound stops the search and says what it cut.** Five sets of
+    /// three, every candidate joined to all outside its own set: 243
+    /// maximal cliques, one from each choice. Under the module's bound all
+    /// are listed. Under a bound of 60 calls fewer are, each one maximal,
+    /// and the cut counts the pairs no listed clique holds.
+    #[test]
+    fn the_bound_says_what_it_cut() {
+        let n = 15u32;
+        let edges: Vec<(u32, u32)> = (0..n)
+            .flat_map(|a| (a + 1..n).map(move |b| (a, b)))
+            .filter(|&(a, b)| a / 3 != b / 3)
+            .collect();
+        let graph = Graph::of(n as usize, &edges);
+        let whole = graph.maximal_cliques(CLIQUE_STEPS);
+        assert_eq!((whole.cliques.len(), whole.cut), (243, None));
+        assert!(whole.steps < CLIQUE_STEPS);
+        assert_eq!(whole.memberships(n as usize), vec![81; 15]);
+
+        let short = graph.maximal_cliques(60);
+        assert_eq!(short.steps, 60);
+        let cut = short.cut.expect("the bound cut it");
+        assert!(!short.cliques.is_empty() && short.cliques.len() < 60);
+        for c in &short.cliques {
+            assert!(whole.cliques.contains(c), "{c:?} is not maximal");
+        }
+        let held: FxHashSet<(u32, u32)> = short
+            .cliques
+            .iter()
+            .flat_map(|c| c.iter().flat_map(move |&a| c.iter().map(move |&b| (a, b))))
+            .collect();
+        let left = edges.iter().filter(|p| !held.contains(p)).count() as u64;
+        assert!(left > 0);
+        assert_eq!(cut.pairs, left);
+
+        // The cover says so, and is not complete.
+        let layer = layer_over(n, &edges, &[]);
+        let cover = Cover::bounded(&layer, &layer, 60);
+        assert_eq!(cover.cut, Some(cut));
+        assert!(!cover.complete() && cover.groups == short.cliques);
+        assert!(Cover::of(&layer, &layer).complete());
+    }
+
+    /// **The cover's two maps, the marks and how a set stands to it.** A
+    /// grid of two rows and three columns, and a candidate nothing
+    /// excludes: five groups, each candidate of the grid in two, the seventh
+    /// in none; a member dead alone at root is a member, and not open.
+    #[test]
+    fn a_grid_is_covered_by_its_rows_and_columns() {
+        // 0 1 2
+        // 3 4 5      and 6, alone.
+        let edges = [
+            (0, 1),
+            (0, 2),
+            (1, 2),
+            (3, 4),
+            (3, 5),
+            (4, 5),
+            (0, 3),
+            (1, 4),
+            (2, 5),
+        ];
+        let small = layer_over(7, &edges, &[]);
+        // At root 1 is dead alone, so root excludes no pair of it.
+        let at_root: Vec<(u32, u32)> = edges
+            .iter()
+            .copied()
+            .filter(|&(a, b)| a != 1 && b != 1)
+            .collect();
+        let root = layer_over(7, &at_root, &[1]);
+        let c = Cover::of(&root, &small);
+        assert_eq!(
+            c.groups,
+            [
+                vec![0, 1, 2],
+                vec![0, 3],
+                vec![1, 4],
+                vec![2, 5],
+                vec![3, 4, 5]
+            ]
+        );
+        assert_eq!(c.member_of[0], [0, 1]);
+        assert_eq!(c.groups_of(4), [2, 4]);
+        assert_eq!(c.in_no_group(), [6]);
+        assert_eq!(c.marks[1], Mark::DeadAlone);
+        assert_eq!(c.marks[6], Mark::AliveAlone);
+        assert_eq!(c.open(0).collect::<Vec<_>>(), [0, 2]);
+        assert_eq!(c.open(2).collect::<Vec<_>>(), [4]);
+        assert!(c.complete() && c.excludes(0, 3) && !c.excludes(0, 4) && !c.excludes(6, 6));
+        // One component, which is no clique: 0 and 4 are in it and do not
+        // exclude.
+        assert_eq!(c.components, [vec![0, 1, 2, 3, 4, 5]]);
+        // Every pair of the theory's is dead at root: by exclusion, or by
+        // its member dead alone.
+        assert_eq!(c.alive_at_root, Some(Vec::new()));
+        // Root's own graph has lost the candidate dead alone.
+        let root_cliques = c.root_cliques.as_ref().expect("root's pairs were read");
+        assert_eq!(
+            root_cliques.cliques,
+            [vec![0, 2], vec![0, 3], vec![2, 5], vec![3, 4, 5]]
+        );
+
+        assert_eq!(c.standing(&[2, 1, 0]), Standing::Group(0));
+        assert_eq!(c.standing(&[5, 3]), Standing::Inside(vec![4]));
+        assert_eq!(c.standing(&[4]), Standing::Fewer);
+        assert_eq!(c.standing(&[]), Standing::Fewer);
+        assert_eq!(
+            c.standing(&[0, 1, 2, 6]),
+            Standing::NotExcluding {
+                alive: 3,
+                holds: vec![0]
+            }
+        );
+        assert_eq!(
+            c.standing(&[0, 4]),
+            Standing::NotExcluding {
+                alive: 1,
+                holds: vec![]
+            }
+        );
+
+        // A layer read as far as its universe gives no mark, and root's
+        // cliques are not claimed.
+        let mut unread = layer_over(7, &[], &[]);
+        unread.singles_left = 7;
+        unread.stopped = Some(Stopped::NoSearch);
+        let c = Cover::of(&unread, &small);
+        assert!(c.marks.iter().all(|&m| m == Mark::Unread));
+        assert!(c.root_cliques.is_none() && c.alive_at_root.is_none());
+        assert_eq!(c.groups.len(), 5);
     }
 
     /// **The licences decide a pair as its node does.** A monotone program's

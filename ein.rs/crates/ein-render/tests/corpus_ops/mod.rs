@@ -23,6 +23,9 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
 
+mod searches;
+pub use searches::{SWEEP_BUDGET, SWEEP_LIMIT, searches};
+
 /// Every observable surface the engine has. One op is one `(surface, mode)`
 /// pair.
 ///
@@ -114,11 +117,6 @@ pub const READ_OUT_MODES: [(&str, Mode); 5] = [
         },
     ),
 ];
-
-/// The sweep's budget and cube limit: small, so that every file is quick and
-/// partial runs, budget- and limit-stopped, are among what is compared.
-pub const SWEEP_BUDGET: u64 = 1 << 14;
-pub const SWEEP_LIMIT: u32 = 10;
 
 /// The frontend surfaces, which have no CLI of their own and are therefore
 /// invisible to a sweep over `ein` processes: `parse`'s accept/reject *and
@@ -523,22 +521,6 @@ impl Drop for Unit<'_> {
             *self.slot().loaded.lock().unwrap_or_else(|e| e.into_inner()) = None;
         }
     }
-}
-
-/// **A program searches when its describe saturates more than root**, at the
-/// sweep's budget and cube limit ([`SWEEP_BUDGET`], [`SWEEP_LIMIT`]), one
-/// job: the programs whose region routes have more than one node to fan out
-/// and more than one fixpoint to intern into, which is where a job count and
-/// an id order can reach an output past root's. The determinism sweeps run
-/// over these per commit (M1f S1f.6.39, the user's rulings on Q-M1f.288 and
-/// .289); computed from the program, never a list. A program that does not
-/// load does not search.
-pub fn searches(ast: &Ast, terms: &mut Terms, kb: &mut ein_core::Kb) -> bool {
-    let mut opts = explore::Options::new(READ_OUT_MODES[0].1);
-    opts.budget = SWEEP_BUDGET;
-    opts.limit = SWEEP_LIMIT;
-    opts.jobs = 1;
-    ein_infer::read_out::run(kb, terms, ast, &opts).is_ok_and(|r| r.answer.saturations > 1)
 }
 
 /// A watch that keeps what a route visits, for `RegionLattice`.
