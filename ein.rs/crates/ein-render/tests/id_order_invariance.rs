@@ -62,11 +62,11 @@
 
 mod corpus_ops;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use corpus_ops::{Op, ops, run};
 use ein_core::{FactId, Symbol, Tag, Terms, Value};
-use ein_corpus::{corpus_files, ein_files_under, repo_root};
+use ein_corpus::{corpus_files, ein_files_under, pool, repo_root};
 use ein_infer::mt19937::Mt19937;
 use rustc_hash::FxHashMap;
 
@@ -213,6 +213,84 @@ fn files_under_test() -> (Vec<PathBuf>, bool) {
     (files, false)
 }
 
+/// One seed's run of one (file, op) pair.
+#[derive(Debug)]
+struct SeedRun {
+    /// How many ids the permutation moved, of how many it could.
+    moved: usize,
+    permutable: usize,
+    outcome: Outcome,
+}
+
+/// What the permuted run came to, beside the plain one.
+#[derive(Debug)]
+enum Outcome {
+    /// Refused only when permuted.
+    Refused(String),
+    /// What the cut says moved; [`Moved::Answer`] with its report line.
+    Cut(Moved, Option<String>),
+}
+
+/// **One (file, op) pair, every seed**: the plain run, whose `Terms` the
+/// permutation is built from, and a permuted run per seed, each held to it
+/// through the cut. `None` where the plain run has nothing for the op.
+///
+/// The plain run is computed here and not read off `corpus_shapes`' golden,
+/// as `jobs_invariance`'s is since M1f S1f.6.39: the permuted id space is a
+/// permutation of *that run's* names and facts, which no digest holds
+/// (S1f.6.39's E-72). `run` is `corpus_ops::run` in the sweep; a test passes
+/// one with an id leaked into it
+/// ([`an_id_order_that_reaches_an_output_is_caught`]).
+fn pair(
+    path: &Path,
+    rel: &Path,
+    op: Op,
+    seeds: &[i64],
+    run: &dyn Fn(&mut Terms, &Path, Op) -> Option<String>,
+) -> Option<Vec<SeedRun>> {
+    let mut base_terms = Terms::new();
+    let base = run(&mut base_terms, path, op)?;
+    let mut out = Vec::new();
+    for &seed in seeds {
+        let mut terms = permuted(&base_terms, seed);
+        let (moved, permutable) = moved(&base_terms, &terms);
+        if permutable == 0 {
+            continue;
+        }
+        let outcome = match run(&mut terms, path, op) {
+            None => Outcome::Refused(format!(
+                "{} [{op}] seed {seed}: refused only when permuted",
+                rel.display()
+            )),
+            Some(got) => match moved_by_the_cut(op, &base, &got) {
+                Moved::Proof => {
+                    assert!(
+                        !got.trim().is_empty(),
+                        "{} [{op}] rendered nothing",
+                        rel.display()
+                    );
+                    Outcome::Cut(Moved::Proof, None)
+                }
+                Moved::Answer(x, y) => {
+                    let line = format!(
+                        "{} [{op}] seed {seed}\n{}",
+                        rel.display(),
+                        first_difference(&x, &y)
+                    );
+                    Outcome::Cut(Moved::Answer(x, y), Some(line))
+                }
+                m => Outcome::Cut(m, None),
+            },
+        };
+        out.push(SeedRun {
+            moved,
+            permutable,
+            outcome,
+        });
+    }
+    Some(out)
+}
+
 #[test]
 fn no_observable_depends_on_the_order_ids_were_assigned_in() {
     let ops = ops();
@@ -229,61 +307,61 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
     let mut tally: std::collections::BTreeMap<String, usize> = Default::default();
     let mut weakest: Option<(usize, usize)> = None;
 
-    for path in &files {
-        let rel = path.strip_prefix(repo_root()).unwrap_or(path);
-        for op in &ops {
-            let mut base_terms = Terms::new();
-            let Some(base) = run(&mut base_terms, path, *op) else {
-                continue;
-            };
-            let mut tested = false;
-            for &seed in &seeds {
-                let mut terms = permuted(&base_terms, seed);
-                let (moved, permutable) = moved(&base_terms, &terms);
-                if permutable == 0 {
+    // The pairs, on the pool (M1f S1f.6.39 T1f.6.39.4), read back in their
+    // order, so every count and the first twenty reports are the serial
+    // loop's.
+    let root = repo_root();
+    let units: Vec<(usize, usize)> = (0..files.len())
+        .flat_map(|f| (0..ops.len()).map(move |o| (f, o)))
+        .collect();
+    let rel = |f: usize| {
+        files[f]
+            .strip_prefix(&root)
+            .unwrap_or(&files[f])
+            .to_path_buf()
+    };
+    let pairs = pool::map(
+        "id_order_invariance",
+        &units,
+        |&(f, o)| (rel(f).display().to_string(), ops[o].to_string()),
+        |&(f, o)| {
+            pair(&files[f], &rel(f), ops[o], &seeds, &|t, p, op| {
+                run(t, p, op)
+            })
+        },
+    );
+    for (&(_, o), runs) in units.iter().zip(pairs) {
+        let op = ops[o];
+        let Some(runs) = runs else {
+            continue;
+        };
+        let mut tested = false;
+        for r in runs {
+            tested = true;
+            if weakest.is_none_or(|(m, p)| r.moved * p < m * r.permutable) {
+                weakest = Some((r.moved, r.permutable));
+            }
+            permutations += 1;
+            match r.outcome {
+                Outcome::Refused(line) => {
+                    bad.push(line);
                     continue;
                 }
-                tested = true;
-                if weakest.is_none_or(|(m, p)| moved * p < m * permutable) {
-                    weakest = Some((moved, permutable));
+                Outcome::Cut(Moved::No, _) => continue,
+                Outcome::Cut(Moved::StoppingPoint, _) => moved_stopping_point += 1,
+                Outcome::Cut(Moved::Proof, _) => moved_proof += 1,
+                Outcome::Cut(Moved::Answer(..), line) => {
+                    *tally.entry(op.to_string()).or_insert(0) += 1;
+                    bad.extend(line);
                 }
-                permutations += 1;
-                let Some(got) = run(&mut terms, path, *op) else {
-                    bad.push(format!(
-                        "{} [{op}] seed {seed}: refused only when permuted",
-                        rel.display()
-                    ));
-                    continue;
-                };
-                match moved_by_the_cut(*op, &base, &got) {
-                    Moved::No => continue,
-                    Moved::StoppingPoint => moved_stopping_point += 1,
-                    Moved::Proof => {
-                        assert!(
-                            !got.trim().is_empty(),
-                            "{} [{op}] rendered nothing",
-                            rel.display()
-                        );
-                        moved_proof += 1;
-                    }
-                    Moved::Answer(x, y) => {
-                        *tally.entry(op.to_string()).or_insert(0) += 1;
-                        bad.push(format!(
-                            "{} [{op}] seed {seed}\n{}",
-                            rel.display(),
-                            first_difference(&x, &y)
-                        ));
-                    }
-                }
-                moved_at_all += 1;
             }
-            compared += 1;
-            if !tested {
-                vacuous += 1;
-            }
+            moved_at_all += 1;
+        }
+        compared += 1;
+        if !tested {
+            vacuous += 1;
         }
     }
-
     if std::env::var("EIN_ID_REPORT").is_ok() {
         for (op, n) in &tally {
             eprintln!("  {n:5} {op}");
@@ -349,6 +427,7 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
 }
 
 /// What a difference between two runs of one op amounts to.
+#[derive(Debug)]
 enum Moved {
     /// The two renderings are byte-identical.
     No,
@@ -444,6 +523,38 @@ fn the_register_s_id_order_rows_answer_what_they_record() {
     }
     assert!(checked > 0, "the register has no id-order rows to check");
     assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
+/// **An id order that reaches an output is caught** (M1f S1f.6.39, the
+/// stage's probe kept as a test): a run that writes the name holding the
+/// first id after the kernel's into its rendering — the shape of a sort that
+/// fell back on `Symbol`'s numeric order — moves the answer under a permuted
+/// id space, and the honest run moves nothing.
+#[test]
+fn an_id_order_that_reaches_an_output_is_caught() {
+    let rel = PathBuf::from("examples/branching/02_one_dead_one_alive.ein");
+    let path = repo_root().join(&rel);
+    let op = ops()
+        .into_iter()
+        .find(|o| o.to_string() == "load")
+        .expect("the load op");
+    let first = Symbol(Terms::new().syms.len() as u32);
+    let leaky = |t: &mut Terms, p: &Path, op: Op| {
+        run(t, p, op).map(|text| format!("{text}\n--- first name {}", t.syms.text(first)))
+    };
+    let honest = |t: &mut Terms, p: &Path, op: Op| run(t, p, op);
+    let runs = pair(&path, &rel, op, &[1], &honest).expect("the program loads");
+    assert!(
+        runs.iter()
+            .all(|r| matches!(r.outcome, Outcome::Cut(Moved::No, _))),
+        "the honest run moved: {runs:?}"
+    );
+    let runs = pair(&path, &rel, op, &[1], &leaky).expect("the program loads");
+    assert!(
+        runs.iter()
+            .any(|r| matches!(r.outcome, Outcome::Cut(Moved::Answer(..), Some(_)))),
+        "a name read by its id did not move the answer: {runs:?}"
+    );
 }
 
 fn first_difference(a: &str, b: &str) -> String {

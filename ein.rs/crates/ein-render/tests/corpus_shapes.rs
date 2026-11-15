@@ -54,45 +54,16 @@
 
 mod corpus_ops;
 
-use corpus_ops::{ops, run};
+use corpus_ops::{manifest_line, ops, pair_name, portable, run};
 use ein_core::Terms;
-use ein_corpus::{corpus_files, golden, golden_path, repo_root};
+use ein_corpus::{corpus_files, golden, golden_path, pool, repo_root};
 
-/// Sixteen hex digits of `md5`, the same digest and the same truncation
-/// `render::hashed_id` uses for a DOT node id. Not a security claim: the
-/// question is whether a rendering changed, and 64 bits answers it.
-fn digest(text: &str) -> String {
-    use md5::Digest;
-    let mut h = md5::Md5::new();
-    h.update(text.as_bytes());
-    format!("{:x}", h.finalize())[..16].to_string()
-}
-
-/// One manifest line. The line count rides along because it is the cheapest
-/// thing that turns "it moved" into "it grew by 40 lines", which is often the
-/// whole diagnosis.
-fn line(name: &str, text: &str) -> String {
-    format!("{}  {:>7}L  {name}", digest(text), text.lines().count())
-}
-
-/// The checkout directory, out of the rendering.
-///
-/// Two of the sweep's surfaces quote a *resolved* path back at the reader: a
-/// `ParseError` names the file it failed in, and `import cycle: …` names the
-/// chain, which `Resolver::locate` canonicalises so that two spellings of one
-/// file are one node in the cycle graph. Digested raw, both bank the blessing
-/// machine's checkout into a checked-in golden — green where it was blessed
-/// and red everywhere else, which is what CI caught on 107 of these lines
-/// while `cargo test --workspace` was clean locally.
-///
-/// `corpus_cli` gets the same normalisation for free by running the binary
-/// with the repo as its working directory and naming its cells relatively;
-/// this sweep calls the crates in-process with the absolute path
-/// [`corpus_files`] hands it, so it does the substitution itself. Only the
-/// root goes: a rendering that starts naming a *different* file still moves,
-/// because everything below `<repo>` is still in the digest.
-fn portable(root: &str, text: &str) -> String {
-    text.replace(root, "<repo>")
+/// What one (file, op) pair contributes to the manifest and to the floors.
+struct Rendered {
+    line: String,
+    bytes: usize,
+    loaded: bool,
+    events: Option<usize>,
 }
 
 #[test]
@@ -121,25 +92,43 @@ fn every_corpus_rendering_reproduces_its_digest() {
          build inside the checkout and leave $EIN_STDLIB unset",
         stdlib.describe()
     );
-    for path in &corpus_files() {
-        let rel = path.strip_prefix(&root).unwrap_or(path);
-        for op in &ops {
+    // The pairs, on the pool (M1f S1f.6.39 T1f.6.39.4): each rendered on
+    // its own `Terms` as before, the lines and the floors read in the pairs'
+    // order, so the manifest is the one a serial loop wrote.
+    let files = corpus_files();
+    let units: Vec<(usize, usize)> = (0..files.len())
+        .flat_map(|f| (0..ops.len()).map(move |o| (f, o)))
+        .collect();
+    let rel = |f: usize| {
+        files[f]
+            .strip_prefix(&root)
+            .unwrap_or(&files[f])
+            .to_path_buf()
+    };
+    let rendered = pool::map(
+        "corpus_shapes",
+        &units,
+        |&(f, o)| (rel(f).display().to_string(), ops[o].to_string()),
+        |&(f, o)| {
+            let op = ops[o];
             let mut terms = Terms::new();
-            let Some(text) = run(&mut terms, path, *op) else {
-                continue;
-            };
-            match op {
-                corpus_ops::Op::Load if !text.starts_with("<refused>") => loads += 1,
-                corpus_ops::Op::Saturate => {
-                    saturates += 1;
-                    events += text.lines().count();
-                }
-                _ => {}
-            }
-            bytes += text.len();
-            let text = portable(&root_str, &text);
-            lines.push(line(&format!("{}::{op}", rel.display()), &text));
+            let text = run(&mut terms, &files[f], op)?;
+            Some(Rendered {
+                loaded: matches!(op, corpus_ops::Op::Load) && !text.starts_with("<refused>"),
+                events: matches!(op, corpus_ops::Op::Saturate).then(|| text.lines().count()),
+                bytes: text.len(),
+                line: manifest_line(&pair_name(&rel(f), op), &portable(&root_str, &text)),
+            })
+        },
+    );
+    for r in rendered.into_iter().flatten() {
+        loads += usize::from(r.loaded);
+        if let Some(n) = r.events {
+            saturates += 1;
+            events += n;
         }
+        bytes += r.bytes;
+        lines.push(r.line);
     }
     // The sweep's own floor: a manifest that shrank because a file stopped
     // parsing would otherwise be blessed as progress.

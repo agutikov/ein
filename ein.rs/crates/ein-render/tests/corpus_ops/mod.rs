@@ -186,6 +186,26 @@ impl std::fmt::Display for Op {
 }
 
 impl Op {
+    /// **Whether the op takes a job count**: the ones [`run_with`] hands to a
+    /// region route, which fans a step's nodes out — the five read-outs, the
+    /// region trace, the states, the lattice, the five core sets and the
+    /// oracle (M1f S1f.6.39 T1f.6.39.2). `run_with` dispatches on this, so
+    /// an op outside it never sees the count, and `jobs_invariance` runs
+    /// these alone at `--jobs N`; the 27 others were one computation run
+    /// twice there until S1f.6.39. The DOT views took one until M1e2
+    /// S1e2.1c.5 (`ein_render::shape::dot_shape`'s note).
+    pub fn takes_jobs(self) -> bool {
+        matches!(
+            self,
+            Op::ReadOut(_)
+                | Op::RegionTrace
+                | Op::States
+                | Op::RegionLattice
+                | Op::Cores(_)
+                | Op::Oracle
+        )
+    }
+
     /// The op's rendering, cut down to what is compared: narration out.
     ///
     /// The cut is `ein-narration`'s, so this sweep and every other caller
@@ -236,10 +256,31 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
 /// T1a.7.5.3's axis.
 ///
 /// It is a parameter and not a global because `jobs_invariance` runs the same
-/// op at two job counts inside one process, and because the ops that *cannot*
-/// differ by job count — every frontend one — should be visibly passing the
-/// same 1 they always did.
+/// op at two job counts inside one process. **Only an op [`Op::takes_jobs`]
+/// receives it** (M1f S1f.6.39 T1f.6.39.2): the dispatch below is on that
+/// predicate, and every other op is [`run_frontend`], which has no job count
+/// to read, so the set the count reaches is read off this code and not
+/// written down beside it.
 pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<String> {
+    if !op.takes_jobs() {
+        return run_frontend(terms, path, op);
+    }
+    let text = std::fs::read_to_string(path).ok()?;
+    let mut ast = Ast::new();
+    let base = path.parent();
+    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
+    let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
+    Some(match region_op(&ast, terms, &mut kb, path, op, jobs) {
+        Ok(text) => text,
+        Err(msg) => format!("<refused> {msg}"),
+    })
+}
+
+/// Every op that takes no job count: the frontend modes, the load, root's
+/// saturation and the shapes over it, and the DOT views. No `jobs` here, so
+/// none of them can depend on one.
+fn run_frontend(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
+    debug_assert!(!op.takes_jobs(), "{op} takes a job count: run_with's");
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
     let base = path.parent();
@@ -271,10 +312,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
         | Op::States
         | Op::RegionLattice
         | Op::Cores(_)
-        | Op::Oracle => {
-            let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
-            region_op(&ast, terms, &mut kb, path, op, jobs)
-        }
+        | Op::Oracle => unreachable!("{op} takes a job count: run_with dispatches it"),
         _ => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             match op {
@@ -570,4 +608,72 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
         Ok(text) => text,
         Err(msg) => format!("<refused> {msg}"),
     }
+}
+
+/// **The pair's name in `corpus_shapes`' golden**, `<repo-relative path>::<op>`.
+pub fn pair_name(rel: &Path, op: Op) -> String {
+    format!("{}::{op}", rel.display())
+}
+
+/// Sixteen hex digits of `md5`, the same digest and the same truncation
+/// `render::hashed_id` uses for a DOT node id. Not a security claim: the
+/// question is whether a rendering changed, and 64 bits answers it.
+///
+/// One definition for the three sweeps (M1f S1f.6.39): `corpus_shapes` banks
+/// it, and `jobs_invariance` holds a `--jobs N` run to what it banked.
+pub fn digest(text: &str) -> String {
+    use md5::Digest;
+    let mut h = md5::Md5::new();
+    h.update(text.as_bytes());
+    format!("{:x}", h.finalize())[..16].to_string()
+}
+
+/// One manifest line. The line count rides along because it is the cheapest
+/// thing that turns "it moved" into "it grew by 40 lines", which is often the
+/// whole diagnosis.
+pub fn manifest_line(name: &str, text: &str) -> String {
+    format!("{}  {:>7}L  {name}", digest(text), text.lines().count())
+}
+
+/// The checkout directory, out of the rendering.
+///
+/// Two of the sweep's surfaces quote a *resolved* path back at the reader: a
+/// `ParseError` names the file it failed in, and `import cycle: …` names the
+/// chain, which `Resolver::locate` canonicalises so that two spellings of one
+/// file are one node in the cycle graph. Digested raw, both bank the blessing
+/// machine's checkout into a checked-in golden — green where it was blessed
+/// and red everywhere else, which is what CI caught on 107 of these lines
+/// while `cargo test --workspace` was clean locally.
+///
+/// `corpus_cli` gets the same normalisation for free by running the binary
+/// with the repo as its working directory and naming its cells relatively;
+/// this sweep calls the crates in-process with the absolute path
+/// `corpus_files` hands it, so it does the substitution itself. Only the
+/// root goes: a rendering that starts naming a *different* file still moves,
+/// because everything below `<repo>` is still in the digest. The golden is
+/// of this text, so a sweep that holds a run to the golden digests the same.
+pub fn portable(root: &str, text: &str) -> String {
+    text.replace(root, "<repo>")
+}
+
+/// **`corpus_shapes`' golden as `name → digest`** (M1f S1f.6.39): what a
+/// `--jobs 1` run of each pair rendered when it was banked, the bytes
+/// [`digest`] reads, narration and all, the checkout made [`portable`].
+///
+/// A sweep that finds its run's digest here has the `--jobs 1` rendering's
+/// digest without computing it. The premise is that the golden is today's,
+/// and `corpus_shapes` is what fails when it is not, in the same gate; a
+/// pair whose digest differs, or that the golden lacks, computes the run.
+/// Empty if the file is missing.
+pub fn golden_digests() -> std::collections::BTreeMap<String, String> {
+    let path = ein_corpus::golden_path("ein-render", "corpus_shapes.md5");
+    std::fs::read_to_string(path)
+        .unwrap_or_default()
+        .lines()
+        .filter_map(|l| {
+            let (left, name) = l.split_once("L  ")?;
+            let digest = left.split_whitespace().next()?;
+            Some((name.to_string(), digest.to_string()))
+        })
+        .collect()
 }
