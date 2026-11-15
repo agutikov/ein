@@ -47,7 +47,8 @@ import threading
 import time
 from pathlib import Path
 
-BANNER = re.compile(r"^── (.+?) ─+\s*$")
+# A banner is ruled to a fixed width, so a label past it has no rule at all.
+BANNER = re.compile(r"^── (.+?)(?: ─*)?\s*$")
 GH_STEP = re.compile(r"^##\[group\]Run (.+)$")
 RUNNING = re.compile(r"Running (?:unittests )?(\S+) \(([^)]*)\)")
 DOCTESTS = re.compile(r"Doc-tests (\S+)")
@@ -271,7 +272,7 @@ def cmd_report(args: argparse.Namespace) -> int:
 
     # The gate's own processes where the log has them (`run`'s fourth column),
     # else the machine's memory over the run's floor.
-    own = any(tree for *_, tree in samples)
+    own = any(tree for *_, tree in samples) and not args.machine
 
     def peak(a: float, z: float) -> int:
         if own:
@@ -333,6 +334,9 @@ def main() -> int:
     p.add_argument("log")
     p.add_argument("--tsv")
     p.add_argument("--min", type=float, default=0.0, help="hide binaries under this many seconds")
+    p.add_argument("--machine", action="store_true",
+                   help="the machine's memory over the run's floor, not the run's process tree "
+                        "(a container's processes are not below `run`)")
     args = ap.parse_args()
     if args.cmd == "run":
         if args.command and args.command[0] == "--":
