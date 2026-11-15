@@ -183,6 +183,12 @@
 //! included. `--readings` adds the same counts under each other reading,
 //! `pairs`, `direct` and `one-step`, each read again.
 //!
+//! In `coupling.json` an edge and a debt name their questions twice: by
+//! text (`questions`), and by place in the file's `questions` list
+//! (`question_ids`), which is what `coupling.dot` calls `q<place>`. Two
+//! questions of one program can share a text, the three kinds of attribute
+//! at one house of `zebra.ein`, and only the place tells them apart.
+//!
 //! `--rule NAME` reads the small KB by another rule than the owner's,
 //! `small-kb`: `proposed`, `objects`, `relates`, `layout` or `h-alone`, the
 //! alternatives the corpus falsified, kept here so that each falsification
@@ -1655,6 +1661,7 @@ fn coupling_row(
     let edges_raw = |edges: &[structure::Edge]| -> Vec<Value> {
         edges.iter().map(|e| json!({
             "questions": e.questions.iter().map(|&q| name(q)).collect::<Vec<_>>(),
+            "question_ids": e.questions,
             "kind": e.kind().as_str(),
             "pairs": {"excludes": e.pairs.excludes, "implies": e.pairs.implies, "interacts": e.pairs.interacts},
             "node": {"conflicts": e.node.conflicts, "derivations": e.node.derivations, "implications": e.node.implications},
@@ -1691,6 +1698,7 @@ fn coupling_row(
             "licensed": d.licensed,
             "payers": texts(&d.payers),
             "questions": d.questions.iter().map(|&q| name(q)).collect::<Vec<_>>(),
+            "question_ids": d.questions,
         })).collect::<Vec<_>>(),
         "debts_across_conflict_components": c.debts_across(),
         "unlicensed_instances": c.unlicensed,

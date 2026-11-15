@@ -34,6 +34,10 @@ pairs paid per program, the cover and the coupling are each *no* for all six que
 than the question; the layer asked by need or after a death is *go* for some; and two ways that add no saturation
 are *go* for all six, a death's core and **what a state's own fixpoint denies**, which no route reads today
 ([`findings.md`](findings.md)'s K-13).
+[S1f.10.12](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-bundle)'s first task ran on 2026-11-16: one
+script writes the bundle under `build/structure/`, a page for each of the 188 programs that search with every
+artefact raw and rendered, a sortable survey, the price list, every default and the four questions' material;
+**its second task is the phase's one stop, pending**, and no surface is designed before the ruling.
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
