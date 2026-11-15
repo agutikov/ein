@@ -855,6 +855,29 @@ impl<'a> Space<'a> {
         Ok(out)
     }
 
+    /// `read` the node of `set` with its whole derivation
+    /// ([`region::Nodes::with_fixpoint_supported`]): the node function's own
+    /// fork of root, saturated again, since the cache keeps no fixpoint.
+    /// Nothing here is remembered and no step is charged to the budget: the
+    /// count is the caller's to report. `Ok(None)` where the node took more
+    /// than `max_firings` applications.
+    pub(crate) fn supported<R>(
+        &mut self,
+        set: &[u32],
+        max_firings: usize,
+        read: impl FnOnce(&Kb, &mut Terms, &[region::Supported]) -> R,
+    ) -> Result<Option<R>, SolveError> {
+        let facts: Vec<FactId> = set.iter().map(|&b| self.facts[b as usize]).collect();
+        let mut reader = region::Nodes::of_parts(
+            self.root,
+            self.snapshot.clone(),
+            self.memo.clone(),
+            self.terms,
+            self.ast,
+        );
+        reader.with_fixpoint_supported(&facts, max_firings, read)
+    }
+
     fn answer(self, mode: Mode, route: Route, found: Found) -> Answer {
         let route = found.route.unwrap_or(route);
         let (n, nodes, stale) = (self.n(), self.saturations, self.stale);

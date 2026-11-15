@@ -116,6 +116,14 @@ jobs:
       # others are the per-commit tier's.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test pair_layer -- the_excluded_pairs_are_the_pairs_of_n
         env: { EIN_CORPUS_SLOW: "1" }
+      # The coupling against a describe on the `slow` entries too: every
+      # member of N lies inside one edge of the questions' hypergraph, and R
+      # is the product of its parts over the hypergraph's components, joined
+      # along the debts across them, on every corpus program whose describe
+      # exhausts at the default budget. The one test that reads the flag, by
+      # name: the binary's others are the per-commit tier's.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test coupling -- the_coupling_is_held_to_n_and_to_r
+        env: { EIN_CORPUS_SLOW: "1" }
       # The structure of the hypothesis set, which is root's pair layer, the
       # theory's share of it and the cover by groups, held to a permuted id
       # space and to every import form on the `slow` entries too. The

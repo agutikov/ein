@@ -1233,6 +1233,13 @@ pub(crate) struct Support {
     pub status: crate::explain::CoreStatus,
 }
 
+/// One rule application of a node, with the facts its universals read
+/// ([`Nodes::with_fixpoint_supported`]).
+pub(crate) struct Supported {
+    pub firing: crate::firing::Firing,
+    pub universal: Box<[FactId]>,
+}
+
 /// The node function, for a reader that needs a state itself and not its two
 /// bits: the read-out's `(model …)`s and its query classes (M1e2
 /// T1e2.1a.5.2). Root is prepared once; each fixpoint is a fork of it,
@@ -1341,6 +1348,63 @@ impl<'a> Nodes<'a> {
             &mut |f| firings.push(f.clone()),
         )
         .map(|kb| read(&kb, self.terms, &firings));
+        self.terms.provs.discard_fork();
+        out
+    }
+
+    /// `read` the fixpoint of root plus `facts` with **every** application
+    /// that reached it, redundant ones among them, each with the facts its
+    /// universals read ([`ein_core::Prov::universal`]): a node's whole
+    /// derivation, for a reader of what its conclusions rest on
+    /// ([`crate::structure`]'s coupling). The node is the node function's
+    /// own fork, saturated to quiescence whether or not it is dead, by at
+    /// most `max_firings` applications: `Ok(None)` where it took more, and
+    /// nothing is read.
+    pub(crate) fn with_fixpoint_supported<R>(
+        &mut self,
+        facts: &[FactId],
+        max_firings: usize,
+        read: impl FnOnce(&Kb, &mut Terms, &[Supported]) -> R,
+    ) -> Result<Option<R>, SolveError> {
+        self.terms.provs.open_fork();
+        let mut firings = Vec::new();
+        let mut fork = self.root.branch();
+        for &h in facts {
+            let (rel, args) = self.terms.facts.get(h);
+            let args = args.to_vec();
+            let prov = self.terms.provs.push(Prov::from_hypothesis(0, None));
+            fork.add_and_index_fact(self.terms, rel, &args, Some(prov))
+                .expect("room for a hypothesis");
+        }
+        let mut events = Events::off();
+        // The applications, and whether the node reached quiescence within
+        // the bound.
+        let ran: Result<bool, crate::saturator::SaturateError> = (|| {
+            let mut s = Session {
+                kb: &mut fork,
+                terms: self.terms,
+                ast: self.ast,
+                events: &mut events,
+                memo: self.memo.clone(),
+            };
+            let delta = self.snapshot.new_facts_of(s.kb);
+            let mut sat = Saturator::resume(&mut s, &self.snapshot, delta)?;
+            sat.read_universals();
+            while let Some(firing) = sat.step(&mut s)? {
+                if firings.len() == max_firings {
+                    return Ok(false);
+                }
+                let universal = sat.take_universal();
+                firings.push(Supported { firing, universal });
+            }
+            Ok(true)
+        })();
+        let out = match ran {
+            Ok(true) => Ok(Some(read(&fork, self.terms, &firings))),
+            Ok(false) => Ok(None),
+            Err(e) => Err(e.into()),
+        };
+        drop(fork);
         self.terms.provs.discard_fork();
         out
     }

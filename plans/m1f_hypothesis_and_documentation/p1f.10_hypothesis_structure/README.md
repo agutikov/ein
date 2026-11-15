@@ -19,6 +19,14 @@ owed group being a group whose members are exactly the alternatives of an instan
 found from the cover alone; on I-Z2 the five grids are the five declared relations and all 36 of their rows and
 columns are owed, on I-Z1 one family of each grid is owed and the other is the subject of 18 instances L5 does not
 license, and where the *must* is missing the record says what a program would have to state.
+[S1f.10.11](s1f.10.11_coupling.md#record-2026-11-15) ran that day, through a stop at its T4: the coupling is
+computed by the owner, the questions' hypergraph read from the pair layer and from one node with every candidate
+alive alone committed; I-L02 shows its triple and I-SEND its four columns, and every member of N on every corpus
+program a describe exhausts lies inside one edge. Over the conflicts' and the derivations' edges the components
+were finer than R on six programs, each by a debt; **the default taken on it by the main session, the user's to
+revise at the stop: every debt root owes is an edge of its own kind, licensed by L5 or not**, and R is then the
+product of its parts over the components on every compared program
+([its record](s1f.10.11_coupling.md#the-stop-and-the-default-taken-on-it)).
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).

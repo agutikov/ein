@@ -11,7 +11,7 @@
 //! ```sh
 //! cargo run --release -p ein-infer --example pair_layer -- \
 //!     [--facts F] [--jobs J] [--routes] [--theory | --supports | --check] \
-//!     [--rule NAME] [--out DIR] [FILE…] > rows.jsonl
+//!     [--coupling | --readings] [--rule NAME] [--out DIR] [FILE…] > rows.jsonl
 //! ```
 //!
 //! `--facts` is the budget, in facts beyond root summed over the layer's
@@ -157,6 +157,32 @@
 //! it, what root says of each, and the candidates whose own node holds it at
 //! root and in the small KB.
 //!
+//! ### The coupling
+//!
+//! `--coupling` reads each program a second time, loaded again, through
+//! [`ein_infer::structure::coupling`] under the reading the owner takes, the
+//! pairs and the whole node, and with `--supports` the support of every
+//! pair root excludes. Three files more, `coupling.json`, raw,
+//! `coupling.md`, the same as tables, and `coupling.dot`, the questions'
+//! hypergraph, and a `coupling` object on the line's `theory`: `questions`
+//! and those that are a candidate `alone`; `ties` of the pair layer by
+//! kind; `edges`, how many, how many the pairs gave, the node gave and are
+//! `of_a_debt` (and `of_a_debt_alone`), of three questions or more, the
+//! `largest`, and `by_arity` as `[arity, edges, of the pairs, of the node,
+//! of a debt]`; `one_step`, the same of the edges one application back,
+//! which the whole node's reading keeps; `reasons`, the puzzle's
+//! statements named; `components`, over every edge, and
+//! `conflict_components`, over the conflicts' and the derivations' alone;
+//! `debts`, the instances that are edges, those of them
+//! `debts_across_conflict_components` and those `debts_unlicensed`, of an
+//! instance L5 does not license, whose payers are the ones read;
+//! `unlicensed`, every instance L5 does not license; `node`, what the one
+//! saturation cost (`saturations`, `facts` beyond root, `applications`,
+//! `steps`, `contradictions`, `rounds`, `merged`), `node_stopped` and
+//! `cut`; and `wall`, of the whole second reading, both pair layers
+//! included. `--readings` adds the same counts under each other reading,
+//! `pairs`, `direct` and `one-step`, each read again.
+//!
 //! `--rule NAME` reads the small KB by another rule than the owner's,
 //! `small-kb`: `proposed`, `objects`, `relates`, `layout` or `h-alone`, the
 //! alternatives the corpus falsified, kept here so that each falsification
@@ -172,8 +198,8 @@ use ein_corpus::repo_root;
 use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::region::Cores;
 use ein_infer::structure::{
-    self, Cliques, Cover, Deaths, ExactlyOne, Mark, NotAGrid, Origin, Owing, PairLayer, Stated,
-    Theory, Verdict, WitnessIs,
+    self, Cliques, Coupling, CouplingOptions, CouplingReading, Cover, Deaths, ExactlyOne, Mark,
+    NotAGrid, Origin, Owing, PairLayer, Question, Stated, Theory, Verdict, WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
 use rustc_hash::FxHashSet;
@@ -288,6 +314,8 @@ fn main() {
     let mut theory = false;
     let mut supports = false;
     let mut check = false;
+    let mut coupling = false;
+    let mut readings = false;
     let mut rule: Rule = structure::small_kb;
     let mut out = repo_root().join("build/structure");
     let mut files: Vec<PathBuf> = Vec::new();
@@ -300,6 +328,8 @@ fn main() {
             "--theory" => theory = true,
             "--supports" => (theory, supports) = (true, true),
             "--check" => (theory, supports, check) = (true, true, true),
+            "--coupling" => (theory, coupling) = (true, true),
+            "--readings" => (theory, coupling, readings) = (true, true, true),
             "--rule" => {
                 let name = args.next().expect("--rule NAME");
                 rule = rule_named(&name).unwrap_or_else(|| panic!("no rule `{name}`"));
@@ -347,6 +377,10 @@ fn main() {
                     std::fs::create_dir_all(&dir).expect("the program's directory");
                     let mut share = theory_row(&path, &rel, &dir, &t, &terms, (rule, &opts));
                     share["cover"] = cover_row(&path, &rel, &dir, &t, &terms);
+                    if coupling {
+                        share["coupling"] =
+                            coupling_row(&path, &rel, &dir, (opts, supports, readings));
+                    }
                     (t.root, Some(share))
                 }
                 Err(e) => {
@@ -1440,6 +1474,445 @@ fn declared_beside(
         "by_rule": by_rule,
     });
     (declared, owed, rows)
+}
+
+/// One reading of the coupling, of the program loaded again: the cover and
+/// the coupling, with the wall of the whole reading, root's saturation and
+/// both pair layers included.
+fn coupled(
+    path: &Path,
+    opts: structure::Options,
+    reading: CouplingReading,
+    supports: bool,
+) -> Result<(Cover, Coupling, f64), String> {
+    let (mut kb, mut terms, ast) = loaded(path).ok_or("it does not load")?;
+    let asked = CouplingOptions {
+        layer: opts,
+        reading,
+        supports,
+    };
+    let t = Instant::now();
+    let (cover, c) =
+        structure::coupling(&mut kb, &mut terms, &ast, &asked).map_err(|e| e.to_string())?;
+    Ok((cover, c, t.elapsed().as_secs_f64()))
+}
+
+/// The members of a set of candidates as one pattern, where they differ in
+/// one word: `(val D *)`. Otherwise its first member and how many there
+/// are.
+fn pattern(texts: &[&str]) -> String {
+    let words: Vec<Vec<&str>> = texts
+        .iter()
+        .map(|t| t.split_whitespace().collect())
+        .collect();
+    let Some(first) = words.first() else {
+        return "(none)".to_string();
+    };
+    if texts.len() == 1 {
+        return texts[0].to_string();
+    }
+    if words.iter().all(|w| w.len() == first.len()) {
+        let differ: Vec<usize> = (0..first.len())
+            .filter(|&k| words.iter().any(|w| w[k] != first[k]))
+            .collect();
+        if let [k] = differ[..] {
+            let mut out: Vec<String> = first.iter().map(|w| w.to_string()).collect();
+            let (open, close) = (first[k].starts_with('('), first[k].ends_with(')'));
+            out[k] = format!(
+                "{}*{}",
+                if open { "(" } else { "" },
+                if close { ")" } else { "" }
+            );
+            return out.join(" ");
+        }
+    }
+    format!("{} … ×{}", texts[0], texts.len())
+}
+
+/// The coupling, of one program: `coupling.json`, raw, `coupling.md`, the
+/// same as tables, and `coupling.dot`, the questions' hypergraph drawn, an
+/// edge of two questions a line and an edge of more a point joined to
+/// each. The line's object: the questions, the ties by kind, the edges by
+/// arity and by what gave them, the components, the debts across them,
+/// what the whole node cost, and the wall of the reading. With `readings`,
+/// the same counts under each of the other readings.
+fn coupling_row(
+    path: &Path,
+    rel: &str,
+    dir: &Path,
+    (opts, supports, readings): (structure::Options, bool, bool),
+) -> Value {
+    let (cover, c, wall) = match coupled(path, opts, CouplingReading::Node, supports) {
+        Ok(read) => read,
+        Err(e) => return json!({"error": e}),
+    };
+    let arities = |edges: &[structure::Edge]| -> Vec<Value> {
+        // [arity, edges, of the pairs, of the node, of a debt]
+        let mut by_arity: BTreeMap<usize, [u32; 4]> = BTreeMap::new();
+        for e in edges {
+            let at = by_arity.entry(e.arity()).or_default();
+            at[0] += 1;
+            at[1] += u32::from(e.pairs.all() > 0);
+            at[2] += u32::from(e.node.all() > 0);
+            at[3] += u32::from(!e.debts.is_empty());
+        }
+        by_arity
+            .iter()
+            .map(|(k, v)| json!([k, v[0], v[1], v[2], v[3]]))
+            .collect()
+    };
+    let edge_counts = |edges: &[structure::Edge]| -> Value {
+        let debt_alone = |e: &&structure::Edge| e.kind() == structure::EdgeKind::Debt;
+        json!({
+            "all": edges.len(),
+            "of_the_pairs": edges.iter().filter(|e| e.pairs.all() > 0).count(),
+            "of_the_node": edges.iter().filter(|e| e.node.all() > 0).count(),
+            "of_a_debt": edges.iter().filter(|e| !e.debts.is_empty()).count(),
+            "of_a_debt_alone": edges.iter().filter(debt_alone).count(),
+            "of_three_or_more": edges.iter().filter(|e| e.arity() >= 3).count(),
+            "largest": edges.iter().map(|e| e.arity()).max().unwrap_or(0),
+            "by_arity": arities(edges),
+        })
+    };
+    let counts = |c: &Coupling, wall: f64| -> Value {
+        let kind = |k: structure::TieKind| c.ties.iter().filter(|t| t.kind == k).count();
+        json!({
+            "reading": c.reading.as_str(),
+            "complete": c.complete(),
+            "domain": c.domain(),
+            "questions": c.questions.len(),
+            "alone": c.alone().count(),
+            "ties": {
+                "all": c.ties.len(),
+                "excludes": kind(structure::TieKind::Excludes),
+                "implies": kind(structure::TieKind::Implies),
+                "interacts": kind(structure::TieKind::Interacts),
+            },
+            "edges": edge_counts(&c.edges),
+            "one_step": c.one_step.as_deref().map(edge_counts),
+            "reasons": c.reasons.len(),
+            "components": c.components.len(),
+            "largest_component": c.components.iter().map(Vec::len).max().unwrap_or(0),
+            "conflict_components": c.conflict_components.len(),
+            "debts": c.debts.len(),
+            "debts_across_conflict_components": c.debts_across().len(),
+            "debts_unlicensed": c.debts.iter().filter(|d| !d.licensed).count(),
+            "unlicensed": c.unlicensed,
+            "committed": c.committed.len(),
+            "node": c.node.map(|w| json!({
+                "saturations": w.saturations,
+                "facts": w.facts,
+                "applications": w.applications,
+                "steps": w.steps,
+                "contradictions": w.contradictions,
+                "rounds": w.rounds,
+                "merged": w.merged,
+            })),
+            "node_stopped": c.node_stopped.map(|s| s.as_str()),
+            "cut": {
+                "ways": c.cut.ways,
+                "descriptions": c.cut.descriptions,
+                "unsettled": c.cut.unsettled,
+            },
+            "wall": wall,
+        })
+    };
+    let mut row = counts(&c, wall);
+    if readings {
+        let mut others = serde_json::Map::new();
+        for reading in [
+            CouplingReading::Pairs,
+            CouplingReading::Direct,
+            CouplingReading::OneStep,
+        ] {
+            let got = match coupled(path, opts, reading, false) {
+                Ok((_, c, wall)) => counts(&c, wall),
+                Err(e) => json!({"error": e}),
+            };
+            others.insert(reading.as_str().to_string(), got);
+        }
+        row["readings"] = Value::Object(others);
+    }
+
+    // The files.
+    let members = |q: u32| -> Vec<u32> {
+        match c.questions[q as usize] {
+            Question::Group(g) => cover.members(g).to_vec(),
+            Question::Alone(b) => vec![b],
+        }
+    };
+    let name = |q: u32| -> String {
+        let m = members(q);
+        pattern(&m.iter().map(|&b| c.text(b)).collect::<Vec<_>>())
+    };
+    let open = |q: u32| -> usize {
+        members(q)
+            .iter()
+            .filter(|&&b| cover.marks[b as usize] == Mark::AliveAlone)
+            .count()
+    };
+    let texts = |v: &[u32]| -> Vec<&str> { v.iter().map(|&b| c.text(b)).collect() };
+    let edges_raw = |edges: &[structure::Edge]| -> Vec<Value> {
+        edges.iter().map(|e| json!({
+            "questions": e.questions.iter().map(|&q| name(q)).collect::<Vec<_>>(),
+            "kind": e.kind().as_str(),
+            "pairs": {"excludes": e.pairs.excludes, "implies": e.pairs.implies, "interacts": e.pairs.interacts},
+            "node": {"conflicts": e.node.conflicts, "derivations": e.node.derivations, "implications": e.node.implications},
+            "debts": e.debts.iter().map(|&d| c.debts[d as usize].instance.as_str()).collect::<Vec<_>>(),
+            "stated": e.stated.iter().map(|&(k, n)| json!([c.reasons[k as usize], n])).collect::<Vec<_>>(),
+        })).collect()
+    };
+    let raw = json!({
+        "program": rel,
+        "reading": c.reading.as_str(),
+        "complete": c.complete(),
+        "domain": c.domain(),
+        "questions": (0..c.questions.len() as u32).map(|q| json!({
+            "is": match c.questions[q as usize] {
+                Question::Group(_) => "a group",
+                Question::Alone(_) => "a candidate in no group",
+            },
+            "name": name(q),
+            "open": open(q),
+            "members": members(q).iter().map(|&b| json!([c.text(b), cover.marks[b as usize].as_str()])).collect::<Vec<_>>(),
+        })).collect::<Vec<_>>(),
+        "ties": c.ties.iter().map(|t| json!({
+            "pair": [c.text(t.pair.0), c.text(t.pair.1)],
+            "kind": t.kind.as_str(),
+            "stated": t.stated.as_ref().map(|s| s.iter().map(|&k| c.reasons[k as usize].as_str()).collect::<Vec<_>>()),
+        })).collect::<Vec<_>>(),
+        "edges": edges_raw(&c.edges),
+        "edges_one_step_back": c.one_step.as_deref().map(edges_raw),
+        "components": c.components.iter().map(|k| texts(k)).collect::<Vec<_>>(),
+        "conflict_components": c.conflict_components.iter().map(|k| texts(k)).collect::<Vec<_>>(),
+        "debts": c.debts.iter().map(|d| json!({
+            "rule": d.rule,
+            "instance": d.instance,
+            "licensed": d.licensed,
+            "payers": texts(&d.payers),
+            "questions": d.questions.iter().map(|&q| name(q)).collect::<Vec<_>>(),
+        })).collect::<Vec<_>>(),
+        "debts_across_conflict_components": c.debts_across(),
+        "unlicensed_instances": c.unlicensed,
+        "committed": texts(&c.committed),
+        "counts": row,
+    });
+    let text = serde_json::to_string_pretty(&raw).expect("JSON");
+    std::fs::write(dir.join("coupling.json"), text + "\n").expect("coupling.json");
+
+    let mut md = format!("# The coupling of `{rel}`\n\n");
+    let whole = if c.complete() {
+        ""
+    } else {
+        ", **not read whole**"
+    };
+    md += &format!(
+        "Reading: **{}**{whole}. {} questions ({} a candidate in no group), {} ties of the pair \
+         layer, {} edges ({} a debt's), {} components ({} over the conflicts' and the \
+         derivations' edges alone), {} debts that are edges ({} of an instance L5 does not \
+         license).\n\n",
+        c.reading.as_str(),
+        c.questions.len(),
+        c.alone().count(),
+        c.ties.len(),
+        c.edges.len(),
+        c.edges.iter().filter(|e| !e.debts.is_empty()).count(),
+        c.components.len(),
+        c.conflict_components.len(),
+        c.debts.len(),
+        c.debts.iter().filter(|d| !d.licensed).count()
+    );
+    if let Some(domain) = c.domain() {
+        md += &format!("**{domain}.**\n\n");
+    }
+    match (c.node, c.node_stopped) {
+        (_, Some(stop)) => md += &format!("The whole node was not read: {}.\n\n", stop.as_str()),
+        (Some(w), None) => {
+            md += &format!(
+                "The whole node: {} candidates committed, 1 saturation, {} facts beyond root, {} \
+                 applications, {} derivation steps, {} contradictions; labels settled in {} \
+                 rounds, {} facts with ways of more than one kind.\n\n",
+                c.committed.len(),
+                w.facts,
+                w.applications,
+                w.steps,
+                w.contradictions,
+                w.rounds,
+                w.merged
+            );
+        }
+        (None, None) => {}
+    }
+    let table = |edges: &[structure::Edge]| -> String {
+        let mut md = "| questions | arity | kind | pairs: excludes / implies / interacts | node: conflicts / derivations / implications | the debts, and the statements most named |\n|---|---:|---|---|---|---|\n".to_string();
+        let mut order: Vec<&structure::Edge> = edges.iter().collect();
+        order.sort_by_key(|e| {
+            (
+                std::cmp::Reverse(e.arity()),
+                std::cmp::Reverse(e.pairs.all() + e.node.all()),
+            )
+        });
+        for e in &order {
+            let questions: Vec<String> = e
+                .questions
+                .iter()
+                .map(|&q| format!("`{}`", name(q)))
+                .collect();
+            let mut why: Vec<String> = e
+                .debts
+                .iter()
+                .map(|&d| format!("owed: `{}`", c.debts[d as usize].instance))
+                .collect();
+            why.extend(
+                e.stated
+                    .iter()
+                    .take(3)
+                    .map(|&(k, n)| format!("`{}` ×{n}", c.reasons[k as usize])),
+            );
+            md += &format!(
+                "| {} | {} | {} | {} / {} / {} | {} / {} / {} | {} |\n",
+                questions.join(" + "),
+                e.arity(),
+                e.kind().as_str(),
+                e.pairs.excludes,
+                e.pairs.implies,
+                e.pairs.interacts,
+                e.node.conflicts,
+                e.node.derivations,
+                e.node.implications,
+                why.join(", ")
+            );
+        }
+        md
+    };
+    md += "## The edges\n\n";
+    md += &table(&c.edges);
+    if let Some(one_step) = &c.one_step {
+        md += &format!(
+            "\n## The edges one application back\n\n{} edges, {} of three questions or more, \
+             against {} and {} above.\n\n",
+            one_step.len(),
+            one_step.iter().filter(|e| e.arity() >= 3).count(),
+            c.edges.len(),
+            c.edges.iter().filter(|e| e.arity() >= 3).count()
+        );
+        md += &table(one_step);
+    }
+    md += "\n## The questions\n\n| question | is | members | open at root |\n|---|---|---:|---:|\n";
+    for q in 0..c.questions.len() as u32 {
+        md += &format!(
+            "| `{}` | {} | {} | {} |\n",
+            name(q),
+            match c.questions[q as usize] {
+                Question::Group(_) => "a group",
+                Question::Alone(_) => "a candidate in no group",
+            },
+            members(q).len(),
+            open(q)
+        );
+    }
+    let listed = |parts: &[Vec<u32>]| -> String {
+        let mut md = String::new();
+        for (k, members) in parts.iter().enumerate() {
+            md += &format!(
+                "{}. {} candidates: `{}`\n",
+                k + 1,
+                members.len(),
+                texts(members).join("` `")
+            );
+        }
+        md
+    };
+    md += "\n## The components\n\n";
+    md += &listed(&c.components);
+    if c.conflict_components.len() != c.components.len() {
+        md += "\n## The components over the conflicts' and the derivations' edges alone\n\n";
+        md += &listed(&c.conflict_components);
+    }
+    if !c.debts.is_empty() {
+        md += "\n## The debts that are edges\n\nAn instance root owes whose payers lie in two questions or more. Where L5 does not license it the payers are those read, the candidates whose own node holds one of its witnesses, and the edge may be too small.\n\n| rule | instance | L5 licenses it | payers | questions | across the conflicts' components |\n|---|---|---|---|---|---|\n";
+        let across = c.debts_across();
+        for (k, d) in c.debts.iter().enumerate() {
+            let questions: Vec<String> = d
+                .questions
+                .iter()
+                .map(|&q| format!("`{}`", name(q)))
+                .collect();
+            md += &format!(
+                "| `{}` | `{}` | {} | `{}` | {} | {} |\n",
+                d.rule,
+                d.instance,
+                if d.licensed { "yes" } else { "**no**" },
+                texts(&d.payers).join("` `"),
+                questions.join(" + "),
+                if across.contains(&(k as u32)) {
+                    "yes"
+                } else {
+                    "no"
+                }
+            );
+        }
+    }
+    std::fs::write(dir.join("coupling.md"), md).expect("coupling.md");
+
+    let quoted = |s: &str| s.replace('\\', "\\\\").replace('"', "\\\"");
+    let mut dot = format!(
+        "graph coupling {{\n  label=\"{}\";\n  node [shape=box, fontsize=10];\n",
+        quoted(rel)
+    );
+    let in_an_edge: BTreeSet<u32> = c
+        .edges
+        .iter()
+        .flat_map(|e| e.questions.iter().copied())
+        .collect();
+    for q in 0..c.questions.len() as u32 {
+        dot += &format!(
+            "  q{q} [label=\"{}\\n{} open of {}\"{}];\n",
+            quoted(&name(q)),
+            open(q),
+            members(q).len(),
+            if in_an_edge.contains(&q) {
+                ""
+            } else {
+                ", color=gray, fontcolor=gray"
+            }
+        );
+    }
+    for (k, e) in c.edges.iter().enumerate() {
+        let weight = e.pairs.all() + e.node.all();
+        // A debt's edge alone is dashed, and named for its debts.
+        let (style, label) = match e.kind() {
+            structure::EdgeKind::Debt => {
+                let unlicensed = e.debts.iter().any(|&d| !c.debts[d as usize].licensed);
+                let label = format!(
+                    "owed ×{}{}",
+                    e.debts.len(),
+                    if unlicensed { ", unlicensed" } else { "" }
+                );
+                (", style=dashed", label)
+            }
+            structure::EdgeKind::Both => ("", format!("{weight}, owed ×{}", e.debts.len())),
+            structure::EdgeKind::Tie => ("", weight.to_string()),
+        };
+        if let [a, b] = e.questions[..] {
+            dot += &format!("  q{a} -- q{b} [label=\"{label}\", fontsize=8{style}];\n");
+        } else {
+            dot += &format!("  e{k} [shape=point, xlabel=\"{label}\"];\n");
+            let dashed = if style.is_empty() {
+                ""
+            } else {
+                " [style=dashed]"
+            };
+            for q in &e.questions {
+                dot += &format!("  e{k} -- q{q}{dashed};\n");
+            }
+        }
+    }
+    dot += "}\n";
+    std::fs::write(dir.join("coupling.dot"), dot).expect("coupling.dot");
+
+    row["files"] = json!(["coupling.json", "coupling.md", "coupling.dot"]);
+    row
 }
 
 /// *Exactly one*, of one program: `exactly_one.json` and `exactly_one.md`

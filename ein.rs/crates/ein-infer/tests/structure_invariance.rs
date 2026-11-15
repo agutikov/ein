@@ -7,7 +7,12 @@
 //! groups with their two maps, the marks, the components and the maximal
 //! cliques of root's own exclusion graph, and *exactly one*: what root owes
 //! with each instance's witnesses, how each instance stands to the cover,
-//! which groups are owed, and the grids. Each is a statement about nodes of
+//! which groups are owed, and the grids; and the coupling: the questions,
+//! the ties of the pair layer, the edges with what each covers, the debts
+//! it is the edge of and the statements it names, the edges one application
+//! back, the components over every edge and over the conflicts' alone, and
+//! the debts, licensed or not. Each is a
+//! statement about nodes of
 //! the program's lattice, so two things that are not the program must not
 //! move it:
 //!
@@ -55,7 +60,8 @@ use std::path::{Path, PathBuf};
 use ein_core::Terms;
 use ein_corpus::repo_root;
 use ein_infer::structure::{
-    self, Cliques, Cover, ExactlyOne, Owing, PairLayer, Theory, TheoryOptions, WitnessIs,
+    self, Cliques, Coupling, CouplingReading, Cover, ExactlyOne, Owing, PairLayer, Question,
+    Theory, TheoryOptions, WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
 
@@ -105,6 +111,7 @@ struct Read {
     theory: Theory,
     cover: Cover,
     exact: ExactlyOne,
+    coupling: Coupling,
     terms: Terms,
 }
 
@@ -115,20 +122,26 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
     let mut ast = Ast::new();
     let forms = parse(&mut ast, text, name.to_str()).ok()?;
     let mut kb = load(&mut ast, &mut terms, &forms, Some(base)).ok()?;
-    Some(
-        match structure::theory(&mut kb, &mut terms, &ast, &TheoryOptions::default()) {
-            Err(e) => Err(e.to_string()),
-            Ok(theory) => match theory.exactly_one() {
-                None => Err(format!("the small KB has no layer: {:?}", theory.small)),
-                Some((cover, exact)) => Ok(Read {
-                    theory,
-                    cover,
-                    exact,
-                    terms,
-                }),
-            },
+    let read = structure::theory_coupled(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &TheoryOptions::default(),
+        CouplingReading::Node,
+    );
+    Some(match read {
+        Err(e) => Err(e.to_string()),
+        Ok((theory, coupled)) => match (theory.exactly_one(), coupled) {
+            (Some((cover, exact)), Some((_, coupling))) => Ok(Read {
+                theory,
+                cover,
+                exact,
+                coupling,
+                terms,
+            }),
+            _ => Err(format!("the small KB has no layer: {:?}", theory.small)),
         },
-    )
+    })
 }
 
 /// Whether the program at `path` searches, loaded again.
@@ -260,6 +273,18 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
             format!("{:?}", (&r.exact.owing, &r.exact.owed_by, &r.exact.about)),
         ),
         ("the grids", format!("{:?}", r.exact.grids)),
+        ("the coupling", {
+            let c = &r.coupling;
+            format!(
+                "{:?}",
+                (
+                    (&c.questions, &c.question_of, &c.ties, &c.reasons),
+                    (&c.edges, &c.one_step, &c.debts, c.unlicensed),
+                    (&c.components, &c.conflict_components, &c.committed),
+                    (c.pairs_read, c.node, c.node_stopped, c.cut)
+                )
+            )
+        }),
     ]
 }
 
@@ -515,7 +540,96 @@ fn as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> Vec<(&'static str, Strin
         ),
         ("the owed groups", format!("{owed_groups:?}")),
         ("the grids", format!("{:?}", (grids, not_grids))),
+        ("the coupling", coupling_as_sets(r, &strip)),
     ]
+}
+
+/// The coupling as sets of texts: a question is its members, an edge its
+/// questions with what it covers, its debts and the statements it names,
+/// and a tie, a component and a debt the candidates each holds. What the node cost
+/// follows the program and not the spelling, and is compared with them.
+fn coupling_as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> String {
+    let c = &r.coupling;
+    let name = |b: u32| strip(c.text(b));
+    let one = |v: &[u32]| -> BTreeSet<String> { v.iter().map(|&b| name(b)).collect() };
+    let question = |q: u32| -> BTreeSet<String> {
+        match c.questions[q as usize] {
+            // A reading a test cut may hold fewer groups than it names.
+            Question::Group(g) => one(r.cover.groups.get(g as usize).map_or(&[], |m| m)),
+            Question::Alone(b) => one(&[b]),
+        }
+    };
+    let questions: BTreeSet<(bool, BTreeSet<String>)> = (0..c.questions.len() as u32)
+        .map(|q| {
+            let alone = matches!(c.questions[q as usize], Question::Alone(_));
+            (alone, question(q))
+        })
+        .collect();
+    let reason = |k: u32| strip(&c.reasons[k as usize]);
+    let ties: BTreeSet<_> = c
+        .ties
+        .iter()
+        .map(|t| {
+            let stated: Option<BTreeSet<String>> = t
+                .stated
+                .as_ref()
+                .map(|s| s.iter().map(|&k| reason(k)).collect());
+            (one(&[t.pair.0, t.pair.1]), t.kind.as_str(), stated)
+        })
+        .collect();
+    type Sets = BTreeSet<BTreeSet<String>>;
+    let questions_of = |v: &[u32]| -> Sets { v.iter().map(|&q| question(q)).collect() };
+    let edges_of = |edges: &[structure::Edge]| -> BTreeSet<_> {
+        edges
+            .iter()
+            .map(|e| {
+                let stated: BTreeSet<(String, u32)> =
+                    e.stated.iter().map(|&(k, n)| (reason(k), n)).collect();
+                // A debt it is the edge of, by its instance.
+                let debts: BTreeSet<String> = e
+                    .debts
+                    .iter()
+                    .map(|&d| strip(&c.debts[d as usize].instance))
+                    .collect();
+                (
+                    questions_of(&e.questions),
+                    format!("{:?}", (e.pairs, e.node)),
+                    debts,
+                    stated,
+                )
+            })
+            .collect()
+    };
+    let edges = (edges_of(&c.edges), c.one_step.as_deref().map(edges_of));
+    let parts = |v: &[Vec<u32>]| -> Sets { v.iter().map(|k| one(k)).collect() };
+    let components = (parts(&c.components), parts(&c.conflict_components));
+    // The debts as a bag: two instances may read alike with the prefixes
+    // off.
+    let mut debts: BTreeMap<_, usize> = BTreeMap::new();
+    for d in &c.debts {
+        let key = (
+            strip(&d.rule),
+            strip(&d.instance),
+            d.licensed,
+            one(&d.payers),
+            questions_of(&d.questions),
+        );
+        *debts.entry(key).or_default() += 1;
+    }
+    let debts = (debts, c.unlicensed);
+    format!(
+        "{:?}",
+        (
+            (questions, ties, edges, components, debts),
+            (
+                one(&c.committed),
+                c.pairs_read,
+                c.node,
+                c.node_stopped,
+                c.cut
+            )
+        )
+    )
 }
 
 /// The first part two readings differ in, with where.
@@ -811,6 +925,16 @@ const REORDERED: &str = r#"(import std.algebra :symbols (functional))
 (is-a a Thing) (is-a b Thing) (is-a p Place) (is-a q Place)
 (functional at)
 (functional likes)
+(relation shy Thing :why "{?1} is shy")
+(shy a)
+(rule shy-at-p ()
+  :match  (and (shy ?x) (at ?x p) (likes ?x ?x))
+  :assert (false)
+  :why    "{?x} is shy, and is not at p while liking itself")
+(rule liked ()
+  :match  (and (is-a ?y Thing) (absent (and (is-a ?x Thing) (likes ?x ?y))))
+  :assert (open likes)
+  :why    "{?y} owes someone who likes it")
 (hrule put ()
   :match  (and (is-a ?x Thing) (is-a ?y Place))
   :assert (at ?x ?y)
@@ -828,8 +952,10 @@ const REORDERED: &str = r#"(import std.algebra :symbols (functional))
 /// comparison as sets is for. Here one does: `(at a p)` is before `(likes a
 /// a)` as written and as `(imp0.at a p)`, and after it as `(places.at a
 /// p)`. The four groups, a thing's places and a thing's likings, are the
-/// same sets in all three forms; and a cover that kept the first two groups
-/// of its own order would not be, which is what the comparison would say.
+/// same sets in all three forms, and so is the coupling, one edge between
+/// two of them by one stated fact and one by two debts; and a cover that
+/// kept the first two groups of its own order would not be, which is what
+/// the comparison would say.
 #[test]
 fn a_form_that_reorders_the_universe_moves_no_set() {
     let dir = ein_corpus::Scratch::new("ein-structure-forms");
@@ -840,6 +966,24 @@ fn a_form_that_reorders_the_universe_moves_no_set() {
         .expect("loads")
         .expect("a structure");
     assert_eq!((written.cover.n(), written.cover.groups.len()), (8, 4));
+    // One statement ties a thing's places to its likings: one tie, and one
+    // edge of the two questions, which every form must name by the same
+    // two sets.
+    let c = &written.coupling;
+    // And each thing owes a liker, one of two candidates in two questions:
+    // two debts, and one edge of the two things' likings that is theirs.
+    assert_eq!(c.ties.len(), 1);
+    assert_eq!((c.debts.len(), c.unlicensed), (2, 0), "{:?}", c.unlicensed);
+    let kinds: Vec<_> = c.edges.iter().map(|e| (e.arity(), e.kind())).collect();
+    assert_eq!(
+        kinds,
+        [
+            (2, structure::EdgeKind::Tie),
+            (2, structure::EdgeKind::Debt)
+        ],
+        "{:?}",
+        c.edges
+    );
     let order = |r: &Read, strip: &dyn Fn(&str) -> String| -> Vec<String> {
         let candidates = r.theory.root.candidates.iter();
         candidates.map(|c| strip(&c.text)).collect()
@@ -876,6 +1020,7 @@ fn a_form_that_reorders_the_universe_moves_no_set() {
                 theory: r.theory.clone(),
                 cover: r.cover.clone(),
                 exact: r.exact.clone(),
+                coupling: r.coupling.clone(),
                 terms: Terms::new(),
             };
             cut.cover.groups.truncate(2);
@@ -916,6 +1061,7 @@ fn a_structure_that_moves_is_caught() {
         theory: r.theory.clone(),
         cover: r.cover.clone(),
         exact: r.exact.clone(),
+        coupling: r.coupling.clone(),
         terms: Terms::new(),
     };
     moved.cover.member_of.swap(0, 1);
@@ -952,6 +1098,29 @@ fn a_structure_that_moves_is_caught() {
     moved.exact.owed_by[0].clear();
     let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
     assert!(d.starts_with("the owed groups"), "{d}");
+
+    // An edge lost, and a component's candidates in another order.
+    moved.exact = r.exact.clone();
+    moved.coupling.edges.pop();
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("the coupling"), "{d}");
+    let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
+    assert!(d.starts_with("the coupling"), "{d}");
+    moved.coupling = r.coupling.clone();
+    moved.coupling.one_step.as_mut().expect("kept").pop();
+    let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
+    assert!(d.starts_with("the coupling"), "{d}");
+    moved.coupling = r.coupling.clone();
+    moved.coupling.conflict_components.pop();
+    let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
+    assert!(d.starts_with("the coupling"), "{d}");
+    moved.coupling = r.coupling.clone();
+    moved.coupling.components[0].reverse();
+    assert!(difference(&said, &as_it_is(&moved)).is_some());
+    assert_eq!(
+        difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)),
+        None
+    );
 
     let renamed = |s: &str| s.replace("color-loc", "m.color-loc");
     let d = difference(&as_sets(&r, &plain), &as_sets(&r, &renamed)).expect("a difference");

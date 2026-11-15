@@ -268,6 +268,126 @@
 //!
 //! **Nothing is synthesised.** No rule, obligation or closure is added, the
 //! table is not handed to the node function, and no route reads any of it.
+//!
+//! ### Coupling: what ties the questions
+//!
+//! A group says which candidates answer one question. [`Coupling`] says
+//! which questions bear on each other. **A question** is a group of the
+//! cover, or a candidate in no group ([`Question`]): *which of these, if
+//! any*, and *this one, or not*. **A coupling is a set of two or more
+//! questions that bear on each other**: some conflict or some derivation
+//! needs a member of each of them, or some debt needs a member of one of
+//! them. With the questions as nodes it is a hyperedge ([`Edge`]), which
+//! says which of the two it is ([`EdgeKind`]), and the result is the
+//! questions' hypergraph: a constraint graph, with what each edge was read
+//! from and the statements or the instance it rests on.
+//!
+//! **Which questions a conflict is about is not in the candidates it
+//! reads.** A candidate of a grid is in two groups: `(val D 5)` is a digit
+//! of `D` and a letter that is `5`. So one **way** to a conclusion, the
+//! candidates one derivation of it reads, has several **descriptions**, a
+//! question of each candidate, and the edges are a **cover** of the ways by
+//! descriptions: the class of questions that describes the most ways
+//! first, a class of one question before any other since a way one
+//! question describes is that question's own, and classes that stand
+//! equal chosen together. That is what makes a column of a sum the letters
+//! it adds and not the digits they may be: every way to the column's
+//! contradiction reads a digit of each of its letters, and no two of them
+//! the same three digits.
+//!
+//! **Two things are read.** From root's pair layer, the **ties**
+//! ([`Tie`]): the pairs of two candidates alive alone and in no question
+//! together that root excludes, of which one implies the other, or that
+//! interact. And **the whole node**: root with every candidate alive alone
+//! committed, one fork, dead at once and saturated to quiescence all the
+//! same, read with every rule application that reached it, redundant ones
+//! among them, each with its premises, what its universals read and the
+//! activator its plan was compiled from, and beside them every
+//! justification the store kept. On a program the static check calls
+//! monotone an application made at a node of alive candidates is made at
+//! the whole node too, so every derivation of every node is there.
+//!
+//! **A derived fact's label is one class of questions**: the union of the
+//! classes the cover of its ways chose, a way being a choice, for each
+//! premise beyond root, of the candidate it is or of its label. The labels
+//! are settled in rounds from none, each round reading every fact from the
+//! round before, so they do not follow the order the applications came
+//! in. A way that reads two candidates no alive state holds together, two
+//! of one question or a pair root excludes, is no state's and is not read,
+//! but for the pair's own contradiction. The node's edges are then the
+//! cover of its ways to a contradiction, an application that concludes
+//! `(false)` or a fact beside its negation; the cover of its ways to each
+//! committed candidate; and every other fact's label ([`NodeTies`]).
+//!
+//! **An edge names the puzzle's statements it rests on** ([`Edge::stated`]):
+//! of a tie, where supports are asked, those of its death's support; of the
+//! whole node, those the last application of each way reads, directly or
+//! through the derivation root recorded first for a premise root holds,
+//! its activator among them. A statement is the puzzle's where the small
+//! KB drops it.
+//!
+//! **A debt is an edge of its own kind** ([`Debt`]). `R` is the
+//! commitments alive and discharged, and an instance root owes ties its
+//! payers there as a conflict does: a state of `R` holds one of them. The
+//! instances are L5's table's, and one whose payers alive alone lie in two
+//! questions or more is an edge of their questions, those that hold the
+//! most payers first, its reason the instance. One whose payers are all in
+//! one question is no edge: it is that question's own, an owed group's
+//! *exactly one*. **Whether L5 licenses the instance does not decide it**:
+//! the licence says whether a search may confine itself to the
+//! alternatives, not whether root owes, and `R` is discharged either way.
+//! A licensed instance's payers are its alternatives. An unlicensed one's
+//! are **the payers read**, the candidates whose own node holds one of its
+//! witnesses, and the edge says which it is ([`Debt::licensed`]).
+//!
+//! **The components** ([`Coupling::components`]) are of the candidates
+//! alive alone: two are together where they share a question or an edge
+//! holds a question of each. They are what `R` is the product of its parts
+//! over. The components over the conflicts' and the derivations' edges
+//! alone stand beside ([`Coupling::conflict_components`]): what no debt
+//! joins, and where a debt's payers lie in two of them
+//! ([`Coupling::debts_across`]) `R` is no product over those.
+//!
+//! **What it rests on, and what it does not tell.**
+//! `ein-infer/tests/coupling.rs` holds it to a describe wherever one
+//! exhausts: every member of `N` lies inside one edge of a conflict or a
+//! derivation, and `R` is that product. Past that:
+//!
+//! - **it may tie more than any state does.** A way through a derived fact
+//!   does not know which members of a question the fact was derived from,
+//!   so two ways no one alive state makes together are read as one;
+//! - **it is coarse where a fact has ways of two kinds.** The label is
+//!   their union, since labels kept apart do not settle on a program whose
+//!   derivations go round. Where every clue propagates into every other,
+//!   as on a grid of bijections, the node's edges come to one edge of every
+//!   question the clues reach, and say what the components say. The edges
+//!   read one application back are kept beside them
+//!   ([`Coupling::one_step`]), off the same node: the finer ones that edge
+//!   absorbs;
+//! - **an unlicensed debt's edge may be too small.** Its payers are only
+//!   those a single candidate's node shows: a witness that needs two
+//!   candidates together is not seen. Components too coarse claim no
+//!   independence that is false, and components too fine would; nothing
+//!   follows for a search from such an edge beyond *do not take these
+//!   questions for independent*;
+//! - **a tie is of root as the clues leave it.** Where root has applied
+//!   them the pairs it excludes are their joint consequences, and an edge
+//!   of the pair layer is no one statement's;
+//! - **the readings short of the whole node** ([`CouplingReading`]) miss
+//!   what they are named for: the pairs alone every conflict of three, the
+//!   node read without following a derived premise every conflict through
+//!   one, and one application back every conflict two away;
+//! - on a program the static check flags nothing above the nodes read
+//!   follows ([`Coupling::domain`]).
+//!
+//! **What it costs** is root's pair layer, the small KB's, and one
+//! saturation ([`NodeWork`]). The node is no node of the routes' cache and
+//! is charged to no budget; it is not read where its facts pass the
+//! layer's budget or its applications [`NODE_APPLICATIONS`]
+//! ([`NodeStop`]). The bounds, that one, [`ROUNDS`], [`WAYS`] and
+//! [`DESCRIPTIONS`], are constants of the module and no lever, and
+//! [`CouplingCut`] says what each cut. `coupling_in` reads it over a
+//! route's open space, as `cover_in` reads the cover. No route reads it.
 
 use std::collections::BTreeMap;
 use std::time::Instant;
@@ -283,6 +403,16 @@ use crate::events::{Events, sexpr};
 use crate::explain::CoreStatus;
 use crate::explore::{self, Ask, Licence, Mode, Seen, Space, Stopped, Which};
 use crate::region::{self, Candidate, Cores};
+
+mod coupling;
+// The entry a route takes, beside `cover_in` and `exactly_one_in`.
+#[allow(unused_imports)]
+pub(crate) use coupling::coupling_in;
+pub use coupling::{
+    COUPLING_FLAGGED, Coupling, CouplingOptions, CouplingReading, Cut as CouplingCut, DESCRIPTIONS,
+    Debt, Edge, EdgeKind, NODE_APPLICATIONS, NodeStop, NodeTies, NodeWork, PairTies, Question,
+    ROUNDS, Tie, TieKind, WAYS, coupling, theory_coupled,
+};
 
 /// The largest step, as the routes'.
 const BATCH: u64 = 1024;

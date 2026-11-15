@@ -268,6 +268,13 @@ pub struct Saturator {
     mirror_queue: Vec<FactId>,
     mirror_seeded: bool,
     record_alternatives: bool,
+    /// Keep what each application's universals read, a **redundant** one's
+    /// among them, for [`Saturator::take_universal`]. Off on every route: a
+    /// redundant firing is the highest-volume path, and only a reader of a
+    /// node's whole derivation asks ([`Saturator::read_universals`]).
+    reading_universals: bool,
+    /// What the last application's universals read, where they are kept.
+    last_universal: Box<[FactId]>,
     last_firing: Option<Firing>,
 
     // ── Observables ────────────────────────────────────────────────
@@ -410,6 +417,8 @@ impl Saturator {
             // was retired at M1e2 S1e2.1a.6, and a marked relation is
             // always closed.
             record_alternatives: cfg.record_alternative_justifications,
+            reading_universals: false,
+            last_universal: Box::default(),
             last_firing: None,
             naf_rounds: 0,
             naf_admitted: 0,
@@ -521,6 +530,8 @@ impl Saturator {
             // than by a firing, so nothing else would offer it.
             mirror_seeded: snapshot.mirror_seeded,
             record_alternatives: cfg.record_alternative_justifications,
+            reading_universals: false,
+            last_universal: Box::default(),
             last_firing: None,
             naf_rounds: 0,
             naf_admitted: 0,
@@ -614,6 +625,21 @@ impl Saturator {
     /// How many `(binding_key, guards)` pairs the dedup has seen.
     pub fn n_seen(&self) -> usize {
         self.seen.len()
+    }
+
+    /// From here on the facts each application's universals read are kept
+    /// for [`Self::take_universal`], a redundant application's too, which
+    /// no record holds. It changes nothing that is derived or recorded: the
+    /// store's alternative justifications are taken as before.
+    pub(crate) fn read_universals(&mut self) {
+        self.reading_universals = true;
+    }
+
+    /// What the universals of the application [`Self::step`] last returned
+    /// read ([`ein_core::Prov::universal`]), once: empty for a mirror's
+    /// derivation, and wherever [`Self::read_universals`] was not asked.
+    pub(crate) fn take_universal(&mut self) -> Box<[FactId]> {
+        std::mem::take(&mut self.last_universal)
     }
 
     pub fn last_firing(&self) -> Option<&Firing> {
@@ -773,6 +799,9 @@ impl Saturator {
             if self.record_alternatives {
                 self.record_alternative(s, &plan, entry, &tentative, guards);
             }
+            if self.reading_universals {
+                self.last_universal = self.universal_support(s, &plan, entry, guards);
+            }
             let e = self.entries.get(entry);
             return Ok(Some(Firing {
                 rule: plan.rule,
@@ -791,6 +820,9 @@ impl Saturator {
         }
         let absent = self.negative_premises(s, &plan, entry, guards);
         let universal = self.universal_support(s, &plan, entry, guards);
+        if self.reading_universals {
+            self.last_universal = universal.clone();
+        }
         let e = self.entries.get(entry);
         let env = Env {
             regs: &e.regs,
