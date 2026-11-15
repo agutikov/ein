@@ -309,6 +309,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.302](#q-m1f302--what-stdmathrats-unreduced-answer-fixes-and-rat-norm-under-b) | what `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b) | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator in normal form, D with no high zero, nothing reduced; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.303](#q-m1f303--rat-simplify-asks-stdmathgcd-the-numerator-first) | `rat-simplify` asks `std.math.gcd` the numerator first | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator first, as before; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.304](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) | `route_invariance` past the default budget, past any shard's five minutes | **ruled 2026-11-15: (d)**, no test runs past the default budget (the user: *"(d)"*); defaulted (a) the same day by T7; built at P1f.6's close; [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled) |
+| [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (b) for E-1, (a) for E-7, (d) for E-54, is not acted on before the reply; the witnesses and the census are on [S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s record |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6006,3 +6007,106 @@ and that they are independent. What the re-plan decided beyond it, each without 
     longer name `docs/history/` as their destination (the user's rulings of 2026-11-15 on the docs).
 
 **Defaulted 2026-11-15: all ten as written, the user's to revise.**
+
+### Q-M1f.306 — What the blind enumerator takes for an object
+
+**Raised** 2026-11-15 by
+[S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s
+tasks 1 to 3, for E-1, E-7 and E-54 of the calculator's [`findings.md`](p1f.6_calculator/findings.md), which
+P1f.10 owns. **It is put at P1f.10's one stop**
+([S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)), with the phase's other three
+questions. Removing a candidate changes H, and H is part of the answer, so this is one of the three places in
+the phase where an answer would move.
+
+**What the engine does** (the record's § What the code does). The blind enumerator's objects are the names
+index at root's fixpoint, which holds every fact's head beside its arguments, and the program's names
+(`invariant::program_names`: every constant in an argument position of a fact or a rule, Q-M1e2.9 (a)); less
+the names a signature declares, seven reserved words, and every name the registry calls a relation or a rule.
+The registry holds a relation a `(relation …)` declares and the head of every fact **a file writes**. So a head
+only a rule derives is an object, and that is E-1 where the head is a kernel dunder and E-7 where it is an
+undeclared relation: one mechanism. Every relation with a signature that nothing scopes out is proposed about,
+over every object, wherever either was loaded from: E-54.
+
+**The witnesses**, each by `ein oracle` on the release binary of `d7050ccf`, R without the marked candidates
+counted in the oracle's cube and, where the language has a means, again by `ein oracle` on a copy of the
+program in which they do not arise (`build/s1f.10.9/run.sh`, 2026-11-15; every program is in the record):
+
+| | witness | H | marked | R | R without them |
+|---|---|---:|---|---:|---:|
+| E-1 | ten digits closed by a rule, `total` open | 11 | `(total __closed__)` | 2 048 | 1 024, and 1 024 on the copy that writes `(__closed__ digit)` as a fact |
+| E-1 | `(import std.math.arith)`, `total` open | 1 | `(total __closed__)` | 2 | 1 |
+| E-1 | `(import std.math.decimal-arith)`, `total` open | 13 | none: `std.math.digits` writes its closures as facts | 8 192 | 8 192 |
+| E-1 | a dunder written as a value, as `(imply1 functional __closed__)` | 2 | `(total __closed__)` | 4 | 2 |
+| E-7 | the import probe, `tasty` alone open | 5 | `(tasty liquid)`, `(tasty thing)` | 32 | 8, and 8 on the copy that declares both |
+| E-7 | the same in one file | 3 | `(tasty liquid)` | 8 | 4, and 4 on the copy that declares it |
+| E-54 | a library of `colour` and `shape`, imported for `colour`, `near` declared | 4 | all 4: each names `red` or `square`, the library's | 16 | 1; without the one of `lib.shape` alone, 8 |
+
+- **E-1 as worded does not reproduce on the shipped calculator**: a written `(__closed__ R)` fact registers
+  the dunder as a relation, so it is an object only where every closure is derived by a rule (the prototype's
+  shape, `std.math.arith` alone), or where it is written as a value. **One closure stated two ways gives two
+  answers today**, 2 048 states and 1 024.
+- **E-7's names are heads, never values.** No rule *asserts them as values*, and `program_names`, which built
+  Q-M1e2.9 (a), does not list them. A relation's name that a program does write as a value is **not** an
+  object where a file declares the relation or writes a fact of it (the record's control).
+
+**The census** (`cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example object_census`,
+2026-11-15, the oracle's default limit of 16; rows in `build/s1f.10.9/census/rows.tsv`). Of 867 corpus files
+644 load. The blind enumerator built H on 470; 115 of them have a candidate, 2 190 candidates in all.
+
+| the candidate names | programs | candidates | R differs without them |
+|---|---:|---:|---|
+| **E-1**, a kernel dunder | 0 | 0 | — |
+| **E-7**, a relation's name | 1, `examples/features/01_not_and_absent.ein` | 16 of its 35 | **not reached by the oracle**, 2³⁵; a default-budget describe computes 64 655 nodes, all in R, and 58 966 of them hold one, so R would differ |
+| **E-54**, a name only an imported module writes | 2, `examples/ein-bugs/wrong-answers/import-directives-as.ein` and `-twice.ein` | 2 of 2 each | **yes, both**, by the oracle's cube: 4 states to 1 |
+| E-54, a candidate of a relation the main file does not spell | 0 | 0 | — |
+
+On the 174 programs another rung builds H for, the blind enumerator is not asked. Were it, it would name
+`__closed__` on 8 of them and a derived relation's name on 4 (the record's last table): the corpus's answers
+are clear of E-1 and E-7 by the rung those programs take.
+
+**The options**, as the stage states them, each with what it would change:
+
+- **(a) Leave E-1 and E-7, and the read-out names such candidates** as it names types bound as objects
+  (Q-M1e.12 (a)). No answer moves. The `universe` row and `root.hypgen` gain a count, which today would print
+  on one corpus program (`features/01`, 16 candidates naming `explicitly-dislikes`) and on the witnesses.
+- **(b) A kernel dunder is never an object**, which is a wrong answer today and a register row before its
+  fix. The witnesses: 2 048 → 1 024, which is what the same program answers with its closure written as a
+  fact; 2 → 1; and for `__symmetric__` 8 → 4. **No corpus program's H holds a dunder, so no corpus
+  answer, golden or expectation moves.** The user would say whether *never* covers a dunder a program writes
+  as a value (4 → 2 on that witness), which Q-M1f.7 (b) keeps legal and Q-M1e2.9 (a) reads as a name.
+- **(c) (b), and a relation's name is not an object either.** The witnesses: 32 → 8 and 8 → 4, each equal to
+  its declaring copy; the original probe, whose R `ein solve` reads as the whole cube of 39 candidates, would be
+  the whole cube of 17. **One corpus program moves**, `features/01`: H 35 → 19, its R, and with it the goldens
+  that hold its renderings and its measured cost; it states no `:expect`. The stage says
+  this *narrows Q-M1e2.9 and needs the user to say so*. On the evidence it narrows nothing of that ruling as
+  built: it would treat a head only a rule derives as every head a file declares or writes is treated already.
+- **(d) Leave E-54**: the universe is the program's names wherever they were written.
+- **(e) A name or a relation only an import brings is not guessed about unless the program writes it**, which
+  makes what is guessed depend on what the main file spells and needs the user to say so. The witness: 16 → 1
+  under both import forms for the names; for the relation alone 16 → 8 where the main file lists `colour` in
+  `:symbols` and 16 → 4 where it imports the module whole, **if a listing counts as writing**, which is an
+  answer that depends on the import form (`ein-cli/tests/import_invariance.rs` holds that none does). **Two
+  corpus programs move**, 4 states → 1, and both are register witnesses of W90 whose `fixed` rows state the
+  four states as the right answer, by hand, over the module's names: those two rows' `right` would be
+  restated. A program that imports the calculator beside an open relation of its own is left with no candidate
+  (the third E-1 witness, 8 192 → 1).
+
+**The default, as the stage names it: (a) for E-7**, *since it is the ruling as written*; **(b) for E-1**,
+*since no program means a dunder as an object*; **(d) for E-54**, *since every import brings its module whole
+and the answer does not depend on the import form*.
+
+**What the census says of those three reasons**, for the user to weigh; it changes no default:
+
+- **E-7's reason does not hold of its witness.** The ruling as written makes names of the constants in
+  argument positions, and the witness's names are in none. What does speak for (a) is the cost of (c): one
+  corpus program's answer, by a register row. What speaks for (c) is that E-1 and E-7 are one mechanism, so (b)
+  alone is a rule about two names inside a behaviour that stays, and that declaring a derived relation already
+  removes its name today.
+- **E-1's reason holds**, and the census adds that (b) moves nothing in the corpus and makes the two ways of
+  stating a closure agree.
+- **E-54's reason holds**, and the census adds that (e) would restate two answers the register holds as right
+  and, in its relation half, break the import invariance on the witness pair.
+
+**Not defaulted. The question is put at the phase's one stop, and no default is acted on before the user
+replies**: no candidate is removed, no register row filed, no read-out row added. As ruled, it is
+[T1f.10.9.4](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#tasks).
