@@ -29,7 +29,13 @@ And the same day, on the census's script:
 > also utils/rule_census.py can group rule shapes by number of relations, by number of relations arguments,
 > and so on propose ways to group shapes
 
-Three things are in it. The milestone *pulls* the ideas and followups about rules as data, which
+And on 2026-11-15, at the close of M1f's calculator phase:
+
+> m12 one more note: most of hand-written rules are one fact match and one fact assert, so the logic of the
+> theory is in the rules connections - one rule activates another either directly or via asserted relation
+> fact, draw diagrams of rules as objects and connections between them as relations for theories
+
+The first instruction has three things in it. The milestone *pulls* the ideas and followups about rules as data, which
 [§ What it pulls together](#what-it-pulls-together) does. It starts from an analysis of the rules the
 repository has, which is [P12.1](#p121--the-census-of-rules). And it has *no specific goals right now*: what
 the milestone builds is decided after the results are read, by the user.
@@ -114,9 +120,30 @@ plans/m12_rules_as_data/rule_census.md` rewrites the page's tables.
 
 ## Later phases
 
-**Not defined.** The user said *"No specific goals right now, want to see analyze results"*: what M12
-builds, in what order, and which of the sources above it takes up is the user's to say once the results
-are read. Nothing is planned here ahead of that.
+**Not defined but for one.** The user said *"No specific goals right now, want to see analyze results"*: what
+M12 builds, in what order, and which of the sources above it takes up is the user's to say once the results
+are read. The one later phase the user has named is [P12.2](#p122--the-theories-drawn-as-graphs-of-rules), by
+the note of 2026-11-15; nothing else is planned here ahead of that.
+
+### P12.2 — The theories drawn as graphs of rules
+
+**Status:** named by the user's note of 2026-11-15 ([§ The instruction](#the-instruction)); not planned in stages,
+not started. **What the note asks:** for each theory, a stdlib module or a program with what it imports, a
+diagram in which **a rule is a node** and **a connection between two rules is an edge, labelled by the relation
+that makes it**. Rule A connects to rule B **via an asserted relation fact** when A's `:assert` concludes a fact
+of a relation that B's `:match` reads, and **directly** when A concludes B's activator, as a closing rule and
+the `positional` macro's call do. The note's premise is that the theory's logic lives in those connections,
+because most hand-written rules match one fact and assert one: on the census of 2026-11-12, 898 rules of the
+corpus are *1 × 1* ([`rule_census.md` § By premises × conclusions](rule_census.md#by-premises--conclusions)),
+the largest group by far, and the calculator has added rules since. The phase re-takes that count first.
+
+**What exists to start from:**
+- **One rule at a time:** `ein render rules` draws a rule's match → assert shape (`ein-render/src/rules.rs`).
+- **The connections, counted but not drawn per rule:** `utils/rule_census.py`'s § B counts the assert → match
+  connections between rules ([§ 10, the digraph](rule_census.md#10-the-assert--match-digraph): its components,
+  cycles and longest paths), and draws the graph only at the level of modules.
+- **The engine's own dependency graph:** `ein_infer::strata`, over the plans a run compiled, printed as the
+  `;; Strata` line of `ein saturate --dump`.
 
 ## Handed over by M1f, 2026-11-15
 
