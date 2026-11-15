@@ -1,9 +1,14 @@
 # S1f.10.13 — The price list
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-15, at the re-plan. Not started.
-**Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md), the excluded pairs. It may run beside the other
-stages of track S.
+**Status:** planned 2026-11-15, at the re-plan. Not started. **Re-scoped 2026-11-15 on the user's correction**
+([README § The two ideas](README.md#the-two-ideas)): track R is required and depends on track S's results. So
+this stage runs after track S's stages and not beside them; it prices each object of the structure (the theory's
+exclusions, root's exclusions, the groups, the owed groups and grids, the coupling) and not the excluded pairs
+alone; and a *no* is a verdict on one way of spending for one question, which sends the track to the next way and
+does not close it. Where the text below says otherwise, this line stands.
+**Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md), [S1f.10.10](s1f.10.10_the_theorys_share.md),
+[S1f.10.2](s1f.10.2_groups.md), [S1f.10.4](s1f.10.4_bounded_groups.md) and [S1f.10.11](s1f.10.11_coupling.md).
 **Read by:** [S1f.10.3](s1f.10.3_the_restricted_join.md), [S1f.10.5](s1f.10.5_ordering.md) and
 [S1f.10.14](s1f.10.14_exactly_one_spent.md), none of which builds anything this stage calls a *no*; and the
 phase's stop, [S1f.10.12](s1f.10.12_the_structure_shown.md), where the user sees the table.

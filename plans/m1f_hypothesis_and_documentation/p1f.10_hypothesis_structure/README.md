@@ -40,15 +40,27 @@ So the phase has two tracks, and a third group that is neither:
 | | the question | its acceptance | what a *no* is |
 |---|---|---|---|
 | **S, the structure** | what structure does a program's hypothesis set H have, read from the program by the engine, with nobody declaring it? | the structure is defined, computed by one owner, held by invariances, and **shown**: on real programs first, then by a surface of `ein` | there is no *no*: what cannot be discovered is said, with the program that shows it |
-| **R, the search** | is discovering that structure cheap, and does knowing it reduce the work of a route over R? | measured before anything is built; where it pays, built with R identical on every corpus program in every mode, the discovery counted as work | a full result. It closes track R and takes nothing from track S |
+| **R, the search** | how does the structure track S discovers reduce the work of a route over R, the discovery counted? | measured before anything is built, on track S's results; built where it pays, with R identical on every corpus program in every mode, the discovery counted as work | of one way of spending: a result, with its table, and the track takes the next way. The track itself is required (the user, 2026-11-15, below) |
 | **H, what H is** | the three owned findings about which facts are candidates at all | each ruled by the user; an answer moves only by a register row | the answer stays, and the read-out says what it is |
 
-**How *independent* is read here.** Neither track's result is a condition for the other's. Track S ships
-whatever track R finds, and its cost is no objection to it: it answers a question a user asks, as `ein oracle`
-does. Track R may use less than track S discovers, or structure obtained another way (a pair learned from a
-death, [S1f.10.13](s1f.10.13_the_price_list.md)), and it is judged by work alone. One stage of R takes S's
-output as its input, the order, by the user's reply of 2026-11-12 below; that is R reading S, not S waiting for
-R.
+**How the two stand to each other, as the user corrected it.** The re-plan read *independent* as *neither
+track's result is a condition for the other's*, made track R an experiment that a table of *no* could close, and
+let its price list run beside track S on the pairs alone. The user, 2026-11-15, while part 1 was running:
+
+> wait a second, both goals - Track S and Track R are both required, but R obviously depends on the results of
+> S. Search improvements depends on hypothesis structure
+
+So:
+
+- **Both tracks are required.** Track S is delivered whatever track R finds, as before. Track R is work the phase
+  owes and not a *maybe*: a way of spending the structure that measures as a loss is a result about that way,
+  named with its table, and the track goes on to the next way. It is not closed by one.
+- **Track R reads track S's results.** Its input is the structure as track S discovers it, the theory's
+  exclusions, the groups, the owed groups and grids, the coupling, and not the pair layer alone. So
+  [S1f.10.13](s1f.10.13_the_price_list.md) runs **after** track S's stages and prices what each object would
+  remove, and every spending stage takes its structure from the one owner.
+- What stays of *independent*: track S's acceptance does not mention track R, and its cost is no objection to
+  it.
 
 ## The instruction
 
@@ -255,7 +267,8 @@ group forms. Every stage reports it, and S1f.10.11 is where its triple has to ap
    groups are cliques of the theory's exclusions. (Re-ordered 2026-11-15, after S1f.10.2 stopped at its control:
    as planned it was S1f.10.1, S1f.10.2, and S1f.10.10 in step 2.)
 2. S1f.10.4 and S1f.10.11, which share the census and no file with each other's result.
-3. S1f.10.13, which needs S1f.10.1 only and may run beside step 2.
+3. S1f.10.13, **after steps 1 and 2**: track R depends on track S's results (the user, 2026-11-15), so the
+   price list reads the groups, the owed groups and the coupling, and not the pairs alone.
 4. The three H stages up to their questions: S1f.10.9, S1f.10.6, S1f.10.15, tasks 1 to 3 of each.
 5. S1f.10.12's bundle, and **the one stop**: the structure on real programs, the price list, and four
    questions (the surface, and the three of track H), each with its default. No default is acted on before the
@@ -304,7 +317,9 @@ A ruling of track H that changes H re-takes the census for the programs it names
 - **Every golden that moves is named before it moves.** The `work` row is in the read-out, so they do move:
   `read_out_examples.md`, the shape digests, a corpus entry's `cost_ms` and with it the slow set.
 - **No lever.** No `(config …)` field, no CLI option and no `EIN_*` name chooses a structure or an order.
-- **A null result closes the track** with its table, and track S's acceptance does not mention it.
+- **A way that does not pay is recorded with its table and its losers, and does not close the track**: the
+  track is required, and its close says which ways of spending the structure were built, which measured as a
+  loss, and what the routes' work is after it.
 
 **Track H**
 
