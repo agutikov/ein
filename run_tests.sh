@@ -231,6 +231,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     trap 'rm -rf "${GATE_TMP}"' EXIT
 
     # ── deep-corpus ──
+    nightly_step "deep-corpus: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
+
     nightly_step "deep-corpus: corpus_cli, the slow entries"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test corpus_cli
 
@@ -262,6 +265,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
     # ── deep-corpus-shards, once per shard of its matrix, one after another ──
+    nightly_step "deep-corpus-shards 1/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
+
     nightly_step "deep-corpus-shards 1/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
 
@@ -273,6 +279,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    nightly_step "deep-corpus-shards 2/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
 
     nightly_step "deep-corpus-shards 2/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
@@ -286,6 +295,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
+    nightly_step "deep-corpus-shards 3/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
+
     nightly_step "deep-corpus-shards 3/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
 
@@ -297,6 +309,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    nightly_step "deep-corpus-shards 4/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
 
     nightly_step "deep-corpus-shards 4/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
@@ -419,6 +434,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     trap 'rm -rf "${GATE_TMP}"' EXIT
 
     # ── deep-corpus, and the slow steps that left it ──
+    dev_host_step "deep-corpus: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
+
     dev_host_step "deep-corpus: corpus_cli, the slow entries"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test corpus_cli
 
@@ -465,6 +483,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check build/review
 
     # ── deep-corpus-shards, once per shard of its matrix, one after another ──
+    dev_host_step "deep-corpus-shards 1/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
+
     dev_host_step "deep-corpus-shards 1/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
 
@@ -476,6 +497,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    dev_host_step "deep-corpus-shards 2/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
 
     dev_host_step "deep-corpus-shards 2/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
@@ -489,6 +513,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
+    dev_host_step "deep-corpus-shards 3/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
+
     dev_host_step "deep-corpus-shards 3/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
 
@@ -500,6 +527,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    dev_host_step "deep-corpus-shards 4/4: the test binaries, built"
+    TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
 
     dev_host_step "deep-corpus-shards 4/4: answer_round_trip, the slow and heavy_dump entries"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip

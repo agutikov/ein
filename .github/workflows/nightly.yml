@@ -65,6 +65,11 @@ jobs:
       # bundle's drawings of them were refused (M1f S1f.5.29, Q-M1f.78).
       - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
       - run: mkdir -p "${GATE_TMP}"
+      # M1f S1f.6.39 — the job's test binaries, built in a step of their own, so
+      # that a test step's time on the runner is its tests' (Q-M1f.102's five
+      # minutes a step) and the build's is read apart: `rust-cache` holds the
+      # dependencies, and the workspace's own crates build here every night.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
       # The `slow = true` entries the per-commit sweep skips, every declared
       # cell of each: 14 entries on 2026-11-03
       # (`grep -c '^slow *= *true' corpus/corpus.toml`). `slow` is a measured
@@ -150,6 +155,11 @@ jobs:
         with: { workspaces: ein.rs }
       - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
       - run: mkdir -p "${GATE_TMP}"
+      # M1f S1f.6.39 — the shard's test binaries, built in a step of their own, so
+      # that a test step's time on the runner is its tests' (Q-M1f.102's five
+      # minutes a step) and the build's is read apart: `rust-cache` holds the
+      # dependencies, and the workspace's own crates build here every night.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli -p ein-infer -p ein-render --profile gate --no-run
       # M1f S1f.5.13 — every corpus program's `--dump-answer` state files, each
       # reloaded to its state by value, with the entries the per-commit tier
       # leaves out: the `slow` ones, and the `heavy_dump` ones, whose dump
