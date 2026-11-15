@@ -1891,11 +1891,14 @@ fn the_closing_rule_of(spec: &Spec) {
     );
 }
 
+/// How a base spells its relation for a parameter of the macro.
+type Spelt = fn(&str) -> String;
+
 /// The bases that connect to `std.math.positional`, each with how its
 /// relation for a parameter is spelt: decimal's is the parameter in lower
 /// case, `?ADD-WALK` is `add-walk`; binary's is that with `bin-`, but for
 /// its numeral, `b2`, and its representation's `bin-named`.
-const BASES: [(&str, fn(&str) -> String); 2] = [
+const BASES: [(&str, Spelt); 2] = [
     ("stdlib/math/decimal-arith.ein", |p| p.to_ascii_lowercase()),
     ("stdlib/math/binary-arith.ein", |p| match p {
         "N" => "b2".to_string(),
