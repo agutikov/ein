@@ -49,8 +49,8 @@
 //! runner's image, `GATE_TMP`'s spelling (each side names its own directory),
 //! the `working-directory` (the script runs from the repo root and names
 //! `ein.rs/Cargo.toml`). And a flag dropped from both copies at once, which
-//! is why [`the_slow_cells_run_under_release_with_the_flag`] pins the one the
-//! corpus sweep's timing band needs.
+//! is why [`the_slow_cells_run_under_the_gate_profile_with_the_flag`] pins the
+//! one the corpus sweep's timing band needs.
 
 use ein_corpus::repo_root;
 
@@ -81,13 +81,13 @@ const NOT_NIGHTLY_STEPS: &[(&str, &str)] = &[
 /// [`the_dev_host_runs_the_nightly_and_what_left_it`] fails.
 const DEV_HOST_ONLY: &[(&str, &str)] = &[
     (
-        "EIN_ID_SEEDS=\"8\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-render --release --test id_order_invariance",
+        "EIN_ID_SEEDS=\"8\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-render --profile gate --test id_order_invariance",
         "left the nightly at S1f.5.27: 452 s on the runner (run 42802597417, \
          2026-11-10), and the per-commit tier runs one permutation of every \
          corpus file",
     ),
     (
-        "EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-cli --release --test route_invariance",
+        "EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-cli --profile gate --test route_invariance",
         "no tier ran it until S1f.5.27 (Q-M1f.51): 857 s here at \
          S1f.5.13, a second route held to answers `corpus_shapes` digests per \
          commit",
@@ -278,18 +278,20 @@ fn every_exception_is_a_step_the_workflow_has() {
     }
 }
 
-/// **The slow cells run under `--release`, with `EIN_CORPUS_SLOW`.** The
+/// **The slow cells run at release speed, with `EIN_CORPUS_SLOW`.** The
 /// timing half of `corpus_cli::the_slow_flag_still_describes_the_sweep` exists
-/// only under that flag, and is calibrated on that profile; if both copies
-/// lost the flag together, the diff above would pass and the band would stop
-/// being asserted anywhere.
+/// only under that flag, and is calibrated on release codegen, which the
+/// gate profile is (`--release` until M1f S1f.6.39, which gave every test
+/// step the gate profile: release codegen with the debug checks); if both
+/// copies lost the flag together, the diff above would pass and the band
+/// would stop being asserted anywhere.
 #[test]
-fn the_slow_cells_run_under_release_with_the_flag() {
+fn the_slow_cells_run_under_the_gate_profile_with_the_flag() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
     assert!(
         nightly.iter().any(|s| s.contains("EIN_CORPUS_SLOW=\"1\"")
-            && s.ends_with("cargo test -p ein-cli --release --test corpus_cli")),
-        "no nightly step runs corpus_cli under --release with EIN_CORPUS_SLOW=\"1\": \
+            && s.ends_with("cargo test -p ein-cli --profile gate --test corpus_cli")),
+        "no nightly step runs corpus_cli under --profile gate with EIN_CORPUS_SLOW=\"1\": \
          {nightly:#?}"
     );
 }
@@ -305,8 +307,8 @@ fn the_round_trips_slow_half_runs_with_the_flag() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
     assert!(
         nightly.iter().any(|s| s.contains("EIN_CORPUS_SLOW=\"1\"")
-            && s.ends_with("cargo test -p ein-cli --release --test answer_round_trip")),
-        "no nightly step runs answer_round_trip under --release with \
+            && s.ends_with("cargo test -p ein-cli --profile gate --test answer_round_trip")),
+        "no nightly step runs answer_round_trip under --profile gate with \
          EIN_CORPUS_SLOW=\"1\": the heavy_dump and slow entries' dumps would be \
          round-tripped by no CI tier: {nightly:#?}"
     );
@@ -508,7 +510,7 @@ fn slow_readers() -> Vec<(String, String)> {
 
 /// **Every slow half runs on a tier** (M1f S1f.5.27, Q-M1f.51's (b)). A test
 /// target that reads `EIN_CORPUS_SLOW` has a step in the nightly or on the dev
-/// host that runs it under `--release` with the flag, or is named in
+/// host that runs it under `--profile gate` with the flag, or is named in
 /// [`NO_SLOW_TIER`] with a premise this test checks. Three targets' slow
 /// halves ran on no tier until S1f.5.27, `route_invariance`, `region` and
 /// `obligation_rung`, and only S1f.5.13's re-take noticed; a fourth would fail
@@ -537,7 +539,7 @@ fn every_slow_half_runs_on_a_tier() {
             }
             continue;
         }
-        let tail = format!("cargo test -p {package} --release --test {target}");
+        let tail = format!("cargo test -p {package} --profile gate --test {target}");
         let runs = |steps: &[String]| {
             steps
                 .iter()
@@ -546,7 +548,7 @@ fn every_slow_half_runs_on_a_tier() {
         assert!(
             runs(&nightly) || runs(&dev),
             "{package}'s `{target}` reads EIN_CORPUS_SLOW, and neither the nightly \
-             nor --dev-host runs it under --release with the flag, so its slow \
+             nor --dev-host runs it under --profile gate with the flag, so its slow \
              half runs on no tier (Q-M1f.51)"
         );
     }

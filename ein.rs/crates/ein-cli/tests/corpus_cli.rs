@@ -283,24 +283,31 @@ fn sweep() -> Vec<Cell> {
     }
     cells.sort();
 
-    let mut out = Vec::with_capacity(cells.len());
-    for (i, (path, run)) in cells.into_iter().enumerate() {
-        let dir = root.join(format!("{i:04}"));
-        std::fs::create_dir_all(&dir).expect("cell output directory");
-        let argv = plan::argv(&run, &path, &dir);
-        let (code, stderr, took) = run_cell(bin, &argv, &repo, &dir);
-        let artefacts = inspect(&path, &run, code, &dir);
-        let _ = std::fs::remove_dir_all(&dir);
-        out.push(Cell {
-            path,
-            run,
-            code,
-            stderr,
-            artefacts,
-            took,
-        });
-    }
-    out
+    // On the pool (M1f S1f.6.39), in the cells' order. A cell's `took` is
+    // its own wall clock with the other workers busy beside it, which the
+    // timing claims below read with their 4× band.
+    let indexed: Vec<(usize, (String, String))> = cells.into_iter().enumerate().collect();
+    ein_corpus::pool::map(
+        "corpus_cli",
+        &indexed,
+        |(_, (path, run))| (path.clone(), run.clone()),
+        |(i, (path, run))| {
+            let dir = root.join(format!("{i:04}"));
+            std::fs::create_dir_all(&dir).expect("cell output directory");
+            let argv = plan::argv(run, path, &dir);
+            let (code, stderr, took) = run_cell(bin, &argv, &repo, &dir);
+            let artefacts = inspect(path, run, code, &dir);
+            let _ = std::fs::remove_dir_all(&dir);
+            Cell {
+                path: path.clone(),
+                run: run.clone(),
+                code,
+                stderr,
+                artefacts,
+                took,
+            }
+        },
+    )
 }
 
 /// The sweep, run once for the whole file. `OnceLock` rather than one sweep
@@ -464,9 +471,10 @@ fn no_cell_crashes() {
 /// *which side of the threshold an entry is on*, and that claim survives a
 /// machine four times slower than the one the numbers were taken on — where a
 /// tighter tolerance would only teach people that a red corpus test means "CI
-/// was busy". This sweep also runs the **`dev`** binary (`opt-level = 1`)
-/// while `cost_ms` is measured on `release`, which is 1.09× over the whole
-/// sweep and more than that on some cells. And the drift it exists to catch
+/// was busy". This sweep ran the **`dev`** binary (`opt-level = 1`) until M1f
+/// S1f.6.39 while `cost_ms` is measured on `release`, which was 1.09× over
+/// the whole sweep and more than that on some cells; since S1f.6.39 it runs
+/// the gate profile's, release codegen with the debug checks, on the pool. And the drift it exists to catch
 /// was **165×**: a flag set on 2026-08-17 and still there, unexamined, when
 /// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
 /// re-priced it. Nothing that big hides inside 4×.
@@ -530,19 +538,22 @@ fn the_slow_flag_still_describes_the_sweep() {
         // threshold itself (3.9× on the worst entry), and they are what
         // notices an entry crossing it.
         //
-        // Nightly runs this file with `EIN_CORPUS_SLOW=1` **and** `--release`
-        // (`.github/workflows/nightly.yml`), which is the profile `cost_ms`
-        // was measured on — so gating it does not weaken the band, it moves
-        // it to where it is truer. If that env line ever loses
+        // Nightly runs this file with `EIN_CORPUS_SLOW=1` **and** release
+        // codegen (`.github/workflows/nightly.yml`; `--release` until M1f
+        // S1f.6.39, the gate profile since, release with the debug checks),
+        // which is what `cost_ms` was measured on — so gating it does not
+        // weaken the band, it moves it to where it is truer. Since S1f.6.39
+        // the cells run on the pool, each beside the others a worker runs,
+        // which the band's 4× is wide enough for (S1f.6.39's record). If that env line ever loses
         // `EIN_CORPUS_SLOW`, this assertion stops existing; since M1e2
-        // S1e2.3.6 `nightly_steps::the_slow_cells_run_under_release_with_the_flag`
+        // S1e2.3.6 `nightly_steps::the_slow_cells_run_under_the_gate_profile_with_the_flag`
         // is what says so.
         if let Some(c) = e.cost_ms.filter(|c| *c as u128 >= floor) {
             let (c, f) = (c as u128, COST_FACTOR as u128);
             if ms > c * f || ms * f < c {
                 drift.push(format!(
                     "  {}: recorded cost_ms = {c}, swept in {ms} ms — outside {f}× \
-                     (machine load? this sweep is the `dev` profile)",
+                     (machine load? this sweep runs on the pool)",
                     e.path
                 ));
             }

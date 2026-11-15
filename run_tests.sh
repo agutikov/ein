@@ -16,17 +16,26 @@
 # pass over 5 209 renderings nothing checked. And `fdp` with its layout plugin
 # (M1f S1f.5.29): the review-bundle smoke lays every KB view out with it.
 #
-# Budget: **619 tests in ~1 m 51 s** (re-measured 2026-08-23, S1a.9.3/.9.4, warm
-# build, twice within 0.3 s). It was 577 in ~1 m 16 s at S1a.9.0 the day
-# before, and the 35 s between them is not the eleven tests S1a.9.3 added:
-# P1a.7 closed in between and put `jobs_invariance` — 20 712 (file, op, jobs)
-# cells — into the default gate. No test is marked slow; four targets are 78 % of the wall clock —
-# `dot_wellformed` 51 s, `jobs_invariance` 12.5 s, `search_invariant` 12.4 s,
-# `id_order_invariance` 11.5 s.
+# Budget: what each step and each test binary costs is a measurement, not a
+# line here: `python3 utils/gate_times.py run --out g.log -- ./run_tests.sh`,
+# then `report g.log` (M1f S1f.6.39, whose record has the gate, the nightly
+# and the runner's image before and after it on AC power). It was 619 tests
+# in ~1 m 51 s on 2026-08-23 and 99 min in gate #3's image on 2026-11-14.
 #
 #   EIN_BLESS=1 ./run_tests.sh          # re-bank every golden
 #   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the slow entries' cells, and every test's slow half
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
+#   EIN_TEST_JOBS=1   ./run_tests.sh    # the corpus sweeps one unit at a time; the verdicts are the default's
+#
+# **The tests run the gate profile, on a pool** (M1f S1f.6.39). Every test
+# step here, in `--nightly` and in `--dev-host` is `cargo test --profile
+# gate`: release codegen with the debug assertions and the overflow checks
+# on (`ein.rs/Cargo.toml`), into `ein.rs/target/gate/`, where the dev
+# profile's `opt-level = 1` made the corpus 1.5 times slower for the same two
+# checks. And every corpus sweep runs its units on `ein_corpus::pool`, on
+# `EIN_TEST_JOBS` workers (default 16, never more than the machine's
+# threads), each sweep reading the results back in its units' order, so no
+# verdict and no failure's text depends on the count.
 #
 # **This runs what CI runs** — every step of the per-commit tier
 # (`.github/workflows/per-commit.yml`), in its order, so that a green
@@ -210,41 +219,41 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     # ── deep-corpus ──
     nightly_step "deep-corpus: corpus_cli, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test corpus_cli
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test corpus_cli
 
     nightly_step "deep-corpus: answer_dump"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_dump
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_dump
 
     nightly_step "deep-corpus: answer_round_trip, the slow and heavy_dump entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_round_trip
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
 
     nightly_step "deep-corpus: lever_invariance, the slow cells"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test lever_invariance
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test lever_invariance
 
     nightly_step "deep-corpus: corpus_cores, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test corpus_cores
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
 
     nightly_step "deep-corpus: region, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test region
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test region
 
     nightly_step "deep-corpus: obligation_rung, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test obligation_rung
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test obligation_rung
 
     nightly_step "deep-corpus: import_invariance, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test import_invariance
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test import_invariance
 
     nightly_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
     nightly_step "deep-corpus: utils/stdlib_mutants.py --check"
-    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check
+    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
 
     # ── frontend-fuzz, once per seed of its matrix, at the nightly's budget ──
     nightly_step "frontend-fuzz: seed 1"
-    EIN_FUZZ_ITERS="20000" EIN_FUZZ_SEED="1" cargo test --manifest-path "${MANIFEST}" -p ein-ir --release --test fuzz_properties
+    EIN_FUZZ_ITERS="20000" EIN_FUZZ_SEED="1" cargo test --manifest-path "${MANIFEST}" -p ein-ir --profile gate --test fuzz_properties
 
     nightly_step "frontend-fuzz: seed 987654321"
-    EIN_FUZZ_ITERS="20000" EIN_FUZZ_SEED="987654321" cargo test --manifest-path "${MANIFEST}" -p ein-ir --release --test fuzz_properties
+    EIN_FUZZ_ITERS="20000" EIN_FUZZ_SEED="987654321" cargo test --manifest-path "${MANIFEST}" -p ein-ir --profile gate --test fuzz_properties
 
     # ── benches ──
     nightly_step "benches: cargo bench --bench engine -- --test"
@@ -276,34 +285,34 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     # ── deep-corpus, and the slow steps that left it ──
     dev_host_step "deep-corpus: corpus_cli, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test corpus_cli
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test corpus_cli
 
     dev_host_step "dev host: id_order_invariance, eight seeds"
-    EIN_ID_SEEDS="8" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --release --test id_order_invariance
+    EIN_ID_SEEDS="8" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
 
     dev_host_step "deep-corpus: answer_dump"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_dump
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_dump
 
     dev_host_step "deep-corpus: answer_round_trip, the slow and heavy_dump entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test answer_round_trip
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
 
     dev_host_step "deep-corpus: lever_invariance, the slow cells"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test lever_invariance
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test lever_invariance
 
     dev_host_step "deep-corpus: corpus_cores, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test corpus_cores
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
 
     dev_host_step "deep-corpus: region, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test region
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test region
 
     dev_host_step "deep-corpus: obligation_rung, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --release --test obligation_rung
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test obligation_rung
 
     dev_host_step "deep-corpus: import_invariance, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test import_invariance
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test import_invariance
 
     dev_host_step "dev host: route_invariance, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --release --test route_invariance
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance
 
     dev_host_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -321,14 +330,14 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check build/review
 
     dev_host_step "deep-corpus: utils/stdlib_mutants.py --check"
-    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check
+    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
 
     # ── frontend-fuzz, once per seed of the nightly's matrix, at P1a.1's budget ──
     dev_host_step "frontend-fuzz: seed 1, a million inputs"
-    EIN_FUZZ_ITERS="1000000" EIN_FUZZ_SEED="1" cargo test --manifest-path "${MANIFEST}" -p ein-ir --release --test fuzz_properties
+    EIN_FUZZ_ITERS="1000000" EIN_FUZZ_SEED="1" cargo test --manifest-path "${MANIFEST}" -p ein-ir --profile gate --test fuzz_properties
 
     dev_host_step "frontend-fuzz: seed 987654321, a million inputs"
-    EIN_FUZZ_ITERS="1000000" EIN_FUZZ_SEED="987654321" cargo test --manifest-path "${MANIFEST}" -p ein-ir --release --test fuzz_properties
+    EIN_FUZZ_ITERS="1000000" EIN_FUZZ_SEED="987654321" cargo test --manifest-path "${MANIFEST}" -p ein-ir --profile gate --test fuzz_properties
 
     # ── benches ──
     dev_host_step "benches: cargo bench --bench engine -- --test"
@@ -404,8 +413,8 @@ rm -rf "${GATE_TMP}"
 mkdir -p "${GATE_TMP}"
 trap 'rm -rf "${GATE_TMP}"' EXIT
 
-step "cargo test --workspace"
-TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
+step "cargo test --profile gate --workspace"
+TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" --profile gate --workspace ${ARGS[@]+"${ARGS[@]}"}
 
 # The calculator's batch under the work counters, `cargo test -p ein-infer
 # --features counters --test arith_batch`, was a step here from M1f S1f.6.3 to
@@ -418,7 +427,8 @@ step "utils/check_test_scratch.py"
 python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
 # M1e2 S1e2.1.6 — the review bundle for one small register case, built into a
-# temporary directory with the debug `ein` the step above just tested, every
+# temporary directory with the gate profile's `ein` the step above just tested
+# (`target/gate/ein`, M1f S1f.6.39), every
 # SVG non-empty and every link and image reference resolving. The bundle is
 # generated and gitignored, so nothing else would notice it break until the
 # review that needed it. Not behind the `--tests-only` guard: it is a test of
@@ -442,7 +452,8 @@ python3 "${SCRIPT_DIR}/utils/review_bundle.py" --smoke
 # would still skip six CI steps, so it is a subset either way, and the
 # header's job is to say so rather than to stop being true. What it would cost
 # is the number that decided it — the bench builds the **release** profile,
-# which `cargo test`'s dev profile shares no artifacts with, so the first
+# which `cargo test`'s profile shares no artifacts with (the dev profile then,
+# the gate profile since M1f S1f.6.39, whose `target/gate/` is its own), so the first
 # `--tests-only` after an engine edit pays a release codegen: **5.3 s**
 # against **1.6 s** for all six static checks warm (measured 2026-09-01,
 # `touch ein-infer/src/lib.rs` then `cargo bench --bench engine --no-run`),

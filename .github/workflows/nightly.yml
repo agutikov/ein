@@ -60,21 +60,24 @@ jobs:
       # in `cost_ms`, and two tests hold the flag to it in both directions:
       # `ein-corpus`'s `slow_matches_the_recorded_cost` and `corpus_cli.rs`'s
       # `the_slow_flag_still_describes_the_sweep`, whose timing half runs only
-      # under `EIN_CORPUS_SLOW` on `--release`, which is this step
-      # (docs/history/m1a_rust/measurements/corpus_cost.md).
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test corpus_cli
+      # under `EIN_CORPUS_SLOW` at release speed, which is this step
+      # (docs/history/m1a_rust/measurements/corpus_cost.md). **Every test step
+      # here runs the gate profile** (M1f S1f.6.39), release codegen with the
+      # debug assertions and overflow checks on, as the per-commit tier does:
+      # `--release` until then, which dropped both.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
       # Eight id-space permutations of every corpus file left for the dev host
       # at M1f S1f.5.27: 452 s on the runner (run 42802597417, 2026-11-10), and
       # the per-commit tier runs one permutation of every file.
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
       # program (`docs/kernel/inference/answer_dump.md`). **This step runs what
-      # the per-commit tier runs, under `--release`.** It was here for one slow
+      # the per-commit tier runs, under the same profile since M1f S1f.6.39.** It was here for one slow
       # run, `zebra2-minus-15 -e -m 3`, which went with `-e` at S1e2.1a.5's
       # switch (`fbcae3b2`, 2026-10-18); nothing in `answer_dump.rs` has read
       # `EIN_CORPUS_SLOW` since. Whether it gets a slow cell back is parked in
       # S1e2.3.6's notes.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test answer_dump
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test answer_dump
         env: { EIN_CORPUS_SLOW: "1" }
       # M1f S1f.5.13 — every corpus program's `--dump-answer` state files, each
       # reloaded to its state by value, with the entries the per-commit tier
@@ -83,18 +86,18 @@ jobs:
       # `square-unique`'s three, `features/04_open` and `features/01`, 64 514
       # to 65 214 each on 2026-11-09). The user's ruling of 2026-11-08 on P-16,
       # *"move to slow tier"*; until it no CI tier ran this test's slow half.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test answer_round_trip
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test answer_round_trip
         env: { EIN_CORPUS_SLOW: "1" }
       # M1e2 S1e2.1a.6 — every mode's read-out and summary under every lever,
       # held to the default's, with the cells the per-commit tier leaves out
       # for their cost: the declared lever cells of the slow entries (the
       # zebra2 pair's) and the register's witnesses that are slow.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test lever_invariance
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test lever_invariance
         env: { EIN_CORPUS_SLOW: "1" }
       # M1e2 S1e2.2.21 — every core a run reports names its commitment and,
       # with root, derives its contradiction; the per-commit tier reads the
       # entries that are not slow, and this the zebra family's too.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test corpus_cores
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test corpus_cores
         env: { EIN_CORPUS_SLOW: "1" }
       # M1f S1f.5.27 (Q-M1f.51) — two slow halves no tier ran, each a second
       # route held to an answer on the zebra2-minus-15 family, which no
@@ -103,15 +106,15 @@ jobs:
       # third, `route_invariance`'s, runs on the dev host: 857 s here
       # (2026-11-09), and the state route's answers on its programs are
       # digested per commit by `corpus_shapes`.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test region
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test region
         env: { EIN_CORPUS_SLOW: "1" }
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --release --test obligation_rung
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test obligation_rung
         env: { EIN_CORPUS_SLOW: "1" }
       # M1f S1f.6.35 — every corpus program that imports answers alike with its
       # imports selective, whole and `:as` (the user's criterion of 2026-11-14);
       # the per-commit tier reads the entries that are not slow, and this the
       # slow ones too: 83 s here (2026-11-14).
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --release --test import_invariance
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test import_invariance
         env: { EIN_CORPUS_SLOW: "1" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
@@ -121,9 +124,12 @@ jobs:
         working-directory: ${{ github.workspace }}
       # ── The sensitivity census — M1e S1e.4.5, `TE-L4` ──
       #
-      # It reads the release `ein` the steps above have already built
-      # (`CARGO_BIN_EXE_ein` is `target/release/ein` under `--release`), so
-      # this is a run and not a job. It is not the gate: the per-commit claim
+      # It reads the gate profile's `ein` the steps above have already built
+      # (`CARGO_BIN_EXE_ein` is `target/gate/ein` under `--profile gate`, M1f
+      # S1f.6.39; `target/release/ein` under `--release` until then), so
+      # this is a run and not a job. Its mutants run on `EIN_TEST_JOBS`
+      # workers, each in its own stdlib tree, the report in the mutants'
+      # order (`--jobs`, S1f.6.39). It is not the gate: the per-commit claim
       # is `ein-infer/tests/stdlib_coverage.rs`, in-process and scoped to
       # `tests/stdlib/`, which asks whether a rule is activated, and this
       # whether the activation would notice a defect. Its sibling,
@@ -144,7 +150,7 @@ jobs:
       # `tests/mutation_survivors.txt`. `--check` fails on a new survivor and on
       # a banked one that is now killed. A change in the set is explained in
       # `tests/README.md` before `--bless` re-banks it.
-      - run: python3 utils/stdlib_mutants.py --check
+      - run: python3 utils/stdlib_mutants.py --check --bin ein.rs/target/gate/ein
         working-directory: ${{ github.workspace }}
 
   frontend-fuzz:
@@ -164,7 +170,7 @@ jobs:
       # 2026-11-10). The per-commit tier runs 2 000 (`EIN_FUZZ_ITERS`' default
       # in `fuzz_properties.rs`). A find is minimised and written to
       # corpus/fuzz_findings/, which the failure artifact carries out.
-      - run: cargo test -p ein-ir --release --test fuzz_properties
+      - run: cargo test -p ein-ir --profile gate --test fuzz_properties
         env: { EIN_FUZZ_ITERS: "20000", EIN_FUZZ_SEED: "${{ matrix.seed }}" }
       - uses: actions/upload-artifact@v6
         if: failure()

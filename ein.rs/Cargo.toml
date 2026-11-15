@@ -164,3 +164,28 @@ debug = false
 [profile.dev.package.snmalloc-sys]
 debug     = false
 opt-level = 3
+
+# **`cargo test --profile gate`, what the gate runs** (M1f S1f.6.39
+# T1f.6.39.5): release codegen with the two checks the dev profile buys and
+# release drops — `debug_assert!` and `cfg(debug_assertions)` (25 asserts and
+# `ein-infer/src/engine.rs`' block on 2026-11-15) and integer overflow
+# checks. The corpus under `ein solve` ran 1.58 times slower at the dev
+# profile than in release, under `ein oracle` 1.47 (S1f.6.39 § Today,
+# `build/ab/`), and the dev profile's `opt-level = 1` was the whole of what
+# the gate paid for the checks it kept. `./run_tests.sh`, `per-commit.yml`,
+# the nightly's test steps and the dev host's run this profile, into
+# `ein.rs/target/gate/`; `cargo build` and `cargo test` without it are what
+# they were.
+[profile.gate]
+inherits         = "release"
+debug-assertions = true
+overflow-checks  = true
+
+# The allocator as release builds it, for the reason the two above give:
+# `cmake`-rs reads `DEBUG` and `OPT_LEVEL`, which the profile already sets to
+# release's, and the Rust half of the crate gets no assertions of its own.
+[profile.gate.package.snmalloc-sys]
+debug            = false
+opt-level        = 3
+debug-assertions = false
+overflow-checks  = false

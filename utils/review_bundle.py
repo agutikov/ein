@@ -21,7 +21,8 @@ all of R). `--corpus` builds one for every corpus entry with a declared
 `solve` run, at that run's flags and without events.
 `--smoke` builds one small case, and one program whose solve is refused, into
 a temporary directory and link-checks it: the per-commit gate's step, using
-the debug `ein` `cargo test` built. Since M1f S1f.5.19 it also builds two
+the `ein` `cargo test --profile gate` built (`target/gate/ein`; the debug
+one, `target/debug/ein`, until M1f S1f.6.39 gave the gate its profile). Since M1f S1f.5.19 it also builds two
 cases whose run is not a solve, and since M1f S1f.5.25 one whose stdout is
 closed (the register's schema /21), and first reads every register row with
 no run through the index and the case pages' register-only parts. What it
@@ -222,8 +223,8 @@ def cmd_smoke(args: list[str]) -> int:
     import subprocess
     import tempfile
     from review.case import register, register_pass
-    debug = REPO / "ein.rs/target/debug/ein"
-    bin = take(args, "--bin") or os.environ.get("EIN_BIN") or str(debug)
+    gate = REPO / "ein.rs/target/gate/ein"
+    bin = take(args, "--bin") or os.environ.get("EIN_BIN") or str(gate)
     keep = take(args, "--keep")
     if keep and Path(keep).exists() and any(Path(keep).iterdir()):
         print(f"error: --keep {keep}: not empty; the smoke builds into a new or empty directory", file=sys.stderr)
