@@ -19,8 +19,15 @@
 //! - a second dump into the same directory leaves nothing stale; a `.einb`
 //!   is refused; a stopped run still says what it is.
 //!
+//! **Per commit, every recorded run but those of the manifest's
+//! `heavy_dump` entries**, whose dumps write tens of thousands of state files;
+//! `EIN_CORPUS_SLOW=1`, the nightly's, every one (M1f S1f.6.39, the user's
+//! ruling of 2026-11-15 on Q-M1f.294, as `answer_round_trip` since the
+//! ruling of 2026-11-08 on P-16).
+//!
 //! ```text
 //! cargo test -p ein-cli --test answer_dump
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test answer_dump   # + the heavy_dump entries' runs
 //! ```
 
 use std::path::Path;
@@ -35,6 +42,12 @@ struct Run {
     code: i32,
     out: String,
     err: String,
+}
+
+/// `EIN_CORPUS_SLOW=1`: the nightly's run, the `heavy_dump` entries' runs
+/// too (the module note).
+fn slow_too() -> bool {
+    std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
 
 fn ein(args: &[&str], env: &[String]) -> Run {
@@ -263,6 +276,17 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     }
     runs.sort();
     runs.dedup();
+    // The `heavy_dump` entries' runs are the nightly's (Q-M1f.294).
+    let heavy: std::collections::BTreeSet<String> = ein_corpus::corpus()
+        .entry
+        .into_iter()
+        .filter(|e| e.heavy_dump)
+        .map(|e| e.path)
+        .collect();
+    let left_out = runs.iter().filter(|(f, _, _)| heavy.contains(f)).count();
+    if !slow_too() {
+        runs.retain(|(f, _, _)| !heavy.contains(f));
+    }
     // One unit per run on the pool (M1f S1f.6.39), read back in order.
     let indexed: Vec<(usize, &(String, String, i32))> = runs.iter().enumerate().collect();
     let checked = ein_corpus::pool::map(
@@ -298,6 +322,13 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
         }
     }
     assert!(states > runs.len(), "no state file was checked");
+    // The cut is a real one: a register row still records a heavy dump, so a
+    // per-commit run leaves something to the nightly, which reads it.
+    assert!(
+        left_out > 0,
+        "no recorded run is a heavy_dump entry's: the nightly's half of this test reads \
+         nothing the per-commit half does not"
+    );
     assert!(
         bad.is_empty(),
         "{} state files:\n{}",

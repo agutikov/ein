@@ -256,15 +256,25 @@ fn ein(args: &[String]) -> std::process::Output {
         .expect("the `ein` binary runs")
 }
 
-/// Every example block's run, with its summary: run once for tests 2–4.
+/// Every example block's run, with its summary: run once for tests 2–4, on
+/// the corpus sweeps' pool (M1f S1f.6.39, the user's ruling on Q-M1f.294),
+/// in the page's order.
 fn runs() -> &'static [Run] {
     static RUNS: OnceLock<Vec<Run>> = OnceLock::new();
     RUNS.get_or_init(|| {
         let tmp = Scratch::new("ein-read-out-reference");
-        captions(&read(EXAMPLES))
-            .into_iter()
-            .enumerate()
-            .map(|(n, (cmd, args))| {
+        let blocks: Vec<(usize, (String, Vec<String>))> =
+            captions(&read(EXAMPLES)).into_iter().enumerate().collect();
+        ein_corpus::pool::map(
+            "read_out_reference",
+            &blocks,
+            |(_, (cmd, args))| {
+                (
+                    args.last().cloned().unwrap_or_default(),
+                    format!("ein {cmd} {}", args.join(" ")),
+                )
+            },
+            |(n, (cmd, args))| {
                 let j = tmp.join(format!("{n}.json"));
                 let mut argv = vec![cmd.clone()];
                 argv.extend(args.iter().cloned());
@@ -280,8 +290,8 @@ fn runs() -> &'static [Run] {
                     stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
                     summary,
                 }
-            })
-            .collect()
+            },
+        )
     })
 }
 

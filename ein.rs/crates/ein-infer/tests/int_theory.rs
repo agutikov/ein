@@ -288,6 +288,14 @@ const OPS: [Op; 7] = [
     },
 ];
 
+/// **`f` for every operation, on the corpus sweeps' pool** (M1f S1f.6.39,
+/// the user's ruling on Q-M1f.294): each operation's program is its own unit,
+/// and a failing one is reported as the first in `OPS`' order, with its own
+/// message, as the loop it replaced reported it.
+fn on_the_pool(sweep: &str, f: impl Fn(&Op) + Sync) {
+    ein_corpus::pool::map(sweep, &OPS, |op| (op.request.to_string(), String::new()), f);
+}
+
 /// Ask every pair as one program of `op` requests and hold every answer:
 /// **exactly one** result fact per request, repeating the operands as
 /// written, what follows them what the integers say, in normal form. A
@@ -358,14 +366,12 @@ fn every_pair_of_small_parts_is_right() {
             cases.push((x.clone(), y.clone()));
         }
     }
-    for op in &OPS {
-        hold(op, &cases);
-    }
+    on_the_pool("int_theory::small_parts", |op| hold(op, &cases));
 }
 
 #[test]
 fn requests_of_every_length_and_sign_are_right() {
-    for op in &OPS {
+    on_the_pool("int_theory::every_length", |op| {
         let mut rng = Rng(0x5146_0607);
         let mut cases = Vec::new();
         let signed = |rng: &mut Rng, v: u128| {
@@ -403,7 +409,7 @@ fn requests_of_every_length_and_sign_are_right() {
             cases.push((parts_of(p, n), parts_of(q, m)));
         }
         hold(op, &cases);
-    }
+    });
 }
 
 /// The stage's task 3: *an unsimplified operand, such as (5, 3), must give
@@ -411,7 +417,7 @@ fn requests_of_every_length_and_sign_are_right() {
 /// by value.
 #[test]
 fn an_operand_is_read_by_value() {
-    for op in &OPS {
+    on_the_pool("int_theory::by_value", |op| {
         let mut rng = Rng(0x5146_0608);
         let spell = |rng: &mut Rng, v: i128| -> Operand {
             // v = p − n with a common amount added to both parts, and each
@@ -446,7 +452,7 @@ fn an_operand_is_read_by_value() {
             cases.push((x, y));
         }
         hold(op, &cases);
-    }
+    });
 }
 
 /// The two requests with one operand: `(int-simplify X)` and `(int-neg X)`.
@@ -521,7 +527,7 @@ fn named_operands_work_for_every_request() {
         body.push_str(&format!("(let c{i} {})\n", pair(p, n)));
         names.push((format!("c{i}"), p as i128 - n as i128));
     }
-    for op in &OPS {
+    on_the_pool("int_theory::named", |op| {
         let mut want = BTreeMap::new();
         let mut src = body.clone();
         for (x, a) in &names {
@@ -546,7 +552,7 @@ fn named_operands_work_for_every_request() {
             );
         }
         assert_eq!(got, want, "{} by name", op.request);
-    }
+    });
     let mut src = body.clone();
     for (x, _) in &names {
         src.push_str(&format!("(int-neg {x})\n(int-simplify {x})\n"));

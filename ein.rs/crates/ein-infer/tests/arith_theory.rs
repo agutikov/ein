@@ -248,6 +248,14 @@ const OPS: [Op; 5] = [
 /// An operand as written, and its value.
 type Operand = (String, u128);
 
+/// **`f` for every operation, on the corpus sweeps' pool** (M1f S1f.6.39,
+/// the user's ruling on Q-M1f.294): each operation's program is its own unit,
+/// and a failing one is reported as the first in `OPS`' order, with its own
+/// message, as the loop it replaced reported it.
+fn on_the_pool(sweep: &str, f: impl Fn(&Op) + Sync) {
+    ein_corpus::pool::map(sweep, &OPS, |op| (op.request.to_string(), String::new()), f);
+}
+
 /// Ask every pair as one program of `op` requests and hold every answer:
 /// **exactly one** result fact per request, repeating the operands as
 /// written, its other arguments what the integers say, in normal form.
@@ -303,14 +311,14 @@ fn every_small_request_is_right() {
             cases.push((value(a), value(b)));
         }
     }
-    for op in &OPS {
+    on_the_pool("arith_theory::every_small_request_is_right", |op| {
         hold(op, &cases);
-    }
+    });
 }
 
 #[test]
 fn requests_of_every_length_are_right() {
-    for op in &OPS {
+    on_the_pool("arith_theory::requests_of_every_length_are_right", |op| {
         let mut rng = Rng(0x5146_0603);
         let mut cases = Vec::new();
         // Every pair of lengths from 0 to the operation's longest, twice.
@@ -330,35 +338,38 @@ fn requests_of_every_length_are_right() {
             cases.push((value(a - 1), value(a)));
         }
         hold(op, &cases);
-    }
+    });
 }
 
 #[test]
 fn a_carry_or_a_borrow_runs_the_whole_length() {
-    for op in &OPS {
-        let mut cases = Vec::new();
-        let mut nines: u128 = 0;
-        for _ in 1..=op.max_digits.min(MAX_DIGITS) {
-            nines = nines * 10 + 9;
-            // 99…9 and 1, both ways, and 99…9 with itself: a sum one digit
-            // longer.
-            cases.push((value(nines), value(1)));
-            cases.push((value(1), value(nines)));
-            cases.push((value(nines), value(nines)));
-            // 100…0 and 1, and 100…0 and 99…9: a borrow through every zero,
-            // and an answer that loses every digit but one.
-            cases.push((value(nines + 1), value(1)));
-            cases.push((value(1), value(nines + 1)));
-            cases.push((value(nines + 1), value(nines)));
-            cases.push((value(nines), value(nines + 1)));
-        }
-        hold(op, &cases);
-    }
+    on_the_pool(
+        "arith_theory::a_carry_or_a_borrow_runs_the_whole_length",
+        |op| {
+            let mut cases = Vec::new();
+            let mut nines: u128 = 0;
+            for _ in 1..=op.max_digits.min(MAX_DIGITS) {
+                nines = nines * 10 + 9;
+                // 99…9 and 1, both ways, and 99…9 with itself: a sum one digit
+                // longer.
+                cases.push((value(nines), value(1)));
+                cases.push((value(1), value(nines)));
+                cases.push((value(nines), value(nines)));
+                // 100…0 and 1, and 100…0 and 99…9: a borrow through every zero,
+                // and an answer that loses every digit but one.
+                cases.push((value(nines + 1), value(1)));
+                cases.push((value(1), value(nines + 1)));
+                cases.push((value(nines + 1), value(nines)));
+                cases.push((value(nines), value(nines + 1)));
+            }
+            hold(op, &cases);
+        },
+    );
 }
 
 #[test]
 fn high_zeros_are_read_by_value() {
-    for op in &OPS {
+    on_the_pool("arith_theory::high_zeros_are_read_by_value", |op| {
         let mut rng = Rng(0x5146_0604);
         let pad = |rng: &mut Rng, v: u128| {
             let zeros = "0".repeat(rng.below(4) as usize);
@@ -387,7 +398,7 @@ fn high_zeros_are_read_by_value() {
             cases.push(((written(zeros), 0), ("z".to_string(), 0)));
         }
         hold(op, &cases);
-    }
+    });
 }
 
 /// A request may name an operand of every operation, and the answer repeats
@@ -403,32 +414,35 @@ fn named_operands_work_for_every_request() {
         body.push_str(&format!("(let c{i} {})\n", normal(v)));
         names.push((format!("c{i}"), v));
     }
-    for op in &OPS {
-        let mut want = BTreeMap::new();
-        let mut src = body.clone();
-        for (x, a) in &names {
-            for (y, b) in names.iter().step_by(7) {
-                // By two names, and by a name and a number.
-                let Some(answer) = (op.answer)(*a, *b) else {
-                    continue;
-                };
-                src.push_str(&format!("({} {x} {y})\n", op.request));
-                want.insert((x.clone(), y.clone()), answer.clone());
-                src.push_str(&format!("({} {x} {})\n", op.request, normal(*b)));
-                want.insert((x.clone(), normal(*b)), answer);
+    on_the_pool(
+        "arith_theory::named_operands_work_for_every_request",
+        |op| {
+            let mut want = BTreeMap::new();
+            let mut src = body.clone();
+            for (x, a) in &names {
+                for (y, b) in names.iter().step_by(7) {
+                    // By two names, and by a name and a number.
+                    let Some(answer) = (op.answer)(*a, *b) else {
+                        continue;
+                    };
+                    src.push_str(&format!("({} {x} {y})\n", op.request));
+                    want.insert((x.clone(), y.clone()), answer.clone());
+                    src.push_str(&format!("({} {x} {})\n", op.request, normal(*b)));
+                    want.insert((x.clone(), normal(*b)), answer);
+                }
             }
-        }
-        let mut got = BTreeMap::new();
-        for fact in run(&src, op.result) {
-            let p = parts(&fact);
-            assert!(
-                got.insert((p[1].clone(), p[2].clone()), p[3..].to_vec())
-                    .is_none(),
-                "two answers: {fact}"
-            );
-        }
-        assert_eq!(got, want, "{} by name", op.request);
-    }
+            let mut got = BTreeMap::new();
+            for fact in run(&src, op.result) {
+                let p = parts(&fact);
+                assert!(
+                    got.insert((p[1].clone(), p[2].clone()), p[3..].to_vec())
+                        .is_none(),
+                    "two answers: {fact}"
+                );
+            }
+            assert_eq!(got, want, "{} by name", op.request);
+        },
+    );
 }
 
 // ── division by zero ───────────────────────────────────────────────

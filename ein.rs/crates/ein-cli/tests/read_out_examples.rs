@@ -125,15 +125,29 @@ fn every_block_is_what_ein_solve_prints() {
     let slow = std::env::var("EIN_CORPUS_SLOW").is_ok_and(|v| v == "1");
     let mut checked = 0usize;
     let mut failures = Vec::new();
-    for b in blocks(&page) {
-        let Some(file) = b.args.last() else { continue };
-        if !Path::new(&repo_root().join(file)).exists() {
-            continue;
-        }
-        if !slow && b.args.iter().any(|a| a == "33554432") {
-            continue;
-        }
-        let got = printed(&b.command, &b.args);
+    let runs: Vec<Block> = blocks(&page)
+        .into_iter()
+        .filter(|b| {
+            b.args
+                .last()
+                .is_some_and(|file| Path::new(&repo_root().join(file)).exists())
+        })
+        .filter(|b| slow || !b.args.iter().any(|a| a == "33554432"))
+        .collect();
+    // Every block's run on the corpus sweeps' pool (M1f S1f.6.39, the user's
+    // ruling on Q-M1f.294), read back in the page's order.
+    let printed_all = ein_corpus::pool::map(
+        "read_out_examples",
+        &runs,
+        |b| {
+            (
+                b.args.last().cloned().unwrap_or_default(),
+                format!("ein {} {}", b.command, b.args.join(" ")),
+            )
+        },
+        |b| printed(&b.command, &b.args),
+    );
+    for (b, got) in runs.iter().zip(printed_all) {
         if got != b.body {
             let diff: Vec<String> = got
                 .lines()
