@@ -469,12 +469,14 @@ cargo bench … --bench engine -- --test                       # the nightly's b
 cargo test … -p ein-infer --features counters --test arith_batch   # M1f S1f.6.3: the calculator's batch, by the matcher's count; by hand since S1f.6.21, in no tier
 cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the tests alone, as the gate builds them (M1f S1f.6.39)
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
-EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test corpus_shapes   # every unit's cost and peak memory, one line each
+EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
+EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step (M1f S1f.6.39)
 python3 utils/gate_times.py run --out g.log -- ./run_tests.sh   # M1f S1f.6.39: a gate run timed per step and per binary, memory and power sampled; `report g.log`
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fifteen names
-EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance   # the dev host's, since M1f S1f.5.27
+EIN_ID_SEEDS=8 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance   # the dev host's, every program
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
+EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance   # the shape golden's every line, tests/ too
 ein solve … --maximal --models key|grid                       # the M1d S1d.3.3 forms, over the states listed
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
@@ -519,10 +521,17 @@ remote one is a local gate that lies — keep the two lists the same;
 `ein-cli/tests/gate_steps.rs` diffs them.
 
 **`./run_tests.sh --nightly` runs the nightly** instead of the gate: every
-step of `.github/workflows/nightly.yml`, its three jobs one after another
-(`deep-corpus`, the fuzzer once per seed, the bench smoke), so the nightly
-can be run before a push; `ein-cli/tests/nightly_steps.rs` diffs its list
-against the workflow's. **The nightly holds only what guards an answer or a
+step of `.github/workflows/nightly.yml`, its jobs one after another
+(`deep-corpus`, `deep-corpus-shards` and `mutants` once per shard, the fuzzer
+once per seed, the bench smoke), so the nightly can be run before a push;
+`ein-cli/tests/nightly_steps.rs` diffs its list against the workflow's.
+**A nightly step over 5 min on the runner runs in shards** (M1f S1f.6.39,
+[Q-M1f.293](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
+a matrix job a shard, `EIN_TEST_SHARD=k/n`, `ein_corpus::shard` dealing every
+program to exactly one shard and `utils/stdlib_mutants.py --shard` every
+`n`-th mutant; each shard is measured on four P-core threads with
+`EIN_TEST_JOBS=4`, the runner's count, on AC, and `nightly_steps.rs` holds a
+sharded step to every one of its shards. **The nightly holds only what guards an answer or a
 contract no per-commit step guards**, each step within 5 min on the runner
 (the user's ruling of 2026-11-10;
 [Q-M1f.102](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
@@ -537,6 +546,21 @@ the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`
 (the dependency runs the other way), a `#[cfg(test)]` module is not in the
 documented crate, and a private item is a real name that public docs may cite
 but not hyperlink.
+
+**What a commit reads and what the nightly does** (M1f S1f.6.39, the
+user's rulings of 2026-11-15 on Q-M1f.287 to .294). Per commit:
+`id_order_invariance` digests every rendering of every corpus program outside
+`tests/` against `ein-render/tests/golden/corpus_shapes.md5` and permutes the
+id space of those of them that **search**, whose describe saturates more than
+root (`corpus_ops::searches`, computed, never listed); `jobs_invariance` reads
+the same programs that search, `dot_wellformed` every program outside
+`tests/`, `route_invariance` every program but the `slow` entries, and
+`answer_dump` every run but the `heavy_dump` entries'. `EIN_CORPUS_SLOW=1`
+reads every corpus program in each, which the nightly does; a per-commit
+`EIN_BLESS=1` re-banks the golden's lines of the programs it reads and keeps
+the others, and a corpus program with no line fails per commit. Each corpus
+sweep over (program, op) pairs loads a program once and runs every op on a
+copy (`corpus_ops::Loads`; `Ast`, `Terms` and `Kb` are `Clone`).
 
 **The gate profile** (M1f S1f.6.39): every test step of every tier runs
 `cargo test --profile gate`, into `ein.rs/target/gate/` — release codegen

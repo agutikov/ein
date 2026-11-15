@@ -736,8 +736,12 @@ mutants side by side since M1f S1f.6.39** (`--jobs N`, default
 of `stdlib/`, and puts the results back in the mutants' order before it
 prints or compares anything, so its report and `--check`'s verdict are the
 same text at any count: 572 mutants one at a time had grown to about 49 min
-of the nightly (gate #3, 2026-11-15). The nightly runs it on the gate
-profile's `ein` (`--bin ein.rs/target/gate/ein`), which its test steps built. The survivors are banked
+of the nightly (gate #3, 2026-11-15). **The nightly runs it in shards**, a
+parallel job each (`--shard k/n`, `$EIN_TEST_SHARD`, every `n`-th mutant from
+the `k`-th; the user's ruling of 2026-11-15 on Q-M1f.293), on the gate
+profile's `ein` (`--bin ein.rs/target/gate/ein`), which the job builds; each
+shard's `--check` holds its own mutants' survivors to their banked lines, and
+`--bless` is a whole run. The survivors are banked
 as a *set* in [`mutation_survivors.txt`](mutation_survivors.txt) — a score
 decays while the thing it guards grows, which is the same finding as `TE-M2`'s
 floors — and `--check` fails on a new one **and** on a banked one that has since
@@ -921,6 +925,17 @@ contributing** when S1c.1.4 closed on 2026-08-24, and *all of them* today,
 which is not a number this page has to keep because
 `stdlib_coverage.rs::every_stdlib_rule_is_activated_by_a_program` fails
 the moment it stops being true.
+
+**They leave the render and determinism sweeps per commit** (M1f S1f.6.39,
+the user's ruling of 2026-11-15 on Q-M1f.290): the golden of every rendering
+(`ein-render/tests/id_order_invariance.rs`), the job count's and the id
+order's sweeps and `dot_wellformed` read every corpus program outside
+`tests/` per commit, and the nightly reads these too, in shards. Per commit a
+program here is held by its claims, `ein test` (`corpus_cli`'s and
+`test_cli`'s cells), the coverage gate above and the mutants. A program added
+or changed here therefore re-banks its golden lines with `EIN_BLESS=1
+EIN_CORPUS_SLOW=1 cargo test -p ein-render --test id_order_invariance`; a
+program with no line at all fails per commit.
 
 The third file every entry here is swept by is `corpus/corpus.toml` — five runs
 each but one, so this directory's share of the sweep is

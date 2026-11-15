@@ -24,15 +24,14 @@ Everything is `cargo test`.
 |---|---|
 | [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
 | [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants, the `slow` and `heavy_dump` sets pinned among them |
-| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **the class-4 claim** (M1e2 S1e2.2.21): every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the nightly (`EIN_CORPUS_SLOW=1`) |
+| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **the class-4 claim** (M1e2 S1e2.2.21): every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the nightly (`EIN_CORPUS_SLOW=1`, in shards) |
 | [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip** (M1e2 S1e2.3.8): every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the nightly (`EIN_CORPUS_SLOW=1`), and holds `heavy_dump` to the state files it counts (M1f S1f.5.13) |
-| [`ein-render/tests/corpus_shapes.rs`](../ein.rs/crates/ein-render/tests/corpus_shapes.rs) | digests every observable surface of every corpus *file* (7 462 renderings), which is a superset of what the runs reach |
-| [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | runs the same sweep twice under a permuted id space |
-| [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to `corpus_shapes`' digest of its `--jobs 1` rendering and computed again only where it differs (M1f S1f.6.39) — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts |
+| [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | digests every observable surface of a corpus *file* against `golden/corpus_shapes.md5`, a superset of what the runs reach, and runs it again under a permuted id space: per commit the golden over every file outside `tests/` and the permutation over those of them that search, in the nightly every file under both, in shards (M1f S1f.6.39; `corpus_shapes.rs` banked the golden until then) |
+| [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to the golden's digest of its `--jobs 1` rendering and computed again only where it differs — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts; per commit the files outside `tests/` that search, in the nightly every file (M1f S1f.6.39) |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
 | [`ein-cli/tests/wrong_answers.rs`](../ein.rs/crates/ein-cli/tests/wrong_answers.rs) | **the wrong-answer register**, [`wrong_answers.toml`](wrong_answers.toml) (M1e2 S1e2.1.1): one row per witness of every known wrong answer, holding each to the answer it gives today — the wrong one while `open`, the right one once `fixed`. Every witness is a manifest entry or a file under `fuzz_findings/`, which `ein-corpus`'s `register` module checks without a run |
 
-The last four walk the *files* (`ein_corpus::corpus_files`) rather than the
+`corpus_cores`, `id_order_invariance` and `jobs_invariance` walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.
 The completeness check is what keeps the two views the same set.
 
@@ -40,11 +39,24 @@ The completeness check is what keeps the two views the same set.
 S1f.6.39, `ein_corpus::pool`): its units — a (file, op) pair, a file, a cell —
 on `EIN_TEST_JOBS` workers, default 16, read back in their order, so no
 verdict and no failure's text depends on the count. A sweep whose cells it
-times, `corpus_cli`, times each beside the cells the other workers run.
+times, `corpus_cli`, times each beside the cells the other workers run. The
+sweeps over (file, op) pairs load each file once and run every op on a copy
+of the load (`corpus_ops::Loads`, Q-M1f.292).
+
+**Which files, per commit and in the nightly** (the user's rulings of
+2026-11-15 on Q-M1f.287 to .291). Per commit the golden and `dot_wellformed`
+read every file outside `tests/`, whose programs are each one stdlib rule's
+claim and are held by their claims; the two determinism sweeps read those of
+them that **search**, whose describe saturates more than root
+(`corpus_ops::searches`, computed, never listed); `route_invariance`, every
+file but the `slow` entries. `EIN_CORPUS_SLOW=1`, the nightly's, reads every
+file in each. The nightly's long steps run as parallel jobs, one shard each,
+`EIN_TEST_SHARD=k/n`: `ein_corpus::shard` deals every file to exactly one
+shard.
 
 **That difference is what a dropped run does and does not cost**, and it is
-worth knowing before reading the `runs` columns below. `corpus_shapes` solves
-every corpus *file* three ways and `summary_properties` five, both under an
+worth knowing before reading the `runs` columns below. The golden solves
+every corpus *file* five ways and `summary_properties` five, both under an
 entering budget, so removing `solve` from an entry's `runs` removes **no
 surface**: what it removes is the *process* — the argv the CLI must still
 accept, the exit code, the diagnostic on stderr, the `--json-summary` file —
