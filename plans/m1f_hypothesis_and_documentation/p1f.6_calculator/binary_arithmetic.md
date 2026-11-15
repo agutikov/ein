@@ -23,10 +23,10 @@ under `build/s1f.6.16/` (gitignored): `python3 build.py` writes the three theori
 **Where it is now (2026-11-12).** The recommended way, (b), is banked as examples, on the user's instruction
 of that day, *"bank binary arithmetic and logic prototypes into examples too"*:
 [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md). The tables are
-[`bits.ein`](../../../examples/binary_arithmetic/bits.ein), the theory
-[`bin.ein`](../../../examples/binary_arithmetic/bin.ein), both written from the shipped `stdlib/arith.ein` by
-[`gen_binary.py`](../../../examples/binary_arithmetic/gen_binary.py), which is this prototype's `build.py`
-cut down to (b); the conversions are [`conv.ein`](../../../examples/binary_arithmetic/conv.ein); and five
+`bits.ein`, the theory
+`bin.ein`, both written from the shipped `stdlib/arith.ein` by
+`gen_binary.py`, which is this prototype's `build.py`
+cut down to (b); the conversions are `conv.ein`; and five
 programs carry claims, `first`, `five_operations`, `div_by_zero`, `both_bases` and `conversions`. They are
 examples and not a stdlib module, and the generator is run by hand, not in the gate. Ways (a) and (c), the
 batches and the long conversions are not banked: they stay here and under `build/s1f.6.16/`. **The banking
@@ -36,7 +36,9 @@ release binary and the stdlib of 2026-11-12, and the answers and the counts this
 firings for the six targets, 826 and 76 for 255 to binary and back, 2 317 and 202 for 123078; the 243 sampled
 requests right against Python, 243 of 243, and 60 conversions of 60 (`python3
 build/s1f.6.16-17/chk_arith.py`, 2026-11-12). `bin.ein` as banked differs from the prototype's `b/bin.ein`
-in its header comment and in one word of its closing rule's `:why`.
+in its header comment and in one word of its closing rule's `:why`. *(Since S1f.6.16's build, 2026-11-15, the
+four files are retired, their programs on the stdlib: [§ What shipped](#what-shipped-2026-11-15); they are in
+`git log --diff-filter=D -- examples/binary_arithmetic/`.)*
 
 **What was run.** The release binary as built at 19:17 on 2026-11-11, copied to `build/s1f.6.16/tools/ein`
 (sha256 `bfaa78d8855a7027…`, `ein 0.1.0`), against the stdlib of `a621dc75` (`git archive HEAD stdlib`), so
@@ -484,3 +486,57 @@ aside on 2026-11-11, *"skip different bases"*.
    wanted?
 7. **Should a request no rule completes say so?** The shipped division over binary tables is the cleanest
    witness yet of a silent non-answer.
+
+## What shipped (2026-11-15)
+
+[S1f.6.16](s1f.6.16_binary_arithmetic.md)'s build, on the user's replies of 2026-11-12 (questions 13 to 18 of
+[`questions.md`](questions.md)) and rulings of 2026-11-14 (the trial's (a), the design's (iii)). The prototype
+above is kept as it was; this section says what each question became and what the shipped modules cost.
+
+| question here | the reply | what shipped |
+|---|---|---|
+| 1, which of the three | 13: *"(b)"* | a theory of its own: `std.math.binary`'s numeral `(b2 PREFIX BIT)`, `std.math.binary-arith`'s requests, beside decimal in one program |
+| 2, the names | 14: a word prefix, not a `2` | every name `bin-`: `bin-add` answered by `bin-sum-of`, `bin-let`; the shape's head `b2` kept, the tables `bin-fa`, `bin-fs`, `bin-cl`, `bin-nz`, the conversions `to-bin`/`bin-of`, `to-dec`/`dec-of` ([Q-M1f.267](../open_questions.md#q-m1f267--the-binary-theorys-names), defaulted) |
+| 3, one `z` | 15: *"(a)"* | one `z`, `std.math.arith`'s since S1f.6.38, of no base |
+| 4, generated or shared | 16: *"extract common rules into separate file the both import"*; the trial's question, *"(a)"*; the design's, *"yes (iii)"* | neither generated nor a hand-kept copy: the 77 rules both bases share are written once in `std.math.positional`, every relation a parameter, and one call of its macro in each base's closing rule connects the base ([Q-M1f.266](../open_questions.md#q-m1f266--how-a-base-is-connected-to-the-shared-rules)) |
+| 5, the conversions | 17: *"(b)"* | `std.math.convert`, a module of its own; decimal's tagged calls are an interface since S1f.6.30, and binary's are now too, held as decimal's |
+| 6, decimal's division | 18: leave it | decimal's bisection unchanged; binary's division is one subtraction a bit |
+| 7, a request nothing completes | not asked again | as decimal: a flag where the module can say what is wrong (`(bin-malformed …)`, `(bin-undeclared …)`, `std.math.binary`'s `(not-binary …)`), silence otherwise ([Q-M1f.268](../open_questions.md#q-m1f268--how-far-binary-flags-a-malformed-request), defaulted) |
+
+Division by zero is arithmetic's own, `std.math.arith`'s flag and rule, whatever the base (the user, 2026-11-14,
+[Q-M1f.269](../open_questions.md#q-m1f269--division-by-zero-is-false-stays-decimals)); a malformed binary numeral is
+binary's representation's, `std.math.binary`, on `std.math.decimal`'s pattern ([Q-M1f.210](../open_questions.md)'s
+ruling read for binary, a default, [Q-M1f.295](../open_questions.md#q-m1f295--binarys-numeral-is-stdmathbinarys)).
+
+**The counts, as shipped** (`grep -c '^(rule ' stdlib/math/*.ein`, the closing rules left out, and the
+tables' rows, 2026-11-15):
+
+| | decimal | binary |
+|---|---:|---:|
+| rules of the base's own | 35: the digit multiplier's walk and rows (6), the division's multiples and bisection (28), `operand-undeclared` | 14: a product's row (4), division one subtraction a bit (9), `bin-operand-undeclared` |
+| shared rules, `std.math.positional`'s | 77 | the same 77 |
+| the numeral's check | 5, `std.math.decimal` | 5, `std.math.binary` |
+| tables · rows | 7 · 1 664 | 4 · 29 |
+
+**Firings and depth of one request** (`arith_theory.rs`' and `binary_theory.rs`' circuits, which pin them):
+the same as the prototype's (b) to the firing, 43 / 43 for 123078 + 4567 where decimal's is 21 / 21, 61 / 43
+for the subtraction (28 / 21), 24 for the comparison (13), 120 for 123 × 456 (72), 245 for 127645 ÷ 25 (220),
+12 / 10 for the division by zero (12 / 10).
+
+**The time,** medians of 11 interleaved rounds, one P-core, on AC (`utils/bench_env.sh --core 2 python3
+build/s1f.6.16/build/tools/cost.py 11`, 2026-11-15): parse, load and compile, then the saturation, in ms;
+nine decimal digits a side, thirty bits in binary.
+
+| program | decimal | binary |
+|---|---:|---:|
+| one sum | 26.1 · 0.58, 30 firings | 8.9 · 0.48, 72 firings |
+| one product | 26.1 · 1.21, 490 firings | 9.0 · 2.26, 1 493 firings |
+| 1 000 sums | 109.2 · 41.5, 27 003 firings | 264.6 · 105.6, 69 003 firings |
+| 250 products | 46.9 · 192.8, 121 587 firings | 73.2 · 551.1, 372 209 firings |
+
+So the page's reading holds of the shipped modules: **what got simpler is the tables and the base's own
+rules** (29 rows where 1 664, 14 rules where 35: no digit multiplier, no multiples, no bisection), **what did
+not is the wiring**, which is now literally one text for both, and **what got worse is the length**, three
+times the places a number, two and a half to three times the firings and the saturation of a request of the
+same magnitude. A small binary program loads in a third of decimal's time, holding no decimal row; a large
+one loads slower, its numerals three times as long, each place a nested fact the loader states.

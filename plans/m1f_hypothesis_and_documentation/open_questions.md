@@ -5305,6 +5305,9 @@ since nothing uses the base's relations without the shared rules.
 **Ruled 2026-11-14: (iii).** The user: *"yes (iii); division by zero is false in binary arithmetic too, so it
 belongs to arithmetic itself, not even to positional one right?"* (the second half is Q-M1f.269's ruling).
 
+**Built 2026-11-15** by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15): the call stands in each base's closing rule's `(and …)` (E-63 fixed), no rule of its
+own and no firing; 77 shared rules and 61 parameters once S1f.6.38 had taken the numeral's check out.
+
 ### Q-M1f.267 — The binary theory's names
 
 **Raised** 2026-11-14 by [S1f.6.16's design](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#the-design-after-the-users-ruling-of-2026-11-14). Reply 14 took a word prefix, `bin-add` answered by
@@ -5318,6 +5321,7 @@ belongs to arithmetic itself, not even to positional one right?"* (the second ha
   `std.math.digits`' (S1f.6.35), and a file lists one or the other.
 
 **Defaulted 2026-11-14: (a), the user's to revise.** As `std.math.int` prefixes every name with `int-`.
+**Built so** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15), with binary's representation module's names on the same rule (Q-M1f.295).
 
 ### Q-M1f.268 — How far binary flags a malformed request
 
@@ -5331,7 +5335,8 @@ S1f.6.12's check but the two rules that list the digits, `check-digit` and `oper
   says so.
 
 **Defaulted 2026-11-14: (a), the user's to revise.** Two rules, measured on the prototype: 234 sampled requests
-right, each answered once.
+right, each answered once. **Built so** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15), on S1f.6.38's split: the digit's place is
+`std.math.binary`'s check where a numeral is written, the undeclared name `bin-operand-undeclared`.
 
 ### Q-M1f.269 — `division-by-zero-is-false` stays decimal's
 
@@ -5352,7 +5357,8 @@ shared by both bases, put it in std.math.arith"*. So the relation `division-by-z
 beside `z`, unparameterised; both bases import it, and `std.math.positional` does not hold it. The concern that
 raised the question does not arise: the rule has no parameter, so `std.math.num9`'s closing rule may go on naming
 it, by its new full name. [S1f.6.38's build](p1f.6_calculator/s1f.6.38_a_number_is_well_formed_from_the_start.md#the-build-as-ruled-2026-11-14) creates the module, so that every
-program's imports are rewritten once.
+program's imports are rewritten once. **Built** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15): the shared `div-by-zero` and
+`div-call-by-zero` write `std.math.arith`'s flag, and binary has no rule of its own for it.
 
 ### Q-M1f.270 — The connecting macro's body, written or generated
 
@@ -5364,7 +5370,8 @@ once with that rule's parameters, so its body repeats every rule's parameter lis
 - **(b) Generated** from the module's rules by a script with a `--check` in the gate.
 
 **Defaulted 2026-11-14: (a), the user's to revise.** The module stays a file a reader can follow, as the plan's
-reply 16 wanted of `std.math.decimal-arith`; the test fails on the drift a generator would prevent.
+reply 16 wanted of `std.math.decimal-arith`; the test fails on the drift a generator would prevent. **Built so**
+2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15): `arith_theory.rs`' `one_call_of_the_macro_connects_each_base`.
 
 ### Q-M1f.271 — What an hrule's `(and …)` conclusion proposes
 
@@ -5717,3 +5724,59 @@ minutes at the runner's 1.13 to 1.34 times (Q-M1f.103). The deep-corpus job is 4
   **(b)** their long halves to the nightly; **(c)** as now.
 
 **Not ruled: the user's.** Neither is a corpus sweep of § Today's 31.
+
+### Q-M1f.295 — Binary's numeral is `std.math.binary`'s
+
+**Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15). Q-M1f.210's ruling, *"malformed decimal numbers is a problem of decimal module,
+malformed binary numbers - of binary module"*, and S1f.6.38's split (a numeral's module apart from its arithmetic,
+Q-M1f.273 (b)) leave the shape of binary's representation to the build.
+
+- **(a) A module `std.math.binary` on `std.math.decimal`'s pattern**: it declares `b2` and `bin-named`, and four
+  rules over the loader's `(written (b2 P A))` flag `(not-binary NUMERAL THING)`, `not-binary-is-false` deriving
+  `(false)`; its rules named with `bin-` (`bin-numeral-bit`, `bin-numeral-prefix-bit`, `-zero`, `-named`); entry
+  `binary`. A decimal digit as a prefix, `(b2 7 1)`, is a name in binary's eyes and silent, as `(n end 1)` is.
+- **(b) The check inside `std.math.binary-arith`**, one module a base, as decimal's was until S1f.6.38.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** The coordinator's brief and the ruling's symmetry.
+
+### Q-M1f.296 — The bit tables, by the digit tables' generator
+
+**Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15) (T1f.6.16.6, *"generator in `utils/`"*).
+
+- **(a) `utils/gen_arith_tables.py` writes both** `stdlib/math/digits.ein` and `stdlib/math/bits.ein`, one
+  `--check` over the two, held in the gate by `ein-ir/tests/digit_tables.rs`, which holds every row of both to Rust's
+  integers; `digits.ein` byte for byte as before.
+- **(b) A generator of its own**, `utils/gen_bits.py`, and a test of its own.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** The tables are one family at two bases, computed by one function
+each in the script.
+
+### Q-M1f.297 — Binary's tagged calls an interface; what `std.math.convert` reads
+
+**Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15).
+
+- **Binary's tagged calls**, `(bin-add-walk TAG X Y C z)` and its ten twins of decimal's interface (S1f.6.30's T1,
+  round 2's item 41 (a)): **(a)** an interface as decimal's, eleven rows of `arith_theory.rs`' `TAGGED`, written in
+  the module's header and `stdlib/README.md`; **(b)** the circuit's own until a caller outside the stdlib needs them.
+- **What `std.math.convert` reads of binary**: `bin-strip`, `bin-done`, `bin-top-first`, `bin-top-first-is` and
+  `bin-b`, binary's circuit, as `conv.ein` read the example theory's; **(a)** as is, a module of the stdlib reading
+  another's circuit, held by `binary_theory.rs`' conversions; **(b)** binary's interface grows a strip-and-turn
+  call.
+- **`(arith-rule decimal-arith)`'s twin**: decimal's module writes its closing rule's name as a fact, kept since
+  removing it would move every state (E-11); **(a)** binary's writes none; **(b)** `(bin-arith-rule binary-arith)`
+  for symmetry.
+
+**Defaulted 2026-11-15: (a), (a), (a), the user's to revise.**
+
+### Q-M1f.298 — The two shared sentences that wrote decimal's numeral
+
+**Raised** 2026-11-15 by [S1f.6.16's build](p1f.6_calculator/s1f.6.16_binary_arithmetic.md#build-record-2026-11-15). `operand-digit`'s and `let-to-digit`'s `:why` wrote *"the number is (n z {?x})"*,
+decimal's numeral in the text.
+
+- **(a) The base's constructor, `({?N} z {?x})`**: the parameter in the sentence, so binary's reads `(b2 z 1)`; a
+  program that does not list `n` reads it by its full name.
+- **(b) A sentence of no base**, *"the number of that one digit"*.
+- **(c) Decimal's text kept**, wrong in binary.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** Each rule gained the parameter `?N`, and reads only where a
+digit or a bit stands for a number, a dead program's trace.

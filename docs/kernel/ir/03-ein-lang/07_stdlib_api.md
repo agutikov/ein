@@ -256,8 +256,10 @@ account, the rule of the theory and what holds it, is
 (import std.math.decimal-arith :symbols (decimal-arith))
 ```
 
-`decimal-arith` is the closing rule, the theory's one entry: it names every rule and
-closes every relation of the theory and each table it reads.
+`decimal-arith` is the closing rule, the theory's one entry: it names every rule of
+its own and closes every relation of the theory and each table it reads, and,
+since M1f S1f.6.16, calls `std.math.positional`'s macro, which activates the 77
+rules every base shares for decimal's relations.
 
 **The number.** `z` is zero, `std.math.arith`'s; `(n PREFIX DIGIT)`,
 `std.math.decimal`'s, is ten times the prefix plus the digit: 123 is `(n (n
@@ -290,6 +292,84 @@ walks (`add-walk`, `sub-walk`, `cmp-walk`, `mul-walk`, `top-first`, `strip`,
 `mul-call`, `mul-step`, `div-call`, `div-step`, `div-choose`, `div-digit`,
 `multiples`), its tags, the accumulator's `b`, and `arith-rule`. The module's
 header lists every name.
+
+## `std.math.positional` — the rules every positional base shares (a macro, no relation)
+
+M1f S1f.6.16 (the user's rulings of 2026-11-14, (a) and (iii)). 77 rules
+written once for decimal and binary, every relation a rule names a
+**parameter** in capitals, `(rule add-column (?ADD-WALK ?N ?FA ?B) …)`, and
+one macro, the module's interface:
+
+```lisp
+(positional OPERAND OPERAND-IS N LET NAMED ADD-WALK FA B STRIP TURN NZ DONE …)   ; 61 relations
+```
+
+| symbol | who writes it | effect |
+|--------|---------------|--------|
+| `(positional R1 … R61)` | a base's closing rule, as one conjunct of its `:assert` | expands to one activator a shared rule, 77 facts, each the rule's name and the base's relations in the rule's parameters' places; derived in the closing rule's own firing. A program never writes it: it imports a base |
+
+A shared rule prints by its own full name whichever base activated it,
+`std.math.positional.add-column`. What a parameter must be is what the base's
+relation of that name is; the order is the macro's
+([`stdlib/README.md` § `std.math.positional`](../../../../stdlib/README.md#stdmathpositional-the-rules-every-positional-base-shares-m1f-s1f616)).
+
+---
+
+## `std.math.bits`, `std.math.binary` and `std.math.binary-arith` — binary arithmetic (requests and results)
+
+M1f S1f.6.16. `std.math.bits` is binary's tables, **facts, no rule**, generated
+beside `std.math.digits`: `(bin-fa a b cin d cout)` 8 rows, `(bin-fs a b bin d
+bout)` 8, `(bin-cl below a b order)` 12, `(bin-nz 1)`. `std.math.binary` is the
+representation, on `std.math.decimal`'s pattern; `std.math.binary-arith` the
+arithmetic, `std.math.decimal-arith`'s twin under `bin-` names, the shared rules
+`std.math.positional`'s. Nothing of decimal is loaded with them.
+
+```lisp
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
+(import std.math.binary :symbols (b2))
+(import std.math.arith :symbols (z))
+```
+
+| fact | who writes it | meaning |
+|------|---------------|---------|
+| `(b2 PREFIX BIT)` | the program | the numeral: twice the prefix, plus the bit; the prefix is `z` or a numeral, the bit `0` or `1`. 5 is `(b2 (b2 (b2 z 1) 0) 1)` |
+| `(not-binary NUMERAL THING)` | `std.math.binary`: a **flag** | NUMERAL, written somewhere in the program, holds THING where a bit or a prefix goes: a name that is no bit (a decimal digit among them), a fact, a bit or a named constant as the prefix. `not-binary-is-false` derives `(false)` from it |
+| `(bin-add X Y)` / `(bin-sum-of X Y S)` | the program / the theory | X + Y is asked / answered, S in normal form |
+| `(bin-sub X Y)` / `(bin-diff-of X Y D R)` | the program / the theory | **two numbers**, as decimal's `diff-of`: D is X − Y or `z`, R is Y − X or `z` |
+| `(bin-cmp X Y)` / `(bin-cmp-of X Y O)` | the program / the theory | O is `lt`, `eq` or `gt`, by value |
+| `(bin-mul X Y)` / `(bin-product-of X Y P)` | the program / the theory | X × Y = P |
+| `(bin-div X Y)` / `(bin-quot-of X Y Q R)` | the program / the theory | X = Q × Y + R, R less than Y |
+| `(division-by-zero (bin-div X Y))` | the theory: a **flag**, `std.math.arith`'s | the divisor is zero by value; `std.math.arith`'s rule derives `(false)`. The request's call is flagged beside it, `(division-by-zero (bin-div-call TAG X Y))` |
+| `(bin-let NAME NUMBER)` | the program | NAME names NUMBER; a request may name an operand |
+| `(bin-malformed REQUEST)` / `(bin-undeclared NAME REQUEST)` | the theory: **flags** | a bit stands for an operand, or a `bin-let` cannot be read / the request names an operand no `bin-let` states; each derives `(false)` by a shared rule |
+
+The tagged calls are binary's twins of decimal's, `(bin-add-walk TAG X Y C
+z)`, `(bin-sub-walk TAG X Y 0 z)`, `(bin-cmp-walk TAG X Y eq)`, `(bin-mul-call
+TAG X Y)`, `(bin-div-call TAG X Y)` and `(bin-operand TAG X)`, answered by
+`bin-done`, `bin-short`, `bin-order-is`, `bin-div-done` and `bin-operand-is`
+([`stdlib/README.md` § Binary](../../../../stdlib/README.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)).
+
+---
+
+## `std.math.convert` — decimal to binary and back (requests and results)
+
+M1f S1f.6.16. Over both bases' calls; it brings both.
+
+```lisp
+(import std.math.convert :symbols (convert to-bin to-dec bin-of dec-of))
+```
+
+| fact | who writes it | meaning |
+|------|---------------|---------|
+| `(to-bin X)` | the program: a **request** | X, a decimal number (`z` or `(n PREFIX DIGIT)`), is asked in binary |
+| `(bin-of X B)` | the theory: the **result** | B is X in binary, in normal form |
+| `(to-dec B)` | the program: a request | B, a binary number, is asked in decimal |
+| `(dec-of B X)` | the theory: the result | X is B in decimal, in normal form |
+
+A name is not looked up: an operand is a number
+([`stdlib/README.md` § `std.math.convert`](../../../../stdlib/README.md#stdmathconvert-decimal-to-binary-and-back-m1f-s1f616)).
+
+---
 
 ## `std.math.num9` — school arithmetic on nine digits in one fact (requests, results, flags)
 

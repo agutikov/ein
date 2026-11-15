@@ -170,10 +170,11 @@ happening to owe something.
 
 M1f [S1f.6.2](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md).
 `std.math.digits` holds the calculator's seven digit tables as plain facts, 1 664
-rows, and no rule. The coverage gate asks that every stdlib *rule* be
-activated by a program here, so it has nothing to ask of this module, and
-`stdlib_coverage.rs` names it as rule-free, beside `std.macro`, rather than
-inferring that a module with no rule is fine. The mutation sweep likewise
+rows, and no rule; `std.math.bits`, binary's four, 29 rows, since S1f.6.16. The
+coverage gate asks that every stdlib *rule* be activated by a program here, so
+it has nothing to ask of these modules, and `stdlib_coverage.rs` names them as
+rule-free, beside `std.macro`, rather than inferring that a module with no rule
+is fine. The mutation sweep likewise
 mutates rules and has none here.
 
 **What holds the rows is not a program here.** A wrong row is a wrong answer
@@ -360,6 +361,34 @@ program a `let` of `z` already kills; and `int-bad-div` either way, the
 division's tag's own flag killing the program beside it. `arith_theory.rs`,
 `int_theory.rs` and `rat_theory.rs` hold every flag's text from outside the
 language.
+
+### `stdlib/math/binary-arith/`, `binary/`, `bits/` and `convert/`: the second base
+
+M1f [S1f.6.16](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md). Binary arithmetic is
+`std.math.binary-arith`'s 14 rules of its own over `std.math.bits`' tables, and
+`std.math.positional`'s 77, the rules both bases share, activated by one call in
+its closing rule; `std.math.binary` is the numeral and its check, on
+`std.math.decimal`'s pattern; `std.math.convert` converts. **A shared rule is
+one rule however many bases activate it**: the coverage gate and the census
+count `std.math.positional.add-column` once, and decimal's programs above
+already activate all 77. The programs here activate them again with binary's
+relations, so that a rule read wrong for one base and right for the other is
+seen, and activate each of binary's own:
+
+| directory | programs | what they are there for |
+|---|---|---|
+| `binary-arith/` | 22 | `01` to `07` the five operations, zero, lengths, high zeros and `bin-let`, every shared rule of the walks and the protocol and binary's product and division rules (`07` reaches `bin-div-bring-zero-none` with a dividend written `0101`); `08` and `09` a division by zero, the request's and a call a rule of the program's own makes; `10` a bit as either operand of every request, the ten routes from a tag to its request once each; `11` the bit `0` as an operand; `12` and `13` an undeclared name, `7` among them, and the same names stated (`bin-operand-undeclared` fired and satisfied); `14` to `20` each `let` rule; `21` both bases in one program, each answering its own; `22` what stays silent |
+| `binary/` | 6 | `01` a well-formed numeral in every place, `not-binary-is-false` loaded and satisfied; `02` to `05` each of the four rules of the check, one fault each; `06` what stays silent, a decimal digit as a prefix among it |
+| `bits/` | 1 | the tables seen from a program, as `digits/01_tables.ein`; the rows are `ein-ir/tests/digit_tables.rs`' |
+| `convert/` | 3 | each way, and a round trip a rule of the program asks back |
+
+**What holds the answers is outside the language**, as for decimal:
+[`ein-infer/tests/binary_theory.rs`](../ein.rs/crates/ein-infer/tests/binary_theory.rs)
+holds the five operations to Rust's integers, every conversion to 300 and a sample
+to 2^40 both ways, and the two bases in one program against each other;
+`arith_theory.rs` holds the rule of the calculator on binary's text and on
+`std.math.positional` read as each base activates it, and the macro's body and
+each base's call. Every claim here was computed from Python's integers.
 
 ### `stdlib/math/num9/`: wide rules, and a generated module
 
