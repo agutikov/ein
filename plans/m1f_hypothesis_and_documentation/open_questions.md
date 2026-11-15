@@ -312,6 +312,8 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (b) for E-1, (a) for E-7, (d) for E-54, is not acted on before the reply; the witnesses and the census are on [S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s record |
 | [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (A) where a static reading gives the control's R on the witness and moves no other corpus program's R, otherwise (C), is not acted on before the reply; the census selects its (A) branch; the probes, the census and (A)'s price are on [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s record |
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's recommendation, (b), restates a ruling of M1d's, so it is not a default and is not acted on; the census does not speak against it, and what it puts beside it is in the entry; the witnesses and the census are on [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s record |
+| [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **put 2026-11-16, not acted on: waits for the user at P1f.10's one stop.** The default named is (a), `ein render structure FILE`; nothing of it is designed or built, and the bundle under `build/structure/` is what the user reads to rule it |
+| [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **defaults taken 2026-11-15 and 2026-11-16, shown at P1f.10's one stop**, each the user's to revise: what a group is, which statements are the puzzle's, what *owed* and a grid are, that a debt is an edge, how the price list's rule was read |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6374,3 +6376,73 @@ recommendation**, for the user to weigh; it changes no wording above:
 replies**: the ladder is unchanged, no register row filed, no read-out row added, no page restated, and E-51
 is open. As ruled, it is
 [T1f.10.15.4](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#tasks).
+
+### Q-M1f.309 — How `ein` shows a program's structure
+
+**Raised** 2026-11-16 at P1f.10's one stop, by [S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)'s second task,
+for the user's first idea of the phase: *the structure is itself a valuable piece of information for
+analysis*. Part 1 computed the structure in one owner, `ein_infer::structure`, and no command of `ein` shows
+it: it is seen today through the examples `pair_layer` and `price_list` and the bundle
+`utils/structure_bundle.py` writes under `build/structure/`.
+
+**The options**, as the stage file has them:
+
+- **(a) a view of `ein render`**, `ein render structure FILE`, writing what a page of the bundle holds: the
+  graphs and a `structure.json`. `ein solve` is untouched and computes no structure it was not asked for.
+- **(b) rows of `ein solve`'s read-out**, a `structure` row with the counts, the lists with `--dump-answer`.
+- **(c) both.**
+- **(d) no surface**: the bundle's script stays the way to see it.
+
+**What part 1 measured that bears on it** ([S1f.10.13](p1f.10_hypothesis_structure/s1f.10.13_the_price_list.md#record-2026-11-16)): the
+structure is not free. Over the 188 corpus programs that search, root's pair layer is 49 015 saturations and the
+small KB's 82 589, where every `--single` of the corpus together is 19 677; on `zebra.ein` the layer whole takes
+a describe from 445 saturations to 740. So under (b) a read-out row would cost most programs more than their
+answer, which is what (a) avoids.
+
+**The default named: (a).** It keeps each question's work the least it needs and puts no count in the read-out
+that a reader cannot act on. **Not acted on**: no view is designed or built before the user's reply; as ruled
+it is [T1f.10.12.3](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md#t1f10123--the-surface-as-ruled), and the page that
+defines the structure, T1f.10.12.4, follows it.
+
+### Q-M1f.310 — P1f.10, part 1: the defaults taken
+
+**Raised** 2026-11-16 at P1f.10's one stop. Part 1 read and measured and changed no answer, route or surface;
+what its stages decided without a ruling is listed in each record's *Defaults taken*, whole. The ones a later
+stage builds on, each the user's to revise:
+
+1. **Track R is required and reads track S's results.** Not a default: the user's correction of 2026-11-15
+   ([§ The two ideas](p1f.10_hypothesis_structure/README.md#the-two-ideas)), which re-ordered part 1 and re-scoped the price list. A way
+   of spending the structure that does not pay closes that way and not the track.
+2. **A group is a maximal set of two or more candidates that pairwise exclude by the theory alone**, over all of
+   H, a candidate dead alone at root a member and marked
+   ([S1f.10.2](p1f.10_hypothesis_structure/s1f.10.2_groups.md#defaults-taken), entry 3, and *Defaults taken here*). Taken by the main
+   session after the stage's control failed under the other reading: the maximal cliques of root's own exclusion
+   graph are 902 on `zebra2.ein` and none is a row or a column. Under this one the 36 groups are the 36 rows and
+   columns of the five declared bijections. It is a cover and not a partition.
+3. **Which statements are the puzzle's and which the theory's**
+   ([S1f.10.10](p1f.10_hypothesis_structure/s1f.10.10_the_theorys_share.md#defaults-taken), entry 1): the planned rule and four more were
+   falsified by the corpus; the rule in force has two branches, by the rung that built H, and counts the row of
+   houses as the puzzle's. It does not fit the programs the blind enumerator serves
+   ([K-5](p1f.10_hypothesis_structure/findings.md), [K-9](p1f.10_hypothesis_structure/findings.md)).
+4. **An owed group is a group whose members are exactly a licensed instance's alternatives; a grid is strict,
+   every member in exactly two groups; a bijection has equal families**
+   ([S1f.10.4](p1f.10_hypothesis_structure/s1f.10.4_bounded_groups.md#defaults-taken), entries 1 to 5). Nothing is synthesised: where the
+   *must* is missing the record says what a program would have to state.
+5. **A node of the hypergraph is a question, a group or a candidate in no group, and every debt root owes is an
+   edge of its own kind, licensed by L5 or not**
+   ([S1f.10.11](p1f.10_hypothesis_structure/s1f.10.11_coupling.md#defaults-taken), entries 1 to 5). The second was taken by the main
+   session at the stage's stop: on six programs the conflicts' components are finer than R, each by a debt, and
+   with the debts as edges R is the product over the components on every program compared. The other two ways
+   put, *listed beside the edges* and *the question is the debt*, are in the record.
+6. **How the price list's rule was read where it does not say**
+   ([S1f.10.13](p1f.10_hypothesis_structure/s1f.10.13_the_price_list.md#defaults-taken)): a *go* needs both units, saturations and facts;
+   a stopped cell counts with what it had spent; the rule is applied to a way of spending and not to a bare
+   source; and ways the plan did not name were priced, `denials` among them, which is the one *go* for every
+   question. **The tenth** in the rule, *no program higher by more than one tenth*, is the stage's number and
+   the user's.
+7. **Three test halves joined the nightly** (`pair_layer`, `structure_invariance`, `coupling`, each by name
+   under `EIN_CORPUS_SLOW=1`), each measured within the five minutes on four P-core threads
+   ([K-2](p1f.10_hypothesis_structure/findings.md)).
+
+What part 1 found outside its stages' scope is [`findings.md`](p1f.10_hypothesis_structure/findings.md), K-1 to K-13 and track H's
+H9-n, H6-n and H15-n. **Stands until revised.**
