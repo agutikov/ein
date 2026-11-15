@@ -828,7 +828,7 @@ fn the_per_commit_sets_keep_their_meaning() {
     assert!(under_tests(Path::new(
         "tests/stdlib/algebra/01_copiers.ein"
     )));
-    assert!(!under_tests(Path::new("examples/zebra.ein")));
+    assert!(!under_tests(Path::new("examples/arith/add.ein")));
     assert!(!under_tests(Path::new("examples/tests.ein")));
     for (p, searches) in SEARCHES {
         let path = root.join(p);
@@ -848,8 +848,8 @@ fn the_per_commit_sets_keep_their_meaning() {
 const SEARCHES: [(&str, bool); 5] = [
     // Two candidates, one of them dead: describe forks.
     ("examples/branching/02_one_dead_one_alive.ein", true),
-    // The puzzle: describe forks all the way down.
-    ("examples/zebra.ein", true),
+    // A small puzzle: describe forks all the way down.
+    ("examples/branching/05_mini_zebra.ein", true),
     // A calculation, no hypothesis: describe is root alone.
     ("examples/arith/add.ein", false),
     // A program the loader refuses.
