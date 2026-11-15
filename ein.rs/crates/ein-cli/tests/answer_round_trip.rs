@@ -688,6 +688,9 @@ fn shard(k: usize) {
         .into_iter()
         .filter(|e| slow || !e.heavy_dump)
         .collect();
+    // The nightly's shard of them (`EIN_TEST_SHARD`, M1f S1f.6.39,
+    // Q-M1f.293), before the eight tests split it.
+    let selected = ein_corpus::shard::keep(selected, |e| e.path.clone());
     // The shard's entries on the corpus sweeps' pool (M1f S1f.6.39), which
     // the eight shards share, each entry with its own tallies, folded back in
     // the entries' order.
@@ -727,8 +730,13 @@ fn shard(k: usize) {
             None => {}
         }
     }
+    // A shard of the nightly's holds its share of the programs; the kinds of
+    // state are each held by the whole run, per commit.
+    let whole = ein_corpus::shard::current().is_none();
     assert!(
-        programs > 20 && states > programs && eager > 0 && held.dead > 0 && held.not_dead > 0,
+        programs > ein_corpus::shard::share(20)
+            && states > programs
+            && (!whole || (eager > 0 && held.dead > 0 && held.not_dead > 0)),
         "shard {k}: {programs} programs, {states} states, {eager} members of N held to their \
          eager cores, {} dead nodes and {} others held to their deadness",
         held.dead,

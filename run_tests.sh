@@ -3,7 +3,7 @@
 # run_tests.sh — the gate.
 #
 #     ./run_tests.sh                 # six static checks, the tests, their scratch check, the review-bundle smoke, the bench smoke
-#     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1) and 8 id seeds
+#     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1: every corpus program) and 8 id seeds
 #     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --dev-host      # instead of the gate: the nightly's steps at full budget, and the steps CI no longer runs
 #     ./run_tests.sh --tests-only    # cargo test, its scratch check and the review-bundle smoke — no static checks, no bench smoke
@@ -26,6 +26,14 @@
 #   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the slow entries' cells, and every test's slow half
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
 #   EIN_TEST_JOBS=1   ./run_tests.sh    # the corpus sweeps one unit at a time; the verdicts are the default's
+#   EIN_TEST_SHARD=2/4 …                # one shard of a sharded sweep, as a nightly job runs it
+#
+# **What a commit reads** (M1f S1f.6.39, the user's rulings of 2026-11-15 on
+# Q-M1f.287 to .294): the golden of every rendering and `dot_wellformed` read
+# every corpus program outside `tests/`, the id order's and the job count's
+# sweeps those of them that search, `route_invariance` every program but the
+# `slow` entries; `EIN_CORPUS_SLOW=1` reads every program, which the nightly
+# does. Each such sweep loads a program once, every op on a copy.
 #
 # **The tests run the gate profile, on a pool** (M1f S1f.6.39). Every test
 # step here, in `--nightly` and in `--dev-host` is `cargo test --profile
@@ -80,10 +88,11 @@
 # same as a missing `cargo` or `dot`.
 #
 # **`--nightly` runs the nightly instead of the gate** (M1e2 S1e2.3.6): every
-# step of `.github/workflows/nightly.yml`, its three jobs one after another in
-# the file's order (`deep-corpus`, the fuzzer once per seed of its matrix, the
-# bench smoke), from the repo root, so that the nightly can be run before a
-# push. Nothing local ran those steps before, and the nightly failed on every
+# step of `.github/workflows/nightly.yml`, its jobs one after another in the
+# file's order (`deep-corpus`; `deep-corpus-shards` and `mutants` once per
+# shard of their matrices, `EIN_TEST_SHARD=k/n`; the fuzzer once per seed of
+# its matrix; the bench smoke), from the repo root, so that the nightly can be
+# run before a push. Nothing local ran those steps before, and the nightly failed on every
 # run from 2026-10-17 to 2026-11-03 while this gate stayed green. It takes no
 # other argument and runs none of the gate's steps. A step is the statement
 # after a `nightly_step "…"` banner, and `ein-cli/tests/nightly_steps.rs`
@@ -92,7 +101,8 @@
 # gate's is. **What the nightly holds is a rule** (M1f S1f.5.27, the user's
 # ruling of 2026-11-10, Q-M1f.102): a step that guards an answer or a contract
 # no per-commit step guards, each at a budget that fits in 5 min on the
-# runner. The fuzz job is in it at 20 000 inputs a seed (Q-M1f.103), where it
+# runner; a step that does not fit whole runs in shards, a parallel job each,
+# every program in exactly one (M1f S1f.6.39, Q-M1f.293). The fuzz job is in it at 20 000 inputs a seed (Q-M1f.103), where it
 # was a million: both seeds and the bench smoke took 15 s together in
 # S1e2.3.6's sweep of 2026-11-03, which is why this paragraph called them
 # cheap, and since S1f.5.5's parser swap a million took up to 4 410 s a seed
@@ -102,8 +112,11 @@
 # S1f.5.27): every step of the nightly, at full budget (the fuzzer at P1a.1's
 # million inputs a seed), and the steps that left the nightly or never ran
 # in it, each over 5 min on the runner or a measurement: the id space
-# permuted eight ways, `route_invariance`'s slow half, `stdlib_census.py
-# --check`, and the whole review bundle with its link check. Nothing
+# permuted eight ways over every program, `route_invariance` whole with its
+# 2^25 half (its default-budget half, the slow entries included, is the
+# nightly's since S1f.6.39), `stdlib_census.py --check`, and the whole review
+# bundle with its link check. It runs a sharded step's shards one after
+# another, as `--nightly` does. Nothing
 # schedules it; the user runs it, here or in the runner's image
 # (`utils/ci_container.sh --dev-host`). It takes no other argument, runs from
 # the repo root, and its test steps run under a checked
@@ -221,32 +234,154 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: corpus_cli, the slow entries"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test corpus_cli
 
-    nightly_step "deep-corpus: answer_dump"
+    nightly_step "deep-corpus: answer_dump, the heavy_dump runs too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_dump
 
-    nightly_step "deep-corpus: answer_round_trip, the slow and heavy_dump entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
-
     nightly_step "deep-corpus: lever_invariance, the slow cells"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test lever_invariance
-
-    nightly_step "deep-corpus: corpus_cores, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test lever_invariance -- every_declared_lever_cell_moves_no_line_of_any_mode
 
     nightly_step "deep-corpus: region, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test region
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test region -- the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6
 
     nightly_step "deep-corpus: obligation_rung, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test obligation_rung
 
+    nightly_step "deep-corpus: route_invariance, the slow entries at the default budget"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
+
     nightly_step "deep-corpus: import_invariance, the slow entries"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test import_invariance
+
+    nightly_step "deep-corpus: jobs_invariance, every program"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test jobs_invariance
+
+    nightly_step "deep-corpus: dot_wellformed, every program"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test dot_wellformed
 
     nightly_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
-    nightly_step "deep-corpus: utils/stdlib_mutants.py --check"
-    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+    # ── deep-corpus-shards, once per shard of its matrix, one after another ──
+    nightly_step "deep-corpus-shards 1/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    nightly_step "deep-corpus-shards 1/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    nightly_step "deep-corpus-shards 1/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    nightly_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    nightly_step "deep-corpus-shards 2/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    nightly_step "deep-corpus-shards 2/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    nightly_step "deep-corpus-shards 2/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    nightly_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    nightly_step "deep-corpus-shards 3/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    nightly_step "deep-corpus-shards 3/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    nightly_step "deep-corpus-shards 3/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    nightly_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    nightly_step "deep-corpus-shards 4/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    nightly_step "deep-corpus-shards 4/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    nightly_step "deep-corpus-shards 4/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    nightly_step "deep-corpus-shards 4/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    # ── mutants, once per shard of its matrix ──
+    nightly_step "mutants 1/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 1/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="1/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 2/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 2/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="2/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 3/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 3/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="3/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 4/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 4/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="4/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 5/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 5/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="5/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 6/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 6/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="6/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 7/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 7/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="7/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 8/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 8/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="8/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 9/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 9/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="9/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 10/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 10/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="10/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 11/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 11/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="11/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    nightly_step "mutants 12/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    nightly_step "mutants 12/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="12/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
 
     # ── frontend-fuzz, once per seed of its matrix, at the nightly's budget ──
     nightly_step "frontend-fuzz: seed 1"
@@ -287,32 +422,35 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus: corpus_cli, the slow entries"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test corpus_cli
 
-    dev_host_step "dev host: id_order_invariance, eight seeds"
-    EIN_ID_SEEDS="8" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+    dev_host_step "dev host: id_order_invariance, eight seeds, every program"
+    EIN_ID_SEEDS="8" EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
 
-    dev_host_step "deep-corpus: answer_dump"
+    dev_host_step "dev host: route_invariance, the slow half at 2^25 too"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance
+
+    dev_host_step "deep-corpus: answer_dump, the heavy_dump runs too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_dump
 
-    dev_host_step "deep-corpus: answer_round_trip, the slow and heavy_dump entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
-
     dev_host_step "deep-corpus: lever_invariance, the slow cells"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test lever_invariance
-
-    dev_host_step "deep-corpus: corpus_cores, the slow entries"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test lever_invariance -- every_declared_lever_cell_moves_no_line_of_any_mode
 
     dev_host_step "deep-corpus: region, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test region
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test region -- the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6
 
     dev_host_step "deep-corpus: obligation_rung, the slow half"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test obligation_rung
 
+    dev_host_step "deep-corpus: route_invariance, the slow entries at the default budget"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
+
     dev_host_step "deep-corpus: import_invariance, the slow entries"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test import_invariance
 
-    dev_host_step "dev host: route_invariance, the slow half"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test route_invariance
+    dev_host_step "deep-corpus: jobs_invariance, every program"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test jobs_invariance
+
+    dev_host_step "deep-corpus: dot_wellformed, every program"
+    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test dot_wellformed
 
     dev_host_step "deep-corpus: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -320,17 +458,133 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "dev host: utils/stdlib_census.py --check"
     python3 "${SCRIPT_DIR}/utils/stdlib_census.py" --check
 
-    # The whole review bundle, every register case, then every link and image
-    # in it: two steps, where M1e2 S1e2.1.6 had one `a && b`, because `set -e`
-    # does not stop on the left of an `&&` (S1e2.3.6).
     dev_host_step "dev host: utils/review_bundle.py"
     python3 "${SCRIPT_DIR}/utils/review_bundle.py"
 
     dev_host_step "dev host: utils/doc_audit.py --links --check build/review"
     python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check build/review
 
-    dev_host_step "deep-corpus: utils/stdlib_mutants.py --check"
-    python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+    # ── deep-corpus-shards, once per shard of its matrix, one after another ──
+    dev_host_step "deep-corpus-shards 1/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    dev_host_step "deep-corpus-shards 1/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    dev_host_step "deep-corpus-shards 1/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    dev_host_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    dev_host_step "deep-corpus-shards 2/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    dev_host_step "deep-corpus-shards 2/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    dev_host_step "deep-corpus-shards 2/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    dev_host_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    dev_host_step "deep-corpus-shards 3/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    dev_host_step "deep-corpus-shards 3/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    dev_host_step "deep-corpus-shards 3/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    dev_host_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    dev_host_step "deep-corpus-shards 4/4: answer_round_trip, the slow and heavy_dump entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-cli --profile gate --test answer_round_trip
+
+    dev_host_step "deep-corpus-shards 4/4: corpus_cores, the slow entries"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test corpus_cores
+
+    dev_host_step "deep-corpus-shards 4/4: id_order_invariance, every program"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    dev_host_step "deep-corpus-shards 4/4: utils/check_test_scratch.py"
+    python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
+
+    # ── mutants, once per shard of its matrix ──
+    dev_host_step "mutants 1/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 1/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="1/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 2/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 2/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="2/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 3/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 3/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="3/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 4/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 4/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="4/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 5/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 5/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="5/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 6/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 6/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="6/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 7/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 7/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="7/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 8/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 8/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="8/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 9/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 9/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="9/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 10/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 10/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="10/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 11/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 11/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="11/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
+
+    dev_host_step "mutants 12/12: cargo build -p ein-cli --profile gate --bin ein"
+    cargo build --manifest-path "${MANIFEST}" -p ein-cli --profile gate --bin ein
+
+    dev_host_step "mutants 12/12: utils/stdlib_mutants.py --check"
+    EIN_TEST_SHARD="12/12" python3 "${SCRIPT_DIR}/utils/stdlib_mutants.py" --check --bin "${SCRIPT_DIR}/ein.rs/target/gate/ein"
 
     # ── frontend-fuzz, once per seed of the nightly's matrix, at P1a.1's budget ──
     dev_host_step "frontend-fuzz: seed 1, a million inputs"

@@ -26,6 +26,7 @@ direction-sensitive rules and the fewest programs per rule.
     utils/stdlib_mutants.py -k slot-adjacent # one rule's mutants
     utils/stdlib_mutants.py --keep DIR       # leave the mutant trees behind
     utils/stdlib_mutants.py --jobs 1         # one mutant at a time
+    utils/stdlib_mutants.py --check --shard 3/9   # every ninth mutant, from the third
 
 ## What a mutation is
 
@@ -58,6 +59,18 @@ report, the survivor set and `--check`'s verdict are the same text at any N.
 `ein test` runs one program at a time, so N processes are N threads of work.
 Until S1f.6.39 it ran one mutant at a time: 572 mutants, about 49 min, in
 gate #3's nightly (2026-11-15).
+
+## In shards (M1f S1f.6.39)
+
+`--shard k/n` (default `$EIN_TEST_SHARD`, the corpus sweeps' shard,
+`ein-corpus/src/shard.rs`) runs every `n`-th mutant from the `k`-th, in the
+mutants' order: one of `n` parallel jobs of the CI nightly, each inside
+Q-M1f.102's five minutes on the runner's four threads (the user's ruling of
+2026-11-15 on Q-M1f.293). Every mutant is in exactly one shard. `--check`
+holds the shard's survivors to the banked lines of the shard's mutants, and
+shard 1 also to the banked lines no mutant has any more, so the `n` shards
+together check what one run checks. `--bless` re-banks the whole set and
+refuses a shard.
 
 ## Why it is not the gate
 
@@ -297,7 +310,21 @@ def main() -> int:
     ap.add_argument("--jobs", type=int, default=None,
                     help="mutants at once (default: $EIN_TEST_JOBS, else 16; "
                          "never more than the machine's threads)")
+    ap.add_argument("--shard", default=os.environ.get("EIN_TEST_SHARD"),
+                    help="k/n: every n-th mutant from the k-th (default: $EIN_TEST_SHARD)")
     args = ap.parse_args()
+    shard = None
+    if args.shard:
+        try:
+            k, n = (int(x) for x in args.shard.split("/"))
+            assert 1 <= k <= n
+        except (ValueError, AssertionError):
+            print(f"--shard {args.shard!r}: a shard k/n with 1 <= k <= n", file=sys.stderr)
+            return 2
+        shard = (k, n)
+        if args.bless:
+            print("--bless re-banks the whole set: run it without a shard", file=sys.stderr)
+            return 2
     jobs = args.jobs if args.jobs is not None else int(os.environ.get("EIN_TEST_JOBS", "16"))
     if jobs < 1:
         print(f"--jobs {jobs}: a count of one or more", file=sys.stderr)
@@ -322,6 +349,10 @@ def main() -> int:
     muts = [m for m in muts if m.splice[2] != modules[m.module][m.splice[0]:m.splice[1]]]
     if args.filter:
         muts = [m for m in muts if args.filter in m.rule]
+    every = {key(m) for m in muts}
+    if shard:
+        k, n = shard
+        muts = [m for i, m in enumerate(muts) if i % n == k - 1]
 
     # The control: the unmutated tree must pass, or every "killed" below is a
     # statement about the suite being broken rather than about the mutation.
@@ -360,7 +391,8 @@ def main() -> int:
             shutil.rmtree(workdir, ignore_errors=True)
 
     killed = sum(1 for r in results if r.killed)
-    print(f"stdlib mutants: {killed} of {len(results)} killed by `ein test {' '.join(args.targets)}`\n")
+    of = f" (shard {shard[0]}/{shard[1]})" if shard else ""
+    print(f"stdlib mutants{of}: {killed} of {len(results)} killed by `ein test {' '.join(args.targets)}`\n")
     by_family: dict[str, list[int]] = {}
     for r in results:
         f = by_family.setdefault(r.mutation.family, [0, 0])
@@ -381,6 +413,10 @@ def main() -> int:
         else set()
     )
     now = {key(r.mutation) for r in survivors}
+    if shard:
+        # This shard's banked lines, and, in shard 1, the lines no mutant has.
+        mine = {key(r.mutation) for r in results}
+        banked = {b for b in banked if b in mine or (shard[0] == 1 and b not in every)}
     if survivors:
         print(f"\n  survivors ({len(survivors)}):")
         for k in sorted(now):

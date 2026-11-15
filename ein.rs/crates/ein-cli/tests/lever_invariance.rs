@@ -147,10 +147,6 @@ fn rel(p: &Path) -> String {
         .to_string()
 }
 
-fn slow_too() -> bool {
-    std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
-}
-
 /// The first line two texts differ on, for a failure message.
 fn first_difference(a: &str, b: &str) -> String {
     let (mut la, mut lb) = (a.lines(), b.lines());
@@ -211,10 +207,14 @@ fn summary_without_spot(summary: &str) -> String {
 
 /// Every declared lever cell, by file: the corpus's `levers` columns, and the
 /// CLI lever each register row's `settings` names (`lever: -L, …`).
-fn declared() -> BTreeMap<String, BTreeSet<String>> {
+///
+/// `slow_too`: the slow entries' cells too, the nightly's, which the one test
+/// that reads `EIN_CORPUS_SLOW` passes (M1f S1f.6.39: the nightly runs that
+/// test by name, its other tests being the per-commit tier's).
+fn declared(slow_too: bool) -> BTreeMap<String, BTreeSet<String>> {
     let mut out: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     for e in corpus().entry {
-        if !e.levers.is_empty() && (slow_too() || !e.slow) {
+        if !e.levers.is_empty() && (slow_too || !e.slow) {
             out.entry(e.path.clone()).or_default().extend(e.levers);
         }
     }
@@ -234,7 +234,7 @@ fn declared() -> BTreeMap<String, BTreeSet<String>> {
         if !SHADOWS.iter().any(|(s, _, _)| *s == lever) {
             continue;
         }
-        if slow_too() || !slow.contains(&row.witness) {
+        if slow_too || !slow.contains(&row.witness) {
             out.entry(row.witness).or_default().insert(lever);
         }
     }
@@ -282,7 +282,8 @@ fn solve(file: &str, flags: &[String]) -> Got {
 /// default prints.**
 #[test]
 fn every_declared_lever_cell_moves_no_line_of_any_mode() {
-    let cells = declared();
+    let slow_too = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
+    let cells = declared(slow_too);
     // Each file's describe at the default, for its k_s and whether R is known.
     let files: Vec<String> = cells.keys().cloned().collect();
     let bases = par_map(
@@ -400,7 +401,7 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     // where k_s = 1. The 186 environment cells beside them, the two
     // `EIN_OBLIGATION_CHOICE` settings over the same six files, went when
     // M1e2 S1e2.3.1 retired the variable.
-    if !slow_too() {
+    if !slow_too {
         assert!(cut.is_empty(), "R is not known for {cut:?}");
         assert!(
             known >= 6 && declared_cells >= 93,

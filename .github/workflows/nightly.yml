@@ -9,9 +9,21 @@
 # over 5 min on the runner, or one that measures rather than checks, runs on
 # the dev host instead, `./run_tests.sh --dev-host`, which runs every step here
 # at full budget and the steps that left: the id space permuted eight ways,
-# `stdlib_census.py`, the whole review bundle and `route_invariance`'s slow
-# half. Nothing schedules the dev host; the user runs it. The three jobs run
-# side by side.
+# `route_invariance`'s 2^25 half, `stdlib_census.py` and the whole review
+# bundle. Nothing schedules the dev host; the user runs it. The jobs run side
+# by side.
+#
+# **The shards** (M1f S1f.6.39, the user's ruling of 2026-11-15 on
+# Q-M1f.293, *"split into parallel nightly jobs (shards), staying in CI"*). A
+# step over five minutes at the runner's four threads runs as a matrix job,
+# one shard a job, `EIN_TEST_SHARD=k/n` (`ein-corpus/src/shard.rs`): every
+# program the step's sweeps read is dealt to exactly one shard, so the `n`
+# jobs together check what the step checked. `deep-corpus-shards` holds the
+# long slow halves and the full-corpus sweeps that left the per-commit tier
+# (Q-M1f.289, .290: every corpus program's renderings held to the golden and
+# permuted), `mutants` the sensitivity census. Each shard was measured on
+# four P-core threads with four workers, the runner's count, as T6 measured
+# the steps (the stage's record).
 #
 # **`./run_tests.sh --nightly` runs every step of this file**, since M1e2
 # S1e2.3.6: the three jobs one after another, in this file's order, the fuzz
@@ -67,18 +79,77 @@ jobs:
       # `--release` until then, which dropped both.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
-      # Eight id-space permutations of every corpus file left for the dev host
-      # at M1f S1f.5.27: 452 s on the runner (run 42802597417, 2026-11-10), and
-      # the per-commit tier runs one permutation of every file.
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
-      # program (`docs/kernel/inference/answer_dump.md`). **This step runs what
-      # the per-commit tier runs, under the same profile since M1f S1f.6.39.** It was here for one slow
-      # run, `zebra2-minus-15 -e -m 3`, which went with `-e` at S1e2.1a.5's
-      # switch (`fbcae3b2`, 2026-10-18); nothing in `answer_dump.rs` has read
-      # `EIN_CORPUS_SLOW` since. Whether it gets a slow cell back is parked in
-      # S1e2.3.6's notes.
+      # program (`docs/kernel/inference/answer_dump.md`). Per commit it leaves
+      # out the runs of the `heavy_dump` entries, W8's `square-unique` witness
+      # among them, and this step reads them (M1f S1f.6.39, Q-M1f.294).
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test answer_dump
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1e2 S1e2.1a.6 — every mode's read-out and summary under every lever,
+      # held to the default's, with the cells the per-commit tier leaves out
+      # for their cost: the declared lever cells of the slow entries (the
+      # zebra2 pair's) and the register's witnesses that are slow. The one
+      # test that reads the flag, by name, since M1f S1f.6.39: the binary's
+      # others are the per-commit tier's, and one of them was 227 of the
+      # step's 244 s on four threads (2026-11-15).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test lever_invariance -- every_declared_lever_cell_moves_no_line_of_any_mode
+        env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.5.27 (Q-M1f.51) — `region`'s slow half, the state route held
+      # to route 1 through layer 6 on zebra2-minus-15, which no per-commit test
+      # reaches: its one test that reads the flag, by name, since S1f.6.39 (the
+      # binary's others are the per-commit tier's, which runs them).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test region -- the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6
+        env: { EIN_CORPUS_SLOW: "1" }
+      # And `obligation_rung`'s, the theory held to the hrule's 32 states.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test obligation_rung
+        env: { EIN_CORPUS_SLOW: "1" }
+      # M1e2 S1e2.1c.2 — route 1 and the state route print one read-out, the
+      # state route never doing more: the test at the default budget, by name,
+      # with the `slow` entries the per-commit half leaves here since M1f
+      # S1f.6.39 (Q-M1f.291). Its other test, the 2^25 budget, stays the dev
+      # host's: one zebra-family program's route 1 there runs past any shard's
+      # five minutes (Q-M1f.304).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test route_invariance -- the_state_route_and_route_1_print_one_read_out
+        env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.6.35 — every corpus program that imports answers alike with its
+      # imports selective, whole and `:as` (the user's criterion of 2026-11-14);
+      # the per-commit tier reads the entries that are not slow, and this the
+      # slow ones too: 83 s here (2026-11-14).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test import_invariance
+        env: { EIN_CORPUS_SLOW: "1" }
+      # M1f S1f.6.39 (Q-M1f.288, .290) — the job count's sweep over every
+      # corpus program, where per commit it reads the programs outside
+      # `tests/` that search; and Graphviz over every view of every corpus
+      # program, where per commit it reads those outside `tests/`.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --profile gate --test jobs_invariance
+        env: { EIN_CORPUS_SLOW: "1" }
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --profile gate --test dot_wellformed
+        env: { EIN_CORPUS_SLOW: "1" }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.14" }
+      # M1e2 S1e2.3.6 — the test steps left nothing in their `TMPDIR`,
+      # every entry named with the file that writes it (S1e2.3.5's check).
+      - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
+        working-directory: ${{ github.workspace }}
+
+  deep-corpus-shards:
+    name: ein.rs — the long slow halves and the full-corpus sweeps, in shards
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
+    env: { GATE_TMP: "${{ github.workspace }}/build/gate-tmp" }
+    # M1f S1f.6.39 (Q-M1f.293): every step here, run whole, was over five
+    # minutes on the runner's four threads, or would have been; one shard of
+    # each a job. A program is in one shard of every step.
+    strategy:
+      fail-fast: false
+      matrix: { shard: ["1/4", "2/4", "3/4", "4/4"] }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - run: sudo apt-get update && sudo apt-get install -y graphviz libgvplugin-neato-layout8
+      - run: mkdir -p "${GATE_TMP}"
       # M1f S1f.5.13 — every corpus program's `--dump-answer` state files, each
       # reloaded to its state by value, with the entries the per-commit tier
       # leaves out: the `slow` ones, and the `heavy_dump` ones, whose dump
@@ -87,71 +158,71 @@ jobs:
       # to 65 214 each on 2026-11-09). The user's ruling of 2026-11-08 on P-16,
       # *"move to slow tier"*; until it no CI tier ran this test's slow half.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test answer_round_trip
-        env: { EIN_CORPUS_SLOW: "1" }
-      # M1e2 S1e2.1a.6 — every mode's read-out and summary under every lever,
-      # held to the default's, with the cells the per-commit tier leaves out
-      # for their cost: the declared lever cells of the slow entries (the
-      # zebra2 pair's) and the register's witnesses that are slow.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test lever_invariance
-        env: { EIN_CORPUS_SLOW: "1" }
+        env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
       # M1e2 S1e2.2.21 — every core a run reports names its commitment and,
       # with root, derives its contradiction; the per-commit tier reads the
       # entries that are not slow, and this the zebra family's too.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test corpus_cores
-        env: { EIN_CORPUS_SLOW: "1" }
-      # M1f S1f.5.27 (Q-M1f.51) — two slow halves no tier ran, each a second
-      # route held to an answer on the zebra2-minus-15 family, which no
-      # per-commit test reaches: `region`'s state route to route 1 through
-      # layer 6, and `obligation_rung`'s theory to the hrule's 32 states. The
-      # third, `route_invariance`'s, runs on the dev host: 857 s here
-      # (2026-11-09), and the state route's answers on its programs are
-      # digested per commit by `corpus_shapes`.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test region
-        env: { EIN_CORPUS_SLOW: "1" }
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test obligation_rung
-        env: { EIN_CORPUS_SLOW: "1" }
-      # M1f S1f.6.35 — every corpus program that imports answers alike with its
-      # imports selective, whole and `:as` (the user's criterion of 2026-11-14);
-      # the per-commit tier reads the entries that are not slow, and this the
-      # slow ones too: 83 s here (2026-11-14).
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test import_invariance
-        env: { EIN_CORPUS_SLOW: "1" }
+        env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
+      # M1f S1f.6.39 (Q-M1f.287, .289, .290) — every rendering of every corpus
+      # program held to the golden, and every one under one permuted id space:
+      # per commit the golden reads the programs outside `tests/` and the
+      # permutation those of them that search. Eight permutations are the dev
+      # host's.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --profile gate --test id_order_invariance
+        env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
-      # M1e2 S1e2.3.6 — the test steps left nothing in their `TMPDIR`,
-      # every entry named with the file that writes it (S1e2.3.5's check).
       - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
         working-directory: ${{ github.workspace }}
-      # ── The sensitivity census — M1e S1e.4.5, `TE-L4` ──
-      #
-      # It reads the gate profile's `ein` the steps above have already built
-      # (`CARGO_BIN_EXE_ein` is `target/gate/ein` under `--profile gate`, M1f
-      # S1f.6.39; `target/release/ein` under `--release` until then), so
-      # this is a run and not a job. Its mutants run on `EIN_TEST_JOBS`
-      # workers, each in its own stdlib tree, the report in the mutants'
-      # order (`--jobs`, S1f.6.39). It is not the gate: the per-commit claim
-      # is `ein-infer/tests/stdlib_coverage.rs`, in-process and scoped to
-      # `tests/stdlib/`, which asks whether a rule is activated, and this
-      # whether the activation would notice a defect. Its sibling,
-      # `stdlib_census.py --check`, the weaker corpus-wide claim and a
-      # measurement, left for the dev host at M1f S1f.5.27 (380 s on the
-      # runner, run 42802597417), and so did the whole review bundle and its
-      # link check (372 s and 13 s there): the per-commit
-      # `review_bundle.py --smoke` reads every register row and builds four
-      # cases, and `utils/ci_container.sh --dev-host` builds the whole bundle
-      # on the runner's Graphviz.
-      #
-      # `working-directory` overrides the job's `ein.rs`: the script resolves
-      # the repo from `__file__` and runs the engine with `cwd=REPO`, but the
-      # `python3 utils/...` path is root-relative.
+
+  # ── The sensitivity census — M1e S1e.4.5, `TE-L4` ──
+  #
+  # It reads the gate profile's `ein`, built by the step before it (M1f
+  # S1f.6.39: `target/gate/ein`, which the deep-corpus job's tests built
+  # until the census left it for shards of its own). Its mutants run on
+  # `EIN_TEST_JOBS` workers, each in its own stdlib tree, the report in the
+  # mutants' order (`--jobs`), every `n`-th mutant from the `k`-th in a
+  # shard (`--shard`, `EIN_TEST_SHARD`, Q-M1f.293: the whole census was 23
+  # min on four threads). It is not the gate: the per-commit claim is
+  # `ein-infer/tests/stdlib_coverage.rs`, in-process and scoped to
+  # `tests/stdlib/`, which asks whether a rule is activated, and this whether
+  # the activation would notice a defect. Its sibling, `stdlib_census.py
+  # --check`, the weaker corpus-wide claim and a measurement, left for the dev
+  # host at M1f S1f.5.27 (380 s on the runner, run 42802597417), and so did
+  # the whole review bundle and its link check (372 s and 13 s there): the
+  # per-commit `review_bundle.py --smoke` reads every register row and builds
+  # four cases, and `utils/ci_container.sh --dev-host` builds the whole
+  # bundle on the runner's Graphviz.
+  mutants:
+    name: stdlib — the sensitivity census, in shards
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ein.rs } }
+    strategy:
+      fail-fast: false
+      matrix: { shard: ["1/12", "2/12", "3/12", "4/12", "5/12", "6/12", "7/12", "8/12", "9/12", "10/12", "11/12", "12/12"] }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: ein.rs }
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.14" }
+      - run: cargo build -p ein-cli --profile gate --bin ein
       # M1e S1e.3.6 — would `tests/` notice a defect in the rule it tests: four
       # mechanical mutation families over every `(rule …)` in `stdlib/`, each
       # run past `ein test tests/`, and the survivors held as a set to
       # `tests/mutation_survivors.txt`. `--check` fails on a new survivor and on
-      # a banked one that is now killed. A change in the set is explained in
-      # `tests/README.md` before `--bless` re-banks it.
+      # a banked one that is now killed, each shard on its own mutants'. A
+      # change in the set is explained in `tests/README.md` before `--bless`
+      # re-banks it, which is a whole run.
+      #
+      # `working-directory` overrides the job's `ein.rs`: the script resolves
+      # the repo from `__file__` and runs the engine with `cwd=REPO`, but the
+      # `python3 utils/...` path is root-relative.
       - run: python3 utils/stdlib_mutants.py --check --bin ein.rs/target/gate/ein
         working-directory: ${{ github.workspace }}
+        env: { EIN_TEST_SHARD: "${{ matrix.shard }}" }
 
   frontend-fuzz:
     name: ein.rs — the frontend fuzzer, at the nightly's budget

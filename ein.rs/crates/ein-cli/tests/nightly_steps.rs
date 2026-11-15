@@ -43,6 +43,17 @@
 //! target that reads `EIN_CORPUS_SLOW` and that neither list runs with it, as
 //! three did until S1f.5.27 (Q-M1f.51).
 //!
+//! ## The shards (M1f S1f.6.39)
+//!
+//! The user's ruling of 2026-11-15 on Q-M1f.293: a nightly step over five
+//! minutes at the runner's four threads is split into parallel jobs, each a
+//! shard of it, `EIN_TEST_SHARD=k/n` (`ein_corpus::shard`), a job's
+//! `matrix: { shard: [...] }` naming its shards. `--nightly` runs a sharded
+//! job once per shard, one after another, as GitHub runs its matrix side by
+//! side, and `--dev-host` runs every shard too, at its budget.
+//! [`every_sharded_step_runs_every_shard`] holds a sharded step to all of
+//! its `n` shards, so no program is left in a shard nothing runs.
+//!
 //! ## What it does not catch
 //!
 //! The environment a job gives every step beyond its `env:` blocks: the
@@ -81,16 +92,19 @@ const NOT_NIGHTLY_STEPS: &[(&str, &str)] = &[
 /// [`the_dev_host_runs_the_nightly_and_what_left_it`] fails.
 const DEV_HOST_ONLY: &[(&str, &str)] = &[
     (
-        "EIN_ID_SEEDS=\"8\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-render --profile gate --test id_order_invariance",
+        "EIN_ID_SEEDS=\"8\" EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-render --profile gate --test id_order_invariance",
         "left the nightly at S1f.5.27: 452 s on the runner (run 42802597417, \
-         2026-11-10), and the per-commit tier runs one permutation of every \
-         corpus file",
+         2026-11-10); the nightly runs one permutation of every corpus \
+         program, in shards, and the per-commit tier one of every program \
+         outside tests/ that searches (S1f.6.39, Q-M1f.289)",
     ),
     (
         "EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${GATE_TMP}\" cargo test -p ein-cli --profile gate --test route_invariance",
-        "no tier ran it until S1f.5.27 (Q-M1f.51): 857 s here at \
-         S1f.5.13, a second route held to answers `corpus_shapes` digests per \
-         commit",
+        "its 2^25 half, `route_1_and_the_state_route_agree_past_the_default_budget`: \
+         route 1 on the zebra family at 2^25 ran past 25 min a program on four \
+         threads (S1f.6.39, 2026-11-15), so no shard fits five minutes on the \
+         runner (Q-M1f.304); the nightly runs its default-budget half, the slow \
+         entries included, by name",
     ),
     (
         "python3 utils/stdlib_census.py --check",
@@ -314,40 +328,101 @@ fn the_round_trips_slow_half_runs_with_the_flag() {
     );
 }
 
-/// **The tests' scratch is checked** (S1e2.3.6, after S1e2.3.5). Every
-/// `cargo test` of the job that runs `check_test_scratch.py` runs under
-/// `TMPDIR="${GATE_TMP}"`, and the check comes after the last of them; so the
-/// slow cells, which no per-commit run reaches, leave nothing either.
+/// **The tests' scratch is checked** (S1e2.3.6, after S1e2.3.5). In every
+/// job that runs `check_test_scratch.py`, every `cargo test` runs under
+/// `TMPDIR="${GATE_TMP}"`, and the check comes after the last of them; and
+/// every job with a `cargo test` under that `TMPDIR` runs the check, so the
+/// slow cells and the shards (S1f.6.39), which no per-commit run reaches,
+/// leave nothing either.
 #[test]
 fn every_test_step_runs_under_the_checked_tmpdir() {
     let all = jobs(&read(".github/workflows/nightly.yml"));
-    let job = all
-        .iter()
-        .find(|j| j.runs.iter().any(|r| r.contains("check_test_scratch.py")))
-        .expect("a nightly job runs utils/check_test_scratch.py");
-    let check = job
-        .runs
-        .iter()
-        .position(|r| r == "python3 utils/check_test_scratch.py \"${GATE_TMP}\"")
-        .expect("the check reads the tests' TMPDIR");
-    let tests: Vec<usize> = (0..job.runs.len())
-        .filter(|&i| job.runs[i].contains("cargo test"))
-        .collect();
-    assert!(!tests.is_empty(), "`{}` runs no cargo test", job.name);
-    for &i in &tests {
+    let check = "python3 utils/check_test_scratch.py \"${GATE_TMP}\"";
+    let mut checked = 0usize;
+    for job in &all {
+        let tests: Vec<usize> = (0..job.runs.len())
+            .filter(|&i| job.runs[i].contains("cargo test"))
+            .collect();
+        let Some(at) = job.runs.iter().position(|r| r == check) else {
+            assert!(
+                tests
+                    .iter()
+                    .all(|&i| !job.runs[i].contains("TMPDIR=\"${GATE_TMP}\"")),
+                "`{}` runs a cargo test under the tests' TMPDIR and never checks it: {:#?}",
+                job.name,
+                job.runs
+            );
+            continue;
+        };
+        checked += 1;
+        assert!(!tests.is_empty(), "`{}` runs no cargo test", job.name);
+        for &i in &tests {
+            assert!(
+                job.runs[i].contains("TMPDIR=\"${GATE_TMP}\" cargo test"),
+                "`{}` runs `{}` outside the checked TMPDIR",
+                job.name,
+                job.runs[i]
+            );
+        }
         assert!(
-            job.runs[i].contains("TMPDIR=\"${GATE_TMP}\" cargo test"),
-            "`{}` runs `{}` outside the checked TMPDIR",
+            tests.iter().all(|&i| i < at),
+            "`{}` checks its TMPDIR before its last cargo test: {:#?}",
             job.name,
-            job.runs[i]
+            job.runs
         );
     }
     assert!(
-        tests.iter().all(|&i| i < check),
-        "`{}` checks its TMPDIR before its last cargo test: {:#?}",
-        job.name,
-        job.runs
+        checked > 0,
+        "no nightly job runs utils/check_test_scratch.py"
     );
+}
+
+/// `step` with its `EIN_TEST_SHARD="k/n" ` taken out, and the shard.
+fn unsharded(step: &str) -> (String, Option<(usize, usize)>) {
+    let key = "EIN_TEST_SHARD=\"";
+    let Some(at) = step.find(key) else {
+        return (step.to_string(), None);
+    };
+    let rest = &step[at + key.len()..];
+    let end = rest.find('"').expect("a closing quote");
+    let shard = rest[..end]
+        .split_once('/')
+        .and_then(|(k, n)| Some((k.parse().ok()?, n.parse().ok()?)));
+    let shard = shard.unwrap_or_else(|| panic!("`{step}` names no shard k/n"));
+    (
+        normalise(format!("{}{}", &step[..at], &rest[end + 1..])),
+        Some(shard),
+    )
+}
+
+/// **Every sharded step runs every one of its shards** (M1f S1f.6.39,
+/// Q-M1f.293): a step the nightly runs with `EIN_TEST_SHARD="k/n"` is run for
+/// each `k` from 1 to `n`, one `n`, once each, so every program its sweep
+/// deals is in a shard a job runs. The dev host's list is held to the
+/// nightly's by [`the_dev_host_runs_the_nightly_and_what_left_it`].
+#[test]
+fn every_sharded_step_runs_every_shard() {
+    let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
+    let mut shards: std::collections::BTreeMap<String, Vec<(usize, usize)>> = Default::default();
+    for s in &nightly {
+        if let (cmd, Some(shard)) = unsharded(s) {
+            shards.entry(cmd).or_default().push(shard);
+        }
+    }
+    assert!(
+        !shards.is_empty(),
+        "no nightly step is sharded: the steps Q-M1f.293 split are back in one job each"
+    );
+    for (cmd, mut got) in shards {
+        got.sort();
+        let n = got[0].1;
+        let want: Vec<(usize, usize)> = (1..=n).map(|k| (k, n)).collect();
+        assert_eq!(
+            got, want,
+            "`{cmd}` is run on the shards {got:?}, where a sharding into {n} runs each \
+             of 1/{n} to {n}/{n} once"
+        );
+    }
 }
 
 /// **The dev host runs the nightly, and every step that left it** (M1f
@@ -432,29 +507,36 @@ fn the_fuzzer_runs_at_each_tiers_budget() {
 }
 
 /// **The dev host's tests' scratch is checked**, as the nightly's is: every
-/// `cargo test` before its `check_test_scratch.py` runs under
-/// `TMPDIR="${GATE_TMP}"`, and the steps that left the nightly or never ran in
-/// it are among them, so the slow halves only the dev host runs leave nothing
-/// either.
+/// `cargo test` before its last `check_test_scratch.py` runs under
+/// `TMPDIR="${GATE_TMP}"` and is followed by a check, nothing after the last
+/// one runs under it, and the steps that left the nightly or never ran in it
+/// are among the checked ones, so the slow halves only the dev host runs
+/// leave nothing either. Several checks since M1f S1f.6.39: one a job, as
+/// the nightly's jobs have, the shards' among them.
 #[test]
 fn every_dev_host_test_step_runs_under_the_checked_tmpdir() {
     let dev = shell_steps(&read("run_tests.sh"), "dev_host_step");
-    let check = dev
+    let check = "python3 utils/check_test_scratch.py \"${GATE_TMP}\"";
+    let last = dev
         .iter()
-        .position(|r| r == "python3 utils/check_test_scratch.py \"${GATE_TMP}\"")
+        .rposition(|r| r == check)
         .expect("--dev-host runs utils/check_test_scratch.py on the tests' TMPDIR");
-    for s in &dev[..check] {
+    for (i, s) in dev[..last].iter().enumerate() {
         if s.contains("cargo test") {
             assert!(
                 s.contains("TMPDIR=\"${GATE_TMP}\" cargo test"),
                 "--dev-host runs `{s}` outside the checked TMPDIR"
             );
+            assert!(
+                dev[i..].iter().any(|r| r == check),
+                "--dev-host runs `{s}` with no scratch check after it"
+            );
         }
     }
-    for s in &dev[check..] {
+    for s in &dev[last..] {
         assert!(
             !s.contains("TMPDIR=\"${GATE_TMP}\""),
-            "--dev-host runs `{s}` under the tests' TMPDIR after it was checked"
+            "--dev-host runs `{s}` under the tests' TMPDIR after it was last checked"
         );
     }
     for (cmd, _) in DEV_HOST_ONLY
@@ -462,10 +544,73 @@ fn every_dev_host_test_step_runs_under_the_checked_tmpdir() {
         .filter(|(c, _)| c.contains("cargo test"))
     {
         assert!(
-            dev[..check].iter().any(|s| *s == normalise(cmd)),
-            "`{cmd}` runs on the dev host after its scratch check, or not at all"
+            dev[..last].iter().any(|s| *s == normalise(cmd)),
+            "`{cmd}` runs on the dev host after its last scratch check, or not at all"
         );
     }
+}
+
+/// **A slow half run by name leaves nothing out in silence** (M1f
+/// S1f.6.39): a nightly step that names the test it runs, `-- NAME`, names a
+/// test of its target, and either that test is the one place the target's
+/// code reads `EIN_CORPUS_SLOW` (`region`'s), or the dev host runs the whole
+/// target with the flag, a step [`DEV_HOST_ONLY`] names with why
+/// (`route_invariance`'s 2²⁵ half). So a second test that reads the flag runs
+/// on some tier.
+#[test]
+fn a_slow_half_run_by_name_leaves_nothing_out() {
+    let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
+    let dev = shell_steps(&read("run_tests.sh"), "dev_host_step");
+    let mut named = 0usize;
+    for s in nightly.iter().filter(|s| s.contains("cargo test")) {
+        let Some((head, name)) = s.split_once(" -- ") else {
+            continue;
+        };
+        let (package, target) = head
+            .split_once(" -p ")
+            .and_then(|(_, r)| r.split_once(" --profile gate --test "))
+            .unwrap_or_else(|| panic!("`{s}` names a test but no target"));
+        let text = read(&format!("ein.rs/crates/{package}/tests/{target}.rs"));
+        assert!(
+            text.contains(&format!("fn {name}(")),
+            "`{s}`: {target} has no test `{name}`"
+        );
+        let whole = format!(
+            "EIN_CORPUS_SLOW=\"1\" TMPDIR=\"${{GATE_TMP}}\" cargo test -p {package} --profile gate --test {target}"
+        );
+        if dev.contains(&whole) && DEV_HOST_ONLY.iter().any(|(c, _)| normalise(c) == whole) {
+            named += 1;
+            continue;
+        }
+        let code: Vec<(usize, &str)> = text
+            .lines()
+            .enumerate()
+            .filter(|(_, l)| !l.trim_start().starts_with("//"))
+            .collect();
+        let at = code
+            .iter()
+            .position(|(_, l)| l.trim_start().starts_with(&format!("fn {name}(")))
+            .unwrap_or_else(|| panic!("`{s}`: {target} has no test `{name}`"));
+        let next = code[at + 1..]
+            .iter()
+            .position(|(_, l)| l.starts_with("fn ") || l.starts_with("#[test]"))
+            .map_or(code.len(), |k| at + 1 + k);
+        let reads: Vec<usize> = (0..code.len())
+            .filter(|&i| code[i].1.contains("\"EIN_CORPUS_SLOW\""))
+            .collect();
+        assert!(
+            !reads.is_empty() && reads.iter().all(|&i| at < i && i < next),
+            "`{s}` runs `{name}` alone, and {target} reads EIN_CORPUS_SLOW outside it \
+             (lines {:?}): its slow half is more than the one test, and the dev host \
+             does not run the target whole with the flag",
+            reads.iter().map(|&i| code[i].0 + 1).collect::<Vec<_>>()
+        );
+        named += 1;
+    }
+    assert!(
+        named > 0,
+        "no nightly step names its test: region's slow half is by name"
+    );
 }
 
 /// Test targets that read `EIN_CORPUS_SLOW` and whose slow half runs on no
@@ -539,11 +684,14 @@ fn every_slow_half_runs_on_a_tier() {
             }
             continue;
         }
+        // The step may name the tests it runs, `-- NAME` (`region`'s, since
+        // S1f.6.39: its one test that reads the flag).
         let tail = format!("cargo test -p {package} --profile gate --test {target}");
         let runs = |steps: &[String]| {
-            steps
-                .iter()
-                .any(|s| s.contains("EIN_CORPUS_SLOW=\"1\"") && s.ends_with(&tail))
+            steps.iter().any(|s| {
+                s.contains("EIN_CORPUS_SLOW=\"1\"")
+                    && (s.ends_with(&tail) || s.contains(&format!("{tail} -- ")))
+            })
         };
         assert!(
             runs(&nightly) || runs(&dev),

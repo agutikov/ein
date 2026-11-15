@@ -58,9 +58,15 @@
 //! (67 928 over 15 nightly; 2026-11-06): the first contradiction's
 //! primaries, `bijection/06`'s cube most of them.
 //!
+//! The slow half runs in the CI nightly in shards, `EIN_TEST_SHARD=k/n`
+//! (M1f S1f.6.39, the user's ruling on Q-M1f.293): each shard reads the
+//! programs `ein_corpus::shard` deals it, and holds its share of the programs
+//! floor; the floors on what the cores are hold per commit.
+//!
 //! ```text
-//! cargo test -p ein-infer --release --test corpus_cores
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --release --test corpus_cores
+//! cargo test -p ein-infer --profile gate --test corpus_cores
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --profile gate --test corpus_cores
+//! EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test -p ein-infer --profile gate --test corpus_cores
 //! ```
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -105,7 +111,9 @@ fn files() -> Vec<PathBuf> {
     files.sort();
     files.dedup();
     files.retain(|f| slow_too() || !slow.contains(f));
-    files
+    // The nightly's shard of them (`EIN_TEST_SHARD`, M1f S1f.6.39,
+    // Q-M1f.293).
+    ein_corpus::shard::keep(files, |f| rel_of(f))
 }
 
 /// A program's path from the repo root, for the pool's instrument.
@@ -301,9 +309,15 @@ fn every_core_names_its_commitment_and_derives_its_contradiction() {
     // Not vacuous: 203 programs, 163 477 cores read, 162 363 of them the
     // cubes' (2026-11-05, at S1e2.2.21 T4; under `EIN_CORPUS_SLOW=1` 217,
     // 233 212 and 227 786).
-    assert!(programs >= 100, "{programs} programs read");
+    // A shard of the nightly's (`EIN_TEST_SHARD`) holds its share of the
+    // programs; the cores, most of them a few programs', are the whole run's
+    // floor, held per commit.
     assert!(
-        cores >= 100_000 && cube >= 100_000,
+        programs >= ein_corpus::shard::share(100),
+        "{programs} programs read"
+    );
+    assert!(
+        ein_corpus::shard::current().is_some() || (cores >= 100_000 && cube >= 100_000),
         "{cores} cores, {cube} the cubes'"
     );
     eprintln!("{programs} programs, {cores} cores, {cube} of them the cubes'");
@@ -489,10 +503,6 @@ struct Claims {
     bad: Vec<String>,
     seen: BTreeSet<Seen>,
     cut: usize,
-    /// Members of N a run past `--region-limit` met, each printed with the
-    /// core taken after the walk (M1f S1f.5.12; `not-kept` since M1e2
-    /// S1e2.3.9 until then).
-    past_limit: usize,
     /// Cores whose contradiction has a fact the core derives through two
     /// rules, where `refuted by` names the first the store records (M1e2
     /// S1e2.3.10, Q-M1e2.21 (a)).
@@ -597,6 +607,189 @@ impl Claims {
     }
 }
 
+/// One of the three runs whose cores [`statuses`] reads: the oracle's cube,
+/// `--maximal`, and describe.
+#[derive(Clone, Copy)]
+enum Run {
+    Cube,
+    Maximal,
+    Describe,
+}
+
+/// What one run printed, in the order it printed it: a core to hold, or a
+/// failure found before any core was held (a member of N with no core).
+enum Printed {
+    Hold(Stated),
+    Bad(String),
+}
+
+/// One run's reading: what it printed, and how many members of N a run past
+/// `--region-limit` met, each printed with the core taken after the walk (M1f
+/// S1f.5.12; `not-kept` since M1e2 S1e2.3.9 until then). `None` where the program does not load, or the run
+/// is refused, which drops the program as one refused run did.
+type Read = Option<(Vec<Printed>, usize)>;
+
+/// **What `run` prints of `path`'s cores**, the run made on a load of its
+/// own: the cube's dead nodes, root's included, where the oracle enumerates
+/// it; the dead nodes `--maximal` and describe visit; and describe's dead
+/// root and N, every member a failure if it carries no core.
+fn read(path: &Path, rel: &str, run: Run) -> Read {
+    let (mut kb, mut terms, ast) = loaded(path)?;
+    let mut out = Vec::new();
+    let which = match run {
+        Run::Cube => {
+            // A program whose root a preparation refuses has no cores to
+            // hold, and no program here: `statuses` read it as `None`.
+            let (mut kb0, mut terms0, ast0) = loaded(path)?;
+            Nodes::new(&mut kb0, &mut terms0, &ast0, &[]).ok()?;
+            if let Ok(Outcome::Region(r)) = region::compute(
+                &mut kb,
+                &mut terms,
+                &ast,
+                &region::Options::default(),
+                &mut |_| {},
+            ) {
+                for (mask, node) in r.nodes.iter().enumerate() {
+                    if r.status[mask] & region::DEAD == 0 {
+                        continue;
+                    }
+                    let set = (0..r.n())
+                        .filter(|b| mask >> b & 1 == 1)
+                        .map(|b| r.candidates[b].fact)
+                        .collect();
+                    out.push(Printed::Hold(Stated {
+                        at: "cube",
+                        set,
+                        core: node.core.clone(),
+                        status: node.core_status,
+                        refuted_by: node.refuted_by.clone(),
+                    }));
+                }
+            }
+            return Some((out, 0));
+        }
+        Run::Maximal => Which::Maximal,
+        Run::Describe => Which::All,
+    };
+    let opts = explore::Options::new(Mode {
+        which,
+        ask: Ask::Describe,
+    });
+    let visits = Arc::new(Mutex::new(Vec::new()));
+    let mut events = ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
+    let a = explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events).ok()?;
+    let by_text: BTreeMap<&str, FactId> = a
+        .candidates
+        .iter()
+        .map(|c| (c.text.as_str(), c.fact))
+        .collect();
+    let at = if which == Which::All {
+        "describe"
+    } else {
+        "maximal"
+    };
+    let visited: Vec<Visit> = visits.lock().expect("done").drain(..).collect();
+    for (commitment, core, status, refuted_by) in visited {
+        let set = commitment.iter().map(|c| by_text[c.as_str()]).collect();
+        out.push(Printed::Hold(Stated {
+            at,
+            set,
+            core,
+            status,
+            refuted_by,
+        }));
+    }
+    let mut past_limit = 0;
+    if which != Which::All {
+        return Some((out, past_limit));
+    }
+    let Some(d) = a.described.as_ref() else {
+        return Some((out, past_limit));
+    };
+    if !d.root.alive {
+        out.push(Printed::Hold(Stated {
+            at: "root",
+            set: Vec::new(),
+            core: d.root.core.clone(),
+            status: d.root.core_status,
+            refuted_by: d.root.refuted_by.clone(),
+        }));
+    }
+    let stopped = matches!(a.stopped, Some(explore::Stopped::Limit { .. }));
+    for x in &d.dead {
+        let set: Vec<FactId> = x
+            .set
+            .iter()
+            .map(|&b| a.candidates[b as usize].fact)
+            .collect();
+        if x.core_status.is_none() || (x.core.is_empty() && !x.set.is_empty()) {
+            // Every member is printed with its core since M1f S1f.5.12,
+            // past `--region-limit` too.
+            out.push(Printed::Bad(format!(
+                "{rel}: N {:?} carries no core ({:?}), on a run {} --region-limit",
+                set,
+                x.core_status,
+                if stopped {
+                    "stopped at"
+                } else {
+                    "not stopped at"
+                }
+            )));
+            continue;
+        }
+        if stopped {
+            past_limit += 1;
+        }
+        out.push(Printed::Hold(Stated {
+            at: "N",
+            set,
+            core: x.core.clone(),
+            status: x.core_status,
+            refuted_by: x.refuted_by.clone(),
+        }));
+    }
+    Some((out, past_limit))
+}
+
+/// How many distinct cores one unit of [`hold_chunk`] holds: a program with
+/// thousands, the zebra family's, is spread over the workers (M1f S1f.6.39).
+const CHUNK: usize = 200;
+
+/// One core's holding: the failures, and whether it was cut and derives its
+/// contradiction through two rules.
+type Held = (Vec<String>, bool, bool);
+
+/// **Distinct cores of one program, each held** against a fresh preparation
+/// of root, one [`Claims::hold`] each: `None` where a preparation or a
+/// fixpoint is refused, which drops the program as it did when one loop held
+/// them all.
+fn hold_chunk(path: &Path, rel: &str, cores: &[&Stated]) -> Option<Vec<Held>> {
+    let (mut kb0, mut terms0, ast0) = loaded(path)?;
+    let mut fresh = Nodes::new(&mut kb0, &mut terms0, &ast0, &[]).ok()?;
+    let mut out = Vec::with_capacity(cores.len());
+    for s in cores {
+        let mut claims = Claims {
+            rel: rel.to_string(),
+            bad: Vec::new(),
+            seen: BTreeSet::new(),
+            cut: 0,
+            two_rules: 0,
+        };
+        claims.hold(
+            &mut fresh,
+            Stated {
+                at: s.at,
+                set: s.set.clone(),
+                core: s.core.clone(),
+                status: s.status,
+                refuted_by: s.refuted_by.clone(),
+            },
+        )?;
+        out.push((claims.bad, claims.cut > 0, claims.two_rules > 0));
+    }
+    Some(out)
+}
+
 /// The claims for every core `path`'s surfaces print, each read against the
 /// preparation of root that took it: the cube's dead nodes, root's included,
 /// where the oracle enumerates it, and the dead nodes describe and
@@ -609,148 +802,131 @@ impl Claims {
 /// distinct cores were read, how many of them were cut, how many members of N
 /// a run past the limit met, and how many cores derive their contradiction
 /// through two rules; `None` where the program does not load or is refused.
-fn statuses(path: &Path) -> Option<Statuses> {
-    let mut claims = Claims {
-        rel: path
-            .strip_prefix(repo_root())
-            .unwrap_or(path)
-            .to_string_lossy()
-            .to_string(),
-        bad: Vec::new(),
-        seen: BTreeSet::new(),
-        cut: 0,
-        past_limit: 0,
-        two_rules: 0,
-    };
-    let (mut kb0, mut terms0, ast0) = loaded(path)?;
-    let mut fresh = Nodes::new(&mut kb0, &mut terms0, &ast0, &[]).ok()?;
-    // The cube.
-    let (mut kb, mut terms, ast) = loaded(path)?;
-    if let Ok(Outcome::Region(r)) = region::compute(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &region::Options::default(),
-        &mut |_| {},
-    ) {
-        for (mask, node) in r.nodes.iter().enumerate() {
-            if r.status[mask] & region::DEAD == 0 {
-                continue;
-            }
-            let set = (0..r.n())
-                .filter(|b| mask >> b & 1 == 1)
-                .map(|b| r.candidates[b].fact)
-                .collect();
-            claims.hold(
-                &mut fresh,
-                Stated {
-                    at: "cube",
-                    set,
-                    core: node.core.clone(),
-                    status: node.core_status,
-                    refuted_by: node.refuted_by.clone(),
-                },
-            )?;
+///
+/// **On the pool in two stages** (M1f S1f.6.39): each (program, run) reads
+/// its cores, a unit; the program's distinct cores, the first of each in the
+/// runs' order as one loop met them, are held in chunks of [`CHUNK`], a unit
+/// each; and every program's failures are read back in the order that loop
+/// found them. One program's cores were one unit until then, and
+/// `zebra2-minus-15`'s took 210 s on one thread, its share of a nightly
+/// shard's five minutes on the runner.
+fn statuses(files: &[PathBuf]) -> Vec<Option<Statuses>> {
+    let runs = [Run::Cube, Run::Maximal, Run::Describe];
+    let rels: Vec<String> = files.iter().map(|p| rel_of(p)).collect();
+    let units: Vec<(usize, usize)> = (0..files.len())
+        .flat_map(|f| (0..runs.len()).map(move |r| (f, r)))
+        .collect();
+    let reads = ein_corpus::pool::map(
+        "corpus_cores::statuses",
+        &units,
+        |&(f, r)| {
+            (
+                rels[f].clone(),
+                ["cube", "maximal", "describe"][r].to_string(),
+            )
+        },
+        |&(f, r)| read(&files[f], &rels[f], runs[r]),
+    );
+    // Each program's runs, in order, and its distinct cores.
+    let mut per: Vec<Option<(Vec<Printed>, usize)>> = Vec::with_capacity(files.len());
+    let mut reads = reads.into_iter();
+    for _ in 0..files.len() {
+        let mut all = Some((Vec::new(), 0usize));
+        for _ in 0..runs.len() {
+            let got = reads.next().expect("a read a run");
+            all = match (all, got) {
+                (Some((mut printed, k)), Some((more, n))) => {
+                    printed.extend(more);
+                    Some((printed, k + n))
+                }
+                _ => None,
+            };
         }
+        per.push(all);
     }
-    // `--maximal`, then describe, each with what it visits.
-    for which in [Which::Maximal, Which::All] {
-        let (mut kb, mut terms, ast) = loaded(path)?;
-        let opts = explore::Options::new(Mode {
-            which,
-            ask: Ask::Describe,
-        });
-        let visits = Arc::new(Mutex::new(Vec::new()));
-        let mut events =
-            ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
-        let a = explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events).ok()?;
-        let by_text: BTreeMap<&str, FactId> = a
-            .candidates
-            .iter()
-            .map(|c| (c.text.as_str(), c.fact))
-            .collect();
-        let at = if which == Which::All {
-            "describe"
-        } else {
-            "maximal"
-        };
-        let visited: Vec<Visit> = visits.lock().expect("done").drain(..).collect();
-        for (commitment, core, status, refuted_by) in visited {
-            let set = commitment.iter().map(|c| by_text[c.as_str()]).collect();
-            claims.hold(
-                &mut fresh,
-                Stated {
-                    at,
-                    set,
-                    core,
-                    status,
-                    refuted_by,
-                },
-            )?;
+    // Which entries are a program's first sight of a core, and the chunks of
+    // them.
+    let mut first: Vec<Vec<usize>> = Vec::with_capacity(files.len());
+    for p in &per {
+        let mut seen: BTreeSet<Seen> = BTreeSet::new();
+        let mut at = Vec::new();
+        if let Some((printed, _)) = p {
+            for (i, e) in printed.iter().enumerate() {
+                if let Printed::Hold(s) = e
+                    && seen.insert((
+                        s.set.clone(),
+                        s.core.clone(),
+                        s.status,
+                        s.refuted_by.clone(),
+                    ))
+                {
+                    at.push(i);
+                }
+            }
         }
-        if which != Which::All {
-            continue;
-        }
-        let Some(d) = a.described.as_ref() else {
-            continue;
-        };
-        if !d.root.alive {
-            claims.hold(
-                &mut fresh,
-                Stated {
-                    at: "root",
-                    set: Vec::new(),
-                    core: d.root.core.clone(),
-                    status: d.root.core_status,
-                    refuted_by: d.root.refuted_by.clone(),
-                },
-            )?;
-        }
-        let stopped = matches!(a.stopped, Some(explore::Stopped::Limit { .. }));
-        for x in &d.dead {
-            let set: Vec<FactId> = x
-                .set
+        first.push(at);
+    }
+    let chunks: Vec<(usize, usize, usize)> = (0..files.len())
+        .flat_map(|f| {
+            let n = first[f].len();
+            (0..n.div_ceil(CHUNK)).map(move |c| (f, c * CHUNK, ((c + 1) * CHUNK).min(n)))
+        })
+        .collect();
+    let held = ein_corpus::pool::map(
+        "corpus_cores::statuses",
+        &chunks,
+        |&(f, from, to)| (rels[f].clone(), format!("hold {from}..{to}")),
+        |&(f, from, to)| {
+            let Some((printed, _)) = &per[f] else {
+                return None;
+            };
+            let cores: Vec<&Stated> = first[f][from..to]
                 .iter()
-                .map(|&b| a.candidates[b as usize].fact)
+                .map(|&i| match &printed[i] {
+                    Printed::Hold(s) => s,
+                    Printed::Bad(_) => unreachable!("a core to hold"),
+                })
                 .collect();
-            if x.core_status.is_none() || (x.core.is_empty() && !x.set.is_empty()) {
-                // Every member is printed with its core since M1f S1f.5.12,
-                // past `--region-limit` too.
-                claims.bad.push(format!(
-                    "{}: N {:?} carries no core ({:?}), on a run {} --region-limit",
-                    claims.rel,
-                    set,
-                    x.core_status,
-                    if stopped {
-                        "stopped at"
-                    } else {
-                        "not stopped at"
-                    }
-                ));
-                continue;
-            }
-            if stopped {
-                claims.past_limit += 1;
-            }
-            claims.hold(
-                &mut fresh,
-                Stated {
-                    at: "N",
-                    set,
-                    core: x.core.clone(),
-                    status: x.core_status,
-                    refuted_by: x.refuted_by.clone(),
-                },
-            )?;
+            hold_chunk(&files[f], &rels[f], &cores)
+        },
+    );
+    // Every program's failures in the order one loop found them.
+    let mut held = held.into_iter();
+    let mut out = Vec::with_capacity(files.len());
+    for (f, p) in per.into_iter().enumerate() {
+        let n = first[f].len();
+        let mut results: Option<Vec<Held>> = Some(Vec::with_capacity(n));
+        for _ in 0..n.div_ceil(CHUNK) {
+            let got = held.next().expect("a chunk's holding");
+            results = match (results, got) {
+                (Some(mut r), Some(more)) => {
+                    r.extend(more);
+                    Some(r)
+                }
+                _ => None,
+            };
         }
+        let (Some((printed, past_limit)), Some(results)) = (p, results) else {
+            out.push(None);
+            continue;
+        };
+        let mut by_entry: BTreeMap<usize, Held> = first[f].iter().copied().zip(results).collect();
+        let (mut bad, mut cut, mut two_rules) = (Vec::new(), 0usize, 0usize);
+        for (i, e) in printed.into_iter().enumerate() {
+            match e {
+                Printed::Bad(msg) => bad.push(msg),
+                Printed::Hold(_) => {
+                    if let Some((b, c, t)) = by_entry.remove(&i) {
+                        bad.extend(b);
+                        cut += usize::from(c);
+                        two_rules += usize::from(t);
+                    }
+                }
+            }
+        }
+        out.push(Some((bad, n, cut, past_limit, two_rules)));
     }
-    Some((
-        claims.bad,
-        claims.seen.len(),
-        claims.cut,
-        claims.past_limit,
-        claims.two_rules,
-    ))
+    out
 }
 
 /// **No core is printed unqualified from a cut search** — M1e2
@@ -796,12 +972,7 @@ fn statuses(path: &Path) -> Option<Statuses> {
 #[test]
 fn no_core_is_printed_unqualified_from_a_cut_search() {
     let files = files();
-    let results = ein_corpus::pool::map(
-        "corpus_cores::statuses",
-        &files,
-        |p| (rel_of(p), String::new()),
-        |p| statuses(p),
-    );
+    let results = statuses(&files);
     let mut failures: Vec<String> = Vec::new();
     let (mut programs, mut cores, mut cut, mut past_limit, mut two_rules) =
         (0usize, 0usize, 0usize, 0usize, 0usize);
@@ -817,10 +988,15 @@ fn no_core_is_printed_unqualified_from_a_cut_search() {
         failures.extend(bad);
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    assert!(programs >= 100, "{programs} programs read");
-    // The ruling has witnesses: 5 041 per commit (2026-11-06, S1e2.3.10).
     assert!(
-        cores >= 100_000 && cut >= 10 && past_limit >= 1 && two_rules >= 100,
+        programs >= ein_corpus::shard::share(100),
+        "{programs} programs read"
+    );
+    // The ruling has witnesses: 5 041 per commit (2026-11-06, S1e2.3.10). A
+    // shard's floor is its programs' alone, as above.
+    assert!(
+        ein_corpus::shard::current().is_some()
+            || (cores >= 100_000 && cut >= 10 && past_limit >= 1 && two_rules >= 100),
         "{cores} cores, {cut} of them cut, {past_limit} members of N past the limit, \
          {two_rules} cores through two rules"
     );
