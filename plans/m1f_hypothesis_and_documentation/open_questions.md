@@ -6010,6 +6010,18 @@ and that they are independent. What the re-plan decided beyond it, each without 
 
 **Defaulted 2026-11-15: all ten as written, the user's to revise.**
 
+**Revised the same day by the user**, while part 1 ran: *"wait a second, both goals - Track S and Track R are both
+required, but R obviously depends on the results of S. Search improvements depends on hypothesis structure"*. That
+corrects the re-plan's reading of *independent* behind defaults 3 and 6: track R is owed and is not closed by a
+table of *no*, S1f.10.13 runs after track S's stages and prices every object of the structure, and the rule for
+*go* judges one way of spending for one question
+([P1f.10 § The two ideas](p1f.10_hypothesis_structure/README.md#the-two-ideas)).
+
+**Defaults the stages of part 1 took after it**, each in its stage file's § Defaults taken and shown at the
+phase's stop: what a group is, after S1f.10.2's control failed
+([S1f.10.2](p1f.10_hypothesis_structure/s1f.10.2_groups.md#defaults-taken)); the rule for the small KB and seven
+more ([S1f.10.10](p1f.10_hypothesis_structure/s1f.10.10_the_theorys_share.md#defaults-taken)).
+
 ### Q-M1f.306 — What the blind enumerator takes for an object
 
 **Raised** 2026-11-15 by

@@ -10,8 +10,9 @@ this 2 facts*, so S1f.10.10 runs before S1f.10.2 ([§ The order](#the-order),
 [S1f.10.10](s1f.10.10_the_theorys_share.md#record-2026-11-15) ran that day: the theory's share is computed by the
 owner, over every pair of H, and on I-Z2 the theory excludes exactly the 128 row and column pairs; the rule that
 says which statements are the puzzle's was restated from the one planned, which the corpus falsified, and is a
-default. Of track H,
-S1f.10.9's tasks 1 to 3 ran that day.
+default. Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran that day, each stopped at its question
+([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
+on; what they found outside their scope is in [`findings.md`](findings.md).
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.
@@ -219,9 +220,13 @@ closure above it. On a flagged program the pair layer is still a set of true sta
 nothing above root follows from them; the stages report such a program's structure with that sentence and track
 R spends nothing on it.
 
-**And H does not grow.** A node that owes an instance root did not already refuses the run on a monotone
-program (`tree.rs`, `check_owed`), so the premise is enforced by something that fails when it stops being true.
-What a program outside it should answer is Q-M1e.11, [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)'s.
+**And H does not grow, of debts.** A node that owes an instance root did not already refuses the run on a
+monotone program (`tree.rs`, `check_owed`), so that premise is enforced by something that fails when it stops
+being true. What a program outside it should answer is Q-M1e.11,
+[S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)'s. **Of an hrule's proposals nothing enforces it**: an hrule
+whose `:match` reads a relation a commitment can change would propose more at a node than at root, the static
+check calls such a program monotone, and no guard refuses it (S1f.10.6's record, and
+[`findings.md`](findings.md)'s H6-1; four corpus programs have such an hrule and none grows).
 
 ### What it does not do
 
