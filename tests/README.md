@@ -344,7 +344,7 @@ programs here are for **where it is written**, each one place, one fault:
 | `03_in_a_fact_of_the_programs_own.ein` | `numeral-prefix-digit` on a fact of the program's own relation, `(price apple (n 1 2))` | a numeral checked only in the calculator's own requests |
 | `04_in_a_rules_conclusion.ein` | `numeral-prefix-zero` on a numeral written whole in a rule's conclusion, a rule that never fires: core ∅ (Q-M1f.275 (a)) | the loader stating facts but not the ground terms of a conclusion |
 | `05_what_stays_silent.ein` | no rule: `(n end 1)`, `(n (pair 1 2) 3)`, a numeral a rule assembles from a variable, and a top-level fact of `n`, each silent beside a sum answered | a rule that starts flagging one of them, which makes the module's page wrong |
-| `06_a_programs_own_named_z.ein` | `numeral-prefix-named`'s `(neq ?m z)`: the program lists `named` and writes `(named z)` itself beside `(price apple (n z 3))`, and R is {∅} (M1f P1f.6's close) | the guard dropped, which flags every numeral, all of which end in `z` |
+| `06_a_programs_own_named_z.ein` | `numeral-prefix-named`'s `(neq ?m z)`: the program lists `named` and writes `(named z)` itself beside `(price apple (n z 3))`, and R is {∅}, a sum answered (M1f P1f.6's close) | the guard dropped, which flags every numeral, all of which end in `z` |
 
 `std.math.arith` has two rules, `division-by-zero-is-false`, which
 `20_div_by_zero.ein` and the other divisions by zero activate, and its closing
@@ -385,7 +385,7 @@ seen, and activate each of binary's own:
 | directory | programs | what they are there for |
 |---|---|---|
 | `binary-arith/` | 22 | `01` to `07` the five operations, zero, lengths, high zeros and `bin-let`, every shared rule of the walks and the protocol and binary's product and division rules (`07` reaches `bin-div-bring-zero-none` with a dividend written `0101`); `08` and `09` a division by zero, the request's and a call a rule of the program's own makes; `10` a bit as either operand of every request, the ten routes from a tag to its request once each; `11` the bit `0` as an operand; `12` and `13` an undeclared name, `7` among them, and the same names stated (`bin-operand-undeclared` fired and satisfied); `14` to `20` each `let` rule; `21` both bases in one program, each answering its own; `22` what stays silent |
-| `binary/` | 7 | `01` a well-formed numeral in every place, `not-binary-is-false` loaded and satisfied; `02` to `05` each of the four rules of the check, one fault each; `06` what stays silent, a decimal digit as a prefix among it; `07` `(bin-named z)` written by the program beside `(b2 z 1)`, R {∅}, which `bin-numeral-prefix-named`'s `(neq ?m z)` holds (P1f.6's close) |
+| `binary/` | 7 | `01` a well-formed numeral in every place, `not-binary-is-false` loaded and satisfied; `02` to `05` each of the four rules of the check, one fault each; `06` what stays silent, a decimal digit as a prefix among it; `07` `(bin-named z)` written by the program beside `(b2 z 1)`, R {∅} and a sum answered, which `bin-numeral-prefix-named`'s `(neq ?m z)` holds (P1f.6's close) |
 | `bits/` | 1 | the tables seen from a program, as `digits/01_tables.ein`; the rows are `ein-ir/tests/digit_tables.rs`' |
 | `convert/` | 3 | each way, and a round trip a rule of the program asks back |
 

@@ -3674,7 +3674,7 @@ note   = "`std.math.binary` — what the check does not flag: a flag means malfo
 path   = "tests/stdlib/math/binary/07_a_programs_own_named_z.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "`std.math.binary` — `(bin-named z)` written by the program beside `(b2 z 1)`, R = {∅}, which `bin-numeral-prefix-named`'s `(neq ?m z)` holds: it kills that rule's `drop-neq` mutant. M1f P1f.6's close."
+note   = "`std.math.binary` — `(bin-named z)` written by the program beside `(b2 z 1)`, R = {∅} and a sum answered, which `bin-numeral-prefix-named`'s `(neq ?m z)` holds: it kills that rule's `drop-neq` mutant. M1f P1f.6's close."
 
 [[entry]]
 path   = "tests/stdlib/math/binary-arith/01_add.ein"
@@ -4166,7 +4166,7 @@ note   = "M1f S1f.6.38, `std.math.decimal`: what the check does not flag, `(n en
 path   = "tests/stdlib/math/decimal/06_a_programs_own_named_z.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "M1f P1f.6's close, `std.math.decimal`: `(named z)` written by the program beside `(price apple (n z 3))`, R = {∅}, which `numeral-prefix-named`'s `(neq ?m z)` holds: it kills that rule's `drop-neq` mutant."
+note   = "M1f P1f.6's close, `std.math.decimal`: `(named z)` written by the program beside `(price apple (n z 3))`, R = {∅} and a sum answered, which `numeral-prefix-named`'s `(neq ?m z)` holds: it kills that rule's `drop-neq` mutant."
 
 [[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"

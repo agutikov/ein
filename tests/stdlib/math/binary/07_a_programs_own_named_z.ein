@@ -16,11 +16,12 @@
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
-;;; nothing, so no flag has a fact. Without the guard root is dead and R is
-;;; empty, which is how this program kills that mutant (the user's ruling of
-;;; 2026-11-15 on P1f.6's close, (a)).
+;;; nothing, so no flag has a fact, and the sum beside the numeral is
+;;; answered. Without the guard root is dead and R is empty, which is how
+;;; this program kills that mutant (the user's ruling of 2026-11-15 on
+;;; P1f.6's close, (a)).
 
-(import std.math.binary-arith :symbols (binary-arith))
+(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of))
 (import std.math.binary :symbols (b2 bin-named))
 (import std.math.arith :symbols (z))
 
@@ -28,5 +29,10 @@
 (__closed__ price)
 (price apple (b2 z 1))
 (bin-named z)
+(bin-add (b2 z 1) (b2 z 1))
 
 (solve :expect (region (model)))
+
+(query :goal (bin-sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (bin-sum-of (b2 z 1) (b2 z 1) (b2 (b2 z 1) 0))))

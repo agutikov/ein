@@ -15,11 +15,12 @@
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
 ;;; `(solve :expect (region (model)))`: R is {∅}, root alive and owing
-;;; nothing, so no flag has a fact. Without the guard root is dead and R is
-;;; empty, which is how this program kills that mutant (the user's ruling of
-;;; 2026-11-15 on P1f.6's close, (a)).
+;;; nothing, so no flag has a fact, and the sum beside the numeral is
+;;; answered. Without the guard root is dead and R is empty, which is how
+;;; this program kills that mutant (the user's ruling of 2026-11-15 on
+;;; P1f.6's close, (a)).
 
-(import std.math.decimal-arith :symbols (decimal-arith))
+(import std.math.decimal-arith :symbols (decimal-arith add sum-of))
 (import std.math.decimal :symbols (n named))
 (import std.math.arith :symbols (z))
 
@@ -27,5 +28,10 @@
 (__closed__ price)
 (price apple (n z 3))
 (named z)
+(add (n z 3) (n z 4))
 
 (solve :expect (region (model)))
+
+(query :goal (sum-of ?x ?y ?s)
+       :goal-text "{?x} + {?y} = {?s}"
+       :expect (model (sum-of (n z 3) (n z 4) (n z 7))))
