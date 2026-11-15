@@ -1,7 +1,7 @@
 # P1f.10 — The structure of the hypothesis set
 
-**Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands. No
-stage has run. The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on
+**Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands.
+[S1f.10.1](s1f.10.1_exclusion_census.md#record-2026-11-15) ran that day; no other stage has. The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on
 2026-11-03; [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.
 **Waited for by:** [P1f.20](../p1f.20_docs_refactor/README.md), which describes the engine after this phase (the

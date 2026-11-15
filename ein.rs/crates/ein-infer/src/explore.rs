@@ -695,7 +695,7 @@ pub(crate) struct Space<'a> {
 pub(crate) type Step<T> = Result<Result<T, Stopped>, SolveError>;
 
 impl<'a> Space<'a> {
-    fn open(
+    pub(crate) fn open(
         root: &'a mut Kb,
         terms: &'a mut Terms,
         ast: &'a Ast,
@@ -753,6 +753,46 @@ impl<'a> Space<'a> {
 
     pub(crate) fn n(&self) -> usize {
         self.facts.len()
+    }
+
+    /// The universe, in rendered-text order: candidate `b` is bit `b` of
+    /// every set [`Self::eval`] takes.
+    pub(crate) fn candidates(&self) -> &[Candidate] {
+        &self.candidates
+    }
+
+    /// The static check calls the program monotone, so L1 to L3 hold of it.
+    pub(crate) fn is_monotone(&self) -> bool {
+        self.monotonicity.is_monotone()
+    }
+
+    /// Root's own fixpoint derives `(false)`, so every node does (L0).
+    pub(crate) fn root_is_dead(&self) -> bool {
+        self.root_dead
+    }
+
+    /// The work done so far: fixpoints computed, and facts beyond root
+    /// summed over them, which is what the budget counts.
+    pub(crate) fn work(&self) -> (u64, u64) {
+        (self.saturations, self.spent)
+    }
+
+    /// How many new fixpoints the budget still affords, by [`Self::afford`]'s
+    /// own projection: a step of at most this many nodes is taken.
+    pub(crate) fn affordable(&self) -> u64 {
+        let per_node = (self.spent / self.saturations.max(1)).max(1);
+        self.budget.saturating_sub(self.spent) / per_node
+    }
+
+    /// Every state met so far, each its fixpoint's facts beyond root's
+    /// sorted by id, indexed by [`Seen::class`].
+    pub(crate) fn states(&self) -> Vec<&[FactId]> {
+        let mut out: Vec<&[FactId]> = vec![&[]; self.classes.len()];
+        // determinism-ok: every class is written to its own slot.
+        for (state, &class) in &self.classes {
+            out[class as usize] = state;
+        }
+        out
     }
 
     fn answer(self, mode: Mode, route: Route, found: Found) -> Answer {
