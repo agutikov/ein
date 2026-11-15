@@ -13,16 +13,22 @@ binary, and `read_out_reference.rs` holds that every row label the printer has
 is printed by one of its blocks; re-write it with
 
     python3 utils/read_out_examples.py [--bin ein.rs/target/release/ein]
+    python3 utils/read_out_examples.py --check   # exit 1 if the page differs
 
 One block is not one whole run: X4's scratch variant, whose query block is
-quoted.
+quoted. The test skips that block and reads no prose, so `--check` is what holds
+the rest of the page to this script; `read_out_examples.rs` runs it with the
+binary it tests, which is how it is in the gate (M1f E-45).
 """
 import argparse
+import atexit
 import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -32,8 +38,18 @@ PLAN = "../../../plans/m1e2_correctness/p1e2.1a_the_solution_region"
 
 ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 ap.add_argument("--bin", default=os.environ.get("EIN_BIN", str(ROOT / "ein.rs/target/release/ein")))
-BIN = ap.parse_args().bin
+ap.add_argument("--check", action="store_true", help="write nothing; exit 1 if the page differs from what this script writes")
+ap.add_argument("--jobs", type=int, default=int(os.environ.get("EIN_TEST_JOBS") or os.cpu_count() or 1),
+                help="runs at once (default: $EIN_TEST_JOBS, else the machine's threads); the page is the same at any count")
+ARGS = ap.parse_args()
+# Absolute, since the scratch variant runs in a directory of its own.
+BIN = str(Path(ARGS.bin).resolve()) if os.sep in ARGS.bin else ARGS.bin
 SCRATCH = Path(tempfile.mkdtemp(prefix="read-out-examples-"))
+atexit.register(shutil.rmtree, SCRATCH, True)
+# Every run is independent of every other, so they go to a pool: `block` puts a
+# mark where its run's text goes, and the page is assembled once all have ended.
+POOL = ThreadPoolExecutor(max_workers=max(1, ARGS.jobs))
+RUNS = []
 
 # The one program that is not a corpus file: 07 with a derived `pair-at`.
 variant_dir = SCRATCH / "ex/lattice"
@@ -56,6 +72,11 @@ def argv(args):
 
 
 def run(args, cwd=ROOT, cmd="solve"):
+    """The block a run prints, at once, beside the pool: for the prose that reads it."""
+    return printed(args, cwd, cmd)
+
+
+def printed(args, cwd=ROOT, cmd="solve"):
     """The block a run prints: stdout (or `answer.txt`), stderr, exit."""
     a = argv(args)
     dump = None
@@ -76,9 +97,9 @@ def block(args, cwd=ROOT, note="", cmd="solve"):
     shown = " ".join(
         x for x in argv(args) if x not in ("--jobs", "8")
     )
-    text = run(args, cwd, cmd)
+    RUNS.append(POOL.submit(printed, args, cwd, cmd))
     cap = f"`ein {cmd} {shown}`" + (f" — {note}" if note else "")
-    return f"{cap}\n\n```text\n{text}\n```\n"
+    return f"{cap}\n\n```text\n\x00{len(RUNS) - 1}\x00\n```\n"
 
 
 S = []
@@ -443,6 +464,17 @@ prints them; the cube's `status` is not known, since no node past root was built
 """)
 add(block(["--no-search", "examples/features/07_unstratifiable.ein"]))
 
-OUT.write_text("\n".join(S))
+PAGE = re.sub("\x00(\\d+)\x00", lambda m: RUNS[int(m.group(1))].result(), "\n".join(S))
+POOL.shutdown()
 shutil.rmtree(SCRATCH)
+if ARGS.check:
+    if OUT.read_text() != PAGE:
+        have, want = OUT.read_text().splitlines(), PAGE.splitlines()
+        at = next((i for i, (h, w) in enumerate(zip(have, want)) if h != w), min(len(have), len(want)))
+        print(f"{OUT.relative_to(ROOT)} is not what utils/read_out_examples.py writes "
+              f"(first difference at line {at + 1}; the page has {len(have)} lines, the script {len(want)}): "
+              "re-write it with `python3 utils/read_out_examples.py`", file=sys.stderr)
+        sys.exit(1)
+    sys.exit(0)
+OUT.write_text(PAGE)
 print(f"wrote {OUT} ({OUT.read_text().count(chr(10))} lines)")

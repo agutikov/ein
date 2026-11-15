@@ -18,9 +18,14 @@
 //! scratch variant), a block that quotes only part of a run (`, the query
 //! block`), and — unless `EIN_CORPUS_SLOW=1` — zebra2 at `--region-budget
 //! 33554432`, 22 s at `-j 8` in a release build.
+//!
+//! What those skips and the prose leave, [`the_page_is_what_the_script_writes`]
+//! holds: it runs the script's `--check` with the binary under test, so the
+//! page is the script's output whole, the variant's block among it (M1f E-45:
+//! the script had stopped running, and no step said so).
 
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use ein_corpus::{Scratch, repo_root};
 
@@ -178,5 +183,45 @@ fn every_block_is_what_ein_solve_prints() {
     assert!(
         blocks(&page).iter().any(|b| b.command == "oracle"),
         "no `ein oracle` block"
+    );
+}
+
+/// `utils/read_out_examples.py --check`, run with this binary so that it is in
+/// the gate, as `ein-ir/tests/digit_tables.rs` runs the table generator's (M1f
+/// E-45, the user's ruling of 2026-11-15). The test above compares the blocks
+/// it can run again; this compares the page byte for byte with what the script
+/// writes, prose, the scratch variant's block and every block, its runs on
+/// [`ein_corpus::pool::jobs`] workers.
+#[test]
+fn the_page_is_what_the_script_writes() {
+    let probe = Command::new("python3")
+        .args(["-c", "pass"])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status();
+    assert!(
+        matches!(probe, Ok(s) if s.success()),
+        "`python3` does not run ({probe:?}): {PAGE} is generated and \
+         `utils/read_out_examples.py --check` is the only check of its prose and \
+         of the block no test can run again — a missing gate, not a missing convenience"
+    );
+    let out = Command::new("python3")
+        .args([
+            "utils/read_out_examples.py",
+            "--check",
+            "--bin",
+            env!("CARGO_BIN_EXE_ein"),
+            "--jobs",
+            &ein_corpus::pool::jobs().to_string(),
+        ])
+        .current_dir(repo_root())
+        .output()
+        .expect("python3 ran a moment ago");
+    assert!(
+        out.status.success(),
+        "{PAGE} is not what the script writes — re-write it with \
+         `python3 utils/read_out_examples.py`\n{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr),
     );
 }
