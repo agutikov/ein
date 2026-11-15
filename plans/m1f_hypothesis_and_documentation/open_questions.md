@@ -5780,3 +5780,53 @@ decimal's numeral in the text.
 
 **Defaulted 2026-11-15: (a), the user's to revise.** Each rule gained the parameter `?N`, and reads only where a
 digit or a bit stands for a number, a dead program's trace.
+
+### Q-M1f.299 — gcd(0, 0)
+
+**Raised** 2026-11-15 by [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15) (the stage file: *gcd(0, 0) is zero by the usual convention,
+which the stage states and the harness holds*). Every number divides zero, so zero and zero have no greatest common
+divisor in the order of size.
+
+- **(a) Zero**, the usual convention: zero is the greatest element of divisibility, gcd(X, 0) = X holds at X = 0 too,
+  and Euclid's chain gives it with no rule of its own (the chain is at its end at once). lcm(0, 0) is zero, by a rule
+  that divides nothing, `lcm-zero`.
+- **(b) No answer**, a request left unanswered, as a malformed one in silence.
+- **(c) A flag and `(false)`**, as a division by zero.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** `gcd_theory.rs`' `zero_in_each_place` holds it, and
+`tests/stdlib/math/gcd/02_gcd_zero.ein` and `06_lcm_zero.ein` claim it.
+
+### Q-M1f.300 — `std.math.gcd`'s tagged call, an interface
+
+**Raised** 2026-11-15 by [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15). [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md) has `rat-simplify` *call* `std.math.gcd`, and a
+rule of `std.math.rat` cannot read `(gcd-of X Y G)` without joining it to its own state on a number, which the rule
+of the theory forbids. So the module has a call under the caller's tag, as `std.math.decimal-arith`'s division has.
+
+- **(a) `(gcd-call TAG X Y)` answered by `(gcd-done TAG G)`, an interface** as decimal's tagged calls are (round 2's
+  item 41, *"(a)"*): two rows of `arith_theory.rs`' `TAGGED`, written in the module's header and
+  `stdlib/README.md`. X and Y are numbers, high zeros allowed, never a name; G in normal form. The public requests
+  are built on it.
+- **(b) The circuit's own**, `std.math.rat` reading `std.math.gcd`'s chain as `std.math.convert` reads binary's
+  circuit (Q-M1f.297's second part).
+
+**Defaulted 2026-11-15: (a), the user's to revise.** `tests/stdlib/math/gcd/07_gcd_call.ein` calls it from a rule
+of a program's own.
+
+### Q-M1f.301 — What `gcd-call` does before Euclid's chain
+
+**Raised** 2026-11-15 by [S1f.6.32](p1f.6_calculator/s1f.6.32_gcd_and_lcm.md#record-2026-11-15). The banked example's chain and `std.math.rat`'s divide the
+operands as written: an answer that is an operand's value comes back as that operand was written, `006`, and a zero
+written with digits, `(n z 0)`, is a divisor of the shape `(n P D)`, a division by zero.
+
+- **(a) Each number put into normal form first, by an addition walk to zero**, `(add-walk TAG X z 0 z)`: zero is
+  `z` and every divisor `(n P D)` is not zero, and the answer is in normal form; some two firings a digit, 13 on
+  two one-digit numbers, 23 on 1071 and 462 (the record's comparison). The chain divides the larger first where
+  it is so written; where X is the smaller, its first step's quotient is zero and turns the two round, one
+  division more (gcd(462, 1071) 742 firings, gcd(1071, 462) 553).
+- **(b) (a), and the two compared first** (a comparison walk, a digit a firing), so that the chain never turns the
+  two round: one division fewer where X is the smaller, a walk more everywhere.
+- **(c) No normal form:** a zero compared with zero first (as `std.math.rat` compares a denominator), and an answer
+  that is an operand's value put into normal form at the end.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** The simplest that is right; (b) is the cheaper on a proper
+fraction's terms, which `rat-simplify` hands over smaller first.
