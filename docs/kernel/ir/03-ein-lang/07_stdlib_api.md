@@ -513,6 +513,37 @@ calls `rat-norm`, `rat-mul-call` and `rat-cross`, with the hand-overs
 `rat-done` and `rat-cross-is`, are for a theory built on this one; the rest
 is in the state and is not an interface.
 
+## `std.math.gcd` — the greatest common divisor and the least common multiple (requests and results)
+
+M1f S1f.6.32. A theory over `std.math.decimal-arith`'s natural numbers, which it
+calls and does not edit: Euclid's chain, a tagged division a step; computed by
+saturation alone, no hypothesis, no `absent`, no guard of its own. The
+module-level account, with what a request costs, is
+[`stdlib/README.md` § `std.math.gcd`](../../../../stdlib/README.md#stdmathgcd-the-greatest-common-divisor-and-the-least-common-multiple-m1f-s1f632).
+
+```lisp
+(import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
+```
+
+`gcd` is both the request and the closing rule, the module's one entry; it names
+`decimal-arith`, `decimal` and `arith`.
+
+| fact | who writes it | meaning |
+|------|---------------|---------|
+| `(gcd X Y)` | the program: a **request** | the greatest common divisor of X and Y, natural numbers, is asked |
+| `(gcd-of X Y G)` | the theory: the **result** | G divides both and is the greatest that does, in normal form; gcd(X, 0) = X and gcd(0, 0) = 0 |
+| `(lcm X Y)` | the program: a request | the least common multiple of X and Y is asked |
+| `(lcm-of X Y L)` | the theory: the result | both divide L, the least that both divide, in normal form; zero where an operand is zero |
+| `(gcd-call TAG X Y)` | a rule: a **tagged call** | the greatest common divisor of the numbers X and Y, for whoever TAG names; a call looks nothing up |
+| `(gcd-done TAG G)` | the theory: the call's answer | G, under the caller's tag |
+
+An operand of a request is a number, high zeros allowed and read by value, or a
+name that `std.math.decimal-arith`'s `let` states; the answer repeats the operand as
+written. An integer or a rational in a number's place is never answered. No
+request divides by zero; an undeclared name or a digit as an operand is flagged
+on the request, `(undeclared NAME REQUEST)` or `(malformed REQUEST)`, and
+`(false)`.
+
 ## See also
 
 - [`stdlib/README.md`](../../../../stdlib/README.md)

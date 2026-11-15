@@ -60,6 +60,7 @@ mirrors it, `tests/stdlib/math/<module>/` and `tests/stdlib/bool/<module>/`.
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers over it, `(int P N)` ([§](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)) | `int-arith` |
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rationals over both, `(rat Z D)` ([§](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)) | `rat-arith` |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | nine digits in one fact, by wide rules, generated ([§](#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613)) | `arith9` |
+| `std.math.gcd` | [`math/gcd.ein`](math/gcd.ein) | the greatest common divisor and the least common multiple of two natural numbers ([§](#stdmathgcd-the-greatest-common-divisor-and-the-least-common-multiple-m1f-s1f632)) | `gcd` |
 | `std.bool.gates` | [`bool/gates.ein`](bool/gates.ein) | the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` (its rows generated) and a relation each, `(And A B OUT)` ([§](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | `gates` |
 | `std.bool.props` | [`bool/props.ein`](bool/props.ein) | thirty relations known of the sixteen, derived from the rows by rules ([§](#stdboolprops-what-is-known-of-the-sixteen-by-rules)) | `props` |
 | `std.bool.circuit` | [`bool/circuit.ein`](bool/circuit.ein) | a circuit as a program, simulated by saturation ([§](#stdboolcircuit-a-circuit-as-a-program)) | `circuit` |
@@ -72,7 +73,7 @@ is the loader's *module not found*. No relation was renamed. `std.math.arith`
 and `std.math.decimal` joined at S1f.6.38, taking `z`, the division by zero's
 flag and rule, `n` and `named` from `std.math.decimal-arith`; `std.math.positional`
 at S1f.6.16, taking the 77 rules both bases share, with binary's three modules
-and `std.math.convert`.
+and `std.math.convert`; `std.math.gcd` at S1f.6.32.
 
 ## The obligation duals (M1d S1d.2.4)
 
@@ -1459,6 +1460,87 @@ circuit's own five relations, the signs `pos` and `neg`, twenty-two tags,
 `rat-rule` and `rat-arith`; everything of `std.math.int` and `std.math.decimal-arith` comes with
 it.
 
+## `std.math.gcd`: the greatest common divisor and the least common multiple (M1f S1f.6.32)
+
+P1f.6's question 38, the user's reply of 2026-11-12: *"(a) but not into
+std.arith; it's time to make a std.math with subfolders"*. A theory over
+`std.math.decimal-arith`, on its natural numbers, which it calls and does not
+edit; computed by saturation alone, no candidate, R {∅}, and no `absent`, no
+`not` and no guard of its own (a program that imports it holds
+`std.math.decimal-arith`'s one `absent`, and two strata).
+
+```lisp
+(import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))     ; gcd(1071, 462)
+(lcm (n (n z 1) 2) (n (n z 1) 8))                       ; lcm(12, 18)
+
+(query :goal (gcd-of ?x ?y ?g))      ; ?g = (n (n z 2) 1), 21
+(query :goal (lcm-of ?x ?y ?l))      ; ?l = (n (n z 3) 6), 36
+```
+
+| | |
+|---|---|
+| **the protocol** | `(gcd X Y)` answered by `(gcd-of X Y G)`; `(lcm X Y)` by `(lcm-of X Y L)`. The operands are repeated as written; every answer is in normal form |
+| **an operand** | a natural number of `std.math.decimal-arith`, high zeros allowed and read by value, or a name a `(let NAME NUMBER)` states. **Natural numbers only**: an integer or a rational where a number goes is answered by silence (the stage's ruling: no gcd of integers or rationals). An undeclared name and a digit as an operand are flagged on the request, by the module's two rules from its tags to the request, as `std.math.int`'s are; a malformed numeral is `std.math.decimal`'s, where it is written |
+| **zero** | gcd(X, 0) = gcd(0, X) = X, and **gcd(0, 0) = 0**, the usual convention (Q-M1f.299, defaulted); lcm with a zero is zero, lcm(0, 0) too. **No request of this module divides by zero**: the chain divides only by a number whose shape says it is not zero, and the least common multiple divides by the greatest common divisor only where that is not zero |
+| **the one entry** | `gcd`, the closing rule, which has the request's name (round 2's layout): it closes every relation of the module, names every rule, and names `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
+
+**How it computes.** The operands are looked up by `std.math.decimal-arith`'s
+`operand`; each is put into normal form by an addition walk to zero, so that
+zero has one shape, `z`; then **Euclid's chain**, gcd(A, B) = gcd(B, A mod B)
+until the remainder is zero, each step one tagged division, the tag carrying
+what is left of the chain. Where A is the smaller the first step's quotient is
+zero and the chain turns the two round. The least common multiple is the
+product divided by the greatest common divisor, one `mul-call` and one
+`div-call` more. **The tagged call a later theory makes is an interface**
+(Q-M1f.300, defaulted), held to its shape by the same test as
+`std.math.decimal-arith`'s; `std.math.rat`'s `rat-simplify` calls it since
+S1f.6.33:
+
+```text
+(gcd-call TAG X Y)                    asked: the greatest common divisor of X and Y
+                                      answered by (gcd-done TAG G)
+```
+
+X and Y are numbers, high zeros allowed and never a name; G is in normal form.
+
+**Every rule has one premise.** `ein-infer/tests/gcd_theory.rs` holds that on
+the text, and holds the answers to Rust's integers: both requests over every
+pair from 0 to 30, operands of one to nineteen digits and pairs with a common
+factor of twelve, the neighbours of the Fibonacci numbers, zero in each place,
+equal operands, high zeros and names, and no division by zero in any of them.
+
+**What it costs.** One request, in firings and depth, the closing rules'
+firings left out (`cargo test -p ein-infer --test gcd_theory the_circuit --
+--nocapture`, 2026-11-15):
+
+| request | firings | depth |
+|---|---:|---:|
+| gcd(1071, 462), a chain of three divisions | 553 | 553 |
+| gcd(462, 1071), four: the first turns the two round | 742 | 742 |
+| lcm(1071, 462) | 866 | 866 |
+| gcd(5, 6) | 257 | 257 |
+| gcd(7, 0) | 17 | 17 |
+| gcd(0, 0), and lcm(0, 0) | 14 | 14 |
+| gcd(102334155, 63245986), F(40) and F(39): 38 divisions | 10 337 | 10 337 |
+
+A step is a long division, and most of it is the divisor's nine multiples,
+computed before the first digit (Q-M1f.183). The count of steps is linear in
+the operands' length (Lamé: at most five a decimal digit of the smaller). In
+batches of numbers of one to three digits, a gcd is 453 firings a request and
+an lcm 634, and a batch costs in proportion to its count: 5 992 and 7 629
+candidates a request at 100, within 3 % at 400 and 1 200 (`cargo test -p
+ein-infer --features counters --test arith_batch a_batch_of_gcd --
+--nocapture`, 2026-11-15).
+
+**The names it occupies** are in the module's header: the two requests and
+their results, the call and its hand-over, `gcd-chain`, eight tags,
+`gcd-rule` and the entry `gcd`; everything of `std.math.decimal-arith` comes
+with it.
+
 ## `std.bool`: the sixteen functions of two inputs, and circuits (M1f S1f.6.17)
 
 Four modules under `bool/`, the user's rulings of 2026-11-12 on P1f.6's
@@ -1569,13 +1651,14 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — some seconds, and **482 of 482** on 2026-11-15 since
+them activated — some seconds, and **501 of 501** on 2026-11-15 since
 `std.math.decimal-arith`'s 116 (M1f S1f.6.3 to S1f.6.6, S1f.6.12's checks and
 S1f.6.24's call), `std.math.num9`'s 47 (S1f.6.13), `std.math.int`'s 71
 (S1f.6.7, and S1f.6.22's division), `std.math.rat`'s 57 (S1f.6.8) and
-`std.bool`'s 55 (S1f.6.17) joined the 77, S1f.6.38 moved the numeral's check
-and S1f.6.16 cut the calculator into `std.math.positional` and the two bases.
-*Of 482* is the command's, `find
+`std.bool`'s 55 (S1f.6.17) joined the 77, S1f.6.38 moved the numeral's check,
+S1f.6.16 cut the calculator into `std.math.positional` and the two bases, and
+`std.math.gcd`'s 19 (S1f.6.32) joined.
+*Of 501* is the command's, `find
 stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '`, which reads every
 depth (the calculator's modules are under `stdlib/math/` since S1f.6.31 and
 `std.bool`'s under `stdlib/bool/`, and `cat stdlib/*.ein` would count 77);
@@ -1621,6 +1704,7 @@ install-relative import could not find it.
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | school arithmetic on numbers of nine digits in one fact, `(num9 d8 … d0)`, **computed by saturation alone**, by wide rules, a premise a column: `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`, `mul9`/`product9-of`, `div9`/`quot9-of`; `(overflow REQUEST)` and no number where an answer does not fit; conversions to and from `std.math.decimal-arith`'s numbers, `to9`/`as9` and `from9`/`of9`. **Generated** by `utils/gen_num9.py`. One entry, `arith9` | S1f.6.13 |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers as a positive and a negative part, `(int P N)`, over `std.math.decimal-arith`'s natural numbers, **computed by saturation alone**: `int-simplify`/`int-simple-of`, `int-neg`/`int-neg-of`, `int-add`/`int-sum-of`, `int-sub`/`int-diff-of`, `int-mul`/`int-product-of`, `int-cmp`/`int-cmp-of`, every answer in normal form, one part `z`; every rule has one premise; integer division names its convention, `int-div-euclid`/`int-quot-euclid-of` (the remainder a natural number), `int-div-trunc`/`int-quot-trunc-of` and `int-div-floor`/`int-quot-floor-of`, since M1f S1f.6.22 ([§ `std.math.int`](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)); imported by its one entry, `(import std.math.int :symbols (int-arith))`, which brings `std.math.decimal-arith` too | M1f S1f.6.7, S1f.6.22 |
 | `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.math.decimal-arith`'s division; a zero denominator is a division by zero, `std.math.arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int` and `std.math.decimal-arith` too | M1f S1f.6.8 |
+| `std.math.gcd` | [`math/gcd.ein`](math/gcd.ein) | the greatest common divisor and the least common multiple of two natural numbers of `std.math.decimal-arith`, **computed by saturation alone**: `gcd`/`gcd-of` by Euclid's chain over the tagged division, `lcm`/`lcm-of` the product divided by it; gcd(0, 0) = 0; no request divides by zero; the tagged call `(gcd-call TAG X Y)` answered by `(gcd-done TAG G)`; every rule has one premise; one entry, `gcd` ([§](#stdmathgcd-the-greatest-common-divisor-and-the-least-common-multiple-m1f-s1f632)) | M1f S1f.6.32 |
 | `std.bool.gates`, `std.bool.props`, `std.bool.circuit`, `std.bool.inputs` | [`bool/`](bool/) | the sixteen Boolean functions of two inputs as a table and as a relation each; thirty relations known of them, derived by rules; a circuit simulated by saturation; inputs as hypotheses that each owe one value, and required values ([§ `std.bool`](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | M1f S1f.6.17 |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.math.digits`](#stdmathdigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |
 | `std.math.bits` | [`math/bits.ein`](math/bits.ein) | **facts, no rule**: binary's four tables, `bin-fa` / `bin-fs` / `bin-cl` / `bin-nz`, 29 rows, each closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` beside `std.math.digits` ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | M1f S1f.6.16 |

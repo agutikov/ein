@@ -111,6 +111,7 @@ alone.
 | [`stdlib/math/num9/`](stdlib/math/num9/) | 47 | `std.math.num9`, school arithmetic on nine digits in one fact by wide rules (M1f S1f.6.13): a program a rule or tight family, thirteen in all: a sum in one firing and a sum that overflows; subtraction's two rules; the one rule of comparison; a product, its zero digit and its three overflows; a quotient, each of the ten step rules, and a division by zero through `std.math.decimal-arith`'s rule; the conversions at every count of digits; both modules in one program; and a chain. See [below](#stdlibmathnum9-wide-rules-and-a-generated-module) |
 | [`stdlib/math/int/`](stdlib/math/int/) | 82 | `std.math.int`, integers as a positive and a negative part over `std.math.decimal-arith` (M1f S1f.6.7, and S1f.6.22 for division): fourteen programs: the normal form; negation; addition, subtraction, multiplication and comparison, each in every combination of signs; an operand that is not simplified answering as its normal form does; operands by name with two rules of the program's own; division under each of the three conventions, every combination of signs with a remainder and without; and a division by zero under each, claiming `(false)`; and (S1f.6.38) twenty-two more, E-38's probes banked and the integer's own shape: a malformed numeral in a part, an undeclared name and a digit as an operand, a digit or a named constant as a part, each claiming `(false)`, and a natural number for an integer, silent. See [below](#stdlibmathint-a-theory-over-a-theory) |
 | [`stdlib/math/rat/`](stdlib/math/rat/) | 67 | `std.math.rat`, rational numbers in lowest terms over `std.math.int` and `std.math.decimal-arith` (M1f S1f.6.8): thirteen programs: lowest terms and Euclid's chain; negation; addition, subtraction, multiplication, division and comparison; an operand not in lowest terms answering as its normal form does; operands by name and a chain; and four that claim `(false)`, a division by a rational that is zero and a denominator of zero in each place an operand can stand; and (S1f.6.38) seventeen more, E-38's probes banked and the rational's own shape, as `std.math.int`'s. See [below](#stdlibmathrat-lowest-terms-and-four-ways-to-divide-by-zero) |
+| [`stdlib/math/gcd/`](stdlib/math/gcd/) | 19 | `std.math.gcd`, the greatest common divisor and the least common multiple of two natural numbers (M1f S1f.6.32): twelve programs: Euclid's chain; zero in each place and gcd(0, 0); high zeros; names; the least common multiple, and with zero; the tagged call from a rule of the program's own; an undeclared name and a digit in each place, each claiming `(false)`; and an integer where a number goes, silent. See [below](#stdlibmathgcd-euclids-chain-and-zero-in-each-place) |
 | [`stdlib/math/digits/`](stdlib/math/digits/) | — | `std.math.digits` is a library of **facts** (M1f S1f.6.2) and has no rule to activate; see [below](#a-module-of-facts-has-no-rule-to-activate). Two programs: every table imported flat with a row of each claimed and R = {∅}; and a refutation through a lookup, whose core names the row |
 | [`stdlib/bool/`](stdlib/bool/) | 55 | `std.bool.gates`, `.props`, `.circuit` and `.inputs`, the sixteen Boolean functions of two inputs and a circuit (M1f S1f.6.17): twelve programs, eight of them written by `utils/gen_gates.py`, each claiming relations whole; a circuit simulated and one refuted; inputs as hypotheses, a truth table and a requirement. See [below](#stdlibbool-the-sixteen-functions-by-rules-and-a-circuit) |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
@@ -555,6 +556,33 @@ be answered alike, `stdlib/math/num9/`'s lesson.
 `rat-z-digit`, `-zero`, `-named`, `rat-d-digit`, `-zero`, `-named` and
 `not-rational-is-false`; and `22`, `23`, an integer and a natural number for a
 rational, silent (Q-M1f.277 (b)).
+
+### `stdlib/math/gcd/`: Euclid's chain, and zero in each place
+
+M1f [S1f.6.32](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.32_gcd_and_lcm.md).
+`std.math.gcd` is a theory over `std.math.decimal-arith`: every rule of the
+module has one premise and makes one of that theory's tagged calls, and right is
+held from outside the language, by `ein-infer/tests/gcd_theory.rs` against
+Rust's integers, every pair from 0 to 30 under both requests. Each claim here
+was computed by Python's `math.gcd` and `math.lcm` when the program was
+drafted; nine of the twelve claim R = {∅}, and the three others `(false)`.
+
+| file | the rules it is there for | what would fail it |
+|---|---|---|
+| `01_gcd.ein` | `gcd-ask`, `gcd-ask-second`, `gcd-start`, `gcd-answer`; the call's `gcd-call-first`, `-second`, `-chain`; the chain's `gcd-step`, `gcd-next`, `gcd-end`: seven requests, 1071 and 462 both ways round | a remainder that does not go on; the chain stopped a step early; the operands exchanged in the answer |
+| `02_gcd_zero.ein` | the chain at its end at once, and after one step: zero in each place, written `z` and `(n z 0)`, gcd(0, 0) = 0 (Q-M1f.299) | a zero written with digits divided by; gcd(0, 0) unanswered |
+| `03_high_zeros.ein` | the call's two walks to normal form, where the answer is an operand's value | an answer with a high zero, an operand as written |
+| `04_named.ein` | names through `std.math.decimal-arith`'s `let`, in both requests | a named operand left unanswered |
+| `05_lcm.ein` | `lcm-ask`, `lcm-start`, `lcm-product`, `lcm-divide`, `lcm-answer`: six requests | the product not divided; the operands as written multiplied |
+| `06_lcm_zero.ein` | `lcm-zero`, and a zero beside a number through the product | a least common multiple of zeros divided by zero |
+| `07_gcd_call.ein` | the tagged call `(gcd-call TAG X Y)` from a rule of the program's own, answered under its tag (Q-M1f.300) | an answer not under the caller's tag; a call read as a request |
+| `08_undeclared_first_operand.ein`, `09_undeclared_second_operand.ein` | `gcd-bad-first`, `gcd-bad-second`: an undeclared name, flagged on the request, a gcd and an lcm | an operand's fault seen under the module's tag and not flagged |
+| `10_digit_as_an_operand.ein`, `11_digit_zero_as_the_second_operand.ein` | the same two rules on a digit, and on the digit 0 | a digit as an operand passed over, or read as a zero to divide by |
+| `12_what_stays_silent.ein` | nothing: an integer where a number goes is silent (natural numbers only), and the request beside it answered | a rule that starts reading another type |
+
+**The mutation sweep kills every mutant of the module**, 19 of 19, on its first
+run, and the bank is unmoved: 494 of 613 over the stdlib, the 119 survivors the
+banked set (`python3 utils/stdlib_mutants.py --jobs 16`, 2026-11-15).
 
 ### `stdlib/bool/`: the sixteen functions, by rules, and a circuit
 

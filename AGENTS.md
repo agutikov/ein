@@ -127,7 +127,9 @@ constrained-reasoning research.
   `(import std.math.decimal :symbols (n))` and `(import std.math.arith
   :symbols (z))` where a program writes a numeral), `std.math.num9`
   (generated, entry `arith9`), `std.math.int` (`int-arith`) and
-  `std.math.rat` (`rat-arith`); binary's twins, `std.math.bits` (its tables,
+  `std.math.rat` (`rat-arith`), and `std.math.gcd` (`gcd`, which is also its
+  request: `(gcd X Y)`/`gcd-of` and `(lcm X Y)`/`lcm-of`, natural numbers only,
+  and the tagged call `gcd-call`/`gcd-done`); binary's twins, `std.math.bits` (its tables,
   generated beside the digits'), `std.math.binary` (`binary`: the numeral
   `b2`) and `std.math.binary-arith` (`binary-arith`, every name `bin-`:
   `bin-add`, `bin-sum-of`, `bin-let`), and `std.math.convert` (`convert`:
@@ -420,7 +422,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 - **A stdlib rule needs a program under `tests/stdlib/` that activates it**,
   or `stdlib_coverage.rs` fails. A rule or relation added to
   a module of the calculator goes into its closing rule's two lists
-  (`arith_theory.rs`, `int_theory.rs`, `rat_theory.rs`, `num9_theory.rs`); a
+  (`arith_theory.rs`, `int_theory.rs`, `rat_theory.rs`, `num9_theory.rs`,
+  `gcd_theory.rs`); a
   rule added to `std.math.positional` goes into its macro's body, and a new
   parameter into the macro's list and every base's call
   (`arith_theory.rs`' `one_call_of_the_macro_connects_each_base`); a
