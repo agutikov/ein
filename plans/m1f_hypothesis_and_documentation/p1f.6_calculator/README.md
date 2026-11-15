@@ -11,8 +11,9 @@ to `tests/stdlib/math/decimal-arith/`, `digits/`, `int/`, `rat/` and `num9/`. A 
 and the stage files below are records and keep the names of their day.
 
 **Status:** planned 2026-11-08, on the user's instruction of that day ([§ The instruction](#the-instruction)).
-**Every stage is built, but S1f.6.39's T7, which applies the user's rulings of 2026-11-15 on its T6; the close is
-prepared for the user: [§ The close, prepared](#the-close-prepared-2026-11-15), [`close.md`](close.md).**
+**Closed 2026-11-15** ([`close.md` § The close](close.md#the-close-2026-11-15)), on the user's rulings of that day:
+every stage built, S1f.6.39's T7 with them, every finding ruled, fixed or given an owner, no `docs/history/`
+record. **P1f.10 is next, then P1f.20.**
 **S1f.6.1, the design, is done (2026-11-11):** three rounds on a prototype and the user's rulings of that day,
 recorded in [`design.md` § The rulings](design.md#the-rulings-2026-11-11). **The phase was re-planned to them the
 same day** ([§ The design, as ruled](#the-design-as-ruled-2026-11-11)). **S1f.6.11, the import fix, is done
@@ -248,7 +249,8 @@ No stage carries an estimate (the user's ruling of 2026-11-08). The numbers 18 a
 18. **S1f.6.16's build** (T1f.6.16.6 to .11, and S1f.6.17's T1f.6.17.7), after S1f.6.39's T1 to T5. **Built
     2026-11-15.**
 19. **The close** (2026-11-15), prepared once every stage but S1f.6.39's T7 was built:
-    [§ The close, prepared](#the-close-prepared-2026-11-15).
+    [§ The close, prepared](#the-close-prepared-2026-11-15). **Closed 2026-11-15**
+    ([`close.md` § The close](close.md#the-close-2026-11-15)).
 20. **After the close, P1f.10 and then P1f.20** (the user's ruling of 2026-11-15,
     [`close.md` § The user's rulings](close.md#the-users-rulings-2026-11-15), 4): P1f.20 rewrites the pages, so it
     describes the engine after P1f.10's changes.
@@ -332,9 +334,10 @@ stands, each row of [`findings.md`](findings.md) with its state, a disposition *
 with no owner, the 81 defaults still the user's to revise, § Acceptance re-taken bullet by bullet (every bullet
 held but the last, *no row without a ruling, a fix or an owner*, which the proposals would hold), and the mutation
 survivors the phase banked, two of which a probe kills. S1f.6.39's T6 was ruled by the user on 2026-11-15, all
-eight as recommended, and its T7 applies the rulings. **The phase is not closed:**
+eight as recommended, and its T7 applied the rulings. **The phase was not closed then:**
 [`close.md` § What the user is asked](close.md#what-the-user-is-asked) listed what it waited for, the dispositions,
 the survivor pair, any default to revise, and the order of P1f.10 and P1f.20, and **the user ruled on 2026-11-15**
 (*"all as you recommended"*, [`close.md` § The user's rulings](close.md#the-users-rulings-2026-11-15)): the dispositions confirmed, the
-survivor pair killed by banked probes, the defaults standing, P1f.10 before P1f.20. It closes once T7 is committed
-on a green gate, E-37's and E-45's fixes are in and the pair's two tests are banked.
+survivor pair killed by banked probes, the defaults standing, P1f.10 before P1f.20. **It closed the same day**, T7
+committed, E-37's and E-45's fixes in and the pair's two tests banked, on the gate in the runner's image
+([`close.md` § The close](close.md#the-close-2026-11-15)).

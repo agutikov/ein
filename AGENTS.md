@@ -266,20 +266,19 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  P1f.5 and P1f.7 are closed. **P1f.6, the calculator, is at its close**: its
-  [README](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md)
-  has the stage table, and
-  [`close.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md)
-  the close prepared for the user. P1f.10 and P1f.20 follow it, in the
-  order the user chooses there.
-- **What waits for the user** in P1f.6:
-  [`close.md` § What the user is asked](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md#what-the-user-is-asked);
-  `questions.md` and `questions_round2.md` are answered. The phase keeps
-  what it finds in its own
-  [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
-  (E-n) and shows it. Milestone-wide questions, with every default taken, are
+  P1f.5, P1f.7 and P1f.6 (the calculator,
+  [its close](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md))
+  are closed. **P1f.10, the structure of the hypothesis set, is next**:
+  [its README](plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md)
+  has the stages. P1f.20, the documentation tree, follows it (the user's
+  ruling of 2026-11-15).
+- **What waits for the user**: milestone-wide questions, with every default
+  taken, are
   [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
-  (Q-M1f.n); a default stands until the user revises it.
+  (Q-M1f.n); a default stands until the user revises it. A phase keeps what
+  it finds outside its scope in a findings page of its own and shows it, as
+  P1f.6's [`findings.md`](plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md)
+  (E-n) did.
 - **The wrong-answer register** is
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml); its counts are
   `grep '^status' corpus/wrong_answers.toml | sort | uniq -c`. Every open row

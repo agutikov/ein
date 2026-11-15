@@ -1,7 +1,8 @@
 # P1f.6 — the close, prepared (2026-11-15)
 
-**Phase:** [P1f.6](README.md). Prepared 2026-11-15, once every stage was built. **The phase is not closed**: its
-close is the user's, on [§ What the user is asked](#what-the-user-is-asked). The pattern is the two closes before it,
+**Phase:** [P1f.6](README.md). Prepared 2026-11-15, once every stage was built. **The phase closed the same day**,
+on the user's answers to [§ What the user is asked](#what-the-user-is-asked): [§ The close](#the-close-2026-11-15).
+The sections before it are the page as the user read it. The pattern is the two closes before it,
 [P1f.5's](../p1f.5_the_no_owner_items/README.md#the-close-2026-11-11) and
 [P1f.7's](../p1f.7_findings_outside_scope/README.md#the-close-2026-11-11): where the stages stand, the findings, the
 defaults, the acceptance re-taken, and what is left for the user. Like them, it proposes no `docs/history/` record:
@@ -204,7 +205,7 @@ cited from the last stage that ran it.
 | **The expression layer** built only if ruled in | held | not built: moved to M1g's S1g.10.2 (reply 10) |
 | **The investigation** a page whose claims carry their commands; a wrong answer a register row before its fix | held, by the stages' records | [`beyond_arithmetic.md`](beyond_arithmetic.md), each probe with its command (not re-read claim by claim here); W93 (`50fe016e`), W94 and W95 (`eccab155`) filed `open` before their fixes |
 | **Every relation and rule carries a `:why`** | held | the loader requires it (S1f.5.14); the stdlib and `tests/` load without `--no-require-why` |
-| **`findings.md` has no row without a ruling, a fix or an owner** | **not held** | 19 rows, [§ The findings](#the-findings); held once the user confirms the dispositions proposed there |
+| **`findings.md` has no row without a ruling, a fix or an owner** | **not held** here; **held at the close** | 19 rows, [§ The findings](#the-findings); held once the user confirms the dispositions proposed there, which the user did ([§ The close](#the-close-2026-11-15)) |
 
 ## The mutation survivors
 
@@ -297,3 +298,56 @@ recommendation each: *"all as you recommended"*. So:
 4. **P1f.10 runs before P1f.20**: P1f.20 rewrites the pages, so it describes the engine after P1f.10's changes.
 5. **The close**: P1f.6 closes once S1f.6.39's T7 is committed on a green gate and items 1's two fixes and 2's two
    tests are in, with no `docs/history/` record.
+
+## The close (2026-11-15)
+
+**P1f.6 is closed**, on the user's rulings above, once S1f.6.39's T7 was committed (`bcdb91f8`) and the fixes and
+tests items 1 and 2 asked for were in. No `docs/history/` record, as P1f.5 and P1f.7 closed; this directory stays.
+**P1f.10 is next, then P1f.20** (ruling 4).
+
+What the close did, each commit docs only unless it says otherwise:
+
+1. **The dispositions.** E-37 fixed, a page (`a6ba0a06`): `01_grammar.md`'s bold sentence reads *a guard's place
+   among the relation premises of its conjunction does not change what the premise means; the order of two guards on
+   a variable no relation premise binds does*, with E-37's pair and a guard that waits, each form checked by `ein
+   test` first; `defined_behaviour.md`'s sentence likewise. The owned rows handed over (`29c34c4f`), each a row or a
+   section *handed over by M1f, 2026-11-15*: F23's D-15 to D-19 (E-34, E-35's first half, E-40, E-42, E-43), M12
+   (E-35's second half, E-55, E-69), M1g's S1g.6.2 (E-36), M1g's P1g.7 (E-44), F24 (E-71), each re-taken where its
+   witness runs. The seven ruled as they stand closed in their rows with the reason above. E-45 fixed, code
+   (`cd23e205`): `utils/read_out_examples.py --check`, run by `read_out_examples.rs`' `the_page_is_what_the_script_writes`
+   with the binary under test, the script's runs on a pool of `--jobs` threads. [`findings.md`](findings.md) has no
+   row without a ruling, a fix or an owner.
+2. **The survivors, (a)**, code (`ff061d7a`, `a51a40ee`): `tests/stdlib/math/decimal/06_a_programs_own_named_z.ein`
+   and `binary/07_a_programs_own_named_z.ein`, `(named z)` beside `(n z 3)` and `(bin-named z)` beside `(b2 z 1)`,
+   each R = {∅} with a sum answered, a corpus entry and its golden lines alone. `python3 utils/stdlib_mutants.py -k
+   numeral-prefix-named --jobs 16`: both `drop-neq` mutants killed, the two `swap-assert` ones still banked; the two
+   lines left `tests/mutation_survivors.txt`, 117 survivors now, and `tests/README.md` says what kills them.
+3. **The defaults** stand; Q-M1f.191, .192, .209, .213 and .217 are marked *superseded* in
+   [`open_questions.md`](../open_questions.md), in the index and in each row (`29c34c4f`).
+4. **The order**, P1f.10 before P1f.20, in [M1f's README](../README.md) and [the phase README](README.md#the-order)
+   (`29c34c4f`).
+5. **Q-M1f.304 ruled (d)** after T7 (the user, *"(d)"*), code (`63f5e4b5`, `93732e85`): no test runs past the
+   default `--region-budget`. `route_invariance`'s 2²⁵ test is gone, with the dev host's step that ran it; the
+   default-budget test holds a program route 1 does not finish and the state route does by the cut, and names it
+   ([the row](../open_questions.md#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes)).
+   Every other test or tier step that runs a region budget above the default was listed for the main session and
+   left as it is.
+
+**The gate, in the runner's image** (`utils/ci_container.sh`, timed by `python3 utils/gate_times.py run`, AC
+throughout, 16 workers): **green on `93732e85`, 14.1 min (843.5 s)**, the test step 672.2 s and clippy 151.9 s; the
+slowest binaries `explore` 59.0 s and `lever_invariance` 55.2 s, the peak 10.4 GiB (`int_theory`). Two runs before it
+failed, each on what the close had just added, each fixed and the run taken again: on `63f5e4b5`, `arith_search_free`,
+whose arithmetic programs each hold an answer, and the two probes had made no request (fixed by `a51a40ee`); on
+`a51a40ee`, `world_anchors`, since the rewritten `route_invariance` header named a zebra program by its path (fixed by
+`93732e85`). **The nightly, in the runner's image** (`utils/ci_container.sh --nightly`, the same way):
+**green on `93732e85`, 23.5 min (1 410.6 s)** with its jobs one after another: `deep-corpus` 314.2 s, the four
+`deep-corpus-shards` 182.7 s at most, the twelve census shards 544.9 s together, every one `--check` green, 500 of
+617 mutants killed and the 117 survivors the banked set; the slowest binary a shard of `answer_round_trip`, 109.7 s.
+Both runs are in
+[S1f.6.39's record](s1f.6.39_the_gate_made_fast.md#in-the-runners-image-at-the-close-2026-11-15) with their
+per-step and per-binary tables; the logs are in `build/p1f6-close/`.
+
+**Acceptance's last bullet now holds**: no row of [`findings.md`](findings.md) is without a ruling, a fix or an owner.
+The register reads 322 fixed, 16 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
+2026-11-15), none of the open rows this phase's; no wrong answer was met at the close. `ein test tests/`: 267 files,
+464 expectations held (the gate profile's binary, 2026-11-15).

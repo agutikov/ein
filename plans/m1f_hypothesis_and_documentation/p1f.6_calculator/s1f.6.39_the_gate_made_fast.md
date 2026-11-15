@@ -675,7 +675,7 @@ threads, AC; a browser at under a tenth of a thread), exit 0:
 | | T1 to T5's after (`b8c931f3`) | T7 |
 |---|---:|---:|
 | here | 15.0 min (899.1 s) | **11.9 min** (713.3 s), `e96cfdd5` |
-| in the runner's image (`utils/ci_container.sh`) | 15.2 min (910.5 s) | ⟨CLOSE-GATE-IMAGE⟩, taken on the close's commit |
+| in the runner's image (`utils/ci_container.sh`) | 15.2 min (910.5 s) | **14.1 min** (843.5 s), `93732e85`, the close's ([below](#in-the-runners-image-at-the-close-2026-11-15)) |
 | the test binaries, summed, here | 853.8 s | 703.0 s |
 
 The corpus grew by 49 programs between the two (S1f.6.16's build, S1f.6.32 and .33), and the binaries T7 did not
@@ -701,10 +701,62 @@ every commit above.
 | | before (T1 to T5's after, `b8c931f3`) | T7 |
 |---|---:|---:|
 | `./run_tests.sh --nightly` here, every job one after another | 16.7 min (1 000.9 s) | — |
-| `utils/ci_container.sh --nightly` | — | ⟨CLOSE-NIGHTLY-IMAGE⟩, taken on the close's commit |
+| `utils/ci_container.sh --nightly` | — | **23.5 min** (1 410.6 s), `93732e85`, every job one after another ([below](#in-the-runners-image-at-the-close-2026-11-15)) |
 
 Each step at the runner's count is the table above: every one inside five minutes on the runner by Q-M1f.103's
 factor, the longest the census's shards, 170.5 s here.
+
+### In the runner's image, at the close (2026-11-15)
+
+Taken by the main session's run of P1f.6's close, once, on `93732e85`, which holds every commit of T7 and the close's
+own (E-45's `--check`, the two probe tests, Q-M1f.304's (d)): `python3 utils/gate_times.py run --out
+build/p1f6-close/gate-image.log -- utils/ci_container.sh`, then the same with `--nightly` into `nightly-image.log`,
+one after the other, AC throughout, the image's default of 16 workers; the tables are `gate_times.py report
+--machine` of each log. **Both green.** Two gate runs before it failed, each on what the close had added and each
+fixed before the run was taken again (`close.md` § The close): on `63f5e4b5`, `arith_search_free`, and on
+`a51a40ee`, `world_anchors`; their logs are `gate-image-failed-*.log` beside these.
+
+**The gate, 14.1 min (843.5 s)**, peak 10.4 GiB over the machine's floor:
+
+| step | wall |
+|---|---:|
+| the six static checks, clippy 151.9 s of them | 156.3 s |
+| `cargo test --profile gate --workspace`, its build included | 672.2 s |
+| `utils/review_bundle.py --smoke` | 1.3 s |
+| `cargo bench --bench engine -- --test` | 13.1 s |
+
+| slowest binaries | wall | peak |
+|---|---:|---:|
+| `explore` | 59.0 s | 3.66 GiB |
+| `lever_invariance` | 55.2 s | 1.40 GiB |
+| `int_theory` | 25.3 s | 10.38 GiB |
+| `corpus_cores` | 24.8 s | 2.36 GiB |
+| `region` | 24.2 s | 3.15 GiB |
+| `id_order_invariance` | 21.5 s | 2.70 GiB |
+| `detector` | 18.0 s | 1.54 GiB |
+| `arith_batch` | 17.0 s | 7.97 GiB |
+| `claim_routes`, `arith_theory` | 16.7 s each | 2.05, 5.57 GiB |
+
+**The nightly, 23.5 min (1 410.6 s)**, every job one after another, peak 3.7 GiB over the floor; on GitHub the jobs
+run side by side and its wall is its longest job:
+
+| job | here, summed |
+|---|---:|
+| `deep-corpus` | 314.2 s |
+| `deep-corpus-shards`, 1/4 to 4/4 | 182.7, 175.8, 78.4, 78.2 s |
+| `mutants`, 12 shards | 544.9 s, 44.0 to 47.3 s a shard; 500 of 617 killed, the 117 survivors the banked set |
+| `frontend-fuzz`, two seeds | 33.7 s |
+| `benches` | 2.6 s |
+
+| slowest binaries | job | wall |
+|---|---|---:|
+| `answer_round_trip`, the slow and `heavy_dump` entries | `deep-corpus-shards` 1/4, 2/4 | 109.7, 109.5 s |
+| `obligation_rung`, the slow half | `deep-corpus` | 73.8 s |
+| `corpus_cores`, the slow entries | `deep-corpus-shards` 1/4, 2/4 | 57.4, 54.8 s |
+| `import_invariance`, the slow entries | `deep-corpus` | 54.3 s |
+| `answer_round_trip` | `deep-corpus-shards` 4/4, 3/4 | 45.6, 41.3 s |
+| `route_invariance`, the slow entries at the default budget | `deep-corpus` | 41.5 s |
+| `answer_dump`, the `heavy_dump` runs | `deep-corpus` | 34.3 s |
 
 ### The probes, after
 
