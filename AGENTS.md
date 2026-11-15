@@ -127,7 +127,9 @@ constrained-reasoning research.
   `(import std.math.decimal :symbols (n))` and `(import std.math.arith
   :symbols (z))` where a program writes a numeral), `std.math.num9`
   (generated, entry `arith9`), `std.math.int` (`int-arith`) and
-  `std.math.rat` (`rat-arith`), and `std.math.gcd` (`gcd`, which is also its
+  `std.math.rat` (`rat-arith`; an operation answers unreduced, a common
+  factor left, and `rat-simplify` alone reduces, by `std.math.gcd`; equality is
+  `rat-cmp`), and `std.math.gcd` (`gcd`, which is also its
   request: `(gcd X Y)`/`gcd-of` and `(lcm X Y)`/`lcm-of`, natural numbers only,
   and the tagged call `gcd-call`/`gcd-done`); binary's twins, `std.math.bits` (its tables,
   generated beside the digits'), `std.math.binary` (`binary`: the numeral

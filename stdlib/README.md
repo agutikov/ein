@@ -58,7 +58,7 @@ mirrors it, `tests/stdlib/math/<module>/` and `tests/stdlib/bool/<module>/`.
 | `std.math.binary-arith` | [`math/binary-arith.ein`](math/binary-arith.ein) | binary arithmetic, decimal's twin under `bin-` names ([§](#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)) | `binary-arith` |
 | `std.math.convert` | [`math/convert.ein`](math/convert.ein) | decimal to binary and back, as requests ([§](#stdmathconvert-decimal-to-binary-and-back-m1f-s1f616)) | `convert` |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers over it, `(int P N)` ([§](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)) | `int-arith` |
-| `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rationals over both, `(rat Z D)` ([§](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)) | `rat-arith` |
+| `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rationals over both, `(rat Z D)`, reduced only by `rat-simplify` ([§](#stdmathrat-rational-numbers-reduced-on-request-m1f-s1f68-s1f633)) | `rat-arith` |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | nine digits in one fact, by wide rules, generated ([§](#stdmathnum9-nine-digits-in-one-fact-and-wide-rules-m1f-s1f613)) | `arith9` |
 | `std.math.gcd` | [`math/gcd.ein`](math/gcd.ein) | the greatest common divisor and the least common multiple of two natural numbers ([§](#stdmathgcd-the-greatest-common-divisor-and-the-least-common-multiple-m1f-s1f632)) | `gcd` |
 | `std.bool.gates` | [`bool/gates.ein`](bool/gates.ein) | the sixteen functions of two inputs, a table `(gate2 NAME A B OUT)` (its rows generated) and a relation each, `(And A B OUT)` ([§](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | `gates` |
@@ -1333,7 +1333,7 @@ and nine results, the four calls and `int-done`, a division's hand-over
 `int-div-done`, twenty-one tags, the signs `pos` and `neg`, `int-rule` and
 `int-arith`; everything of `std.math.decimal-arith` comes with it.
 
-## `std.math.rat`: rational numbers, in lowest terms (M1f S1f.6.8)
+## `std.math.rat`: rational numbers, reduced on request (M1f S1f.6.8, S1f.6.33)
 
 The calculator's second extension, and the user's proposal of 2026-11-08:
 rational numbers *"containing integer numerator and natural denominator"*. A
@@ -1348,17 +1348,30 @@ strata).
 (import std.math.rat :symbols (rat-arith))
 
 (rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 3)))     ; 1/2 + 1/3
+(rat-add (rat (int (n z 1) z) (n z 2)) (rat (int (n z 1) z) (n z 2)))     ; 1/2 + 1/2
+(rat-simplify (rat (int (n z 4) z) (n z 4)))                              ; 4/4 in lowest terms
 
-(query :goal (rat-sum-of ?x ?y ?s))      ; ?s = (rat (int (n z 5) z) (n z 6))
+(query :goal (rat-sum-of ?x ?y ?s))      ; 5/6, and 1/2 + 1/2 = (rat (int (n z 4) z) (n z 4))
+(query :goal (rat-simple-of ?x ?s))      ; ?s = (rat (int (n z 1) z) (n z 1))
 ```
+
+**An answer is not canonical; ask `rat-simplify` for lowest terms and `rat-cmp`
+for equality** (M1f S1f.6.33; round 2's item 54, the user's *"(b)"*, to *"I
+think we don't need to reduce every rational, can ask explicitely for it?"*).
+An operation answers the cross products, or the numerators' product, over the
+product of the denominators, as computed: 1/2 + 1/2 is 4/4, and two equal
+results are two different facts. A rule that wants *the same number* asks
+`rat-cmp`, which compares by cross products, or `rat-simplify` of each. A chain
+of operations grows, the denominators multiplying at every step, unless the
+program asks `rat-simplify` on the way.
 
 | | |
 |---|---|
-| **the rational** | `(rat Z D)`. 1/2 is `(rat (int (n z 1) z) (n z 2))`, −3/4 is `(rat (int z (n z 3)) (n z 4))`. The **normal form** is in lowest terms: the numerator in `std.math.int`'s normal form, the denominator with no high zero, the two with no common divisor but 1, and zero written 0 over 1, `(rat (int z z) (n z 1))`. Every rational has exactly one. An operand is read by value, 2/4 as 1/2, and every answer is in normal form |
-| **the protocol** | `(rat-simplify X)` answered by `(rat-simple-of X S)`; `(rat-neg X)` by `(rat-neg-of X S)`; `(rat-add X Y)` by `(rat-sum-of X Y S)`; `(rat-sub X Y)` by `(rat-diff-of X Y S)`; `(rat-mul X Y)` by `(rat-product-of X Y S)`; `(rat-div X Y)` by `(rat-quot-of X Y S)`, **one rational, exact, and no remainder**; `(rat-cmp X Y)` by `(rat-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value |
+| **the rational** | `(rat Z D)`. 1/2 is `(rat (int (n z 1) z) (n z 2))`, −3/4 is `(rat (int z (n z 3)) (n z 4))`. **An answer is unreduced**: its numerator in `std.math.int`'s normal form, one part `z`, its denominator with no high zero; a common factor of the two stays, and zero is 0 over any denominator, 0/6. **Lowest terms**, the two with no common divisor but 1 and zero written 0 over 1, `(rat (int z z) (n z 1))`, is the one normal form every rational has, and `rat-simplify` answers it. An operand is read by value, 2/4 as 1/2 |
+| **the protocol** | `(rat-simplify X)` answered by `(rat-simple-of X S)`, X in lowest terms, the one request that reduces; `(rat-neg X)` by `(rat-neg-of X S)`; `(rat-add X Y)` by `(rat-sum-of X Y S)`; `(rat-sub X Y)` by `(rat-diff-of X Y S)`; `(rat-mul X Y)` by `(rat-product-of X Y S)`; `(rat-div X Y)` by `(rat-quot-of X Y S)`, **one rational, exact, and no remainder**; `(rat-cmp X Y)` by `(rat-cmp-of X Y O)`, O one of `lt`, `eq`, `gt`, by value |
 | **an operand** | a rational written out, `(rat (int P N) D)`, or a name a `(let NAME (rat (int P N) D))` states. An integer or a natural number is **not** a rational operand, and is not flagged (Q-M1f.181, Q-M1f.277 (b)). An undeclared name and a digit as an operand are flagged on the request, by the module's three rules from its tags to the request (S1f.6.38, E-38); a digit or a named constant where the integer or the denominator goes, `(rat 7 (n z 2))`, is the rational's own fault, `(not-rational RATIONAL THING)`, flagged where it is written (Q-M1f.276 (a)), as in `std.math.int` |
 | **a zero denominator** | **a division by zero, and a contradiction**, as in `std.math.decimal-arith`, and by `std.math.arith`'s rule. A request any operand of which has a denominator of zero, however the zero is written, and a `rat-div` by a rational that is zero, derive `(division-by-zero REQUEST)`, the request as written, and `std.math.arith`'s `division-by-zero-is-false` derives `(false)`. Root is dead and R is empty (Q-M1f.182) |
-| **the one entry** | `rat-arith`, the closing rule: it closes every relation of the module and `nz`, names every rule, and names `int-arith`, `decimal-arith`, `decimal` and `arith`, the entries of the modules it imports |
+| **the one entry** | `rat-arith`, the closing rule: it closes every relation of the module and `nz`, names every rule, and names `int-arith`, `decimal-arith`, `decimal`, `arith` and `gcd`, the entries of the modules it imports |
 
 **How it computes.** The operands are looked up and each denominator is
 compared with zero by `std.math.decimal-arith`'s walk. A sum of P1 less N1 over D1 and P2
@@ -1369,84 +1382,90 @@ difference's numerator and nothing more**: its positive part against its
 negative part, since the denominators are positive. A product is the
 numerators' product, `std.math.int`'s, over the denominators'; a quotient is a
 product with the divisor turned over, its sign kept in the numerator, and a
-divisor that is zero has no turning over. Then **lowest terms**: the numerator
-simplified by `std.math.int`, the greatest common divisor of its size and the
-denominator by **Euclid's chain**, gcd(A, B) = gcd(B, A mod B) until the
-remainder is zero, each step a division of `std.math.decimal-arith`, and both divided by
-what it finds. **It does not need a division of integers**, so it does not
-wait for Q-M1f.179. A call's tag is its request, as in `std.math.int`. **The tagged
+divisor that is zero has no turning over. **Nothing is divided**: the
+numerator is simplified by `std.math.int` and the denominator walked to normal
+form, or is a product, which has none. **Lowest terms, on request**: `rat-simplify`
+simplifies the numerator, asks `std.math.gcd`'s tagged call, `(gcd-call TAG A
+D)`, for the greatest common divisor of its size and the denominator, Euclid's
+chain, and divides both by what it finds, two divisions of
+`std.math.decimal-arith`; the module holds no chain of its own since S1f.6.33.
+**It does not need a division of integers**, so it does not wait for
+Q-M1f.179. A call's tag is its request, as in `std.math.int`. **The tagged
 calls a later theory makes are an interface,** held to these shapes by the
 same test as `std.math.decimal-arith`'s; the denominators must not be zero:
 
 ```text
-(rat-norm TAG P N D)                  asked: P less N over D, in lowest terms
+(rat-norm TAG P N D)                  asked: P less N over D, the numerator in normal form and
+                                      D with no high zero, not reduced
                                       answered by (rat-done TAG RATIONAL)
-(rat-mul-call TAG P1 N1 D1 P2 N2 D2)  asked: P1 less N1 over D1, times P2 less N2 over D2
+(rat-mul-call TAG P1 N1 D1 P2 N2 D2)  asked: P1 less N1 over D1, times P2 less N2 over D2, not reduced
                                       answered by (rat-done TAG RATIONAL)
 (rat-cross TAG P1 N1 D1 P2 N2 D2)     asked: P1 × D2 + P2 × D1, and N1 × D2 + N2 × D1
                                       answered by (rat-cross-is TAG POSITIVE NEGATIVE)
 ```
 
 **Every rule has one premise.** `ein-infer/tests/rat_theory.rs` holds that on
-the text, and holds the answers to exact fractions: every pair of the 28
-fractions with a numerator from −3 to 3 over a denominator from 1 to 4 under
-each of the five operations, samples to twelve digits, and operands spelt
-with a common factor, an unsimplified numerator and high zeros.
+the text, and holds the answers to exact fractions **by value**, cross-multiplied
+against the oracle, each in the module's form: every pair of the 28 fractions
+with a numerator from −3 to 3 over a denominator from 1 to 4 under each of the
+five operations, samples to twelve digits, and operands spelt with a common
+factor, an unsimplified numerator and high zeros; every answer of the four
+operations over the 28 held to its unreduced spelling, as computed; and
+`rat-simplify`'s alone to lowest terms. Two requests of one value answer two
+facts, and `rat-cmp` says `eq` of them.
 
-**What it costs.** One request, in firings (`cargo test -p ein-infer --test
-rat_theory the_circuit`, 2026-11-12):
+**What it costs.** One request, in firings, the closing rules' left out, when
+every answer was reduced (S1f.6.8, 2026-11-12) and since only `rat-simplify`
+reduces (S1f.6.33; `cargo test -p ein-infer --test rat_theory the_circuit`,
+2026-11-15):
 
-| request | firings |
-|---|---:|
-| 2/4 in lowest terms | 334 |
-| 1071/462 in lowest terms, a chain of three divisions | 867 |
-| −3/4 negated | 435 |
-| 1/2 + 1/3 | 492 |
-| 1/2 − 1/3 | 417 |
-| 2/3 × 3/4 | 459 |
-| 1/2 ÷ −3/4 | 494 |
-| 1/2 against 1/3 | 76 |
-| 123/456 + 789/1011 | 2 640 |
-| 123/456 against 789/1011 | 270 |
+| request | every answer reduced | reduced on request |
+|---|---:|---:|
+| 2/4 in lowest terms | 334 | 345 |
+| 1071/462 in lowest terms, a chain of three divisions | 867 | 888 |
+| −3/4 negated | 435 | 25 |
+| 1/2 + 1/3 | 492 | 101 |
+| 1/2 − 1/3 | 417 | 104 |
+| 2/3 × 3/4 | 459 | 81 |
+| 1/2 ÷ −3/4 | 494 | 91 |
+| 1/2 against 1/3 | 76 | 76 |
+| 123/456 + 789/1011 | 2 640 | 386 |
+| 123/456 against 789/1011 | 270 | 270 |
 
-Most of a request is lowest terms, and most of that is `std.math.decimal-arith`'s
-division computing its divisor's nine multiples before its first digit, on
-every step of the chain and on the two divisions after it (Q-M1f.183). **A
-comparison reduces nothing** and costs a sixth of a sum: a program that only
-needs the order should ask for the order. In batches, two fractions with a
-numerator from 1 to 9 of either sign over a denominator from 2 to 9, the
-saturator's own milliseconds, best of three (`python3 build/s1f.6.8/batch.py`,
-2026-11-12):
+Lowest terms was most of every request, and most of that is
+`std.math.decimal-arith`'s division computing its divisor's nine multiples
+before its first digit, on every step of the chain and on the two divisions
+after it (Q-M1f.183). **A sum is a fifth of what it was** (round 2's item 54
+said *about a fifth*; 492 to 101), a product less: an operation divides
+nothing. `rat-simplify` pays for the chain, now `std.math.gcd`'s, and its two
+walks to normal form, some ten or twenty firings more than the chain inside
+the module cost. **A comparison reduces nothing**, as before. The saturator's
+own milliseconds, `ein saturate` of each program, every firing counted, medians
+of eleven interleaved rounds on one P-core, on AC (`utils/bench_env.sh --core 2
+--require-ac python3 build/s1f.6.33/cost.py 11`, 2026-11-15; two fractions a
+request with a numerator from 1 to 9 of either sign over a denominator from 2
+to 9):
 
-| operation | requests | firings a request | ms |
-|---|---:|---:|---:|
-| add | 100 | 611.4 | 103.2 |
-| add | 400 | 630.6 | 425.0 |
-| add | 1200 | 639.8 | 1348.8 |
-| sub | 100 | 644.1 | 109.5 |
-| sub | 400 | 627.6 | 424.2 |
-| sub | 1200 | 636.8 | 1366.5 |
-| mul | 100 | 592.9 | 96.4 |
-| mul | 400 | 604.0 | 411.2 |
-| mul | 1200 | 599.6 | 1253.7 |
-| div | 100 | 587.5 | 96.7 |
-| div | 400 | 595.9 | 405.1 |
-| div | 1200 | 599.7 | 1245.1 |
-| cmp | 100 | 78.0 | 11.4 |
-| cmp | 400 | 78.2 | 44.4 |
-| cmp | 1200 | 78.1 | 133.9 |
+| program | reduced: ms | firings | on request: ms | firings |
+|---|---:|---:|---:|---:|
+| one sum, 1/2 + 1/3 | 1.77 | 497 | 1.10 | 107 |
+| one product, 2/3 × 3/4 | 1.73 | 464 | 1.08 | 87 |
+| one `rat-simplify`, 1071/462 | 2.37 | 872 | 2.45 | 894 |
+| 400 sums | 469.57 | 255 594 | 71.81 | 44 007 |
+| 400 products | 437.08 | 236 007 | 56.71 | 33 786 |
 
-A batch costs in proportion to its count: 7 511, 7 470, 6 957, 6 942 and 641
+A batch costs in proportion to its count: 669.8, 665.2, 501.7, 549.3 and 656.0
 candidates a request for a sum, a difference, a product, a quotient and a
 comparison at 100 requests, and within a few per cent of that at 400 and
-1 200 (`cargo test -p ein-infer --features counters --test arith_batch
-a_batch_of_rational -- --nocapture`, 2026-11-12). The batches are smaller
-than the other modules' because a stored fact costs about a kilobyte (E-26):
-1 200 sums are 760 000 facts. A program that imports the module pays
-29.8 ms of load where `std.math.int`'s pays 24.4 and `std.math.decimal-arith`'s 19.8 (`ein saturate
-examples/arith/rat.ein`, `int.ein` and `add.ein`, the `kb load:` line, best
-of five, 2026-11-12, re-taken with S1f.6.22's division in `std.math.int`, which
-this module brings; 27.0 and 22.4 before it).
+1 200, where lowest terms made the first four 7 511, 7 470, 6 957 and 6 942
+(`cargo test -p ein-infer --features counters --test arith_batch
+a_batch_of_rational -- --nocapture`, 2026-11-15). The batches are smaller
+than the other modules' because a stored fact costs about a kilobyte (E-26),
+and are kept so that the two measures compare. A program that imports the
+module pays some 35 ms of load, a millisecond more since it brings
+`std.math.gcd` (`ein saturate` of the one sum above, the `kb load:` line,
+median of seven, one P-core, on AC, 2026-11-15, 34.4 ms on S1f.6.32's
+stdlib; 29.8 ms was `examples/arith/rat.ein`'s, best of five, 2026-11-12).
 
 **Nothing limits the length.** Cross products are as long as their operands
 together, and nested numbers hold them: two fractions of twelve-digit terms
@@ -1651,14 +1670,15 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — some seconds, and **501 of 501** on 2026-11-15 since
+them activated — some seconds, and **499 of 499** on 2026-11-15 since
 `std.math.decimal-arith`'s 116 (M1f S1f.6.3 to S1f.6.6, S1f.6.12's checks and
 S1f.6.24's call), `std.math.num9`'s 47 (S1f.6.13), `std.math.int`'s 71
 (S1f.6.7, and S1f.6.22's division), `std.math.rat`'s 57 (S1f.6.8) and
 `std.bool`'s 55 (S1f.6.17) joined the 77, S1f.6.38 moved the numeral's check,
-S1f.6.16 cut the calculator into `std.math.positional` and the two bases, and
-`std.math.gcd`'s 19 (S1f.6.32) joined.
-*Of 501* is the command's, `find
+S1f.6.16 cut the calculator into `std.math.positional` and the two bases,
+`std.math.gcd`'s 19 (S1f.6.32) joined, and `std.math.rat` gave up its chain for
+`std.math.gcd`'s, two rules fewer (S1f.6.33).
+*Of 499* is the command's, `find
 stdlib -name '*.ein' -exec cat {} + | grep -c '^(rule '`, which reads every
 depth (the calculator's modules are under `stdlib/math/` since S1f.6.31 and
 `std.bool`'s under `stdlib/bool/`, and `cat stdlib/*.ein` would count 77);
@@ -1703,7 +1723,7 @@ install-relative import could not find it.
 | `std.math.decimal-arith` | [`math/decimal-arith.ein`](math/decimal-arith.ein) | school arithmetic on natural numbers of any length, `z` and `(n PREFIX DIGIT)` of the two modules above, **computed by saturation alone** over `std.math.digits`' tables: a request `(add X Y)` answered by `(sum-of X Y S)`, named constants `(let NAME NUMBER)`; no rule joins two facts on a number; one entry, the closing rule `decimal-arith`. Addition, subtraction with its two numbers `(diff-of X Y D R)`, comparison `(cmp-of X Y lt|eq|gt)`, multiplication `(product-of X Y P)` and division `(quot-of X Y Q R)`, a division by zero a flag and `(false)` from it, raised at the tagged call whoever made it; a malformed operand or `let` and an undeclared name a flag and `(false)` likewise, `(malformed REQUEST)` and `(undeclared NAME REQUEST)` ([§ `std.math.decimal-arith`](#stdmathdecimal-arith-school-arithmetic-computed-by-saturation-alone-m1f-p1f6)) | M1f S1f.6.3 to S1f.6.6, S1f.6.12, S1f.6.24, S1f.6.38 |
 | `std.math.num9` | [`math/num9.ein`](math/num9.ein) | school arithmetic on numbers of nine digits in one fact, `(num9 d8 … d0)`, **computed by saturation alone**, by wide rules, a premise a column: `add9`/`sum9-of`, `sub9`/`diff9-of`, `cmp9`/`cmp9-of`, `mul9`/`product9-of`, `div9`/`quot9-of`; `(overflow REQUEST)` and no number where an answer does not fit; conversions to and from `std.math.decimal-arith`'s numbers, `to9`/`as9` and `from9`/`of9`. **Generated** by `utils/gen_num9.py`. One entry, `arith9` | S1f.6.13 |
 | `std.math.int` | [`math/int.ein`](math/int.ein) | integers as a positive and a negative part, `(int P N)`, over `std.math.decimal-arith`'s natural numbers, **computed by saturation alone**: `int-simplify`/`int-simple-of`, `int-neg`/`int-neg-of`, `int-add`/`int-sum-of`, `int-sub`/`int-diff-of`, `int-mul`/`int-product-of`, `int-cmp`/`int-cmp-of`, every answer in normal form, one part `z`; every rule has one premise; integer division names its convention, `int-div-euclid`/`int-quot-euclid-of` (the remainder a natural number), `int-div-trunc`/`int-quot-trunc-of` and `int-div-floor`/`int-quot-floor-of`, since M1f S1f.6.22 ([§ `std.math.int`](#stdmathint-integers-as-a-positive-and-a-negative-part-m1f-s1f67)); imported by its one entry, `(import std.math.int :symbols (int-arith))`, which brings `std.math.decimal-arith` too | M1f S1f.6.7, S1f.6.22 |
-| `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone** and answered in lowest terms: `rat-simplify`/`rat-simple-of`, `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`; the greatest common divisor by Euclid's chain over `std.math.decimal-arith`'s division; a zero denominator is a division by zero, `std.math.arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int` and `std.math.decimal-arith` too | M1f S1f.6.8 |
+| `std.math.rat` | [`math/rat.ein`](math/rat.ein) | rational numbers, `(rat Z D)`, an integer of `std.math.int` over a natural number that is not zero, **computed by saturation alone**, an operation's answer not reduced and `rat-simplify`/`rat-simple-of` the one request that answers in lowest terms (S1f.6.33): `rat-neg`/`rat-neg-of`, `rat-add`/`rat-sum-of`, `rat-sub`/`rat-diff-of`, `rat-mul`/`rat-product-of`, `rat-div`/`rat-quot-of` (one rational, no remainder), `rat-cmp`/`rat-cmp-of`, the equality; lowest terms by `std.math.gcd`'s tagged call; a zero denominator is a division by zero, `std.math.arith`'s flag and its rule to `(false)`; every rule has one premise ([§ `std.math.rat`](#stdmathrat-rational-numbers-reduced-on-request-m1f-s1f68-s1f633)); imported by its one entry, `(import std.math.rat :symbols (rat-arith))`, which brings `std.math.int`, `std.math.decimal-arith` and `std.math.gcd` too | M1f S1f.6.8, S1f.6.33 |
 | `std.math.gcd` | [`math/gcd.ein`](math/gcd.ein) | the greatest common divisor and the least common multiple of two natural numbers of `std.math.decimal-arith`, **computed by saturation alone**: `gcd`/`gcd-of` by Euclid's chain over the tagged division, `lcm`/`lcm-of` the product divided by it; gcd(0, 0) = 0; no request divides by zero; the tagged call `(gcd-call TAG X Y)` answered by `(gcd-done TAG G)`; every rule has one premise; one entry, `gcd` ([§](#stdmathgcd-the-greatest-common-divisor-and-the-least-common-multiple-m1f-s1f632)) | M1f S1f.6.32 |
 | `std.bool.gates`, `std.bool.props`, `std.bool.circuit`, `std.bool.inputs` | [`bool/`](bool/) | the sixteen Boolean functions of two inputs as a table and as a relation each; thirty relations known of them, derived by rules; a circuit simulated by saturation; inputs as hypotheses that each owe one value, and required values ([§ `std.bool`](#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)) | M1f S1f.6.17 |
 | `std.math.digits` | [`math/digits.ein`](math/digits.ein) | **facts, no rule**: the calculator's seven digit tables, `fa` / `fs` / `md` / `cl` / `nz` / `mid` / `adj`, 1 664 rows, each table closed by a written `(__closed__ R)`; generated by `utils/gen_arith_tables.py` ([§ `std.math.digits`](#stdmathdigits-a-library-of-facts-m1f-s1f62)) | M1f S1f.6.2 |

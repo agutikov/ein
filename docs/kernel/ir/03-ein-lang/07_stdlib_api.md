@@ -468,30 +468,34 @@ calls `int-norm`, `int-add-call`, `int-mul-call` and
 `int-cmp-call`, with the hand-over `int-done`, are for a theory built on this
 one; the tags and `int-rule` are in the state and are not an interface.
 
-## `std.math.rat` — rational numbers in lowest terms (requests and results)
+## `std.math.rat` — rational numbers, reduced on request (requests and results)
 
 M1f P1f.6 (S1f.6.8). The calculator's second extension, written over
 `std.math.int` and `std.math.decimal-arith`, which it calls and does not edit: computed by
 saturation alone, with no hypothesis, no `absent`, no guard and one stratum.
 The module-level account, with what a request costs, is
-[`stdlib/README.md` § `std.math.rat`](../../../../stdlib/README.md#stdmathrat-rational-numbers-in-lowest-terms-m1f-s1f68).
+[`stdlib/README.md` § `std.math.rat`](../../../../stdlib/README.md#stdmathrat-rational-numbers-reduced-on-request-m1f-s1f68-s1f633).
 
 ```lisp
 (import std.math.rat :symbols (rat-arith))
 ```
 
-`rat-arith` is the closing rule, the theory's one entry; it names `int-arith`
-and `decimal-arith`, so the one name brings the two theories below it.
+`rat-arith` is the closing rule, the theory's one entry; it names `int-arith`,
+`decimal-arith`, `decimal`, `arith` and `gcd`, the entries of the modules it
+imports.
 
 **The rational.** `(rat Z D)`: Z an integer of `std.math.int`, `(int P N)`, and D a
 number of `std.math.decimal-arith` that is not zero. 1/2 is `(rat (int (n z 1) z) (n z
-2))`. The normal form is in lowest terms, zero written 0 over 1; an operand is
-read by value and every answer is in normal form.
+2))`. **An answer is not reduced** (M1f S1f.6.33): its numerator in
+`std.math.int`'s normal form and its denominator with no high zero, a common
+factor left, so 1/2 + 1/2 is 4/4 and two equal answers may be two facts. Lowest
+terms, zero written 0 over 1, is asked for by `rat-simplify`; equality is
+`rat-cmp`. An operand is read by value.
 
 | fact | who writes it | meaning |
 |------|---------------|---------|
-| `(rat-simplify X)` | the program: a **request** | X in lowest terms is asked |
-| `(rat-simple-of X S)` | the theory: the **result** | S is X's normal form |
+| `(rat-simplify X)` | the program: a **request** | X in lowest terms is asked: the one request that reduces |
+| `(rat-simple-of X S)` | the theory: the **result** | S is X's normal form, in lowest terms |
 | `(rat-neg X)` | the program: a request | 0 − X is asked |
 | `(rat-neg-of X S)` | the theory: the result | S is X negated |
 | `(rat-add X Y)` | the program: a request | X + Y is asked |
