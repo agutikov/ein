@@ -1,10 +1,11 @@
 # S1f.10.9 — What the blind enumerator takes for an object
 
-**Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
-**Status:** planned 2026-11-12. Not started. **It stops for the user** after its census, before anything
-changes.
-**Depends on:** nothing in the phase. It may run before [S1f.10.1](s1f.10.1_exclusion_census.md), whose
-census reads the same candidate sets.
+**Phase:** [P1f.10](README.md), track H (what H is)
+**Status:** planned 2026-11-12; at the re-plan of 2026-11-15, E-54 added and its stop made the phase's one
+stop. Not started. **Its question is put at that stop** ([S1f.10.12](s1f.10.12_the_structure_shown.md)), after
+its census, and nothing changes before the user replies.
+**Depends on:** nothing in the phase. [S1f.10.1](s1f.10.1_exclusion_census.md)'s census reads the same
+candidate sets, and the bundle marks the candidates this stage counts.
 **Source:** row 56 of [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner) of the
 calculator's questions, E-1 and E-7 of its [`findings.md`](../p1f.6_calculator/findings.md). The row's
 suggestion was *(b) P1f.10, which plans how the candidates are built*; the user left the line empty on
@@ -12,7 +13,7 @@ suggestion was *(b) P1f.10, which plans how the candidates are built*; the user 
 ([round 2, § Left empty](../p1f.6_calculator/questions_round2.md#empty)). So this stage stands on an empty
 line and is dropped if the user names the row.
 
-## The two findings
+## The three findings
 
 - **E-1. `__closed__` is proposed as an object.** Where the blind enumerator builds H for a declared
   relation and the program writes a `(__closed__ …)` fact of another, the dunder is among the candidate
@@ -22,15 +23,23 @@ line and is dropped if the user names the row.
 - **E-7. The blind enumerator proposes as objects the relation names a rule asserts as values.** The
   witnesses are the import probes' `liquid` and `thing`; E-1's neighbour.
 
-Both load, and both are *open, shown, no owner yet* in the findings. The user ruled the case behind them (a
+- **E-54. The blind enumerator's universe is every relation and every name the program holds**, loaded from
+  wherever: a declared relation no rule and no closure touches is proposed about, over objects that include
+  every name a module brings. So what a program imports, and not only what it writes, is what is guessed. The
+  witness: a library declaring `colour` and `shape`, closing neither; a program that imports it for `colour`
+  and declares `near`: 4 candidates, `shape` and `square` among them, 16 states (2026-11-14). No tracked
+  program reaches it. Given to this stage on 2026-11-14.
+
+All three load. The user ruled the case behind them (a
 program's own open relations beside the theory) *left as it is*; these rows are the roughness inside it.
 
 ## Why it is not simply a fix
 
 **Removing a candidate changes H, and H is part of the answer.** k_s 2 048 on E-1's witness counts states
-that hold `(total __closed__)`; without the candidate the count is another number. This phase's rule is
-that it *may not change an answer. Not one model, not one fact, not one verdict word*. So the stage is the
-one place in the phase where an answer would move, and it moves only if the user rules that today's is
+that hold `(total __closed__)`; without the candidate the count is another number. Tracks S and R of this
+phase may not change an answer. So this stage is one of the three places in the phase where an answer would
+move, with [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) and
+[S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md), and it moves only if the user rules that today's is
 wrong:
 
 - The candidates are the program's names by ruling: *a constant a fact names at any depth, or a rule's
@@ -45,21 +54,26 @@ wrong:
 
 ## Tasks
 
-1. **T1f.10.9.1 — the two witnesses rebuilt and banked** under `build/` first, on the release binary and the shipped stdlib as they
+1. **T1f.10.9.1 — the three witnesses rebuilt and banked** under `build/` first, on the release binary and the shipped stdlib as they
    stand (both were found on the calculator's prototype): H listed, the candidates that
    are a dunder or a relation name marked, R with and without them computed by `ein oracle` on a copy of
    the program that closes the relation.
 2. **T1f.10.9.2 — the census.** Over every corpus program: how many candidates of H are `__closed__`,
    `__symmetric__`, or a name that the program uses *only* as a relation or only as a relation name in
-   value position; and how many programs' R would differ without them. Programs that state their lattice
+   value position, or a name or a relation that only an imported module writes (E-54); and how many programs' R
+   would differ without them. Programs that state their lattice
    or close their relations have no such candidate; the census says how many are left.
 3. **T1f.10.9.3 — the question, and the stop.** Under the next free id in
    [`open_questions.md`](../open_questions.md), with the census: (a) leave it, and the read-out names such
    candidates as it names types bound as objects; (b) a kernel dunder is never an object, which is a
    wrong answer today and a register row before its fix; (c) (b), and a relation name asserted as a value
-   is not an object either, which narrows Q-M1e2.9 and needs the user to say so. **Default: (a) for E-7,
-   since it is the ruling as written; (b) for E-1, since no program means a dunder as an object.** The
-   default is not acted on before the user replies.
+   is not an object either, which narrows Q-M1e2.9 and needs the user to say so; and for E-54, (d) leave it,
+   the universe is the program's names wherever they were written, or (e) a name or a relation only an import
+   brings is not guessed about unless the program writes it, which makes what is guessed depend on what the
+   main file spells and needs the user to say so. **Default: (a) for E-7, since it is the ruling as written;
+   (b) for E-1, since no program means a dunder as an object; (d) for E-54, since every import brings its
+   module whole and the answer does not depend on the import form.** The question is put at the phase's one
+   stop, and no default is acted on before the user replies.
 4. **T1f.10.9.4 — as ruled.** Under (b) or (c): the register rows filed `open` first, with the witnesses
    under `examples/ein-bugs/wrong-answers/`; the fix in `invariant::program_names` or the enumerator; the
    sweep, old binary against new over the corpus, with every moved R listed; the rows flipped in the fixing
@@ -69,10 +83,10 @@ wrong:
 
 ## Acceptance
 
-- The two witnesses and the census are on the stage's record, each with its command.
-- The user has ruled; E-1 and E-7 are closed in the calculator's `findings.md` with what was done.
-- If an answer moved, it moved by a register row, and the phase's README names this stage as the one
-  exception to *no answer changes*.
+- The three witnesses and the census are on the stage's record, each with its command.
+- The user has ruled; E-1, E-7 and E-54 are closed in the calculator's `findings.md` with what was done.
+- If an answer moved, it moved by a register row, and the phase's README names this stage as an exception to
+  *no answer changes*.
 
 ## What it must not do
 
@@ -83,5 +97,5 @@ wrong:
 ## The standing rules
 
 A wrong answer is a row in `corpus/wrong_answers.toml`, filed `open` before its fix. Config never changes an
-answer. The gate is `./run_tests.sh`, then `./run_tests.sh --nightly` after a code commit;
-`utils/ci_container.sh` is not needed.
+answer. The gate is `./run_tests.sh`, once on the last commit of the batch; `utils/ci_container.sh` is not
+needed.

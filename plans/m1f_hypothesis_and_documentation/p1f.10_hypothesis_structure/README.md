@@ -1,71 +1,51 @@
 # P1f.10 — The structure of the hypothesis set
 
-**Estimate:** ~5 weeks — 8 stages, 22.5 days. (23 until 2026-08-28, when
-S1f.10.8 handed its check and its census to
-[S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent).)
-**Depends on:** [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
-[S1e.1.1](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md) only —
-for [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
-ruling, which this phase is the first consumer of. Nothing else — and since
-2026-08-28 the dependency runs the other way too: this phase answers the
-review's `Q6`, which S1e.1.1 used to.
-**Blocks:** nothing. [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)
-holds the review's `Q6` **probe** and `CO-H3`(c)'s regression test, which is a
-claim M1e would like and does not depend on — see [§ What the move cost, and
-what it did not](#what-the-move-cost-and-what-it-did-not). Everything else here
-is a *new capability*, answer-preserving by construction: the acceptance is
-*the same model sets, fact for fact*, on every corpus entry.
+**Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands. No
+stage has run. The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on
+2026-11-03; [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
+**Depends on:** nothing unfinished.
+**Waited for by:** [P1f.20](../p1f.20_docs_refactor/README.md), which describes the engine after this phase (the
+user's ruling of 2026-11-15); `std.math.crypt`, the cryptarithm theory, which waits for
+[S1f.10.5](s1f.10.5_ordering.md); M1g's
+[S1g.6.6](../../m1g_logic/p1g.6_engine_requirements/s1g.6.6_exactly_one_value_per_object.md), which starts from
+the groups.
 **Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
-— *what happens to an obligation derived under a hypothesis*, handed over from
-[S1e.1.1 D2](../../../docs/history/m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md)
-on 2026-08-28. See [§ The set that is not fixed](#the-set-that-is-not-fixed).
-**Source:** the user's instruction of 2026-08-28, recorded verbatim in
-[§ The instruction](#the-instruction).
-**Was P1e.1b**, in [M1e](../../../docs/history/m1e_review_processing/README.md), until 2026-08-29. No stage had run, so
-all eight moved and all eight were renumbered `S1f.10.<n>` from `S1e.1b.<n>`.
+and the register's one row with a stage for an owner, `W26/oblig-derived-activator`
+([S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)); and five findings of the calculator's
+[`findings.md`](../p1f.6_calculator/findings.md): E-29 (S1f.10.5), E-1, E-7 and E-54
+([S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md)), E-51
+([S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md)).
 
 ---
 
-## What this phase is, and the note about its placement is now answered
+## The two ideas
 
-**It was `P1e.1b` until 2026-08-29**, and the honest note this section used to
-carry has been overtaken: *it is engine work, it was not asked for by any of
-[M1e](../../../docs/history/m1e_review_processing/README.md)'s 63 findings, and it would sit as comfortably in an
-M-number of its own.* It has one. What put it in M1e was that the review's own
-[Q5](../../../docs/history/m1e_review_processing/review/open-questions.md) turned out to terminate in the same question
-— *what does it mean for a hypothesis to be decided?* — that this phase answers
-structurally, and that connection is still the reason to read the two together.
+The user, 2026-11-15, after the analysis of this phase against today's engine:
 
-Two consequences a reader should hold:
+> There were 2 ideas behind this hypothesis structure phase: 1st the structure is itself a vlauable piece of
+> information for analysis, 2nd maybe hyp structure investigation is cheap and can improve search of R; they
+> are independent;
 
-- **M1e's acceptance is untouched by the move.** The 63 dispositions never
-  depended on this phase, and the one question that came to — `Q6` — was
-  *ruled* inside M1e on 2026-08-28 (the rung mode is re-read at every node).
-  What moved here is the **probe**, not the ruling. See below.
-- **This phase may not change an answer.** Not one model, not one fact, not
-  one verdict word. Every stage's acceptance is a fact-for-fact model-set
-  comparison across the corpus, and the win is measured in *enterings*.
+and then: *"do re-plan according you findings and those 2 ideas"*.
 
-### What the move cost, and what it did not
+So the phase has two tracks, and a third group that is neither:
 
-One question, and less of it than it looks.
-[S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) is where the review's
-**`Q6`** is *demonstrated* — the flip constructed, or written up as not
-constructible — and it came here from
-[S1e.1.1](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md)
-on 2026-08-28, before the milestone split. M1e's acceptance says *every one of
-Q1–Q10 is answered*, and Q6 **is**: the ruling it needed was taken there and is
-recorded there. A probe that would let a later milestone *remove* the guard is
-not the same claim as the ruling that installs it, and only the probe is here.
+| | the question | its acceptance | what a *no* is |
+|---|---|---|---|
+| **S, the structure** | what structure does a program's hypothesis set H have, read from the program by the engine, with nobody declaring it? | the structure is defined, computed by one owner, held by invariances, and **shown**: on real programs first, then by a surface of `ein` | there is no *no*: what cannot be discovered is said, with the program that shows it |
+| **R, the search** | is discovering that structure cheap, and does knowing it reduce the work of a route over R? | measured before anything is built; where it pays, built with R identical on every corpus program in every mode, the discovery counted as work | a full result. It closes track R and takes nothing from track S |
+| **H, what H is** | the three owned findings about which facts are candidates at all | each ruled by the user; an answer moves only by a register row | the answer stays, and the read-out says what it is |
 
-The **guard** Q6 gates is unaffected either way: applying the ruling is
-[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3's, in M1e, and it does not
-wait on this phase.
-
-Cutting this phase whole is therefore free again, which it had not been since
-2026-08-28 — the cost the move removed.
+**How *independent* is read here.** Neither track's result is a condition for the other's. Track S ships
+whatever track R finds, and its cost is no objection to it: it answers a question a user asks, as `ein oracle`
+does. Track R may use less than track S discovers, or structure obtained another way (a pair learned from a
+death, [S1f.10.13](s1f.10.13_the_price_list.md)), and it is judged by work alone. One stage of R takes S's
+output as its input, the order, by the user's reply of 2026-11-12 below; that is R reading S, not S waiting for
+R.
 
 ## The instruction
+
+The user, 2026-08-28, which founded the phase:
 
 > set of L1 hyps has mutually inconsistent hyps, e.g. (Norvegian lives in
 > House1) and (Norvegian lives in House2). It can be checked on small fact set
@@ -78,148 +58,16 @@ Cutting this phase whole is therefore free again, which it had not been since
 > pets, permutations of nationalities. So hypothesis selection could be
 > ordered by the structure of hypothesis set, not by simple lexical order.
 
-## Why it is worth a phase
-
-The search enumerates **subsets of a fixed `alive` set**. Layer *L* enters the
-*L*-subsets that survive the apriori prefix-join and the no-good filter
-(`apriori.rs`), and the only
-thing that removes a candidate before it is entered is a **learned clause** —
-which is to say, something the search already paid a death for.
-
-Nothing removes a candidate for a reason the *theory* could have stated in
-advance. `{(nation-loc Norwegian H1), (nation-loc Norwegian H2)}` is a
-2-subset the join proposes, the engine forks, saturates, derives `(false)`
-from `functional`, and learns a width-2 clause — **per pair, per puzzle, every
-run**. There are 250 such pairs in `zebra2`'s five bijections before a single
-clue is read, and every one of them is a property of `(bijective nation-loc)`
-and the ontology alone.
-
-The measured shape of the waste is already in the tree. M1d
-[S1d.10.1](../../../docs/history/m1d_satisfiability/layer_census.md)'s census
-found that for **25 of the 49** entries that search at all, the enterings are
-*exactly* `Σₖ C(alive, k)` — the full powerset, with the no-good machinery
-removing **1.4 %** corpus-wide and dead-element pruning removing **0**. The
-lattice is, on those entries, an unfiltered binomial walk.
-
-And the comparison this repo already keeps is the sharpest statement of the
-gap: [`c/README.md`](../../../c/README.md)'s three baselines differ by
-**3 668 465×** and *"the difference is not an algorithm — it is one integer
-per clue, the level at which every attribute it names is bound."* This phase
-asks the same question of the hypothesis set: what does the search already
-have, structurally, that it is not being told?
-
-## The ladder
-
-Five stages, and each one is a strictly larger claim about the same object.
-
-| rung | the claim | who checks it |
-|---|---|---|
-| **exclusion** | `h₁` and `h₂` cannot both hold, and the proof needs **rules + ontology + the two facts** and nothing else | [S1f.10.1](s1f.10.1_exclusion_census.md) |
-| **groups** | the exclusion relation partitions — or covers — the hypothesis set into *pick at most one from each* | [S1f.10.2](s1f.10.2_groups.md) |
-| **the join** | a candidate set containing two members of one group is refused **before** the fork | [S1f.10.3](s1f.10.3_the_restricted_join.md) |
-| **bounded groups** | two overlapping group families whose members exhaust each other are a **bijection**, so the space is `n!` and not `2^(n²)` | [S1f.10.4](s1f.10.4_bounded_groups.md) |
-| **order** | the traversal order follows the structure — most-constrained group first — instead of the canonical tuple sort | [S1f.10.5](s1f.10.5_ordering.md) |
-| **soundness** | `excludes` is a property of the program only if no `(false)` in it rests on an `absent` over a relation the search can still extend | [S1f.10.8](s1f.10.8_refutation_under_absent.md) |
-| **domain** | the four rungs above are valid over a *stated* class of programs, and a derived obligation is what can put a program outside it | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) |
-| **calibration** | the tree traversal already gets **200 053×** on the phase's hardest instance by branching on structure; how much of that is this ladder's to recover | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) |
-| [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | What the blind enumerator takes for an object: `__closed__`, and relation names a rule asserts as values (added 2026-11-12) | — | E-1 and E-7 of the calculator's findings re-taken, the census of who is affected, and a question for the user before anything moves: removing a candidate changes H, and this phase may not change an answer |
-
-### The one distinction the whole phase rests on
-
-**Exclusion is state-independent; the lookahead is state-dependent.**
-
-`Lookahead::dies_immediately` ([`hypgen.rs:440`](../../../ein.rs/crates/ein-infer/src/hypgen.rs))
-simulates one rule firing **against the saturated root KB** — so its answer is
-a property of *this* state and has to be recomputed at every node, and it is
-the costliest of the four filters for exactly that reason.
-
-The exclusion this phase computes takes `rules + ontology + {h₁, h₂}` and
-**nothing else**, which means:
-
-- it is a property of the *program*, computed once at load;
-- it is valid at **every** node of the search, root and depth 7 alike;
-- it cannot flip under a hypothesis — which is the property
-  [Q6](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md) found the
-  tree's rung probe *lacks*.
-
-That last line is why this phase is not merely an optimisation. A
-state-independent branch structure is one a tree traversal may cache at root
-**soundly**, and it is the first candidate this repo has for jointly
-exhaustive branches on a program that declares no `(open …)` rule at all.
-
-### The set that is not fixed
-
-The sentence this phase opens with — *the search enumerates subsets of a fixed
-`alive` set* — is the one thing here that the engine does not guarantee, and
-[Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
-is that gap, handed to this phase on 2026-08-28.
-
-An obligation's activator is an ordinary fact, so a rule can derive one
-**inside a fork** — and the facts that would discharge the new obligation are
-new candidates, in a branch that was entered because its alternatives were
-jointly exhaustive. The growth is monotone (the KB is append-only, so nothing
-retracts), and the guard is already decided elsewhere: the rung mode is
-re-read per node, which is [S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)
-T3's to write. What is *this* phase's is the structural half — **what a group
-means when the set it partitions can grow underneath it.**
-
-Two answers are admissible and the phase must pick one in writing:
-
-- the structure is **relative to the node**, recomputed where the set grew —
-  which makes it a cheaper lookahead rather than a load-time property, and
-  costs the phase its headline claim; or
-- the structure is a **load-time property of programs whose obligation
-  activators are all root-derivable**, and a program outside that class is
-  refused or falls back — which keeps the claim and names its domain.
-
-Either is an answer; what is not admissible is the phase shipping a group
-structure whose validity nobody has stated. [S1f.10.1](s1f.10.1_exclusion_census.md)
-is the natural first reader — *does any corpus entry derive an obligation
-activator under a hypothesis?* is one column and today's expected answer is
-**no**, which is what makes the second option affordable.
-
-### What it does not do
-
-Pairwise exclusion does **not** subsume `complete`, and
-[`examples/lattice/02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein)
-is the counterexample the corpus already carries: its `(false)` needs all
-three of `a-prop`, `b-prop`, `c-prop`, so no pair excludes and no group forms.
-Its own header says so — *"the genuine combinatorial-core case … no amount of
-subset elimination can avoid the size-3 fork."* Q-M1e.6's definition of a
-solution still needs the general test; this phase makes the common case free,
-not the general one.
-
-## The instances
-
-Named here and used by every stage.
-
-| tag | file | why it is the one |
-|---|---|---|
-| **I-Z1** | [`examples/zebra.ein`](../../../examples/zebra.ein) | one `co-located` equivalence relation; the group structure is **implied** by `sibling-exclusive` + `functional` and declared nowhere. The subject |
-| **I-Z2** | [`examples/zebra2.ein`](../../../examples/zebra2.ein) | five `*-loc` projections, each `(bijective …)`. The structure is **declared**, so it is the control: whatever S1f.10.1 discovers here it must agree with |
-| **I-B06** | [`examples/branching/06_lookahead_on.ein`](../../../examples/branching/06_lookahead_on.ein) | I-Z1 in miniature — five colours, five houses, one `co-located` — and already the corpus's most expensive cell that is not `slow` (377 ms) |
-| **I-L02** | [`examples/lattice/02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein) | the negative control: a 3-way conflict with no pairwise exclusion. Every stage asserts it is **unchanged**, which is what keeps the phase honest about its own reach |
-| **I-Z2M** | `examples/zebra2-minus-15.ein` | 32 models, 23 varying variables in **one** coupling component ([model_set_census](../../../docs/history/m1d_satisfiability/model_set_census.md)). The under-determined case, where a group order should matter most |
-
-## Stages
-
-| ID | title | est. | ends with |
-|---|---|---:|---|
-| [S1f.10.1](s1f.10.1_exclusion_census.md) | The exclusion relation, measured before it is used | 3 d | `utils/exclusion_census.py`; per corpus entry, how many L1 pairs exclude, how many of them the **minimal** KB proves without the puzzle's clues, and what fraction of the join they would have removed |
-| [S1f.10.2](s1f.10.2_groups.md) | From the exclusion graph to *pick at most one* | 2.5 d | a written definition of a **group** that the corpus does not falsify — cliques, not components — plus the finding that groups **overlap** and why that is the bijection rather than a defect |
-| [S1f.10.3](s1f.10.3_the_restricted_join.md) | The join, restricted | 3 d | `generate_layer` refuses a candidate containing two members of one group; every corpus model set identical fact for fact; the enterings delta measured per entry |
-| [S1f.10.4](s1f.10.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
-| [S1f.10.5](s1f.10.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
-| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
-| [S1f.10.8](s1f.10.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
-| [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1f.10.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
+Read against the two ideas: *mutually inconsistent*, *groups to pick one from* and *bounded hyp groups* are the
+structure (S1f.10.1, S1f.10.2, S1f.10.4); *checked on small fact set … without the rest of KB* is one way of
+finding it, and the one that says which part of it is the theory's and which the puzzle's (S1f.10.10); *not
+enumerate all possible N-sets* and *ordered by the structure* are the search (S1f.10.3, S1f.10.5).
 
 ## Additions of 2026-11-12
 
 Two things came to this phase from the user's replies of 2026-11-12 to the calculator's questions
 ([`questions.md`](../p1f.6_calculator/questions.md); the index of every reply is
-[`replies_2026-11-12.md`](../p1f.6_calculator/replies_2026-11-12.md)). No estimate is attached to either
-(the user's ruling of 2026-11-08).
+[`replies_2026-11-12.md`](../p1f.6_calculator/replies_2026-11-12.md)).
 
 ### The order of the search is this phase's, and the structure comes first
 
@@ -231,143 +79,291 @@ first*. The user, 2026-11-12:
 > it definitely will depend on the hyp structure. So first need to automate analysis/discovery of the
 > structure itself, and then use it as input to hyp ordering strategy.
 
-That is this phase's ladder in the user's words, and it fixes two things the plan had left loose:
-
 - **The order is a consumer of the structure, not a heuristic beside it.** [S1f.10.5](s1f.10.5_ordering.md)
-  is *ordering by structure*; by this reply it takes the structure S1f.10.1 to S1f.10.4 discover **as its
-  input**, and a strategy is then one function of that input among several possible. *Fewest alive
-  alternatives first*, the option the question offered, is one such strategy and is not ruled as *the* one:
-  *"the concrete strategy … can be different"*.
-- **Discovery is automated.** *"first need to automate analysis/discovery of the structure itself"*: the
-  exclusion relation, the groups and the bounded groups are computed from the program, which is what
-  S1f.10.1, S1f.10.2 and S1f.10.4 plan; none is to be declared by the program's author to get an order.
+  takes what track S discovers as its input, and a strategy is one function of that input among several
+  possible. *Fewest alive alternatives first* is one such strategy and is not ruled as *the* one.
+- **Discovery is automated.** The exclusions, the groups, the bounded groups and what couples them are computed
+  from the program; none is declared by the program's author to get an order.
 
 **The witness, E-29** of the calculator's [`findings.md`](../p1f.6_calculator/findings.md): the obligation
 tree branches in the order the obligations are written, and that order decides whether a search ends.
 SEND + MORE = MONEY, 80 candidates, under `ein solve --single`: with its letters declared by column, D E Y N
-R O S M, *Solution — R is one state* in 17 747 saturations, 0.50 s; the same program with the letters
-declared as the puzzle is written, S E N D M O R Y, no answer in 600 s (2026-11-12). With propagation rules
-the two orders are 639 saturations against 5 267. Nothing in the read-out says the order mattered. The two
-programs are `build/s1f.6.10/p/p3_send.ein` and `p3_send_written.ein`; the first is banked in the corpus by
-the calculator's [S1f.6.27](../p1f.6_calculator/s1f.6.27_ein_test_by_the_cheapest_route.md), and **this
-phase banks the second,** as the instance on which an order derived from structure has to end where the
-written order does not. It joins [§ The instances](#the-instances) as **I-SEND** when S1f.10.5 runs.
+R O S M, *Solution — R is one state* in 17 747 saturations; the same program with the letters declared as the
+puzzle is written, S E N D M O R Y, no answer in 600 s (2026-11-12). With propagation rules the two orders are
+639 saturations against 5 267. Nothing in the read-out says the order mattered. The first program is
+[`examples/beyond_arith/send_more_money.ein`](../../../examples/beyond_arith/send_more_money.ein), **I-SEND**;
+the second is `build/s1f.6.10/p/p3_send_written.ein`, which S1f.10.5 banks as **I-SENDW**, the instance on
+which an order derived from structure has to end where the written order does not.
 
-**What the witness changes in the plan.** The stage files were written on 2026-08-28 against the walk, the
-lattice of commitment sets and its `lattice-order`, which M1e2 deleted (S1e2.1c.5, 2026-11-03). The order
-point E-29 names is another one: the order in which `--single` and `-n` take the **owed instances** of the
-obligation tree, row 5 of S1f.10.5's inventory, whose lever `EIN_OBLIGATION_CHOICE` was retired on
-2026-11-03. So before S1f.10.5 runs its inventory is re-taken against the routes as they are, and the
-order it adds is on the obligation tree. The phase's rule is unchanged and is what makes this safe: **an
-order may not change an answer,** only the work; `--single`'s verdict, R, N and H are the same under every
-order, held as the phase's acceptance holds everything else, and an order is not a `(config …)` flag a
+The phase's rule is what makes an order safe: **an order may not change an answer,** only the work.
+`--single`'s verdict, R, N and H are the same under every order, and an order is not a `(config …)` flag a
 program sets.
-
-The cryptarithm theory the user ruled in (question 42, `std.math.crypt`) waits for this: its example's cost
-hangs on declaration order until an order is derived.
 
 ### What the blind enumerator takes for an object
 
 Row 56 of the calculator's [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner),
 **E-1 and E-7**, was left empty by the user and so took its suggestion: *(b) P1f.10, which plans how the
-candidates are built*.
+candidates are built*. **E-54** joined them on 2026-11-14. They are
+[S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md). The user ruled the case behind them, a
+program's own open relations beside an imported theory, *left as it is*; the rows are the roughness and not
+that.
 
-- **E-1.** Where the blind enumerator builds H for a declared relation and the program writes a
-  `(__closed__ …)` fact of another, the dunder is among the candidate objects: `(total __closed__)` is a
-  candidate beside `(total 0)` to `(total 9)`.
-- **E-7.** The blind enumerator proposes as objects the relation names a rule asserts as values.
+## The engine this plan is written against
 
-They are [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md). The user ruled the case
-behind them, a program's own open relations beside an imported theory, *left as it is*; the rows are the
-roughness and not that.
+What is true at `dbedc535`, each line with where it is stated:
+
+- **H, the universe**, is the generator's list at root's fixpoint, config-free, in rendered-text order
+  (`region.rs`, § The universe). The ladder builds it: an hrule's proposals, else what would discharge the
+  debts root owes, else the blind enumerator (`hypgen.rs`, `oblgen.rs`).
+- **A node** is root's fixpoint with a commitment written in and saturated, by one function every route and the
+  oracle share (`region.rs`, § What a node is).
+- **The routes** (`explore.rs`): describe and `--count` take the state route (`states.rs`); `-n`, `--single`
+  and the two lines take the obligation tree, the climb and the dualisation (`tree.rs`); a program the static
+  check flags takes the cube. Each skip is licensed: **L1** dead is upward-closed, **L2** discharged is
+  upward-closed, **L3** a commitment's state is its closure's, **L4** the lines are local, **L5** an owed
+  instance's alternatives cover R above the state that owes it.
+- **The only memory of a death** is the dead commitment itself, recorded whole (`tree.rs`, `record_dead`), and
+  it prunes its supersets by L1. Nothing shrinks it to the facts that killed it.
+- **No lever reaches an order.** `-o/--lattice-order` is retired, and each route's order is part of its
+  definition (`tree.rs`, § Which instance).
+- **The read-out prints the work**: `work  374 saturations · 42 705 facts beyond root`, with `N`, `universe …
+  dead alone` and the `route` row's licences ([`read_out.md`](../../../docs/kernel/inference/read_out.md)).
+- **What structure the engine already has.** Declared: the five mechanisms read at root (`mechanisms.rs`) and
+  the owed instances with their alternatives, licensed or not (`oblgen::Alternatives`). Of R, once a describe
+  is exhausted: N, the components, the sub-cubes and the merged states (`described.rs`). **It has no structure
+  of H that is neither declared nor read off a finished describe**, which is what track S adds.
+
+## What was measured at the re-plan
+
+2026-11-15, the release binary at `dbedc535`, on AC. Each run dumped with `--dump-lattice`, and a dead node
+counted when its commitment, with the closures of the alive nodes under it, holds two facts of one relation
+that agree in exactly one argument. That is a syntactic stand-in for *excluded by `functional` or `injective`*,
+not a proof; [S1f.10.13](s1f.10.13_the_price_list.md) holds the script and re-takes the table with the
+exclusion relation S1f.10.1 computes.
+
+| run | saturations | dead | dead holding such a pair | of all saturations |
+|---|---:|---:|---:|---:|
+| `zebra2.ein`, describe | 374 | 190 | 110 | 29 % |
+| `zebra2.ein --single` | 45 | 41 | 38 | 84 % |
+| `zebra2-minus-15.ein`, describe (stopped by the budget before the states of 3 candidates) | 8 391 | 1 996 | 1 106 | 13 % |
+| `zebra2-minus-15.ein --single` | 39 | 11 | 0 | 0 % |
+| `zebra2-minus-15.ein --maximal` | 2 346 | 2 266 | 2 234 | 95 % |
+| `beyond_arith/send_more_money.ein --single` | 17 747 | 15 974 | 9 350 | 53 % |
+
+What it says, and each is a premise of a stage below, to be re-taken there:
+
+1. **The waste the instruction names is real, in another place than the old plan put it.** There is no join.
+   There is an extension step, and a dead extension is remembered as the whole commitment: 2 177 of the
+   `--maximal` run's deaths are 24-candidate sets, each paid for with a saturation, each holding a pair that
+   was dead at root.
+2. **A question of 39 or 45 saturations cannot pay for a pair layer.** `zebra2-minus-15` has 96 candidates and
+   4 560 pairs. Whether the structure is *cheap* is a question per route and per way of getting it
+   (S1f.10.13).
+3. **The under-determined instance's describe is mostly alive states.** 5 530 of its 8 391 saturations are
+   owing states, which no exclusion removes; only branching on *exactly one* does, and describe does not use
+   it (S1f.10.14).
+4. **E-29's witness is probably out of reach of pairs.** An inference, not a measurement: the tree already
+   takes the instance with the fewest alternatives not known dead, but it counts only deaths it has paid for,
+   so on a fresh state every letter ties at ten and report order decides. A table of excluded pairs sees
+   *different letters, different digits* and ties as well. What makes the by-column order end is that D, E and
+   Y share a column, a conflict of three. So the order needs what **couples** the groups
+   ([S1f.10.11](s1f.10.11_coupling.md)), and S1f.10.5 checks this first.
+
+## The structure
+
+What track S discovers, over H as root builds it. Every object is read from nodes of the program's own
+lattice, so each is a fact about R's lattice and not a second semantics.
+
+| object | what it is | stage |
+|---|---|---|
+| **dead alone**, **implies**, **equivalent** | a candidate whose own node is dead; `b` in the closure of `{a}`; two candidates with one closure | [S1f.10.1](s1f.10.1_exclusion_census.md) |
+| **excludes** | `a` and `b` each alive alone, `{a, b}` dead | S1f.10.1 |
+| **of the theory, of the puzzle** | whether an exclusion holds with *rules, ontology and the two facts* alone, and if not, which stated facts it rests on | [S1f.10.10](s1f.10.10_the_theorys_share.md) |
+| **group** | a maximal set of pairwise excluding candidates: *pick at most one*. A cover of H, not a partition | [S1f.10.2](s1f.10.2_groups.md) |
+| **owed group**, **grid** | a group some member of which must hold, *exactly one*; two families of groups over one member set, a bijection | [S1f.10.4](s1f.10.4_bounded_groups.md) |
+| **coupling** | what ties groups together that no pair shows: a conflict or a derivation that needs members of three groups or more | [S1f.10.11](s1f.10.11_coupling.md) |
+| **in no group**, **junk** | a candidate nothing excludes; a candidate that is a kernel name or a relation's name | S1f.10.2, [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) |
+
+Beside each discovered object the stages put what the program **declares** (`mechanisms.rs`,
+`oblgen::Alternatives`), and the difference between the two is part of the information: a bijection declared
+and found, one found and declared nowhere, an owed instance the tree cannot license and why.
+
+### The domain
+
+**The structure is of H as root builds it, on a program the static check calls monotone.** There L1 and L3
+hold, so a pair dead at root is dead at every node above it and a closure read at root is a subset of every
+closure above it. On a flagged program the pair layer is still a set of true statements about root's nodes, and
+nothing above root follows from them; the stages report such a program's structure with that sentence and track
+R spends nothing on it.
+
+**And H does not grow.** A node that owes an instance root did not already refuses the run on a monotone
+program (`tree.rs`, `check_owed`), so the premise is enforced by something that fails when it stops being true.
+What a program outside it should answer is Q-M1e.11, [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)'s.
+
+### What it does not do
+
+Pairs do **not** subsume conflicts of three.
+[`examples/lattice/02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein) is the
+corpus's standing case: its `(false)` needs all of `a-prop`, `b-prop`, `c-prop`, so no pair excludes and no
+group forms. Every stage reports it, and S1f.10.11 is where its triple has to appear.
+
+## The instances
+
+| tag | file | why it is the one |
+|---|---|---|
+| **I-Z1** | [`examples/zebra.ein`](../../../examples/zebra.ein) | one symmetric `co-located` relation. Root owes 36 instances through `std.slots`; the tree licenses the `slot-owed-room` half and not the `slot-owed-fill` half, whose witnesses the hrule never proposes |
+| **I-Z2** | [`examples/zebra2.ein`](../../../examples/zebra2.ein) | five `*-loc` relations, each `(bijective …)`. The structure is **declared**, so it is the control: what is discovered here must agree with it |
+| **I-Z2M** | [`examples/zebra2-minus-15.ein`](../../../examples/zebra2-minus-15.ein) | the under-determined case: 32 states met, describe not exhausted at the default budget |
+| **I-B06** | [`examples/branching/06_lookahead_on.ein`](../../../examples/branching/06_lookahead_on.ein) | the blind enumerator: 132 candidates, 130 dead alone, no obligation and no hrule |
+| **I-L02** | [`examples/lattice/02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein) | the negative control for pairs, and the positive one for coupling |
+| **I-SEND** | [`examples/beyond_arith/send_more_money.ein`](../../../examples/beyond_arith/send_more_money.ein) | E-29's witness, declared by column |
+| **I-SENDW** | to be banked by S1f.10.5 from `build/s1f.6.10/p/p3_send_written.ein` | the same program declared as the puzzle is written |
+
+## Stages
+
+| ID | track | title | ends with |
+|---|---|---|---|
+| [S1f.10.1](s1f.10.1_exclusion_census.md) | S | The pair layer: what one candidate and two decide at root | every corpus program that searches read: dead alone, implies, equivalent, excludes, by the engine's own node; held to N on every program a describe exhausts |
+| [S1f.10.2](s1f.10.2_groups.md) | S | From the exclusion graph to *pick at most one* | the definition of a group the corpus does not falsify; the cover computed, beside what each program declares |
+| [S1f.10.10](s1f.10.10_the_theorys_share.md) | S | The theory's share: rules, ontology and the two facts | each exclusion marked *of the theory* or *by these stated facts*; the small-KB check and the support of a death held to each other |
+| [S1f.10.4](s1f.10.4_bounded_groups.md) | S | Exactly one: owed groups and grids | which groups are *exactly one* and on what that rests; each bijection found, declared or not; what a program would have to state where it cannot be derived |
+| [S1f.10.11](s1f.10.11_coupling.md) | S | Coupling: what ties the groups together | the groups' hypergraph with a reason on every edge, or a written account of what no cheap reading finds; I-L02's triple and I-SEND's columns the controls |
+| [S1f.10.13](s1f.10.13_the_price_list.md) | R | The price list | per program and per question: the work, the part of it the structure explains, what each way of getting the structure costs, and a *go* or a *no* for each by a rule stated first |
+| [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | What the blind enumerator takes for an object | E-1, E-7 and E-54 with witnesses and a census; a question |
+| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | A debt root was not told of | W26 re-taken over R, the census of who derives an activator at a node, Q-M1e.11's four answers priced; a question |
+| [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | The rung a loaded rule chooses | E-51 with witnesses and a census; a question |
+| [S1f.10.12](s1f.10.12_the_structure_shown.md) | S | The structure shown, and its surface | `build/structure/`, every instance raw and rendered; **the phase's one stop**, with the surface's question, the three H questions and the price list; then the surface as ruled |
+| [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | At most one, spent: the extension step | where S1f.10.13 says *go*: a set holding an excluded pair is not saturated, on every route through one owner; R identical everywhere; the work delta per program, the losers named |
+| [S1f.10.5](s1f.10.5_ordering.md) | R | The order on the obligation tree | I-SENDW banked; an order that is a function of the structure; `--single` on I-SENDW decided within the default budget; the read-out says what order a run took |
+| [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | Exactly one, spent: branching nothing licenses yet | the instances L5 does not license, licensed by an argument the oracle holds, or a written *no* per kind |
+| [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | What the walk left in the generator | `generate_one_branch`, `most-constrained`, the lookahead's reach and the stale module headers each deleted or kept with its reader named |
+| [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | — | ~~Why the tree wins, and the flag~~ | **dropped at the re-plan**: its three subjects were deleted with the walk |
+| [S1f.10.8](s1f.10.8_refutation_under_absent.md) | — | ~~May a refutation rest on an `absent`?~~ | **closed**: ruled *forbid* and built in M1e2 |
+
+## The order
+
+**Part 1 reads and measures. It changes no answer, no route and no surface.**
+
+1. S1f.10.1, then S1f.10.2.
+2. S1f.10.10, S1f.10.4 and S1f.10.11, which share S1f.10.1's census and no file with each other's result.
+3. S1f.10.13, which needs S1f.10.1 only and may run beside step 2.
+4. The three H stages up to their questions: S1f.10.9, S1f.10.6, S1f.10.15, tasks 1 to 3 of each.
+5. S1f.10.12's bundle, and **the one stop**: the structure on real programs, the price list, and four
+   questions (the surface, and the three of track H), each with its default. No default is acted on before the
+   user replies.
+
+**Part 2 is as ruled.**
+
+6. S1f.10.12's surface; each H stage's task 4.
+7. S1f.10.3, where the price list says *go*; S1f.10.5; S1f.10.14.
+8. S1f.10.16, with whichever code batch it fits; it depends on nothing.
+
+A ruling of track H that changes H re-takes the census for the programs it names, by the same command.
 
 ## Acceptance
 
-- **Not one answer moves.** Every corpus entry's model set is identical fact
-  for fact before and after, at the same `-m` and `-e`, and the check is the
-  comparison `tree_traversal.rs`
-  already makes — *"never of `k`. Two searches that agree on a count and
-  disagree on a model are exactly the failure"*.
-- **Every rung is measured before the next is built.** S1f.10.1's census is
-  the phase's gate on itself: if the minimal-KB check disagrees with the
-  full-KB one on any corpus entry, the structure is state-dependent after all
-  and S1f.10.3 does not ship as written.
-- **The cost is stated in enterings, per entry**, and the entries where it is
-  **zero** are named — I-L02 is expected to be one of them, and a phase that
-  cannot name its own null cases has not measured.
-- **No new hand-maintained parallel copy** ([AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings)).
-  The group structure has one owner; if `apriori`, `hypgen` and `oblgen` all
-  need it, they read it from that owner.
-- **The exclusion relation's precondition is ruled, not assumed** —
-  S1f.10.8 says whether a refutation may rest on an `absent`, because
-  `excludes` is computed on the *minimal* KB and spent on larger ones, and
-  [C3](../../../docs/kernel/inference/absent_semantics.md) is the statement
-  that removing facts can fabricate a contradiction.
-- **The domain is stated, not assumed** — S1f.10.6's sentence about what a
-  group means when the set can grow is written where the structure is
-  *computed*, and S1f.10.2 and S1f.10.3 cite it rather than re-deriving it.
-- **The phase's target is audited before it is quoted.** S1f.10.7 attributes
-  the tree's 200 053×, and if most of it turns out to be work the tree never
-  does (it terminates by discharge and reports `exhausted = false`), every
-  later citation of that number says so in the same sentence.
-- `./run_tests.sh` green at every stage boundary; every golden this phase
-  moves is named in its stage file before it moves. **The expectation is that
-  it moves none**: enterings counters are not golden, but
-  `corpus_shapes.md5` and the event goldens are, and a candidate the join
-  never proposes is an `enter` event that never happens.
+**Track S**
+
+- **The structure is defined in writing**, each object of [§ The structure](#the-structure) with the corpus
+  program that falsifies each rejected alternative, named and not argued.
+- **One owner computes it.** The census, the bundle, the surface and anything track R spends read the same
+  value. No second copy.
+- **It is held by invariances, each a test or a command that fails:**
+  - the excluded pairs are exactly N's members of two candidates, and the candidates dead alone are the
+    read-out's, on every corpus program whose describe exhausts within the default budget;
+  - on I-Z2 the discovered groups are the rows and columns of the five declared bijections, over the
+    candidates root leaves;
+  - the structure of a program is the same under every import form and under a permutation of the interner's
+    ids;
+  - I-L02 has no excluded pair and one coupling.
+- **It is shown**: every instance and every corpus program that searches, raw and rendered, before a surface is
+  built; and then by the surface the user rules.
+- **Its cost is stated per program**, in saturations and facts beyond root, and a program past the default
+  budget is named, not silently skipped.
+- **It moves no answer.** It reads nodes; it writes nothing a route reads unless track R takes it.
+
+**Track R**
+
+- **Measured before built.** S1f.10.13's rule for *go* is written before its table is taken.
+- **R is identical** on every corpus program in every mode: `ein-infer/tests/explore.rs` and `region.rs`
+  against the oracle, `lever_invariance`, `route_invariance`, `claim_routes` and `answer_round_trip` green
+  with no expectation edited. And each spending stage adds one invariance of its own: the route with the
+  structure and without it describes one R.
+- **The discovery is counted as work**, in the same `work` row.
+- **The work delta is listed per program and per question, and the programs made slower are named.** A stage
+  with no loser has not measured enough programs.
+- **Every golden that moves is named before it moves.** The `work` row is in the read-out, so they do move:
+  `read_out_examples.md`, the shape digests, a corpus entry's `cost_ms` and with it the slow set.
+- **No lever.** No `(config …)` field, no CLI option and no `EIN_*` name chooses a structure or an order.
+- **A null result closes the track** with its table, and track S's acceptance does not mention it.
+
+**Track H**
+
+- Each finding has its witness, its census and the user's ruling; where an answer moves, it moves by a
+  register row filed `open` before its fix, and this README names the stage as an exception to *no answer
+  changes*.
+
+**The phase**
+
+- `./run_tests.sh` green on the last commit of each batch of code commits; a docs-only commit gets
+  `utils/doc_audit.py --links --check`.
+- Code, comments and `docs/kernel/` pages written here state behaviour and cite a decision's id, not this plan
+  and not a date (the user's ruling of 2026-11-15 on the docs).
 
 ## Risks
 
-- **It is a CSP in disguise, and this repo has said so before.**
-  [`docs/lib/`](../../../docs/lib/README.md) catalogues the constraint-solving
-  literature precisely so this rewrite can borrow from it rather than
-  rediscover it. Groups are variables, exclusion is an all-different, and
-  most-constrained-first is a textbook heuristic that has been in
-  `hypgen_scoring` **as a name with no implementation** since S1.5a.7. The
-  risk is not that the idea is wrong — it is that the stage writes a solver
-  instead of a *structure*, and the engine acquires a second search. Every
-  stage here changes what the existing search is **told**, never how it walks.
-- **The minimal KB is not obviously well-defined.** *Rules + ontology* is
-  clear in `zebra2` — `(relation …)`, `(is-a …)`, the `(bijective …)`
-  declarations — and much less clear where a "clue" is itself an `is-a` fact.
-  S1f.10.1 owns the definition and the corpus is what falsifies it; getting
-  this wrong in the permissive direction produces an exclusion that is really
-  a consequence of the clues, and a group that is wrong on a *different*
-  puzzle with the same ontology.
-- **Overlapping groups are the normal case, not the exception.**
-  `(color-loc Blue H1)` is excluded by *Blue is elsewhere* and by *H1 is
-  another colour*: two groups, one member. A design that assumes a partition
-  will be wrong on the first bijection it meets, which is the second corpus
-  entry it reads. S1f.10.2 exists to get this stated before S1f.10.3 depends
-  on it.
-- **The set can grow underneath the structure.** Q-M1e.11, above: a group
-  computed at load is a claim about a hypothesis set that a derived obligation
-  can extend mid-search. The phase's exposure is bounded — no corpus entry is
-  known to do it, and the growth is monotone — but a structure whose domain is
-  unstated is the failure mode this repo's own `domain_contract.md` C4 exists
-  to prevent.
-- **The win may already be taken on the entries that matter.** `zebra.ein`
-  solves in 111 enterings and `zebra2.ein` in 101; the powerset behaviour
-  S1d.10.1 measured is on the *under-determined* entries. The phase should be
-  honest that its headline is `zebra2-minus-15`-shaped work, not the solved
-  puzzles, and S1f.10.1's census is what will say so with a number.
+- **It is a CSP in disguise.** Groups are variables, exclusion is an all-different, coupling is the constraint
+  hypergraph, and *most constrained first* is a textbook heuristic.
+  [`docs/lib/`](../../../docs/lib/README.md) catalogues the literature so the stages borrow its vocabulary
+  rather than rediscover it. The risk is a stage of track R writing a solver, and the engine acquiring a second
+  search: every stage of R changes what the routes are **told**, through L1 and L5, and adds no route.
+- **Track S grows without a reader.** A structure nobody looks at is a census. S1f.10.12 puts it in front of
+  the user on real programs before any surface is built, and the surface is the user's ruling.
+- **The theory's share is not obviously well-defined.** *Rules and ontology* is clear where a clue is a fact of
+  a candidate's relation, as `zebra2`'s conditions (9) and (10) are, and unclear where a clue is the activator of
+  a rule, as twelve of its fifteen conditions are, or a fact of the layout every rule reads, as condition (1)
+  is. S1f.10.10 owns the definition, the corpus falsifies it, and the support of a death is its second,
+  definition-free reading.
+- **Overlapping groups are the normal case.** `(color-loc Red House-3)` is in *where is Red* and in *what
+  colour is House-3*. A design that assumes a partition is wrong on the first bijection it meets.
+- **Exactly one can remove a model if it is wrong**, which is the failure the project treats as worst.
+  S1f.10.14 spends it only through a licence the oracle holds on every cube it enumerates, and refuses the run
+  where the premise fails at a node, as L5 does.
+- **Coupling may have no cheap reading.** Then the order has nothing to read on I-SENDW, and S1f.10.5's result
+  is what an order from pairs alone reaches, stated, with E-29 still open and shown.
+
+## What the re-plan changed
+
+| the plan of 2026-08-28 | here |
+|---|---|
+| one ladder, every rung measured in enterings, ending in a pruned search | two tracks and the owned findings, [§ The two ideas](#the-two-ideas) |
+| S1f.10.1, minimal KB against full KB, by a script over `ein saturate` | S1f.10.1 the pair layer at root by the engine's node; the minimal KB is S1f.10.10 |
+| S1f.10.2, groups | unchanged in substance; the declared groups put beside the discovered |
+| S1f.10.3, the join restricted (`generate_layer`, `apriori`, deleted) | S1f.10.3, the extension step, after S1f.10.13's *go* |
+| S1f.10.4, the bijection derived for `zebra.ein`, measured under `EIN_TRAVERSAL=tree` | S1f.10.4 the discovery, S1f.10.14 the spending; `zebra.ein` now owes through `std.slots` |
+| S1f.10.5, a third `lattice-order` mode | S1f.10.5, the obligation tree's own order; `most-constrained` goes to S1f.10.16 |
+| S1f.10.6, the tree's rung flip | S1f.10.6, the same question over R, which W26 already asks |
+| S1f.10.7, the 200 053× attributed and `--traversal` | dropped; `generate_one_branch` goes to S1f.10.16; learning from a death, the half of Q-M1e.5 it held, is a source S1f.10.13 prices |
+| S1f.10.8 | closed in M1e2 |
+| S1f.10.9 | E-54 added; its stop is the phase's one stop |
+| — | S1f.10.10 to S1f.10.16 |
+| estimates | none (the user's ruling of 2026-11-08) |
+| acceptance *the same model sets at the same `-m` and `-e`*, by `tree_traversal.rs` | the oracle and the invariance sweeps, [§ Acceptance](#acceptance) |
+
+The defaults the re-plan took are
+[Q-M1f.305](../open_questions.md#q-m1f305--p1f10-re-planned-the-defaults-taken).
 
 ## Connections
 
-- [`docs/history/m1d_satisfiability/completeness.md`](../../../docs/history/m1d_satisfiability/completeness.md)
-  — why an obligation's alternatives are jointly exhaustive. A group is the
-  same claim, derived instead of declared.
-- [`docs/history/m1d_satisfiability/domain_contract.md`](../../../docs/history/m1d_satisfiability/domain_contract.md)
-  — C1 and C4. C4 in particular: *a branch is jointly exhaustive only while
-  the candidate set cannot grow underneath it*. A state-independent group
-  cannot grow underneath anything, which is the point.
+- [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) — the
+  answer as a region R; the structure is of the lattice R is a region of.
+- [`docs/kernel/standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) — an argument for a skip
+  holds only while its premise is enforced by something that fails; every licence track R adds is held so.
 - [`docs/kernel/inference/domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md)
-  — the same structure as a **saturation rule** (`domain-elimination`,
-  `no-room-left`) rather than as a generator restriction, measured in 2025.
-  This phase must say why it is not simply that.
-- [`docs/history/m1d_satisfiability/layer_census.md`](../../../docs/history/m1d_satisfiability/layer_census.md)
-  — the `Σₖ C(alive, k)` finding, which is this phase's motivating number.
-- [`c/README.md`](../../../c/README.md) § Circular dependencies between levels
-  — the 3 668 465× and what one integer per clue bought.
-- [`plans/ideas/06-inference-rules-completeness.md`](../../ideas/06-inference-rules-completeness.md)
-  — the user's own framing of what the rule set owes.
+  — the same structure as a saturation rule (`domain-elimination`, `no-room-left`). S1f.10.13 says why a
+  structure read by the search is not simply that.
+- [`c/README.md`](../../../c/README.md) § Circular dependencies between levels — three baselines that differ
+  by 3 668 465×, *"one integer per clue, the level at which every attribute it names is bound"*: what an order
+  that follows the coupling buys, stated about another search.
+- [`plans/ideas/06-inference-rules-completeness.md`](../../ideas/06-inference-rules-completeness.md) — the
+  user's own framing of what the rule set owes.

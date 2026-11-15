@@ -42,7 +42,7 @@ M1e2's no-owner items ahead of its own two stages, and the user added a fourth, 
 | [P1f.6](p1f.6_calculator/README.md) | A calculator in Ein: school arithmetic as a theory over digit atoms, computed by saturation alone | 37, **closed 2026-11-15** ([its close](p1f.6_calculator/close.md#the-close-2026-11-15)) (thirteen planned 2026-11-12 on the user's replies, [`replies_2026-11-12.md`](p1f.6_calculator/replies_2026-11-12.md), six more by 2026-11-15; S1f.6.14 moved to M1g) | — | **re-planned 2026-11-11 on the user's rulings on its [design](p1f.6_calculator/design.md)**: numbers are nested facts of digit names in reading order, `(n (n (n z 1) 2) 3)`, of any length and normalised, computed by circuits in which no rule joins two facts on a number (the design called K), so a batch is linear; a theory that adds, subtracts with a remainder, multiplies, divides with a remainder and compares, with the tables a library of plain facts, so **no search**: H empty, k_s 1, R {∅} on every arithmetic program, held by a test (the user's instruction of 2026-11-08); a flat import that brings a module's facts, an engine fix, first (S1f.6.11); division by zero a flag and `(false)` from it; fixed-width `num9` shipped as a second module; malformed numbers detected where the theory can; negative and rational numbers; word problems as the first application (S1f.6.20); and an investigation of what the theory can do beyond arithmetic. Not native numbers: Q-M1e2.24 stands |
 | [P1f.7](p1f.7_findings_outside_scope/README.md) | The wrong answers P1f.5's stages found outside their scope, a stage each | 12 (+ later findings) | — | each finding confirmed on the release binary, filed as a register row before its fix, and fixed or ruled: a goal's nested variable relation, an hrule that reads `not`, a connective as a pattern's argument, the negation of a name concluded, a macro called in a goal (S1f.5.28's items 12 to 16, moved here on the user's instruction of 2026-11-10 so that P1f.5 can close); a written `(false k)`, an `(absent k)` fact, a `(solve …)` list naming nothing and a fact's `:rule` naming no rule (S1f.5.23's); and every one P1f.5's remaining stages find |
 | [P1f.8](p1f.8_school_algebra_and_geometry/README.md) | ~~Middle-school algebra and geometry~~: **split and moved to M1g on 2026-11-13** | 0 here (11 moved) | — | **planned 2026-11-11 on the user's instruction of that day**, extended 2026-11-12, and on 2026-11-13 **split into two phases and moved to [M1g](../m1g_logic/README.md)** on the user's instruction (*"seems too complex having both algebra and geometry, let's split it into 2 phases and move into m1g"*): [P1g.10](../m1g_logic/p1g.10_school_algebra/README.md), school algebra (S1f.8.1 to .5, .10 and .11, now S1g.10.1 to S1g.10.7), and [P1g.11](../m1g_logic/p1g.11_school_geometry/README.md), school geometry (S1f.8.6 to .9, now S1g.11.1 to S1g.11.4). Nothing of the content was redesigned. The link here is a stub with the table of old and new ids; the number 8 is used and vacated, and is not reassigned |
-| [P1f.10](p1f.10_hypothesis_structure/README.md) | The structure of the hypothesis set | 9 (one added 2026-11-12) | 22.5 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no*; the **domain** of that structure stated; the tree's **200 053×** attributed, with `--traversal` replacing `EIN_TRAVERSAL`; and a ruling on whether a refutation may rest on an `absent` |
+| [P1f.10](p1f.10_hypothesis_structure/README.md) | The structure of the hypothesis set | 14 (**re-planned 2026-11-15** on the user's two ideas, against the engine after the walk's deletion: seven re-scoped in place, seven added; one dropped and one closed in M1e2 beside them) | — | **track S**, the structure as information: what one candidate and two decide at root, held to N; groups as a **cover**, not a partition; which exclusions are the theory's and which the puzzle's; *exactly one* and the grids, found beside declared; what couples the groups; all of it **shown on real programs**, then by a surface the user rules. **Track R**, independent of it: a price list first, and only where it says *go*, an excluded pair spent in the extension step and an order on the obligation tree read from the structure, with R identical on every corpus program and SEND + MORE = MONEY as written decided within the default budget; a *no* is a full result. **Track H**: the three owned findings about what H is (W26 and Q-M1e.11, E-1/E-7/E-54, E-51), each ruled |
 | [P1f.20](p1f.20_docs_refactor/README.md) | `docs/ein/`: the tree a released system would have | 7 | 25 d | `docs/history/` dissolved rather than deleted; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; every history-referencing line outside `plans/` resolved; and the two checks, links and the release voice, that make it finishable and keep it finished. **Was S1f.5.20** until 2026-11-08 |
 
 The numbering is deliberate and the gaps are real: **1–4, 9 and 11–19 are
@@ -82,14 +82,15 @@ first, moved S1f.7.9's fix to [F24](../followups/f24_written_provenance.md) and 
 ([Q-M1f.112](open_questions.md#q-m1f112--p1f7-after-its-analysis-the-order-s1f79-and-three-findings-with-no-stage)). **P1f.7 closed on 2026-11-11**
 ([its close](p1f.7_findings_outside_scope/README.md#the-close-2026-11-11)), twelve stages done; P1f.6 is next. [P1f.8](p1f.8_school_algebra_and_geometry/README.md), school algebra and geometry, planned the same day, was to run after P1f.6, whose
 numbers, extensions (S1f.6.7, S1f.6.8) and word problems (S1f.6.20) it imports, and whose open question on expressions (S1f.6.14) it supplied the evidence for. **On 2026-11-13 the user split it and moved it to M1g**, as
-[P1g.10](../m1g_logic/p1g.10_school_algebra/README.md), school algebra, and [P1g.11](../m1g_logic/p1g.11_school_geometry/README.md), school geometry; it is no longer a phase of this milestone, and M1f's order no longer has it. **P1f.6 closed on 2026-11-15** ([its close](p1f.6_calculator/close.md#the-close-2026-11-15)), and **P1f.10 is next**: P1f.10 and P1f.20, neither started, follow it, and **P1f.10 runs before P1f.20** (the user's ruling of 2026-11-15, [`close.md` § The user's rulings](p1f.6_calculator/close.md#the-users-rulings-2026-11-15), 4): P1f.20 rewrites the pages, so it describes the engine after P1f.10's changes.
+[P1g.10](../m1g_logic/p1g.10_school_algebra/README.md), school algebra, and [P1g.11](../m1g_logic/p1g.11_school_geometry/README.md), school geometry; it is no longer a phase of this milestone, and M1f's order no longer has it. **P1f.6 closed on 2026-11-15** ([its close](p1f.6_calculator/close.md#the-close-2026-11-15)), and **P1f.10 is next**: P1f.10 and P1f.20, neither started, follow it, and **P1f.10 runs before P1f.20** (the user's ruling of 2026-11-15, [`close.md` § The user's rulings](p1f.6_calculator/close.md#the-users-rulings-2026-11-15), 4): P1f.20 rewrites the pages, so it describes the engine after P1f.10's changes. **P1f.10 was re-planned the same day**, before any stage of it ran, on the user's statement of the two ideas behind it (*the structure is itself a valuable piece of information for analysis*; *maybe hyp structure investigation is cheap and can improve search of R*; *they are independent*) and on an analysis of its stage files against the engine as M1e2 left it ([its README](p1f.10_hypothesis_structure/README.md#the-two-ideas)).
 
 They also meet in one place, and it is worth naming because it is the only
 technical connection between them:
 [S1f.5.15](p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md) removes
 `:priority` and derives the firing order from the rule dependency graph;
 [S1f.10.5](p1f.10_hypothesis_structure/s1f.10.5_ordering.md) replaces the
-lattice's candidate order with one derived from the group structure. Two
+obligation tree's written order with one derived from the structure of the hypothesis set (the lattice's
+candidate order, which the stage named until 2026-11-15, went with the walk). Two
 orderings, both currently declared by hand, both to be derived from something
 the program already says. Whichever runs second should read what the first
 learned about deriving an order nobody wrote down.
@@ -121,9 +122,11 @@ is now the one-stage record of what that phase delivered.
 
 ## Acceptance for the milestone
 
-- **P1f.10 changes no answer.** Not one model, not one fact, not one verdict
-  word, on any corpus entry, at any `-m` — the phase's own first acceptance
-  line, and the reason it may ship an optimisation at all.
+- **P1f.10's tracks S and R change no answer.** R is identical on every corpus
+  program in every mode, held by the oracle and the invariance sweeps — the
+  reason it may ship an optimisation at all. Its three H stages may move one,
+  each by the user's ruling and a register row
+  ([its acceptance](p1f.10_hypothesis_structure/README.md#acceptance)).
 - **Every item of P1f.5's no-owner stages is settled** as the user ruled
   it, and a wrong answer among them is a register row before it is fixed,
   S1f.5.0's twenty first ([P1f.5 § Acceptance](p1f.5_the_no_owner_items/README.md#acceptance-for-the-phase)).
@@ -131,8 +134,10 @@ is now the one-stage record of what that phase delivered.
   [Q-M1e.4](../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
   is the rule and it is inherited unchanged: *every count a test pins is
   exactly right; every count only prose states has drifted.*
-- **Every rung of P1f.10 is measured before the next is built**, and the
-  entries where the win is **zero** are named.
+- **P1f.10's track R is measured before it is built**, by a rule for *go*
+  written before the table is taken, and the programs a change makes slower
+  are named. **Its track S is shown to the user on real programs** before a
+  surface is built.
 - **Nothing here renumbers a shipped stage or a raised question.** Two stages
   that had not run were renumbered on 2026-11-08, S1f.5.5 and S1f.5.6 to
   S1f.5.14 and S1f.5.15, and [P1f.5 § The ids](p1f.5_the_no_owner_items/README.md#the-ids)
@@ -160,7 +165,9 @@ is now the one-stage record of what that phase delivered.
   and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gated `S1f.5.20`,
   now P1f.20, until 2026-08-31.
 - [`docs/history/m1d_satisfiability/layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
-  — the `Σₖ C(alive, k)` finding, P1f.10's motivating number.
+  — the `Σₖ C(alive, k)` finding, the walk's, which P1f.10's plan of 2026-08-28
+  started from; what the routes spend today is in
+  [its README](p1f.10_hypothesis_structure/README.md#what-was-measured-at-the-re-plan).
 - [`c/README.md`](../../c/README.md) — the **3 668 465×** between three C
   baselines, and *"the difference is not an algorithm — it is one integer per
   clue"*, which is P1f.10's thesis stated about a different search.

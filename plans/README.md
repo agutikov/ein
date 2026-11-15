@@ -108,9 +108,11 @@ the tree they left, and one out of that review's close:
 - **M1f — The structure of the hypothesis set, and the documentation ein does
   not have** ([m1f_hypothesis_and_documentation/](m1f_hypothesis_and_documentation/README.md))
   beside M1e — the two phases M1e carried that were **not** review processing,
-  given an M-number on 2026-08-29. `P1f.10` derives a branch structure the
-  theory could state in advance (the exclusion relation, groups, the restricted
-  join) and may not move one model doing it; `P1f.5` takes M1e2's no-owner
+  given an M-number on 2026-08-29. `P1f.10`, re-planned on 2026-11-15 as two independent tracks, discovers the
+  structure of a program's hypothesis set (exclusions, groups, what is exactly
+  one, what couples the groups) and shows it, and separately measures whether
+  that structure makes a route over R cheaper, spending it only where it does
+  and moving no answer doing it; `P1f.5` takes M1e2's no-owner
   items (P1e2.5 until 2026-11-08: the grammar generated, names and digits,
   closed keywords, `eq`/`neq` as relations and the rest), removes `:priority`
   before the generated grammar is swapped in, and last makes `:why` required

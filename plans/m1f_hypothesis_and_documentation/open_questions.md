@@ -316,11 +316,11 @@ them across the milestone boundary, which is what a sticky id is for:
 
 | id | what it is | who owns it here |
 |---|---|---|
-| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | is *experimental* a licence to ship a surface whose read-out is false? | [S1f.10.7](p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
+| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | is *experimental* a licence to ship a surface whose read-out is false? | closed in M1e2 (the user's (a), 2026-11-03: no). [S1f.10.7](p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md), whose `--traversal` flag waited on it, was dropped at P1f.10's re-plan of 2026-11-15; its learning half is a source [S1f.10.13](p1f.10_hypothesis_structure/s1f.10.13_the_price_list.md) prices |
 | [Q-M1e.6](../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model) | what is a **solution**, and what is a **model**? | decided 2026-08-28; [P1f.10](p1f.10_hypothesis_structure/README.md) is its first consumer |
-| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | is `dead` really upward-closed under `absent`? | the **language** half is [S1f.10.8](p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s |
+| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | is `dead` really upward-closed under `absent`? | the **language** half was [S1f.10.8](p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s: ruled *forbid* on 2026-11-02 and built in M1e2; the stage is closed |
 | [Q-M1e.10](../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) | two `(config …)` flags are **inert** | raised by the shipped `S1e.5.1`; owner unassigned |
-| [Q-M1e.11](../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | what happens to an obligation **derived under a hypothesis**? | **owned** by [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md) |
+| [Q-M1e.11](../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | what happens to an obligation **derived under a hypothesis**? | **owned** by [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md), which since the re-plan of 2026-11-15 asks it over R, with register row W26 as its witness |
 
 A question raised by an M1f stage from now on gets a `Q-M1f.<n>` here.
 
@@ -5967,3 +5967,42 @@ compared; 5 held by the cut, `examples/zebra.ein`, `zebra2.ein`, `zebra2-obligat
 `square-fwd` programs, `send_more_money.ein` and `zebra2-minus-15.ein` with its `-obligations` twin. The dev
 host's step and its `DEV_HOST_ONLY` entry are gone (`nightly_steps.rs`, `run_tests.sh`), and the pages that named
 the half (`corpus/README.md`'s table, the workflow's comments).
+
+### Q-M1f.305 — P1f.10 re-planned: the defaults taken
+
+**Raised** 2026-11-15 by the re-plan of [P1f.10](p1f.10_hypothesis_structure/README.md), which the user asked for
+that day (*"do re-plan according you findings and those 2 ideas"*) after an analysis of its stage files against
+the engine as it stands and their statement of the two ideas behind the phase
+([§ The two ideas](p1f.10_hypothesis_structure/README.md#the-two-ideas)). The instruction fixes the two tracks
+and that they are independent. What the re-plan decided beyond it, each without a ruling:
+
+1. **The ids.** No stage had run. The seven stages that keep a subject keep their id and their file name, so
+   that the register (`owner = "S1f.10.6"`), the kernel pages and `docs/history/` still point at something:
+   S1f.10.1 to .6 and .9, re-scoped in place. S1f.10.7 is dropped and S1f.10.8 closed, each left as a stub, the
+   ids used and vacated. New stages are S1f.10.10 to S1f.10.16. The alternative, renumbering all of them by
+   track, was not taken.
+2. **A third group, track H**, for the three findings the phase owns about what H is (W26 and Q-M1e.11; E-1, E-7
+   and E-54; E-51), which are neither idea and each need the user.
+3. **One stop.** Part 1 reads and measures and changes nothing; then the user is shown the structure on real
+   programs, the price list and four questions at once (the surface, and track H's three). The alternative, a
+   stop per H stage before any structure exists, was not taken: the bundle is itself the evidence for those
+   questions.
+4. **The pair layer is read by the engine's own node**, an example in the crate beside `state_reach`, and not by
+   a script over `ein saturate` on a rewritten program as the plan of 2026-08-28 had it. The small-KB check of
+   the user's instruction of 2026-08-28 is kept as its own stage, S1f.10.10, with the support of a death as a
+   second reading that checks it.
+5. **Coupling is a stage**, S1f.10.11, added because the re-plan's analysis infers that E-29's witness cannot be
+   ordered from pairs alone. The inference is not a measurement, and S1f.10.5's first task checks it.
+6. **The rule for *go*** in S1f.10.13: a source of structure is spent on a question only where the corpus's
+   total work for that question falls with the source's cost counted **and no program's rises by more than one
+   tenth**. The tenth is the re-plan's number.
+7. **The surface's default is a view of `ein render`**, not rows of `ein solve`'s read-out, put to the user at
+   the stop and not built before.
+8. **S1f.10.15 recommends reversing a reading of M1d's** (the second rung by an obligation activated at root, not
+   by a rule loaded). Because it restates a ruling it is a recommendation only, and is not taken as a default.
+9. **Whether describe should answer from the tree where the budget would stop it** is recorded with numbers and
+   filed as a question at the phase's close (S1f.10.14's T4). Nothing is built for it in this phase.
+10. **Estimates are removed** from the phase's files (the user's ruling of 2026-11-08), and the stage records no
+    longer name `docs/history/` as their destination (the user's rulings of 2026-11-15 on the docs).
+
+**Defaulted 2026-11-15: all ten as written, the user's to revise.**

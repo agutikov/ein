@@ -1,200 +1,46 @@
-# S1f.10.8 — May a refutation rest on an `absent`?
+# S1f.10.8 — ~~May a refutation rest on an `absent`?~~
 
-> **The ruling moved to M1e2 on 2026-11-01**: its T1 (the exposed set) and
-> the *forbid* / *respect* ruling are
-> [M1e2 P1e2.4](../../m1e2_correctness/p1e2.4_what_the_switch_left/README.md)'s
-> S1e2.4.1 ([Q-M1e2.5](../../m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here)).
-> This stage keeps the corollary it writes into `absent_semantics.md`.
->
-> **Ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](../../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)).
-> The refusal is M1e2's [S1e2.2.5](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md),
-> **built 2026-11-04** with the user's F2, *via, per activator*; the corollary
-> is written in `absent_semantics.md` and `defined_behaviour.md` § 4.7.
+**Phase:** [P1f.10](README.md)
+**Status:** **closed.** Ruled and built in M1e2; recorded as closed at the re-plan of 2026-11-15. Nothing of it
+is left for this phase to run.
 
-**Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
-**Estimate:** 2.5 days — 3 until 2026-08-28, when
-[S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent) took the check
-and the census this stage would have built first.
-**Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md) — this stage is that
-census's **soundness precondition**, and the census is what measures it.
-**Blocks:** [S1f.10.3](s1f.10.3_the_restricted_join.md), which spends the
-exclusion relation, and [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md),
-whose domain sentence has to say whether this shape is inside it.
-**Answers:** the **language** half of
-[Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
-— the engine half stays
-[D4](../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)'s.
-**Source:** the user's note of 2026-08-28, recorded in
-[D4 § The user's reading](../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md):
-*"maybe emitting `(false)` or `(not …)` under `absent` is not a good idea. It
-also worth investigation stage."*
+## What it asked
 
-## Why it is this phase's, and not a patch to the search
+Planned 2026-08-28 on the user's note of that day (*"maybe emitting `(false)` or `(not …)` under `absent` is
+not a good idea"*): whether a rule may conclude `(false)` or a stored negative from an `(absent P)` over a
+relation the search can still extend. It was this phase's because an exclusion computed on a smaller KB and
+spent on larger ones is false exactly when such a rule exists: a smaller KB passes an `absent` that a larger
+one fails.
 
-The phase's first rung is one predicate:
+## What happened to it
 
-```
-excludes(h₁, h₂)  ≡  saturate(rules ∪ ontology ∪ {h₁, h₂})  derives (false)
-```
+| | |
+|---|---|
+| **2026-11-01** | the ruling moved to M1e2's S1e2.4.1 ([Q-M1e2.5](../../m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here)) |
+| **2026-11-02** | the user ruled ***forbid*** ([S1e2.4.1 § 5](../../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)) |
+| **2026-11-04** | built by M1e2's [S1e2.2.5](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md), with the user's *via, per activator*; followup F18, world-aware negatives, closed without being done |
 
-and the claim built on it is that this is a property of the **program**,
-computed once at load and valid at every node. **A `(false)` that rests on an
-`absent` is precisely the mechanism by which that claim would be false.** The
-minimal KB has fewer facts than any node below it, so an `absent` guard passes
-there and fails deeper: the exclusion is computed on the smallest world and
-spent on larger ones. [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md)
-C3 states the direction that bites — *removing a fact can flip an absent and
-**fabricate** a contradiction the full KB never had* — and a minimal KB is
-nothing but a full KB with facts removed.
+## Where it stands in the engine
 
-S1f.10.1 already predicts the symptom and calls it *"a bug in the minimal KB's
-definition, and finding one is this stage's most valuable outcome"*. This stage
-says it may instead be a bug in the **rule**, and that the two have different
-fixes: one narrows what *minimal* means, the other narrows what a rule may
-conclude.
+- **The refusal**: [`forbid.rs`](../../../ein.rs/crates/ein-infer/src/forbid.rs). A program whose refutation
+  could rest on an `absent` over a relation a commitment can still extend is refused, on every command that
+  asks about a commitment.
+- **The pages**: the corollary in
+  [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md), and
+  [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.7.
+- **The census** it planned as its first task: `ein-infer/examples/refutation_census.rs`.
+- **`connex`**, the stdlib's one rule of the shape (`std.algebra`): unchanged, and judged per activator like
+  any other rule. Over a relation no commitment extends it is closed-world reasoning and legal; over one a
+  commitment extends, the program that activates it is refused: `(connex lt instance Node)` beside an hrule
+  that proposes `lt` is a load error naming the rule, the activator and the hrule (`ein solve`, the release
+  binary at `dbedc535`, 2026-11-15).
 
-## What is already established
+## What this phase takes from it
 
-- **The mechanism.** D4's probe, and the matrix in which five of six shipped
-  configurations answer a twenty-line program wrongly. `{(p A)}` dies, the
-  writeback stores `(not (p A))`, and L2 never sees `{(p A), (q A)}`.
-- **The probe is a mis-encoded obligation**, per the user's reading: it says
-  *a world with `p` and without `q` is false* and never says *`q` is required*,
-  which is what `(open ?R)` — form **G** of
-  [`obligation_forms.md`](../../../docs/history/m1d_satisfiability/obligation_forms.md)'s
-  menu — exists to say. So the engine's complaint about it is not wrong; the
-  **word** may be.
-- **The shape is in the stdlib.** A syntactic census (2026-08-28) of
-  `stdlib/`, `examples/` and `tests/` finds **60 rules** whose `:match` carries
-  an `(absent …)` and whose `:assert` is `(false)` (14) or a `(not …)` (46).
-  The discriminator is whether the `absent` reads a relation the search can
-  still extend:
+The premise its own first rung needed: on a program that loads, **no death rests on an `absent` that a
+commitment can lift**, so on a monotone program a pair dead at root is dead above it
+([README § The domain](README.md#the-domain)). [S1f.10.10](s1f.10.10_the_theorys_share.md)'s small KB is the
+one place the old worry can still appear, a KB with *stated* facts removed, and its first task stops on a
+disagreement for that reason.
 
-  | family | the `absent` reads | exposed? |
-  |---|---|---|
-  | `std.slots`' `slot-prune-*` / `slot-endpoint-*` / `slot-adjacent-*-neg`, and the six inline twins in every `zebra2*` | `?S`, the **given** adjacency structure over positions | no — and this is why the corpus is quiet |
-  | `std.algebra`'s **`connex`** — `(absent (?R ?a ?b)) (absent (?R ?b ?a)) ⟹ (false)` | `?R`, the **subject** relation | **yes by shape**: `(connex color-loc)` on a puzzle whose `*-loc` the rung proposes is D4's probe with a stdlib rule in place of `bad` |
-
-- **And the repo has already written the distinction down** — in a fixture
-  header, not in a rule.
-  [`tests/stdlib/closure/03_closed_and_owing.ein`](../../../examples/ein-bugs/closed-and-owing.ein):
-
-  > `total`'s stored-negative discipline is what stops it firing `(false)` on
-  > every empty-yet state, and is the **right** way to write it — **`connex` is
-  > what the other way looks like**.
-
-  `total` demands a stored negative for every candidate
-  (`(forall ?b (?isa ?b ?B) (not (?R ?a ?b)))`) before concluding; `connex`
-  concludes from an absence. Two stdlib rules, one idiom apart, and the
-  difference has never been stated as a rule anyone must follow.
-
-## The question, in three parts
-
-1. **What counts as *still extendable*?** The union of the hypothesis-eligible
-   relations (the generator's `allowed` minus `excluded` minus `__closed__`)
-   and the rule-derived ones — which is `warn-derived-naf`'s existing subject.
-   The compiler knows both already; that is what makes a load-time answer
-   possible at all.
-2. **What replaces the pattern?** Both replacements exist and neither is
-   documented as *the* way: `total`'s stored-negative scan for a refutation,
-   `(open ?R)` for a requirement. The constructive half of this stage is
-   writing that down.
-3. **What happens to a program that does it anyway?** Refuse, warn, scope, or
-   accept-and-say-so.
-
-## Options
-
-| | ruling | consequence |
-|---|---|---|
-| **A — forbid** | a `(false)` or `(not …)` conclusion may not rest on an `(absent P)` whose relation is still extendable; load error naming the replacement | strongest, and it makes [D4](../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)'s option C **unnecessary** — nothing can write a negative whose justification a later fact invalidates, so the no-good store needs no world-awareness. Costs `connex` a rewrite and a `broken/load/` fixture |
-| **B — warn** | extend `warn-derived-naf` to the hypothesis-eligible case | **already shipped** — [S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent), ruled *B now* on 2026-08-28. So B is this stage's **floor**, not one of its options: the question here is whether to go further |
-| **C — scope** | keep it legal, tag the conclusion with its `absent` premises (`Prov::absent` **already records them**) and refuse to store it beyond the world it was derived in | D4's option C. The real fix *if* the pattern must stay legal, and the first walk that interprets what `Prov::absent` has been recording since S1.21.8 |
-| **D — allow, and fix the word** | the shape is legal; the answer to such a program is *your program is ill-formed*, which is **not** *your constraints are unsatisfiable* | the user's own reading taken to its end. It needs `Q-M1d.1`'s verdict vocabulary, which M1e does not own — so it is a companion to A/B/C, not an alternative |
-
-**Recommended: A, with `connex` rewritten as the proof that A is affordable —
-and D's distinction recorded whatever else is chosen.** A is decidable at load
-from information the compiler already has, it removes the premise rather than
-compensating for it, and the census says the corpus survives it. What would
-overturn it is a second legitimate user found by T1: one rule that needs to
-refute from an absence over an extendable relation and cannot be written
-`total`-style. If T1 finds one, A becomes C.
-
-## Acceptance
-
-- **The census exists, is re-takable, and names the exposed set per corpus
-  entry** — not the 60 syntactic sites but the subset whose `absent` reads an
-  extendable relation under that entry's declared runs. It is a column of
-  [S1f.10.1](s1f.10.1_exclusion_census.md)'s script if it fits there and a
-  small one of its own if it does not ([AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings): no
-  fourth copy).
-- **`connex` has a disposition** — rewritten, restricted to closed relations,
-  or kept with the reason written at the rule. It is the stdlib's only exposure
-  and the ruling has to survive contact with it.
-- **The ruling is written in
-  [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md)
-  as a numbered corollary**, beside C3 and C6, which are what it follows from —
-  not in a plan file
-  ([Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
-  third rule).
-- **If A: the diagnostic names the replacement**, has a `broken/load/` fixture
-  with a positioned message, and D4's option B is the same code rather than a
-  second check.
-- **Not one answer moves** on any program that survives the ruling — the
-  phase's standing acceptance, and here it is also the test that the ruling is
-  narrow enough.
-
-## Tasks
-
-### Task T1f.10.8.1 — The census, from syntax to exposure
-
-Half a day, **not one** — [S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)
-computed the exposed set when it set the diagnostic's default, so this task
-*reads* that number rather than deriving it. Start from the 60 syntactic sites
-and that stage's per-entry column.
-The two-line answer to look for: *how many rules are exposed, and does any
-program actually reach one?* Today's expectation is **one rule and no
-program** — `connex`, unexercised on a hypothesis-eligible relation — and if
-that holds, the ruling is cheap.
-
-### Task T1f.10.8.2 — Exposed by shape, or in fact?
-
-Half a day. Declare `(connex R)` on a relation the rung proposes and run it. If
-the state that a hypothesis would have repaired is refuted, `connex` is D4's
-probe wearing a stdlib name, it is a **stdlib defect**, and it gets a
-`tests/stdlib/algebra/` fixture whether or not the ruling lands.
-
-### Task T1f.10.8.3 — Price the replacement
-
-Half a day. Rewrite `connex` in `total`'s stored-negative style and check it
-still does its job on the fixture that activates it. This is what makes A a
-measurement rather than a preference: *the same constraint, written the way the
-repo already calls right.*
-
-### Task T1f.10.8.4 — Rule, and write it where rules are written
-
-Half a day. Pick from A–D, write the corollary into `absent_semantics.md`, and
-say what D4's B becomes. If A, T5 is the code.
-
-### Task T1f.10.8.5 — Promote the diagnostic, if A
-
-**A quarter-day, because the check already exists.**
-[S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent) ships the walk —
-guards scanned for `absent` heads, asserts for `(false)` / `not`, intersected
-with the extendable set, with a message naming `total`'s form and `(open ?R)`.
-If this stage rules **A**, the change is warn → refuse plus one `broken/load/`
-fixture and its corpus entry. If it rules anything else, S1e.2.3's diagnostic
-is the whole of the engine change and this task is empty.
-
-## Notes
-
-**Why not P1e.2.** It is not one of the 63 findings and it is not a defect in a
-*surface*. It is a question about what a rule may conclude — the language, not
-the read-out — and the phase that is already reasoning about what a hypothesis
-set means is where it can be answered without inventing a context for it.
-
-**The honest risk.** A forbids a shape the language has always allowed, on the
-evidence that one stdlib rule uses it and no program exercises that rule
-dangerously. That is a thin margin, and T1 is what widens or closes it. A
-ruling made before the census is a ruling made on the shape of the argument
-rather than on its extent — which is the failure this phase's own
-[S1f.10.1](s1f.10.1_exclusion_census.md) exists to avoid one rung lower.
+The stage file as planned is in `git log -- plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md`.

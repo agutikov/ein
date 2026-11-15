@@ -1,130 +1,91 @@
-# S1f.10.4 — Bounded groups: rediscovering the bijection
+# S1f.10.4 — Exactly one: owed groups and grids
 
-**Phase:** [P1f.10](README.md)
-**Estimate:** 3 days
-**Depends on:** [S1f.10.2](s1f.10.2_groups.md) — the cover and its overlap.
-**Blocks:** nothing. It is the phase's most speculative rung and the one most
-likely to end in a written *no*.
+**Phase:** [P1f.10](README.md), track S (the structure)
+**Status:** re-planned 2026-11-15. Not started.
+**Depends on:** [S1f.10.2](s1f.10.2_groups.md), the cover and what each program declares beside it.
+**Read by:** [S1f.10.12](s1f.10.12_the_structure_shown.md); of track R,
+[S1f.10.14](s1f.10.14_exactly_one_spent.md), which spends what this stage finds.
 
 ## Context
 
 The instruction's second half:
 
-> Next step is somehow functionally find that there are bounded hyp groups,
-> e.g. permutations of pets, permutations of nationalities.
+> Next step is somehow functionally find that there are bounded hyp groups, e.g. permutations of pets,
+> permutations of nationalities.
 
-A group from [S1f.10.2](s1f.10.2_groups.md) says *at most one*. A **bounded**
-group says *exactly one* — and that is a different and much stronger claim,
-because *exactly one* is what makes a branch set **jointly exhaustive**, which
-is what licenses committing to one alternative and discarding its siblings
-with nothing to refute
-([`completeness.md`](../../../docs/history/m1d_satisfiability/completeness.md)).
+A group says *at most one*. A **bounded** group says *exactly one*, and that is a different and stronger claim:
+it is what makes a set of alternatives jointly exhaustive, which is what L5 needs to branch on them alone
+([`tree.rs`](../../../ein.rs/crates/ein-infer/src/tree.rs), § L5).
 
-The engine already has this, declared: `(bijective nation-loc)` fans out into
-`total` / `surjective` / `functional` / `injective`, and since M1d S1d.2.5 the
-`total-owed` / `surjective-owed` obligations make the *exactly one* into a
-choice point the search branches on
-([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)). The tree
-traversal's 86-against-17 204 592 is what that buys.
+*At most one* is a negative and comes free from the dead pairs. *Exactly one* is a positive: some member
+**must** hold, and no amount of pairwise refutation implies that. In the engine as it stands the *must* has one
+source, an **obligation**: a state that owes an instance is not in R until a witness arrives, and
+`oblgen::alternatives` reads at root the facts that can witness each instance and whether L5's premise holds of
+it.
 
-This stage asks whether it can be **derived** where it is not declared, and
-the target is [I-Z1](README.md#the-instances) — `examples/zebra.ein`, whose
-one `co-located` equivalence relation carries the same structure with no
-`(bijective …)` anywhere.
+So this stage is a reading of three things against each other, per program:
 
-## What *exactly one* would have to rest on
-
-*At most one* is a negative and comes free from the exclusion graph. *Exactly
-one* is a positive: it says some member of the group **must** hold, and no
-amount of pairwise refutation implies that. Three routes, and the stage's real
-work is choosing between them:
-
-| route | the claim | where the *must* comes from |
+| | what | from |
 |---|---|---|
-| **(a) counting** | group of size *n* over *n* objects, and the two clique families cover the same members ⇒ a perfect matching ⇒ exactly one per row and per column | the pigeonhole, applied to the cover's own shape. Needs **closure**: that the object list is complete |
-| **(b) the declaration, generalised** | recognise `functional ∧ total` and read the group off it, without requiring the word `bijective` | already half-shipped — `std.closure` is exactly `functional ∧ total ⇒ (__closed__ R)`, opt-in |
-| **(c) the obligation** | the group *is* an obligation instance's candidate set, so state one and let the existing rung do the work | zero new machinery; the question becomes *may the loader synthesise an `(open …)` rule?* |
+| **owed** | the instances root owes, each with its alternatives, licensed or not, and the reason where not | `oblgen::Alternatives` |
+| **excluding** | the groups | S1f.10.2 |
+| **grid** | two families of groups over one member set, every member in one group of each: rows and columns | computed here |
 
-Route (a) is the instruction's ("functionally find"), and it is the one that
-needs a closure assumption the kernel does not otherwise make — C1 of
-[`domain_contract.md`](../../../docs/history/m1d_satisfiability/domain_contract.md)
-is emphatic that *stating* an obligation asks nothing about closure. Route (c)
-is the cheapest and hands the whole problem to machinery that already has a
-completeness argument written for it.
+and the objects it names:
 
-## Acceptance
+- an **owed group**: an owed instance whose alternatives are pairwise excluding. *Exactly one.*
+- an **owed set that is not a group**: an instance whose alternatives do not exclude each other. *At least
+  one.*
+- a **group nothing owes**: *at most one*, and the program does not say one must hold.
+- a **grid**, and whether each of its rows and columns is owed: a bijection when all are.
 
-- The three routes are each tried on [I-Z1](README.md#the-instances) and
-  [I-B06](README.md#the-instances), and the stage **names which it took and
-  why**, with the other two's failure written where a reader will look for it.
-- Whichever route: `examples/zebra.ein` gets the same branch structure the
-  `-obligations` variants of `zebra2` get, **or** the stage states exactly
-  what is missing from the program text to make that derivable. A written
-  *"not without a closure declaration"* is a full result.
-- **The closure assumption, if taken, is stated as a premise and checked.**
-  It is `(__closed__ R)` under another name, and this repo already has
-  [ST-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) — *an invariant that is the warrant for a
-  dedup and is enforced nowhere*. A second one is not acceptable.
-- Not one model moves. Same acceptance as
-  [S1f.10.3](s1f.10.3_the_restricted_join.md), and it matters more here:
-  *exactly one* is a claim that can **remove** models if it is wrong, which is
-  the failure class the project treats as worst.
-- If the derived structure reaches the **tree traversal** — a program with no
-  `(open …)` getting jointly exhaustive branches — then
-  [Q6](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md)'s answer
-  applies to it too, and the stage says so rather than inheriting the tree's
-  root-only probe by accident.
+**The instances already disagree in instructive ways.** I-Z2 declares five bijections and root owes 36
+instances of two kinds, a value owed a house and a house owed a value. I-Z1 gets its debts from `std.slots`, and the tree licenses the
+`slot-owed-room` instances and not the `slot-owed-fill` ones, whose witnesses are the symmetric
+`(co-located House-n v)` that the hrule never proposes: half of each grid is owed and unspendable. I-B06
+declares `functional` and `sibling-exclusive` as plain rules and owes nothing: its groups are *at most one*
+with no *must* anywhere.
 
 ## Tasks
 
-### Task T1f.10.4.1 — Route (c) first, because it is falsifiable in a day
+1. **T1f.10.4.1 — the table of the three**, for every corpus program that searches: owed groups, owed sets
+   that are not groups, groups nothing owes, grids and how much of each is owed. For the instances, the lists.
+2. **T1f.10.4.2 — every bijection, found or declared.** A program that states `(bijective R)` and a program
+   whose groups form a fully owed grid over `R`'s candidates are compared: found and declared; declared and
+   not found, with what at root broke the grid; found and declared nowhere. I-Z2 is the control and must be
+   all *found and declared*.
+3. **T1f.10.4.3 — where the *must* is missing, what would supply it.** Three routes, as analysis and not as
+   something this stage builds:
 
-Hand-write the `(open …)` rule that the group structure of
-`examples/zebra.ein` would correspond to, add it to a copy of the file, and
-run it under `EIN_TRAVERSAL=tree` against the lattice. If the model sets agree
-fact for fact, route (c) is *sound for this program* and the remaining
-question is purely whether a loader may synthesise the rule. If they disagree,
-the group structure is not an obligation's candidate set and routes (a)/(b)
-are the only ones left — a much more valuable finding than a day's work
-usually buys.
+   | route | the claim | where the *must* comes from |
+   |---|---|---|
+   | **counting** | a grid of *n* rows and *n* columns over *n* objects | the pigeonhole, which needs the object list to be complete: nothing may introduce another value. The alive-set invariant gives that of names ([`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs)); whether it gives it of a *type's* members is the question |
+   | **what is declared, read more widely** | `functional` and `total` together, without the word `bijective`; [`stdlib/closure.ein`](../../../stdlib/closure.ein) concludes `(__closed__ R)` from that pair | a declaration the program already carries under another name |
+   | **the obligation** | the group is what an obligation rule would owe, were it stated | zero new machinery; the program has to say it |
 
-The `-obligations` fixture pair is the precedent and the shape:
-[`examples/zebra2-obligations.ein`](../../../examples/zebra2-obligations.ein)
-is `zebra2` with the `(hrule guess …)` and the `:hrules` clause deleted and
-nothing else, and it *"solves to the same models in the same number of
-enterings as the hrule path it dropped"*.
+   For each instance with a group nothing owes: which routes apply, and for the third, the lines the program
+   would have to add, written out and run by `ein oracle` on a copy to show the R it gives.
+4. **T1f.10.4.4 — the unlicensed half.** For every owed instance L5 does not license, the reason in the
+   program's terms. For I-Z1's `slot-owed-fill`: each witness is in the closure of a candidate (its symmetric
+   twin), which S1f.10.1's *implies* shows. Whether a witness that a candidate implies can stand for the
+   candidate is an argument for S1f.10.14; this task supplies the census: how many unlicensed instances in the
+   corpus have every witness implied by a candidate.
 
-### Task T1f.10.4.2 — Route (a): the counting argument, and its premise
+## Acceptance
 
-Two clique families over the same member set, `|rows| = |cols| = n`, every
-member in exactly one of each ⇒ the grid. State the premise this needs
-(**the object list is complete** — no rule may introduce a new `Color`) and
-check it, because it is the same premise
-[ST-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) says nothing enforces. The check is cheap
-and post-fixpoint: did saturation introduce an object the load-time KB did not
-have?
+- T1's table and T2's comparison are recorded here for the corpus, and for the instances in
+  `build/structure/<program>/`.
+- **On I-Z2 every row and every column of five grids is an owed group.** On I-Z1 the stage says exactly which
+  halves are owed, which are licensed, and what is missing for the rest.
+- **Where exactly one cannot be derived, the stage says so and says what the program would have to state.** A
+  written *not without a declaration* is a full result.
+- Nothing is synthesised: no rule, no obligation, no closure. The stage reads.
+- No answer, route or surface changes.
 
-### Task T1f.10.4.3 — Route (b): what `std.closure` already gives
+## What it must not do
 
-`functional ∧ total ⇒ (__closed__ R)` is opt-in and in the stdlib. Measure how
-many corpus entries would satisfy it if imported, and whether `(__closed__ R)`
-is already enough for the group to be *exactly one* — because if it is, this
-stage's answer is *"import `std.closure`"* and the rest is documentation.
-
-### Task T1f.10.4.4 — Say what it is worth
-
-On [I-Z2M](README.md#the-instances) — 32 models, 23 varying variables in one
-coupling component — compare enterings under the lattice, under the tree, and
-under whichever route this stage took. The tree's 86-vs-17 204 592 is the bar,
-and the honest outcome is that a derived structure reaches some fraction of
-it. Name the fraction.
-
-## Notes
-
-The stage is deliberately last-but-one and deliberately allowed to fail. The
-phase's shipped value is [S1f.10.3](s1f.10.3_the_restricted_join.md) — *at
-most one*, which is free and answer-preserving. *Exactly one* is a semantic
-claim about the puzzle's intent, and a milestone that processes a review is a
-strange place to make one; if the routes all need a declaration the program
-does not carry, the right result is a `Q-M1e.<n>` and a pointer at M1d's
-unfinished traversal work, not a heuristic.
+- **Not conclude *exactly one* from *at most one* and a count** without the premise written and checked. *An
+  invariant that is the warrant for a skip and is enforced nowhere* is the defect this repo has already had
+  once (the alive-set invariant before `invariant.rs` evaluated it).
+- **Not read `is-a`, `bijective` or any stdlib name inside the engine** to recognise a declaration. The
+  comparison with what is declared is the census's, by the mechanisms the engine already reads.

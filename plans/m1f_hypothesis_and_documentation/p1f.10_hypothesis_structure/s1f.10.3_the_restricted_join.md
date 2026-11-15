@@ -1,146 +1,93 @@
-# S1f.10.3 — The join, restricted
+# S1f.10.3 — At most one, spent: the extension step
 
-**Phase:** [P1f.10](README.md)
-**Estimate:** 3 days
-**Depends on:** [S1f.10.2](s1f.10.2_groups.md) — the cover, and its one owner.
-**Blocks:** [S1f.10.5](s1f.10.5_ordering.md) only.
-**Parked 2026-11-03, from M1e2:** the join this stage restricts is the walk's
-(`generate_layer` in `solve.rs`, `apriori.rs`). No `ein` command reaches it since
-M1e2 S1e2.1a.5's switch, no route uses it
-([T1e2.1c.4.4](../../m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md#task-t1e21c44--what-of-the-walks-library-the-routes-reuse)),
-and [S1e2.1c.5](../../m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)'s
-step 5 deletes it. M1e2's S1e2.2.1 and S1e2.2.3, which were to hand this stage a
-fixed join, are dropped. Whether this stage survives, and over which route, is
-M1f's re-scope. M1e2 decides nothing here.
+**Phase:** [P1f.10](README.md), track R (the search)
+**Status:** re-planned 2026-11-15. Not started. **Built only where
+[S1f.10.13](s1f.10.13_the_price_list.md) says *go***; where it says *no* for every question, this file records
+that and the stage is not built.
+**Depends on:** [S1f.10.13](s1f.10.13_the_price_list.md) (which questions, which source);
+[S1f.10.2](s1f.10.2_groups.md) (the owner of the pairs).
+**Was:** *the join, restricted*. The join was the walk's (`generate_layer`, `apriori`), deleted on 2026-11-03.
+The file keeps its name so that links to it hold.
 
 ## Context
 
-This is the stage where the phase touches the engine, and it is one predicate
-in one place. `generate_layer`
-(`solve.rs:1659`, through
-`apriori::filter_candidate`)
-builds layer *L*'s candidates by prefix-joining `a_prev`, then drops a
-candidate for exactly two reasons: an element is no longer in `alive`, or a
-learned clause subsumes it. The stage adds a third:
+No route joins candidate sets any more. Every route **extends**: it takes a state `S` and a candidate `b` and
+asks for the node `S ∪ {b}`. Before it saturates, it asks whether a set already known dead lies inside
+(`tree.rs`'s `pruned`, the state route's L1 step). What is known dead is what the run has itself seen die, and
+each death is remembered as the **whole commitment** (`record_dead`). So the death of a 24-candidate set
+teaches that 24-candidate set, and the pair inside it that was dead at root is paid for again above every
+other state: 2 234 of the 2 346 saturations of `zebra2-minus-15 --maximal`, by the re-plan's probe.
 
-> **a candidate containing two members of one group is refused before the
-> fork.**
+The stage gives that memory the excluded pairs:
 
-It is answer-preserving by the group's own definition: the two members exclude
-each other, so the fork would have saturated to `(false)` and died. What
-changes is that the death is not paid for.
+> **a set that holds an excluded pair is dead, and is not saturated.**
 
-## The two things that make it not a one-liner
+**It needs no new licence.** An excluded pair is a dead node of the program's own lattice, computed by the node
+function every route uses, and L1 says its supersets are dead. The stage adds no theorem; it fills L1's memory
+earlier, or from less. So it holds exactly where L1 holds, on a program the static check calls monotone, and a
+flagged program gets nothing.
 
-**It changes the learned clause set.** A pair that never enters never emits its
-width-2 no-good, so `nogoods_emitted` falls, and every counter downstream of
-it moves. That is the *point* — the clause was re-derived work — but it means
-the stage must say what happens to the clauses' other readers: the unsat core
-(`union_dead_cores`), the `--trace` proof's `learned_nogoods`, and
-`lstate.dead`. A death the search never suffered is not evidence, and a core
-assembled from deaths is a core assembled from fewer of them.
+## What a node not saturated owes the surfaces
 
-**It changes what a `Contradiction` explains.** Where every candidate at a
-layer is group-refused, the layer is empty for a *structural* reason rather
-than through death, and `finalise`'s Contradiction arm unions over a dead list
-that is now shorter. On an unsatisfiable puzzle this could produce a smaller
-— or an empty — core, which is
-[CO-H3](../../../docs/history/m1e_review_processing/README.md#the-findings)(b)'s defect arriving by a second route.
-The stage owns this, and the safe shape is: **a group refusal is recorded**,
-with its own kind, so the core can cite it.
+Listed before anything is built, each with what the stage does about it. This is the part that is not a
+one-liner.
 
-## Acceptance
-
-- **Every corpus model set is identical, fact for fact**, at each entry's
-  declared runs and at `-e`. The comparison is
-  `tree_traversal.rs`'s
-  — *never of `k`* — and it runs over the whole corpus, not a sample.
-- Every corpus **verdict word, `k`, and `exhausted`** identical.
-- The enterings delta is recorded **per entry**, and the entries where it is
-  zero are named — [I-L02](README.md#the-instances) expected among them.
-- The no-good and dead-commitment counters are expected to **move**, and the
-  stage file says which goldens that moves *before* it moves them. A re-bless
-  that was not predicted is a stop.
-- A group refusal is **narrated** — a new kind on the existing `layer` census
-  row, or a new event field; not silent. `layer_census.py`'s sixteen counters
-  get a seventeenth or the census stops adding up.
-- The unsat core on every corpus entry that reports `Contradiction` is
-  **unchanged**, or the change is stated and defended.
+| surface | what changes | what the stage does |
+|---|---|---|
+| the `work` row | fewer saturations; and the pairs' own saturations are work | both counted in the one row; the `route` row names the licence in words, as it names L1 to L5 |
+| `N`, `dead alone`, `k_s`, `k_c`, the lines, the shape | nothing: they are read off the states | held by the acceptance |
+| `--dump-lattice`, `ein render lattice` | a dead node not saturated is not *visited*; the pair nodes are | the dump says by which pair a set was known dead, where it lists what L1 pruned today |
+| a dead node's core, where a surface prints one | a node not saturated has no derivation | inventory which surfaces print a core of a node the routes would now skip; where one does, the pair's own node is the explanation, and is what is printed |
+| `--events` | fewer `saturate` narrations | [`events.md`](../../../docs/kernel/inference/events.md) restated in the same commit if a line's meaning moves |
+| the goldens | `read_out_examples.md`, the shape digests, corpus entries' `cost_ms` and the slow set | each named in this file before it moves |
 
 ## Tasks
 
-### Task T1f.10.3.1 — The predicate, off by default
+1. **T1f.10.3.1 — the inventory**: the table above checked against the code, every reader of a dead node
+   named, and the goldens that will move listed here. A golden that moves and is not on the list is a stop.
+2. **T1f.10.3.2 — one place.** Every route asks one owner whether a set is known dead, and the excluded pairs
+   are in it. The owner is S1f.10.2's; the routes do not each keep a copy. If the source S1f.10.13 chose is
+   *the pair of a death*, the same owner is what a death writes its pair to, instead of the whole commitment
+   or beside it.
+3. **T1f.10.3.3 — with and without.** An internal switch for a test, on the calling thread, in the way
+   `forbid::studying` lifts a refusal for a census: **not** a lever, not in `(config …)`, not on the command
+   line, not an `EIN_*` name. The test: every corpus program that searches, every question, with the pairs and
+   without, one `Described` and one verdict; the sweep through `ein_corpus::pool::map`.
+4. **T1f.10.3.4 — the work delta**, per program and per question, recorded here with the command and the date;
+   the programs that got slower named, and held to S1f.10.13's rule: a question that loses by more than a
+   tenth on some program does not get the source.
+5. **T1f.10.3.5 — the fixture**: a small bijection under `tests/` or `examples/`, with an `:expect`, on which a
+   test pins how many extensions were known dead by a pair. It is what fails if a later change drops the step.
+6. **T1f.10.3.6 — the pages**: [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` and
+   `work` rows, and the routes' module headers, stating what the engine does, with no stage id and no date.
 
-Add it behind a `SolverConfig` field — `enable-group-refusal`, defaulting to
-**false** for the duration of this stage — so the A/B is one flag and the
-corpus can be swept both ways before anything becomes the default. The
-precedent is every lever in
-[`config.rs`](../../../ein.rs/crates/ein-core/src/config.rs) and the reason is
-`EIN_OBLIGATION_CHOICE`'s: a knob whose two settings are being compared must
-not re-bless the shape goldens while the comparison is running.
+## Acceptance
 
-**Then flip the default in the same stage, deliberately, once the sweep is
-clean** — a lever nobody turns on is [DO-M1](../../../docs/history/m1e_review_processing/README.md#the-findings)'s
-shape in the config table.
+- **R is identical on every corpus program in every mode.** `ein-infer/tests/explore.rs` and `region.rs`
+  against the oracle, `lever_invariance`, `route_invariance`, `claim_routes` and `answer_round_trip` green with
+  no expectation edited; T3's test green.
+- **N and `dead alone` are unchanged** on every program a describe exhausts.
+- The work delta is recorded per program and per question, with the losers named; **I-L02's is zero**.
+- The pairs' own cost is in the `work` row.
+- Every golden that moved is on T1's list.
+- No lever of any kind.
+- `./run_tests.sh` green on the batch's last commit, and `./run_tests.sh --nightly` once, since a route
+  changed.
 
-### Task T1f.10.3.2 — The sweep
+## What it must not do
 
-Every corpus entry, both settings, `--json-summary` both times, model sets
-diffed fact for fact. This is the stage's evidence and it is the same shape as
-[S1d.10.6](../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s
-tree-vs-lattice verification, which is the precedent for trusting it.
-
-Report: enterings before/after, wall before/after, no-goods emitted
-before/after, and the **model set delta, which must be empty everywhere**.
-
-### Task T1f.10.3.3 — What a refusal owes the core
-
-Decide and implement one of:
-
-- **(a)** a refused candidate is recorded in `lstate.dead` with a synthetic
-  core of the two group members and a `Kind` of its own, so the unsat core and
-  the proof read as they did;
-- **(b)** a refusal is counted and narrated but not recorded, and the
-  Contradiction arm's core is documented as *"over the deaths the search
-  suffered"* — which is what it already is, but is not currently a distinction
-  anyone has had to make.
-
-(a) is more work and keeps every downstream surface honest; (b) is one
-sentence and makes the core weaker on exactly the puzzles where structure did
-the most work. **(a) is required, not preferred**, and the reason is
-[Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
-operational form: a solution is a surviving commitment **whose every superset
-died**, so a superset that is *refused* rather than entered has to count as
-dead or the maximality test reads a refusal as an unexplored child and stops
-recognising solutions. It is dead — the two group members exclude — but the
-refusal must say so where the test looks.
-
-That coupling is worth stating in the stage rather than discovering: this
-phase and [Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)'s
-fix touch the same layer bookkeeping, and whichever lands second has to know
-about the first.
-
-### Task T1f.10.3.4 — The fixture
-
-One `examples/` fixture whose only purpose is the refusal: a small bijection
-where layer 2's join proposes `n` same-group pairs and the counter says `n`
-were refused. It goes in the corpus with an `:expect`, and it is what fails if
-a later milestone removes the predicate.
+- **Not spend a pair on a flagged program.**
+- **Not spend a pair of the theory that is not a node of this program** (S1f.10.10's small KB). What is spent
+  is S1f.10.1's.
+- **Not add a route, and not change the order of one.** The order is S1f.10.5's.
+- **Not skip a node whose content a surface prints without saying where the content now comes from.**
 
 ## Notes
 
-The saving compounds with depth and the census should say so: a 3-set is
-refused if **any** of its three pairs excludes, so the fraction removed at
-layer *L* grows with *L* — which is the direction that matters, because
-[layer_census](../../../docs/history/m1d_satisfiability/layer_census.md) found
-the deep layers are where the powerset lives.
+**Why this is not simply a saturation rule.** `domain-elimination` and `no-room-left` write the same
+knowledge as stored negatives, per node, by firing rules; they are already in every number S1f.10.13 took. What
+is spent here is what remains after them: a node the route would have built only to watch it die.
 
-There is an alternative implementation this stage deliberately does not take:
-**seed the no-good store with the group clauses at load**. It needs no new
-predicate — `filter_candidate` already refuses a candidate a clause subsumes —
-and it is three lines. It is rejected because a clause is *learned* evidence
-with a provenance, and manufacturing 250 of them at load makes every proof,
-every core and every `learned_nogoods` list a mixture of what the search
-proved and what the loader asserted. Should the stage find the predicate
-route unaffordable, that is the fallback and the cost is a paragraph in
-[`docs/kernel/inference/`](../../../docs/kernel/inference/README.md) saying so.
+**The saving compounds with depth**: a set is known dead if *any* pair in it excludes, so the share removed
+grows with the size of the states a route extends, which is where the `--maximal` run's 24-candidate deaths
+are.
