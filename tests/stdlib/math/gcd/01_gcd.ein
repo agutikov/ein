@@ -1,0 +1,54 @@
+;;; `std.math.gcd` — the greatest common divisor by Euclid's chain, each step
+;;; a division of `std.math.decimal-arith`. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(gcd X Y)` over two natural numbers is answered by
+;;; `(gcd-of X Y G)`: G is the greatest number that divides both, in normal
+;;; form, and the operands are repeated as written.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; The operands are looked up (`gcd-ask`, `gcd-ask-second`), and the call is
+;;; made (`gcd-start`): each number is put into normal form by an addition
+;;; walk to zero (`gcd-call-first`, `gcd-call-second`, `gcd-call-chain`).
+;;; Then Euclid's chain, the remainder of each division what goes on
+;;; (`gcd-step`, `gcd-next`), until nothing is left (`gcd-end`,
+;;; `gcd-answer`):
+;;;
+;;;   gcd(1071, 462):  1071 = 2 x 462 + 147;  462 = 3 x 147 + 21;
+;;;                    147 = 7 x 21 + 0;  so 21
+;;;   gcd(462, 1071):  462 = 0 x 1071 + 462: the chain turns the two round,
+;;;                    and goes on as above; so 21
+;;;   gcd(48, 18) = 6     gcd(17, 5) = 1     gcd(12, 12) = 12
+;;;   gcd(6, 12) = 6      gcd(36, 24) = 12
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `gcd-of`'s whole extent: seven requests, seven answers, each in normal
+;;; form. The `(solve …)` form claims R = {∅}: nothing is guessed, and no
+;;; division by zero kills root.
+
+(import std.math.gcd :symbols (gcd gcd-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))
+(gcd (n (n (n z 4) 6) 2) (n (n (n (n z 1) 0) 7) 1))
+(gcd (n (n z 4) 8) (n (n z 1) 8))
+(gcd (n (n z 1) 7) (n z 5))
+(gcd (n (n z 1) 2) (n (n z 1) 2))
+(gcd (n z 6) (n (n z 1) 2))
+(gcd (n (n z 3) 6) (n (n z 2) 4))
+
+(solve :expect (region (model)))
+
+(query :goal (gcd-of ?x ?y ?g)
+       :goal-text "gcd({?x}, {?y}) = {?g}"
+       :expect (model (gcd-of (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2) (n (n z 2) 1))
+                      (gcd-of (n (n (n z 4) 6) 2) (n (n (n (n z 1) 0) 7) 1) (n (n z 2) 1))
+                      (gcd-of (n (n z 4) 8) (n (n z 1) 8) (n z 6))
+                      (gcd-of (n (n z 1) 7) (n z 5) (n z 1))
+                      (gcd-of (n (n z 1) 2) (n (n z 1) 2) (n (n z 1) 2))
+                      (gcd-of (n z 6) (n (n z 1) 2) (n z 6))
+                      (gcd-of (n (n z 3) 6) (n (n z 2) 4) (n (n z 1) 2))))

@@ -1,0 +1,38 @@
+;;; `std.math.gcd` — an operand written with high zeros is read by value, and
+;;; the answer is in normal form. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An operand may be written with high zeros, `(n (n z 0) 7)`, and is read by
+;;; value; every answer is in normal form, with no high zero, even where the
+;;; answer is an operand's value: the call puts each number into normal form
+;;; by an addition walk to zero (`gcd-call-first`, `gcd-call-second`) before
+;;; Euclid's chain starts, so the chain's last divisor is never an operand
+;;; as written.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   gcd(0012, 018) = gcd(12, 18) = 6
+;;;   gcd(006, 0012) = gcd(6, 12) = 6: 6 divides 12, and the answer is 6, not 006
+;;;   gcd(07, 0) = 7: the chain is at its end at once, on 7 in normal form
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `gcd-of`'s whole extent: three requests, the operands repeated as written
+;;; and each answer with no high zero.
+
+(import std.math.gcd :symbols (gcd gcd-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd (n (n (n (n z 0) 0) 1) 2) (n (n (n z 0) 1) 8))
+(gcd (n (n (n z 0) 0) 6) (n (n (n (n z 0) 0) 1) 2))
+(gcd (n (n z 0) 7) (n z 0))
+
+(solve :expect (region (model)))
+
+(query :goal (gcd-of ?x ?y ?g)
+       :goal-text "gcd({?x}, {?y}) = {?g}"
+       :expect (model (gcd-of (n (n (n (n z 0) 0) 1) 2) (n (n (n z 0) 1) 8) (n z 6))
+                      (gcd-of (n (n (n z 0) 0) 6) (n (n (n (n z 0) 0) 1) 2) (n z 6))
+                      (gcd-of (n (n z 0) 7) (n z 0) (n z 7))))

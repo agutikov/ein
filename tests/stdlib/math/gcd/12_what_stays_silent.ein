@@ -1,0 +1,32 @@
+;;; `std.math.gcd` — natural numbers only: what is no operand here is answered
+;;; by silence. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The module's operands are natural numbers of `std.math.decimal-arith`; it
+;;; has no gcd of integers or rationals (the stage's ruling). An integer of
+;;; `std.math.int` where a number goes stands for itself, as that module's
+;;; operands do, and no walk reads it: the request is neither refused nor
+;;; answered, as `std.math.decimal-arith` answers a fact of another relation
+;;; where a number goes. **A flag means malformed; no flag does not mean
+;;; well-formed.** The request beside it is answered.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; R is {∅}: root is alive. `gcd-of`'s whole extent is the one request over
+;;; two natural numbers, gcd(4, 6) = 2; the request over an integer is in
+;;; root's state, not refused and not answered.
+
+(import std.math.gcd :symbols (gcd gcd-of))
+(import std.math.int :symbols (int))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd (int (n z 4) z) (n z 6))
+(gcd (n z 4) (n z 6))
+
+(solve :expect (region (model)))
+
+(query :goal (gcd-of ?x ?y ?g)
+       :goal-text "gcd({?x}, {?y}) = {?g}"
+       :expect (model (gcd-of (n z 4) (n z 6) (n z 2))))

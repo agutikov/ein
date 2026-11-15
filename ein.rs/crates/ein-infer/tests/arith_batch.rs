@@ -50,9 +50,9 @@
 //! and its bound to [`BOUND`]. Each operation is measured in batches of its
 //! own (S1f.6.4).
 //!
-//! `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7), `std.math.rat` (S1f.6.8) and
-//! `std.math.binary-arith` (S1f.6.16) have a test of their own each, below, of the
-//! same shape; binary's holds the rule of the theory where most of its rules
+//! `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7), `std.math.rat` (S1f.6.8),
+//! `std.math.binary-arith` (S1f.6.16) and `std.math.gcd` (S1f.6.32) have a test of
+//! their own each, below, of the same shape; binary's holds the rule of the theory where most of its rules
 //! are `std.math.positional`'s, activated with binary's relations, and the
 //! stated exception where its `bin-let` is.
 
@@ -187,6 +187,7 @@ fn saturate(src: &str, result: &str) -> Work {
                 "std.math.num9",
                 "std.math.int",
                 "std.math.rat",
+                "std.math.gcd",
             ]
             .iter()
             .find_map(|m| terms.syms.get(&format!("{m}.{result}")))
@@ -883,5 +884,107 @@ fn a_binary_number_operand_does_not_walk_the_lets() {
             "{requests} `{op}` requests beside {lets} `bin-let`s: two guard values for each \
              operand and each `bin-let`'s name"
         );
+    }
+}
+
+// ── std.math.gcd (S1f.6.32) ─────────────────────────────────────────────
+
+const IMPORT_GCD: &str = "(import std.math.gcd :symbols (gcd))\n";
+
+/// `std.math.gcd`'s two requests, each with its result relation and what a
+/// request may cost at the smallest batch, in `candidates`: a little above
+/// the measure, as [`BOUND`] is.
+const REQUESTS_GCD: [(&str, &str, f64); 2] =
+    [("gcd", "gcd-of", BOUND_GCD), ("lcm", "lcm-of", BOUND_LCM)];
+const BOUND_GCD: f64 = 6500.0;
+const BOUND_LCM: f64 = 8300.0;
+
+/// A number of the batch: one to three digits, its top digit not zero, so
+/// that the chains are of every length a pair of such numbers has.
+fn number_gcd(rng: &mut u64) -> String {
+    let mut draw = |n: u64| {
+        *rng = rng
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
+        (*rng >> 33) % n
+    };
+    let digits = 1 + draw(3);
+    let mut out = String::from("z");
+    for i in 0..digits {
+        let d = if i == 0 { 1 + draw(9) } else { draw(10) };
+        out = format!("(n {out} {d})");
+    }
+    out
+}
+
+fn batch_gcd(op: &str, count: usize) -> String {
+    let mut rng = 0x5146_0632_u64;
+    let mut src = String::from(IMPORT_GCD);
+    let mut seen = std::collections::BTreeSet::new();
+    while seen.len() < count {
+        let request = format!("({op} {} {})\n", number_gcd(&mut rng), number_gcd(&mut rng));
+        if seen.insert(request.clone()) {
+            src.push_str(&request);
+        }
+    }
+    src
+}
+
+/// **The greatest common divisor keeps the rule of the theory.** Every rule
+/// of `std.math.gcd` has one premise (`gcd_theory.rs` holds that on the
+/// text): the two walks to normal form, Euclid's chain and the least common
+/// multiple's product and division are each a call of `std.math.decimal-arith`
+/// under a tag. Here: a request of each kind costs the same `candidates` and
+/// the same firings at 400 and at 1 200 requests as at 100, within the
+/// rationals' tolerance, since the chain's length varies from pair to pair as
+/// it does there.
+#[test]
+fn a_batch_of_gcd_requests_costs_in_proportion_to_its_count() {
+    let sizes = SIZES_RAT;
+    for (op, result, bound) in REQUESTS_GCD {
+        let work: Vec<Work> = sizes
+            .iter()
+            .map(|&n| saturate(&batch_gcd(op, n), result))
+            .collect();
+        for (n, w) in sizes.iter().zip(&work) {
+            assert_eq!(w.answers, *n, "{n} `{op}` requests, each answered");
+            eprintln!(
+                "{op}: {n} requests: {} firings, {:.2} a request; {} candidates, {:.2} a request",
+                w.firings,
+                per_request(w.firings, *n),
+                w.candidates,
+                per_request(w.candidates, *n)
+            );
+        }
+        let base_firings = per_request(work[0].firings, sizes[0]);
+        let base = per_request(work[0].candidates, sizes[0]);
+        for (n, w) in sizes.iter().zip(&work).skip(1) {
+            let firings = per_request(w.firings, *n);
+            assert!(
+                firings <= base_firings * TOLERANCE_RAT,
+                "`{op}`: firings per request grew with the batch: {base_firings:.1} at {} \
+                 and {firings:.1} at {n}",
+                sizes[0]
+            );
+            if cfg!(feature = "counters") {
+                let c = per_request(w.candidates, *n);
+                assert!(
+                    c <= base * TOLERANCE_RAT,
+                    "`{op}`: the matcher's work per request grew with the batch: {base:.1} \
+                     candidates a request at {} and {c:.1} at {n}. A rule of std.math.gcd \
+                     joins two facts on a number (E-3 of P1f.6's findings.md); \
+                     `gcd_theory.rs` names the rule if it is written as two premises",
+                    sizes[0]
+                );
+            }
+        }
+        if cfg!(feature = "counters") {
+            assert!(base > 0.0, "the counters are on and counted nothing");
+            assert!(
+                base < bound,
+                "`{op}`: {base:.1} candidates a request at {} requests, over {bound}",
+                sizes[0]
+            );
+        }
     }
 }

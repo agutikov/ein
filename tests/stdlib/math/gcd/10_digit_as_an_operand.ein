@@ -1,0 +1,21 @@
+;;; `std.math.gcd` — a digit where a number goes. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `7` is no number: seven is `(n z 7)`. `std.math.decimal-arith`'s
+;;; `operand-digit` says `(bad-operand TAG (not-a-number 7))` under this
+;;; module's tag, `gcd-bad-first` turns it into the request, and the request
+;;; is flagged `(malformed (lcm 7 Y))`, and `(false)`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.gcd :symbols (lcm))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(lcm 7 (n z 6))
+
+(solve :expect (false))

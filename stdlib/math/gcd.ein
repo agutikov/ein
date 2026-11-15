@@ -1,0 +1,291 @@
+;;; Ein stdlib — `std.math.gcd`: the greatest common divisor and the least
+;;; common multiple of two natural numbers, computed by saturation alone (M1f
+;;; P1f.6, S1f.6.32; P1f.6's question 38, the user's reply of 2026-11-12:
+;;; *"(a) but not into std.arith; it's time to make a std.math with
+;;; subfolders"*).
+;;;
+;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; This module is a theory written in Ein over `std.math.decimal-arith`, which
+;;; it calls and does not edit: every step is one of that theory's tagged
+;;; calls, made with a tag of this module's, and nothing is guessed. On a
+;;; program that imports it and states requests the universe has no
+;;; candidate, R is {∅}, and the answer is root's fixpoint. No `absent`, no
+;;; `not` and no guard of its own; a program that imports it holds
+;;; `std.math.decimal-arith`'s one `absent`, the undeclared name's, and so two
+;;; strata. A malformed numeral is `std.math.decimal`'s, flagged where it is
+;;; written; an operand's faults are flagged on the request (below).
+;;;
+;;; ── Import ─────────────────────────────────────────────────────────────────
+;;;
+;;;     (import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
+;;;     (import std.math.decimal :symbols (n))
+;;;     (import std.math.arith :symbols (z))
+;;;
+;;; An import brings the module whole, `std.math.decimal-arith`, the modules
+;;; below it and the tables with it (M1f S1f.6.35); a program lists the names
+;;; it writes, from the module that declares each: `gcd`, `lcm`, `gcd-of` and
+;;; `lcm-of` from this one, `let` from `std.math.decimal-arith` where it names
+;;; an operand, `n` from `std.math.decimal` and `z` from `std.math.arith`.
+;;; `gcd` is also the module's entry, the closing rule at the end of this
+;;; file: it names every rule and closes every relation of the module, and it
+;;; names `decimal-arith`, `decimal` and `arith`, the entries of the modules it
+;;; imports.
+;;;
+;;; ── The protocol: a request fact, answered by a result fact ────────────────
+;;;
+;;;     (gcd X Y)          (gcd-of X Y G)      G is the greatest common divisor
+;;;                                            of X and Y
+;;;     (lcm X Y)          (lcm-of X Y L)      L is the least common multiple
+;;;                                            of X and Y
+;;;
+;;; X and Y are natural numbers of `std.math.decimal-arith`. The operands are
+;;; repeated as written; an operand is a number, high zeros allowed, or a name
+;;; a `(let NAME NUMBER)` states, and is read by value. Every answer is in
+;;; normal form. Natural numbers only: an integer of `std.math.int` or a
+;;; rational of `std.math.rat` is no operand here, and a request over one is
+;;; answered by silence (the stage's ruling: no gcd of integers or
+;;; rationals).
+;;;
+;;; **Zero** (Q-M1f.299, the default the stage states): gcd(X, 0) and
+;;; gcd(0, X) are X, and **gcd(0, 0) is zero**, the usual convention, which
+;;; makes zero the greatest element of divisibility. lcm(X, 0) and lcm(0, X)
+;;; are zero, and so is lcm(0, 0). **No request of this module divides by
+;;; zero:** Euclid's chain divides by a number only where its shape says it is
+;;; not zero, and the least common multiple divides by the greatest common
+;;; divisor only where that is not zero, so a request of this module never
+;;; derives `std.math.arith`'s `division-by-zero` (`ein-infer/tests/
+;;; gcd_theory.rs` holds that).
+;;;
+;;; An operand's faults are flagged on the request, as `std.math.int`'s and
+;;; `std.math.rat`'s are (S1f.6.38): a digit as an operand, `(gcd 7 X)`, is
+;;; `(malformed (gcd 7 X))`, and a name no `let` states, `(undeclared foo (gcd
+;;; foo X))`, each `(false)` by `std.math.decimal-arith`'s rules.
+;;;
+;;; ── How it computes ────────────────────────────────────────────────────────
+;;;
+;;;   - **The operands,** each looked up by `std.math.decimal-arith`'s
+;;;     `operand`.
+;;;   - **Each put into normal form,** an addition walk to zero, `(add-walk
+;;;     TAG X z 0 z)`, so that zero has one shape, `z`, and the answer none
+;;;     but the normal one.
+;;;   - **Euclid's chain:** the greatest common divisor of A and B is that of
+;;;     B and the remainder of A divided by B, and of A and zero it is A. Each
+;;;     step is one tagged division of `std.math.decimal-arith`, `(div-call
+;;;     TAG A B)`, the tag carrying what is left of the chain; the remainders
+;;;     get smaller, so the chain ends. Where A is the smaller, the first
+;;;     step's quotient is zero and its remainder A: the chain turns the two
+;;;     round.
+;;;   - **The least common multiple** is the product of the two divided by
+;;;     their greatest common divisor, one `mul-call` and one `div-call`,
+;;;     whose remainder is zero; where the divisor is zero, both operands are,
+;;;     and so is the answer.
+;;;
+;;; **The tagged call a later theory makes is an interface,** as
+;;; `std.math.decimal-arith`'s are (P1f.6's question 41, round 2, the user's
+;;; *"(a)"*; Q-M1f.300), held to this shape by `ein-infer/tests/
+;;; arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`:
+;;;
+;;;     (gcd-call TAG X Y)                    the greatest common divisor of X
+;;;                                           and Y; answered by
+;;;                                           (gcd-done TAG G)
+;;;
+;;; X and Y are natural numbers as `n` and `z` build them, high zeros allowed,
+;;; and never a name a `let` states: a call looks nothing up. G is in normal
+;;; form. The TAG is the caller's and names one call.
+;;;
+;;; **No rule joins two facts on a number:** every rule of this module has
+;;; one premise. `ein-infer/tests/gcd_theory.rs` holds that on this file's
+;;; text, and holds the answers to Rust's integers.
+;;;
+;;; **What it costs.** A step of the chain is a long division, and a division
+;;; computes its divisor's nine multiples first: gcd(1071, 462) is three
+;;; steps, some three hundred firings (`stdlib/README.md` § `std.math.gcd` has
+;;; them measured). The count of steps is linear in the operands' length
+;;; (Lamé's bound, five a decimal digit of the smaller at most).
+;;;
+;;; ── The names this module occupies ─────────────────────────────────────────
+;;;
+;;; Its own: the requests `gcd` and `lcm`; the results `gcd-of` and `lcm-of`;
+;;; the call `gcd-call` and its hand-over `gcd-done`; the circuit's own
+;;; `gcd-chain`; the tags `gcd-first`, `gcd-second`, `gcd-norm`,
+;;; `gcd-norm-of`, `gcd-rem`, `lcm-g`, `lcm-p` and `lcm-q`; `gcd-rule`, and
+;;; the entry `gcd`, which is also the request's name. Everything of
+;;; `std.math.decimal-arith` comes with it. The interface is the requests, the
+;;; results and the call with its hand-over; the rest is in the state for a
+;;; query or a `--trace` to see, and is not a promise.
+
+(import std.math.decimal-arith :symbols (decimal-arith operand operand-is add-walk done
+                            mul-call div-call div-done bad-operand bad-request))
+(import std.math.decimal :symbols (decimal n))
+(import std.math.arith :symbols (arith z))
+
+;; ── The protocol ────────────────────────────────────────────────────────────
+(relation gcd Operand Operand
+  :why "asked: the greatest common divisor of {?1} and {?2}")
+(relation gcd-of Operand Operand Number
+  :why "the greatest common divisor of {?1} and {?2} is {?3}")
+(relation lcm Operand Operand
+  :why "asked: the least common multiple of {?1} and {?2}")
+(relation lcm-of Operand Operand Number
+  :why "the least common multiple of {?1} and {?2} is {?3}")
+
+;; ── The call, and the circuit's own facts ───────────────────────────────────
+(relation gcd-call Tag Number Number
+  :why "wanted, for {?1}: the greatest common divisor of {?2} and {?3}")
+(relation gcd-done Tag Number
+  :why "the greatest common divisor for {?1} is {?2}")
+(relation gcd-chain Tag Number Number
+  :why "for {?1}: the greatest common divisor wanted is that of {?2} and {?3}")
+
+;; ── The tags: what a call's answer is for ───────────────────────────────────
+(relation gcd-first Request Operand
+  :why "the first operand of {?1}, whose second is {?2}")
+(relation gcd-second Request Number
+  :why "the second operand of {?1}, whose first is {?2}")
+(relation gcd-norm Tag Number
+  :why "the first number of the call for {?1} in normal form; the second is {?2}")
+(relation gcd-norm-of Tag Number
+  :why "the second number of the call for {?1} in normal form; the first is {?2}")
+(relation gcd-rem Tag Number
+  :why "a step of Euclid's chain, for {?1}: the remainder of a division by {?2}")
+(relation lcm-g Operand Operand Number Number
+  :why "the greatest common divisor of {?3} and {?4}, for the least common multiple of {?1} and {?2}")
+(relation lcm-p Operand Operand Number
+  :why "the product of the operands, for the least common multiple of {?1} and {?2}, to be divided by {?3}")
+(relation lcm-q Operand Operand
+  :why "the product divided by the greatest common divisor, for the least common multiple of {?1} and {?2}")
+
+;; ── The call: two numbers in normal form, then Euclid's chain ───────────────
+;; `(gcd-call TAG X Y)`: X and Y as `n` and `z` build them, each put into normal
+;; form by an addition walk to zero, so that zero is `z` and the answer is in
+;; normal form whatever the high zeros.
+(rule gcd-call-first ()
+  :match  (gcd-call ?k ?x ?y)
+  :assert (add-walk (gcd-norm ?k ?y) ?x z 0 z)
+  :why    "the greatest common divisor of {?x} and {?y} is wanted: first {?x} in normal form")
+
+(rule gcd-call-second ()
+  :match  (done (gcd-norm ?k ?y) ?a)
+  :assert (add-walk (gcd-norm-of ?k ?a) ?y z 0 z)
+  :why    "the first is {?a}: now {?y} in normal form")
+
+(rule gcd-call-chain ()
+  :match  (done (gcd-norm-of ?k ?a) ?b)
+  :assert (gcd-chain ?k ?a ?b)
+  :why    "the second is {?b}: Euclid's chain on {?a} and {?b}")
+
+;; Euclid's chain: the greatest common divisor of A and B is that of B and the
+;; remainder of A divided by B, and of A and zero it is A. A divisor is
+;; `(n P D)` in normal form, so it is not zero, and no step divides by zero.
+(rule gcd-step ()
+  :match  (gcd-chain ?k ?a (n ?b ?c))
+  :assert (div-call (gcd-rem ?k (n ?b ?c)) ?a (n ?b ?c))
+  :why    "{?b}{?c} is not zero: divide {?a} by it, and the remainder is what goes on")
+
+(rule gcd-next ()
+  :match  (div-done (gcd-rem ?k ?b) ?q ?r)
+  :assert (gcd-chain ?k ?b ?r)
+  :why    "the remainder is {?r}: now the greatest common divisor of {?b} and {?r}")
+
+(rule gcd-end ()
+  :match  (gcd-chain ?k ?a z)
+  :assert (gcd-done ?k ?a)
+  :why    "nothing is left over: the greatest common divisor is {?a}")
+
+;; ── The requests: the operands looked up, then the call ─────────────────────
+;; The tags hold the request as written, so that one rule a step serves both
+;; requests, and an operand's fault is turned into its request by one rule.
+(rule gcd-ask ()
+  :match  (gcd ?x ?y)
+  :assert (operand (gcd-first (gcd ?x ?y) ?y) ?x)
+  :why    "the greatest common divisor of {?x} and {?y} is asked: first, the number {?x} stands for")
+
+(rule lcm-ask ()
+  :match  (lcm ?x ?y)
+  :assert (operand (gcd-first (lcm ?x ?y) ?y) ?x)
+  :why    "the least common multiple of {?x} and {?y} is asked: first, the number {?x} stands for")
+
+(rule gcd-ask-second ()
+  :match  (operand-is (gcd-first ?r ?y) ?u)
+  :assert (operand (gcd-second ?r ?u) ?y)
+  :why    "the first operand is {?u}: now the number {?y} stands for")
+
+(rule gcd-start ()
+  :match  (operand-is (gcd-second (gcd ?x ?y) ?u) ?v)
+  :assert (gcd-call (gcd ?x ?y) ?u ?v)
+  :why    "the greatest common divisor of {?u} and {?v}")
+
+(rule gcd-answer ()
+  :match  (gcd-done (gcd ?x ?y) ?g)
+  :assert (gcd-of ?x ?y ?g)
+  :why    "the greatest common divisor of {?x} and {?y} is {?g}")
+
+;; The least common multiple: the operands' product divided by their greatest
+;; common divisor, the call's tag carrying the two operands; where that is
+;; zero, both are zero, and so is the answer.
+(rule lcm-start ()
+  :match  (operand-is (gcd-second (lcm ?x ?y) ?u) ?v)
+  :assert (gcd-call (lcm-g ?x ?y ?u ?v) ?u ?v)
+  :why    "first the greatest common divisor of {?u} and {?v}")
+
+(rule lcm-zero ()
+  :match  (gcd-done (lcm-g ?x ?y ?u ?v) z)
+  :assert (lcm-of ?x ?y z)
+  :why    "the greatest common divisor is zero, so both are: the least common multiple of {?x} and {?y} is zero")
+
+(rule lcm-product ()
+  :match  (gcd-done (lcm-g ?x ?y ?u ?v) (n ?p ?d))
+  :assert (mul-call (lcm-p ?x ?y (n ?p ?d)) ?u ?v)
+  :why    "the greatest common divisor is {?p}{?d}: multiply {?u} by {?v}")
+
+(rule lcm-divide ()
+  :match  (done (lcm-p ?x ?y ?g) ?m)
+  :assert (div-call (lcm-q ?x ?y) ?m ?g)
+  :why    "the product is {?m}: divide it by {?g}, which is not zero")
+
+(rule lcm-answer ()
+  :match  (div-done (lcm-q ?x ?y) ?l ?r)
+  :assert (lcm-of ?x ?y ?l)
+  :why    "the least common multiple of {?x} and {?y} is {?l}")
+
+;; ── An operand's faults: from this module's tags to the request ────────────
+;; As `std.math.int`'s and `std.math.rat`'s do: `std.math.decimal-arith`'s
+;; `operand` says what is wrong with an operand under the tag it was asked
+;; with, and these two rules turn the tag into the request, `(bad-request
+;; REQUEST FAULT)`; `std.math.decimal-arith`'s flags and `(false)` follow.
+(rule gcd-bad-first ()
+  :match  (bad-operand (gcd-first ?request ?y) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the first operand of {?request} is at fault: {?f}")
+
+(rule gcd-bad-second ()
+  :match  (bad-operand (gcd-second ?request ?u) ?f)
+  :assert (bad-request ?request ?f)
+  :why    "the second operand of {?request} is at fault: {?f}")
+
+;; ── The closing rule, and the module's one entry ────────────────────────────
+;; Every relation of the module is closed and every rule named, with
+;; `decimal-arith`, `decimal` and `arith`, the entries of the modules it
+;; imports, as `std.math.int` and `std.math.rat` name theirs. The entry has the
+;; request's name, `gcd` (round 2's layout, confirmed): a rule and a relation
+;; may share one. `ein-infer/tests/gcd_theory.rs` holds that nothing is
+;; missing here.
+(relation gcd-rule Rule
+  :why "{?1} is a rule std.math.gcd brings")
+
+(rule gcd ()
+  :match  ()
+  :assert (and (__closed__ gcd) (__closed__ gcd-of) (__closed__ lcm) (__closed__ lcm-of)
+               (__closed__ gcd-call) (__closed__ gcd-done) (__closed__ gcd-chain)
+               (__closed__ gcd-first) (__closed__ gcd-second) (__closed__ gcd-norm)
+               (__closed__ gcd-norm-of) (__closed__ gcd-rem) (__closed__ lcm-g)
+               (__closed__ lcm-p) (__closed__ lcm-q) (__closed__ gcd-rule)
+               (gcd-rule decimal-arith) (gcd-rule decimal) (gcd-rule arith)
+               (gcd-rule gcd-call-first) (gcd-rule gcd-call-second) (gcd-rule gcd-call-chain)
+               (gcd-rule gcd-step) (gcd-rule gcd-next) (gcd-rule gcd-end)
+               (gcd-rule gcd-ask) (gcd-rule lcm-ask) (gcd-rule gcd-ask-second)
+               (gcd-rule gcd-start) (gcd-rule gcd-answer)
+               (gcd-rule lcm-start) (gcd-rule lcm-zero) (gcd-rule lcm-product)
+               (gcd-rule lcm-divide) (gcd-rule lcm-answer)
+               (gcd-rule gcd-bad-first) (gcd-rule gcd-bad-second))
+  :why    "a greatest common divisor is computed and never guessed: every relation of the module is closed")

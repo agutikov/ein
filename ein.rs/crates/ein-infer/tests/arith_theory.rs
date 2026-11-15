@@ -2100,8 +2100,9 @@ fn the_rules_of_a_family_differ_by_their_digit_alone() {
 /// and a comparison at `eq`; an addition's carry in is the caller's, a bit
 /// in `std.math.convert`. Each module's calls come first and then the facts
 /// that answer them; `std.math.int`'s comparison is answered by
-/// `std.math.decimal-arith`'s `order-is`. Binary's twins join at S1f.6.16.
-const TAGGED: [(&str, &str, &str); 32] = [
+/// `std.math.decimal-arith`'s `order-is`. Binary's twins join at S1f.6.16, and
+/// `std.math.gcd`'s call at S1f.6.32 (Q-M1f.300).
+const TAGGED: [(&str, &str, &str); 34] = [
     (
         "decimal-arith",
         "(add-walk TAG X Y C z)",
@@ -2194,6 +2195,8 @@ const TAGGED: [(&str, &str, &str); 32] = [
         "Tag Number Number",
     ),
     ("binary-arith", "(bin-operand-is TAG N)", "Tag Number"),
+    ("gcd", "(gcd-call TAG X Y)", "Tag Number Number"),
+    ("gcd", "(gcd-done TAG G)", "Tag Number"),
 ];
 
 /// A tagged call as written: its relation, and each argument's place, `None`
@@ -2263,7 +2266,7 @@ fn the_tagged_calls_keep_their_shapes() {
     let readme = std::fs::read_to_string(root.join("stdlib/README.md")).expect("stdlib/README.md");
     // ── the declarations, and the pages ──
     let mut declared: BTreeMap<&str, Vec<String>> = BTreeMap::new();
-    for module in ["decimal-arith", "int", "rat", "binary-arith"] {
+    for module in ["decimal-arith", "int", "rat", "binary-arith", "gcd"] {
         let path = root.join(format!("stdlib/math/{module}.ein"));
         let text = std::fs::read_to_string(&path).expect("a module");
         let mut ast = Ast::new();
@@ -2460,6 +2463,7 @@ fn the_tagged_calls_keep_their_shapes() {
         "examples/beyond_arith/casting_out_nines.ein",
         "stdlib/math/binary-arith.ein",
         "stdlib/math/convert.ein",
+        "stdlib/math/gcd.ein",
     ] {
         assert!(read.contains_key(caller), "{caller} was not read: {read:?}");
     }

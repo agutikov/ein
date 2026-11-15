@@ -1,0 +1,24 @@
+;;; `std.math.gcd` — a second operand that is a name no `let` states, in a
+;;; least common multiple. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; The first operand is found, and the second is looked up under the tag
+;;; `(gcd-second REQUEST U)`: `std.math.decimal-arith`'s `operand-undeclared`
+;;; says `(bad-operand (gcd-second (lcm X foo) U) (no-let foo))`,
+;;; `gcd-bad-second` turns the tag into the request, and the request is
+;;; flagged `(undeclared foo (lcm X foo))`, and `(false)`. The tags of both
+;;; requests hold the request, so one rule a place serves `gcd` and `lcm`.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.gcd :symbols (lcm))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(lcm (n z 6) foo)
+
+(solve :expect (false))

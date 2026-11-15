@@ -1,0 +1,44 @@
+;;; `std.math.gcd` — zero in each place, and gcd(0, 0). M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; gcd(X, 0) and gcd(0, X) are X: every number divides zero. **gcd(0, 0) is
+;;; zero**, the usual convention, which makes zero the greatest element of
+;;; divisibility (Q-M1f.299, the stage's default, the user's to revise). Zero
+;;; may be written `z` or with digits, `(n z 0)`; the call puts each number
+;;; into normal form first, so zero is `z` there and no step of the chain
+;;; divides by it. **No request of this module divides by zero.**
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   gcd(7, 0):   the chain is at its end at once (`gcd-end`): 7
+;;;   gcd(0, 7):   0 = 0 x 7 + 0, one step (`gcd-step`, `gcd-next`); 7
+;;;   gcd(0, 0):   the chain is at its end at once: 0, written `z`
+;;;   gcd(00, 0):  each zero put into normal form, `z`; then as above: `z`
+;;;   gcd(0, 12):  12
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `gcd-of`'s whole extent, five answers in normal form, and R = {∅}: root is
+;;; alive, so no `division-by-zero` flag, which would derive `(false)`, is in
+;;; it.
+
+(import std.math.gcd :symbols (gcd gcd-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd (n z 7) z)
+(gcd z (n z 7))
+(gcd z z)
+(gcd (n (n z 0) 0) (n z 0))
+(gcd (n z 0) (n (n z 1) 2))
+
+(solve :expect (region (model)))
+
+(query :goal (gcd-of ?x ?y ?g)
+       :goal-text "gcd({?x}, {?y}) = {?g}"
+       :expect (model (gcd-of (n z 7) z (n z 7))
+                      (gcd-of z (n z 7) (n z 7))
+                      (gcd-of z z z)
+                      (gcd-of (n (n z 0) 0) (n z 0) z)
+                      (gcd-of (n z 0) (n (n z 1) 2) (n (n z 1) 2))))

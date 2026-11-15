@@ -1,0 +1,40 @@
+;;; `std.math.gcd` — the least common multiple with zero: zero, and never a
+;;; division by zero. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; lcm(X, 0) and lcm(0, X) are zero, and so is lcm(0, 0) (Q-M1f.299). The
+;;; least common multiple divides the product by the greatest common divisor,
+;;; and that is zero only where both operands are: there the answer is zero
+;;; at once, and nothing is divided (`lcm-zero`). **No request of this module
+;;; divides by zero.**
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   lcm(0, 0):   the greatest common divisor is 0: the answer is 0 (`lcm-zero`)
+;;;   lcm(00, 0):  the same, each zero put into normal form first
+;;;   lcm(0, 5):   the greatest common divisor is 5; 0 x 5 = 0, and 0 / 5 = 0
+;;;   lcm(5, 0):   the same, the other way round
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `lcm-of`'s whole extent, four zeros, and R = {∅}: root is alive, so no
+;;; `division-by-zero` flag is in it.
+
+(import std.math.gcd :symbols (lcm lcm-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(lcm z z)
+(lcm (n (n z 0) 0) (n z 0))
+(lcm z (n z 5))
+(lcm (n z 5) z)
+
+(solve :expect (region (model)))
+
+(query :goal (lcm-of ?x ?y ?l)
+       :goal-text "lcm({?x}, {?y}) = {?l}"
+       :expect (model (lcm-of z z z)
+                      (lcm-of (n (n z 0) 0) (n z 0) z)
+                      (lcm-of z (n z 5) z)
+                      (lcm-of (n z 5) z z)))

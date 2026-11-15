@@ -1,0 +1,22 @@
+;;; `std.math.gcd` — the digit 0 where the second number goes. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `0` is a digit and no number: zero is `z`. `std.math.decimal-arith`'s
+;;; `operand-digit-zero` says `(bad-operand (gcd-second (gcd X 0) U)
+;;; (not-a-number 0))`, `gcd-bad-second` turns it into the request, and the
+;;; request is flagged `(malformed (gcd X 0))`, and `(false)`. It is not a
+;;; division by zero: the request is never read as a number.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.gcd :symbols (gcd))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd (n z 6) 0)
+
+(solve :expect (false))

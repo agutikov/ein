@@ -1,0 +1,42 @@
+;;; `std.math.gcd` — operands by name. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An operand of either request may be a name a `(let NAME NUMBER)` of
+;;; `std.math.decimal-arith` states: the module looks its operands up through
+;;; that theory's `operand`, and the answer repeats the name as written.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;;   width = 1071, height = 462, tile = 0
+;;;   gcd(width, height) = 21         gcd(height, 1071) = 21
+;;;   lcm(width, height) = 23562      gcd(width, tile) = 1071
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `gcd-of`'s and `lcm-of`'s whole extents, the names repeated.
+
+(import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
+(import std.math.decimal-arith :symbols (let))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(let width  (n (n (n (n z 1) 0) 7) 1))
+(let height (n (n (n z 4) 6) 2))
+(let tile   z)
+
+(gcd width height)
+(gcd height (n (n (n (n z 1) 0) 7) 1))
+(gcd width tile)
+(lcm width height)
+
+(solve :expect (region (model)))
+
+(query :goal (gcd-of ?x ?y ?g)
+       :goal-text "gcd({?x}, {?y}) = {?g}"
+       :expect (model (gcd-of width height (n (n z 2) 1))
+                      (gcd-of height (n (n (n (n z 1) 0) 7) 1) (n (n z 2) 1))
+                      (gcd-of width tile (n (n (n (n z 1) 0) 7) 1))))
+(query :goal (lcm-of ?x ?y ?l)
+       :goal-text "lcm({?x}, {?y}) = {?l}"
+       :expect (model (lcm-of width height (n (n (n (n (n z 2) 3) 5) 6) 2))))

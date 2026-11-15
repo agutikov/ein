@@ -1,0 +1,82 @@
+;;; The greatest common divisor and the least common multiple, computed by
+;;; saturation alone: the largest square tile for a floor of 1071 by 462, and
+;;; when two buses leave together again. M1f P1f.6 (S1f.6.32).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.math.gcd` is a theory over `std.math.decimal-arith` (`add.ein`, `div.ein`
+;;; beside this file), on natural numbers:
+;;;
+;;;   (gcd X Y)              a request fact; (gcd-of X Y G) answers it: G is
+;;;                          the greatest number that divides both
+;;;   (lcm X Y)              answered by (lcm-of X Y L): L is the least
+;;;                          number both divide
+;;;   (let NAME NUMBER)      a named number; a request may name its operands
+;;;
+;;; gcd(X, 0) is X, gcd(0, 0) is zero, and a least common multiple with a
+;;; zero is zero: no request divides by zero.
+;;;
+;;; ── What happens ───────────────────────────────────────────────────────
+;;;
+;;; Nothing is guessed. Each number is put into normal form, and Euclid's
+;;; chain divides, each step one division of `std.math.decimal-arith`, until
+;;; nothing is left over:
+;;;
+;;;   gcd(1071, 462):  1071 = 2 x 462 + 147;  462 = 3 x 147 + 21;
+;;;                    147 = 7 x 21 + 0;  so 21
+;;;
+;;; The least common multiple is the product divided by that:
+;;;
+;;;   lcm(12, 18):     gcd 6;  12 x 18 = 216;  216 / 6 = 36
+;;;
+;;; ── The program's own rules ────────────────────────────────────────────
+;;;
+;;; A floor of 1071 by 462 is covered by square tiles, none cut: the largest
+;;; tile's side is the greatest common divisor, 21, and `tiles-along` asks
+;;; how many go along each wall, a division of the program's own. Two buses
+;;; leave the station together, one every 12 minutes and one every 18: they
+;;; leave together again after the least common multiple, 36 minutes.
+;;;
+;;; `ein solve examples/arith/gcd.ein --trace T.md` writes every step as a
+;;; sentence.
+
+(import std.math.gcd :symbols (gcd lcm gcd-of lcm-of))
+(import std.math.decimal-arith :symbols (let div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation tile-side Number
+  :why "the largest square tile has a side of {?1}")
+(relation together-after Number
+  :why "the two buses leave together again after {?1} minutes")
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (and (__closed__ tile-side) (__closed__ together-after))
+  :why    "the program's own relations are closed, as the theory's are")
+
+(let length (n (n (n (n z 1) 0) 7) 1))
+(let width  (n (n (n z 4) 6) 2))
+(let bus-a  (n (n z 1) 2))
+(let bus-b  (n (n z 1) 8))
+
+(gcd length width)
+(lcm bus-a bus-b)
+
+(rule largest-tile ()
+  :match  (gcd-of length width ?g)
+  :assert (and (tile-side ?g) (div length ?g) (div width ?g))
+  :why    "the largest square tile that fits both walls is {?g} across: how many go along each?")
+
+(rule buses-together ()
+  :match  (lcm-of bus-a bus-b ?l)
+  :assert (together-after ?l)
+  :why    "both timetables first meet again at {?l}")
+
+(query :goal (tile-side ?s) :goal-text "the tile is {?s} across"
+       :expect (model (tile-side (n (n z 2) 1))))
+(query :goal (quot-of ?wall ?side ?count ?left)
+       :goal-text "{?count} tiles along {?wall}, {?left} left over"
+       :expect (model (quot-of length (n (n z 2) 1) (n (n z 5) 1) z)
+                      (quot-of width (n (n z 2) 1) (n (n z 2) 2) z)))
+(query :goal (together-after ?t) :goal-text "together again after {?t} minutes"
+       :expect (model (together-after (n (n z 3) 6))))

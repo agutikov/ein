@@ -1,0 +1,73 @@
+;;; `std.math.gcd` — the tagged call, from a rule of the program's own.
+;;; M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; `(gcd-call TAG X Y)` is the interface a theory built on this module
+;;; calls (Q-M1f.300): X and Y are numbers, high zeros allowed, never a name,
+;;; and the answer comes back under the caller's tag, `(gcd-done TAG G)`, G
+;;; in normal form. The rule that reads it has one premise, and joins no two
+;;; facts on a number: what it needs is in its tag.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; The program asks whether two numbers are coprime, their greatest common
+;;; divisor 1, by a rule of its own on each `(pair X Y)`:
+;;;
+;;;   (pair 1071 462):  gcd 21, not coprime
+;;;   (pair 17 5):      gcd 1, coprime
+;;;   (pair 008 15):    gcd 1, coprime: the call reads 008 as 8
+;;;   (pair 9 0):       gcd 9, not coprime
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `coprime`'s whole extent: the two pairs whose call answered `(n z 1)`;
+;;; `gcd-done`'s, every call's answer under its tag. No request was made, so
+;;; `gcd-of` has no fact, which the second query says by naming it.
+
+(import std.math.gcd :symbols (gcd-call gcd-done gcd-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation pair Number Number
+  :why "is {?1} coprime with {?2}?")
+(relation coprime-test Number Number
+  :why "the coprime test of {?1} and {?2}")
+(relation coprime Number Number
+  :why "{?1} and {?2} are coprime")
+
+(rule the-program-guesses-nothing ()
+  :match  ()
+  :assert (and (__closed__ pair) (__closed__ coprime-test) (__closed__ coprime))
+  :why    "the program's own relations are closed, as the theory's are")
+
+(rule ask-the-divisor ()
+  :match  (pair ?x ?y)
+  :assert (gcd-call (coprime-test ?x ?y) ?x ?y)
+  :why    "{?x} and {?y} are coprime if their greatest common divisor is 1")
+
+(rule coprime-if-one ()
+  :match  (gcd-done (coprime-test ?x ?y) (n z 1))
+  :assert (coprime ?x ?y)
+  :why    "the greatest common divisor of {?x} and {?y} is 1")
+
+(pair (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))
+(pair (n (n z 1) 7) (n z 5))
+(pair (n (n (n z 0) 0) 8) (n (n z 1) 5))
+(pair (n z 9) z)
+
+(solve :expect (region (model)))
+
+(query :goal (coprime ?x ?y)
+       :goal-text "{?x} and {?y} are coprime"
+       :expect (model (coprime (n (n z 1) 7) (n z 5))
+                      (coprime (n (n (n z 0) 0) 8) (n (n z 1) 5))))
+(query :goal (gcd-done ?t ?g)
+       :goal-text "for {?t}: {?g}"
+       :expect (model (gcd-done (coprime-test (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2)) (n (n z 2) 1))
+                      (gcd-done (coprime-test (n (n z 1) 7) (n z 5)) (n z 1))
+                      (gcd-done (coprime-test (n (n (n z 0) 0) 8) (n (n z 1) 5)) (n z 1))
+                      (gcd-done (coprime-test (n z 9) z) (n z 9))))
+(query :goal (gcd-of ?x ?y ?g)
+       :goal-text "gcd({?x}, {?y}) = {?g}"
+       :expect (model))

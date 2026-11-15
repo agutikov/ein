@@ -1,0 +1,47 @@
+;;; `std.math.gcd` — the least common multiple: the product divided by the
+;;; greatest common divisor. M1f S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; A request fact `(lcm X Y)` is answered by `(lcm-of X Y L)`: L is the least
+;;; number both divide, in normal form, and the operands are repeated as
+;;; written.
+;;;
+;;; ── By hand ────────────────────────────────────────────────────────────────
+;;;
+;;; The operands are looked up (`lcm-ask`, `gcd-ask-second`), and the
+;;; greatest common divisor is the call's, under a tag that carries both
+;;; (`lcm-start`). It is not zero here, so the operands are multiplied
+;;; (`lcm-product`), the product divided by it (`lcm-divide`), and the
+;;; quotient is the answer (`lcm-answer`):
+;;;
+;;;   lcm(1071, 462) = 1071 x 462 / 21 = 494802 / 21 = 23562
+;;;   lcm(4, 6) = 24 / 2 = 12       lcm(17, 5) = 85 / 1 = 85
+;;;   lcm(12, 12) = 144 / 12 = 12   lcm(6, 12) = 72 / 6 = 12
+;;;   lcm(07, 0010) = 70 / 1 = 70: read by value, and in normal form
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `lcm-of`'s whole extent: six requests, six answers.
+
+(import std.math.gcd :symbols (lcm lcm-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(lcm (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2))
+(lcm (n z 4) (n z 6))
+(lcm (n (n z 1) 7) (n z 5))
+(lcm (n (n z 1) 2) (n (n z 1) 2))
+(lcm (n z 6) (n (n z 1) 2))
+(lcm (n (n z 0) 7) (n (n (n (n z 0) 0) 1) 0))
+
+(solve :expect (region (model)))
+
+(query :goal (lcm-of ?x ?y ?l)
+       :goal-text "lcm({?x}, {?y}) = {?l}"
+       :expect (model (lcm-of (n (n (n (n z 1) 0) 7) 1) (n (n (n z 4) 6) 2) (n (n (n (n (n z 2) 3) 5) 6) 2))
+                      (lcm-of (n z 4) (n z 6) (n (n z 1) 2))
+                      (lcm-of (n (n z 1) 7) (n z 5) (n (n z 8) 5))
+                      (lcm-of (n (n z 1) 2) (n (n z 1) 2) (n (n z 1) 2))
+                      (lcm-of (n z 6) (n (n z 1) 2) (n (n z 1) 2))
+                      (lcm-of (n (n z 0) 7) (n (n (n (n z 0) 0) 1) 0) (n (n z 7) 0))))

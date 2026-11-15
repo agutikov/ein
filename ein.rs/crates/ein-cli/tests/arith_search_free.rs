@@ -19,7 +19,7 @@
 //! **Which programs.** Every `.ein` under [`ROOTS`]: the tests of the
 //! theories, `std.math.decimal-arith`, `std.math.num9` (S1f.6.13), `std.math.int` (S1f.6.7),
 //! `std.math.rat` (S1f.6.8), `std.math.binary-arith` and `std.math.convert` (S1f.6.16),
-//! and their examples. A
+//! `std.math.gcd` (S1f.6.32), and their examples. A
 //! program joins by being put there, and an operation by adding its result
 //! relation to [`RESULTS`]; nothing else here names a file.
 //!
@@ -41,9 +41,9 @@ use std::process::Command;
 use ein_corpus::{Scratch, ein_files_under, repo_root};
 
 /// Where the arithmetic programs live: `std.math.decimal-arith`'s tests, `std.math.num9`'s
-/// (S1f.6.13), `std.math.int`'s (S1f.6.7), `std.math.rat`'s (S1f.6.8), and the examples
-/// of all.
-const ROOTS: [&str; 10] = [
+/// (S1f.6.13), `std.math.int`'s (S1f.6.7), `std.math.rat`'s (S1f.6.8), `std.math.gcd`'s
+/// (S1f.6.32), and the examples of all.
+const ROOTS: [&str; 11] = [
     "tests/stdlib/math/decimal-arith",
     "tests/stdlib/math/decimal",
     "tests/stdlib/math/num9",
@@ -52,6 +52,7 @@ const ROOTS: [&str; 10] = [
     "tests/stdlib/math/binary-arith",
     "tests/stdlib/math/binary",
     "tests/stdlib/math/convert",
+    "tests/stdlib/math/gcd",
     "examples/arith",
     "examples/binary_arithmetic",
 ];
@@ -61,9 +62,14 @@ const ROOTS: [&str; 10] = [
 /// `std.math.int`'s six and `std.math.rat`'s seven; and `div-done`, the hand-over of
 /// `std.math.decimal-arith`'s tagged division, which is the answer a rule of a program's
 /// own reads where it calls the division itself (S1f.6.24's `41`). Since S1f.6.16
-/// `std.math.binary-arith`'s five and `std.math.convert`'s two.
-const RESULTS: [&str; 38] = [
+/// `std.math.binary-arith`'s five and `std.math.convert`'s two; since S1f.6.32
+/// `std.math.gcd`'s two, and `gcd-done`, its tagged call's hand-over, which a
+/// rule of a program's own reads as it reads `div-done`.
+const RESULTS: [&str; 41] = [
     "div-done",
+    "gcd-done",
+    "gcd-of",
+    "lcm-of",
     "bin-sum-of",
     "bin-diff-of",
     "bin-cmp-of",
@@ -104,23 +110,25 @@ const RESULTS: [&str; 38] = [
 ];
 
 /// The theories: a program under [`ROOTS`] imports one, or several.
-const THEORIES: [&str; 6] = [
+const THEORIES: [&str; 7] = [
     "(import std.math.decimal-arith ",
     "(import std.math.num9 ",
     "(import std.math.int ",
     "(import std.math.rat ",
     "(import std.math.binary-arith ",
     "(import std.math.convert ",
+    "(import std.math.gcd ",
 ];
 
 /// The theories that bring decimal's base and binary's, each reading one
 /// `absent`, over its `let`: a program reads one a base it holds.
-const DECIMAL_BASE: [&str; 5] = [
+const DECIMAL_BASE: [&str; 6] = [
     "(import std.math.decimal-arith ",
     "(import std.math.num9 ",
     "(import std.math.int ",
     "(import std.math.rat ",
     "(import std.math.convert ",
+    "(import std.math.gcd ",
 ];
 const BINARY_BASE: [&str; 2] = [
     "(import std.math.binary-arith ",
@@ -164,8 +172,9 @@ const RESTS_ON: [&str; 8] = [
 /// The requests and the `let` a malformed program's flag can name, by the
 /// start of their text (S1f.6.12): `std.math.decimal-arith`'s five requests,
 /// and since S1f.6.38 `std.math.int`'s and `std.math.rat`'s, whose undeclared
-/// name or digit as an operand is flagged on the request.
-const READS: [&str; 14] = [
+/// name or digit as an operand is flagged on the request; since S1f.6.32
+/// `std.math.gcd`'s two.
+const READS: [&str; 16] = [
     "(add ",
     "(sub ",
     "(cmp ",
@@ -174,6 +183,8 @@ const READS: [&str; 14] = [
     "(let ",
     "(int-",
     "(rat-",
+    "(gcd ",
+    "(lcm ",
     "(bin-add ",
     "(bin-sub ",
     "(bin-cmp ",

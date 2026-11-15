@@ -176,6 +176,11 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// calculator: the 38 programs listed for `z` alone left the list, and the
 /// others lost their `z` line.
 ///
+/// **Joined at M1f S1f.6.32**: `tests/stdlib/math/gcd/12_what_stays_silent.ein`,
+/// which imports `std.math.int` beside `std.math.gcd` for an integer where a
+/// number goes, and so meets `pos` and `neg` where every program that brings
+/// `std.math.int` does, in its division's rules.
+///
 /// **Joined at M1f S1f.6.16**: three programs of `tests/stdlib/math/binary/`,
 /// on the pattern of decimal's (a letter or a decimal digit in a numeral, a
 /// name only a rule writes); and `stdlib/math/positional.ein` alone, the rules
@@ -190,7 +195,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// `readings`, hold the calculator whole and meet `z` first in
 /// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
 /// `0` and `1` in its `domain-elimination`.
-const SEEDED: [(&str, &[&str]); 124] = [
+const SEEDED: [(&str, &[&str]); 125] = [
     (
         "examples/arith/int.ein",
         &[
@@ -514,6 +519,13 @@ const SEEDED: [(&str, &[&str]); 124] = [
             "`end`, in (let far (n end 1))",
             "`pear`, asserted by rule `assemble`",
             "`x`, asserted by rule `assemble`",
+        ],
+    ),
+    (
+        "tests/stdlib/math/gcd/12_what_stays_silent.ein",
+        &[
+            "`neg`, asserted by rule `std.math.int.int-div-pn`",
+            "`pos`, asserted by rule `std.math.int.int-div-pp`",
         ],
     ),
     (

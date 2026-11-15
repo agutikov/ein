@@ -1,0 +1,24 @@
+;;; `std.math.gcd` — a first operand that is a name no `let` states. M1f
+;;; S1f.6.32.
+;;;
+;;; ── What the theory promises ───────────────────────────────────────────────
+;;;
+;;; An operand is looked up through `std.math.decimal-arith`'s `operand`,
+;;; whose `operand-undeclared` says `(bad-operand (gcd-first REQUEST Y) (no-let
+;;; foo))` under this module's tag; `gcd-bad-first` turns the tag into the
+;;; request, `(bad-request (gcd foo Y) (no-let foo))`, and
+;;; `std.math.decimal-arith`'s rules derive `(undeclared foo (gcd foo Y))` and
+;;; `(false)`. The request is never answered.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `(solve :expect (false))`: root's own fixpoint derives `(false)`, R is
+;;; empty, and it is the one claim such a program can make.
+
+(import std.math.gcd :symbols (gcd))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(gcd foo (n z 6))
+
+(solve :expect (false))
