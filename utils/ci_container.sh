@@ -111,7 +111,7 @@ git -C "${WORK}/src" checkout -q --detach "${HEAD}"
 git -C "${WORK}/src" clean -q -fdx -e ein.rs/target -e build
 
 # Mounted at its own path, not a short one: the tests bake
-# `CARGO_MANIFEST_DIR` into their binaries, and `corpus_shapes.rs` makes a
+# `CARGO_MANIFEST_DIR` into their binaries, and the golden's sweep makes a
 # rendering portable by replacing the repo root's text with `<repo>`, so a
 # root of `/w` rewrote every `/w…` in 1 446 renderings (2026-11-08).
 SRC="${WORK}/src"

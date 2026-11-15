@@ -1,10 +1,11 @@
 //! The corpus × op sweep, shared by the two tests that walk it.
 //!
-//! `id_order_invariance` runs every pair twice under different id spaces;
-//! `corpus_shapes` runs every pair once and digests it. Both need the same
-//! answer to "what are the observable surfaces, and how is one produced", and
-//! a second copy of that list would be a second opinion about what the engine
-//! renders.
+//! `id_order_invariance` runs every pair once, digests it against the golden
+//! (`corpus_shapes.rs` did, until M1f S1f.6.39) and runs it again under a
+//! permuted id space; `jobs_invariance` runs the pairs a job count reaches at
+//! `--jobs N`. Both need the same answer to "what are the observable
+//! surfaces, and how is one produced", and a second copy of that list would be
+//! a second opinion about what the engine renders.
 //!
 //! Every test binary that declares the module compiles the whole of it, so an
 //! item only one of them calls reads as dead to the other — the standard cost
@@ -229,7 +230,7 @@ impl Op {
             // The region trace is a derivation told step by step, which two
             // runs may narrate differently — the walk's `markdown` was the same
             // and compared for presence only (`ein_narration::is_narration`).
-            // `corpus_shapes` still digests it whole, in one id space.
+            // The golden still digests it whole, in one id space.
             Op::RegionTrace => return None,
             // The three ops the relaxation never touches: the frontend modes,
             // the loaded KB's shape, and root saturation's event stream. None
@@ -804,7 +805,8 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
     }
 }
 
-/// **The pair's name in `corpus_shapes`' golden**, `<repo-relative path>::<op>`.
+/// **The pair's name in the golden**, `corpus_shapes.md5`,
+/// `<repo-relative path>::<op>`.
 pub fn pair_name(rel: &Path, op: Op) -> String {
     format!("{}::{op}", rel.display())
 }
@@ -813,7 +815,7 @@ pub fn pair_name(rel: &Path, op: Op) -> String {
 /// `render::hashed_id` uses for a DOT node id. Not a security claim: the
 /// question is whether a rendering changed, and 64 bits answers it.
 ///
-/// One definition for the three sweeps (M1f S1f.6.39): `corpus_shapes` banks
+/// One definition for the sweeps (M1f S1f.6.39): `id_order_invariance` banks
 /// it, and `jobs_invariance` holds a `--jobs N` run to what it banked.
 pub fn digest(text: &str) -> String {
     use md5::Digest;
@@ -850,14 +852,14 @@ pub fn portable(root: &str, text: &str) -> String {
     text.replace(root, "<repo>")
 }
 
-/// **`corpus_shapes`' golden as `name → digest`** (M1f S1f.6.39): what a
-/// `--jobs 1` run of each pair rendered when it was banked, the bytes
-/// [`digest`] reads, narration and all, the checkout made [`portable`].
+/// **The golden as `name → digest`** (M1f S1f.6.39): what a `--jobs 1` run
+/// of each pair rendered when it was banked, the bytes [`digest`] reads,
+/// narration and all, the checkout made [`portable`].
 ///
 /// A sweep that finds its run's digest here has the `--jobs 1` rendering's
 /// digest without computing it. The premise is that the golden is today's,
-/// and `corpus_shapes` is what fails when it is not, in the same gate; a
-/// pair whose digest differs, or that the golden lacks, computes the run.
+/// and `id_order_invariance` is what fails when it is not, in the same tier;
+/// a pair whose digest differs, or that the golden lacks, computes the run.
 /// Empty if the file is missing.
 pub fn golden_digests() -> std::collections::BTreeMap<String, String> {
     let path = ein_corpus::golden_path("ein-render", "corpus_shapes.md5");

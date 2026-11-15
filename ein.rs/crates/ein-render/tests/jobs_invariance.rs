@@ -1,9 +1,9 @@
 //! T1a.7.5.3 — **the `--jobs` contract, as a sweep**: the whole corpus, every
 //! observable surface, at one job count and at several, and nothing may move.
 //!
-//! This is the third sweep over [`corpus_ops`](corpus_ops), beside
-//! `corpus_shapes` (digest once) and `id_order_invariance` (twice, ids
-//! permuted). It is what
+//! This is the second sweep over [`corpus_ops`](corpus_ops), beside
+//! `id_order_invariance` (digested against the golden once, and again with
+//! the ids permuted). It is what
 //! [P1a.7's acceptance](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //! names.
 //!
@@ -51,15 +51,23 @@
 //! [`an_op_outside_the_predicate_ignores_jobs`] holds that side.
 //!
 //! **Against the golden.** `--jobs 1`'s rendering of every pair is what
-//! `corpus_shapes` digests and banks (`tests/golden/corpus_shapes.md5`), over
-//! the same bytes — narration and all, the checkout made portable — so a
+//! `id_order_invariance` digests and banks (`tests/golden/corpus_shapes.md5`),
+//! over the same bytes — narration and all, the checkout made portable — so a
 //! `--jobs N` run whose digest is the banked one is a run that rendered the
 //! same bytes, and the `--jobs 1` run is not computed again. Only a run whose
 //! digest differs, or that the golden lacks, computes `--jobs 1` and reports
 //! the first difference through the cut, as before. The premise is that the
-//! golden is today's, and `corpus_shapes` fails in the same gate when it is
-//! not; a stale golden costs this test time, never a verdict, since a
+//! golden is today's, and `id_order_invariance` fails in the same tier when
+//! it is not; a stale golden costs this test time, never a verdict, since a
 //! mismatch is what computes the baseline.
+//!
+//! **Which programs** (the user's rulings of 2026-11-15 on Q-M1f.288 and
+//! .290). Per commit, the programs outside `tests/` that **search**, whose
+//! describe saturates more than root (`corpus_ops::searches`, computed from
+//! the program): a job count reaches only a region route's fan-out, which has
+//! more than one node to fan out only there. `EIN_CORPUS_SLOW=1`, the
+//! nightly's, every corpus program, in its shard (`EIN_TEST_SHARD`). Each
+//! program is loaded once, every cell on a copy (`corpus_ops::Loads`).
 //!
 //! ## Why it is cheap enough to be in `cargo test`
 //!
@@ -72,6 +80,7 @@
 //!
 //! ```text
 //! cargo test -p ein-render --test jobs_invariance
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-render --test jobs_invariance
 //! EIN_JOBS_SWEEP=2,4,8,16 cargo test -p ein-render --test jobs_invariance
 //! ```
 
@@ -82,7 +91,13 @@ use std::path::{Path, PathBuf};
 
 use corpus_ops::{Loads, Op, digest, golden_digests, ops, pair_name, portable, run_with};
 use ein_core::Terms;
-use ein_corpus::{corpus_files, pool, repo_root};
+use ein_corpus::{corpus_files, pool, repo_root, shard, under_tests};
+
+/// `EIN_CORPUS_SLOW=1`: the nightly's sweep, every corpus program; unset,
+/// the per-commit one (the module note).
+fn slow_too() -> bool {
+    std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
+}
 
 /// The job counts to compare `--jobs 1` against.
 ///
@@ -129,6 +144,8 @@ fn the_sweep_is_not_vacuous() {
 /// What one (file, op, jobs) cell came to.
 #[derive(Debug, PartialEq)]
 enum Cell {
+    /// The program does not search, and this run reads only those that do.
+    Outside,
     /// `--jobs 1` refused the file: nothing to compare, as before.
     Skipped,
     /// The same bytes as `--jobs 1`'s: by the golden's digest, or by the
@@ -200,10 +217,17 @@ fn cell(
 #[test]
 fn jobs_does_not_move_any_observable() {
     let ops: Vec<Op> = ops().into_iter().filter(|op| op.takes_jobs()).collect();
-    let files = corpus_files();
+    let slow = slow_too();
+    let root = repo_root();
+    let files: Vec<PathBuf> = corpus_files()
+        .into_iter()
+        .filter(|f| slow || !under_tests(f.strip_prefix(&root).unwrap_or(f)))
+        .collect();
+    let files = shard::keep(files, |f| {
+        f.strip_prefix(&root).unwrap_or(f).display().to_string()
+    });
     let counts = job_counts();
     let golden = golden_digests();
-    let root = repo_root();
     let root_str = root.display().to_string();
     let (mut answers, mut narrations) = (Vec::new(), Vec::new());
     let (mut compared, mut by_golden) = (0usize, 0usize);
@@ -232,14 +256,21 @@ fn jobs_does_not_move_any_observable() {
         },
         |&(f, o, j)| {
             let unit = loads.unit(f);
+            if !slow && !unit.searches() {
+                return Cell::Outside;
+            }
             cell(&rel(f), ops[o], counts[j], &golden, &root_str, &|op, n| {
                 unit.run(op, n).0
             })
         },
     );
-    for c in cells {
+    let mut searching = std::collections::BTreeSet::new();
+    for (&(f, _, _), c) in units.iter().zip(cells) {
+        if c != Cell::Outside {
+            searching.insert(f);
+        }
         match c {
-            Cell::Skipped => {}
+            Cell::Outside | Cell::Skipped => {}
             Cell::Same { by_golden: g } => {
                 compared += 1;
                 by_golden += usize::from(g);
@@ -291,15 +322,34 @@ fn jobs_does_not_move_any_observable() {
     // A sweep that compared nothing that could differ would be green forever:
     // every cell here runs an op a job count reaches.
     assert!(
-        compared >= 1000,
+        compared >= shard::share(1000),
         "only {compared} cells ran an op that takes a job count — the ops \
          that can differ by job count are the ones that search, and this \
          sweep has stopped reaching them"
     );
+    // Per commit the programs that search are what the sweep reads
+    // (Q-M1f.288): a predicate that held of none would check nothing, and
+    // one that held of all would be no reduction.
+    if !slow {
+        assert!(
+            searching.len() >= shard::share(100) && searching.len() < files.len(),
+            "{} of the {} programs outside tests/ search, as `corpus_ops::searches` \
+             reads them — the set this sweep runs over per commit has lost its meaning",
+            searching.len(),
+            files.len()
+        );
+    }
     eprintln!(
-        "jobs invariance: {compared} (file, op, jobs) cells over {} files × \
+        "jobs invariance{}{}: {compared} (file, op, jobs) cells over {} of {} files × \
          {} ops that take a job count × {:?}, {by_golden} held to the golden's \
          digest and {} to a computed --jobs 1 run, 0 moved",
+        if slow {
+            " [every corpus program]"
+        } else {
+            " [the programs that search, outside tests/]"
+        },
+        shard::current().map_or(String::new(), |s| format!(" [shard {s}]")),
+        searching.len(),
         files.len(),
         ops.len(),
         counts,

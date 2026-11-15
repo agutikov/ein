@@ -140,7 +140,8 @@ fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
         remapped += usize::from(r);
         checked += 1;
     }
-    // The floor `corpus_shapes` holds `load` to: a sweep that loaded nothing
+    // The floor the golden's sweep (`id_order_invariance`) holds `load` to,
+    // over every corpus program in the nightly: a sweep that loaded nothing
     // agrees about nothing.
     assert!(checked >= 60, "only {checked} corpus files loaded");
     // The remap is half of what is being tested; a sweep in which every file

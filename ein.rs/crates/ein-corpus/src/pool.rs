@@ -67,7 +67,8 @@ pub const DEFAULT_JOBS: usize = 16;
 /// oracle FILE`, each process's `ru_maxrss` by `os.wait4`
 /// (`build/s1f.6.39/cli_rss.py`): `send_more_money` 529 MB and `04_open`
 /// 266 MB, every other program 187 MB or less. In-process, every unit of
-/// `corpus_shapes` at `EIN_TEST_JOBS=1` under `EIN_TEST_UNITS` left the whole
+/// `corpus_shapes` (the golden's sweep until S1f.6.39) at `EIN_TEST_JOBS=1`
+/// under `EIN_TEST_UNITS` left the whole
 /// test process under 272 MB. So the bound is loose: four of these at once
 /// and twelve of the next-heaviest come to under 5 GB, against the 24 GB the
 /// pool is held to (the record's per-binary peaks, `utils/gate_times.py`).
@@ -245,6 +246,25 @@ fn cost_of(program: &str) -> u64 {
         .map_or(0, |(_, c)| *c)
 }
 
+/// **The order the pool starts units in**, as indices into `programs` (each
+/// a unit's program): the [`HEAVY`] programs first, then the [`LONG`] ones,
+/// then by the manifest's `cost_ms`, longest first, then in the list's own
+/// order. No result reads it; `crate::shard` deals programs to the nightly's
+/// shards in it, so the long ones are spread first.
+pub fn start_order(programs: &[String]) -> Vec<usize> {
+    let mut order: Vec<usize> = (0..programs.len()).collect();
+    order.sort_by_key(|&i| {
+        let p = &programs[i];
+        (
+            !is_heavy(p),
+            !LONG.iter().any(|l| p.ends_with(l)),
+            std::cmp::Reverse(cost_of(p)),
+            i,
+        )
+    });
+    order
+}
+
 /// **Run `f` over every unit on the pool; the results in the units' order.**
 ///
 /// `sweep` names the caller for the instrument; `key` names a unit as
@@ -267,16 +287,8 @@ where
     let keys: Vec<(String, String)> = units.iter().map(&key).collect();
     let heavy: Vec<bool> = keys.iter().map(|(p, _)| is_heavy(p)).collect();
     // The order units start in: heavy first, then the longest programs.
-    let mut order: Vec<usize> = (0..units.len()).collect();
-    order.sort_by_key(|&i| {
-        let p = &keys[i].0;
-        (
-            !heavy[i],
-            !LONG.iter().any(|l| p.ends_with(l)),
-            std::cmp::Reverse(cost_of(p)),
-            i,
-        )
-    });
+    let programs: Vec<String> = keys.iter().map(|(p, _)| p.clone()).collect();
+    let order = start_order(&programs);
     let instrument = std::env::var_os("EIN_TEST_UNITS");
     let measure_peak = instrument.is_some() && jobs() == 1;
 

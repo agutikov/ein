@@ -444,7 +444,7 @@ fn a_query_over_an_empty_r_says_which_empty() {
 /// 2026-11-03 that a count is describe's question with the listing left out.
 ///
 /// In-process, at the corpus sweep's small budget and cube limit (2¹⁴ facts,
-/// 2¹⁰ nodes, `corpus_shapes.rs`'s), so that partial runs of every kind are
+/// 2¹⁰ nodes, the golden's sweep's, `corpus_ops`'), so that partial runs of every kind are
 /// among what is compared and the whole sweep is cheap. Each program is asked
 /// both questions, and:
 ///

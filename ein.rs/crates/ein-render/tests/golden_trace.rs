@@ -128,7 +128,7 @@ fn real_trace(rel: &str, flag: &str) -> String {
 /// Replace every fenced `dot` block with one marker line.
 ///
 /// A block that *vanished* still fails — the marker counts — and what is
-/// inside one is `golden_dot.rs`'s and `corpus_shapes.rs`'s to pin.
+/// inside one is `golden_dot.rs`'s and `corpus_shapes.md5`'s to pin.
 fn strip_dot(md: &str) -> String {
     let mut out: Vec<&str> = Vec::new();
     let mut in_dot = false;

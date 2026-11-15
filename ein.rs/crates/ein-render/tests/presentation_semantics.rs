@@ -1,7 +1,8 @@
 //! T1a.10.2.2 — presentation as **behaviour**, not as bytes.
 //!
-//! The bytes of every renderer are already pinned twice over: `corpus_shapes.rs`
-//! digests the DOT views of every corpus entry, and `golden_dot.rs` /
+//! The bytes of every renderer are already pinned twice over:
+//! `id_order_invariance.rs` digests the DOT views of every corpus entry
+//! against `golden/corpus_shapes.md5`, and `golden_dot.rs` /
 //! `golden_trace.rs` reproduce checked-in goldens.
 //! What none of those say is *what the picture means* — a golden that changed
 //! for a good reason is refreshed and the claim behind it is lost. These are

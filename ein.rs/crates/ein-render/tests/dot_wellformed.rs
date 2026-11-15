@@ -6,6 +6,11 @@
 //! view of every corpus entry also goes through `dot -Tsvg`, which is the only
 //! authority on whether the grammar and the attribute values are real.
 //!
+//! **Per commit, every corpus program outside `tests/`; in the nightly,
+//! `EIN_CORPUS_SLOW=1`, every one** (M1f S1f.6.39, the user's ruling of
+//! 2026-11-15 on Q-M1f.290): the programs under `tests/` are each one stdlib
+//! rule's claim, drawn by the writers every other program is drawn by.
+//!
 //! ## When Graphviz is the one that is broken
 //!
 //! `ubuntu-24.04` — the per-commit runner — ships `graphviz 2.42.2-9ubuntu0.1`,
@@ -46,9 +51,15 @@
 //! so that a view erroring once its engine was gone could not pass here.
 
 use ein_core::Terms;
-use ein_corpus::{corpus_files, repo_root};
+use ein_corpus::{corpus_files, repo_root, under_tests};
+
+/// `EIN_CORPUS_SLOW=1`: the nightly's sweep, every corpus program; unset,
+/// the per-commit one, every program outside `tests/`.
+fn slow_too() -> bool {
+    std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
+}
 use ein_ir::{Ast, parse};
-use ein_render::shape::{KB_VIEWS, all_views, dot_shape};
+use ein_render::shape::{KB_VIEWS, all_views, dot_shape, kb_dot_shape};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -125,7 +136,9 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// example (1 228 of 216 before them; `cargo test -p ein-render --test
 /// dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
-/// what it used to check is noticed.
+/// what it used to check is noticed. A per-commit run reads no program under
+/// `tests/` (Q-M1f.290), and holds the directories it reads to the entries
+/// outside it; the nightly's, to every entry.
 const SKIPPING: [&str; 17] = [
     "examples/arith",
     "examples/beyond_arith",
@@ -292,32 +305,40 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
     };
     // A file that does not parse has no view, one that does not load has
     // no KB view, and one whose root does not saturate has no `kb-since`:
-    // the corpus's load- and compile-error fixtures.
-    let (loads, saturates) = {
-        let mut ast = Ast::new();
-        let mut terms = Terms::new();
-        let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
-            return file;
-        };
-        match ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) {
-            Ok(mut kb) => (
-                true,
-                ein_infer::region::root_firings(
-                    &mut kb,
-                    &mut terms,
-                    &ast,
-                    &mut ein_infer::Events::off(),
-                )
-                .is_ok(),
-            ),
-            Err(_) => (false, false),
-        }
+    // the corpus's load- and compile-error fixtures. The file is loaded once
+    // and every KB view drawn from a copy of the load (M1f S1f.6.39,
+    // Q-M1f.292), as `id_order_invariance` digests them.
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
+        return file;
+    };
+    let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent());
+    let (loads, saturates) = match &kb {
+        Ok(kb) => (
+            true,
+            ein_infer::region::root_firings(
+                &mut kb.clone(),
+                &mut terms.clone(),
+                &ast,
+                &mut ein_infer::Events::off(),
+            )
+            .is_ok(),
+        ),
+        Err(_) => (false, false),
     };
     for view in views.iter() {
-        let mut ast = Ast::new();
-        let mut terms = Terms::new();
-        let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
-        let out = match dot_shape(&mut ast, &mut terms, &forms, path.parent(), view) {
+        let drawn = if KB_VIEWS.contains(view) {
+            match &kb {
+                Ok(kb) => kb_dot_shape(&ast, &mut terms.clone(), &mut kb.clone(), view),
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            let mut ast = Ast::new();
+            let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
+            dot_shape(&mut ast, &mut Terms::new(), &forms, path.parent(), view)
+        };
+        let out = match drawn {
             Ok(out) => out,
             Err(_) if !loads && KB_VIEWS.contains(view) => continue,
             Err(_) if !saturates && *view == "kb-since" => continue,
@@ -380,7 +401,12 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
 fn graphviz_accepts_every_view_of_every_corpus_file() {
     require_graphviz();
     let views = all_views();
-    let files = corpus_files();
+    let slow = slow_too();
+    let root = repo_root();
+    let files: Vec<std::path::PathBuf> = corpus_files()
+        .into_iter()
+        .filter(|f| slow || !under_tests(f.strip_prefix(&root).unwrap_or(f)))
+        .collect();
     let next = std::sync::atomic::AtomicUsize::new(0);
     let workers = std::thread::available_parallelism().map_or(1, |n| n.get());
     let mut found: Vec<(usize, FileSweep)> = std::thread::scope(|scope| {
@@ -424,8 +450,14 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
         bad.join("\n\n")
     );
     eprintln!(
-        "graphviz: {checked} non-empty views accepted, {} skipped past {DOT_LAYOUT_BOUND} edges \
-         ({skipped_files} files)",
+        "graphviz{}: {checked} non-empty views of {} files accepted, {} skipped past \
+         {DOT_LAYOUT_BOUND} edges ({skipped_files} files)",
+        if slow {
+            " [every corpus program]"
+        } else {
+            " [outside tests/]"
+        },
+        files.len(),
         skipped.len()
     );
     for (view, edges) in &skipped {
@@ -439,9 +471,14 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
         );
     }
     assert!(checked >= 500, "only {checked} views reached Graphviz");
+    let want: Vec<&str> = SKIPPING
+        .iter()
+        .copied()
+        .filter(|d| slow || !under_tests(std::path::Path::new(d)))
+        .collect();
     assert_eq!(
         skipping.iter().map(String::as_str).collect::<Vec<_>>(),
-        SKIPPING,
+        want,
         "the directories with a view past {DOT_LAYOUT_BOUND} edges, which is \
          skipped and not put to Graphviz, are not the ones `SKIPPING` names \
          (`-- --nocapture` lists every skipped view)"
