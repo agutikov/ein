@@ -3691,6 +3691,13 @@ it: a rational over a small denominator pays for a long division's preparation f
 alternative if rationals are used at volume; it was not prototyped. What a program can do today is compare
 before it computes: a comparison reduces nothing.
 
+**Ruled 2026-11-12, round 2's item 54: *"(b)"*** — not one of the three options above but *reduce only on request*
+([`questions_round2.md` § 54](p1f.6_calculator/questions_round2.md#q54); the user's question there, *"I think we
+don't need to reduce every rational, can ask explicitely for it?"*). **Built by
+[S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15), 2026-11-15:** an operation answers
+unreduced, `rat-simplify` alone reduces, by `std.math.gcd`'s tagged call, and `std.math.rat` holds no chain of its
+own; 1/2 + 1/3 is 101 firings, 2/3 × 3/4 81, and 2/4 simplified 345.
+
 ### Q-M1f.184 — The harness of `std.rat`, and the sizes memory allows
 
 **Raised** 2026-11-12 by [S1f.6.8](p1f.6_calculator/s1f.6.8_rational_numbers.md)'s T3. The stage file: *every operand pair at the exhausting width*. A request
@@ -5830,3 +5837,35 @@ written with digits, `(n z 0)`, is a divisor of the shape `(n P D)`, a division 
 
 **Defaulted 2026-11-15: (a), the user's to revise.** The simplest that is right; (b) is the cheaper on a proper
 fraction's terms, which `rat-simplify` hands over smaller first.
+
+### Q-M1f.302 — What `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b)
+
+**Raised** 2026-11-15 by [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15). The stage file: *the operations answer unreduced: the cross products over the
+product of the denominators, as computed, with the sign in the numerator's integer in normal form and the
+denominator a natural number that is not zero; … only the common factor of numerator and denominator stays*. A
+sum's and a product's denominator is a product, which has no high zero; a negation's is the operand's, as written,
+`(n (n z 0) 4)` perhaps. And `(rat-norm TAG P N D)`, an interface (round 2's item 41), was *P less N over D in
+lowest terms*.
+
+- **(a) Every answer with no high zero:** `rat-norm` simplifies the numerator and walks D to normal form by an
+  addition walk to zero, and reduces nothing; its meaning in the interface becomes *P less N over D, the numerator
+  in normal form and D with no high zero, not reduced*, the shape unchanged. A sum pays the walk on a denominator
+  that has no high zero, some two firings a digit.
+- **(b) D as handed over:** `rat-norm` simplifies the numerator only; a negation walks its denominator before it
+  calls, and a caller of the interface that hands D with high zeros gets them back.
+- **(c) D as written in a negation's answer too**: `-(1/02)` is `-1/02`.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** One sentence says what every answer is, and a caller of the
+interface reads it whatever it hands over.
+
+### Q-M1f.303 — `rat-simplify` asks `std.math.gcd` the numerator first
+
+**Raised** 2026-11-15 by [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15). `rat-simplify` calls `(gcd-call TAG A D)`, A the numerator's size and D the
+denominator, as `std.math.rat`'s own chain took them until this stage. Where A is the smaller, a proper fraction,
+the chain's first division turns the two round ([Q-M1f.301](#q-m1f301--what-gcd-call-does-before-euclids-chain)):
+one division more.
+
+- **(a) A first**, as before: the before-and-after measures of this stage compare step for step.
+- **(b) D first**, the cheaper on a proper fraction and the dearer on an improper one.
+
+**Defaulted 2026-11-15: (a), the user's to revise.**
