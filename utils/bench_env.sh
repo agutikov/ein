@@ -7,6 +7,7 @@
 #     utils/bench_env.sh --cores P:8 ./target/release/ein solve ... --jobs 8
 #     utils/bench_env.sh --report                     # fingerprint only
 #     utils/bench_env.sh --cores E:4 --report         # ...for a named core set
+#     utils/bench_env.sh --cores 0-31 --require-ac ./run_tests.sh   # the whole machine, on AC or not at all
 #
 # Two jobs, and the first is the one that matters: **print the machine state
 # every number was taken under**, to stderr, so no artefact in this phase can
@@ -39,17 +40,29 @@
 # `powersave` honestly and letting the variance column carry the consequence.
 # That is why every bench in this phase reports best-of-N *and* spread, and why
 # the fingerprint names the governor it ran under.
+#
+# **And the power supply** (M1f S1f.6.39): every `/sys/class/power_supply/*`
+# of type `Mains` with its `online`, and each battery's status. On battery
+# this laptop throttles every core, small binaries too — gate #3's mid-run
+# slowdown, 2.1 to 2.9 times gate #2 from its 38th minute, was the machine on
+# battery (the user, 2026-11-15) — so a number taken there is a number about
+# the battery. The fingerprint says `ON BATTERY` and warns; it does not refuse,
+# because a fingerprint that says so is what a record needs, and
+# `--require-ac` (exit 3 on battery, before the command) is for a script that
+# must not record such a number at all.
 set -euo pipefail
 
 CORE=4          # a P-core sibling on the dev machine; --core overrides
 CORES=""        # --cores spec; overrides --core when given
 REPORT_ONLY=0
+REQUIRE_AC=0
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --core) CORE="$2"; CORES=""; shift 2 ;;
         --cores) CORES="$2"; shift 2 ;;
         --report) REPORT_ONLY=1; shift ;;
+        --require-ac) REQUIRE_AC=1; shift ;;
         --) shift; break ;;
         *) break ;;
     esac
@@ -88,6 +101,20 @@ leader_of() {
     echo "$sibs" | tr ',-' '\n\n' | sort -n | head -1
 }
 
+# A literal taskset list with its ranges spelt out, `0-3,8` → `0,1,2,3,8`, so
+# that `describe_cores` counts and classifies every cpu of `--cores 0-31`.
+expand_list() {
+    local part out="" a b i
+    for part in $(echo "$1" | tr ',' ' '); do
+        case "$part" in
+            *-*) a=${part%-*}; b=${part#*-}
+                 for ((i = a; i <= b; i++)); do out="${out:+$out,}$i"; done ;;
+            *)   out="${out:+$out,}$part" ;;
+        esac
+    done
+    echo "$out"
+}
+
 # Resolve a --cores spec to a comma-separated taskset list.
 #
 # `P:N` takes one thread per *physical* core and `PT:N` takes threads in cpu
@@ -96,7 +123,7 @@ leader_of() {
 resolve_cores() {
     local spec="$1" want kind n picked seen leader
     case "$spec" in
-        [0-9]*) echo "$spec"; return ;;
+        [0-9]*) expand_list "$spec"; return ;;
         P|P:*)   kind=P; want=one-per-core ;;
         PT|PT:*) kind=P; want=per-thread ;;
         E|E:*)   kind=E; want=one-per-core ;;
@@ -160,6 +187,44 @@ cpu_kind() {
     fi
 }
 
+# "AC (ACAD online=1); BAT1 Charging 98 %" — or "ON BATTERY …". `power_state`
+# sets POWER to `ac`, `battery` or `unknown` (no `Mains` supply: a desktop, a
+# container, a VM), and only `battery` warns.
+POWER=unknown
+power_state() {
+    local d type online mains="" bats="" any_online=0 any_mains=0
+    for d in /sys/class/power_supply/*; do
+        [ -e "$d/type" ] || continue
+        type=$(sysfile "$d/type")
+        case "$type" in
+            Mains)
+                online=$(sysfile "$d/online")
+                any_mains=1
+                [ "$online" = 1 ] && any_online=1
+                mains="${mains:+$mains, }${d##*/} online=$online" ;;
+            Battery)
+                bats="${bats:+$bats, }${d##*/} $(sysfile "$d/status") $(sysfile "$d/capacity") %" ;;
+        esac
+    done
+    if [ "$any_mains" = 0 ]; then
+        POWER=unknown
+        echo "no mains supply reported${bats:+; $bats}"
+    elif [ "$any_online" = 1 ]; then
+        POWER=ac
+        echo "AC ($mains)${bats:+; $bats}"
+    else
+        POWER=battery
+        echo "ON BATTERY ($mains)${bats:+; $bats} — timings taken now are not the machine's"
+    fi
+}
+POWER_LINE=$(power_state)
+# `$(…)` ran it in a subshell: read the verdict back off the line.
+case "$POWER_LINE" in
+    AC*) POWER=ac ;;
+    "ON BATTERY"*) POWER=battery ;;
+    *) POWER=unknown ;;
+esac
+
 if [ -n "$CORES" ]; then
     CORE_LIST=$(resolve_cores "$CORES")
     REPORT_CORE=${CORE_LIST%%,*}
@@ -185,12 +250,22 @@ fi
                               && echo "on (no_turbo=0)" || echo "off")"
     echo "  cur / max MHz   $(( $(sysfile "/sys/devices/system/cpu/cpu$REPORT_CORE/cpufreq/scaling_cur_freq") / 1000 ))" \
          "/ $(( $(sysfile "/sys/devices/system/cpu/cpu$REPORT_CORE/cpufreq/scaling_max_freq") / 1000 ))"
+    echo "  power           $POWER_LINE"
     echo "  loadavg         $(cut -d' ' -f1-3 /proc/loadavg)"
     echo "  perf_paranoid   $(sysfile /proc/sys/kernel/perf_event_paranoid)" \
          "(2 = user-space samples only, enough for a self-time table)"
     echo "  git             $(git -C "$(dirname "$0")/.." rev-parse --short HEAD 2>/dev/null || echo '?')"
     echo "──────────────────────────────────────────────────────────"
+    if [ "$POWER" = battery ]; then
+        echo "warning: on battery — every core is throttled; do not record these timings" \
+             "(M1f S1f.6.39)."
+    fi
 } >&2
+
+if [ "$POWER" = battery ] && [ "$REQUIRE_AC" = 1 ]; then
+    echo "bench_env.sh: --require-ac, and the machine is on battery — nothing run." >&2
+    exit 3
+fi
 
 [ "$REPORT_ONLY" = "1" ] && exit 0
 [ $# -eq 0 ] && {
