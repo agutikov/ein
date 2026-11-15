@@ -448,10 +448,13 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ./run_tests.sh --tests-only                                  # skip the static checks
 ./run_tests.sh --nightly                                     # M1e2 S1e2.3.6: instead of the gate, every step of nightly.yml, its three jobs in order
 ./run_tests.sh --dev-host                                    # M1f S1f.5.27: instead of the gate, the nightly at full budget and the steps that left it
-EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --release --test fuzz_properties     # the nightly's fuzz job, once per seed (1, 987654321); the dev host runs 1000000
+EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --profile gate --test fuzz_properties     # the nightly's fuzz job, once per seed (1, 987654321); the dev host runs 1000000
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
 cargo test … -p ein-infer --features counters --test arith_batch   # M1f S1f.6.3: the calculator's batch, by the matcher's count; by hand since S1f.6.21, in no tier
-cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
+cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the tests alone, as the gate builds them (M1f S1f.6.39)
+EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
+EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test corpus_shapes   # every unit's cost and peak memory, one line each
+python3 utils/gate_times.py run --out g.log -- ./run_tests.sh   # M1f S1f.6.39: a gate run timed per step and per binary, memory and power sampled; `report g.log`
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the slow entries, which the_slow_set_is_exactly_these_fifteen names
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance   # the dev host's, since M1f S1f.5.27
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
@@ -491,11 +494,11 @@ deleted at M1e2 S1e2.1c.5; a page that describes it is a record.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
 six static checks (`--tests-only` skips them and the bench smoke), then
-`cargo test --workspace`, then the bench smoke test. The tests run with
+`cargo test --profile gate --workspace`, then the bench smoke test. The tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,
-naming the file that writes it. **`cargo test --workspace` alone is not the
-gate**: it checks none of the six. A local gate that is a subset of the
+naming the file that writes it. **`cargo test --profile gate --workspace`
+alone is not the gate**: it checks none of the six. A local gate that is a subset of the
 remote one is a local gate that lies — keep the two lists the same;
 `ein-cli/tests/gate_steps.rs` diffs them.
 
@@ -519,7 +522,23 @@ the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`
 documented crate, and a private item is a real name that public docs may cite
 but not hyperlink.
 
-Everything runs one engine. `cargo test --workspace` is the gate — the corpus
+**The gate profile** (M1f S1f.6.39): every test step of every tier runs
+`cargo test --profile gate`, into `ein.rs/target/gate/` — release codegen
+with `debug_assert!` and overflow checks on (`ein.rs/Cargo.toml`), which the
+dev profile kept at `opt-level = 1` and `--release` dropped. Clippy, rustdoc
+and the bench smoke are unchanged; the review-bundle smoke drives
+`target/gate/ein`. **The worker pool**: a sweep over the corpus hands its
+loop to `ein_corpus::pool::map`, whose units — a (program, output) pair, a
+program, a CLI cell — run on `EIN_TEST_JOBS` workers (default 16, never more
+than the machine's threads, shared by every pool of one test binary; a
+program on `pool::HEAVY` runs in a lane of a quarter of them) and come back
+in the units' order. **No verdict depends on the count**: a unit keeps no
+state another reads, and the sweep folds the results as its serial loop did,
+so a failure reads the same at 1 and at 16 (`pool.rs`' tests). A new corpus
+sweep uses the pool. `utils/stdlib_mutants.py --jobs` is the same count for
+the mutation census.
+
+Everything runs one engine. `cargo test --profile gate --workspace` is the gate — the corpus
 sweep through the CLI, the shape digests, the goldens, the manifest's own
 invariants, and the **stdlib conformance** pair — and it needs **Graphviz** on
 `PATH`, because `dot_wellformed.rs` is the only authority the DOT views have

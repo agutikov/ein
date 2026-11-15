@@ -28,13 +28,19 @@ Everything is `cargo test`.
 | [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip** (M1e2 S1e2.3.8): every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the nightly (`EIN_CORPUS_SLOW=1`), and holds `heavy_dump` to the state files it counts (M1f S1f.5.13) |
 | [`ein-render/tests/corpus_shapes.rs`](../ein.rs/crates/ein-render/tests/corpus_shapes.rs) | digests every observable surface of every corpus *file* (7 462 renderings), which is a superset of what the runs reach |
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | runs the same sweep twice under a permuted id space |
-| [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the same sweep again at `--jobs N` — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts |
+| [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to `corpus_shapes`' digest of its `--jobs 1` rendering and computed again only where it differs (M1f S1f.6.39) — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
 | [`ein-cli/tests/wrong_answers.rs`](../ein.rs/crates/ein-cli/tests/wrong_answers.rs) | **the wrong-answer register**, [`wrong_answers.toml`](wrong_answers.toml) (M1e2 S1e2.1.1): one row per witness of every known wrong answer, holding each to the answer it gives today — the wrong one while `open`, the right one once `fixed`. Every witness is a manifest entry or a file under `fuzz_findings/`, which `ein-corpus`'s `register` module checks without a run |
 
 The last four walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.
 The completeness check is what keeps the two views the same set.
+
+**Every reader above that sweeps the corpus runs on the worker pool** (M1f
+S1f.6.39, `ein_corpus::pool`): its units — a (file, op) pair, a file, a cell —
+on `EIN_TEST_JOBS` workers, default 16, read back in their order, so no
+verdict and no failure's text depends on the count. A sweep whose cells it
+times, `corpus_cli`, times each beside the cells the other workers run.
 
 **That difference is what a dropped run does and does not cost**, and it is
 worth knowing before reading the `runs` columns below. `corpus_shapes` solves
@@ -318,11 +324,11 @@ workflow and the dev host's to the nightly's.
 
 | test or script | per commit | CI nightly | dev host |
 |---|---|---|---|
-| `corpus_cli` | every entry but the `slow` ones | the `slow` ones too (`EIN_CORPUS_SLOW=1`, `--release`) | as the nightly |
+| `corpus_cli` | every entry but the `slow` ones | the `slow` ones too (`EIN_CORPUS_SLOW=1`) | as the nightly |
 | `answer_round_trip` | every entry but the `slow` and `heavy_dump` ones | every entry | as the nightly |
 | `lever_invariance` | every declared lever cell but the `slow` ones | the `slow` cells too | as the nightly |
 | `corpus_cores` | every entry but the `slow` ones | the `slow` ones too | as the nightly |
-| `answer_dump` | every entry | the same, in release | as the nightly |
+| `answer_dump` | every entry | the same | as the nightly |
 | `region`, `obligation_rung` | the fast halves | the slow halves too, since S1f.5.27 | as the nightly |
 | `route_invariance` | every monotone program both routes describe at the default budget | — | the zebra family and the six `square-*` at `--region-budget` 2²⁵ too |
 | `id_order_invariance` | one permutation of the id space | — | eight |
@@ -332,8 +338,13 @@ workflow and the dev host's to the nightly's.
 | `utils/review_bundle.py` | `--smoke` | — | the whole bundle, and its link check |
 | `cargo bench --bench engine -- --test` | yes | yes | yes |
 
+**Every tier's test steps run the gate profile** (M1f S1f.6.39): `cargo test --profile gate`, release codegen with the
+debug assertions and overflow checks on, where the per-commit tier ran the dev profile and the nightly `--release`.
+
 What each step took, on the runner and here, is in
-[S1f.5.27's records](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md#t1-record-2026-11-10).
+[S1f.5.27's records](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md#t1-record-2026-11-10),
+and before and after the pool and the profile in
+[S1f.6.39's](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.39_the_gate_made_fast.md).
 
 ## Levers
 

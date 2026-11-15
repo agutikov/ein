@@ -647,8 +647,15 @@ the five separations above was added *because* a mutant survived without it,
 so the sweep is not decoration: it is what built this directory.
 
 The two numbers are different measurements. The script is **exhaustive** over
-four mechanical families where the hand sweep was one per family, and it runs
-in 7 s, so it can be re-taken rather than remembered. The survivors are banked
+four mechanical families where the hand sweep was one per family, and it ran
+in 7 s then, so it can be re-taken rather than remembered. **It runs its
+mutants side by side since M1f S1f.6.39** (`--jobs N`, default
+`$EIN_TEST_JOBS` or 16, at most the machine's threads), each in its own copy
+of `stdlib/`, and puts the results back in the mutants' order before it
+prints or compares anything, so its report and `--check`'s verdict are the
+same text at any count: 572 mutants one at a time had grown to about 49 min
+of the nightly (gate #3, 2026-11-15). The nightly runs it on the gate
+profile's `ein` (`--bin ein.rs/target/gate/ein`), which its test steps built. The survivors are banked
 as a *set* in [`mutation_survivors.txt`](mutation_survivors.txt) — a score
 decays while the thing it guards grows, which is the same finding as `TE-M2`'s
 floors — and `--check` fails on a new one **and** on a banked one that has since
