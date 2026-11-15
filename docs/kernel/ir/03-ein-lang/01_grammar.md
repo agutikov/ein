@@ -860,16 +860,27 @@ every two different values, computed and never stored. Its arguments are
 values: a variable, a name (a run of digits is a name, an integer until M1f
 S1f.5.4), or a fact that holds no variable, `(f a)`, the nested fact it spells
 as in `(p (f a))`; a form that holds a variable is refused at load (Q-M1f.30),
-and `_` and a keyword pair at the parse. **A premise means the same in any
-order of its conjuncts**: a guard whose variable a relation premise of its
-conjunction binds waits for that premise and is a test after it, so `(and
-(neq ?x a) (p ?x))` is `(and (p ?x) (neq ?x a))`. A variable **nothing** in
-the conjunction binds is bound by the guard, where it is written, as a relation
-premise binds it: `eq` binds it to the other side's value, and `neq`, or `eq`
-with both sides free, ranges it over **the program's names**, every constant a
-fact writes in an argument, at any depth, and every constant of a rule's
-`:match` or `:assert` (Q-M1e2.9 (a), `invariant::program_names`), the list H's
-candidates are built from; a name only a query writes is none of them. An
+and `_` and a keyword pair at the parse. **A guard's place among the relation
+premises of its conjunction does not change what the premise means; the order
+of two guards on a variable no relation premise binds does** (M1f E-37): a
+guard whose variable a relation premise of its conjunction binds waits for that
+premise and is a test after it, so `(and (neq ?x a) (p ?x))` is `(and (p ?x)
+(neq ?x a))`. A variable **nothing** in the conjunction binds is bound by the
+guard, where it is written, as a relation premise binds it: `eq` binds it to
+the other side's value, and `neq`, or `eq` with both sides free, ranges it over
+**the program's names**, every constant a fact writes in an argument, at any
+depth, and every constant of a rule's `:match` or `:assert` (Q-M1e2.9 (a),
+`invariant::program_names`), the list H's candidates are built from; a name
+only a query writes is none of them. A guard on that variable after it is a
+test, so the first of two such guards to run decides what the variable holds:
+`(and (p ?a) (neq ?m z) (eq ?m ?a))` binds `?a` to each name `p` holds of
+but `z`, and to no nested fact, since `neq` ranges `?m` over the names and `eq`
+tests it, while `(and (p ?a) (eq ?m ?a) (neq ?m z))` binds it to each value `p`
+holds of but `z`, a nested fact too, since `eq` binds `?m` to `?a`'s value.
+A guard that also reads a variable a relation premise binds still waits for
+that premise, so `(and (eq ?m ?a) (neq ?m z) (p ?a))` reads as the first of
+the two. The first order is how a rule says *a name, and not a fact*
+(`std.math.decimal-arith`'s `operand-undeclared`, Q-M1f.208). An
 `(absent …)` after such a guard reads its variable, and one before it does not
 (Q-M1f.34). Under an `(absent …)`, the enclosing premises before it bind, as
 they scope the `absent` itself. From M1e2 S1e2.2.24 (W24, Q-M1e2.18 (i) and

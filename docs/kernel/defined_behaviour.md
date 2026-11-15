@@ -1227,11 +1227,12 @@ the loader accepts reaches and a direct caller of `compile_rule` does. Pinned by
 `examples/broken/load/derived_activator.ein` and `derived_activator_never.ein`,
 and the register's two W59 rows.
 
-Since M1f S1f.5.7 a guard's variable needs no binder before it: a premise
-means the same in any order of its conjuncts, so a guard waits for the relation
-premise that binds its variable, and binds one nothing binds, `eq` to the other
-side and `neq` over the program's names (§ 01_grammar.md's *Premise order
-around a guard*). From S1e2.2.24 until then a guard's variable counted as bound
+Since M1f S1f.5.7 a guard's variable needs no binder before it: a guard waits
+for the relation premise that binds its variable, so its place among the
+relation premises does not change what the premise means, and binds one nothing
+binds where it is written, `eq` to the other side and `neq` over the program's
+names, so the order of two guards on such a variable does (M1f E-37;
+§ 01_grammar.md's *Premise order around a guard*). From S1e2.2.24 until then a guard's variable counted as bound
 by the rule's parameters and by the variables of the positive patterns written
 before it; under an `(absent …)`, by those the enclosing premises bound before
 it and the `absent`'s own earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
