@@ -309,11 +309,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.302](#q-m1f302--what-stdmathrats-unreduced-answer-fixes-and-rat-norm-under-b) | what `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b) | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator in normal form, D with no high zero, nothing reduced; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.303](#q-m1f303--rat-simplify-asks-stdmathgcd-the-numerator-first) | `rat-simplify` asks `std.math.gcd` the numerator first | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator first, as before; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.304](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) | `route_invariance` past the default budget, past any shard's five minutes | **ruled 2026-11-15: (d)**, no test runs past the default budget (the user: *"(d)"*); defaulted (a) the same day by T7; built at P1f.6's close; [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled) |
-| [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (b) for E-1, (a) for E-7, (d) for E-54, is not acted on before the reply; the witnesses and the census are on [S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-15-tasks-1-to-3)'s record |
-| [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's default, (A) where a static reading gives the control's R on the witness and moves no other corpus program's R, otherwise (C), is not acted on before the reply; the census selects its (A) branch; the probes, the census and (A)'s price are on [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s record |
-| [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **put 2026-11-15, not defaulted: waits for the user at P1f.10's one stop.** The stage's recommendation, (b), restates a ruling of M1d's, so it is not a default and is not acted on; the census does not speak against it, and what it puts beside it is in the entry; the witnesses and the census are on [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s record |
-| [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **put 2026-11-16, not acted on: waits for the user at P1f.10's one stop.** The default named is (a), `ein render structure FILE`; nothing of it is designed or built, and the bundle under `build/structure/` is what the user reads to rule it |
-| [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **defaults taken 2026-11-15 and 2026-11-16, shown at P1f.10's one stop**, each the user's to revise: what a group is, which statements are the puzzle's, what *owed* and a grid are, that a debt is an edge, how the price list's rule was read |
+| [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, left, and the read-out names such candidates; **(d) for E-54**, left. Whether (b) covers a dunder a program writes as a value is asked back, and that one witness is not moved before the reply. Built by S1f.10.9's task 4 |
+| [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(A)**, H holds what a node's debt would propose, by the static reading, which the census selected. Built by S1f.10.6's task 4; Q-M1e.11 is answered by it |
+| [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **put 2026-11-15, still waits for the user.** It has no default: the stage's recommendation, (b), restates a ruling of M1d's. The user's *"all defaults ok"* of 2026-11-16 is not read as taking it; asked back that day, and nothing is acted on |
+| [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth |
+| [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6127,6 +6127,8 @@ and the answer does not depend on the import form*.
 replies**: no candidate is removed, no register row filed, no read-out row added. As ruled, it is
 [T1f.10.9.4](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#tasks).
 
+**Ruled 2026-11-16.** The user, shown the phase's four questions with their defaults at the stop: *"all defaults ok"*. So: **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, the candidates stay and the read-out names them; **(d) for E-54**, the universe is the program's names wherever they were written. One thing the entry left to the user is not covered by a default and is asked back: whether *never* covers a dunder a program writes as a value (the fourth E-1 witness, 4 states to 2). Until the reply that witness is not moved: (b) is built for a dunder that is an object only because no file wrote a fact of it.
+
 ### Q-M1f.307 — A debt root was not told of: what H holds
 
 **Raised** 2026-11-15 by
@@ -6260,6 +6262,8 @@ replies**: H is unchanged, `check_owed` untouched, no register row filed or flip
 no program refused. As ruled, it is
 [T1f.10.6.4](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#tasks).
 
+**Ruled 2026-11-16.** The user, shown the phase's four questions with their defaults at the stop: *"all defaults ok"*. So: **(A), by the static reading** (reading 1), the branch the census selected: the ground activators of an obligation rule that a rule reading `D⁺` writes, with the rung's own scan run for them at root, repeated until it adds nothing. The caveats above stand as recorded: it is exact on the corpus and inexact both ways on two written probes, and it leaves H6-1 as it is.
+
 ### Q-M1f.308 — The rung a loaded obligation rule chooses
 
 **Raised** 2026-11-15 by
@@ -6377,6 +6381,8 @@ replies**: the ladder is unchanged, no register row filed, no read-out row added
 is open. As ruled, it is
 [T1f.10.15.4](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#tasks).
 
+**Not ruled on 2026-11-16.** The user's *"all defaults ok"* at the stop covers the questions that have a default; this one has a recommendation and no default, by its own wording. Asked back the same day. The ladder is unchanged and task 4 waits.
+
 ### Q-M1f.309 — How `ein` shows a program's structure
 
 **Raised** 2026-11-16 at P1f.10's one stop, by [S1f.10.12](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md)'s second task,
@@ -6403,6 +6409,8 @@ answer, which is what (a) avoids.
 that a reader cannot act on. **Not acted on**: no view is designed or built before the user's reply; as ruled
 it is [T1f.10.12.3](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md#t1f10123--the-surface-as-ruled), and the page that
 defines the structure, T1f.10.12.4, follows it.
+
+**Ruled 2026-11-16.** The user, shown the phase's four questions with their defaults at the stop: *"all defaults ok"*. So: **(a)**, `ein render structure FILE`.
 
 ### Q-M1f.310 — P1f.10, part 1: the defaults taken
 
@@ -6446,3 +6454,5 @@ stage builds on, each the user's to revise:
 
 What part 1 found outside its stages' scope is [`findings.md`](p1f.10_hypothesis_structure/findings.md), K-1 to K-13 and track H's
 H9-n, H6-n and H15-n. **Stands until revised.**
+
+**Accepted 2026-11-16.** The user, shown the stop: *"all defaults ok"*.
