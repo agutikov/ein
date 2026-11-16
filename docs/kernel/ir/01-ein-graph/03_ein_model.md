@@ -51,7 +51,7 @@ ways:
 
 The same reflexive stack, read by *node kind* rather than by
 self-instantiation, is the **four-level KB** (objects / facts /
-relations / rules) — see [`05_four_level_kb.md`](05_four_level_kb.md).
+relations / rules) — see [rules as statements § The four levels](../../../ein/reasoning/static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in).
 
 ## 2. The five foundational terms
 

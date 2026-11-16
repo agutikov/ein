@@ -2,7 +2,7 @@
 
 > **Status: part operational, part design.** This file expresses Ein's
 > own model — the four levels of
-> [`../01-ein-graph/05_four_level_kb.md`](../01-ein-graph/05_four_level_kb.md) —
+> [rules as statements § The four levels](../../../ein/reasoning/static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in) —
 > *in ein-lang itself*, using **only forms the loader already accepts**
 > (the closed declarator set + facts). Much of it is **operational
 > today**: the `is-a` kind lattice (L0), relation signatures that rules
@@ -216,7 +216,7 @@ match a fact `(?R ?a ?b)`, a relation `(relation ?R ?A ?B)`, and a
 property `(symmetric ?R)` — but **not** another rule: there is no
 `(rule ?N …)` node a `:match` can bind, and a rule may not `:assert` a
 new `(rule …)` or `(relation …)`. The downward-consuming stack
-([`05_four_level_kb.md` §4](../01-ein-graph/05_four_level_kb.md)) is a
+([rules as statements § The four levels](../../../ein/reasoning/static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in)) is a
 clean DAG *only* because M1 forbids the L3→L3 and L3→L2 arrows.
 
 | concern | operational in M1 | F5 |
@@ -251,11 +251,11 @@ to target.
 - **Reflexivity.** `(is-a is-a Relation)` is already a fixed-point edge;
   F5 rules that match rules will close more of these. The level model
   survives — "consumes any level, including its own"
-  ([`05_four_level_kb.md` §4](../01-ein-graph/05_four_level_kb.md)).
+  ([rules as statements § The four levels](../../../ein/reasoning/static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in)).
 
 ## See also
 
-- [`../01-ein-graph/05_four_level_kb.md`](../01-ein-graph/05_four_level_kb.md)
+- [rules as statements § The four levels](../../../ein/reasoning/static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in)
   — the L0–L3 schema this file expresses in ein-lang.
 - [`../01-ein-graph/03_ein_model.md`](../01-ein-graph/03_ein_model.md)
   — the reflexive root (§1) that makes a self-describing schema coherent.
