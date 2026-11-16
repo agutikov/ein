@@ -74,7 +74,7 @@ Zebra-acceptance milestone.
 - `inference/` is documented:
   [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
   (as-built O1–O9) + [`architecture.md`](../ein/ein.rs/architecture.md) (module map)
-  + [`absent_semantics.md`](inference/absent_semantics.md) (the normative
+  + [`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md) (the normative
   `(absent P)` / NAF semantics — worlds, fire-time evaluation, corollaries;
   P1.21 R4). The engine shipped P1.3–P1.5b.
 
@@ -86,13 +86,13 @@ visible from the page itself. Triaged page by page at M1e
 (2026-08-30), 40 pages; 41 since M1e2 S1e2.1.2 added
 [`inference/answer_dump.md`](inference/answer_dump.md), 42 since S1e2.1a.1
 added [`inference/region_dump.md`](inference/region_dump.md), 43 since
-S1e2.1b.6 added [`inference/monotonicity.md`](inference/monotonicity.md), 45
+S1e2.1b.6 added [`inference/monotonicity.md`](../ein/reasoning/kb-evolution/monotonicity.md), 45
 since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
 [`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
 M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
-(2026-11-10), 47 with [`inference/hypothesis_space.md`](inference/hypothesis_space.md),
+(2026-11-10), 47 with [`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md),
 the hypothesis space and its structure, and 48 with
-[`inference/finding_r.md`](inference/finding_r.md), how the oracle and the routes find `R`
+[`finding-r.md`](../ein/reasoning/kb-evolution/finding-r.md), how the oracle and the routes find `R`
 (`git ls-files 'docs/kernel/*.md' | wc -l`), current:
 
 - **current** — every claim holds of the engine that ships. No banner; this is
@@ -124,9 +124,8 @@ the hypothesis space and its structure, and 48 with
   `docs/history/README.md` records as having no entry — *"what survived its plan
   tree went to `docs/kernel/inference/` and `plans/followups/` at P1.22"*.
 
-Two pages also carry a *partial* banner, which is the same rule applied below
-page granularity: [`ir/03-ein-lang/08_self_describing.md`](ir/03-ein-lang/08_self_describing.md)
-marks which of its four levels are operational and which are design, and
+Some pages also carry a *partial* banner, which is the same rule applied below
+page granularity:
 [`inference/domain_elim_vs_hypothesis.md`](inference/domain_elim_vs_hypothesis.md),
 [`inference/features.md`](inference/features.md) and
 [`inference/README.md`](inference/README.md) scope their frozen measurements and
@@ -210,7 +209,7 @@ explicit audience banner.
 |----------|-------|
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](ir/03-ein-lang/09_natural_language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`inference/read_out.md`](inference/read_out.md) (what `ein solve` prints, row by row, and what each number counts) |
-| **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
+| **dev**  | [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md); `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
 | **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`inference/read_out.md` § 11](inference/read_out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](../ein/ein.rs/events.md). |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs, and [`configuration.md`](configuration.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* and *does it change R* on every flag row |
 

@@ -84,9 +84,9 @@
 //! rule is that *nothing reads output*, and there was no other way to ask a
 //! corpus what fraction of it states a closure claim — `:expect` is a query
 //! keyword, and a grep cannot tell a keyword from a comment about one. That
-//! is M1d
-//! [S1d.4.1](../../../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)'s
-//! transport, and `utils/closure_census.py` is what reads it.
+//! is the transport of
+//! [the claims about a set of states](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states),
+//!  and `utils/closure_census.py` is what reads it.
 //!
 //! Additive, in the sense the other artefact flags are: stdout, stderr, the
 //! exit code and what is solved are identical with the flag and without it. A

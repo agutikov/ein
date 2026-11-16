@@ -23,7 +23,7 @@ constrained-reasoning research.
   the answer as a region R;
   [`inference/read_out.md`](docs/kernel/inference/read_out.md), every row
   `ein solve` prints and what it counts;
-  [`inference/hypothesis_space.md`](docs/kernel/inference/hypothesis_space.md),
+  [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
   `h-space.json`;
   [`configuration.md`](docs/kernel/configuration.md), the `(config …)` flags,
@@ -33,8 +33,8 @@ constrained-reasoning research.
   and `00_ebnf.md`, the language;
   [`ir/03-ein-lang/09_natural_language.md`](docs/kernel/ir/03-ein-lang/09_natural_language.md),
   `:why` texts and how a fact reads as English; and
-  `inference/implementation.md` with `ir/02-data-model/03_implementation.md`,
-  the module maps. What is true of the language and the answer today is
+  [`docs/ein/ein.rs/architecture.md`](docs/ein/ein.rs/architecture.md), the
+  module map, with the design contracts under `docs/ein/ein.rs/design/`. What is true of the language and the answer today is
   [§ Standing rules](#standing-rules) below; how each rule came to be is in
   the stage records under `plans/` and in `git log`, not here.
   **This tree is the only statement of intent that is

@@ -368,9 +368,9 @@ run through the **same** `ein solve` — the verdict is read from the result
   condition (15) (the only fact pinning Blue at `H_2`), leaving the colours
   under-determined. `ein solve … --exhaustive` reports `Ambiguous — k distinct
   complete models` when the lattice was exhausted and `… k distinct complete
-  models found` when the depth cap stopped it first (M1d
-  [S1d.3.3](../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict):
-  a model count is a claim, and `exhausted` is what licenses it).
+  models found` when the depth cap stopped it first
+  ([a model count is a claim](../../ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims),
+  and `exhausted` is what licenses it).
   `--models key` prints the set as its **determining key** instead of as k
   blocks — 4 of 23 slots and 32 rows here, against 516 printed lines.
 - [`ein-bugs/zebra2-bad.ein`](../../../examples/ein-bugs/zebra2-bad.ein) — **CONTRADICTIONS**

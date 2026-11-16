@@ -88,7 +88,7 @@ The page is built under the standing rulings, none re-opened here:
 - **The words.** A lattice is neither monotone nor not. A *function of a
   node* is: the **state**, and the **status** (`dead`, `owes`). The third,
   stronger property is the **monotone program**
-  ([`monotonicity.md` § 7.6](../../../docs/kernel/inference/monotonicity.md#76-the-program-the-third-stronger-property)).
+  ([`monotonicity.md` § 2](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program)).
   *Monotone lattice* appears below only inside today's output, quoted.
 
 ## 1. The programs, and what every surface says today
@@ -96,7 +96,7 @@ The page is built under the standing rulings, none re-opened here:
 The stage's list, plus three programs written for the census pages and one for
 this page. `fifo_gap.ein` stands in for S1e2.1b.7's FIFO-gap fixture, which
 does not exist yet. It is
-[`monotonicity.md` § 7.3](../../../docs/kernel/inference/monotonicity.md#73-the-state-path-independent--monotone-given-cumulativity)'s
+[`monotonicity.md` § 8.2](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#82-path-independent--monotone-given-cumulativity)'s
 counter-example written out: r2 `a ∧ b ∧ absent(q) → p` before r1
 `a ∧ absent(z) → q`, both at priority 200, `a` and `b` the candidates. It is a
 scratch file beside this page, not banked, and **drafted**. So are the copies
@@ -310,7 +310,7 @@ is new:
 | says | row | from | on the programs of § 1 |
 |---|---|---|---|
 | **what is assumed** | `assumes` | constant: every node is a fork of root, and what a node is here is open (Q-M1e2.2, F21) | every flagged program |
-| **which property is at stake** | `site`, one per site, ≤ 4 on stdout | `classify`'s site, what its rule concludes, and the property: an `absent` site puts **the state** at stake (and `dead` with it when it concludes `(false)`); a trigger puts **the status** (`owes`); an activator, the status or the state through the plan a node compiles. Drafted on [`monotonicity.md` § 7.6](../../../docs/kernel/inference/monotonicity.md#76-the-program-the-third-stronger-property)'s table; S1e2.1b.7's taxonomy supplies the final words | every flagged program |
+| **which property is at stake** | `site`, one per site, ≤ 4 on stdout | `classify`'s site, what its rule concludes, and the property: an `absent` site puts **the state** at stake (and `dead` with it when it concludes `(false)`); a trigger puts **the status** (`owes`); an activator, the status or the state through the plan a node compiles. Drafted on [`monotonicity.md` § 2](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program)'s table; S1e2.1b.7's taxonomy supplies the final words | every flagged program |
 | | `cycle` | the dependency graph over D, `node_census --strata`'s, with its parity | `features/07` (even), `d3-unsat-core` (odd) |
 | | `order` | new: an `absent` rule that reads under an `absent` a relation in D another `absent` rule concludes. At one priority the written order decides; at an earlier priority the reader goes first in every order (§ 7) | `features/07`, `fifo_gap`, `stratified_stale` |
 | **whether it bit** | `status` | the cube's violations, attributed by S1e2.1b.3's rule: **non-monotone here (exercised, by *site*)**, **monotone here (conservative)**, or **not known** past the limit | 6 exercised (7 with `synth/trigger_hole`), 6 conservative, 2 not known |
@@ -439,7 +439,7 @@ the status: owes` and `status non-monotone here (exercised, by total-owed
 relation is one a commitment can change; root compiled no plan of it — at
 stake: the status: owes, through a plan a node compiles`. Neither has a stale
 fact or a path that differs: a hole that needs no path dependence
-([`monotonicity.md` § 7.5](../../../docs/kernel/inference/monotonicity.md#75-the-status-dead-follows-the-state-owes-does-not)).
+([`monotonicity.md` § 8.5](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#85-the-status-dead-follows-the-state-owes-does-not)).
 
 **`ACTIVATOR_UNDER_ABSENT`**, as `activator_under_absent.ein`. The static check
 reports **2 sites**: `act`, an `absent` site over `q` that concludes a
@@ -729,7 +729,7 @@ against the 1 s line.
 | the event | the `monotonicity` event gains optional fields | no version bump; not in `corpus_shapes.md5` |
 | `region.md`, the `ein render region` label, the review bundle | reworded | no golden |
 | [`wrong_answers.toml`](../../../corpus/wrong_answers.toml) | 3 qualifiers, 2 `open_because` (§ 4.3) | 5 strings, data only |
-| the docs | [`events.md`](../../../docs/ein/ein.rs/events.md)'s `monotonicity` entry; [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve)'s *"under assumes a monotone lattice"*; [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md) § 5 and § 8; [`configuration.md`](../../../docs/kernel/configuration.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
+| the docs | [`events.md`](../../../docs/ein/ein.rs/events.md)'s `monotonicity` entry; [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve)'s *"under assumes a monotone lattice"*; `docs/kernel/inference/monotonicity.md` at `50739fdb` § 5 and § 8; [`configuration.md`](../../../docs/kernel/configuration.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
 
 **The spot check, if it ships**, adds one row inside the same 150 lines and no
 golden of its own.
@@ -775,7 +775,7 @@ golden of its own.
    ([`node_census_drafted.txt`](detector_proposal/outputs/node_census_drafted.txt),
    [`node_census_invariance_drafted.txt`](detector_proposal/outputs/node_census_invariance_drafted.txt)).
    That is the claim
-   [`monotonicity.md` § 7.8](../../../docs/kernel/inference/monotonicity.md#78-the-standing-of-each-claim)
+   [`monotonicity.md` § What holds it](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it)
    lists as *unverified*. Banking it, and re-labelling the row, is S1e2.1b.7's.
    This page only drafts on it.
 6. **`ACTIVATOR_UNDER_ABSENT`** (§ 4.2): the static check reports `act`, the
@@ -787,7 +787,7 @@ golden of its own.
    Three syntax fixtures hold an odd cycle over relations outside D, with
    n = 0 ([`node_census.md` § 5](node_census.md#5-the-stratification-check)),
    and the detector stays silent on them. This is consistent with
-   [`monotonicity.md` § 7.6](../../../docs/kernel/inference/monotonicity.md#76-the-program-the-third-stronger-property):
+   [`monotonicity.md` § 2](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program):
    a race over a static relation is settled at root, and every fork inherits
    its result.
 

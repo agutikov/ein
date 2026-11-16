@@ -371,6 +371,6 @@ which advances the tiebreaker and therefore changes later ordering.
 - [08 — Parallelism](08_parallelism.md) — the enqueue pass and the
   boundary round are both read-only over the KB, which is what makes them
   parallelisable.
-- [`absent_semantics.md`](../../../kernel/inference/absent_semantics.md)
+- [`absent_semantics.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md)
   — the normative reading of `(absent …)` this loop implements.
 - [`architecture_and_algorithms.md` §O2/§O3/§O5](../../../kernel/inference/architecture_and_algorithms.md).

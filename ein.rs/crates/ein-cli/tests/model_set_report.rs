@@ -2,8 +2,8 @@
 //! rule, and the determining key that is the set's compact form, read since
 //! M1e2 S1e2.1a.5's switch over the states a run lists.
 //!
-//! [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)
-//! answered *print or describe* with **both**, and the two halves are tested
+//! [What a count of models claims](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)
+//! answers *print or describe* with **both**, and the two halves are tested
 //! here because they are one surface. The rule first, since the key inherits
 //! it.
 //!
@@ -25,9 +25,8 @@
 //!
 //! `--models key` is **additional output, never a second answer**: it adds a
 //! projection of the listed states to stdout and reaches nothing recorded. The
-//! third test is that claim, checked the way
-//! [S1d.2.5](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
-//! checked its lever — run the entry both ways and diff everything outside
+//! third test is that claim, checked the way a lever is checked — run the
+//! entry both ways and diff everything outside
 //! the block that is allowed to move.
 
 use std::process::Command;

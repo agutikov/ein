@@ -1,6 +1,6 @@
 //! The **M1 alive-set invariant**, as a predicate the engine can evaluate.
 //!
-//! `docs/kernel/inference/README.md` § M1 invariant states three clauses —
+//! `docs/ein/reasoning/kb-evolution/saturation.md` § The alive-set invariant states three clauses —
 //! rules assert no new objects, no new relations, and hypotheses connect
 //! existing names only — and concludes that the candidates are a pure
 //! function of the closed KB. Three mechanisms cited that conclusion as their

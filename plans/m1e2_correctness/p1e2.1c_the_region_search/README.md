@@ -13,7 +13,7 @@ to measure how far its routes reach, which it did on 2026-10-16
 ([`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md)), and for
 [S1e2.1b.6](../p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)
 to write down the strategies, which it did on 2026-11-02
-([`monotonicity.md` § 6](../../../docs/kernel/inference/monotonicity.md#6-how-to-solve)). They
+([`monotonicity.md` § 12](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#12-how-each-kind-is-solved)). They
 were specified on 2026-11-02 with what is known now. P1e2.1b rules nothing
 since its re-plan the same day, so no stage here waits on a ruling: every
 route this phase builds is for **monotone** programs.
@@ -64,7 +64,7 @@ static check calls monotone. A flagged program keeps what it has today:
 route 2, exact at n ≤ `--region-limit`, partial past it, with P1e2.1b's
 warnings. A route that built a node from a parent's fixpoint on a flagged
 program could depend on the path and disagree with the oracle
-([`monotonicity.md` § 7.2](../../../docs/kernel/inference/monotonicity.md#72-paths-and-the-general-form)),
+([`monotonicity.md` § 8.1](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#81-three-constructions-of-a-node)),
 which is F21's D3.
 **Blocks:** [P1e2.2](../p1e2.2_wrong_answers/README.md). Its stages are
 re-scoped against this phase before any of them runs.

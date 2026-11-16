@@ -1,9 +1,8 @@
 //! The obligations rung — hypotheses from what a state still owes.
 //!
-//! M1d [P1d.2](../../../../docs/history/m1d_satisfiability/README.md#p1d2--obligations)
-//! [S1d.2.5](../../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations).
-//! [S1d.2.4](../../../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
-//! made a quiescent state able to say what it owes; this makes the debt a
+//! [The ladder's second rung](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt).
+//! [The pass over a quiescent state](../../../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
+//! makes it able to say what it owes; this makes the debt a
 //! *choice point*.
 //!
 //! ### The ladder
@@ -190,7 +189,7 @@ pub struct RungReport {
     /// completeness condition, as a number.
     ///
     /// The rung is exhaustive iff obligations and saturation between them
-    /// determine every remaining open fact ([S1d.2.5] T1d.2.5.3). `0` makes
+    /// determine every remaining open fact ([what the rung leaves]). `0` makes
     /// that structural: every relation a hypothesis could be about is one
     /// some obligation owes, so a branch set that discharges every debt has
     /// left nothing undecided. Non-zero does **not** make it false — it says
@@ -198,7 +197,7 @@ pub struct RungReport {
     /// only a model-set comparison can settle, and the zebra family is where
     /// it was settled.
     ///
-    /// [S1d.2.5]: `docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations`
+    /// [what the rung leaves]: ../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#46-what-the-rung-leaves-to-saturation
     pub uncovered: u64,
     /// Debts this state does not owe and a commitment can bring: the
     /// activators of an obligation rule, not held here, that a rule's
@@ -982,7 +981,7 @@ impl Alternatives {
 
 /// **L5's premise, checked at load** — M1e2
 /// [S1e2.1c.4](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md),
-/// [`solve_interface.md` § 3.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#31-the-licences).
+/// [L5 and its argument](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
 ///
 /// `kb` is root's fixpoint, on a program the static check calls monotone, and
 /// `candidates` maps each candidate of `H` to its bit. For every obligation

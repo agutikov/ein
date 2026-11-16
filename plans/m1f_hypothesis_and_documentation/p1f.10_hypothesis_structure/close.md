@@ -39,7 +39,7 @@ It is shown three ways:
 - `ein show hyps FILE`: H as Ein facts, one per line;
 - the review bundle, `utils/structure_bundle.py`.
 
-It is defined in [`hypothesis_space.md`](../../../docs/kernel/inference/hypothesis_space.md). On `zebra2.ein` the 36
+It is defined in [`hypothesis_space.md`](../../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). On `zebra2.ein` the 36
 groups are the 36 rows and columns of the five declared bijections, every one owed.
 
 ### Track R — spending the structure on the search
@@ -84,7 +84,7 @@ false as stated (two programs banked) and is not built.
 - Two `--minimal` cells that the budget stops both ways visit more nodes for the same facts under L8.
 
 How R is found, with every licence, is written as formulas in
-[`finding_r.md`](../../../docs/kernel/inference/finding_r.md).
+[`finding_r.md`](../../../docs/ein/reasoning/kb-evolution/finding-r.md).
 
 ### Track H — what H is
 
@@ -101,7 +101,7 @@ left unread in the generator, and moved no golden.
 
 **Track S**
 
-- **Defined in writing, one owner**: [`hypothesis_space.md`](../../../docs/kernel/inference/hypothesis_space.md) and
+- **Defined in writing, one owner**: [`hypothesis_space.md`](../../../docs/ein/reasoning/kb-evolution/hypothesis-space.md) and
   `ein_infer::structure`. The stages' records name the program that falsified each rejected alternative.
 - **Held by invariances**, each a test:
   - the excluded pairs against N: `ein-infer/tests/pair_layer.rs`;

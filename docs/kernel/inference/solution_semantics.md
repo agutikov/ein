@@ -20,7 +20,7 @@
 > [F21](../../../plans/followups/f21_non_monotone_programs_decided.md) on
 > 2026-11-02. Until then a node is built by fork from root, as § 1.5 says.
 > Each place the definition depends on monotonicity says so, and
-> [`monotonicity.md`](monotonicity.md) sets the two kinds of program side by
+> [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md) sets the two kinds of program side by
 > side.
 >
 > **§ 6 is the walk's half.** §§ 1–5 are the definition, and since M1e2
@@ -105,7 +105,7 @@ less
   __closed__)` hands it to a rule. Writing it so stays legal, and it is then
   a name of the program as `invariant::program_names` lists them, which is
   the list the alive-set invariant reads
-  ([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally));
+  ([`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant));
   it is the enumerator's objects that leave it out. So a closure or a
   symmetry a rule derives is the one a fact states, and a program that
   states it either way has one H and one R
@@ -304,7 +304,7 @@ the first contradiction: that is the definition, and the oracle computes it
 whole. **What the routes compute** on a monotone program is the state of an
 alive node whole, and of a dead node, root's excepted, the fork only as far as
 the firing that makes its first contradiction
-([`finding_r.md` § 1](finding_r.md#1-a-node)): it is dead exactly when the
+([`finding-r.md` § 1](../../ein/reasoning/kb-evolution/finding-r.md#1-a-node)): it is dead exactly when the
 state is, since the KB only grows, and that bit is all a route reads of a
 dead node, so R and everything read off it are the oracle's. What such a
 node reports of itself, its facts beyond root, debts and closure, is the
@@ -315,7 +315,7 @@ the limit but one, banked to show the exception: an equal-priority race over
 a static read, settled at root and re-run inside a node built from scratch,
 where it leaves a stale fact the fork does not hold
 ([`11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein),
-[`monotonicity.md` § 7.6](monotonicity.md#76-the-program-the-third-stronger-property),
+[`monotonicity.md` § 3.4](../../ein/reasoning/kb-evolution/monotonicity.md#34-the-verdict-is-relative-to-root),
 measured 2026-11-02 by M1e2 S1e2.1b.7). With the boundary admitting in stratum
 order, emulated by priorities, that node's scratch state is the fork's
 ([`node_census.md` § 12.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#124-admission-in-stratum-order-emulated)).
@@ -363,7 +363,7 @@ its consequence operator is monotone on every KB. The lattice of commitments
 is the domain and is never itself monotone or not. What a monotone program
 guarantees is two properties of the functions on its nodes, which a
 non-monotone program can lose separately
-([`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence)):
+([`monotonicity.md` § 2](../../ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program)):
 the **state** is monotone in C, which, where saturation is cumulative, is the
 same as being independent of the path that built the node (fork from root, a
 parent's fixpoint, or scratch); and the **status** is monotone, `dead` and
@@ -400,7 +400,7 @@ On a monotone program that is exact. **On a non-monotone program it is not**,
 and the engine claims nothing of its answer there: not soundness, correctness
 or completeness. A node's state can depend on the path it is built by,
 `sat(root + C₁ + C₂) ≠ sat(sat(root + C₁) + C₂)`, and on the agenda's order
-([`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence)),
+([`monotonicity.md` § 8](../../ein/reasoning/kb-evolution/monotonicity.md#8-paths-and-the-state)),
 so *the full set of nodes* is not one object. The engine builds every node one
 way, the fork route of § 1.5, and R on a flagged program is the region of that
 construction: every command agrees on it, and nothing more is claimed
@@ -423,7 +423,7 @@ order:
 | **monotone** (§ 1.6) | convex, and the lines follow from N and E without visiting the cube (§ 2.4), with N, E and the static verdict as a certificate |
 | **shape** | restrictions only: the minimal line is {∅}. Obligations only: the maximal line is {⊤}, every candidate (§ 2.4) |
 
-[`monotonicity.md` § 2](monotonicity.md#2-the-ladder) writes the same
+[`monotonicity.md` § 5](../../ein/reasoning/kb-evolution/monotonicity.md#5-the-ladder) writes the same
 ladder from the non-monotone side (M1e2 S1e2.1b.6).
 
 ### 2.2 ∅
@@ -485,7 +485,7 @@ complements of N's minimal transversals are the maximal alive states on
 In the corpus it holds on every monotone region (§ 8). On a non-monotone one
 it is not guaranteed, with a hole or without one:
 [`synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein)
-has no hole, and its top owes ([`monotonicity.md` § 3](monotonicity.md#3-the-comparison)).
+has no hole, and its top owes ([`monotonicity.md` § 6](../../ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)).
 
 **Locally.** Without holes, a node of R is maximal exactly when every edge up
 leads to a dead node, and minimal exactly when every edge down leads to an
@@ -513,19 +513,19 @@ sub-cubes [∅ … pair] of dimension 2. N = {{a,b,c}}, E = {∅}, and the duali
 gives both lines. The conflict is genuinely three-way, which is what the
 fixture is named for.
 
-![lattice/02's region, with a bare ein solve on it](diagrams/region_02_genuine_3set_death.svg)
+![lattice/02's region, with a bare ein solve on it](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.svg)
 
 Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
-([`.dot`](diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
+([`.dot`](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
 on the cube (M1e2 S1e2.1a.7, 2026-11-01). Re-made with:
 
 ```sh
 ein oracle examples/lattice/02_genuine_3set_death.ein --dump cube/
 ein solve  examples/lattice/02_genuine_3set_death.ein --dump-lattice run/lattice --dump-answer run/answer
 ein render region cube/ --visited run/lattice --answer run/answer \
-    > docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot
-dot -Tsvg docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot \
-    -o docs/kernel/inference/diagrams/region_02_genuine_3set_death.svg
+    > docs/ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot
+dot -Tsvg docs/ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot \
+    -o docs/ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.svg
 ```
 
 Fill is the node's status in the cube, shape is what the run did there, and
@@ -623,7 +623,7 @@ measured the scope rule over the corpus is
 Normative detail on what an obligation quantifies over:
 [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md)
 (C1–C4) and
-[`completeness.md`](../../history/m1d_satisfiability/completeness.md).
+[why an obligation's alternatives are jointly exhaustive](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive).
 
 ---
 
@@ -961,18 +961,18 @@ leave those out.
 
 ## Cross-references
 
-- [`finding_r.md`](finding_r.md): how R is found, the oracle's cube and the routes' licences, as
+- [`finding-r.md`](../../ein/reasoning/kb-evolution/finding-r.md): how R is found, the oracle's cube and the routes' licences, as
   formulas.
 - [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
-- [`monotonicity.md`](monotonicity.md): the monotone and the non-monotone
+- [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): the monotone and the non-monotone
   region compared, and how to solve each.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
   R drawn, `ein render region`.
-- [`absent_semantics.md`](absent_semantics.md): worlds, the NAF boundary, and
+- [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md): worlds, the NAF boundary, and
   the corollaries a non-monotone program has to be read beside.
 - [`configuration.md`](../configuration.md): the config principle, and every
   lever's row read against it.
-- [`completeness.md`](../../history/m1d_satisfiability/completeness.md): why
+- [`satisfiability.md`](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive): why
   an obligation's alternatives are jointly exhaustive.
 - [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md):
   C1–C4, what an obligation quantifies over.

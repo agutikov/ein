@@ -8,7 +8,7 @@
 ;;; closing `next-to` is what it means: root's fixpoint, and the inference the
 ;;; demo shows, are unchanged, and the program is monotone, route 1, partial at
 ;;; --region-budget. The original: flagged, route 2, partial past
-;;; --region-limit 16. Figures in docs/kernel/inference/monotonicity.md § 8.2.
+;;; --region-limit 16. Figures in monotonicity.md § 8.2 at 50739fdb.
 ;;;
 ;;; Re-take (2026-11-02):
 ;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/square_unique_cul_de_sac_closed.ein

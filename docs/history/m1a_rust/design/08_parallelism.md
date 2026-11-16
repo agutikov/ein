@@ -274,7 +274,7 @@ argument.
 > *Append-only, nothing retracts* establishes that `sat` is **inflationary**;
 > it does not establish that `sat` is **monotone in its input**, and
 > `(absent P)` is exactly what separates the two —
-> [`absent_semantics.md` C3](../../../kernel/inference/absent_semantics.md)
+> [`absent_semantics.md` C3](../../../ein/reasoning/kb-evolution/absent-and-naf.md)
 > already says so from the other direction. On
 > `(and (p ?x) (absent (q ?x))) ⇒ (false)`, `{(p A)}` is dead and
 > `{(p A), (q A)}` is alive, so **claim (1) below fails on its own terms**,

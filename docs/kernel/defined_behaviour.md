@@ -546,7 +546,7 @@ strength:
 
 **R2 is the one the engine's soundness rests on**, because the universe H is
 taken once, at root's fixpoint
-([`solution_semantics.md` § 1.4](inference/solution_semantics.md#14-candidate-and-universe)),
+([`solution_semantics.md` § 1.4](../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)),
 and every route reads subsets of it. A name that arrived later would extend
 the blind enumerator's candidate-object pool into a region no route revisits.
 **R0 is what makes R2 hold for a rule's constant**: the pool is
@@ -576,7 +576,7 @@ roles, the kernel's words (`not`, `false`, `and`, `or`, `absent`, `eq`,
 `neq`), every name the registry calls a relation or a rule, and **the
 kernel's two dunders, `__closed__` and `__symmetric__`, which are never an
 object**, neither as the head of a fact a rule derives nor written as a
-value ([`solution_semantics.md` § 1.2](inference/solution_semantics.md#12-names)).
+value ([`solution_semantics.md` § 1.2](../ein/reasoning/kb-evolution/solution-semantics.md#12-names)).
 The invariant's own list does not narrow with it:
 `invariant::program_names` holds a dunder wherever a program writes one in an
 argument position, [`Universe::of`](../../ein.rs/crates/ein-infer/src/invariant.rs)
@@ -1011,7 +1011,7 @@ mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))`, and its activator binds
 it: `(mirror q)`. An activator that binds such a parameter to an **integer**
 would have the compiler name a relation by the integer's decimal text, a name
 the program does not have, which no rule's text predicts and so no candidate
-can hold ([§ 3.3](#33-the-m1-alive-set-invariant-operationally)). The user
+can hold ([`saturation.md` § The alive-set invariant](../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant)). The user
 ruled on 2026-10-16 that rules cannot assert new names
 ([Q-M1e.21](../history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
 (b)), so both places that can see the binding refused it, in ein's own words,
@@ -1051,7 +1051,7 @@ with its F2 of 2026-11-04, *via, per activator*: a rule that concludes
 `(false)` or `(not …)` may not rest on an `(absent P)` over a relation a
 commitment can still extend, directly, through a fact a rule derived under
 one, or through its activator. *Extendable* is `D⁺`: the static check's `D`
-([`monotonicity.md`](inference/monotonicity.md)) followed through every rule
+([`monotonicity.md`](../ein/reasoning/kb-evolution/monotonicity.md)) followed through every rule
 with parameters whose activator relation it holds, since a node compiles a
 plan of such a rule that root never had, and what that plan writes a
 commitment can change too. The check reads root's plans and, from its
@@ -2558,7 +2558,7 @@ all three of its forms are assertions about **facts**, and an `open` conclusion
 is by construction never a fact. Twelve corpus entries changed word and **zero**
 changed exit code.
 
-**M1d [S1d.3.3](../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
+**The [report of a set of models](../ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)
 added the 49th option and one rendering rule.** `solve --models {list,key}`
 chooses the projection of a model **set** that goes to stdout — the blocks, or
 the smallest set of slots that tells the models apart and the table of
@@ -2621,7 +2621,7 @@ route proves, or where a bound stops it and the run says so. The word is
 settled too: a refutation said under a depth cap is not a refutation, and
 it no longer says it is.
 
-**M1d [S1d.4.1](../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)
+**The [claims about a set of states](../ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states)
 added the 50th option and no behaviour at all.** `ein test --json-report
 FILE.json` writes **one row per `(query …)` of the whole selection** — the
 claim's shape (`model` / `or` / `false`), how many models it lists, the

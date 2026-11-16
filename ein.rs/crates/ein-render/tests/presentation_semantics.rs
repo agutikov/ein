@@ -410,7 +410,7 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
 /// set's iteration order made one puzzle produce two different trace files
 /// across runs. `repr` rather than a native comparison because a core can hold
 /// facts with mixed argument types, which have no total order otherwise
-/// (`defined_behaviour.md` §2.1). Six facts, fed in scrambled order, so a collection order that
+/// (`docs/ein/reasoning/static-ir/values-and-order.md` § How a value is printed). Six facts, fed in scrambled order, so a collection order that
 /// happens to match sorted order is 1-in-720 rather than a coin flip.
 #[test]
 fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {

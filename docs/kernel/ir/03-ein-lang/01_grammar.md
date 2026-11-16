@@ -194,7 +194,7 @@ The distinction is **presentation only** — the engine treats every fact
 alike, and fact identity is `(relation_name, args)` regardless. There is no
 way to override it, and no need for one: write the annotation that is true —
 a numbered condition gets `:source`, a property tag gets nothing. See
-[`../02-data-model/01_entities.md` §4](../02-data-model/01_entities.md)
+[names and atoms § Identity, stated once](../../../ein/reasoning/static-ir/names-and-atoms.md#identity-stated-once)
 and [`plans/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
 deduction by common sense](../../../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md)
 for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
@@ -350,7 +350,7 @@ domain/range check, `std.typing`'s hierarchy wiring, zebra2's
 `disjunctive-prune`. The kernel never resolves a signature atom to
 anything: `Relation.signature` holds *opaque atoms*, and since S1.7.23
 there are no `Type` entities to resolve them **to**
-([`../02-data-model/01_entities.md` §1.1](../02-data-model/01_entities.md)).
+([names and atoms § The kinds of named thing](../../../ein/reasoning/static-ir/names-and-atoms.md#the-kinds-of-named-thing)).
 
 **As structure — kernel, three signals.** The engine reads the
 signature's shape only, and only in these places:
@@ -370,7 +370,7 @@ implicitly in the kernel?" — **both, in different roles.** As *types* they
 exist only for userspace rules; as *structure* (present / length-2 /
 name-set) they steer hypothesis generation. No kernel site ever interprets
 an atom like `Attribute` as a type. See also
-[`08_self_describing.md` §3](08_self_describing.md) for the userspace half
+[Rules as data § 3](../../../ein/reasoning/rule-evolution/rules-as-data.md#3-what-already-describes-itself) for the userspace half
 in its own right, and
 [`06_reserved_names.md` §Not reserved](06_reserved_names.md) for why `T` is
 a convention rather than a kernel atom.
@@ -831,7 +831,7 @@ world.
 The normative definition — worlds, the single evaluation point E1, the
 corollaries the engine relies on, and what is explicitly *not*
 provided (stratification, stable models, retraction) — is
-[`inference/absent_semantics.md`](../../inference/absent_semantics.md);
+[`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md);
 the operational narrative is in the
 [inference README](../../inference/README.md).
 
@@ -1331,7 +1331,7 @@ so that two names never print as one.
 where the import stands: background, or given where it carries a `:source`.
 Its constants are names of the program, so they are among the objects the
 blind enumerator proposes facts about
-([`solution_semantics.md` § 1.2](../../inference/solution_semantics.md#12-names));
+([`solution_semantics.md` § 1.2](../../../ein/reasoning/kb-evolution/solution-semantics.md#12-names));
 a program that wants no guesses about a library's relation closes it. A fact
 of a module arrives once, the module being one copy. The same fact stated
 with two `:source`s keeps its first statement and loses the second in

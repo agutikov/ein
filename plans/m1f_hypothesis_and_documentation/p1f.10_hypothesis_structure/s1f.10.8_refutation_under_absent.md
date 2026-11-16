@@ -26,7 +26,7 @@ one fails.
   could rest on an `absent` over a relation a commitment can still extend is refused, on every command that
   asks about a commitment.
 - **The pages**: the corollary in
-  [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md), and
+  [`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md), and
   [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.7.
 - **The census** it planned as its first task: `ein-infer/examples/refutation_census.rs`.
 - **`connex`**, the stdlib's one rule of the shape (`std.algebra`): unchanged, and judged per activator like

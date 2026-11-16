@@ -26,7 +26,7 @@ non-monotone program. It detects, documents, warns and prepares
 is [F21](../../followups/f21_non_monotone_programs_decided.md)'s.
 **Done:** [S1e2.1b.1](s1e2.1b.1_the_site_census.md) (the site census; the
 grain ruled *relation, as shipped*), [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)
-([`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), one
+([`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md), one
 fixture per cause, the guard split held to the oracle) and
 [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), at its evidence
 ([`node_census.md`](node_census.md)), with Q-M1e2.2 deferred to F21.
@@ -86,7 +86,7 @@ The user, verbatim:
   programs: the sites (S1e2.1b.1), a node's state by fork and from scratch
   (S1e2.1b.2), holes by cause (S1e2.1b.3), refutations that rest on an
   `absent` (S1e2.1b.4).
-- **Writes it down**: [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md)
+- **Writes it down**: [`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md)
   compares the two kinds of program (S1e2.1b.6). Its § 7, written with this
   re-plan at the user's *"Ok, just add all of this into followup and docs -
   will return to it later"*, holds the analysis of 2026-11-02 with every
@@ -281,8 +281,8 @@ reports both the sites and the violations the cube observed.
 | [S1e2.1b.3](s1e2.1b.3_holes.md) | Holes | 1.5 d | **done at its evidence** 2026-11-02 | `hole_census.md`: every hole by cause and kind, each attributed to a site (the gap S1e2.1b.6 found closed), the read-out today, and each reporting option drafted on real programs with its consequences. The decision is F21's D4 |
 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | **done at its evidence** 2026-11-02 | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
 | [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | **done** 2026-11-03: T1e2.1b.5.1 drafted 2026-11-02 ([`detector_proposal.md`](detector_proposal.md)) and approved 2026-11-03; T1e2.1b.5.2–.6 built | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
-| [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
-| [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md) § 7.9 (the taxonomy, thirteen causes), § 8.1 (each option's consequences per program, open, naming F21) and § 8.2 ((E)'s rewrites, eleven probes); [`node_census.md`](node_census.md) § 11–12 (the path and cumulativity censuses); `examples/lattice/10_fifo_gap.ein` and `11_fifo_gap_static.ein`; § 7.8 with no row left unverified; `monotone.rs`'s module docs in § 7's words |
+| [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | `docs/kernel/inference/monotonicity.md` at `50739fdb`, *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
+| [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | **done** 2026-11-02 | `docs/kernel/inference/monotonicity.md` at `50739fdb` § 7.9 (the taxonomy, thirteen causes), § 8.1 (each option's consequences per program, open, naming F21) and § 8.2 ((E)'s rewrites, eleven probes); [`node_census.md`](node_census.md) § 11–12 (the path and cumulativity censuses); `examples/lattice/10_fifo_gap.ein` and `11_fifo_gap_static.ein`; § 7.8 with no row left unverified; `monotone.rs`'s module docs in § 7's words |
 
 **Work order:** .1, .6, .2, .3, .4 and .7, the evidence written down; then
 .5, last, done 2026-11-03: its warnings cite .7's taxonomy, and its tests make

@@ -94,7 +94,7 @@ branches on every extension and is the state route again.
    its slow half on a nightly tier within five minutes a shard.
 5. **T1f.10.17.5 — the pages and the record.** [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` and
    `work` rows, `read_out_examples.md` regenerated,
-   [`finding_r.md`](../../../docs/kernel/inference/finding_r.md) § 6 and the borders' formulas,
+   [`finding_r.md`](../../../docs/ein/reasoning/kb-evolution/finding-r.md) § 6 and the borders' formulas,
    `implementation.md`'s rows; the record here with every number's command; Q-M1f.311's *Built* paragraph.
 
 ## Acceptance

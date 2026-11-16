@@ -236,7 +236,7 @@ fn show_command() -> Command {
                      which rung built H and how many it holds. It is the set every route \
                      searches over, and listing it costs root's saturation and the \
                      generator, no search. It asks about H, not about R, and changes no \
-                     answer (docs/kernel/inference/hypothesis_space.md)",
+                     answer (docs/ein/reasoning/kb-evolution/hypothesis-space.md)",
                 )
                 .arg(Arg::new("file").required(true))
                 .arg(no_require_why()),
@@ -423,7 +423,7 @@ fn render_command() -> Command {
                      lattice with nobody declaring it: which candidates exclude each other, \
                      which of those pairs the theory makes alone, the groups (pick at most \
                      one), the owed groups and grids (exactly one), and what couples the \
-                     questions (docs/kernel/inference/hypothesis_space.md). Prints a \
+                     questions (docs/ein/reasoning/kb-evolution/hypothesis-space.md). Prints a \
                      read-out, or the --view asked. It reads nodes and changes no answer",
                 )
                 .arg(Arg::new("file").required(true))

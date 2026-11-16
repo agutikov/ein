@@ -450,7 +450,7 @@ They use none of the shapes above. In `exclusion` a candidate is a box; in
 `cover` a group is a box and a candidate an oval; in the two hypergraphs a
 question is a box and an edge of three questions or more a point. What each
 object is, what each stroke means and what the document holds is
-[`inference/hypothesis_space.md`](../../inference/hypothesis_space.md).
+[`hypothesis-space.md`](../../../ein/reasoning/kb-evolution/hypothesis-space.md).
 
 ## Markdown trace (S1.6.4)
 

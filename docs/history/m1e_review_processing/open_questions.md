@@ -699,7 +699,7 @@ states it:
 
 *Append-only* makes `sat` **inflationary**, not monotone in its input, and
 `absent` is what separates the two — which
-[C3](../../kernel/inference/absent_semantics.md) already says from the
+[C3](../../ein/reasoning/kb-evolution/absent-and-naf.md) already says from the
 other direction.
 
 **The counterexample is twenty lines**
