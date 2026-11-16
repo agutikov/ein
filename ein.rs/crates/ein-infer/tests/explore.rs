@@ -668,8 +668,8 @@ fn every_mode_is_the_oracle() {
 
 /// The orders of the obligation tree the oracle holds beside the routes'
 /// own: the written order, with the denials counted and without, and its
-/// reverse; a seeded permutation of the choice started again as it goes;
-/// both queues; and the structure read at its first choice, at its second,
+/// reverse; two seeded permutations of the choice, one alone under the
+/// routes' queue and one started again as it goes; both queues; and the structure read at its first choice, at its second,
 /// third, fourth and fifth node, whole or within a share of the run's
 /// facts, each of those starting the tree again where a choice made before
 /// falls otherwise. The learned orders and the other permutations are
@@ -705,6 +705,10 @@ fn tree_orders() -> Vec<(&'static str, ein_infer::order::Order)> {
         (
             "shuffled 2, deepest, restarts",
             an(Choice::Shuffled(2), Queue::Deepest, Structure::None, true),
+        ),
+        (
+            "shuffled 4, the choice alone",
+            an(Choice::Shuffled(4), Queue::BySize, Structure::None, false),
         ),
         (
             "node at once",

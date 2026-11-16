@@ -31,9 +31,8 @@
 //! text too; a form respells a name, and where that moves one candidate
 //! past another the same answer is found by other work. The programs on
 //! which it does are named ([`RESPELLED_PAST`]), each with why, and every
-//! other program's work is the same in all three forms. The `slow` entries
-//! are left to the answer's comparison: `--single` on them is held under a
-//! permuted id space by `id_order_invariance`.
+//! other program's work is the same in all three forms, the `slow` entries
+//! among them where `EIN_CORPUS_SLOW=1` adds them.
 //!
 //! The forms are written into a scratch directory beside links to the
 //! program's directory's modules, since a module is found from the program
@@ -158,17 +157,14 @@ const RESPELLED_PAST: &[&str] = &["examples/binary_logic/synthesis.ein"];
 /// One program: `Ok((compared forms, forms whose tree's work was compared,
 /// forms whose tree's work is another))` or the first difference in an
 /// answer.
-fn check(path: &Path, slow: bool) -> Result<(usize, usize, usize), String> {
+fn check(path: &Path) -> Result<(usize, usize, usize), String> {
     let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
     let dir = path.parent().expect("a directory");
     let file = path.file_name().expect("a name").to_str().expect("utf-8");
     let mut prefixes = module_prefixes(dir);
     let s = summary(dir, file);
     // The tree's work, where the program as written is answered by one.
-    let tree = (!slow)
-        .then(|| single(dir, file))
-        .flatten()
-        .filter(|(route, _)| route == "tree");
+    let tree = single(dir, file).filter(|(route, _)| route == "tree");
     let (mut compared, mut trees, mut moved) = (0, 0, 0);
     for mode in ['W', 'A'] {
         let Some((written, extra)) = form(path, &text, mode) else {
@@ -263,12 +259,6 @@ fn every_corpus_program_answers_alike_under_every_import_form() {
     let todo = programs();
     let total = todo.len();
     let root = repo_root();
-    let slow: std::collections::BTreeSet<PathBuf> = corpus()
-        .entry
-        .iter()
-        .filter(|e| e.slow)
-        .map(|e| root.join(&e.path))
-        .collect();
     let results = ein_corpus::pool::map(
         "import_invariance",
         &todo,
@@ -278,7 +268,7 @@ fn every_corpus_program_answers_alike_under_every_import_form() {
                 String::new(),
             )
         },
-        |p| check(p, slow.contains(p)),
+        |p| check(p),
     );
     let mut failures = Vec::new();
     let (mut compared, mut trees) = (0usize, 0usize);

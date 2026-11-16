@@ -303,7 +303,7 @@ group forms. Every stage reports it, and S1f.10.11 is where its triple has to ap
 | **I-B06** | [`examples/branching/06_lookahead_on.ein`](../../../examples/branching/06_lookahead_on.ein) | the blind enumerator: 132 candidates, 130 dead alone, no obligation and no hrule |
 | **I-L02** | [`examples/lattice/02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein) | the negative control for pairs, and the positive one for coupling |
 | **I-SEND** | [`examples/beyond_arith/send_more_money.ein`](../../../examples/beyond_arith/send_more_money.ein) | E-29's witness, declared by column |
-| **I-SENDW** | to be banked by S1f.10.5 from `build/s1f.6.10/p/p3_send_written.ein` | the same program declared as the puzzle is written |
+| **I-SENDW** | [`examples/beyond_arith/send_more_money_written.ein`](../../../examples/beyond_arith/send_more_money_written.ein), banked by S1f.10.5 from `build/s1f.6.10/p/p3_send_written.ein` and generated from I-SEND by `examples/gen_send_written.py` | the same program declared as the puzzle is written |
 
 ## Stages
 
@@ -320,7 +320,7 @@ group forms. Every stage reports it, and S1f.10.11 is where its triple has to ap
 | [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | The rung a loaded rule chooses | E-51 with witnesses and a census; a question |
 | [S1f.10.12](s1f.10.12_the_structure_shown.md) | S | The structure shown, and its surface | `build/structure/`, every instance raw and rendered; **the phase's one stop**, with the surface's question, the three H questions and the price list; then the surface as ruled |
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | At most one, spent: the extension step | where S1f.10.13 says *go*: a set holding an excluded pair is not saturated, on every route through one owner; R identical everywhere; the work delta per program, the losers named |
-| [S1f.10.5](s1f.10.5_ordering.md) | R | The order on the obligation tree | I-SENDW banked; an order that is a function of the structure; `--single` on I-SENDW decided within the default budget; the read-out says what order a run took |
+| [S1f.10.5](s1f.10.5_ordering.md) | R | The order on the obligation tree | I-SENDW banked; an order that is a function of the structure; `--single` on I-SENDW decided within the default budget; the read-out says what order a run took; **ran to its end, 2026-11-16**: the tree branches on the owed instance closest to closing a coupling read off the whole node, I-SENDW is *Solution* in 18 030 saturations, the same work as I-SEND, E-29 closed; the minimal line, whole and under `--single`, keeps the written order, *no* by the price list's rule |
 | [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | Exactly one, spent: branching nothing licenses yet | the instances L5 does not license, licensed by an argument the oracle holds, or a written *no* per kind |
 | [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | What the walk left in the generator | `generate_one_branch`, `most-constrained`, the lookahead's reach and the stale module headers each deleted or kept with its reader named |
 | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | — | ~~Why the tree wins, and the flag~~ | **dropped at the re-plan**: its three subjects were deleted with the walk |

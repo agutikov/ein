@@ -258,9 +258,6 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus: known_dead, with the denials and from deaths alone on the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test known_dead -- every_question_answers_alike_with_the_denials_and_from_deaths_alone
 
-    nightly_step "deep-corpus: order, every order of the tree one answer, every order and the slow entries too"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
-
     nightly_step "deep-corpus: structure_invariance, the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test structure_invariance
 
@@ -292,6 +289,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus-shards 1/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
 
+    nightly_step "deep-corpus-shards 1/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
+
     nightly_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -306,6 +306,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus-shards 2/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    nightly_step "deep-corpus-shards 2/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
 
     nightly_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -322,6 +325,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus-shards 3/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
 
+    nightly_step "deep-corpus-shards 3/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
+
     nightly_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -336,6 +342,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus-shards 4/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    nightly_step "deep-corpus-shards 4/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
 
     nightly_step "deep-corpus-shards 4/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -479,9 +488,6 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus: known_dead, with the denials and from deaths alone on the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test known_dead -- every_question_answers_alike_with_the_denials_and_from_deaths_alone
 
-    dev_host_step "deep-corpus: order, every order of the tree one answer, every order and the slow entries too"
-    EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
-
     dev_host_step "deep-corpus: structure_invariance, the slow entries too"
     EIN_CORPUS_SLOW="1" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test structure_invariance
 
@@ -522,6 +528,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus-shards 1/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
 
+    dev_host_step "deep-corpus-shards 1/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
+
     dev_host_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -536,6 +545,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus-shards 2/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    dev_host_step "deep-corpus-shards 2/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
 
     dev_host_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -552,6 +564,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus-shards 3/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
 
+    dev_host_step "deep-corpus-shards 3/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
+
     dev_host_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -566,6 +581,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus-shards 4/4: id_order_invariance, every program"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-render --profile gate --test id_order_invariance
+
+    dev_host_step "deep-corpus-shards 4/4: order, every order of the tree one answer, every order and the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test order
 
     dev_host_step "deep-corpus-shards 4/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"

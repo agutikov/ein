@@ -381,12 +381,10 @@ mod tests {
             // S1f.6.27 banked it, its bare `solve` describing R to the budget
             // in 7.47 s (`utils/bench_env.sh python3 utils/corpus_cost.py -k
             // send_more_money --runs 3`, 2026-11-13). Its generated twin
-            // `send_more_money_written` is the sixteenth, at the threshold:
-            // `solve --single` and `test` are 1.55 s together on a machine
-            // that read the by-column file's `--single` at 1.7 times its
-            // recorded cost (`-k send_more_money --runs 5`), so about 0.9 s
-            // on a quiet one. This test's name keeps its count until that is
-            // re-taken.
+            // `send_more_money_written` is the sixteenth: `solve --single`
+            // and `test` are 1.59 s together on an idle machine
+            // (`-k send_more_money_written --runs 5`). This test's name keeps
+            // its count of fifteen, which is one short.
             [
                 "examples/features/01_not_and_absent.ein",
                 "examples/beyond_arith/send_more_money.ein",

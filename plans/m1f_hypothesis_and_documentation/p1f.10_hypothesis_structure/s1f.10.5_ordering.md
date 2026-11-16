@@ -1,7 +1,9 @@
 # S1f.10.5 — The order on the obligation tree
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** re-planned 2026-11-15. Not started.
+**Status:** ran to its end, 2026-11-16 ([record](#record-2026-11-16)): the order built, I-SENDW decided and the
+same work as I-SEND under `--single`, E-29 closed; by the price list's rule the order ships for six questions of
+eight, and the minimal line, whole and under `--single`, keeps the written order.
 **Depends on:** [S1f.10.2](s1f.10.2_groups.md) and [S1f.10.11](s1f.10.11_coupling.md), whose output is the
 order's input; [S1f.10.13](s1f.10.13_the_price_list.md), for the ceiling. It does not depend on
 [S1f.10.3](s1f.10.3_the_restricted_join.md), and where both are built the order is measured with it on.
@@ -659,7 +661,8 @@ tree starts again from root where one falls otherwise (`Search::choose_again`): 
 route's name and before the licences (`explore::TreeOrder::words`):
 
 - *branching on the owed instance with the fewest alternatives left*, where no choice was tied;
-- *…, the first by text among equals*, or *the first written among equals* under `-n N`, where one was; with
+- *…, the first by text among equals*, or *the first written among equals* under `-n N` and, after the rule, on
+  the minimal line, where one was; with
   *; no coupling read, the whole node costing more than a twentieth of the run* where the node was tried and
   stopped;
 - *branching on the owed instance closest to closing a coupling, then the one with the fewest alternatives
@@ -764,6 +767,137 @@ and not built, a death's pair or its core as a nogood that the sweep's extension
 I-SEND's deaths under `--single` hold a letter's two digits or a digit's two letters. For the four nodes on the
 `zebra2-minus-15` pair under `--minimal --single`, K-26.
 
+### T5: the invariances
+
+Each a test in the gate, within the default `--region-budget`, through `ein_corpus::pool::map` where it sweeps.
+
+- **Every order gives one answer.** [`ein-infer/tests/explore.rs`](../../../ein.rs/crates/ein-infer/tests/explore.rs),
+  `every_order_of_the_tree_is_the_oracle`: ten orders beside the routes' own, the written one with the denials
+  counted and without, its reverse, **two seeded permutations of the choice**, one alone under the routes' queue
+  (added here, seed 4) and one with the other queue started again as it goes, both queues, and the couplings read
+  at the first choice and at the second, third, fourth and fifth node, whole or within a share; each against
+  **the oracle**, C1 and C2, on every monotone cube some mode of which a tree answers, every mode but describe,
+  unbudgeted and at the budget of C3: 3 360 cells, 2 416 of them stopped by the budget. The routes' own order is
+  held to the oracle by the file's other tests. [`ein-infer/tests/order.rs`](../../../ein.rs/crates/ein-infer/tests/order.rs),
+  `every_order_gives_one_answer`: `--single`, `-n 1` and both lines on every corpus program and register witness
+  that searches, the routes' order against six others per commit and sixteen in the nightly, the `slow` entries
+  against four; every listing **the routes' own among them** (added here) held to a finished describe or to the
+  maximal line listed whole, and two finished runs to one verdict, one `exhausted` and, where a part is listed
+  whole, one set of states. Per commit: 4 320 cells, 231 with other work than the routes', 40 listing other
+  states of `R`, none held to nothing.
+- **The work does not read the order a program is written in.** `order.rs`, `the_two_sends_take_the_same_work`:
+  under `--single` and `--maximal` I-SEND and I-SENDW saturate the same number of nodes, 18 030, derive the same
+  facts, list the same state and report the same order taken, five couplings read; under `-n 1` they find the one
+  state; under the written order of before I-SENDW `--single` is stopped. **What still reads the written order,
+  and why**: `-n N`, whose last key among instances equal in coupling and in count is the first the obligation
+  pass reports, by the rule (`zebra2.ein -n 1` sinks a canonical key, K-26), so the two find the one state in
+  15 855 and 17 542; and the minimal line, whole and under `--single`, which keeps the written order by the rule
+  and which the budget stops on both, so the two are two runs there (held, with the `slow` entries, to the written
+  order and to no coupling read). And K-23: a spelling that reorders the universe moves the work, since a
+  branch's alternatives and the last key are in rendered-text order.
+- **The work under a permuted id space**: [`ein-render/tests/id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
+  as it was: its digests of `read-out[single]`, `[n2]`, `[minimal]` and `[maximal]` hold the `route` row's words,
+  with the saturation the couplings were read at, and the `work` row to the same bytes under a permuted interner,
+  per commit on every corpus program outside `tests/` that searches and in the nightly on every program, the two
+  SENDs among them.
+- **The work under the import forms**: [`ein-cli/tests/import_invariance.rs`](../../../ein.rs/crates/ein-cli/tests/import_invariance.rs),
+  which T4 extended: where a program's `--single` takes the tree, each form's verdict, saturations and facts are
+  the program's, but on `binary_logic/synthesis.ein`, named with why (K-23); **the `slow` entries too where
+  `EIN_CORPUS_SLOW=1` adds them** (added here; T4 left them to the answer's comparison), the two SENDs among them.
+- **No lever.** `config_reference.rs` gained no row; `order::with` is a thread-local the tests and the harness
+  take; `lever_invariance.rs` holds every mode's read-out, the `route` and `work` rows among it, under every
+  config flag and declared lever.
+- **On a tier, within five minutes a step.** Walls on four P-core threads with four workers, on AC, the machine
+  otherwise idle (`utils/bench_env.sh --cores PT:4 --require-ac env EIN_CORPUS_SLOW=1 EIN_TEST_JOBS=4 cargo test
+  … --test order`, 2026-11-16). **`order.rs`'s slow half, as T3 left it, was 554 s whole**, past the nightly's
+  five minutes; it is now a step of `deep-corpus-shards`, `EIN_TEST_SHARD=k/4`, a program in one shard
+  (`ein_corpus::shard::keep`), the two SENDs' test whole in shard 4, in `nightly.yml`, `run_tests.sh --nightly`
+  and `--dev-host`, which `nightly_steps.rs` holds to one another. Dealt whole a program to a unit, the shards
+  were 322, 249, 55 and 29 s; the sweep now asks each program's base (its describe and the routes' four answers)
+  and then each other order as a unit of its own, so a long program's orders run side by side, and the shards are
+  **291, 168, 51 and 55 s**. Shard 1 is near the line: it is dealt three of the four longest programs, I-SEND,
+  I-SENDW and `zebra2-minus-15-obligations.ein`, and I-SEND's units run one at a time in the pool's heavy lane,
+  about 185 s of it. Per commit the sweep is 19 s where it was 24, and its counts are the same, 4 320 cells.
+  `import_invariance.rs`'s slow half, a step of `deep-corpus`, is 119 s with the slow entries' work compared.
+  `known_dead.rs` gained nothing.
+
+### What moved
+
+**The work**, by question, the order built against the written one (`build/s5/m6/`, `today` against `routes`):
+
+| question | programs whose work moved |
+|---|---|
+| `--single` | `send_more_money_written.ein` stopped after 131 134 → *Solution* in 18 030 · 221 803; `send_more_money.ein` 17 747 · 222 924 → 18 030 · 221 803; `cryptarithm.ein` 119 · 691 → 119 · 722; `zebra2.ein` and `zebra2-obligations.ein` 9 · 892 → 7 · 666; `zebra2-minus-15.ein` and its twin 40 · 2 688 → 39 · 2 568 |
+| `-n 1`, `--minimal -n 1`, `--maximal -n 1` | `send_more_money_written.ein` stopped → 17 542, 17 549 and 17 573 saturations; `send_more_money.ein` one saturation and 166 facts more under each |
+| `--maximal`, `--maximal --single` | as `--single` for the two SENDs (I-SEND 17 754 → 18 030), `cryptarithm.ein` 128 · 763 → 128 · 794, `lattice/05_owed_seats_bounded.ein` 9 · 20 → 8 · 17, the zebra2 pair 9 → 7, the `zebra2-minus-15` pair 104 · 10 850 → 108 · 11 512 |
+| `--minimal`, `--minimal --single` | none: the written order |
+
+**Programs whose listed states are others**, every one a state of `R` (held by `order.rs` to a describe or a whole
+maximal line, and by `explore.rs` to the oracle on the cubes): under `--single`, `send_more_money_written.ein`
+(none → its state), `zebra.ein`, `zebra2.ein` and `zebra2-obligations.ein` (the same state reached from another
+commitment), `zebra2-minus-15.ein` and its `-obligations` twin (two others of R's 32) and
+`ein-bugs/wrong-answers/owed-seats-renamed.ein` (two others of its R); under `-n 1` and every line under `-n 1`,
+and under `--maximal`, `send_more_money_written.ein` alone; under `--maximal --single`, it and the
+`zebra2-minus-15` pair. Under `--minimal` and `--minimal --single`, none. On 4 programs the tree visits as many
+nodes and other ones, or the same in another order (`owed-seats.ein`, `uncovered.ein`, `uncovered-knows.ein`,
+`equation_two_unknowns.ein`, read off `--dump-lattice` against the binary at T3's commit), which moves their
+`cores[…]` lines and nothing they print.
+
+**The goldens that moved**, every one on [T1's list](#t1-the-inventory-verified-before-any-route-changed), and
+shown against `master` after the merge by a filter that prints nothing:
+
+```sh
+git diff master -U0 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5 | grep '^[-+][^-+]' \
+  | awk '{print $3}' | sort -u | grep -v '^examples/beyond_arith/send_more_money_written.ein::' \
+  | grep -v -E '::(read-out|cores)\[(single|n2|minimal|maximal)\]$'
+```
+
+- `ein-render/tests/golden/corpus_shapes.md5`: the lines of `send_more_money_written.ein`, the program T1
+  banked; `read-out[single]`, `[n2]`, `[minimal]` and `[maximal]` of the 35 other programs a mode of which the
+  tree answers, the `route` row's words, and the work and listed state where they moved (T4; under `[minimal]`
+  27 of them moved again with the rule, to the written order's words and work); and `cores[single]` and
+  `[maximal]` of the 13 whose visited nodes moved, with `cores[n2]` of `send_more_money.ein`. `cores[minimal]`
+  is master's on every program but the new one. No describe's line, no `states`, `region-trace`,
+  `region-lattice` or DOT line of a program master has.
+- `docs/kernel/inference/read_out_examples.md`: `--maximal -n 1` and `--single` on `zebra2.ein`, the two
+  examples whose route is the tree.
+- `README.md` and `docs/guide/04_solving_the_whole_puzzle.md`: the transcript of `zebra2.ein --single`, the
+  `route` row, 9 → 7 saturations and the state `from` another commitment.
+- `docs/api/rust.md`'s output block and `ein-cli/tests/embedding.rs`: `saturations: 9` → `7`.
+- `ein-cli/tests/golden/corpus_exits.txt`: I-SENDW's two cells, `solve --single` and `test`, exit 0.
+- `corpus/corpus.toml`: I-SENDW's entry (its recorded answer flipped, `test` declared, `cost_ms` re-taken) and
+  the notes of `send_more_money.ein` and `cryptarithm.ein`.
+- `examples/README.md`'s anchor list did not move (`world_anchors`, blessed on the merged tree).
+
+### The merge of `master`
+
+`git merge master` into the branch (`06df3ac0`). Four conflicts, each resolved by keeping both sides' behaviour:
+`docs/kernel/inference/structure.md`, renamed `hypothesis_space.md` on master, took the stage's edits (one object
+of the structure a route reads, § The coupling a route reads) with `ein render h-space` where it said `ein render
+structure`, and `read_out.md` links the new page; `ein-render/src/read_out.rs` prints master's `relation names`
+row and the order's words in the `route` row; `structure_invariance.rs` holds the coupling from the whole node
+beside master's `h-space.json` and listing of H; `implementation.md`'s `structure.rs` row has master's text and
+the sentence on the one object a route reads. `ein-infer/src/explore.rs` merged without a conflict (`known`,
+`cached` and `TreeOrder`). The generated and golden files were made again on the merged tree and not merged by
+hand. The two SENDs are 18 030 saturations each on the merged tree, as before it.
+
+### Verification
+
+On the branch's last tree, after its last edit, in the worktree (2026-11-16), `--manifest-path ein.rs/Cargo.toml`:
+
+- `cargo test --profile gate -p ein-infer`: 549 passed in 53 binaries; `-p ein-cli`: 406 in 65; `-p
+  ein-render`: 66 in 12. None failed.
+- `EIN_CORPUS_SLOW=1`, once each: `-p ein-infer --test explore --test known_dead --test order`,
+  `-p ein-render --test id_order_invariance`, `-p ein-cli --test import_invariance`: all passed at the default sixteen workers (`explore` 7 tests, `known_dead` 4, `order` 2, the whole slow half unsharded, `id_order_invariance` 4, `import_invariance` 1). `order.rs`'s
+  four shards, each on four P-core threads, as § T5 has them.
+- `cargo fmt --all --check`; `cargo clippy --workspace --all-targets -- -D warnings` (T4's `bool::then` with a
+  closure was refused and is `then_some`); `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`;
+  `python3 utils/check_hashmap_iteration.py`; `python3 utils/stdlib_manifest.py`; `python3
+  examples/gen_send_written.py --check`; `python3 utils/doc_audit.py --links --check docs plans README.md
+  AGENTS.md corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md`,
+  576 pages and no finding. All green.
+- Not run, the batch's: `./run_tests.sh`, `--nightly`, `utils/ci_container.sh`.
+
 ### Defaults taken
 
 Each the user's to revise. The first three are how the measurement was read, written before the order is
@@ -780,3 +914,74 @@ built.
    5 · 164 → 5 · 302 under a canonical key that sinks `-n 1`.
 3. **I-SENDW's `--check` is a cargo test's**, `cli_semantics.rs`, as the zebra2 variants' is; no static step
    was added to the gate's six.
+4. **The rule that decided is the price list's, read as its own defaults read it** (§ The rule as the price
+   list reads it): every cell in the total and in the tenth, a stopped cell with what it had spent. Defaults 1
+   and 2 above are how T3's tables read it, and they gave `--minimal` *go*; the price list's reading gives it
+   *no*, by a cell stopped both ways whose saturations rose for the same facts, and that is the verdict taken.
+   Read otherwise, a cell stopped both ways left out of the tenth, the minimal line would be *go* under
+   `--minimal` and still *no* under `--minimal --single`, by the `zebra2-minus-15` pair.
+5. **Of default 2's cells, none is a default any more**: each line under `-n 1` and under `--single` was
+   measured and judged by the rule. The minimal line under `-n 1` is *go* and takes `-n N`'s order; under
+   `--single` it is *no* and keeps the written one.
+6. **The order is a function of the question, and the last key is the first written under `-n N` and on the
+   minimal line.** Under `-n 1` the rule sinks every canonical last key by `zebra2.ein`'s 138 facts in an
+   unchanged five saturations (K-26). The other reading, the user's to take: one canonical order for every
+   question, `-n 1` on `zebra2.ein` back at the 302 facts it was before S1f.10.3, and I-SENDW under `-n 1` the
+   same work as I-SEND.
+7. **The count still reads the denials** (K-24): the classical choice, and the rule sinks the count held to
+   deaths under `-n 1`.
+8. **The share is a twentieth and the threshold twenty saturations**, `order::READ_SHARE` and `READ_AFTER`,
+   constants and no lever: of the three shares measured the least total, and the one under which `--maximal` is
+   *go* (K-26 says how thin that is).
+9. **The queue is as it was**, the smallest closure first: the largest first is *no* for every question (K-25).
+10. **The whole node is a node the run visited**: one of the `work` row's saturations and an entry of a
+    `--dump-lattice`, the node of every candidate. An attempt stopped at its share is no node, and its facts are
+    in the `work` row. A whole node found dead is ⊤ known dead for the rest of the run, so no route saturates it
+    a second time; an alive one is ⊤'s, through the cache.
+11. **The read-out says the order in the `route` row and in no JSON field.** `region.route` and
+    `region.licences` are as they were; `explore::Answer::order` holds it for a library's reader.
+12. **`node_coupling_in` commits every candidate**, not those alive alone, which a layer would have to say; the
+    owner's full coupling is untouched and `ein render h-space` does not show the reading a route takes.
+13. **A blame by a death's core was not run** as a learned order: it needs a core at every death, a search no
+    route takes unless a surface prints one. The control is the run's own deaths, by the branch and by the path,
+    by size and largest first, with and without starting again.
+14. **Three strategies of the plan's list were not run as written**: the count *live by root's excluded pairs*
+    (its source is the pair layer, which `full` shows sinks whatever reads it); the *product* of the count and
+    the coupling (they are taken in turn, either first); and a *best-first* queue by the count.
+15. **I-SENDW declares `solve --single` and `test`**, and no bare `solve`: describing its R is I-SEND's
+    question, to the node. It stays `slow`, its two runs 1.59 s together on an idle machine, re-taken after the
+    order was built: the estimate of 0.9 s that T4's note made from a loaded machine was wrong.
+16. **T5's new permutation is in `explore.rs`'s set alone**, a permutation of the choice under the routes'
+    queue held to the oracle; `order.rs`'s per-commit set is the six T3 chose, the permutations of seeds 2 and 3
+    in the nightly's.
+
+### What is not done, and what it leaves
+
+- **I-SEND is 18 030 saturations against a floor of 9**, and an order was never going to move that: what
+  stands between is 9 350 deaths that hold a letter's two digits or a digit's two letters and 6 184 that are a
+  column's, which a nogood removes and an order does not ([§ T3](#t3-measured), *Against the ceiling*). The pair
+  of a death and a death's core are priced and not built ([S1f.10.3](s1f.10.3_the_restricted_join.md)); a
+  `functional` that stores what it excludes is K-13's. The same nogoods are the next way for the minimal line,
+  which no order measured decides on either SEND.
+- **`-n N` and the minimal line still read the declared order among equals** (defaults 4 to 6, K-26).
+- **The largest state first** is a quarter less work under `-n 1` and is not built (K-25).
+- **A spelling that reorders the universe moves the work** (K-23).
+- **For [S1f.10.14](s1f.10.14_exactly_one_spent.md), *exactly one*.** The tree now has the couplings of what
+  root owes at one node's price, and the instances L5 does not license are in none of them: an unlicensed
+  instance is no question of the reading, since its alternatives are not known to be all of what can pay it.
+  If S1f.10.14 licenses one, it becomes a question and is ordered with the others for nothing more. Its witness,
+  `lattice/06_friends_tables_everyone_sits.ein`, 207 saturations under `--single`, does not move under any order
+  measured here: the states above it that owe unlicensed instances alone branch on every extension, and no order
+  chooses among extensions. And the largest state first, which the rule sank, loses most on such programs
+  (`oblig-fresh-name-two.ein --minimal` 39 → 150), so a licence there would change what the queue costs.
+- **`send_more_money.ein`'s own `cost_ms`** is not this stage's and was not re-banked: on the same idle machine
+  its declared runs were 14.40 s together, the bare `solve` 12.87 s, against the 8 404 ms recorded
+  (`utils/bench_env.sh --cores PT --require-ac python3 utils/corpus_cost.py -k send_more_money --runs 5`,
+  2026-11-16). The flag stands either way; the state page owes it a quiet re-take.
+- **`order.rs`'s first shard is 291 s of the nightly's 300** on this machine (§ T5). I-SENDW belongs on
+  `ein_corpus::pool::LONG` by that list's own definition, a unit of 5 s or more, and on it would be dealt away
+  from I-SEND; but the list orders every sweep's start and deals every sharded step, `answer_round_trip`,
+  `corpus_cores` and `id_order_invariance` among them, whose shards were measured with it as it is. Not done:
+  it wants those steps measured again with it, on the runner.
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh` were not run: the batch's, on the merged tree. No DOT
+  writer changed.

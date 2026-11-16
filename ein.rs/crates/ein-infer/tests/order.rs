@@ -46,11 +46,13 @@
 //!   nor a line holds fails the test.
 //!
 //! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, the
-//! nightly's, under fewer orders; the two zebra puzzles every run.
+//! nightly's, under fewer orders; the two zebra puzzles every run. The
+//! nightly runs it in shards, `EIN_TEST_SHARD=k/n`, each program in one
+//! (`ein_corpus::shard`), and the two SENDs' test whole in one of them.
 //!
 //! ```text
 //! cargo test -p ein-infer --profile gate --test order
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-infer --profile gate --test order
+//! EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=1/4 cargo test -p ein-infer --profile gate --test order
 //! ```
 
 use std::collections::BTreeSet;
@@ -88,6 +90,8 @@ fn rel_of(path: &Path) -> String {
 const INSTANCES: [&str; 2] = ["examples/zebra.ein", "examples/zebra2.ein"];
 
 const SEND: &str = "examples/beyond_arith/send_more_money.ein";
+/// The nightly's shard [`the_two_sends_take_the_same_work`] runs whole in.
+const SENDS_SHARD: usize = 4;
 const SEND_WRITTEN: &str = "examples/beyond_arith/send_more_money_written.ein";
 
 /// Every corpus file and register witness, once: the `slow` entries that
@@ -328,15 +332,24 @@ struct Tally {
     unheld: Vec<String>,
 }
 
-/// One program that searches: its four questions under the routes' order
-/// and under each of `orders`, by the module's definition of *one answer*.
-fn held(path: &Path, orders: &[(&'static str, Order)]) -> Tally {
-    let mut t = Tally::default();
-    let Some((mut kb, mut terms, ast)) = loaded(path) else {
-        return t;
-    };
+/// What one program that searches answers under the routes' order, which
+/// every other order's answers are held to: the four questions, R as a
+/// describe lists it where it finishes, and the maximal line where the
+/// routes' order lists it whole.
+struct Base {
+    rel: String,
+    r: Option<BTreeSet<Vec<u32>>>,
+    line: Option<BTreeSet<Vec<u32>>>,
+    asked: Vec<(&'static str, Mode, Result<Answer, String>)>,
+    /// The routes' own listing, where the describe does not hold it.
+    failures: Vec<String>,
+}
+
+/// [`Base`] of `path`, or `None` where it does not load or does not search.
+fn base(path: &Path) -> Option<Base> {
+    let (mut kb, mut terms, ast) = loaded(path)?;
     if !searching::searches(&ast, &mut terms, &mut kb) {
-        return t;
+        return None;
     }
     let rel = rel_of(path);
     // R as a describe lists it, where it finishes: what every state a run
@@ -354,7 +367,7 @@ fn held(path: &Path, orders: &[(&'static str, Order)]) -> Tally {
         _ => None,
     };
     let mut line: Option<BTreeSet<Vec<u32>>> = None;
-    let mut listed: Vec<(String, BTreeSet<Vec<u32>>)> = Vec::new();
+    let mut failures = Vec::new();
     let mut asked: Vec<(&'static str, Mode, Result<Answer, String>)> = Vec::new();
     for (flags, mode) in questions() {
         let a = ask(path, mode, None);
@@ -365,83 +378,109 @@ fn held(path: &Path, orders: &[(&'static str, Order)]) -> Tally {
         {
             line = Some(closures(a));
         }
+        // The routes' own listing is held to the describe as every other
+        // order's is.
+        if let (Ok(a), Some(r)) = (&a, &r)
+            && !closures(a).is_subset(r)
+        {
+            failures.push(format!(
+                "{rel} {flags}, the routes' order: lists a state the describe does not"
+            ));
+        }
         asked.push((flags, mode, a));
     }
-    for (flags, mode, a) in &asked {
-        for (name, o) in orders {
-            let at = format!("{rel} {flags}, {name}");
-            let (a, b) = match (a, ask(path, *mode, Some(o))) {
-                (Ok(a), Ok(b)) => (a, b),
-                (Err(x), Err(y)) if *x == y => continue,
-                (x, y) => {
-                    t.failures.push(format!(
-                        "{at}: {:?} against {:?}",
-                        x.as_ref().err(),
-                        y.err()
-                    ));
-                    continue;
-                }
-            };
-            t.cells += 1;
-            t.trees += usize::from(b.route == explore::Route::Tree);
-            t.other_work += usize::from((a.saturations, a.facts) != (b.saturations, b.facts));
-            if a.verdict.is_some() && b.verdict.is_some() && a.verdict != b.verdict {
+    Some(Base {
+        rel,
+        r,
+        line,
+        asked,
+        failures,
+    })
+}
+
+/// One program's four questions under one other order, held to its
+/// [`Base`] by the module's definition of *one answer*.
+fn held(path: &Path, base: &Base, name: &'static str, o: &Order) -> Tally {
+    let mut t = Tally {
+        failures: base.failures.clone(),
+        ..Tally::default()
+    };
+    let rel = &base.rel;
+    for (flags, mode, a) in &base.asked {
+        let at = format!("{rel} {flags}, {name}");
+        let (a, b) = match (a, ask(path, *mode, Some(o))) {
+            (Ok(a), Ok(b)) => (a, b),
+            (Err(x), Err(y)) if *x == y => continue,
+            (x, y) => {
+                t.failures.push(format!(
+                    "{at}: {:?} against {:?}",
+                    x.as_ref().err(),
+                    y.err()
+                ));
+                continue;
+            }
+        };
+        t.cells += 1;
+        t.trees += usize::from(b.route == explore::Route::Tree);
+        t.other_work += usize::from((a.saturations, a.facts) != (b.saturations, b.facts));
+        if a.verdict.is_some() && b.verdict.is_some() && a.verdict != b.verdict {
+            t.failures
+                .push(format!("{at}: {:?} against {:?}", b.verdict, a.verdict));
+        }
+        for x in [a, &b] {
+            if x.stopped.is_some() && x.exhausted {
                 t.failures
-                    .push(format!("{at}: {:?} against {:?}", b.verdict, a.verdict));
+                    .push(format!("{at}: a stopped run says it listed a part whole"));
             }
-            for x in [a, &b] {
-                if x.stopped.is_some() && x.exhausted {
-                    t.failures
-                        .push(format!("{at}: a stopped run says it listed a part whole"));
-                }
-                if x.stopped.is_some()
-                    && mode.ask == Ask::Single
-                    && !matches!(x.verdict, None | Some(Verdict::Ambiguity))
-                {
-                    t.failures
-                        .push(format!("{at}: a stopped --single says {:?}", x.verdict));
-                }
-            }
-            match (a.stopped.is_some(), b.stopped.is_some()) {
-                (false, false) => {
-                    if (a.verdict, a.exhausted) != (b.verdict, b.exhausted) {
-                        t.failures.push(format!(
-                            "{at}: {:?}, exhausted {}, against {:?}, exhausted {}",
-                            b.verdict, b.exhausted, a.verdict, a.exhausted
-                        ));
-                    } else if a.exhausted {
-                        if closures(a) != closures(&b) || minimal(a) != minimal(&b) {
-                            t.failures
-                                .push(format!("{at}: one part of R, listed whole, two ways"));
-                        }
-                    } else if a.states.len() != b.states.len() {
-                        t.failures.push(format!(
-                            "{at}: {} states listed against {}",
-                            b.states.len(),
-                            a.states.len()
-                        ));
-                    } else if closures(a) != closures(&b) {
-                        t.other_states += 1;
-                    }
-                }
-                (true, true) => {}
-                _ => t.one_stopped += 1,
-            }
-            match &r {
-                Some(r) => {
-                    if !closures(&b).is_subset(r) {
-                        t.failures
-                            .push(format!("{at}: lists a state the describe does not"));
-                    }
-                }
-                None if closures(&b) != closures(a) => listed.push((at, closures(&b))),
-                None => {}
+            if x.stopped.is_some()
+                && mode.ask == Ask::Single
+                && !matches!(x.verdict, None | Some(Verdict::Ambiguity))
+            {
+                t.failures
+                    .push(format!("{at}: a stopped --single says {:?}", x.verdict));
             }
         }
-    }
-    for (at, states) in listed {
-        if !states.is_empty() && !line.as_ref().is_some_and(|l| states.is_subset(l)) {
-            t.unheld.push(at);
+        match (a.stopped.is_some(), b.stopped.is_some()) {
+            (false, false) => {
+                if (a.verdict, a.exhausted) != (b.verdict, b.exhausted) {
+                    t.failures.push(format!(
+                        "{at}: {:?}, exhausted {}, against {:?}, exhausted {}",
+                        b.verdict, b.exhausted, a.verdict, a.exhausted
+                    ));
+                } else if a.exhausted {
+                    if closures(a) != closures(&b) || minimal(a) != minimal(&b) {
+                        t.failures
+                            .push(format!("{at}: one part of R, listed whole, two ways"));
+                    }
+                } else if a.states.len() != b.states.len() {
+                    t.failures.push(format!(
+                        "{at}: {} states listed against {}",
+                        b.states.len(),
+                        a.states.len()
+                    ));
+                } else if closures(a) != closures(&b) {
+                    t.other_states += 1;
+                }
+            }
+            (true, true) => {}
+            _ => t.one_stopped += 1,
+        }
+        match &base.r {
+            Some(r) => {
+                if !closures(&b).is_subset(r) {
+                    t.failures
+                        .push(format!("{at}: lists a state the describe does not"));
+                }
+            }
+            None => {
+                let states = closures(&b);
+                if states != closures(a)
+                    && !states.is_empty()
+                    && !base.line.as_ref().is_some_and(|l| states.is_subset(l))
+                {
+                    t.unheld.push(at);
+                }
+            }
         }
     }
     t
@@ -464,16 +503,49 @@ fn every_order_gives_one_answer() {
     if slow {
         units.extend(files(true).into_iter().map(|f| (f, true)));
     }
+    // The nightly runs this in shards, a program in one of them.
+    let units = ein_corpus::shard::keep(units, |(p, _)| rel_of(p));
     let orders = &most;
-    let results = ein_corpus::pool::map(
-        "order::every_order_gives_one_answer",
+    // Each program's answers under the routes' order, then one unit per
+    // program and other order, so that a long program's orders run side by
+    // side.
+    let bases = ein_corpus::pool::map(
+        "order::every_order_gives_one_answer::base",
         &units,
         |(p, _)| (rel_of(p), String::new()),
-        |(p, is_slow)| held(p, if *is_slow { &few } else { &most }),
+        |(p, _)| base(p),
+    );
+    let mut pairs: Vec<(usize, usize)> = Vec::new();
+    for (i, (b, (_, is_slow))) in bases.iter().zip(&units).enumerate() {
+        if b.is_some() {
+            let n = if *is_slow { few.len() } else { most.len() };
+            pairs.extend((0..n).map(|j| (i, j)));
+        }
+    }
+    let order_of = |i: usize, j: usize| if units[i].1 { &few[j] } else { &most[j] };
+    let results = ein_corpus::pool::map(
+        "order::every_order_gives_one_answer",
+        &pairs,
+        |&(i, j)| (rel_of(&units[i].0), order_of(i, j).0.to_string()),
+        |&(i, j)| {
+            let (name, o) = order_of(i, j);
+            held(&units[i].0, bases[i].as_ref().expect("a base"), name, o)
+        },
     );
     let mut all = Tally::default();
+    // A routes' listing the describe does not hold is said once, not once an
+    // order.
+    let mut seen: BTreeSet<String> = BTreeSet::new();
     for t in results {
-        all.failures.extend(t.failures);
+        let failures: Vec<String> = t
+            .failures
+            .into_iter()
+            .filter(|f| {
+                !f.ends_with("the routes' order: lists a state the describe does not")
+                    || seen.insert(f.clone())
+            })
+            .collect();
+        all.failures.extend(failures);
         all.cells += t.cells;
         all.trees += t.trees;
         all.other_work += t.other_work;
@@ -508,13 +580,15 @@ fn every_order_gives_one_answer() {
     // Not vacuous: trees are asked, and the orders are orders, with other
     // work and other states listed.
     assert!(
-        all.cells >= 4 * 150 * orders.len() && all.trees >= 100 * orders.len(),
+        all.cells >= ein_corpus::shard::share(4 * 150 * orders.len())
+            && all.trees >= ein_corpus::shard::share(60 * orders.len()),
         "{} cells, {} trees",
         all.cells,
         all.trees
     );
     assert!(
-        all.other_work >= 30 * orders.len() && all.other_states >= 10,
+        all.other_work >= ein_corpus::shard::share(30 * orders.len())
+            && all.other_states >= ein_corpus::shard::share(10),
         "{} cells with other work, {} with other states",
         all.other_work,
         all.other_states
@@ -538,6 +612,10 @@ fn every_order_gives_one_answer() {
 /// read with the `slow` entries, and there the two are two runs.
 #[test]
 fn the_two_sends_take_the_same_work() {
+    // One computation, whole in one shard of the nightly's.
+    if !ein_corpus::shard::whole_in(SENDS_SHARD) {
+        return;
+    }
     let slow = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
     let (send, written) = (repo_root().join(SEND), repo_root().join(SEND_WRITTEN));
     let texts = |x: &Answer| -> Vec<Vec<String>> {

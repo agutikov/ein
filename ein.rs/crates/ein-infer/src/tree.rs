@@ -1314,7 +1314,7 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
     f.route = Some(s.route());
     f.licences = s.licences(&f.licences);
     f.denials = s.dead.denials_spent();
-    f.order = s.l5.then(|| TreeOrder {
+    f.order = s.l5.then_some(TreeOrder {
         written: matches!(
             s.order.choice,
             Choice::Written { .. } | Choice::Coupled { written: true }

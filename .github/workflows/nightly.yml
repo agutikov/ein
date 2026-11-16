@@ -132,13 +132,6 @@ jobs:
       # per-commit tier's.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test known_dead -- every_question_answers_alike_with_the_denials_and_from_deaths_alone
         env: { EIN_CORPUS_SLOW: "1" }
-      # The order of the obligation tree decides the work and never the
-      # answer: each question the tree answers, on every corpus program that
-      # searches, under the routes' order and under every other order the
-      # test names, the `slow` entries under the first four. The per-commit
-      # tier reads the programs that are not slow under six orders.
-      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test order
-        env: { EIN_CORPUS_SLOW: "1" }
       # The structure of the hypothesis set, which is root's pair layer, the
       # theory's share of it and the cover by groups, held to a permuted id
       # space and to every import form on the `slow` entries too. The
@@ -217,6 +210,16 @@ jobs:
       # permutation those of them that search. Eight permutations are the dev
       # host's.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-render --profile gate --test id_order_invariance
+        env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
+      # The order of the obligation tree decides the work and never the
+      # answer: each question the tree answers, on every corpus program that
+      # searches, under the routes' order and under every other order the
+      # test names, the `slow` entries under the first four; and the two
+      # SENDs, whole in one shard, the same work under `--single` and the
+      # maximal line. The per-commit tier reads the programs that are not
+      # slow under six orders. Whole it was over nine minutes on four P-core
+      # threads with four workers.
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test order
         env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
