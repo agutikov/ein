@@ -49,8 +49,8 @@
 ;;; licenses has to be re-derived from the *slot-partition* property
 ;;; instead (std.slots, imported below). That property is TYPE-SCOPED —
 ;;; it quantifies over the attribute types, not over one relation — which
-;;; is exactly the expressivity `zebra.ein` was missing when it did not
-;;; solve. See plans/…/p1.22_…/reports/c2_zebra_ein_gap.md.
+;;; is exactly the expressivity a split encoding needs and a property of
+;;; one relation cannot give.
 ;;;
 ;;; ── Provenance convention ───────────────────────────────────────────
 ;;;   no annotation  — IMPLICIT assumptions: schema, instance
@@ -66,7 +66,7 @@
 ;;;
 ;;; Every rule carries a `:why` template; every relation that reads as a
 ;;; sentence carries a positional `:why` render template. Together with
-;;; the query's `:goal-text` that makes this file the M2 NL⇄IR
+;;; the query's `:goal-text` that makes this file the NL ⇄ IR
 ;;; round-trip target, not just a fixture. See
 ;;; docs/ein/user/guide/06_zebra_walkthrough.md.
 
@@ -79,10 +79,10 @@
 ;; bounds it; these knobs decide how hard each candidate is tested
 ;; before it is entered.
 (config
-  ;; The walk's lookahead, its kill cache and its path no-goods were set
-  ;; here until M1e2 S1e2.1c.5 (2026-11-03), when the user retired the
-  ;; three flags: no route reads them, and a program that sets one is
-  ;; refused at load.
+  ;; `:record-alternative-justifications` is the one flag set here, and
+  ;; no flag changes R: this one may change which core a dead node's
+  ;; refutation names, and no state (docs/ein/user/reference/config.md). It is
+  ;; set
   ;; OFF, and this is the single most consequential knob in the file.
   ;; With multi-justification provenance on, a dead branch's no-good is
   ;; explained by searching the AND/OR proof graph for a genuinely
@@ -103,12 +103,12 @@
 
 
 ;; ──── Imported property rules ──────────────────────────────────────
-;; These used to be hand-rolled copies at the top of this file. They are
-;; the std.algebra property closures; the module comes whole, and the
+;; The std.algebra property closures, imported rather than written in
+;; this file; the module comes whole, and the
 ;; list names the rules the property-application facts below activate
 ;; (`(symmetric co-located)`, `(symmetric next-to)`, `(includes right-of
-;; next-to)`), so they are written short. `includes` replaces the file's old local `implies` — same
-;; body, the stdlib spelling.
+;; next-to)`), so they are written short. `(includes R S)` copies every
+;; R fact into S: here, every `right-of` pair is a `next-to` pair.
 ;;
 ;; `symmetric-negative-setup` is load-bearing, not decoration: a
 ;; symmetric relation has a symmetric COMPLEMENT too, and this encoding
@@ -180,7 +180,7 @@
 ;;
 ;; Either way the candidate space is the 25 attribute values × 5 houses
 ;; = 125 raw `(?R V H)` facts — and ~18x smaller than the unguided
-;; enumeration this file used to fall back to (2255 candidates over
+;; enumeration the file would get without one (2255 candidates over
 ;; `co-located` × `next-to`: with no hrule, hypgen fills EVERY slot of
 ;; EVERY open relation, type-blind).
 ;;
@@ -325,7 +325,7 @@
 
 (query
   ;; The two puzzle questions are "who drinks water?" and "who owns the
-  ;; zebra?" — a Nationality, not a House (S1.7.5 who-vs-where). The
+  ;; zebra?" — a Nationality, not a House (who, not where). The
   ;; goal binds the drink's / pet's house, then joins back through
   ;; co-located to a Nationality. Under solve() the goal is
   ;; projection-only (the verdict is consistent ∧ complete, not

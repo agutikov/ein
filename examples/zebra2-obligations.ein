@@ -1,4 +1,4 @@
-;;; Ein — Zebra puzzle, B1 encoding (S1.5.8c.5, 2026-05-24).
+;;; Ein — Zebra puzzle, the projection encoding.
 ;;;
 ;;; ── Editing this file ────────────────────────────────────────
 ;;;
@@ -11,12 +11,12 @@
 ;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
-;;; The pre-B1 zebra2 used a single symmetric+transitive
-;;; `co-located` relation to express the equivalence "same house"
-;;; across all five attribute kinds (Color, Nationality, Drink,
-;;; Cigarette, Pet). The B1 refactor (S1.5.8c §2.3) drops that
-;;; single equivalence relation and replaces it with five specific
-;;; attribute→House projections:
+;;; `zebra.ein` expresses "same house" as one symmetric and transitive
+;;; `co-located` relation across all five attribute kinds (Color,
+;;; Nationality, Drink, Cigarette, Pet). This file has no such
+;;; equivalence: each attribute kind has its own projection onto
+;;; House, five attribute→House relations:
+;;;
 ;;;
 ;;;   color-loc  : Color       → House
 ;;;   nation-loc : Nationality → House
@@ -25,15 +25,15 @@
 ;;;   pet-loc    : Pet         → House
 ;;;
 ;;; Each is a bijection (functional + total in both projections).
-;;; Spatial relations (right-of, next-to) stay as before, House×House.
+;;; Spatial relations (right-of, next-to) are House×House.
 ;;;
-;;; Naming convention (S1.5a.5, 2026-05-24): the relations are
+;;; Naming convention: the relations are
 ;;; named *-loc to read as "location of the X" — `(color-loc Red H1)`
 ;;; ≡ "the location of Red is H1". Attribute is in slot 0; House
 ;;; sits in slot 1. The cross-attribute primitives `co-located` and
 ;;; `adjacent-via` mirror that convention.
 ;;;
-;;; ── Condition encoding under B1 ──────────────────────────────
+;;; ── Condition encoding ───────────────────────────────────────
 ;;;
 ;;; The 15 puzzle conditions split into three groups:
 ;;;
@@ -55,20 +55,20 @@
 ;;;     passes for functional right-of; filters non-corner cases for
 ;;;     symmetric next-to (those need branching).
 ;;;
-;;; The four S1.5.8c.4 stdlib rules (typecheck-arg-{0,1},
-;;; domain-elimination, no-room-left) are inlined here until P1.8
-;;; imports land.
+;;; The bijection rules (typecheck-arg-{0,1}, domain- and
+;;; range-elimination, the negative completion) come from the stdlib,
+;;; imported below; the rules written here are the puzzle's own.
 
 
-;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
-
-;; ──── General property rules — now from std.algebra (S1.8.A5) ──
-;; symmetric / transitive / includes were inline kernel rules; they are the
-;; importable std.algebra property-closure rules (P1.8 S1.8.A5-tail). Imported
-;; FLAT so the bare names their activators reference (`(symmetric next-to)`,
-;; `(transitive is-a*)`, `(includes is-a is-a*)` below) resolve unchanged.
+;; ──── General property rules — from std.algebra ─────────────
+;; `symmetric`, `transitive` and `includes` are std.algebra's property
+;; closures, each activated by a fact below: `(symmetric next-to)`
+;; mirrors every next-to pair, `(transitive is-a*)` closes is-a* under
+;; composition, `(includes is-a is-a*)` copies every is-a edge into
+;; is-a* and `(includes right-of next-to)` every right-of pair into
+;; next-to. The three are listed in `:symbols`, so those facts write the
+;; names short.
+;; The file sets no `(config …)`: every flag has its default.
 (import std.algebra :symbols (symmetric transitive includes))
 
 ;; ──── Binary-relation property contradiction rules ─────────
@@ -90,7 +90,7 @@
 ;; This is sound under partial information — a "must hold"
 ;; rule on totality would fire false on every empty-yet state.
 
-;; ──── Bijection cardinality + inference — imported from the stdlib (S1.8a.f20) ──
+;; ──── Bijection cardinality + inference — imported from the stdlib ──
 ;; The generic cardinality CHECKS (functional / injective / total / surjective +
 ;; the `bijective` fan-out) live in std.algebra; the closed-world INFERENCE they
 ;; license — negative completion, domain/range elimination, arg typecheck — lives
@@ -101,8 +101,8 @@
 ;; `(typecheck-arg-0 color-loc is-a* Color)`, …). Only co-located* / adjacent-via*
 ;; stay puzzle-specific — they exceed relation algebra's 3-variable ceiling.
 ;;
-;; An import brings its module whole, with the modules it imports (M1f
-;; S1f.6.35): `std.bijection` imports `forall` and std.algebra, so this one line
+;; An import brings its module whole, with the modules it imports:
+;; `std.bijection` imports `forall` and std.algebra, so this one line
 ;; loads the entire working stack — `bijective-properties` (functional /
 ;; injective / total / surjective), domain/range elimination, the
 ;; negative-completion rules, typecheck-arg-{0,1}. `:symbols` lists the two
@@ -119,7 +119,7 @@
 (typecheck-hierarchy is-a*)
 
 
-;; ──── Cross-attribute propagation (B1) ─────────────────────
+;; ──── Cross-attribute propagation ──────────────────────────
 ;; `co-located` — two attribute-values share a house, propagate
 ;; the partner via the shared house. The activator's V1 / V2 are
 ;; attribute values (Color, Nationality, …); the rule scans for a
@@ -131,15 +131,15 @@
   :why    "co-located: ({?R1} {?V1} {?h}) ⟹ ({?R2} {?V2} {?h}).")
 
 ;; `co-located-fanout` — one meta-rule fans a `(co-located …)` activator into
-;; both companions it needs (S1.8a.f20, multi-fact `:assert (and …)`):
+;; both companions it needs (one multi-fact `:assert (and …)`):
 ;;   1. the SWAPPED activator — co-located is symmetric, (co-located A B C D) and
 ;;      (co-located C D A B) express the same constraint, so authors write ONE
 ;;      direction and this derives the reverse (the `co-located` rule then fires
 ;;      both ways; the swapped fact re-triggers this rule, swap-back redundant);
 ;;   2. the `co-located-negative` activator — the same shared-house equivalence
 ;;      carries negatives, (not (R1 V1 h)) ⟹ (not (R2 V2 h)).
-;; (Replaces the former `co-located-symmetric` + `derive-co-located-negative`,
-;; which matched the same `(co-located …)` at the same priority.)
+;; One rule derives both, since both are read off the same
+;; `(co-located …)` activator.
 (rule co-located-fanout ()
   :match  (co-located ?R1 ?V1 ?R2 ?V2)
   :assert (and (co-located ?R2 ?V2 ?R1 ?V1)
@@ -187,7 +187,7 @@
 ;; the NL chain *(color-loc Blue H_2) ⟹ ¬(color-loc Green H_2)
 ;; ⟹ ¬(color-loc Ivory H_1)* at d=0 — without this, Ivory@H_1
 ;; stays open and `domain-elimination color-loc` cannot force
-;; Yellow@H_1 in the first saturation pass (S1.5a.19 follow-up).
+;; Yellow@H_1 in the first saturation pass.
 ;; Same NAF uniqueness as the positive sibling — silent for
 ;; symmetric ?S in non-corner cases.
 
@@ -220,11 +220,11 @@
   :why    "adjacent-via ⟹ both directional activators (identical args).")
 
 ;; `derive-adjacent-via-{fwd,bwd}-fanout` — each directional activator fans out
-;; (S1.8a.f20 multi-fact `:assert (and …)`) into the THREE consumers that key off
-;; it, all at the same priority: the negative-propagation companion, the
-;; disjunctive pruner, and the spatial-endpoint exclusion. (Replaces the six
-;; former derive-adjacent-via-{fwd,bwd}-{negative,…} + derive-disjunctive-prune-*
-;; + derive-adjacent-via-endpoint-* rules, which shared a match and priority.)
+;; (one multi-fact `:assert (and …)`) into the THREE consumers that key off
+;; it: the negative-propagation companion, the disjunctive pruner, and the
+;; spatial-endpoint exclusion. One rule per direction derives all three,
+;; since they share a match.
+;;
 (rule derive-adjacent-via-fwd-fanout ()
   :match  (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
   :assert (and (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
@@ -258,34 +258,34 @@
 ;;     ``(?S h1 h_other)`` — the *reverse* operand order.
 ;;     Exclude h_other where that's absent.
 ;;
-;; Pre-S1.5a.2 there was a single rule with the fwd-direction
-;; NAF; the bwd activator simply swapped the args. For symmetric
-;; ?S (next-to) the two NAF directions are equivalent so the bug
-;; was masked. For right-of, the bwd rule asserted spurious
+;; One rule with the fwd operand order, the bwd activator merely
+;; swapping its args, would be right only where ?S is symmetric:
+;; for next-to the two operand orders are equivalent, but for
+;; right-of such a bwd rule asserts a spurious
 ;; ``(not (color-loc Ivory H_4))`` from a known Green@H_5,
-;; contradicting the Wikipedia solution. The S1.5a.11 dump on
-;; `zebra2-hints.ein` surfaced this in its first realistic outing.
+;; contradicting the Wikipedia solution. Hence two rules, each with
+;; its own operand order.
 ;;
-;; **h_other = h1 is not exempt** (2026-08-20). Both rules used to
-;; carry a `(neq ?h_other ?h1)` premise, which read as "a value
+;; **h_other = h1 is not exempt.** Neither rule carries a
+;; `(neq ?h_other ?h1)` premise, which would read as "a value
 ;; cannot exclude its own house" — but the very next premise,
 ;; `(absent (?S ?h_other ?h1))`, already decides that case, and
 ;; decides it correctly: for an *irreflexive* ?S (both `right-of`
 ;; and `next-to` are) h1 is not its own ?S-neighbour, so h1 is
 ;; exactly the house the partner must be excluded from. The guard
-;; was redundant where ?S is reflexive and wrong where it is not,
-;; and it silently exempted the one case it should have caught:
-;; V1 and V2 in the SAME house satisfied an `adjacent-via`.
+;; would be redundant where ?S is reflexive and wrong where it is
+;; not, and it would exempt the one case it should catch: V1 and V2
+;; in the SAME house satisfying an `adjacent-via`.
 ;;
-;; It never showed on the determinate puzzles — condition (6) is
+;; On the determinate puzzle that changes nothing — condition (6) is
 ;; colour↔colour, where functional/injective already forbid two
 ;; values in one house, and (11)/(12)/(15) are cross-attribute but
-;; over-constrained. It showed on `zebra2-minus-15.ein`, which is
-;; under-determined: with the guard the exhaustive search reported
-;; **55** distinct models where the puzzle has **32** — 23 of them
-;; placing Chesterfields with the Fox, or Kools with the Horse.
+;; over-constrained. On `zebra2-minus-15.ein`, which is
+;; under-determined, R has the puzzle's **32** states; with the guard
+;; it would have **55**, 23 of them placing Chesterfields with the
+;; Fox, or Kools with the Horse.
 ;; `examples/features/09_adjacent_via_same_house.ein` is the
-;; regression fixture.
+;; fixture of the same-house case.
 
 (rule disjunctive-prune-fwd (?S ?R1 ?V1 ?R2 ?V2)
   :match  (and (?R1 ?V1 ?h1)
@@ -304,10 +304,10 @@
   :why    "({?V2} at {?h1} via {?R2}) restricts {?V1} to {?S}-preimages (bwd); {?h_other} excluded.")
 
 ;; The disjunctive-prune-{fwd,bwd} activators are derived by
-;; `derive-adjacent-via-{fwd,bwd}-fanout` above (priority 200 — they MUST fire
-;; AFTER all next-to derivations have drained at priority 100, `includes
-;; right-of next-to` + `symmetric next-to`; the fire-time NAF re-eval, S1.5a.1,
-;; also catches the race). Args pass through unchanged — each rule handles its
+;; `derive-adjacent-via-{fwd,bwd}-fanout` above. Their `absent` guard is
+;; judged at quiescence, once the positive closure has derived every next-to
+;; pair (`includes right-of next-to` + `symmetric next-to`): a guard is read
+;; at that boundary and nowhere else. Args pass through unchanged — each rule handles its
 ;; own direction internally via the NAF operand order.
 
 ;; ──── Spatial-endpoint exclusion ────────────────────────────
@@ -346,7 +346,7 @@
 ;; ──── Bijection inference — imported from std.algebra + std.bijection ────────
 ;; typecheck-arg-{0,1}, domain-elimination, range-elimination, total, surjective,
 ;; functional-negative, injective-negative and the `bijective`/`*-setup` glue all
-;; come from the stdlib imports at the top (S1.8a.f20). The per-relation
+;; come from the stdlib imports at the top. The per-relation
 ;; `(bijective …)` declarations + the two `*-hierarchy` knobs drive them.
 
 ;; ──── Hypothesis generation: THERE IS NONE (generated) ──────
@@ -358,14 +358,14 @@
 ;; What proposes the (?R ?v ?h) candidates instead is the theory the file
 ;; already states. `(bijective color-loc)` and its four siblings fan out
 ;; into std.algebra's `total-owed` / `surjective-owed`, each of which
-;; reports an unwitnessed slot as `(open ?R)`; M1d S1d.2.5's obligations
+;; reports an unwitnessed slot as `(open ?R)`; the obligations
 ;; rung branches on exactly the facts that would discharge one. The hrule
 ;; said "guess a (value, house) pair"; the bijection declaration had
 ;; already said it, and now the engine hears it.
 ;;
-;; This file existing and solving is the idea note's complaint about
-;; :hrules — "while it is not part of the theory (rules + ontology)" —
-;; closed as a fixture. Regenerate with gen_zebra2_variants.py.
+;; This file solving is the fixture for it: no hrule is needed where the
+;; theory (rules + ontology) already says what to guess. Regenerate with
+;; gen_zebra2_variants.py.
 
 ;; ──── Relation signatures ──────────────────────────────────
 ;; Every relation carries a `:why` render template — a positional
@@ -508,15 +508,15 @@
 ;; obligation's own domain scan.
 
 (query
-  ;; (no :mode — obsolete: the verdict is read from the result `k`, never
-  ;; chosen up front; the engine's goal test is hardwired to SOLVE.)
   ;; The two puzzle questions are "who drinks water?" and "who owns the
-  ;; zebra?" — a Nationality, not a House (S1.7.5 who-vs-where). The goal
+  ;; zebra?" — a Nationality, not a House (who, not where). The goal
   ;; binds the located house, then joins through the shared house to
-  ;; nation-loc so ?who_water / ?who_zebra carry the answer. Under solve()
-  ;; the goal is projection-only (the verdict is consistent ∧ complete,
-  ;; not goal-match), so the extra conjuncts don't gate the search; they
-  ;; let the answer renderer report "the Norwegian drinks the water".
+  ;; nation-loc so ?who_water / ?who_zebra carry the answer. The goal is
+  ;; projection-only: it cuts each state of R down to its rows and
+  ;; decides nothing about which states are in R, so the extra conjuncts
+  ;; don't gate the search; they let the answer renderer report "the
+  ;; Norwegian drinks the water". A query has no mode: what it asks of R
+  ;; is the command's question (`ein solve`, `--single`, `ein test`).
   :goal (and (drink-loc  Water      ?h_water)
              (nation-loc ?who_water ?h_water)
              (pet-loc    Zebra      ?h_zebra)
