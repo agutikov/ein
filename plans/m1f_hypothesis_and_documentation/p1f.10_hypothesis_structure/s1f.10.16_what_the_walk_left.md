@@ -6,7 +6,10 @@
 `most-constrained`, and the lookahead's unread kill list are deleted; the lookahead, its kill cache, the walk's
 `generate` and `emit_closed` are kept, read by the shape golden's `hyp` and `hyp+closed` ops alone, and whether
 those ops stay is put to the user as Q-M1f.312, not acted on; the retired config names stay refused at load and
-in the `.einb` layout; the stale headers and pages are restated. No golden moved.
+in the `.einb` layout; the stale headers and pages are restated. No golden moved. **As ruled at the close,
+2026-11-16** ([§ Record](#record-2026-11-16-as-ruled-at-the-close)): Q-M1f.312 (e), both ops removed and what only
+they read deleted — the walk's `generate`, `complete`, the lookahead and its kill cache, `emit_closed` — with K-29's
+no-good store and K-30's `is_solution_node`; the golden lost its 1 322 `hyp` and `hyp+closed` lines and nothing else.
 **Depends on:** nothing. It runs with whichever batch of code commits it fits.
 **Takes over:** the old [S1f.10.5](s1f.10.5_ordering.md)'s *`most-constrained`, implemented or deleted*, and
 the old [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md)'s call on `generate_one_branch`.
@@ -414,3 +417,122 @@ mention by mention: `architecture.md`, `configuration.md` § 2.4, `glossary.md`,
 `lattice_diagrams.md`, `parity_baselines.md`) and their diagrams are not rewritten. A mention that is the
 language's (the writeback name), a retired name's, a fixture's file name, `N`'s *minimal nogoods*, or a sentence
 stating what the walk did, in the past, stays.
+
+### What was deleted
+
+Three commits on the branch: the inventory above (`c7c1e4fd`), the code with the golden (`26d0bc56`), the pages
+(`ff63da53`); this record is the fourth. Over `ein.rs/` less the golden, 1 898 lines out and 150 in
+(`git diff --shortstat c7c1e4fd 26d0bc56 -- ein.rs ':!ein.rs/crates/ein-render/tests/golden'`), 1 445 of them out of
+`ein-infer`. Every item of the inventory went, as listed, with these particulars:
+
+- **`ein-infer`**: `lookahead.rs`, `closed.rs`, `tests/hypgen_coverage.rs`, `examples/hypgen_calls.rs` and
+  `examples/hypgen_cost.rs`, whole. In `hypgen.rs`: `generate`, `GenOptions` and `generate_with`'s `opts` argument
+  (it is the config-free pass, and `generate_config_free` and `generate_blind` call it with the rungs alone),
+  `Ctx::lookahead`, `Ctx::kill_cache`, `Ctx::matcher`, the lookahead's arm of `apply_filters`, `write_negated`,
+  `Drop::LookaheadKilled` (so `HypGenStats::filtered` holds three), `report_lines`, `balances`, `DROPS`, `SKIPS`, the
+  section *Solution predicates* (`open_hypotheses`, `complete`, `complete_counted`, `consistent`,
+  `is_solution_node`) and the unit test of the report. `match_.rs`: `run_seeded_at`, `holds_seeded`. `shape.rs`:
+  `hyp_shape`, `hyp_shape_with`. `lib.rs`: the modules `closed` and `lookahead` and every re-export of the above.
+  Tests: `search_semantics.rs` lost `dies` with its three kill-condition tests and `solution_node_needs_both_halves`;
+  its `candidates`, `compile_semantics.rs`' `guessed_relations` and `explain_semantics.rs`' `hypotheses` ask
+  `hypgen::generate_config_free`; `explain_semantics.rs`' `emit_closed_on` and `cli_semantics.rs`' call of
+  `emit_closed` went, and an assertion message that printed `report_lines` prints the skip counters. **That
+  message was a reader the inventory missed**: found by the build, a test's failure text, deciding nothing.
+- **`ein-core`**: `Nogoods`, `NogoodFreeze` and their re-exports; `Kb`'s field, `nogoods`, `freeze_nogoods`, and
+  the store's handling in `Clone`, `new`, `with_program`, `branch`, `snapshot` (now `self.fork()`) and `diff`; the
+  tests `a_fork_shares_no_goods_and_a_snapshot_copies_them`, `a_frozen_store_refuses_a_write`,
+  `the_freeze_lifts_when_the_guard_drops`. The counters `hypgen_complete` and `lookahead_probe`.
+- **`ein-einb`**: `sections::write_nogoods`, `read_nogoods`, `Kind::Nogoods`; `header.rs` says what kind 9 was.
+- **`ein-cli`**: `summary.rs`' `filtered` map names the three filters, and `sparse` takes a slice.
+- **`ein-render`**: `corpus_ops::Op::Hyp`, its two entries in `ops()`, its arms.
+
+### The goldens that moved
+
+`corpus_shapes.md5`, blessed once with `EIN_BLESS=1 EIN_CORPUS_SLOW=1`, which reads every corpus program and, under
+the slow flag, permutes the id space of every one: 1 322 lines out, none in. The filter over the diff:
+
+```sh
+git diff -U0 cb0fbde8 26d0bc56 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5 \
+  | grep '^[-+][0-9a-f]' | grep -vcE '^-[0-9a-f]{16} +[0-9]+L  .*::hyp(\+closed)?$'   # 0: no other line moved
+git diff -U0 cb0fbde8 26d0bc56 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5 | grep -c '^+[0-9a-f]'   # 0
+git diff -U0 cb0fbde8 26d0bc56 -- …corpus_shapes.md5 | grep -cE '::hyp$'          # 661
+git diff -U0 cb0fbde8 26d0bc56 -- …corpus_shapes.md5 | grep -cE '::hyp\+closed$'  # 661
+grep -cE '::hyp(\+closed)?$' ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5        # 0 left
+```
+
+No other golden is in `git diff --name-only cb0fbde8 26d0bc56`. So the inventory's list was the list.
+
+### The pages
+
+Restated to what the engine does, with no plan path, stage id, finding id or date added: `architecture.md` (the
+worlds and complete-model rows; L3 has no writer left, L4 is gone with the code it named, and the leak list's
+counts), `configuration.md` § 2.4 (no engine code reads a retired field; its tables and generated block as they
+were, so `config_reference.rs` holds them unchanged), `defined_behaviour.md` (no pipeline writes between two
+candidates), `implementation.md` (the `hypgen.rs` row; `lookahead.rs` and `closed.rs` marked deleted, unlinked;
+`SolverConfig`'s row), `reserved_engine_strings.md` (the writeback name has no writer; `__closed__` has one engine
+side, `hypgen.rs`'s), `inference/README.md` (the banner, the guard evaluation the lookahead was, the generator's
+link), `absent_semantics.md` (C7, P6, D3), `answer_dump.md` (two rows' prose; the row names the test reads
+unchanged), `architecture_and_algorithms.md` (the banner, a § 3 row, O2's gap, O8's *Ein today*),
+`solution_semantics.md` (§ 1.4's `alive₀`, § 7's note), `03_ein_model.md`, `01_grammar.md`'s signature row and
+`06_reserved_names.md`'s `__closed__` row. Kept as they are, each a record or not a statement about the deleted
+code: § 6 of `solution_semantics.md`, the banner'd sections of `inference/README.md`, `features.md`,
+`lattice_dump.md`, `region_dump.md`'s past tense, `events.md`'s walk kinds, `standard_of_proof.md`'s worked
+example, `glossary.md`'s *Hypothesis set*, and `domain_elim_vs_hypothesis.md`, which is K-12's and P1f.20's.
+`docs/api/rust.md` is unchanged: no `pub` item it shows went. `AGENTS.md` is unchanged: it names neither op, and
+no rule or command it states moved. `utils/README.md` has no row of either example.
+
+**Left for the merge**: `hypgen::candidate_objects`' doc still says, in a parenthesis, that a `(not h)` is
+*written mid-call by the kill cache*. The paragraph is the one H9-1's branch edits, so it is not touched here to
+keep the two branches from conflicting; the parenthesis goes with that edit or at the merge.
+
+### Defaults taken
+
+Each the user's to revise.
+
+1. **`hypgen_coverage.rs` deleted, not re-pointed at H's pass.** Its stated reason was the `hyp` digests; with
+   them gone the counters it floored are in no golden, which is (e)'s stated consequence, and re-pointing it would
+   be a new check of H's narration that the ruling did not ask for.
+2. **`Drop::LookaheadKilled` deleted with the filter**, though the summary's map named it: H's pass never bumped
+   it, so the summary prints the same.
+3. **`Matcher::run_seeded_at` and `holds_seeded` taken as the lookahead's**: `pub`, and called by
+   `dies_immediately` alone.
+4. **`closed.rs` deleted whole**: once `emit_closed` and `producible_relations` went, its `CLOSED` was a copy of
+   `hypgen::CLOSED` that nothing read. The pages point at `hypgen.rs`.
+5. **K-29 deleted without a format bump**, against the finding's first reading: no 2.x file can hold the section,
+   so 2.0's layout is unchanged, and kind 9 is skipped as an unknown kind, as kind 3 is.
+6. **The writeback name and its kernel symbol kept**: removing either is a grammar change or an id-layout change,
+   and no ruling asked for one.
+7. **`Hrules::candidates`' ahead branch kept**, its doc restated: it is on H's path, not *read only by the ops*;
+   K-73.
+8. **The fixtures named for the lookahead not edited**: a corpus file's text is digested; K-71.
+
+### Verification
+
+On the gate profile, on `ff63da53` (the code as of `26d0bc56`, the pages after it; nothing under `ein.rs/` changed
+after the code commit), with `TMPDIR` under `build/`:
+
+- `cargo test --profile gate --no-fail-fast -p ein-infer -p ein-render -p ein-corpus -p ein-core -p ein-ir
+  -p ein-einb -p ein-narration`, whole crates: 954 tests in 98 binaries, green; `explore`, `claim_routes`,
+  `stdlib_coverage` and the per-commit `id_order_invariance` among them. A first run without `--no-fail-fast`
+  stopped at `ein-einb`'s `a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond`, a wall clock, at
+  29.7 ms against its 20 ms budget under a load average of 16 to 31 from the other worktrees' runs; alone it took
+  10.7 ms, and the open path lost only the read of a section no 2.x file holds. Not a measurement.
+- `cargo test --profile gate -p ein-cli -- --skip no_config_flag_moves_a_line_of_any_mode`: 407 tests, green;
+  `lever_invariance`'s other five by name in it (`every_declared_lever_cell_moves_no_line_of_any_mode`, the
+  describe route, the core exemption, W36, `--no-search`), `read_out_reference` and `config_reference` among them.
+  The skipped one is the cell another worktree is fixing.
+- `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test id_order_invariance`, once, on the
+  code commit's tree: green, every corpus program permuted, and it wrote the golden above.
+- `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`,
+  `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`: clean. `python3 utils/check_hashmap_iteration.py`:
+  ok. `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md corpus/README.md tests/README.md
+  examples/README.md stdlib/README.md utils/README.md c/README.md`: 0 findings, after this record too.
+  `utils/check_test_scratch.py` over the tests' scratch directory: empty.
+- Not run, as the stage was told: `./run_tests.sh`, the nightly, `utils/ci_container.sh`.
+
+### Findings outside the stage's scope
+
+Filed in [`findings.md`](findings.md#from-the-stages-of-tracks-s-and-r), open: **K-71**, eight `branching/` fixtures
+named for the lookahead or the kill cache, whose headers describe them; **K-72**, the `.einb` `SOLUTIONS` section,
+which no command writes and which carries the walk's no-good counters; **K-73**, `Hrules::candidates`' order
+guarding against a write no pass makes. K-29 and K-30 are closed.
