@@ -106,7 +106,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   the engine has: a program with no stable reading.
 - **The second theorem, and what a certificate is.** A system of that strength cannot prove its own
   consistency. Ein's practical form of the question is what `exhausted` and a green gate license one to say,
-  which [`standard_of_proof.md`](../../docs/kernel/standard_of_proof.md) answers for the repo and not for the
+  which [`standard-of-proof.md`](../../docs/ein/standard-of-proof.md) answers for the repo and not for the
   logic.
 
 ## And common sense

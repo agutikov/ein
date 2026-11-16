@@ -16,8 +16,8 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
-| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
+| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1. The destination was already written into [`docs/history/README.md`](../README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | **answered 2026-08-31 — yes, if the sentence carries the warrant**, and there are three: a **command** that re-takes it, a **date**, or a **test** that pins it. A count that can carry none is deleted. Which warrant fits follows from what the number *is* — a **size** takes the command (and all nine drifted counts are sizes), a **measurement** takes the date, a **test-pinned** count takes the test's name. The fourth shape the question lists — a checker asserting prose against a command — is **refused**: the counts that are right are the ones behind an instrument that is *run*, not one that exists |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | **closed 2026-11-03 — no**, by the user's ruling (a) on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q4: the ruling of 2026-10-16 answers it — *no two commands may disagree, and every answer agrees with the oracle* — and makes no exception for a surface called experimental ([§ Closed](#closed-2026-11-03--answered-by-the-ruling-of-2026-10-16)). Both instances are gone: `ein test`'s sentence at M1e2 S1e2.1a.5's switch, the tree with the walk at S1e2.1c.5. The learning half, learning on tree deaths, is M1f's [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md) |
@@ -45,7 +45,7 @@ records which question became which id.
 
 > **Decided 2026-08-28 and written down.** Both this and
 > [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) are now
-> [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md),
+> [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md),
 > which carries the two rules, the four-row calibration table and the worked
 > example. This entry stays as the argument that produced them. Later stages
 > **cite the page**, not this entry.
@@ -76,7 +76,7 @@ binding on every stage:
 
 > **Decided 2026-08-28, beside Q-M1e.1** — *an argument suffices when its
 > premise is itself enforced* — and written into
-> [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md)
+> [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md)
 > as Rule 2.
 
 Several findings are of the form *this is stated but not enforced*
@@ -113,7 +113,7 @@ named test — so a comment at the future wiring point is enough.
 > **harder** to see than an uncited one, because the citation is what stops
 > anybody looking. The hazard was removed instead of documented (a
 > non-vivifying `find`, ten lines), and
-> [`standard_of_proof.md`](../../kernel/standard_of_proof.md) Rule 2 now
+> [`standard-of-proof.md`](../../ein/standard-of-proof.md) Rule 2 now
 > carries the second question: *does the named test enforce the premise, or
 > something adjacent to it?*
 
@@ -1139,7 +1139,7 @@ cost question rather than a design one:
 3. **Leave it**, on the argument that the read side is a pure function of
    `(joined, alive, store)` and all three are pinned. That is an argument whose
    premise is enforced, so it is admissible under
-   [`standard_of_proof.md`](../../kernel/standard_of_proof.md) Rule 2 —
+   [`standard-of-proof.md`](../../ein/standard-of-proof.md) Rule 2 —
    but it should then be *written*, because "we compare that column" and "that
    column is entailed by three we compare" are different claims and the tree
    currently makes the first.

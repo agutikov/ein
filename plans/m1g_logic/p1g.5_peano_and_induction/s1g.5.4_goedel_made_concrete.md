@@ -96,7 +96,7 @@ built. Ein's own rule language is neither.
 **5. *The second theorem, and what a certificate is.*** No program. One paragraph relating three things a
 reader may run together: `exhausted` (every commitment over H classified: a statement about one run); a
 green gate (the engine agrees with its tests and its oracle); and consistency of a theory. With a pointer to
-[`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) for the second.
+[`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) for the second.
 
 ## Tasks
 

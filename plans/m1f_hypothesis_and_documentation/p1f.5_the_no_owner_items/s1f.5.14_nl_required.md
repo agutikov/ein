@@ -35,7 +35,7 @@ and [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1
 which decide **which fact set** the claim quantifies over — the model or the
 solution KB. Both are ratified.
 **Blocks:** nothing in M1e. It is the IR→NL half of the round trip
-[`zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
+[`06_zebra_walkthrough.md`](../../../docs/ein/user/guide/06_zebra_walkthrough.md)
 calls the M2 target, and the channel
 [`EinAf.md`](../../m2_nl_to_ir/EinAf.md#f7--provenance)'s F6/F7 feedback grades
 are written against.
@@ -823,7 +823,7 @@ the answer, which is backwards.
 - [`docs/kernel/ir/03-ein-lang/syntax.md`](../../../docs/ein/user/reference/syntax.md)
   § `:why` render template and § the division of labour — the normative
   statement the new page extends rather than restates.
-- [`docs/kernel/inference/zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
+- [`docs/kernel/inference/06_zebra_walkthrough.md`](../../../docs/ein/user/guide/06_zebra_walkthrough.md)
   — the NL ⇄ ein-rule table, and the target this stage is the return leg of.
 - [`plans/ideas/08-human-style-deductive-trace.md`](../../ideas/08-human-style-deductive-trace.md)
   — the user's own framing, authoritative on intent.

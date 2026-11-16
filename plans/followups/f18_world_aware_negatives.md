@@ -107,5 +107,5 @@ does.
 - [design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
   — the monotonicity definition this theme exists because of, and the worked
   example in
-  [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md)
+  [`docs/kernel/standard-of-proof.md`](../../docs/ein/standard-of-proof.md)
   of what it cost to leave it unenforced.

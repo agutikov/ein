@@ -464,7 +464,7 @@ rule over the same premises collapse however they were bound.
   DAG.
 - [`../01-ein-graph/01_kb.md`](../01-ein-graph/01_kb.md) — the
   conceptual model these records implement.
-- [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax that
+- [`../reference/`](../../../ein/user/reference/) — the surface syntax that
   produces these entities at load.
 - [`../../inference/`](../../inference/) — the engine that *adds* derived
   facts via rule firings.

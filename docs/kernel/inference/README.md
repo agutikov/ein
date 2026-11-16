@@ -732,7 +732,7 @@ derived negatives reach `domain/range-elimination`'s `forall`
 premises in the same pass.
 
 The NL chain this closes (see
-[`examples/README.md`](zebra_walkthrough.md)):
+[`examples/README.md`](../../ein/user/guide/06_zebra_walkthrough.md)):
 *Norwegian@H_1 ⟹ Englishman ≠ H_1 ⟹ Red ≠ H_1* — once
 `functional-negative` produces the first negative,
 `co-located-negative` propagates it across the equivalence,

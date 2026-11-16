@@ -574,7 +574,7 @@ Two things decided it, and neither was the speed. **The answers do not move** �
 3.2 M enterings compared fact by fact, every verdict, model, unsat core and all
 85 `summary.json` counters identical. And the trace gets *better*: it now opens
 with root's own derivations, then `Assuming …`, then what the hypothesis adds,
-which is how [`zebra_walkthrough.md`](../../kernel/inference/zebra_walkthrough.md)
+which is how [`06_zebra_walkthrough.md`](../../ein/user/guide/06_zebra_walkthrough.md)
 tells it and what the accidental re-derivation was standing in for.
 
 The cost accepted, stated plainly: **267 529 facts record a different — equally
@@ -693,7 +693,7 @@ bigger change than it looked.** A fork's firing list is what
 [`08-human-style-deductive-trace`](../../../plans/ideas/08-human-style-deductive-trace.md)
 renders, and 961 re-derivations of what was already true before the
 hypothesis is noise in it — the human walkthrough in
-[`zebra_walkthrough.md`](../../kernel/inference/zebra_walkthrough.md)
+[`06_zebra_walkthrough.md`](../../ein/user/guide/06_zebra_walkthrough.md)
 narrates what a hypothesis *adds*, and the rendered after-trace does exactly
 that from its second step. The speed is a consequence, and it happens to be
 the consequence that closes the milestone's last open target.

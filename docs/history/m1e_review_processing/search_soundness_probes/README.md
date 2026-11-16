@@ -158,7 +158,7 @@ which changes what several of the others are about.
 ### Task T1e.1.1.1 — Ratify the standard of proof — **both rules** ✅
 
 > **Done 2026-08-28.** Both rules are
-> [`docs/kernel/standard_of_proof.md`](../../../kernel/standard_of_proof.md),
+> [`docs/kernel/standard-of-proof.md`](../../../ein/standard-of-proof.md),
 > the register marks both questions decided, the milestone README carries the
 > one-line version, and `docs/kernel/README.md` points at the page from its
 > load-bearing-claims note and its Conventions.

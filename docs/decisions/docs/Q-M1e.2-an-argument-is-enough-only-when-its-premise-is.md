@@ -13,5 +13,5 @@ no check at all. A citation of the wrong test is harder to see than no citation,
 looking. Together with [Q-M1e.1](Q-M1e.1-a-behaviour-is-refuted-by-a-banked-probe.md) it is one rule read from two
 ends: a risk is not argued away, and this is what an argument must stand on where one is accepted.
 
-**Held by.** `docs/kernel/standard_of_proof.md`, Rule 2 and its table; the alive-set invariant, a premise first
+**Held by.** `docs/ein/standard-of-proof.md`, Rule 2 and its table; the alive-set invariant, a premise first
 argued and now enforced, by `ein-infer/tests/alive_invariant.rs`.

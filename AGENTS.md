@@ -46,7 +46,7 @@ constrained-reasoning research.
   re-takes it or the **test** that pins it, and a number that can carry
   neither is not written down (a date is no warrant).
   What it takes to call a claim *settled* is
-  [`standard_of_proof.md`](docs/kernel/standard_of_proof.md): a behaviour is
+  [`standard-of-proof.md`](docs/ein/standard-of-proof.md): a behaviour is
   refuted only by a banked probe, an absence by naming the thing that checks
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
@@ -70,13 +70,13 @@ constrained-reasoning research.
   [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and
   a test in that file diffs the two, so `cargo test --workspace` keeps the
   page true — *edit the test, run it, paste; never edit the block by hand*.
-- **`docs/install.md`** — the install page: the two channels (a release
+- **`docs/ein/user/install.md`** — the install page: the two channels (a release
   binary, `cargo install --path`), what `ein --version`'s five lines mean, how
   to check a binary's stdlib against the checkout's manifest, and
   `$EIN_STDLIB`. **`pip install` is not a channel.**
-- **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
+- **`docs/ein/user/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
   Zebra puzzle"). User-facing; references `docs/kernel/` + `docs/ein/`, never
-  explains internals; complements `inference/zebra_walkthrough.md`.
+  explains internals; complements `docs/ein/user/guide/06_zebra_walkthrough.md`.
 - **`docs/history/`** — **shipped milestones, kept as record**
   ([`docs/history/README.md`](docs/history/README.md)): a document goes there,
   rather than staying only in git, when it is still read, as a specification,
@@ -104,7 +104,7 @@ constrained-reasoning research.
   and [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
   `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
   `(solve … :hrules …)` clause **deleted and nothing else**.
-- **`docs/kernel/inference/zebra_walkthrough.md`** — the Wikipedia human
+- **`docs/ein/user/guide/06_zebra_walkthrough.md`** — the Wikipedia human
   Zebra walkthrough annotated as ein inference: the **M1 target trace** for
   the engine and the **M2 target** for the NL ⇄ IR round-trip.
 - **`stdlib/`** — the ein-lang standard library (`std.*`), the single source

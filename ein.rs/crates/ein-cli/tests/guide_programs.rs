@@ -1,6 +1,6 @@
 //! **Every program block in the guide runs on today's engine** — M1f S1f.5.26.
 //!
-//! [`docs/guide/`](../../../../docs/guide/) is the newcomer's first contact
+//! [`docs/ein/user/guide/`](../../../../docs/ein/user/guide/) is the newcomer's first contact
 //! with Ein, and until S1f.5.26 nothing read its `lisp` blocks:
 //! [`guide_transcripts.rs`](guide_transcripts.rs) diffs the *marked
 //! transcripts* and nothing else. So chapter 4's block went on writing
@@ -12,7 +12,7 @@
 //!
 //! ## What is read, and how
 //!
-//! Every fenced `lisp` block of every page in `docs/guide/`, by
+//! Every fenced `lisp` block of every page in `docs/ein/user/guide/`, by
 //! [`read_guide`]:
 //!
 //! - **A whole program** is a block that writes no `…` outside a string. It is
@@ -32,7 +32,7 @@
 //!
 //! What this does not read is the prose around a block, the `sh` commands
 //! outside a marked transcript, and whether an excerpt quotes the file it says
-//! it is from; [`docs/guide/README.md`](../../../../docs/guide/README.md) says
+//! it is from; [`docs/ein/user/guide/README.md`](../../../../docs/ein/user/guide/README.md) says
 //! so where a reader of the guide will look. The choices above, that `…`
 //! decides the kind and that an excerpt's whole forms load together, are
 //! [Q-M1f.69]'s, taken by default.
@@ -244,7 +244,7 @@ struct Report {
 }
 
 /// Read every `lisp` block of every `.md` page in `dir`, which `shown` names
-/// in a finding (`docs/guide` for the guide itself). Each block's text is
+/// in a finding (`docs/ein/user/guide` for the guide itself). Each block's text is
 /// written under `scratch` to be loaded and, if it is a whole program, solved.
 fn read_guide(dir: &Path, shown: &str, scratch: &Path) -> Report {
     let mut pages: Vec<PathBuf> = std::fs::read_dir(dir)

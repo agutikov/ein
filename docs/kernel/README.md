@@ -14,7 +14,7 @@ kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
 > implementation**: a claim here is checked by `cargo test --workspace` and by
 > nothing else. Behaviours whose only other statement would be the source are
 > stated in [`defined_behaviour.md`](defined_behaviour.md), and what it takes
-> to call a claim here settled is [`standard_of_proof.md`](standard_of_proof.md) — two
+> to call a claim here settled is [`standard-of-proof.md`](../ein/standard-of-proof.md) — two
 > rules, ratified 2026-08-28.
 
 ## Reading order
@@ -33,7 +33,7 @@ The four sub-trees layer on each other:
    store with its registries, indexes, the fact view, hypothesis forks,
    derivation DAGs. Maps the semantics in (1) onto concrete shapes.
 
-3. **[`ir/03-ein-lang/`](ir/03-ein-lang/)** — the **surface
+3. **[`ir/reference/`](../ein/user/reference/)** — the **surface
    syntax**. The S-expression IR that users author and the engine
    dumps. Lexical rules, the **flat sequence of forms** classified by
    head (P1.7c removed the `(ontology …)` / `(facts …)` /
@@ -207,13 +207,13 @@ explicit audience banner.
 
 | audience | pages |
 |----------|-------|
-| **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
+| **newcomer** | [`../guide/`](../ein/user/guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](../ein/user/syntax-and-semantics/natural-language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`read-out.md`](../ein/user/reference/read-out.md) (what `ein solve` prints, row by row, and what each number counts) |
 | **dev**  | [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md); `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
 | **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`read-out.md` § 11](../ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](../ein/ein.rs/events.md). |
 | **both** | this README, [`glossary.md`](../ein/user/reference/glossary.md), the per-subtree READMEs, and [`config.md`](../ein/user/reference/config.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* and *does it change R* on every flag row |
 
-- **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
+- **Newcomer path** (never seen Ein): the [guide](../ein/user/guide/) end-to-end
   (Ch.1 → Ch.4), then the user path below for depth.
 - **User path** (author a puzzle): glossary → `01-ein-graph` →
   `03-ein-lang` (grammar → patterns → `06_reserved_names` →
@@ -258,7 +258,7 @@ explicit audience banner.
   thirteen diagnostics, orderings and error strings the engine defines, stated
   as normative rather than left to the source.
 - **End-to-end target trace**:
-  [`inference/zebra_walkthrough.md`](inference/zebra_walkthrough.md) — the human
+  [`06_zebra_walkthrough.md`](../ein/user/guide/06_zebra_walkthrough.md) — the human
   Wikipedia Zebra solution annotated as ein inference (NL ↔ ein
   rule ↔ branch-depth, contradictions, learnt no-goods). The
   *inference* column is what the M1 kernel + engine must reproduce;
@@ -276,7 +276,7 @@ explicit audience banner.
 - Cross-references inside the kernel tree use relative paths that
   resolve regardless of repo root.
 - A claim on these pages is subject to
-  [`standard_of_proof.md`](standard_of_proof.md): a behaviour is refuted only
+  [`standard-of-proof.md`](../ein/standard-of-proof.md): a behaviour is refuted only
   by a banked probe, and an argument for leaving something as it is holds only
   while its premise is enforced by something that fails when it stops being
   true.

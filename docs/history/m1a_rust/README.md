@@ -657,7 +657,7 @@ container format, the features compiled in, and SHA-256 of the stdlib manifest
 **as resolved**, naming which of the three resolution steps answered;
 `.gitattributes`, without which the first Windows corpus sweep would have been
 a wall of red about CRLF rather than about Windows;
-[`docs/install.md`](../../install.md); and a six-job release workflow whose
+[`docs/install.md`](../../ein/user/install.md); and a six-job release workflow whose
 `publish` `needs:` the gate, the `--jobs` cross-diff and the dependency-light
 build. Its `--no-default-features` task was written as a compile check and run
 as a **measurement**, which found that two of the three features that build was

@@ -65,7 +65,7 @@ scope. What's left is a focused contradiction detector
 
 Audited the ein-model unification
 ([`ontology.md`](../docs/ein/user/syntax-and-semantics/ontology.md)
-+ [`04_jack_drinks_coffee.md`](../docs/kernel/ir/01-ein-graph/04_jack_drinks_coffee.md))
++ [`05_jack_drinks_coffee.md`](../docs/ein/user/guide/05_jack_drinks_coffee.md))
 against the existing P1.2 stages.
 
 - [x] **S1.2.1-S1.2.4 acceptance under reflexive framing** — *all 4

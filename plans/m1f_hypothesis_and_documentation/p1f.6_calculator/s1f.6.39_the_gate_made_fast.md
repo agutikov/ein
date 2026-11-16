@@ -108,7 +108,7 @@ eight processes a split by program buys nothing, and a split by (program, output
    mismatch computes the ordinary run and applies today's cut (the narration differences it admits are found
    that way, as now). `EIN_ID_SEEDS`, `EIN_ID_FILES` (which has no golden: there the baseline is computed) and the
    register's id-order rows unchanged.
-   **T2 and T3 are verified by sensitivity, not by argument** ([`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md)):
+   **T2 and T3 are verified by sensitivity, not by argument** ([`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md)):
    a probe that makes one output depend on the id order, and one that makes one depend on the job count, each fails
    the test before the change and after it, the probes kept as a test or banked in the record.
 4. **T1f.6.39.4 — a worker pool.** One helper in `ein-corpus`: a sweep's work is its (program, output) units, run on

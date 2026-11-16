@@ -32,7 +32,7 @@ Three places where the engine has an *exactly one* it does not spend, in rising 
    candidate, each in the closure of some candidate, and let `A(I)` be the candidates whose closure holds a
    witness. If every other read of `I`'s guard is static, as L5's premise already requires, then every member
    of R above a state owing `I` holds a member of `A(I)`. Written out as `tree.rs` writes L5's argument, under
-   [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md): the premise checked at load by
+   [`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md): the premise checked at load by
    `oblgen::alternatives` and on every node the route computes, a node that breaks it refusing the run. The
    gap to close in writing: a witness could also be **derived** at a node by no single candidate, which the
    premise must exclude or the claim is false.

@@ -890,7 +890,7 @@ So each state s is a class `{C : cl(C) = s}`:
 - **The hard direction, *split*, is the minimal generators.** They are what
   has to be guessed to reach s. The size of the smallest one is the number of
   hypotheses the solution needs, which is the branch depth
-  [`zebra_walkthrough.md`](../../docs/kernel/inference/zebra_walkthrough.md)
+  [`06_zebra_walkthrough.md`](../../docs/ein/user/guide/06_zebra_walkthrough.md)
   tabulates.
 
 **What to expose:**

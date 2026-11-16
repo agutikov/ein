@@ -20,7 +20,7 @@ The walk was deleted on 2026-11-03 and the generator stayed, because H is built 
 stayed has no reader on any command's path. This phase is about to write code beside it and pages about it, so
 it settles each piece first: deleted, or kept with the reader that needs it named at the item. An argument for
 leaving something alone holds only while its premise is enforced by something that fails
-([`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md)).
+([`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md)).
 
 ## The items, as found on 2026-11-15 at `dbedc535`
 

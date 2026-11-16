@@ -337,7 +337,7 @@ jobs:
             echo "Identify: \`ein --version\` reports the engine version, the"
             echo "\`--events\` protocol, the features compiled in, and the SHA-256 of"
             echo "the \`std.*\` manifest it will load. See"
-            echo "[docs/install.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/install.md)."
+            echo "[docs/ein/user/install.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/docs/ein/user/install.md)."
             echo
             echo "### Artefacts"
             echo

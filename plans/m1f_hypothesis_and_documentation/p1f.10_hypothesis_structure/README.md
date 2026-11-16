@@ -466,7 +466,7 @@ The defaults the re-plan took are
 
 - [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) — the
   answer as a region R; the structure is of the lattice R is a region of.
-- [`docs/kernel/standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) — an argument for a skip
+- [`docs/kernel/standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) — an argument for a skip
   holds only while its premise is enforced by something that fails; every licence track R adds is held so.
 - [`docs/kernel/inference/domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md)
   — the same structure as a saturation rule (`domain-elimination`, `no-room-left`). S1f.10.13 says why a

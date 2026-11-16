@@ -322,7 +322,7 @@ comment — *"a store no fork reads while it saturates"* — enforced by nothing
 `emit_nogood` takes `&Kb` and locks internally, so the type system does not
 stop a worker from writing the way `Interner::intern`'s `&mut self` stops one
 from interning ([08](08_parallelism.md) §6). By
-[`standard_of_proof.md`](../../../kernel/standard_of_proof.md) Rule 2 that is
+[`standard-of-proof.md`](../../../ein/standard-of-proof.md) Rule 2 that is
 not yet enough: *an argument suffices when its premise is itself enforced.*
 
 So it is now checked. `Kb::freeze_nogoods` (`kb.rs:1066`) returns a `Drop`

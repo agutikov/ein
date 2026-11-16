@@ -272,7 +272,7 @@ that, and three things become derivable that a typed integer never was:
   [S1e.4.8](../../../docs/history/m1e_review_processing/README.md#s1e48--maintainability-low)
   is told so rather than fixing a comment on a constant that is leaving.~~
   **Overtaken 2026-09-01**: S1e.4.8 fixed it. Under
-  [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) Rule 2 the
+  [`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) Rule 2 the
   premise *the constant is leaving* is enforced by nothing that fails when it
   stops being true — this stage may end in a written refusal, and it has not
   started — and a deferral would have needed a note **at the site** anyway,

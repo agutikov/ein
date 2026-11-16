@@ -207,7 +207,7 @@ row. The register rule applies: a finding that turns out to be a wrong answer is
 **Ruled 2026-11-10.** The user: *"new stage, investigate and exaplain the root cause, propose fix, then I will decide"* → [S1f.5.25](s1f.5.25_a_closed_stdout.md), whose T1 record has the root cause. Rust ignores `SIGPIPE`, so a write to a closed pipe fails, and `print!` panics on any write error, which exits 101. `ein solve` exits 0 only because its read-out is one write that fits the pipe's buffer, and `ein solve --dump-config | head -1` exits 101. The fix is [Q-M1f.68](../open_questions.md#q-m1f68--what-ein-does-when-its-reader-closes-stdout).
 
 6. **The tutorial is broken.**
-   [`docs/guide/04_solving_the_whole_puzzle.md`](../../../docs/guide/04_solving_the_whole_puzzle.md) line 13 writes
+   [`docs/guide/04_solving_the_whole_puzzle.md`](../../../docs/ein/user/guide/04_solving_the_whole_puzzle.md) line 13 writes
    the retired `(config :enable-pre-branch-lookahead true)`, so a reader who copies it gets a refusal.
 
 **Ruled 2026-11-10.** The user: *"fix the tutorial, new stage"* → [S1f.5.26](s1f.5.26_the_tutorial_runs.md).

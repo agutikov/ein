@@ -68,7 +68,7 @@
 ;;; sentence carries a positional `:why` render template. Together with
 ;;; the query's `:goal-text` that makes this file the M2 NL⇄IR
 ;;; round-trip target, not just a fixture. See
-;;; docs/kernel/inference/zebra_walkthrough.md.
+;;; docs/ein/user/guide/06_zebra_walkthrough.md.
 
 
 ;; ──── Search control ───────────────────────────────────────────────

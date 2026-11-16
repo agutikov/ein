@@ -1,13 +1,13 @@
 # Ein examples
 
-Encoded puzzles and focused fixtures, in [ein-lang](../docs/kernel/ir/03-ein-lang/).
+Encoded puzzles and focused fixtures, in [ein-lang](../docs/ein/user/reference/).
 Run any with `ein solve <file>` (or `ein saturate <file>` for the
 saturation demos); see [`docs/ein/ein.rs/api.md`](../docs/ein/ein.rs/api.md) to drive them
 from another Rust program.
 
 > The step-by-step **human Zebra walkthrough** (the M1 target trace) used to
 > live here; it moved to
-> [`docs/kernel/inference/zebra_walkthrough.md`](../docs/kernel/inference/zebra_walkthrough.md).
+> [`docs/ein/user/guide/06_zebra_walkthrough.md`](../docs/ein/user/guide/06_zebra_walkthrough.md).
 
 > **The stdlib conformance corpus is not here.** M1c
 > [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)

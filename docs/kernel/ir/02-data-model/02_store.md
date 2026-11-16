@@ -367,7 +367,7 @@ discarded) rather than mutation.
 - [`01_entities.md`](01_entities.md) — the records this store
   owns.
 - [`../01-ein-graph/`](../01-ein-graph/) — the conceptual model.
-- [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax the
+- [`../reference/`](../../../ein/user/reference/) — the surface syntax the
   loader parses.
 - [`../../inference/`](../../inference/) — the engine that produces derived
   facts via rule firings. It shipped across P1.3–P1.6.

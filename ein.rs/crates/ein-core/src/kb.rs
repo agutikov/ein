@@ -435,7 +435,7 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
 /// lines rather than a comment, and neither is the one the plan expected:
 ///
 /// - **The premise the *comment* route rested on was misattributed.**
-///   [`standard_of_proof.md`] cited
+///   [`standard-of-proof.md`] cited
 ///   `naf_semantics::matching_does_not_resolve_equality_classes` as enforcing
 ///   *nothing fires equality propagation*. It does not: it unions by hand and
 ///   then asserts the **matcher** ignores the class, which is a different
@@ -454,7 +454,7 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
 /// every fork made afterwards, and a merge in a fork is invisible to its
 /// siblings. What no longer holds is that a *question* can do it.
 ///
-/// [`standard_of_proof.md`]: ../../../../docs/kernel/standard_of_proof.md
+/// [`standard-of-proof.md`]: ../../../../docs/ein/standard-of-proof.md
 /// [fc]: ../../../../ein.rs/crates/ein-core/tests/fork_cost.rs
 #[derive(Clone, Default, Debug)]
 pub struct EqClasses {

@@ -63,7 +63,7 @@
 //! S1e2.1b.7, `node_census.md` § 12.2). No shipped route builds from scratch,
 //! so the gate is sound for what ships, and the scope is the claim.
 //!
-//! Under [`standard_of_proof.md`](../../../../docs/kernel/standard_of_proof.md)'s
+//! Under [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
 //! rule 2 the argument is enough only while its premise is enforced, and the
 //! premise is enforced by the tests of the stage's (c), which fail when it stops
 //! being true:

@@ -6,7 +6,7 @@ The **structural** map of the codebase: *where* each concern lives and how a
 order) — by answering "where do I look to change X?".
 
 > **Audience: engine contributors.** Puzzle authors want
-> [`ir/03-ein-lang/`](ir/03-ein-lang/) (the surface language) instead.
+> [`ir/reference/`](../ein/user/reference/) (the surface language) instead.
 
 ## Data flow — `.ein` source → answer
 

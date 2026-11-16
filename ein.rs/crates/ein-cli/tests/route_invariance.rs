@@ -19,7 +19,7 @@
 //! - **the premise of the rule**: the state route saturates no more nodes and
 //!   derives no more facts than route 1. The day a program breaks it, the rule
 //!   is revisited, which is what lets the rule rest on a measurement
-//!   (`standard_of_proof.md`).
+//!   (`standard-of-proof.md`).
 //!
 //! **Where route 1 is cut and the state route is not**, at the default
 //! budget, the read-outs are not compared and the premise is held by the

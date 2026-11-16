@@ -116,7 +116,7 @@ from the repo root. `probes/` is [`../probes/`](../probes/).
 *Live* means the same surface still states the false thing. *Moved* means the
 false statement now sits on another surface. *Gone* means no surface states it,
 and the row names what removed it and what fails if it comes back, or says
-that nothing checks it ([`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md):
+that nothing checks it ([`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md):
 an absence is settled by naming the thing that checks it).
 
 | id | the witness, re-taken | today | class | removed by, and what holds it |

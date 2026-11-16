@@ -2,7 +2,7 @@
 
 > **No language, no code here.** This document describes rules in
 > graph-rewriting terms. The S-expression syntax that declares rules
-> is in [`../03-ein-lang/`](../03-ein-lang/); the `Rule` / `Pattern`
+> is in [`../reference/`](../../../ein/user/reference/); the `Rule` / `Pattern`
 > records are in [`../02-data-model/`](../02-data-model/).
 
 A **rule** is a graph rewriting rule over the knowledge base. The
@@ -602,7 +602,7 @@ branch, retract on contradiction, commit on uniqueness. This is the
 The data-model mapping is detailed in
 [`../02-data-model/`](../02-data-model/); the surface syntax for
 authoring rules is in
-[`../03-ein-lang/`](../03-ein-lang/) §pattern sub-language.
+[`../reference/`](../../../ein/user/reference/) §pattern sub-language.
 
 ## See also
 
