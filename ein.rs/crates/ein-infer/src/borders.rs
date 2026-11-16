@@ -62,7 +62,7 @@
 //! borders are found in order, `R`'s states, then the candidates dead alone
 //! (whose closures every later step reads), then each state's class, then
 //! `N`, so a run the budget stops has finished every border before the one
-//! it stopped in, and says which ([`Border`]).
+//! it stopped in, and says which (`Border`).
 //!
 //! ### Measured, and taken by no question
 //!
