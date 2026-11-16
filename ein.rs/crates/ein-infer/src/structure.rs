@@ -1656,19 +1656,19 @@ fn theory_in(
         } else {
             Vec::new()
         };
-        // Each a node the layer read, so the cache answers.
-        let nodes: Vec<FxHashSet<FactId>> = if check && !sets.is_empty() {
-            match sp.eval(&sets)? {
-                Ok(read) => {
-                    let states = sp.states();
-                    read.iter()
-                        .map(|s| states[s.class as usize].iter().copied().collect())
-                        .collect()
-                }
-                Err(_) => Vec::new(),
-            }
+        // Each a node the layer read, off the cache, which asks no budget: a
+        // layer whose last step carried it past its budget has read them
+        // all the same. `None` where one was never computed, and then each
+        // check is unread and says so.
+        let nodes: Option<Vec<FxHashSet<FactId>>> = if check && !sets.is_empty() {
+            sp.cached(&sets).map(|read| {
+                let states = sp.states();
+                read.iter()
+                    .map(|s| states[s.class as usize].iter().copied().collect())
+                    .collect()
+            })
         } else {
-            Vec::new()
+            Some(Vec::new())
         };
         (
             l,
@@ -1876,9 +1876,23 @@ fn theory_in(
         })
         .collect();
 
+    // A pair's own node the cache did not hold: each check is unread, and
+    // says why, rather than left out.
+    let nodes: Vec<FxHashSet<FactId>> = nodes.unwrap_or_else(|| {
+        for s in supports.iter_mut().filter(|s| s.read) {
+            s.check = Some(Check {
+                dead: false,
+                root_dead: false,
+                beyond: 0,
+                unread: Some("the pair's own node is not one root's layer computed".to_string()),
+            });
+        }
+        Vec::new()
+    });
+
     // The check: the program over each distinct support, with each of its
     // pairs.
-    if check && nodes.len() == supports.len() {
+    if check && !nodes.is_empty() && nodes.len() == supports.len() {
         let mut by_support: BTreeMap<Vec<u32>, Vec<usize>> = BTreeMap::new();
         for (k, s) in supports.iter().enumerate() {
             if s.read {
