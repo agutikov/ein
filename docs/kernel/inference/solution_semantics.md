@@ -110,7 +110,11 @@ less
   symmetry a rule derives is the one a fact states, and a program that
   states it either way has one H and one R
   (`ein-infer/tests/dunder_objects.rs`;
-  [W96](../../../corpus/wrong_answers.toml));
+  [W96](../../../corpus/wrong_answers.toml)); a symmetry, one root too,
+  since the saturation that derives the mark mirrors the relation as a
+  written mark does
+  ([`reserved_engine_strings.md`](reserved_engine_strings.md#__symmetric__--engine-effect);
+  [W98](../../../corpus/wrong_answers.toml));
 - every name the registry calls a relation or a rule. The registry holds a
   relation a `(relation …)` declares and the head of every fact **a file
   writes**. It does not hold the head of a fact that only a rule concludes,

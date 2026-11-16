@@ -16,14 +16,14 @@
 ;;; nothing, and every fact of the program's one relation is in it: the blind
 ;;; enumerator has nothing to propose, and R is {∅}, the control's answer.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; Root's first saturation is no fixpoint: the mirror is seeded before the
-;;; rule fires, and the mark it derives never offers `near`'s facts to it, so
-;;; `ein saturate --dump` prints `(near a b)` and the mark and no `(near b
-;;; a)`. The blind enumerator then proposes `(near b a)`, and R is two states,
-;;; ∅ and `{(near b a)}`, each holding both facts once a later saturation
-;;; mirrors `near`.
+;;; Root's first saturation was no fixpoint: the mirror was seeded before the
+;;; rule fired, and the mark it derived never offered `near`'s facts to it,
+;;; so `ein saturate --dump` printed `(near a b)` and the mark and no `(near b
+;;; a)`. The blind enumerator then proposed `(near b a)`, and R was two
+;;; states, ∅ and `{(near b a)}`, each holding both facts once a later
+;;; saturation mirrored `near`. The answer is the one above now.
 
 (relation near Thing Thing :why "{?1} is near {?2}")
 (near a b)

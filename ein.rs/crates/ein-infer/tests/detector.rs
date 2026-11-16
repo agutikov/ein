@@ -603,18 +603,6 @@ fn the_spot_check_reads_three_parents_of_each_printed_state() {
 /// --max-n 12` reads to 12 (`node_census.md` § 11.4).
 const SPLIT_BOUND: usize = 10;
 
-/// **The open register row W98's witnesses**, which the sweep leaves out
-/// until the row is fixed: a `(__symmetric__ R)` a rule derives is not
-/// mirrored by the saturation that derives it. At root
-/// (`symmetric-derived-root.ein`) a node's fork resumes a saturation that
-/// never mirrored `near`, and scratch, whose seed reads the mark, does; under
-/// a commitment (`symmetric-derived-node.ein`) a split from a node that holds
-/// the mark mirrors where the fork does not. The fixing commit deletes this.
-const W98_OPEN: [&str; 2] = [
-    "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein",
-    "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein",
-];
-
 /// `sat(P ∪ C)` with `P` the program as loaded and not saturated: a node
 /// built **from scratch**, `node_census`'s step from the base.
 fn scratch(base: &mut Kb, terms: &mut Terms, ast: &Ast, facts: &[FactId]) -> Box<[FactId]> {
@@ -747,9 +735,6 @@ fn a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split() {
             .unwrap_or(&path)
             .display()
             .to_string();
-        if W98_OPEN.contains(&rel.as_str()) {
-            continue;
-        }
         let Ok(text) = std::fs::read_to_string(&path) else {
             continue;
         };

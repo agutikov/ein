@@ -89,13 +89,6 @@ const REGIMES: [(&str, Mode); 5] = [
 
 const BUDGET: u64 = 1 << 14;
 
-/// **The open register row W98's root witness**, which the sweep leaves out
-/// until the row is fixed: a `(__symmetric__ R)` a rule derives is not
-/// mirrored by the saturation that derives it, so root's first saturation is
-/// no fixpoint, and a run that saturates root again reports another root
-/// block than `--monotone`'s. The fixing commit deletes this.
-const W98_OPEN: [&str; 1] = ["examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"];
-
 /// The largest cube a flagged program gets in the sweep: the cube is bounded
 /// by its limit and not by the budget, and 2¹⁶ saturations a cell would be
 /// most of the sweep's cost for no identity it does not already check at 2¹⁰.
@@ -325,9 +318,6 @@ fn the_description_is_coherent_on_every_corpus_cell() {
             let mut peak: std::collections::BTreeMap<&str, i64> = Default::default();
             {
                 let rel = path.strip_prefix(repo_root()).unwrap_or(path);
-                if W98_OPEN.iter().any(|w| rel == std::path::Path::new(w)) {
-                    return (bad, cells, described, rooted, peak);
-                }
                 let root = root_of(path);
                 for (regime, mode) in REGIMES {
                     let Some(s) = summary(path, mode, BUDGET) else {

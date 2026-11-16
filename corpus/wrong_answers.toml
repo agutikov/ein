@@ -1254,7 +1254,14 @@
 # fact answers {∅}), and the mark a commitment brings a rule to derive,
 # which no node mirrors (four states where the same closure written as a
 # rule answers {∅}). Filed `open`, owned by S1f.10.9, in a commit of their
-# own.
+# own, `30d12edc`, and **fixed the same day** by the stage's next: the
+# saturation in which `(__symmetric__ R)` comes to hold offers every fact of
+# R already stored to the mirror, as its seed does a relation marked from the
+# start, so a mark a rule derives, at root or in a node, closes R as a written
+# one does. Each witness answers its control's R. No other corpus program's
+# H, R, read-out, stderr or exit code moved. Each `[case.fixed]` carries the
+# null id in the flipping commit, and the stage's next commit writes the
+# hash. No open row is owned by a stage of M1f's phase 10.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -17973,10 +17980,14 @@ settings = "default"
 owner    = "S1f.10.9"
 question = ["P1f.10 findings.md H9-4"]
 witness  = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
-note     = "Filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`, on the user's ruling at the phase's close, *\"File and fix them in this phase\"*: the finding's own witness, `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The control, symmetric-written-root.ein, writes the mark as a fact and differs in nothing else. Put in the corpus as it stands, the witness departs from scratch in `detector.rs`'s sweep and panics `claim_round_trip.rs`'s library check, each because root's first saturation is no fixpoint; both name it until the fix"
-open_because = "the saturator seeds its native mirror once, at its first step, from the relations marked then, and the rule derives the mark after it: the mark offers `near`'s stored facts to no mirror, so root's first saturation leaves `(near b a)` underived. The blind enumerator proposes it, and R is two states, ∅ and `{(near b a)}`, each listed holding both facts once a later saturation of the same KB, whose seed reads the mark, mirrors `near`. S1f.10.9's next commit fixes it"
+note     = "Filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`, on the user's ruling at the phase's close, *\"File and fix them in this phase\"*: the finding's own witness, `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The control, symmetric-written-root.ein, writes the mark as a fact and differs in nothing else. Put in the corpus as it stands, the witness breaks five corpus sweeps, each because root's first saturation is no fixpoint: it departs from scratch in `detector.rs`'s, panics `claim_round_trip.rs`'s library check, and fails `read_out.rs`'s, `summary_properties.rs`'s and `answer_dump.rs`'s; each named it until the fix. Fixed by S1f.10.9 (2026-11-16): the saturation that derives the mark mirrors `near`, root's fixpoint holds `(near b a)`, no candidate, and R {∅}, the control's"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.9, H9-4 of P1f.10's `findings.md`: `Saturator::symmetric_rels`, where it reads the marked relations again, offers the whole extent of every relation marked since its last read to the native mirror, as the seed offers a relation marked from the start, and the seed reads the marks before it marks itself taken. So the saturation in which `(__symmetric__ R)` comes to hold, root's or a node's resumed one, closes R under the swap, written or derived"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -17998,10 +18009,10 @@ exhausted = true
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(near b a)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "`reserved_engine_strings.md` § `__symmetric__`: a marked relation's extension is closed under arg-swap, the closure the stdlib `symmetric` rule computes, which reads a mark a rule derives as one written; and `solution_semantics.md` § 1.3: root is the program's facts saturated to quiescence"
@@ -18016,9 +18027,8 @@ derived   = "`near` is marked symmetric, so root's fixpoint holds `(near b a)` b
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
-relations = ["near"]
-models    = [["(near a b)", "(near b a)"], ["(near a b)", "(near b a)"]]
+k         = 1
+models    = [[]]
 
 [[case]]
 id       = "W98/derived-at-node"
@@ -18029,10 +18039,14 @@ settings = "default"
 owner    = "S1f.10.9"
 question = ["P1f.10 findings.md H9-4"]
 witness  = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["answer", "summary"]
-note     = "Filed by S1f.10.9 (2026-11-16) beside `W98/derived-at-root`: the same mechanism in a node's saturation, which resumes root's. `(near a b)`, scoped out; `close`, which the blind enumerator proposes about; a rule that marks `near` symmetric once anything is close; and one that calls `(near b a)` a contradiction. The control, symmetric-rule-node.ein, closes `near` under the swap by a rule of its own, the closure the native mirror computes for a marked relation, and differs in nothing else. Root holds no mark, so neither `detector.rs` nor `claim_round_trip.rs` meets it"
-open_because = "a node resumes root's saturation, whose mirror was seeded at root with nothing marked; the mark a commitment brings `close-symmetric` to derive offers `near`'s stored facts to no mirror, so no node holds `(near b a)` and `one-way` kills none: R is the whole cube, four states. S1f.10.9's next commit fixes it"
+note     = "Filed by S1f.10.9 (2026-11-16) beside `W98/derived-at-root`: the same mechanism in a node's saturation, which resumes root's. `(near a b)`, scoped out; `close`, which the blind enumerator proposes about; a rule that marks `near` symmetric once anything is close; and one that calls `(near b a)` a contradiction. The control, symmetric-rule-node.ein, closes `near` under the swap by a rule of its own, the closure the native mirror computes for a marked relation, and differs in nothing else. Root holds no mark; a split from a node that holds it departs from the fork in `detector.rs`'s sweep, and its state files saturate to `(false)` in `answer_dump.rs`'s, each of which named it until the fix. Fixed by S1f.10.9 (2026-11-16): the node's saturation that derives the mark mirrors `near`, each candidate is dead alone, and R is {∅}, the control's"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.9, H9-4 of P1f.10's `findings.md`: `Saturator::symmetric_rels`, where it reads the marked relations again, offers the whole extent of every relation marked since its last read to the native mirror, as the seed offers a relation marked from the start, and the seed reads the marks before it marks itself taken. So the saturation in which `(__symmetric__ R)` comes to hold, root's or a node's resumed one, closes R under the swap, written or derived"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -18054,10 +18068,10 @@ exhausted = true
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 4
-k_c      = 4
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(close a)", "(close b)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "`reserved_engine_strings.md` § `__symmetric__`: a marked relation's extension is closed under arg-swap, the closure the stdlib `symmetric` rule computes, in whichever saturation the mark comes to hold"
@@ -18072,6 +18086,6 @@ derived   = "H is `(close a)` and `(close b)`. A state that holds either marks `
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 4
+k         = 1
 relations = ["close"]
-models    = [[], ["(close a)"], ["(close b)"], ["(close a)", "(close b)"]]
+models    = [[]]

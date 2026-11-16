@@ -18,12 +18,13 @@
 ;;; contradiction. Root holds no `close`, no mark and no `(near b a)`: it is
 ;;; alive and owes nothing. So R is {∅}, the control's answer.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; A node resumes root's saturation, whose mirror was seeded at root with
-;;; nothing marked. The mark a commitment brings `close-symmetric` to derive
-;;; never offers `near`'s facts to the mirror, so no node holds `(near b a)`
-;;; and none is dead: R is the whole cube, four states.
+;;; nothing marked. The mark a commitment brought `close-symmetric` to derive
+;;; never offered `near`'s facts to the mirror, so no node held `(near b a)`
+;;; and none was dead: R was the whole cube, four states. The answer is the
+;;; one above now.
 
 (relation near Thing Thing :why "{?1} is near {?2}")
 (relation close Thing :why "{?1} is close")

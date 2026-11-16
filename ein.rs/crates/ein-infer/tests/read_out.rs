@@ -33,14 +33,6 @@ fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
     Some((kb, terms, ast))
 }
 
-/// **The open register row W98's root witness**, which the sweep leaves out
-/// until the row is fixed: a `(__symmetric__ R)` a rule derives is not
-/// mirrored by the saturation that derives it, so root's first saturation is
-/// no fixpoint. The read-out lists ∅ with `(near b a)`, which a later
-/// saturation of root mirrors, and the oracle's ∅ is the first saturation's,
-/// without it. The fixing commit deletes this.
-const W98_OPEN: [&str; 1] = ["examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"];
-
 fn corpus_and_register() -> Vec<PathBuf> {
     let mut files = ein_corpus::corpus_files();
     for row in ein_corpus::register().case {
@@ -48,7 +40,6 @@ fn corpus_and_register() -> Vec<PathBuf> {
             files.push(repo_root().join(row.witness_of(a)));
         }
     }
-    files.retain(|f| !W98_OPEN.contains(&rel_of(f).as_str()));
     files.sort();
     files.dedup();
     files

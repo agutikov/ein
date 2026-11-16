@@ -3053,7 +3053,7 @@ note   = "M1f W97 (`W97/connex-import`), filed by S1f.10.15's T1f.10.15.4 (2026-
 path   = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W98 (`W98/derived-at-root`), filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The mark is derived after the saturator seeded its native mirror and offers `near`'s facts to none, so root's first saturation is no fixpoint: no `(near b a)`, which the blind enumerator then proposes, and R two states where it is {∅}, the control's. Open, owned by S1f.10.9."
+note   = "M1f W98 (`W98/derived-at-root`), filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The mark is derived after the saturator seeded its native mirror and offers `near`'s facts to none, so root's first saturation is no fixpoint: no `(near b a)`, which the blind enumerator then proposes, and R two states where it is {∅}, the control's. Fixed by the same stage: the saturation that derives the mark mirrors `near`, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-written-root.ein"
@@ -3065,7 +3065,7 @@ note   = "M1f W98's control for `W98/derived-at-root`, filed by S1f.10.9: the ma
 path   = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W98 (`W98/derived-at-node`), filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`: the mark derived under a commitment, by a rule that reads `close`, beside a rule that calls `(near b a)` a contradiction. A node resumes root's saturation, whose mirror was seeded with nothing marked, and the mark offers `near`'s facts to none: no node holds `(near b a)`, and R is four states where it is {∅}, the control's. Open, owned by S1f.10.9."
+note   = "M1f W98 (`W98/derived-at-node`), filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`: the mark derived under a commitment, by a rule that reads `close`, beside a rule that calls `(near b a)` a contradiction. A node resumes root's saturation, whose mirror was seeded with nothing marked, and the mark offers `near`'s facts to none: no node holds `(near b a)`, and R is four states where it is {∅}, the control's. Fixed by the same stage: the node's saturation that derives the mark mirrors `near`, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein"
