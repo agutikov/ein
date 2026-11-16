@@ -62,3 +62,42 @@ L8's and L9's are.
 
 - **Not skip a node whose state a surface prints** without saying where its content comes from.
 - **Not ship a licence whose premise is argued and not checked at every node.**
+
+## The rule for *go*, written before the table (2026-11-16)
+
+Written and committed before T2's corpus table was taken. It is
+[S1f.10.13's](s1f.10.13_the_price_list.md#the-rule-for-go-written-before-the-table-is-taken), read as
+[its defaults](s1f.10.13_the_price_list.md#defaults-taken) read it, applied to one way of spending: **read the whole
+node, and do not saturate an extension `S ∪ {b}` of an alive state that closes no edge through `b`.**
+
+For a question:
+
+- **go** when, over the corpus programs that search, the total work of that question with the licence taken (the
+  whole node's cost added, the nodes it saves taken off) is lower, **and no program's cell is higher by more than
+  one tenth**;
+- **no** otherwise, with the programs that lose named.
+
+Read as S1f.10.13's defaults read it, each where the rule does not say:
+
+1. **Both units, and a *go* needs both**: saturations, and facts beyond root.
+2. **A stopped cell counts with what it spent**, and the licence is priced on the nodes that cell visited.
+3. **A flagged program is in every total**, and the licence is applied to none: its routes are the cube's.
+4. **A unit in which a cell is 0 loses by any positive net.**
+5. **The whole node is charged to the way that reads it**: one saturation and its facts beyond root, added to every
+   cell of a monotone program whose run did not visit that node itself (the tree's coupled order reads it inside
+   some runs, and there it is in the cell already). It is charged whether or not it is read whole; a node the
+   reading stops is charged what it derived, and saves nothing.
+
+And three that are this stage's, each the user's to revise:
+
+6. **Soundness before work.** The rule prices work. A test under which some dead node closes no edge is no licence,
+   whatever its price: the plan's *not ship a licence whose premise is argued and not checked*. So each question's
+   verdict is *no* wherever T1 banks a program or T2 finds a node that breaks the test, and the rule's verdict on
+   the work is given beside it, as what the licence would have been worth.
+7. **The saving is an upper bound.** An alive node that closes no edge is counted saved, its saturation and its
+   facts, though the licence decides the node's `dead` bit and not its closure or its debts, which every route but
+   `--single`'s last step reads off it. The record says where a route could do without them.
+8. **Three tests are priced**, each with the same node: *as stated* (no edge through `b` closed); *narrowed* (and
+   `b` in no pair with a member of `S`, `S` holding no other member of a question of `b`, and `b` not dead alone);
+   and *narrowed, unmerged* (the narrowed test, taken only on a program whose whole node is read whole and gives no
+   fact a label of two classes, the node paid on every monotone program all the same).
