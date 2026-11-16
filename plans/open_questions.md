@@ -45,6 +45,7 @@ file it keeps its id; do not reuse a closed id.
 | Q40 | `(hypothesis ?h)` / `(contradiction-under ?h)` rule premises — Provenance map? | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q41 | Rule priority — scale (100/200/…) and placement (per-rule vs config)          | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                       | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
+| Q-M1e.19 | Algorithmic pathology has no owner: where does the search degrade?        | [here](#q-m1e19--algorithmic-pathology-has-no-owner) — moved from M1e's ledger at M1f S1f.20.8 (2026-11-17), id kept; open, no owner |
 
 ---
 
@@ -840,6 +841,42 @@ plan) land in a future followup phase adjacent to F4.
 
 Full context:
 `p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q42.
+
+---
+
+## Q-M1e.19 — Algorithmic pathology has no owner
+
+**Raised 2026-08-29** by M1e S1e.1.6 (T1e.1.6.2), in M1e's ledger
+(`docs/history/m1e_review_processing/open_questions.md`), as the one of the
+review's `Q9` surfaces nobody swept: the parser and CLI edges were swept,
+`cast.rs` went with `ein-einb`'s next change, micro-CSP ground truth is
+[M10](m10_external_benchmarks/README.md)'s, and this one had no home. **Moved
+here at M1f S1f.20.8 (2026-11-17)**, its id kept, when `docs/history/` was
+dissolved: it is open, nothing in the project cites it, and every open
+question lives in `plans/` (the user's ruling at S1f.20.2's review, item 10).
+**Owner unassigned.**
+
+*Where does the search degrade, and is there an input class that makes it
+degrade catastrophically?* Nothing in the tree asks. What exists measures the
+corpus as it is: `corpus/corpus.toml`'s `cost_ms` and `slow = true`
+(`utils/corpus_cost.py`), and the budget's forecast, which tells a run stopped
+at `--region-budget` what its next step would cost. **A pathology pass
+measures what is *not* in the corpus**: a family of programs parameterised by
+n, run until it stops finishing, with the exponent read off, the routes named
+(the state route, the tree and the classes, route 1, the cube), and the
+programs that put the alive set where nobody expects it found.
+
+When it was raised the evidence was the deleted walk's: its tree traversal
+reached `zebra2-minus-15-obligations.ein`'s 32 models in 86 enterings where
+the lattice needed 17 204 592, a 200 053× gap on one input, and nothing said
+which inputs have it. The walk went at M1e2 S1e2.1c.5; the question, which is
+about the engine's inputs and not about one route, did not.
+
+**Why it is not a task anywhere yet.** A pathology pass is a measurement
+phase, a family of generated inputs, a harness, a fitted exponent and a
+written conclusion, and no milestone has taken one. It is the natural
+neighbour of [F22](followups/f22_exact_core_past_the_cap.md)'s unbounded core
+search (K-82), which is one such pathology found by accident.
 
 ---
 
