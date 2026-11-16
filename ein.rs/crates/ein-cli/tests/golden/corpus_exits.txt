@@ -72,6 +72,10 @@
 0    examples/beliefs/01_common_belief.ein :: saturate
 0    examples/beliefs/01_common_belief.ein :: solve
 0    examples/beliefs/01_common_belief.ein :: test
+0    examples/beliefs/02_packing.ein :: render kb
+0    examples/beliefs/02_packing.ein :: saturate
+0    examples/beliefs/02_packing.ein :: solve
+0    examples/beliefs/02_packing.ein :: test
 0    examples/beyond_arith/casting_out_nines.ein :: saturate
 0    examples/beyond_arith/casting_out_nines.ein :: solve
 0    examples/beyond_arith/casting_out_nines.ein :: test
