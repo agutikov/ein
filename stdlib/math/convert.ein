@@ -47,8 +47,8 @@
 ;;;
 ;;; The two directions do not cost the same: a halving is a whole decimal
 ;;; division, where a doubling is one addition walk: 255 to binary is 826
-;;; firings and 1111101000 to decimal 100 (`stdlib/README.md` §
-;;; `std.math.convert` has the command).
+;;; firings and 1111101000 to decimal 100 (`ein saturate` of each request
+;;; alone, the closing rules' firings left out).
 ;;;
 ;;; It reaches into both theories: decimal's `div-call`, `div-done`,
 ;;; `add-walk` and `done` are its interface (the tagged calls), and binary's

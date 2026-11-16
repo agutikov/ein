@@ -98,7 +98,7 @@
 ;;; matters, or where a fixed width with an overflow flag is what is modelled.
 ;;; `std.math.decimal-arith` for numbers of any length, for named constants, and for
 ;;; batches: its circuits are longer chains of cheaper steps
-;;; (`stdlib/README.md` § `std.math.num9` has both measured).
+;;; (`num9_theory.rs` pins what each request costs in firings).
 ;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────
 ;;;

@@ -99,8 +99,8 @@
 ;;;
 ;;; **What it costs.** A step of the chain is a long division, and a division
 ;;; computes its divisor's nine multiples first: gcd(1071, 462) is three
-;;; steps, some three hundred firings (`stdlib/README.md` § `std.math.gcd` has
-;;; them measured). The count of steps is linear in the operands' length
+;;; steps, 553 firings (`gcd_theory.rs`' `the_circuit_of_each_request` pins
+;;; them). The count of steps is linear in the operands' length
 ;;; (Lamé's bound, five a decimal digit of the smaller at most).
 ;;;
 ;;; ── The names this module occupies ─────────────────────────────────────────

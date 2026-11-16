@@ -788,7 +788,7 @@
 ;; two guards on `?v`, in this order: `(neq ?v z)` ranges `?v` over the
 ;; program's names, and `(eq ?v ?x)` keeps the one that is the operand, so
 ;; a number, which is a fact, never passes. It costs a comparison a name of
-;; the program for each operand (`stdlib/README.md` has the measurement).
+;; the program for each operand, which `arith_batch.rs` pins.
 (rule operand-undeclared ()
   :match  (and (operand ?k ?x)
                (neq ?v z) (eq ?v ?x)
