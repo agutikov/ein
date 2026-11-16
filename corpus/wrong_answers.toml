@@ -1245,23 +1245,23 @@
 #
 # **W98 was filed on 2026-11-16 by S1f.10.9**, from H9-4 of P1f.10's
 # `findings.md`, on the user's ruling at the phase's close, *"File and fix
-# them in this phase"*: a `(__symmetric__ R)` a rule derives is not mirrored
-# by the saturation that derives it. The saturator seeds its native mirror
-# once, from the relations marked when the seed is taken, and a mark derived
-# after it offers the facts of R already stored to no mirror. Two rows, one
-# per witness: the mark derived at root, which leaves root's first
+# them in this phase"*: a `(__symmetric__ R)` a rule derived was not mirrored
+# by the saturation that derived it. The saturator seeded its native mirror
+# once, from the relations marked when the seed was taken, and a mark derived
+# after it offered the facts of R already stored to no mirror. Two rows, one
+# per witness: the mark derived at root, which left root's first
 # saturation short of its fixpoint (two states where the mark written as a
 # fact answers {∅}), and the mark a commitment brings a rule to derive,
-# which no node mirrors (four states where the same closure written as a
+# which no node mirrored (four states where the same closure written as a
 # rule answers {∅}). Filed `open`, owned by S1f.10.9, in a commit of their
 # own, `30d12edc`, and **fixed the same day** by the stage's next: the
 # saturation in which `(__symmetric__ R)` comes to hold offers every fact of
 # R already stored to the mirror, as its seed does a relation marked from the
 # start, so a mark a rule derives, at root or in a node, closes R as a written
 # one does. Each witness answers its control's R. No other corpus program's
-# H, R, read-out, stderr or exit code moved. Each `[case.fixed]` carries the
-# null id in the flipping commit, and the stage's next commit writes the
-# hash. No open row is owned by a stage of M1f's phase 10.
+# H, R, read-out, stderr or exit code moved. Each `[case.fixed]` carried the
+# null id in the flipping commit, `72121213`, and the stage's next commit
+# wrote the hash. No open row is owned by a stage of M1f's phase 10.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -17985,7 +17985,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`, on the user's ruling at the phase's close, *\"File and fix them in this phase\"*: the finding's own witness, `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The control, symmetric-written-root.ein, writes the mark as a fact and differs in nothing else. Put in the corpus as it stands, the witness breaks five corpus sweeps, each because root's first saturation is no fixpoint: it departs from scratch in `detector.rs`'s, panics `claim_round_trip.rs`'s library check, and fails `read_out.rs`'s, `summary_properties.rs`'s and `answer_dump.rs`'s; each named it until the fix. Fixed by S1f.10.9 (2026-11-16): the saturation that derives the mark mirrors `near`, root's fixpoint holds `(near b a)`, no candidate, and R {∅}, the control's"
 
 [case.fixed]
-commit = "0000000"
+commit = "72121213"
 by     = "S1f.10.9, H9-4 of P1f.10's `findings.md`: `Saturator::symmetric_rels`, where it reads the marked relations again, offers the whole extent of every relation marked since its last read to the native mirror, as the seed offers a relation marked from the start, and the seed reads the marks before it marks itself taken. So the saturation in which `(__symmetric__ R)` comes to hold, root's or a node's resumed one, closes R under the swap, written or derived"
 date   = "2026-11-16"
 
@@ -18044,7 +18044,7 @@ look_at  = ["answer", "summary"]
 note     = "Filed by S1f.10.9 (2026-11-16) beside `W98/derived-at-root`: the same mechanism in a node's saturation, which resumes root's. `(near a b)`, scoped out; `close`, which the blind enumerator proposes about; a rule that marks `near` symmetric once anything is close; and one that calls `(near b a)` a contradiction. The control, symmetric-rule-node.ein, closes `near` under the swap by a rule of its own, the closure the native mirror computes for a marked relation, and differs in nothing else. Root holds no mark; a split from a node that holds it departs from the fork in `detector.rs`'s sweep, and its state files saturate to `(false)` in `answer_dump.rs`'s, each of which named it until the fix. Fixed by S1f.10.9 (2026-11-16): the node's saturation that derives the mark mirrors `near`, each candidate is dead alone, and R is {∅}, the control's"
 
 [case.fixed]
-commit = "0000000"
+commit = "72121213"
 by     = "S1f.10.9, H9-4 of P1f.10's `findings.md`: `Saturator::symmetric_rels`, where it reads the marked relations again, offers the whole extent of every relation marked since its last read to the native mirror, as the seed offers a relation marked from the start, and the seed reads the marks before it marks itself taken. So the saturation in which `(__symmetric__ R)` comes to hold, root's or a node's resumed one, closes R under the swap, written or derived"
 date   = "2026-11-16"
 
