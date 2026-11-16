@@ -1292,31 +1292,28 @@ pub fn unread(w: &Whole) -> Vec<String> {
     if let Some(c) = p.cover.root_cliques.as_ref().and_then(|r| r.cut.as_ref()) {
         out.push(cut_words("the cliques of root's own exclusion graph", c));
     }
-    // Which candidates' own nodes hold each witness is read through a
-    // layer's singles, after the layer, and is refused once the layer has
-    // spent its budget. That is so of a layer that stopped, and of one that
-    // read every pair and whose last step carried it past the budget: the
-    // layer is then whole and this reading is not, so neither sentence says
-    // the layer stopped.
+    // Which candidates' own nodes hold each witness is read off a layer's
+    // singles, which the layer's own reading left in the cache: it is unread
+    // where the layer stopped before its last single, and there alone. The
+    // layer's own sentence, above, says it stopped; these say what follows.
     let owed = &p.exactly_one.owed;
     if owed.instances.is_ok() {
         if !owed.singles_read {
             out.push(
                 "which candidates' own nodes hold each witness of an instance root owes was \
-                 not read at root: root's layer had spent its budget, whether or not it read \
-                 every pair, and this reading is refused past it. No witness is listed as held \
-                 at root, and an instance L5 does not license has no payers read, so the debts \
-                 listed are the licensed ones alone and the components may be finer than R's"
+                 not read at root: root's layer stopped before its last single, and the \
+                 holders are read off the singles. No witness is listed as held at root, and \
+                 an instance L5 does not license has no payers read, so the debts listed are \
+                 the licensed ones alone and the components may be finer than R's"
                     .to_string(),
             );
         }
         if !owed.theory_read {
             out.push(
                 "which candidates' own nodes hold each witness of an instance root owes was \
-                 not read in the small KB: its layer had spent its budget, whether or not it \
-                 read every pair, and this reading is refused past it. No witness is listed as \
-                 held by the theory, and no instance L5 does not license is said to be about a \
-                 group"
+                 not read in the small KB: its layer stopped before its last single, and the \
+                 holders are read off the singles. No witness is listed as held by the \
+                 theory, and no instance L5 does not license is said to be about a group"
                     .to_string(),
             );
         }
@@ -1687,6 +1684,7 @@ pub fn json(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph]) -> 
             coupling_lists(c, &p.cover),
             vec![
                 ("pairs_read", Json::Bool(c.pairs_read)),
+                ("payers_read", Json::Bool(c.payers_read)),
                 ("node_stopped", opt_text(c.node_stopped.map(|s| s.as_str()))),
                 (
                     "cut",

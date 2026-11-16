@@ -1025,6 +1025,16 @@ impl<'a> Space<'a> {
         Ok(Ok(sets.iter().map(|s| self.seen[s].clone()).collect()))
     }
 
+    /// The nodes of `sets` **as the cache holds them**, in order: `None`
+    /// where one of them was never computed. Nothing is saturated and
+    /// nothing is charged, so neither the budget nor the deadline is asked:
+    /// a reader that reads nodes a step already computed takes them here,
+    /// where [`Self::eval`] refuses even a step of no new node once the run
+    /// has spent its budget.
+    pub(crate) fn cached(&self, sets: &[Box<[u32]>]) -> Option<Vec<Seen>> {
+        sets.iter().map(|s| self.seen.get(s).cloned()).collect()
+    }
+
     /// `{a, b}` or `∅`, in candidate order.
     fn name_of(&self, set: &[u32]) -> String {
         if set.is_empty() {

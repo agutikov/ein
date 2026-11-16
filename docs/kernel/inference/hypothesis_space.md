@@ -462,17 +462,25 @@ What can be unread: a pair layer that stopped, with the singles and the pairs
 it left; a small KB with no layer, and so no cover and no coupling; a clique
 enumeration its bound cut; supports the search did not read, or cut; the whole
 node, where it passed a bound; a way or a description past its bound; labels
-that did not settle; and the two readings of the next paragraph.
+that did not settle; and the witnesses' holders, of the next paragraph.
 
-**A layer read whole can leave something unread.** Which candidates' own nodes
-hold each witness of an owed instance is read after a layer, through its
-singles, and is refused once the layer has spent its budget. A layer's last
-step may carry it past the budget, so the layer can end with every pair read
-and that reading refused. An unlicensed instance then has no payers read: at
-root it is no edge of the coupling, and in the small KB it is about no group.
-The structure says `whole: false` there, with the sentence that names the
-reading. `ein-cli/tests/h_space_view.rs` holds this on `examples/zebra.ein`,
-one fact under what root's layer spends.
+**The witnesses' holders are read wherever a layer read its singles.** Which
+candidates' own nodes hold each witness of an owed instance is read after a
+layer, off its singles, which the layer's own reading left in the cache:
+nothing is computed for it, so it asks no budget. A layer's last step is
+afforded by a projection and may carry the layer past its budget; the layer
+then ends with every pair read, having spent more than it was given, and its
+holders are read all the same. `ein-cli/tests/h_space_view.rs` and
+`ein-infer/tests/coupling.rs` hold this on `examples/zebra.ein`, one fact
+under what root's layer spends and one under what the small KB's does.
+
+**They are unread where a layer stopped before its last single, and there
+alone.** An unlicensed instance then has no payers read: at root it is no edge
+of the coupling, and in the small KB it is about no group. The owner says so
+itself, `exactly_one.singles_read` or `theory_read` false and, where the table
+holds an unlicensed instance, `coupling.payers_read` false with
+`coupling.complete`; and the view says it in a sentence a layer, beside the
+one that says the layer stopped.
 
 **Asking for supports can make a whole structure not whole.** A support's
 search has caps of its own, and one it stops at is cut: a real frontier of the
@@ -629,7 +637,7 @@ is found by them.
 | key | what it holds |
 |---|---|
 | `reading`, `complete`, `domain` | the reading taken, the whole node's; whether it was read whole; a flagged program's sentence |
-| `pairs_read`, `node_stopped`, `cut` | whether root's pairs were all read; why the whole node was not, where it was not; what the bounds cut (`ways`, `descriptions`, `unsettled`) |
+| `pairs_read`, `payers_read`, `node_stopped`, `cut` | whether root's pairs were all read; whether the payers of every instance L5 does not license were, which they are where root's layer read its singles; why the whole node was not, where it was not; what the bounds cut (`ways`, `descriptions`, `unsettled`) |
 | `questions` | each what it `is`, its `name`, how many members are `open`, and its `members` with each one's mark |
 | `ties` | each `pair` with its `kind` and, under `--supports`, the statements it is `stated` by |
 | `edges`, `edges_one_step_back` | the two readings' edges, below |
@@ -685,9 +693,6 @@ beside its one grid, a bijection.
 - **A tie is of root as the clues leave it.** Where root has applied them, the
   pairs it excludes are their joint consequences, and a tie is no one
   statement's.
-- **The owner's coupling does not itself say when an unlicensed instance's
-  payers were not read.** The view says it, from what was read of the
-  witnesses ([§ A structure that is not whole](#a-structure-that-is-not-whole)).
 - **On a flagged program nothing above the nodes read follows.**
 
 ---
@@ -698,7 +703,7 @@ beside its one grid, a bijection.
 |---|---|
 | each object, on its controls and over the corpus | `ein-infer/tests/pair_layer.rs`, `theory_share.rs`, `cover.rs`, `exactly_one.rs`, `coupling.rs` |
 | the structure, the document and the graphs are the same in any id space and under every import form | `ein-infer/tests/structure_invariance.rs` |
-| the document is the owner's reading; the door, the dump, a stopped structure, a refused reading, a flagged program, a program with no candidate; the read-out above | `ein-cli/tests/h_space_view.rs` |
+| the document is the owner's reading; the door, the dump, a stopped structure, the witnesses' holders read and unread, a flagged program, a program with no candidate; the read-out above | `ein-cli/tests/h_space_view.rs` |
 | Graphviz draws every graph, and every corpus structure is whole at the default budget | `ein-render/tests/dot_wellformed.rs` |
 | `ein show hyps` lists the document's candidates and `ein solve -H`'s, and each line is a fact a file could hold | `ein-cli/tests/h_space_view.rs`, on the six instances |
 | the listing's door: nothing else on stdout, the note, an empty H, a dead root, a refused program, a `.einb`; the listing above | `ein-cli/tests/show_hyps.rs` |

@@ -22,7 +22,9 @@
 //!    Graphviz draws every graph; a `.einb` gives the `.ein`'s structure; a
 //!    job count moves no byte;
 //! 4. **honesty**: a budget that stops a layer exits 0 and says what was not
-//!    read, in the document, the read-out and on stderr; a flagged program's
+//!    read, in the document, the read-out and on stderr; a layer that read
+//!    its singles has its witnesses' holders read whatever it spent, and one
+//!    that did not says so; a flagged program's
 //!    document says what its statements are about; a program with no
 //!    candidate, or a dead root, says so; a refused program is refused.
 //!
@@ -823,28 +825,25 @@ fn a_stopped_structure_says_what_was_not_read() {
     assert_eq!(r.code, 2, "{}", r.err);
 }
 
-/// **A layer read whole can still leave something unread, and the view says
-/// which.** Which candidates' own nodes hold each witness of an owed
-/// instance is read through root's singles after root's layer, and the owner
-/// refuses that reading once the layer has spent its budget. A layer's last
-/// step may carry it past the budget, so one fact under what root's layer
-/// spends the layer reads every pair, the holders are refused, and every
-/// debt of an instance L5 does not license drops out of the coupling, whose
-/// own `complete` stays true. The view does not take that for whole: the
-/// document says `whole: false`, the one sentence names the reading that was
-/// refused and does not say the layer stopped, and the debts it lists are the
-/// licensed ones.
+/// **A layer that read its singles has its holders read, whatever it
+/// spent.** Which candidates' own nodes hold each witness of an owed
+/// instance is read after a layer, off its singles, which the layer left in
+/// the cache: nothing is computed, so no budget is asked. A layer's last
+/// step may carry it past its budget, so one fact under what root's layer
+/// spends the layer reads every pair, having spent more than it was given;
+/// the holders are read all the same, every debt of an instance L5 does not
+/// license is an edge, and the structure is whole, the document the one of
+/// the default budget but for what was asked. The same of the small KB's
+/// layer one fact under its own spend: every unlicensed instance is about
+/// the group it is about at the default budget.
 ///
-/// The budget is read off the program's own whole document, so the test
-/// follows the layer's spend wherever the engine moves it. Should the owner
-/// stop refusing that reading, `singles_read` is true here and this fails by
-/// name, which is how it should be noticed.
+/// Each budget is read off the program's own whole document, so the test
+/// follows the layers' spend wherever the engine moves it.
 #[test]
-fn a_whole_layer_with_its_holders_refused_is_not_called_whole() {
+fn a_layer_read_whole_has_its_holders_read() {
     let file = "examples/zebra.ein";
     let whole = document_of(file, &[]);
     assert_eq!(whole["whole"], true);
-    let spent = whole["pairs"]["work"]["facts"].as_u64().expect("facts");
     let debts = |d: &Value| d["coupling"]["debts"].as_array().expect("debts").clone();
     let unlicensed = debts(&whole)
         .iter()
@@ -852,12 +851,8 @@ fn a_whole_layer_with_its_holders_refused_is_not_called_whole() {
         .count();
     assert!(unlicensed > 0, "{file} has no unlicensed debt any more");
 
-    // At what the layer spends, everything is read.
-    let at = document_of(file, &["--region-budget", &spent.to_string()]);
-    assert_eq!(at["whole"], true, "{}", at["unread"]);
-    assert_eq!(debts(&at).len(), debts(&whole).len());
-
-    // One fact under it.
+    // One fact under what root's layer spends.
+    let spent = whole["pairs"]["work"]["facts"].as_u64().expect("facts");
     let budget = (spent - 1).to_string();
     let r = ein(&["render", CMD, file, "--region-budget", &budget]);
     assert_eq!(r.code, 0, "{}", r.err);
@@ -865,44 +860,132 @@ fn a_whole_layer_with_its_holders_refused_is_not_called_whole() {
     assert_eq!(d["pairs"]["complete"], true, "root's layer read every pair");
     assert_eq!(d["pairs"]["stopped"], Value::Null);
     assert_eq!(d["pairs"]["pairs"]["left"], 0);
-    assert_eq!(d["pairs"]["excluded"], whole["pairs"]["excluded"]);
-    assert_eq!(d["exactly_one"]["singles_read"], false);
     assert_eq!(
-        d["coupling"]["complete"], true,
-        "the owner's coupling calls itself complete here"
+        d["pairs"]["work"]["facts"], spent,
+        "and spent more than it was given"
     );
-    assert_eq!(d["whole"], false, "and the view does not");
+    assert_eq!(d["exactly_one"]["singles_read"], true);
+    assert_eq!(d["exactly_one"]["theory_read"], true);
+    assert_eq!(d["coupling"]["payers_read"], true);
+    assert_eq!(d["coupling"]["complete"], true);
+    assert_eq!(d["whole"], true, "{}", d["unread"]);
+    assert_eq!(debts(&d), debts(&whole), "every debt is an edge");
+    for key in [
+        "candidates",
+        "pairs",
+        "theory",
+        "cover",
+        "exactly_one",
+        "coupling",
+    ] {
+        assert!(d[key] == whole[key], "{key} moved one fact under the spend");
+    }
+    assert!(r.out.contains("\nwhole        yes"), "{}", r.out);
+    assert!(!r.err.contains("note:"), "{}", r.err);
+
+    // One fact under what the small KB's layer spends. Root's layer, which
+    // spends more, stops there; the small KB's reads every pair, and what
+    // the theory alone brings of each witness is read.
+    let small_spent = whole["theory"]["small_kb_layer"]["work"]["facts"]
+        .as_u64()
+        .expect("facts");
+    assert!(small_spent < spent, "the small KB's layer costs root's now");
+    let d = document_of(file, &["--region-budget", &(small_spent - 1).to_string()]);
+    let small = &d["theory"]["small_kb_layer"];
+    assert_eq!(
+        small["complete"], true,
+        "the small KB's layer read every pair"
+    );
+    assert_eq!(small["pairs"]["left"], 0);
+    assert_eq!(small["work"]["facts"], small_spent);
+    assert_eq!(d["exactly_one"]["theory_read"], true);
+    assert_eq!(d["exactly_one"]["singles_read"], true);
+    let about = |d: &Value| -> Vec<(Value, Value)> {
+        d["exactly_one"]["instances"]
+            .as_array()
+            .expect("instances")
+            .iter()
+            .filter(|i| i["licensed"] == false)
+            .map(|i| {
+                (
+                    i["about_group"].clone(),
+                    i["pay_by_the_theory_alone"].clone(),
+                )
+            })
+            .collect()
+    };
+    assert_eq!(about(&d).len(), unlicensed);
+    assert!(about(&d).iter().all(|(g, p)| !g.is_null() && !p.is_null()));
+    assert_eq!(about(&d), about(&whole));
+    assert_eq!(d["pairs"]["complete"], false, "root's layer stopped");
+    assert_eq!(d["whole"], false);
+    let unread = d["unread"].as_array().expect("unread");
+    assert!(
+        unread
+            .iter()
+            .filter_map(Value::as_str)
+            .all(|s| !s.starts_with("which candidates' own nodes")),
+        "{unread:?}"
+    );
+}
+
+/// **Where a layer stopped before its last single the holders are not read,
+/// and nothing calls the structure whole.** At a budget of one fact root's
+/// layer and the small KB's each stop among their singles. No witness has a
+/// holder listed, an instance L5 does not license has no payers and is no
+/// edge, and the owner's coupling says so itself: `payers_read` is false and
+/// `complete` with it. The view says it in a sentence a layer, each a note
+/// and a row, beside the sentence that says the layer stopped.
+#[test]
+fn holders_a_stopped_layer_left_unread_are_said() {
+    let file = "examples/zebra.ein";
+    let budget = ["--region-budget", "1"];
+    let d = document_of(file, &budget);
+    assert!(d["pairs"]["singles_left"].as_u64().is_some_and(|n| n > 0));
+    assert_eq!(d["exactly_one"]["singles_read"], false);
+    assert_eq!(d["exactly_one"]["theory_read"], false);
+    assert_eq!(d["coupling"]["payers_read"], false);
+    assert_eq!(d["coupling"]["complete"], false);
+    assert_eq!(d["whole"], false);
+    assert!(
+        d["coupling"]["unlicensed_instances"]
+            .as_u64()
+            .is_some_and(|n| n > 0)
+    );
+    let debts = d["coupling"]["debts"].as_array().expect("debts");
+    assert!(debts.iter().all(|x| x["licensed"] == true), "{debts:?}");
     let unread: Vec<&str> = d["unread"]
         .as_array()
         .expect("unread")
         .iter()
         .filter_map(Value::as_str)
         .collect();
-    let [sentence] = unread[..] else {
-        panic!("one thing is unread: {unread:?}");
-    };
-    assert!(sentence.contains("was not read at root"), "{sentence}");
+    let mut args = vec!["render", CMD, file];
+    args.extend(budget);
+    let r = ein(&args);
+    assert_eq!(r.code, 0, "{}", r.err);
+    for (place, layer) in [
+        ("at root", "root's layer"),
+        ("in the small KB", "its layer"),
+    ] {
+        let said = format!("was not read {place}: {layer} stopped before its last single");
+        let [sentence] = unread
+            .iter()
+            .filter(|s| s.contains(&said))
+            .collect::<Vec<_>>()[..]
+        else {
+            panic!("no one sentence says: {said}: {unread:?}");
+        };
+        assert!(r.err.contains(*sentence), "no note: {}", r.err);
+        assert!(r.out.contains(*sentence), "no row: {}", r.out);
+    }
     assert!(
-        !sentence.contains("stopped"),
-        "the layer did not stop, and the sentence says it did: {sentence}"
+        unread
+            .iter()
+            .any(|s| s.starts_with("root's pair layer stopped")),
+        "{unread:?}"
     );
-    assert!(sentence.contains("the licensed ones alone"), "{sentence}");
-    assert!(r.err.contains(sentence), "no note: {}", r.err);
-    assert!(r.out.contains(sentence), "no row: {}", r.out);
-    assert!(
-        r.out.contains("\nwhole        NO: 1 thing was"),
-        "{}",
-        r.out
-    );
-    // The debts listed are the licensed ones: none here that L5 does not
-    // license, where the whole structure has them.
-    let left = debts(&d);
-    assert!(left.iter().all(|x| x["licensed"] == true), "{left:?}");
-    assert_eq!(left.len(), debts(&whole).len() - unlicensed);
-    assert!(
-        len(&d["coupling"]["edges"]) < len(&whole["coupling"]["edges"]),
-        "the debts' own edges are gone with them"
-    );
+    assert!(r.out.contains("\nwhole        NO: "), "{}", r.out);
 }
 
 /// **A flagged program gets what the owner gives a flagged program, and the

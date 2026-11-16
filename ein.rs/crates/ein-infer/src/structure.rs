@@ -349,7 +349,10 @@
 //! alternatives, not whether root owes, and `R` is discharged either way.
 //! A licensed instance's payers are its alternatives. An unlicensed one's
 //! are **the payers read**, the candidates whose own node holds one of its
-//! witnesses, and the edge says which it is ([`Debt::licensed`]).
+//! witnesses, and the edge says which it is ([`Debt::licensed`]). They are
+//! read off root's singles, which a layer that read its singles has; where
+//! it stopped before them no unlicensed instance is an edge, and the
+//! coupling says so ([`Coupling::payers_read`]) and is not complete.
 //!
 //! **The components** ([`Coupling::components`]) are of the candidates
 //! alive alone: two are together where they share a question or an edge
@@ -1640,12 +1643,9 @@ fn theory_in(
             Reading::Universe => universe_alone(sp),
         };
         let read = RootRead::of(sp);
-        // Which singles hold each fact that can witness an instance: the
-        // cache has the singles where the layer read them.
-        let held_at_root = match &owing {
-            Some((_, rows)) if l.singles_left == 0 => holders(sp, rows)?,
-            _ => None,
-        };
+        // Which singles hold each fact that can witness an instance: off
+        // the cache, which has the singles where the layer read them.
+        let held_at_root = owing.as_ref().and_then(|(_, rows)| holders(sp, rows));
         let sets: Vec<Box<[u32]>> = l.excluded.iter().map(|&(a, b)| Box::from([a, b])).collect();
         let supports = if want && !sets.is_empty() {
             sp.supports(&sets, &stated_set)?
@@ -1804,10 +1804,7 @@ fn theory_in(
         |sp| {
             let licensed = sp.is_monotone();
             let l = layer(sp, licensed, true)?;
-            let held = match &owing {
-                Some((_, rows)) if l.singles_left == 0 => holders(sp, rows)?,
-                _ => None,
-            };
+            let held = owing.as_ref().and_then(|(_, rows)| holders(sp, rows));
             Ok((l, held))
         },
     );
@@ -2014,14 +2011,16 @@ fn theory_in(
 
 /// For each instance's witnesses, the candidates alive alone whose own
 /// node holds each, ascending: `rows` are L5's table's instances in its
-/// order, each with the facts that can witness it. The singles are read
-/// through the cache, which has them once a layer has read its singles; a
-/// fact nothing has interned is held by no node. `None` where a single is
-/// not to be had.
-fn holders(
-    sp: &mut Space<'_>,
-    rows: &[crate::oblgen::Witnesses],
-) -> Result<Option<Held>, SolveError> {
+/// order, each with the facts that can witness it. A fact nothing has
+/// interned is held by no node.
+///
+/// **The singles are read off the cache and nothing is computed**
+/// ([`Space::cached`]), so the reading asks no budget: a layer that read its
+/// singles has its holders read, whatever it spent, its last step having
+/// carried it past its budget or a later one having stopped it among its
+/// pairs. `None` where a single was never computed, a layer stopped before
+/// or among its singles, and there alone.
+fn holders(sp: &Space<'_>, rows: &[crate::oblgen::Witnesses]) -> Option<Held> {
     let n = sp.n() as u32;
     let empty = |rows: &[crate::oblgen::Witnesses]| -> Held {
         rows.iter()
@@ -2030,16 +2029,13 @@ fn holders(
     };
     if sp.root_is_dead() || n == 0 {
         // Under a dead root no candidate is alive alone.
-        return Ok(Some(empty(rows)));
+        return Some(empty(rows));
     }
     let sets: Vec<Box<[u32]>> = (0..n).map(|b| Box::from([b])).collect();
-    let singles = match sp.eval(&sets)? {
-        Ok(seen) => seen,
-        Err(_) => return Ok(None),
-    };
+    let singles = sp.cached(&sets)?;
     let states = sp.states();
     let terms = sp.terms();
-    Ok(Some(
+    Some(
         rows.iter()
             .map(|r| {
                 let Ok(witnesses) = &r.rows else {
@@ -2060,7 +2056,7 @@ fn holders(
                     .collect()
             })
             .collect(),
-    ))
+    )
 }
 
 /// Per instance, per witness: the candidates whose own node holds it.
@@ -2846,9 +2842,13 @@ pub struct Owed {
     pub root_owes: u32,
     /// The table's instances, in its order.
     pub instances: Result<Vec<OwedInstance>, NoTable>,
-    /// Root's singles were read: [`Witness::held_at_root`] says something.
+    /// Root's singles were read, every one: [`Witness::held_at_root`] says
+    /// something. `false` where root's layer stopped before its last single,
+    /// and where there is no table.
     pub singles_read: bool,
-    /// The small KB's singles were read: [`Witness::held_in_theory`] does.
+    /// The small KB's singles were read, every one:
+    /// [`Witness::held_in_theory`] does. `false` where its layer stopped
+    /// before its last single or it has none, and where there is no table.
     pub theory_read: bool,
 }
 

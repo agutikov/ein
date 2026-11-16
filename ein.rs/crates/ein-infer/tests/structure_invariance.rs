@@ -400,7 +400,7 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                     (&c.questions, &c.question_of, &c.ties, &c.reasons),
                     (&c.edges, &c.one_step, &c.debts, c.unlicensed),
                     (&c.components, &c.conflict_components, &c.committed),
-                    (c.pairs_read, c.node, c.node_stopped, c.cut)
+                    (c.pairs_read, c.payers_read, c.node, c.node_stopped, c.cut)
                 )
             )
         }),
@@ -814,6 +814,7 @@ fn coupling_as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> String {
             (
                 one(&c.committed),
                 c.pairs_read,
+                c.payers_read,
                 c.node,
                 c.node_stopped,
                 c.cut
