@@ -1,7 +1,7 @@
 # S1f.10.19 — A dead node stopped at its first contradiction
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-16, on the user's *"Yes, both"* of that day. **T1 to T3 ran 2026-11-16**: [§ Record](#record-2026-11-16-t1-to-t3). T4 waits for S1f.10.17 and, for the agenda, Q-M1f.313.
+**Status:** planned 2026-11-16, on the user's *"Yes, both"* of that day. **T1 to T3 ran 2026-11-16**: [§ Record](#record-2026-11-16-t1-to-t3). **T4 done under FIFO, 2026-11-16**: [§ Record: T4](#record-2026-11-16-t4), on two defaults the user may revise (a core over the node's fixpoint; a container saved saturated may count other facts). The agenda waits for Q-M1f.313.
 **Depends on:** [S1f.10.13](s1f.10.13_the_price_list.md) (the rule for *go*). **Built after
 [S1f.10.17](s1f.10.17_describe_by_borders.md) is merged**, since both move every route's `work`; its measurement does
 not wait.
@@ -719,3 +719,135 @@ is not touched** (Q-M1f.313 is the user's): the stop is a setting of a built sat
   pins them beyond `corpus_shapes.md5`'s `cores[q]`.
 - **The nightly**: a sharded step for the new sweep's slow half (`deep-corpus-shards`, four shards), in
   `.github/workflows/nightly.yml` and `run_tests.sh`'s `--nightly` and `--dev-host` copies (`nightly_steps.rs`).
+
+## Record (2026-11-16): T4
+
+**The stop is built under FIFO, and every golden that moved is the inventory's.** On the base `f70552d5`, the
+inventory committed first (`d92c7c8b`), then the code with its goldens and pages (`a761d181`), then this record.
+
+### Where the stop is
+
+- **`region::node_in_region`** saturates through `region::saturated`, which hands back the saturator; where the axes
+  carry the stop (`Axes::stopping_at_first_contradiction`) and the commitment is not empty, it calls
+  `Saturator::stop_at_first_contradiction`, and `saturate` returns after the firing whose conclusions make the
+  fork's first contradiction (or before any firing, where the commitment written makes one). Everything the node
+  reports is read there: its facts beyond root (`NodeOut::state`, the run's `work` and its budget), debts, closure,
+  denials, the detector's `first_rules` and `absent_premises`, L9's breach, and its narration. **Then, where a core
+  is taken, the same saturator goes on** (`Saturator::run_to_quiescence`), silently, and the core is taken over the
+  fixpoint: the same firings in the same order, so the same core, status, rules and sources as before.
+- **Set by** `explore::Space::stopping_dead_nodes` (the tree's space in `run_with`, monotone only) and
+  `states::compute_resumable` (monotone by its decline); **kept off** the oracle, root, flagged programs, route 1,
+  `structure::with_space`, the whole node and `region::Nodes`, by construction: none of them builds axes with it.
+- **The switch**: `region::to_quiescence`, a thread-local read when a route builds its axes; no lever.
+- **The agenda** is untouched: `saturator::fail_first` is read at a saturator's construction and no route takes it;
+  ruling Q-M1f.313 (b) is a `fail_first(FailFirst::Pairs, …)` around the route's node, where the stop is set.
+
+### What held, and the test that holds it
+
+**`ein-infer/tests/first_contradiction.rs`**, `every_question_answers_alike_with_the_stop_and_without`: the six
+questions on every corpus program and register witness that searches, with the stop and under `to_quiescence`,
+through `ein_corpus::pool::map`, held to the definition written in its header before the cells were read. On every
+program (`EIN_CORPUS_SLOW=1`, 202 programs, 1 212 cells, 1 038 of them monotone with root alive): no failure; a
+program the stop does not reach equal field for field, the work included; every finished describe and `--count`
+equal field for field but the work, **N with every member's core** (4 086 members) among the fields; `owing_met`
+moved on none; no listing other states; no cell stopped with the stop where it finished without; every finished
+describe the same saturations. Per commit, 188 programs, 1 128 cells, in 11 s to 26 s at 16 workers. Its slow half
+whole was 332 s on four P-core threads with four workers, its shards 166, 125, 35 and 32 s (`EIN_CORPUS_SLOW=1
+EIN_TEST_SHARD=k/4 EIN_TEST_JOBS=4 utils/bench_env.sh --cores PT:4 --require-ac cargo test … --test
+first_contradiction`, on AC, load average 2 to 3 from other agents): a step of `deep-corpus-shards`.
+
+Beside it, with no expectation edited: `explore.rs` (every mode against the oracle), `region.rs`, `claim_routes.rs`,
+`known_dead.rs`, `order.rs`, `corpus_cores.rs`, `lever_invariance.rs`, `route_invariance.rs`, `answer_round_trip.rs`
+(its `eager_cores` among them), `jobs_invariance.rs`, `import_invariance.rs`, `id_order_invariance.rs`'s permutation
+and `wrong_answers.rs`, per commit and, for the first eight named in the task, with `EIN_CORPUS_SLOW=1`
+(§ Verification).
+
+### What moved
+
+The inventory's list and nothing else: 351 lines of `corpus_shapes.md5` (the filter in § Verification), five
+`work` rows of `read_out_examples.md`, three trace goldens, the two transcripts, the anchor list, `einb_cli.rs`'
+saturated comparison, `finding_r.md` § 7's SEND row and three `corpus.toml` notes. The pages: `read_out.md`'s two
+`work` rows, `answer_dump.md`'s `facts` counter and N's cores, `lattice_dump.md`, `events.md` (the node's lines,
+the `owe` row and bullet, K-61), `finding_r.md` § 1 and § 8, `solution_semantics.md` § 1.5, `region.rs`' header
+(K-52), `explore.rs`' module header and `charge_whole_node` (K-51), `saturator.rs`' header, `events.rs`' `Visited`,
+`region_lattice.rs`' header.
+
+### The work, per question, against the record's simulation
+
+Monotone programs with root alive, every question at the default budget, a stopped cell with what it spent
+(`EIN_CORPUS_SLOW=1 cargo test … --test first_contradiction -- --nocapture`, 2026-11-16); the simulation is § T2's
+*FIFO stop* column.
+
+| question | saturations, with / without | facts without | facts with the stop | simulated |
+|---|---|---:|---:|---:|
+| describe, `--count` | 1 234 652 / 1 234 652 | 10 286 374 | 9 996 689 (2.8 % less) | 9 993 816 |
+| `--single` | 37 670 / 37 668 | 480 836 | 380 571 (20.9 % less) | 380 624 |
+| `-n 1` | 34 689 / 34 589 | 423 020 | 341 397 (19.3 % less) | 340 827 |
+| `--minimal` | 394 981 / 367 002 | 4 361 094 | 4 307 684 (1.2 % less) | 3 774 714 |
+| `--maximal` | 41 140 / 41 138 | 573 494 | 446 769 (22.1 % less) | 447 012 |
+
+Within a few hundredths of a percent of the simulation but in two places, each the record's *not simulated*:
+**`--minimal`'s four budget-stopped cells reach further** and spend their budget there (`send_more_money.ein`
+205 166 → 217 607 saturations, `send_more_money_written.ein` 131 134 → 140 834, both `zebra2-minus-15` files
+13 102 → 16 021; the same states listed), and **the coupled order reads the whole node at another moment** on the
+SENDs (below). The ten budget-stopped describes reach the same layer with the same saturations, their spend lower.
+No program does more work with the stop in facts; in saturations only where the order moved (+1 on the SENDs'
+`--single` and `--maximal`, +100 on `send_more_money_written.ein -n 1`).
+
+### The coupled order, re-measured
+
+`tree.rs`' `read_structure` reads the whole node within a share of the facts the run has derived, and the run
+derives fewer:
+
+| program, question | without the stop | with it |
+|---|---|---|
+| `send_more_money.ein --single`, `--maximal` | couplings at saturation 712; 18 030 saturations, 221 803 facts | at 722; 18 031, 173 415 |
+| `send_more_money.ein -n 1` | at 652; 15 855, 192 722 | at 652; 15 855, 151 744 |
+| `send_more_money_written.ein --single`, `--maximal` | at 712; 18 030, 221 803 | at 722; 18 031, 173 415 |
+| `send_more_money_written.ein -n 1` | at 1 872; 17 542, 199 031 | at 1 972; 17 642, 158 962 |
+
+The same verdicts and the same one state listed; the two files still take the same work to the fact under
+`--single` (`order.rs`' `the_two_sends_take_the_same_work`). Ten more saturations before the read under
+`--single`, one more in all.
+
+### Defaults taken
+
+Each the user's to revise.
+
+1. **A core is taken over the node's fixpoint**, the stopped saturation going on from the stop, where the record
+   read it over the stopped node (§ T4's inventory, *Two readings*): the register's fixed W21 rows, `corpus_cores`
+   and the oracle's agreement hold N's cores to the fixpoint's. The stop saves no work on a run that prints cores
+   (`--dump-lattice`, `--events`, `--dump-answer`, `--trace`), and that run's `work` row is still the run's
+   without them.
+2. **The structure's readers are not stopped** (`ein render h-space`, the theory's check): no question's route,
+   and the check reads a dead node's facts.
+3. **Route 1 is not stopped**: in production it runs only on a flagged program with a dead root, and its test
+   holds it to the oracle node for node, the `OWING` bit of dead nodes included.
+4. **A container saved `--saturate` may count other facts in its `work` row than its source**, and past the budget
+   spend otherwise; `einb_cli.rs`' saved-again test masks that number for the saturated save. The alternative is a
+   saturated container that reproduces its source's plan order on load, or no stop; the default container, the
+   loaded KB, stays byte-identical.
+5. **The printed rows keep their words**: the `work` row prints what it printed, and `read_out.md`,
+   `answer_dump.md` and `lattice_dump.md` define a dead node's facts on a monotone program as those to its first
+   contradiction; no surface says *stopped* beside a node.
+6. **`owing_met`** (no surface) is left out of the sweep's comparison and reported: it moved on no program.
+7. **`cost_ms` and the slow set were not re-taken**: the machine was not idle.
+
+### Verification
+
+On the final tree, each green: `cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer -p
+ein-cli -p ein-render -p ein-corpus`; `EIN_CORPUS_SLOW=1` once for `explore`, `known_dead`, `order`,
+`corpus_cores`, `id_order_invariance`, `answer_round_trip` and `first_contradiction`; `cargo fmt --all --check`;
+`cargo clippy --workspace --all-targets -- -D warnings`; `RUSTDOCFLAGS="-D warnings" cargo doc --workspace
+--no-deps`; `python3 utils/check_hashmap_iteration.py`; `python3 utils/doc_audit.py --links --check docs plans
+README.md AGENTS.md corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md
+c/README.md`. The golden filter: `git diff -U0 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5`, every
+moved line's program monotone and its op one of `read-out[q]`, `cores[q]`, `region-trace` and `region-lattice`,
+listed by `build/t4/shapes.py` (kept under the worktree's `build/`).
+
+### Not done
+
+- The fail-first agenda (Q-M1f.313).
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the batch's.
+- `cost_ms` (default 7).
+- S1f.10.17's border route was not merged on this branch; its dead sets are no question's.
