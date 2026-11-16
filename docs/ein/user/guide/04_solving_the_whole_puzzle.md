@@ -147,6 +147,6 @@ with inline graphs.
   that is not Rust, run the binary and read `--json-summary` / `--events`;
   there is no binding for another language
   ([Q-M1a.23](../../../decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)).
-- **How the engine finds the answer**: [finding R](../../../kernel/inference/finding_r.md).
+- **How the engine finds the answer**: [finding R](../../reasoning/kb-evolution/finding-r.md).
   This guide deliberately never opened that box.
 

@@ -347,7 +347,7 @@ shape calls a state that has not yet decided `P` a contradiction, and a commitme
 state back to life: *dead* would not be upward-closed, and no answer about R could be trusted.
 
 *Extendable* is the static check's set of relations a commitment can extend
-([`monotonicity.md`](../../../kernel/inference/monotonicity.md)), followed through every rule with parameters whose
+([`monotonicity.md`](../../reasoning/kb-evolution/monotonicity.md)), followed through every rule with parameters whose
 activator relation it holds, because a commitment can bring such a rule a plan root never had, and what that plan
 writes a commitment can change too; an `absent` such a rule reads itself, over a relation in the set or over the
 relation its parameter names, taints what it derives. The check runs after root's fixpoint, so it refuses **every

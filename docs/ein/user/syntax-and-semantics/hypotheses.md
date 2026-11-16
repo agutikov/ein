@@ -84,7 +84,7 @@ graph exclusion {
 ```
 
 The other views draw the groups H falls into (*pick at most one*, *exactly one*) and what couples them; what each
-structure means is [the hypothesis space](../../../kernel/inference/hypothesis_space.md).
+structure means is [the hypothesis space](../../reasoning/kb-evolution/hypothesis-space.md).
 
 ## In words
 
@@ -238,7 +238,7 @@ signature or a declaration that names the type or the relation takes it out of H
 | `ein solve FILE -H` | after the read-out, H by relation, with the candidates dead alone |
 | `ein render h-space FILE` | the structure of H: which candidates exclude each other, the groups, the owed groups and grids, what couples them; a read-out, a graph as DOT (`--view`), or a JSON document (`--dump`) |
 
-None of them changes an answer. What the structure of H means is [the hypothesis space](../../../kernel/inference/hypothesis_space.md).
+None of them changes an answer. What the structure of H means is [the hypothesis space](../../reasoning/kb-evolution/hypothesis-space.md).
 
 ## See also
 
@@ -246,4 +246,4 @@ None of them changes an answer. What the structure of H means is [the hypothesis
 - [Query](query.md): the `(solve …)` form that carries the lists and `:no-search`.
 - [Solutions and models](solutions-and-models.md): what the lattice over H is, and R in it.
 - [Diagnostics](../reference/diagnostics.md): every refusal named here, word for word.
-- [The hypothesis space](../../../kernel/inference/hypothesis_space.md): the structure of H.
+- [The hypothesis space](../../reasoning/kb-evolution/hypothesis-space.md): the structure of H.

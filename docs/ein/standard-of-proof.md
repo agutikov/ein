@@ -88,5 +88,5 @@ test). The premise was written down, believed, load-bearing and wrong. That is w
   to know it.
 - [Solutions and models](user/syntax-and-semantics/solutions-and-models.md): the answer, whose lines are premises of
   this kind.
-- [`absent` and negation as failure](../kernel/inference/absent_semantics.md): the corollaries the upward-closure
+- [`absent` and negation as failure](reasoning/kb-evolution/absent-and-naf.md): the corollaries the upward-closure
   premise is read beside.

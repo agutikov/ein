@@ -15,7 +15,7 @@ use std::process::Command;
 
 use ein_corpus::{Scratch, repo_root};
 
-const PAGE: &str = "docs/kernel/ir/03-ein-lang/09_natural_language.md";
+const PAGE: &str = "docs/ein/user/syntax-and-semantics/natural-language.md";
 const CENSUS: &str = "utils/nl_census.py";
 const OPEN: &str = "<!-- state-file: ";
 const CLOSE: &str = "<!-- /state-file -->";

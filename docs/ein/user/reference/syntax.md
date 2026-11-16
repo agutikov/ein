@@ -180,7 +180,9 @@ at any count:
 ```
 
 For a bare declaration the two coincide, so one fact is stored. A relation no form declares, a property tag such as
-`symmetric`, gets neither, so `(relation ?R)` means precisely a *declared* relation.
+`symmetric`, gets neither from the loader. A rule may conclude the membership fact too: `(rule r () :match (p ?x)
+:assert (relation ?x) …)` over `(p a)` derives `(relation a :rule r)`, a fact like any other, with no declaration
+behind it. So `(relation ?R)` matches every declared relation and every name a rule has concluded it of.
 
 **What a file writes, stated.** As it stores each declaration's mirror, the loader states each fact nested in a fact
 a file writes, at any depth, as `(written T)`, and each fact a rule's or an hrule's conclusion nests that holds no
@@ -487,7 +489,7 @@ admitted, after which the closure runs again. For a rule's author that means:
 
 A **nested** `(absent …)`, what `forall` expands to, `(absent (and G (absent B)))`, is one question, asked as a unit
 against the same fixpoint. The definition, and what is not provided (stable models, retraction), is
-[`absent_semantics.md`](../../../kernel/inference/absent_semantics.md).
+[`absent-and-naf.md`](../../reasoning/kb-evolution/absent-and-naf.md).
 
 #### Premise order around a guard
 

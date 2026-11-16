@@ -42,7 +42,7 @@ the oracle therefore cannot disagree about a node; they can only visit different
 concludes a line, only through a **licence** the program's static class proves, and a program the static check flags
 gets none beyond the cube: its questions are certified up to `--region-limit` and partial past it, and C1–C3 still
 hold. How each question is computed, and the licences, are
-[`docs/kernel/inference/finding_r.md`](../../../kernel/inference/finding_r.md)'s. Each question does the least work
+[`docs/kernel/inference/finding-r.md`](../../reasoning/kb-evolution/finding-r.md)'s. Each question does the least work
 it needs, and the whole cube is computed only when `ein oracle` is asked for it by name
 ([Q-M1e2.31](../../../decisions/answer/Q-M1e2.31-each-question-about-r-does-the-least-work-it.md)).
 
@@ -190,7 +190,7 @@ an answer. What each view draws, and how, is [`rendering.md`](rendering.md).
 | `ein render kb FILE` | a knowledge base, loaded and saturated, as one digraph; a state file of `--dump-answer` is a `FILE`, so a solution draws the way root does |
 | `ein render lattice FILE` | the nodes a describing `ein solve` run visits: R green, owing amber, dead red |
 | `ein render region DIR` | an `ein oracle --dump` directory as a Hasse diagram, with a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`, `--answer`); it loads nothing |
-| `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions ([`docs/kernel/inference/hypothesis_space.md`](../../../kernel/inference/hypothesis_space.md)) |
+| `ein render h-space FILE` | the structure of the hypothesis set: which candidates exclude each other, the groups and grids, what couples the questions ([`docs/kernel/inference/hypothesis-space.md`](../../reasoning/kb-evolution/hypothesis-space.md)) |
 | `ein show hyps FILE` | the hypothesis set H as Ein facts, one candidate a line, in the universe's order; a `note:` on stderr says which rung built H and how many it holds ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)) |
 
 ### 2.6 `ein kb`

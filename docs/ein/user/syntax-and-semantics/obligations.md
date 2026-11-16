@@ -323,4 +323,4 @@ Each of these is refused before anything runs, on every command, with the line u
 - [Solutions and models](solutions-and-models.md): R, its two lines, and the two kinds of empty R.
 - [The standard library](../reference/stdlib.md): `std.algebra`, `std.bijection`, `std.slots`, `std.elim`.
 - [The read-out](../reference/read-out.md): every row that reports a debt.
-- [The definition of R](../../../kernel/inference/solution_semantics.md), stated for a second implementation.
+- [The definition of R](../../reasoning/kb-evolution/solution-semantics.md), stated for a second implementation.

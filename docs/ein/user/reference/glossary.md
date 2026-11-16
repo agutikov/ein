@@ -67,7 +67,7 @@ conclusion of either is checked, a false one `(false)`; `(not (eq x y))` is `(ne
 have reached their fixpoint, under the bindings of the premises written before it. Never a stored fact. On a monotone
 program its answer does not depend on the order rules fire in. See
 [`syntax.md` § NAF evaluation timing](syntax.md#naf-evaluation-timing--the-closureworld-boundary) and
-[`absent_semantics.md`](../../../kernel/inference/absent_semantics.md).
+[`absent-and-naf.md`](../../reasoning/kb-evolution/absent-and-naf.md).
 
 ### Stratification
 A rule set is stratified when no `(absent …)` reads a relation that depends, through the rules, on the guarded rule's

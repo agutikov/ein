@@ -260,7 +260,7 @@ sits on its **closure**, the node its fixpoint's candidates make. Each node then
   this one, and dead is upward-closed), *above a state's denial* (an alive node it visited denies one of this node's
   facts and lies below it, and what a state denies is dead above it; the tooltip and the table name the state and the
   fact), *the run stopped first* (`-n`, `--single`, a budget), or *not needed* by the question asked. Why each of
-  these licenses skipping a node is [`finding_r.md`](../../../kernel/inference/finding_r.md).
+  these licenses skipping a node is [`finding-r.md`](../../reasoning/kb-evolution/finding-r.md).
 
 **The answer is R** ([Q-M1e2.7](../../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)).
 A run answers the part of R its question asked, all of it for a bare `ein solve`, one line for `--minimal` or
@@ -311,7 +311,7 @@ ein render h-space examples/zebra2.ein --view cover | dot -Tsvg > cover.svg
 They use none of the shapes above. In `exclusion` a candidate is a box; in `cover` a group is a box and a candidate an
 oval; in the two hypergraphs a question is a box and an edge of three questions or more a point. What each object is,
 what each stroke means and what the document holds is
-[`hypothesis_space.md`](../../../kernel/inference/hypothesis_space.md).
+[`hypothesis-space.md`](../../reasoning/kb-evolution/hypothesis-space.md).
 
 ## The trace — `ein solve --trace`
 

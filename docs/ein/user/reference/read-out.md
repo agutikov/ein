@@ -21,7 +21,7 @@ goes to, are [`diagnostics.md`](diagnostics.md)'s and [`cli.md`](cli.md)'s. The 
 [`answer-dump.md`](answer-dump.md)'s; the `monotonicity` block and the warning's theory are
 [`region-dump.md` § Monotonicity](region-dump.md#monotonicity--the-static-check)'s; the `--events` stream is
 [`events.md`](../../../kernel/inference/events.md)'s. How each question is computed is
-[`finding_r.md`](../../../kernel/inference/finding_r.md)'s. `--trace`'s file, `ein test`'s text and report, and the
+[`finding-r.md`](../../reasoning/kb-evolution/finding-r.md)'s. `--trace`'s file, `ein test`'s text and report, and the
 event stream repeat rows this page defines, and § 12 says which.
 
 ---
@@ -63,7 +63,7 @@ what each row means, and the examples page shows what it prints.
 
 A bare `ein solve FILE` describes all of R. On a monotone program it takes one of two routes, which
 `--describe-route tree|states` chooses and which describe one R
-([`finding_r.md` § 6](../../../kernel/inference/finding_r.md#6-the-routes-question-by-question)): **the tree and the
+([`finding-r.md` § 6](../../reasoning/kb-evolution/finding-r.md#6-the-routes-question-by-question)): **the tree and the
 classes**, the default, where root owes an instance a licence takes
 ([Q-M1f.311](../../../decisions/answer/Q-M1f.311-describe-takes-the-tree-and-the-classes.md)), and **the state
 route** elsewhere or when asked.
@@ -101,8 +101,8 @@ the same either way ([Q-M1f.224](../../../decisions/read-out/Q-M1f.224-a-run-tak
 | `strata` | when the rules' dependency graph has a cycle through an `absent` | how many such cycles; a diagnostic, not a refusal: root's fixpoint may depend on the boundary's order. The block of § 5.2 names each | around R | — | [X14](read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 | `minimal hole` | describe on route 2 and `ein oracle`, when the cube shows a hole; at the block's indent, up to four | a minimal hole, and why it is out: dead, with its core (`dead: ∅` where the core holds no fact), or what it owes | around R | `region.holes.minimal[k].owes`, `region.holes.minimal[k].core` | [X8](read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
 | `universe` | every run | H's size in candidates and how many are dead alone, or that the run did not visit each alone; *no candidate* when H is empty, which decides R by root alone. The block of § 5.3 under it | around R | `region.universe.candidates`, `region.universe.dead_alone` | [X1](read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X6](read-out-examples.md#x6--testsregion04_owingein-r-empty-alive-nodes-owe), [X9](read-out-examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
-| `route` | every run | the route that answered, and the licences it used. A licence a run can do without is named only where an answer rested on it: `L5 an owed instance's alternatives are exhaustive` where a branch took an instance's alternatives; `L8 what a state denies is dead above it` where a set was taken for dead, with no saturation, because a state the run met stores the negation of one of its candidates; and `L9 a fact nothing proposes and nothing writes is in no state` where a branch took the alternatives of an instance L5 alone does not license: some of its witnesses are no candidate and not denied at root, and every such witness is of a relation no rule of the program writes and the kernel does not mirror, so no state holds it and the candidates among its witnesses are all that can pay ([`finding_r.md` § 4](../../../kernel/inference/finding_r.md#4-a-monotone-program-three-properties-and-the-licences) has each licence's argument). The tree and the classes, describe's default where root owes an instance a licence takes, read *the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance*, then their licences, L4 and L5 among them. On route 2 describe and `ein oracle` say *no licence* and why, where the summary and a mode's row name `L7 the cube` ([Q-M1f.20](../../../decisions/read-out/Q-M1f.20-on-route-2-describe-says-no-licence-and-a-mode.md)) | the run | — | [X1](read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X8](read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
-| `work` | every run | saturations, facts beyond root, and the route's layers: what the run cost, each counter defined in [`answer-dump.md` § The run summary](answer-dump.md#the-run-summary). A saturation is a node the run computed: a set a licence decided, dead above a dead set (L1), dead by a state's denial (L8) or a state already met (L3), is none, and costs none. The facts are each node's beyond root: an alive node's fixpoint, and on a monotone program a dead node's **to its first contradiction**, where its saturation stops ([`finding_r.md` § 1](../../../kernel/inference/finding_r.md#1-a-node)), but for the whole node of [§ 3.1](#31-what-order-the-obligation-tree-took), read to quiescence; on a flagged program every node's fixpoint. No option but a speed option moves it, and the wall clock is `-s`'s | the run | `work.saturations`, `work.facts`, `work.layers` | [X1](read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
+| `route` | every run | the route that answered, and the licences it used. A licence a run can do without is named only where an answer rested on it: `L5 an owed instance's alternatives are exhaustive` where a branch took an instance's alternatives; `L8 what a state denies is dead above it` where a set was taken for dead, with no saturation, because a state the run met stores the negation of one of its candidates; and `L9 a fact nothing proposes and nothing writes is in no state` where a branch took the alternatives of an instance L5 alone does not license: some of its witnesses are no candidate and not denied at root, and every such witness is of a relation no rule of the program writes and the kernel does not mirror, so no state holds it and the candidates among its witnesses are all that can pay ([`finding-r.md` § 4](../../reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences) has each licence's argument). The tree and the classes, describe's default where root owes an instance a licence takes, read *the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance*, then their licences, L4 and L5 among them. On route 2 describe and `ein oracle` say *no licence* and why, where the summary and a mode's row name `L7 the cube` ([Q-M1f.20](../../../decisions/read-out/Q-M1f.20-on-route-2-describe-says-no-licence-and-a-mode.md)) | the run | — | [X1](read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once), [X8](read-out-examples.md#x8--lattice04_obligation_trigger_holeein-a-hole) |
+| `work` | every run | saturations, facts beyond root, and the route's layers: what the run cost, each counter defined in [`answer-dump.md` § The run summary](answer-dump.md#the-run-summary). A saturation is a node the run computed: a set a licence decided, dead above a dead set (L1), dead by a state's denial (L8) or a state already met (L3), is none, and costs none. The facts are each node's beyond root: an alive node's fixpoint, and on a monotone program a dead node's **to its first contradiction**, where its saturation stops ([`finding-r.md` § 1](../../reasoning/kb-evolution/finding-r.md#1-a-node)), but for the whole node of [§ 3.1](#31-what-order-the-obligation-tree-took), read to quiescence; on a flagged program every node's fixpoint. No option but a speed option moves it, and the wall clock is `-s`'s | the run | `work.saturations`, `work.facts`, `work.layers` | [X1](read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 <!-- /rows -->
 
 **What root owes.** Where the `∅` row reads *not in R — root owes n*, the `owed` rows under it name the n instances,
@@ -195,7 +195,7 @@ the `route` row says which of them this run came to use:
 **A coupling** is a set of owed instances that some conflict or some derivation needs a member of each of: the
 letters of one column of a sum, with the letters its carry comes from. It is read off **the whole node**, root with
 every candidate committed, saturated once
-([`hypothesis_space.md` § The coupling a route reads](../../../kernel/inference/hypothesis_space.md#the-coupling-a-route-reads-the-whole-node-alone)).
+([`hypothesis-space.md` § The coupling a route reads](../../reasoning/kb-evolution/hypothesis-space.md#the-coupling-a-route-reads-the-whole-node-alone)).
 **That saturation is the run's**: it is one of the `work` row's saturations, with its facts, and one of the nodes a
 `--dump-lattice` lists, the node of every candidate. So the couplings are read only **when a choice is left tied, the
 run has saturated twenty nodes, and the node costs at most a twentieth of the facts the run has derived**: a question
@@ -298,7 +298,7 @@ has them all. The block does not take the listings' 100 lines. Its JSON is the s
 <!-- rows: strata -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `negative cycle` | per cycle through an `absent` of the rules' dependency graph | its relations, the rules on its negative edges, and what its parity may mean; [`absent_semantics.md`](../../../kernel/inference/absent_semantics.md#the-stratification-diagnostic) has every line it prints | around R | — | [X14](read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
+| `negative cycle` | per cycle through an `absent` of the rules' dependency graph | its relations, the rules on its negative edges, and what its parity may mean; [`analysis-of-rules.md`](../../reasoning/rule-evolution/analysis-of-rules.md#5-where-it-is-shown) has every line it prints | around R | — | [X14](read-out-examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 <!-- /rows -->
 
 ### 5.3 Under `universe`
@@ -308,10 +308,10 @@ Every question prints these, since every question is over the same H.
 <!-- rows: universe -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H is on the obligations rung is [`solution_semantics.md` § 1.4](../../../kernel/inference/solution_semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](read-out-examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
+| `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H is on the obligations rung is [`solution-semantics.md` § 1.4](../../reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](read-out-examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
 | `outside` | when H leaves out a relation the program can conclude or ask about | the relations, why no rung proposes their facts, and what every state of R holds of them | around R | `root.hypgen.outside[].relation` | [X1](read-out-examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 | `types` | when the blind enumerator binds a type as an object | the objects, how many candidates of which relations name them, and why | around R | `root.hypgen.types_as_objects.objects`, `root.hypgen.types_as_objects.candidates` | [X13](read-out-examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) |
-| `relation names` | when the blind enumerator binds a relation's name as an object: a candidate names the head of a fact root's fixpoint holds, or a relation a rule's `:assert` names, that no file declares or writes a fact of | the names, how many candidates of which relations name them, and why they are objects. The candidates stay in H; declaring the relation takes its name out ([`solution_semantics.md` § 1.2](../../../kernel/inference/solution_semantics.md#12-names)) | around R | `root.hypgen.relation_names_as_objects.objects`, `root.hypgen.relation_names_as_objects.candidates` | [X15](read-out-examples.md#x15--features01_not_and_absentein-the-warning-past-four-rows) |
+| `relation names` | when the blind enumerator binds a relation's name as an object: a candidate names the head of a fact root's fixpoint holds, or a relation a rule's `:assert` names, that no file declares or writes a fact of | the names, how many candidates of which relations name them, and why they are objects. The candidates stay in H; declaring the relation takes its name out ([`solution-semantics.md` § 1.2](../../reasoning/kb-evolution/solution-semantics.md#12-names)) | around R | `root.hypgen.relation_names_as_objects.objects`, `root.hypgen.relation_names_as_objects.candidates` | [X15](read-out-examples.md#x15--features01_not_and_absentein-the-warning-past-four-rows) |
 <!-- /rows -->
 
 ---
@@ -345,7 +345,7 @@ a row prints at most four rows of a kind, and three kinds say where the rest is:
 
 **Two objects called *model*.** A listing's `(model …)`, and the summary's `region.states[].facts`, is a state's facts
 over the candidates' relations, root's included: what tells R's states apart, and the region language's claim form.
-[`solution_semantics.md` § 3](../../../kernel/inference/solution_semantics.md#3-model)'s **model**, a state's positive
+[`solutions-and-models.md` § Model](../syntax-and-semantics/solutions-and-models.md#model)'s **model**, a state's positive
 facts minus the positive initial KB, is what `-P` prints (§ 8). `-t`'s `read-out` row says *model* of the first. The
 words are as they print
 ([Q-M1f.18](../../../decisions/read-out/Q-M1f.18-the-read-outs-model-is-the-claim-form-and-p.md)).
@@ -425,14 +425,14 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 | `--models key` | the set it keys, and the key's size | the smallest set of slots that tells the states apart, and the combinations that occur | the listed states, as a key |
 | `--models grid` | the set it draws | a grid per state where a relation says what a row is, or why none | each listed state |
 | `-p` | per state, its number, and the count of facts | every fact beyond the program as loaded: root's derivations, the commitment and what it derives | a state's facts beyond the program |
-| `-P` | the same, `(not …)` omitted | the positive ones | [the model](../../../kernel/inference/solution_semantics.md#3-model) |
+| `-P` | the same, `(not …)` omitted | the positive ones | [the model](../syntax-and-semantics/solutions-and-models.md#model) |
 | `-f` | the relations, and the count of facts | every fact of the candidates' relations, given ones too | the candidates' relations' facts |
 | `--diff-models FILE` | the listed states against the file's, and what they are compared over | per state, what differs | the listed states |
 
 `-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is
 `ein show hyps FILE`**: one candidate a line and nothing else on stdout, at the cost of root's saturation and the
 generator's pass, no route run
-([`hypothesis_space.md` § How to see it](../../../kernel/inference/hypothesis_space.md#how-to-see-it)). The
+([`hypothesis-space.md` § How to see it](../../reasoning/kb-evolution/hypothesis-space.md#how-to-see-it)). The
 candidates are the same in both.
 
 ---

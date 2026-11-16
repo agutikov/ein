@@ -125,7 +125,7 @@ model(C)    = { f ∈ state(C) : f positive } \ { f ∈ program : f positive }
 On a monotone program, one where adding a fact never takes a conclusion away or adds a debt, dead and discharged are
 both upward-closed: a dead commitment stays dead and a discharged one stays discharged as candidates are added. R then
 has no hole, and its two lines describe it: R = ⋃ [a … b] over a ∈ min(R), b ∈ max(R) with a ⊆ b. The full definition,
-stated for a second implementation, is [the solution semantics](../../../kernel/inference/solution_semantics.md).
+stated for a second implementation, is [the solution semantics](../../reasoning/kb-evolution/solution-semantics.md).
 
 ## Context and problem
 
@@ -280,7 +280,7 @@ is **flagged**: R is still the set of alive, discharged nodes, each built as roo
 command agrees on it, but the engine claims nothing more of it, not soundness and not completeness
 ([Q-M1e2.2](../../../decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)). Such a region may have
 holes, and the engine answers it by visiting every node, within a limit. What a flagged program is, and how to write
-one that is not, is [monotonicity](../../../kernel/inference/monotonicity.md).
+one that is not, is [monotonicity](../../reasoning/kb-evolution/monotonicity.md).
 
 ## See also
 
@@ -288,6 +288,6 @@ one that is not, is [monotonicity](../../../kernel/inference/monotonicity.md).
 - [Hypotheses](hypotheses.md): H, the space R is drawn from.
 - [Obligations](obligations.md) and [constraints](constraints.md): the two bounds.
 - [The read-out](../reference/read-out.md): every row `ein solve` prints.
-- [The solution semantics](../../../kernel/inference/solution_semantics.md): the definition of R, for a second
+- [The solution semantics](../../reasoning/kb-evolution/solution-semantics.md): the definition of R, for a second
   implementation.
-- [How R is found](../../../kernel/inference/finding_r.md): the oracle and the routes.
+- [How R is found](../../reasoning/kb-evolution/finding-r.md): the oracle and the routes.

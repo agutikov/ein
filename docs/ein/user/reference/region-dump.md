@@ -43,7 +43,7 @@ and every route of `ein solve` takes the same list.
 **What it leaves out** is named: each relation the program can conclude or ask about, does not scope out itself, and of
 which the rung that built the list proposes no fact
 ([Q-M1e2.3](../../../decisions/answer/Q-M1e2.3-r-is-over-the-universe-and-the-read-out-names.md),
-[`solution_semantics.md` § 1.4](../../../kernel/inference/solution_semantics.md#14-candidate-and-universe)).
+[`solution-semantics.md` § 1.4](../../reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 `region.md` says it under its candidate count, as the read-out's `outside` row does, and `region.json` lists it as
 `outside`.
 
@@ -131,7 +131,7 @@ candidate, and nothing derived from one, can match it.
 **Which property the check is about.** The verdict is about the **program**, whose consequence operator the check
 approximates; the lattice is the domain, and is never itself monotone or not. A site can break two properties of the
 node functions, kept apart in
-[`monotonicity.md` § 7](../../../kernel/inference/monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence):
+[`monotonicity.md` § 7](../../reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program):
 the **state**'s, monotone in C and, where saturation is cumulative, independent of the path that built the node, which
 only an `absent` breaks; and the **status**'s, which an obligation's trigger or an activator breaks with no `absent`.
 `region.md`'s violations are the status's. A program whose cube shows none is a *conservative* flag.
@@ -247,5 +247,5 @@ above) rather than proposed.
 - [`lattice_dump.md`](../../../kernel/inference/lattice_dump.md): every node a run visited.
 - [`rendering.md`](rendering.md): this directory drawn, with a region run on it, `ein render region`.
 - [`solutions-and-models.md`](../syntax-and-semantics/solutions-and-models.md): what R is.
-- [`monotonicity.md`](../../../kernel/inference/monotonicity.md): what the static check's two verdicts mean for R,
+- [`monotonicity.md`](../../reasoning/kb-evolution/monotonicity.md): what the static check's two verdicts mean for R,
   compared, with one fixture and one drawing per cause.
