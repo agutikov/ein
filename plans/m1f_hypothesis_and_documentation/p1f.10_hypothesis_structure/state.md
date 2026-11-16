@@ -86,6 +86,14 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
 
 ## Owed before anything else is built
 
+**Taken on 2026-11-16, on `037b7f55`** (the six part-2 branches merged): `utils/ci_container.sh`, the gate in the
+runner's image, **green**; `utils/ci_container.sh --nightly` **red** at its first sharded step, `corpus_cores`' slow
+half: the coupled order narrated the whole node as a dead node with the core `[]` and no status, on the two SENDs
+under `--maximal`. Fixed on `master` as `a8fa30d3` (the node's core taken where the run is narrated; six lines of
+the shape golden moved), the slow test green here. The nightly stopped there, so its later steps have not run on
+part 2: **the container nightly is owed again**, once, on the batch's last commit after S1f.10.14, S1f.10.15 and
+S1f.10.16 are merged, with the container gate beside it.
+
 1. **One `./run_tests.sh` on `master`'s head**, then **`./run_tests.sh --nightly`** (a route changed, and nightly
    steps were added), then **`utils/ci_container.sh`** (DOT writers changed: the h-space view's graphs and
    `region_dot.rs`). None has run on anything merged since `4a07010f`. The partial runs made at each merge are in
