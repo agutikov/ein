@@ -48,6 +48,11 @@ jobs:
       # `.ein` comment and in `corpus/corpus.toml`.
       # gate-step
       - run: python3 utils/doc_audit.py --links --check --tracked
+      # The release voice, held to its banked per-file baseline, which may
+      # only fall: no milestone, phase, stage or task id, no path into
+      # `plans/` and no date where the released tree keeps its prose.
+      # gate-step
+      - run: python3 utils/check_release_voice.py
 
   rust:
     name: ein.rs — build, lint, test

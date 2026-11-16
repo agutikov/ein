@@ -216,13 +216,14 @@ fn what_tests_only_skips_is_what_the_script_guards() {
             "utils/stdlib_manifest.py",
             "utils/check_hashmap_iteration.py",
             "utils/doc_audit.py --links --check",
+            "utils/check_release_voice.py",
             "cargo fmt --all --check",
             "cargo clippy --workspace --all-targets -D warnings",
             "cargo doc --no-deps, -D warnings",
             "cargo bench --bench engine -- --test",
         ],
         "the set `--tests-only` skips moved. Note the last one: the flag skips \
-         the **bench smoke** as well as the six static checks, which is what \
+         the **bench smoke** as well as the seven static checks, which is what \
          `run_tests.sh`'s header says since M1e S1e.4.5 (`TE-L3`) and what the \
          assertions below hold it to"
     );
