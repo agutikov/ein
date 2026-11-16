@@ -16,7 +16,7 @@ pub enum Mode {
     /// the commitment and what it derives, the `(not …)` facts among them.
     All,
     /// `-P` — `All` with the `(not …)` facts dropped: the state's model, as
-    /// `solution_semantics.md` § 3 defines it.
+    /// `docs/ein/reasoning/kb-evolution/solution-semantics.md` § 3 defines it.
     Positive,
     /// `-f` — only the facts of the candidates' relations, *whatever their
     /// origin*, so the given conditions count too.
@@ -33,8 +33,7 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
                 .filter(|&f| targets.contains(&terms.facts.get(f).0))
                 .collect();
             // The relations as Ein spells names, one space apart: they are
-            // the candidates', whether or not the program wrote `:hrules`
-            // (M1e2 S1e2.3.7's N1).
+            // the candidates', whether or not the program wrote `:hrules`.
             let mut names: Vec<&str> = targets.iter().map(|&s| terms.sym(s)).collect();
             names.sort_unstable();
             let label = if names.is_empty() {
@@ -50,7 +49,7 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
         _ => {
             // Beyond the program as loaded, not beyond root: root's own
             // derivations are in every state's block, and a commitment is
-            // not derived (M1e2 S1e2.3.7's N2).
+            // not derived.
             let not = terms.syms.get("not");
             let picked: Vec<_> = kb
                 .facts()
@@ -103,7 +102,7 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
 /// of every `--print-final-*` mode but `hfacts`.
 fn beyond_the_program(kb: &Kb, terms: &Terms, fact: ein_core::FactId) -> bool {
     // A `(written T)` fact is the loader's statement of what the program
-    // writes, derived at load by its step (M1f S1f.6.38): the program as
+    // writes, derived at load by its step (Q-M1f.272): the program as
     // loaded holds it.
     if terms.facts.get(fact).0 == terms.kernel.written {
         return false;

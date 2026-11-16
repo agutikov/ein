@@ -1,5 +1,5 @@
-//! `ein solve --json-summary FILE` — the structured run summary, since M1e2
-//! S1e2.1a.5's switch `ein-summary/2`: the read-out as data
+//! `ein solve --json-summary FILE` — the structured run summary,
+//! `ein-summary/2`: the read-out as data
 //! ([`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)).
 //!
 //! Four properties: **additive** (writes a file, never stdout/stderr/the exit
@@ -10,8 +10,7 @@
 //! be, so a consumer switching on `schema` never tests for a key (*a field
 //! that appears only sometimes is a field a consumer has to guess about*).
 //! `ein-cli/tests/region_answer.rs` holds the key set on every arm, and
-//! `summary_properties.rs` the region's identities. `ein-summary/1`, the
-//! walk's, went with the walk's CLI path.
+//! `summary_properties.rs` the region's identities.
 
 use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::SharedMemo;
@@ -34,9 +33,7 @@ fn sparse(counts: &[u64], name: impl Fn(usize) -> &'static str) -> Json {
 }
 
 /// `--json-summary`'s `root` block: root's fixpoint and how H was built, as
-/// every route starts from them — M1e2
-/// [S1e2.3.1](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
-/// the user's ruling (a) of 2026-11-03.
+/// every route starts from them.
 ///
 /// **It runs nothing.** `kb` is root's fixpoint already: every writer reaches
 /// the summary after [`ein_infer::region`]'s `prepare_with` has saturated root
@@ -45,11 +42,8 @@ fn sparse(counts: &[u64], name: impl Fn(usize) -> &'static str) -> Json {
 /// compiled, its NAF boundary's counters, and the config-free generator pass
 /// whose `emitted` is H's size. So the block is config-free, no lever moves it,
 /// and `summary_properties.rs` holds `facts` to root's fixpoint and `emitted`
-/// to `region.universe.candidates`. Until that stage the block ran its own
-/// pass on a fork — `emit_closed`'s markers, a second saturation and the
-/// walk's generator with the lookahead and its kill cache on — and counted
-/// what that pass wrote as root's (27 facts where root holds 22 on
-/// `branching/02_one_dead_one_alive.ein`, and 30 candidates where H holds 48).
+/// to `region.universe.candidates`: a pass of its own would count what it
+/// wrote as root's.
 fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> Json {
     let mut by_rel: std::collections::BTreeMap<String, i64> = Default::default();
     for f in kb.facts() {
@@ -89,14 +83,14 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
         ));
     }
     hypgen.extend([
-        // What the universe leaves out (M1e2 S1e2.2.8, Q-M1e2.3 (a)):
+        // What the universe leaves out (Q-M1e2.3):
         // on every run, `[]` when nothing.
         (
             "outside",
             ein_render::dump::region::outside_json(&stats.outside),
         ),
-        // What the untyped rung bound as an object (M1e2 S1e2.2.10,
-        // Q-M1e.12 (a)): on every run, empty when nothing.
+        // What the untyped rung bound as an object (Q-M1e.12): on every
+        // run, empty when nothing.
         (
             "types_as_objects",
             ein_render::dump::region::types_json(&stats.types_as_objects),
@@ -116,7 +110,7 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
             "facts_by_relation",
             Json::Object(by_rel.into_iter().map(|(k, v)| (k, Json::int(v))).collect()),
         ),
-        // Root's standing (M1f S1f.6.36): what `--no-search` reports, and what
+        // Root's standing (Q-M1f.255): what `--no-search` reports, and what
         // every run reaches first.
         ("dead", Json::Bool(stats.dead)),
         ("owes", Json::int(i64::from(stats.owes))),
@@ -149,13 +143,10 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
 /// model" and "2ⁿ models" when the reading is open-world.
 ///
 /// **It is a read, and that is the whole design.** The pass is config-free
-/// since M1e2 S1e2.3.1 (the user's ruling of 2026-11-03: no lookahead filter,
-/// so no `(not h)` kill is written) and writes nothing but the interning of
-/// its candidates; it still runs on a fork of the state's KB, dropped on the
-/// next line, so that no pass this probe makes can reach the state. P1d.2
-/// declined this measurement because the pass it had in mind ran against the
-/// live node; the fork is the difference between the two, and it costs one
-/// generation call per *listed state*.
+/// (no lookahead filter, so no `(not h)` kill is written) and writes nothing
+/// but the interning of its candidates; it still runs on a fork of the
+/// state's KB, dropped on the next line, so that no pass this probe makes can
+/// reach the state, at one generation call per *listed state*.
 ///
 /// The event log is silent for the same reason `--events` output is a
 /// contract: a probe nobody asked for must not narrate into a stream somebody
@@ -202,13 +193,13 @@ fn leftover_at(
     ))
 }
 
-/// `EIN_LEFTOVER=1`'s block for a region run — M1d S1d.3.1's probe, re-read
-/// per listed state at M1e2 S1e2.1a.5 (`read-out.md` § 12): what the
+/// `EIN_LEFTOVER=1`'s block for a region run (`config.md`'s `EIN_LEFTOVER`
+/// row): what the
 /// **blind** enumerator would still propose at each state the read-out
 /// listed, outside H — a question about the universe, not about a route.
 ///
-/// Off unless the variable is `1`, for the reasons the walk's had: a blind
-/// generation pass per state would sit in every corpus summary of
+/// Off unless the variable is `1`: a blind generation pass per state would
+/// sit in every corpus summary of
 /// `cargo test`, and a `(config …)` knob would re-bless every shape golden.
 /// The block is emitted either way, `taken` saying which, and `states` and
 /// `states_by_relation` are index-aligned with `region.states`' listed ones.
@@ -253,8 +244,8 @@ fn leftover_block(
     ]))
 }
 
-/// The resolved config: the two flags a program can set since M1e2
-/// S1e2.2.5 (`ein_core::config::FLAGS`), kebab-cased, in declaration order —
+/// The resolved config: the two flags a program can set
+/// (`ein_core::config::FLAGS`), kebab-cased, in declaration order —
 /// the same fields `--dump-config` prints.
 fn config_block(cfg: &SolverConfig) -> Json {
     Json::obj(vec![
@@ -266,8 +257,7 @@ fn config_block(cfg: &SolverConfig) -> Json {
     ])
 }
 
-/// The summary of a region run, `ein-summary/2` — M1e2 T1e2.1a.5.2, its
-/// answer blocks defined by
+/// The summary of a region run, `ein-summary/2`, its answer blocks defined by
 /// [`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks).
 /// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
 /// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
@@ -312,8 +302,8 @@ pub fn build_region(
     Ok(Json::obj(pairs))
 }
 
-/// The summary of `ein solve --monotone`, `ein-summary/2` — M1e2 S1e2.1b.5:
-/// every key a region run's summary has, `asked.ask` = `"monotone"`, no
+/// The summary of `ein solve --monotone`, `ein-summary/2`: every key a
+/// region run's summary has, `asked.ask` = `"monotone"`, no
 /// region, no verdict, no query answered, root's one saturation as the work,
 /// and the static check's block. Its `root` block is a region run's, so
 /// `root.hypgen.emitted` is the universe its stdout prints.
@@ -380,14 +370,14 @@ pub fn build_monotone(
 /// The summary as JSON, two-space indented, **ASCII-only**, with a trailing
 /// newline.
 ///
-/// # Escaped here, literal in the event stream — M1e S1e.4.8
+/// # Escaped here, literal in the event stream
 ///
 /// `dumps_indent` escapes every non-ASCII character, so `ein solve
 /// examples/zebra.ein --json-summary` emits `\u2014` where the *same run*'s
 /// `--events` emits a literal em dash: `ein-infer`'s event writer leaves
 /// non-ASCII text as it is (`events.rs`, pinned by
-/// `strings_escape_json_specials_and_keep_non_ascii`). `MA-L3` reported the
-/// difference, and it is **accepted rather than changed**:
+/// `strings_escape_json_specials_and_keep_non_ascii`). The difference is
+/// **kept, not removed**:
 ///
 /// - the summary is documented as a **parsed**, self-describing artefact and
 ///   every reader in the tree parses it, so `json.loads` and `serde_json` give

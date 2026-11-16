@@ -1,17 +1,16 @@
-# ein.rs — the ein engine (M1a).
+# ein.rs — the ein engine.
 #
-# Six engine crates and two dev-only ones. Five of the six were in place and
-# empty at P1a.0 and filled in over P1a.1–P1a.5, so that a stage added code
-# rather than also adding a crate; `ein-einb` is the exception and arrived with
-# P1a.8, because it is the one crate whose *boundary* is load-bearing — see its
-# own manifest.
+# Six engine crates and two dev-only ones. The six stack linearly up to
+# `ein-infer` and fork there: `ein-einb` and `ein-render` are siblings over it,
+# and `ein-cli` depends on both. `ein-einb` is the one crate whose *boundary*
+# is load-bearing — see its own manifest.
 #
 # The two dev-only crates (`publish = false`, and nothing outside a
 # `[dev-dependencies]` block or a bench depends on either):
 #
 #   ein-corpus  the corpus manifest (`corpus/corpus.toml`), the fixture helpers
-#               every crate's tests share, and the eight-bench M1a measurement
-#               set.
+#               every crate's tests share, the worker pool the corpus sweeps
+#               share, and the benchmark set.
 #   ein-narration  what counts as a derivation's *narration* rather than its
 #               content, executable. A fork *resumes* root's saturation rather
 #               than re-deriving it, so two runs of one program can narrate
@@ -19,11 +18,10 @@
 #               rendered derivation, a dying fork's stopping point — while the
 #               answer and the search stay exact.
 #
-# `ein-server` is NOT here: the server was dropped outright on 2026-08-18 —
-# the engine ships as a library plus this CLI.
+# There is no server crate: the engine ships as libraries plus this CLI.
 #
 # Layout and the dependency policy:
-# docs/history/m1a_rust/design/12_toolchain_and_layout.md.
+# docs/ein/ein.rs/design/toolchain-and-layout.md.
 
 [workspace]
 resolver = "3"
@@ -47,9 +45,7 @@ exclude = ["vendor"]
 version    = "0.1.0"
 edition    = "2024"
 license    = "MIT"
-# The remote, and what `cargo install` / crates.io metadata point at. It read
-# `gutikoff/ein` until S1a.9.3 — a repository that does not exist, unnoticed
-# because nothing had yet followed the link.
+# The remote, and what `cargo install` / crates.io metadata point at.
 repository = "https://github.com/agutikov/ein"
 
 [workspace.dependencies]
@@ -57,64 +53,60 @@ repository = "https://github.com/agutikov/ein"
 # by integers it assigned itself, so the adversarial-input resistance
 # `RandomState` buys is worthless here — and its per-process randomisation is
 # an active hazard, because a hash map that iterates in a run-dependent order
-# is exactly the failure design/02 §9 forbids.
+# is exactly the failure docs/ein/ein.rs/design/determinism-and-order.md
+# § 2.3 forbids.
 rustc-hash = "2"
 serde      = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml        = { version = "0.9", default-features = false, features = ["parse", "serde"] }
 include_dir = "0.7"
 # `render.dot_util.hashed_id` is `md5(seed)[:10]` and the checked-in DOT
-# goldens are its fixture (design/02 §8) — a node id, not a security claim.
+# goldens are its fixture (determinism-and-order.md § 8) — a node id, not a
+# security claim.
 md-5        = "0.10"
-# `render.palette.hash_color` — the relation-colour index (design/02 §8).
+# `render.palette.hash_color` — the relation-colour index (the same § 8).
 sha1        = "0.10"
 sha2        = "0.10"
-# The `.einb` header digest (design/10 §2, §4) — content addressing, so the
-# question it answers is "are these the bytes that were written", which is what
-# a fast tree hash is for. `ein-einb` only; the engine crates stay
+# The `.einb` header digest (docs/ein/ein.rs/design/binary-format.md § 2.1) —
+# content addressing, so the question it answers is "are these the bytes that
+# were written", which is what a fast tree hash is for. `ein-einb` only; the engine crates stay
 # dependency-light, and the two digests already here are rendering fixtures
 # rather than integrity checks (`md-5` is a DOT node id, `sha1` a colour index).
 blake3      = { version = "1", default-features = false, features = ["std"] }
-# P1a.7's work-stealing pool, `ein-infer` only and behind its `parallel`
-# feature (design/12 §2). What it buys over `std::thread::scope` is that the
-# threads **stay alive between batches**: a fanned-out layer runs in bounded
-# batches so that the results in flight cannot grow with the layer, and
-# spawning `jobs` threads per batch cost more than the parallelism returned —
-# 96 000 spawns and a 3x *slowdown* at `--jobs 2` on `features/01 -e`,
-# measured (docs/history/m1a_rust/measurements/scaling.md §8).
+# The route workers' work-stealing pool, `ein-infer` only and behind its
+# `parallel` feature (toolchain-and-layout.md § 4). What it buys over
+# `std::thread::scope` is that the threads **stay alive between batches**:
+# work runs in bounded batches so that the results in flight stay bounded,
+# and spawning `jobs` threads for every batch would cost more than the
+# parallelism returns.
 rayon       = "1"
 criterion   = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
-# The global allocator, default-on for the binary and the bench (T1a.6.2.7).
-# glibc `malloc` is 20.0 % of an exhaustive `zebra2`'s self time over 880 k
-# allocations averaging ~71 bytes, and that profile — enormous counts, tiny
-# sizes, extreme lifetime locality — is what the per-thread-cache allocators
-# exist for. All three were measured; snmalloc won on wall clock *and* kept
-# peak RSS, which mimalloc did not (+42 % on `zebra -e`), and it is the only
-# one of the two fastest that also builds on MSVC (`tikv-jemallocator` is
-# `cfg(not(target_env = "msvc"))` by its own README). `--no-default-features`
-# on `ein-cli` puts the system allocator back for a distro build that would
-# rather not have a vendored C++ one.
-# docs/history/m1a_rust/measurements/baseline.md § 13.
+# The global allocator, default-on for the binary and the bench. The engine
+# allocates in enormous counts and tiny sizes, with extreme lifetime locality,
+# which is what the per-thread-cache allocators exist for; snmalloc also
+# builds on MSVC (`tikv-jemallocator` is `cfg(not(target_env = "msvc"))` by
+# its own README). `--no-default-features` on `ein-cli` puts the system
+# allocator back for a distro build that would rather not have a vendored C++
+# one.
 snmalloc-rs = "0.7"
 # The CLI's argument parser. `--help` layout and usage-error text are clap's;
 # what is fixed is the *surface* — every option's name, short key, default,
 # exclusions and help string, and every exit code
-# (`docs/kernel/defined_behaviour.md` § 5). `cli` only; the engine crates stay
+# (`docs/ein/user/reference/cli.md` § 5). `cli` only; the engine crates stay
 # dependency-light.
 clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
-# `signal(SIGPIPE, SIG_DFL)`, once, at the top of the binary's `main` (M1f
-# S1f.5.25, the user's ruling on Q-M1f.68 (b), "why not handle sigpipe
-# properly?"): Rust's runtime ignores SIGPIPE before `main`, so a write to a
-# pipe whose reader has gone failed with EPIPE and every `print!` panicked,
-# exit 101. The disposition is process-wide, so it is the binary's choice, as
-# the allocator is, and `ein-cli` on Unix only; no engine crate takes it. It
-# is in every build already, through the parser's `lrpar` and its `filetime`
-# (`cargo tree -i libc`, 2026-11-10); MIT OR Apache-2.0.
+# `signal(SIGPIPE, SIG_DFL)`, once, at the top of the binary's `main`
+# (Q-M1f.68): Rust's runtime ignores SIGPIPE before `main`, so without it a
+# write to a pipe whose reader has gone fails with EPIPE and every `print!`
+# panics, exit 101. The disposition is process-wide, so it is the binary's
+# choice, as the allocator is, and `ein-cli` on Unix only; no engine crate
+# takes it. It is in every build already, through the parser's `lrpar` and
+# its `filetime` (`cargo tree -i libc`); MIT OR Apache-2.0.
 libc        = "0.2"
 
-# grmtools' parser runtime, patched (M1f S1f.5.5 F11): `lrpar` 0.15.0's
-# error recovery was not deterministic. It ranked equal repairs in a
-# `HashSet`'s random order and stopped at a 500 ms wall-clock budget, so one
+# grmtools' parser runtime, patched (Q-M1e2.25): the published `lrpar`
+# 0.15.0's error recovery is not deterministic. It ranks equal repairs in a
+# `HashSet`'s random order and stops at a 500 ms wall-clock budget, so one
 # refused file could report different errors on two runs. The copy under
 # `vendor/lrpar/` keeps the first of each duplicate in the order the search
 # found it, sorts stably, and bounds recovery by a count of search steps over
@@ -123,28 +115,24 @@ libc        = "0.2"
 # published crate, apart from the licence files the crate does not ship,
 # which are grmtools' at the commit it was published from. Through
 # `[patch.crates-io]`, so the parser `ein-ir`'s `build.rs` generates and any
-# grammar loaded at run time both get it. The patch stays here and is not
-# sent upstream (the user's ruling of 2026-11-08, "don't send the lrpar patch
-# upstream either"); nothing but a change to `ein.patch` edits the copy.
+# grammar loaded at run time both get it. The patch stays here; nothing but
+# a change to `ein.patch` edits the copy.
 [patch.crates-io]
 lrpar = { path = "vendor/lrpar" }
 
 # Optimised even in dev: `cargo test` spawns hundreds of engine processes —
-# `ein-cli/tests/corpus_cli.rs` alone is 542 of them — and a debug-speed engine
-# would make the gate slow enough to skip. The corpus sweep is 2.7 s at
-# `opt-level = 1` and 2.6 s in release, so this is the whole of the difference.
+# `ein-cli/tests/corpus_cli.rs` alone runs one for every declared run of every
+# corpus entry — and a debug-speed engine would make the tests slow enough to
+# skip.
 [profile.dev]
 opt-level = 1
 
 # `cargo build --profile profiling` — release codegen plus the one thing a
 # profiler needs and a shipped binary does not: line tables, so `perf` can put a
 # name on an address. Frame pointers are deliberately *not* forced: `perf
-# --call-graph fp` cannot unwind out of glibc, which has none, and S1a.6.1
-# measured what that costs — 57 % of an exhaustive `zebra2`'s samples arrived
-# with no caller. `utils/profile_ein_rs.py` uses LBR call stacks instead, which
-# need neither frame pointers nor DWARF. `debug = 1` changes no codegen, and the
-# script re-times `release` against this profile on every run so the claim that
-# it changes no codegen stays a measurement.
+# --call-graph fp` cannot unwind out of glibc, which has none, so most samples
+# would arrive with no caller; LBR call stacks need neither frame pointers nor
+# DWARF. `debug = 1` changes no codegen.
 [profile.profiling]
 inherits = "release"
 debug    = 1
@@ -152,10 +140,9 @@ strip    = false
 
 # …but not for the vendored C++ allocator. `cmake`-rs picks `CMAKE_BUILD_TYPE`
 # from the `DEBUG` and `OPT_LEVEL` cargo passes each build script, so
-# `debug = 1` above quietly built snmalloc as `RelWithDebInfo` and the
-# profiling binary ran **+49.6 %** slower than the release one — a profile of a
-# different program, which is the one thing this profile exists not to be. The
-# script's release-vs-profiling line is what caught it (T1a.6.2.7).
+# `debug = 1` above would build snmalloc as `RelWithDebInfo` and the
+# profiling binary would run slower than the release one — a profile of a
+# different program, which is the one thing this profile exists not to be.
 [profile.profiling.package.snmalloc-sys]
 debug = false
 
@@ -165,17 +152,12 @@ debug = false
 debug     = false
 opt-level = 3
 
-# **`cargo test --profile gate`, what the gate runs** (M1f S1f.6.39
-# T1f.6.39.5): release codegen with the two checks the dev profile buys and
-# release drops — `debug_assert!` and `cfg(debug_assertions)` (25 asserts and
-# `ein-infer/src/engine.rs`' block on 2026-11-15) and integer overflow
-# checks. The corpus under `ein solve` ran 1.58 times slower at the dev
-# profile than in release, under `ein oracle` 1.47 (S1f.6.39 § Today,
-# `build/ab/`), and the dev profile's `opt-level = 1` was the whole of what
-# the gate paid for the checks it kept. `./run_tests.sh`, `per-commit.yml`,
-# the nightly's test steps and the dev host's run this profile, into
-# `ein.rs/target/gate/`; `cargo build` and `cargo test` without it are what
-# they were.
+# **`cargo test --profile gate`, the profile the tests are built in**:
+# release codegen with the two checks the dev profile buys and release drops,
+# `debug_assert!` and `cfg(debug_assertions)` (`ein-infer/src/engine.rs` has a
+# block of them) and integer overflow checks, so the tests run optimised and
+# still check the engine's assertions. It builds into `ein.rs/target/gate/`;
+# `cargo build` and `cargo test` without it build the dev profile.
 [profile.gate]
 inherits         = "release"
 debug-assertions = true

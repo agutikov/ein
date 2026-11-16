@@ -1,12 +1,11 @@
-//! `ein solve` — the one command for R, `solve_interface.md` § 2.1.
+//! `ein solve` — the one command for R (`docs/ein/user/reference/cli.md`
+//! § 2.1).
 //!
-//! Since M1e2 S1e2.1a.5's switch every run is a region run
-//! (`crate::modes`): bare `ein solve FILE` describes R, and `--minimal`,
-//! `--maximal`, `--single` and `-n N` each ask one question about it. The
-//! walk has no CLI path. Its library code is kept, with no caller, until
-//! P1e2.1c measures what of it the cheap modes reuse.
+//! Every run is a region run (`crate::modes`): bare `ein solve FILE`
+//! describes R, and `--minimal`, `--maximal`, `--single` and `-n N` each ask
+//! one question about it.
 //!
-//! What is here is the command's own half: the nine retired options, refused
+//! What is here is the command's own half: the retired options, refused
 //! with what replaced each, and the helpers `test` and `oracle` share.
 
 use std::io::Write;
@@ -18,8 +17,8 @@ use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::events::{Events, Level};
 use ein_ir::Ast;
 
-/// The nine options the switch retired (`solve_interface.md` § 2.1), each with
-/// the sentence its refusal prints: what replaces it. They stay in the parser,
+/// The retired options and levers, each with the sentence its refusal
+/// prints: what replaces it. They stay in the parser,
 /// hidden, so that this is what a stale argv gets.
 pub(crate) const RETIRED: [(&str, &str); 11] = [
     (
@@ -103,8 +102,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     crate::modes::run(m)
 }
 
-/// `kb.config` (or defaults) plus the lever the command line sets, `-y`, the
-/// one left since M1e2 S1e2.1c.5 retired `-L` and `-K`. A command that does
+/// `kb.config` (or defaults) plus the one lever the command line sets, `-y`.
+/// A command that does
 /// not define it leaves the field as the program set it.
 pub(crate) fn resolved_config(kb: &Kb, m: &ArgMatches) -> SolverConfig {
     let mut cfg = kb.program().config.clone().unwrap_or_default();
@@ -158,16 +157,12 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
     })
 }
 
-/// **The one shape an artefact flag's failure takes** — M1e
-/// [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
-/// `EH-M1`.
+/// **The one shape an artefact flag's failure takes.**
 ///
-/// Five options write a file the caller asked for, and before this stage they
-/// failed in four different ways: `--events`, `--json-summary` and `--trace`
-/// printed a bare OS error (*Is a directory (os error 21)* — no flag, no
-/// path, on a run with three artefact flags), `--json-report` named the path
-/// and not the flag, and `--dump-states` was the only one whose failure the
-/// exit code carried. A consumer that reads stderr — which is the whole of
+/// Several options write a file the caller asked for, and each failure names
+/// the flag and the path: a bare OS error (*Is a directory (os error 21)* —
+/// no flag, no path, on a run with three artefact flags) would not. A
+/// consumer that reads stderr — which is the whole of
 /// what the contract gives it — has to be able to tell *which* artefact was
 /// lost and *where* it was going.
 ///
@@ -205,16 +200,16 @@ pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
 
 /// `--jobs N`, or `--jobs auto` — which the parser gives us as `0`.
 ///
-/// **The default is 1 and stays 1** ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
-/// T1a.7.5.1): a benchmark, a golden run and the corpus sweep must never
+/// **The default is 1 and stays 1** ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)):
+/// a benchmark, a golden run and the corpus sweep must never
 /// silently become a different computation, even one that is provably the
 /// same. `auto` is what a user opts into, and it is the *machine's* number:
 /// [`std::thread::available_parallelism`] respects a cgroup quota and a
 /// `taskset` affinity mask, and counts logical CPUs — SMT siblings and E-cores
 /// included, which on a hybrid box is not the fastest setting.
 ///
-/// This lives here and **not in `SolverConfig`**, which is the ruling
-/// T1a.7.5.1 owed: every `SolverConfig` field is printed by `--dump-config`
+/// This lives here and **not in `SolverConfig`**: every `SolverConfig` field
+/// is printed by `--dump-config`
 /// and parsed from `(config …)`, so putting a thread count there would let a
 /// *puzzle file* set it — a `.ein` that reads differently on an 8-core machine
 /// than on a 4-core one, through a field the KB-shape digest renders. Jobs is
@@ -230,9 +225,9 @@ pub(crate) fn resolve_jobs(n: i64) -> usize {
 /// with its imports inlined, by the three calls `stdlib/README.md` documents
 /// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
 /// holds to the same program; or, on a `.einb`, the program it stores, already
-/// resolved and import-flattened (M1f S1f.5.12, W43). The program as loaded,
-/// whole: since M1f S1f.6.35 an import brings its module whole and nothing is
-/// shaken out (E-41), so the file declares every full name the run had. The file has already
+/// resolved and import-flattened (Q-M1f.27, W43). The program as loaded,
+/// whole: an import brings its module whole and nothing is shaken out, so
+/// the file declares every full name the run had. The file has already
 /// loaded, so a failure here is a defect, and it is written into the file
 /// rather than swallowed.
 pub(crate) fn inlined_program(file: &str) -> String {

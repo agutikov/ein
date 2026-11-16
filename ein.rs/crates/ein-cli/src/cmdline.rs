@@ -27,8 +27,8 @@ fn int_arg(s: &str) -> Result<i64, String> {
 ///
 /// What `auto` promises is the *machine's* answer, not the best one:
 /// `available_parallelism` counts logical CPUs, and on a hybrid CPU that
-/// includes SMT siblings and E-cores. P1a.7's measurements say more threads
-/// than physical P-cores is not faster
+/// includes SMT siblings and E-cores, and more threads than physical P-cores
+/// need not be faster
 /// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)), so
 /// `auto` is a convenience and `--jobs N` is what a measurement uses.
 fn jobs_spec(s: &str) -> Result<i64, String> {
@@ -46,20 +46,13 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
     }
 }
 
-/// `-n/--solutions` — a count of **one or more**.
+/// `-n/--solutions` — a count of **one or more** (Q-M1e.24).
 ///
-/// Zero is refused for the reason [`jobs_spec`] refuses `--jobs 0`: it has two
-/// readings and the engine implements a third. `stop_after` is compared with
-/// `>=` *after* a model is recorded (`ein_infer`'s `commit_entering`), so
-/// `Some(0)` — and, before this validator, every negative, which the CLI
-/// clamped onto it — cuts at the **first** model and is `-n 1` under another
-/// name. Neither reading a user could mean is available: *record nothing* is
-/// not what it does, and *no limit* is already spelled `--exhaustive`.
-///
-/// Refusing them moves no recorded output: no golden under `tests/golden/` is
-/// a `solve` invocation at all, and every `-n` in the corpus is `-n 3`. M1e
-/// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
-/// Q-M1e.24.
+/// Zero is refused for the reason [`jobs_spec`] refuses `--jobs 0`: a
+/// stop-after of zero has no reading a user could mean. *Record nothing* is
+/// no question about R, and *no limit* is leaving `-n` out, so accepting it
+/// would make `-n 0` another spelling of some other count. A negative is
+/// refused with it.
 ///
 /// The non-integer message stays [`int_arg`]'s, because
 /// [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
@@ -91,9 +84,8 @@ fn region_budget_spec(s: &str) -> Result<i64, String> {
     }
 }
 
-/// `--region-limit`'s `n` — **not negative**, the
-/// [S5](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02)
-/// shape `int_arg` alone would let through.
+/// `--region-limit`'s `n` — **not negative**, a shape `int_arg` alone would
+/// let through.
 fn region_limit_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
         n if (0..=63).contains(&n) => Ok(n),
@@ -105,9 +97,8 @@ fn region_limit_spec(s: &str) -> Result<i64, String> {
 
 /// `-g/--progress-every`'s `N` — **0 or more**: 0 logs no node line, as
 /// `ein saturate --progress-every 0` disables its progress, and a negative is
-/// refused (M1e2 S1e2.3.4, the user's ruling (b) of 2026-11-03, which closed
-/// Q-M1e.17). The region modes clamped it with `.max(1)`, so `-g=0` and
-/// `-g=-3` logged every node, as `-g 1` does, with no word.
+/// refused (Q-M1e.17): a clamp with `.max(1)` would log every node for `-g=0`
+/// and `-g=-3`, as `-g 1` does, with no word.
 fn progress_every_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
         n if n >= 0 => Ok(n),
@@ -119,13 +110,13 @@ fn progress_every_spec(s: &str) -> Result<i64, String> {
 
 /// An artefact flag's path — **not empty**.
 ///
-/// M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
-/// `EH-M1`'s neighbour and found by its probe. Five options name a file or a
-/// directory the run will write, and an empty string reached all five: three
-/// of them then failed with a bare `No such file or directory` and exit 0,
-/// and **`--dump-states ""` succeeded** — `create_dir_all("")` is `Ok` on
-/// Linux, so `""/00_timeline.jsonl` resolved to the *current directory* and
-/// the run silently dropped four files into the caller's cwd.
+/// Several options name a file or a directory the run will write
+/// ([`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure)),
+/// and an empty string would reach each: a file write would fail with a bare
+/// `No such file or directory`, and a directory would **succeed** —
+/// `create_dir_all("")` is `Ok` on Linux, so `""/<file>` resolves to the
+/// *current directory* and the run would silently drop its files into the
+/// caller's cwd.
 ///
 /// Refused here rather than at the write, for `solutions_spec`'s reason: an
 /// empty path is a usage error, the CLI is where usage errors are answered,
@@ -164,18 +155,14 @@ fn rule_mode() -> Arg {
         )
 }
 
-/// `--no-require-why`, on every command that loads a program — M1f S1f.5.14.
-/// T1f.5.14.6 gave the loader a flag that makes a `:why` required, `--require-why`,
-/// default false, on the user's rulings of 2026-11-08: `:why` is optional in
-/// the grammar, and a loader flag makes it required. T1f.5.14.7 turned the
-/// default to true once every program the corpus, the stdlib and the Rust
-/// suites load carried its `:why`s, and this option, the CLI's spelling of a
-/// negative (`--no-types`, `--no-instances`), loads a program without them
-/// (Q-M1f.62). It sets [`ein_ir::LoadOptions::require_why`] false and nothing
-/// else, so it decides whether a program loads and never what a loaded one
-/// answers (*"yes, the flag only decides loading"*). The four views that draw
-/// a program as written take it since M1f S1f.5.21, which has them read the
-/// program through the loader first (Q-M1f.71). One builder, as
+/// `--no-require-why`, on every command that loads a program. A `:why` is
+/// optional in the grammar and required by the loader by default, and this
+/// option, the CLI's spelling of a negative (`--no-types`, `--no-instances`),
+/// loads a program without them (Q-M1f.62). It sets
+/// [`ein_ir::LoadOptions::require_why`] false and nothing else, so it decides
+/// whether a program loads and never what a loaded one answers. The four
+/// views that draw a program as written take it, since they read the program
+/// through the loader first (Q-M1f.71). One builder, as
 /// [`rule_mode`] and [`event_args`] are, so the eleven commands cannot
 /// describe it differently.
 fn no_require_why() -> Arg {
@@ -276,8 +263,7 @@ fn render_command() -> Command {
                 .arg(Arg::new("file").required(true))
                 .arg(no_require_why()),
         )
-        // M1e2 S1e2.1.3 — the two renderers Q-M1e.20 found produced, tested
-        // and reachable from no command.
+        // Two renderers a command reaches as every renderer is (Q-M1e.20).
         .subcommand(
             Command::new("program")
                 .about(
@@ -334,9 +320,9 @@ fn render_command() -> Command {
                 )
                 .arg(no_require_why()),
         )
-        // M1e2 S1e2.1a.2 — the cube an `ein oracle --dump` directory holds,
-        // drawn from the files, so the picture is of the run whose answer it
-        // shows; S1e2.1a.7 — a region run on it, from the run's own dumps.
+        // The cube an `ein oracle --dump` directory holds, drawn from the
+        // files, so the picture is of the run whose answer it shows; and a
+        // region run on it, from the run's own dumps.
         .subcommand(
             Command::new("region")
                 .about(
@@ -507,13 +493,14 @@ const H_SPACE_VIEWS: [&str; 6] = [
     "json",
 ];
 
-/// `ein solve` — the one command for R, `solve_interface.md` § 2.1. Since M1e2
-/// S1e2.1a.5's switch it describes R by default, and `--minimal`, `--maximal`,
-/// `--single` and `-n N` each ask one question about it; since T1e2.1c.4.6
-/// `--count` asks how many states and commitments R holds.
+/// `ein solve` — the one command for R
+/// ([`cli.md` § 2.1](../../../../docs/ein/user/reference/cli.md#21-ein-solve)).
+/// It describes R by default, and `--minimal`, `--maximal`, `--single` and
+/// `-n N` each ask one question about it; `--count` asks how many states and
+/// commitments R holds.
 ///
-/// The nine options the switch retired, and the two levers S1e2.1c.5 retired,
-/// stay in the parser, **hidden**, so that a stale argv is refused with the
+/// The retired options and levers stay in the parser, **hidden**, so that a
+/// stale argv is refused with the
 /// sentence naming what replaced it (`crate::solve::RETIRED`) rather than with
 /// clap's "unexpected argument".
 fn solve_command() -> Command {
@@ -586,8 +573,8 @@ fn solve_command() -> Command {
                      exits 0, and a run that stopped before it decided says so",
                 ),
         )
-        // M1e2 T1e2.1c.4.6, the user's ruling of 2026-11-03: R's two counts
-        // and nothing listed. Its refusals name what answers the other
+        // R's two counts and nothing listed (Q-M1f.218). Its refusals name
+        // what answers the other
         // question (`crate::modes`'s `COUNT_REFUSES`), so they are not
         // clap's conflicts.
         .arg(
@@ -626,7 +613,7 @@ fn solve_command() -> Command {
                      changes no part of R",
                 ),
         )
-        // M1e2 S1e2.1b.5, approved 2026-11-03: a question about the program.
+        // A question about the program.
         .arg(
             Arg::new("monotone")
                 .long("monotone")
@@ -654,8 +641,8 @@ fn solve_command() -> Command {
                      described; every verdict exits 0",
                 ),
         )
-        // M1f S1f.6.36, the user's words of 2026-11-14: a flag that declines
-        // to discover R, never one that changes it.
+        // A flag that declines to discover R, never one that changes it
+        // (Q-M1e2.30, Q-M1f.258).
         .arg(
             Arg::new("no-search")
                 .long("no-search")
@@ -710,7 +697,7 @@ fn solve_command() -> Command {
                      step of work. A machine-dependent limit is never an answer",
                 ),
         )
-        // T1a.7.2.1's knob, the same under every route.
+        // The route workers' count, the same under every route.
         .arg(
             Arg::new("jobs")
                 .short('j')
@@ -788,7 +775,7 @@ fn solve_command() -> Command {
             "stats",
             "print the wall clock under the read-out",
         ))
-        // ── the listed states' projection (M1d S1d.3.3) ──
+        // ── the listed states' projection ──
         .arg(
             Arg::new("models")
                 .long("models")
@@ -877,7 +864,7 @@ fn solve_command() -> Command {
         .arg(retired("dump-states", Some('D'), true))
         .arg(retired("dump-region", None, true))
         .arg(retired("region-states", None, false))
-        // ── retired at M1e2 S1e2.1c.5, the user's ruling of 2026-11-03 ──
+        // ── retired levers ──
         .arg(retired("no-lookahead", Some('L'), false))
         .arg(retired("no-kill-cache", Some('K'), false));
 
@@ -934,8 +921,8 @@ fn solve_command() -> Command {
         ))
 }
 
-/// `ein test` — M1c
-/// [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
+/// `ein test`
+/// ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
 ///
 /// **Small on purpose.** The only engine knobs here are the ones that decide
 /// whether a run *can finish*, the two budgets, because everything else
@@ -943,11 +930,11 @@ fn solve_command() -> Command {
 /// asks the one the file already asked. In particular there is no `-n`, no
 /// `--single` and no line flag: an expectation is a claim about a whole part
 /// of R, so which question decides it is read off the claim's shape and is
-/// the runner's to ask, never a flag's ([`crate::test`], M1f S1f.6.27).
+/// the runner's to ask, never a flag's ([`crate::test`]).
 ///
-/// The two file-only flags are here because the stage's acceptance asks for
-/// them by name: a failing expectation is exactly when someone wants the
-/// stream. Each still names one path, so each is refused on a selection that
+/// The two file-only flags are here because a failing expectation is exactly
+/// when someone wants the stream. Each still names one path, so each is
+/// refused on a selection that
 /// is more than one run.
 fn test_command() -> Command {
     let cmd = Command::new("test")
@@ -984,7 +971,7 @@ fn test_command() -> Command {
                      established either way",
                 ),
         )
-        // M1f S1f.6.36: root alone, as `ein solve --no-search` reads it.
+        // Root alone, as `ein solve --no-search` reads it (Q-M1f.258).
         .arg(
             Arg::new("no-search")
                 .long("no-search")
@@ -995,7 +982,7 @@ fn test_command() -> Command {
                      it, and every other is NOT CHECKED. R is not searched",
                 ),
         )
-        // The walk's two, retired at M1e2 S1e2.1a.5's switch with `solve`'s.
+        // Two retired options, refused as `solve`'s are.
         .arg(
             Arg::new("max-set-size")
                 .short('m')
@@ -1056,7 +1043,7 @@ fn test_command() -> Command {
     )
 }
 
-/// `ein oracle` — the region by brute force, M1e2 S1e2.1a.9 T1e2.1a.9.4: every
+/// `ein oracle` — the region by brute force: every
 /// subset of the root candidates saturated, nothing skipped. It is the
 /// reference every `ein solve` mode is held to, and it costs `2ⁿ` on every
 /// program, so it runs only when asked for by name
@@ -1067,7 +1054,7 @@ fn oracle_command() -> Command {
         .arg(Arg::new("file").required(true))
         .arg(no_require_why())
         // Refused with a sentence (`crate::oracle::REFUSED`), as a retired
-        // option of `solve` is: the oracle's one question is R (M1f S1f.6.36).
+        // option of `solve` is: the oracle's one question is R (Q-M1f.258).
         .arg(
             Arg::new("no-search")
                 .long("no-search")
@@ -1117,7 +1104,7 @@ fn oracle_command() -> Command {
             "stats",
             "print the work: saturations and the wall clock of each phase",
         ))
-        // The five `ein solve` takes for the read-out — M1e2 T1e2.1a.5.3.
+        // The five `ein solve` takes for the read-out.
         .arg(
             Arg::new("max-time")
                 .short('T')
@@ -1168,10 +1155,10 @@ fn oracle_command() -> Command {
 }
 
 /// `--models`' help, `grid`'s gloss and where the rest is aside. The key's
-/// decline is said with the bound it is priced against (M1e2 S1e2.4.2), read
-/// from the constant, so the help cannot state a bound the renderer does not
-/// apply. Where the rest is: M1e2 S1e2.3.3, the user's ruling (a) of
-/// 2026-11-03.
+/// decline is said with the bound it is priced against, read from the
+/// constant, so the help cannot state a bound the renderer does not apply.
+/// Where the rest is: stdout's listings share 100 lines, and a dump holds
+/// the whole (Q-M1e2.34).
 fn models_help(grid: &str, dump: &str) -> String {
     format!(
         "after the read-out, the states it showed: 'key' (the smallest set of \
@@ -1233,7 +1220,7 @@ pub fn saturate_command() -> Command {
 
 /// The whole tree.
 pub fn command() -> Command {
-    /// `ein kb` — P1a.8's surface. Registered only when the `einb` feature is
+    /// `ein kb`, the container's surface. Registered only when the `einb` feature is
     /// on, so a build without the container does not advertise it.
     #[cfg(feature = "einb")]
     fn kb_command() -> Command {

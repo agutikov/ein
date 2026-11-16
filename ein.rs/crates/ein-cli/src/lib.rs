@@ -11,9 +11,8 @@
 //!
 //! **`test` is the one exception, and it is deliberate**: there 1 means *an
 //! expectation is false* and a load error takes 2, because a test runner that
-//! cannot tell a broken file from a false claim is the failure mode M1c
-//! [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)
-//! T1c.1.3.5 is written against.
+//! cannot tell a broken file from a false claim fails at its one job
+//! ([`cli.md` § 2.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)).
 
 #![forbid(unsafe_code)]
 
@@ -112,7 +111,7 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     a.get_one::<String>("visited").map(String::as_str),
                     a.get_one::<String>("answer").map(String::as_str),
                 ),
-                // The walk's depth cap went with `solve -m` (M1e2 S1e2.1a.5).
+                // A retired depth cap, refused as `solve -m` is.
                 Some(("lattice", a))
                     if solve::refuse_retired(
                         a,

@@ -1,6 +1,5 @@
 //! `ein --version` — what this binary *is*, in five lines
-//! ([design/toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#7-what-a-binary-says-it-is)
-//! T1a.9.3.4).
+//! ([design/toolchain-and-layout.md § 7](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#7-what-a-binary-says-it-is)).
 //!
 //! A version number alone answers almost nothing about this program. Three of
 //! the four things that decide what a run does are not in it:
@@ -83,8 +82,8 @@ fn container() -> String {
 /// and de-duplicated.
 ///
 /// De-duplicated because a feature forwarded to the engine is a feature of
-/// both crates (`fork-delta` and `spec-audit` were, until M1e2 S1e2.1c.5
-/// retired them with the walk). Sorted because the line is compared by eye between two binaries, and a set
+/// both crates, and the line names each once. Sorted because the line is compared by eye
+/// between two binaries, and a set
 /// printed in declaration order is a set two crates can disagree about the
 /// order of.
 pub fn features() -> Vec<&'static str> {
