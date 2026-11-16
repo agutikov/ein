@@ -314,9 +314,9 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **ruled 2026-11-16**: the user, asked back since the question had a recommendation and no default: *"308 (b) ok"*. **(b)**, the second rung where an obligation is activated at root. **Built 2026-11-16** by [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)'s task 4: the register's W97, three rows, filed and fixed, the re-plan's probe refused at load; 41 corpus programs change rung, `features/09` changes H, no R moves |
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
-| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, a describe that visits each predicate's borders instead of every alive state, an option the main session put that day; the user: *"YES! … lets pick this variant"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md) |
+| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, then, on S1f.10.17's measured *no* for the whole border route, *"2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one or another, verbose warning about budget"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md) |
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **put 2026-11-16 by S1f.10.16's T2, not ruled, to be shown at the phase's close**: default (b), `hyp` re-pointed at H's pass and `hyp+closed` removed; not acted on, both ops as they were; [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers) |
-| [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **put 2026-11-16 by S1f.10.19's T3, not ruled, to be shown at the phase's close**: default (b), a fail-first agenda (`pairs`) in the routes' nodes on a monotone program, the oracle's node FIFO; not acted on, the agenda FIFO as ruled; [S1f.10.19](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#t3-q-m1f313) |
+| [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. Built by S1f.10.19 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6609,6 +6609,17 @@ generic approach, independent from k_c = k_s?"*):
 state - lets pick this variant"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md),
 which measures the borders against the state route before it builds, by the price list's rule.
 
+**Measured 2026-11-16, and ruled again.** S1f.10.17's T2: the border route is identical to the state route on every
+program both finish and to the oracle within its limit, but *no* for describe on the corpus (1 234 630 · 10 286 321
+saturations · facts by the state route, 817 794 · 11 058 806 by borders, 20 programs higher by more than a tenth):
+N, the global border, is larger than the alive states it replaces where root owes, and a class with many minimal
+generators pays one saturation each. The cheap part pays: the tree and the classes give R, `k_c` and the minimal line
+exactly, `send_more_money.ein --count` in 18 127 saturations where the state route stops. The user, shown the table:
+*"S1f.10.17 - 2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one
+or another, verbose warning about budget so user knows about forecast and options."* So describe and `--count` take
+**the tree and the classes by default**, and **the state route on request**, by a command-line option; where a
+route's forecast passes the budget, the run says so, with the forecast and the options. Built by S1f.10.17's T3.
+
 ### Q-M1f.312 — What the shape golden's `hyp` and `hyp+closed` ops digest
 
 **Raised** 2026-11-16 by [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers)'s
@@ -6750,3 +6761,11 @@ it loses on no cell, it moved no fixpoint and no core of the corpus, and the ora
 ruling's ground, that an order is speed and a core an explanation, holds of it. (a) is the ruling's own consequence
 if the written order is part of the definition the user wants every node to keep. **Not acted on**: no route takes
 the switch, and S1f.10.19's T4 builds the stop under FIFO alone unless this is ruled otherwise first.
+
+**Ruled 2026-11-16: (c)**, a fail-first agenda everywhere: root, every route, the oracle and every reader, with the
+`pairs` half first (rules concluding `(false)`, a stored negation, or a fact of a relation whose negation is concluded
+or stored). The user: *"Q-M1f.313 (c) non-monotone programs still out of scope, we know about them, can detect them,
+can solve them somehow, but don't claim about solution soundness, correctness or completeness or anything."* It
+supersedes Q-M1f.6's *plain FIFO* for the agenda's order; a core stays an explanation. On a monotone program the
+fixpoint does not depend on the order; on a program the static check flags, the engine claims nothing of its answer
+under any order. Built by S1f.10.19 after its T4.
