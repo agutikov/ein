@@ -90,7 +90,7 @@ S1e2.1b.6 added [`inference/monotonicity.md`](inference/monotonicity.md), 45
 since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
 [`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
 M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
-(2026-11-10), 47 with [`inference/hypothesis_space.md`](inference/hypothesis_space.md),
+(2026-11-10), 47 with [`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md),
 the hypothesis space and its structure, and 48 with
 [`finding-r.md`](../ein/reasoning/kb-evolution/finding-r.md), how the oracle and the routes find `R`
 (`git ls-files 'docs/kernel/*.md' | wc -l`), current:

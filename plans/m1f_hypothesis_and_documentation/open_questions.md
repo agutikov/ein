@@ -6920,7 +6920,7 @@ also can we get plain dump of hypothesis? we should be able to"*. The view shows
 set H alone, so it is renamed: **`ein render h-space FILE`**, the main session's choice between the user's two
 examples and a default the user may change, with no alias; its document is `h-space.json`, schema
 `ein-h-space/1`, and its page
-[`docs/kernel/inference/hypothesis_space.md`](../../docs/kernel/inference/hypothesis_space.md). And of the dump,
+[`docs/kernel/inference/hypothesis_space.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). And of the dump,
 the same day: *"ein render writes dot, by listing hypothesis I meant listing them as ein facts, so add one more
 top level command `show` and one sub-command `show hyps` that lists them"*. So: **`ein show hyps FILE`**, a new
 top-level command with one subcommand, prints H as Ein facts, one candidate a line and nothing else on stdout,

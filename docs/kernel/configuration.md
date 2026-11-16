@@ -394,7 +394,7 @@ dispatchers. `ein kb save` exists only under the `einb` feature; a
 takes one, `--no-require-why`, and nothing that could move what it lists
 (§ 3.3). `ein render h-space` takes six, `--view`,
 `--dump`, `--supports`, `--region-budget`, `-j`/`--jobs` and
-`--no-require-why` (§ 3.3, and [`inference/hypothesis_space.md`](inference/hypothesis_space.md),
+`--no-require-why` (§ 3.3, and [`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md),
 which defines what it shows). M1f S1f.6.36 added two, `--no-search` on `ein solve` and on
 `ein test` (§ 3.3). M1f T1f.5.14.6 added seven, `--require-why` on
 each command that loads a program (§ 3.4), which T1f.5.14.7 turned into
@@ -524,7 +524,7 @@ answer about.
   route ([`inference/read_out.md`](inference/read_out.md)).
 - **The hypothesis space** — `ein render h-space`'s `--view`, `--dump`,
   `--supports`, `--region-budget` and `-j`/`--jobs`
-  ([`inference/hypothesis_space.md`](inference/hypothesis_space.md)). **Does it change the
+  ([`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md)). **Does it change the
   answer: no.** The command asks about the hypothesis set H and not about R: it
   reads nodes of the program's own lattice through the node function every
   route uses, writes nothing a route reads, and `ein solve` computes none of
@@ -540,7 +540,7 @@ answer about.
   `ein-infer/tests/structure_invariance.rs` holds the document and the graphs
   to a permuted id space and to every import form.
 - **The hypothesis set, listed** — `ein show hyps`, which takes no option of
-  its own ([`inference/hypothesis_space.md` § How to see it](inference/hypothesis_space.md#how-to-see-it)).
+  its own ([`hypothesis-space.md` § How to see it](../ein/reasoning/kb-evolution/hypothesis-space.md#how-to-see-it)).
   **Does it change the answer: no.** The command asks about H and not about
   R: it saturates root, runs the generator at root's fixpoint and prints the
   candidates, one fact a line; it reads no node, writes nothing a route

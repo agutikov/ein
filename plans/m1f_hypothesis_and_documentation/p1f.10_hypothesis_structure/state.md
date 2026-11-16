@@ -64,7 +64,7 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
 
 - **`worktree-agent-a3b0431c091872649`, merged as `025c7b38`.** `ein render structure` is `ein render h-space`, with
   no alias; its document is `h-space.json`, its page
-  [`hypothesis_space.md`](../../../docs/kernel/inference/hypothesis_space.md). `ein show` is a new top-level command
+  [`hypothesis_space.md`](../../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). `ein show` is a new top-level command
   with one subcommand, `ein show hyps FILE`: H as Ein facts, one a line, uncut, for root's saturation and the
   generator. K-17 is fixed in the owner (`Space::cached`, `Coupling::payers_read`). It filed K-19, open: the
   support check's node read is dropped the same way past the budget, and only the census example asks for it.

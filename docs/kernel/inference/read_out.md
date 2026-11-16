@@ -204,8 +204,8 @@ function of the question, and no option, `(config …)` field or `EIN_*` name re
 
 **A coupling** is a set of owed instances that some conflict or some derivation needs a member of each of: the
 letters of one column of a sum, with the letters its carry comes from. It is read off **the whole node**, root
-with every candidate committed, saturated once ([`hypothesis_space.md` § The coupling a route
-reads](hypothesis_space.md#the-coupling-a-route-reads-the-whole-node-alone)). **That saturation is the run's**: it is one
+with every candidate committed, saturated once ([`hypothesis-space.md` § The coupling a route
+reads](../../ein/reasoning/kb-evolution/hypothesis-space.md#the-coupling-a-route-reads-the-whole-node-alone)). **That saturation is the run's**: it is one
 of the `work` row's saturations, with its facts, and one of the nodes a `--dump-lattice` lists, the node of every
 candidate. So the couplings are read only **when a choice is left tied, the run has saturated twenty nodes, and
 the node costs at most a twentieth of the facts the run has derived**: a question a few nodes answer reads none,
@@ -444,7 +444,7 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 
 `-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is `ein show hyps
 FILE`**: one candidate a line and nothing else on stdout, at the cost of root's saturation and the generator's pass, no
-route run ([`hypothesis_space.md` § How to see it](hypothesis_space.md#how-to-see-it)). The candidates are the same:
+route run ([`hypothesis-space.md` § How to see it](../../ein/reasoning/kb-evolution/hypothesis-space.md#how-to-see-it)). The candidates are the same:
 `ein-cli/tests/h_space_view.rs` holds the two listings to each other.
 
 ---
