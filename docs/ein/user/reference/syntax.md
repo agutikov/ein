@@ -137,7 +137,7 @@ property tag gets nothing.
 
 ### Relation declarator
 
-```lisp
+```text
 (relation <name> [<T1> <T2> …]           ; the signature: zero or more type names
   :why "<template>")                      ; the one keyword a relation takes
 ```
@@ -250,7 +250,7 @@ presentation.
 
 A fact is any top-level form whose head is **not** a declarator:
 
-```lisp
+```text
 (not <fact> [:source "<text>"])           ; a stored negative: one fact, the head `not` reserved
 (<name> <arg>* [:source "<text>"])        ; a relation instance, an enumeration, a property tag
 ```
@@ -311,7 +311,7 @@ written as a value, `(word settled)`, is a name.
 The engine writes a fact it derives as a flat form annotated with `:rule`, the rule that fired, and `:using`, the
 premises it read, in place of `:source`, so that it reads back as a derivation:
 
-```lisp
+```text
 (<name> <arg>* :rule <rule-name> :using (<premise-fact>+))
 (not <fact>    :rule <rule-name> :using (<premise-fact>+))
 ```
@@ -327,7 +327,7 @@ writes the provenance as a comment.
 
 ### Rules
 
-```lisp
+```text
 (rule <name> (<param-vars>*)      ; the parameter list: required, () for a rule with none
   :match <premise>                ; what it reads (§ 3)
   :assert <conclusion>            ; what it derives
@@ -528,7 +528,7 @@ on a variable no relation premise binds does**
 
 ### Solve
 
-```lisp
+```text
 (solve
   [:hrules (<hrule> <activator>…)]         ; the hrules that generate, and their activators
   [:hypothesis-relations (<rel> …)]        ; speculate only these
@@ -581,7 +581,7 @@ has one lattice and one answer, and every query asks about it. What each list do
 
 #### The expected region — `(solve … :expect …)`
 
-```lisp
+```text
 <claim> ::= (region <item>*)              ; R, by its nodes
           | (false)                       ; every node dead
 <item>  ::= (model <fact>*)               ; one state of R
@@ -606,7 +606,7 @@ word, a name wherever a name goes. A region claim lists a state's stored facts, 
 
 ### Query
 
-```lisp
+```text
 (query
   :goal <premise>                          ; what to find, or verify
   [:goal-text "<template>"]                ; the headline template
@@ -649,7 +649,7 @@ command:
 ([Q-M1c.1](../../../decisions/language/Q-M1c.1-a-query-states-the-answer-it-expects-with-expect.md)). A query may
 state its own answer, and the engine checks it. Three shapes, the verdict implied by which one is written:
 
-```lisp
+```text
 :expect (model <fact>*)                 ; exactly one class: one answer
 :expect (or (model …) (model …) …)      ; that set of classes
 :expect (false)                         ; no answer
@@ -777,7 +777,7 @@ the importer states its own, or none.
 
 ### Trace
 
-```lisp
+```text
 (trace
   (step <id> :rule <name>                  ; one derivation step
              :using (<premise-ids>)        ;   or (and <id>+)

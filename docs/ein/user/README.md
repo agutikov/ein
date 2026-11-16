@@ -40,8 +40,11 @@ each.
 
 ## Conventions
 
-- Ein code is in ```` ```lisp ```` blocks, Graphviz in ```` ```dot ````, a shell session in ```` ```sh ````. A
-  `lisp` block that writes `…` is an excerpt; any other is a whole program that `ein solve` loads.
+- Ein code is in ```` ```lisp ```` blocks, Graphviz in ```` ```dot ````, a shell session in ```` ```sh ````, and a
+  form's shape, written with `<placeholders>`, in ```` ```text ````. A `lisp` block that writes `…` is an excerpt. In
+  the guide every other `lisp` block is a whole program that `ein solve` loads, and the test suite holds that; on the
+  other pages a block may also be a fragment the text names (a claim, a query of a program shown before, a module's
+  importer), or a program shown beside the refusal it gets.
 - Output shown on a page is the binary's, pasted, not written by hand; where a page is held to the binary by the
   test suite, it says so.
 - A decision is cited as a link to its file under [`docs/decisions/`](../../decisions/README.md).

@@ -138,7 +138,7 @@ full(M)  =  M's forms, each name n M declares written M.n
 
 ## Macros
 
-```lisp
+```text
 (macro <name> (<param>+) <body> :why "<what the pattern means>")
 ```
 

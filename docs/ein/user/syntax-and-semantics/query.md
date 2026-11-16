@@ -125,7 +125,7 @@ A region claim lists models `M₁ … Mₖ`; let `N` be the relations it names, 
 
 ## `(solve …)`: the lattice, stated once
 
-```lisp
+```text
 (solve
   [:hrules (<activator> …)]          ; which hrules propose, and with what
   [:hypothesis-relations (<rel> …)]  ; guess only these
@@ -147,7 +147,7 @@ A region claim lists models `M₁ … Mₖ`; let `N` be the relations it names, 
 
 ## `(query …)`: one question about R
 
-```lisp
+```text
 (query
   :goal <premise>                    ; the pattern asked about
   [:goal-text "<template>"]          ; the answer as a sentence, over the goal's variables
@@ -191,7 +191,7 @@ relation and check nothing. `model` is not reserved.
 
 ### The region claim
 
-```lisp
+```text
 <claim> ::= (region <item>*)              ; R, by its nodes
           | (false)                       ; every node dead
 <item>  ::= (model <fact>*)               ; one state of R
@@ -428,7 +428,7 @@ report are [the CLI](../reference/cli.md)'s.
 
 ## `(config …)`: the solver's flags
 
-```lisp
+```text
 (config [:lattice-sanity-check true|false]
         [:record-alternative-justifications true|false])
 ```

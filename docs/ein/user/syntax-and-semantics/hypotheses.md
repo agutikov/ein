@@ -134,7 +134,7 @@ obligation rules, and they decide nothing until a fact activates one.
 
 ### The hrule
 
-```lisp
+```text
 (hrule <name> (<param>*)
   :match  <premise>
   :assert <one fact>
