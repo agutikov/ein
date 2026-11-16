@@ -10,7 +10,7 @@
 ;;; R is one state, x = 123. `ein solve --single` finds it and shows there is
 ;;; no other in 31 saturations; a bare `ein solve` describes R, 251.
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
 (import std.math.digits :symbols (md nz __closed__))
 (import std.algebra :symbols (total-owed functional))

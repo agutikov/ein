@@ -128,7 +128,7 @@ figure is re-taken by [S1h.2.1](s1h.2.1_what_a_slice_is_today.md).
   writes 22 `fire` lines, and none is of `giver-gave-too-many` or `gave-more-than-had-is-false`.
   `--events-level verbose` adds 2 120 `hypskip` lines and no other kind.
 - **Two banked problems with a fact no question needs,** `unused.ein` and `bystander.ein`
-  ([`word_problems.md` § 6.5](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#65-a-fact-the-problem-does-not-need--punusedein-pbystanderein)).
+  ([`word-problems.md` § The plan, and in what order](../../../docs/ein/user/guide/word-problems.md#the-plan-and-in-what-order)).
 - **The pairs under `tests/stdlib/`:** a rule that refutes has two programs, one where it fires and one
   where it is *loaded, activated and satisfied* ([`tests/README.md`](../../../tests/README.md)). The second
   of each pair is the phase's second opening question, already written as a test.

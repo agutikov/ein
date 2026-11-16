@@ -102,7 +102,7 @@ figure is re-taken by the stage that uses it.
   the pupil's in 123 ([its F-2](../../m1g_logic/p1g.10_school_algebra/findings.md)).
 - **The formula exists nowhere today.** It is the order in which rules ask the calculator. What a run does
   hold is the requests, each with the rule that asked
-  ([`word_problems.md` § 2.2](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#22-the-two-step-problem-in-full),
+  ([`word-problems.md` § The plan, and in what order](../../../docs/ein/user/guide/word-problems.md#the-plan-and-in-what-order),
   `ein saturate boxes12.ein --dump`): `(add (n z 5) (n z 7) :rule together-means-sum)` and
   `(div (n (n z 1) 2) (n z 3) :rule holds-means-divide)`, and the order between them is nowhere written:
   the second is derived from the first one's answer.

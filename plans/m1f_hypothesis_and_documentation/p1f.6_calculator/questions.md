@@ -253,7 +253,7 @@ answer and asks the next thing. An expression layer would let one fact hold a tr
 N3)))`, evaluated on demand, and `(let NAME E)` name its value. You called it questionable on 2026-11-11
 (*"Ein is not Lisp, is it?"*), and it was to be asked again once the word problems showed the need. Source:
 [S1f.6.14](s1f.6.14_expressions.md#what-the-user-is-asked-when-the-need-shows);
-[word_problems.md Q12](word_problems.md#11-the-questions-for-the-user).
+[word-problems.md Q12](../../../docs/ein/user/guide/word-problems.md).
 
 - **(a) No expression layer.** Every composition is a rule of the program's. The smallest theory.
 - **(b) `(let NAME E)` only:** named quantities, no anonymous `calc`; say whether E is one level deep or any
@@ -540,7 +540,7 @@ completed. So R is empty as *every alive node owes*, `ein solve --single` answer
 and the read-out prints the owing nodes and **no row for N**, the minimal dead sets with their cores, which is
 the explanation; those are in `--dump-answer`'s `nogoods.json` and `--trace` only. `Open` reads as *not yet*
 where the run has shown *never*. Sources: [stdlib.md Q6](../../../docs/ein/user/reference/stdlib.md#stdboolinputs--inputs-as-hypotheses);
-[beyond_arithmetic.md Q6](beyond_arithmetic.md#6b-a-proof-of-no-solution-three-forms-one-of-them-a-proof);
+[word-problems.md Q6](../../../docs/ein/user/guide/word-problems.md#an-equation-with-no-solution-three-ways);
 E-23 of [`findings.md`](findings.md); [M1g's probe 1b](../../m1g_logic/README.md#first-probes-2026-11-11).
 
 - **(a) Keep the words,** and add the N row to the read-out of an R that is empty by owing, so the reasons are
@@ -596,7 +596,7 @@ A prototype theory of what the words of a school problem mean (*has*, *gave*, *t
 calculator, with 29 programs. **The problems were banked on 2026-11-12 under `examples/word_problems/`, in the
 page's recommended variants, on your instruction; the questions below stay open,** and an answer other than
 the recommendation changes those files. [question 10](#q10), on expressions, took the page's twelfth question. Source:
-[`word_problems.md` § 11](word_problems.md#11-the-questions-for-the-user).
+[`word-problems.md` § 11](../../../docs/ein/user/guide/word-problems.md).
 
 <a id="q26"></a>
 
@@ -802,7 +802,7 @@ The same reasoning also reads *(n z 5) + (n z 7) = (n (n z 1) 2)*, which is [que
 ## G. Inverse requests, and what the investigation proposed
 
 S1f.6.10 asked what the tables do besides arithmetic. Source:
-[`beyond_arithmetic.md` § Questions](beyond_arithmetic.md#questions-for-the-user).
+[`word-problems.md` § Questions](../../../docs/ein/user/guide/word-problems.md).
 
 <a id="q37"></a>
 

@@ -142,17 +142,17 @@ As the tree stands on 2026-11-13. Each is re-taken by the stage that uses it.
   not empty, `owed` rows under `∅` name each instance through its rule's `:why`
   ([`read-out.md` § 2](../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
   So the calculator's table of what each form of a gap prints
-  ([`word_problems.md` § 3.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#36-what-each-mechanism-does))
+  ([`word-problems.md` § When the problem leaves a number out](../../../docs/ein/user/guide/word-problems.md#when-the-problem-leaves-a-number-out))
   is out of date in one cell, *the gap is not printed*, and S1h.3.1 re-takes it whole.
 - **The forms that were tried and not banked.** The investigation's prototypes, `gap_a` (an obligation),
   `gap_c` (a hypothesis over a stated list), `gap_assume_h`, `_ha` and `_hb` (the assumption as a
   hypothesis, alone and with each form of the gap), `readings_always`, `readings_both`, `readings_gap`, stand
   under `build/s1f.6.20/p/` on 2026-11-13. That directory is scratch and not tracked: where it is gone, each
-  is rebuilt from [`word_problems.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md),
+  is rebuilt from [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#the-theory-of-the-examples),
   which carries the theory in full (§ 12) and each variant's rule.
 - **The stale fact.** With the gap as a fact and the assumption as a hypothesis (`gap_assume_hb`), the state
   that supposes Alice's amount still holds *not stated*, and the read-out's warning names it
-  ([`word_problems.md` § 3.5](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#35-the-gap-closed-by-a-stated-assumption)).
+  ([`word-problems.md` § When the reader assumes a number](../../../docs/ein/user/guide/word-problems.md#when-the-reader-assumes-a-number)).
   It is F21's open question met on a program a user would write.
 - **Two findings of the calculator's phase** that bear on a gap as a debt: E-18, a query's `:expect (false)`
   holds on a program that only owes

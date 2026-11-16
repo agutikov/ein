@@ -13,7 +13,7 @@ hand; reading them off the English is [M2](../../plans/m2_nl_to_ir/README.md)'s.
 
 They were banked on 2026-11-12, on the user's instruction (*"bank word problems into examples/word_problems with
 recommended variants"*), from the prototype that
-[`word_problems.md`](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md) reports, and
+[`word-problems.md`](../../docs/ein/user/guide/word-problems.md) reports, and
 rebuilt on 2026-11-13 by
 [S1f.6.28](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md) on
 the user's replies of 2026-11-12: **a reading is always chosen** (reply 31), and ***what is not listed is zero***
@@ -125,7 +125,7 @@ quantity is detected (reply 28): *"I want already written word problems banked a
 note that is is not only and not final."* So each form below is **the one picked to bank the problems, not the
 only one and not the final one**: the subject is
 [M1h's](../../plans/m1h_beyond_word_problems/README.md), which takes each up again. The section numbers are
-[`word_problems.md`](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md)'s, which has
+[`word-problems.md`](../../docs/ein/user/guide/word-problems.md)'s, which has
 every other form with its run.
 
 | the choice | banked | the reply | the other forms, on the page |

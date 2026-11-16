@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
-**T1 done 2026-11-11, and stopped for the user:** the prototype and the page, [`word_problems.md`](word_problems.md),
+**T1 done 2026-11-11, and stopped for the user:** the prototype and the page, [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md),
 29 programs under `build/s1f.6.20/` on the release binary, every problem of the table answered, the three gap
 mechanisms and the three forms of a missing reading each run, twelve questions with recommendations, and E-17 to
 E-20 in [`findings.md`](findings.md). Nothing shipped; T2 onward wait for the rulings.
@@ -203,7 +203,7 @@ holds each gap problem to its named gap.
 
 **The instruction.** The user, 2026-11-12: *"bank word problems into examples/word_problems with recommended
 variants"*. It is an instruction for the examples. **It is not a ruling on the twelve questions of
-[`word_problems.md` § 11](word_problems.md#11-the-questions-for-the-user), which stay open**; a ruling that
+[`word-problems.md` § 11](../../../docs/ein/user/guide/word-problems.md), which stay open**; a ruling that
 differs from a recommendation moves the banked files. No stdlib module and no engine source moved.
 
 **What is banked**, under [`examples/word_problems/`](../../../examples/word_problems/README.md): sixteen
@@ -313,7 +313,7 @@ gains thirteen of the files, the `z` inside a nested number they write or the ca
 `readings.ein` and `boxes12.ein` the hrule's name its closing rule concludes. No engine source moved.
 
 **Pages:** `examples/word_problems/README.md`, new; `examples/README.md`, a row for the directory;
-[`word_problems.md`](word_problems.md), *Where it is banked* and the table of names; `findings.md`;
+[`word-problems.md`](../../../docs/ein/user/guide/word-problems.md), *Where it is banked* and the table of names; `findings.md`;
 `open_questions.md`; the phase README's row; `corpus/corpus.toml`; `AGENTS.md`. `questions.md`, which holds the
 user's replies in progress, was not touched: its section F says the problems were banked, and Q-M1f.194 to .198
 and E-33 are not yet in its sections I and J.

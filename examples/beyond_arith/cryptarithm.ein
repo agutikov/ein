@@ -13,7 +13,7 @@
 ;;; visits every partial assignment that is still alive and stops at the
 ;;; budget (M1f S1f.6.27).
 ;;;
-;;; M1f P1f.6 (S1f.6.10): `plans/…/p1f.6_calculator/beyond_arithmetic.md` has
+;;; M1f P1f.6 (S1f.6.10): `docs/ein/user/guide/word-problems.md` has
 ;;; the probe this program was banked from, its cost and what it shows.
 (import std.math.digits :symbols (fa nz __closed__))
 (import std.algebra :symbols (total-owed functional injective))

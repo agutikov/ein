@@ -4044,7 +4044,7 @@ four import the tables alone.
 - **(b) Under `examples/arith/`,** with the test told which files search, by a list or a marker in the file.
 
 **Defaulted 2026-11-12: (a).** It moves no test, and the directory's name is the page's. It is question 8 of
-[`beyond_arithmetic.md`](p1f.6_calculator/beyond_arithmetic.md).
+[`word-problems.md`](../../docs/ein/user/guide/word-problems.md).
 
 ### Q-M1f.187 — Which probes of S1f.6.10 are banked, and at what size
 
@@ -4092,7 +4092,7 @@ circuit's own*; `std.int` and `std.rat` call them from inside the stdlib.
   hide it.
 
 **Defaulted 2026-11-12: (a), for the banked programs; the interface question is the user's**, question 4 of
-[`beyond_arithmetic.md`](p1f.6_calculator/beyond_arithmetic.md), with the recommendation that the module's page
+[`word-problems.md`](../../docs/ein/user/guide/word-problems.md), with the recommendation that the module's page
 name the tagged calls as what a theory built on it calls. Eight programs under `examples/beyond_arith/` would
 move if a tagged call's shape did; `arith_theory.rs` does not hold those shapes for outside callers.
 
@@ -4193,7 +4193,7 @@ three-input classes stay under `build/s1f.6.16/` and `build/s1f.6.17/`, with the
 
 **Raised** 2026-11-12 by [S1f.6.20](p1f.6_calculator/s1f.6.20_word_problems.md), on the user's instruction of that day: *"bank word problems into
 examples/word_problems with recommended variants"*. The prototype is 29 programs and nine modules, most of them
-one problem written under several variants ([`word_problems.md`](p1f.6_calculator/word_problems.md) § 0).
+one problem written under several variants ([`word-problems.md`](../../docs/ein/user/guide/word-problems.md#the-problems) § 0).
 
 - **(a) One file per distinct problem, under the variant the page recommends for each choice**, and the modules
   under the names the page proposes (§ 8): `words.ein`, `gaps.ein`, and `readings.ein`, which is the page's

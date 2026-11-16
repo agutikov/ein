@@ -12,7 +12,7 @@ its source and is kept as it was written on 2026-11-12, with a pointer at its he
 ([S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md),
 [S1f.6.28](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md)) are
 what every question below was first met on, and
-[`word_problems.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md) is the
+[`word-problems.md`](../../docs/ein/user/guide/word-problems.md) is the
 investigation's page.
 **Where it sits against [M1g](../m1g_logic/README.md) is not ruled** ([§ Open questions](#open-questions), 1).
 **Blocks:** nothing.

@@ -89,7 +89,7 @@ byte-identical after. Anything more is a finding with an owner, not this stage's
    entry's is.
 7. **T1f.6.27.7 — the pages:** [`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query)
    and the runner's page (what `ein test` runs for which claim); `tests/README.md`;
-   [`beyond_arithmetic.md`](beyond_arithmetic.md) gets a closing note on its question 2;
+   [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md) gets a closing note on its question 2;
    `AGENTS.md`, whose S1c.1.3 sentence *it exhausts* is restated; E-30 and E-31 closed or re-owned in
    [`findings.md`](findings.md).
 
@@ -507,7 +507,7 @@ by hand, the new entry's three cells, each exit 0, which the slow-tier run above
 **The pages.** `cryptarithm.ein`'s header and its corpus note said SEND + MORE was not in the corpus;
 [`examples/README.md`](../../../examples/README.md)'s line for `beyond_arith/` (seventeen programs, five that
 search); [`tests/README.md`](../../../tests/README.md) § What may be claimed here names the file;
-[`beyond_arithmetic.md`](beyond_arithmetic.md) gets its closing note on question 2.
+[`word-problems.md`](../../../docs/ein/user/guide/word-problems.md) gets its closing note on question 2.
 
 ### T1f.6.27.7 — the pages, done
 

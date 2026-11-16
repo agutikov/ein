@@ -21,7 +21,7 @@ So they ship, in a module of their own: `std.math.gcd`, `stdlib/math/gcd.ein`, e
   `std.math.decimal-arith`, the operands repeated as written, an operand a number or a name a `let` states.
 - **Euclid's chain** over the calculator's tagged division, a step a `div-call`, each step's tag carrying
   what is left; the lcm as the product divided by the gcd. Six rules offered both on the prototype
-  (`questions.md` 38; [`beyond_arithmetic.md`](beyond_arithmetic.md)'s question 5 and its banked example
+  (`questions.md` 38; [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md)'s question 5 and its banked example
   under `examples/beyond_arith/`).
 - **Under the rule of the theory:** no rule joins two facts on a number; no `absent`, no `not`; search-free.
 - **The edge the rules must say:** gcd with zero (gcd(X, 0) is X, gcd(0, 0) is zero by the usual

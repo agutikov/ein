@@ -34,7 +34,7 @@ with it.*
 - **The investigation's filter,** `build/s1f.6.20/pupil.py`: it keeps the steps whose rule is declared in
   the prototype's files, by reading those files, and prints each one's `:why` and first conclusion. Scratch,
   not tracked; its output for the two-step problem is on
-  [`word_problems.md` § 2.2](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#22-the-two-step-problem-in-full).
+  [`word-problems.md` § The plan, and in what order](../../../docs/ein/user/guide/word-problems.md#the-plan-and-in-what-order).
 - **A call.** A word rule asks the calculator by concluding a request, `(div 12 3)`, and reads its answer,
   `(quot-of 12 3 4 z)`. Between the two are the calculator's steps. The calculator's own tagged calls
   (`add-walk`, `mul-call`, `div-call`, `cmp-walk`) are named as an interface by

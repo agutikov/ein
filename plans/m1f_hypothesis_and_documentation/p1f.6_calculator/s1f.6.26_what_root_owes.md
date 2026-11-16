@@ -80,7 +80,7 @@ an open state; any change to what `Open` or `(false)` mean. Those are
    rows: they are counted with a command and named in the record before blessing. `lever_invariance` holds
    the read-out under every lever.
 6. **T1f.6.26.6 — the pages and the rows:** E-19 closed and E-18 marked *the row built, the claim asked* in
-   [`findings.md`](findings.md); `AGENTS.md`; [`word_problems.md`](word_problems.md)'s § 3.5 gets a pointer
+   [`findings.md`](findings.md); `AGENTS.md`; [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#when-the-reader-assumes-a-number)'s § 3.5 gets a pointer
    from the stage that edits that page next, not from this one.
 
 ## Acceptance
@@ -379,7 +379,7 @@ above the claim says which empty R is, and `as :expect (false)` under it is what
 - **`AGENTS.md` is not edited.** This file's T6 lists it; the user ruled on 2026-11-13 that it holds
   standing rules, locations and commands and no stage's history, and none of the three changed: a new row
   of the read-out is `read_out.md`'s.
-- [`word_problems.md`](word_problems.md) § 3.5 is not edited: its pointer is the next stage's that edits the
+- [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#when-the-reader-assumes-a-number) § 3.5 is not edited: its pointer is the next stage's that edits the
   page, as the task has it.
 
 ### The stage, closed
