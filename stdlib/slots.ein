@@ -128,7 +128,7 @@
 ;;;   250  disjunctive pruning + violation checks
 ;;;   400  elimination (reads the negatives the 240/250 bands produced)
 
-;; Dependency self-imported (idempotent — S1.8a.f20): the eliminations quantify
+;; Dependency self-imported (one copy per program): the eliminations quantify
 ;; with `forall` (std.macro).
 (import std.macro :symbols (forall))
 
@@ -136,9 +136,9 @@
 ;; ══ glue ════════════════════════════════════════════════════════════════════
 ;; Fan `(slot-partition R isa sub Super)` out into the four operational
 ;; activators. None-activator (generic-by-premise, the `bijective-properties`
-;; idiom) so the multi-fact `:assert (and …)` is legal — S1.8.A11 rejects a
-;; multi-assert on a *generic* rule, since the load-time split renames it out of
-;; reach of its own activator.
+;; idiom): one firing asserts all four, sharing one provenance, and each
+;; activator it derives lights the rule below that consumes it. A generic rule
+;; may conclude a conjunction too; this one reads its relation off a premise.
 (rule slot-partition-setup ()
   :match  (slot-partition ?R ?isa ?sub ?super ?index)
   :assert (and (slot-locate      ?R ?isa ?index)
@@ -309,7 +309,7 @@
   :assert (false)
   :why    "slot {?i} has every {?Tv} excluded — it has no {?Tv} left.")
 
-;; ── the OBLIGATION duals of the two above (M1d P1d.2 S1d.2.4) ───────────────
+;; ── the OBLIGATION duals of the two above (Q-M1d.2) ─────────────────────────
 ;; Same pair of questions, one modality down. `slot-no-room` / `slot-no-fill`
 ;; fire when every candidate carries a stored negative — the requirement has
 ;; become unreachable, so the state is dead. These fire while no candidate is

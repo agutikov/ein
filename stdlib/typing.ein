@@ -1,4 +1,4 @@
-;;; Ein stdlib — `std.typing`: type-hierarchy convention + auto-wiring (P1.8 S1.8.A10).
+;;; Ein stdlib — `std.typing`: type-hierarchy convention + auto-wiring.
 ;;;
 ;;; Variant (c) of the converse domain-check. Instead of declaring a
 ;;; `(converse-illtyped-dom R1 R2 is-a*)` activator per converse pair (the raw
@@ -13,23 +13,23 @@
 ;;;
 ;;; Depends on std.algebra's converse-illtyped-{dom,ran}, whose activators this
 ;;; derives; it imports std.algebra, so an import of it brings std.algebra too
-;;; (M1f S1f.6.35). A consumer lists what it writes:
+;;; (Q-M1f.247). A consumer lists what it writes:
 ;;;
 ;;;     (import std.algebra :symbols (converse))
 ;;;     (import std.typing  :symbols (type-hierarchy-converse))
 ;;;
-;;; Every rule here is NON-generic (empty params, relation read from a premise)
-;;; so it may multi-assert: S1.8.A11 splits a *generic* multi-assert into
-;;; un-activatable `__and<j>` siblings and rejects it (the split renames the
-;;; rule, but a generic rule is reached by its exact name). Non-generic rules
-;;; carry a None activator and are unaffected — same idiom as `bijective-properties`.
+;;; Every rule here is NON-generic (empty params, relation read from a premise):
+;;; it carries no activator and fires on every match. Where it concludes a
+;;; conjunction, one firing asserts every conjunct, as any rule's does — the
+;;; same idiom as `bijective-properties`, which reads its relation out of a
+;;; fact too.
 
 ;; ── (type-hierarchy R) drives converse typechecking ─────────────────────────
 ;; One converse declaration → both the domain- and range-side check activators,
 ;; instantiated at the puzzle's hierarchy relation ?isR*. Relies on reflective
-;; rule-implication (S1.8.A9): the derived activators light up the generic
+;; rule-implication: the derived activators light up the generic
 ;; converse-illtyped-{dom,ran} rules on the next saturation pass.
-;; The activators it reads and writes are `std.algebra`'s (M1f S1f.6.35: a name a
+;; The activators it reads and writes are `std.algebra`'s (Q-M1f.236: a name a
 ;; module writes of another module's is listed from it, or it is the module's own).
 (import std.algebra :symbols (converse converse-illtyped-dom converse-illtyped-ran))
 

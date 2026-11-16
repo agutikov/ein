@@ -1,10 +1,10 @@
 ;;; Ein stdlib — `std.math.gcd`: the greatest common divisor and the least
-;;; common multiple of two natural numbers, computed by saturation alone (M1f
-;;; P1f.6, S1f.6.32; P1f.6's question 38, the user's reply of 2026-11-12:
-;;; *"(a) but not into std.arith; it's time to make a std.math with
-;;; subfolders"*).
+;;; common multiple of two natural numbers, computed by saturation alone: a
+;;; module of its own, over natural numbers (Q-M1f.336), under `std.math`,
+;;; where the calculator's modules are, a dot of the name a directory
+;;; (Q-M1f.338).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is a theory written in Ein over `std.math.decimal-arith`, which
 ;;; it calls and does not edit: every step is one of that theory's tagged
 ;;; calls, made with a tag of this module's, and nothing is guessed. On a
@@ -22,7 +22,7 @@
 ;;;     (import std.math.arith :symbols (z))
 ;;;
 ;;; An import brings the module whole, `std.math.decimal-arith`, the modules
-;;; below it and the tables with it (M1f S1f.6.35); a program lists the names
+;;; below it and the tables with it (Q-M1f.247); a program lists the names
 ;;; it writes, from the module that declares each: `gcd`, `lcm`, `gcd-of` and
 ;;; `lcm-of` from this one, `let` from `std.math.decimal-arith` where it names
 ;;; an operand, `n` from `std.math.decimal` and `z` from `std.math.arith`.
@@ -43,10 +43,10 @@
 ;;; a `(let NAME NUMBER)` states, and is read by value. Every answer is in
 ;;; normal form. Natural numbers only: an integer of `std.math.int` or a
 ;;; rational of `std.math.rat` is no operand here, and a request over one is
-;;; answered by silence (the stage's ruling: no gcd of integers or
-;;; rationals).
+;;; answered by silence: there is no gcd of integers or of rationals
+;;; (Q-M1f.336).
 ;;;
-;;; **Zero** (Q-M1f.299, the default the stage states): gcd(X, 0) and
+;;; **Zero** (Q-M1f.299): gcd(X, 0) and
 ;;; gcd(0, X) are X, and **gcd(0, 0) is zero**, the usual convention, which
 ;;; makes zero the greatest element of divisibility. lcm(X, 0) and lcm(0, X)
 ;;; are zero, and so is lcm(0, 0). **No request of this module divides by
@@ -57,7 +57,7 @@
 ;;; gcd_theory.rs` holds that).
 ;;;
 ;;; An operand's faults are flagged on the request, as `std.math.int`'s and
-;;; `std.math.rat`'s are (S1f.6.38): a digit as an operand, `(gcd 7 X)`, is
+;;; `std.math.rat`'s are (Q-M1f.206): a digit as an operand, `(gcd 7 X)`, is
 ;;; `(malformed (gcd 7 X))`, and a name no `let` states, `(undeclared foo (gcd
 ;;; foo X))`, each `(false)` by `std.math.decimal-arith`'s rules.
 ;;;
@@ -81,8 +81,8 @@
 ;;;     and so is the answer.
 ;;;
 ;;; **The tagged call a later theory makes is an interface,** as
-;;; `std.math.decimal-arith`'s are (P1f.6's question 41, round 2, the user's
-;;; *"(a)"*; Q-M1f.300), held to this shape by `ein-infer/tests/
+;;; `std.math.decimal-arith`'s are (Q-M1f.189, Q-M1f.300), held to this
+;;; shape by `ein-infer/tests/
 ;;; arith_theory.rs`'s `the_tagged_calls_keep_their_shapes`:
 ;;;
 ;;;     (gcd-call TAG X Y)                    the greatest common divisor of X

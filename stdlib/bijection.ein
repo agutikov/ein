@@ -4,11 +4,11 @@
 ;;; injective / total / surjective fire `(false)` on violation) with the
 ;;; INFERENCE those properties license: negative-completion (a positive forces
 ;;; the alternatives off), domain/range elimination (force the survivor when all
-;;; but one partner is excluded), and arg typecheck. The zebra2 formulation
-;;; (S1.8a.f20), generalised: SIGNATURE-DRIVEN (the arg types are read from the
+;;; but one partner is excluded), and arg typecheck. The zebra2 formulation,
+;;; generalised: SIGNATURE-DRIVEN (the arg types are read from the
 ;;; `(relation R A B)` declaration, not spelled out positionally) and IS-A-FREE
 ;;; (the type-membership relation arrives as the `?isa` param, never an `is-a`
-;;; literal — kernel-purity, S1.8.A10; `(?isa …)` is then an activator-bound
+;;; literal — kernel purity; `(?isa …)` is then an activator-bound
 ;;; scan). Cf. `std.elim`, which ships a *positional* (`functional R 0 1`,
 ;;; `domain-elimination R isa OT VT`) variant for puzzles that prefer to name the
 ;;; arg types — this is the signature-driven variant.
@@ -40,11 +40,11 @@
 ;;; DIRECT type membership (`is-a`), while typecheck accepts a value whose type
 ;;; matches DIRECTLY or via the hierarchy (`is-a*`, the transitive closure).
 ;;;
-;;; Dependencies are **self-imported** (idempotent re-import, S1.8a.f20): `forall`
+;;; Dependencies are **self-imported** (one copy per program): `forall`
 ;;; (std.macro) for the elimination quantifiers, and the cardinality rules
 ;;; (std.algebra) the bodies guard on (`functional`/`total`/…) or a puzzle
 ;;; activates (`bijective-properties`). An import brings this module whole, and
-;;; std.algebra and std.macro with it (M1f S1f.6.35): a puzzle's
+;;; std.algebra and std.macro with it (Q-M1f.247): a puzzle's
 ;;; `(import std.bijection :symbols (bijective-setup typecheck-setup))` holds the
 ;;; whole working stack, and lists from std.algebra what it writes of it
 ;;; (`bijective-properties`, a rule of std.algebra's, is std.algebra's to list).
@@ -57,8 +57,8 @@
 ;; bound by the `(bijection-hierarchy ?isa)` premise and only ever APPEARS as an
 ;; asserted argument here (never scanned), so no bound-head scan is needed — the
 ;; scans happen in the consuming rules, where ?isa is an activator param. The
-;; multi-fact `:assert (and …)` is S1.8.A13 firing-level. Priority 100 (propagate
-;; band) so the activators exist before the rules that consume them fire.
+;; multi-fact `:assert (and …)` is one firing, its conjuncts sharing one
+;; provenance; each activator lights the rule that consumes it once derived.
 (rule bijective-setup ()
   :match  (and (bijective ?R) (bijection-hierarchy ?isa))
   :assert (and (total ?R ?isa) (surjective ?R ?isa)

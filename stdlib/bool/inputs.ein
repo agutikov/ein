@@ -1,6 +1,6 @@
 ;;; Ein stdlib — `std.bool.inputs`: a circuit's inputs as hypotheses, each
-;;; owing exactly one value, and the values a program requires (M1f P1f.6,
-;;; S1f.6.17).
+;;; owing exactly one value, and the values a program requires
+;;; (Q-M1f.328).
 ;;;
 ;;; This is the one module of `std.bool` with a search in it. An input wire
 ;;; has exactly one value, and which one is for the search to try:
@@ -23,16 +23,16 @@
 ;;; truth table's rows; with requirements, the assignments that satisfy them,
 ;;; which is satisfiability, and empty where none does. Such an R is empty
 ;;; because every alive node owes an input it cannot be given, not because
-;;; every node is dead: `ein solve --single` answers `Open` (E-23 of P1f.6's
-;;; findings; question 24 of the phase, not ruled).
+;;; every node is dead: `ein solve --single` answers `Open`, and not
+;;; `Contradiction`, which is said only where no node is alive (Q-M1d.6).
 ;;;
 ;;; **What it costs.** A node of the search is a partial assignment, each
 ;;; input unset, 0 or 1: describing R over n inputs is 3^n + n saturations,
-;;; and finding one state 2^n. That is a demonstration and not a SAT solver
-;;; (the user's reply to round 2's item 25, 2026-11-12, "yes, both"): a
-;;; cheaper search for *exactly one value per object* is M1g's S1g.6.6. Where
-;;; every input is to be tried, writing the inputs as test vectors is one
-;;; saturation (`examples/binary_logic/adder_against_table.ein`).
+;;; and finding one state 2^n. That is a demonstration and not a SAT solver:
+;;; the search has no cheaper move for *exactly one value per object* than
+;;; the obligation's candidates, one input at a time. Where every input is to
+;;; be tried, writing the inputs as test vectors is one saturation
+;;; (`examples/binary_logic/adder_against_table.ein`).
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -41,7 +41,7 @@
 ;;;     (import std.bool.gates :symbols (Xor And))
 ;;;
 ;;; An import brings the module whole, `std.bool.circuit`, `std.bool.gates`
-;;; and `std.algebra` with it (M1f S1f.6.35); a program lists the names it
+;;; and `std.algebra` with it (Q-M1f.247); a program lists the names it
 ;;; writes from the module that declares each. `inputs` is the entry, the
 ;;; closing rule at the end of this file: it closes `is-a` and `require`,
 ;;; which are written and never guessed, names every rule, and names

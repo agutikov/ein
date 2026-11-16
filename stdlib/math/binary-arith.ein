@@ -1,9 +1,9 @@
 ;;; Ein stdlib — `std.math.binary-arith`: school arithmetic on binary numbers of
-;;; any length, computed by saturation alone (M1f P1f.6, S1f.6.16; the user's
-;;; rulings of 2026-11-12 on P1f.6's questions 13 to 18 and of 2026-11-14 on
-;;; the design).
+;;; any length, computed by saturation alone: a theory of its own beside
+;;; decimal's, which shares decimal's positional rules (Q-M1f.321,
+;;; Q-M1f.266).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is a *theory* written in Ein over the binary numerals of
 ;;; `std.math.binary`, whose bits are the names `0` and `1`: the tables of
 ;;; `std.math.bits` are the gates, and the rules are the wiring. It is
@@ -26,7 +26,7 @@
 ;;;
 ;;; An import brings the whole theory, the rows of its tables, the shared
 ;;; rules and the modules below it, under full names,
-;;; `std.math.binary-arith.bin-add` (M1f S1f.6.35); a program lists the names
+;;; `std.math.binary-arith.bin-add` (Q-M1f.247); a program lists the names
 ;;; it writes from the module that declares each: the requests, the results
 ;;; and `bin-let` from this one, `b2` from `std.math.binary` and `z` from
 ;;; `std.math.arith`. **Nothing of decimal is loaded**: no row of
@@ -38,8 +38,8 @@
 ;;;
 ;;; ── The protocol: a request fact, answered by a result fact ────────────────
 ;;;
-;;; As `std.math.decimal-arith`'s, each name with `bin-` before it (P1f.6's
-;;; reply 14; Q-M1f.267, defaulted):
+;;; As `std.math.decimal-arith`'s, each name with `bin-` before it
+;;; (Q-M1f.267):
 ;;;
 ;;;     (bin-add X Y)          asked: X + Y
 ;;;     (bin-sum-of X Y S)     the answer, repeating the operands as written
@@ -61,7 +61,7 @@
 ;;; **Division by zero is a contradiction, in two steps**, as in decimal: the
 ;;; request's flag, `(division-by-zero (bin-div X Y))`, and the call's,
 ;;; `(division-by-zero (bin-div-call TAG X Y))`, both `std.math.arith`'s flag,
-;;; arithmetic's own whatever the base (the user's ruling of 2026-11-14), and
+;;; arithmetic's own whatever the base (Q-M1f.269), and
 ;;; `(false)` from each by `std.math.arith`'s rule.
 ;;;
 ;;; **The tagged calls**, binary's twins of decimal's interface, for a rule of
@@ -82,8 +82,8 @@
 ;;; **A malformed numeral is not this module's**: whether `(b2 (b2 z 1) 2)` is
 ;;; a number is `std.math.binary`'s question, asked where the numeral is
 ;;; written (`(not-binary NUMERAL THING)`). What is left is what is wrong with
-;;; an operand or a `bin-let`, as far as decimal flags its own (Q-M1f.268,
-;;; defaulted), by the shared rules and one of binary's:
+;;; an operand or a `bin-let`, as far as decimal flags its own (Q-M1f.268),
+;;; by the shared rules and one of binary's:
 ;;;
 ;;;     (bin-malformed REQUEST)          a bit stands where a number goes,
 ;;;                                      (bin-add 1 X): one is (b2 z 1)
@@ -393,7 +393,7 @@
 ;; below, `arith` and `binary`; and its last conjunct connects the base, one
 ;; call of `std.math.positional`'s macro with binary's 61 relations, which
 ;; derives the 77 activators of the shared rules in this same firing
-;; (Q-M1f.266, ruled (iii)). `ein-infer/tests/arith_theory.rs` holds that no
+;; (Q-M1f.266). `ein-infer/tests/arith_theory.rs` holds that no
 ;; relation and no rule of this file is missing here, and that the call is the
 ;; macro's whole order.
 (relation bin-arith-rule Rule

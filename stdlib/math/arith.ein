@@ -1,19 +1,19 @@
 ;;; Ein stdlib — `std.math.arith`: arithmetic itself, what every base shares
-;;; (M1f P1f.6, S1f.6.38; the user's rulings of 2026-11-14).
+;;; (Q-M1f.322, Q-M1f.269).
 ;;;
 ;;; Two things are true of a number in any base, and so are no base's own:
 ;;;
 ;;;   - **`z`, zero, the number with no digit.** Every numeral ends in it:
 ;;;     `(n (n z 4) 2)` is 42 in `std.math.decimal`, and a binary numeral ends
-;;;     in the same `z` (the user, 2026-11-14: *"z is shared by both bases,
-;;;     put it in std.math.arith"*; P1f.6's reply 15, *"one `z`; a bare `z`
-;;;     is of no base"*). It is declared here, a relation of no argument
+;;;     in the same `z`: one `z` serves every base, and a bare `z` is of no
+;;;     base (Q-M1f.322). It is declared here, a relation of no argument
 ;;;     that no fact is ever of, so that it has one full name,
 ;;;     `std.math.arith.z`, and a file that writes it lists it, as it lists
-;;;     any name a module declares (M1f S1f.6.35).
-;;;   - **Division by zero is a contradiction** (the user, 2026-11-14:
-;;;     *"division by zero is false in binary arithmetic too, so it belongs to
-;;;     arithmetic itself"*). A module that divides derives the flag
+;;;     any name a module declares (Q-M1f.231). A relation of no argument
+;;;     adds no fact and no candidate (Q-M1f.283).
+;;;   - **Division by zero is a contradiction** of arithmetic itself, in
+;;;     every base, binary's as decimal's (Q-M1f.269), and so no base's own.
+;;;     A module that divides derives the flag
 ;;;     `(division-by-zero REQUEST)`, the request or the call as it was
 ;;;     asserted, and `division-by-zero-is-false` derives `(false)` from it:
 ;;;     two steps, so that a trace shows the flag as a step of its own and the
@@ -21,7 +21,7 @@
 ;;;     allowed, a wheel or a meadow, would be a module that does not import
 ;;;     this one; none exists.
 ;;;
-;;; Until S1f.6.38 both were `std.math.decimal-arith`'s.
+;;; Both are here, below every base: each base's numeral module imports this.
 ;;;
 ;;; ── Import ─────────────────────────────────────────────────────────────────
 ;;;
@@ -29,7 +29,7 @@
 ;;;     (import std.math.decimal :symbols (n))
 ;;;
 ;;; A program imports a base, `std.math.decimal-arith` or a module over it,
-;;; which brings this one whole (M1f S1f.6.35), and lists from here the names
+;;; which brings this one whole (Q-M1f.247), and lists from here the names
 ;;; it writes: `z` in a numeral, and `division-by-zero` where a rule or a
 ;;; claim reads the flag. `arith` is the module's entry, the closing rule at
 ;;; the end of this file.

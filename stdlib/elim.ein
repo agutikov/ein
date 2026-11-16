@@ -1,7 +1,7 @@
 ;;; Ein stdlib — `std.elim`: closed-world domain/range elimination + typecheck.
 ;;;
-;;; The S1.5.8c.4 "M1-blocking stdlib" rule set, re-homed as an importable
-;;; module (P1.8 S1.8.A8). Four generic rules, each parametrised over a
+;;; Elimination and typechecking for a relation of declared cardinality, as an
+;;; importable module. Four generic rules, each parametrised over a
 ;;; relation R, the instance-type relation `isa`, and the type(s) of R's
 ;;; argument positions, activated by a per-relation fact:
 ;;;
@@ -11,7 +11,7 @@
 ;;;   (no-room-left R isa OT VT)        — R functional+total: every VT excluded → ⊥
 ;;;
 ;;; The instance-type relation rides in as the parameter `isa`, NOT a hardcoded
-;;; `is-a` literal (P1.8 S1.8.A10): the rule BODIES name only kernel primitives
+;;; `is-a` literal: the rule BODIES name only kernel primitives
 ;;; (`and`/`absent`/`neq`/`not`/`false`) + variables, so the dependency on the
 ;;; puzzle's type convention is explicit, and a puzzle may pass `is-a` (flat) or
 ;;; `is-a*` (the transitive closure, for an inheritance hierarchy). A puzzle
@@ -21,7 +21,7 @@
 ;;; them (`:symbols`) to write their activators by the bare names.
 ;;;
 ;;; Dependency: the rules use `forall` (std.macro), which this module imports,
-;;; so an import of it brings std.macro too (M1f S1f.6.35); a puzzle lists the
+;;; so an import of it brings std.macro too (Q-M1f.247); a puzzle lists the
 ;;; rules whose activators it writes:
 ;;;     (import std.elim :symbols (typecheck-arg-0 typecheck-arg-1
 ;;;                                domain-elimination no-room-left))
@@ -31,10 +31,10 @@
 ;;; NOTE: this is the *positional* formulation (`functional R 0 1`,
 ;;; `domain-elimination R isa OT VT`). The *signature-driven* variant — types
 ;;; read from `(relation R A B)`, plus `range-elimination` + negative-completion
-;;; — shipped as `std.bijection` (S1.8a.f20, the A8 reconciliation); the two
+;;; — is `std.bijection`; the two
 ;;; coexist. This module keeps the positional form for its demo + tests.
 
-;; Dependency self-imported (idempotent — S1.8a.f20): domain-elimination /
+;; Dependency self-imported (one copy per program): domain-elimination /
 ;; no-room-left quantify with `forall` (std.macro).
 (import std.macro :symbols (forall))
 

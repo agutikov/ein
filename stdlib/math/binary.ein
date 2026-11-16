@@ -1,9 +1,9 @@
 ;;; Ein stdlib — `std.math.binary`: the binary numeral, and whether a written
-;;; one is one (M1f P1f.6, S1f.6.16; on `std.math.decimal`'s pattern, S1f.6.38,
-;;; by the user's ruling of 2026-11-14 on Q-M1f.210, *"malformed binary numbers
-;;; - of binary module"*).
+;;; one is one, on `std.math.decimal`'s pattern: a malformed binary numeral is
+;;; this module's fault, flagged where it is written (Q-M1f.295,
+;;; Q-M1f.210).
 ;;;
-;;; Ein has no numbers and no arithmetic (the user's ruling of 2026-11-06).
+;;; Ein has no numbers and no arithmetic (Q-M1e2.24).
 ;;; This module is the binary **representation**: the constructor `b2` and what
 ;;; a numeral written with it must be. It computes nothing;
 ;;; `std.math.binary-arith` is the arithmetic over it, and imports it.
@@ -15,14 +15,14 @@
 ;;;     (import std.math.arith :symbols (z))
 ;;;
 ;;; A program imports the arithmetic, which brings this module and
-;;; `std.math.arith` whole (M1f S1f.6.35), and lists `b2` from here and `z`
+;;; `std.math.arith` whole (Q-M1f.247), and lists `b2` from here and `z`
 ;;; from `std.math.arith`, since it writes them: nothing is re-exported.
 ;;; `binary` is the module's entry, the closing rule at the end of this file.
 ;;;
 ;;; ── The numeral ────────────────────────────────────────────────────────────
 ;;;
 ;;; A natural number is `z`, zero, `std.math.arith`'s, which both bases share
-;;; (the user, 2026-11-14), or `(b2 PREFIX BIT)`: twice the prefix, plus the
+;;; (Q-M1f.322), or `(b2 PREFIX BIT)`: twice the prefix, plus the
 ;;; bit. It reads in the order it is written:
 ;;;
 ;;;     1        (b2 z 1)
@@ -32,17 +32,17 @@
 ;;; A bit is one of the two names `0` and `1`, which are decimal's digits too,
 ;;; and a prefix is `z` or a numeral. Any length; high zeros are allowed in
 ;;; what a program writes, `(b2 (b2 z 0) 1)` is 1, and the arithmetic answers
-;;; in normal form. The shape is its own, `b2` and not decimal's `n` (P1f.6's
-;;; reply 13, way (b)), so a number says which base it is in and the two bases
-;;; stand in one program; the name `b2` is the prototype's, kept
-;;; (Q-M1f.267, defaulted).
+;;; in normal form. The shape is its own, `b2` and not decimal's `n`, so a
+;;; number says which base it is in and the two bases stand in one program,
+;;; as binary's names carry `bin-` where decimal's carry none
+;;; (Q-M1f.267).
 ;;;
 ;;; ── A numeral is well-formed from the start ────────────────────────────────
 ;;;
 ;;; As `std.math.decimal`'s check, of what was written and of nothing a
 ;;; calculation does: the loader states every fact nested in a fact a file
 ;;; writes, and in a rule's conclusion where it holds no variable, as
-;;; `(written T)` (`defined_behaviour.md` § 4.30), and five rules over
+;;; `(written T)` (Q-M1f.275), and five rules over
 ;;; `(written (b2 P A))` see every place of every numeral a file writes,
 ;;; wherever it sits. A well-formed place costs no firing; a malformed one
 ;;; derives the flag on the smallest `b2` term at fault, and the flag derives
@@ -68,13 +68,13 @@
 ;;;   - a prefix that is a name neither `z`, a bit nor a named constant,
 ;;;     `(b2 end 1)`, and so a decimal digit as a prefix, `(b2 7 1)`, which
 ;;;     is a name in binary's eyes: saying *a name* costs a walk of the
-;;;     program's names (E-36 of P1f.6's `findings.md`);
+;;;     program's names (Q-M1f.318);
 ;;;   - a prefix that is a fact of another relation, `(b2 (pair 1 0) 1)`;
 ;;;   - a numeral a rule assembles from a variable, `(b2 ?p 2)`;
 ;;;   - a numeral written as a top-level fact of `b2`, which is no term.
 ;;;
 ;;; A wrong count of arguments, `(b2 1)`, is refused when the program is loaded
-;;; (S1f.6.23). What is not a numeral's fault is not this module's: a name no
+;;; (Q-M1f.315). What is not a numeral's fault is not this module's: a name no
 ;;; `bin-let` states, a bit where a number goes, `(bin-add 1 X)`, and a
 ;;; `bin-let` that cannot be read are `std.math.binary-arith`'s, flagged on the
 ;;; request (`(bin-malformed REQUEST)`, `(bin-undeclared NAME REQUEST)`).

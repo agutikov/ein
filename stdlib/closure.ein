@@ -1,4 +1,4 @@
-;;; Ein stdlib — `std.closure`: auto-infer `(__closed__ R)` (P1.8 S1.8.A6).
+;;; Ein stdlib — `std.closure`: auto-infer `(__closed__ R)`.
 ;;;
 ;;; `(__closed__ R)` tells the hypothesis generator never to speculate R-facts —
 ;;; R's extension is taken as fixed. `infer-closure` derives it from the
@@ -20,7 +20,7 @@
 ;;; │ (a COMPLETENESS hazard, not a wrong-answer one). So this is opt-in by  │
 ;;; │ import and must NOT be imported into the zebra family. The strong      │
 ;;; │ (semantic) sense — "the extension cannot grow" — needs a cardinality / │
-;;; │ count predicate the eq/neq matcher lacks (out of M1; see A10 / F1b).   │
+;;; │ count predicate the eq/neq matcher lacks; Ein has no numbers.          │
 ;;; └────────────────────────────────────────────────────────────────────────┘
 ;;;
 ;;; Opt-in (there is no config flag — the import IS the gate):
@@ -28,7 +28,7 @@
 ;;; Expects single-arg property facts `(functional R)` `(total R)` (the form
 ;;; zebra2's `bijective-properties` derives), not std.elim's positional one.
 
-;; The two property facts it reads are `std.algebra`'s activators (M1f S1f.6.35:
+;; The two property facts it reads are `std.algebra`'s activators (Q-M1f.236:
 ;; a name a module writes of another module's is listed from it).
 (import std.algebra :symbols (functional total))
 
