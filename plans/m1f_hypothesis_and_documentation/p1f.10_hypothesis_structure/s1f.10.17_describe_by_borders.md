@@ -178,3 +178,29 @@ states is **not** a step of describe: the maximal owing states are measured in T
 Not moving: any answer (`R`, its counts, its lines, `N`, a claim's outcome), any mode's read-out, the oracle,
 `README.md`'s and `docs/guide/04_solving_the_whole_puzzle.md`'s transcripts (`--single`) and `docs/api/rust.md`'s
 block.
+
+### The rule for *go*, written before T2's table is taken
+
+[S1f.10.13](s1f.10.13_the_price_list.md#the-rule-for-go-written-before-the-table-is-taken)'s rule, as its
+[*Defaults taken*](s1f.10.13_the_price_list.md#defaults-taken) read it, applied to the border route as one way of
+answering, for **describe** and for **`--count`** apart (`--count` takes no `N`):
+
+- **the programs**: every corpus program and register witness that searches, by the determinism sweeps' one
+  definition (`corpus_ops::searches`), whose static check calls it monotone and whose root is alive. A flagged
+  program takes the cube and a dead root is decided in one saturation either way, so neither is compared;
+- **the cell**: the question asked at the default `--region-budget` (2^20 facts), once by the state route and once
+  by the border route, on the same binary, each with the options `ein solve` gives it (describe takes `N`, `--count`
+  does not). Its work is the run's own `work` row: saturations, and facts beyond root. **Every saturation the border
+  route spends is in its cell**, the tree's, the classes', the singles' and the global border's alike; nothing is
+  simulated;
+- **go** when the total over the programs is lower with the border route **in saturations and in facts beyond
+  root**, and **no program's cell is higher by more than one tenth** in either unit; **no** otherwise, with the
+  programs that lose named;
+- **a stopped cell counts with what it had spent**, either route's; a unit in which a cell is 0 loses by any
+  positive net;
+- **"go on the corpus, no on some programs"** means the first clause holds and the second fails. Then describe
+  chooses between the two routes by something the run can see before it has the answer, the rule is applied
+  again to the route so chosen, and the choice is listed under *Defaults taken*;
+- **beside the rule, not in it**: what each cell established (`R` exact or not, `N` exact or not), and the walls
+  (the border route's transversal searches cost time and no saturation, as a core did in S1f.10.13), each said
+  where it bears.
