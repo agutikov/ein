@@ -5,7 +5,7 @@
 //! an entity shared between a root and its forks cannot answer a question
 //! about one with the other's facts.
 //!
-//! Since S1.7.23 there are no `Type` / `Instance` entities: the kernel imposes
+//! There are no `Type` / `Instance` entities: the kernel imposes
 //! no type system, so a puzzle's inheritance forest is just `is-a` facts.
 
 use crate::intern::Symbol;
@@ -21,7 +21,8 @@ use rustc_hash::FxHashMap;
 ///
 /// In practice almost every one of these is `None`: the frontend builds a
 /// top-level form without a position, so a loader error that interpolates the
-/// form's location prints `at None` (`defined_behaviour.md` § 1.5).
+/// form's location prints `at None` (`docs/ein/user/reference/diagnostics.md`
+/// § 1.5).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Loc {
     pub file: u32,
@@ -62,7 +63,7 @@ impl NameCategory {
 ///
 /// `signature` holds argument-position types **by name**: opaque atoms naming
 /// whatever a puzzle declared, used only as object-exclusion metadata by
-/// hypgen. An *empty* signature is legal (S1.22.4) and is deliberately not a
+/// hypgen. An *empty* signature is legal and is deliberately not a
 /// hypothesis target — the "declared domain relation" signal is signature
 /// presence.
 ///
@@ -125,16 +126,16 @@ pub struct Macro {
 pub struct Query {
     pub kw_pairs: Box<[ExprRef]>,
     /// The `:goal` as the program wrote it, where the loader expanded a macro
-    /// call in it (M1f S1f.7.5): `kw_pairs` holds the expansion, which is what
+    /// call in it: `kw_pairs` holds the expansion, which is what
     /// is matched, and a surface that prints the goal prints this. `None`
     /// where the program declares no macro, and the goal is the pair's value.
     pub goal_written: Option<ExprRef>,
 }
 
-/// The `(solve …)` block — M1e2 S1e2.1a.4: the problem's lattice, stated once.
+/// The `(solve …)` block: the problem's lattice, stated once.
 /// It holds the keywords that choose the candidate list (`:hrules`,
-/// `:hypothesis-relations`, `:no-hypothesis`), which `(query …)` carried until
-/// then, so that one program has one lattice and one R. Raw kw-pairs, as
+/// `:hypothesis-relations`, `:no-hypothesis`), and no `(query …)` does, so
+/// that one program has one lattice and one R. Raw kw-pairs, as
 /// [`Query`] keeps them.
 #[derive(Clone, Debug, Default)]
 pub struct Solve {

@@ -1,6 +1,6 @@
 //! `repr` — the textual form of a value, for the three shapes a fact argument
-//! can take: `str`, `tuple` and `Fact` (and `int` until M1f S1f.5.4 retired
-//! the int kind: since S1f.5.5's swap a run of digits is a name, a `str`).
+//! can take: `str`, `tuple` and `Fact` (a run of digits is a name, a
+//! `str`).
 //!
 //! The canonical state key sorts by it, the explanation tie-breaks order by
 //! it and the DOT labels print it

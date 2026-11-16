@@ -15,16 +15,16 @@ use crate::intern::Symbol;
 use crate::terms::Terms;
 
 /// `Clone` is for [`Kb`](crate::Kb)'s, which copies the registries rather
-/// than sharing them (M1f S1f.6.39).
+/// than sharing them.
 #[derive(Clone, Default, Debug)]
 pub struct Program {
     pub relations: Registry<Relation>,
     pub rules: Registry<Rule>,
-    /// Hypothesis rules (S1.5.6b) — a `Rule` by shape, kept out of `rules` so
+    /// Hypothesis rules — a `Rule` by shape, kept out of `rules` so
     /// the saturator, which walks `rules`, never fires one. `hypgen` is the
     /// only consumer. Rules and hrules share **one** name-space.
     pub hrules: Registry<Rule>,
-    /// Obligation rules (M1d P1d.2 S1d.2.3) — a `Rule` by shape whose
+    /// Obligation rules — a `Rule` by shape whose
     /// `:assert` is the reserved verdict atom `(open)` / `(open ?R)` and
     /// nothing else. Kept out of `rules` for the same reason `hrules` are:
     /// the saturator walks `rules`, and an obligation rule must never enter
@@ -34,36 +34,34 @@ pub struct Program {
     /// *after* the fixpoint instead.
     ///
     /// Three things read it, none of them the saturator: `obligations::tally`
-    /// reports the undischarged instances once per quiescent KB (S1d.2.4),
+    /// reports the undischarged instances once per quiescent KB,
     /// `oblgen` branches on the facts that would discharge them — the
-    /// hypothesis ladder's middle rung (S1d.2.5) — and `verdict_of` declines
-    /// to call an undischarged state a model, which is the `Open` word
-    /// (S1d.2.6). This comment said *nothing reads it* until M1e S1e.2.2.
+    /// hypothesis ladder's middle rung — and `verdict_of` declines
+    /// to call an undischarged state a model, which is the `Open` word.
     pub obligations: Registry<Rule>,
     pub macros: Registry<Macro>,
-    /// **Every** `(query …)` block, in source order — plural since M1c
-    /// [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims).
+    /// **Every** `(query …)` block, in source order
+    /// ([query.md](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
     ///
-    /// It was `Option<Query>` filled by *the last block, silently*, which is
-    /// the one failure mode a file carrying `:expect` must not have: a second
-    /// check that loads, is discarded, and says nothing. `config` keeps
+    /// Not the last block alone, which is the one failure mode a file
+    /// carrying `:expect` must not have: a second check that loads, is
+    /// discarded, and says nothing. `config` keeps
     /// last-wins on purpose — a config is a setting and a query is content,
     /// and the two want opposite rules.
     pub queries: Vec<Query>,
     /// Which of `queries` this load is *about*. One run answers one query;
     /// the CLI loads once per query and every consumer reads
     /// [`Program::query`], so nothing downstream has to know there were
-    /// others. Since M1e2 S1e2.1a.4 every query asks about the one lattice
-    /// [`Program::solve`] states.
+    /// others. Every query asks about the one lattice [`Program::solve`]
+    /// states.
     pub active_query: usize,
     /// The `(solve …)` block, at most one — the lattice every query asks about.
     pub solve: Option<Solve>,
     pub config: Option<SolverConfig>,
     /// **The program's names, sorted by text**: what a variable no premise
-    /// binds ranges over in an `eq` or `neq` guard (M1f S1f.5.7, on the
-    /// user's ruling of 2026-11-07 on Q-M1e2.26). It is `ein-infer`'s
-    /// `invariant::program_names`, the list H's candidates are built from,
-    /// and the same in every state of the program (the M1 alive-set
+    /// binds ranges over in an `eq` or `neq` guard (Q-M1e2.26). It is
+    /// `ein-infer`'s `invariant::program_names`, the list H's candidates are
+    /// built from, and the same in every state of the program (the alive-set
     /// invariant), so it is computed once, by the first guard that needs it
     /// (`ein_infer::predicates::domain`), and shared by every fork. A load
     /// that changes the registries ([`crate::Kb::program_mut`]) clears it.
@@ -118,20 +116,20 @@ impl Program {
     ///
     /// `relation` and `rule` are the two kernel forms hardcoded as
     /// `"relation"`, and `written`, the loader's statement of what a file
-    /// writes, since M1f S1f.6.38. Since S1.7.6, `type` and `instance` are **not** special:
+    /// writes. `type` and `instance` are **not** special:
     /// they categorise as relations only when a puzzle declares them.
     /// `hrules` are deliberately absent — a name declared only as an hrule
     /// falls through to `"object"`.
     ///
-    /// **Obligations are not** (M1d S1d.2.4), and the difference from `hrules`
+    /// **Obligations are not**, and the difference from `hrules`
     /// is the whole reason the line is here. A category says what a name *is*;
     /// [`Program::obligations`] is a split by which pass **walks** a rule, over
     /// one name-space, so an obligation rule's name is a rule name in exactly
-    /// the way `total`'s is. Leaving it out made it an `Object` — and
+    /// the way `total`'s is. Left out, it would be an `Object` — and
     /// `hypgen::candidate_objects` keeps every `Object`, so the blind
-    /// enumerator started proposing `(seats total-owed C1)`: the *name of a
+    /// enumerator would propose `(seats total-owed C1)`: the *name of a
     /// rule* as a puzzle value. `tests/stdlib/bijection/06_blind_enumeration.ein`
-    /// is what found it, and the assertion that catches it lives in
+    /// is the witness, and the assertion that catches it lives in
     /// `ein-infer/tests/obligation_reports.rs`.
     ///
     /// `hrules` stay out as a fixed behaviour rather than as a judgement about

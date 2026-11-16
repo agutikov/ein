@@ -1,7 +1,7 @@
 //! Provenance records — where a fact came from.
 //!
-//! Provenance is what makes Ein's answers explainable, and since S1.21.7 a
-//! fact is an **OR-node** over its recorded derivations, each of which is an
+//! Provenance is what makes Ein's answers explainable: a fact is an
+//! **OR-node** over its recorded derivations (Q18), each of which is an
 //! AND-node over its premises. The records themselves live here; which
 //! records a given KB has recorded is a per-KB table in [`crate::kb`], and the
 //! policy that decides what may be recorded is
@@ -9,8 +9,8 @@
 //! ([design/data-model.md § 8](../../../../docs/ein/ein.rs/design/data-model.md#8-provenance)).
 //!
 //! **The arena is global, like the fact store** — all but one region of it.
-//! design/03 §5 sketches it inside `KbCore`; putting it beside the other
-//! interned tables instead is the same trade the fact store makes — creating a
+//! It sits beside the other interned tables rather than inside a KB, the
+//! same trade the fact store makes — creating a
 //! record says nothing about whether any KB has recorded it, so a fork may
 //! build one without the parent seeing it, and a `ProvId` means the same thing
 //! in every branch. What is per-fork (and must be: a justification recorded
@@ -19,12 +19,11 @@
 //!
 //! ## The fork region
 //!
-//! Records used to accumulate for the whole run. That cost `features/01 -e`
-//! **2 135 093** of them — 205 MB — to keep the twelve anything still pointed
-//! at, and it made the arena the one shared structure on a worker's write path
-//! that
+//! Records kept for the whole run would hold every record any node derived
+//! to serve the few that anything still points at, and would make the arena a
+//! shared structure on a worker's write path, which
 //! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
-//! has no row for. They no longer do. The search opens a **fork region** around
+//! has no row for. So the search opens a **fork region** around
 //! each entering ([`ProvArena::open_fork`]); every record the fork derives
 //! lands there; and the region is discarded when the fork is
 //! ([`ProvArena::discard_fork`]) — except on the one path that keeps a fork
@@ -34,11 +33,10 @@
 //! Two properties make that safe, and both are asserted rather than assumed
 //! ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)):
 //!
-//! - **A fork's records die with the fork.** Measured — ≥ 33.7 % of all pushes
-//!   happen inside one, and four of the six workloads reference *none* of them
-//!   when the solve ends. `ein-infer/tests/provenance.rs` asks the holding-side
-//!   question over every corpus file that solves: is any live justification,
-//!   root's or a recorded solution's, a fork's record?
+//! - **A fork's records die with the fork.** [`ProvArena::discard_fork`]
+//!   drops the region (`a_forks_records_do_not_reach_the_arena`, below), and
+//!   `ein-einb` refuses to save a fork's record, asserting it on every record
+//!   it writes.
 //! - **A stale id cannot alias a live one.** The region's ids come from a
 //!   **monotone** sequence that [`ProvArena::discard_fork`] advances, so an id
 //!   from a finished fork falls below the live region's base and
@@ -60,8 +58,7 @@ use std::sync::Arc;
 ///
 /// Bit 31 is the **fork tag**: set, the remaining 31 bits are a position in
 /// the arena's monotone fork sequence; clear, they index the arena proper.
-/// Either space is 2 147 483 648 records deep, which is a thousandfold the
-/// largest workload M1a has (`features/01 -e`, 2 135 093).
+/// Either space is 2 147 483 648 records deep.
 ///
 /// The tag preserves the ordering the untagged ids had, because a fork's
 /// records are pushed after every record that existed when it opened: a fork
@@ -110,7 +107,7 @@ impl ProvKind {
 }
 
 /// A negative premise — an `(absent …)` query that had to fail on the
-/// closure/world boundary for a firing to be admitted (S1.21.8).
+/// closure/world boundary for a firing to be admitted.
 ///
 /// The relation queried and the argument pattern it was queried with, with
 /// [`NafArg::Free`] where the query ranged free. It is the missing half of
@@ -129,7 +126,7 @@ pub enum NafArg {
     /// The query ranged free here.
     Free,
     /// A name: a bound variable, an `Atom`'s name (a run of digits among
-    /// them, since M1f S1f.5.4 retired the `Int`).
+    /// them: Ein has no integers).
     Value(Value),
     /// A nested pattern, rendered as a `(relation, (args…))` tuple — so it
     /// can be partly free, and cannot collapse into a [`Value`].
@@ -153,21 +150,23 @@ pub struct Prov {
     /// (`Terms::display`), which leaves the rendering decision where it
     /// belongs.
     pub bindings: Box<[(Symbol, Value)]>,
-    /// S1.21.8's negative premises. **Recorded, not yet interpreted** by any
-    /// walk: making a walk honour them is a semantics change that
-    /// `docs/ein/reasoning/kb-evolution/absent-and-naf.md` leaves out.
+    /// The negative premises: the `(absent …)` queries that had to fail for
+    /// the firing. The non-monotone detector reads them (`ein_infer::detector`:
+    /// whether the guard a fact rests on is now falsified, and the labels of a
+    /// failure's chain), as does `ein_infer::region`'s account of the guards a
+    /// failure rests on. No core walk follows them ([`crate::walks`] follows
+    /// premises, activators and universals): a core is a set of facts, and an
+    /// absence is none.
     pub absent: Box<[NafRef]>,
     pub branch: Option<u32>,
     pub loc: Option<Loc>,
     /// The **activator** the firing plan was compiled from — the fact
     /// `(rule args…)` that bound a rule's parameters — or `None` for a rule
-    /// with none, and for every record that is not a firing. M1e2 S1e2.2.19:
-    /// until then a derivation recorded the premises its plan matched and
-    /// not this, so a commitment that reaches a refutation only through an
-    /// activator was in no core (W19). What reads it is
-    /// [`crate::walks::node_activator`], which follows one a node derived or
-    /// committed and never root's (Q-M1e2.12 (c), the user's ruling of
-    /// 2026-11-04). A `.einb` does not store it: it holds root's KB, whose
+    /// with none, and for every record that is not a firing. Through it a
+    /// commitment that reaches a refutation only through an activator is in
+    /// the core (W19). What reads it is [`crate::walks::node_activator`],
+    /// which follows one a node derived or committed and never root's
+    /// (Q-M1e2.12). A `.einb` does not store it: it holds root's KB, whose
     /// activators no reader follows.
     pub activator: Option<FactId>,
     /// The facts the firing's **universals** read: for each `(absent (and G
@@ -176,12 +175,11 @@ pub struct Prov {
     /// found them. Empty for a firing with no universal, and for every record
     /// that is not a firing.
     ///
-    /// M1e2 S1e2.2.21, on the user's ruling of 2026-11-05 on Q-M1e2.15, (b).
-    /// A universal that holds rests on facts: `total`'s `(false)` rests on
-    /// the `(not (R a b))` that exclude every `b`, and records the two facts
-    /// its plan matched. Until S1e2.2.21 no record named them, and a core
-    /// left them out (`examples/ein-bugs/wrong-answers/forall-core-false.ein`
-    /// reported `(item a)`, root's). The core search folds each in at its own
+    /// A universal that holds rests on facts (Q-M1e2.15): `total`'s `(false)`
+    /// rests on the `(not (R a b))` that exclude every `b`, beside the two
+    /// facts its plan matched, and a core names them
+    /// (`examples/ein-bugs/wrong-answers/forall-core-false.ein` is the
+    /// witness). The core search folds each in at its own
     /// smallest frontier ([`crate::walks::walk_premises`] follows them too),
     /// and a `.einb` stores them, since root's derivations carry them as a
     /// node's do. Not part of [`Prov::same_justification`]: a firing's
@@ -256,7 +254,7 @@ impl Prov {
     /// The AND-node identity of a justification: `(rule, premises,
     /// activator)`. `bindings` is display metadata and is excluded, so two
     /// firings that consumed the same premises collapse. The activator is
-    /// identity since M1e2 S1e2.2.19: two plans of one rule, compiled from
+    /// identity: two plans of one rule, compiled from
     /// two activators, that match the same premises are two derivations, and
     /// a frontier that follows one activator is not the other's.
     pub fn same_justification(&self, other: &Prov) -> bool {
@@ -330,8 +328,8 @@ pub struct ProvArena {
     forking: bool,
 }
 
-/// A copy of the whole arena, its records in an `Arc` of the copy's own
-/// (M1f S1f.6.39): `ProvArena::promote` grows the arena only
+/// A copy of the whole arena, its records in an `Arc` of the copy's own:
+/// `ProvArena::promote` grows the arena only
 /// where nothing else holds it, so a copy that shared the original's records
 /// could not be grown.
 impl Clone for ProvArena {
@@ -356,9 +354,7 @@ impl ProvArena {
     /// commitment, and everything the fork derives dies with it.
     ///
     /// The caller is a route's node function (`ein_infer::region`), and the
-    /// scope is one node's fixpoint: read, then dropped. (It was one
-    /// iteration of the walk's candidate loop until M1e2 S1e2.1c.5 deleted the
-    /// walk.)
+    /// scope is one node's fixpoint: read, then dropped.
     pub fn open_fork(&mut self) {
         // Deliberately not an assertion that no region is open. One way to
         // arrive here with one is a `?` unwound past the discard, and that run
@@ -659,7 +655,7 @@ mod tests {
             !a.same_justification(&reordered),
             "premise order is identity"
         );
-        // M1e2 S1e2.2.19: the activator a plan was compiled from is too.
+        // The activator a plan was compiled from is too.
         let mut other = b.clone();
         other.activator = Some(FactId(7));
         assert!(

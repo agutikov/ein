@@ -2,11 +2,10 @@
 //! load-time cycle check.
 //!
 //! Every walk here answers the same question with a different appetite: what
-//! does this fact rest on? Since S1.21.7 a fact is an **OR-node** over its
-//! recorded derivations, so each walk takes an explicit choice —
+//! does this fact rest on? A fact is an **OR-node** over its recorded
+//! derivations (Q18), so each walk takes an explicit choice —
 //! [`Justifications::Primary`] or [`Justifications::All`] — rather than
-//! taking the first-recorded one by accident, which is what every walker did
-//! before the alternatives existed.
+//! taking the first-recorded one by accident.
 //!
 //! Cycles are real here and are not an error: the symmetric mirror makes
 //! `(R a b)` and `(R b a)` justify each other in any ordinary puzzle. The
@@ -56,15 +55,13 @@ fn resolve(kb: &Kb, premise: FactId) -> Option<FactId> {
 /// it — its primary record is a fork's ([`crate::prov::ProvId::is_fork`]) —
 /// and `None` where root holds it, stated or derived.
 ///
-/// M1e2 S1e2.2.19, on the user's ruling of 2026-11-04 on Q-M1e2.12, (c).
-/// Root's activators are the program's, as the plans root compiles from them
+/// Q-M1e2.12. Root's activators are the program's, as the plans root compiles from them
 /// are its rules, so a core does not name a declaration such as `(bijective
 /// color-loc)`, nor what root derived an activator from; a plan only a node
 /// compiles rests on what the node added to compile it, and the core
-/// follows that. Until S1e2.2.19 no derivation recorded its activator, and a
-/// commitment that reaches a refutation only through one was in no core
-/// (W19: `forbid-chain-no-absent.ein`'s dead `{(p a)}` reported `(seed a)`,
-/// root's).
+/// follows that, so a commitment that reaches a refutation only through an
+/// activator is in the core (W19: `forbid-chain-no-absent.ein`'s dead
+/// `{(p a)}` has the core `(p a) (seed a)`, not root's `(seed a)` alone).
 ///
 /// [`Prov::activator`]: crate::prov::Prov::activator
 pub fn node_activator(kb: &Kb, prov: &crate::prov::Prov) -> Option<FactId> {
@@ -122,11 +119,11 @@ pub fn walk_premises(
                     stack.push(premise);
                 }
             }
-            // The activator a node derived or committed (M1e2 S1e2.2.19).
+            // The activator a node derived or committed.
             if let Some(a) = node_activator(kb, prov).and_then(|a| resolve(kb, a)) {
                 stack.push(a);
             }
-            // The facts its universals read (M1e2 S1e2.2.21).
+            // The facts its universals read.
             for &u in prov.universal.iter() {
                 if let Some(u) = resolve(kb, u) {
                     stack.push(u);

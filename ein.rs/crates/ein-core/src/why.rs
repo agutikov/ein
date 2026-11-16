@@ -9,26 +9,21 @@
 //! may start with a digit. Unbound references keep their reference text; the
 //! trace renderer prefers a partial render over a hard failure.
 //!
-//! **A reference names every variable a program can write** since M1f
-//! S1f.5.4's T1f.5.4.5 (W37, on the user's ruling of 2026-11-08 on S1f.5.5's
-//! T9 review stop, item 7): after `{?` it reads the name rule's characters
-//! ([`crate::text::is_name_char`]) up to the first `}`. Until then it read one
-//! letter or digit and then letters, digits, `_` and `-`, so `{?isR*}`, the
-//! stdlib's, and every variable the name rule allows past those (`?_x_`,
-//! `?a.b`, `?n*`) printed as written. `}` is a name character too (the user,
-//! 2026-11-07), so a variable holding one cannot be named, and the loader
+//! **A reference names every variable a program can write** (W37): after
+//! `{?` it reads the name rule's characters ([`crate::text::is_name_char`])
+//! up to the first `}`, so `{?isR*}`, the stdlib's, and every variable the
+//! name rule allows (`?_x_`, `?a.b`, `?n*`) is substituted. `}` is a name
+//! character too, so a variable holding one cannot be named, and the loader
 //! refuses a template that writes such a reference
-//! ([`unreachable_references`]).
+//! ([`unreachable_references`], Q-M1f.11).
 //!
-//! This is nominally
-//! [architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli)
-//! T6, and it lived in `ein-render` until M1d S1d.2.4, because the only
-//! things that rendered a `:why` were the trace, the slice and the answer —
-//! all of them above the engine. The obligation pass is the first reader
-//! *below* it: an `owe` event carries the rendered sentence, and `--events`
-//! is emitted from `ein-infer`, which `ein-render` depends on rather than the
-//! other way round. So the function moved down to the crate that depends on
-//! nothing; `ein_render::render_why` still names it, and no caller changed.
+//! It lives here, in the crate that depends on nothing
+//! ([architecture.md § 3.1](../../../../docs/ein/ein.rs/architecture.md#31-ein-core)),
+//! rather than beside the renderers above the engine (the trace, the slice
+//! and the answer), because the obligation pass is a reader *below* them: an
+//! `owe` event carries the rendered sentence, and `--events` is emitted from
+//! `ein-infer`, which `ein-render` depends on rather than the other way
+//! round. `ein_render::render_why` names it.
 
 /// Substitute `{?ref}` references against `bindings`, an association list of
 /// `(name, rendered value)`.
@@ -76,9 +71,7 @@ fn reference_end(bytes: &[u8], i: usize) -> Option<usize> {
 
 /// The variables of `vars` that `template` writes a reference to and no
 /// reference can name: a name holding `}`, which a reference reads up to, so
-/// `{?a}b}` is the reference `{?a}` and the text `b}` — M1f S1f.5.4's
-/// T1f.5.4.5, the question W37's fix settles (taken by default on the user's
-/// instruction of 2026-11-09, as S1f.5.5's T9 review recommended). The loader
+/// `{?a}b}` is the reference `{?a}` and the text `b}` (Q-M1f.11). The loader
 /// refuses each one, so a template never prints a sentence its author did not
 /// write. `vars` are names without their `?`.
 pub fn unreachable_references<'a>(
@@ -133,9 +126,9 @@ mod tests {
         );
     }
 
-    /// **A reference names every variable the name rule spells** — M1f
-    /// S1f.5.4's T1f.5.4.5, W37. Each name below was printed as written until
-    /// then, `{?` one letter or digit, then letters, digits, `_` and `-`.
+    /// **A reference names every variable the name rule spells** (W37),
+    /// not only `{?` one letter or digit, then letters, digits, `_` and `-`:
+    /// each name below is substituted.
     #[test]
     fn a_reference_reads_the_name_rules_characters_up_to_the_first_brace() {
         for name in [

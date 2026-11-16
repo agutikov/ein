@@ -4,8 +4,8 @@
 //! a fact's argument is a `Value` whose tag says which of the two tables to
 //! read, and rendering or ordering one needs both
 //! ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md) §§2–4).
-//! There was a third, the integer pool, until M1f S1f.5.4 retired the int
-//! kind: since S1f.5.5's swap a run of digits is a name.
+//! There is no third: Ein has no integers (Q-M1e2.24), and a run of digits
+//! is a name.
 //!
 //! No entity carries a back-pointer to these tables: an accessor takes
 //! `&Terms` (and, where belief matters, `&Kb`) explicitly, so an entity shared
@@ -167,8 +167,8 @@ impl Default for Terms {
 /// **A copy of every table**, each the copy's own: the names, the facts and
 /// the derivation records under the same ids, the kernel's words where they
 /// were. A caller that loads a program once and runs several things over it
-/// runs each on a copy of the loaded `Terms` (M1f S1f.6.39, the corpus
-/// sweeps' one load a program), and a copy interns from where the
+/// runs each on a copy of the loaded `Terms` (the corpus sweeps, which load
+/// a program once), and a copy interns from where the
 /// original stood, so every id it hands out is the one the original would.
 impl Clone for Terms {
     fn clone(&self) -> Terms {
@@ -187,11 +187,9 @@ impl Clone for Terms {
 /// and not predicates (computed guards) — the calculus the compiler, matcher
 /// and contradiction detector interpret directly.
 ///
-/// `open` / `forall` used to live here as compile-time sugar; since P1.8
-/// S1.5.9 they are ordinary `(macro …)` declarations in `std.macro`, expanded
-/// at load time, so they are no longer kernel vocabulary — and the macro that
-/// was spelled `open` is now `unknown` (M1d P1d.2, naming pair P3), because
-/// `open` was wanted for the KB-level verdict atom below.
+/// `unknown` and `forall` are not here: they are ordinary `(macro …)`
+/// declarations in `std.macro`, expanded at load time, so they are no kernel
+/// vocabulary.
 ///
 /// `open` is **not** here. It is reserved (it may not be bound by a
 /// declarator) but it is not a rule-body primitive: it appears only as an
@@ -199,7 +197,7 @@ impl Clone for Terms {
 /// contradiction detector does not read it. `(false)` is its dual and lives
 /// here because a stored `(false)` fact *is* read by the detector; an `open`
 /// conclusion is never stored at all
-/// (`docs/history/m1d_satisfiability/README.md#s1d23--the-form`).
+/// (`docs/ein/user/syntax-and-semantics/obligations.md`).
 pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
 
 /// The built-in computed predicates.
@@ -219,24 +217,22 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// about *binding* a name: a fact may still have a reserved head, such as a
 /// stored `(not X)` octagon.
 ///
-/// **That set is not this one.** It was also called `RESERVED` until M1e
-/// S1e.4.2 (`SE-L2`); the two overlap in five names (`and`, `neq`, `not`,
-/// `open`, `or`) and neither contains the other. `open` is in both since M1f
-/// S1f.5.23 (the user's ruling on Q-M1f.66): the grammar reads it only as the
+/// **That set is not this one.** The two overlap in five names (`and`,
+/// `neq`, `not`, `open`, `or`) and neither contains the other. `open` is in
+/// both (Q-M1f.66): the grammar reads it only as the
 /// verdict a rule's `:assert` writes, `(open)` or `(open ?R)`, and never as a
 /// name, so no program binds it and none writes it as a value.
 ///
-/// **The kernel's two dunders are here since M1f S1f.5.5's T1f.5.5.11**
-/// (2026-11-08), on the user's ruling of that day on Q-M1f.7, *"Never bound
-/// (b)"*: [`CLOSED`] and [`SYMMETRIC`] are written only with their fixed
+/// **The kernel's two dunders are here** (Q-M1f.7): [`CLOSED`] and
+/// [`SYMMETRIC`] are written only with their fixed
 /// meaning, so a program may not bind either, as a relation it declares, a
 /// rule's, an hrule's or a macro's name, or an import's `:as`; it may use
 /// either wherever a name is used, as a relation or as a value, which is how
 /// `(imply1 functional __closed__)` hands the trigger to a rule. The engine's
 /// three writeback names ([`FORCED_POSITIVE`], [`MONOTONIC_UNCONDITIONAL`],
 /// [`LOOKAHEAD_DIES`]) are not here: the grammar refuses them wherever a
-/// program writes them. **[`WRITTEN`] is here since M1f S1f.6.38**: the
-/// loader states its facts, so no program declares it either.
+/// program writes them. **[`WRITTEN`] is here**: the loader states its
+/// facts, so no program declares it either.
 pub const RESERVED: [&str; 12] = [
     CLOSED, SYMMETRIC, "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
     WRITTEN,
@@ -297,22 +293,23 @@ pub const LOOKAHEAD_DIES: &str = "<lookahead-dies-immediately>";
 pub const MONOTONIC_UNCONDITIONAL: &str = "<monotonic-unconditional>";
 /// The synthetic rule a `(query :goal …)` compiles to, so a goal binding has a
 /// rule name to be reported under. One of [`crate::text::INTERNAL_NAMES`], so
-/// no rule a program writes can be named it (`<query>` until M1f T1f.5.5.8).
+/// no rule a program writes can be named it.
 pub const QUERY_RULE: &str = "#query";
 /// `(written T)` — the fact `T` is nested in a fact a file writes, or in a
-/// rule's conclusion where it holds no variable (M1f S1f.6.38, E1, the user's
-/// ruling of 2026-11-14 on Q-M1f.272). A kernel relation as `relation`'s
+/// rule's conclusion where it holds no variable (Q-M1f.272). A kernel
+/// relation as `relation`'s
 /// mirror facts are: **the loader states it** and nothing else does, so it is
 /// reserved (no declarator binds it), never a hypothesis target, and decided
 /// at root; a program that writes a fact of it, or a rule that concludes one,
-/// is refused at load (`defined_behaviour.md` § 4.30). What reads it is a
+/// is refused at load (`docs/ein/user/reference/diagnostics.md` § 2.30).
+/// What reads it is a
 /// representation module's check of its own terms, `std.math.decimal`'s of a
 /// numeral, which so sees every numeral a program writes, wherever it sits,
 /// with no calculation started.
 pub const WRITTEN: &str = "written";
 /// The step a `(written T)` fact is derived by: the loader's reading of the
 /// fact that holds `T`, its one premise, so a core that rests on a `written`
-/// fact names the fact as written (M1f S1f.6.38). A `T` stated from a rule's
+/// fact names the fact as written. A `T` stated from a rule's
 /// conclusion rests on no fact: the rule's text holds it. One of
 /// [`crate::text::INTERNAL_NAMES`], so no rule a program writes can be named
 /// it.
@@ -348,7 +345,7 @@ pub struct Kernel {
     pub absent: Symbol,
     pub r#false: Symbol,
     /// The reserved verdict atom — `(false)`'s dual, and the one kernel name
-    /// that is never a fact. M1d S1d.2.3 reserved it; the obligation pass
+    /// that is never a fact. The obligation pass
     /// ([`crate::Program::obligations`]) is what reads a plan's `:assert` for
     /// it.
     pub open: Symbol,
@@ -367,7 +364,7 @@ pub struct Kernel {
     pub symmetric: Symbol,
     pub mirror_a: Symbol,
     pub mirror_b: Symbol,
-    /// [`WRITTEN`] and [`WRITTEN_STEP`] (M1f S1f.6.38), interned after `open`.
+    /// [`WRITTEN`] and [`WRITTEN_STEP`], interned after `open`.
     pub written: Symbol,
     pub written_step: Symbol,
 }
@@ -408,7 +405,7 @@ impl Terms {
             // others. `id_order_invariance` says a permuted id space moves no
             // answer, so this is about keeping the *renderings* still too.
             open: intern("open"),
-            // M1f S1f.6.38's two, appended for the same reason.
+            // `written`'s two, appended for the same reason.
             written: intern(WRITTEN),
             written_step: intern(WRITTEN_STEP),
         };
@@ -428,20 +425,20 @@ impl Terms {
     ///
     /// This is the whole of what
     /// [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
-    /// T1a.7.2.1 hands a worker, and the shape is
+    /// hands a worker, and the shape is
     /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)'s
     /// four decisions in one type:
     ///
-    /// - the **interner** is shared by `&`, because it does not grow during a
-    ///   search — 0 of the 90 corpus files that solve;
-    /// - the **fact store** is shared by `&` too, because a search assigns 41
-    ///   to 417 ids against 5.8–26 M borrow-returning reads, and *per
-    ///   entering* four of six workloads assign none at all. A worker that
-    ///   would have assigned one gets [`Overflow::Shared`] and hands the
-    ///   entering back;
+    /// - the **interner** is shared by `&`, because a search almost never
+    ///   names a symbol the load did not, and a worker that would gets
+    ///   [`Overflow::Shared`] too;
+    /// - the **fact store** is shared by `&` too, because a search assigns few
+    ///   ids against many borrow-returning reads, and most nodes assign none.
+    ///   A worker that would have assigned one gets [`Overflow::Shared`] and
+    ///   hands the node back;
     /// - the **provenance arena** is per-worker, because it is the one with a
-    ///   real write rate — 100 % of enterings, 2 135 093 records on
-    ///   `features/01 -e` — and because a fork's records die with the fork;
+    ///   real write rate, every node writing records, and because a fork's
+    ///   records die with the fork;
     /// - and there is **no lock**, so there is no protocol to model.
     ///
     /// The view borrows nothing, so it is `Send` and can cross into a worker;
@@ -488,8 +485,7 @@ impl Terms {
     /// from the other side: not a crash, but a `Terms` that has silently
     /// stopped growing and an entering that hands itself back for ever. The
     /// pairing is structural here rather than a rule someone has to keep
-    /// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
-    /// T1a.7.5.6).
+    /// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)).
     pub fn lend(&mut self) -> Lent<'_> {
         self.share();
         Lent { terms: self }
@@ -547,11 +543,9 @@ impl Terms {
     /// A name as a value — what the loader's `atomic_value` produces for an
     /// `Atom`: the symbol its text spells.
     ///
-    /// Until M1f S1f.5.5's swap a `String` collapsed to the same shape, so
-    /// `(likes A "foo")` and `(likes A foo)` were one fact, and a `Var` in a
-    /// fact to the name `?x` (`value_var`, retired by S1f.5.2's T1f.5.2.3); a
-    /// string is natural-language text since, and neither is a fact's
-    /// argument.
+    /// A string is natural-language text and a variable is no value, so
+    /// neither is a fact's argument: `(likes A "foo")` is refused, not read
+    /// as `(likes A foo)`.
     pub fn value_text(&mut self, s: &str) -> Result<Value, Overflow> {
         Ok(Value::sym(self.intern_text(s)?))
     }
@@ -597,9 +591,7 @@ impl Terms {
     /// Order two values by content: a name by its text ([`Interner::rank`]),
     /// a fact as [`Self::cmp_fact_semantic`] orders it, and a mixed pair by
     /// tag, `Sym < Fact`
-    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order),
-    /// whose `Int < Sym < Fact` lost its first member with the int kind, M1f
-    /// S1f.5.4).
+    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
         match (a.tag(), b.tag()) {
             (Tag::Sym, Tag::Sym) => self
@@ -671,10 +663,8 @@ impl Terms {
     /// A value as Ein text the loader reads back to the same value — **the
     /// one printer** ([`crate::text`]): a name bare where it lexes as itself
     /// and quoted elsewhere, and a `Fact` as [`Terms::fact_text`]. Every
-    /// surface that prints a value prints it through here (M1e2 S1e2.3.8).
-    /// Until then a name printed as its raw text, so the int `1` and the name
-    /// `"1"` printed alike, and a `Fact` as its `repr`; since M1f S1f.5.5's
-    /// swap there is no int, and `1` and `01` are two names that print apart.
+    /// surface that prints a value prints it through here. There is no int:
+    /// `1` and `01` are two names, and they print apart.
     pub fn display(&self, v: Value) -> String {
         match v.tag() {
             Tag::Sym => text::symbol(self.sym(v.as_sym().expect("tagged Sym"))).into_owned(),
@@ -722,8 +712,9 @@ impl Drop for Lent<'_> {
     }
 }
 
-/// `Sym < Fact` — design/02 §5 H2's recommendation, `Int < Sym < Fact`,
-/// without the int (M1f S1f.5.4). The raw tag order agrees now, but an
+/// `Sym < Fact`
+/// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order)).
+/// The raw tag order agrees, but an
 /// observable order is not left to an encoding (`Sym` is tag 0 because it is
 /// the overwhelmingly common shape and the cheapest thing to leave untagged in
 /// a debugger).
@@ -738,11 +729,10 @@ fn tag_order(tag: Tag) -> u8 {
 mod tests {
     use super::*;
 
-    /// P1a.2–6 are single-threaded, but retrofitting `Send + Sync` onto the
-    /// intern tables under
-    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) would
-    /// touch every call site, so the property is asserted from the start —
-    /// which is what rules out an `Rc` or a `RefCell` creeping in later.
+    /// The intern tables cross into the workers of
+    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md),
+    /// so the property is asserted here, which is what rules out an `Rc` or a
+    /// `RefCell` creeping in.
     #[test]
     fn the_intern_tables_stay_shareable_across_threads() {
         fn assert_send_sync<T: Send + Sync>() {}
@@ -751,17 +741,15 @@ mod tests {
         assert_send_sync::<crate::FactStore>();
     }
 
-    /// A name's value is its text's symbol, one text one value. Until M1f
-    /// S1f.5.2 this test also held a string and a variable in a fact to the
-    /// names they spelled (`"foo"` to `foo`, `?x` to the name `?x`), which the
-    /// grammar refuses in a fact since S1f.5.5's swap.
+    /// A name's value is its text's symbol, one text one value. A string and
+    /// a variable are no value: the grammar refuses either in a fact.
     #[test]
     fn a_name_is_its_texts_one_value() {
         let mut t = Terms::new();
         let foo = t.value_text("foo").expect("room");
         assert_eq!(foo, t.value_text("foo").expect("room"));
         assert_ne!(foo, t.value_text("?foo").expect("room"));
-        // A run of digits is a name like any other (M1f S1f.5.4), and `07`
+        // A run of digits is a name like any other (Q-M1e2.24), and `07`
         // is another one.
         assert_ne!(
             t.value_text("7").expect("room"),
@@ -777,10 +765,10 @@ mod tests {
         let two = t.value_text("2").expect("room");
         let ten = t.value_text("10").expect("room");
         assert_eq!(t.cmp_semantic(apple, zebra), Ordering::Less);
-        // A run of digits is a name (M1f S1f.5.4), so it sorts as text:
+        // A run of digits is a name (Q-M1e2.24), so it sorts as text:
         // "10" < "2", as `(p 10)` lists before `(p 2)`.
         assert_eq!(t.cmp_semantic(ten, two), Ordering::Less);
-        // Mixed: Sym < Fact (design/02 §5 H2, without the int).
+        // Mixed: Sym < Fact (determinism-and-order.md § 2.2).
         let rel = t.intern_text("p").expect("room");
         let fact = t.value_fact(rel, &[apple]).expect("room");
         assert_eq!(t.cmp_semantic(zebra, fact), Ordering::Less);
@@ -814,8 +802,8 @@ mod tests {
         assert_eq!(t.display(s), "House-1");
         assert_eq!(t.display(i), "007");
         assert_eq!(t.display(nested), "(co-located House-1 007)");
-        // Since S1f.5.5's swap a run of digits is a name (S1f.5.4's ruling),
-        // which prints bare and as written, and there is no int.
+        // A run of digits is a name (Q-M1e2.24), which prints bare and as
+        // written; there is no int.
         let one = t.value_text("1").expect("room");
         assert_eq!(t.display(one), "1", "the name 1 prints as written");
         let zero_one = t.value_text("01").expect("room");

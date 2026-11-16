@@ -1,25 +1,24 @@
 //! **The one printer**: a value as Ein text the loader reads back to the same
-//! value (M1e2 S1e2.3.8, P1e2.3's N5).
+//! value.
 //!
 //! A fact argument is a name (a [`crate::Symbol`]) or a nested fact. A name
 //! prints **bare** where its text reads back as one name under the name rule
-//! (M1f S1f.5.4's ruling, the parser's since S1f.5.5's swap): a run of
+//! (Q-M1e2.24, and `ein.l`'s `NAME`): a run of
 //! [name characters](is_name_char), not a bare `_`, not one of the thirteen
 //! words that are never a name ([`LEXER_KEYWORDS`]) and not one of the
 //! engine's three writeback names. So `1`, `07`, `-7`, `1..5`, `it's` and
 //! `[a]` print bare, and `(p 1) (p 01)` print as two facts. Anything else
 //! prints as a **quoted string**: a space, a parenthesis, `?`, `:`, `#`, a
-//! non-ASCII letter, the empty name, a reserved word. Since S1f.5.5's swap a
-//! string is no value a program can write (S1f.5.2's ruling), so a quoted
+//! non-ASCII letter, the empty name, a reserved word. A string is no value a
+//! program can write, so a quoted
 //! name is one the engine made (the loader's `#…` names) and does not load
 //! back. A nested fact prints as `(rel arg …)` with its arguments printed the
 //! same way.
 //!
-//! Until S1e2.3.8 every surface printed a name as its raw text, so the int
-//! `1` and the name `"1"` printed alike, `(holds "x y")` printed as the
-//! two-argument `(holds x y)`, and a `--dump-answer` state file did not load
-//! back to its state. Since S1f.5.5's swap there is no int: a run of digits
-//! is a name.
+//! Every surface prints a value through here, so a `--dump-answer` state
+//! file loads back to its state: a name printed as its raw text would print
+//! a name with a space in it, `"x y"`, as two. There is no int: a run of
+//! digits is a name.
 //!
 //! The lexer is `ein-ir`'s and this crate is below it, so [`is_symbol`] is a
 //! second statement of the name rule; `ein-ir`'s
@@ -31,7 +30,7 @@ use std::borrow::Cow;
 /// `grammar::RESERVED_WORDS`, tokens of their own in `ein.l`): a name that is
 /// one of them prints quoted. A longer run (`not-red`, `rule.x`, `neq-1`) is
 /// the name it spells, a reserved word being a whole token. `open`, the
-/// verdict, joined them at M1f S1f.5.23 (the user's ruling on Q-M1f.66): no
+/// verdict, is one of them (Q-M1f.66): no
 /// program can write a name `open`, and a form headed `open` is the verdict,
 /// which [`head`] prints bare.
 pub const LEXER_KEYWORDS: &[&str] = &[
@@ -39,8 +38,8 @@ pub const LEXER_KEYWORDS: &[&str] = &[
     "import", "open",
 ];
 
-/// A character of a name, under the name rule (M1f S1f.5.4's ruling, the
-/// user's of 2026-11-07, `ein.l`'s `NAME`): ASCII letters and digits, the
+/// A character of a name, under the name rule (`ein.l`'s `NAME`): ASCII
+/// letters and digits, the
 /// connectors `_ - .`, the decorators `$ % ^ * + = < > ! & @ ~ /`, and, for
 /// now, `' ` [ ] { }`. Nothing else: no `? : ; # | , \ " ( )`, no space, no
 /// character outside ASCII.
@@ -75,7 +74,7 @@ pub fn is_name_char(ch: char) -> bool {
 /// Does `s`, written bare, read back as one name? A run of
 /// [name characters](is_name_char) that is not a bare `_`, not one of the
 /// thirteen words that are never a name ([`LEXER_KEYWORDS`]), and not one of
-/// the engine's three writeback names (`ein.l`'s `WRITEBACK`, T1f.5.5.11). The
+/// the engine's three writeback names (`ein.l`'s `WRITEBACK`). The
 /// ten words a position gives a meaning to (`relation`, `model`, …) are
 /// names wherever a name goes, so they print bare.
 pub fn is_symbol(s: &str) -> bool {
@@ -126,13 +125,13 @@ pub fn symbol(s: &str) -> Cow<'_, str> {
 /// make up for something a program writes no name for ([`INTERNAL_NAMES`]).
 ///
 /// `#` is no name character in either lexer: the name rule's list leaves it
-/// out (the user, 2026-11-07: *"`;`,`#`,`|` - for comments, also not allowed
-/// in names"*), the generated lexer reads a `#` that does not open a `#|`
+/// out, as it leaves out `;` and `|`, the comment characters; the generated
+/// lexer reads a `#` that does not open a `#|`
 /// comment as part of a token that is not a name, and the hand-written lexer
 /// starts no token with it. None of these names is followed by `|`, so none
-/// opens a comment either. Until M1f S1f.5.5's T1f.5.5.8 (2026-11-08) they were
-/// spelled with `@` and `<…>`, which the name rule makes name characters, so
-/// that `(p ())` and `(p (@empty))` would have loaded as one fact.
+/// opens a comment either. A spelling in name characters, `@empty` or
+/// `<query>`, would let a program write one: `(p ())` and `(p (@empty))`
+/// would load as one fact.
 pub const INTERNAL_MARK: char = '#';
 
 /// The relation name the loader gives a nested form whose head is not an atom
@@ -172,8 +171,8 @@ pub fn is_internal(name: &str) -> bool {
 }
 
 /// A fact's head as Ein text: a relation is a `SYMBOL`, a kernel form's head
-/// (`not`, `and`, `or`, `neq`, `=`, and `open`, the verdict, since M1f
-/// S1f.5.23) reads back as that form, and the two names
+/// (`not`, `and`, `or`, `neq`, `=`, and `open`, the verdict) reads back as
+/// that form, and the two names
 /// the loader gives a nested form with no atom head print as what loads them
 /// ([`NESTED_HEAD`], [`EMPTY_HEAD`]). Any other text is quoted, which does not
 /// parse in head position: no corpus state holds one
@@ -202,7 +201,7 @@ pub fn form(rel: &str, args: &[String]) -> String {
 mod tests {
     use super::*;
 
-    /// Restated at S1f.5.5's swap (T1f.5.5.4): the name rule, so a run of
+    /// The name rule: a run of
     /// digits, `1..5`, `it's` and a bracket print bare, and `(p 1)` and
     /// `(p 01)` print apart.
     #[test]

@@ -1,4 +1,4 @@
-//! S1a.2.1's acceptance — one ordering and one rendering the data model has
+//! One ordering and one rendering the data model has
 //! to get exactly right, each checked against a statement of it written out
 //! separately.
 //!
@@ -13,11 +13,8 @@
 //!   shapes the test builds are checked in as strings.
 //!
 //! The generated corpus is ~900 names, because its job is to reach the
-//! neighbourhoods a hand-written case would miss. A third, ~400 integer
-//! literals each canonicalised by the int pool against nine lines of Rust that
-//! shared no code with it, went with the pool when M1f S1f.5.4 retired the int
-//! kind: since S1f.5.5's swap a run of digits is a name, kept as written, so
-//! `7`, `07` and `007` are three names
+//! neighbourhoods a hand-written case would miss. A run of digits is a name,
+//! kept as written, so `7`, `07` and `007` are three names
 //! ([`a_run_of_digits_is_a_name_as_written`]).
 
 use ein_core::{Interner, Symbol, Terms};
@@ -139,13 +136,12 @@ fn the_rank_table_orders_names_by_code_point() {
     );
 }
 
-/// **A run of digits is a name, as written** — M1f S1f.5.4, on the user's
-/// ruling of 2026-11-06 (*"digits are not numbers, digits are plain names
-/// … (p 1) and (p 01) are VERY DIFFERENT facts"*).
+/// **A run of digits is a name, as written** (Q-M1e2.24): `(p 1)` and
+/// `(p 01)` are two facts.
 ///
-/// Every literal the int pool's test canonicalised until the kind was retired
-/// — widths either side of an `i64`, leading zeros, both signs, the two
-/// spellings of zero — is a name here: interned as its own text, distinct
+/// Every literal an integer reading would canonicalise — widths either side
+/// of an `i64`, leading zeros, both signs, the two spellings of zero — is a
+/// name here: interned as its own text, distinct
 /// from every other spelling, and printed as written.
 #[test]
 fn a_run_of_digits_is_a_name_as_written() {
@@ -211,17 +207,14 @@ fn a_run_of_digits_is_a_name_as_written() {
 }
 
 /// **`Terms::display` renders each of the six value shapes that reach a
-/// trace** — as the one printer prints them (M1e2 S1e2.3.8): Ein text the
-/// loader reads back to the same value.
+/// trace** — as the one printer prints them: Ein text the loader reads back
+/// to the same value, not a nested fact's `repr`,
+/// `Fact(relation_name=…, args=(…))`.
 ///
-/// Until S1e2.3.8 `display` of a nested fact was its `repr`,
-/// `Fact(relation_name=…, args=(…))`, and a name its raw text, so `it's`
-/// printed bare and could not be read back.
-///
-/// What each shape is for: an atom (bare), an atom with an apostrophe (bare
-/// since S1f.5.5's swap), a name of digits with leading zeros and a negative
-/// one wider than an `i64` (each an int until M1f S1f.5.4, printed in its
-/// canonical decimal; a name since, printed as written), a nested fact, and a
+/// What each shape is for: an atom (bare), an atom with an apostrophe (bare,
+/// `'` being a name character), a name of digits with leading zeros and a
+/// negative one wider than an `i64` (each a name, printed as written, not in
+/// a canonical decimal), a nested fact, and a
 /// fact nested inside a fact — the last being the only place the recursion is
 /// visible.
 #[test]
@@ -243,7 +236,7 @@ fn display_renders_every_value_shape() {
     let mut bad = Vec::new();
     for (v, want) in [
         (norwegian, "Norwegian"),
-        // `'` is a name character since S1f.5.5's swap (the name rule), so
+        // `'` is a name character (the name rule), so
         // `it's` prints bare and reads back as itself.
         (quote, "it's"),
         (seven, "007"),

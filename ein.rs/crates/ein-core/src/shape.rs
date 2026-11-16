@@ -12,8 +12,7 @@
 //! - **Facts are named by their position** in the fact list, so the very first
 //!   disagreement a diff can show is a fact-order one.
 //! - **Values are rendered with `repr`**, so a name and a nested fact cannot
-//!   collide (nor could `7` the integer and `7` the atom, until M1f S1f.5.4
-//!   retired the int), and every map is emitted in a sorted order rather than
+//!   collide, and every map is emitted in a sorted order rather than
 //!   its own, so the text does not move when an insertion order does.
 
 use crate::entities::NameCategory;
@@ -90,8 +89,8 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             out.push(format!("QUERY {}", q.kw_pairs.len()));
         }
     }
-    // M1e2 S1e2.1a.4. Only when there is one, so a program that states no
-    // lattice keeps the digest it had.
+    // The `(solve …)` block's line, only when there is one: a program that
+    // states no lattice has no `SOLVE` line.
     if let Some(s) = &program.solve {
         out.push(format!("SOLVE {}", s.kw_pairs.len()));
     }
@@ -121,8 +120,7 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
         for (slot, value) in args.iter().enumerate() {
             if value.tag() != crate::value::Tag::Fact {
                 // `DIRECT` on purpose: this dump enumerates the index's
-                // direct keys, not the nested-argument ones T1a.6.3.0 added
-                // underneath them.
+                // direct keys, not the nested-argument ones underneath them.
                 let key = SlotKey::direct(rel, slot as u16, *value);
                 slots.push((
                     format!("{} {} {}", terms.sym(rel), slot, render(terms, *value)),

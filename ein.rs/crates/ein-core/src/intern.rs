@@ -24,22 +24,19 @@ use std::sync::OnceLock;
 /// How many distinct ids one interned space can hold.
 ///
 /// [`crate::Value`] packs a 2-bit tag beside a 30-bit payload, so a symbol and
-/// a fact share the same ceiling (and an int-pool entry did, until M1f
-/// S1f.5.4 retired the int kind). The check exists so
+/// a fact share the same ceiling. The check exists so
 /// that hitting it is an error somebody can read rather than a silent wrap
 /// into another value's identity.
 ///
 /// **This is one of two limits, and it is not the one that binds first.** A
 /// symbol's text and a fact's overflow arguments live in arenas addressed by
 /// `u32`, so [`ARENA_CAPACITY`] caps the *bytes* where this caps the *count* —
-/// and they are independent, because nothing bounds a symbol's length. This
-/// comment used to say reaching the id ceiling "needs ≥ 4 GB of symbol text",
-/// which holds only at a mean symbol length of exactly 4 bytes; measured
-/// through the `.einb` symbol-table header
-/// (`ein kb save <file> x.einb`, 2026-09-01) the corpus runs 7.55 B/symbol on
-/// `examples/branching/06_lookahead_on.ein` and 18.93 on `examples/zebra2.ein`,
-/// where the arena fills at **21 %** of this ceiling. Both are guarded, at the
-/// one site each arena can grow (M1e S1e.4.1, `CO-L1`).
+/// and they are independent, because nothing bounds a symbol's length.
+/// Reaching the id ceiling would need ≥ 4 GB of symbol text only at a mean
+/// symbol length of exactly 4 bytes; the corpus's symbols are longer (`ein kb
+/// save <file> x.einb` reports a program's symbol bytes in the container's
+/// symbol table), so the arena fills first. Both are guarded, at the one site
+/// each arena can grow.
 pub const CAPACITY: u32 = 1 << 30;
 
 /// How many slots one arena addressed by a `u32` offset can hold.
@@ -68,16 +65,12 @@ pub(crate) fn arena_room(len: usize, more: usize, which: Overflow) -> Result<(),
 
 /// Why an id could not be assigned.
 ///
-/// Two of the six are the 30-bit payload filling up (three of seven until M1f
-/// S1f.5.4 retired the integer pool's) and three more are an
+/// Two of the six are the 30-bit payload filling up and three more are an
 /// arena or a field beside it. A puzzle that reaches one is a research
 /// finding, not a crash — so it is a [`Result`] at every site that assigns an
-/// id or writes an offset, and not a panic. **That was a claim rather than a
-/// fact until M1e S1e.4.1** (`CO-L1`): [`SymbolText`](Overflow::SymbolText),
+/// id or writes an offset, and not a panic: [`SymbolText`](Overflow::SymbolText),
 /// [`FactArgs`](Overflow::FactArgs) and [`FactArity`](Overflow::FactArity)
-/// are the three the sentence above was already promising, and the last of
-/// them was a live `expect` that took the process down with exit 101 on a
-/// 65 536-argument fact.
+/// among them, the last a 65 536-argument fact.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Overflow {
     Symbols,
@@ -153,11 +146,11 @@ pub struct Interner {
     arena: String,
     /// `Symbol` → `(start, len)` in [`Interner::arena`].
     spans: Vec<(u32, u32)>,
-    /// The reverse lookup. It owns a *second* copy of each string, which
-    /// design/03 §2 does not: the map it sketches is keyed by `&'arena str`,
-    /// and a self-referential borrow needs `unsafe`, which this crate forbids.
-    /// The duplicate is ~1.5 KB on `zebra2` and the alternative is a
-    /// hand-rolled table for no measurable gain — [`crate::facts`] pays that
+    /// The reverse lookup. It owns a *second* copy of each string: a map
+    /// keyed by `&'arena str` would be a self-referential borrow, which needs
+    /// `unsafe`, which this crate forbids. The duplicate is small and the
+    /// alternative is a hand-rolled table for no measurable gain —
+    /// [`crate::facts`] pays that
     /// price where it buys something.
     lookup: FxHashMap<Box<str>, Symbol>,
     /// `Symbol` → position in the lexicographically sorted symbol list.
@@ -321,9 +314,8 @@ mod tests {
     /// asserted where it is *computed* rather than where it is reached. The
     /// last assertion is the one that holds [`CAPACITY`]'s corrected comment:
     /// at the corpus's own mean symbol length the byte bound arrives first, so
-    /// a future edit restoring *"reaching the id ceiling needs ≥ 4 GB of
-    /// symbol text"* fails here rather than merely reading oddly. M1e
-    /// S1e.4.1, `CO-L1`.
+    /// a doc comment that says *"reaching the id ceiling needs ≥ 4 GB of
+    /// symbol text"* fails here rather than merely reading oddly.
     #[test]
     fn the_arena_bound_is_the_byte_bound_and_not_the_id_bound() {
         assert_eq!(
@@ -339,9 +331,9 @@ mod tests {
             arena_room(usize::MAX, 1, Overflow::FactArgs),
             Err(Overflow::FactArgs)
         );
-        // 7.55 B/symbol is the corpus's *shortest* mean (`branching/06`), so
-        // even there the arena fills at 53 % of the id ceiling — measured
-        // 2026-09-01 through `ein kb save`'s symbol-table header.
+        // At a mean symbol length of 7 bytes or more, as the corpus's are
+        // (`ein kb save`'s symbol table reports them), the arena fills before
+        // the id ceiling.
         assert!(
             ARENA_CAPACITY / 7 < CAPACITY as usize,
             "the id ceiling would bind first, and the doc comment says it does not"

@@ -36,17 +36,14 @@ pub struct FactId(pub u32);
 /// most [`INLINE_ARGS`] of them.
 ///
 /// 20 bytes, and reading a fact's arguments is **one** load rather than two
-/// dependent ones — which is what T1a.6.2.6 turned out to be about. The store
-/// is 18 KB for an exhaustive `zebra` and lives in L1 entirely, so this was
-/// never a cache-footprint question ([design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)); it is a
+/// dependent ones. A puzzle's store fits in L1, so this is not a
+/// cache-footprint question ([design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)); it is a
 /// question about the *dependency chain* on the matcher's hot path, where
 /// every candidate resolves two argument lists — the premise's and, for a
 /// nested pattern, the fact inside it — before it can be rejected.
 ///
 /// A fact of arity > [`INLINE_ARGS`] keeps its arguments in
-/// [`FactStore::args`] as before. Two covers **96.7 %** of an exhaustive
-/// `zebra`'s facts and **83.5 %** of `zebra2`'s, measured rather than guessed
-/// (`examples/layout_shape.rs`).
+/// [`FactStore::args`]. Two covers most of a puzzle's facts.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Row {
     pub rel: Symbol,
@@ -120,11 +117,10 @@ impl FactStore {
             return Err(Overflow::Facts);
         }
         // Two bounds beside the id count, both of them promised by
-        // `Overflow`'s own doc comment and neither of them checked until M1e
-        // S1e.4.1 (`CO-L1`). The arity was an `expect`, and it was reachable:
-        // a 65 536-argument fact is a three-line program and it took the
-        // process down with exit 101 — the shape `defined_behaviour.md` § 4.3
-        // ruled out for `(eq ?x)` one phase earlier.
+        // `Overflow`'s own doc comment. The arity is reachable: a 65 536-
+        // argument fact is a three-line program, and an `expect` here would
+        // take the process down with exit 101, the shape `diagnostics.md`
+        // § 2.3 rules out for `(eq ?x)`.
         let arity = u16::try_from(args.len()).map_err(|_| Overflow::FactArity)?;
         if args.len() > INLINE_ARGS {
             arena_room(self.args.len(), args.len(), Overflow::FactArgs)?;
@@ -171,12 +167,10 @@ impl FactStore {
     /// The row itself, for a caller that reads the relation, decides, and only
     /// then wants the arguments.
     ///
-    /// The matcher's nested-pattern step is that caller and it is 25 M calls
-    /// on an exhaustive `zebra`: `get` would resolve an argument list that
-    /// **79 %** of an exhaustive `zebra2`'s candidates never read, and asking
-    /// [`FactStore::rel`] first and [`FactStore::args`] second loads the row
-    /// twice — measured at −8.2 % on one puzzle and +0 % on the other, each
-    /// way round (T1a.6.2.2). One load, then the branch.
+    /// The matcher's nested-pattern step is that caller, on its hot path:
+    /// `get` would resolve an argument list most candidates never read, and
+    /// asking [`FactStore::rel`] first and [`FactStore::args`] second loads
+    /// the row twice. One load, then the branch.
     pub fn row(&self, id: FactId) -> &Row {
         crate::counters::bump(|c| c.fact_read += 1);
         &self.rows[id.0 as usize]
@@ -201,8 +195,9 @@ impl FactStore {
         self.rows.is_empty()
     }
 
-    /// Bytes held by the two arenas — the figure design/03 §4 budgets
-    /// (~8 KB for a saturated `zebra2`). Excludes the lookup table, which is
+    /// Bytes held by the two arenas
+    /// (`a_zebra_sized_store_fits_the_memory_budget` holds a zebra-sized
+    /// store under 10 000). Excludes the lookup table, which is
     /// an index over them rather than part of the store's contents.
     pub fn footprint(&self) -> usize {
         self.rows.len() * size_of::<Row>() + self.args.len() * size_of::<Value>()
@@ -368,7 +363,8 @@ mod tests {
 
     #[test]
     fn a_zebra_sized_store_fits_the_memory_budget() {
-        // design/03 §4: 381 facts of mean arity ≈ 2.2 is ~8 KB, contiguous.
+        // A zebra-sized store, 381 facts of mean arity 2.2, fits in 10 000
+        // bytes, contiguous.
         let mut interner = Interner::new();
         let mut s = FactStore::new();
         let rel = interner.intern("co-located").expect("room");
@@ -393,12 +389,11 @@ mod tests {
     /// **A fact wider than the arity field is refused, and one that fits is
     /// not.**
     ///
-    /// The threshold is exact and it was a **panic** until M1e S1e.4.1
-    /// (`CO-L1`): `u16::try_from(args.len()).expect(…)` took the process down
-    /// with exit 101 on a three-line program, which is the shape
-    /// `defined_behaviour.md` § 4.3 had already ruled out for `(eq ?x)` one
-    /// phase earlier and which [`Overflow`]'s own doc comment says this crate
-    /// does not do.
+    /// The threshold is exact and it is an error, not a **panic**: a
+    /// `u16::try_from(args.len()).expect(…)` would take the process down with
+    /// exit 101 on a three-line program, which is the shape `diagnostics.md`
+    /// § 2.3 rules out for `(eq ?x)` and which [`Overflow`]'s own doc comment
+    /// says this crate does not do.
     #[test]
     fn a_fact_wider_than_the_arity_field_is_refused_and_one_narrower_is_not() {
         let mut s = FactStore::new();

@@ -52,9 +52,8 @@ fn value_corpus() -> Vec<ReprValue> {
         "House-1",
         "__closed__",
     ];
-    // Runs of digits, which were `ReprValue::Int`'s rows, printed bare, until
-    // M1f S1f.5.4 retired the int kind: since S1f.5.5's swap each is a name,
-    // a `str`, whatever its width, and quoted like one.
+    // Runs of digits: each is a name, a `str`, whatever its width, and quoted
+    // like one.
     let digits = [
         "0",
         "7",
@@ -104,8 +103,8 @@ fn value_corpus() -> Vec<ReprValue> {
 ///
 /// Quote choice (a `'` and no `"` in the string flips the quote to `"`), the
 /// escape table, the one-tuple's trailing comma, a nested `Fact`, an arity-0
-/// relation, and names of digits wider than an `i64` (integers, printed bare,
-/// until M1f S1f.5.4) — 37 shapes, one row each.
+/// relation, and names of digits wider than an `i64` — 37 shapes, one row
+/// each.
 #[test]
 fn repr_of_every_reachable_value_shape() {
     let corpus = value_corpus();
