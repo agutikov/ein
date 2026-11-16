@@ -250,7 +250,7 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
     run_with(terms, path, op, 1)
 }
 
-/// The same, at a chosen job count — [S1a.7.5](../../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
+/// The same, at a chosen job count — [design/parallelism.md § 1](../../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 /// T1a.7.5.3's axis.
 ///
 /// It is a parameter and not a global because `jobs_invariance` runs the same

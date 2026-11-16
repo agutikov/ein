@@ -1,6 +1,6 @@
 //! T1a.7.2.1 — **the seam a worker crosses**, without a thread yet.
 //!
-//! [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
+//! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
 //! fanned a layer out by handing every worker the same root and letting each
 //! run the walk's `try_commitment_set` against it (deleted with the walk at
 //! M1e2 S1e2.1c.5, and with it the test that an entering on a worker view is

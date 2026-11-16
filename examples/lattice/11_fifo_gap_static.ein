@@ -29,7 +29,7 @@
 ;;;   cargo run --release -p ein-infer --example node_census -- --paths examples/lattice/11_fifo_gap_static.ein
 ;;;   cargo run --release -p ein-infer --example node_census -- --cumulative examples/lattice/11_fifo_gap_static.ein
 ;;;
-;;; (plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md § 12).
+;;; (utils/censuses/node-census.md § 12).
 
 (relation thing T :why "{?1} is a thing")
 (relation a T :why "a holds of {?1}")

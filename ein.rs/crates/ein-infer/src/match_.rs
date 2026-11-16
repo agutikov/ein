@@ -1,5 +1,5 @@
 //! The register matcher — S1a.3.2,
-//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md).
+//! [design/matcher.md](../../../../docs/ein/ein.rs/design/matcher.md).
 //!
 //! Variables live in a register file, binding is `regs[r] = v` plus a push
 //! onto a **trail**, unification is a `u32` compare, and a match is handed to
@@ -12,7 +12,7 @@
 //! firing order is the trace, so this module owes three orders exactly:
 //!
 //! - **matches**, in the order the nested loops produce them — which is why
-//!   join reordering is rejected outright ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §6);
+//!   join reordering is rejected outright ([design/matcher.md § 6](../../../../docs/ein/ein.rs/design/matcher.md#6-which-optimisations-are-legal));
 //! - **bindings**, in the order the matcher first bound each variable, because
 //!   `Provenance.bindings` is in that order and it is printed
 //!   in the trace. The trail ([`Env::trail`](crate::Env::trail)) is that order,
@@ -30,7 +30,7 @@
 //! step slice is borrowed. So
 //! the recursion stays, the allocation claim is tested rather than argued
 //! (`tests/match_alloc.rs`), and flattening the loop is left to
-//! [P1a.6](../../../../docs/history/m1a_rust/README.md#p1a6--performance) to *measure*
+//! [design/matcher.md § 3.1](../../../../docs/ein/ein.rs/design/matcher.md#31-registers-trail-and-premise-slots) to *measure*
 //! rather than assume. The register file, the trail and the callback — the
 //! parts that were about the data model — are all here.
 
@@ -561,7 +561,7 @@ impl Matcher {
         // the same answer by fetching the whole participation bucket and
         // unifying every fact in it — 9.96 facts per guard premise on
         // `zebra -e`, of which 71.8 % of premises are ground
-        // ([T1a.6.12.3](../../../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)).
+        // ([design/matcher.md § 5.1](../../../../docs/ein/ein.rs/design/matcher.md#51-a-ground-premise-one-lookup)).
         //
         // Identical by construction, not by test: the pattern denotes one
         // value tuple, `unify` accepts a fact iff its arguments *are* that

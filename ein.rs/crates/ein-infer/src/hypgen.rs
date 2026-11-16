@@ -22,7 +22,7 @@
 //! - **The filter order.** It decides which counter a drop is attributed to,
 //!   and the counters are observable. A reordering that looks like an
 //!   optimisation changes them
-//!   ([S1a.4.1](../../../../docs/history/m1a_rust/README.md#s1a41--hypothesis-generation)).
+//!   ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
 //! - **The candidate order.** A route reads it only as a tie-break: H is
 //!   sorted by each candidate's raw text and deduped before any route sees it
 //!   (`region::order_key`), and the generator's order decides only between
@@ -44,7 +44,7 @@
 //! *row key is the identity*, so a candidate costs one intern — a hash lookup
 //! that returns the same `FactId` every later call — and the two filters that
 //! reject almost all of them are single bit tests on it
-//! ([design/07](../../../../docs/history/m1a_rust/design/07_search_layer.md) §2).
+//! ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
 //!
 //! design/07 calls this "intern-on-demand: probe, and only materialise on
 //! survival". The probe and the intern turned out to be *the same hash

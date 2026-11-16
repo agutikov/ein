@@ -3,7 +3,7 @@
 //! Symbols and facts are interned together because they are asked together:
 //! a fact's argument is a `Value` whose tag says which of the two tables to
 //! read, and rendering or ordering one needs both
-//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §§2–4).
+//! ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md) §§2–4).
 //! There was a third, the integer pool, until M1f S1f.5.4 retired the int
 //! kind: since S1f.5.5's swap a run of digits is a name.
 //!
@@ -29,9 +29,9 @@ use std::sync::atomic::{AtomicBool, Ordering as Atomics};
 /// duration of a fanned-out layer.
 ///
 /// Two states and one rule: **a table that is lent cannot grow.** That is the
-/// whole of what [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
+/// whole of what [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
 /// needs from the interner and the fact store, and it is why neither takes a
-/// lock — [shared_state.md §4](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses).
+/// lock — [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how).
 ///
 /// **Why not simply `Arc<T>` in both states.** Growing an `Arc`'s contents
 /// means [`Arc::get_mut`], whose uniqueness test is a locked read-modify-write
@@ -128,7 +128,7 @@ pub struct Terms {
     /// A lent table is readable from every thread and growable from none, so
     /// *sharing is what forbids growing* — no lock, no shard, and the
     /// invariant that makes it affordable is the one
-    /// [shared_state.md §3](../../../../docs/history/m1a_rust/measurements/shared_state.md#3-the-interner-does-not-grow-during-a-search--now)
+    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
     /// measured and `ein-infer/tests/interning.rs` keeps: nothing interns a
     /// name during a search.
     pub syms: Table<Interner>,
@@ -150,7 +150,7 @@ pub struct Terms {
     /// doing and this says so: whatever the entering produced afterwards is
     /// **not** the entering the sequential engine would have run, so the
     /// fan-out discards it and re-runs it on the committing thread
-    /// ([shared_state.md §4.2](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses)).
+    /// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)).
     ///
     /// Atomic only because [`Terms`] is `Sync`; it is written and read by the
     /// one thread that owns this `Terms`, so `Relaxed` is the whole ordering
@@ -263,13 +263,13 @@ pub fn is_reserved(name: &str) -> bool {
 /// search**, measured over the whole corpus by
 /// `ein-infer/tests/interning.rs`.
 ///
-/// Why that matters is [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)'s
-/// [S1a.7.1](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync):
+/// Why that matters is [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)'s
+/// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how):
 /// [`Interner::text`](crate::Interner::text) hands out a `&str` borrowed from
 /// the arena, which no lock can do, so a shareable interner is one that does
 /// not **grow** while it is shared, and the search is where it would be
 /// shared. Three of the eight were growing it there
-/// ([shared_state.md](../../../../docs/history/m1a_rust/measurements/shared_state.md) §3);
+/// ([design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how));
 /// the other five arrive during root saturation, which is single-threaded —
 /// they are here because `__symmetric__` was interned by every
 /// `Saturator::new` and [`MIRROR_A`] / [`MIRROR_B`] by every mirror firing,
@@ -427,9 +427,9 @@ impl Terms {
     /// **record region of its own**.
     ///
     /// This is the whole of what
-    /// [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
+    /// [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)
     /// T1a.7.2.1 hands a worker, and the shape is
-    /// [shared_state.md §4](../../../../docs/history/m1a_rust/measurements/shared_state.md#4-what-this-chooses)'s
+    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)'s
     /// four decisions in one type:
     ///
     /// - the **interner** is shared by `&`, because it does not grow during a
@@ -488,7 +488,7 @@ impl Terms {
     /// from the other side: not a crash, but a `Terms` that has silently
     /// stopped growing and an entering that hands itself back for ever. The
     /// pairing is structural here rather than a rule someone has to keep
-    /// ([S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
+    /// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
     /// T1a.7.5.6).
     pub fn lend(&mut self) -> Lent<'_> {
         self.share();
@@ -597,7 +597,7 @@ impl Terms {
     /// Order two values by content: a name by its text ([`Interner::rank`]),
     /// a fact as [`Self::cmp_fact_semantic`] orders it, and a mixed pair by
     /// tag, `Sym < Fact`
-    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2,
+    /// ([design/determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#22-content-order),
     /// whose `Int < Sym < Fact` lost its first member with the int kind, M1f
     /// S1f.5.4).
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
@@ -619,7 +619,7 @@ impl Terms {
     /// tuple that is a prefix of a longer one sorting first — by arity.
     ///
     /// This is the comparator the lattice's first layer sorts the alive set by
-    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3b).
+    /// ([design/determinism-and-order.md § 4.2](../../../../docs/ein/ein.rs/design/determinism-and-order.md#42-the-hypothesis-set-and-the-search)).
     pub fn cmp_fact_semantic(&self, a: FactId, b: FactId) -> Ordering {
         let (a_rel, a_args) = self.facts.get(a);
         let (b_rel, b_args) = self.facts.get(b);
@@ -639,7 +639,7 @@ impl Terms {
 
     // ── Rendering ──────────────────────────────────────────────────
 
-    /// The value as a [`ReprValue`], for the `repr`-shaped output sites ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
+    /// The value as a [`ReprValue`], for the `repr`-shaped output sites ([design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer)).
     pub fn repr_value(&self, v: Value) -> ReprValue {
         match v.tag() {
             Tag::Sym => ReprValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
@@ -740,7 +740,7 @@ mod tests {
 
     /// P1a.2–6 are single-threaded, but retrofitting `Send + Sync` onto the
     /// intern tables under
-    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) would
+    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) would
     /// touch every call site, so the property is asserted from the start —
     /// which is what rules out an `Rc` or a `RefCell` creeping in later.
     #[test]

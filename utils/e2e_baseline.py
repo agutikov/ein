@@ -25,7 +25,7 @@ So this measures processes, one `ein` binary per series against the same argv:
 `--bin` was added for and the one every P1a.6 stage asked — *did this change
 make the shipping binary faster?* — across builds (allocator arms, feature
 flags, `--profile`s) and across commits
-([baseline.md](../docs/history/m1a_rust/measurements/baseline.md)).
+(baseline.md).
 `$EIN_BIN` moves the default.
 
 Reported per cell: **best, median, spread** (max - min as a % of the median)

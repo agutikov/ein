@@ -3,7 +3,7 @@
 //!
 //! The grammar admits every tokenization; recursive descent commits to one.
 //! That is the one structural risk in the parser
-//! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §1),
+//! ([design/ir-frontend.md § 3.3](../../../../docs/ein/ein.rs/design/ir-frontend.md#33-the-lexer)),
 //! and the fuzzer probes it by generating malformed and nearly-well-formed
 //! inputs. It is the generator, the minimiser, the seed corpus, and three
 //! properties:

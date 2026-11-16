@@ -29,7 +29,7 @@
 ;;; two in stratum order by priority. Read both ways by
 ;;;   cargo run --release -p ein-infer --example node_census -- --paths examples/lattice/10_fifo_gap.ein
 ;;;   cargo run --release -p ein-infer --example node_census -- --cumulative examples/lattice/10_fifo_gap.ein
-;;; (plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md § 12).
+;;; (utils/censuses/node-census.md § 12).
 ;;;
 ;;; What a node's state is on it is F21's D2, open; this file pins the gap.
 

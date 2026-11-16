@@ -37,7 +37,7 @@ run against the state.*
   one where it is *loaded, activated and satisfied* ([`tests/README.md`](../../../tests/README.md)). The
   second of each pair is this question's witness outside the word problems, already written.
 - **What a run counts.** `--events` has `enqueue` and `fire`
-  ([`events.md`](../../../docs/kernel/inference/events.md)); the matcher's own counts of candidates exist
+  ([`events.md`](../../../docs/ein/ein.rs/events.md)); the matcher's own counts of candidates exist
   only in a build with `--features counters`, which no shipped binary has.
 
 ## What it produces

@@ -6,7 +6,7 @@
 //! possible outcome this phase has available to it, so every fixture below
 //! that must *fail* is checked for failing — with the right exit code and the
 //! right message — and not merely run. The
-//! [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)
+//! [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
 //! precedent: the fuzzer's own three controls each failed once first.
 //!
 //! The comparisons themselves live in `ein-infer` — a query's classes in
@@ -745,7 +745,7 @@ fn every_file_of_the_selection_has_a_row() {
 /// wrong. That mistake was made — it is what M1d S1d.4.1's first-hour
 /// reconnaissance reported, and correcting it took the corpus's count of
 /// set-closure claims from two to **one**
-/// ([the census](../../../../docs/history/m1d_satisfiability/closure_census.md)).
+/// (the census).
 #[test]
 fn the_shape_comes_from_the_program_and_not_from_the_text() {
     let d = Dir::new("report-shape");

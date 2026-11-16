@@ -480,7 +480,7 @@ sentence that did says what it was and what it is since this stage.
 - [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md): the closure line, the computed-equality row,
   and the registry's table and its paragraph.
 - [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) § Computed predicates, and
-  [`implementation.md`](../../../docs/kernel/inference/implementation.md)'s `predicates.rs` row.
+  [`architecture.md`](../../../docs/ein/ein.rs/architecture.md)'s `predicates.rs` row.
 - [`glossary.md`](../../../docs/kernel/glossary.md): an entry for `eq` and `neq`.
 - [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.1's claim rows (a region claim naming
   either, a goal's form that holds a variable) and § 4.9's guard rows and its paragraph.

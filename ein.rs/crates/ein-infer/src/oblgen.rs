@@ -7,7 +7,7 @@
 //!
 //! ### The ladder
 //!
-//! [design/07](../../../../docs/history/m1a_rust/design/07_search_layer.md)'s
+//! [design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)'s
 //! "hrule presence *is* the switch", grown one rung:
 //!
 //! | the program declares | hypotheses come from |

@@ -56,7 +56,7 @@ does), the cycles through an `absent` from `node_census`'s graph, a new order
 check, a bare describe through `explore::run`, the cube's two bits and
 `Topology::of` within the limit, the violations attributed by
 `shared/attribution.rs` (S1e2.1b.3's rule), the stale-fact check of
-[`node_census.md` § 4](node_census.md#4-the-staleness-census), and the spot
+[`../../../utils/censuses/node-census.md` § 4](../../../utils/censuses/node-census.md#4-the-staleness-census), and the spot
 check. Then it prints the rows this page proposes. Example code: no route reads
 it, and it writes nothing.
 
@@ -419,7 +419,7 @@ Conservative, stale, and order-sensitive.
 
 **`lattice/08_absent_witness_hole.ein`**: exercised in the status. Only the
 spot check sees the state's path dependence, which
-[`node_census.md` § 6.1](node_census.md#61-the--y-abort-on-d3-unsat-core)
+[`../../../utils/censuses/node-census.md` § 6.1](../../../utils/censuses/node-census.md#61-the--y-abort-on-d3-unsat-core)
 found with nothing derived at root.
 
 ```
@@ -447,7 +447,7 @@ positive fact (the activator `(watch r)`), and `watch`'s activator. Today's
 hole row is `minimal hole {(p A), (r A)} — dead: (r A)`. The core names a
 commitment, the oracle's `absent_premises` is empty, and provenance alone
 calls the death untainted
-([taint census § 3](taint_census.md#3-the-readings-of-tainted-side-by-side)).
+([taint census § 3](../../../utils/censuses/taint-census.md#3-the-readings-of-tainted-side-by-side)).
 The drafted detector:
 
 ```
@@ -493,7 +493,7 @@ these, three more `stale` rows elided:
 ```
 
 **Line counts.** The warning sits above the listings, whose 100 lines it does
-not take ([`hole_census.md` § 9](hole_census.md#9-each-option-drafted-on-real-programs)),
+not take ([`../../../utils/censuses/hole-census.md` § 9](../../../utils/censuses/hole-census.md#9-each-option-drafted-on-real-programs)),
 and it is bounded on its own: 4 `site` rows and 4 `stale` rows at most, each
 followed by one `…` row. A bare `ein solve`'s stdout grows by 4–9 rows on a
 flagged program, and by one more with the spot check:
@@ -552,7 +552,7 @@ ok           examples/features/12_expect_false.ein
 
 `features/12` is the case where *what is assumed* decides the answer. L0 is
 the fork's own construction, and its R = ∅ holds from scratch only by
-measurement ([`node_census.md` § 6.2](node_census.md#62-l0-on-features12)).
+measurement ([`../../../utils/censuses/node-census.md` § 6.2](../../../utils/censuses/node-census.md#62-l0-on-features12)).
 The report's row gains the same fields beside its `monotone`:
 `"region": {"route": "route 2", "monotone": false, "k_s": 3, "k_c": 3,
 "status": "exercised", "stale_nodes": 0, "paths_differ": 0}`. The claim
@@ -566,7 +566,7 @@ stdout prints 4. `answer.json` is the summary above.
 
 **The event stream.** The `monotonicity` event is emitted at `prepare`, before
 any node, so it carries the static half. The new fields are optional, so
-`ein-events/1` stays ([`events.md` § Versioning](../../../docs/kernel/inference/events.md#versioning)):
+`ein-events/1` stays ([`events.md` § Versioning](../../../docs/ein/ein.rs/events.md#versioning)):
 
 ```json
 {"e": "monotonicity", "n": 7, "verdict": "non-monotone", "sites": 1, "site": ["bad: absent reads q at absent depth 1"], "at_stake": ["state, dead"], "cycles": [], "order": [], "assumes": "fork"}
@@ -636,7 +636,7 @@ becomes `· **not monotone**: status exercised (by bad) · no stale fact`.
 
 D4 is *what is reported when R has holes*
 ([F21 § D4](../../followups/f21_non_monotone_programs_decided.md#d4--what-is-reported-when-r-has-holes-q-m1e27-d),
-[`hole_census.md` § 9–10](hole_census.md#10-the-consequences-per-option)).
+[`../../../utils/censuses/hole-census.md` § 9–10](../../../utils/censuses/hole-census.md#10-the-consequences-per-option)).
 The draft keeps **today's hole listing exactly**: the `minimal hole` rows, up
 to four, `— dead: core` or `— owes n`, and `region.holes` in the summary. It
 adds no repair edge, no piece, no qualifier on the lines and no refusal, and it
@@ -646,7 +646,7 @@ It touches D4 in two places:
 
 - **(d3), the stub's words.** The `lattice` row loses *"; assumes a monotone
   lattice for what a node is (P1e2.1b)"* and gains the `assumes` row.
-  [`hole_census.md` § 10](hole_census.md#10-the-consequences-per-option) says
+  [`../../../utils/censuses/hole-census.md` § 10](../../../utils/censuses/hole-census.md#10-the-consequences-per-option) says
   S1e2.1b.5 rewords the stub in the meantime, whatever D4 decides. It does not
   say *the lines bound R*, which is D4's option (c).
 - **The `status` row names the sites the cube's violations are attributed
@@ -668,7 +668,7 @@ fate is S1e2.1c.5's.
 `via_hole` and `ACTIVATOR_UNDER_ABSENT`, the stale check finds nothing (no
 node's own fixpoint falsifies a guard) while a parent path reaches another
 state. That is the path dependence
-[`node_census.md` § 6.1](node_census.md#61-the--y-abort-on-d3-unsat-core)
+[`../../../utils/censuses/node-census.md` § 6.1](../../../utils/censuses/node-census.md#61-the--y-abort-on-d3-unsat-core)
 measured, now on the states a user is shown. Without it, the warning on those
 four says *no stale fact* and nothing more about the state.
 
@@ -729,7 +729,7 @@ against the 1 s line.
 | the event | the `monotonicity` event gains optional fields | no version bump; not in `corpus_shapes.md5` |
 | `region.md`, the `ein render region` label, the review bundle | reworded | no golden |
 | [`wrong_answers.toml`](../../../corpus/wrong_answers.toml) | 3 qualifiers, 2 `open_because` (§ 4.3) | 5 strings, data only |
-| the docs | [`events.md`](../../../docs/kernel/inference/events.md)'s `monotonicity` entry; [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve)'s *"under assumes a monotone lattice"*; `docs/kernel/inference/monotonicity.md` at `50739fdb` § 5 and § 8; [`configuration.md`](../../../docs/kernel/configuration.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
+| the docs | [`events.md`](../../../docs/ein/ein.rs/events.md)'s `monotonicity` entry; [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve)'s *"under assumes a monotone lattice"*; `docs/kernel/inference/monotonicity.md` at `50739fdb` § 5 and § 8; [`configuration.md`](../../../docs/kernel/configuration.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
 
 **The spot check, if it ships**, adds one row inside the same 150 lines and no
 golden of its own.
@@ -785,7 +785,7 @@ golden of its own.
 7. **A *Monotone* verdict is relative to root, and so is a detector gated
    on it.**
    Three syntax fixtures hold an odd cycle over relations outside D, with
-   n = 0 ([`node_census.md` § 5](node_census.md#5-the-stratification-check)),
+   n = 0 ([`../../../utils/censuses/node-census.md` § 5](../../../utils/censuses/node-census.md#5-the-stratification-check)),
    and the detector stays silent on them. This is consistent with
    [`monotonicity.md` § 2](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program):
    a race over a static relation is settled at root, and every fork inherits

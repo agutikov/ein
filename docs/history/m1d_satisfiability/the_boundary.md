@@ -187,7 +187,7 @@ keyword:
    cannot verify, provided it says so:
    [`Outcome::NotChecked`](../../../ein.rs/crates/ein-infer/src/expect.rs) is
    that provision, it takes a failing exit code, and
-   [S1d.4.1](closure_census.md) measured that **no corpus claim is in that
+   S1d.4.1 measured that **no corpus claim is in that
    state** while **ten entries would be if one were written**.
 
 ---
@@ -198,7 +198,7 @@ keyword:
 and better posed. It is not *"where does the closure claim live"* — it lives at
 the meta level and `:expect` is the meta level. It is:
 
-- what the meta level can **afford** to check ([the closure census](closure_census.md)'s
+- what the meta level can **afford** to check (the closure census's
   four tables are the input),
 - what it **says** when it cannot ( `NOT CHECKED` today, and whether the exit
   code and the stream that carries it are right),

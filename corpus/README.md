@@ -236,7 +236,7 @@ hypothesis space is unbounded in memory first.
 
 **An entry is `slow` when its declared runs cost 1 s or more, together**, on
 the build and machine
-[`corpus_cost.md`](../docs/history/m1a_rust/measurements/corpus_cost.md) names.
+[`corpus-cost.md`](../utils/censuses/corpus-cost.md) names.
 `cost_ms` records that sum, and two tests hold the flag to it: `ein-corpus`'s
 `slow_matches_the_recorded_cost` (exact, arithmetic, never flakes) and
 `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
@@ -249,7 +249,7 @@ moved with the set), and `grep -c '^slow *= *true' corpus/corpus.toml` counts
 them. A re-take moves the flag both ways: `features/04_open` lost it at M1e2
 S1e2.1a.5's switch, when no cell ran the walk any more, and the six `square-*`
 gained it at S1e2.1c.2. What each costs is
-[`corpus_cost.md`](../docs/history/m1a_rust/measurements/corpus_cost.md)'s, whose
+[`corpus-cost.md`](../utils/censuses/corpus-cost.md)'s, whose
 § 10 is the latest re-take (2026-11-03).
 
 The **cell count** is `wc -l ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt`:
@@ -271,7 +271,7 @@ measurement — **5.3 s** of `cargo test` by default and **22.2 s** with
 > root's layer stack at the search's layer barrier is 2.8× on that entry, and
 > the flag stopped being true. Nothing was dropped and nothing was tuned — a
 > re-take found it, which is the whole reason `slow` carries a number
-> ([scaling.md §6](../docs/history/m1a_rust/measurements/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+> (scaling.md §6).
 > The same pass re-priced the other two: `features/01` 4.06 → 3.46 s, most of
 > it T1a.7.1.7's per-worker provenance region, and `features/04` 10.21 →
 > 9.74 s.

@@ -1,7 +1,7 @@
 # P1a.7 — what the shared state costs
 
 [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync)'s measurements, in
-[scaling.md](scaling.md)'s shape: the numbers first, the argument after, and
+scaling.md's shape: the numbers first, the argument after, and
 every section reproducible from one command.
 
 **Taken** 2026-08-22 on `master`, Intel i9-14900HX,
@@ -215,7 +215,7 @@ with the change stashed, so the columns differ by one commit.
 ⁺ **A dated column, and one cell has since moved.** These are the two sides of
 one commit, taken 2026-08-22 — not a claim about the engine today.
 `branching/07 -e` is **0.28 s** since T1a.7.2.0 coalesced root's layer stack
-([scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)),
+(scaling.md §6),
 which also took the entry off the corpus's `slow` tier. Nothing else in the
 table changed by more than noise.
 

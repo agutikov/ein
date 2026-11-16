@@ -130,8 +130,8 @@ The interesting case, because 32 models can disagree where one cannot.
 | model sets | **equal** | **equal** |
 | every other counter | identical | identical |
 
-`-m 3` is where all 32 models are ([layer census
-§4](layer_census.md#4-zebra2-minus-15-all-five-layers));
+`-m 3` is where all 32 models are (layer census
+§4);
 depths 4 and 5 exist only to prove there are no more. **The full-depth
 re-take is §2.3.**
 
@@ -144,8 +144,8 @@ pinned the counters would be testing the fixtures' arithmetic.
 
 ### 2.3 The full-depth re-take
 
-T1d.2.5.5 asked for the twin against [the 618 076 / 416 s
-baseline](layer_census.md#4-zebra2-minus-15-all-five-layers).
+T1d.2.5.5 asked for the twin against the 618 076 / 416 s
+baseline.
 Both arms were run to the depth cap, back to back, on the same machine:
 
 | `solve -e` (depth 5) | `zebra2-minus-15` | `zebra2-minus-15-obligations` |

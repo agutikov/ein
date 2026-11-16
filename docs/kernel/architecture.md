@@ -48,7 +48,7 @@ over the region R since, and `--single`'s four words are read off R
 > `ein-bench` use, documented by
 > [S1a.9.4](../history/m1a_rust/README.md#s1a94--documentation).
 > From **anything else**, run the `ein` binary and read
-> `--json-summary` / [`--events`](inference/events.md).
+> `--json-summary` / [`--events`](../ein/ein.rs/events.md).
 
 ## Crate dependency map
 
@@ -416,7 +416,7 @@ gate: the corpus sweep through the CLI, the shape digests, the goldens and the
 manifest's own invariants.
 
 The per-module detail behind these is
-[`inference/implementation.md`](inference/implementation.md) (engine) and
+[`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md) (engine) and
 [`ir/02-data-model/`](ir/02-data-model/) (KB).
 
 ## See also
@@ -424,10 +424,10 @@ The per-module detail behind these is
 - [`README.md`](README.md) — the reading-order companion to this structural doc.
 - [`inference/architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
   — the engine's algorithmic (O1–O9) view.
-- [`inference/implementation.md`](inference/implementation.md) — the engine's module map.
+- [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md) — the engine's module map.
 - [`defined_behaviour.md`](defined_behaviour.md) — the thirteen diagnostics,
   orderings and error strings the engine defines, stated as normative.
-- [`../api/rust.md`](../api/rust.md) — this pipeline as a library API: the
+- [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md) — this pipeline as a library API: the
   crates, with a worked example the gate runs.
 - [`glossary.md`](glossary.md) — kernel vocabulary.
 - [`plans/README.md`](../../plans/README.md) — the milestone roadmap.

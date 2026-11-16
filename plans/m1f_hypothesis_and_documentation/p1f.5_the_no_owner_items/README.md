@@ -746,6 +746,6 @@ with every `:priority` stripped. Each stage file carries its own case, dated.
 prose table beside a list the code holds is a copy with no diff, which is what
 [AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) found. So a page S1f.5.14 adds is generated, or diffed by a test, and so is
 [S1f.5.16](s1f.5.16_the_read_out_reference.md)'s, whose subject is the page this risk was first written
-about. [`docs/api/rust.md`](../../../docs/api/rust.md)'s marker-guarded region
+about. [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md)'s marker-guarded region
 is the precedent that already works. The old phase's other two risks were about the configuration
 reference, which shipped as S1e.5.1.

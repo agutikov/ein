@@ -11,7 +11,7 @@ costs as the alive set grows, which is the table
 [S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md) and
 [S1e2.1c.4](s1e2.1c.4_the_flags_at_scale.md) are measured against. It lists
 the flagged programs past the limit with what they get today.
-[`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) is
+[`route1-reach.md`](../../../utils/censuses/route1-reach.md) is
 P1e2.1a's record and the first answer. This page is the second, and it does
 not edit the first.
 
@@ -96,7 +96,7 @@ the register's witnesses, at the default budget of 2¹⁹ facts. That is
 | | **210** | |
 
 183 programs are monotone and 27 are flagged.
-[`route1_reach.md` § 1](../p1e2.1a_the_solution_region/route1_reach.md#1-the-three-routes-over-the-corpus)
+[`route1-reach.md` § 1](../../../utils/censuses/route1-reach.md#1-the-three-routes-over-the-corpus)
 counted 195 programs on 2026-10-16, split 162 / 13 / 20. What moved since:
 
 - **The selection grew by 15 programs.** Route 1 grew by 10, `features/12`
@@ -111,7 +111,7 @@ counted 195 programs on 2026-10-16, split 162 / 13 / 20. What moved since:
   - `zebra2-minus-15` and its `-obligations` twin.
 - **The fifteen monotone programs route 1 describes past the oracle's limit
   are the same fifteen** as
-  [§ 5 there](../p1e2.1a_the_solution_region/route1_reach.md#5-past-the-oracles-limit-the-fifteen).
+  [§ 5 there](../../../utils/censuses/route1-reach.md#5-past-the-oracles-limit-the-fifteen).
 - **Every monotone program at `n ≤ 16` is still route 1's**: 156 of 156.
 
 **The slow entries** (`corpus/corpus.toml`, `slow = true`) are the same ten.
@@ -157,7 +157,7 @@ that declined, which is describe's `work` row. A `≥` is a count of what the
 run met, labelled as a floor. It is not a total, and it is not extrapolated.
 
 - **Thirteen finish.** The zebra family's three finish exactly as
-  [`route1_reach.md` § 6](../p1e2.1a_the_solution_region/route1_reach.md#6-where-route-1-declines-and-zebras-region-counted)
+  [`route1-reach.md` § 6](../../../utils/censuses/route1-reach.md#6-where-route-1-declines-and-zebras-region-counted)
   counted them on 2026-10-16, to the commitment and layer for layer. That
   includes `zebra`'s 270 912 visits, its k_c of 261 982 and its one state.
 - **The seven everything-alive cubes finish.** Each layer is exactly the
@@ -172,7 +172,7 @@ run met, labelled as a floor. It is not a total, and it is not extrapolated.
 
 ### 2.2 What the finished runs' layers hold
 
-`zebra`'s layers are in [`route1_reach.md` § 6](../p1e2.1a_the_solution_region/route1_reach.md#6-where-route-1-declines-and-zebras-region-counted)
+`zebra`'s layers are in [`route1-reach.md` § 6](../../../utils/censuses/route1-reach.md#6-where-route-1-declines-and-zebras-region-counted)
 and are not repeated here. § 3 prints them again, beside their states.
 
 - **`zebra2` and `zebra2-obligations` agree layer for layer**, in every
@@ -485,7 +485,7 @@ total.
 
 Route 1 checks its budget before each layer, against the facts spent plus a
 projection of the next layer: its size times the facts per node of the layer
-before ([`route1_reach.md` § 4](../p1e2.1a_the_solution_region/route1_reach.md#4-the-budget)).
+before ([`route1-reach.md` § 4](../../../utils/censuses/route1-reach.md#4-the-budget)).
 Replaying that rule over a finished run's layers gives the **smallest
 `--region-budget` under which describe finishes**. It is a count, and the
 binary confirms it:
@@ -549,7 +549,7 @@ that reports R. The warning's three parts are as the binary prints them:
   *not known — without a licence it needs the whole cube*. The counts it
   prints are of what it met, each labelled *a lower bound*.
 - **`features/12` is the eighth** of
-  [`route1_reach.md` § 1](../p1e2.1a_the_solution_region/route1_reach.md#1-the-three-routes-over-the-corpus)'s
+  [`route1-reach.md` § 1](../../../utils/censuses/route1-reach.md#1-the-three-routes-over-the-corpus)'s
   eight. It is past the limit, but its root is dead, so route 1 certifies
   R = ∅ in one saturation. It still carries the warning, whose `status` line
   says what L0 settles.

@@ -77,7 +77,7 @@ jobs:
       # `ein-corpus`'s `slow_matches_the_recorded_cost` and `corpus_cli.rs`'s
       # `the_slow_flag_still_describes_the_sweep`, whose timing half runs only
       # under `EIN_CORPUS_SLOW` at release speed, which is this step
-      # (docs/history/m1a_rust/measurements/corpus_cost.md). **Every test step
+      # (utils/censuses/corpus-cost.md). **Every test step
       # here runs the gate profile** (M1f S1f.6.39), release codegen with the
       # debug assertions and overflow checks on, as the per-commit tier does:
       # `--release` until then, which dropped both.

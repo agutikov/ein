@@ -159,7 +159,7 @@ pub const SCHEMA: &str = "ein-corpus/2";
 /// alone: the entries above it cost 2.1 s, 4.1 s and 10.2 s, the ones below it
 /// 0.38 s and less, so a machine would have to be 2.1× faster or 2.7× slower
 /// before the answer changed.
-/// [`corpus_cost.md`](../../../../docs/history/m1a_rust/measurements/corpus_cost.md)
+/// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
 /// is the measurement and `corpus/README.md` § `slow` is the rule.
 pub const SLOW_MS: u64 = 1000;
 

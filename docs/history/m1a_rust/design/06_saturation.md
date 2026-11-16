@@ -111,7 +111,7 @@ than assumed.
 > `compile_rule` runs **17 430** times on an exhaustive `zebra2`, the number
 > this section predicted, and **21.1 % of the run is inside
 > `ein_infer::compile`** with 19.7 % of it under `PlanMemo::intern`
-> ([baseline.md §7](../measurements/baseline.md#7-the-top-five-costs)
+> (baseline.md §7
 > item 1) — an unclaimed 21 %, which is nearly twice the 12 % this section
 > expected.
 >
@@ -177,7 +177,7 @@ queue is non-empty (the phases are ordered for a reason).
 
 All four are now closed, three of them against the measurement rather than for
 it ([S1a.6.12](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot),
-[baseline.md §18](../measurements/baseline.md#18-s1a612--the-boundary-and-the-premise-that-had-nothing-left-to-bind)):
+baseline.md §18):
 
 | | projected | measured |
 |---|---|---|
@@ -258,7 +258,7 @@ arg-swap directly by the saturator — no plan, no matcher. Notes:
 > survive. 267 529 facts record a different, equally valid derivation first,
 > because a resumed fork inherits root's parked candidates with root's
 > tiebreakers and the boundary admits one per round.
-> [baseline.md §11](../measurements/baseline.md#11-the-resumed-fork-saturator-measured)
+> baseline.md §11
 > has all of it.
 
 
@@ -275,7 +275,7 @@ best-known in the whole engine — it is the commitment set — and it is the
 one place the delta is thrown away.
 
 Measured
-([P1a.6 baseline §9](../measurements/baseline.md#9-the-fork-entry-re-derivation)):
+(P1a.6 baseline §9):
 **94.6 %** of `zebra -e`'s fork firings and **95.6 %** of `zebra2 -e`'s
 are redundant, and `try_commitment_set` is 95.0 % of `zebra -e`
 cumulatively. Win A's 17 430 compiles are a *symptom* of the same fresh

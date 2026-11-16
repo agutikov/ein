@@ -1,4 +1,4 @@
-//! [`docs/kernel/inference/events.md`] — the `--events` schema, pinned to its
+//! [`docs/ein/ein.rs/events.md`] — the `--events` schema, pinned to its
 //! emitters.
 //!
 //! M1e [S1e.3.7](../../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium)
@@ -25,7 +25,7 @@
 //! - a row with no emitter — a kind was removed or renamed and the row
 //!   outlived it ([`every_row_has_an_emitter`]).
 //!
-//! [`docs/kernel/inference/events.md`]: ../../../../docs/kernel/inference/events.md
+//! [`docs/ein/ein.rs/events.md`]: ../../../../docs/ein/ein.rs/events.md
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -38,8 +38,8 @@ use ein_corpus::repo_root;
 const NARRATING_CRATES: [&str; 2] = ["ein-infer", "ein-cli"];
 
 fn page() -> String {
-    std::fs::read_to_string(repo_root().join("docs/kernel/inference/events.md"))
-        .expect("docs/kernel/inference/events.md")
+    std::fs::read_to_string(repo_root().join("docs/ein/ein.rs/events.md"))
+        .expect("docs/ein/ein.rs/events.md")
 }
 
 fn rust_sources(dir: &Path, out: &mut Vec<PathBuf>) {
@@ -171,7 +171,7 @@ fn every_emitted_kind_has_a_row() {
     assert!(
         missing.is_empty(),
         "emitted but undocumented: {missing:?}. Add a row to \
-         docs/kernel/inference/events.md § Events — the page claims to be every \
+         docs/ein/ein.rs/events.md § Events — the page claims to be every \
          step the engine took, and a consumer cannot code to a kind it cannot see."
     );
 }

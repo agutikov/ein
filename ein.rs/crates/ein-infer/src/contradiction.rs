@@ -17,7 +17,7 @@
 //! puzzle was accepted in silence.
 //!
 //! The lookup is two bit tests
-//! ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) §6):
+//! ([design/saturation.md § 6.2](../../../../docs/ein/ein.rs/design/saturation.md#62-contradiction)):
 //! is `X` negated, and is `X` in the KB. The result **order** is fixed —
 //! direct ⊥ first, then pairs in extent order — because it reaches the unsat
 //! core and the trace.

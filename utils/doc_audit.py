@@ -15,7 +15,7 @@ every page, none of which needs to know what changed:
     python3 utils/doc_audit.py                  # all three, as a report
     python3 utils/doc_audit.py --links --check --tracked   # the gate step, decision ids too
     python3 utils/doc_audit.py --inbound --tracked [--target docs/kernel]
-    python3 utils/doc_audit.py --identifiers -k inference/lattice_dump.md
+    python3 utils/doc_audit.py --identifiers -k ein.rs/lattice-dump.md
 
 The default tree is `docs/kernel`, which is what the three questions are
 *about*. The **links** half is not — a relative link resolves or it does not

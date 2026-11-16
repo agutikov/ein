@@ -8,7 +8,7 @@
 //! |---|---|
 //! | every subcommand | how a broken file is reported |
 //! | `ein solve` | the stop policy, the diagnostic flags, `--json-summary` |
-//! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/kernel/inference/events.md) |
+//! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/ein/ein.rs/events.md) |
 //! | the Zebra files | that `zebra2.ein` and its two variants stay one encoding |
 //! | the editor grammar | its three closed name sets |
 //!
@@ -1728,7 +1728,7 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load
 }
 
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
-/// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
+/// else** — [design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 /// T1a.7.5.1.
 ///
 /// What it asserts is the contract: the read-out at two jobs and at `auto` is
@@ -2132,7 +2132,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 }
 
 /// The corpus fixtures that between them emit every kind
-/// [`events.md`](../../../../docs/kernel/inference/events.md) defines, and the
+/// [`events.md`](../../../../docs/ein/ein.rs/events.md) defines, and the
 /// kind each is here for.
 ///
 /// A six-file cover rather than the whole corpus: the sweep is 0.06 s this
@@ -2181,7 +2181,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
 
 /// Where the `--events` schema lives: the protocol is a product surface — a
 /// debugging tool, and M20's likely feed.
-const EVENTS_DOC: &str = "docs/kernel/inference/events.md";
+const EVENTS_DOC: &str = "docs/ein/ein.rs/events.md";
 
 /// Every event kind the schema names, read out of the document itself.
 ///

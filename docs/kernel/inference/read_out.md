@@ -24,7 +24,7 @@ the binary by `ein-cli/tests/read_out_examples.rs`. This page is held to the pri
 [`configuration.md`](../configuration.md)'s. The `--dump-answer` directory and the summary's `work` and `root` blocks
 are [`answer_dump.md`](answer_dump.md)'s; the `monotonicity` block and the warning's theory are
 [`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)'s; the `--events` stream is
-[`events.md`](events.md)'s. How each question is computed and what it costs is
+[`../../ein/ein.rs/events.md`](../../ein/ein.rs/events.md)'s. How each question is computed and what it costs is
 [`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3 and § 4.
 The rulings that made this vocabulary, on 2026-10-16, and what M1e2's stages amended, are the record in M1e2's
 [`read_out.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md), which is not kept current.
@@ -620,7 +620,7 @@ They define nothing; each repeats rows defined above.
 - [`solution_semantics.md`](solution_semantics.md): R, its two counts, its lines, a model.
 - [`answer_dump.md`](answer_dump.md): the answer directory, and the `work` and `root` blocks.
 - [`region_dump.md`](region_dump.md): the cube's dump and the `monotonicity` block.
-- [`events.md`](events.md): the event stream.
+- [`../../ein/ein.rs/events.md`](../../ein/ein.rs/events.md): the event stream.
 - [`../configuration.md`](../configuration.md): every option.
 - M1e2's [`read_out.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) and its frozen
   examples, the record of the rulings of 2026-10-16.

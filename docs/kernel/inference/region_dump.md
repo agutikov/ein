@@ -241,7 +241,7 @@ found, in these places:
   then the minimal holes as before;
 - `ein solve FILE --monotone`, the static half alone, root's fixpoint and no
   node;
-- a `monotonicity` event ([`events.md`](events.md)), with the static half;
+- a `monotonicity` event ([`../../ein/ein.rs/events.md`](../../ein/ein.rs/events.md)), with the static half;
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone
   or not: each site's `concludes` and `at_stake`, then `assumes`, `cycles`,
   `order`, `status`, `state` (every stale node, uncut) and `paths`. On a
@@ -375,7 +375,7 @@ root's fixpoint.
 ## Cross-references
 
 - [`answer_dump.md`](answer_dump.md): a run's answer, as files.
-- [`lattice_dump.md`](lattice_dump.md): every node a run visited.
+- [`../../ein/ein.rs/lattice-dump.md`](../../ein/ein.rs/lattice-dump.md): every node a run visited.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
   this directory drawn, with a region run on it, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this

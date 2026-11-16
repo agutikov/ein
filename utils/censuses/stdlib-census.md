@@ -1,23 +1,23 @@
 # The stdlib census — what 73 rules promise, and what 400 corpus runs activate
 
-**Stage:** [S1c.1.1](README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised) — T1c.1.1.1 … T1c.1.1.4
+**Stage:** [S1c.1.1](../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised) — T1c.1.1.1 … T1c.1.1.4
 **Taken:** 2026-08-23, commit `114835d`, `ein 0.1.0` (`ein-events/1`, stdlib
 `sha256:a498c762…`)
-**Instrument:** [`utils/stdlib_census.py`](../../../utils/stdlib_census.py) — 128
+**Instrument:** [`utils/stdlib_census.py`](../stdlib_census.py) — 128
 corpus entries, **400 inference runs**, `--events-level verbose`, 35.6 s wall
 **Re-take:** `python3 utils/stdlib_census.py --json census.json`
 
 > **Since the take, twice.** The tables below are the 2026-08-23 `114835d`
 > take and are kept as the *before* column;
 > [§11](#11-the-re-take--2026-08-24-and-the-zero-set-is-empty) is the re-take
-> after [S1c.1.4](README.md#s1c14--the-stdlib-corpus), where the zero-firing set is
+> after [S1c.1.4](../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus), where the zero-firing set is
 > **0**. What follows in this callout is the smaller of the two moves.
 >
-> [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects) added five fixtures to
+> [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) added five fixtures to
 > the corpus on the same day. Re-taken against them, exactly one cell moves:
 > `std.algebra`'s `symmetric` goes from **7 entries to 8** and 1 084 → 1 092
 > productive firings, because
-> [`examples/features/10_expect.ein`](../../../examples/features/10_expect.ein)
+> [`examples/features/10_expect.ein`](../../examples/features/10_expect.ein)
 > imports it. **The zero-firing set is unchanged at 38** and every module's
 > covered/zero pair is identical, so nothing below is stale. The numbers in the
 > tables are the 2026-08-23 `114835d` take, and the command above is what
@@ -63,7 +63,7 @@ a coverage number nobody can reproduce the derivation of is a slogan.
 **A fired name is not a stdlib rule.** Twenty-five files under `examples/`
 declare their own `symmetric`, `transitive`, `functional`, `injective`,
 `total`, `surjective` or `domain-elimination` — the inline copies
-[`stdlib/README.md`](../../../stdlib/README.md) says are kept deliberately
+[`stdlib/README.md`](../../stdlib/README.md) says are kept deliberately
 (a variant `:why`, or a showcase demo that wants the rule visible in the file),
 plus `zebra2-hints.ein`, which *imports* three `std.algebra` symbols and
 declares five more of its own names alongside them. Crediting those firings to
@@ -87,10 +87,10 @@ the count rather than hiding it, because silent double-counting is how the
 first version read 129 firings for a rule that fires twice.
 
 **`normal` hides three rules** — the one the stage doc warned about, so it was
-never taken, only measured. [events.md § Levels](../../kernel/inference/events.md)
+never taken, only measured. [events.md § Levels](../../docs/ein/ein.rs/events.md)
 says a redundant firing is counted but not emitted at `normal`, so a rule whose
 every firing re-derives an existing fact reads as zero — the trap
-[S1a.7.0](../m1a_rust/README.md#s1a70--the-speculation-audit)'s
+[S1a.7.0](../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s
 audit hit. It is real here and now has a number:
 
 | level | rules reading zero | the difference |
@@ -226,7 +226,7 @@ rule count. Their coverage is inherited from the rules that use them: `forall`
 appears in **10** stdlib rule bodies, **9** of which fire somewhere in the
 corpus (the tenth is `std.elim`'s `no-room-left`), so the expansion is
 exercised. `open` appears in **no stdlib rule at all** — one file in the whole
-repository uses it, [`examples/features/04_open.ein`](../../../examples/features/04_open.ein),
+repository uses it, [`examples/features/04_open.ein`](../../examples/features/04_open.ein),
 which the corpus marks as having no finite hypothesis space and runs under
 `saturate` only.
 
@@ -283,7 +283,7 @@ rule coverage and one test.** Drop `examples/zebra.ein` from the corpus and
 the covered set falls from **35 rules to 15** — a third of the standard
 library's tested surface is one file. If that file changed its encoding —
 which is exactly what a second Zebra formulation is *for*, and
-[`examples/zebra2.ein`](../../../examples/zebra2.ein) is the other one, using
+[`examples/zebra2.ein`](../../examples/zebra2.ein) is the other one, using
 `std.bijection` instead — eighteen rules would become untested silently, and
 the census is the only thing in the repository that would say so.
 
@@ -291,7 +291,7 @@ The other two rows are worse in a different way. `std.algebra`'s two
 cardinality checks are activated **only by a fixture whose name says it is
 broken**, and `std.elim`'s `domain-elimination` fires **twice** in the entire
 corpus — the positional twin of the rule
-[whose guard was wrong for a year](README.md#the-thesis).
+[whose guard was wrong for a year](../../docs/history/m1c_external_validation/README.md#the-thesis).
 
 ---
 
@@ -413,7 +413,7 @@ the pure copiers (`converse`, `imply*`, `includes`, `symmetric`, `join-*`,
 lemmas, and the four `std.typing` rules. For those the only "must not" is
 *scope* — a copier activated for `R1→R2` must not touch `R3` — which is a
 relation-closure claim and therefore exactly what
-[S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects)'s rule 3 makes checkable, and *only* rule 3:
+[S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)'s rule 3 makes checkable, and *only* rule 3:
 neither a per-fact assertion nor a whole-state golden states it.
 
 **The `forall` row is the one to write first.** Ten rules quantify, every
@@ -438,7 +438,7 @@ Alpha-renaming each `(params, :match, :assert)` and grouping:
 
 The first two say a fact-shaped expectation cannot distinguish the members of a
 pair: one test covers both, and *which one fired* is the `route` residue
-[Q-M1c.2](open_questions.md#q-m1c2--what-may-an-expectation-say) parks. Fine
+[Q-M1c.2](../../docs/history/m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say) parks. Fine
 — that is what parking it means.
 
 The last two are not an alias, they are a **divergence**. Two modules ship the
@@ -480,7 +480,7 @@ The stage asks for these to be flagged as findings about the rule.
    operand is saturation-determined. Same shape as 5: the sentence is easy, the
    condition under which it is true is not.
 
-Every one of these is a case where [S1c.1.4](README.md#s1c14--the-stdlib-corpus)'s
+Every one of these is a case where [S1c.1.4](../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)'s
 "header saying what the rule promises" is doing real work, and where the
 expectation that matters is the **consequence at a distance** the phase README
 demands rather than a restatement of the assert.
@@ -511,7 +511,7 @@ rules that need three facts. The expensive item is not in the zero set at all:
 it is `std.slots`, which is fully covered and entirely dependent on
 `examples/zebra.ein`, and whose eighteen rules need a second activating program
 small enough to read —
-[`features/09_adjacent_via_same_house.ein`](../../../examples/features/09_adjacent_via_same_house.ein)-sized,
+[`features/09_adjacent_via_same_house.ein`](../../examples/features/09_adjacent_via_same_house.ein)-sized,
 per the phase's own acceptance.
 
 **Recommendation: S1c.1.4 goes from 4 days to 6**, and its task list gains one
@@ -530,7 +530,7 @@ what a `forall` guard must not do.
 runs**, `--events-level verbose`, 36.6 s wall. `python3
 utils/stdlib_census.py --check` exits **0**.
 
-[S1c.1.4](README.md#s1c14--the-stdlib-corpus) shipped **45 programs** under
+[S1c.1.4](../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus) shipped **45 programs** under
 `tests/stdlib/`, and T1c.1.4.6 is this: the same instrument, re-run, so the
 before and after are comparable by construction. One thing about the
 instrument changed — `inference_runs` now sweeps `test` runs as well as `solve`
@@ -617,16 +617,16 @@ those terms, so 0/73 closes it. Three things it is not:
   relations that exist only after saturation, and `:expect` may name only a
   relation the program text already makes — so their output is checked through
   what it activates rather than directly
-  ([Q-M1c.7](open_questions.md#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates)).
+  ([Q-M1c.7](../../docs/history/m1c_external_validation/open_questions.md#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates)).
 - **Not a mutation score.** "Every rule fires somewhere" and "every rule's
   guard is tested" are different claims, and only the first is what this
   instrument measures. The second was taken separately and by hand — 51
   deliberate defects, one per rule family, injected into a copy of `stdlib/`
   and run past `ein test tests/` — and it is **50 of 51**, with the survivor
-  named in [`tests/README.md`](../../../tests/README.md). Seven fixtures were
+  named in [`tests/README.md`](../../tests/README.md). Seven fixtures were
   changed because of what it found, which is the difference between a coverage
   number and a test suite. Making either check a *gate* is
-  [S1c.1.5](README.md#s1c15--in-the-gate)'s.
+  [S1c.1.5](../../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)'s.
 
 ---
 
@@ -636,7 +636,7 @@ those terms, so 0/73 closes it. Three things it is not:
 tests/stdlib` — 45 entries, **135 inference runs**, 0.7 s wall.
 
 §11's number is over the whole corpus, and the whole corpus is not what tests
-the stdlib. [S1c.1.5](README.md#s1c15--in-the-gate) asked the narrower question — *what does
+the stdlib. [S1c.1.5](../../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate) asked the narrower question — *what does
 the suite written to activate rules activate on its own?* — because that is the
 one a gate can hold: a rule that fires only inside `examples/zebra.ein` has no
 test, and 20 rules were in exactly that state before S1c.1.4.
@@ -678,13 +678,13 @@ rules that were never anybody's subject.
 
 ## Cross-links
 
-- [`utils/stdlib_census.py`](../../../utils/stdlib_census.py) — the instrument;
+- [`utils/stdlib_census.py`](../stdlib_census.py) — the instrument;
   `--check` exits 1 while any rule is at zero. **The gate is not this** since
-  [S1c.1.5](README.md#s1c15--in-the-gate): it is `ein-infer/tests/stdlib_coverage.rs`,
+  [S1c.1.5](../../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate): it is `ein-infer/tests/stdlib_coverage.rs`,
   in-process, 0.04 s, and scoped to `tests/stdlib/` — §12
-- [`stdlib/README.md`](../../../stdlib/README.md) — the module catalogue, and
+- [`stdlib/README.md`](../../stdlib/README.md) — the module catalogue, and
   the `std.bijection` vs `std.slots` comparison §4 turns into a fragility
-- [`docs/kernel/inference/events.md`](../../kernel/inference/events.md)
+- [`docs/ein/ein.rs/events.md`](../../docs/ein/ein.rs/events.md)
   § Levels — why the census runs at `verbose`
-- [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects) — the form these findings become
+- [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) — the form these findings become
   expectations in; §7 and §8 are its two hardest cases

@@ -262,7 +262,7 @@ once at default settings and once under each of 24 levers, the seventeen flags
 of the time among them. Each run's R is compared with the default's: the
 candidates, every node's status and state class, root's fixpoint, and the
 facts of every state in R
-([`region_census.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md)).
+([`region-census.md`](../../utils/censuses/region-census.md)).
 
 - **No lever changes R on 158 of the 159**, and 23 of the 24 change it on
   none. That is by construction for most of them: the oracle's universe is
@@ -326,7 +326,7 @@ facts of every state in R
   *"Saturation commutativity violated"*. Four of the eight nodes it found are
   its own direct path stopping at the first contradiction
   (`enable-fail-fast-fork`), and the other four a stale fact a parent path
-  keeps ([`node_census.md` § 11.2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes),
+  keeps ([`node-census.md` § 11.2](../../utils/censuses/node-census.md#112-the-flagged-cubes),
   2026-11-02). No route runs the probe since the switch. Its question ships
   as the detector's parent-path spot check (M1e2 S1e2.1b.5, the read-out's
   `paths` row), on a flagged program at most three one-step parents of each
@@ -597,7 +597,7 @@ answer about.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
   (`ein-summary/2`), `--json-report` (`ein-test-report/5`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
-  ([`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer`
+  ([`lattice-dump.md`](../ein/ein.rs/lattice-dump.md)), `--dump-answer`
   ([`answer_dump.md`](inference/answer_dump.md)), and `ein oracle`'s `--dump`
   with `--states` ([`region_dump.md`](inference/region_dump.md)). The
   directories are made before the run. **Additive** in the strict sense:
@@ -807,7 +807,7 @@ is an environment variable and not a flag.
 whether the tree ran and what it took of the stop policy; `enter`, `layer`,
 `nogood` and `writeback` are **not emitted at all**, so the enterings are
 invisible in a stream that still counts them. The row and the reasons are
-[`inference/events.md` § `traversal`](inference/events.md#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
+[`../ein/ein.rs/events.md` § `traversal`](../ein/ein.rs/events.md#search-layer).
 
 **5 — the stop policy** is § [3.3](#33-what-an-option-can-do-to-the-answer):
 `-n` honoured, `-m` refused at exit 2 in all three subcommands.
@@ -863,7 +863,7 @@ EIN_BLESS=1 cargo test --manifest-path ein.rs/Cargo.toml -p ein-cli --test confi
 ```
 
 Edit the engine, run that, commit. **Never edit the generated block by hand** —
-it is `docs/api/rust.md`'s rule for the same reason.
+it is `docs/ein/ein.rs/api.md`'s rule for the same reason.
 
 The prose columns are not generated and cannot be: *what it changes* is read
 off a call site and *does it change the answer* is a judgement with evidence.

@@ -1,7 +1,7 @@
 //! The compiled form of a `(rule, activator)` pair — plan bytecode.
 //!
 //! A plan is a program of `Scan` / `Join` / `Guard` / `AbsentGuard` opcodes,
-//! encoded ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2)
+//! encoded ([design/matcher.md § 2.2](../../../../docs/ein/ein.rs/design/matcher.md#22-the-plans-layout))
 //! as flat arenas indexed by [`Span`], a slot that is one of four `u32`-sized
 //! things, and every variable resolved to a **register** at compile time.
 //!
@@ -151,7 +151,7 @@ pub struct RelStep {
 ///
 /// The first skip is static and is applied here — an opaque or nested slot
 /// never produces a `Probe`. The other two conditions are **not** static, and
-/// [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2's claim that
+/// [design/matcher.md § 5.2](../../../../docs/ein/ein.rs/design/matcher.md#52-a-probe-into-the-participation-index)'s claim that
 /// they are is the one thing in that section this stage had to correct:
 ///
 /// - whether a register is bound at this step depends on the *entry point* —

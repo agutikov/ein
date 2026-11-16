@@ -1,7 +1,7 @@
 //! The IR contract — what ein-lang *is*, written down as answers.
 //!
 //! Stage **T1a.10.2.2** of
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--the-behaviour-suite).
+//! [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests).
 //! Three surfaces: the grammar (what is accepted and what is rejected),
 //! lowering (the node a text becomes, and the `dump ∘ parse` round trip), and
 //! macros (expansion, and the names a macro may not take).

@@ -1659,7 +1659,7 @@ Before them, **38 of the 73 rules below had never fired** in any of 400 corpus
 runs — 33 never even loaded — and 20 more were reached by `examples/zebra.ein`
 alone, so a change to that one puzzle's encoding could have untested a whole
 module silently
-([`stdlib_census.md`](../docs/history/m1c_external_validation/stdlib_census.md)).
+([`stdlib-census.md`](../utils/censuses/stdlib-census.md)).
 The claim that every rule is now activated is *measured*, not read off the
 directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)

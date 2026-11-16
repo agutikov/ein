@@ -1,5 +1,5 @@
 //! The M1a benchmark set (T1a.0.4.5) —
-//! [design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §4.
+//! [design/toolchain-and-layout.md § 8](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#8-benchmarks)
 //!
 //! Eight benches, named as every table in `baseline.md` is written against
 //! them.

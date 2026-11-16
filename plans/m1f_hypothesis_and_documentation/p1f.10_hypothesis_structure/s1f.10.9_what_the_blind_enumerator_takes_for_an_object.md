@@ -990,7 +990,7 @@ No row is filed for it and nothing of it is changed.
 A `(__symmetric__ R)` a rule derives marks R as the same fact written does, so each witness's right answer is
 its control's. Three things on the pages say so, and none says otherwise:
 
-- [`reserved_engine_strings.md` § `__symmetric__`](../../../docs/kernel/inference/reserved_engine_strings.md#__symmetric__--engine-effect):
+- [`reserved-engine-strings.md` § `__symmetric__`](../../../docs/ein/ein.rs/reserved-engine-strings.md#__symmetric__--engine-effect):
   the native mirror is *a performance optimization, NOT a capability*, computing *the identical closure as the
   stdlib `symmetric` rule*. That rule is activated by `(symmetric R)` however the fact came to hold, a rule's
   conclusion among them, so the identical closure reads a derived mark too.

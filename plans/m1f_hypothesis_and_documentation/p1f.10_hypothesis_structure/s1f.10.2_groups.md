@@ -231,7 +231,7 @@ What a **group** is. The control leaves three readings, each with its numbers ab
 
 The cover in `ein_infer::structure`, its bound, its order and its two maps (T1f.10.2.2, .4); the declared columns
 (T1f.10.2.3); the cover beside the census; the id-permutation test. `structure.rs`, the `pair_layer` example,
-[`implementation.md`](../../../docs/kernel/inference/implementation.md) and
+[`architecture.md`](../../../docs/ein/ein.rs/architecture.md) and
 [`utils/README.md`](../../../utils/README.md) are as S1f.10.1 left them. The phase's two invariances of the pair
 layer, the import forms and the id permutation, are still tests nowhere: [`findings.md`](findings.md)'s K-4 says
 what each needs.
@@ -341,7 +341,7 @@ The alternatives, each with the corpus program that falsifies it:
   three in the module, `--lib structure` ([§ The tests](#the-tests-of-the-cover)).
 - **Three helpers moved, each as it was, to a file two test binaries include**
   ([§ The two invariances](#the-two-invariances)); [`findings.md`](findings.md)'s K-4 and K-1 are closed by it.
-- Docs: `structure.rs`'s row in [`implementation.md`](../../../docs/kernel/inference/implementation.md), the
+- Docs: `structure.rs`'s row in [`architecture.md`](../../../docs/ein/ein.rs/architecture.md), the
   example's in [`utils/README.md`](../../../utils/README.md), the tier table of
   [`corpus/README.md`](../../../corpus/README.md) and `EIN_CORPUS_SLOW`'s readers in
   [`configuration.md`](../../../docs/kernel/configuration.md).

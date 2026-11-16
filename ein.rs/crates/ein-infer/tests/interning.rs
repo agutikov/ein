@@ -1,11 +1,10 @@
 //! T1a.7.1.0 — **what a run interns, and when.**
 //!
-//! [S1a.7.1](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)
+//! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 //! has to make [`Terms`] shareable across workers, and the interner is the
 //! part of it that cannot simply be wrapped: [`Interner::text`] hands out a
 //! `&str` borrowed from the arena, and no lock returns a borrow that outlives
-//! its guard. A sharded `RwLock` — [design/08
-//! §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)'s
+//! its guard. A sharded `RwLock` — [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)'s
 //! sketch — would therefore have to change every read site in the engine, not
 //! the write sites.
 //!
@@ -44,7 +43,7 @@
 //! written down and the compiler where a rule derives it, before the name is
 //! interned (`docs/kernel/defined_behaviour.md` § 4.6). A worker that cannot
 //! intern can only fall back, which is
-//! [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)'s
+//! [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)'s
 //! to build and this file's to keep honest.
 
 use ein_core::Terms;

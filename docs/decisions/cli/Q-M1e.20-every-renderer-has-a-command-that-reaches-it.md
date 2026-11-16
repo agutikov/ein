@@ -15,5 +15,5 @@ wrong answer, who reaches the engine through the binary.
 
 **Held by.** `ein-cli/tests/render_doors.rs`: `every_door_prints_dot_that_dot_draws`,
 `dump_lattice_lists_the_nodes_the_run_entered`, `the_dump_combines_with_the_other_flags`. The pages:
-[lattice_dump.md](../../kernel/inference/lattice_dump.md),
+[lattice-dump.md](../../ein/ein.rs/lattice-dump.md),
 [04_dot_rendering.md](../../kernel/ir/03-ein-lang/04_dot_rendering.md).

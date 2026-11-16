@@ -1,20 +1,17 @@
-//! T1a.9.4.3 — **the Rust embedding contract, executable.**
+//! **The Rust embedding contract, executable.**
 //!
-//! [`docs/api/rust.md`](../../../../docs/api/rust.md) documents how to drive
-//! the engine from another Rust program. Its worked example is not a code
-//! block someone typed into a markdown file: it is the region of *this* file
-//! between the two `// ─── page ───` markers, and
-//! [`the_page_quotes_this_file`] compares the two texts. Since M1e a second
-//! pair of markers, `// ─── prose ───`, does the same for the *paragraph* that
-//! names these tests; on the page it is delimited by `<!-- prose -->`.
+//! [`docs/ein/ein.rs/api.md`](../../../../docs/ein/ein.rs/api.md) documents
+//! how to drive the engine from another Rust program. Its worked example is
+//! not a code block someone typed into a markdown file: it is the region of
+//! *this* file between the two `// ─── page ───` markers, and
+//! [`the_page_quotes_this_file`] compares the two texts. A second pair of
+//! markers, `// ─── prose ───`, does the same for the *paragraph* that names
+//! these tests; on the page it is delimited by `<!-- prose -->`.
 //!
 //! That is the whole mechanism, and it is deliberately the cheapest one that
-//! cannot rot. The substitute for the contract suite the deferred [S1a.9.2]
-//! would have been is not a bigger suite; it is a page whose example is
-//! compiled and run by `cargo test --workspace` and whose text is diffed
-//! against what ran.
-//!
-//! [S1a.9.2]: ../../../../docs/history/m1a_rust/README.md#p1a9--release
+//! cannot rot: a page whose example is compiled and run by `cargo test
+//! --workspace` and whose text is diffed against what ran stands in for a
+//! contract suite.
 //!
 //! Five tests, five different failures:
 //!
@@ -27,24 +24,21 @@
 //!   [`the_page_quotes_this_files_prose_too`] and
 //!   [`the_page_and_the_file_name_the_same_tests`].
 //!
-//! The last two are M1e `CD-M4`, and the finding was on this mechanism's own
-//! page: the sentence naming the tests said
-//! `the_other_two_verdicts_are_reachable` — a name from before `Open` arrived
-//! — and sat **outside** the marked region, which is the one class of drift a
-//! quote-this-file check structurally cannot catch. Widening the region is
-//! only half a fix, and it is worth being explicit about which half:
-//! a second marker makes the page and this file **one text**, so editing one
-//! and not the other is loud; it does **not** make that text *true*, because
-//! renaming a test and leaving the comment alone keeps the two in agreement
-//! about a name neither of them still has. That is what
-//! [`the_page_and_the_file_name_the_same_tests`] is for, and it is the one
-//! that would have failed on the day of the rename.
+//! The last two exist because a sentence naming the tests that sits
+//! **outside** the marked region is the one class of drift a quote-this-file
+//! check structurally cannot catch. Widening the region is only half a fix,
+//! and it is worth being explicit about which half: a second marker makes the
+//! page and this file **one text**, so editing one and not the other is loud;
+//! it does **not** make that text *true*, because renaming a test and leaving
+//! the comment alone keeps the two in agreement about a name neither of them
+//! still has. That is what [`the_page_and_the_file_name_the_same_tests`] is
+//! for.
 //!
 //! **`cargo fmt` is one of the things that can make them drift**, since the
 //! marked region is ordinary code and the formatter has an opinion about it.
 //! That is intended, not a flaw: the failure is loud and the fix is one
-//! paste. The rule, and it is in `AGENTS.md` too — **edit the test, run it,
-//! paste. Never edit the page's code block by hand.**
+//! paste. The rule: **edit the test, run it, paste. Never edit the page's
+//! code block by hand.**
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
@@ -58,7 +52,7 @@ fn this_file() -> PathBuf {
 
 /// The page these markers are quoted into.
 fn page() -> String {
-    std::fs::read_to_string(repo_root().join("docs/api/rust.md")).expect("the page")
+    std::fs::read_to_string(repo_root().join("docs/ein/ein.rs/api.md")).expect("the page")
 }
 
 // ─── page ───────────────────────────────────────────────────────────
@@ -122,8 +116,8 @@ fn run(path: &Path) -> Result<String, String> {
         Some(Verdict::Ambiguity) => out += "R holds two states or more\n",
         Some(Verdict::Contradiction) => out += "R is empty: every node is dead\n",
         // Alive nodes, every one of which still owes an obligation the program
-        // stated (M1d S1d.2.6). Not a model and not a refutation — a caller
-        // that branches on "R is empty" alone would call it unsat.
+        // stated. Not a model and not a refutation — a caller that branches
+        // on "R is empty" alone would call it unsat.
         Some(Verdict::Open) => out += "R is empty: every alive node owes\n",
         None => out += &format!("undecided: {:?}\n", r.answer.stopped),
     }
@@ -195,9 +189,9 @@ trace: 581 steps
 /// arms, so the `match` in the page is not four arms of which one has ever
 /// executed.
 ///
-/// The fourth arrived with M1d S1d.2.6 and is the one an embedder is most
-/// likely to get wrong: R is empty there as it is for a `Contradiction`, so a
-/// caller that branches on "no state" alone silently files it under *unsat*.
+/// The fourth is the one an embedder is most likely to get wrong: R is empty
+/// there as it is for a `Contradiction`, so a caller that branches on "no
+/// state" alone silently files it under *unsat*.
 #[test]
 fn the_other_three_verdicts_are_reachable() {
     let bad = run(&repo_root().join("examples/ein-bugs/zebra2-bad.ein")).expect("solve");
@@ -236,14 +230,14 @@ fn the_page_quotes_this_file() {
     let block = page
         .split("```rust\n")
         .nth(1)
-        .expect("a ```rust block in docs/api/rust.md")
+        .expect("a ```rust block in docs/ein/ein.rs/api.md")
         .split("\n```")
         .next()
         .expect("its close");
 
     assert_eq!(
         block, example,
-        "docs/api/rust.md's first ```rust block and this file's marked region \
+        "docs/ein/ein.rs/api.md's first ```rust block and this file's marked region \
          have diverged. They are one text: edit the test, run it, paste."
     );
 }
@@ -282,24 +276,22 @@ fn the_page_quotes_this_files_prose_too() {
     let quoted = page
         .split("<!-- prose -->")
         .nth(1)
-        .expect("a <!-- prose --> region in docs/api/rust.md");
+        .expect("a <!-- prose --> region in docs/ein/ein.rs/api.md");
     assert_eq!(
         quoted.trim_matches('\n'),
         prose.trim_matches('\n'),
-        "docs/api/rust.md's <!-- prose --> region and this file's `// ─── prose ───` \
+        "docs/ein/ein.rs/api.md's <!-- prose --> region and this file's \
+         `// ─── prose ───` \
          region have diverged. They are one text: edit the comment, paste."
     );
 }
 
 /// **Every test name the page prints exists, and every test here is named.**
 ///
-/// This is the check that would have caught `CD-M4` on the day it was made.
-/// `the_other_two_verdicts_are_reachable` became
-/// `the_other_three_verdicts_are_reachable` when the `Open` arm arrived, and
-/// nothing anywhere resolved the old name against anything — not rustdoc (a
-/// backtick is not an intra-doc link), not the quote-this-file diff (the
-/// sentence was outside the region), and not the compiler (it is a string in a
-/// markdown file).
+/// A test name on the page is a string in a markdown file, and nothing else
+/// resolves it against anything: not rustdoc (a backtick is not an intra-doc
+/// link), not the quote-this-file diff (a sentence may sit outside the
+/// region), and not the compiler.
 ///
 /// Both directions, because a marker only makes the two texts *agree*:
 ///
@@ -338,13 +330,13 @@ fn the_page_and_the_file_name_the_same_tests() {
     let phantom: Vec<_> = cited.difference(&declared).collect();
     assert!(
         phantom.is_empty(),
-        "docs/api/rust.md names {phantom:?}, which is not a test in \
+        "docs/ein/ein.rs/api.md names {phantom:?}, which is not a test in \
          ein-cli/tests/embedding.rs"
     );
     let unnamed: Vec<_> = declared.difference(&cited).collect();
     assert!(
         unnamed.is_empty(),
-        "{unnamed:?} is a test here that docs/api/rust.md never names — if it \
+        "{unnamed:?} is a test here that docs/ein/ein.rs/api.md never names — if it \
          was renamed, the page still names the old one"
     );
 }

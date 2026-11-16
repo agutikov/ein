@@ -14,7 +14,7 @@
 # `branching/07_lookahead_off.ein` 2.8x cheaper and took it out, and M1e2's
 # re-takes moved entries in and out again. The rule, and why the sum rather
 # than the slowest run, is corpus/README.md § `slow`; the measurement is
-# docs/history/m1a_rust/measurements/corpus_cost.md and
+# utils/censuses/corpus-cost.md and
 # `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
 #
 # `heavy_dump = true` (M1f S1f.5.13) keeps an entry out of the per-commit

@@ -2,11 +2,11 @@
 //!
 //! Everything that formats lives here, so every rendered surface is one crate
 //! and can be diffed as a unit
-//! ([design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §1).
+//! ([design/toolchain-and-layout.md § 1](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#1-the-workspace)).
 //! The bulk lands at
-//! [P1a.5](../../../../docs/history/m1a_rust/README.md#p1a5--presentation-and-cli); the
+//! [architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli); the
 //! derivation DAG comes early, with the provenance it renders
-//! ([S1a.2.4](../../../../docs/history/m1a_rust/README.md#s1a24--provenance-and-derivation-walks)),
+//! ([design/data-model.md § 8.4](../../../../docs/ein/ein.rs/design/data-model.md#84-derivation-walks)),
 //! because a walk whose output nobody can read is a walk nobody can check.
 
 #![forbid(unsafe_code)]

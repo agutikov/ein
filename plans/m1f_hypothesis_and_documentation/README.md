@@ -164,7 +164,7 @@ is now the one-stage record of what that phase delivered.
 - [M1e](../../docs/history/m1e_review_processing/README.md) — where both phases were written,
   and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gated `S1f.5.20`,
   now P1f.20, until 2026-08-31.
-- [`docs/history/m1d_satisfiability/layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
+- `docs/history/m1d_satisfiability/layer_census.md`
   — the `Σₖ C(alive, k)` finding, the walk's, which P1f.10's plan of 2026-08-28
   started from; what the routes spend today is in
   [its README](p1f.10_hypothesis_structure/README.md#what-was-measured-at-the-re-plan).

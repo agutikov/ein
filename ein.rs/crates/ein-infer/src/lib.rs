@@ -1,9 +1,9 @@
 //! `ein-infer` — Compile, match, saturate, world, search, verdict, explain.
 //!
 //! The engine proper. It lands over
-//! [P1a.3](../../../../docs/history/m1a_rust/README.md#p1a3--deductive-core) (compile →
+//! [architecture.md § 3.3](../../../../docs/ein/ein.rs/architecture.md#33-ein-infer) (compile →
 //! match → saturate → the NAF boundary) and
-//! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer) (the
+//! [design/search.md](../../../../docs/ein/ein.rs/design/search.md) (the
 //! hypothesis loop above it). The search is the region's: every question
 //! about `R` is [`explore`]'s, answered by a route over nodes that are root
 //! with a subset of H committed and saturated ([`region`]). P1a.4's
@@ -15,7 +15,7 @@
 //! error are all observable, and fixed: where no other page states one, it is
 //! [`docs/kernel/defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md)'s.
 //! What is free is the encoding, and that is where the cost lives —
-//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1 attributes 46 %
+//! [design/matcher.md § 1](../../../../docs/ein/ein.rs/design/matcher.md#1-the-costs-it-is-shaped-against) attributes 46 %
 //! of an exhaustive solve's self time to unification.
 
 #![forbid(unsafe_code)]

@@ -1,6 +1,6 @@
 //! The event stream, compared for the derivation rather than the narration.
 //!
-//! Two [`--events`](../../../../docs/kernel/inference/events.md) logs in,
+//! Two [`--events`](../../../../docs/ein/ein.rs/events.md) logs in,
 //! a list of differences out. What calls it is
 //! `ein-infer/tests/event_cut_control.rs`, which mutates one real stream and
 //! checks the cut still reports the mutation. That test is not decoration:
@@ -11,7 +11,7 @@
 //! # 1. Why the stream cannot simply be filtered
 //!
 //! The firing traffic is where a run says *what it derived*, and since
-//! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+//! [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
 //! a fork resumes root's saturation rather than re-deriving it, so how much of
 //! that traffic a run narrates is not fixed. Eliding it wholesale would stop
 //! catching the thing a comparison of two streams exists for — a run that

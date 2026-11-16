@@ -4,7 +4,7 @@
 //! `parse(dump(parse(x))) == parse(x)` holds. Positions live in a **side
 //! table** so that it holds by construction: [`Node`] carries no `Loc`, so
 //! structural equality ([`Ast::eq_nodes`]) cannot see one
-//! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §3).
+//! ([design/ir-frontend.md § 5](../../../../docs/ein/ein.rs/design/ir-frontend.md#5-the-ast-arena)).
 //!
 //! Everything is `u32`-indexed into three parallel arenas — nodes, their
 //! locations, and a flat argument list. No `Rc`, no recursive `Drop`, and a
@@ -101,7 +101,7 @@ pub enum Node {
 
 /// String interner. Never iterated — only `intern` and index lookups — so the
 /// hash map's order cannot reach an observable
-/// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9),
+/// ([design/determinism-and-order.md § 9](../../../../docs/ein/ein.rs/design/determinism-and-order.md#9-the-tests-that-hold-it)),
 /// and it may therefore be hashed by whatever is fastest. SipHash was **7 %**
 /// of a `parse/zebra2` profile for a table of 157 entries (T1a.6.5.2).
 #[derive(Clone, Default, Debug)]

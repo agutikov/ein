@@ -333,7 +333,7 @@ string surface byte for byte, unchanged.
   § 4's table (a row for an imported module that cannot be read) and its paragraph on the one read, and a new
   [§ 4.18](../../../docs/kernel/defined_behaviour.md#418-an-imported-module-is-read-as-the-program-is--m1f-s1f522); § 1.5's
   count of `at None` fixtures is unmoved, no fixture under `examples/broken/load/` having moved.
-- [`03_implementation.md`](../../../docs/kernel/ir/02-data-model/03_implementation.md): `read.rs` in the module map,
+- [`architecture.md`](../../../docs/ein/ein.rs/architecture.md): `read.rs` in the module map,
   and the lexer's thirteen words (it said twelve, from before S1f.5.23).
 - `examples/README.md`'s catalogue (224 entries under `ein-bugs/wrong-answers/`, `ls examples/ein-bugs/wrong-answers |
   wc -l`, 2026-11-10, the directory among them; the `unicode-space-*` family and `import-module-directory`), the
