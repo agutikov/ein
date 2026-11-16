@@ -89,6 +89,12 @@ needs:
 Its cost is `2ⁿ` saturations, so it refuses a universe past its limit, `--region-limit`, and says how many
 saturations the region would have taken.
 
+**What the oracle does not check.** It computes each node with the engine's own saturation and takes H from the
+engine's own generator, so it is the reference every route is held to, not a check of those two: a derivation the
+saturation misses, or a candidate the generator never proposes, is missing from the oracle's R as from every
+route's. A relation the generator leaves out is named on every surface
+([solution semantics § 1.4](solution-semantics.md#14-candidate-and-universe)).
+
 ## 3. A program the static check flags
 
 A program is **flagged** when the static check cannot prove it monotone ([Monotone and non-monotone

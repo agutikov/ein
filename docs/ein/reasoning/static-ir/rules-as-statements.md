@@ -4,7 +4,7 @@ A **rule** is a statement about the state it fires in: where its pattern matches
 holds too ([Q4](../../../decisions/language/Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md)). It reads facts
 and concludes facts of one state, and no form reads another state, the number of states, or how far a search has
 gone ([Q-M1d.7](../../../decisions/language/Q-M1d.7-a-rule-is-a-sentence-about-the-state-it-fires.md)). How a
-rule is written, its parts and its reason, is the user's [rules page](../../../kernel/ir/01-ein-graph/02_rules.md);
+rule is written, its parts and its reason, is the user's [rules page](../../user/syntax-and-semantics/rules.md);
 this page states what kinds of statement a rule can be, how a rule reads as a rewrite of a graph, and the levels a
 knowledge base describes itself in.
 

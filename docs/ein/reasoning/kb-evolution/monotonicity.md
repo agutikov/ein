@@ -114,7 +114,9 @@ closure is incomplete, and the program stays flagged.
 
 Fact grain is sufficient too, and that claim is held to every corpus cube within the oracle's limit. It would unflag a program
 whose dynamic reads no commitment can ever match: a read that asks for membership in a type, `(is-a ?a House)`, where
-every candidate is a membership between objects. Ein's check does not read at it.
+every candidate is a membership between objects. Ein's check does not read at it: the check, *forbid* and the
+obligations rung read one D at relation grain, so a program with a read of a relation in D is flagged whatever the
+read's pattern, and fact grain is a reading held to the cube, which no route takes.
 
 ### 3.4 The verdict is relative to root
 
@@ -472,6 +474,7 @@ of the agenda the engine claims nothing of such a program
 | `ein solve FILE --monotone` answers from root's fixpoint and the static check, and describes no region (§ 3.1) | `ein-cli/tests/region_modes.rs`: `the_monotone_question_is_about_the_program` |
 | the theorem on the cube: a program the check calls monotone shows no violation of either upward closure; the non-monotone witnesses are flagged, each for its cause (§ 3.2) | `ein-infer/tests/region.rs`: `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
 | a *monotone* verdict beside a cube violation fails, on every corpus program and register witness within the oracle's limit (§ 3.2, § 4) | `ein-infer/tests/region.rs`: `fact_grain_never_calls_a_violated_cube_monotone` |
+| the check reads at relation grain: a program whose dynamic reads no commitment can match is flagged all the same (§ 3.3) | `ein-infer/tests/region.rs`: `fact_grain_on_programs_written_to_test_it` (*relation grain flags it*) |
 | fact grain calls no violated cube monotone, and leaves the set only where no commitment can match a read (§ 3.3) | `ein-infer/tests/region.rs`: `fact_grain_never_calls_a_violated_cube_monotone`, `fact_grain_on_programs_written_to_test_it` |
 | a *monotone* verdict is one state per node by fork and by every split from a fixpoint that holds root's, with no stale fact; from scratch it departs on `11_fifo_gap_static`'s `{b}` alone (§ 3.4, § 11.3) | `ein-infer/tests/detector.rs`: `a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`, `a_monotone_verdict_is_one_state_per_node_on_random_programs` |
 | zebra2's `absent`s read static relations, so the check calls it monotone (§ 3.5) | `ein-infer/tests/region.rs`: `zebra2_is_monotone_by_construction` |

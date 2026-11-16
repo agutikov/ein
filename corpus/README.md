@@ -3,18 +3,15 @@
 **The inventory**: every `.ein` file the engine is exercised over, and the
 invocations each one is exercised under.
 
-- **`corpus.toml`** — the manifest. Generated once from the tree, maintained by
-  hand thereafter. A completeness check fails on any `.ein` under `examples/`,
-  `stdlib/` or `tests/` with no entry, so the corpus cannot silently miss a
-  file. The third root arrived with M1c
-  [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)
-  and [`tests/README.md`](../tests/README.md) says why a stdlib conformance
+- **`corpus.toml`** — the manifest, maintained by hand. A completeness check
+  fails on any `.ein` under `examples/`, `stdlib/` or `tests/` with no entry,
+  so the corpus cannot silently miss a file;
+  [`tests/README.md`](../tests/README.md) says why a stdlib conformance
   program is not an example.
 - **`fuzz_findings/`** — minimised inputs a fuzzer found something on.
-- **`wrong_answers.toml`** — the register of known wrong answers
-  ([M1e2](../plans/m1e2_correctness/README.md) S1e2.1.1): one row per witness,
-  with the engine's answer today and the right one, as data. Its header is the
-  format.
+- **`wrong_answers.toml`** — the register of known wrong answers: one row per
+  witness, with the engine's answer today and the right one, as data. Its
+  header is the format.
 
 ## Who reads it
 
@@ -24,44 +21,42 @@ Everything is `cargo test`.
 |---|---|
 | [`ein-cli/tests/corpus_cli.rs`](../ein.rs/crates/ein-cli/tests/corpus_cli.rs) | **the sweep** — runs every entry under every declared run, as a process, holds each cell's exit code to a banked golden, and times them: it is what holds `cost_ms` and `slow` to the wall clock |
 | [`ein-corpus/src/manifest.rs`](../ein.rs/crates/ein-corpus/src/manifest.rs) | the completeness check and the manifest's own invariants, the `slow` and `heavy_dump` sets pinned among them |
-| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **the class-4 claim** (M1e2 S1e2.2.21): every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the nightly (`EIN_CORPUS_SLOW=1`, in shards) |
-| [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip** (M1e2 S1e2.3.8): every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the nightly (`EIN_CORPUS_SLOW=1`), and holds `heavy_dump` to the state files it counts (M1f S1f.5.13) |
-| [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | digests every observable surface of a corpus *file* against `golden/corpus_shapes.md5`, a superset of what the runs reach, and runs it again under a permuted id space: per commit the golden over every file outside `tests/` and the permutation over those of them that search, in the nightly every file under both, in shards (M1f S1f.6.39; `corpus_shapes.rs` banked the golden until then) |
-| [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to the golden's digest of its `--jobs 1` rendering and computed again only where it differs — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts; per commit the files outside `tests/` that search, in the nightly every file (M1f S1f.6.39) |
+| [`ein-infer/tests/corpus_cores.rs`](../ein.rs/crates/ein-infer/tests/corpus_cores.rs) | **every core names its cause**: every core a run reports for a dead node on an alive root, the oracle's cube and describe's N, names its commitment and, with root, derives its contradiction; walks the *files* and the register's witnesses, and reads `slow` to leave the zebra family to the slow half |
+| [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) | **the dump's round trip**: every entry's `ein solve FILE --dump-answer DIR`, declared or not, each state file reloaded to its state by value; reads `slow` and `heavy_dump` to leave those entries to the slow half, and holds `heavy_dump` to the state files it counts |
+| [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | digests every observable surface of a corpus *file* against `golden/corpus_shapes.md5`, a superset of what the runs reach, and runs it again under a permuted id space |
+| [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the ops a job count reaches again at `--jobs N`, each held to the golden's digest of its `--jobs 1` rendering and computed again only where it differs; `EIN_JOBS_SWEEP` names the job counts |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
-| [`ein-cli/tests/wrong_answers.rs`](../ein.rs/crates/ein-cli/tests/wrong_answers.rs) | **the wrong-answer register**, [`wrong_answers.toml`](wrong_answers.toml) (M1e2 S1e2.1.1): one row per witness of every known wrong answer, holding each to the answer it gives today — the wrong one while `open`, the right one once `fixed`. Every witness is a manifest entry or a file under `fuzz_findings/`, which `ein-corpus`'s `register` module checks without a run |
+| [`ein-cli/tests/wrong_answers.rs`](../ein.rs/crates/ein-cli/tests/wrong_answers.rs) | **the wrong-answer register**, [`wrong_answers.toml`](wrong_answers.toml): one row per witness of every known wrong answer, holding each to the answer it gives today — the wrong one while `open`, the right one once `fixed`. Every witness is a manifest entry or a file under `fuzz_findings/`, which `ein-corpus`'s `register` module checks without a run |
 
 `corpus_cores`, `id_order_invariance` and `jobs_invariance` walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.
 The completeness check is what keeps the two views the same set.
 
-**Every reader above that sweeps the corpus runs on the worker pool** (M1f
-S1f.6.39, `ein_corpus::pool`): its units — a (file, op) pair, a file, a cell —
-on `EIN_TEST_JOBS` workers, default 16, read back in their order, so no
+**Every reader above that sweeps the corpus runs on the worker pool**
+(`ein_corpus::pool`): its units — a (file, op) pair, a file, a cell — run
+on `EIN_TEST_JOBS` workers, default 16, and are read back in their order, so no
 verdict and no failure's text depends on the count. A sweep whose cells it
 times, `corpus_cli`, times each beside the cells the other workers run. The
 sweeps over (file, op) pairs load each file once and run every op on a copy
 of the load (`corpus_ops::Loads`).
 
-**Which files, per commit and in the nightly.** Per commit the golden and `dot_wellformed`
-read every file outside `tests/`, whose programs are each one stdlib rule's
-claim and are held by their claims; the two determinism sweeps read those of
-them that **search**, whose describe saturates more than root
+**Which files, by default and in the slow half.** By default the golden and
+`dot_wellformed` read every file outside `tests/`, whose programs are each one
+stdlib rule's claim and are held by their claims; the two determinism sweeps
+read those of them that **search**, whose describe saturates more than root
 (`corpus_ops::searches`, computed, never listed); `route_invariance`, every
-file but the `slow` entries. `EIN_CORPUS_SLOW=1`, the nightly's, reads every
-file in each. The nightly's long steps run as parallel jobs, one shard each,
-`EIN_TEST_SHARD=k/n`: `ein_corpus::shard` deals every file to exactly one
-shard.
+file but the `slow` entries. `EIN_CORPUS_SLOW=1` reads every file in each. A
+long sweep can be split, `EIN_TEST_SHARD=k/n`: `ein_corpus::shard` deals every
+file to exactly one shard.
 
 **That difference is what a dropped run does and does not cost**, and it is
-worth knowing before reading the `runs` columns below. The golden solves
-every corpus *file* five ways and `summary_properties` five, both under an
-entering budget, so removing `solve` from an entry's `runs` removes **no
-surface**: what it removes is the *process* — the argv the CLI must still
-accept, the exit code, the diagnostic on stderr, the `--json-summary` file —
-and the fact that the run was **unbudgeted**. On a fixture with no hypothesis
-structure, that last one is the only thing a `solve` cell was contributing,
-and it contributes it in the form of a blind enumeration nobody reads.
+worth knowing before reading the `runs` columns below. The golden digests
+every rendering of every corpus *file*, and `summary_properties` asks each five
+questions under a small budget, so removing `solve` from an entry's `runs`
+removes **no surface**: what it removes is the *process* — the argv the CLI
+must still accept, the exit code, the diagnostic on stderr, the
+`--json-summary` file — and the run at the default budget. On a fixture with no
+hypothesis structure, that last one is a blind enumeration nobody reads.
 
 ```sh
 cargo test --manifest-path ein.rs/Cargo.toml -p ein-cli --test corpus_cli
@@ -81,14 +76,13 @@ runs   = ["solve", "solve --maximal", "saturate", "render rules"]
 levers = ["-y"]                    # each makes one more `solve <lever>` run
 slow   = true                      # excluded from the default sweep — see § `slow`
 cost_ms = 3459                     # what its runs cost, together, measured
-heavy_dump = true                  # out of the per-commit round trip — see § `heavy_dump`
+heavy_dump = true                  # out of the default round trip — see § `heavy_dump`
 note   = "why this entry is interesting, when it is not obvious"
 ```
 
 A **run name is the `ein` argv with the file position elided**: `"solve
 --maximal"` is `ein solve <path> --maximal`, `"render rules"` is `ein render
-rules <path>`. Two
-substitutions happen in the sweep:
+rules <path>`. Two substitutions happen in the sweep:
 
 - `{out}` expands to that cell's output directory, so a run can name its own
   artefacts — `"solve --trace {out}/trace.md"`, `"oracle --dump {out}/region"`;
@@ -99,300 +93,202 @@ a thing that must work.
 
 **Exit 2 means two things, and a run has to say which.** It is the CLI's
 usage-error code *and* the code a `-T` abort takes, plus `ein test`'s load
-error and nothing-to-check. Since M1e S1e.3.6 `no_cell_crashes` reads the run:
-**a `2` is allowed exactly where the run names `-E` / `-T` /
-`--max-enterings` / `--max-time`**. Since M1e2 S1e2.1a.5 no cell does: a
-budget that stops a description (`--region-budget`, `--region-limit`) is an
-answer and exits 0, so `examples/zebra2.ein`'s walk cell `solve -E 1` became
-`solve --region-budget 1`, which exits 0 with a `note:`, and `-E` is retired.
-`ein oracle` over its `--region-limit` exits 2 too, and is refused, not
-budgeted, so no cell declares one (`lattice/06`'s two entries say so).
+error and nothing-to-check. `no_cell_crashes` reads the run: **a `2` is
+allowed exactly where the run names `-E` / `-T` / `--max-enterings` /
+`--max-time`**, and no cell does. A budget that stops a description
+(`--region-budget`, `--region-limit`) is an answer and exits 0, so
+`examples/zebra2.ein`'s cell `solve --region-budget 1` exits 0 with a
+`note:`, and `-E` is refused by the CLI. `ein oracle` over its
+`--region-limit` exits 2 too, and is refused, not budgeted, so no cell
+declares one (`lattice/06`'s two entries say so).
 
-**`-T` is refused in a cell** — M1e S1e.4.5, `TE-L1`. `-T` counts seconds, so
-a `-T` cell's **exit code is a stopwatch** and `corpus_exits.txt` banks it
-line by line.
-Measured 2026-09-01, the same argv exits 2 at `-T 0.001` and 0 at `-T 60`.
+**`-T` is refused in a cell.** `-T` counts seconds, so a `-T` cell's **exit
+code would be a stopwatch** and `corpus_exits.txt` would bank it line by line.
 That would be the only place in this repo where a wall clock reaches a banked
-artefact — everywhere else the clock is scrubbed before a comparison — so it is
-a check rather than a sentence: `ein-corpus`'s
+artefact — everywhere else the clock is scrubbed before a comparison — so it
+is a check rather than a sentence: `ein-corpus`'s
 `no_declared_run_budgets_by_wall_clock` fails on a `runs` or `levers` entry
 naming `-T` or `--max-time`. The allowance above stays as it is, because the
-*CLI* still takes both. A `test` cell on a file that does not load, or that
+*CLI* still takes `-T`. A `test` cell on a file that does not load, or that
 claims nothing, would exit 2 for a third reason and is **not** in the
-allowance: add the cell and the rule together, or the check cannot tell it from
-a stale argv.
+allowance: add the cell and the rule together, or the check cannot tell it
+from a stale argv.
 
-**`test` is the one run name that can fail on the file's own account.** M1c
-[S1c.1.3](../docs/ein/user/reference/cli.md#23-ein-test)
-added `ein test <path>`, which runs whatever `:expect` the file's queries carry
-and exits 1 when one of them is false — so a `test` cell in the exit golden is
-banking a claim the *program* makes, not one the engine happens to render. It
-is declared on every entry that carries an `:expect` — the three
-`examples/features/1{0,1,2}_expect*.ein` fixtures and every program under
-[`tests/stdlib/`](../tests/) — and on anything else it would exit 2 with
-"nothing to check", which is the right answer and not a useful cell. Adding one
-to a file that grows an `:expect` is the growth rule below, applied.
+**`test` is the one run name that can fail on the file's own account.**
+[`ein test <path>`](../docs/ein/user/reference/cli.md#23-ein-test) checks
+whatever `:expect` the file carries and exits 1 when one of them is refuted, so
+a `test` cell in the exit golden is banking a claim the *program* makes, not
+one the engine happens to render. It is declared on every entry that carries
+an `:expect` — the `examples/features/1{0,1,2,3}_*.ein` fixtures among them,
+and every program under [`tests/stdlib/`](../tests/) — and on anything else it
+would exit 2 with "nothing to check", which is the right answer and not a
+useful cell. Adding one to a file that grows an `:expect` is the growth rule
+below, applied.
 
 ## Groups
 
 | group | what it holds | the sweep expects |
 |---|---|---|
-| `positive` | `examples/**/*.ein` outside `broken/` and `ein-bugs/` | at least one run answers; catalogued in [`examples/README.md`](../examples/README.md) |
-| `stdlib` | the [stdlib](../stdlib/) modules loaded standalone, **and the conformance programs under [`tests/stdlib/`](../tests/) that exercise their rules** — one per rule or tight family, `find tests/stdlib -name '*.ein' \| wc -l` (M1c S1c.1.4; the closed-and-owing pair is M1d S1d.2.2) | as `positive`. The seven module entries exercise the import + macro machinery on their own terms; the `tests/` entries each carry an `:expect`, so their `test` cell is a claim the program makes |
-| `parse-negative` | `examples/broken/*.ein` | every run refused, `IRParseError` with `file:line:col` |
+| `positive` | `examples/**/*.ein` outside `broken/` and `ein-bugs/`, and the programs under `tests/` outside `tests/stdlib/` | at least one run answers; catalogued in [`examples/README.md`](../examples/README.md) and [`tests/README.md`](../tests/README.md) |
+| `stdlib` | the [stdlib](../stdlib/) modules loaded standalone, **and the conformance programs under [`tests/stdlib/`](../tests/) that exercise their rules** — one per rule or tight family, `find tests/stdlib -name '*.ein' \| wc -l` | as `positive`. The module entries exercise the import + macro machinery on their own terms; the `tests/` entries each carry an `:expect`, so their `test` cell is a claim the program makes |
+| `parse-negative` | `examples/broken/*.ein` | every run refused, with `file:line:col` |
 | `load-negative` | `examples/broken/load/*.ein` | parse, then fail to load; the exact message is checked in beside each fixture ([README](../examples/broken/load/README.md)) |
-| `compile-negative` | `examples/broken/compile/*.ein` | parse and load, then the compiler refuses; `.expected` beside each ([README](../examples/broken/compile/README.md)). **No entry since M1f S1f.5.24**, which moved the last, `eq_in_a_macro_body`, to `broken/load/` (W66): no program reaches a compile refusal. `activator_arity.ein` sits in that directory and is `positive`: its error is unreachable through the engine by design, so the file solves and derives nothing, which is what it pins |
+| `compile-negative` | `examples/broken/compile/*.ein` | parse and load, then the compiler refuses; `.expected` beside each ([README](../examples/broken/compile/README.md)). **It has no entry**: no program reaches a compile refusal, since the parser and the loader refuse every shape that would. `activator_arity.ein` sits in that directory and is `positive`: its error is unreachable through the engine by design, so the file solves and derives nothing, which is what it pins |
 | `regression` | `examples/ein-bugs/*.ein` | **nothing uniform** — see below |
 
 A negative fails whichever way you enter, so what varies is *which entry point
 reports it*: the negative groups run `solve`, `saturate` and `render rules` —
 three presentations of one error, and three chances to format one of them
-differently. With one caveat the sweep measured and this table did not use to
-admit: **`render rules` does not load the KB**, so ten of the thirty
-load-negatives render their rules and exit 0. That is not a hole, it is where
+differently. With one caveat: **`render rules` does not load the KB**, so a
+load-negative can render its rules and exit 0. That is not a hole, it is where
 the pass boundary is; the exit golden records it per cell.
 
 `regression` is the group with no rule, and deliberately. It holds the inputs
 that once broke the engine — an uncompilable query goal, a goal binding that
 was a JSON number, an `(or …)` whose arms bind different variables — and what
-"correct" means for one of them is whatever it does now.
-Seven of its ten entries answer on every run, one answers under `saturate` and
-is refused under `solve`, two are refused outright — and the exit golden is the
-only statement of which.
+"correct" means for one of them is whatever it does now. Some of its entries
+answer on every run, some are refused, and some do both — and the exit
+golden is the only statement of which (`negatives_are_grouped_by_where_they_fail`
+holds the group to the directory).
 
 **A group is a directory, with one deliberate widening.** `tests/stdlib/`'s
-entries are `stdlib` rather than a seventh group, because there the group names
-a *subject* rather than a failure point: what a `tests/stdlib/` entry is about
-is a rule of `stdlib/`, and nothing else in the corpus is. The alternative was
-a `stdlib-conformance` group holding the tests and nothing else, which is a
-vocabulary entry that means "the directory it is named after".
+entries are `stdlib` rather than a group of their own, because there the group
+names a *subject* rather than a failure point: what a `tests/stdlib/` entry is
+about is a rule of `stdlib/`, and nothing else in the corpus is. The
+alternative was a `stdlib-conformance` group holding the tests and nothing
+else, which is a vocabulary entry that means "the directory it is named
+after".
 
-**Six groups, and no empty ones.** There were two: `golden` until
-[Q-M1a.9](../docs/history/m1a_rust/open_questions.md#q-m1a9--where-do-goldens-live)
-was answered (goldens live in `ein.rs/crates/<crate>/tests/golden/`), and
-`generated` until
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer).
-`generated` named a throwaway manifest of fuzzer cases; `utils/fuzz_engine.py`
-drives the `ein` binary directly and writes no manifest, so the name has no
-referent. **A corpus entry
-is a file the engine is *permanently* exercised over**, and a generated case
-lives for milliseconds — which is why the group could never have held one
-anyway. A fuzz find that is worth keeping goes to
+**No empty group.** Goldens live beside the crate they pin, in
+`ein.rs/crates/<crate>/tests/golden/`
+([Q-M1a.9](../docs/decisions/corpus/Q-M1a.9-a-golden-lives-beside-the-crate-it-pins.md)),
+not in the corpus. **A corpus entry is a file the engine is *permanently*
+exercised over**, and a generated fuzz case lives for milliseconds, so it
+never has an entry: a fuzz find that is worth keeping goes to
 [`fuzz_findings/`](fuzz_findings/README.md) and, once its expectation
 settles, becomes a `regression` entry with a name.
 
-An empty group is a question with a home; both questions are answered, so
-neither group is here.
-
 ## Dropped runs
 
-Some entries do not declare `solve`, or `render lattice`, and each says so in
-its `note`. Every reason is about the **puzzle**. Until M1e2 S1e2.1a.5 the
-list was about the walk's `solve` and `solve -e`, and the reasons below are
-the ones those notes give:
+Some entries do not declare `solve`, or `render lattice`, and each says why in
+its `note`. Every reason is about the **puzzle**:
 
-- **A demo that closes no domain.** The `saturation/**` demos exist to show ONE
+- **A demo that states no domain.** The `saturation/**` demos exist to show ONE
   rule firing; `features/02_star_in_identifiers` is a lexer demo;
-  `features/04_open` demonstrates the `unknown` macro (named `open` when the file was) and
+  `features/04_open` demonstrates the `unknown` macro and
   `features/05_stdlib_domain_elim` the stdlib's elimination rules. None of them
-  states a domain, so `solve` on one is not solving the demo — it is
-  enumerating everything that could be built out of the demo's objects, to the
-  `-m` cap, and calling the result `Contradiction`
-  ([Q-M1d.6](../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)).
-  `saturate` is the run that asks the demo's question and it costs 3.5 ms.
-- **`zebra2-minus-15`** is the honest case: genuinely under-determined at 32
-  models, so its exhaustive search is large rather than pathological. Its `-e`
-  is [M1d](../docs/history/m1d_satisfiability/README.md)'s subject and arrives with
-  that milestone.
-- **`render lattice` is `solve -e` with a DOT writer** (`-m 3` rather than 5 —
-  `render.rs::cmd_lattice`), so it inherits the same question and the same
-  answer. On `zebra2.ein` it draws **26.8 KB and 210 lines**, which is a view;
-  on `square-unique/cul-de-sac` it draws **49.2 MB and 480 934 lines** after
-  94 s, which is the enumerator's shadow. Four entries do without it —
-  `square-unique/{corner-house,cul-de-sac,terminus}` and `zebra2-minus-15` —
-  and **one keeps it**: `features/04_open`, because that fixture's subject *is*
-  what an open domain does to a search
-  ([Q-M1d.3](../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)).
-  The corpus pays for exactly one unbounded lattice, and it is the one that
-  demonstrates something.
+  bounds what may be guessed, so `solve` on one is not solving the demo: it is
+  enumerating every fact that could be built out of the demo's objects.
+  `saturate` is the run that asks the demo's question.
+- **The `syntax/` probes** exist to be drawn: each is one shape the renderers
+  must handle, and its runs are the views
+  ([`examples/README.md`](../examples/README.md)).
 
 **Do not drop a run merely because it is slow.** The test is whether the run
-*asks the fixture's question* — `features/05_stdlib_domain_elim` solves in
-3.0 s today and is still not declared, because three seconds of blind
-enumeration is not three seconds of coverage; `branching/07_lookahead_off`
-costs 0.32 s per run — 0.92 s until T1a.7.2.0 — and keeps both, because on that
-fixture the cost **is** the finding. And where a run is dropped the note says which and why: a `runs`
-column that shrinks without a reason is how coverage disappears.
-
-[S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) priced
-every excluded run against the engine. Three of them finish —
-`features/05_stdlib_domain_elim`'s two at 3.0 s and `zebra2-minus-15 :: render
-lattice` at 27.8 s — and the eight `solve` / `solve -e` cells that do not are
-not waiting on a budget at all: at the default `-m 5` they are killed by the
-**OOM killer**, at 14 GB and between one and three minutes. An unbounded
-hypothesis space is unbounded in memory first.
+*asks the fixture's question*: a run that does stays, whatever it costs, and
+a slow entry is flagged `slow` rather than trimmed. Where a run is dropped the
+note says which and why: a `runs` column that shrinks without a reason is how
+coverage disappears.
 
 ## `slow`
 
-**An entry is `slow` when its declared runs cost 1 s or more, together**, on
-the build and machine
-[`corpus-cost.md`](../utils/censuses/corpus-cost.md) names.
-`cost_ms` records that sum, and two tests hold the flag to it: `ein-corpus`'s
+**An entry is `slow` when its declared runs cost 1 s or more, together**
+(`ein_corpus::manifest::SLOW_MS`). `cost_ms` records that sum, measured on a
+release build, and two tests hold the flag to it: `ein-corpus`'s
 `slow_matches_the_recorded_cost` (exact, arithmetic, never flakes) and
 `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
-the sweep it has just run, at a 4× tolerance).
+the sweep it has just run, within a factor of the threshold; the recorded
+`cost_ms` is held within the same factor under `EIN_CORPUS_SLOW=1`).
 
 **Which entries are slow is a test's to say**, and this page does not copy its
 list: `ein-corpus`'s `the_slow_set_is_exactly_these_fifteen` names them, in
-path order, and fails per commit when the set moves (M1e S1e.3.6; its name has
-moved with the set), and `grep -c '^slow *= *true' corpus/corpus.toml` counts
-them. A re-take moves the flag both ways: `features/04_open` lost it at M1e2
-S1e2.1a.5's switch, when no cell ran the walk any more, and the six `square-*`
-gained it at S1e2.1c.2. What each costs is
-[`corpus-cost.md`](../utils/censuses/corpus-cost.md)'s, whose
-§ 10 is the latest re-take (2026-11-03).
+path order, and fails when the set moves, and
+`grep -c '^slow *= *true' corpus/corpus.toml` counts them. A re-take of the
+costs can move the flag both ways, which is what a measured flag is for.
 
 The **cell count** is `wc -l ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt`:
 the exit golden is one line per cell of the full selection, so it is the number
 and it cannot drift from the sweep that writes it. The default selection is
-that minus the slow entries' cells. What the sweep costs is a
-measurement — **5.3 s** of `cargo test` by default and **22.2 s** with
-`EIN_CORPUS_SLOW=1`, where before S1a.9.0 they took **307 s** (2026-08-22, and
-`utils/corpus_cost.py` re-takes it).
-
-> It was 629 / 641 cells at S1a.9.0 and the wall clock has not moved: M1c
-> S1c.1.2 added five fixtures and S1c.1.4 added 45 with 225 cells between
-> them, and the default sweep still finishes in the same 5.3 s, because a
-> conformance program is a dozen facts and the cost of a cell there is the
-> process, not the engine.
-
-> **Three, until M1a T1a.7.2.0.** `branching/07_lookahead_off`'s seven cells
-> cost 2.12 s when S1a.9.0 measured them and **754 ms** after it: coalescing
-> root's layer stack at the search's layer barrier is 2.8× on that entry, and
-> the flag stopped being true. Nothing was dropped and nothing was tuned — a
-> re-take found it, which is the whole reason `slow` carries a number
-> (scaling.md §6).
-> The same pass re-priced the other two: `features/01` 4.06 → 3.46 s, most of
-> it T1a.7.1.7's per-worker provenance region, and `features/04` 10.21 →
-> 9.74 s.
+that minus the slow entries' cells.
 
 Three decisions are worth knowing before editing the column:
 
 - **The sum, not the slowest run.** The flag's job is the sweep's budget, and
-  the sum is what an entry costs it. The one entry the two rules used to
-  disagree about was `branching/07_lookahead_off`, whose two 0.92 s runs were
-  under a per-run line and over the sum's — and it is now under both.
-- **One second**, because the whole default selection is under three seconds:
-  past that an entry stops being part of the sweep and becomes the reason it
-  is slow. When the line was drawn the measured distribution left room on both
-  sides (M1a T1a.7.2.0, 2026-08-22, `corpus_cost.md` § 7): the two slow
-  entries cost 3.5 s and 9.7 s, and the most expensive unflagged one 0.75 s,
-  so a machine would have had to be 3.5× faster or 1.3× slower before the
-  line moved. It was 2.1 s / 4.1 s / 10.2 s against 0.38 s until T1a.7.2.0
-  took the 2.1 s entry to 0.75 s. The distribution since is each re-take's in
-  `corpus_cost.md`, which moved entries across the line both ways.
+  the sum is what an entry costs it.
+- **One second**, so that an entry past it is the reason the default sweep is
+  slow, not a part of it.
 - **`cost_ms` is recorded only where something checks it**: on a `slow` entry,
-  or on one within 4× of the threshold. Below that the sweep's own tolerance
-  swallows it and it would be a number nobody verifies — which is exactly what
-  the flag was between 2026-08-17 and S1a.9.0.
+  or on one within the tolerance factor of the threshold. Below that the
+  sweep's own tolerance swallows it and it would be a number nobody verifies.
 
 ## `heavy_dump`
 
-**An entry is `heavy_dump` when its describe dump writes 40 000 state files or more** (M1f S1f.5.13, the user's
-ruling of 2026-11-08 on P-16, *"move to slow tier"*). The dump is `ein solve FILE --dump-answer DIR`, which no entry
-declares and [`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs) runs on every
-entry, reloading each state file to its state by value; the line is `ein_corpus::manifest::HEAVY_DUMP_FILES`.
+**An entry is `heavy_dump` when its describe dump writes 40 000 state files or
+more** (`ein_corpus::manifest::HEAVY_DUMP_FILES`). The dump is
+`ein solve FILE --dump-answer DIR`, which no entry declares and
+[`ein-cli/tests/answer_round_trip.rs`](../ein.rs/crates/ein-cli/tests/answer_round_trip.rs)
+runs on every entry, reloading each state file to its state by value.
 
-- **Per commit** the round trip leaves out every entry that is `slow` or `heavy_dump`, and fails on an unflagged one
-  that writes 40 000 or more. **Under `EIN_CORPUS_SLOW=1`**, which the nightly's `deep-corpus` job sets, as
-  `./run_tests.sh --slow`, `--nightly` and `--dev-host` do, it takes every entry and fails as well on a flagged one that writes
-  fewer. `ein-corpus`'s `the_heavy_dump_set_is_exactly_these_five` pins the set per commit, and `nightly_steps.rs`
-  that the nightly sets the flag.
-- **Not `slow`**, which is a claim about the declared runs: the dump is none of them, and the four entries the ruling
-  moved declare runs that cost milliseconds, so `slow` on them would be the false claim
-  `slow_matches_the_recorded_cost` fails on.
-- **A count, not a time**, so it holds on any machine and moves only when a dump does. The line sits in the gap the
-  distribution of 2026-11-09 leaves above the six `slow` `square-*` (`EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo
-  test … -p ein-cli --release --test answer_round_trip -- --nocapture`): five entries write 64 514 to 65 214 state
-  files, then come 23 390 (the six), 11 339 (`type-exclusivity/pets`) and 4 096 or fewer.
+- **By default** the round trip leaves out every entry that is `slow` or
+  `heavy_dump`, and fails on an unflagged one that writes 40 000 or more.
+  **Under `EIN_CORPUS_SLOW=1`** it takes every entry and fails as well on a
+  flagged one that writes fewer. `ein-corpus`'s
+  `the_heavy_dump_set_is_exactly_these_five` pins the set.
+- **Not `slow`**, which is a claim about the declared runs: the dump is none of
+  them, and most flagged entries declare runs that cost milliseconds, so `slow`
+  on them would be the false claim `slow_matches_the_recorded_cost` fails on.
+- **A count, not a time**, so it holds on any machine and moves only when a
+  dump does. The line sits in a gap of the distribution, which
+  `EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test
+  answer_round_trip -- --nocapture` prints, each program with its count.
 
-**Five entries are flagged**: `square-unique/corner-house`, `cul-de-sac` and `terminus`, `features/04_open`, and
-`features/01_not_and_absent`, which is `slow` too and carries the flag because the slow tier holds it on every entry.
-Per commit the round trip took 8.6 s where it took 55 s, and the slow tier takes 121 s in release (2026-11-09,
-[S1f.5.13's T2 record](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.13_large_dumps_to_the_slow_tier.md#t2-record-2026-11-09)).
+**Five entries are flagged**: `square-unique/corner-house`, `cul-de-sac` and
+`terminus`, `features/04_open`, and `features/01_not_and_absent`, which is
+`slow` too and carries the flag because the slow half holds it on every entry.
 
-## Tiers
+## The slow half
 
-**Three tiers run the corpus's tests** (M1f S1f.5.27, the user's ruling of 2026-11-10: *"reduce nightly job, remove
-long running tests, we will eventually run them on dev host, retain critical tests in CI"*): the per-commit gate
-(`./run_tests.sh`, `per-commit.yml`), the CI nightly (`./run_tests.sh --nightly`, `nightly.yml`) and the dev host
-(`./run_tests.sh --dev-host`), which nothing schedules. The nightly keeps a step that guards an answer or a contract no
-per-commit step guards, at a budget that fits in 5 min on the runner; a step past that, or one that measures rather
-than checks, is the dev host's, which also runs every nightly step at full budget.
-`ein-cli/tests/gate_steps.rs` holds the gate's list to its workflow, and `nightly_steps.rs` the nightly's to its
-workflow and the dev host's to the nightly's.
+Each corpus test has a default half and a slow half, `EIN_CORPUS_SLOW=1`, which
+adds what the default leaves out. The tests are built to run under
+`cargo test --profile gate` ([`ein.rs/Cargo.toml`](../ein.rs/Cargo.toml)):
+release codegen with the debug assertions and overflow checks on.
 
-| test or script | per commit | CI nightly | dev host |
-|---|---|---|---|
-| `corpus_cli` | every entry but the `slow` ones | the `slow` ones too (`EIN_CORPUS_SLOW=1`) | as the nightly |
-| `answer_round_trip` | every entry but the `slow` and `heavy_dump` ones | every entry | as the nightly |
-| `lever_invariance` | every declared lever cell but the `slow` ones | the `slow` cells too | as the nightly |
-| `corpus_cores` | every entry but the `slow` ones | the `slow` ones too | as the nightly |
-| `answer_dump` | every entry | the same | as the nightly |
-| `region`, `obligation_rung` | the fast halves | the slow halves too, since S1f.5.27 | as the nightly |
-| `pair_layer` | every entry but the `slow` ones, and three named instances | the `slow` ones too | as the nightly |
-| `theory_share` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half | as the nightly |
-| `cover` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half | as the nightly |
-| `structure_invariance` | every program that searches but the `slow` ones, and three named instances | the `slow` ones too | as the nightly |
-| `route_invariance` | every monotone program both routes describe at the default budget, but the `slow` entries | the `slow` ones too | as the nightly; no test runs past the default region budget |
-| `id_order_invariance` | one permutation of the id space | — | eight |
-| `fuzz_properties` | 2 000 inputs | 20 000 a seed, two seeds | 1 000 000 a seed |
-| `utils/stdlib_mutants.py --check` | — | yes | yes |
-| `utils/stdlib_census.py --check` | — (`stdlib_coverage` is the gate) | — | yes |
-| `utils/review_bundle.py` | `--smoke` | — | the whole bundle, and its link check |
-| `cargo bench --bench engine -- --test` | yes | yes | yes |
-
-**Every tier's test steps run the gate profile** (M1f S1f.6.39): `cargo test --profile gate`, release codegen with the
-debug assertions and overflow checks on, where the per-commit tier ran the dev profile and the nightly `--release`.
-
-What each step took, on the runner and here, is in
-[S1f.5.27's records](../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.27_the_nightly_reduced.md#t1-record-2026-11-10),
-and before and after the pool and the profile in
-[S1f.6.39's](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.39_the_gate_made_fast.md).
+| test | by default | under `EIN_CORPUS_SLOW=1` |
+|---|---|---|
+| `corpus_cli` | every entry but the `slow` ones | the `slow` ones too |
+| `answer_round_trip` | every entry but the `slow` and `heavy_dump` ones | every entry |
+| `lever_invariance` | every declared lever cell but the `slow` ones | the `slow` cells too |
+| `corpus_cores` | every entry but the `slow` ones | the `slow` ones too |
+| `answer_dump` | every run it records but the `heavy_dump` entries' | the `heavy_dump` entries' too |
+| `region`, `obligation_rung` | the fast halves | the slow halves too |
+| `pair_layer` | every entry but the `slow` ones, and three named instances | the `slow` ones too |
+| `theory_share` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half |
+| `cover` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half |
+| `structure_invariance` | every program that searches but the `slow` ones, and three named instances | the `slow` ones too |
+| `route_invariance` | every monotone program both routes describe at the default budget, but the `slow` entries | the `slow` ones too; no test runs past the default region budget |
+| `id_order_invariance` | one permutation of the id space; `EIN_ID_SEEDS=N` takes N | the same, over every file |
+| `fuzz_properties` | 2 000 inputs; `EIN_FUZZ_ITERS` and `EIN_FUZZ_SEED` set the budget and the stream | the same |
 
 ## Levers
 
 `levers` names the CLI levers a program is run under, each one more `solve
-<lever>` run: `-L` (`enable-pre-branch-lookahead` off), `-K`
-(`enable-lookahead-kill-cache` off) and `-y` (`lattice-sanity-check` on).
-**Twelve entries declare 30 cells** (2026-11-01). `-o score-sum` was the fourth until M1e2
-S1e2.1a.5's switch retired it with the walk's order levers. The other flags a
-program can set are reachable only through its own `(config …)` block, so a
-process sweep cannot flip them from outside.
+<lever>` run. The one a manifest declares is `-y` (`lattice-sanity-check`
+on). The other flags a program can set are reachable only through its own
+`(config …)` block, so a process sweep cannot flip them from outside.
 
-**Since the switch no route reads a lever**, and a cell is a claim that it
-changes nothing printed: C4 of
-[`cli.md`](../docs/ein/user/reference/cli.md#1-the-contract),
-and the user's config principle of 2026-10-15
-([`config.md` § 2.5](../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
-`corpus_cli.rs` runs each cell for its exit code. Since M1e2 S1e2.1a.6
+**No route reads a lever**, and a cell is a claim that it changes nothing
+printed: C4 of [`cli.md`](../docs/ein/user/reference/cli.md#1-the-contract),
+and the config principle
+([`config.md` § 2.5](../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row),
+[Q-M1e2.30](../docs/decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)).
+`corpus_cli.rs` runs each cell for its exit code, and
 **`ein-cli/tests/lever_invariance.rs` holds what it prints**: every declared
-cell under each of `ein solve`'s fifteen questions, stdout, stderr, the exit
-code and the summary, against the same question at the default, and every
-flag a `(config …)` can set on every program whose R is known. The zebra2
-pair's cells are `slow` and run in the nightly, under `EIN_CORPUS_SLOW=1`.
-A lever that changes an answer is a register row, never a weaker mode.
-
-**Before the switch the levers were the walk's**, and `-L` was *a strictly
-weaker debug mode*: `complete()` approximated maximality more weakly with the
-lookahead off, so its cells checked a weaker mode rather than giving a second
-opinion
-([`branching/15`+`16`](../examples/branching/15_lookahead_two_step_on.ein)
-showed both sides wrong), and `-K` removed writes the search made into the KB
-it recorded
-([Q-M1e.7](../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
-Under R the register filed both: `-L`'s weaker mode as W1's `-L` rows, and
-the default's writes as W9, where `-K` was the run that agreed with R.
+cell under each of `ein solve`'s questions, stdout, stderr, the exit code and
+the summary, against the same question at the default, and every flag a
+`(config …)` can set on every program whose R is known. The cells of
+`zebra2.ein` and `zebra2-obligations.ein` are `slow`, and run under
+`EIN_CORPUS_SLOW=1`. A lever that changes an
+answer is a register row, never a weaker mode.
 
 ## Growth rule
 
