@@ -344,3 +344,73 @@ after it, and this record is the only later edit:
 
 **Findings outside the stage's scope**: [K-29 and K-30](findings.md#from-the-stages-of-tracks-s-and-r); K-30 is
 now the last.
+
+## Record (2026-11-16): as ruled at the close
+
+[Q-M1f.312](../open_questions.md#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) was ruled **(e)**
+at the phase's close (*"(e) Remove both"*), and K-29 and K-30 were to be fixed now, as proposed
+([`close.md`](close.md) § The user's answers). So both ops leave the shape golden, and what only they read is
+deleted by this stage's rule: **a piece no command's path, no golden and no page a user reads depends on is
+deleted with its tests**; a piece one of them still depends on stays, with that reader named.
+
+Run on `cb0fbde8`, in a worktree. Every reader below was re-found on that tree before anything was deleted
+(`grep -rn` over `ein.rs/crates`, `docs/`, `utils/` and the top-level pages), and this inventory is committed
+before the code.
+
+### The inventory: what goes, with its readers
+
+A **deciding** reader is a command's path, a golden, or a page a user reads; tests, examples and records decide
+nothing. Once the two ops are gone, each piece below has none.
+
+| # | piece | readers on `cb0fbde8` | disposition |
+|---|---|---|---|
+| 1 | `corpus_ops::Op::Hyp`, its two entries in `ops()` (`hyp`, `hyp+closed`), its `Display` and `run_loaded` arms | `id_order_invariance` (the golden and the permuted runs); `jobs_invariance` reads `ops()` but runs only `takes_jobs`, which `Hyp` is not | **deleted**, as ruled |
+| 2 | `shape::hyp_shape`, `shape::hyp_shape_with` (`pub`, re-exported) | `corpus_ops` (item 1); `hypgen_coverage.rs` | **deleted** |
+| 3 | `ein-infer/tests/hypgen_coverage.rs` | reads `hyp_shape_with`'s text for eight counters; its stated reason is that the `hyp` digests are evidence about the filters | **deleted**: the digests it vouched for are gone, and the filters H's pass runs are held by what H decides (the read-out's `universe` rows, every route's answer) |
+| 4 | `hypgen::generate` (`pub`, re-exported) and its reading of `enable_pre_branch_lookahead` and `enable_lookahead_kill_cache` (`GenOptions`, the `opts` argument of `generate_with`) | `hyp_shape_with`; `complete_counted`, `open_hypotheses` (item 5); the tests `compile_semantics.rs` (`guessed_relations`), `explain_semantics.rs` (`hypotheses`) and `search_semantics.rs` (`candidates`); the examples `hypgen_calls.rs` and `hypgen_cost.rs` | **deleted**. The three test helpers ask what the generator proposes, scoped by the program's lists, closures and signatures, which H's pass decides: they are re-pointed at `hypgen::generate_config_free`, the pass every command runs. `generate_with` takes no options: it is the config-free pass |
+| 5 | `hypgen::complete`, `complete_counted`, `open_hypotheses` (`pub`; the first and last re-exported) | `hyp_shape_with` (its `COMPLETE` and `OPEN` lines); `hypgen_calls.rs`; `search_semantics.rs`' `solution_node_needs_both_halves`; a doc row of `kb.rs` | **deleted** |
+| 6 | `hypgen::consistent`, `hypgen::is_solution_node` (`pub`, re-exported): **K-30** | `search_semantics.rs`' `solution_node_needs_both_halves` alone; named by `architecture.md`'s *complete model* row, `architecture_and_algorithms.md` § 2 and `implementation.md`'s `hypgen.rs` row | **deleted with that test**. The answer is R; `contradiction::has_contradiction`, which `consistent` wrapped, stays |
+| 7 | the lookahead: `lookahead.rs` whole (`Lookahead`, re-exported, `dies_immediately`, its three unit tests); in `hypgen`, `Ctx::lookahead`, `Ctx::kill_cache`, the filter's arm in `apply_filters`, `write_negated` (the kill cache) and `Drop::LookaheadKilled`; `Matcher::run_seeded_at` and `Matcher::holds_seeded` (`pub`) | `generate_with` where `generate`'s config switched it on (item 4); `hypgen_calls.rs` (`Lookahead::new`); `search_semantics.rs`' `dies` and its three kill-condition tests; `run_seeded_at` and `holds_seeded` are called by `dies_immediately` alone; `Drop::LookaheadKilled` is named by `ein-cli/src/summary.rs`' sparse `filtered` map, which H's pass never bumps (`answer_dump.md`: *it never appears*) | **deleted** with those tests. The summary's map lists the three filters H's pass runs; its output does not move, since a zero count prints no key |
+| 8 | `HypGenStats::report_lines`, `HypGenStats::balances`, `DROPS`, `SKIPS`, and the unit test `the_stats_report_omits_the_keys_that_never_fired` | `hyp_shape_with` (its `STATS` and `BALANCE` lines) alone: `--hyp-stats` prints H by relation, not these lines | **deleted** |
+| 9 | `closed.rs` whole: `emit_closed`, `producible_relations` (`pub`, re-exported), `closed::CLOSED` (a copy of `hypgen::CLOSED`), its unit test | `hyp_shape_with(…, true)`, the `hyp+closed` op; `cli_semantics.rs`' `root_saturated`, which runs it before root's saturation; `explain_semantics.rs`' `emit_closed_on`, run on both arms of `fork_and_direct_saturation_agree`; `producible_relations` by `emit_closed` alone; `closed::CLOSED` by nothing | **deleted**. `root_saturated` then saturates root as `ein solve` does, which its doc says it does; `fork_and_direct_saturation_agree` compares the two arms without the pass, which neither needs |
+| 10 | the examples `hypgen_calls.rs` and `hypgen_cost.rs` | time `generate`, `complete`, `open_hypotheses` and `Lookahead::new`; no `utils/README.md` row, no script runs them | **deleted** |
+| 11 | counters `hypgen_complete` and `lookahead_probe` | bumped by `complete_counted` and `dies_immediately` alone; `rows()` lists them; no script or page reads either by name outside `docs/history/` | **deleted**; `rows()` holds 54 |
+| 12 | **K-29**: `ein_core::Nogoods`, `NogoodFreeze` (`pub`, re-exported), `Kb::nogoods`, `Kb::freeze_nogoods`, the `nogoods` field and its handling in `Kb`'s `Clone`, `new`, `with_program`, `branch`, `snapshot` and `diff`; `kb.rs`' three tests of the store; the `.einb` `NOGOODS` section (`sections::write_nogoods`, `read_nogoods`, `Kind::Nogoods`) | the container: `ein kb save` writes the section **only when the store is non-empty**, and opening a `.einb` inserts a file's clauses. No route writes a clause (`grep -rn 'nogoods()' ein.rs/crates`: the container and `kb.rs`' tests), so the store is empty on every KB a command builds | **deleted, with no layout change.** No 2.x writer can have written the section: it is written only from a non-empty store, the store is filled only by a file's own section, and this reader refuses 1.x files, the last a writer with clauses could have made (the walk's learned clauses went before format 2.0). So a 2.0 file reads the same before and after, and kind 9 is not reused: a section of it is an unknown one and skipped, as kind 3 is. `Kb::snapshot` stays, read by the `kb-since` view and `kb_semantics.rs`: it is a fork |
+
+### What stays, with its reader
+
+| piece | the reader that keeps it |
+|---|---|
+| `hypgen::generate_config_free`, `generate_blind`, the ladder (`generate_with`, `rung`, the three rungs, the filters `negated_fact`, `fact_already_exists`, `seen_in_call`), `HypGenStats` and its counters | H at root (`region::prepare_with`), every command; `EIN_LEFTOVER`'s probe; the `--json-summary` root block; `ein show hyps`; the `hyp` and `hypskip` events |
+| `Drop` (three variants) and `Skip` | the `hyp` event's `verdict`, the summary's sparse `filtered` and `pre_candidate` maps |
+| `<lookahead-dies-immediately>`: `terms::LOOKAHEAD_DIES`, its `ENGINE` entry and `Kernel::lookahead_dies` | **the grammar**: the generated lexer's `WRITEBACK` token refuses the name wherever a program writes it (`ein.l`, `text::is_symbol`, `engine_names.rs`, `00_ebnf.md` § 1), a language contract no ruling asked to change; and the kernel's id layout, where a kernel name's id is its position in `Terms::new`'s list and dropping one moves every later id. No pass writes it any more |
+| the fifteen retired config fields on `SolverConfig` and in `FIELDS`, the lookahead's two among them | `RETIRED`'s refusal at load, on every command, and the `.einb` `META` layout, which writes `FIELDS` whole (the user accepted that default). After this no code reads either of the lookahead's two |
+| `-L/--no-lookahead` and `-K/--no-kill-cache` | the CLI's retired flags, refused with the reason (`solve.rs`, `region_modes.rs`) |
+| `Matcher::holds`, `Engine::with_memo`, `Engine::plan_arc`, `firing::build_conclusion`, `compile::asserted_relation` | the saturator, the mechanisms check, `naf_deps`, `oblgen`, `obligations`, `verdict`, `detector`, `hrule`, `scope`, `forbid`, the plan shape |
+| the `examples/branching/*lookahead*` and `*kill_cache*` fixtures | corpus programs, each with its answer held; their headers describe the walk's lookahead, which is a finding (K-71), not this stage's edit: editing a corpus file's text moves its parse digests |
+| the `SOLUTIONS` section's `nogoods_emitted` and `nogoods_subsumed` | the `.einb` layout of a saved solution set; outside this stage |
+
+### The goldens that will move
+
+- **`ein-render/tests/golden/corpus_shapes.md5`: every `::hyp` and every `::hyp+closed` line, 661 of each**
+  (`grep -c '::hyp$'`, `grep -c '::hyp+closed$'`), 393 of each outside `tests/` (the per-commit sweep's) and 268
+  of each under it (`EIN_CORPUS_SLOW=1`'s). They are removed by a bless with `EIN_CORPUS_SLOW=1`, and no other
+  line of the file may move.
+- **No other golden.** Held unmoved: every other line of `corpus_shapes.md5`; `ein-cli/tests/golden/help_shape.txt`
+  and `corpus_exits.txt`; `ein-ir/tests/golden/*` (`config_coercion.txt` and `grammar_table.txt` hold the retired
+  names' refusals and the writeback name's); `ein-core/tests/golden/*`; `ein-render/tests/golden/` beyond the
+  manifest; `configuration.md`'s generated block (`FLAGS` is untouched); `read_out_examples.md`;
+  `docs/api/rust.md`'s block, which shows none of the pieces. **A golden that moves and is not on this list is
+  a stop.**
+
+### The pages to restate
+
+The current pages under `docs/kernel/` that state a piece above as present, by
+`grep -rn 'hyp+closed\|hyp_shape\|emit_closed\|lookahead\|kill cache\|is_solution_node\|nogood' docs/kernel`, read
+mention by mention: `architecture.md`, `configuration.md` § 2.4, `glossary.md`, `ir/01-ein-graph/03_ein_model.md`,
+`ir/03-ein-lang/01_grammar.md` and `06_reserved_names.md`, and under `inference/`: `README.md`,
+`absent_semantics.md`, `answer_dump.md`, `architecture_and_algorithms.md`, `events.md`, `implementation.md`,
+`reserved_engine_strings.md`, `solution_semantics.md`. The three superseded pages (`algorithm_layer_n.md`,
+`lattice_diagrams.md`, `parity_baselines.md`) and their diagrams are not rewritten. A mention that is the
+language's (the writeback name), a retired name's, a fixture's file name, `N`'s *minimal nogoods*, or a sentence
+stating what the walk did, in the past, stays.
