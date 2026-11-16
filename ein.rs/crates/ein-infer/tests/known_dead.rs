@@ -205,17 +205,22 @@ struct Tally {
     saturations: [u64; 2],
 }
 
-/// One program that searches: its six questions both ways, held to the
-/// module's definition of *one answer*.
-fn held(path: &Path) -> Tally {
-    let mut t = Tally::default();
+/// Whether the sweep reads `path`: it loads, and it searches.
+fn searches(path: &Path) -> bool {
     let Some((mut kb, mut terms, ast)) = loaded(path) else {
-        return t;
+        return false;
     };
-    if !searching::searches(&ast, &mut terms, &mut kb) {
-        return t;
-    }
+    searching::searches(&ast, &mut terms, &mut kb)
+}
+
+/// One program that searches: its six questions both ways, held to the
+/// module's definition of *one answer*. `answers` are the twelve runs, each
+/// question's with the denials read and then from deaths alone, in
+/// [`questions`]' order, each a unit of the sweep.
+fn held(path: &Path, answers: Vec<Result<Answer, String>>) -> Tally {
+    let mut t = Tally::default();
     let rel = rel_of(path);
+    let mut answers = answers.into_iter();
     // R as the describe with the denials lists it, where it finished: what
     // every state any cell lists is held to.
     let mut r: Option<BTreeSet<Vec<u32>>> = None;
@@ -225,7 +230,9 @@ fn held(path: &Path) -> Tally {
     let mut listed: Vec<(String, BTreeSet<Vec<u32>>)> = Vec::new();
     for (flags, mode) in questions() {
         let at = format!("{rel} {flags}");
-        let (a, b) = match (ask(path, mode, false), ask(path, mode, true)) {
+        let with = answers.next().expect("the run with the denials");
+        let alone = answers.next().expect("the run from deaths alone");
+        let (a, b) = match (with, alone) {
             (Ok(a), Ok(b)) => (a, b),
             (Err(x), Err(y)) if x == y => continue,
             (x, y) => {
@@ -420,12 +427,48 @@ fn every_question_answers_alike_with_the_denials_and_from_deaths_alone() {
     // test of this binary that reads the flag.
     let slow_too = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
     let files = files(slow_too);
-    let results = ein_corpus::pool::map(
+    // The programs that search, then one unit per (program, question, run),
+    // so that a program's twelve runs go side by side; folded per program,
+    // in the programs' order.
+    let read = ein_corpus::pool::map(
         "known_dead::with_and_without",
         &files,
-        |p| (rel_of(p), String::new()),
-        |p| held(p),
+        |p| (rel_of(p), "searches".to_string()),
+        |p| searches(p),
     );
+    let files: Vec<&PathBuf> = files
+        .iter()
+        .zip(read)
+        .filter_map(|(p, read)| read.then_some(p))
+        .collect();
+    let asked = questions();
+    let units: Vec<(usize, usize, bool)> = (0..files.len())
+        .flat_map(|f| (0..asked.len()).flat_map(move |q| [(f, q, false), (f, q, true)]))
+        .collect();
+    let mut answers = ein_corpus::pool::map(
+        "known_dead::with_and_without",
+        &units,
+        |&(f, q, alone)| {
+            (
+                rel_of(files[f]),
+                format!(
+                    "{} {}",
+                    asked[q].0,
+                    if alone {
+                        "from deaths alone"
+                    } else {
+                        "with the denials"
+                    }
+                ),
+            )
+        },
+        |&(f, q, alone)| ask(files[f], asked[q].1, alone),
+    )
+    .into_iter();
+    let results: Vec<Tally> = files
+        .iter()
+        .map(|p| held(p, answers.by_ref().take(2 * asked.len()).collect()))
+        .collect();
     let mut all = Tally::default();
     let mut programs = 0usize;
     for t in results {

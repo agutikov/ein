@@ -567,6 +567,9 @@ fn region_op(
     opts.budget = SWEEP_BUDGET;
     opts.limit = SWEEP_LIMIT;
     opts.jobs = jobs;
+    // Every core a surface below prints: `--dump-lattice`'s visited nodes',
+    // `--dump-answer`'s and `--trace`'s members of N.
+    opts.cores = ein_infer::region::Cores::ALL;
     let argv = |m: &str| format!("{file} --{m}");
     fn options<'a>(argv: &'a str, file: &'a str) -> ein_render::read_out::Options<'a> {
         ein_render::read_out::Options {

@@ -110,6 +110,11 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
         which: Which::All,
         ask: Ask::Describe,
     });
+    // Each dead node drawn with its core, as `--dump-lattice` asks.
+    opts.cores = ein_infer::region::Cores {
+        visited: true,
+        nogoods: false,
+    };
     if let Some(b) = budget {
         opts.budget = b;
     }

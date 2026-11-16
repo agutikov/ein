@@ -245,6 +245,7 @@ fn check(path: &Path) -> Option<Checked> {
     let (mut kb, mut terms, ast) = loaded(path)?;
     let opts = explore::Options {
         describe_route: explore::DescribeRoute::States,
+        cores: region::Cores::ALL,
         ..explore::Options::new(Mode {
             which: Which::All,
             ask: Ask::Describe,
@@ -675,10 +676,14 @@ fn read(path: &Path, rel: &str, run: Run) -> Read {
         Run::Maximal => Which::Maximal,
         Run::Describe => Which::All,
     };
-    let opts = explore::Options::new(Mode {
-        which,
-        ask: Ask::Describe,
-    });
+    // Each visited node's core, as `--dump-lattice` asks.
+    let opts = explore::Options {
+        cores: region::Cores::ALL,
+        ..explore::Options::new(Mode {
+            which,
+            ask: Ask::Describe,
+        })
+    };
     let visits = Arc::new(Mutex::new(Vec::new()));
     let mut events = ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
     let a = explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events).ok()?;

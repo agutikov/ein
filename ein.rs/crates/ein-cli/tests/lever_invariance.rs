@@ -36,7 +36,12 @@
 //!   corpus program and register witness whose R is known, under the same
 //!   sixteen questions: the read-out the binary prints, rendered uncut, with
 //!   its stderr lines and exit code, and the summary. This is the route a flag
-//!   takes into the saturator, which every mode's every node runs.
+//!   takes into the saturator, which every mode's every node runs. Each
+//!   (program, setting, question) is a unit of the pool of its own, so one
+//!   program's questions run side by side. Each question is asked as `ein
+//!   solve` asks it ([`explore::Options::new`], the read-out's cores alone),
+//!   which [`the_librarys_question_does_the_binarys_work`] holds on the cell
+//!   that once ran for most of an hour.
 //!
 //! **One exemption** (M1e2 S1e2.2.11, the user's ruling of 2026-11-04 on
 //! Q-M1e2.11 (ii)): `:record-alternative-justifications false` makes the proof
@@ -82,7 +87,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 use ein_core::SolverConfig;
 use ein_core::config::{FLAGS, FieldKind, rendered_fields};
@@ -701,34 +705,58 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         }
     }
     // One item per program and setting — the program as written, and each
-    // flag flipped — so that a program with a large R is spread over the
-    // workers rather than run on one.
+    // flag flipped — each asked its questions.
     let mut items: Vec<(usize, Option<&str>)> = Vec::new();
     for (i, _) in known.iter().enumerate() {
         items.push((i, None));
         items.extend(FLAGS.iter().map(|(f, _)| (i, Some(*f))));
     }
-    let outputs = par_map(
+    // One unit per (program, setting, question), so that the questions of a
+    // program with a large R run side by side rather than one after another
+    // on one worker; the results are read back per item, in the items' order
+    // and each item's questions in theirs, as one unit per item gave them.
+    let units: Vec<(usize, usize)> = items
+        .iter()
+        .enumerate()
+        .flat_map(|(n, &(i, _))| (0..known[i].questions.len()).map(move |q| (n, q)))
+        .collect();
+    let mut printed_all = par_map(
         "lever_invariance::flags",
-        &items,
-        |&(i, flag)| {
+        &units,
+        |&(n, q)| {
+            let (i, flag) = items[n];
             (
                 rel(&known[i].path),
-                flag.unwrap_or("as written").to_string(),
+                format!(
+                    "{} {}",
+                    flag.unwrap_or("as written"),
+                    known[i].questions[q].0.join(" ")
+                )
+                .trim_end()
+                .to_string(),
             )
         },
-        |&(i, flag)| {
+        |&(n, q)| {
+            let (i, flag) = items[n];
             let k = &known[i];
             let text = match flag {
                 None => k.text.clone(),
                 Some(f) => format!("{}{}", k.text, flipped(&k.resolved, f)),
             };
-            k.questions
-                .iter()
-                .map(|(flags, mode)| printed(&k.path, &text, flags, *mode))
-                .collect::<Vec<String>>()
+            let (flags, mode) = &k.questions[q];
+            printed(&k.path, &text, flags, *mode)
         },
-    );
+    )
+    .into_iter();
+    let outputs: Vec<Vec<String>> = items
+        .iter()
+        .map(|&(i, _)| {
+            printed_all
+                .by_ref()
+                .take(known[i].questions.len())
+                .collect()
+        })
+        .collect();
     let mut defaults: BTreeMap<usize, &Vec<String>> = BTreeMap::new();
     for (&(i, flag), out) in items.iter().zip(&outputs) {
         if flag.is_none() {
@@ -818,6 +846,106 @@ fn no_config_flag_moves_a_line_of_any_mode() {
     );
     // 180 on 2026-11-01, of 255 files: 12 partial, 63 with no read-out.
     assert!(known.len() >= 180, "{} programs compared", known.len());
+}
+
+/// **The library's question does the binary's work**, on the cell
+/// [`no_config_flag_moves_a_line_of_any_mode`] once ran for most of an hour.
+///
+/// `zebra.ein`'s own `(config …)` sets [`CORE_FLAG`] off, and says why: on,
+/// a dead node's core is an explanation search over a densely re-derived
+/// proof graph, some twenty seconds a node. The sweep flips it on. Its
+/// questions were asked through [`explore::Options::new`], whose cores were
+/// then every core any surface prints, a core at every dead node a route
+/// visits, which only `--events` and `--dump-lattice` print and the sweep
+/// does not read; `ein solve COPY --minimal`, which takes the read-out's
+/// cores alone, answered in a second. `Options::new` asks the read-out's
+/// cores now, as the binary does. So on `zebra.ein` with the flag on, every
+/// question asked in process through `Options::new` answers before a
+/// deadline that a core taken at each dead node passes after its first few
+/// nodes, and prints what `ein solve` prints for it.
+#[test]
+fn the_librarys_question_does_the_binarys_work() {
+    let path = repo_root().join("examples/zebra.ein");
+    let Reach::Known(k) = reach(&path) else {
+        panic!("zebra.ein: R is not known");
+    };
+    assert!(
+        !k.resolved.record_alternative_justifications,
+        "zebra.ein no longer sets :{CORE_FLAG} off: this test flips it on"
+    );
+    let dir = Scratch::new("ein-lever-library-question");
+    let copy = dir.join("zebra-alternatives.ein");
+    std::fs::write(
+        &copy,
+        format!("{}{}", k.text, flipped(&k.resolved, CORE_FLAG)),
+    )
+    .expect("the copy writes");
+    let file = copy.to_string_lossy().to_string();
+    let text = std::fs::read_to_string(&copy).expect("the copy reads");
+    let mismatched = par_map(
+        "lever_invariance::library_question",
+        &k.questions,
+        |(flags, _)| ("examples/zebra.ein".to_string(), flags.join(" ")),
+        |(flags, mode)| {
+            let at = format!("{file} {}", flags.join(" "));
+            let argv = at.trim_end();
+            let opts = explore::Options {
+                deadline: Some(std::time::Instant::now() + std::time::Duration::from_secs(60)),
+                ..explore::Options::new(*mode)
+            };
+            let mut ast = Ast::new();
+            let mut terms = ein_core::Terms::new();
+            let forms = parse(&mut ast, &text, Some(file.as_str())).expect("the copy parses");
+            let mut kb = load(&mut ast, &mut terms, &forms, copy.parent()).expect("it loads");
+            let slow = "in process, the question ran past a minute where `ein solve` answers \
+                        at once: does `Options::new` take cores no surface it prints reads?";
+            let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
+                .unwrap_or_else(|e| panic!("{argv}: {e}; {slow}"));
+            assert_ne!(
+                r.answer.stopped,
+                Some(explore::Stopped::Deadline),
+                "{argv}: {slow}"
+            );
+            let t = ein_render::read_out::render(
+                &r,
+                &ein_render::read_out::Options {
+                    command: "solve",
+                    argv,
+                    file: &file,
+                    budget: opts.budget,
+                    uncut: false,
+                },
+            );
+            let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+                .arg("solve")
+                .arg(&file)
+                .args(flags)
+                .current_dir(repo_root())
+                .output()
+                .expect("the `ein` binary runs");
+            let stdout = String::from_utf8_lossy(&out.stdout);
+            (out.status.code() != Some(t.code) || stdout != t.stdout).then(|| {
+                format!(
+                    "{argv}: exit {:?} from the binary and {} in process; its stdout, as \
+                     `default`, against the read-out in process, {}",
+                    out.status.code(),
+                    t.code,
+                    first_difference(&stdout, &t.stdout)
+                )
+            })
+        },
+    );
+    let bad: Vec<String> = mismatched.into_iter().flatten().collect();
+    assert!(
+        bad.is_empty(),
+        "the library's question prints otherwise than `ein solve`'s:\n{}",
+        bad.join("\n")
+    );
+    assert_eq!(
+        explore::Options::new(k.questions[0].1).cores,
+        ein_infer::region::Cores::READ_OUT,
+        "the library's default cores are the read-out's"
+    );
 }
 
 /// **W36 is exempt from `refuted by` until F22 fixes it** (M1f S1f.5.15, the
@@ -1056,85 +1184,117 @@ fn outcomes(s: &J) -> Vec<J> {
 #[test]
 fn no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r() {
     let files = programs();
-    let compared = AtomicUsize::new(0);
-    let bad: Vec<String> = par_map(
+    // One unit per (program, run), the full run and `--no-search` side by
+    // side; folded per program, in the programs' order.
+    let units: Vec<(usize, bool)> = (0..files.len())
+        .flat_map(|f| [(f, false), (f, true)])
+        .collect();
+    let mut runs = par_map(
         "lever_invariance::no_search",
-        &files,
-        |p| (rel(p), "--no-search".to_string()),
-        |path| {
-        let at = path
-            .strip_prefix(repo_root())
-            .unwrap_or(path)
-            .display()
-            .to_string();
-        let mut bad = Vec::new();
-        let (fc, _, ferr, full) = run_json(path, &[]);
-        let (nc, nout, nerr, ns) = run_json(path, &["--no-search"]);
-        if full.is_null() {
-            if nc != fc || nerr != ferr || !ns.is_null() {
-                bad.push(format!(
-                    "{at}: refused by the full run (exit {fc}), and --no-search exits {nc}:\n{nerr}"
-                ));
-            }
-            return bad;
-        }
-        if ns.is_null() {
-            bad.push(format!("{at}: --no-search wrote no summary (exit {nc}): {nerr}"));
-            return bad;
-        }
-        compared.fetch_add(1, Ordering::Relaxed);
-        let r = &full["region"];
-        let n = &ns["root"];
-        let standing = if n["dead"] == J::Bool(true) {
-            "dead"
-        } else if n["owes"] == 0 {
-            "in-r"
-        } else {
-            "owing"
-        };
-        if r["root"] != standing || r["root_owes"] != n["owes"] || r["root_owed"] != n["owed"] {
-            bad.push(format!(
-                "{at}: root is ({}, {}, {}) to the full run and ({standing}, {}, {}) to --no-search",
-                r["root"], r["root_owes"], r["root_owed"], n["owes"], n["owed"]
-            ));
-        }
-        if full["root"] != ns["root"] {
-            bad.push(format!("{at}: the root blocks differ"));
-        }
-        if !ns["region"].is_null() || ns["asked"]["ask"] != "no-search" {
-            bad.push(format!(
-                "{at}: --no-search states a region, or asked {}",
-                ns["asked"]
-            ));
-        }
-        for label in R_ROWS {
-            let printed = nout.lines().any(|l| {
-                l.strip_prefix("  ")
-                    .and_then(|rest| rest.strip_prefix(label))
-                    .is_some_and(|rest| rest.starts_with(' '))
-            });
-            if printed {
-                bad.push(format!("{at}: --no-search prints the row {label}"));
-            }
-        }
-        for (want, got) in outcomes(&full).iter().zip(outcomes(&ns)) {
-            if got != *want && got != "not-checked" {
-                bad.push(format!(
-                    "{at}: a claim is {want} to the full run and {got} to --no-search"
-                ));
-            }
-        }
-        bad
-    })
-    .into_iter()
-    .flatten()
-    .collect();
+        &units,
+        |&(f, no_search)| {
+            (
+                rel(&files[f]),
+                if no_search { "--no-search" } else { "solve" }.to_string(),
+            )
+        },
+        |&(f, no_search)| {
+            let flags: &[&str] = if no_search { &["--no-search"] } else { &[] };
+            run_json(&files[f], flags)
+        },
+    )
+    .into_iter();
+    let mut compared = 0usize;
+    let mut bad: Vec<String> = Vec::new();
+    for path in &files {
+        let (fc, _, ferr, full) = runs.next().expect("the full run");
+        let (nc, nout, nerr, ns) = runs.next().expect("the --no-search run");
+        bad.extend(no_search_against_full(
+            path,
+            &mut compared,
+            (fc, ferr, full),
+            (nc, nout, nerr, ns),
+        ));
+    }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     // A floor, so that a sweep that compared nothing cannot pass: 517 of the
     // 856 tracked programs wrote a summary on 2026-11-14 (S1f.6.36's T1),
     // the slow tier among them.
-    let compared = compared.into_inner();
     assert!(compared >= 400, "only {compared} programs compared");
+}
+
+/// What [`no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r`]
+/// finds wrong on one program: the full run's exit, stderr and summary
+/// against `--no-search`'s exit, stdout, stderr and summary.
+fn no_search_against_full(
+    path: &Path,
+    compared: &mut usize,
+    (fc, ferr, full): (i32, String, J),
+    (nc, nout, nerr, ns): (i32, String, String, J),
+) -> Vec<String> {
+    let at = path
+        .strip_prefix(repo_root())
+        .unwrap_or(path)
+        .display()
+        .to_string();
+    let mut bad = Vec::new();
+    if full.is_null() {
+        if nc != fc || nerr != ferr || !ns.is_null() {
+            bad.push(format!(
+                "{at}: refused by the full run (exit {fc}), and --no-search exits {nc}:\n{nerr}"
+            ));
+        }
+        return bad;
+    }
+    if ns.is_null() {
+        bad.push(format!(
+            "{at}: --no-search wrote no summary (exit {nc}): {nerr}"
+        ));
+        return bad;
+    }
+    *compared += 1;
+    let r = &full["region"];
+    let n = &ns["root"];
+    let standing = if n["dead"] == J::Bool(true) {
+        "dead"
+    } else if n["owes"] == 0 {
+        "in-r"
+    } else {
+        "owing"
+    };
+    if r["root"] != standing || r["root_owes"] != n["owes"] || r["root_owed"] != n["owed"] {
+        bad.push(format!(
+            "{at}: root is ({}, {}, {}) to the full run and ({standing}, {}, {}) to --no-search",
+            r["root"], r["root_owes"], r["root_owed"], n["owes"], n["owed"]
+        ));
+    }
+    if full["root"] != ns["root"] {
+        bad.push(format!("{at}: the root blocks differ"));
+    }
+    if !ns["region"].is_null() || ns["asked"]["ask"] != "no-search" {
+        bad.push(format!(
+            "{at}: --no-search states a region, or asked {}",
+            ns["asked"]
+        ));
+    }
+    for label in R_ROWS {
+        let printed = nout.lines().any(|l| {
+            l.strip_prefix("  ")
+                .and_then(|rest| rest.strip_prefix(label))
+                .is_some_and(|rest| rest.starts_with(' '))
+        });
+        if printed {
+            bad.push(format!("{at}: --no-search prints the row {label}"));
+        }
+    }
+    for (want, got) in outcomes(&full).iter().zip(outcomes(&ns)) {
+        if got != *want && got != "not-checked" {
+            bad.push(format!(
+                "{at}: a claim is {want} to the full run and {got} to --no-search"
+            ));
+        }
+    }
+    bad
 }
 
 /// The keys of a summary's `region` block that are `R`'s or around it, and
@@ -1175,75 +1335,89 @@ const R_KEYS: [&str; 14] = [
 #[test]
 fn the_describe_route_moves_no_part_of_r() {
     let files = programs();
-    let compared = AtomicUsize::new(0);
-    let bad: Vec<String> = par_map(
+    // One unit per (program, question, route), so that a program's four runs
+    // go side by side; folded per (program, question), in the programs'
+    // order and describe before `--count`, as one unit per program read them.
+    const ROUTES: [&str; 2] = ["tree", "states"];
+    let units: Vec<(usize, bool, &str)> = (0..files.len())
+        .flat_map(|f| {
+            [false, true]
+                .into_iter()
+                .flat_map(move |count| ROUTES.into_iter().map(move |r| (f, count, r)))
+        })
+        .collect();
+    let mut runs = par_map(
         "lever_invariance::describe_route",
-        &files,
-        |p| (rel(p), "--describe-route".to_string()),
-        |path| {
-            let at = rel(path);
-            let mut bad = Vec::new();
-            for count in [false, true] {
-                let ask: &[&str] = if count { &["--count"] } else { &[] };
-                let with = |route: &'static str| {
-                    let mut flags: Vec<&str> = ask.to_vec();
-                    flags.extend(["--describe-route", route]);
-                    run_json(path, &flags)
-                };
-                let (tc, _, terr, tree) = with("tree");
-                let (sc, _, serr, states) = with("states");
-                if tree.is_null() || states.is_null() {
-                    if tc != sc || terr != serr {
-                        bad.push(format!(
-                            "{at}: no summary, and the two routes exit {tc} and {sc}"
-                        ));
-                    }
-                    continue;
-                }
-                let (t, s) = (&tree["region"], &states["region"]);
-                if t.is_null() || s.is_null() {
-                    if t != s {
-                        bad.push(format!("{at}: one route states a region and one does not"));
-                    }
-                    continue;
-                }
-                if t["exhausted"] != J::Bool(true) || s["exhausted"] != J::Bool(true) {
-                    continue;
-                }
-                compared.fetch_add(1, Ordering::Relaxed);
-                for key in R_KEYS {
-                    if t[key] != s[key] {
-                        bad.push(format!(
-                            "{at}{}: region.{key} is {} by the tree and {} by the state route",
-                            if count { " --count" } else { "" },
-                            t[key],
-                            s[key]
-                        ));
-                    }
-                }
-                for key in ["nogoods", "frontier"] {
-                    if !t[key].is_null() && !s[key].is_null() && t[key] != s[key] {
-                        bad.push(format!("{at}: region.{key} differs where both computed it"));
-                    }
-                }
-                // A claim over an empty R's owing frontier is not checked
-                // where the tree and the classes did not compute it.
-                let frontier_skipped = t["frontier"].is_null() && !s["frontier"].is_null();
-                for (x, y) in outcomes(&tree).iter().zip(outcomes(&states)) {
-                    if *x != y && !(frontier_skipped && *x == "not-checked") {
-                        bad.push(format!(
-                            "{at}: a claim is {x} by the tree and {y} by the state route"
-                        ));
-                    }
-                }
-            }
-            bad
+        &units,
+        |&(f, count, route)| {
+            (
+                rel(&files[f]),
+                format!(
+                    "{}--describe-route {route}",
+                    if count { "--count " } else { "" }
+                ),
+            )
+        },
+        |&(f, count, route)| {
+            let mut flags: Vec<&str> = if count { vec!["--count"] } else { Vec::new() };
+            flags.extend(["--describe-route", route]);
+            run_json(&files[f], &flags)
         },
     )
-    .into_iter()
-    .flatten()
-    .collect();
+    .into_iter();
+    let mut compared = 0usize;
+    let mut bad: Vec<String> = Vec::new();
+    for path in &files {
+        let at = rel(path);
+        for count in [false, true] {
+            let (tc, _, terr, tree) = runs.next().expect("the tree's run");
+            let (sc, _, serr, states) = runs.next().expect("the state route's run");
+            if tree.is_null() || states.is_null() {
+                if tc != sc || terr != serr {
+                    bad.push(format!(
+                        "{at}: no summary, and the two routes exit {tc} and {sc}"
+                    ));
+                }
+                continue;
+            }
+            let (t, s) = (&tree["region"], &states["region"]);
+            if t.is_null() || s.is_null() {
+                if t != s {
+                    bad.push(format!("{at}: one route states a region and one does not"));
+                }
+                continue;
+            }
+            if t["exhausted"] != J::Bool(true) || s["exhausted"] != J::Bool(true) {
+                continue;
+            }
+            compared += 1;
+            for key in R_KEYS {
+                if t[key] != s[key] {
+                    bad.push(format!(
+                        "{at}{}: region.{key} is {} by the tree and {} by the state route",
+                        if count { " --count" } else { "" },
+                        t[key],
+                        s[key]
+                    ));
+                }
+            }
+            for key in ["nogoods", "frontier"] {
+                if !t[key].is_null() && !s[key].is_null() && t[key] != s[key] {
+                    bad.push(format!("{at}: region.{key} differs where both computed it"));
+                }
+            }
+            // A claim over an empty R's owing frontier is not checked
+            // where the tree and the classes did not compute it.
+            let frontier_skipped = t["frontier"].is_null() && !s["frontier"].is_null();
+            for (x, y) in outcomes(&tree).iter().zip(outcomes(&states)) {
+                if *x != y && !(frontier_skipped && *x == "not-checked") {
+                    bad.push(format!(
+                        "{at}: a claim is {x} by the tree and {y} by the state route"
+                    ));
+                }
+            }
+        }
+    }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
-    let compared = compared.into_inner();
     assert!(compared >= 800, "only {compared} runs compared");
 }

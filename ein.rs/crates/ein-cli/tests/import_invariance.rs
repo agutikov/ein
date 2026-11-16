@@ -161,20 +161,70 @@ fn signature(v: &serde_json::Value, prefixes: &[String]) -> String {
 ///   alias, the sixteen are in one alphabet and it takes 16.
 const RESPELLED_PAST: &[&str] = &["examples/binary_logic/synthesis.ein"];
 
-/// One program: `Ok((compared forms, forms whose tree's work was compared,
-/// forms whose tree's work is another))` or the first difference in an
-/// answer.
-fn check(path: &Path) -> Result<(usize, usize, usize), String> {
-    let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+/// The program as written: its summary and, where its `--single` is answered
+/// by the obligation tree, that run's route and work.
+struct AsWritten {
+    summary: Result<serde_json::Value, i32>,
+    tree: Option<(String, String)>,
+}
+
+/// The program as written, run: a unit of the sweep's first pass.
+fn as_written(path: &Path) -> Result<AsWritten, String> {
+    std::fs::read_to_string(path).map_err(|e| e.to_string())?;
     let dir = path.parent().expect("a directory");
     let file = path.file_name().expect("a name").to_str().expect("utf-8");
+    Ok(AsWritten {
+        summary: summary(dir, file),
+        tree: single(dir, file).filter(|(route, _)| route == "tree"),
+    })
+}
+
+/// One import form of a program, run: the form as written and the module
+/// prefixes it adds, its summary, and its `--single` where the program as
+/// written was answered by the tree. `None` where the form could not be
+/// written.
+struct InForm {
+    written: String,
+    extra: Vec<String>,
+    summary: Result<serde_json::Value, i32>,
+    single: Option<Option<(String, String)>>,
+}
+
+/// Form `mode` of the program, run: a unit of the sweep's second pass, one
+/// a form, so that a program's two forms run side by side.
+fn in_form(path: &Path, mode: char, tree: bool) -> Option<InForm> {
+    let text = std::fs::read_to_string(path).ok()?;
+    let file = path.file_name().expect("a name").to_str().expect("utf-8");
+    let (written, extra) = form(path, &text, mode)?;
+    let scratch = beside_its_modules(path, &written);
+    Some(InForm {
+        summary: summary(scratch.path(), file),
+        single: tree.then(|| single(scratch.path(), file)),
+        written,
+        extra,
+    })
+}
+
+/// One program, from its runs: `Ok((compared forms, forms whose tree's work
+/// was compared, forms whose tree's work is another))` or the first
+/// difference in an answer, the forms read in order.
+fn check(
+    path: &Path,
+    s: &Result<AsWritten, String>,
+    forms: [&Option<InForm>; 2],
+) -> Result<(usize, usize, usize), String> {
+    let AsWritten { summary: s, tree } = s.as_ref().map_err(|e| e.clone())?;
+    let dir = path.parent().expect("a directory");
     let mut prefixes = module_prefixes(dir);
-    let s = summary(dir, file);
-    // The tree's work, where the program as written is answered by one.
-    let tree = single(dir, file).filter(|(route, _)| route == "tree");
     let (mut compared, mut trees, mut moved) = (0, 0, 0);
-    for mode in ['W', 'A'] {
-        let Some((written, extra)) = form(path, &text, mode) else {
+    for (mode, run) in ['W', 'A'].into_iter().zip(forms) {
+        let Some(InForm {
+            written,
+            extra,
+            summary: f,
+            single,
+        }) = run
+        else {
             // Its imports refused: S is refused too, and there is no form.
             if s.is_err() {
                 compared += 1;
@@ -186,14 +236,12 @@ fn check(path: &Path) -> Result<(usize, usize, usize), String> {
             ));
         };
         for p in extra {
-            if !prefixes.contains(&p) {
-                prefixes.push(p);
+            if !prefixes.contains(p) {
+                prefixes.push(p.clone());
             }
         }
         prefixes.sort_by_key(|p| std::cmp::Reverse(p.len()));
-        let scratch = beside_its_modules(path, &written);
-        let f = summary(scratch.path(), file);
-        match (&s, &f) {
+        match (s, f) {
             (Ok(a), Ok(b)) => {
                 let (a, b) = (signature(a, &prefixes), signature(b, &prefixes));
                 if a != b {
@@ -213,8 +261,8 @@ fn check(path: &Path) -> Result<(usize, usize, usize), String> {
                 ));
             }
         }
-        if let Some((_, as_written)) = &tree {
-            match single(scratch.path(), file) {
+        if let Some((_, as_written)) = tree {
+            match single.clone().flatten() {
                 Some((route, in_form)) if route == "tree" && in_form == *as_written => trees += 1,
                 // The same verdict by other work: counted, and held to the
                 // list by the caller.
@@ -260,23 +308,37 @@ fn programs() -> Vec<PathBuf> {
 
 #[test]
 fn every_corpus_program_answers_alike_under_every_import_form() {
-    // On the pool (M1f S1f.6.39), one unit per program, read back in the
-    // manifest's order: until S1f.6.39 this test ran its own sixteen threads
-    // and listed its failures in the order they finished.
+    // On the pool (M1f S1f.6.39), read back in the manifest's order: until
+    // S1f.6.39 this test ran its own sixteen threads and listed its failures
+    // in the order they finished. Two passes, so that no unit runs a
+    // program's every form: each program as written, then one unit per
+    // (program, form), each asked `--single` where the first pass found the
+    // tree.
     let todo = programs();
     let total = todo.len();
     let root = repo_root();
-    let results = ein_corpus::pool::map(
+    let name = |p: &Path| p.strip_prefix(&root).unwrap_or(p).display().to_string();
+    let written = ein_corpus::pool::map(
         "import_invariance",
         &todo,
-        |p| {
-            (
-                p.strip_prefix(&root).unwrap_or(p).display().to_string(),
-                String::new(),
-            )
-        },
-        |p| check(p),
+        |p| (name(p), "S".to_string()),
+        |p| as_written(p),
     );
+    let units: Vec<(usize, char)> = (0..todo.len()).flat_map(|i| [(i, 'W'), (i, 'A')]).collect();
+    let forms = ein_corpus::pool::map(
+        "import_invariance",
+        &units,
+        |&(i, mode)| (name(&todo[i]), mode.to_string()),
+        |&(i, mode)| {
+            let tree = written[i].as_ref().is_ok_and(|s| s.tree.is_some());
+            in_form(&todo[i], mode, tree)
+        },
+    );
+    let results: Vec<Result<(usize, usize, usize), String>> = todo
+        .iter()
+        .enumerate()
+        .map(|(i, p)| check(p, &written[i], [&forms[2 * i], &forms[2 * i + 1]]))
+        .collect();
     let mut failures = Vec::new();
     let (mut compared, mut trees) = (0usize, 0usize);
     let mut respelled: Vec<String> = Vec::new();

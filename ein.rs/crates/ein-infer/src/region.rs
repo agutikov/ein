@@ -297,13 +297,16 @@ pub struct Cores {
 }
 
 impl Cores {
-    /// Every core any surface prints: the library's default.
+    /// Every core any surface prints: what `ein solve` takes with
+    /// `--events` or `--dump-lattice` and, under describe, `--dump-answer`
+    /// or `--trace`; the oracle's cube with `--dump`.
     pub const ALL: Cores = Cores {
         visited: true,
         nogoods: true,
     };
     /// Root's and the minimal holes' alone: what the read-out and the summary
-    /// print, and what a run no other surface reads asks.
+    /// print, and what a run no other surface reads asks — the default of
+    /// [`crate::explore::Options::new`].
     pub const READ_OUT: Cores = Cores {
         visited: false,
         nogoods: false,

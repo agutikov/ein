@@ -461,6 +461,50 @@ fn the_readings_agree_on_one_relation() {
     assert_eq!(the_readings_agree("examples/zebra.ein"), (56, 358));
 }
 
+/// **A support's check is read where root's layer passed its budget.** The
+/// check compares the small KB's node of a pair with the program's own node
+/// of it, which root's layer computed, and reads that node off the cache,
+/// which asks no budget. A layer's last step is afforded by a projection and
+/// may carry it past its budget: one fact under what root's layer spends on
+/// the one-relation zebra, the layer reads every pair, every support is read,
+/// and every one is checked, each check the one of the default budget. The
+/// budget is read off the program's own spend.
+#[test]
+fn a_supports_check_is_read_where_roots_layer_passed_its_budget() {
+    let rel = "examples/zebra.ein";
+    let whole = theory_of(rel, &checked());
+    let spent = whole.root.work.facts;
+    let mut asked = checked();
+    asked.layer.budget = spent - 1;
+    let at = theory_of(rel, &asked);
+    assert!(
+        at.root.complete() && at.root.pairs.left == 0,
+        "{:?}",
+        at.root.stopped
+    );
+    assert_eq!(at.root.work.facts, spent, "its last step passed the budget");
+    let checks = |t: &Theory| -> Vec<Option<structure::Check>> {
+        t.supports.iter().map(|s| s.check.clone()).collect()
+    };
+    let checked_at = checks(&at);
+    assert_eq!(checked_at.len(), at.root.excluded.len(), "a support a pair");
+    assert!(
+        checked_at
+            .iter()
+            .all(|c| c.as_ref().is_some_and(|c| c.unread.is_none())),
+        "a support left unchecked: {:?}",
+        checked_at
+            .iter()
+            .find(|c| c.as_ref().is_none_or(|c| c.unread.is_some()))
+    );
+    assert_eq!(
+        checked_at,
+        checks(&whole),
+        "each check is the default budget's"
+    );
+    assert_eq!(at.readings(), whole.readings());
+}
+
 /// Two cryptarithms. SEND + MORE = MONEY's 609 excluded pairs are a letter's
 /// two digits or a digit's two letters, all the theory's; the smaller one's
 /// 215 hold 71 that its one column excludes. In both the puzzle's

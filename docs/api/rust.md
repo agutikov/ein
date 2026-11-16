@@ -159,6 +159,7 @@ an embedder sets:
 | `limit` | the largest `n` whose whole cube a program the static check flags gets — `--region-limit` |
 | `jobs` | `> 1` fans the nodes out over threads, same answer. Inert without the `parallel` feature |
 | `deadline` | `-T`: an `Instant`, past which the run is an error, never an answer |
+| `cores` | which dead nodes' cores the run takes beyond root's and the minimal holes', which the read-out prints (`region::Cores`): `visited`, each dead node the run visits, for a watch that reads them as `--events` and `--dump-lattice` do; `nogoods`, each member of `N` under describe, for `--dump-answer` and `--trace`, which refuse a member without one. A core is an explanation search and can cost far more than its node, so `Options::new` takes neither, as `ein solve` does; no answer depends on it |
 
 `read_out::run` is `explore::run` plus every listed state read through the
 node function: each state's `(model …)` and each `(query …)`'s projection

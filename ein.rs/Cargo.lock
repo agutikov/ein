@@ -382,6 +382,7 @@ dependencies = [
  "rayon",
  "rustc-hash",
  "serde_json",
+ "toml",
 ]
 
 [[package]]

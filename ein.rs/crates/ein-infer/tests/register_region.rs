@@ -285,8 +285,22 @@ fn block(g: &Region) -> String {
     out.join("\n")
 }
 
+/// Where the line that is exactly `header` starts in `row`: a table's header,
+/// never the same text inside a string, a note that names the table.
+fn header_at(row: &str, header: &str) -> Option<usize> {
+    let mut at = 0;
+    for line in row.split_inclusive('\n') {
+        if line.trim_end_matches('\n') == header {
+            return Some(at);
+        }
+        at += line.len();
+    }
+    None
+}
+
 /// Put `block` into row `id` of the register's text: in place of its
-/// `[case.region]`, or before its `[case.right]`.
+/// `[case.region]` table, or before its `[case.right]` table, each found by
+/// its header line ([`header_at`]).
 fn bless(text: &str, id: &str, block: &str) -> String {
     let at = text
         .find(&format!("id       = {}", quote(id)))
@@ -297,19 +311,52 @@ fn bless(text: &str, id: &str, block: &str) -> String {
         .min()
         .map_or(text.len(), |e| at + e + 1);
     let row = &text[at..end];
-    let new_row = match row.find("[case.region]\n") {
+    let new_row = match header_at(row, "[case.region]") {
         Some(r0) => {
             let r1 = row[r0..].find("\n\n").map_or(row.len(), |e| r0 + e + 2);
             format!("{}{block}\n\n{}", &row[..r0], &row[r1..])
         }
         None => {
-            let r0 = row
-                .find("[case.right]")
-                .unwrap_or_else(|| panic!("{id}: no [case.right]"));
+            let r0 =
+                header_at(row, "[case.right]").unwrap_or_else(|| panic!("{id}: no [case.right]"));
             format!("{}{block}\n\n{}", &row[..r0], &row[r0..])
         }
     };
     format!("{}{new_row}{}", &text[..at], &text[end..])
+}
+
+/// **The bless writes a region block before the row's `[case.right]`
+/// table**, never into a string that names the table: a note ending
+/// *`[case.right].derived` carries the count* stays whole, the block lands on
+/// the line before the table's header, and the row still parses. A row that
+/// states a `[case.region]` table has it replaced, a note that names it left
+/// as it was.
+#[test]
+fn the_bless_writes_before_the_right_table_and_not_into_a_note() {
+    let block = "[case.region]\nroute    = \"state route\"\nk_s      = 1";
+    let row = |region: &str| {
+        format!(
+            "[[case]]\nid       = \"X/one\"\nnote     = \"`[case.region]` and `[case.right]`.derived \
+             carry the counts\"\n\n[case.wrong]\nk = 2\n\n{region}[case.right]\nk = 1\n\n[[case]]\n\
+             id       = \"X/two\"\n\n[case.right]\nk = 3\n"
+        )
+    };
+    let note = "note     = \"`[case.region]` and `[case.right]`.derived carry the counts\"\n";
+    for region in ["", "[case.region]\nroute    = \"cube\"\nk_s      = 9\n\n"] {
+        let text = row(region);
+        let got = bless(&text, "X/one", block);
+        assert!(got.contains(note), "the note moved:\n{got}");
+        assert!(
+            got.contains(&format!("{block}\n\n[case.right]\nk = 1\n")),
+            "the block is not before the table:\n{got}"
+        );
+        assert_eq!(got.matches("[case.region]\n").count(), 1, "{got}");
+        assert!(!got.contains("\"cube\""), "the old block stayed:\n{got}");
+        // The next row is untouched, and the whole still parses as TOML.
+        assert!(got.ends_with("[[case]]\nid       = \"X/two\"\n\n[case.right]\nk = 3\n"));
+        let parsed = toml::from_str::<toml::Table>(&got);
+        assert!(parsed.is_ok(), "{parsed:?}\n{got}");
+    }
 }
 
 #[test]

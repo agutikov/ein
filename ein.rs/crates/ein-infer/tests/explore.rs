@@ -1208,6 +1208,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                     let mode = Mode { which, ask };
                     let mut eager = explore::Options::new(mode);
                     eager.jobs = jobs();
+                    eager.cores = ein_infer::region::Cores::ALL;
                     let mut lazy = eager;
                     lazy.cores = ein_infer::region::Cores::READ_OUT;
                     let mut nogoods = eager;

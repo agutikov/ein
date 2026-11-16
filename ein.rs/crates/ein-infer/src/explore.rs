@@ -204,7 +204,12 @@ pub struct Options {
     /// (`--dump-answer`, `--trace`). M1e2 S1e2.2.21 and M1f S1f.5.12, the
     /// user's rulings of 2026-11-05 and 2026-11-08, *minimum work per
     /// question*: every core taken is the one an eager walk takes, and no
-    /// answer depends on it.
+    /// answer depends on it. [`Options::new`] asks [`Cores::READ_OUT`], what
+    /// `ein solve` asks for the same question with no artefact that prints
+    /// another core, so the library's question does the binary's work; a
+    /// caller that writes such an artefact, or reads a visited node's core
+    /// through an [`crate::events::Watch`], asks for it here, as the binary
+    /// does.
     pub cores: Cores,
     /// The run is asked to **decide the program's claims**, as `ein test`
     /// asks (M1f S1f.6.27): a claim the answer does not decide by exhausting
@@ -272,6 +277,12 @@ impl DescribeRoute {
 }
 
 impl Options {
+    /// `mode` asked as `ein solve` asks it with no other option: the default
+    /// budget and limit, one job, and the cores the read-out and the summary
+    /// print ([`Cores::READ_OUT`]). A dead node's core is an explanation
+    /// search, which on a densely re-derived program costs far more than the
+    /// node's saturation, so a run that took one at every dead node it visits
+    /// could run for hours where the binary's same question answers at once.
     pub fn new(mode: Mode) -> Self {
         Options {
             mode,
@@ -280,7 +291,7 @@ impl Options {
             jobs: 1,
             deadline: None,
             sanity: false,
-            cores: Cores::ALL,
+            cores: Cores::READ_OUT,
             refute: false,
             nogoods: true,
             no_search: false,
