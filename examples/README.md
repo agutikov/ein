@@ -76,7 +76,7 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 | `solve --exhaustive` | Solution, k=1, exhausted — **46.9 ms** | Solution, k=1, exhausted — **31.1 ms** |
 
 *(End-to-end, release build, one pinned P-core —
-[scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md), taken
+scaling.md §1, taken
 2026-08-20. **Re-taken 2026-09-01** on the same box with
 `utils/bench_env.sh` and `ein solve <file> -e -t`, median of five: **44.1 ms**
 and **28.2 ms**, verdict, `k` and `exhausted` unchanged. Both rows are the

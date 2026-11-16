@@ -249,7 +249,7 @@ a model*, so `false` outranks it and a discharged model outranks it; it exits
 obligation can reach it, which is why the 92 corpus entries that declare none
 report exactly the words they did before P1d.2
 ([`defined_behaviour.md` §5](../../defined_behaviour.md),
-[the census](../../../history/m1d_satisfiability/openness_census.md)).
+the census).
 
 `:expect` did **not** grow a word for it, and could not: all three of its forms
 are assertions about *facts*, and an `open` conclusion is by construction never

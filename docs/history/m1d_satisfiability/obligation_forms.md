@@ -15,7 +15,7 @@ they were taken: **G** as the form and **P3** as the naming (2026-08-24),
 run). [S1d.2.3](README.md#s1d23--the-form) is the executable record; this page is
 where each decision's alternatives and reasons survive.
 **Reads:** [`../ideas.md`](ideas.md) (authoritative on intent),
-[`../p1d.10_exhaustive_search/layer_census.md`](layer_census.md)
+`../p1d.10_exhaustive_search/layer_census.md`
 (what the corpus actually does today).
 
 ---
@@ -208,7 +208,7 @@ watched literals, which has a forty-year literature.
 **And the census supports it specifically.** `alive` never shrinks in the barren
 regime — 3 of 46 multi-layer cells, all three in the pruning four — so **the
 clause store is the only thing that can shrink a layer**
-([layer_census.md §6](layer_census.md#6-one-of-the-two-filter-arms-cannot-fire)).
+(layer_census.md §6).
 A positive clause is the one object that shrinks it *by construction* rather
 than by waiting for a death.
 
@@ -369,7 +369,7 @@ the exact "obligations they imply" row of
 true at root discharge 2 × 2 = 4 of them: tally **46 = §5's 23 forward + 23
 backward**, measured by hand before this form had a name. The equality is a
 **conservation audit** in the
-[`layer_census`](layer_census.md) style: the
+`layer_census` style: the
 engine can predict the ledger from the declarations and diff what the rules
 emit, and a mismatch is an encoding bug with a number attached.
 
@@ -759,7 +759,7 @@ stream):
 kills none; layer 2 enters all `C(96, 2) = 4 560` pairs; the whole exhaustive
 run is **618 076 enterings and 416 s**, of which **92.1 % happen after the last
 new model is found**
-([layer_census.md §4](layer_census.md#4-zebra2-minus-15-all-five-layers)).
+(layer_census.md §4).
 
 **What a choice point is instead**: one obligation with 5 candidates is a
 5-way branch that is complete at that node by construction. Nothing has to

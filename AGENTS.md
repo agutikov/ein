@@ -665,7 +665,7 @@ rather than to the corpus on purpose: a rule that fires only inside
 `examples/zebra.ein` has no test. `utils/stdlib_census.py` is the same census
 with the *numbers*, and is not the gate.
 
-The `ein` binary links `snmalloc` by default (worth 8–16 % of a solve), so
+The `ein` binary links `snmalloc` by default, so
 the build needs **`cmake` and a C++ compiler**;
 `cargo build --release -p ein-cli --no-default-features` builds against the
 system allocator and needs neither.

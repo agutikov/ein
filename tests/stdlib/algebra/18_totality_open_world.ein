@@ -8,7 +8,7 @@
 ;;; documents itself as open-world-safe — "fires only when the stored negatives
 ;;; cover the whole extent, never on a merely-undecided state" — and before
 ;;; this file that claim was checked by nothing at all
-;;; (docs/history/m1c_external_validation/stdlib_census.md §7).
+;;; (utils/censuses/stdlib-census.md §7).
 ;;; It is also the claim whose failure is silent: a `forall` that fires one
 ;;; negative early yields a **wrong model**, not a crash. `total` firing early
 ;;; would refute a satisfiable puzzle; `domain-elimination` firing early would

@@ -1,13 +1,13 @@
 # How far route 1 reaches — 2026-10-16
 
 **T1e2.1a.9.1's measurement**, for
-[S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md). Route 1 is a monotone
+[S1e2.1a.9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md). Route 1 is a monotone
 program's region computed from its alive down-set
-([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs),
+([`ein_infer::downset`](../../ein.rs/crates/ein-infer/src/downset.rs),
 T1e2.1a.9.3). It visits the alive commitments and `N`, the minimal dead sets,
 where the oracle visits all 2ⁿ. This page says what that reaches, what it
 costs, and where its budget should sit. The budget is
-[`solve_flags.md`](solve_flags.md)'s third question for the user.
+[`solve_flags.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md)'s third question for the user.
 
 ```sh
 cargo run --release -p ein-infer --example route1_reach -- --budget 262144 --oracle > rows.jsonl
@@ -19,9 +19,9 @@ job unless a row says otherwise, on a 32-thread machine with nothing else
 running. One JSON line per program. The tables were read off the lines.
 
 **What it selects.** Every file
-[`corpus_files()`](../../../ein.rs/crates/ein-corpus/src/lib.rs) lists, plus the
+[`corpus_files()`](../../ein.rs/crates/ein-corpus/src/lib.rs) lists, plus the
 register's witnesses, that loads and compiles: **195 programs**. That is
-[`region_census.md`](region_census.md)'s `--all` selection less the 55 that
+[`region_census.md`](region-census.md)'s `--all` selection less the 55 that
 do not load, plus one `n = 0` program the census's selection does not hold.
 Its numbers at `n ≤ 16` are therefore the census's to within that one row.
 
@@ -72,7 +72,7 @@ Over the 147 monotone programs both routes reach, at one job:
 | wall | **1.75 s** | 21.18 s |
 
 The census's first take of the same ratio was 18.4 % by arithmetic over the
-oracle's dump ([`region_census.md` § 10](region_census.md#10-route-1s-reach-for-s1e21a9)).
+oracle's dump ([`region_census.md` § 10](region-census.md#10-route-1s-reach-for-s1e21a9)).
 This is the route itself, and it agrees.
 
 | program | n | route 1 visits | of | route 1 | oracle |
@@ -88,7 +88,7 @@ This is the route itself, and it agrees.
 *is* the oracle, plus the join. The two entries above that cost route 1 as
 much as the oracle are R = the whole cube, one sub-cube [∅ … ⊤]. Describing
 such an R without visiting it is
-[P1e2.1c](../p1e2.1c_the_region_search/README.md)'s duality stage, S1e2.1c.2.
+[P1e2.1c](../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s duality stage, S1e2.1c.2.
 
 ## 3. What a node costs
 
@@ -168,7 +168,7 @@ loses nothing the corpus has below the zebra family:
 
 2¹⁸ saves under a second in all and sends `zebra2-hints` (n = 36, 309 545
 facts) and `features/02` to the other routes. The library takes a visit budget
-today (`downset::Options::budget`), and the unit moves with the ruling. The ruling is the user's ([`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling)).
+today (`downset::Options::budget`), and the unit moves with the ruling. The ruling is the user's ([`solve_flags.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md#9-what-needs-the-users-ruling)).
 
 ## 5. Past the oracle's limit: the fifteen
 
@@ -247,7 +247,7 @@ What it says, in R's terms:
   static verdict, `N` (458 minimal dead sets, every one of size ≤ 3) and the
   minimal line. Today `ein solve -e zebra.ein` says the same by the walk, and
   the walk's `exhausted` certifies the walk
-  ([Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
+  ([Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
   This certifies R.
 - **∅ owes, so ∅ ∉ R**. The maximal line is one commitment of 18 facts: the
   18 candidates the solution makes true. Layers 13–18 are exactly C(18, k):
@@ -300,14 +300,14 @@ timeout. Enterings, verdict, k and `exhausted` are from `--json-summary`.
 | `zebra2`, `zebra2-obligations` | 0.019 s | 0.048 s | 11 / 101 | Solution, k = 1 | false / true |
 
 † flagged non-monotone. The `zebra2-minus-15` row is
-[M1d's](../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
+[M1d's](../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
 measurement and was not re-taken.
 
 What it says for the default:
 
 - **Route 3 needs a budget of its own.** Today the walk has none: no `-E`
   default, and `-e` on `zebra2-minus-15` takes 25 minutes. [`solve_flags.md`
-  § 10](solve_flags.md#10-decided-here-unless-the-user-objects) gives route 3
+  § 10](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md#10-decided-here-unless-the-user-objects) gives route 3
   an enterings budget and makes hitting it a *partial* description, not an
   abort.
 - **Where it reaches, route 3 is often wrong in R's terms**, and says so only
@@ -317,14 +317,14 @@ What it says for the default:
   in shape. It is
   P1e2.1c's problem and P1e2.2's register's, not this stage's, and the
   read-out stage words it
-  ([S1e2.1a.5](s1e2.1a.5_the_read_out.md)).
+  ([S1e2.1a.5](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)).
 
 ## 8. What this settles
 
 - **T1e2.1a.9.1's question.** Route 1 is route 1 on 162 of 195 programs at a
   2¹⁹-fact budget, and on every monotone program the oracle reaches. The
   default budget is the user's, with § 4 on the table.
-- **For [P1e2.1c](../p1e2.1c_the_region_search/README.md):**
+- **For [P1e2.1c](../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md):**
   - **S1e2.1c.1** has its first answer: the zebra family's alive set is
     270 454, and R is one state.
   - **S1e2.1c.2** has its cases: the seven everything-alive cubes, and

@@ -10,7 +10,7 @@ stages and 17.5 days until P1e2.1b's re-plan that day moved
 days). The stages waited for
 [S1e2.1a.9](../p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
 to measure how far its routes reach, which it did on 2026-10-16
-([`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md)), and for
+([`route1-reach.md`](../../../utils/censuses/route1-reach.md)), and for
 [S1e2.1b.6](../p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)
 to write down the strategies, which it did on 2026-11-02
 ([`monotonicity.md` § 12](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#12-how-each-kind-is-solved)). They
@@ -82,7 +82,7 @@ S1e2.1a.9 gives the default an honest answer wherever it is cheap: the alive
 down-set of a monotone program, and the 2ⁿ oracle at n ≤ the limit. Everywhere
 else it says *partial*. The zebra family is past the oracle at n = 56, and
 past route 1's default budget. Its alive set was counted on 2026-10-16
-([`route1_reach.md` § 6](../p1e2.1a_the_solution_region/route1_reach.md#6-where-route-1-declines-and-zebras-region-counted)):
+([`route1-reach.md` § 6](../../../utils/censuses/route1-reach.md#6-where-route-1-declines-and-zebras-region-counted)):
 
 - `zebra.ein` has **270 454** alive commitments, and its R is **one state**
   of 261 982 commitments with 63 minimal generators. That took 25 s on 12
@@ -108,7 +108,7 @@ gives a meaning or retires.
 
 | ID | title | the question |
 |---|---|---|
-| [S1e2.1c.1](s1e2.1c.1_how_large_the_alive_set_gets.md) | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not). **Done 2026-11-03**: [`alive_set_reach.md`](alive_set_reach.md). The seven cubes are decided in two saturations and counted, with k_s = 27 559 on each `square-*` and 2¹⁹ on `arg-kinds`. `zebra2-minus-15` runs to layer 6: 4 097 512 alive commitments, 4 709 alive states, none new at layer 6. There is a states column beside the commitments, and the cost table over every monotone program |
+| [S1e2.1c.1](s1e2.1c.1_how_large_the_alive_set_gets.md) | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1-reach.md`](../../../utils/censuses/route1-reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not). **Done 2026-11-03**: [`alive_set_reach.md`](alive_set_reach.md). The seven cubes are decided in two saturations and counted, with k_s = 27 559 on each `square-*` and 2¹⁹ on `arg-kinds`. `zebra2-minus-15` runs to layer 6: 4 097 512 alive commitments, 4 709 alive states, none new at layer 6. There is a states column beside the commitments, and the cost table over every monotone program |
 | [S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md) | The lines by duality | **Done 2026-11-03**, the default budget ruled 2²⁰: the state route over the 181 monotone programs costs 1 341 309 saturations where route 1 costs 7 732 817, `zebra` describes in 445, `zebra2-minus-15` is k_s 32, k_c 241 462 963, \|N\| 27 804. The question as specified: for a monotone program only, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\|. [`walk_and_region.md` § 6](../p1e2.1a_the_solution_region/walk_and_region.md#6-what-this-means-for-question-3) measured the state lattice beside the commitment one: zebra has 27 alive states against 270 454 alive commitments, and a route over states costs at most *states × n* |
 | [S1e2.1c.3](s1e2.1c.3_the_non_monotone_search.md) | The non-monotone search | **moved to [F21](../../followups/f21_non_monotone_programs_decided.md)'s D7, 2026-11-02.** Its file stays, with a banner, as the design notes the decision will start from |
 | [S1e2.1c.4](s1e2.1c.4_the_flags_at_scale.md) | The flags at scale | on a monotone program, *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to. The target is [`solve_interface.md` § 3.2](../p1e2.1a_the_solution_region/solve_interface.md#32-a-monotone-program-each-modes-route)'s right-hand column. It includes licence L5, the obligation tree, which decides `zebra2-obligations`' uniqueness in 9 enterings, and whether a `--count` is worth a flag. **T1e2.1c.4.1–.4 done 2026-11-03**: L5 held to the oracle (zebra licenses 18 of its 36 debts on the hrule rung); the obligation tree, the climb with dualise and advance, and the shrink with the duality, for every mode; zebra's `--single`, `--maximal` and `--minimal` in 49, 49 and 451 saturations, `zebra2-minus-15`'s maximal line certified at the default; the slow set the same fourteen. T1e2.1c.4.5 measured `--count` and put it to the user, who **ruled (a), add it, on 2026-11-03**. **Done 2026-11-03**: T1e2.1c.4.6 built `--count`, describe's route and counts with nothing read past them, held to the oracle, to describe's rows on every corpus program, and under every lever |

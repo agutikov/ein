@@ -13,7 +13,7 @@ before commit 7ec8a480 (`--bin` / `$EIN_BIN`), and read its record as the
 walk's. Porting it to the region is not owed by the switch.
 
 The named instrument behind
-[baseline.md §9](../docs/history/m1a_rust/measurements/baseline.md#9-the-fork-entry-re-derivation),
+baseline.md §9,
 promoted from the inline script that section was first written with
 (T1a.6.9.1). Re-run it at the end of every P1a.6 stage: S1a.6.8 removed the
 compile share of this cost and S1a.6.3 is aimed at the match share, so the

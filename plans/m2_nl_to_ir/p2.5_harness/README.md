@@ -141,8 +141,8 @@ either.
 - [`EinAf.md` § Stage D](../EinAf.md#stage-d--establish-baselines),
   [§ Stage H](../EinAf.md#stage-h--define-rigorous-metrics),
   [§ Stage N](../EinAf.md#stage-n--reproducibility).
-- [`utils/bench_env.sh`](../../../utils/bench_env.sh), [`baseline.md`](../../../docs/history/m1a_rust/measurements/baseline.md),
-  [`corpus_cost.md`](../../../docs/history/m1a_rust/measurements/corpus_cost.md) —
+- [`utils/bench_env.sh`](../../../utils/bench_env.sh), `baseline.md`,
+  [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md) —
   the measurement discipline the record inherits: machine state named,
   instrument named, frozen columns marked.
 - [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) — the four

@@ -18,7 +18,7 @@ promote when one isn't.
 > gated, measured and declined twice — the second time at *0.45 candidates per
 > step entered*; D2's shape trigger fired and its cost trigger moved further
 > out of reach. What the phase shipped instead is in
-> [baseline.md](../../docs/history/m1a_rust/measurements/baseline.md): an alpha-memory
+> baseline.md: an alpha-memory
 > keyed one level inside a nested argument, a ground-premise lookup, a resumed
 > fork saturator, a per-round watch stamp, and an allocator. Both entries stay
 > open with sharper triggers than they had; the sections below carry them.
@@ -56,7 +56,7 @@ re-took both.** What changed:
 - **D1's catch dissolved, as this file predicted it would.** "A memory that
   must be copied per fork can lose more than it saves" was the parking reason;
   a fork's whole delta is **3.6 KB mean, 9 KB worst case** over 101
-  enterings ([baseline.md §5](../../docs/history/m1a_rust/measurements/baseline.md#5-memory)),
+  enterings (baseline.md §5),
   so per-fork memories are affordable outright and the read-only-share
   design is an optimisation rather than a precondition.
 - The gate on [S1a.6.3](../../docs/history/m1a_rust/README.md#s1a63--beta-memories-f11-d1)
@@ -75,7 +75,7 @@ utils/bench_env.sh python3 utils/feature_matrix.py --runs 5        # the lever m
 wall-clock one, and `feature_matrix.py` — which drives the binary `$EIN_BIN`
 names — the lever matrix.
 The whole set is listed in
-[baseline.md § Reproducing all of it](../../docs/history/m1a_rust/measurements/baseline.md#reproducing-all-of-it).
+baseline.md § Reproducing all of it.
 
 ## D1 — RETE beta-memories
 
@@ -88,7 +88,7 @@ The whole set is listed in
 >
 > - **The intermediate is 2.2 tuples wide.** An exhaustive `zebra` offers
 >   1 171 385 candidates over 530 405 steps entered, where before
->   [T1a.6.3.0](../../docs/history/m1a_rust/measurements/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass)
+>   T1a.6.3.0
 >   it offered 25 160 149 — **47.4 per step down to 2.21**. What T1a.6.3.0 did
 >   was key the participation index *one level inside a nested argument*, so a
 >   `(not (R ?b ?i))` premise probes a bucket instead of walking a 368-fact
@@ -119,7 +119,7 @@ The whole set is listed in
 >
 > | when | candidates | steps entered (`walk`) | per step |
 > |---|---:|---:|---:|
-> | before [T1a.6.3.0](../../docs/history/m1a_rust/measurements/baseline.md#14-s1a63--the-alpha-memory-and-the-gate-the-beta-memory-did-not-pass) | 25 160 149 | 530 405 | **47.4** |
+> | before T1a.6.3.0 | 25 160 149 | 530 405 | **47.4** |
 > | after it (S1a.6.3) | 1 171 385 | 530 405 | **2.21** |
 > | after [S1a.6.12](../../docs/history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot) | **238 567** | 532 115 | **0.45** |
 >

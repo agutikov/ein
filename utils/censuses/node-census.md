@@ -1,7 +1,7 @@
 # The node census — 2026-11-02
 
-**S1e2.1b.2's measurement** ([the stage](s1e2.1b.2_fork_or_scratch.md)), the
-evidence for [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
+**S1e2.1b.2's measurement** ([the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md)), the
+evidence for [Q-M1e2.2](../../plans/m1e2_correctness/open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
 asked of every node. A node's state is built two ways, and the two are
 compared node for node on every cube the oracle reaches:
 
@@ -31,7 +31,7 @@ cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-cli --test region_
 
 Every command takes `--json` for one row per program. Taken 2026-11-02 at
 `bc1dff73` (T1e2.1b.2.1), which adds this stage's
-[`node_census`](../../../ein.rs/crates/ein-infer/examples/node_census.rs) and
+[`node_census`](../../ein.rs/crates/ein-infer/examples/node_census.rs) and
 its fix to `utils/region.py`, release build, stdlib = the
 checkout, 16 jobs on a 32-thread machine. Every number on this page is from
 those commands unless it names another.
@@ -39,7 +39,7 @@ those commands unless it names another.
 **What it selects.** With no file, the programs of `site_census`'s selection
 (`corpus_files()` and the register's witnesses, 271 files, 208 of which load
 and saturate) that the static check flags and whose cube is within
-`--region-limit 16`: **18**. That is [site census § 3](site_census.md#3-the-flagged-programs-within-the-limit)'s
+`--region-limit 16`: **18**. That is [site census § 3](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#3-the-flagged-programs-within-the-limit)'s
 14, plus the four fixtures S1e2.1b.6 banked after it (`lattice/08`,
 `lattice/09`, `synth/maximal_not_top`, `synth/local_not_global`). `--control`
 takes the 155 that the check calls monotone. S1e2.4.1's probes get their own
@@ -52,7 +52,7 @@ all 256 flagged nodes. It was overruled for two other reasons:
 
 - **It was wrong on one program.** It called a node dead only when the dump
   held a `false` fact. A pair contradiction, `X` beside `(not X)`, derives
-  none, and on [`d3-unsat-core.ein`](../../../corpus/fuzz_findings/d3-unsat-core.ein)
+  none, and on [`d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein)
   12 of the 32 nodes die that way. `region.py` called those 12 alive, while the
   oracle and both library routes call them dead. The stage fixed it: a node
   is dead also when `--json-summary`'s `region.root` says so, which is the
@@ -96,24 +96,24 @@ no command reaches it.
 
 | program | n | nodes | status differs | state differs |
 |---|---:|---:|---:|---:|
-| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | 32 | 0 | 0 |
-| [`branching/13_lookahead_naf_world.ein`](../../../examples/branching/13_lookahead_naf_world.ein) | 2 | 4 | 0 | 0 |
-| [`branching/14_lookahead_unjudgeable.ein`](../../../examples/branching/14_lookahead_unjudgeable.ein) | 2 | 4 | 0 | 0 |
-| [`ein-bugs/alive-empty-interlayer.ein`](../../../examples/ein-bugs/alive-empty-interlayer.ein) | 3 | 8 | 0 | 0 |
-| [`ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein) | 2 | 4 | 0 | 0 |
-| [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | 2 | 0 | **1** |
-| [`ein-bugs/wrong-answers/naf-nowb.ein`](../../../examples/ein-bugs/wrong-answers/naf-nowb.ein) | 2 | 4 | 0 | 0 |
-| [`ein-bugs/wrong-answers/stale-naf-fork-warn.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein) | 1 | 2 | **1** | **1** |
-| [`ein-bugs/wrong-answers/stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) | 1 | 2 | **1** | **1** |
-| [`features/07_unstratifiable.ein`](../../../examples/features/07_unstratifiable.ein) | 1 | 2 | 0 | **1** |
-| [`lattice/04_obligation_trigger_hole.ein`](../../../examples/lattice/04_obligation_trigger_hole.ein) | 2 | 4 | 0 | 0 |
-| [`lattice/08_absent_witness_hole.ein`](../../../examples/lattice/08_absent_witness_hole.ein) | 3 | 8 | 0 | 0 |
-| [`lattice/09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein) | 2 | 4 | 0 | 0 |
-| [`lattice/synth/local_not_global.ein`](../../../examples/lattice/synth/local_not_global.ein) | 2 | 4 | 0 | 0 |
-| [`lattice/synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein) | 3 | 8 | 0 | 0 |
-| [`lattice/synth/three_components.ein`](../../../examples/lattice/synth/three_components.ein) | 7 | 128 | 0 | 0 |
-| [`lattice/synth/trigger_hole.ein`](../../../examples/lattice/synth/trigger_hole.ein) | 5 | 32 | 0 | 0 |
-| [`tests/region/07_cube.ein`](../../../tests/region/07_cube.ein) | 2 | 4 | 0 | 0 |
+| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | 32 | 0 | 0 |
+| [`branching/13_lookahead_naf_world.ein`](../../examples/branching/13_lookahead_naf_world.ein) | 2 | 4 | 0 | 0 |
+| [`branching/14_lookahead_unjudgeable.ein`](../../examples/branching/14_lookahead_unjudgeable.ein) | 2 | 4 | 0 | 0 |
+| [`ein-bugs/alive-empty-interlayer.ein`](../../examples/ein-bugs/alive-empty-interlayer.ein) | 3 | 8 | 0 | 0 |
+| [`ein-bugs/naf-upward-closure.ein`](../../examples/ein-bugs/naf-upward-closure.ein) | 2 | 4 | 0 | 0 |
+| [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | 2 | 0 | **1** |
+| [`ein-bugs/wrong-answers/naf-nowb.ein`](../../examples/ein-bugs/wrong-answers/naf-nowb.ein) | 2 | 4 | 0 | 0 |
+| [`ein-bugs/wrong-answers/stale-naf-fork-warn.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein) | 1 | 2 | **1** | **1** |
+| [`ein-bugs/wrong-answers/stale-naf-fork.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) | 1 | 2 | **1** | **1** |
+| [`features/07_unstratifiable.ein`](../../examples/features/07_unstratifiable.ein) | 1 | 2 | 0 | **1** |
+| [`lattice/04_obligation_trigger_hole.ein`](../../examples/lattice/04_obligation_trigger_hole.ein) | 2 | 4 | 0 | 0 |
+| [`lattice/08_absent_witness_hole.ein`](../../examples/lattice/08_absent_witness_hole.ein) | 3 | 8 | 0 | 0 |
+| [`lattice/09_activator_hole.ein`](../../examples/lattice/09_activator_hole.ein) | 2 | 4 | 0 | 0 |
+| [`lattice/synth/local_not_global.ein`](../../examples/lattice/synth/local_not_global.ein) | 2 | 4 | 0 | 0 |
+| [`lattice/synth/maximal_not_top.ein`](../../examples/lattice/synth/maximal_not_top.ein) | 3 | 8 | 0 | 0 |
+| [`lattice/synth/three_components.ein`](../../examples/lattice/synth/three_components.ein) | 7 | 128 | 0 | 0 |
+| [`lattice/synth/trigger_hole.ein`](../../examples/lattice/synth/trigger_hole.ein) | 5 | 32 | 0 | 0 |
+| [`tests/region/07_cube.ein`](../../tests/region/07_cube.ein) | 2 | 4 | 0 | 0 |
 
 **Every node where the two differ**, with the facts that differ and the rule
 that derived each:
@@ -134,7 +134,7 @@ judges any guard, so `derive-p` never fires. On `stale-naf-fork` the stale
 `features/07` and its twin nothing refutes the pair, and the node is in R on
 both routes, holding a different state.
 
-These are the four programs [site census § 2](site_census.md#2-the-sites)
+These are the four programs [site census § 2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)
 names as the only ones within the limit where a site's rule fires at root.
 The census called that an argument for where the routes *can* differ. Here
 the routes differ there, on one node each, and nowhere else.
@@ -175,7 +175,7 @@ stratified program, scratch's own root holds a stale fact.
 ## 3. The control: the monotone cubes
 
 On a program the static check calls monotone, fork and scratch build the same
-state by the theorem ([phase README § What non-monotone means](README.md#what-non-monotone-means-and-what-is-not)).
+state by the theorem ([phase README § What non-monotone means](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md#what-non-monotone-means-and-what-is-not)).
 `--control` checks that premise node for node, on every fact; `region_dump.rs`
 checks the statuses and closures of nine programs:
 
@@ -277,12 +277,12 @@ Over the 208 programs of the selection that load and saturate:
 
 | program | n | flagged | over D | the cycle | parity |
 |---|---:|---|---|---|---|
-| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | yes | **yes** | `fire-1` reads `(not r1)` under `absent` and writes `r1`; `fire-0` reads `r1` and writes `(not r1)` | odd |
-| [`features/07_unstratifiable.ein`](../../../examples/features/07_unstratifiable.ein) | 1 | yes | **yes** | `derive-p`: `q` →¬ `p`; `derive-q`: `p` →¬ `q` | even |
-| [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | yes | **yes** | the same | even |
-| [`syntax/rule-forall-and-not.ein`](../../../examples/syntax/rule-forall-and-not.ein) | 0 | no | no | `f` reads `r` under a `forall` and writes `r` and `(not r)` | odd |
-| [`syntax/rule-guards.ein`](../../../examples/syntax/rule-guards.ein) | 0 | no | no | `g`: `s` →¬ `s` | odd |
-| [`syntax/rule-shared-guard-var.ein`](../../../examples/syntax/rule-shared-guard-var.ein) | 0 | no | no | `sh`: `r` →¬ `r` | odd |
+| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | yes | **yes** | `fire-1` reads `(not r1)` under `absent` and writes `r1`; `fire-0` reads `r1` and writes `(not r1)` | odd |
+| [`features/07_unstratifiable.ein`](../../examples/features/07_unstratifiable.ein) | 1 | yes | **yes** | `derive-p`: `q` →¬ `p`; `derive-q`: `p` →¬ `q` | even |
+| [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | yes | **yes** | the same | even |
+| [`syntax/rule-forall-and-not.ein`](../../examples/syntax/rule-forall-and-not.ein) | 0 | no | no | `f` reads `r` under a `forall` and writes `r` and `(not r)` | odd |
+| [`syntax/rule-guards.ein`](../../examples/syntax/rule-guards.ein) | 0 | no | no | `g`: `s` →¬ `s` | odd |
+| [`syntax/rule-shared-guard-var.ein`](../../examples/syntax/rule-shared-guard-var.ein) | 0 | no | no | `sh`: `r` →¬ `r` | odd |
 
 **What (D) would refuse, and what that costs, by name.**
 
@@ -350,7 +350,7 @@ contradiction; built to quiescence, as the oracle builds a node, they agree.
   every node from root at once. But the node is *root plus the commitment at
   once*, so a search that extends a parent's fixpoint builds a different node
   on a flagged program. `lattice/08` is stratified, so (D) does not remove the
-  case. That constrains [P1e2.1c](../p1e2.1c_the_region_search/README.md)'s
+  case. That constrains [P1e2.1c](../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s
   search.
 - **(B)**: a node has no path, and the direct node already is scratch's. The
   abort says nothing against (B).
@@ -375,7 +375,7 @@ answer, R = ∅, is the same under (B). L0's *reason* is not: under scratch a
 dead root does not kill its supersets, as `dead_root` (§ 2.3) shows with
 `{(h A)}` in R above a dead ∅. Under (B), a flagged program with a dead root
 needs another licence, or the cube. On `features/12` the arguments that exist
-are fact grain (its reads are static at fact grain, [site census § 5.3](site_census.md#53-what-leaves-the-set))
+are fact grain (its reads are static at fact grain, [site census § 5.3](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#53-what-leaves-the-set))
 and S1e2.2.5's refusal under *forbid*. (C) would change nothing, by the same
 fact-grain argument and not by a run: the guard root's `(false)` rests on reads
 `(instance ?h Hole)`, which no candidate and no fact derived from one
@@ -444,7 +444,7 @@ root derives `(q one)` where it derived `(p one)`. The candidate list becomes
 `{(p one)}`, and R is `{∅, {(p one)}}`, the mirror image of today's. That
 happens **on both routes**. The oracle's own R on `features/07` depends on
 which of two rules at priority 200 is written first, which is the config
-principle's *stable* ([`monotonicity.md` § 12.1](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#121-three-words):
+principle's *stable* ([`monotonicity.md` § 12.1](../../docs/ein/reasoning/kb-evolution/monotonicity.md#121-three-words):
 *"it does not depend … on rule order"*) broken by today's node, not only by
 scratch.
 
@@ -624,8 +624,8 @@ a fork-aware cell, which S1e2.1c.3 would have to design.
 
 ## 11. The path census — S1e2.1b.7
 
-[S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md)'s T1e2.1b.7.2, for
-the rows [`monotonicity.md` § What holds it](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it)
+[S1e2.1b.7](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md)'s T1e2.1b.7.2, for
+the rows [`monotonicity.md` § What holds it](../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it)
 left *unverified*: every split C1 ⊆ C and longer chains, the state-memoized
 path DAG and (F)'s per-node counts, and the premise that a step is a function
 of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
@@ -642,7 +642,7 @@ Taken 2026-11-02 at `8a2dffe3` (the parent of the commit that adds `--paths`),
 release build, stdlib = the checkout, 16 jobs on a 32-thread machine, one
 program a job. `--written` carries six programs since this stage: § 2.3's
 three and the two of
-[`examples/shared/written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)
+[`examples/shared/written.rs`](../../ein.rs/crates/ein-infer/examples/shared/written.rs)
 (`activator_refutes`, `activator_under_absent`), and § 12's `fifo_gap_static`
 from T1e2.1b.7.3 on.
 
@@ -816,7 +816,7 @@ are not read.
 ## 12. The cumulativity census, and the FIFO gap — S1e2.1b.7
 
 T1e2.1b.7.3, for three rows of
-[`monotonicity.md` § What holds it](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it):
+[`monotonicity.md` § What holds it](../../docs/ein/reasoning/kb-evolution/monotonicity.md#what-holds-it):
 *a stratified program evaluated stratum by stratum is cumulative*, *the FIFO
 example is path-dependent in the engine as written*, and *a Monotone verdict
 can leave scratch ≠ fork through a FIFO race over a static read*.
@@ -840,7 +840,7 @@ one **156** (§ 3's 155 and `11_fifo_gap_static`).
 
 ### 12.1 The FIFO gap, banked
 
-[`examples/lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein)
+[`examples/lattice/10_fifo_gap.ein`](../../examples/lattice/10_fifo_gap.ein)
 is § 7.3's counter-example as written: r2 `a ∧ b ∧ absent(q) → p` before r1
 `a ∧ absent(z) → q`, both at priority 200, `a` and `b` the two candidates as
 hrules. It is stratified (z < q < p), flagged (r2's `absent` reads `q`, which
@@ -861,14 +861,14 @@ written**, first try:
 - **`--invariance`**: writing r1 before r2 moves the state of `{(a one), (b
   one)}` on both routes and moves no status, no universe.
 - **The reader at an earlier priority**, the proposal's scratch copy
-  [`fifo_gap_priority.ein`](detector_proposal/fifo_gap_priority.ein) (r2 at
+  [`fifo_gap_priority.ein`](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) (r2 at
   100), reads the same under `--paths` and `--cumulative`, and `--invariance`
   finds no equal-priority pair to reorder. It is not banked: it is the same
   gap, and the order check that tells the two apart is S1e2.1b.5's.
 
 ### 12.2 The static variant, banked
 
-[`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein)
+[`examples/lattice/11_fifo_gap_static.ein`](../../examples/lattice/11_fifo_gap_static.ein)
 is the same program with `(a one)` given and only `b` a candidate. `q` is no
 relation a commitment can change, so r2's `absent` is static and **the static
 check calls the program monotone**: `ein solve` takes route 1, *"L1 dead is

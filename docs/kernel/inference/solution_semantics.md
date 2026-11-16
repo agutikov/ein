@@ -318,7 +318,7 @@ where it leaves a stale fact the fork does not hold
 [`monotonicity.md` § 3.4](../../ein/reasoning/kb-evolution/monotonicity.md#34-the-verdict-is-relative-to-root),
 measured 2026-11-02 by M1e2 S1e2.1b.7). With the boundary admitting in stratum
 order, emulated by priorities, that node's scratch state is the fork's
-([`node_census.md` § 12.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#124-admission-in-stratum-order-emulated)).
+([`node-census.md` § 12.4](../../../utils/censuses/node-census.md#124-admission-in-stratum-order-emulated)).
 The state defined here, the fork's, is the one every route builds. Then:
 
 | | the state |
@@ -618,7 +618,7 @@ judged by discharge*, was a rule about which arm of § 2.6 a program got. Under
 R there is one definition for every program, and a program that states no
 obligation simply has ∅ in R when its root is consistent. The census that
 measured the scope rule over the corpus is
-[openness_census.md](../../history/m1d_satisfiability/openness_census.md).
+openness_census.md.
 
 Normative detail on what an obligation quantifies over:
 [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md)
@@ -917,7 +917,7 @@ rows and § 6 keep their names as the record.
 [`utils/region_census.py`](../../../utils/region_census.py) is the region of
 every corpus program the oracle reaches, re-takable with one command. The
 page with every table, and what each number settles, is
-[`region_census.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md).
+[`region-census.md`](../../../utils/censuses/region-census.md).
 Taken 2026-10-16 at `9248236d`, `--all --levers`: 249 programs; R computed on
 159 (n ≤ 16), 146 of them monotone, and 93 of those have no candidate at all,
 so their R is root or nothing. The counts below that say *with a candidate*
@@ -936,7 +936,7 @@ leave those out.
 - **k_c ≠ k_s** on 13 regions, up to 32 768 against 728 (§ 2.3).
 - **The universe**: alive₀ ≠ H on 29 of 194 walks (§ 6.3).
 - **Route 1** (S1e2.1a.9,
-  [`route1_reach.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/route1_reach.md),
+  [`route1-reach.md`](../../../utils/censuses/route1-reach.md),
   `cargo run --release -p ein-infer --example route1_reach`, 2026-10-16): R
   of 162 of 195 programs from the alive set and N alone, 15 of them past the
   oracle's limit. With its budget raised, `zebra.ein`'s R is **one state**,

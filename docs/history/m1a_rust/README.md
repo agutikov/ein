@@ -19,7 +19,7 @@ and the engine every `ein` command runs.
 | file | what it is |
 |---|---|
 | [`design/`](design/README.md) | the ten design contracts — the *how* of the engine, and the documents `ein.rs` source comments cite as their specification. `design/README.md` § Measured is the per-phase measured record |
-| [`measurements/`](measurements/) | [`baseline.md`](measurements/baseline.md) (P1a.6, 2 898 lines — the optimisation programme's every profile), [`scaling.md`](measurements/scaling.md) and [`shared_state.md`](measurements/shared_state.md) (P1a.7), [`corpus_cost.md`](measurements/corpus_cost.md) and [`feature_cost.md`](measurements/feature_cost.md) (P1a.9), [`fork_delta_trace.md`](measurements/fork_delta_trace.md) (S1a.6.9) |
+| [`measurements/`](measurements/) | `baseline.md` (P1a.6, 2 898 lines — the optimisation programme's every profile), `scaling.md` and [`shared_state.md`](measurements/shared_state.md) (P1a.7), [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md) and `feature_cost.md` (P1a.9), `fork_delta_trace.md` (S1a.6.9) |
 | [`open_questions.md`](open_questions.md) | seventeen questions: fifteen settled, one deferred with three trip-wires, **one still open on purpose** |
 
 ---
@@ -34,12 +34,12 @@ fanned-out lattice layer.
 
 | | measured | where |
 |---|---|---|
-| `solve zebra2.ein -e` end-to-end | **29.0 ms**, peak RSS **17 MB** | [baseline.md](measurements/baseline.md) |
-| `solve zebra.ein -e` end-to-end | **47.5 ms**; **585.8 → 47.5 ms** across P1a.6 | [baseline.md](measurements/baseline.md) |
-| parse + load `zebra2.ein` | **0.67 ms** | [baseline.md](measurements/baseline.md) |
-| the three acceptance fixtures | **0.127 s** | [baseline.md](measurements/baseline.md) |
-| `--jobs 8` on 8 P-cores | **3.17–4.40×** on the measurement set (`branching/06 -e` 194.2 → 44.1 ms) against a **≥ 6×** target — not met, and named | [scaling.md](measurements/scaling.md) |
-| `--jobs N` is the same computation | 20 712 (file, op, jobs) cells, **0 moved**, 30 s; the verbose event stream byte-identical at both job counts; 10 000 paired fuzz runs, zero findings | [scaling.md](measurements/scaling.md) |
+| `solve zebra2.ein -e` end-to-end | **29.0 ms**, peak RSS **17 MB** | baseline.md |
+| `solve zebra.ein -e` end-to-end | **47.5 ms**; **585.8 → 47.5 ms** across P1a.6 | baseline.md |
+| parse + load `zebra2.ein` | **0.67 ms** | baseline.md |
+| the three acceptance fixtures | **0.127 s** | baseline.md |
+| `--jobs 8` on 8 P-cores | **3.17–4.40×** on the measurement set (`branching/06 -e` 194.2 → 44.1 ms) against a **≥ 6×** target — not met, and named | scaling.md |
+| `--jobs N` is the same computation | 20 712 (file, op, jobs) cells, **0 moved**, 30 s; the verbose event stream byte-identical at both job counts; 10 000 paired fuzz runs, zero findings | scaling.md |
 | memory under parallelism | per-worker provenance: `features/01 -e` **684–708 → 85–91 MB**; peak RSS 79.8 / 90.3 MB at `--jobs 1 / 16` | [shared_state.md](measurements/shared_state.md) |
 | `.einb`, the binary KB container | a saturated `zebra2` is **57 688 bytes**, opens cold in **0.614 ms**; `solve x.einb` byte-identical to `solve x.ein` | [P1a.8](#p1a8--binary-kb-container) |
 | the gate | **619 tests, 0 failures, 1 m 51 s** (re-counted 2026-08-23) | [P1a.10](#p1a10--gate-corpus-and-specification) |
@@ -385,7 +385,7 @@ every counter — is identical.
 **Shipped 2026-08-18.** The stage that re-planned the phase, and the reflex the
 milestone then used twice more ([S1a.7.0](#s1a70--the-speculation-audit),
 [S1a.9.0](#s1a90--the-slow-corpus-re-priced)): measure the premise before
-spending four days on it. [baseline.md](measurements/baseline.md) §1–§9 is its
+spending four days on it. baseline.md §1–§9 is its
 output.
 
 #### S1a.6.8 — The compile cache and the extent counts
@@ -407,7 +407,7 @@ facts**, which pick a different equally valid derivation because a resumed fork
 inherits root's parked candidates with root's tiebreakers.
 [Q-M1a.18](open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
 decided it, and
-[fork_delta_trace.md](measurements/fork_delta_trace.md) is the before/after
+fork_delta_trace.md is the before/after
 trace the decision was taken against. `--trace` gained a *Before any
 assumption* section, without which the solution's proof silently lost every
 rule that fires only at root.
@@ -567,7 +567,7 @@ with the commits rather than sitting flat (**1.69 → 3.13×** on the CLI's
 **Declined 2026-08-23**, premise measured before the build: three of the four
 measurement-set workloads never park a candidate, the fourth judges a median of
 one per round, and a round is 0.18 µs against a ~10 µs barrier
-([scaling.md §9](measurements/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+(scaling.md §9).
 Nothing was built, gated off or left half-present.
 
 #### S1a.7.4 — Level 2: the parallel enqueue pass
@@ -643,7 +643,7 @@ been priced against the engine being released, and measuring found **twelve
 were never slow by any threshold worth stating**, the flagship `zebra2.ein`
 among them at 16 ms. What
 the release gate sweeps is **641 cells in 19.4 s where it was 660 in 242.6 s**.
-The measurement is [corpus_cost.md](measurements/corpus_cost.md), `slow = true`
+The measurement is [corpus-cost.md](../../../utils/censuses/corpus-cost.md), `slow = true`
 is now a claim with a `cost_ms` behind it, and the stage found something it did
 not fix: **ten entries where `solve` costs exactly what `solve -e` costs**,
 because all ten return `Contradiction` / `exhausted = false` at
@@ -662,7 +662,7 @@ a wall of red about CRLF rather than about Windows;
 build. Its `--no-default-features` task was written as a compile check and run
 as a **measurement**, which found that two of the three features that build was
 documented to drop **were not being dropped**
-([feature_cost.md](measurements/feature_cost.md)). **What no machine here has
+(feature_cost.md). **What no machine here has
 run is the build matrix**: this repository has never been built for aarch64,
 macOS, Windows or musl, and the first `v*` tag runs all four for the first
 time. The stage says so rather than letting a badge say otherwise.

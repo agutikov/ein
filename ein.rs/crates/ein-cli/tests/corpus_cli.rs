@@ -58,7 +58,7 @@
 //! `features/04_open.ein :: render lattice` at **10.2 s**, a blind
 //! enumerator over a domain the demo never bounds, which made that entry
 //! `slow` until M1e2 S1e2.1a.5's switch; what each cell costs since is
-//! `utils/corpus_cost.py`'s (`docs/history/m1a_rust/measurements/corpus_cost.md`).
+//! `utils/corpus_cost.py`'s (`utils/censuses/corpus-cost.md`).
 //! It used to be `square-unique/cul-de-sac.ein :: render lattice` at
 //! **94 s** — 125 s for its sibling `corner-house` — and those two cells were
 //! 90 % of the whole sweep until S1a.9.0 asked what they were for. A cell at

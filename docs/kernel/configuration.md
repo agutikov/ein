@@ -262,7 +262,7 @@ once at default settings and once under each of 24 levers, the seventeen flags
 of the time among them. Each run's R is compared with the default's: the
 candidates, every node's status and state class, root's fixpoint, and the
 facts of every state in R
-([`region_census.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md)).
+([`region-census.md`](../../utils/censuses/region-census.md)).
 
 - **No lever changes R on 158 of the 159**, and 23 of the 24 change it on
   none. That is by construction for most of them: the oracle's universe is
@@ -326,7 +326,7 @@ facts of every state in R
   *"Saturation commutativity violated"*. Four of the eight nodes it found are
   its own direct path stopping at the first contradiction
   (`enable-fail-fast-fork`), and the other four a stale fact a parent path
-  keeps ([`node_census.md` § 11.2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes),
+  keeps ([`node-census.md` § 11.2](../../utils/censuses/node-census.md#112-the-flagged-cubes),
   2026-11-02). No route runs the probe since the switch. Its question ships
   as the detector's parent-path spot check (M1e2 S1e2.1b.5, the read-out's
   `paths` row), on a flagged program at most three one-step parents of each

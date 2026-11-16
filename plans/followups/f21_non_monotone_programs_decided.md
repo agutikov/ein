@@ -89,7 +89,7 @@ saturating:
 
 Every shipped route builds a node from root with all of C at once, which is
 why C1 = ∅ is the only case a route has met. Measured
-([`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md),
+([`node-census.md`](../../utils/censuses/node-census.md),
 `bc1dff73`, 2026-11-02):
 
 - fork and scratch hold different facts on 4 of the 256 nodes of the 18
@@ -110,7 +110,7 @@ of C. A search that extends a parent's fixpoint
 ruling of 2026-10-16, *"results must be consistent: region is a region of
 oracle"*. The real question under Q-M1e2.2 is **is a node's state a function
 of C alone?** Every split C1 ⊆ C and every maximal chain are measured since
-S1e2.1b.7 ([`node_census.md` § 11](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#11-the-path-census--s1e21b7),
+S1e2.1b.7 ([`node-census.md` § 11](../../utils/censuses/node-census.md#11-the-path-census--s1e21b7),
 `node_census -- --paths`, 2026-11-02): 20 of the 256 flagged nodes within the
 limit reach two states, none three; 10 only through a dead parent; along alive
 paths the status moves on 3, `lattice/08`'s hole into R among them; on the
@@ -136,7 +136,7 @@ Argued, not tested:
   | memoize by | sound when | the tree collapses onto |
   |---|---|---|
   | **C**, the subset | the state is path-independent | the cube 2ⁿ, today's oracle |
-  | **the state**, the KB | always, if `sat(s ∪ {h})` is a function of s's contents and not of its insertion history (premise measured: 688 809 steps from contents another history reached, 0 conflicts, [`node_census.md` § 11.5](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#115-what-it-settles-and-what-it-does-not)) | a DAG of reachable states, acyclic because a step only adds |
+  | **the state**, the KB | always, if `sat(s ∪ {h})` is a function of s's contents and not of its insertion history (premise measured: 688 809 steps from contents another history reached, 0 conflicts, [`node-census.md` § 11.5](../../utils/censuses/node-census.md#115-what-it-settles-and-what-it-does-not)) | a DAG of reachable states, acyclic because a step only adds |
 
 - **Path-independent: both keys are sound, and the result is smaller than the
   cube.**
@@ -160,7 +160,7 @@ Argued, not tested:
   - Per C it would give 0 states on an odd cycle (`d3-unsat-core`), 1 on a
     stratified program, and several on an even cycle (`features/07`, where
     the guard split already finds *two stable readings*).
-  - **Measured, these counts do not hold** ([`node_census.md` § 11.5](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#115-what-it-settles-and-what-it-does-not)):
+  - **Measured, these counts do not hold** ([`node-census.md` § 11.5](../../utils/censuses/node-census.md#115-what-it-settles-and-what-it-does-not)):
     from P, every node of every flagged cube within the limit has exactly
     one stale-free state, the odd cycle included; from root, W8's four
     `{(q one)}` nodes have none, and the even cycle never reaches its second
@@ -191,7 +191,7 @@ fails.
 - **Who is cumulative.** A monotone program is, by fork: its saturation is a
   closure operator. A stratified program evaluated stratum by stratum should
   be, since its fixpoint is its perfect model. **Measured since S1e2.1b.7**
-  ([`node_census.md` § 12](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)):
+  ([`node-census.md` § 12](../../utils/censuses/node-census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)):
   as the engine admits today, saturation is cumulative on every node read
   except where the FIFO race below reaches, four programs, one of them
   monotone and failing from scratch only; with admission in stratum order,
@@ -199,7 +199,7 @@ fails.
   every node and every scratch node is stale-free.
 - **The FIFO counter-example.** The boundary admits equal-priority candidates
   one a round in (priority, FIFO) order, not in stratum order
-  ([`node_census.md` § 4](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#4-the-staleness-census)).
+  ([`node-census.md` § 4](../../utils/censuses/node-census.md#4-the-staleness-census)).
   Take r2 `a ∧ b ∧ absent(q) → p`, written before r1 `a ∧ absent(z) → q`.
   Built at once, {a, b} gives {a, b, p, q}, with `p` stale. By way of {a} it
   gives {a, b, q}. The state function is monotone, and the state is
@@ -211,7 +211,7 @@ fails.
   as argued**: banked by S1e2.1b.7 as
   [`examples/lattice/10_fifo_gap.ein`](../../examples/lattice/10_fifo_gap.ein),
   `{a, b}` holds a stale `p` built at once and not by way of `{a}`
-  ([`node_census.md` § 12.1](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#121-the-fifo-gap-banked)).
+  ([`node-census.md` § 12.1](../../utils/censuses/node-census.md#121-the-fifo-gap-banked)).
 
 So the state has one property, monotone ⇔ path-independent, broken by an
 odd-depth `absent` over D and by the FIFO gap. **It is Q-M1e2.2's subject.**
@@ -234,7 +234,7 @@ absent in s1e2.4.1"*.
   `-y`'s direct path stopping at its first contradiction, and built to
   quiescence they agree; S1e2.1b.7's path census finds each of the 21 states
   a path reaches beyond fork and scratch holding such a fact
-  ([`node_census.md` § 11.5](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#115-what-it-settles-and-what-it-does-not)).
+  ([`node-census.md` § 11.5](../../utils/censuses/node-census.md#115-what-it-settles-and-what-it-does-not)).
 - **An activator can hide the `absent`.** `region.rs`'s `ACTIVATOR_REFUTES`
   compiles `rule watch` with `(absent (?R ?x))` at a node. Its only site is
   the activator, and a check that reads root's plans does not see the
@@ -275,7 +275,7 @@ can reach a static read: with `a` given and only `b` a candidate, r2
 scratch on {b} would hold a stale `p` that the fork does not. **Measured since
 S1e2.1b.7**: banked as `examples/lattice/11_fifo_gap_static.ein`, the check
 calls it monotone, route 1 answers it, and from scratch `{(b one)}` holds the
-stale `p` ([`node_census.md` § 12.2](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#122-the-static-variant-banked)).
+stale `p` ([`node-census.md` § 12.2](../../utils/censuses/node-census.md#122-the-static-variant-banked)).
 So D2's (B) needs admission in stratum order on programs the check calls
 monotone as well.
 
@@ -307,7 +307,7 @@ open, in P1e2.2, the last phase of the milestone's order. It does not cover:
   plan the node compiles reads no `absent`, so even a check of the plans a
   node compiles misses it, unless F2's `via` follows a plan's activator. (E)
   refuses its `act`. Measured by P1e2.1b's
-  [taint census § 7](../m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3);
+  [taint census § 7](../../utils/censuses/taint-census.md#7-the-refutation-a-node-compiles-for-f3);
 - **obligation triggers and activators**, which are not refutations;
 - **the FIFO gap**.
 
@@ -386,7 +386,7 @@ asked of every node. Moot under D1's (E).
 | | a node's state | measured consequence |
 |---|---|---|
 | **(A) fork** | `sat(sat(P) ∪ C)`, today's | nothing moves. W8's rows close `not-wrong` with the reason. Not stable under rule order on `features/07`, `f07-fpoff` |
-| **(B) scratch** | `sat(P ∪ C)` | `stale-naf-fork` and its twin gain `{(q one)}`; `features/07`, `f07-fpoff` and the probe `not_conclusion` lose a stale fact from one state. Saturation ×0.2–5.6 a node, root re-derived at every node. L0 stops being the node's construction. Exposed to the FIFO race on a stratified program (`examples/lattice/10_fifo_gap.ein`) **and on one the check calls monotone**, measured since S1e2.1b.7: [`11_fifo_gap_static.ein`](../../examples/lattice/11_fifo_gap_static.ein), whose node `{(b one)}` holds a stale fact from scratch and not by fork. Admission in stratum order, emulated, removes both ([`node_census.md` § 12](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)) |
+| **(B) scratch** | `sat(P ∪ C)` | `stale-naf-fork` and its twin gain `{(q one)}`; `features/07`, `f07-fpoff` and the probe `not_conclusion` lose a stale fact from one state. Saturation ×0.2–5.6 a node, root re-derived at every node. L0 stops being the node's construction. Exposed to the FIFO race on a stratified program (`examples/lattice/10_fifo_gap.ein`) **and on one the check calls monotone**, measured since S1e2.1b.7: [`11_fifo_gap_static.ein`](../../examples/lattice/11_fifo_gap_static.ein), whose node `{(b one)}` holds a stale fact from scratch and not by fork. Admission in stratum order, emulated, removes both ([`node-census.md` § 12](../../utils/censuses/node-census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)) |
 | **(C) guards are premises** | (A) or (B), and a state holding a stale fact is not a solution | over (A): `features/07`, `f07-fpoff` lose `{(q one)}`; over (B): nothing on the corpus. A third node outcome, its own status or dead |
 | **(D) refuse a cycle through an odd `absent`** | a load error | over D: `features/07`, `f07-fpoff`, `d3-unsat-core` |
 | **(F) the stable endpoints of every path** | the set of states the path tree reaches at C whose facts are not stale ([§ The traversal](#the-traversal-a-tree-of-paths-and-what-it-may-be-memoized-by)); default logic's extensions | measured by S1e2.1b.7's path census, and not as argued: from P, one stale-free state on every flagged node, which is (B)'s wherever scratch is stale-free; from root, none on W8's four `{(q one)}`, so R is (C) over (A)'s there. The answer becomes a set of (C, state) pairs, so k_s counts states and not nodes. The cost is the state DAG, not the cube |
@@ -394,7 +394,7 @@ asked of every node. Moot under D1's (E).
 Sub-questions: **(D)'s scope**, over D (3 programs) or over all relations (6,
 three syntax fixtures with n = 0 added); and **stratum-order admission**,
 which closes the FIFO gap. Evidence:
-[`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
+[`node-census.md`](../../utils/censuses/node-census.md)
 § 4, § 5, § 7, § 9 and § 10, which also carries the agent's recommendation,
 not the user's: (B) with (D), admission in stratum order. The register's W8
 `right` blocks are (B)'s answer (§ 9 there). Stratum-order admission,
@@ -439,7 +439,7 @@ node from a parent's fixpoint agrees with the oracle?
   root at once.
 
 Evidence: § 6.1 there, and S1e2.1b.7's path and cumulativity censuses
-([§ 11–12 there](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#11-the-path-census--s1e21b7)). **The consequences for
+([§ 11–12 there](../../utils/censuses/node-census.md#11-the-path-census--s1e21b7)). **The consequences for
 P1e2.1c**: `docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D3.
 **Until decided:** (ii). P1e2.1c's S1e2.1c.2 and .4 are scoped to monotone
 programs.
@@ -452,7 +452,7 @@ repair edges; (b) R as convex pieces; (c) a qualifier; (d) a refusal. With
 (d1) dead and owing holes, one word or two, (d2) a claim form, (d3) the stub's
 words, (d4) `lattice/04`'s register row. Evidence:
 [S1e2.1b.3](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s
-[`hole_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)
+[`hole-census.md`](../../utils/censuses/hole-census.md)
 (2026-11-02, `cargo run --release -p ein-infer --example hole_census`):
 
 - **the holes**: 18 on 9 of the 18 flagged corpus cubes within the limit, 8
@@ -496,7 +496,7 @@ premise over D, read off provenance, which is
 [F18](f18_world_aware_negatives.md)'s narrow form; (c) the refusal first, a
 reorder of the milestone. Evidence:
 [S1e2.1b.4](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s
-[taint census](../m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md)
+[taint census](../../utils/censuses/taint-census.md)
 (2026-11-02, `cargo run --release -p ein-infer --example taint_census`) and the
 test it banks, `ein-infer/tests/region.rs::an_untainted_death_is_dead_in_every_superset`:
 
@@ -674,12 +674,12 @@ this page.
 - [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md): the two
   kinds of program compared; § 7, this analysis with every claim labelled by
   its standing; § 8, what is open.
-- [`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
+- [`node-census.md`](../../utils/censuses/node-census.md)
   (D2, D3), [`site_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md)
   (D1, D7), S1e2.1b.3's `hole_census.md` (D4), S1e2.1b.4's taint census (D6),
   S1e2.1b.7's consequences (`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1–8.2,
   all) and its path and cumulativity censuses
-  ([`node_census.md` § 11–12](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#11-the-path-census--s1e21b7), D2 and D3).
+  ([`node-census.md` § 11–12](../../utils/censuses/node-census.md#11-the-path-census--s1e21b7), D2 and D3).
   The causes as one table: [`monotonicity.md` § 9](../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes).
 - [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md):
   *forbid*, its F1–F5, the `via` set and the rewrites that keep R.

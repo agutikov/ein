@@ -22,7 +22,7 @@ about a word the engine already says.
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) shipped the ladder and **no counter moved** ([the record §2](hypotheses_from_obligations.md)) |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | **closed 2026-08-26 — both**: the count now carries its exhaustion qualifier and **(b) the determining key** ships behind `ein solve --models key` ([the verdict](the_verdict.md)). The half that was broken was the *enumeration* |
-| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](openness_census.md)) |
+| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word (the census §5) |
 | [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | **closed 2026-08-26 — no**, and for three reasons rather than one: [the boundary](the_boundary.md). *A rule is a sentence about the world it fires in* |
 
 ---
@@ -77,7 +77,7 @@ regime this question is not about.
 > would be compared against **zero** models and would come back `NOT CHECKED`
 > rather than `FAILED`, because `expect.rs` refuses to refute a claim on the
 > strength of a search that stopped
-> ([S1d.4.1](closure_census.md) §4). The verdict
+> (S1d.4.1 §4). The verdict
 > channel says *the constraints are contradictory*; the claim channel says
 > *nobody knows*. Whatever this question settles should leave them agreeing.
 
@@ -228,7 +228,7 @@ the `unknown` macro, and a corpus entry
 point is that an open domain makes the search unbounded.
 
 **What that costs, measured** (M1a
-[S1a.9.0](../../history/m1a_rust/measurements/corpus_cost.md)): `render lattice` on that
+[S1a.9.0](../../../utils/censuses/corpus-cost.md)): `render lattice` on that
 one file — an exhaustive solve at `-m 3` with the lattice stored — is **10.2 s,
 the slowest cell in the corpus and 640× `zebra2`'s entire `solve`**. At the
 `solve` default of `-m 5` the same file has no answer at all: it reaches
@@ -286,7 +286,7 @@ the JSON summary reports: 101 enterings, 34 alive, 67 dead, 2 layers, 67
 no-goods, one model, and the same 56 candidates at layer 1. On
 `zebra2-minus-15-obligations.ein` they agree at full depth — **618 076
 enterings, 19 121 learned clauses, five layers and the same 32 models** — which
-is the [layer census](layer_census.md)'s baseline
+is the layer census's baseline
 reproduced to the entering. Not one golden was re-blessed for a counter.
 
 Two things make that less surprising than it reads, and both are in
@@ -322,7 +322,7 @@ adapters that compare Ein's answer to Clingo's.
 and enumerate on request". What is not legitimate is a compact form that only
 the engine can read.
 
-**Half of it is now measured** — [`model_set_census.md`](model_set_census.md),
+**Half of it is now measured** — `model_set_census.md`,
 S1d.3.1, 2026-08-25. *"Report the factorisation"* has a price: no corpus entry
 has `Π dom == k`; **2 of 13** model sets partition into independent blocks and
 both are two-object demos whose three-object sibling does not; **5 of 13** are a
@@ -384,7 +384,7 @@ the corpus's slow tail and found ten entries costing the *same* exhaustively as
 on the fast path — `solve` and `solve -e` within 2 % of each other on nine of
 them and 1.24× on the tenth, where the two paths should differ by the whole of
 the search
-([corpus_cost.md § 2B](../../history/m1a_rust/measurements/corpus_cost.md)). Every one of
+([corpus-cost.md § 2B](../../../utils/censuses/corpus-cost.md)). Every one of
 them ends the same way:
 
 ```text
@@ -577,7 +577,7 @@ Twelve corpus entries moved, all under `tests/stdlib/`, all from `Solution`.
 
 **And the ten this question is about did not move**, which is the part worth
 recording. Measured before any word changed
-([the census §5](openness_census.md)): all ten declare
+(the census §5): all ten declare
 **zero** obligation rules, so all ten are out of the read-out's scope and keep
 `Contradiction` at `exhausted = false`. The guarantee holds over them
 vacuously — they do not owe anything, because nothing ever told them what they
@@ -694,7 +694,7 @@ claim, and `:expect` keeps its right to state what it cannot verify so long as
 it says `NOT CHECKED`.
 
 > **Sized 2026-08-26**, by
-> [S1d.4.1](closure_census.md): whatever the answer,
+> S1d.4.1: whatever the answer,
 > it is an answer for **one** existing instance. Parsed rather than grepped,
 > the corpus states 59 claims over 124 queries and exactly **one** about a
 > model set — `examples/features/11_expect_ambiguity.ein`, two models,

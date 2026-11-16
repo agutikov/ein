@@ -11,7 +11,7 @@ It keeps every other ruling on this page. **Nothing in the parser has moved.**
 **What it stands on:** route 1 exists in the library since T1e2.1a.9.3
 ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)) and is held
 to the oracle node for node. How far it reaches is
-[`route1_reach.md`](route1_reach.md) (T1e2.1a.9.1).
+[`../../../utils/censuses/route1-reach.md`](../../../utils/censuses/route1-reach.md) (T1e2.1a.9.1).
 
 ---
 
@@ -151,7 +151,7 @@ into an answer, which `lever_matrix.rs` already says of the process matrix. It
 is checked **before each layer**, so a declined run has saturated whole layers
 `0 … k` and nothing past them.
 
-[`route1_reach.md` § 4](route1_reach.md#4-the-budget) has the curve. What the
+[`../../../utils/censuses/route1-reach.md` § 4](../../../utils/censuses/route1-reach.md#4-the-budget) has the curve. What the
 choice trades:
 
 - **a budget too small sends programs route 1 finishes to route 3.** Past the
@@ -226,7 +226,7 @@ The user, 2026-10-16, verbatim:
 2. **Where today's walk goes.** (a) `ein walk`, (b) `ein solve --walk`, or (c)
    `EIN_WALK=1`. **Ruled: (a), `ein walk`. Withdrawn the same day**, below.
 3. **Route 1's budget**: its unit and its default
-   ([`route1_reach.md` § 4](route1_reach.md#4-the-budget)). The user asked
+   ([`../../../utils/censuses/route1-reach.md` § 4](../../../utils/censuses/route1-reach.md#4-the-budget)). The user asked
    first why the walk and the oracle differ at all, since the question
    assumes they compute the same thing: [`walk_and_region.md`](walk_and_region.md).
    Its § 6 put the question again with what the analysis found:

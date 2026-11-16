@@ -110,7 +110,7 @@ about, because the exclusion happens one level below the traversal.
 
 ### 3b. What *is* excluded, measured
 
-[S1d.3.1](model_set_census.md)'s `EIN_LEFTOVER=1` probe is
+S1d.3.1's `EIN_LEFTOVER=1` probe is
 the instrument, and split by relation it is exact:
 
 | program | `k` | leftover at the model | by relation |

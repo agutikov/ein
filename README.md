@@ -251,16 +251,16 @@ M1e2 S1e2.1a.5's switch, and they are kept as the record of M1a's engine.
 
 | measurement | value | record |
 |---|---:|---|
-| `solve zebra2.ein -e` end-to-end | **29.0 ms**; peak RSS **17 MB** | [baseline.md § the close](docs/history/m1a_rust/measurements/baseline.md#the-four-targets-at-the-close), [P1a.6 § Targets](docs/history/m1a_rust/README.md#p1a6--performance) |
+| `solve zebra2.ein -e` end-to-end | **29.0 ms**; peak RSS **17 MB** | baseline.md § the close, [P1a.6 § Targets](docs/history/m1a_rust/README.md#p1a6--performance) |
 | `solve zebra.ein -e` | **47.2 ms** | same |
 | parse + load `zebra2.ein` · the three-fixture acceptance gate | **0.67 ms** · **0.127 s** | same |
-| the P1a.6 optimisation programme on `zebra -e` | 585.8 → 47.5 ms across the phase; matcher candidates 25 160 149 → 238 567 | [baseline.md](docs/history/m1a_rust/measurements/baseline.md) |
-| `--jobs 8` on 8 P-cores, the four workloads that fan out | **3.17–4.40×** (`branching/06 -e` 194 → 44 ms); the ≥ 6× target **not met**, the remaining 1.5× named as allocation, not contention | [scaling.md](docs/history/m1a_rust/measurements/scaling.md#8-t1a721--the-fan-out-and-the-three-things-it-costs), [P1a.7](docs/history/m1a_rust/README.md#p1a7--parallelism) |
+| the P1a.6 optimisation programme on `zebra -e` | 585.8 → 47.5 ms across the phase; matcher candidates 25 160 149 → 238 567 | baseline.md |
+| `--jobs 8` on 8 P-cores, the four workloads that fan out | **3.17–4.40×** (`branching/06 -e` 194 → 44 ms); the ≥ 6× target **not met**, the remaining 1.5× named as allocation, not contention | scaling.md, [P1a.7](docs/history/m1a_rust/README.md#p1a7--parallelism) |
 | `--jobs N` is the same computation | 20 712 (file, op, jobs) cells, **0 moved**, 30 s; the verbose event stream byte-identical at both job counts, 2 200 561 lines included; 10 000 paired fuzz runs, zero findings | [P1a.7 § acceptance](docs/history/m1a_rust/README.md#p1a7--parallelism) |
 | memory under parallelism | per-worker provenance: `features/01 -e` 684–708 MB → **85–91 MB**; peak RSS 79.8 / 90.3 MB at `--jobs 1 / 16` | [design/README § Measured](docs/history/m1a_rust/design/README.md#measured) |
 | `.einb`, the binary KB container | a saturated `zebra2` is 57 688 bytes and opens cold in **0.614 ms**; `solve x.einb` byte-identical to `solve x.ein`; 20 000 fuzzed inputs and 3 348 bit-flips rejected by the digest | [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container) |
 | the gate | **619 tests, 0 failures, 1 m 51 s** | [`run_tests.sh`](run_tests.sh) |
-| the corpus | 128 entries in six groups, 629 cells as processes in 5.3 s; the slow tier 641 cells in **19.4 s** where it was 660 in 242.6 s; **two** entries are slow and `cost_ms` says so | [corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry), [`corpus/`](corpus/README.md#slow) |
+| the corpus | 128 entries in six groups, 629 cells as processes in 5.3 s; the slow tier 641 cells in **19.4 s** where it was 660 in 242.6 s; **two** entries are slow and `cost_ms` says so | [corpus-cost.md](utils/censuses/corpus-cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry), [`corpus/`](corpus/README.md#slow) |
 | determinism | every order-sensitive site specified; `--shuffle` is MT19937 exactly | [design/02](docs/history/m1a_rust/design/02_determinism_and_order.md) |
 
 Two of the phase histories are worth reading as method rather than as
@@ -376,7 +376,7 @@ were measured, not assumed:
   `Solution k=1` and `Contradiction k=0` where the hand-derived answer is two
   states. Both say two since the switch, on the maximal line.
 - **`--jobs` is 1.5× short of its target**, and the shortfall is named
-  ([scaling.md](docs/history/m1a_rust/measurements/scaling.md#where-the-other-15-is)).
+  (scaling.md).
 - **Every check is still relative** — to the engine's own past — until
   [M1c](docs/history/m1c_external_validation/README.md#the-thesis) and
   [M10](plans/m10_external_benchmarks/README.md) land an independent one. The precedent is specific: a stdlib guard was wrong for a
@@ -425,7 +425,7 @@ and — for the default build — `cmake` and a C++ compiler, because `ein` link
 `snmalloc`. `./build.sh --no-snmalloc` (or `cargo build --release -p ein-cli
 --no-default-features`) needs neither and costs a measured **+25 % on `solve
 zebra2.ein -e`** (the walk's, at M1a), along with `ein kb` and `--jobs`
-([feature_cost.md](docs/history/m1a_rust/measurements/feature_cost.md)).
+(feature_cost.md).
 
 `ein --version` names the build in **five** lines: engine version, `--events`
 protocol, `.einb` container format, the features compiled in, and the SHA-256

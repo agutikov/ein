@@ -111,7 +111,7 @@ CAPS_UP = (6, 8, 10)
 #: …and it is tried **only where the run was cheap**. A deeper cap on an entry
 #: that already costs seconds is not a measurement, it is a way to find the OOM
 #: killer: `features/01_not_and_absent -e` enters `Σₖ C(35, k)` term for term
-#: ([layer census](../docs/history/m1d_satisfiability/layer_census.md)),
+#: (layer census),
 #: which is 23.5 M commitments at `-m 8` alone and 2.7 GB before the clock runs
 #: out. Nothing is lost by declining: the row reports the cap it used and
 #: `exhausted = false` beside it, which is the honest form of "this is what the

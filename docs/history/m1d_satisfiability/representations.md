@@ -6,7 +6,7 @@ that finds all 32 models.
 **Instrument:** [`utils/model_set_census.py --form
 {envelope,key,list,diagram}`](../../../utils/model_set_census.py), which
 renders a model set as one of the candidates. No engine change: every form is
-a rendering of the `verdict.solutions` [the census](model_set_census.md)
+a rendering of the `verdict.solutions` the census
 already reads.
 **Re-take:** `utils/model_set_census.py --form key -k zebra2-minus-15.ein`
 (each form ≈ 27 s, of which 26.5 s is the solve).
@@ -28,7 +28,7 @@ the *"why these four"* objection has an answer the census supplied.
 
 ## 1. The four columns, filled
 
-Every cell traceable to [`model_set_census.md`](model_set_census.md) or to §§3–7
+Every cell traceable to `model_set_census.md` or to §§3–7
 below. Sizes are of the **actual rendered output** on `zebra2-minus-15`;
 *produce* excludes the solve, which every form shares.
 
@@ -68,7 +68,7 @@ a *k* this corpus does not have.
 
 [`ideas.md`](ideas.md)'s seventh form — *частичная модель с `open`-фактами,
 если они независимы* — is not in the table because
-[the census](model_set_census.md) killed it: the 23 varying decision variables
+the census killed it: the 23 varying decision variables
 of `zebra2-minus-15` are **one** coupling component, so there are no
 independent open facts to leave open. It survives on exactly two corpus
 entries, `saturation/type-exclusivity/{colors,nationalities}`, whose two-object
@@ -367,7 +367,7 @@ edges against a 32 × 4 table.
 So (c) does not lose on the coupling structure. It loses on arithmetic that has
 nothing to do with this puzzle: **a decision diagram is a win when *k* is
 exponential in *n*, and here *k* is 32.** No variable order changes that, and
-[the census](model_set_census.md)'s separator number — 17 of 23, the graph
+the census's separator number — 17 of 23, the graph
 being K₂₃ minus a five-star — is the reason a diagram would *also* be no good
 if *k* were large. Both halves point the same way and neither is about the
 order.

@@ -155,7 +155,7 @@ It is **scoped to programs that state an obligation** (`owes.declared > 0`),
 because a state is judged by discharge when it has been told what it owes and
 by exhaustion when it has not; 92 of the 121 corpus entries that reach a
 fixpoint state none and report exactly the words they always did
-([the census](../../../docs/history/m1d_satisfiability/openness_census.md)).
+(the census).
 `false` outranks it and a discharged model outranks it, so it is said only when
 nothing was refuted, nothing was discharged, and something is owed — *not yet a
 model*, as against `Contradiction`'s *no model*.

@@ -1555,12 +1555,12 @@ title — *three* kernel primitives — over-counts by one on the repair side.
 degrade catastrophically?* Nothing in the tree asks. What exists is adjacent
 and is not the same question:
 
-- [`corpus_cost.md`](../m1a_rust/measurements/corpus_cost.md)
+- [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md)
   prices the corpus as it is, and `slow = true` is a measured claim about
   **these** files.
-- [`scaling.md`](../m1a_rust/measurements/scaling.md) measures
+- `scaling.md` measures
   `--jobs` on four workloads.
-- [`layer_census.md`](../m1d_satisfiability/layer_census.md)
+- `layer_census.md`
   measures what a layer costs and what a clause removes, again on the corpus.
 
 All three measure the corpus. **A pathology pass measures what is *not* in the

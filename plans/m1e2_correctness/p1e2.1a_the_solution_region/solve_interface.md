@@ -413,7 +413,7 @@ S1e2.1b.6's guard split. That is S1e2.1c.3's.
 
 Saturations, i.e. nodes evaluated. *Measured* numbers carry their command.
 *Derived* ones are arithmetic over route 1's layer counts for `zebra.ein`
-([`route1_reach.md` § 6](route1_reach.md#6-where-route-1-declines-and-zebras-region-counted),
+([`../../../utils/censuses/route1-reach.md` § 6](../../../utils/censuses/route1-reach.md#6-where-route-1-declines-and-zebras-region-counted),
 2²⁰ visits, 2026-10-16), and each is an upper bound.
 
 **`examples/zebra.ein`**: n = 56. R is one state s of 18 candidates and

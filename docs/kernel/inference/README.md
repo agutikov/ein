@@ -1194,7 +1194,7 @@ the events up to the abort suffice for diagnostic).
 > **Frozen constants.** Both rows below are P1.5b's; neither instrument
 > exists. What is live is the same solve on ein.rs — milliseconds, re-measurable through
 > [`e2e_baseline.py`](../../../utils/e2e_baseline.py) and recorded in
-> [`baseline.md`](../../history/m1a_rust/measurements/baseline.md).
+> `baseline.md`.
 
 - `examples/zebra2.ein`: Solution with 1 alive entering, 0 nogoods —
   single-shot solve via fork-side `is_solved`.
