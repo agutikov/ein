@@ -237,7 +237,7 @@ on which bindings, in the context of each tested hypothesis.
 > `outcome.txt` across the tree; and (2) within each fork, both the
 > positive firings and the derived negatives (`(not …)` facts appear
 > among `firings.jsonl`'s derived facts, since the [d=0
-> negative-completion rules](README.md#d0-negative-completion-s15a19)
+> negative-completion rules](../../ein/reasoning/kb-evolution/saturation.md#what-saturation-derives-before-anything-is-supposed)
 > emit them as ordinary derived facts). A *derived* negative is
 > not a frontier fact, so it does not show up in `unsat_core.jsonl` —
 > a `(not …)` line there was **given**, not derived.
@@ -318,7 +318,7 @@ it's the entry point for "show me every refutation" tooling.
 - **"Did rule R fire where I expected?"** — `grep '"rule": "R"'`
   across `enterings/**/firings.jsonl`. Empty under a commitment where
   you expected it means a `:match` premise (often an
-  [`(absent …)` NAF guard](README.md#naf-semantics--the-closureworld-boundary-s1218))
+  [`(absent …)` NAF guard](../../ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary))
   didn't hold in that fork.
 - **"Two commitments should reach the same state but don't"** — ground truth
   is the state itself: `diff` the two forks' `kb.ein` under `enterings/`. If

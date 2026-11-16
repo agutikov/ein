@@ -10877,7 +10877,7 @@ minimal  = [[]]
 maximal  = [[]]
 
 [case.right]
-reading   = "`(absent P)` is negation as failure, judged against the state (`absent_semantics.md`), in a goal as in a rule's premise, and a query's class is the goal's instances under its rows (`region_language.md` § 5), an `(absent …)`'s among them, which a claim may list as it lists a guard's "
+reading   = "`(absent P)` is negation as failure, judged against the state (`absent-and-naf.md`), in a goal as in a rule's premise, and a query's class is the goal's instances under its rows (`region_language.md` § 5), an `(absent …)`'s among them, which a claim may list as it lists a guard's "
 verdict   = "Solution"
 k         = 1
 exhausted = true

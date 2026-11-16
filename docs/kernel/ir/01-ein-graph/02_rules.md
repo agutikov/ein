@@ -347,7 +347,7 @@ every recorded derivation (provenance-based, NAF-safe, budgeted);
 **not** a subset-minimal MUS, and minimal only relative to the
 derivations the saturator actually recorded. Unioning one
 justification per fact over every witness is the cheaper answer, and
-never a smaller one. See [`01_kb.md` §5](01_kb.md) for the AND/OR
+never a smaller one. See [`cores.md` § The proof graph](../../../ein/reasoning/kb-evolution/cores.md#the-proof-graph) for the AND/OR
 proof graph both of them read.
 
 ### 3.1 Three-state fact storage (S1.5.8c)
@@ -369,7 +369,7 @@ hypothesis-generation rules that should only propose candidates
 for slots that aren't yet committed either way. "Neither in KB" is
 read against the **positive fixpoint** of the branch, not against
 whatever had been derived when the match was found (§7, and
-[`../../inference/absent_semantics.md`](../../inference/absent_semantics.md)
+[`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md)
 for the normative definition).
 
 ### 3.2 Transitive closure as a 2-fact idiom
@@ -446,7 +446,7 @@ A firing whose conclusion is **already** in working memory adds no
 node — but it is not forgotten either: its rule + premises are
 recorded as an *alternative justification* on the fact that is already
 there, which is what makes that fact an OR-node of the proof graph
-([`01_kb.md` §5.1](01_kb.md)). The exception is a fact the engine
+([`cores.md` § The proof graph](../../../ein/reasoning/kb-evolution/cores.md#the-proof-graph)). The exception is a fact the engine
 treats as given (`source` / `hypothesis`): re-deriving one changes
 nothing.
 
@@ -454,7 +454,7 @@ The full **derivation DAG** of any derived fact is built by walking
 each rule-kind fact's premises transitively until reaching `source`
 or `hypothesis` terminals — one justification per fact by default,
 every recorded one when the caller asks for the AND/OR graph. See
-[`01_kb.md` §5](01_kb.md).
+[`cores.md` § A derivation record](../../../ein/reasoning/kb-evolution/cores.md#a-derivation-record).
 
 This is what makes the engine **explanation-complete**: every fact
 the engine derived has a recoverable "why", in the form of a
@@ -577,7 +577,7 @@ and the engine claims nothing of such a program's answer. The normative
 reading of `(absent …)` —
 including what a non-stratified rule set still owes to operational
 order — is
-[`../../inference/absent_semantics.md`](../../inference/absent_semantics.md).
+[`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md).
 The saturation loop's design is in P1.3 S1.3.3.
 
 When saturation stalls and the puzzle isn't yet solved, the engine
@@ -609,7 +609,7 @@ authoring rules is in
 - [`01_kb.md`](01_kb.md) — the graph that rules operate over.
 - [`../../inference/`](../../inference/) — the saturation /
   branching engine.
-- [`../../inference/absent_semantics.md`](../../inference/absent_semantics.md) —
+- [`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md) —
   what a negative premise means and where the closure/world boundary
   decides it.
 - [`../03-ein-lang/02_patterns.md`](../03-ein-lang/02_patterns.md) —

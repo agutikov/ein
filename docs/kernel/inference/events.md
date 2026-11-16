@@ -130,7 +130,7 @@ document the run.
 engine took: a line at root's first `quiesce`, `category` and `message`.
 Three categories shipped. `alive-set-invariant` (M1e `ST-M1`, unconditional)
 left at M1e2 S1e2.2.4, when the universe was seeded with a rule's constants
-([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
+([`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant)).
 `DerivedNafWarning` (a rule's `(absent …)` reads a relation some rule
 derives) and `RefutationUnderAbsentWarning` (…and concludes a refutation,
 the shape [Q-M1e2.5](../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)

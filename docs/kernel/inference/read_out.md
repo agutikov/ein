@@ -310,7 +310,7 @@ block, [`region_dump.md`](region_dump.md#monotonicity--the-static-check)'s.
 <!-- rows: strata -->
 | label | printed when | says | kind | summary | example |
 |---|---|---|---|---|---|
-| `negative cycle` | per cycle through an `absent` of the rules' dependency graph | its relations, the rules on its negative edges, and what its parity may mean; [`absent_semantics.md`](absent_semantics.md#the-stratification-diagnostic) has every line it prints | around R | — | [X14](read_out_examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
+| `negative cycle` | per cycle through an `absent` of the rules' dependency graph | its relations, the rules on its negative edges, and what its parity may mean; [`analysis-of-rules.md`](../../ein/reasoning/rule-evolution/analysis-of-rules.md) has every line it prints | around R | — | [X14](read_out_examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 <!-- /rows -->
 
 ### 5.3 Under `universe`

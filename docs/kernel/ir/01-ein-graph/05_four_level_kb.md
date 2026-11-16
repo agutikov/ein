@@ -71,7 +71,7 @@ library. Two cases bend it:
 - **Rules that match rules** (F5 rules-as-data) — an L3 node whose
   `:match` ranges over other L3 nodes. The arrow points L3→L3, breaking
   the strict reads-only-below shape. M1 forbids it (the
-  [M1 invariant](../../inference/README.md#m1-invariant--alive-set-soundness):
+  [alive-set invariant](../../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant):
   rules don't assert new relations or rules).
 - **Rules that declare relations dynamically** — an L3 node asserting an
   `(relation …)` L2 node. Same break; same M1 prohibition.

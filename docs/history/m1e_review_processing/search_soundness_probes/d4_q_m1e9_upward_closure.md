@@ -35,7 +35,7 @@ and its claim (1):
 > for every `c ⊇ {h}`, `sat(B ∪ c) ⊇ sat(B ∪ {h})` by monotonicity, so `c`
 > dies whether or not `¬h` is at root.
 
-Against [`absent_semantics.md` C3](../../../kernel/inference/absent_semantics.md):
+Against [`absent_semantics.md` C3](../../../ein/reasoning/kb-evolution/absent-and-naf.md):
 
 > Removing a fact can flip an absent and **fabricate** a contradiction the
 > full KB never had.
@@ -100,7 +100,7 @@ The matrix separates them, and each is sufficient on its own:
    ([`hypgen.rs:464`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs)). The
    forced-positive cascade then promotes `(q A)` into root — and the cached
    negative, whose justification no longer holds, is never revisited. This is
-   [C6](../../../kernel/inference/absent_semantics.md) — *"an `absent`
+   [C6](../../../ein/reasoning/kb-evolution/absent-and-naf.md) — *"an `absent`
    query answered in one world is meaningless in every other"* — violated by a
    cache.
 2. **The singleton writeback** — the `-L` route. `{(p A)}` is entered, dies,

@@ -1011,7 +1011,7 @@ mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))`, and its activator binds
 it: `(mirror q)`. An activator that binds such a parameter to an **integer**
 would have the compiler name a relation by the integer's decimal text, a name
 the program does not have, which no rule's text predicts and so no candidate
-can hold ([§ 3.3](#33-the-m1-alive-set-invariant-operationally)). The user
+can hold ([`saturation.md` § The alive-set invariant](../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant)). The user
 ruled on 2026-10-16 that rules cannot assert new names
 ([Q-M1e.21](../history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
 (b)), so both places that can see the binding refused it, in ein's own words,

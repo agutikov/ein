@@ -207,7 +207,7 @@ the closure onto an explicit boundary — is **shipped** as of S1.21.8; the seam
 census and the package-layout debt it names live in
 [`../architecture.md` §closure/worlds seam](../architecture.md) (P1.21 R6),
 and the normative reading of a boundary query is
-[`absent_semantics.md`](absent_semantics.md).
+[`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md).
 
 ---
 
@@ -448,7 +448,7 @@ soundness warning to a stratification one. The **normative semantics**
 (worlds, the `W ⊭ ∃x̄.Pθ` definition, the single evaluation point E1 with
 E2 retired, corollaries C1–C7 with C4/C5 retired and C2 re-grounded, and the
 explicit non-guarantees this Gap gestures at) is
-[`absent_semantics.md`](absent_semantics.md) (P1.21 R4, re-grounded by
+[`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md) (P1.21 R4, re-grounded by
 S1.21.8).
 
 ### O4 — Equality / congruence
@@ -564,7 +564,7 @@ flat edge set cannot express.
 so. (1) **Not a subset-minimal MUS** — no proper subset is checked for
 satisfiability (the caveat flagged in P1.7a), and the textbook deletion-based
 minimiser is **NAF-unsound here** (S1.9.E19; corollary C3 of
-[`absent_semantics.md`](absent_semantics.md) — the recorded
+[`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md) — the recorded
 `absent_premises` make a *sound* variant conceivable, since a candidate
 subset would have to preserve every negative query as well, but nothing
 implements that and until something does the caveat stands).
@@ -667,7 +667,7 @@ promoting a singleton-alive hypothesis to root and re-saturating
 (`Run::promote_forced_positives`) — is its positive dual. The lookahead
 is the search layer's only direct reader of a rule's `(absent …)` guards, and
 S1.21.8 fixed the world it read them in
-([`absent_semantics.md`](absent_semantics.md)'s divergence D3): a guard
+([`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md)'s divergence D3): a guard
 must hold in the world **with** `h` — no match in `kb` *and* `h` creating
 none — and a guard whose verdict that test cannot decide (one with a nested
 absent, non-monotone in the KB) makes the lookahead skip the disjunct rather

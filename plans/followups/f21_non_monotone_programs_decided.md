@@ -179,7 +179,7 @@ fails.
   `state(C′)`. Saturation is **cumulative** when X ⊆ Y ⊆ sat(X) ⇒
   sat(Y) = sat(X).
 - **⇒ always holds.** Construction is append-only: the KB never retracts
-  ([`absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md):
+  ([`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*). Take C ⊆ C′ and build
   C′ by way of C. The result holds `state(C)`, and by path independence it is
   `state(C′)`.
@@ -683,7 +683,7 @@ this page.
   The causes as one table: [`monotonicity.md` § 7.9](../../docs/kernel/inference/monotonicity.md#79-the-causes-as-one-table).
 - [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md):
   *forbid*, its F1–F5, the `via` set and the rewrites that keep R.
-- [`absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md):
+- [`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*, which D2's (B) and (C)
   would qualify.
 - [F18](f18_world_aware_negatives.md), whose closure rode on *forbid* (D6).

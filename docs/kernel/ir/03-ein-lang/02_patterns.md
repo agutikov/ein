@@ -219,7 +219,7 @@ exists at all — no puzzle in the corpus writes one.
   matches a **stored** `(not p)` fact, uniform with every other pattern; it is
   not failure-to-prove. The NAF operator is `(absent <p>)`, which is a *query*
   answered once at the closure/world boundary
-  ([`../../inference/absent_semantics.md`](../../inference/absent_semantics.md)).
+  ([`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md)).
 - **Universal quantifiers / aggregates as expressions** — `forall` is
   available as a **macro** over nested `absent`s
   ([`std.macro`](../../../../stdlib/macro.ein)), not as a primitive. A
@@ -300,7 +300,7 @@ S1f.5.5's swap refused it at the parse ([Q-M1e2.28](../../../decisions/language/
 > `forall` macro over nested `absent`s, decided at the closure boundary — no
 > aggregate primitive required
 > ([`07_stdlib_api.md`](07_stdlib_api.md),
-> [`../../inference/README.md` § d=0 negative-completion](../../inference/README.md#d0-negative-completion-s15a19)).
+> [`saturation.md` § What saturation derives before anything is supposed](../../../ein/reasoning/kb-evolution/saturation.md#what-saturation-derives-before-anything-is-supposed)).
 
 ## Triangle rule — two forms
 

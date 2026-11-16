@@ -105,7 +105,7 @@ less
   __closed__)` hands it to a rule. Writing it so stays legal, and it is then
   a name of the program as `invariant::program_names` lists them, which is
   the list the alive-set invariant reads
-  ([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally));
+  ([`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant));
   it is the enumerator's objects that leave it out. So a closure or a
   symmetry a rule derives is the one a fact states, and a program that
   states it either way has one H and one R
@@ -968,7 +968,7 @@ leave those out.
   region compared, and how to solve each.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
   R drawn, `ein render region`.
-- [`absent_semantics.md`](absent_semantics.md): worlds, the NAF boundary, and
+- [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md): worlds, the NAF boundary, and
   the corollaries a non-monotone program has to be read beside.
 - [`configuration.md`](../configuration.md): the config principle, and every
   lever's row read against it.

@@ -854,7 +854,7 @@ Two follow-ups from the coordinator's review of the stage, one commit (T1f.5.15.
   admission order, and need not be unique*. Every sentence it prints is a possibility the graph licenses or a fact
   about the graph (its relations, its edges, *not stratifiable*), never a fact about the run.
   `strata_diagnostic.rs` holds the wording on `features/07` and on `rule-guards`, where no line claims *one of
-  several*. The read-out vocabulary's `strata` row ([`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 4) says the same, and [`absent_semantics.md` § The stratification diagnostic](../../../docs/kernel/inference/absent_semantics.md#the-stratification-diagnostic) has every line the diagnostic prints, the row, the sub-row and the `rule-guards` example; `01_grammar.md` and `glossary.md` say the same.
+  several*. The read-out vocabulary's `strata` row ([`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md) § 4) says the same, and [`absent_semantics.md` § The stratification diagnostic](../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md) has every line the diagnostic prints, the row, the sub-row and the `rule-guards` example; `01_grammar.md` and `glossary.md` say the same.
 
 ### Task T1f.5.15.9 — the three scripts that still wrote `:priority`
 
@@ -949,7 +949,7 @@ first code commit, T1f.5.15.7's, which writes the ruling there.
   called advisory.
 - [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) — the
   existing advisory map, and the half of the graph that is already built.
-- [`docs/kernel/inference/absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md)
+- [`docs/kernel/inference/absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
   — P1/P2, the normative statement that the guard is judged at the closure
   boundary, which is *why* priority stopped deciding derivability.
 - [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — Q2,

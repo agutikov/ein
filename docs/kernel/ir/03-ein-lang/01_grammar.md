@@ -831,7 +831,7 @@ world.
 The normative definition — worlds, the single evaluation point E1, the
 corollaries the engine relies on, and what is explicitly *not*
 provided (stratification, stable models, retraction) — is
-[`inference/absent_semantics.md`](../../inference/absent_semantics.md);
+[`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md);
 the operational narrative is in the
 [inference README](../../inference/README.md).
 

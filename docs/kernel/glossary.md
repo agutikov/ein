@@ -287,7 +287,7 @@ but `alt-cap-core.ein`'s (M1e2 S1e2.2.11, `ein solve FILE --events`,
 [`explain::smallest_contradiction_frontier`](../../ein.rs/crates/ein-infer/src/explain.rs)
 over the **ATMS label** search in
 [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs). See
-[`inference/architecture_and_algorithms.md` §O6](inference/architecture_and_algorithms.md).
+[`cores.md`](../ein/reasoning/kb-evolution/cores.md).
 
 ### Fork
 A hypothesis branch — a `KnowledgeBase` that shares the loaded entities
@@ -309,7 +309,7 @@ does. It is a **read-only view taken at a positive quiescence**, not
 a snapshot and not an owner of the KB — saturating past that point
 invalidates it, so the saturator builds a fresh one per boundary
 round. See
-[`inference/absent_semantics.md` §Worlds](inference/absent_semantics.md#worlds).
+[`absent-and-naf.md` § Worlds](../ein/reasoning/kb-evolution/absent-and-naf.md#worlds).
 
 ### Equality class
 A union-find class of objects the engine has concluded are *the same*.
@@ -490,7 +490,7 @@ most one is admitted, re-entering the closure; the loop ends when a
 quiescence admits nothing. The default M1 strategy is still lazy:
 saturate before branching. See
 [`inference/README.md`](inference/README.md) and
-[`inference/absent_semantics.md` §Evaluation points](inference/absent_semantics.md#evaluation-points).
+[`absent-and-naf.md` § The boundary](../ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary).
 
 ### Absent / negation-as-failure (NAF)
 `(absent P)` in a `:match` — a **query** "this world holds no fact
@@ -510,9 +510,9 @@ made of first, then the rest, each half in the written and arrival order);
 on others it can be fixed by boundary-admission order, which is the
 agenda's too (see [Stratification](#stratification)).
 Normative page:
-[`inference/absent_semantics.md`](inference/absent_semantics.md);
+[`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md);
 operational how:
-[`inference/README.md` §NAF](inference/README.md#naf-semantics--the-closureworld-boundary-s1218).
+[`absent-and-naf.md` § The boundary](../ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary).
 
 ### Stratification
 The property of a rule set that no `(absent …)` guard watches a
@@ -533,7 +533,7 @@ the firing order; on unstratified ones
 picked by boundary-admission order; since S1f.5.15 the `strata` row
 says that the fixpoint may depend on that order and need not be unique,
 what the graph licenses, without naming any other model. See
-[`inference/absent_semantics.md` §Explicitly not provided](inference/absent_semantics.md#explicitly-not-provided).
+[`absent-and-naf.md` § What is not provided](../ein/reasoning/kb-evolution/absent-and-naf.md#what-is-not-provided).
 
 ---
 
