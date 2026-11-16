@@ -2397,11 +2397,18 @@ fn the_event_stream_does_not_depend_on_interning_order() {
         let buffer = Buffer::new();
         let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
         // `ein solve FILE --events`: a describe, whose stream narrates root and
-        // every node the route visits (the walk's stream until M1e2 S1e2.1c.5).
-        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
-            which: ein_infer::explore::Which::All,
-            ask: ein_infer::explore::Ask::Describe,
-        });
+        // every node the route visits (the walk's stream until M1e2 S1e2.1c.5),
+        // each dead one with its core, as `--events` asks.
+        let opts = ein_infer::explore::Options {
+            cores: ein_infer::region::Cores {
+                visited: true,
+                nogoods: false,
+            },
+            ..ein_infer::explore::Options::new(ein_infer::explore::Mode {
+                which: ein_infer::explore::Which::All,
+                ask: ein_infer::explore::Ask::Describe,
+            })
+        };
         ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
             .expect("the fixture solves");
         buffer.to_string_lossy()

@@ -94,7 +94,14 @@ fn real_trace(rel: &str, flag: &str) -> String {
             ask: Ask::Describe,
         },
     };
-    let opts = explore::Options::new(mode);
+    // N's cores under describe, which `--trace` prints and asks for.
+    let opts = explore::Options {
+        cores: ein_infer::region::Cores {
+            visited: false,
+            nogoods: mode.which == Which::All,
+        },
+        ..explore::Options::new(mode)
+    };
     let mut events = ein_infer::events::Events::off();
     let firings = ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut events)
         .expect("root saturates");

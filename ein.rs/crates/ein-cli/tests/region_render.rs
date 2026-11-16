@@ -122,10 +122,17 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         let visits = Arc::new(Mutex::new(Visits::default()));
         let mut events =
             ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
-        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
-            which: ein_infer::explore::Which::Maximal,
-            ask: ein_infer::explore::Ask::Describe,
-        });
+        // Each visited node's core, as `--dump-lattice` asks.
+        let opts = ein_infer::explore::Options {
+            cores: ein_infer::region::Cores {
+                visited: true,
+                nogoods: false,
+            },
+            ..ein_infer::explore::Options::new(ein_infer::explore::Mode {
+                which: ein_infer::explore::Which::Maximal,
+                ask: ein_infer::explore::Ask::Describe,
+            })
+        };
         let r = ein_infer::read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
             .expect("studied, the run answers");
         let candidates: Vec<String> = r.answer.candidates.iter().map(|c| c.text.clone()).collect();
