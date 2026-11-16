@@ -237,7 +237,10 @@ post-M1.
 | provenance kind | `source` · `rule` · `hypothesis` · `rejected` | `ein-core/prov.rs` |
 | lattice node verdict | `alive` · `dead` · `solution` | `ein-infer/solve.rs`, deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03) |
 | dead kind | `dead-pre` · `dead-post` | `ein-infer/solve.rs` (`DeadCommitment.kind`), deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03) |
-| hypgen scoring | `most-constrained` · `popularity` (`branch-info` reserved) | `hypgen.score_hypothesis` |
+
+The walk's hypgen scoring modes, `most-constrained` and `popularity`, went with
+the generator's scorer, which nothing called; `hypgen-scoring`, the flag that
+chose one, is refused at load ([`configuration.md` § 2.4](../configuration.md#24-the-fifteen-retired-flags)).
 
 ## `__closed__` — engine effect
 
@@ -252,9 +255,9 @@ isolated in
   walk ran it once before the initial saturation. **No route and no command
   runs it** since M1e2
   [S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
-  (2026-11-03): its one caller is `shape::hyp_shape_with`, the corpus's `hyp`
-  op. So a solve sees only the markers a program authors or `std.closure`
-  derives, and H holds the candidates of every other relation.
+  (2026-11-03): its one caller is `shape::hyp_shape_with`, the shape golden's
+  `hyp+closed` op. So a solve sees only the markers a program authors or
+  `std.closure` derives, and H holds the candidates of every other relation.
 - **Hypgen suppression** — `hypgen::closed_relations` reads the `(__closed__
   R)` facts in the KB, and the generator contributes zero candidates for R.
 

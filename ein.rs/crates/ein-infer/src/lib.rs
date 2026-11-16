@@ -4,12 +4,13 @@
 //! [P1a.3](../../../../docs/history/m1a_rust/README.md#p1a3--deductive-core) (compile →
 //! match → saturate → the NAF boundary) and
 //! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer) (the
-//! hypothesis loop above it). The search is the region's since M1e2: every
-//! question about `R` is [`explore`]'s, answered by a route. P1a.4's
-//! hypothesis loop, the walk, had no command since S1e2.1a.5's switch and was
-//! deleted at S1e2.1c.5 on the user's ruling of 2026-11-03; its generator
-//! ([`hypgen`]) stays, because H is built by its ladder and two summary blocks
-//! still call it.
+//! hypothesis loop above it). The search is the region's: every question
+//! about `R` is [`explore`]'s, answered by a route over nodes that are root
+//! with a subset of H committed and saturated ([`region`]). P1a.4's
+//! hypothesis loop, the walk, is deleted. Its generator ([`hypgen`]) builds
+//! H by its ladder, config-free; the walk's own pass over that ladder, with
+//! the one-step [`lookahead`] and its kill cache, is run by no command and
+//! kept for the shape golden's `hyp` ops, as [`closed`]'s pass is.
 //!
 //! The shape of a plan, the order of a firing sequence and the text of an
 //! error are all observable, and fixed: where no other page states one, it is
@@ -89,8 +90,8 @@ pub use firing::{
 };
 pub use hrule::Hrules;
 pub use hypgen::{
-    CLOSED, Drop, HypGenStats, ScoreError, Skip, candidate_objects, complete, consistent, generate,
-    is_solution_node, open_hypotheses, score_hypothesis,
+    CLOSED, Drop, HypGenStats, Skip, candidate_objects, complete, consistent, generate,
+    is_solution_node, open_hypotheses,
 };
 pub use lookahead::Lookahead;
 pub use match_::{Emit, Match, Matcher};

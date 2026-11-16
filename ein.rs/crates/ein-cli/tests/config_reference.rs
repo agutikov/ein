@@ -25,9 +25,10 @@
 //!    `EIN_*` name a *shipping* crate reads from the process environment has a
 //!    row, and every row names one. The classification is the result: a grep
 //!    census lists `EIN_RS`, which is a constant in two `utils/` scripts.
-//! 5. [`the_two_inert_flags_are_still_inert`] — `print-alive` and
-//!    `candidate-order-seed` are read by no code path, which is the page's
-//!    one novel claim about behaviour, so it is held by behaviour.
+//! 5. [`the_retired_flags_are_refused_with_why`] — each of the fifteen
+//!    retired flags is a load error that names why it went, which is what a
+//!    program that sets one gets. `print-alive` and `candidate-order-seed`,
+//!    inert until they were retired, are two of them.
 //! 6. [`the_surface_table_agrees_with_the_sections_it_summarises`] — the
 //!    three-row table at the top of the page repeats three numbers the
 //!    sections below own. Two hundred lines apart inside one file is still a

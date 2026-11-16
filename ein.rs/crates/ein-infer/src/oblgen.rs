@@ -45,17 +45,15 @@
 //!
 //! One obligation's candidate set is mutually exclusive and jointly
 //! exhaustive: some `b` must witness it, so branching over them loses no
-//! model. **This engine's traversal cannot take that branch on its own**,
-//! though, and the reason is structural rather than incidental: the search is
-//! a breadth-first lattice over *root's* `alive` set — layer `k` enters the
-//! `k`-subsets of one fixed set — so a model needing an arrow the chosen
-//! obligation never proposed is unreachable, at every depth. The rung
-//! therefore proposes the **union** over the accepted instances, of which any
-//! single obligation's set is a subset; the per-instance structure survives in
-//! the walk order, the decline rule and the report. Choosing *one* is a
-//! depth-first move, and
-//! [S1d.2.5's record](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
-//! is where that is measured rather than asserted.
+//! model. **What this module builds is H**, though, and H is one set: built
+//! once at root's fixpoint and read by every route and the oracle, each of
+//! whose nodes is root with a subset of it committed. So the rung proposes the
+//! **union** over the accepted instances, in report order, of which every
+//! single instance's set is a subset. The branch is taken elsewhere: the
+//! obligation tree, which answers `-n`, `--single` and the two lines, reads
+//! each owed instance's own alternatives from `alternatives`, L5's table,
+//! scanned at root by this module's projection, and branches on one instance
+//! at a time where L5 or L9 licenses it.
 //!
 //! ### When it declines
 //!
@@ -214,47 +212,13 @@ pub struct RungReport {
     pub later_candidates: u64,
 }
 
-/// The order the owed instances are walked in — T1d.2.5.2's measured pair.
-///
-/// It is a *walk* order, not a branch choice: the emitted set is the union
-/// either way, `seen_in_call` dedups it, and `apriori::order_candidates` sorts
-/// every layer canonically — so no order imposed here reaches the traversal.
-/// **Measured inert**, on both fixtures and on every counter
-/// ([the record §4]); it is kept because it is the interface a depth-first
-/// traversal would need on day one, and it costs one `sort_by_key` over the
-/// instance list.
-///
-/// **Every caller passes [`Choice::RuleOrder`]** since M1e2 S1e2.3.1 retired
-/// `EIN_OBLIGATION_CHOICE`, the environment lever that chose the other two
-/// (the user's ruling of 2026-11-03): no route walks the ladder, the universe
-/// is taken in report order, and once the summary's `root` block read that
-/// pass the variable changed nothing the binary prints.
-///
-/// [the record §4]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub enum Choice {
-    /// Report order — priority, then load order, then activator, then match.
-    /// The control.
-    RuleOrder,
-    /// Smallest candidate set first. Costs a full enumeration before the first
-    /// candidate is emitted, which is what the control does not.
-    FailFirst,
-    /// Branch on none of them: the rung declines every call and the blind
-    /// enumerator runs. **The engine as it was before S1d.2.5**, kept as the
-    /// measurement's control arm and as the one-line proof that the ladder is
-    /// the only thing between the two numbers.
-    Off,
-}
-
-impl Choice {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Choice::RuleOrder => "rule-order",
-            Choice::FailFirst => "fail-first",
-            Choice::Off => "off",
-        }
-    }
-}
+/// The order a call emits the owed instances' candidates in, as its `rung`
+/// line's `reason` names it: **report order**, the obligation plans in order
+/// and each plan's matches in match order. It is the one order the rung has.
+/// A route reads it only as the tie-break of H's sort by raw text
+/// (`region::order_key`); it is the order of the `hyp` events that follow the
+/// `rung` line.
+pub const ORDER: &str = "rule-order";
 
 /// The static half of the ladder's decision, per `(rule, activator)`.
 struct Proj {
@@ -270,9 +234,9 @@ struct Proj {
 
 /// One owed instance's branch: the facts that would discharge it.
 ///
-/// A `Vec<Vec<FactId>>` by another name, and the name is the point — the
-/// per-instance grouping is what [`Choice`] orders and what a depth-first
-/// traversal would branch on one of.
+/// A `Vec<Vec<FactId>>` by another name. A call emits the branches' union, in
+/// report order, and counts each instance's candidates; the per-instance sets
+/// a route branches on are `alternatives`'.
 struct Branch {
     candidates: Vec<FactId>,
 }
@@ -466,14 +430,9 @@ pub(crate) fn generate(
     allowed: &Option<FxHashSet<Symbol>>,
     excluded: &FxHashSet<Symbol>,
     closed: &FxHashSet<Symbol>,
-    choice: Choice,
     stats: &mut HypGenStats,
     emit: &mut dyn FnMut(&mut Session<'_>, &mut HypGenStats, FactId) -> ControlFlow<()>,
-    one_branch: bool,
 ) -> Result<RungReport, CompileError> {
-    if choice == Choice::Off {
-        return Ok(declined(s, "choice off"));
-    }
     let memo = s.memo.clone();
     let program = s.kb.program_arc();
     let plans = crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?;
@@ -649,37 +608,13 @@ pub(crate) fn generate(
         .map(|b| b.candidates.len() as u64)
         .sum();
 
-    if choice == Choice::FailFirst {
-        // Stable, so instances of equal width keep report order — the control
-        // is the tie-breaker rather than a second variable.
-        branches.sort_by_key(|b| b.candidates.len());
-    }
     let before = stats.emitted;
     let mut broke = false;
-    // T1d.10.6.3 — **one instance's alternatives, or every instance's union.**
-    // `branches` is the per-instance grouping this function has always built
-    // and always flattened here; a depth-first traversal branches on *one* of
-    // them, and one is all it may take, because only one instance's set is
-    // jointly exhaustive on its own.
-    //
-    // The selection happens **before** the filter pipeline and not after it,
-    // which is the whole reason this is a parameter rather than a grouping the
-    // caller could reconstruct. `apply_filters`' `seen_in_call` drops a
-    // candidate already offered *earlier in the same call*, so under the union
-    // a later instance whose alternatives an earlier one had already proposed
-    // comes back short or empty — harmless when the caller wants the union,
-    // and a silently truncated branch when it wants that instance's.
-    //
-    // Which one is `Choice`'s: `RuleOrder` takes report order and `FailFirst`
-    // the smallest set, and that is the heuristic
-    // [S1d.2.5 §4](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
-    // measured inert under a lattice and kept for this.
-    let taken: &[Branch] = if one_branch {
-        &branches[..branches.len().min(1)]
-    } else {
-        &branches[..]
-    };
-    for b in taken {
+    // Every instance's alternatives, in report order: the union, which is
+    // what H holds. `apply_filters`' `seen_in_call` drops a candidate an
+    // earlier instance already offered, so a later instance's share can come
+    // back short or empty, which the union does not mind.
+    for b in &branches {
         for &fact in &b.candidates {
             if emit(s, stats, fact).is_break() {
                 broke = true;
@@ -699,10 +634,8 @@ pub(crate) fn generate(
         report.mode = Mode::Stuck;
     }
     // The later debts' candidates, after everything the state owes, so a
-    // call that reads none emits what it emitted and in that order. One
-    // instance's alternatives are an instance the state owes: `one_branch`
-    // takes none of these.
-    if !one_branch && !broke {
+    // call that reads none emits what it emitted and in that order.
+    if !broke {
         'later: for (debt, branches) in later.iter_mut().zip(&later_branches) {
             for &fact in branches.iter().flat_map(|b| b.candidates.iter()) {
                 let emitted = stats.emitted;
@@ -716,7 +649,7 @@ pub(crate) fn generate(
         }
     }
     stats.later = later;
-    narrate(s, &report, choice);
+    narrate(s, &report);
     Ok(report)
 }
 
@@ -741,11 +674,11 @@ fn declined(s: &mut Session<'_>, reason: &str) -> RungReport {
     report
 }
 
-fn narrate(s: &mut Session<'_>, r: &RungReport, choice: Choice) {
+fn narrate(s: &mut Session<'_>, r: &RungReport) {
     if !s.events.on() {
         return;
     }
-    let (mode, order) = (r.mode.as_str(), choice.as_str());
+    let (mode, order) = (r.mode.as_str(), ORDER);
     let (owed, branches, declined, candidates, uncovered) =
         (r.owed, r.branches, r.declined, r.candidates, r.uncovered);
     let (later_debts, later_candidates) = (r.later_debts, r.later_candidates);
@@ -1486,7 +1419,6 @@ mod tests {
             &None,
             &FxHashSet::default(),
             &FxHashSet::default(),
-            Choice::RuleOrder,
             &mut stats,
             &mut |_, stats, _| {
                 stats.raw += 1;
@@ -1495,7 +1427,6 @@ mod tests {
                 }
                 ControlFlow::Continue(())
             },
-            false,
         )
         .expect("the rung runs")
     }
@@ -1610,14 +1541,12 @@ mod tests {
             &None,
             &FxHashSet::default(),
             &FxHashSet::default(),
-            Choice::RuleOrder,
             &mut stats,
             &mut |_, stats, _| {
                 stats.raw += 1;
                 stats.emitted += 1;
                 ControlFlow::Continue(())
             },
-            false,
         )
         .expect("the rung runs");
         let rung = buffer

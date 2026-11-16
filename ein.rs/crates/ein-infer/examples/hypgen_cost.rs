@@ -9,8 +9,11 @@
 //! cargo run --release -p ein-infer --example hypgen_cost
 //! ```
 //!
-//! One pass is timed rather than a whole solve: the search loop that calls it
-//! ~100 times is [S1a.4.5](../../../../docs/history/m1a_rust/README.md#s1a45--the-solve-loop-and-verdict-synthesis)'s.
+//! The pass it times is `ein_infer::generate`, the walk's generator, with the
+//! lookahead set on and off on the loaded KB: no command runs it (H is the
+//! config-free pass, once at root), and the walk's search loop called it ~100
+//! times a solve. So the figure is the record of that pass's cost, which the
+//! shape golden's `hyp` ops still pay once per program.
 //! Rounds after the first do identical work — the only state a pass leaves
 //! behind is the kill cache's `(not h)` facts, and writing one is idempotent —
 //! so the mean over `ROUNDS` is the steady-state cost.

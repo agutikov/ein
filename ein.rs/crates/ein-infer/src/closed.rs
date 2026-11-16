@@ -15,18 +15,15 @@
 //! (functional ∧ total ⇒ closed). [`crate::hypgen`] does not care which path
 //! produced the fact — the index lookup is the same.
 //!
-//! **Where it is called from matters, and it is no command.** Since M1e2
-//! S1e2.3.1 no CLI path calls it: the JSON summary's `root` block, its last
-//! caller in `ein-cli`, became root's fixpoint and H as every route starts
-//! from them (the user's ruling (a) of 2026-11-03), and no route runs the
-//! pass, so every route sees each relation the program does not close itself
-//! as open. Its one caller is [`crate::shape::hyp_shape_with`], for the
-//! corpus's `hyp` op in `corpus_ops`, which asks the walk's generator in both
-//! regimes; S1e2.1c.5 kept the pass for it. It moves a lot when it does run:
-//! every relation it closes is one the enumerator skips where it proposed
-//! facts of it. The facts it writes are headed by the dunder and no registry
-//! holds it, and the dunder is no object all the same
-//! ([`crate::hypgen::candidate_objects`]).
+//! **Where it is called from matters, and it is no command.** No CLI path and
+//! no route runs the pass, so every route sees each relation the program does
+//! not close itself as open. Its one caller outside the tests is
+//! [`crate::shape::hyp_shape_with`], for the shape golden's `hyp+closed` op,
+//! which runs the walk's generator after it; the pass stays while that op
+//! reads it. It moves a lot when it does run: every relation it closes is one
+//! the enumerator skips where it proposed facts of it. The facts it writes are
+//! headed by the dunder and no registry holds it, and the dunder is no object
+//! all the same ([`crate::hypgen::candidate_objects`]).
 
 use ein_core::{Symbol, Value};
 use rustc_hash::FxHashSet;
@@ -104,10 +101,10 @@ mod tests {
     use ein_core::{Kb, Terms};
     use ein_ir::{Ast, from_ir::load, parse};
 
-    /// `emit_closed` is run **per fork**, by `--hyp-stats` and by the JSON
-    /// summary, so running it twice over the same state must be a no-op. The
-    /// corpus sweep only ever runs it once; what it does check is the other
-    /// half — that an *authored* `(__closed__ R)` is left alone.
+    /// Running `emit_closed` twice over the same state must be a no-op: the
+    /// marker is a function of the program. The corpus sweep only ever runs it
+    /// once; what it does check is the other half — that an *authored*
+    /// `(__closed__ R)` is left alone.
     #[test]
     fn a_second_pass_closes_nothing_new() {
         let src = "(relation open-r T T :why \"open-r holds of {?1} and {?2}\")\n(relation shut-r T T :why \"shut-r holds of {?1} and {?2}\")\n\

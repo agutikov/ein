@@ -27,16 +27,19 @@
 //!   world, and a rule whose guard watches the candidate's own relation would
 //!   kill a live hypothesis.
 //!
-//! ### Its sign
+//! ### Who runs it
 //!
-//! `enable_pre_branch_lookahead` measures *slightly negative* today (0.9× on
-//! exhaustive `zebra2`): it pays a simulation to avoid forks that S1.9.E23's
-//! fail-fast already made cheap. Because it runs the matcher it inherits
-//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md)'s speedup
-//! wholesale, which may flip that sign — a
-//! [P1a.6](../../../../docs/history/m1a_rust/README.md#p1a6--performance)
-//! measurement, not a decision to take here. The default does not move
-//! without it.
+//! **No route and no command.** Every route saturates each candidate's node,
+//! and H, the universe, is the generator's list with this filter off
+//! (`hypgen::generate_config_free`), so what the filter would drop is still in
+//! the lattice and is judged there. The one caller is [`crate::hypgen`]'s
+//! `generate`, which reads `enable_pre_branch_lookahead` and
+//! `enable_lookahead_kill_cache` from the config: both are retired, a program
+//! cannot set them, and both are on. `generate` is run by the shape golden's
+//! `hyp` and `hyp+closed` ops, whose lines carry this filter's
+//! `lookahead_killed` verdicts, the `compile` events [`Lookahead::new`] emits
+//! and the kill cache's `negated_fact` repeats; so it stays while those ops
+//! read it, and by the tests of its kill conditions.
 
 use std::ops::ControlFlow;
 use std::sync::Arc;
