@@ -8,9 +8,9 @@
 //! |---|---|
 //! | [`manifest`] | `corpus/corpus.toml` — one entry per `.ein` file, the runs it is exercised under, and the completeness check that fails on a file with no entry |
 //! | [`plan`] | a run name → an `ein` argv, which is what makes a manifest row executable |
-//! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one (M1e2 S1e2.1.1) |
-//! | [`pool`] | the corpus sweeps' worker pool: a sweep's units on `EIN_TEST_JOBS` workers, the results in the units' order, so no verdict depends on the count (M1f S1f.6.39) |
-//! | [`shard`] | the nightly's shards: `EIN_TEST_SHARD=k/n` keeps the programs dealt to shard `k`, so `n` parallel jobs hold every program a sweep holds (M1f S1f.6.39) |
+//! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one |
+//! | [`pool`] | the corpus sweeps' worker pool: a sweep's units on `EIN_TEST_JOBS` workers, the results in the units' order, so no verdict depends on the count |
+//! | [`shard`] | a sweep's shards: `EIN_TEST_SHARD=k/n` keeps the programs dealt to shard `k`, so `n` runs together hold every program the sweep holds |
 //! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere; and [`Scratch`], the one way a test makes a directory it does not keep |
 //!
 //! What is *not* here is a `skip` helper. A skip that prints to stderr —
@@ -41,13 +41,13 @@ pub fn repo_root() -> PathBuf {
         .expect("repo root")
 }
 
-/// **The imports a test program writes, under M1f S1f.6.35's full names**:
+/// **The imports a test program writes, under full names**:
 /// for each `(module, entries)`, one `(import MODULE :symbols (…))` line
 /// listing the entries and every name the module declares that `body` writes,
 /// in the order `body` first writes them; a module with nothing listed writes
-/// no line. An import brings its module whole since S1f.6.35 and a list only
-/// names, so a program lists the names it writes from the module that
-/// declares them (`std.math.int`'s tests list `n` from `std.math.decimal-arith`). A name two of
+/// no line. An import brings its module whole and a list only names, so a
+/// program lists the names it writes from the module that declares them
+/// (`std.math.int`'s tests list `n` from `std.math.decimal`). A name two of
 /// the modules declare is the first one's.
 ///
 /// `module` is a `std.*` name, read from the checkout's `stdlib/`; a
@@ -129,9 +129,9 @@ pub fn import_lines(modules: &[(&str, &[&str])], body: &str) -> String {
 /// the head of `src` keeps its entries, and the modules each imports, read
 /// off the stdlib's own `(import …)` lines, follow with nothing of their own;
 /// every one then lists the names `src`'s body writes that it declares. A
-/// text that starts with no import is returned as it is. What a test that
-/// built a program on `(import std.math.decimal-arith :symbols (decimal-arith))` writes since M1f
-/// S1f.6.35, where a list only names.
+/// text that starts with no import is returned as it is. It is how a test
+/// that builds a program on `(import std.math.decimal-arith :symbols
+/// (decimal-arith))` lists the names it writes, since a list only names.
 pub fn listed(src: &str) -> String {
     let mut modules: Vec<(String, Vec<String>)> = Vec::new();
     let mut rest = src;
@@ -208,13 +208,13 @@ pub fn listed(src: &str) -> String {
     format!("{}{rest}", import_lines(&args, rest))
 }
 
-/// Every spelling a stdlib name may print in since M1f S1f.6.35: its short
+/// Every spelling a stdlib name may print in: its short
 /// name, where the program lists it, and its full name under each stdlib
 /// module, where it does not. A test that reads a relation by name looks for
 /// each in turn.
 ///
 /// Every module at any depth: `stdlib/math/decimal-arith.ein` is
-/// `std.math.decimal-arith` (M1f S1f.6.31).
+/// `std.math.decimal-arith`.
 pub fn spellings(short: &str) -> Vec<String> {
     let mut out = vec![short.to_string()];
     let dir = repo_root().join("stdlib");
@@ -237,7 +237,7 @@ pub fn spellings(short: &str) -> Vec<String> {
 /// `text` with every stdlib module prefix taken off where it starts a name,
 /// `(std.math.decimal-arith.done (std.math.decimal-arith.sum a b) c)` read
 /// `(done (sum a b) c)`: what a test that compares facts in their short
-/// spelling reads (M1f S1f.6.35).
+/// spelling reads.
 pub fn unprefixed(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut rest = text;
@@ -246,7 +246,7 @@ pub fn unprefixed(text: &str) -> String {
         if at_start && let Some(after) = rest.strip_prefix("std.") {
             // `std.<segment>.…<segment>.`, a segment a run of name characters
             // with no dot: a module's canonical name is a dot a directory
-            // (`std.math.decimal-arith.`, M1f S1f.6.31), and the name after
+            // (`std.math.decimal-arith.`), and the name after
             // it holds none.
             let segment = |s: &str| -> Option<usize> {
                 let dot = s.find('.')?;
@@ -285,7 +285,7 @@ pub fn corpus() -> Corpus {
 /// Pet. Vocabulary independent, which is the point: `ein-infer`'s
 /// `acceptance.rs` checks both encodings' *solver* against it, and
 /// `ein-cli/tests/models_grid.rs` checks `ein solve --models grid`'s
-/// *renderer* against it (M1e2 S1e2.1.4). One independent source for both.
+/// *renderer* against it. One independent source for both.
 pub const ZEBRA_GRID: [(&str, [&str; 5]); 5] = [
     ("House-1", ["Yellow", "Norwegian", "Kools", "Water", "Fox"]),
     (
@@ -321,8 +321,8 @@ pub fn register() -> Register {
 /// sweep walk the *files* and the CLI sweep walk the *rows* without either one
 /// having to trust the other.
 ///
-/// `tests/` is M1c S1c.1.4's — the stdlib conformance programs, which are a
-/// suite rather than a set of examples and so are not under `examples/`.
+/// `tests/` holds the stdlib conformance programs, which are a suite rather
+/// than a set of examples and so are not under `examples/`.
 pub fn corpus_files() -> Vec<PathBuf> {
     let root = repo_root();
     let mut out = Vec::new();
@@ -334,10 +334,11 @@ pub fn corpus_files() -> Vec<PathBuf> {
 }
 
 /// **Whether a corpus program is under `tests/`**, `rel` repo-relative: the
-/// per-commit render and determinism sweeps (`id_order_invariance`'s golden
-/// and permutation, `jobs_invariance`, `dot_wellformed`) leave those out,
-/// each one stdlib rule's claim and checked by its claims under `ein test`,
-/// and the nightly reads them (M1f S1f.6.39). A path test, never a list.
+/// render and determinism sweeps (`id_order_invariance`'s golden and
+/// permutation, `jobs_invariance`, `dot_wellformed`) leave those out by
+/// default, each one stdlib rule's claim and checked by its claims under
+/// `ein test`, and read them under `EIN_CORPUS_SLOW=1`. A path test, never a
+/// list.
 pub fn under_tests(rel: &Path) -> bool {
     rel.starts_with("tests")
 }
@@ -419,21 +420,15 @@ pub fn golden_path(krate: &str, name: &str) -> PathBuf {
         .join(name)
 }
 
-/// **A scratch directory that removes itself** (M1e2 S1e2.3.5).
+/// **A scratch directory that removes itself**.
 ///
 /// `<prefix>-<pid>-<n>` under [`std::env::temp_dir`], so `$TMPDIR` moves it.
-/// The pid keeps two test binaries, or two gate runs, apart; `n`, a counter
+/// The pid keeps two test binaries, or two test runs, apart; `n`, a counter
 /// of this process, keeps apart two tests of one binary, which are threads of
 /// one process. It is created empty, and removed with everything in it when
 /// the value is dropped, by a test that panics too, since the panic unwinds
 /// through the drop. [`Scratch::keep`] leaves it behind on purpose, for a
 /// human to read after a failure.
-///
-/// Before it each test file made its own scratch, and seven removed it on no
-/// path at all, nine more only when the test passed: 1 098 `/tmp/ein-*`
-/// directories had piled up by 2026-11-03, eleven more per gate run
-/// (S1e2.3.5's sweep). `./run_tests.sh` now runs the tests under a fresh
-/// `TMPDIR` and fails on anything left in it.
 ///
 /// It dereferences to its [`Path`], so `scratch.join("x.ein")` and
 /// `scratch.display()` read as they would on a `PathBuf`.
@@ -463,8 +458,9 @@ impl Scratch {
     }
 
     /// Leave the directory where it is, and return its path: the one way a
-    /// test keeps its output for a human. Nothing removes it afterwards, and
-    /// the gate's scratch check fails on it if the run is otherwise green.
+    /// test keeps its output for a human. Nothing removes it afterwards, so it
+    /// is for a failing test's output: kept by a test that passes, it is a
+    /// directory left behind.
     pub fn keep(mut self) -> PathBuf {
         self.keep = true;
         self.path.clone()

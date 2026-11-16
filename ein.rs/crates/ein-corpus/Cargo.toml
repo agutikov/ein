@@ -1,6 +1,6 @@
 [package]
 name        = "ein-corpus"
-description = "Test-only: the corpus manifest, the fixture helpers every crate's tests share, and the M1a bench set"
+description = "Test-only: the corpus manifest, the fixture helpers every crate's tests share, and the engine's bench set"
 publish     = false
 version.workspace    = true
 edition.workspace    = true
@@ -8,7 +8,7 @@ license.workspace    = true
 repository.workspace = true
 
 [features]
-# The bench set runs under the binary's allocator by default (T1a.6.2.7).
+# The bench set runs under the binary's allocator by default.
 # `cargo bench -p ein-corpus --no-default-features` is the other arm of that
 # measurement — the same benches on the system allocator — and it is how the
 # allocator's share of each bench stays a number rather than a claim.
@@ -26,7 +26,7 @@ toml.workspace       = true
 
 [dev-dependencies]
 criterion.workspace = true
-# The bench runs under the *binary's* allocator (T1a.6.2.7); a bench set that
+# The bench runs under the *binary's* allocator; a bench set that
 # measures a different program from the one that ships is measuring nothing.
 snmalloc-rs.workspace = true
 # The engine, for the bench set only. A dev-dependency, so the engine crates

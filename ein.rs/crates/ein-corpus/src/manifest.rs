@@ -40,44 +40,43 @@ pub struct Entry {
     /// express today.
     #[serde(default)]
     pub levers: Vec<String>,
-    /// Nightly tier only — see [`SLOW_MS`], which is the threshold it is a
-    /// claim about, and [`Entry::cost_ms`], which is the measurement.
+    /// Left out of the default sweep — see [`SLOW_MS`], which is the
+    /// threshold it is a claim about, and [`Entry::cost_ms`], which is the
+    /// measurement.
     #[serde(default)]
     pub slow: bool,
     /// **What this entry's declared runs cost, together, in milliseconds** —
     /// the evidence behind [`Entry::slow`], measured rather than guessed.
     ///
     /// The sum rather than the slowest run, because the flag's job is the
-    /// *sweep's* budget and the sum is what an entry costs it. On today's
-    /// corpus the two rules choose the same entries except one —
-    /// [`branching/07_lookahead_off`](../../../../examples/branching/07_lookahead_off.ein),
-    /// whose two 925 ms runs are under a per-run line and over the sum's — and
-    /// `corpus/README.md` § `slow` is where the choice is written down.
+    /// *sweep's* budget and the sum is what an entry costs it. The two rules
+    /// part on an entry of several runs each under the line and together over
+    /// it, and `corpus/README.md` § `slow` is where the choice is written
+    /// down.
     ///
     /// Recorded for the tail and omitted where it would be noise: an entry
     /// with no `cost_ms` is one the default sweep runs in milliseconds, and
     /// the sweep itself is what holds that claim up
-    /// (`corpus_cli::the_slow_flag_still_describes_the_sweep`). Re-take it
-    /// with `utils/bench_env.sh python3 utils/corpus_cost.py`.
+    /// (`corpus_cli::the_slow_flag_still_describes_the_sweep`). The figure is
+    /// a measurement taken outside the tests and banked here.
     #[serde(default)]
     pub cost_ms: Option<u64>,
     /// **This entry's describe dump writes at least [`HEAVY_DUMP_FILES`]
-    /// state files** (M1f S1f.5.13, the user's ruling of 2026-11-08 on P-16:
-    /// *"move to slow tier"*). `ein-cli/tests/answer_round_trip.rs` runs every
-    /// corpus program's `ein solve FILE --dump-answer DIR` and reloads each
-    /// state file it writes, so a dump of tens of thousands of files is most
-    /// of that test's time; per commit it leaves a flagged entry out, and
-    /// under `EIN_CORPUS_SLOW=1`, which the nightly sets, it takes it.
+    /// state files.** `ein-cli/tests/answer_round_trip.rs` runs every corpus
+    /// program's `ein solve FILE --dump-answer DIR` and reloads each state
+    /// file it writes, so a dump of tens of thousands of files is most of
+    /// that test's time; by default it leaves a flagged entry out, and under
+    /// `EIN_CORPUS_SLOW=1` it takes it.
     ///
     /// Not [`Entry::slow`], which is a claim about the entry's *declared*
-    /// runs: the round trip's dump is none of them, and the four entries the
-    /// ruling moved declare runs that cost milliseconds. It is a count, not
-    /// a time, so it holds on any machine, and the round trip holds it in
-    /// both directions wherever it dumps an entry: an unflagged entry that
-    /// writes [`HEAVY_DUMP_FILES`] or more fails, and so does a flagged one
-    /// that writes fewer. A `slow` entry is held to it too, in the slow
-    /// tier, so the flag says the same thing of every entry.
-    /// `the_heavy_dump_set_is_exactly_these_five` pins the set per commit.
+    /// runs: the round trip's dump is none of them, and the flagged entries
+    /// that are not `slow` declare runs that cost milliseconds. It is a
+    /// count, not a time, so it holds on any machine, and the round trip
+    /// holds it in both directions wherever it dumps an entry: an unflagged
+    /// entry that writes [`HEAVY_DUMP_FILES`] or more fails, and so does a
+    /// flagged one that writes fewer. A `slow` entry is held to it too, under
+    /// `EIN_CORPUS_SLOW=1`, so the flag says the same thing of every entry.
+    /// `the_heavy_dump_set_is_exactly_these_five` pins the set.
     #[serde(default)]
     pub heavy_dump: bool,
     /// Free-text; why this entry is interesting, when that is not obvious.
@@ -135,57 +134,47 @@ impl Corpus {
     }
 }
 
-/// Bumped to 2 at S1a.10.3, which renamed one group to `regression` and split
-/// the compile-error fixtures out as `compile-negative`. The version is what
-/// refuses a
+/// Version 2 names one group `regression` that version 1 named otherwise, and
+/// holds the compile-error fixtures as a group of their own,
+/// `compile-negative`. The version is what refuses a
 /// schema-1 manifest: an unknown group is an error, but a *renamed* one would
 /// otherwise reach [`Corpus::load`]'s vocabulary check as a typo, and the
 /// reader should say which of the two it is.
 pub const SCHEMA: &str = "ein-corpus/2";
 
 /// **The `slow` threshold**, in milliseconds of an entry's declared runs
-/// summed — S1a.9.0.
+/// summed.
 ///
-/// Until that stage `slow` had no threshold at all: it was set from a one-off
-/// probe of the whole matrix on 2026-08-17 ("3 s or more on any run") and
-/// never re-taken, so by S1a.9.0 the flag was false on `zebra2.ein`, which it
-/// marked slow at **16 ms**.
 /// A flag with a number behind it can rot; a flag with no number cannot even
-/// be checked.
+/// be checked. [`Entry::cost_ms`] is the number, and `slow_matches_the_recorded_cost`
+/// holds the flag to it against this line.
 ///
 /// One second is where a single entry stops being part of a default sweep and
-/// starts being the reason it is slow — the whole default selection is under
-/// three seconds of engine time. The measured distribution leaves the line
-/// alone: the entries above it cost 2.1 s, 4.1 s and 10.2 s, the ones below it
-/// 0.38 s and less, so a machine would have to be 2.1× faster or 2.7× slower
-/// before the answer changed.
+/// starts being the reason it is slow.
 /// [design/shared-assets.md § 5](../../../../docs/ein/ein.rs/design/shared-assets.md#5-the-corpus)
-/// is the measurement and `corpus/README.md` § `slow` is the rule.
+/// states the field and `corpus/README.md` § `slow` the rule.
 pub const SLOW_MS: u64 = 1000;
 
 /// **The `heavy_dump` threshold**, in state files an entry's describe dump
-/// writes (M1f S1f.5.13): what `answer_round_trip`'s `check` reloads, and
+/// writes: what `answer_round_trip`'s `check` reloads, and
 /// what `EIN_ROUND_TRIP_LIST=1` prints beside each program.
 ///
-/// Set in the gap of the distribution, on 2026-11-09 at `7bc6ea72`
+/// Set in the gap of the distribution
 /// (`EIN_ROUND_TRIP_LIST=1 EIN_CORPUS_SLOW=1 cargo test -p ein-cli --release
 /// --test answer_round_trip -- --nocapture`): 296 of the 417 entries write a
 /// state file, five write 64 514 to 65 214, the next six 23 390 each (the
 /// `slow` `square-fwd` and `square-bwd`), then 11 339
 /// (`type-exclusivity/pets`) and 4 096 or fewer. Forty thousand is 1.6×
-/// under the five and 1.7× over the six, and it moves the four the ruling
-/// named and `features/01_not_and_absent`, which is `slow` anyway. A count
+/// under the five and 1.7× over the six, and it flags the five
+/// `the_heavy_dump_set_is_exactly_these_five` names, one of them `slow`. A count
 /// depends on the engine and the corpus, never on the machine, so the line
 /// moves only when a dump does, and the round trip says which.
 pub const HEAVY_DUMP_FILES: usize = 40_000;
 
 /// The group vocabulary — `corpus/README.md`.
 ///
-/// `generated` was the seventh until S1a.10.4. It named the throwaway
-/// manifest `utils/fuzz_engine.py` wrote for a batch of generated programs; the
-/// fuzzer now runs the binary directly and writes no manifest, and a corpus
-/// entry is a file the engine is *permanently* exercised over rather than one
-/// that lives for milliseconds.
+/// A corpus entry is a file the engine is *permanently* exercised over, so a
+/// batch of generated programs, which lives for milliseconds, has no group.
 pub const GROUPS: [&str; 6] = [
     "positive",
     "stdlib",
@@ -207,9 +196,8 @@ mod tests {
     /// turn "the stdlib directory is gone" into "the check passes over fewer
     /// files".
     ///
-    /// `tests/` joined them at M1c
-    /// [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus):
-    /// the stdlib conformance programs are a suite rather than a set of
+    /// `tests/` is the third root: the stdlib conformance programs, under
+    /// [`tests/README.md`](../../../../tests/README.md), are a suite rather than a set of
     /// examples, and they are walked here for the same reason the other two
     /// roots are — a test file with no corpus entry is a file the sweep never
     /// runs, which reads as coverage nobody has.
@@ -239,8 +227,8 @@ mod tests {
         out
     }
 
-    /// The completeness check. The four claims below it are the manifest's
-    /// other invariants (T1a.10.1.1).
+    /// The completeness check. The claims below it are the manifest's other
+    /// invariants.
     #[test]
     fn every_ein_file_has_an_entry() {
         let corpus = corpus();
@@ -278,65 +266,18 @@ mod tests {
         }
     }
 
-    /// **S1a.9.0 — `slow` is a measured claim, and this is what measures it
-    /// against the threshold.**
-    ///
-    /// The flag drifted for exactly one reason: nothing anywhere related it to
-    /// a number. It was set under an engine that left the tree, on a budget
-    /// set for that engine, and the only way to find out that `zebra2.ein` was
-    /// flagged slow at 16 ms was to time it by hand. So the manifest now
-    /// carries the measurement beside the flag and this holds the two
-    /// together — no engine run, no wall clock, no flake: [`SLOW_MS`] against
-    /// a recorded [`Entry::cost_ms`], in both directions.
-    ///
-    /// The half this cannot see is whether `cost_ms` is still *true*, and
-    /// that half is `corpus_cli::the_slow_flag_still_describes_the_sweep`,
-    /// which compares it against the sweep it has just run. Two checks, one
-    /// claim: this one is exact and always runs, that one measures and needs
-    /// a tolerance — and since M1e S1e.4.5 (`TE-L1`) only under
-    /// `EIN_CORPUS_SLOW`, because the tolerance was tighter than the machine.
-    ///
-    /// (Everything above documents [`slow_matches_the_recorded_cost`], which
-    /// is further down this file. It sat here from M1e S1e.3.6 until S1e.4.5:
-    /// the new test's paragraph was pasted into the existing block with no
-    /// separator, so the S1a.9.0 sentence — *no engine run, no wall clock, no
-    /// flake* — documented a test that compares two string arrays, and a
-    /// reader chasing `TE-L1` through the code was sent to the wrong
-    /// function. Nothing in the workspace detects a mis-attached doc comment;
-    /// `cargo doc -D warnings` is green over it.)
-    ///
-    /// The flag's *timing* half only runs under `EIN_CORPUS_SLOW=1`, because
-    /// the default sweep contains no slow entries to time: a `slow = true`
-    /// that stopped being true was visible to nightly and to a reader of
-    /// nightly, which is S1a.9.0's own finding one turn later. The direction
-    /// that genuinely needs a stopwatch stays nightly; what a per-commit run
-    /// can assert for nothing is the **set**.
-    ///
-    /// Two things it catches that nothing else did. An entry *gaining* the
-    /// flag — which silently removes it from the default sweep, so every
-    /// assertion about it keeps passing on a cell that no longer runs — and
-    /// an entry *losing* it, which is S1a.9.0's mechanism working
-    /// (`branching/07_lookahead_off` came off the list when T1a.7.2.0 made it
-    /// 2.8× cheaper) and is worth a line rather than a silent diff.
-    ///
-    /// It is `assert_eq!` on the names rather than a floor on the count for
-    /// the reason [TE-M2](../../../../docs/history/m1e_review_processing/README.md#s1e36--tests-medium)
-    /// is a finding: a floor over a growing corpus decays.
-    ///
-    /// **No declared run may carry a wall-clock budget** — M1e S1e.4.5,
-    /// `TE-L1`, and it is the one hazard in that finding's class that reaches
-    /// a **golden** rather than a test.
+    /// **No declared run may carry a wall-clock budget**: it is the one place
+    /// a stopwatch would reach a **golden** rather than a test.
     ///
     /// [`corpus/README.md`](../../../../corpus/README.md) blesses `-T` /
     /// `--max-time` in the run vocabulary as the equal of `-E`, and
     /// `no_cell_crashes` allows an exit 2 wherever a run names one. But `-E`
-    /// counts enterings and `-T` counts seconds: measured 2026-09-01, the
-    /// same argv exits **2** at `-T 0.001` and **0** at `-T 60`, and
+    /// counts enterings and `-T` counts seconds: the same argv exits **2** at
+    /// `-T 0.001` and **0** at `-T 60`, and
     /// `ein-cli/tests/golden/corpus_exits.txt` is compared line by line. So a
     /// `-T` cell would put a stopwatch inside a banked artefact — which is
     /// the one place in this repo the clock is otherwise always scrubbed
-    /// before a comparison (`golden_dump.rs`, `shape.rs`). Nothing forbade
-    /// adding one; four lines do.
+    /// before a comparison (`golden_dump.rs`, `shape.rs`).
     #[test]
     fn no_declared_run_budgets_by_wall_clock() {
         let bad: Vec<String> = corpus()
@@ -360,6 +301,18 @@ mod tests {
         );
     }
 
+    /// **The `slow` set, by name.** Two things it catches that nothing else
+    /// does. An entry *gaining* the flag — which silently removes it from the
+    /// default sweep, so every assertion about it keeps passing on a cell
+    /// that no longer runs — and an entry *losing* it, which is the
+    /// measurement working and is worth a line rather than a silent diff.
+    /// Whether a recorded `slow = true` is still true wants a stopwatch, and
+    /// is `corpus_cli::the_slow_flag_still_describes_the_sweep`'s under
+    /// `EIN_CORPUS_SLOW=1`; what a default run can assert for nothing is the
+    /// **set**.
+    ///
+    /// It is `assert_eq!` on the names rather than a floor on the count,
+    /// because a floor over a growing corpus decays.
     #[test]
     fn the_slow_set_is_exactly_these_fifteen() {
         let manifest = corpus();
@@ -371,23 +324,8 @@ mod tests {
             .collect();
         assert_eq!(
             slow,
-            // Re-taken 2026-11-03 at M1e2 S1e2.1c.2's default budget of 2^20
-            // facts (`measurements/corpus_cost.md` § 9): the six `square-*`
-            // joined, their `render lattice` counting the states 2^20 reaches,
-            // and `features/02` and `zebra2-hints` left, the state route
-            // describing each in milliseconds. Seven joined and
-            // `features/04_open` left at M1e2 S1e2.1a.5's switch, re-taken
-            // 2026-10-18 (§ 8). `beyond_arith/send_more_money` joined when M1f
-            // S1f.6.27 banked it, its bare `solve` describing R to the budget
-            // in 7.47 s (`utils/bench_env.sh python3 utils/corpus_cost.py -k
-            // send_more_money --runs 3`, 2026-11-13). Its generated twin
-            // `send_more_money_written` is the sixteenth: `solve --single`
-            // and `test` are 1.59 s together on an idle machine
-            // (`-k send_more_money_written --runs 5`). `zebra` left on
-            // 2026-11-16, its describe taking the tree and the classes, 500 ms
-            // together (`utils/bench_env.sh --cores PT --require-ac python3
-            // utils/corpus_cost.py --slow-only`), which brings the set back to
-            // the fifteen of this test's name.
+            // The entries whose declared runs cost a second or more
+            // together, as each one's `cost_ms` records, in manifest order.
             [
                 "examples/features/01_not_and_absent.ein",
                 "examples/beyond_arith/send_more_money.ein",
@@ -413,6 +351,16 @@ mod tests {
         );
     }
 
+    /// **`slow` is a measured claim, and this is what holds it to the
+    /// threshold**: [`SLOW_MS`] against a recorded [`Entry::cost_ms`], in
+    /// both directions — no engine run, no wall clock, no flake.
+    ///
+    /// The half this cannot see is whether `cost_ms` is still *true*, and
+    /// that half is `corpus_cli::the_slow_flag_still_describes_the_sweep`,
+    /// which compares it against the sweep it has just run. Two checks, one
+    /// claim: this one is exact and always runs, that one measures and needs
+    /// a tolerance, and asserts its drift only under `EIN_CORPUS_SLOW`,
+    /// because a tolerance tighter than the machine fails on the machine.
     #[test]
     fn slow_matches_the_recorded_cost() {
         let mut bad: Vec<String> = Vec::new();
@@ -444,12 +392,12 @@ mod tests {
         );
     }
 
-    /// **The `heavy_dump` set, per commit** (M1f S1f.5.13), as
+    /// **The `heavy_dump` set, by name**, as
     /// [`the_slow_set_is_exactly_these_fifteen`] pins `slow`'s. Whether the
     /// flag is *true* is `answer_round_trip`'s to say, which dumps the
-    /// unflagged entries per commit and the flagged ones only under
+    /// unflagged entries by default and the flagged ones only under
     /// `EIN_CORPUS_SLOW=1`; so an entry that gained the flag would leave the
-    /// per-commit round trip with nothing per commit to notice. This does.
+    /// default round trip with nothing in a default run to notice. This does.
     #[test]
     fn the_heavy_dump_set_is_exactly_these_five() {
         let manifest = corpus();
@@ -461,9 +409,9 @@ mod tests {
             .collect();
         assert_eq!(
             heavy,
-            // Taken 2026-11-09 at `7bc6ea72`, the distribution in
-            // `HEAVY_DUMP_FILES`' doc: the four P-16 named, and
-            // `features/01_not_and_absent`, `slow` too.
+            // The entries whose describe dump writes at least
+            // `HEAVY_DUMP_FILES` state files, the distribution in that
+            // constant's doc; `features/01_not_and_absent` is `slow` too.
             [
                 "examples/features/01_not_and_absent.ein",
                 "examples/features/04_open.ein",
@@ -487,8 +435,8 @@ mod tests {
         }
     }
 
-    /// T1a.10.1.1 — the first of the manifest's four other invariants:
-    /// "every file has an entry" says nothing about whether a file has two.
+    /// One of the manifest's other invariants: "every file has an entry" says
+    /// nothing about whether a file has two.
     #[test]
     fn paths_are_unique() {
         let corpus = corpus();
@@ -503,10 +451,10 @@ mod tests {
     }
 
     /// **A group is a directory.** `broken/*.ein` fail at parse,
-    /// `broken/load/*.ein` at load, `broken/compile/*.ein` at compile — the
-    /// split is what lets P1a.1 gate on one, P1a.2 on the next and P1a.3 on
-    /// the third — and `ein-bugs/*.ein` are the bug-repro puzzles, which fail
-    /// at no fixed point because some of them no longer fail at all.
+    /// `broken/load/*.ein` at load, `broken/compile/*.ein` at compile — so a
+    /// group names the stage that refuses its files — and `ein-bugs/*.ein`
+    /// are the bug-repro puzzles, which fail at no fixed point: some of them
+    /// do not fail at all.
     ///
     /// That last group is defined by where a file lives, not by what it does:
     /// some of its members answer and some are refused, which is why the
@@ -518,22 +466,22 @@ mod tests {
             let want: &[&str] = if path.starts_with("examples/broken/load/") {
                 &["load-negative"]
             } else if path.starts_with("examples/broken/compile/") {
-                // S1a.3.1 — they parse and load, then the compiler refuses.
-                // `activator_arity` is the exception: the S1.22.0 arity filter
+                // They parse and load, then the compiler refuses.
+                // `activator_arity` is the exception: the activators' arity filter
                 // makes its error unreachable through the engine, so its run
                 // succeeds and it is an ordinary `positive`.
                 &["compile-negative", "positive"]
             } else if path.starts_with("examples/broken/") {
                 &["parse-negative"]
             } else if path.starts_with("examples/ein-bugs/") {
-                // S1a.10.3 — the whole directory, so the group is a fact about
-                // where a file lives rather than about what it does. What it
-                // does is mixed: seven answer, two are refused, one does both.
+                // The whole directory, so the group is a fact about where a
+                // file lives rather than about what it does. What it does is
+                // mixed: some answer, some are refused.
                 &["regression"]
             } else if path.starts_with("examples/") {
                 &["positive"]
             } else if path.starts_with("tests/stdlib/") {
-                // M1c S1c.1.4 — the stdlib conformance programs. They are in
+                // The stdlib conformance programs. They are in
                 // the `stdlib` group with the modules they exercise, because
                 // the group names a *subject* here rather than a failure
                 // point: what a `tests/stdlib/` entry is about is a rule of
@@ -549,7 +497,7 @@ mod tests {
         }
     }
 
-    /// The other half of S1a.3.1: every `examples/broken/compile/*.ein` is a
+    /// The compile-negative fixtures: every `examples/broken/compile/*.ein` is a
     /// corpus entry and has its `.expected` beside it, and nothing else claims
     /// to be one.
     #[test]
@@ -575,8 +523,8 @@ mod tests {
     }
 
     /// Every load-negative fixture is a corpus entry, and every load-negative
-    /// entry has its `.expected` beside it — the cross-check against the other
-    /// half of S1a.0.1.
+    /// entry has its `.expected` beside it — the group checked against the
+    /// fixture directory.
     #[test]
     fn the_load_negative_group_matches_the_fixture_directory() {
         let repo = repo_root();
