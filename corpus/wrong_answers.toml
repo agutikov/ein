@@ -1192,8 +1192,8 @@
 # added; the witness's H gains `(drinks Ann Tea)` and it answers its control's
 # R, one state. The control's answer is unchanged, and no other corpus
 # program's is. The row's review, `deferred` until then, is the ruling's. Its
-# `[case.fixed]` carried the null id in the flipping commit, and the stage's
-# next commit wrote the hash. No open row is owned by a stage of M1f's phase
+# `[case.fixed]` carried the null id in the flipping commit, `168263f1`, and the
+# stage's next commit wrote the hash. No open row is owned by a stage of M1f's phase
 # 10 any more: the open rows are the followups' (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`).
 #
@@ -7963,7 +7963,7 @@ look_at  = ["root", "answer"]
 note     = "Filed by S1e2.2.25 (T1e2.2.25.1, 2026-11-05) for the inventory of 2026-11-05's W-15, which had no witness: the stage's nine-line probe shows it. The control, oblig-derived-activator-declared.ein, states the activator too. The program is flagged (total-owed's activator relation is one a commitment can change), before the fix and after it. Open and deferred to M1f's S1f.10.6 until that stage fixed it (schema /10: a deferred row may wait on another milestone's stage)"
 
 [case.fixed]
-commit = "0000000"
+commit = "168263f1"
 by     = "S1f.10.6 (T1f.10.6.4), Q-M1f.307 (A) by the static reading: the obligations rung proposes at root what a debt root does not owe would, for each activator of an obligation rule that a rule reading what a commitment can change concludes, its own scan run for the activator's plan at root and repeated until it adds nothing"
 date   = "2026-11-16"
 

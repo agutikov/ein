@@ -939,7 +939,7 @@ A tenth program, the witness under two hrules that propose a relation where its 
 which is `[case.right]`; `[case.region]` is route 2, flagged, `k_s = k_c = 1`; its review, `deferred` since
 2026-11-05, is `confirmed`, the ruling's, a deferred review being an open row's by the register's own check.
 `[case.control]` is as it was. Neither the witness nor the control states an `:expect`, so no expectation
-moved. `[case.fixed]` carries the null id in the fixing commit and the next commit writes the hash, the
+moved. `[case.fixed]` carried the null id in the fixing commit, `168263f1`, and the next commit wrote the hash, the
 register's convention.
 
 ### Tests and verification
