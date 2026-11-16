@@ -10,7 +10,7 @@
 > implemented" sections were reconciled by
 > P1.20 S1.20.A0;
 > the module-level walkthrough is
-> [`implementation.md`](implementation.md).
+> [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md).
 >
 > **The commitment-lattice search was deleted at M1e2 S1e2.1c.5
 > (2026-11-03).** That search, *the walk* (`solve.rs`, `apriori.rs`,
@@ -110,7 +110,7 @@ docs/kernel/inference/
 
 Source for the engine lives under
 [`ein-infer`](../../../ein.rs/crates/ein-infer/src/); the
-module-by-module walkthrough is [`implementation.md`](implementation.md).
+module-by-module walkthrough is [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md).
 
 ## What's implemented (M1)
 
@@ -157,7 +157,7 @@ contributes, locked by S1.21.8:
    `Fact.provenance` is the primary justification and
    `kb.justifications(fact)` returns every recorded one, so a fact is an
    OR-node over AND-nodes — the proof structure is an AND/OR graph
-   ([`implementation.md` § cross-cutting invariants](implementation.md), searched by
+   ([`../../ein/ein.rs/architecture.md` § cross-cutting invariants](../../ein/ein.rs/architecture.md), searched by
    [`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs)).
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
@@ -1261,7 +1261,7 @@ loop) and P1.6 (rendering + trace); M1's plan tree was removed at P1.22 and is
 in git history. What is *read* today:
 
 - the as-built architecture — [`architecture_and_algorithms.md`](architecture_and_algorithms.md);
-- the module map — [`implementation.md`](implementation.md);
+- the module map — [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md);
 - the normative pages — [`absent_semantics.md`](absent_semantics.md),
   [`solution_semantics.md`](solution_semantics.md),
   [`../defined_behaviour.md`](../defined_behaviour.md);

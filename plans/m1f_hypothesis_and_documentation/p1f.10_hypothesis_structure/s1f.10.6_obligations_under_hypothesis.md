@@ -925,7 +925,7 @@ A tenth program, the witness under two hrules that propose a relation where its 
   row; `read_out_examples.md` has X20, written by `utils/read_out_examples.py`;
   [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) and
   [`region_dump.md`](../../../docs/kernel/inference/region_dump.md) the JSON key;
-  [`implementation.md`](../../../docs/kernel/inference/implementation.md), the glossary and
+  [`architecture.md`](../../../docs/ein/ein.rs/architecture.md), the glossary and
   `06_reserved_names.md`'s ladder sentence say the rung proposes for a later debt too.
 - **Q-M1e.11 is recorded as ruled** in
   [`open_questions.md`](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),

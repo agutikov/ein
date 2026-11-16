@@ -409,7 +409,7 @@ obligation paths agree on the model set — but determining is not **closing**,
 and the enumerator will go on offering what nothing has denied.
 
 **And most of what it offers is ill-typed**, which is not a defect but
-[S1.7.23](../../../docs/kernel/inference/implementation.md) working as
+[S1.7.23](../../ein/ein.rs/architecture.md) working as
 designed: *the kernel imposes no type system; the enumerator proposes
 type-blind and the puzzle's own rules do the pruning.* `(is-a Red House-1)` is
 a candidate and nothing in the KB denies it — which is also why `zebra.ein`'s

@@ -20,7 +20,7 @@ derivation DAGs).
 > `DerivationDAG` is `DerivationDag`, the `all_justifications=` keyword is the
 > `Justifications::{Primary, All}` argument); the code-level map, with the real
 > signatures and complexities, is
-> [`03_implementation.md`](03_implementation.md).
+> [`../../../ein/ein.rs/architecture.md`](../../../ein/ein.rs/architecture.md).
 
 ---
 
@@ -128,7 +128,7 @@ There is no `view.matching(pattern)`: the matcher arrived at P1.3 and it does
 not run over the fact view. Pattern matching goes through a **compiled plan** —
 `compile.rs` lowers each (rule, activator) to a register program and `match_.rs`
 executes it against the KB's indexes
-([`../../inference/implementation.md`](../../inference/implementation.md)).
+([`../../../ein/ein.rs/architecture.md`](../../../ein/ein.rs/architecture.md)).
 
 ## 5. Fork — `kb.fork()`
 
@@ -153,13 +153,13 @@ fork(kb) -> KnowledgeBase
 
 **Cost:** seal the parent's top layer and clone the list of shared layers —
 allocation count independent of `|facts|`
-([`03_implementation.md` §3](03_implementation.md)).
+([`../../../ein/ein.rs/architecture.md` §3](../../../ein/ein.rs/architecture.md)).
 
 No entity carries a pointer to its KB: every accessor takes the KB explicitly —
 `to_dot(kb, …)`, `justifications(kb, f)` — so nothing can answer for the wrong
 KB. Said the same way by
 [`01_entities.md` §5](01_entities.md#5-entity-attachment--why-there-is-no-back-pointer)
-and [`03_implementation.md` §2](03_implementation.md).
+and [`../../../ein/ein.rs/architecture.md` §2](../../../ein/ein.rs/architecture.md).
 
 A fork-scoped read is therefore just a read against the fork:
 `fork.all_facts().about(name)`.

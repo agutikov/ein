@@ -426,7 +426,7 @@ fork sound.
 No entity carries a pointer to the KB that owns it: every accessor takes the
 KB explicitly, so a shared `Relation` asked on a fork answers for the fork, and
 there is nothing to attach, detach, or exclude from equality. See
-[`03_implementation.md` §2](03_implementation.md).
+[`../../../ein/ein.rs/architecture.md` §2](../../../ein/ein.rs/architecture.md).
 
 ## 6. Identity rules — summary
 

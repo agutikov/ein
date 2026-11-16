@@ -149,7 +149,7 @@ Nothing here closes a door: [§ What each stage starts from](#what-each-stage-st
 - **One entry in the owner**: `structure::pair_layer_with(root, terms, ast, opts, events)`, `pair_layer` with the
   space's nodes narrated into a caller's `Events`, so that root's layer can be priced node by node. `with_space`
   is cut in two for it and every other caller passes `Events::off()` as before. A sentence of `structure.rs`'s
-  row in [`implementation.md`](../../../docs/kernel/inference/implementation.md).
+  row in [`architecture.md`](../../../docs/ein/ein.rs/architecture.md).
 - **The test**, [`ein-infer/tests/price_list.rs`](../../../ein.rs/crates/ein-infer/tests/price_list.rs), two, per
   commit, 5.5 s at 16 workers, on `ein_corpus::pool::map`, with no slow half.
 - **Two findings**, K-12 and K-13 of [`findings.md`](findings.md).

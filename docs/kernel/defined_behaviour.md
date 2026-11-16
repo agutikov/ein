@@ -2890,7 +2890,7 @@ on every commit. The two items are kept as the record of what was filed:
   — the decisions this page restates.
 - [`../ein/ein.rs/reserved-engine-strings.md`](../ein/ein.rs/reserved-engine-strings.md)
   — the other kind of thing that is defined only because the engine does it.
-- [`inference/implementation.md`](inference/implementation.md) — where each
+- [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md) — where each
   behaviour above is implemented.
 - [`standard_of_proof.md`](standard_of_proof.md) — its opposite number: this
   page states what the engine **does**, that one states what it takes to know

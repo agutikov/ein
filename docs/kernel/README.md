@@ -73,7 +73,7 @@ Zebra-acceptance milestone.
   artefact of one encoding.
 - `inference/` is documented:
   [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
-  (as-built O1–O9) + [`implementation.md`](inference/implementation.md) (module map)
+  (as-built O1–O9) + [`architecture.md`](../ein/ein.rs/architecture.md) (module map)
   + [`absent_semantics.md`](inference/absent_semantics.md) (the normative
   `(absent P)` / NAF semantics — worlds, fire-time evaluation, corollaries;
   P1.21 R4). The engine shipped P1.3–P1.5b.
@@ -108,7 +108,7 @@ the hypothesis space and its structure, and 48 with
 
   | page | describes | current statement |
   |---|---|---|
-  | [`inference/algorithm_layer_n.md`](inference/algorithm_layer_n.md) | the three sibling solve entries and the per-candidate flow of the 2026-05 design | [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md) §2, [`implementation.md`](inference/implementation.md) |
+  | [`inference/algorithm_layer_n.md`](inference/algorithm_layer_n.md) | the three sibling solve entries and the per-candidate flow of the 2026-05 design | [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md) §2, [`architecture.md`](../ein/ein.rs/architecture.md) |
   | [`inference/lattice_diagrams.md`](inference/lattice_diagrams.md) | the same design's search-lattice data model, as diagrams | same, plus [`lattice-dump.md`](../ein/ein.rs/lattice-dump.md) for the artifact the search writes |
   | [`inference/parity_baselines.md`](inference/parity_baselines.md) | the tree-vs-monotonic wall-clock table of 2026-05-28 | the `branching` corpus group, swept by `corpus_cli.rs` |
 

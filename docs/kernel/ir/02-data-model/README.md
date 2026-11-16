@@ -16,7 +16,7 @@ hypothesis-fork mechanic, and the provenance + derivation-DAG machinery.
 - [`02_store.md`](02_store.md) — the store's registries + indexes; the
   IR loader; the fact view; `fork()` for hypothesis branches; the
   derivation DAG / unsat core; equality classes placeholder.
-- [`03_implementation.md`](03_implementation.md) — the code-level companion
+- [`../../../ein/ein.rs/architecture.md`](../../../ein/ein.rs/architecture.md) — the code-level companion
   (**dev-facing**): the module map, the identity mechanics, and the
   concrete collection shapes + complexity.
 
@@ -34,7 +34,7 @@ map + mechanics + complexity); skip it if you only need the abstract model.
 `value.rs`, `facts.rs`, `terms.rs`, `entities.rs`, `program.rs`, `kb.rs`,
 `prov.rs` — with the loader in `ein-ir` (`from_ir.rs`, `imports.rs`) and the
 DOT view in `ein-render` (`kb_dot.rs`). The module-by-module map with roles is
-[`03_implementation.md` §1](03_implementation.md).
+[`../../../ein/ein.rs/architecture.md` §1](../../../ein/ein.rs/architecture.md).
 
 ## Stability
 

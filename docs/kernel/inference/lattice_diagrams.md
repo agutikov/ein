@@ -17,7 +17,7 @@
 > [`algorithm_layer_n.md`](algorithm_layer_n.md)'s banner, and **not rewritten
 > to match today's engine**. What the search does now:
 > [`architecture_and_algorithms.md` §2](architecture_and_algorithms.md) and
-> [`implementation.md`](implementation.md); what it *writes*,
+> [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md); what it *writes*,
 > [`../../ein/ein.rs/lattice-dump.md`](../../ein/ein.rs/lattice-dump.md), which is current and golden-pinned.
 >
 > The **fixture table** at the foot of this page is live — those four

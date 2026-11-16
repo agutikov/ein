@@ -353,7 +353,7 @@ one rewritten).
   `(or …)` sits, how many variables a clause writes, and a goal's relations*, each the loader's since.
 - [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md): `render program` reads the program
   through the loader first; [`configuration.md`](../../../docs/kernel/configuration.md) § 3.1 and § 3.4, 82 options,
-  `--no-require-why` on eleven commands; [`inference/implementation.md`](../../../docs/kernel/inference/implementation.md),
+  `--no-require-why` on eleven commands; [`ein.rs/architecture.md`](../../../docs/ein/ein.rs/architecture.md),
   the register ceiling refused at load.
 - [F23](../../followups/f23_diagnostics_in_eins_words.md)'s D-1 row: its `CompileError` half taken here,
   `FileNotFoundError` left with the line T1 re-took; D-2's: its `Loc(…)` half taken here, `at None` left.

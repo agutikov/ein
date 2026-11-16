@@ -12,7 +12,7 @@
 > Source of truth for the code:
 > [`ein-infer`](../../../ein.rs/crates/ein-infer/src/) (engine),
 > [`ein-core`](../../../ein.rs/crates/ein-core/src/) (data model), mapped
-> module by module in [`implementation.md`](implementation.md), which wins
+> module by module in [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md), which wins
 > wherever the two disagree. For the
 > *planned* how-to chapters (`01_matcher.md` … `05_trace.md`) see
 > [`README.md`](README.md); this file is the architecture + algorithms
@@ -93,7 +93,7 @@ monotone/non-monotone seam:
   `downset.rs`, `states.rs`, `tree.rs`.
 
 Both lists are the layer split of
-[`implementation.md`](implementation.md)'s module map, which is the full one —
+[`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md)'s module map, which is the full one —
 they named `saturator.rs`, `firing.rs` and `hypgen.rs` **twice each** and
 `plan.rs` not at all until M1e `CD-M8`, which is what a hand-maintained second
 copy does.
