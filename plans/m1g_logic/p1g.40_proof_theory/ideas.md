@@ -54,7 +54,7 @@ Meaning through inference rules rather than predefined interpretations
 | Display Logic           | Display property, structural connectives, Belnap calculi               |
 | Deep Inference          | Calculus of Structures, atomic flows, context-sensitive rewriting      |
 | Categorical Semantics   | Cartesian closed categories, adjunctions, internal languages           |
-| Fixed-Point Logics      | Inductive definitions, least/greatest fixed points, \\(\mu\\)-calculus |
+| Fixed-Point Logics      | Inductive definitions, least/greatest fixed points, $\mu$-calculus     |
 | Generalized Connectives | Nonstandard operators, definability, compositionality                  |
 | Logical Pluralism       | Multiple consequence relations, nonclassical semantics                 |
 
@@ -81,9 +81,11 @@ Meaning through inference rules rather than predefined interpretations
 
 A useful formal target is:
 
-\\[ \mathcal R\vdash\operatorname{Law}(O_1,\ldots,O_n) \\]
+$$
+\mathcal R\vdash\operatorname{Law}(O_1,\ldots,O_n)
+$$
 
-where \\(\mathcal R\\) is a rule set and \\(\operatorname{Law}\\) is a proposed algebraic property.
+where $\mathcal R$ is a rule set and $\operatorname{Law}$ is a proposed algebraic property.
 
 The important distinction is whether this law is **derivable, admissible, semantically valid, or merely consistent** with the rule set.
 
@@ -108,7 +110,7 @@ The mathematical structure, transformation, normalization, and equivalence of pr
 | Proof Transformations | Permutation of inference rules, proof normalization                 |
 | Interpolation         | Craig interpolation, Maehara's lemma                                |
 | Subformula Property   | Analytic proofs, proof locality                                     |
-| Ordinal Analysis      | Proof-theoretic ordinals, \\(\varepsilon_0\\), collapsing functions |
+| Ordinal Analysis      | Proof-theoretic ordinals, $\varepsilon_0$, collapsing functions     |
 | Reflection Principles | Uniform reflection, local reflection, consistency strength          |
 | Abstract Proof Theory | Generalized consequence relations, abstract proof systems           |
 
@@ -141,7 +143,9 @@ The mathematical structure, transformation, normalization, and equivalence of pr
 
 A useful distinction is:
 
-\\[ \text{Same conclusion} \\;\not\Rightarrow\\; \text{Same proof} \\]
+$$
+\text{Same conclusion} \;\not\Rightarrow\; \text{Same proof}
+$$
 
 Even if hypothesis-set indexing makes the search state canonical, it does not necessarily make the **derivation history** canonical.
 
@@ -202,15 +206,21 @@ Algorithms for constructing proofs efficiently, completely, and with controlled 
 
 A natural mathematical foundation is a monotone consequence operator:
 
-\\[ F:\mathcal P(X)\rightarrow\mathcal P(X) \\]
+$$
+F:\mathcal P(X)\rightarrow\mathcal P(X)
+$$
 
 with:
 
-\\[ A\subseteq B\Rightarrow F(A)\subseteq F(B) \\]
+$$
+A\subseteq B\Rightarrow F(A)\subseteq F(B)
+$$
 
 Then saturation is characterized by a least fixed point:
 
-\\[ \operatorname{Closure}(A)=\operatorname{lfp}(X\mapsto A\cup F(X)) \\]
+$$
+\operatorname{Closure}(A)=\operatorname{lfp}(X\mapsto A\cup F(X))
+$$
 
 This connects Ein to Datalog, deductive databases, abstract interpretation, and fixed-point logics.
 
@@ -230,7 +240,7 @@ Finite proof graphs representing potentially infinite reasoning, recursion, and 
 | Inductive Proofs               | Mathematical induction, structural induction                  |
 | Coinductive Proofs             | Greatest fixed points, bisimulation, productivity             |
 | Inductive Definitions          | Least fixed points, inductively generated predicates          |
-| Fixed-Point Logics             | \\(\mu\\)-calculus, \\(\mu MALL\\), \\(\mu LK\\)              |
+| Fixed-Point Logics             | $\mu$-calculus, $\mu MALL$, $\mu LK$                          |
 | Cyclic Arithmetic              | Cyclic PA, cyclic HA, arithmetic strength                     |
 | Cyclic Separation Logic        | Recursive predicates, heap reasoning                          |
 | Parity Conditions              | Büchi/parity automata, infinite-trace acceptance              |
@@ -255,21 +265,27 @@ Finite proof graphs representing potentially infinite reasoning, recursion, and 
 
 Suppose we want to prove:
 
-\\[ \forall n\\,P(n) \\]
+$$
+\forall n\,P(n)
+$$
 
 An ordinary inductive proof establishes:
 
-\\[ P(0) \\]
+$$
+P(0)
+$$
 
 and
 
-\\[ \forall n\\,(P(n)\rightarrow P(n+1)) \\]
+$$
+\forall n\,(P(n)\rightarrow P(n+1))
+$$
 
 A cyclic proof system can instead represent certain recursive proof obligations using back-edges.
 
 Conceptual cyclic proof graph. The back-edge is sound only if an appropriate global progress condition is satisfied.
 
-A cycle alone proves nothing. For example, accepting \\(P\\) because \\(P\\) is assumed would make every proposition provable.
+A cycle alone proves nothing. For example, accepting $P$ because $P$ is assumed would make every proposition provable.
 
 Cyclic proof systems therefore impose conditions ensuring that infinite unfolding cannot produce an invalid infinite descent through a well-founded measure.
 
@@ -289,7 +305,9 @@ Cyclic proof systems therefore impose conditions ensuring that infinite unfoldin
 
 A useful target is:
 
-\\[ \operatorname{CyclicProof}(G,\varphi) \land \operatorname{GlobalTraceValid}(G) \implies \operatorname{Valid}(\varphi) \\]
+$$
+\operatorname{CyclicProof}(G,\varphi) \land \operatorname{GlobalTraceValid}(G) \implies \operatorname{Valid}(\varphi)
+$$
 
 This is a schematic soundness statement, not a theorem for arbitrary cyclic graphs. Its validity depends on the precise calculus and trace condition.
 
