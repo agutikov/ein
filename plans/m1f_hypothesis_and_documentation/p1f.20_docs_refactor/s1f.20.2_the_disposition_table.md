@@ -2,7 +2,8 @@
 
 **Phase:** [P1f.20](README.md) (`docs/ein/`: the tree a released system would have)
 **Estimate:** 2 days.
-**Status:** not started. It was `T1f.5.20.2` until 2026-11-08.
+**Status:** **T1 and T2 written 2026-11-16, stopped for the user's review** ([§ Record](#record-2026-11-16));
+the inbound-count column waits for S1f.20.1's checker. It was `T1f.5.20.2` until 2026-11-08.
 **Depends on:** [S1f.20.1](s1f.20.1_the_two_checks.md), whose link check counts each page's inbound links.
 
 ## What it is
@@ -72,3 +73,45 @@ the user's rulings of 2026-11-15. Nothing moves until the user has read them.
 - Every source page has exactly one row, and every row one disposition.
 - No page that is the only written intent for shipped code is *deleted*.
 - The user has reviewed the table and the tree.
+
+## Record (2026-11-16)
+
+**What was written.** [`docs/ein/README.md`](../../../docs/ein/README.md): the three perspectives (provisional),
+§ The tree redrawn against the tree of 2026-11-16, § Where each page went, and § For the review. Nothing moved;
+no page was rewritten or deleted.
+
+**The rows: 175, every source exactly once.** `docs/kernel/` 48 pages and its 28 diagram files as 5 rows,
+`docs/api/` 2, `docs/guide/` 5, `docs/install.md`, `docs/history/` 77 files (73 pages, `lattice_exhaustive_run.log`
+and three probe files: more than the 73 of 2026-11-08's count, which counted `*.md` only), 27 pages of finished
+plan folders, and 10 ledgers under `plans/`. By disposition: **90 rewritten into, 7 evidence, 77 deleted, 1 moved**
+(`m1d_satisfiability/ideas.md`), by the `awk` command in the page's § Counts. Nine plan folders are finished
+(the page's § Plan folders gives the line that says so for each), and the rest stay.
+
+**What the table adds to this file's list of rows.** The file names `solve_interface.md` as the one user-facing
+reference under `plans/`. It is not the only page of a finished plan that shipped code cites as its specification:
+`claim.rs` cites M1e2's `region_examples.md` § 1, `expect.rs` its `region_language.md` § 5, `detector.rs` and
+`explore.rs` its `detector_proposal.md`, `monotone.rs` its `site_census.md` § 5, `states.rs` its
+`alive_set_reach.md` § 3, and three files M1e2's `read_out.md`, a record. Deleting those folders as they stand
+would delete the only written intent for that code, which the acceptance forbids, so every page of a finished
+folder cited from outside `plans/` (stage files, ledgers and READMEs aside) has a row: 14 of M1e2's, 9 of P1f.6's,
+P1f.10's close, F9, F18 and M1j's README.
+
+**The specification-bearing history pages**, none of them *deleted*: the M1a design contracts (85 citations from
+the crates), the sections of `m1a_rust/README.md` (96), `m1d_satisfiability/README.md` (25) and
+`m1c_external_validation/README.md` (17) that the code cites, `shared_state.md` § 4, and M1d's `completeness.md`,
+`domain_contract.md`, `obligation_forms.md`, `the_boundary.md` and `hypotheses_from_obligations.md`. Each count by
+`grep -rhoE 'history/<path>' ein.rs/crates | wc -l`.
+
+**How the rows were judged.** Each page's opening, banner and section list; who cites it, by a scratch scan that
+resolves every path in a tracked text file (not banked: S1f.20.1's checker is the instrument the column takes);
+for a measurement, whether its instrument runs on today's engine (`utils/README.md` lists the walk's seven, which
+re-take only against a binary at or before `7ec8a480`); for a page a test or the binary reads, the test, generator
+or help text that moves with it.
+
+**For the user** (the page's § For the review): the decisions' layout, the defaults of S1f.20.8 and S1f.20.9,
+nine rows I was least sure of, five questions to decide personally, six sources with no obvious destination, and
+six findings outside this stage's scope, each with its witness.
+
+**Waiting**: the **in** column, until S1f.20.1's inbound-count mode is on `master`; then this branch merges
+`master`, runs it, fills the column, writes the command into the page, and banks the page's release-voice count
+as scaffolding.
