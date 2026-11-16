@@ -315,6 +315,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
 | [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **put 2026-11-16 by S1f.10.14's T4, not ruled, to be shown at the phase's close**: default (a), describe as it is; not acted on; [S1f.10.14](p1f.10_hypothesis_structure/s1f.10.14_exactly_one_spent.md#t4-describe-as-a-question-with-numbers--q-m1f311-put) |
+| [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **put 2026-11-16 by S1f.10.16's T2, not ruled, to be shown at the phase's close**: default (b), `hyp` re-pointed at H's pass and `hyp+closed` removed; not acted on, both ops as they were; [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6582,3 +6583,61 @@ merged states are read from.
 
 **The default named: (a)**, which the plan's framing gives: describe's route is M1e2's decision, which the phase
 reports on and does not reopen by itself. **Not acted on.**
+
+### Q-M1f.312 — What the shape golden's `hyp` and `hyp+closed` ops digest
+
+**Raised** 2026-11-16 by [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers)'s
+T1 and T2, from [`findings.md`](p1f.10_hypothesis_structure/findings.md)'s H9-5. **Put, not ruled, to be shown at
+the phase's close.** The stage was told not to remove an op from the per-commit shape check on its own judgment,
+so both ops are as they were, and so is every piece they call.
+
+**What each op digests.** `ein-render/tests/golden/corpus_shapes.md5` holds a line of each for every corpus
+program that loads, 659 of each (391 outside `tests/`, which the per-commit sweep reads; the nightly reads all).
+Both are `ein_infer::shape::hyp_shape_with`: root saturated with events off, then **the walk's generator**,
+`hypgen::generate`, narrated at verbose (its `compile`, `rung`, `hyp` and `hypskip` events), its counters
+(`--hyp-stats`' old report, `BALANCE`), and a trailer, `COMPLETE` and `OPEN`, from two more calls of it. `generate`
+is the generation ladder with the walk's one-step lookahead on and its kill cache writing a `(not h)` for each
+candidate the lookahead drops, both read from two retired config fields at their defaults. `hyp+closed` is the
+same after `closed::emit_closed` has written a `(__closed__ R)` for every declared relation no compiled rule
+concludes, with a `CLOSED […]` line.
+
+**Who reads them.** `id_order_invariance` digests both against the golden and holds them under a permuted id
+space; nothing else reads the golden lines. `hypgen_coverage.rs` reads the `hyp` text, not the line, for its
+eight counters. **No command runs either computation**: H is `hypgen::generate_config_free`'s list at root
+(`region::prepare_with`), the same ladder with neither the lookahead nor the kill cache, sorted by rendered text;
+no command calls `emit_closed`.
+
+**How far they are from H.** Measured by a scratch probe on `060576ec` over the 659 programs (kept as
+`build/s1f.10.16/probe.rs` and its output, not committed): **H is exactly `generate`'s emitted candidates with
+its lookahead-killed ones, on all 659**; the `hyp` op's event stream is the narration of H's pass, candidate for
+candidate, once four things are set aside, and identical outright on 91. The four, each something no route runs:
+`Lookahead::new`'s `compile` events (568 programs), the verdict `lookahead_killed` (59), the kill cache's
+`negated_fact` for a repeat H's pass calls `seen_in_call` (29), and the ordinals they shift. `emit_closed` closes
+a relation on 612 of the 659. So `hyp` is the golden's only digest of the generator's narration and counters, and
+it digests them under two filters no command applies; `hyp+closed` digests them after a pass no command calls.
+
+**What each keeps alive.** `hypgen::generate`'s reading of the two retired lookahead fields, `Lookahead`, the
+kill cache (`write_negated`), `complete` and `open_hypotheses` have no other reader but tests and two examples
+(`hypgen_calls.rs`, `hypgen_cost.rs`), and `emit_closed` none but tests; S1f.10.16 kept each for the ops
+(its T2).
+
+**The options.**
+
+- **(a) Both as they are.** Nothing moves. The walk's generator and `emit_closed` stay for the golden, and a
+  change to the lookahead re-banks lines of programs whose answers do not move, as the fix of W96 re-banked 185
+  `hyp+closed` lines.
+- **(b) `hyp` re-pointed at H's pass, `hyp+closed` removed.** `hyp` digests `generate_config_free` at root as
+  `ein solve --events` narrates it, its counters and H's size: what every command builds, which no line of the
+  golden digests today. Moves: the `hyp` line of at least the 568 programs with a `compile` event, the exact set
+  by the re-bank; all 659 `hyp+closed` lines go. After it the lookahead, its kill cache, `generate`'s config
+  reading, `complete`, `open_hypotheses` and `emit_closed` have tests and examples as their only readers, and
+  S1f.10.16's rule deletes them in a later stage, with the two retired fields' last code reader.
+- **(c) `hyp` re-pointed, `hyp+closed` kept**: `hyp+closed` alone keeps the walk's generator and `emit_closed`.
+- **(d) `hyp+closed` removed, `hyp` kept**: its 659 lines go and `emit_closed` has tests alone; the walk's
+  generator stays for `hyp`.
+- **(e) Both removed**: the generator's narration and counters are then in no golden. H itself is still held by
+  the read-out's `universe` rows on every program, `ein show hyps`' tests and the routes' invariances.
+
+**The default named: (b).** The golden then pins what a command produces and nothing only the golden runs,
+which is the rule S1f.10.16 settled every other piece by. **Not acted on**: both ops, and every piece they
+call, are as they were.
