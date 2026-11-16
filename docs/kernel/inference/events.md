@@ -276,9 +276,8 @@ only — `self_edge` alone fires once per (object, filler, relation, slot).
 
 #### `rung` — which generator proposed
 
-Added by M1d
-[S1d.2.5](../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations),
-which turned hypothesis generation from a switch into a **ladder**: the user's
+Hypothesis generation is a
+[**ladder**](../../ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder): the user's
 `(hrule …)` if there is one, else, where an obligation is activated at the
 state, what would pay the debts it owes, else the blind enumerator. One line
 per generation call, and **only** where an obligation is activated at the
@@ -313,8 +312,8 @@ construction — every relation a hypothesis could be about is one some
 obligation owes. Non-zero does not say it is *in*complete: it says the claim
 now rests on saturation determining those relations, which only a model-set
 comparison settles, and
-[the stage record](../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
-is where the zebra family settled it.
+[what the rung leaves to saturation](../../ein/reasoning/kb-evolution/hypothesis-generation.md#46-what-the-rung-leaves-to-saturation)
+is how the zebra family settles it.
 
 **`later_debts` and `later_candidates` are optional**, written only where
 the call read a debt the state does not owe and a commitment can bring: an

@@ -389,7 +389,7 @@ impl Matcher {
     }
 
     /// A guard's sub-plan with one step **removed** — the obligation rung's
-    /// candidate scan (M1d [S1d.2.5]).
+    /// candidate scan ([the facts that would pay a debt]).
     ///
     /// [`Matcher::holds`] asks whether the guard has a match. This asks what
     /// it would take to give it one: the witness step is *skipped* rather than
@@ -404,7 +404,7 @@ impl Matcher {
     /// every witness slot from the scan or from the parent, which is what
     /// [`ein_ir`]'s load-time projection check guarantees.
     ///
-    /// [S1d.2.5]: `docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations`
+    /// [the facts that would pay a debt]: ../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#41-an-instance-and-the-facts-that-would-pay-it
     #[allow(clippy::too_many_arguments)]
     pub fn scan_without(
         &mut self,

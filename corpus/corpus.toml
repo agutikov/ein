@@ -1219,7 +1219,7 @@ note   = "M1e2 W5's twin: owed-seats.ein with Ann renamed Zed, and a different t
 path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W6, contested (`W6/uncovered`): completeness.md § 3c's fixture. `exhausted = true` while `knows` is never hypothesised — exhaustive over alive₀, not over the program (Q-M1e2.3)."
+note   = "M1e2 W6, contested (`W6/uncovered`): docs/ein/reasoning/kb-evolution/satisfiability.md § 5's witness. `exhausted = true` while `knows` is never hypothesised — exhaustive over alive₀, not over the program (Q-M1e2.3)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"

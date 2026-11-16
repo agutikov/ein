@@ -696,8 +696,8 @@ re-architecture (O7) would bring.
 > the ~18 k a blind combinatorial enumerator would, because an `(hrule …)`
 > replaces the enumeration outright.
 >
-> **And since M1d [S1d.2.5](../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations)
-> the hrule is not the only thing that can replace it.** Generation is a
+> **And [the generation ladder](../../ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder)
+> means the hrule is not the only thing that can replace it.** Generation is a
 > ladder — the puzzle's hrules if it has any, else the facts that would
 > discharge what the state *owes*, else the blind enumeration — and the middle
 > rung costs the puzzle nothing to declare, because `(bijective R)` already
