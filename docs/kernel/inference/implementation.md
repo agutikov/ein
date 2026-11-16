@@ -230,14 +230,14 @@ committing thread. `ein --version` is what says which build you have.
   boundary-admission order, the agenda's too. On a monotone program the order
   decides no fixpoint; on a flagged one the boundary's can, and the engine
   claims nothing of a flagged program's answer. Normative definition:
-  [`absent_semantics.md`](absent_semantics.md); operational narrative:
-  [`README.md` § NAF semantics](README.md).
+  [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md); operational narrative:
+  [`absent-and-naf.md` § The boundary](../../ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary).
 - **Alive-set soundness** (the M1 invariant) — rules assert no new objects /
   relations / nested-fact hypotheses, so `alive = f(closed KB)`; see
-  [`README.md` § M1 invariant](README.md). **Evaluated since M1e S1e.3.3** by
+  [`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant). **Evaluated since M1e S1e.3.3** by
   [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs), whose
   operational form is
-  [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally):
+  [`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant):
   a static read of the program's names at load, `invariant::program_names`
   (the facts' arguments at any depth, the rules' `:match` and `:assert`
   constants), which seeds the blind enumerator's objects (a rule's `:assert`
@@ -262,14 +262,14 @@ committing thread. `ein --version` is what says which build you have.
   representable. No walk reads it yet: the unsat core, the explanation search
   and the trace's "using" line still follow positive premises only — which is
   why deletion-based core minimisation stays unsound (corollary C3 of
-  [`absent_semantics.md`](absent_semantics.md)).
+  [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md)).
 
 ## See also
 
 - [`architecture_and_algorithms.md`](architecture_and_algorithms.md) — the
   idiomatic (O1–O9, CS-analog) view this map is the code-level companion to.
 - [`README.md`](README.md) — design principles, M1 invariant, NAF, determinism.
-- [`absent_semantics.md`](absent_semantics.md) — the normative reading of
+- [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md) — the normative reading of
   `(absent P)` these modules implement: worlds, the single evaluation point
   E1, and the corollaries (C1–C7) the closure/boundary split rests on.
 - [`../defined_behaviour.md`](../defined_behaviour.md) — the diagnostics,

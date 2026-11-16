@@ -154,7 +154,7 @@ head may be a variable only as a parameter its activator binds; the loader store
 `(relation R T1 … Tk)` ([§ Relation declarator](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)),
 so activators can be derived from the declarations; **no premise tells a written fact from a derived one**; and an
 `(absent …)` premise is decided at the closure/world boundary, after the positive closure stalls
-([`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md#evaluation-points)).
+([`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary)).
 
 Five placements, each run on the same probes (§ 4) and batches (§ 5):
 

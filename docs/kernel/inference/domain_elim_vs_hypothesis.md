@@ -174,7 +174,7 @@ fork-and-refute search only surfaces when **all three** are removed.
   the elimination rule absent it still solves (via forced-positive
   promotion, or via real branching when negative-completion is also
   absent), just at higher cost. This matches the
-  [d=0 negative-completion](README.md#d0-negative-completion-s15a19)
+  [negative completion](../../ein/reasoning/kb-evolution/saturation.md#what-saturation-derives-before-anything-is-supposed)
   design — push elimination into saturation rules and let branching
   catch only what the rules cannot pre-determine.
 
@@ -217,5 +217,5 @@ is removed.
   record, see the *Historical numbers* note).
 - Fixtures: [`examples/domain_elim/`](../../../examples/domain_elim/).
 - Stage: `s1.5b.32_…`.
-- Engine overview + the d=0 rules: [README](README.md#d0-negative-completion-s15a19).
+- Engine overview + the d=0 rules: [saturation](../../ein/reasoning/kb-evolution/saturation.md#what-saturation-derives-before-anything-is-supposed).
 - The lookahead lever: [`SolverConfig.enable_pre_branch_lookahead`](../../../ein.rs/crates/ein-core/src/config.rs).

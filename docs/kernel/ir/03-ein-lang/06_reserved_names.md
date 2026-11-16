@@ -32,7 +32,7 @@ you can author a puzzle without reading engine source.
 | set a solver knob                            | `(config :flag v)`                      | §declarators |
 | import a stdlib module                       | `(import std.X :symbols (…))`           | §declarators |
 | conjoin / disjoin premises in `:match`       | `(and …)` / `(or …)`                    | §⊥ primitives |
-| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives; [semantics](../../inference/absent_semantics.md) |
+| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives; [semantics](../../../ein/reasoning/kb-evolution/absent-and-naf.md) |
 | match a **stored** negative                  | `(not P)` in `:match`                   | §⊥ primitives |
 | require two slots differ / are equal         | `(neq ?a ?b)` / `(eq ?a ?b)`            | §predicates |
 | declare this branch contradictory            | `:assert (false)`                       | §⊥ primitives |
@@ -301,7 +301,7 @@ Declared once in [`ein-core/terms.rs`](../../../../ein.rs/crates/ein-core/src/te
 | `false` | 0 | direct ⊥ — `(false)` asserts the firing rule reached a contradiction. It takes no argument, as a fact, a value, a premise and a conclusion: `(false k)` is refused since M1f S1f.7.6 (until then a written one was stored with its argument and killed root) | contradiction detector |
 | `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.rs`) |
 | `or` | 2+ | disjunction; a **top-level** `(or …)` in a `:match` is lowered to one rule per disjunct at load time | loader (`kb.from_ir._match_disjuncts`) |
-| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom, so no fact, value or conclusion is headed by it: a written or concluded `(absent k)` is refused since M1f S1f.7.7 (until then it stored a fact no premise can read), and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (the guard lift) + the saturator's boundary phase |
+| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom, so no fact, value or conclusion is headed by it: a written or concluded `(absent k)` is refused since M1f S1f.7.7 (until then it stored a fact no premise can read), and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md) | compiler (the guard lift) + the saturator's boundary phase |
 
 ## Computed predicates
 
@@ -346,7 +346,7 @@ puzzle may even redefine them. A puzzle that wants them imports them
 | `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))` — guarded universal ∀b. G→B |
 
 Both expand to nested `absent`s, so their meaning is inherited from the
-[`absent` semantics](../../inference/absent_semantics.md): the ∀ arises
+[`absent` semantics](../../../ein/reasoning/kb-evolution/absent-and-naf.md): the ∀ arises
 as ¬∃¬ over the world at the closure boundary, and a nested absent is
 the one guard shape that can flip false→true during saturation — so its
 candidate stays parked and is re-judged at every later quiescence

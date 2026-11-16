@@ -642,8 +642,8 @@ extend a parent is open too (D3).
 - **Cumulative** saturation: X ⊆ Y ⊆ sat(X) ⇒ sat(Y) = sat(X).
 
 **⇒ holds always (argued).** Construction is append-only: the KB never
-retracts ([`absent_semantics.md`](absent_semantics.md) § Explicitly not
-provided). Take C ⊆ C′ and build C′ by way of C: the result holds `state(C)`,
+retracts ([`absent-and-naf.md` § What is not
+provided](../../ein/reasoning/kb-evolution/absent-and-naf.md#what-is-not-provided)). Take C ⊆ C′ and build C′ by way of C: the result holds `state(C)`,
 and by path independence it is `state(C′)`.
 
 **⇐ needs cumulativity (argued).** Take a path ∅ = K_0 ⊆ K_1 ⊆ … ⊆ K_k = C,
@@ -1193,7 +1193,7 @@ register's `right`.
   check it reports.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
   how § 4's drawings are read.
-- [`absent_semantics.md`](absent_semantics.md): what an `absent` means at fire
+- [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md): what an `absent` means at fire
   time, which is why a fork and a scratch build can differ.
 - [`lattice_diagrams.md`](lattice_diagrams.md): **superseded**, the 2026-05
   design's search lattice, not the cube drawn here.

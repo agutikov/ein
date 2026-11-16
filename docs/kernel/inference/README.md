@@ -177,7 +177,7 @@ contributes, locked by S1.21.8:
    and `(absent P)` is asked once, of a *saturated* world
    ([the boundary phase](../../../ein.rs/crates/ein-infer/src/saturator.rs)),
    never of a half-built KB (S1.21.8; normative contract:
-   [`absent_semantics.md`](absent_semantics.md), layering:
+   [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md), layering:
    [`architecture.md` §closure/worlds seam](../architecture.md)).
    The consequence rule authors feel: on a **stratified** rule set
    the order orders the work but does not decide what is derivable — the
@@ -257,7 +257,7 @@ two describe one R.
 (the review's `ST-M1`), and the operational form — which three readings there
 are, which one the soundness rests on, what the baseline is and what a breach
 is reported as — is
-[`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally).
+[`saturation.md` § The alive-set invariant](../../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant).
 In short: [`ein_infer::invariant::program_names`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
 reads the program's names at load (the facts' arguments at any depth, the
 rules' `:match` and `:assert` constants; a string among them as the symbol it
@@ -284,7 +284,7 @@ else.
 ## NAF semantics — the closure/world boundary (S1.21.8)
 
 > **Normative definition:**
-> [`absent_semantics.md`](absent_semantics.md) (P1.21 R4, re-grounded by
+> [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md) (P1.21 R4, re-grounded by
 > S1.21.8). `absent(P)` is a **query** — "the current fork-local world, at
 > the positive quiescence this firing was admitted at, holds no fact
 > matching P" — **never a ground atom** that could be stored, cached, or
@@ -443,12 +443,12 @@ minimisation unsound. **It makes negative dependence visible; no walk
 interprets it yet** — `unsat_core`,
 [`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs) and the
 trace's "using" line still read positive premises only, so
-[`absent_semantics.md`](absent_semantics.md) C3 stands as written.
+[`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md) C3 stands as written.
 
 **The guard evaluation that judged a world it had not built.** The walk's
 one-step lookahead judged a rule's guards in the world **with** the probed
 candidate `h`: the guard had to find no match in `kb` *and* `h` must not
-create one ([`absent_semantics.md`](absent_semantics.md)'s D3, fixed with this
+create one ([`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md)'s D3, fixed with this
 stage), and it skipped a disjunct whose nested absent it could not decide
 cheaply. It is deleted with the walk's generator pass: every guard the engine
 judges is judged against a KB it holds.
@@ -562,7 +562,7 @@ being done, and the `warn` event kind left the schema.
 - **Static stratification checking** — the engine accepts unstratifiable
   rule sets, answers them by boundary-admission order, and reports one
   model without saying that others exist
-  ([`absent_semantics.md` §Explicitly not provided](absent_semantics.md)).
+  ([`absent-and-naf.md` § What is not provided](../../ein/reasoning/kb-evolution/absent-and-naf.md#what-is-not-provided)).
   `naf_deps::derived_naf_warnings` is the advisory proxy in the meantime
   (the `warn_derived_naf` flag that narrated it retired at M1e2 S1e2.2.5).
 - S1.7.4
@@ -1001,7 +1001,7 @@ monotonicity. Any revival must gate on that *checked* precondition, or
 move to a dependency carrier that records negative support (ATMS-style
 environments). Fork-internal NAF *ordering* is a distinct hole, covered by
 the `absent`-semantics formalisation —
-[`absent_semantics.md`](absent_semantics.md) (§C1 no-root-merge and §C2
+[`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md) (§C1 no-root-merge and §C2
 negative-dependence are this section's two lessons, stated as corollaries
 of the boundary epistemic definition — C2 having been re-grounded by
 S1.21.8 from "positive provenance is not dependence" to "negative
@@ -1217,7 +1217,7 @@ the events up to the abort suffice for diagnostic).
 > `solve()` walks the lattice under a **stop policy** (`stop_after` = 1 / N /
 > exhaustive), and the verdict is *read off* `k` rather than decided by which
 > termination fired — which is what the paragraph above this one says, and
-> what [`architecture_and_algorithms.md` §1](architecture_and_algorithms.md)
+> what [`firing.md` § What Ein answers](../../ein/reasoning/kb-evolution/firing.md#what-ein-answers)
 > records the split as a **soundness bug** for. The table below is the
 > superseded design; "monotonic" is its early-terminating mode and "lattice"
 > its exhaustive one, and `SOLVE / GAPS / CONTRADICTIONS` are three *views* of
@@ -1262,7 +1262,7 @@ in git history. What is *read* today:
 
 - the as-built architecture — [`architecture_and_algorithms.md`](architecture_and_algorithms.md);
 - the module map — [`implementation.md`](implementation.md);
-- the normative pages — [`absent_semantics.md`](absent_semantics.md),
+- the normative pages — [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md),
   [`solution_semantics.md`](solution_semantics.md),
   [`../defined_behaviour.md`](../defined_behaviour.md);
 - the milestones that changed it since — [`docs/history/`](../../history/README.md);

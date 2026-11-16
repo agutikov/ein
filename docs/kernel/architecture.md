@@ -135,7 +135,7 @@ Roadmap detail: [`plans/`](../../plans/README.md).
 > P1.21 S1.21.8
 > (purely-positive closure + boundary NAF re-eval). The *as-built* two-layer
 > picture stays in
-> [`inference/architecture_and_algorithms.md` §2](inference/architecture_and_algorithms.md#2-architecture-and-the-main-steps);
+> [`firing.md` § The main steps](../ein/reasoning/kb-evolution/firing.md#the-main-steps);
 > this section records the seam itself, which modules own its nodes, and the
 > places the layout still **leaks** across it — **L2 and L3 stand**, L3 with
 > no writer left; L1 is closed, L4 gone with the code it named, L5 resolved,
@@ -214,7 +214,7 @@ code it named, two standing):
   full-match split are **deleted, not bypassed**, leaving `naf_dropped`
   structurally 0 beside the `naf_rounds` / `naf_admitted` / `naf_retired`
   observables. Contract and consequences:
-  [`absent_semantics.md`](inference/absent_semantics.md) and
+  [`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md) and
   [§NAF at the boundary](#naf-at-the-boundary--how-it-works) below.
 - **L2 — worlds state stored inside the KB** — **still open.**
   The no-good store lives in the ground-atom store and is **fork-shared by
@@ -272,7 +272,7 @@ code it named, two standing):
   minimisation ([`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs),
   corollary C3) — are now **revisit-able, not revisited**. Recording makes
   NAF-dependence visible; honouring it is future work
-  ([`absent_semantics.md`](inference/absent_semantics.md) C2/C3).
+  ([`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md) C2/C3).
 
 ### NAF at the boundary — how it works
 
@@ -281,7 +281,7 @@ closure/world boundary**, not disguised as a positive-premise variant inside
 the closure. A guard used to be judged against *"the KB as of this dequeue"*,
 which is not a world at all; it is now judged only against a **saturated
 world** `W`, which makes the epistemic reading `W ⊭ ∃x̄.Pθ` literal rather
-than approximated. [`inference/absent_semantics.md`](inference/absent_semantics.md)
+than approximated. [`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md)
 is that boundary's **contract** — re-grounded by S1.21.8, and the place to
 read what `(absent …)` means: there is now exactly **one** evaluation point
 (E1, at the boundary), E2 (fire-time re-check) and corollaries C4/C5 are

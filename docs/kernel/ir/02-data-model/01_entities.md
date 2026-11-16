@@ -261,7 +261,7 @@ Contrast with `type-exclusivity`'s LHS `(and (is-a ?a ?T) (is-a ?b ?T))`:
 
 ## 3. `Provenance` — where each fact came from
 
-Per [`../01-ein-graph/01_kb.md` §5](../01-ein-graph/01_kb.md), every
+Per [`cores.md` § A derivation record](../../../ein/reasoning/kb-evolution/cores.md#a-derivation-record), every
 fact carries a `Provenance` record of one of four kinds. The
 record:
 

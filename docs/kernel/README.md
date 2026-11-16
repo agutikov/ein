@@ -74,7 +74,7 @@ Zebra-acceptance milestone.
 - `inference/` is documented:
   [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md)
   (as-built O1–O9) + [`implementation.md`](inference/implementation.md) (module map)
-  + [`absent_semantics.md`](inference/absent_semantics.md) (the normative
+  + [`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md) (the normative
   `(absent P)` / NAF semantics — worlds, fire-time evaluation, corollaries;
   P1.21 R4). The engine shipped P1.3–P1.5b.
 
