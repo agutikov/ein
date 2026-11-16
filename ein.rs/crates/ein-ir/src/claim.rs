@@ -1,9 +1,8 @@
-//! `(solve … :expect …)` — the expected region, M1e2
-//! [S1e2.1a.4](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md).
+//! `(solve … :expect …)` — the expected region
+//! ([`query.md` § The region claim](../../../../docs/ein/user/syntax-and-semantics/query.md#the-region-claim)).
 //!
 //! The shape, which the loader validates; the comparison against R is
-//! `ein_infer::claim`. The grammar is the one the user ruled on 2026-10-16
-//! ([`query.md`](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)):
+//! `ein_infer::claim`:
 //!
 //! ```lisp
 //! (solve :expect (false))                          ; every node dead
@@ -21,12 +20,10 @@
 //!
 //! **The words are this keyword's alone.** `region`, `merged` and `owing` are
 //! read here and nowhere else, as `model` is under a query's `:expect`. Each
-//! is a word a position gives a meaning to since M1f S1f.5.5's swap, a name
-//! wherever a name goes but not a top-level fact's relation (`ein.y`'s
-//! `FactHead`), so a `(region …)` pasted at the top of a file is refused at the
-//! parse, where until then it would have loaded as a fact of a new relation,
-//! checked nothing and said nothing, but for the loader's guard (M1e2
-//! S1e2.1a.4, `CLAIM_HEADS` until T1f.5.5.5).
+//! is a word a position gives a meaning to, a name wherever a name goes but
+//! not a top-level fact's relation (`ein.y`'s `FactHead`), so a `(region …)`
+//! pasted at the top of a file is refused at the parse rather than loaded as
+//! a fact of a new relation that checks nothing and says nothing.
 
 use crate::ast::{Ast, Node, NodeId};
 use crate::expect::Model;
@@ -63,12 +60,11 @@ pub struct Merged {
 
 /// Read a `(solve … :expect …)` value, or say what is wrong with it.
 ///
-/// **Its shape is the grammar's** since M1f S1f.5.5's swap (`ein.y`'s
-/// `RegionClaim`, `RegionItem` and `MergedFrom`): `(false)`, or a `(region
-/// …)` of `(model …)`s, `(merged (model …) <from>)`s whose `<from>` is a
-/// `(model …)` or an `(or …)` of one or more, and `(owing (model …) …)`s of
-/// one or more. Until T1f.5.5.5 this module refused every other shape, eleven
-/// lines; since the swap the parse refuses each first. What stays is what a
+/// **Its shape is the grammar's** (`ein.y`'s `RegionClaim`, `RegionItem` and
+/// `MergedFrom`): `(false)`, or a `(region …)` of `(model …)`s,
+/// `(merged (model …) <from>)`s whose `<from>` is a `(model …)` or an
+/// `(or …)` of one or more, and `(owing (model …) …)`s of one or more; the
+/// parse refuses every other shape first. What this module checks is what a
 /// grammar cannot see: one `(owing …)` at most, not beside a state, and a
 /// `(merged …)` whose state is one the region lists.
 pub fn parse(ast: &Ast, node: NodeId) -> Result<Claim, String> {

@@ -1,18 +1,18 @@
-//! Import resolution and macro expansion — S1a.1.3's acceptance, and since
-//! M1f S1f.6.35 imports by full name (`imports_full_names.rs` holds the model's
-//! own cases: short names, aliases, the refusals, the user's dependency graph).
+//! Import resolution and macro expansion, imports by full name
+//! (`imports_full_names.rs` holds the model's own cases: short names, aliases,
+//! the refusals, a dependency graph of modules).
 //!
 //! Where each part is checked:
 //!
 //! | claim | where |
 //! |---|---|
-//! | the corpus-wide ops (`resolve` / `expand`) | `corpus_shapes.md5`'s `ir[resolve]` and `ir[expand]` lines, through `dump_canonical` (`minimize`, the tree-shake, went at M1f S1f.6.35) |
+//! | the corpus-wide ops (`resolve` / `expand`) | `corpus_shapes.md5`'s `ir[resolve]` and `ir[expand]` lines, through `dump_canonical`; no import is tree-shaken |
 //! | `std.macro`'s exported names | [`stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`], which re-parses `stdlib/macro.ein` at test time |
 //! | the 14-module mangling | a checked-in table |
 //! | one module under two spellings is one copy | [`one_module_under_two_spellings_is_one_copy`] |
-//! | what each import form brings of a module's relations, rules, macros and facts | [`what_each_import_form_brings_of_a_module`] (M1f S1f.6.11's table) |
+//! | what each import form brings of a module's relations, rules, macros and facts | [`what_each_import_form_brings_of_a_module`] |
 //! | a facts library reached by two flat paths | [`a_diamond_of_flat_imports_yields_each_fact_once`] |
-//! | the 9 `.expected` fixtures of the resolver and the expander | [`the_import_and_macro_failures_are_byte_identical`] (12 until M1f S1f.5.5's swap moved three to `examples/broken/`, refused at the parse) |
+//! | the 9 `.expected` fixtures of the resolver and the expander | [`the_import_and_macro_failures_are_byte_identical`]; three more, refused at the parse, are under `examples/broken/` |
 
 use std::path::{Path, PathBuf};
 
@@ -88,15 +88,13 @@ fn the_import_and_macro_failures_are_byte_identical() {
             .replace("{STDLIB}", stdlib.to_str().expect("utf-8"))
     };
 
-    // Only the fixtures whose message this phase owns. The rest —
-    // relation/rule/config/derivation, the duplicate and reserved macro
-    // names, the S1.8a.f20 guard's wiring — are the loader's, and are
-    // compared when the loader lands (P1a.2). Since M1f S1f.5.5's swap
-    // (T1f.5.5.4) `import_alias_not_a_name` (a string, S1f.5.2),
-    // `import_symbols_empty` and `import_symbols_not_a_list` (the paper
-    // grammar's `:symbols`, a list of one name or more) are refused at the
-    // parse, and moved to `examples/broken/`, where
-    // `grammar_decisions.rs` holds their reports.
+    // Only the fixtures whose message the resolver or the expander owns. The
+    // rest — relation/rule/config/derivation, the duplicate and reserved
+    // macro names, the guard on a `std.macro` macro the program does not
+    // import — are the loader's. `import_alias_not_a_name` (a string),
+    // `import_symbols_empty` and `import_symbols_not_a_list` (`:symbols` is a
+    // list of one name or more) are refused at the parse, under
+    // `examples/broken/`, where `grammar_decisions.rs` holds their reports.
     for name in [
         "import_as_and_symbols",
         "import_bare_std",
@@ -140,10 +138,9 @@ fn the_import_and_macro_failures_are_byte_identical() {
 }
 
 /// One module, imported **twice under two spellings**, an alias and a list,
-/// is **one copy** (M1f S1f.6.35, the user's model (h)): every path to a
-/// module reaches the same declarations under the same full names. Until
-/// then the alias renamed a copy of its own, `m.forall` beside `forall`.
-/// The one copy prints by the main file's listed name, the short name
+/// is **one copy** (Q-M1f.247): every path to a module reaches the same
+/// declarations under the same full names; an alias renames no copy of its
+/// own, no `m.forall` beside `forall`. The one copy prints by the main file's listed name, the short name
 /// coming before an alias's spelling (Q-M1f.237, Q-M1f.253).
 #[test]
 fn one_module_under_two_spellings_is_one_copy() {
@@ -173,11 +170,10 @@ fn one_module_under_two_spellings_is_one_copy() {
 /// **Module-name → file-path mangling**, and the places it is surprising only
 /// show up in the "module not found" text.
 ///
-/// `std.nope.`, `std..nope`, `a.` and `std.__x` are the interesting rows: an
-/// empty segment — a doubled or a trailing dot — was dropped until M1f
-/// S1f.6.35, so the message named a file nobody would have guessed; since, a
-/// module's name is its identity, and one with an empty segment or a `/` is
-/// refused (Q-M1f.252). Checked in as a table because the message *is* the
+/// `std.nope.`, `std..nope`, `a.` and `std.__x` are the interesting rows: a
+/// module's name is its identity, and one with an empty segment — a doubled
+/// or a trailing dot — or a `/` is refused (Q-M1f.252), rather than dropped
+/// into a file name nobody would have guessed. Checked in as a table because the message *is* the
 /// observable — resolution either finds a module or says which file it
 /// looked for.
 ///
@@ -232,7 +228,7 @@ fn module_names_mangle_into_these_file_paths() {
     }
 }
 
-// ── M1e S1e.2.1 — CO-H2: one reserved-name list ────────────────────
+// ── One reserved-name list ─────────────────────────────────────────
 
 /// A scratch module directory one test owns and deletes.
 ///
@@ -288,36 +284,22 @@ fn declaration(decl: &str, name: &str) -> String {
 }
 
 /// **A declarator may not bind a reserved name, by whichever route it
-/// arrives** — M1e S1e.2.1, `CO-H2`.
+/// arrives**.
 ///
-/// Thirty-two cells: four declarators × two names × four import routes. The
-/// names are `open`, which is `ein-core`'s ninth and was the drift, and
-/// `absent`, which is in every copy of the list there has ever been and is the
-/// control — the finding is precisely that the two behaved differently.
+/// Forty-eight cells: four declarators × three names × four import routes,
+/// direct, flat `:symbols`, qualified and `:as`. A module's declaration takes
+/// its full name, but a reserved one is never renamed — no `m.open` — so the
+/// loader refuses it under its own name; the resolver asks
+/// `ein_core::is_reserved`, the one list, rather than a list of its own.
 ///
-/// **Eight of the thirty-two used to load with exit 0.** `imports.rs` carried
-/// its own `RESERVED_NAMES: [&str; 8]` and `qualify()` filtered against it, so
-/// a name it did not know was prefixed — `m.open` — before the loader could
-/// object, and `qualify()`'s own doc comment stated the opposite intent. Two
-/// of the four routes go through `qualify()`, hence 4 declarators × 2 routes.
-/// The comment beside the list even predicted the fix (*"P1a.3 brings the
-/// registries over and this becomes a query against them"*); it never
-/// happened, and what closed it is one `ein_core::is_reserved` call.
-///
-/// **The fourth route is this test's own finding.** The review named three —
-/// direct, flat `:symbols`, qualified — and `:as` is a fourth, taking the same
-/// `qualify()` path with a different prefix. It was equally broken.
-///
-/// **Since M1f S1f.5.5's swap (T1f.5.5.4) `open` and `absent` are refused at
-/// the parse wherever a declarator binds one**, each a word a position gives
-/// a meaning to and no name a declarator takes (the paper grammar's default
-/// 1): in the program on the direct route, in the module on the other three.
-/// The loader's route-independence is held since by a third name the grammar
-/// reads as a name, the kernel dunder `__closed__` (T1f.5.5.11), refused as a
-/// reserved name through every route: forty-eight cells. **Since M1f S1f.5.23
-/// `open` is no name at all** (the user's ruling on Q-M1f.66), so the flat
-/// route's `:symbols (open)` is refused at the program's own parse, before the
-/// module is read.
+/// **`open` and `absent` are refused at the parse wherever a declarator binds
+/// one**, each a word a position gives a meaning to and no name a declarator
+/// takes: in the program on the direct route, in the module on the other
+/// three. `open` is no name at all (Q-M1f.66), so the flat route's
+/// `:symbols (open)` is refused at the program's own parse, before the module
+/// is read. The loader's route-independence is held by a third name the
+/// grammar reads as a name, the kernel dunder `__closed__` (Q-M1f.7), refused
+/// as a reserved name through every route.
 #[test]
 fn reserved_names_are_reserved_through_every_import_route() {
     let m = Modules::new("routes");
@@ -382,27 +364,21 @@ fn an_unreserved_name_still_qualifies_through_all_four_routes() {
     }
 }
 
-/// **There is one reserved-name list, and it is [`ein_core::RESERVED`]** —
-/// M1e S1e.2.1's other half.
+/// **There is one reserved-name list, and it is [`ein_core::RESERVED`]**.
 ///
-/// The test the finding asked for is *"assert the two lists are one"*, which a
-/// shared constant makes trivial and therefore worth stating as a behaviour
-/// instead: every name in `ein_core::RESERVED` is unbindable, checked one name
-/// at a time through the route that used to leak. A re-forked list fails here
-/// the moment the two disagree, and it fails naming the name.
+/// *The lists are one* is trivial for a shared constant, and therefore worth
+/// stating as a behaviour instead: every name in `ein_core::RESERVED` is
+/// unbindable, checked one name at a time through a qualified import, where a
+/// module's declaration takes its full name. A re-forked list fails here the moment the two
+/// disagree, and it fails naming the name.
 ///
 /// Two outcomes count as reserved, and the split is the grammar's rather than
-/// the loader's. Until M1f S1f.5.5's swap `and`, `neq`, `not` and `or` were
-/// SYMBOL-excluded by the hand-written lexer (its own list, which genuinely
-/// differed and is
-/// [`SE-L2`](../../../../docs/history/m1e_review_processing/README.md#s1e42--semantics-low)),
-/// so a module declaring one never parsed, and the rest reached the loader.
-/// Since the swap (T1f.5.5.4) every name of the list that is a token of its
-/// own is refused at the parse where a declarator binds it, the four words
-/// that are never a name and the five a position gives a meaning to and no
-/// declarator takes (`absent`, `eq`, `false`, `open`, `relation`); the two
-/// kernel dunders, names the grammar reads, reach the loader and are refused
-/// there (T1f.5.5.11). What no name may do is **load**.
+/// the loader's. Every name of the list that is a token of its own is refused
+/// at the parse where a declarator binds it, the four words that are never a
+/// name (`and`, `neq`, `not`, `or`) and the five a position gives a meaning to
+/// and no declarator takes (`absent`, `eq`, `false`, `open`, `relation`); the
+/// two kernel dunders, names the grammar reads, reach the loader and are
+/// refused there (Q-M1f.7). What no name may do is **load**.
 #[test]
 fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
     let m = Modules::new("all-names");
@@ -437,7 +413,7 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
     );
 }
 
-// ── The third resolution tier — M1e `CO-M5` ────────────────────────
+// ── The third resolution tier ──────────────────────────────────────
 
 /// **A `std.*` module may import only `std.*` modules**, and the refusal is
 /// the same in all three tiers.
@@ -502,8 +478,8 @@ fn the_embedded_stdlib_is_a_resolution_tier_that_works() {
         !resolved.is_empty(),
         "the embedded module resolved to nothing"
     );
-    // Qualified, the way an unaliased import is — so this also pins that the
-    // embedded path goes through `qualify` like the other two tiers.
+    // Under full names, the way an unaliased import is — so this also pins
+    // that a module from the embedded copy is named like the other two tiers'.
     let names: Vec<String> = resolved
         .iter()
         .filter_map(|&f| {
@@ -524,15 +500,14 @@ fn the_embedded_stdlib_is_a_resolution_tier_that_works() {
 }
 
 /// **A `$EIN_STDLIB` that cannot prove itself is refused at the first
-/// `std.*` import** — M1e S1e.3.5, `EH-M2`.
+/// `std.*` import**.
 ///
-/// The override was the only one of the three tiers taken on faith: the
-/// checkout walk requires `MANIFEST.sha256` because *a directory called
-/// `stdlib/` proves nothing*, and the highest-precedence source skipped that
-/// test. What a typo'd or stale override produced was *"module not found at
-/// &lt;path&gt;/algebra.ein"* — true, and it names the module rather than the
-/// variable that chose the directory, so the cost of the mistake was the
-/// diagnosis and not the wrong answer.
+/// The override is held to the test the checkout walk applies:
+/// `MANIFEST.sha256` is required because *a directory called `stdlib/` proves
+/// nothing*. Without it, a typo'd or stale override would produce *"module not
+/// found at &lt;path&gt;/algebra.ein"* — true, but it names the module rather
+/// than the variable that chose the directory, so the cost of the mistake
+/// would be the diagnosis and not the wrong answer.
 ///
 /// Driven through `with_stdlib` rather than the environment: a `#[test]` is a
 /// thread of a shared binary, and a `set_var` there is a write every other
@@ -570,17 +545,15 @@ fn an_override_without_the_marker_is_refused_by_name() {
 
 /// **The route that inlines a puzzle's imports into a standalone program.**
 ///
-/// `stdlib/README.md` offered `ein ir parse --resolve` for this until M1e
-/// `CD-M5`; the whole `ein ir` subcommand went at P1.11 (2026-06-16,
-/// `8378ad7`), and what replaced it is a library call with no CLI in front of
-/// it. So the README now shows three functions, and this is the test that says
-/// they compose — because a documented route nothing runs is what `CD-M5` was.
+/// The route is a library call with no CLI in front of it: `stdlib/README.md`
+/// shows three functions, and this is the test that says they compose,
+/// because a documented route nothing runs is a route nobody can trust.
 ///
 /// The claim is not just that the dump has no `(import …)` left in it: it is
-/// that the standalone text is the **same program**. Until M1f S1f.6.35 the
-/// route minimised, dropping imported declarations nothing reached; since,
-/// every import brings its module whole, and the inlined text is the program
-/// as resolved. Loading both and comparing the KBs is the cheap way to say it.
+/// that the standalone text is the **same program**. Every import brings its
+/// module whole, nothing is dropped as unreached, and the inlined text is the
+/// program as resolved. Loading both and comparing the KBs is the cheap way to
+/// say it.
 #[test]
 fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     let puzzle = repo_root().join("examples/zebra2.ein");
@@ -619,14 +592,13 @@ fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
     assert_eq!(format!("{got:?}"), format!("{want:?}"));
 }
 
-/// **An import brings its module whole, and the inlined program is it** —
-/// M1f S1f.6.35 (the user, 2026-11-14: *"in all cases we import everything,
-/// the difference only in names"*).
+/// **An import brings its module whole, and the inlined program is it**
+/// (Q-M1f.247: every import form imports everything, and differs only in
+/// names).
 ///
-/// Until then a selection kept the listed names and their closure, and the
-/// tree-shake a `--dump-answer` state file's program went through kept what a
-/// live name reached (M1f S1f.6.25, E-11, W91; E-41 its qualified twin). A
-/// selection names now: every relation, rule and macro of the library comes,
+/// A selection names; it keeps no closure of the listed names, and no state
+/// file's program is tree-shaken to what a live name reaches (W91). Every
+/// relation, rule and macro of the library comes,
 /// the listed one under its short name and the rest under their full names,
 /// and the inlined text loads to the same program with nothing left to
 /// resolve against.
@@ -703,9 +675,9 @@ fn an_import_brings_its_module_whole_and_the_inlined_program_is_it() {
     assert_eq!(format!("{got:?}"), format!("{want:?}"));
 }
 
-// ── M1f S1f.6.11: a flat import brings a module's facts ──────────────────────
+// ── A flat import brings a module's facts ────────────────────────────────────
 
-/// The ontology library of S1f.6.11's table: a declared relation with two
+/// The ontology library the import forms are read over: a declared relation with two
 /// facts, one carrying a `:source`; a relation nothing mentions; a fact and a
 /// stored negation of a relation the module does not declare; two rules over
 /// `is-a`; a macro; and the three forms that are neither declaration nor fact.
@@ -746,17 +718,16 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
         .collect())
 }
 
-/// **What each import form brings of a module** — M1f S1f.6.11's table, a
-/// case per cell (W88), and since M1f S1f.6.35 one answer for every form: the
-/// module whole, its declarations and its facts, under the names the form
-/// gives them (the user, 2026-11-14: *"in all cases we import everything, the
-/// difference only in names"*).
+/// **What each import form brings of a module**, a case per cell (W88), one
+/// answer for every form: the module whole, its declarations and its facts,
+/// under the names the form gives them (Q-M1f.247: every form imports
+/// everything, and differs only in names).
 ///
 /// A bare import writes every declared name in full, `onto.is-a`; `:as o`
 /// under the alias; a selection writes the names it lists short and every
 /// other in full. A name no file declares (`likes`, `thing`, a constant) is
 /// one name everywhere. What a module states as a program, its `(query …)`,
-/// `(solve …)` and `(config …)`, never comes (M1f S1f.6.25, E-8, W90).
+/// `(solve …)` and `(config …)`, never comes (W90, Q-M1f.215).
 #[test]
 fn what_each_import_form_brings_of_a_module() {
     let onto = [("onto", ONTO)];
@@ -825,17 +796,15 @@ fn what_each_import_form_brings_of_a_module() {
     }
 }
 
-/// **No import brings what a module states as a program** — M1f S1f.6.25,
-/// E-8 of P1f.6's `findings.md`, W90.
+/// **No import brings what a module states as a program** (W90, Q-M1f.215).
 ///
 /// A module may be a program of its own, with a query, a lattice and a
-/// configuration. Until the stage a bare or `:as` import kept all three: the
-/// importer answered the module's query, renamed; was solved under the
-/// module's `(solve …)`, so its own hypotheses were gone; ran under the
-/// module's `(config …)` flags; and a second qualified import of the same
-/// module was refused, *2 (solve …) forms — a program states its lattice
-/// once*, of a program that wrote none. A `(trace …)` form is the fourth such
-/// form and goes the same way (Q-M1f.215).
+/// configuration. An import that kept them would have the importer answer the
+/// module's query, renamed; be solved under the module's `(solve …)`, so its
+/// own hypotheses were gone; run under the module's `(config …)` flags; and
+/// refuse a second qualified import of the same module, *2 (solve …) forms — a
+/// program states its lattice once*, of a program that wrote none. A
+/// `(trace …)` form is the fourth such form and stays behind the same way.
 #[test]
 fn no_import_brings_a_modules_query_solve_or_config() {
     let m = "(relation is-a Thing Type :why \"{?1} is a {?2}\")\n\
@@ -859,7 +828,7 @@ fn no_import_brings_a_modules_query_solve_or_config() {
             "{import}"
         );
     }
-    // Twice, under two names: one copy (M1f S1f.6.35), printed under the
+    // Twice, under two names: one copy (Q-M1f.247), printed under the
     // first alias, and no second lattice.
     assert_eq!(
         resolved(&[("m", m)], "(import m :as a)\n(import m :as b)").expect("resolves"),
@@ -904,10 +873,10 @@ fn no_import_brings_a_modules_query_solve_or_config() {
     assert!(kb.program().config.is_none(), "the module's config came");
 }
 
-/// **A selection names; the module comes whole** — M1f S1f.6.35, Q-M1f.247.
-/// Until then a selection's closure followed the names a kept declaration
-/// writes and not the names inside a kept fact, and a fact of the marker came
-/// where the marker was listed or written. Every form, the facts
+/// **A selection names; the module comes whole** (Q-M1f.247). No closure of
+/// the listed names decides what comes, so no name inside a fact is left
+/// behind and a fact of the marker comes whether or not the marker is listed
+/// or written. Every form, the facts
 /// of the marker among them; a value the module declares as a relation, the
 /// `cat` of `(owns Ann cat)`, is read under its full name as the relation is.
 #[test]
@@ -951,7 +920,7 @@ fn a_selection_names_and_the_module_comes_whole() {
 }
 
 /// **A diamond of imports of one facts library yields each fact once**
-/// (M1f S1f.6.11's T4; one copy of the module since M1f S1f.6.35).
+/// (one copy of the module, Q-M1f.143).
 ///
 /// A module is read once per program whoever imports it, so a statement of
 /// it arrives once, where the module first arrives. A fact the program itself

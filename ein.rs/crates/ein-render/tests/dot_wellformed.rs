@@ -1,4 +1,4 @@
-//! S1a.5.1 acceptance — Graphviz accepts every file the engine emits.
+//! Graphviz accepts every file the engine emits.
 //!
 //! A digest sweep (`corpus_shapes.md5`) proves every view still renders the
 //! bytes it rendered. It cannot prove those bytes are *valid*: a golden of a
@@ -6,16 +6,15 @@
 //! view of every corpus entry also goes through `dot -Tsvg`, which is the only
 //! authority on whether the grammar and the attribute values are real.
 //!
-//! **Per commit, every corpus program outside `tests/`; in the nightly,
-//! `EIN_CORPUS_SLOW=1`, every one** (M1f S1f.6.39): the programs under
-//! `tests/` are each one stdlib
+//! **Every corpus program outside `tests/`; under `EIN_CORPUS_SLOW=1`,
+//! every one**: the programs under `tests/` are each one stdlib
 //! rule's claim, drawn by the writers every other program is drawn by.
 //!
 //! ## When Graphviz is the one that is broken
 //!
-//! `ubuntu-24.04` — the per-commit runner — ships `graphviz 2.42.2-9ubuntu0.1`,
-//! which reports itself as 2.43.0 and dates from 2019; a working checkout is
-//! more likely to have 12.x or 15.x. On that build five of `stdlib/slots.ein`'s
+//! Ubuntu 24.04 ships `graphviz 2.42.2-9ubuntu0.1`, which reports itself as
+//! 2.43.0 and dates from 2019, where a working checkout is more likely to
+//! have 12.x or 15.x. On that build five of `stdlib/slots.ein`'s
 //! views kill `dot` outright, SIGABRT out of `malloc(): unaligned fastbin chunk
 //! detected` or SIGSEGV, and the trigger is cross-graph: every digraph in those
 //! views is accepted **on its own**, and two of them in one process are not.
@@ -31,30 +30,24 @@
 //! kills it, there is nothing left to split and the view fails — which is also
 //! what a genuine rejection does, now naming the digraph rather than the view.
 //!
-//! **It fails rather than skips when Graphviz is missing.** It used to skip —
-//! on a stderr line `cargo test` captures for a passing test. A check that
-//! reports a pass because its tool is absent is not a check, and "loudly" was
-//! the word doing the lying.
+//! **It fails rather than skips when Graphviz is missing.** A skip would be a
+//! stderr line `cargo test` captures for a passing test, and a check that
+//! reports a pass because its tool is absent is not a check.
 //!
-//! **Nor does it skip a view that errors** (M1e2 S1e2.1c.5). Until then a view
-//! whose renderer returned an error was passed over in silence, so deleting
-//! the engine a view runs would have left this test green over views it no
-//! longer checked. A file that does not parse has no view, one that does not
+//! **Nor does it skip a view that errors**: a view whose renderer returned an
+//! error and was passed over in silence would leave this test green over a
+//! view it does not check, the engine the view runs deleted or not. A file
+//! that does not parse has no view, one that does not
 //! load has no KB view, and one whose root does not saturate has no
 //! `kb-since`, the one view that saturates: those are the corpus's load- and
 //! compile-error fixtures, and each is skipped by its reason. Every other
 //! error fails the sweep.
-//!
-//! **The walk's three views are gone**, `lattice`, `lattice-full` and
-//! `slice`: they rendered the walk's proof, and went with the walk at M1e2
-//! S1e2.1c.5 (2026-11-03). Until that commit this test left them out by name,
-//! so that a view erroring once its engine was gone could not pass here.
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root, under_tests};
 
-/// `EIN_CORPUS_SLOW=1`: the nightly's sweep, every corpus program; unset,
-/// the per-commit one, every program outside `tests/`.
+/// `EIN_CORPUS_SLOW=1`: every corpus program; unset, every program outside
+/// `tests/`.
 fn slow_too() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
@@ -89,56 +82,48 @@ enum Verdict {
 }
 
 /// A view with more edges than this is **not put to Graphviz at all**: it is
-/// counted and skipped (M1f S1f.6.21, the user's ruling of 2026-11-12, *"don't
-/// test graphviz itself - that is the main point here. just skip big graphs,
-/// run tests only on small"*).
+/// counted and skipped. What the test checks is the engine's DOT, not
+/// Graphviz's layout of a large graph.
 ///
 /// `dot`'s layered layout is superlinear in the edges, and a library of facts
-/// is where that shows. `stdlib/math/digits.ein` (M1f S1f.6.2) is the
-/// calculator's 1 664 table rows over eleven shared names, and every view of it has some
-/// 7 900 edges: `dot` 16.0.0 had not drawn one after five minutes, and `fdp`,
-/// the layout a KB view suggests, not after 100 s. Table by table, the KB view
-/// of `fa` alone (1 014 edges) takes `dot` 0.5 s, `fa` and `fs` (2 021) 3.2 s,
-/// with `cl` (3 227) 9.9 s, and `md` alone (4 514) 23.7 s (2026-11-11). The
-/// largest view the corpus had before that module has 361 edges, and its
-/// slowest took 0.43 s, so no view that `dot` drew then is past the bound.
+/// is where that shows. `stdlib/math/digits.ein` is the
+/// calculator's 1 664 table rows over eleven shared names, and every view of
+/// it has some 7 900 edges, which neither `dot` nor `fdp`, the layout a KB
+/// view suggests, lays out in minutes. Outside the tables and the wide rule
+/// libraries [`SKIPPING`] names, no corpus view is past the bound.
 ///
-/// **The bound is under the smallest table** since M1f S1f.6.3 (it was 1 500
-/// for a stage): the KB view of a program that imports
-/// `std.math.decimal-arith` holds `fa`'s 200 rows, some 1 200 edges. So a view that holds a table is past
-/// the bound, and what `dot` lays out is what it laid out before the tables.
+/// **The bound is under the smallest table**: the KB view of a program that
+/// imports `std.math.decimal-arith` holds `fa`'s 200 rows, some 1 200 edges.
+/// So a view that holds a table is past the bound, and what `dot` lays out
+/// is every view that holds none.
 ///
 /// **What is given up:** nothing checks that the DOT text of a skipped view
-/// is well-formed. From S1f.6.2 to S1f.6.21 such a view went to Graphviz
-/// under `fdp` stopped after one iteration, which checked the grammar and
-/// the attributes without `dot`'s layout and was most of this test's time.
-/// The writers are the same functions that write the small views, which is
-/// why the ruling is safe to take. The sweep prints how many views it
+/// is well-formed. The writers are the same functions that write the small
+/// views, which is why the skip is safe. The sweep prints how many views it
 /// skipped and each by name, with its edges, and holds the
 /// directories they are in to [`SKIPPING`], so a skip is visible and one in
 /// a directory that had none fails.
 const DOT_LAYOUT_BOUND: usize = 1000;
 
 /// The directories that hold a corpus file with a view past
-/// [`DOT_LAYOUT_BOUND`]: the calculator's modules (`stdlib/math/` since M1f
-/// S1f.6.31), the programs that import them and so hold the digit tables,
+/// [`DOT_LAYOUT_BOUND`]: the calculator's modules (`stdlib/math/`), the
+/// programs that import them and so hold the digit tables,
 /// and three rule libraries wide enough on their own: `stdlib/math/num9.ein`'s
 /// wide rules, `examples/binary_arithmetic/five_operations.ein`, and
-/// `std.bool.props` (`stdlib/bool/props.ein` since M1f S1f.6.17, its
+/// `std.bool.props` (`stdlib/bool/props.ein`, its
 /// `kb-since` view, which holds what its rules derive) with the programs that
 /// import it, under `tests/stdlib/bool/props/` and `examples/binary_logic/`,
 /// where two more programs pass the bound by `std.bool.gates`' table and its
-/// second layout; `tests/stdlib/math/decimal/` since M1f S1f.6.38, whose
-/// programs hold the tables; and since S1f.6.16 `tests/stdlib/math/convert/`
-/// and `tests/stdlib/math/binary-arith/`, whose conversions and program of
-/// both bases hold decimal's; since S1f.6.32 `tests/stdlib/math/gcd/`. 1 312
-/// views of 230 files on 2026-11-15, after S1f.6.32's module, programs and
-/// example (1 228 of 216 before them; `cargo test -p ein-render --test
-/// dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
-/// directory is named here, which is where a bound that has started to skip
-/// what it used to check is noticed. A per-commit run reads no program under
-/// `tests/`, and holds the directories it reads to the entries
-/// outside it; the nightly's, to every entry.
+/// second layout; `tests/stdlib/math/decimal/`, whose programs hold the
+/// tables; `tests/stdlib/math/convert/` and `tests/stdlib/math/binary-arith/`,
+/// whose conversions and program of both bases hold decimal's; and
+/// `tests/stdlib/math/gcd/`. `cargo test -p ein-render --test dot_wellformed
+/// -- --nocapture` prints how many views are skipped, of how many files. A
+/// view skipped anywhere else fails the sweep until its directory is named
+/// here, which is where a bound that starts to skip a view it checked is
+/// noticed. A run without `EIN_CORPUS_SLOW` reads no program under `tests/`,
+/// and holds the directories it reads to the entries outside it; a run with
+/// it, to every entry.
 const SKIPPING: [&str; 17] = [
     "examples/arith",
     "examples/beyond_arith",
@@ -306,7 +291,7 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
     // A file that does not parse has no view, one that does not load has
     // no KB view, and one whose root does not saturate has no `kb-since`:
     // the corpus's load- and compile-error fixtures. The file is loaded once
-    // and every KB view drawn from a copy of the load (M1f S1f.6.39), as
+    // and every KB view drawn from a copy of the load, as
     // `id_order_invariance` digests them.
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -390,11 +375,8 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
     file
 }
 
-/// The sweep, **several files at a time** since M1f S1f.6.5: a program that
-/// imports `std.math.decimal-arith` holds the digit tables, each of its six KB views is
-/// some 9 000 edges, and the bounded layout of the time took two seconds on
-/// one. Since S1f.6.21 those views are skipped and the sharing is kept: the
-/// files are independent, each view a `dot` process of its own, so they are
+/// The sweep, **several files at a time**: the files are independent, each
+/// view a `dot` process of its own, so they are
 /// shared out among the machine's cores, and what is reported is gathered in
 /// the files' order, so the report reads the same whatever ran first.
 #[test]
@@ -505,8 +487,8 @@ fn strokes(dot: &str) -> usize {
 /// is no longer past it. The under-determined zebra's exclusion graph is the
 /// pairs of its 96 candidates, and its edges read one application back are
 /// mostly of two questions; the two programs whose `R` passes 2^64
-/// commitments tie every candidate to every other. A per-commit run reads no
-/// `slow` entry, and holds the list to the others.
+/// commitments tie every candidate to every other. A run without
+/// `EIN_CORPUS_SLOW` reads no `slow` entry, and holds the list to the others.
 const STRUCTURE_SKIPPING: [(&str, &str); 8] = [
     (
         "examples/ein-bugs/wrong-answers/count-past-2-128.ein",
@@ -636,9 +618,9 @@ fn sweep_structure(path: &std::path::Path) -> StructureSweep {
 /// questions' hypergraph and its edges read one application back, each one
 /// graph, each put to `dot -Tsvg` with nothing to say of it.
 ///
-/// Per commit, the programs that search outside `tests/` but for the
-/// corpus's `slow` entries; under `EIN_CORPUS_SLOW=1`, the nightly's, every
-/// one that searches. A program that does not search has no candidate, and
+/// Without `EIN_CORPUS_SLOW`, the programs that search outside `tests/` but
+/// for the corpus's `slow` entries; under `EIN_CORPUS_SLOW=1`, every one that
+/// searches. A program that does not search has no candidate, and
 /// its four graphs are a title each, which the view's own test draws. A
 /// graph past [`DOT_LAYOUT_BOUND`] is skipped as a view is, and named
 /// ([`STRUCTURE_SKIPPING`]). Nothing here holds a picture: the SVG is

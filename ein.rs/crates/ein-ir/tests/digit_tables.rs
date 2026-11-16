@@ -1,11 +1,9 @@
-//! **`std.math.digits` and `std.math.bits`, every row held to the integers** — M1f
-//! [S1f.6.2](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.2_digits_and_tables.md),
-//! and [S1f.6.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.16_binary_arithmetic.md)
-//! for the bits.
+//! **`std.math.digits` and `std.math.bits`, every row held to the integers**
+//! ([`stdlib.md`](../../../../docs/ein/user/reference/stdlib.md#stdmathdigits--the-digit-tables)).
 //!
-//! `stdlib/math/digits.ein` is the calculator's gates: seven tables of plain facts,
-//! written by `utils/gen_arith_tables.py`, which since S1f.6.16 also writes
-//! `stdlib/math/bits.ein`, binary's four. Ein has no numbers, so nothing in
+//! `stdlib/math/digits.ein` is the calculator's gates: seven tables of plain
+//! facts, and `stdlib/math/bits.ein` binary's four, both written by one
+//! generator and never by hand. Ein has no numbers, so nothing in
 //! the engine can say whether `(fa 7 5 0 2 1)` is true; a wrong row would be a
 //! wrong answer in every program that adds 7 and 5, and no golden would know.
 //! What holds the rows is this file, in three claims:
@@ -14,8 +12,8 @@
 //! |---|---|
 //! | every row agrees with Rust's integers, **none missing and none twice** | [`every_row_agrees_with_the_integers`] |
 //! | the module is a library of facts: seven declarations, a `(__closed__ R)` fact for each, the rows, and nothing else | [`the_module_is_seven_closed_tables_and_nothing_else`] |
-//! | the file is what the generator writes — the script's `--check`, which is how that check is in the gate | [`the_file_is_what_the_generator_writes`] |
-//! | **`std.math.bits`**: every row agrees with Rust's integers at base two, none missing and none twice, and the module is four closed tables and nothing else (S1f.6.16) | [`every_bit_row_agrees_with_the_integers`], [`the_bits_are_four_closed_tables_and_nothing_else`] |
+//! | the file is what the generator writes — the generator's own `--check`, run here | [`the_file_is_what_the_generator_writes`] |
+//! | **`std.math.bits`**: every row agrees with Rust's integers at base two, none missing and none twice, and the module is four closed tables and nothing else | [`every_bit_row_agrees_with_the_integers`], [`the_bits_are_four_closed_tables_and_nothing_else`] |
 //! | a flat import brings a listed table's rows, and the closing facts when `__closed__` is listed, from the **embedded** copy too | [`a_flat_import_brings_a_table_from_the_embedded_copy`] |
 //!
 //! The rows are computed twice, in Python by the generator and in Rust here,
@@ -240,7 +238,7 @@ fn every_row_agrees_with_the_integers() {
     }
 }
 
-/// **`std.math.bits`' rows, held to the integers at base two** (S1f.6.16):
+/// **`std.math.bits`' rows, held to the integers at base two**:
 /// 29 rows, none missing and none twice.
 #[test]
 fn every_bit_row_agrees_with_the_integers() {
@@ -320,11 +318,10 @@ fn the_module_is_seven_closed_tables_and_nothing_else() {
     );
 }
 
-/// `utils/gen_arith_tables.py --check`, run here so that it is in the gate,
-/// for both of its files, `std.math.digits` and, since S1f.6.16, `std.math.bits`:
-/// the per-commit tier runs `cargo test --workspace`, and its job installs a
-/// `python3` for `cli_semantics.rs`'s `gen_zebra2_variants.py --check`, the
-/// same shape.
+/// The tables' generator's `--check` (`utils/gen_arith_tables.py`, which
+/// this test spawns), for both of its files, `std.math.digits` and
+/// `std.math.bits`; a `python3` that does not run fails the test rather than
+/// skipping it.
 #[test]
 fn the_file_is_what_the_generator_writes() {
     let probe = Command::new("python3")
@@ -352,8 +349,8 @@ fn the_file_is_what_the_generator_writes() {
     );
 }
 
-/// The tier a release binary uses. Since M1f S1f.6.35 an import brings the
-/// module whole: the listed tables under their short names with their rows,
+/// The tier a release binary uses. An import brings the module whole
+/// (Q-M1f.247): the listed tables under their short names with their rows,
 /// every other table under its full name, `std.math.digits.fs`, and the module's
 /// seven closing facts.
 #[test]

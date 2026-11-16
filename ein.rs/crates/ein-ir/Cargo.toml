@@ -9,17 +9,18 @@ repository.workspace = true
 [dependencies]
 ein-core    = { path = "../ein-core" }
 # The interner's index. Its keys are strings the *source file* chose, so the
-# adversarial-input resistance `RandomState` buys is not worth 7 % of a parse
-# (T1a.6.5.2), and a per-process random seed is a determinism hazard the
-# workspace already refuses everywhere else — design/02 §9.
+# adversarial-input resistance `RandomState` buys is not worth its cost on every
+# parse, and a per-process random seed is a determinism hazard the workspace
+# refuses everywhere else (docs/ein/ein.rs/design/determinism-and-order.md § 2.3).
 rustc-hash.workspace = true
-# The stdlib, embedded so the binary ships self-contained (design/11 §3).
+# The stdlib, embedded so the binary ships self-contained
+# (docs/ein/ein.rs/design/shared-assets.md § 3).
 include_dir.workspace = true
-# grmtools (M1f S1f.5.5, the user's ruling of 2026-11-07): the grammar is
-# `src/ein.l` and `src/ein.y`, and `build.rs` generates the parser from them,
-# so a conflict in the grammar fails the build. `lrpar` is the vendored, patched
-# copy (`[patch.crates-io]` in the workspace manifest, F11). Exact versions: the
-# patch is against 0.15.0, and the generated code calls into all three.
+# grmtools (Q-M1e2.25): the grammar is `src/ein.l` and `src/ein.y`, and
+# `build.rs` generates the parser from them, so a conflict in the grammar fails
+# the build. `lrpar` is the vendored, patched copy (`[patch.crates-io]` in the
+# workspace manifest). Exact versions: the patch is against 0.15.0, and the
+# generated code calls into all three.
 cfgrammar = "=0.15.0"
 lrlex     = "=0.15.0"
 lrpar     = "=0.15.0"
@@ -28,8 +29,7 @@ lrpar     = "=0.15.0"
 lrlex = "=0.15.0"
 lrpar = "=0.15.0"
 
-# No `[features]`: T1f.5.5.3's `generated-parser` hook went at the swap
-# (T1f.5.5.4), when the generated parser became the only one.
+# No `[features]`: the generated parser is the only one.
 
 [dev-dependencies]
 # Verifying the embedded copy against `stdlib/MANIFEST.sha256`, in a test —
@@ -40,6 +40,6 @@ sha2.workspace = true
 ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true
 # `fuzz_properties`' `no_firing_meets_an_unbound_variable` compiles the plans of
-# what the loader accepts (M1f S1f.5.10, Q-M1f.40). A dev-dependency only, as
+# what the loader accepts (Q-M1f.40). A dev-dependency only, as
 # `ein-infer` takes `ein-render`: no shipped crate gains an edge.
 ein-infer = { path = "../ein-infer", default-features = false }

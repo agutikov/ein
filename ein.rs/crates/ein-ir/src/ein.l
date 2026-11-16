@@ -1,29 +1,29 @@
 %grmtools {allow_wholeline_comments}
-// Ein's tokens: S1f.5.5's final grammar, step 2 (T1f.5.5.2), 2026-11-08.
+// Ein's tokens, read by lrlex; `ein.y` is the grammar over them.
 //
 // lrlex takes the longest match at the cursor, and of two matches of one
 // length the earlier rule. Every rule below leans on that:
 //   - a reserved word is a whole token: `not` is the word, and `not-a`,
-//     `nota` and `neq-1` are names, being longer (Q-M1e2.24, overriding
-//     Q-M1e2.17 (i)(a));
+//     `nota` and `neq-1` are names, being longer (Q-M1e2.17,
+//     Q-M1e2.24);
 //   - a keyword this grammar knows is its own token, and any other `:word`
 //     is KEYWORD, which no production uses: an unknown keyword is a parse
-//     error at its position (Q-M1e2.28, S1f.5.11's lists);
+//     error at its position (Q-M1e2.28);
 //   - `_` and `?_` are tokens of their own, used by no production, so each
-//     is refused where it stands (Q-M1e2.22, S1f.5.1);
+//     is refused where it stands (Q-M1e2.22);
 //   - a token runs to a separator: a space, a paren, `;`, `#|` or the end.
-//     BAD, BADTEXT and BADESCAPE are the catch-alls that make it so (F2):
+//     BAD, BADTEXT and BADESCAPE are the catch-alls that make it so:
 //     whatever ASCII is glued to a token makes one longer, bad, token;
 //   - a character that is not ASCII is written only inside a string (TEXT,
-//     and BADESCAPE's, a string still) or a comment, the skip rule's (M1f
-//     S1f.5.22, the user's ruling of 2026-11-10, and Q-M1f.65 (b)): no other
+//     and BADESCAPE's, a string still) or a comment, the skip rule's
+//     (Q-M1f.65): no other
 //     rule matches one, so the lexer stops at it, and the parse error names
 //     it, its code point and where Unicode is allowed (`ein_ir::grammar`);
 //   - the engine's three writeback names are a token of their own, used by no
-//     production, so each is refused where it stands (Q-M1f.7, T1f.5.5.11).
+//     production, so each is refused where it stands (Q-M1f.7).
 //   - after any token but a paren, only `(`, `)` and the rule that skips
 //     whitespace and comments can match, by the bullet above; the state
-//     AFTER_WORD tries those three alone (T1f.5.5.12), below.
+//     AFTER_WORD tries those three alone, below.
 // No production uses UNDERSCORE, VARUNDERSCORE, WRITEBACK, KEYWORD, BAD,
 // BADTEXT or BADESCAPE; ein.y lists them under %expect-unused.
 //
@@ -38,15 +38,15 @@
 // BAD takes. So after one comes the end, one of those six where no rule but
 // `(`, `)` and the skip rule can start (a `#` there opens a comment or starts
 // no token at all, in either state), or a character that is not ASCII, where
-// no rule starts in either state (M1f S1f.5.22). Every rule but those three is
-// tried in INITIAL alone, and the tokens are T4's, kind and span
-// (`generated_parser::the_lexer_gives_the_tokens_t4s_did`).
+// no rule starts in either state. Every rule but those three is tried in
+// INITIAL alone, and the tokens, kind and span, are the ones the same rules give
+// tried in one state (`generated_parser::the_lexer_gives_the_tokens_t4s_did`).
 %x AFTER_WORD
 %%
 <INITIAL,AFTER_WORD>\( <INITIAL>"("
 <INITIAL,AFTER_WORD>\) <INITIAL>")"
 // The declarators, the kernel's connectives and, below, `open`, the verdict
-// (M1f S1f.5.23, the user's ruling on Q-M1f.66). Never a name.
+// (Q-M1f.66). Never a name.
 not <AFTER_WORD>"not"
 and <AFTER_WORD>"and"
 or <AFTER_WORD>"or"
@@ -60,10 +60,10 @@ trace <AFTER_WORD>"trace"
 macro <AFTER_WORD>"macro"
 import <AFTER_WORD>"import"
 // Words a position gives a meaning to. Each is also a name (ein.y's Name),
-// so `(p model)` and `(relation step T)` still mean what they mean today;
-// all but `open`, which is a name nowhere since M1f S1f.5.23 and is written
-// only as a rule's whole :assert, `(open)` or `(open ?R)` (ein.y's Assert).
-// Its rule stays here, where it was, so that no token moves.
+// so `(p model)` and `(relation step T)` mean what a name means; all but
+// `open`, which is a name nowhere and is written only as a rule's whole
+// :assert, `(open)` or `(open ?R)` (ein.y's Assert). Its rule stays among
+// these, so that no token moves.
 relation <AFTER_WORD>"relation"
 step <AFTER_WORD>"step"
 eq <AFTER_WORD>"eq"
@@ -75,7 +75,7 @@ model <AFTER_WORD>"model"
 region <AFTER_WORD>"region"
 merged <AFTER_WORD>"merged"
 owing <AFTER_WORD>"owing"
-// The keywords, each the token of the forms that take it (S1f.5.11).
+// The keywords, each the token of the forms that take it.
 :why <AFTER_WORD>":why"
 :source <AFTER_WORD>":source"
 :goal\-text <AFTER_WORD>":goal-text"
@@ -102,26 +102,23 @@ _ <AFTER_WORD>"UNDERSCORE"
 // Reserved and refused: the engine's three writeback rule names, which it
 // writes as the rule of a conclusion no rule drew (`ein_core::terms::ENGINE`).
 // Each is a NAME of the same length, so this rule, being earlier, wins; a
-// longer run (`<forced-positive>x`) is the NAME it spells. The user's ruling of
-// 2026-11-08 on S1f.5.5's review stop, *"they are also reserved names"*, read
-// by Q-M1f.7 (b): no meaning a program can write, so refused wherever written
-// (T1f.5.5.11). `[<]` and `[>]`, since a rule that starts with `<` names a
-// start condition and `\<` is a word boundary.
+// longer run (`<forced-positive>x`) is the NAME it spells. They are reserved
+// names (Q-M1f.7): no meaning a program can write, so refused wherever
+// written. `[<]` and `[>]`, since a rule that starts with `<` names a start
+// condition and `\<` is a word boundary.
 [<](forced\-positive|monotonic\-unconditional|lookahead\-dies\-immediately)[>] <AFTER_WORD>"WRITEBACK"
 // The name rule (Q-M1e2.24): a run of digits is a name like any other, and
-// no token of its own, since `:priority`, which took digits alone, is not in
-// this grammar (the user, 2026-11-08: S1f.5.15 deletes it before the swap).
-// ASCII letters and digits, the connectors
-// `_ - .`, the decorators `$ % ^ * + = < > ! & @ ~ /`, and, for now,
-// `' ` [ ] { }`. Nothing else, ever: no `? : ; # | , \ " ( )`, no space, no
-// character outside ASCII.
+// no token of its own: no keyword of this grammar takes digits alone. ASCII
+// letters and digits, the connectors `_ - .`, the decorators
+// `$ % ^ * + = < > ! & @ ~ /`, and, for now, `' ` [ ] { }`. Nothing else,
+// ever: no `? : ; # | , \ " ( )`, no space, no character outside ASCII.
 [A-Za-z0-9_.\-$%^*+=<>!&@~\/'`\[\]{}]+ <AFTER_WORD>"NAME"
 \?[A-Za-z0-9_.\-$%^*+=<>!&@~\/'`\[\]{}]+ <AFTER_WORD>"VAR"
 :[A-Za-z0-9_.\-$%^*+=<>!&@~\/'`\[\]{}]+ <AFTER_WORD>"KEYWORD"
-// A string: any Unicode, the escapes \n \t \r \" \\ and \u{…} (S1f.5.2).
+// A string: any Unicode, the escapes \n \t \r \" \\ and \u{…}.
 // \u{…} is one to six hex digits naming a Unicode scalar value: 0 to 10FFFF
-// and not a surrogate, D800 to DFFF, which names no character (T1f.5.2.5,
-// W38). The six alternatives are the values of one to six significant
+// and not a surrogate, D800 to DFFF, which names no character
+// (W38). The six alternatives are the values of one to six significant
 // digits, each after the leading zeros that keep it within six; the fourth
 // leaves out D800 to DFFF.
 // Any other escape is BADESCAPE; a string glued to what follows, BADTEXT,
@@ -130,20 +127,19 @@ _ <AFTER_WORD>"UNDERSCORE"
 "([^"\\]|\\[^\n])*" <AFTER_WORD>"BADESCAPE"
 "([^"\\]|\\[^\n])*"[\x00-\x7F--[\s();\x1c-\x1f]]+ <AFTER_WORD>"BADTEXT"
 // Everything else up to a separator. `#` ends a token only where `#|`
-// opens a comment, as `;` does. ASCII only (M1f S1f.5.22): a character that
-// is not ASCII outside a string and a comment matches no rule, so the lexer
-// stops there, and the parse error names it (`ein_ir::grammar`'s
-// NOT_ASCII), where until then BAD took it into a token that is not a name.
+// opens a comment, as `;` does. ASCII only: a character that is not ASCII
+// outside a string and a comment matches no rule, so the lexer stops there,
+// and the parse error names it (`ein_ir::grammar`'s NOT_ASCII), rather than
+// BAD taking it into a token that is not a name.
 ([\x00-\x7F--[\s();#\x1c-\x1f]]|#[\x00-\x7F--[|\s();\x1c-\x1f]])+ <AFTER_WORD>"BAD"
 // What separates tokens and names nothing: a run of whitespace (ASCII's,
 // \t \n \v \f \r and the space, and \x1c to \x1f), `;` comments to the end
-// of the line and `#| … |#` comments, as one rule (T1f.5.5.12), so that a run
-// of them is one position where it was one per piece under the three rules
-// this replaced, `[\s\x1c-\x1f]+`, `;[^\n]*` and `#\|([^|]|\|+[^|#])*\|+#`.
-// No named rule matches where any of the three does, so the tokens are the
-// same (`generated_parser::the_lexer_gives_the_tokens_t4s_did`). A comment
-// holds any character, Unicode's among them (Q-M1f.65 (b)); whitespace is
-// ASCII's since M1f S1f.5.22, where until then `\s` was Unicode's, so a
-// no-break space, U+3000 and U+2028 were separators a reader could not tell
-// from a space or a line break (W73).
+// of the line and `#| … |#` comments, as one rule, so that a run of them is
+// one position, where three rules, one for whitespace, `;[^\n]*` and
+// `#\|([^|]|\|+[^|#])*\|+#`, would make it one per piece. No named rule
+// matches where any of the three does, so the tokens are the ones the three
+// give (`generated_parser::the_lexer_gives_the_tokens_t4s_did`). A comment
+// holds any character, Unicode's among them (Q-M1f.65); whitespace is
+// ASCII's, so a no-break space, U+3000 or U+2028 is no separator: a reader
+// could not tell one from a space or a line break (W73).
 <INITIAL,AFTER_WORD>([\x09-\x0D\x20\x1C-\x1F]|;[^\n]*|#\|([^|]|\|+[^|#])*\|+#)+ <INITIAL>;

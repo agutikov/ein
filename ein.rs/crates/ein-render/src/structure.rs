@@ -11,9 +11,9 @@
 //! the owner reads none.
 //!
 //! The five `*_lists` functions are the lists of one object each, every
-//! candidate as the program writes it. `ein-infer/examples/pair_layer.rs`,
-//! the census, writes the same five as a file each, so the census and the
-//! view cannot spell one object two ways.
+//! candidate as the program writes it. `ein-infer/examples/pair_layer.rs`
+//! writes the same five as a file each, through these functions, so it and
+//! the view cannot spell one object two ways.
 //!
 //! **A file is a function of the program and of what was asked.** It holds
 //! no clock and no job count, every list is in the owner's canonical order,
@@ -820,8 +820,8 @@ pub struct Graph {
 /// where L5 licenses none of one. A question in none of `edges` is grey.
 ///
 /// `places` writes each question's place into its label, which is what
-/// tells two questions of one name apart; the census writes its
-/// `coupling.dot` without.
+/// tells two questions of one name apart; `ein-infer/examples/pair_layer.rs`
+/// writes its `coupling.dot` without.
 pub fn coupling_dot(
     title: &str,
     c: &Coupling,

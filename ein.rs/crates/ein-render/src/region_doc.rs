@@ -1,7 +1,6 @@
 //! An `ein oracle --dump` directory read back, and a region run joined to the
-//! cube — M1e2 [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)
-//! drew the cube, and [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)
-//! put a region run on it.
+//! cube ([`region-dump.md`](../../../../docs/ein/user/reference/region-dump.md),
+//! [`rendering.md`](../../../../docs/ein/user/reference/rendering.md)).
 //!
 //! `ein render region DIR` draws from the files the commands wrote, never from
 //! a second solve, so the picture is of the run whose answer it shows. The
@@ -9,8 +8,8 @@
 //! `--dump-lattice` (`nodes.json`, every node it visited) and `--dump-answer`
 //! (`index.json`, every state it reported). They are joined here, in Rust,
 //! because what the overlay reports — *missing*, *spurious*, the run's reading
-//! of a node against the cube's — is a comparison, and the review bundle does
-//! not compute.
+//! of a node against the cube's — is a comparison, and a reader of the
+//! drawing computes nothing.
 //!
 //! ### The join
 //!
@@ -22,17 +21,15 @@
 //! candidates make ([`NodeDoc::closure`]), and every commitment of that class
 //! is answered by it.
 //!
-//! ### What is compared, under ruling (a)
+//! ### What is compared
 //!
-//! The answer to a program is R (S1e2.1a.3's ruling (a), 2026-10-16), and a
+//! The answer to a program is R (Q-M1e2.7), and a
 //! run answers the part of R its question asked: all of it, its minimal line
 //! or its maximal line (`asked.which`). A node of that part whose state no
 //! reported state is, is **missing** when the run says it is complete
 //! (`exhausted`) and **not reached** when it stopped, which is a bound and not
-//! a defect (`solve_interface.md`'s C3). A reported state whose state is no
-//! node of that part is **spurious**. Until S1e2.1a.7 the overlay was the
-//! walk's, and compared it with each line separately, because ruling (a) was
-//! not yet taken.
+//! a defect. A reported state whose state is no node of that part is
+//! **spurious**. R is compared whole, not line by line.
 
 use std::path::Path;
 
@@ -61,7 +58,7 @@ pub struct NodeDoc {
     pub owed: Vec<String>,
     pub core: Vec<String>,
     /// `region.json`'s `core_status`, read back; `None` where no core was
-    /// taken (M1e2 S1e2.2.23).
+    /// taken.
     pub core_status: Option<ein_infer::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub absent_premises: Vec<String>,
@@ -105,10 +102,10 @@ pub struct RegionDoc {
     pub candidates: Vec<String>,
     pub monotone: bool,
     /// Each site, rendered `rule · kind · relation`, with what it puts at
-    /// stake where `region.json` says (M1e2 S1e2.1b.5).
+    /// stake where `region.json` says.
     pub sites: Vec<String>,
     /// The detector's word for the cube's half: `exercised`, `conservative`
-    /// or `not known`; `None` on a monotone program or an older dump.
+    /// or `not known`; `None` on a monotone program or a dump without it.
     pub status: Option<String>,
     /// How many nodes of the cube hold a stale fact, where `region.json`
     /// says.
@@ -389,7 +386,7 @@ pub struct Visit {
     pub closure_at: Option<u64>,
 }
 
-/// A region run, read back from its two dumps — M1e2 S1e2.1a.7. Either may be
+/// A region run, read back from its two dumps. Either may be
 /// absent: `--answer` alone draws what it reported, `--visited` alone what it
 /// visited, neither the cube alone.
 #[derive(Clone, Debug, Default)]

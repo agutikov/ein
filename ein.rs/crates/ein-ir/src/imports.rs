@@ -1,16 +1,15 @@
-//! Import resolution — full names and short names (M1f S1f.6.35, the user's
-//! model (h) of 2026-11-13 and its ruling of 2026-11-14).
+//! Import resolution — full names and short names (Q-M1f.231, Q-M1f.247).
 //!
 //! `(import M [:as A | :symbols (S…)])` is resolved at the **form** level,
 //! *before* the loader runs, into one import-free list of forms:
 //!
 //! - **Every import brings its module whole**, with the module's own imports,
 //!   all the way down, and **one copy per program**: a module read by two
-//!   edges, under two aliases or by none of the program's own, is read once.
-//!   The user, 2026-11-14: *"in all cases we import everything, the
-//!   difference only in names"*. What a module states as a program, its
-//!   `(query …)`, `(solve …)`, `(config …)` and `(trace …)` (`DIRECTIVES`),
-//!   is the program's own and no import brings it (M1f S1f.6.25, E-8).
+//!   edges, under two aliases or by none of the program's own, is read once:
+//!   every import brings everything, and the forms differ only in names
+//!   (Q-M1f.247). What a module states as a program, its `(query …)`,
+//!   `(solve …)`, `(config …)` and `(trace …)` (`DIRECTIVES`), is the
+//!   program's own and no import brings it (Q-M1f.215).
 //! - **A name a module declares has one full name**, the module's canonical
 //!   name and the name, `std.math.decimal-arith.add`, the same through every import path
 //!   and global: any file may write it. A module's canonical name is
@@ -31,21 +30,22 @@
 //!   (Q-M1f.237, Q-M1f.253): the resolved list is renamed once, full name to
 //!   that spelling, before the loader sees it, so every surface prints it.
 //!
-//! The refusals, each a section of `defined_behaviour.md` § 4: a module's
+//! The refusals, each a section of
+//! [`diagnostics.md` § 2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes): a module's
 //! name with an empty segment or a `/` (Q-M1f.252, `..` among them); one short
 //! name bound to two full names in one file (Q-M1f.234); a prefixed or full
 //! name that names nothing its module declares (Q-M1f.251); a full name of a
 //! module no import brings (Q-M1f.238); a declaration of the main file under
 //! an imported module's full name (Q-M1f.239); a module's declared name with a
-//! dot (Q-M1f.241). A cycle is refused as it always was.
+//! dot (Q-M1f.241). A cycle is refused.
 //!
 //! This module is the engine's **only** filesystem access, which is what keeps
-//! any later policy on what the engine may read a single seam rather than an
-//! audit: everything goes through [`Resolver`], and the stdlib half already
-//! does ([`crate::stdlib`]). A module on disk is read through
+//! any policy on what the engine may read a single seam rather than an audit:
+//! everything goes through [`Resolver`], and the stdlib half does too
+//! ([`crate::stdlib`]). A module on disk is read through
 //! [`crate::read::read_program`], the read every command makes of the program
-//! it is given (M1f S1f.5.22): a module that exists and cannot be read as text
-//! is refused with that read's line, naming the module's path.
+//! it is given: a module that exists and cannot be read as text is refused
+//! with that read's line, naming the module's path.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -100,7 +100,7 @@ enum Unread {
     /// No file is there: `module not found at …`.
     Missing,
     /// A file is there and cannot be read as text: the line
-    /// [`read::read_program`] gives it, naming its path (M1f S1f.5.22).
+    /// [`read::read_program`] gives it, naming its path.
     Refused(String),
 }
 
@@ -165,7 +165,7 @@ impl File {
     /// The full name of a name this file declares: the module's name and the
     /// name, or the name itself in the main file. A reserved name is never
     /// renamed, so that a module that illegally declares one is refused by
-    /// the loader under its own name (`CO-H2`, M1e S1e.2.1).
+    /// the loader under its own name.
     fn full(&self, short: &str) -> String {
         match &self.name {
             Some(m) if !ein_core::is_reserved(short) => format!("{m}{MODULE_SEP}{short}"),
@@ -198,9 +198,11 @@ impl Resolver {
         }
     }
 
-    /// The pattern-macro names `std.macro` exports (`forall` / `open`), read
-    /// from the module through the resolution chain rather than hardcoded —
-    /// so the S1.8a.f20 guard consults the library that is actually loaded.
+    /// The pattern-macro names `std.macro` declares (`forall`, `unknown`),
+    /// read from the module through the resolution chain rather than
+    /// hardcoded — so the unimported-macro guard
+    /// ([`crate::macros::unimported_macro_errors`]) consults the library that
+    /// is actually loaded.
     ///
     /// Empty when `std.macro` is unreadable: degrade to no check.
     pub fn stdlib_macro_names(&self) -> Vec<String> {
@@ -227,7 +229,7 @@ impl Resolver {
     /// of a program gives where one is and cannot be read as text.
     ///
     /// A file on disk is read through [`crate::read::read_program`], the read
-    /// every command makes of the program it is given, since M1f S1f.5.22: a
+    /// every command makes of the program it is given: a
     /// module that is not UTF-8 is refused at its first such byte, one that
     /// cannot be read or is a directory with the OS's reason, and a `.einb`
     /// container as one ([`crate::read::container_module_line`], Q-M1f.91).
@@ -345,8 +347,8 @@ impl Resolver {
 
     /// The short names the main file binds through its imports' `:symbols`
     /// lists, each to its full name: what a program written with every
-    /// import whole would write in full (`ein-cli`'s `import_invariance.rs`,
-    /// the stage's acceptance). The program's own declarations are not among
+    /// import whole would write in full (`ein-cli`'s `import_invariance.rs`
+    /// reads it, Q-M1f.249). The program's own declarations are not among
     /// them.
     pub fn short_names(
         &self,
@@ -453,7 +455,7 @@ impl Resolver {
     ) -> Result<(String, String), LoadError> {
         let segments: Vec<&str> = module.split(MODULE_SEP).collect();
         let (root, rel) = if segments[0] == STDLIB_ALIAS {
-            // **The override proves itself here** — M1e S1e.3.5, `EH-M2`.
+            // **The override proves itself here** ([`stdlib::Source::problem`]).
             // Checked at the first `std.*` import rather than at
             // `Resolver::new`, because a program that imports nothing from the
             // stdlib has no business being refused for the shape of a variable
@@ -841,9 +843,8 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
     let loc = loc_repr(ast, ast.loc(form));
     let args = ast.form_args(form).to_vec();
     // An import is a module's name, then `:symbols` or `:as` (`ein.y`'s
-    // `Import`). Until M1f S1f.5.5's T5 four shapes were refused here, each
-    // the grammar's since the swap: no module name, an `:as` that is no name,
-    // a `:symbols` that is no list, and `:symbols ()`.
+    // `Import`). The grammar refuses no module name, an `:as` that is no
+    // name, a `:symbols` that is no list, and `:symbols ()`.
     let module = ast
         .atom_name(args[0])
         .expect("an import's first argument is a module's name (ein.y's Import)")
@@ -865,9 +866,8 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
         )));
     }
     let alias = match as_value {
-        // An alias binds a name, so it may not be a reserved one (M1f
-        // S1f.5.5's T1f.5.5.11, Q-M1f.7 (b)): `ein_core::RESERVED`, the
-        // kernel's dunders among them.
+        // An alias binds a name, so it may not be a reserved one (Q-M1f.7):
+        // `ein_core::RESERVED`, the kernel's dunders among them.
         Some(v) => match ast
             .atom_name(v)
             .expect(":as takes a name (ein.y's ImportClause)")
@@ -924,7 +924,7 @@ fn decl_name(ast: &Ast, form: NodeId) -> Option<String> {
 /// a declaration, or one of [`DIRECTIVES`].
 ///
 /// A stored negation, `(not (likes Milk Tea))`, is a fact of the relation it
-/// negates (M1f S1f.6.11).
+/// negates.
 fn fact_relation(ast: &Ast, form: NodeId) -> Option<String> {
     let mut form = form;
     loop {
@@ -1016,7 +1016,7 @@ fn first_loc(ast: &Ast, node: NodeId) -> Option<Loc> {
 ///
 /// Every module is one copy, so two declarations of one full name come from
 /// one file's text: a file that writes one declaration twice. A fact that
-/// arrives twice is the same node and kept once (M1f S1f.6.11); a fact the
+/// arrives twice is the same node and kept once (Q-M1f.143); a fact the
 /// program writes twice is two nodes, and is left to the loader.
 ///
 /// The key is `(kind, name)`, not the name alone: a `(rule undefeated …)` and

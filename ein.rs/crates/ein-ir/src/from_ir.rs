@@ -3,9 +3,9 @@
 //! The loader walks a **flat sequence** of top-level forms and classifies each
 //! by its head: `relation` declares one, `rule` / `hrule` declare a rule,
 //! `macro` a pattern macro, `query` / `config` fill their slots, `trace` is
-//! engine output and is ignored, and **anything else is a fact**. The former
-//! block wrappers are gone (S1.7c.4): a `(facts …)` form loads as a fact whose
-//! relation is `facts`, like any other head.
+//! engine output and is ignored, and **anything else is a fact**. No form is a
+//! block wrapper: a `(facts …)` form loads as a fact whose relation is `facts`,
+//! like any other head.
 //!
 //! It is a validation surface as much as a construction one: errors
 //! **accumulate** and surface as one `; `-joined message, so both the text of
@@ -53,20 +53,15 @@ impl From<Overflow> for KbLoadError {
 
 /// What a load requires of a program beyond what the grammar does.
 ///
-/// **One option, and it decides only whether a program loads** — M1f
-/// S1f.5.14, T1f.5.14.6, on the user's rulings of 2026-11-08: *":why is
-/// optional in grammar and loader has a flag that makes it required, start
-/// with default false so not break everything"*, and, asked whether it can
-/// change an answer, *"yes, the flag only decides loading"*. A program it lets
-/// through loads to the same `Kb` it loads to without it, so it is not a lever
-/// under the config principle (`docs/ein/user/reference/config.md` § 2.5). It is
-/// not a `(config …)` field, which a program could set against itself and
-/// which the KB-shape digest renders, and not an `EIN_*` name; the CLI's
-/// `--no-require-why` turns it off on every command that loads a program.
+/// **One option, and it decides only whether a program loads**: `:why` is
+/// optional in the grammar, and this option makes the loader require it. A
+/// program it lets through loads to the same `Kb` it loads to without it, so it
+/// is not a lever under the config principle (`docs/ein/user/reference/config.md`
+/// § 2.5). It is not a `(config …)` field, which a program could set against
+/// itself and which the KB-shape digest renders, and not an `EIN_*` name; the
+/// CLI's `--no-require-why` turns it off on every command that loads a program.
 ///
-/// **Required by default since S1f.5.14's T1f.5.14.7** (2026-11-10), the
-/// user's *"then after other stages finished swith to default true and fix
-/// remaining ein code"*: every program the corpus, the stdlib and the Rust
+/// **Required by default**: every program the corpus, the stdlib and the Rust
 /// suites load carries its `:why`s, so [`load`], [`load_query`] and
 /// [`load_file`] refuse one that does not; `require_why: false` loads it, as
 /// `--no-require-why` does (Q-M1f.62).
@@ -74,10 +69,9 @@ impl From<Overflow> for KbLoadError {
 pub struct LoadOptions {
     /// Refuse every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)`
     /// the load reads, the stdlib's and an imported module's included, that
-    /// carries no `:why "…"`, one line each ([`WHY_REQUIRED_OF`]). A macro
-    /// since S1f.5.5's swap (T1f.5.5.4), when the one parser became the one
-    /// that reads a macro's `:why` and the stdlib's two macros got theirs.
-    /// **Default true** since S1f.5.14's T1f.5.14.7; false until then.
+    /// carries no `:why "…"`, one line each ([`WHY_REQUIRED_OF`]); the parser
+    /// reads a macro's `:why` as it reads the others', and the stdlib's macros
+    /// carry theirs. **Default true.**
     pub require_why: bool,
 }
 
@@ -92,7 +86,7 @@ impl Default for LoadOptions {
 pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
 
 /// The most distinct variables a rule's `:match`, its parameters among them,
-/// or a query's `:goal` may write — M1f S1f.5.21 (W63, Q-M1f.73).
+/// or a query's `:goal` may write (W63, Q-M1f.73).
 ///
 /// The compiler numbers a plan's variables into a fixed register file of this
 /// many slots, so the matcher's inner loop allocates nothing
@@ -101,9 +95,9 @@ pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
 /// one per lifted `(absent …)`, the variables its body writes. The loader
 /// counts every distinct variable the clause writes, anywhere in it, with the
 /// parameters, which bounds each file, so the compiler meets no clause past it
-/// (`refuse_wide_matches`). Until S1f.5.21 the compiler refused one where it
-/// compiled the plan, so a rule no state activated, and a goal no state was
-/// answered from, loaded and answered.
+/// (`refuse_wide_matches`). The bound is the loader's, not the compiler's, so
+/// a clause past it is refused whether or not any state activates its rule or
+/// is answered from its goal.
 pub const MAX_MATCH_VARIABLES: usize = 256;
 
 /// The line [`LoadOptions::require_why`] refuses a form with: its head and its
@@ -204,13 +198,10 @@ pub fn load_query_with(
     let mut solve_blocks: Vec<NodeId> = Vec::new();
     for &form in &forms {
         // Every top-level form has a name for its head: a declarator's word,
-        // or a fact's relation (`ein.y`'s `Form`). Until M1f S1f.5.5's T5 a
-        // form that had none was refused here, *unexpected top-level form*,
-        // and a fact headed by a claim's word, `(region …)`, `(merged …)` or
-        // `(owing …)`, *a region claim belongs under (solve … :expect …)*
-        // (M1e2 S1e2.1a.4); since the swap the grammar refuses both, the
-        // second because a top-level fact's relation (`FactHead`) is none of
-        // the three.
+        // or a fact's relation (`ein.y`'s `Form`). The grammar refuses a form
+        // that has none, and a fact headed by a claim's word, `(region …)`,
+        // `(merged …)` or `(owing …)`, because a top-level fact's relation
+        // (`FactHead`) is none of the three.
         let head = ast
             .head_name(form)
             .expect("a top-level form's head is a name (ein.y's Form)");
@@ -255,8 +246,7 @@ pub fn load_query_with(
         ingest_relation(ast, terms, &mut kb, form, opts, &mut errors)?;
     }
     // What each declaration declares of its relation's count of arguments
-    // (M1f S1f.6.23, W89): read by the rules pass, the facts' and the
-    // queries'.
+    // (W89): read by the rules pass, the facts' and the queries'.
     let declared = declared_counts(ast, &relations);
     // Pass 2 — rules. After this, rule-name resolution is possible.
     ingest_rules(
@@ -278,19 +268,19 @@ pub fn load_query_with(
             stored.push((form, id));
         }
     }
-    // `written` is the loader's to state (M1f S1f.6.38): a fact of it a file
-    // writes is refused, and so is a rule's conclusion of it (the rules pass).
+    // `written` is the loader's to state: a fact of it a file writes is
+    // refused, and so is a rule's conclusion of it (the rules pass).
     refuse_written_facts(ast, &facts, &mut errors);
     // …and stated: every fact nested in what a file writes, and the ground
-    // ones of a rule's conclusion (E1, Q-M1f.272 and Q-M1f.275 (a)).
+    // ones of a rule's conclusion (Q-M1f.272 and Q-M1f.275).
     state_written(ast, terms, &mut kb, &stored)?;
     // A fact, or a fact it holds, of a declared relation at another count of
-    // arguments than declared (M1f S1f.6.23, W89).
+    // arguments than declared (W89).
     refuse_wrong_counts_in_facts(ast, &facts, &declared, &mut errors);
-    // A written fact of `eq` at another arity (M1f S1f.5.9, W61).
+    // A written fact of `eq` at another arity (W61).
     refuse_eq_facts_of_another_arity(ast, &facts, &mut errors);
     // A macro's call written as a fact, which nothing expands, and a relation
-    // declared under a macro's name (M1f S1f.7.12, W86).
+    // declared under a macro's name (W86).
     let stdlib_macros = Resolver::new().stdlib_macro_names();
     refuse_macro_facts(
         ast,
@@ -301,22 +291,21 @@ pub fn load_query_with(
         &mut errors,
     );
     // A rule parameter that names a relation, bound to a nested fact by an
-    // activator the program writes down (M1e2 S1e2.2.4, S1e2.2.24).
+    // activator the program writes down.
     validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
-    // …and one a rule could derive, read off the program (M1f S1f.5.18,
-    // Q-M1f.1 (b)).
+    // …and one a rule could derive, read off the program (Q-M1f.1).
     let relation_places =
         refuse_derived_relation_activators(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
     // A conclusion `(not ?x)` whose variable the program shows can hold a
-    // name (M1f S1f.7.4, W84).
+    // name (W84).
     refuse_negated_names(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
 
-    // Every query block, in source order — plural since M1c S1c.1.2, because a
-    // second one used to load and be discarded in silence. `config` keeps
-    // last-wins: a config is a setting, a query is content.
+    // Every query block, in source order: a program may ask several
+    // questions, and none is discarded. `config` keeps last-wins: a config is
+    // a setting, a query is content.
     //
     // A goal is a premise, so a macro called in one is expanded as a rule's
-    // `:match` is (M1f S1f.7.5, W77): every reader of the query's `:goal`
+    // `:match` is (W77): every reader of the query's `:goal`
     // meets the expansion, and `Query::goal_written` keeps the goal as the
     // program wrote it, for the surfaces that print it.
     let mut queries: Vec<Query> = Vec::with_capacity(query_blocks.len());
@@ -324,8 +313,8 @@ pub fn load_query_with(
         queries.push(expand_goal(ast, form, &declared_macros, &mut errors));
     }
     kb.program_mut().queries = queries;
-    // One lattice per program (M1e2 S1e2.1a.4): a second `(solve …)` would be
-    // a second R, which is what splitting solving from asking removed.
+    // One lattice per program: a second `(solve …)` would be a second R,
+    // and a program states one R, which its queries all ask about.
     if solve_blocks.len() > 1 {
         errors.push(format!(
             "{} (solve …) forms — a program states its lattice once",
@@ -336,8 +325,8 @@ pub fn load_query_with(
         kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
     });
     // The relations of the program, as it writes them outside its goals and
-    // its `(solve …)` lists (M1f S1f.7.8's notion, Q-M1f.114): what a claim
-    // may list and a goal may ask about (S1f.7.11). A program already refused
+    // its `(solve …)` lists (Q-M1f.114): what a claim may list and a goal may
+    // ask about. A program already refused
     // is not read for them, since a rule the loader refused may be missing
     // from the registries they are read off.
     let relations_of = errors
@@ -352,7 +341,7 @@ pub fn load_query_with(
     });
     validate_solve(ast, &kb, holdable.as_ref(), &mut errors);
     // A `(solve …)` list that names an hrule or a relation the program does
-    // not have (M1f S1f.7.8, W76).
+    // not have (W76).
     if let Some(known) = relations_of.as_ref() {
         refuse_solve_names(ast, terms, &kb, known, &relation_places, &mut errors);
     }
@@ -363,9 +352,9 @@ pub fn load_query_with(
         .collect();
     validate_queries(ast, &kb, holdable.as_ref(), &unimported, &mut errors);
     // A goal's pattern and a claim's fact are held to a declaration's count
-    // as a rule's and a written fact are (M1f S1f.6.23, W89).
+    // as a rule's and a written fact are (W89).
     refuse_wrong_counts_in_queries(ast, &kb, &declared, &mut errors);
-    // …and one a claim lists, which is a fact too (S1f.7.12). A claim headed
+    // …and one a claim lists, which is a fact too. A claim headed
     // by the call names no relation of the program and has its own line
     // (Q-M1f.118), so this one is for a program nothing else refuses.
     if errors.is_empty() {
@@ -376,7 +365,7 @@ pub fn load_query_with(
         kb.program_mut().config = Some(config_from_kw_pairs(ast, &args));
     }
 
-    // The S1.8a.f20 guard: a `(forall …)` / `(unknown …)` used without importing
+    // The unimported-macro guard: a `(forall …)` / `(unknown …)` used without importing
     // `std.macro` would leave the invocation in place and the rule would
     // silently never fire.
     let mut rule_matches: Vec<(String, NodeId)> = Vec::new();
@@ -391,8 +380,8 @@ pub fn load_query_with(
             }
         }
     }
-    // …and a goal, which is a premise too (M1f S1f.7.5, W77): unexpanded, the
-    // call matched nothing and the goal had no row in any state.
+    // …and a goal, which is a premise too (W77): unexpanded, the call would
+    // match nothing and the goal would have no row in any state.
     for query in &kb.program().queries {
         if let Some(goal) = query_keyword(ast, query, "goal") {
             rule_matches.push(("query".to_string(), goal));
@@ -450,10 +439,8 @@ pub fn load_query_with(
 /// A *seeded* head — `(?rel ?a ?b)` — names the relation its activator binds,
 /// which is a name the program has or a nested fact, refused
 /// (`validate_relation_parameters` where the activator is written down, the
-/// compiler where a rule derives it). Until M1f S1f.5.4 it could also bind an
-/// integer, whose decimal text the compiler would have interned as a symbol,
-/// refused the same way since M1e2 S1e2.2.4; since S1f.5.5's swap a run of
-/// digits is a name, interned here like any other.
+/// compiler where a rule derives it). A run of digits is a name, interned here
+/// like any other.
 fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     fn walk(ast: &Ast, terms: &mut Terms, node: NodeId) {
         match ast.node(node) {
@@ -461,8 +448,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
                 let _ = terms.intern_text(ast.sym(s));
             }
             // A string is natural-language text, here a query's `:goal-text`,
-            // and names nothing (M1f S1f.5.2): until T1f.5.2.3 it was
-            // interned as a name, which nothing asked for.
+            // and names nothing, so it is not interned.
             Node::Str(_) | Node::Keyword(_) => {}
             Node::KwPair { key, value } => {
                 walk(ast, terms, key);
@@ -507,8 +493,8 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 
 /// Intern every fact an `eq` or `neq` guard compares, `(f a)` in `(neq ?x (f
 /// a))`, for the same reason [`intern_program_names`] interns names: the
-/// compiler reads it as a value (M1f S1f.5.7, the user's ruling of 2026-11-07
-/// on `W24/form-in-guard`), and must not intern it for the first time during
+/// compiler reads it as a value (`W24/form-in-guard`), and must not intern it
+/// for the first time during
 /// a search. A form that holds a variable is refused (Q-M1f.30), and holds
 /// none of these.
 fn intern_guard_facts(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<(), Overflow> {
@@ -539,12 +525,10 @@ fn intern_guard_facts(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<(), 
 /// `:expect`'s are.
 ///
 /// **Which keywords a `(solve …)` and a `(query …)` take is the grammar's**
-/// since M1f S1f.5.5's swap (S1f.5.11's ruling, `ein.y`'s `SolveClause` and
-/// `QueryClause`): any other is a parse error at its place, a query's lattice
-/// keyword with a note naming its home on `(solve …)`. Until T1f.5.5.5 each
-/// form had an allow-list here, `SOLVE_KEYWORDS` and `QUERY_KEYWORDS` (M1c
-/// [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims),
-/// M1e2 S1e2.1a.4), which no program the grammar accepts reached since.
+/// (`ein.y`'s `SolveClause` and `QueryClause`): any other is a parse error at
+/// its place, a query's lattice keyword with a note naming its home on
+/// `(solve …)`, so this pass reads no keyword list of its own
+/// ([claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)).
 fn validate_solve(
     ast: &Ast,
     kb: &Kb,
@@ -578,10 +562,8 @@ fn validate_solve(
         for &f in &model.facts {
             let fact = crate::expect::fact(ast, f);
             // `eq` and `neq` are relations whose facts are computed and never
-            // stored (M1f S1f.5.7, Q-M1e2.26), and a region claim lists a
-            // state's stored facts, so one that lists either can never hold
-            // (S1f.5.7's default, taken on the user's instruction of
-            // 2026-11-09).
+            // stored (Q-M1e2.26), and a region claim lists a state's stored
+            // facts, so one that lists either can never hold, and is refused.
             if is_predicate(fact.relation) {
                 if reported.insert(fact.relation.to_string()) {
                     errors.push(format!(
@@ -593,9 +575,9 @@ fn validate_solve(
                 }
                 continue;
             }
-            // A relation of the program (M1f S1f.7.11, W78): until then one
-            // a declaration or a fact makes, which refused a claim listing a
-            // fact only a rule's `:assert` derives.
+            // A relation of the program (W78), not only one a declaration or
+            // a fact makes, so a claim may list a fact only a rule's `:assert`
+            // derives.
             let known = relations_of.is_none_or(|k| k.contains(fact.relation));
             if !known && reported.insert(fact.relation.to_string()) {
                 errors.push(format!(
@@ -619,13 +601,13 @@ struct RelationPlaces {
     passed: BTreeSet<String>,
 }
 
-/// **A `(solve …)` list names what the program has** — M1f S1f.7.8 (W76).
+/// **A `(solve …)` list names what the program has** (W76).
 ///
 /// The three lists choose the candidates, so a name in one that matches
-/// nothing moved H, and R with it, in silence: `:hrules (gues …)` beside an
-/// hrule `guess` proposed nothing, an activator `(att Color House)` proposed
+/// nothing would move H, and R with it, in silence: `:hrules (gues …)` beside
+/// an hrule `guess` would propose nothing, an activator `(att Color House)`
 /// facts of a relation `att` nothing else names, and `:no-hypothesis (like)`
-/// restricted nothing. Each is refused here, one line per name, placed at
+/// would restrict nothing. Each is refused here, one line per name, placed at
 /// the name:
 ///
 /// - **`:hrules`**: the list's first name, and every bare name after it, is
@@ -648,7 +630,7 @@ struct RelationPlaces {
 ///
 /// An activator's argument at a parameter that names no relation is a value,
 /// a type or an object, and is not checked: `(guess (at Colour House))`
-/// loads, and proposes nothing (F25's R-2).
+/// loads, and proposes nothing.
 /// The relation of every form at or under `node`, where it is a name.
 fn relation_heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
     match ast.node(node) {
@@ -670,8 +652,8 @@ const CLAIM_RELATION: &str = "a relation of the program is one it declares, stat
                               writes in a rule or an hrule";
 
 /// **The relations of the program**, as it writes them outside its goals and
-/// its `(solve …)` lists — M1f S1f.7.8's notion (Q-M1f.114), which S1f.7.11
-/// holds a goal and a claim to: a relation it declares or states a fact of,
+/// its `(solve …)` lists (Q-M1f.114), which a goal and a claim are held to: a
+/// relation it declares or states a fact of,
 /// `is-a`, `eq` and `neq`, the relation of any form at any depth in a rule's,
 /// an hrule's or an obligation's `:match` or `:assert`, as expanded, or in a
 /// fact, a name a fact or a conclusion passes where a relation's name is held
@@ -679,7 +661,7 @@ const CLAIM_RELATION: &str = "a relation of the program is one it declares, stat
 ///
 /// A goal's own relations are not among them: a goal reads, and a relation
 /// only a goal names is one no state holds a fact of. [`refuse_solve_names`]
-/// adds them for its lists (Q-M1f.114 (b)).
+/// adds them for its lists (Q-M1f.114).
 fn program_relations(
     ast: &Ast,
     terms: &Terms,
@@ -712,8 +694,8 @@ fn program_relations(
 
 /// The relations a `(solve :hrules …)` activator gives its hrule at a
 /// parameter that names a relation: that hrule proposes facts of each, so a
-/// state can hold one, and a goal may ask about it and a claim list it
-/// (M1f S1f.7.11). [`refuse_solve_names`] holds each to the program's other
+/// state can hold one, and a goal may ask about it and a claim list it.
+/// [`refuse_solve_names`] holds each to the program's other
 /// relations, a goal's among them.
 fn activator_relations(ast: &Ast, kb: &Kb, places: &RelationPlaces) -> BTreeSet<String> {
     let mut known: BTreeSet<String> = BTreeSet::new();
@@ -924,8 +906,8 @@ fn solve_keyword(ast: &Ast, kw_pairs: &[ExprRef], want: &str) -> Option<NodeId> 
 }
 
 /// The `(query …)` blocks' own validation — `:over`, and `:expect`. Which
-/// keywords a query takes, and a claim's shape, are the grammar's since M1f
-/// S1f.5.5's swap ([`validate_solve`]).
+/// keywords a query takes, and a claim's shape, are the grammar's
+/// ([`validate_solve`]).
 ///
 /// Runs after the fact pass, because two of the three `:expect` rules are
 /// about the *program*: a relation it names must be one the program knows, and
@@ -946,25 +928,24 @@ fn validate_queries(
             refuse_unreachable_references("query", ":goal-text", text, &vars, errors);
         }
         if let Some(goal) = query_keyword(ast, query, "goal") {
-            // A goal is a premise, held to what a rule's `:match` is held to
-            // (M1f S1f.7.5, S1f.7.1): the one walk a rule's clauses get reads
-            // it, a guard over a form holding a variable (Q-M1f.30), a
-            // premise that is no form, which a macro's expansion can leave,
-            // and a relation written as a variable, at the top level (M1f
-            // S1f.5.21, W64) and inside a pattern (S1f.7.1, W79).
+            // A goal is a premise, held to what a rule's `:match` is held to:
+            // the one walk a rule's clauses get reads it, a guard over a form
+            // holding a variable (Q-M1f.30), a premise that is no form, which
+            // a macro's expansion can leave, and a relation written as a
+            // variable, at the top level (W64) and inside a pattern (W79).
             let n_refused = errors.len();
             refuse_no_fact_holds(ast, "query", &[], ":goal", goal, errors);
             // A goal is compiled as a rule's `:match` is, and refused where the
-            // compiler would refuse it (M1f S1f.5.21: W62, W63).
+            // compiler would refuse it (W62, W63).
             refuse_nested_disjunctions(ast, "query", ":goal", goal, errors);
             refuse_wide_matches(ast, "query", ":goal", &[], goal, errors);
-            // A kernel primitive in a shape only a macro's expansion writes
-            // (S1f.5.24's walk, S1f.7.5).
+            // A kernel primitive in a shape only a macro's expansion writes,
+            // read by the same walk a rule's clauses get.
             if errors.len() == n_refused {
                 refuse_malformed_primitives(ast, "query", ":goal", goal, errors);
             }
             // A relation the goal asks about is a relation of the program
-            // (S1f.7.11, W78).
+            // (W78).
             if errors.len() == n_refused
                 && let Some(known) = relations_of
             {
@@ -988,16 +969,15 @@ fn validate_queries(
             for &f in &model.facts {
                 let fact = crate::expect::fact(ast, f);
                 // A query's claim lists its goal's instances, and `eq` and
-                // `neq` are relations a goal may ask about (M1f S1f.5.7,
-                // Q-M1e2.26): their facts are computed, so no declaration or
-                // fact makes them one, and the check below is the goal's. So
-                // is an `(absent …)` the goal writes, whose instance a class
-                // lists beside the rest (S1f.5.7's T1f.5.7.6, W56).
+                // `neq` are relations a goal may ask about (Q-M1e2.26): their
+                // facts are computed, so no declaration or fact makes them
+                // one, and the check below is the goal's. So is an
+                // `(absent …)` the goal writes, whose instance a class lists
+                // beside the rest (W56).
                 //
-                // Since M1f S1f.7.11 (W78) the rest is a relation of the
-                // program, [`program_relations`]: until then one a declaration
-                // or a fact makes, which refused a claim listing a fact only a
-                // rule's `:assert` derives.
+                // The rest is a relation of the program, [`program_relations`]
+                // (W78), not only one a declaration or a fact makes, so a
+                // claim may list a fact only a rule's `:assert` derives.
                 let known = is_predicate(fact.relation)
                     || fact.relation == "absent"
                     || relations_of.is_none_or(|k| k.contains(fact.relation));
@@ -1010,8 +990,8 @@ fn validate_queries(
                 }
             }
         }
-        // Since M1e2 T1e2.1a.5.3 a query's `:expect` lists its projection
-        // classes (`query.md`): each `(model …)` is one class,
+        // A query's `:expect` lists its projection classes (`query.md`):
+        // each `(model …)` is one class,
         // the goal's atoms under its rows. So a listed fact must be one a goal
         // atom matches — anything else is a claim about the state, which is
         // the region claim's — and a class is listed once.
@@ -1049,9 +1029,9 @@ fn validate_queries(
     }
 }
 
-/// **A template that names a variable no reference can reach is refused** —
-/// M1f S1f.5.4's T1f.5.4.5 (W37), taken by default on the user's instruction
-/// of 2026-11-09 as S1f.5.5's T9 review recommended. A reference reads a
+/// **A template that names a variable no reference can reach is refused**
+/// (W37; [`diagnostics.md` § 2.11](../../../../docs/ein/user/reference/diagnostics.md#211-a-template-reference-no-reference-can-reach)).
+/// A reference reads a
 /// variable's name up to its first `}` ([`ein_core::why::render_why`]), and
 /// `}` is a name character, so `{?a}b}` is the reference `{?a}` and the text
 /// `b}`: a rule's `:why`, a macro's or a query's `:goal-text` that writes one
@@ -1121,11 +1101,9 @@ fn string_value(ast: &Ast, node: Option<NodeId>) -> Option<&str> {
 /// A name as a fact's argument: the symbol it spells. Anything else (a
 /// nested form, and the shapes the grammar refuses in a fact) answers `None`.
 ///
-/// A fact holds names and facts (`ein.y`'s `FactArg`). Until M1f S1f.5.5's
-/// swap a string there was the name it spells, `(p "a")` the fact `(p a)`
-/// (M1e2 S1e2.2.16), and a variable the name `?x`, printed `"?x"`; the swap
-/// refused both at the parse (S1f.5.2's ruling and its G-6), and T1f.5.2.3
-/// retired the two arms, each shown unreachable first.
+/// A fact holds names and facts (`ein.y`'s `FactArg`): the grammar refuses a
+/// string or a variable as a fact's argument at the parse, so neither reaches
+/// here.
 fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Value>, Overflow> {
     Ok(Some(match ast.node(node) {
         Node::Atom(s) => terms.value_text(ast.sym(s))?,
@@ -1169,9 +1147,9 @@ fn fact_args(ast: &Ast, terms: &mut Terms, args: &[NodeId]) -> Result<Vec<Value>
 
 /// Read the `(macro …)` declarations, then intern them into the program.
 ///
-/// The **reading** is [`macros::collect_macros`]'s since M1e S1e.3.1 — one
-/// implementation, so the dump path and the loader refuse the same programs
-/// with the same sentences (`CO-M4`). What stays here is the half that needs a
+/// The **reading** is [`macros::collect_macros`]'s — one implementation, so
+/// the dump path and the loader refuse the same programs with the same
+/// sentences. What stays here is the half that needs a
 /// `Terms` and a `Kb`: interning the name and the parameters, and storing the
 /// macro on the program.
 fn ingest_macros(
@@ -1223,16 +1201,15 @@ fn ingest_relation(
 ) -> Result<(), Overflow> {
     let loc = loc_repr(ast, ast.loc(form));
     let args = ast.form_args(form).to_vec();
-    // Flat args post-R10. An EMPTY signature is legal since S1.22.4 —
+    // Flat args. An EMPTY signature is legal —
     // `(relation R)` declares a relation node with no declared arg types, and
     // is deliberately not a hypothesis target, since the "declared domain
     // relation" signal is signature *presence*.
     //
     // A declaration is a name, then names, then its `:why` (`ein.y`'s
-    // `Relation`). Until M1f S1f.5.5's T5 this pass refused `(relation)`,
-    // *needs a name*, and a signature holding anything but names, *malformed
-    // (relation)*, which kept the wrapped `(relation R (T1 T2))` from loading
-    // as a bare declaration; since the swap the grammar refuses both.
+    // `Relation`): the grammar refuses `(relation)` with no name, and a
+    // signature holding anything but names, so the wrapped
+    // `(relation R (T1 T2))` never loads as a bare declaration.
     let name = ast
         .atom_name(args[0])
         .expect("a declaration's first argument is its name (ein.y's Relation)")
@@ -1279,7 +1256,7 @@ fn ingest_relation(
     let mut decl_args = vec![Value::sym(name_sym)];
     decl_args.extend(sig.iter().map(|&s| Value::sym(s)));
     kb.add_fact(terms, relation, &decl_args, None)?;
-    // S1.22.4 — the companion arity-1 *membership* fact. Matching is
+    // The companion arity-1 *membership* fact. Matching is
     // arity-coupled, so `(relation ?R ?A ?B)` sees only binary declarations
     // and `(relation ?R)` is the arity-independent question. For a bare
     // `(relation R)` the mirror above already is that fact.
@@ -1289,10 +1266,10 @@ fn ingest_relation(
     Ok(())
 }
 
-// ── `written`: what a file writes, stated (M1f S1f.6.38) ───────────
+// ── `written`: what a file writes, stated ──────────────────────────
 
 /// The second half of every refusal of a `written` fact a program writes, or a
-/// rule concludes (`defined_behaviour.md` § 4.30).
+/// rule concludes ([`diagnostics.md` § 2.30](../../../../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
 const WRITTEN_IS_THE_LOADERS: &str = "written is the loader's: it states (written T) for each \
      fact nested in a fact a file writes, and a program does not write it";
 
@@ -1310,7 +1287,7 @@ fn writes_written(ast: &Ast, node: NodeId) -> bool {
 }
 
 /// A fact a file writes of `written`, or a stored negation of one: refused,
-/// one line each, placed at the fact (M1f S1f.6.38, § 4.30).
+/// one line each, placed at the fact (`diagnostics.md` § 2.30).
 fn refuse_written_facts(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
     for &form in facts {
         if writes_written(ast, form) {
@@ -1323,9 +1300,8 @@ fn refuse_written_facts(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
     }
 }
 
-/// **The loader states every fact nested in what a file writes** (M1f
-/// S1f.6.38, E1; the user's ruling of 2026-11-14 on Q-M1f.272, and Q-M1f.275
-/// (a)): for each fact stored from a file, a program's, a local module's or a
+/// **The loader states every fact nested in what a file writes** (Q-M1f.272,
+/// and Q-M1f.275): for each fact stored from a file, a program's, a local module's or a
 /// stdlib module's, each fact nested among its arguments at any depth,
 /// `(written T)`, once a value; for a stored negation `(not P)`, the facts
 /// nested in P's arguments, P being no term the file writes but the fact it
@@ -1337,8 +1313,7 @@ fn refuse_written_facts(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
 /// Then **the ground nested facts of every rule's and hrule's conclusion**,
 /// in the registries' order, each by the same step from no premise: the
 /// rule's text holds it, and a core that rests on it rests on no fact. A
-/// nested fact a rule assembles from a variable is stated by nothing (the
-/// stage's r2).
+/// nested fact a rule assembles from a variable is stated by nothing.
 ///
 /// A representation module reads it: `std.math.decimal`'s check of a numeral
 /// is five rules over `(written (n P A))`, so every numeral a file writes is
@@ -1511,7 +1486,7 @@ fn is_ground(ast: &Ast, node: NodeId) -> bool {
 
 /// What the rules pass reads of the passes before it: the macros it expands
 /// a rule's clauses with, and the count each `(relation …)` declares, which
-/// the expanded clauses are held to (M1f S1f.6.23).
+/// the expanded clauses are held to (W89).
 #[derive(Clone, Copy)]
 struct Declarations<'a> {
     macros: &'a BTreeMap<String, IrMacro>,
@@ -1536,10 +1511,8 @@ fn ingest_rules(
         let loc = loc_repr(ast, ast.loc(form));
         let args = ast.form_args(form).to_vec();
         // A rule is a name, a parameter list, then its clauses (`ein.y`'s
-        // `Rule`). Until M1f S1f.5.5's T5 this pass refused a rule with fewer
-        // than two arguments, *needs name + params*, and one whose name or
-        // parameter list was not one, *malformed*; since the swap the grammar
-        // refuses both.
+        // `Rule`): the grammar refuses a rule with fewer than two arguments,
+        // and one whose name or parameter list is not one.
         let name = ast
             .atom_name(args[0])
             .expect("a rule's first argument is its name (ein.y's Rule)")
@@ -1589,8 +1562,8 @@ fn ingest_rules(
                 }
             }
         };
-        // A wildcard as a relation, in a rule — M1e2 S1e2.2.20 (W20) — and
-        // the shapes S1e2.2.24 refuses (W24).
+        // A wildcard as a relation, in a rule (W20), and the shapes that
+        // read nothing (W24).
         let n_refused = errors.len();
         let param_vars: Vec<&str> = ast
             .form_args(params_form)
@@ -1604,13 +1577,12 @@ fn ingest_rules(
         refuse_no_fact_holds(ast, &who, &param_vars, ":match", match_node, errors);
         refuse_no_fact_holds(ast, &who, &param_vars, ":assert", assert_node, errors);
         // An `(or …)` written as a premise, and a `:match` past the register
-        // file: the compiler's two refusals a program reached, read here since
-        // M1f S1f.5.21 (W62, W63), after expansion, so a macro's `(or …)` too
-        // (Q-M1f.74).
+        // file: the two shapes the compiler cannot compile, read here (W62,
+        // W63), after expansion, so a macro's `(or …)` too (Q-M1f.74).
         refuse_nested_disjunctions(ast, &who, ":match", match_node, errors);
         refuse_wide_matches(ast, &who, ":match", &param_vars, match_node, errors);
         // A pattern or a conclusion of a declared relation at another count
-        // of arguments than declared (M1f S1f.6.23, W89): read here, after
+        // of arguments than declared (W89): read here, after
         // expansion, so a macro's body is held where a rule calls it.
         refuse_wrong_counts(ast, &who, ":match", "writes", match_node, declared, errors);
         refuse_wrong_counts(
@@ -1626,14 +1598,14 @@ fn ingest_rules(
             continue;
         }
         // A kernel primitive the grammar shapes, which a macro's expansion
-        // wrote in another shape (M1f S1f.5.24, W66 to W69, Q-M1f.80): read
+        // wrote in another shape (W66 to W69, Q-M1f.80): read
         // here, after expansion, so no command compiles, fires or proposes it.
         refuse_malformed_primitives(ast, &who, ":match", match_node, errors);
         refuse_malformed_primitives(ast, &who, ":assert", assert_node, errors);
         if errors.len() != n_refused {
             continue;
         }
-        // A conclusion's variable nothing binds (M1f S1f.5.10, F13).
+        // A conclusion's variable nothing binds.
         refuse_unbound_conclusions(
             ast,
             &head,
@@ -1666,7 +1638,7 @@ fn ingest_rules(
             })
             .collect();
         // The reserved verdict atom: the grammar writes it only as a rule's
-        // whole `:assert`, at arity 0 or 1 (M1f S1f.5.23), and it is refused
+        // whole `:assert`, at arity 0 or 1 (Q-M1f.66), and it is refused
         // here where its projection does not resolve. A rule that asserts it is
         // an **obligation** and is routed out of the saturation agenda below.
         let n_errors = errors.len();
@@ -1683,9 +1655,9 @@ fn ingest_rules(
             continue;
         }
         // An hrule proposes one fact per match, each a commitment of its own,
-        // so its conclusion, read flat, is one conjunct (M1f S1f.6.37,
-        // Q-M1f.271's default, E-65, W95). Until then the hypothesis layer read
-        // its plan's first template alone, and dropped the others in silence.
+        // so its conclusion, read flat, is one conjunct (Q-M1f.271, W95): a
+        // conjunction could read as *each is a guess* or as *these together*,
+        // and no commitment states the second.
         if head == "hrule" && !is_obligation {
             let n = ast.conjuncts(assert_node).len();
             if n > 1 {
@@ -1700,7 +1672,7 @@ fn ingest_rules(
             }
         }
         // `written` is the loader's to state, and a rule that concluded it
-        // would let a commitment extend it (M1f S1f.6.38, § 4.30).
+        // would let a commitment extend it (`diagnostics.md` § 2.30).
         if !is_obligation {
             let n_written = errors.len();
             for c in ast.conjuncts(assert_node) {
@@ -1720,10 +1692,10 @@ fn ingest_rules(
             .iter()
             .map(|p| terms.intern_text(p))
             .collect::<Result<_, _>>()?;
-        // S1.8.A13 — a top-level `(or …)` `:match` and an `(and …)` `:assert`
-        // stay as ordinary AST on ONE rule, which keeps its source name; the
-        // compiler lowers them to several plans and templates, an `(and …)` at
-        // any depth since M1f S1f.6.37 (`Ast::conjuncts`).
+        // A top-level `(or …)` `:match` and an `(and …)` `:assert` stay as
+        // ordinary AST on ONE rule, which keeps its source name; the compiler
+        // lowers them to several plans and templates, an `(and …)` read flat at
+        // any depth (`Ast::conjuncts`).
         let rule = Rule {
             name: name_sym,
             params: params.into_boxed_slice(),
@@ -1736,8 +1708,7 @@ fn ingest_rules(
             // Never the saturator's: it derives nothing, so it has no place in
             // a queue that orders derivation, and it is read once per quiescent
             // KB after the fixpoint instead. An `hrule` asserting `open` is the
-            // same object and goes the same way — `:choose` was never the home
-            // for obligations (`obligations.md`).
+            // same object and goes the same way (`obligations.md`).
             kb.program_mut().add_obligation(rule);
         } else if head == "hrule" {
             kb.program_mut().add_hrule(rule);
@@ -1748,9 +1719,8 @@ fn ingest_rules(
     Ok(())
 }
 
-/// **What no fact can hold, and what reads nothing, in a rule is refused** —
-/// M1e2 S1e2.2.20, W20, and S1e2.2.24, W24 (Q-M1e2.18; a bare `_` is refused
-/// at the parse since, Q-M1e2.22).
+/// **What no fact can hold, and what reads nothing, in a rule is refused**
+/// (W20, W24, Q-M1e2.18; a bare `_` is refused at the parse, Q-M1e2.22).
 ///
 /// The pass reads a rule's clauses as the compiler does: a `:match` as
 /// premises, each pattern's arguments as slots, and an `:assert` as
@@ -1761,69 +1731,35 @@ fn ingest_rules(
 ///   the top level or inside a pattern, in either clause: a relation is named
 ///   by a name or by a parameter its activator binds (Q29);
 /// - a **premise that is not a form**, the whole `:match`, a member of an
-///   `(and …)` or an `(or …)`, an `(absent …)`'s body: since M1f S1f.5.5's
-///   swap only a macro's body puts one there, a name or a variable;
+///   `(and …)` or an `(or …)`, an `(absent …)`'s body: only a macro's body
+///   puts one there, a name or a variable;
 /// - a **guard's argument that is a pattern**, a form that holds a variable,
-///   `(eq ?x (f ?y))` (Q-M1f.30, taken by default on the user's instruction of
-///   2026-11-09).
+///   `(eq ?x (f ?y))` (Q-M1f.30).
 ///
-/// **Until M1f S1f.5.7 it refused every form as a guard's argument, and a
-/// variable no premise before the guard binds** (Q-M1e2.18 (i)(a) and
-/// (ii)(a), since S1e2.2.24). The user's ruling of 2026-11-07 on Q-M1e2.26
-/// answers both: `eq` and `neq` are relations, a fact that holds no variable
-/// is a value as it is in `(p (f a))`, and a premise means the same in any
-/// order of its conjuncts, so a guard waits for the premise that binds its
-/// variable, and a variable nothing binds ranges over the program's names
-/// (`ein_infer::compile`'s `Seq`).
+/// **A guard's other arguments load** (Q-M1e2.26): `eq` and `neq` are
+/// relations, a fact that holds no variable is a value as it is in
+/// `(p (f a))`, and a premise means the same in any order of its conjuncts,
+/// so a guard waits for the premise that binds its variable, and a variable
+/// nothing binds ranges over the program's names (`ein_infer::compile`'s
+/// `Seq`).
 ///
-/// **Since M1f S1f.5.5's swap the grammar refuses the rest**, and T1f.5.5.5
-/// deleted their lines: a wildcard written as a relation, `(_ a)`; a keyword
-/// pair inside a pattern inside a pattern, `(box (a :k v))`; `_` or a keyword
-/// pair as a guard's argument; and an atom, `_`, a string or a variable
-/// written where a premise goes. Each is a row of the grammar's table
-/// (`ein-ir/tests/grammar_pages.rs`).
+/// **The grammar refuses the rest**, so this walk meets none of them: a
+/// wildcard written as a relation, `(_ a)`; a keyword pair inside a pattern
+/// inside a pattern, `(box (a :k v))`; `_` or a keyword pair as a guard's
+/// argument; and an atom, `_`, a string or a variable written where a
+/// premise goes, each a row of the grammar's table
+/// (`ein-ir/tests/grammar_pages.rs`). So it does a keyword pair at a
+/// pattern's top level, `(n ?x :where v)`, or as a premise of an `(and …)`,
+/// `:where (neq ?a ?b)` (Q-M1e2.28); `_` as a pattern's argument (W20); and
+/// `_` or a keyword pair at an `:assert`'s conclusion's top level. A keyword
+/// pair met as a premise would be refused here as a premise that is no form.
+/// Ein has no ranges (Q-M1e2.24): `1..3` is a parse error.
 ///
-/// **Until the swap three more shapes were not refused here.** A keyword pair
-/// at a pattern's top level, `(n ?x :where v)`, or as a premise of an `(and
-/// …)`, `:where (neq ?a ?b)`, which this walk skipped and the compiler dropped
-/// (refused since: Q-M1e2.28), so the rule fired as if it were not written; `_` as a pattern's
-/// argument, which matched any value (W20, S1e2.2.20); and `_` or a keyword
-/// pair at an `:assert`'s conclusion's top level, which stopped the firing with
-/// the line `ein_infer::firing::FireError::NotAFact` printed. The grammar
-/// refuses each since (S1f.5.11's ruling, S1f.5.1's), and S1f.5.11's
-/// T1f.5.11.2 retired this walk's skips with the compiler's drop: a keyword
-/// pair met as a premise would be refused as a premise that is no form.
-///
-/// **Until S1e2.2.20** the compiler lowered a range as an opaque slot that
-/// matched nothing, in silence, and a wildcard head stopped compilation with
-/// the Python IR's spelling of the pattern. From S1e2.2.20 this pass refused a
-/// range in a rule too, until M1f S1f.5.3 retired the token: Ein has no
-/// ranges (Q-M1e2.24), and `1..3` is a parse error.
-///
-/// **Until S1e2.2.24** each of the rest read nothing, in silence: a guard
-/// compared `_`, a form or a keyword
-/// pair as a raw IR node, equal to no value, and an unbound variable as a
-/// null, so `(eq ?x _)` never held and `(and (neq ?x a) (p ?x))` fired for
-/// `a`; the compiler dropped a premise that is not a form, so the rule fired
-/// as if it were not written; and a pattern inside a pattern whose relation
-/// no parameter binds, or that holds a keyword pair, was an opaque slot that
-/// matched nothing. The same variable head at the top level, and an
-/// `(absent …)` whose body is no form, stopped compilation with a
-/// `CompileError` in the Python IR's spelling, and in an `:assert` the firing
-/// stopped with `NotAFact`'s line.
-///
-/// **A query's `:goal` is read by the same walk** since M1f S1f.7.5 and
-/// S1f.7.1, `who` being `query` and `clause` `:goal`: a goal is a premise.
-/// A query has no activator, so every relation written as a variable is
-/// refused, at the top level (M1f S1f.5.21, W64: until then the compiler
-/// refused it where a state was answered from the goal, so `ein saturate` and
-/// `ein solve` on a program whose R is empty answered it) and inside a
-/// pattern (S1f.7.1, W79: until then the compiler lowered the inner pattern as
-/// a slot that matches nothing, so `(p (?R ?x))` had no row beside `(p (g
-/// k))`, and under an `(absent …)` held in every state). Until S1f.7.5 a goal
-/// had two walks of its own, `refuse_guard_patterns` and
-/// `refuse_goal_relation_variables`, and neither read a premise that is no
-/// form, which a macro's expansion leaves in a goal as in a rule.
+/// **A query's `:goal` is read by the same walk**, `who` being `query` and
+/// `clause` `:goal`: a goal is a premise. A query has no activator, so every
+/// relation written as a variable is refused, at the top level (W64) and
+/// inside a pattern (W79), and so is a premise that is no form, which a
+/// macro's expansion leaves in a goal as in a rule.
 fn refuse_no_fact_holds(
     ast: &Ast,
     who: &str,
@@ -1832,15 +1768,14 @@ fn refuse_no_fact_holds(
     node: NodeId,
     errors: &mut Vec<String>,
 ) {
-    // Four more were refused here until M1f S1f.5.5's T5, each a shape the
-    // grammar refuses since the swap, so no program reached them: a wildcard
-    // written as a relation (`WildHead`), a keyword pair inside a pattern
-    // inside a pattern (`NestedKw`), `_` as a guard's argument (`WildGuard`)
-    // and a keyword pair as one (`GuardNode`'s other half). The parser builds
-    // no `_` (S1f.5.1's ruling) and no keyword pair inside a clause's value
-    // (S1f.5.11's), and macro expansion copies only what a program wrote.
-    // `NotAForm` stays: a macro's body is a template, and `(macro id (?x) ?x)`
-    // called as `(id foo)` leaves the name `foo` where a premise goes.
+    // The grammar refuses every other shape, so no program reaches them: a
+    // wildcard written as a relation, a keyword pair inside a pattern inside
+    // a pattern, `_` as a guard's argument and a keyword pair as one. The
+    // parser builds no `_` (Q-M1e2.22) and no keyword pair inside a clause's
+    // value (Q-M1e2.28), and macro expansion copies only what a program
+    // wrote. `NotAForm` is reached: a macro's body is a template, and
+    // `(macro id (?x) ?x)` called as `(id foo)` leaves the name `foo` where a
+    // premise goes.
     enum Found {
         /// A form whose relation is a variable no parameter binds.
         FreeHead(NodeId, NodeId),
@@ -1873,10 +1808,8 @@ fn refuse_no_fact_holds(
             }
         }
         /// A pattern written as a premise or a conclusion: its relation, and
-        /// its arguments as slots. Until M1f S1f.5.5's swap its own keyword
-        /// pairs were skipped here, the compiler's to drop or the
-        /// firing's to refuse; since, a pattern holds none (`ein.y`'s `Args`
-        /// and `Terms`), and S1f.5.11's T1f.5.11.2 retired the skip.
+        /// its arguments as slots. A pattern holds no keyword pair (`ein.y`'s
+        /// `Args` and `Terms`).
         fn pattern(&mut self, node: NodeId, bound: Option<&mut Vec<String>>) {
             let ast = self.ast;
             let Node::SForm { head, args } = ast.node(node) else {
@@ -1892,16 +1825,11 @@ fn refuse_no_fact_holds(
             }
         }
         /// A guard, `(eq a b)` or `(neq a b)`: a relation whose facts are
-        /// computed (M1f S1f.5.7, Q-M1e2.26), so each argument is a value — a
-        /// variable, a name, or a fact that holds no variable — and a variable
-        /// no premise binds is one the guard binds, in any order of the
-        /// conjuncts. A form that holds a variable is a pattern, and is
-        /// refused (Q-M1f.30).
-        ///
-        /// Until S1f.5.7 a form was refused here whatever it held (Q-M1e2.18
-        /// (i)(a)), and so was a variable no premise *before* the guard binds
-        /// (Q-M1e2.18 (ii)(a)), each since M1e2 S1e2.2.24 (W24); the user's
-        /// ruling of 2026-11-07 answers both.
+        /// computed (Q-M1e2.26), so each argument is a value — a variable, a
+        /// name, or a fact that holds no variable — and a variable no premise
+        /// binds is one the guard binds, in any order of the conjuncts. A
+        /// form that holds a variable is a pattern, and is refused
+        /// (Q-M1f.30).
         fn guard(&mut self, node: NodeId) {
             let ast = self.ast;
             // One line per argument as written: `(eq (f ?x) (f ?x))` names
@@ -1926,9 +1854,8 @@ fn refuse_no_fact_holds(
         /// scopes a guard.
         fn premise(&mut self, node: NodeId, within: Option<NodeId>, bound: &mut Vec<String>) {
             let ast = self.ast;
-            // A keyword pair was skipped here, a premise the compiler dropped, until
-            // S1f.5.11's T1f.5.11.2; no premise is one since M1f S1f.5.5's
-            // swap, and one met would be a premise that is no form.
+            // No premise is a keyword pair (the grammar's, Q-M1e2.28), and
+            // one met would be a premise that is no form.
             match ast.node(node) {
                 Node::SForm { args, .. } => match ast.head_name(node) {
                     Some("absent") => {
@@ -1954,11 +1881,8 @@ fn refuse_no_fact_holds(
             }
         }
         /// A conclusion: its conjuncts (`Ast::conjuncts`, an `(and …)` read
-        /// flat at any depth since M1f S1f.6.37; the top one alone until
-        /// then, so an inner `(and …)` was read here as a pattern headed
-        /// `and`), each a pattern. A keyword pair beside them was skipped
-        /// until S1f.5.11's T1f.5.11.2, and none parses there since M1f
-        /// S1f.5.5's swap.
+        /// flat at any depth), each a pattern. No keyword pair parses beside
+        /// them.
         fn conclusion(&mut self, node: NodeId) {
             let ast = self.ast;
             for c in ast.conjuncts(node) {
@@ -2038,8 +1962,8 @@ fn refuse_no_fact_holds(
     }
 }
 
-/// **A conclusion's every variable is bound** — M1f S1f.5.10, on the user's
-/// ruling of 2026-11-07 on F13 (*"yes, file F13 with the refusal"*).
+/// **A conclusion's every variable is bound**
+/// ([`diagnostics.md` § 2.13](../../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)).
 ///
 /// Every variable a rule's or an hrule's `:assert` writes, at any depth, must
 /// be bound on every way its `:match` can hold, as the compiler reads it
@@ -2049,12 +1973,12 @@ fn refuse_no_fact_holds(
 /// - by a **relation premise**, at any depth of its arguments — a stored
 ///   `(not P)` among them, a pattern over stored negations;
 /// - or by an **`eq` or `neq` guard**, whose variable nothing else binds
-///   ranges over the program's names (M1f S1f.5.7).
+///   ranges over the program's names (Q-M1e2.26).
 ///
 /// A variable seen only inside an `(absent …)` — `forall` and `unknown` expand
 /// to one — is not bound outside it. A top-level `(or …)` is one way per
 /// disjunct, and the variable must be bound in each; a nested one binds what
-/// every one of its arms binds (and is refused since M1f S1f.5.21, [`refuse_nested_disjunctions`]).
+/// every one of its arms binds (and is refused, [`refuse_nested_disjunctions`]).
 /// An `(open …)` conclusion names a relation, which `validate_open` checks.
 ///
 /// One line per variable, in the order the `:assert` writes them, naming the
@@ -2063,13 +1987,11 @@ fn refuse_no_fact_holds(
 /// *every object of a type*, a premise such as `(is-a ?y T)`, and *every name
 /// of the program*, `(eq ?y ?y)`.
 ///
-/// **Until S1f.5.10** the loader did not check it, and the run found it at
-/// whichever node first fired the rule: it stopped with
-/// `ein_infer::firing::FireError::UnboundVar`'s *unbound var ?y in :assert —
-/// bindings: {'x': 'a'}*, exit 1, or, where only a commitment fires the rule,
-/// answered on the commands that never reached one; an hrule's template
-/// proposed nothing, in silence; and a rule that never fired loaded and
-/// answered.
+/// **Checked at load, on every command**, so no firing meets a variable it
+/// cannot ground, and whether a program loads does not depend on whether a
+/// run reaches a node that fires the rule: a rule only a commitment fires is
+/// refused as one root fires is, and so is an hrule whose template could
+/// propose nothing.
 fn refuse_unbound_conclusions(
     ast: &Ast,
     head: &str,
@@ -2174,23 +2096,20 @@ fn refuse_unbound_conclusions(
     }
 }
 
-/// **An `(or …)` is a whole `:match`, or a whole `:goal`** — M1f S1f.5.21,
-/// on the user's ruling on the close review's finding 1 (*"new stage in
-/// p1f.5"*), W62.
+/// **An `(or …)` is a whole `:match`, or a whole `:goal`** (W62;
+/// [`diagnostics.md` § 2.15](../../../../docs/ein/user/reference/diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable)).
 ///
 /// A top-level `(or …)` is one way the rule holds per disjunct, each compiled
 /// as a plan of its own (`ein_infer::compile`'s `match_disjuncts`). One written
 /// as a premise, of an `(and …)`, an `(absent …)` or a top-level `(or …)`, is
-/// not lowered: until S1.22.0 the compiler dropped it, so the rule fired
-/// unguarded or its guard retired its candidates, and from then until
-/// S1f.5.21 it refused it where it compiled the plan, with the Python IR's
-/// spelling. A plan is compiled per activator, by the hypothesis layer for an
-/// hrule and where a state is answered for a goal, so a rule only a commitment
-/// activates, an hrule, a goal and one no state reached loaded, and some
-/// commands answered what others stopped on. The loader refuses it since, one
-/// line per disjunction as written, naming what it is a premise of; the walk
-/// is the compiler's (`premise`), so it does not descend into a pattern, a
-/// guard or a stored negation, where an `(or …)` is no premise.
+/// not lowered. A plan is compiled per activator, by the hypothesis layer for
+/// an hrule and where a state is answered for a goal, so a refusal where the
+/// plan is compiled would let a rule only a commitment activates, an hrule, a
+/// goal and one no state reaches load, and some commands answer what others
+/// stop on. The loader refuses it instead, one line per disjunction as
+/// written, naming what it is a premise of; the walk is the compiler's
+/// (`premise`), so it does not descend into a pattern, a guard or a stored
+/// negation, where an `(or …)` is no premise.
 fn refuse_nested_disjunctions(
     ast: &Ast,
     who: &str,
@@ -2242,28 +2161,25 @@ fn refuse_nested_disjunctions(
 }
 
 /// **A macro's expansion is held to the shapes the grammar gives a written
-/// rule** — M1f S1f.5.24, on the user's ruling of 2026-11-10 on Q-M1f.67
-/// (*"the ultimate goal in this case is not allow execution of (eq
-/// <arg>)"*), W66 to W69.
+/// rule** (Q-M1f.67, W66 to W69;
+/// [`diagnostics.md` § 2.16](../../../../docs/ein/user/reference/diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes)).
 ///
 /// A macro's body is a template whose head may be any name at any arity
 /// (`ein.y`'s `Template`), and a call's argument may be any premise, so the
 /// grammar, which shapes each kernel primitive where a rule writes it, never
-/// reads the expanded rule. Until S1f.5.24 what it wrote was met where it was
-/// used, or not at all: `eq` and `absent` at another arity by the compiler,
-/// where it compiled the plan, so a rule only a commitment activates, an hrule,
-/// an obligation and a rule no activator reaches loaded and some or every
-/// command answered (W66); a `not` of no fact, a connective where a value goes,
-/// `false` with an argument and an `(or …)` concluded were matched, concluded
-/// or proposed as they stood, `(eq k)` stored (W67, W68); and a conclusion that
-/// is no form stopped the firing that met it and was dropped by the hypothesis
-/// layer (W69). An unused macro is not read here, so one that no rule calls
-/// loads whatever its body (the ruling); one a rule calls is refused where it
-/// is called, at load, on every command (Q-M1f.80).
+/// reads the expanded rule. Unread here, what it writes would be met only
+/// where it is used, or not at all: `eq` and `absent` at another arity by the
+/// compiler, where it compiles a plan, so whether a program loads would hang
+/// on whether a command activates the rule (W66); a `not` of no fact, a
+/// connective where a value goes, `false` with an argument and an `(or …)`
+/// concluded would be matched, concluded or proposed as they stand (W67,
+/// W68); and a conclusion that is no form would reach the firing and the
+/// hypothesis layer (W69). An unused macro is not read here, so one that no
+/// rule calls loads whatever its body (Q-M1f.67); one a rule calls is refused
+/// where it is called, at load, on every command (Q-M1f.80).
 ///
-/// **Since M1f S1f.7.7, S1f.7.6, S1f.7.10 and S1f.7.3 the walk holds the value
-/// rule too** (the user's ruling of 2026-11-11, Q-M1f.113: *a value is a name,
-/// or a fact a state could hold: an atom of an ordinary relation, or its
+/// **The walk holds the value rule too** (Q-M1f.113: *a value is a name, or a
+/// fact a state could hold: an atom of an ordinary relation, or its
 /// negation*; W80 to W83). The grammar refuses what a program writes of it,
 /// through `ValueHead`; what is left to this walk is what a macro's expansion
 /// writes, and the one shape the grammar cannot refuse, a connective as a
@@ -2280,13 +2196,13 @@ fn refuse_nested_disjunctions(
 /// `not`, `false`, `and` or `or` against the shape the grammar gives it there,
 /// and a conclusion that is no form; what other checks read it leaves to them:
 /// the verdict `(open …)` (`validate_open`; the grammar writes it only as a
-/// rule's whole `:assert` since M1f S1f.5.23, and a macro's body and a call's
-/// argument write no `open`), a premise that is no form and a relation variable
-/// no parameter binds (`refuse_no_fact_holds`), and an `(or …)` written as a
-/// premise (`refuse_nested_disjunctions`). Until M1f S1f.7.3 a written rule
-/// never failed it, the grammar having refused the same shapes at the parse;
-/// since, a connective written as a pattern's argument does. One line per form, in the
-/// compiler's spelling (S1f.5.21's): the position where the expanded form is
+/// rule's whole `:assert`, Q-M1f.66, and a macro's body and a call's argument
+/// write no `open`), a premise that is no form and a relation variable no
+/// parameter binds (`refuse_no_fact_holds`), and an `(or …)` written as a
+/// premise (`refuse_nested_disjunctions`). A written rule fails it only by a
+/// connective written as a pattern's argument: the grammar refuses the other
+/// shapes at the parse. One line per form, in the spelling of the loader's
+/// other clause refusals: the position where the expanded form is
 /// written, which is the macro's body or the call's argument, then the rule,
 /// the clause, the form as Ein text and what to write instead (Q-M1f.82).
 fn refuse_malformed_primitives(
@@ -2347,7 +2263,7 @@ impl<'a> Shapes<'a> {
     /// position at or under it, in the order it is written. A form the
     /// macro's body writes as `(eq ?a)` has its own, the body's; one the
     /// grammar builds for a keyword, `(not …)`, `(neq …)`, `(and …)` or
-    /// `(or …)`, has none (`at None`, F23's D-2), so its first part's is
+    /// `(or …)`, has none (`at None`), so its first part's is
     /// taken, which is the call's argument where the argument is what is
     /// malformed, and in the program's file where `std.macro`'s `unknown`
     /// wrote the form. Nothing where no part has one.
@@ -2427,11 +2343,10 @@ impl<'a> Shapes<'a> {
             }
             Some("not") => self.negation(node, false, false),
             Some(g @ ("eq" | "neq")) => self.guard(node, g),
-            // `false` takes no argument, as a premise too (M1f S1f.7.6).
+            // `false` takes no argument, as a premise too.
             Some("false") if !args.is_empty() => self.false_with_arguments(node, "holds where"),
-            // No premise is `(open …)` since M1f S1f.5.23: the grammar writes
-            // `open` only as a rule's whole `:assert`, which `validate_open`
-            // holds; until then this arm left one to `validate_open`'s refusal.
+            // No premise is `(open …)`: the grammar writes `open` only as a
+            // rule's whole `:assert`, which `validate_open` holds (Q-M1f.66).
             _ => {
                 for a in args {
                     self.arg(node, a);
@@ -2446,9 +2361,9 @@ impl<'a> Shapes<'a> {
     ///
     /// The grammar takes a connective there, so that a macro such as `forall`
     /// can be called with premises; once the macros are expanded, one that is
-    /// still a pattern's argument is a pattern no fact matches (M1f S1f.7.3,
-    /// W83). Until then `(q (and (p ?x)))` loaded and matched nothing, in
-    /// silence, and under an `(absent …)` held, so the rule fired.
+    /// still a pattern's argument is a pattern no fact matches (W83): unread,
+    /// `(q (and (p ?x)))` would match nothing, in silence, and under an
+    /// `(absent …)` hold, so the rule would fire.
     fn arg(&mut self, within: NodeId, node: NodeId) {
         if let Some(what) = self.no_value(node) {
             self.refuse(within, what);
@@ -2466,11 +2381,10 @@ impl<'a> Shapes<'a> {
     }
 
     /// Why the form `node` is no value, where it is one of the heads no value
-    /// has (M1f P1f.7's value rule, the user's ruling of 2026-11-11: *a value
-    /// is a name, or a fact a state could hold: an atom of an ordinary
-    /// relation, or its negation*): a connective, `and`, `or` or `neq`, as
-    /// S1f.5.24 refused; `eq`, computed and never stored (S1f.7.10); `absent`,
-    /// a premise's test (S1f.7.7); and `false` with an argument (S1f.7.6).
+    /// has (the value rule, Q-M1f.113: *a value is a name, or a fact a state
+    /// could hold: an atom of an ordinary relation, or its negation*): a
+    /// connective, `and`, `or` or `neq`; `eq`, computed and never stored;
+    /// `absent`, a premise's test; and `false` with an argument.
     fn no_value(&self, node: NodeId) -> Option<String> {
         const VALUE: &str = "a value is a name, a variable, or a fact a state could hold, \
                              (relation argument …) or its negation";
@@ -2496,7 +2410,7 @@ impl<'a> Shapes<'a> {
         }
     }
 
-    /// `(false k)` written as a premise or a conclusion (M1f S1f.7.6).
+    /// `(false k)` written as a premise or a conclusion.
     fn false_with_arguments(&mut self, node: NodeId, says: &str) {
         let n = self.args(node).len();
         self.refuse(
@@ -2583,7 +2497,7 @@ impl<'a> Shapes<'a> {
 
     /// A conclusion (`ein.y`'s `Assert` and `Conclusion`): its conjuncts
     /// (`Ast::conjuncts`, an `(and …)` read flat at any depth, the reading
-    /// every reader of a conclusion shares since M1f S1f.6.37), each a form.
+    /// every reader of a conclusion shares), each a form.
     fn conclusion(&mut self, node: NodeId) {
         for c in self.ast.conjuncts(node) {
             self.conjunct(c);
@@ -2614,7 +2528,7 @@ impl<'a> Shapes<'a> {
             ),
             Some("not") => self.negation(node, true, false),
             Some("false") if !args.is_empty() => self.false_with_arguments(node, "concludes that"),
-            // No fact is of `absent`, so no conclusion is (M1f S1f.7.7).
+            // No fact is of `absent`, so no conclusion is.
             Some("absent") => self.refuse(
                 node,
                 "absent is negation as failure, a premise's test, and no fact is of it — a \
@@ -2635,13 +2549,12 @@ impl<'a> Shapes<'a> {
 }
 
 /// **A rule binds at most [`MAX_MATCH_VARIABLES`] variables, and so does a
-/// goal** — M1f S1f.5.21, W63 (Q-M1f.73).
+/// goal** (W63, Q-M1f.73).
 ///
 /// The count is every distinct variable the clause writes, at any depth, and
 /// the rule's parameters, which bounds each register file the compiler builds
-/// for it. Until S1f.5.21 the compiler refused a plan past its file where it
-/// compiled it (`MAX_REGS`, S1a.3.1's one compile-time bound), so a rule no
-/// state activated and a goal no state was answered from loaded and answered.
+/// for it (`MAX_REGS`). Read at load, so a rule no state activates and a goal
+/// no state is answered from are refused as any other is.
 fn refuse_wide_matches(
     ast: &Ast,
     who: &str,
@@ -2669,11 +2582,11 @@ fn refuse_wide_matches(
     ));
 }
 
-/// **A goal asks about relations of the program** — M1f S1f.7.11, W78.
+/// **A goal asks about relations of the program** (W78).
 ///
 /// A premise of a goal over a relation the program names nowhere else can
 /// have no row in any state, and under an `(absent …)` holds in every one, so
-/// a relation misspelt in a goal read as a goal that is undetermined. Each is
+/// a relation misspelt in a goal would read as a goal that is undetermined. Each is
 /// refused, one line per name, placed at the pattern: the relation of every
 /// pattern the goal writes, at any depth, a nested pattern's and a stored
 /// negation's too, must be one of `known`, [`program_relations`]. `eq` and
@@ -2723,13 +2636,12 @@ fn refuse_goal_relations(
 }
 
 /// One `(query …)` as the program holds it: its clauses, with the macro calls
-/// of its `:goal` expanded as a rule's `:match`'s are — M1f S1f.7.5, W77.
+/// of its `:goal` expanded as a rule's `:match`'s are (W77).
 ///
-/// A goal is a premise. Until S1f.7.5 only a rule's clauses were expanded, so
-/// a call in a goal, `(unknown (p ?x))`, was read as a pattern over a relation
-/// `unknown`: the goal had no row in any state, `:expect (model)` held of it,
-/// and the claim that lists what the macro means was refused at load. The
-/// expansion replaces the `:goal` pair's value, so every reader of the query
+/// A goal is a premise. Unexpanded, a call in a goal, `(unknown (p ?x))`,
+/// would read as a pattern over a relation `unknown`: the goal would have no
+/// row in any state, `:expect (model)` would hold of it, and the claim that
+/// lists what the macro means would be refused at load. The expansion replaces the `:goal` pair's value, so every reader of the query
 /// meets it, and [`Query::goal_written`] keeps the goal as written, which the
 /// read-out and `ein test` print (Q-M1f.117). A call that does not expand, by
 /// its arity or by a macro that expands to itself, is one line, and the goal
@@ -2778,28 +2690,23 @@ fn expand_goal(
     }
 }
 
-/// **A rule parameter that names a relation is bound to a name** — M1e2
-/// [S1e2.2.4](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md),
-/// Q-M1e.21's residue.
+/// **A rule parameter that names a relation is bound to a name** (Q-M1e.21).
 ///
 /// `(rule mirror (?R) :match (q ?a ?b) :assert (?R ?b ?a))` names the relation
 /// it matches and asserts by its parameter, and the activator binds it:
 /// `(mirror q)` asserts `q` facts. An activator that binds it to a **nested
 /// fact**, `(mirror (p a))`, names no relation: a nested fact binds no
-/// parameter (M1e2 S1e2.2.24, W24, Q-M1e2.18 (iv)), so it is refused.
+/// parameter (W24, Q-M1e2.18), so it is refused.
 ///
 /// **Here, where the activator is written down**: a fact, or a literal in a
 /// rule's `:assert`. An activator a rule derives through a variable is known
-/// only to a run; since M1f S1f.5.18 the loader refuses a program in which a
-/// rule could derive one, [`refuse_derived_relation_activators`], below, and
+/// only to a run; the loader refuses a program in which a rule could derive
+/// one, [`refuse_derived_relation_activators`], below, and
 /// the compiler's refusal (`ein_infer::compile`) is the backstop behind both,
 /// which a direct caller of `compile_rule` reaches. An activator of the wrong arity activates nothing
-/// (`activators_for`'s filter), so it is not checked. Until M1f S1f.5.4 an
-/// activator could also bind an **integer**, `(mirror 3)`, which would have
-/// had the compiler name a relation by the integer's decimal text, a name the
-/// program does not have (Q-M1e.21 (b): rules cannot assert new names), and
-/// was refused here since M1e2 S1e2.2.4; since S1f.5.5's swap `3` is a name
-/// of the program and `(mirror 3)` names the relation `3`.
+/// (`activators_for`'s filter), so it is not checked. A run of digits is a
+/// name of the program, so `(mirror 3)` names the relation `3`, a name the
+/// program has (Q-M1e.21: a rule brings in no name).
 fn validate_relation_parameters(
     ast: &Ast,
     terms: &Terms,
@@ -2863,8 +2770,7 @@ fn validate_relation_parameters(
         }
         for &(i, param) in heads {
             // A nested fact binds no parameter (`ein_infer::compile`), so
-            // the relation it would name is none — M1e2 S1e2.2.24, W24,
-            // Q-M1e2.18 (iv).
+            // the relation it would name is none (W24, Q-M1e2.18).
             if let Node::SForm { .. } = ast.node(args[i]) {
                 errors.push(format!(
                     "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
@@ -2900,19 +2806,18 @@ fn validate_relation_parameters(
 }
 
 /// **A rule could derive an activator that binds a relation parameter to a
-/// fact** — M1f S1f.5.18, on the user's ruling of 2026-11-08 on Q-M1f.1 (b)
-/// (*"Q1 - b"*): G-14's derived activator, refused at load by a static check,
-/// whether or not a run derives it.
+/// fact** (Q-M1f.1): a derived activator, refused at load by a static
+/// check, whether or not a run derives it.
 ///
 /// [`validate_relation_parameters`] refuses a relation parameter bound to a
 /// fact where the activator is written down (W24). An activator a rule
 /// derives, `(rule mk () :match (item ?f) :assert (r ?f))`, binds `r`'s
-/// parameter to whatever `?f` holds, which only a run knows; until S1f.5.18 the
-/// run stopped where `r`'s plan was compiled, or answered where no run derived
-/// it (W59). This check reads the program instead.
+/// parameter to whatever `?f` holds, which only a run knows: a check where
+/// `r`'s plan is compiled would stop one run and let another, which never
+/// derives it, answer (W59). This check reads the program instead.
 ///
-/// **Which positions hold relation names** (Q-M1f.41 (b), taken by default on
-/// the user's instruction of 2026-11-09). A rule's parameter that heads a form,
+/// **Which positions hold relation names** (Q-M1f.41). A rule's parameter
+/// that heads a form,
 /// `(?R …)`, holds one, and every argument of `(relation …)` holds a name. An
 /// argument of a **declared** relation holds any value of its type, a fact
 /// among them, as does an argument inside a fact pattern, `(p (g ?x))`, and an
@@ -2922,8 +2827,7 @@ fn validate_relation_parameters(
 /// variable bound there reaches a position that holds relation names, so does
 /// that position, inferred to a fixpoint. This is what lets the stdlib's
 /// fan-outs load, `bijective-properties` passing `(bijective ?R)`'s `?R` to
-/// `functional`, which the sketch of the stage file would refuse with 32
-/// corpus programs.
+/// `functional`.
 ///
 /// **What is refused**, one line per site, in Ein's spelling:
 /// - a conclusion that writes, where a relation name is held, a variable no
@@ -2934,11 +2838,11 @@ fn validate_relation_parameters(
 ///
 /// A conclusion written `(?T …)` writes into the relation its activator
 /// names: it is read as writing into every rule of its arity whose name the
-/// program writes as an argument (Q-M1f.42 (a)), which is where a rule's name
+/// program writes as an argument (Q-M1f.42), which is where a rule's name
 /// can come from. `(not P)` is read as `P`, in a premise, a conclusion and a
 /// fact, since a stored negative holds the values its positive would.
 ///
-/// **What it returns** (M1f S1f.7.8): the positions that hold relation names,
+/// **What it returns**: the positions that hold relation names,
 /// and every name the program writes at one, in a fact or a conclusion — the
 /// relations a program names only by passing them to a rule, which
 /// [`refuse_solve_names`] reads.
@@ -3165,7 +3069,7 @@ fn refuse_derived_relation_activators(
         .map(|(n, _)| terms.sym(n).to_string())
         .collect();
     // The names a program writes as an argument: where a rule's name can come
-    // from, for a conclusion written `(?T …)` (Q-M1f.42 (a)).
+    // from, for a conclusion written `(?T …)` (Q-M1f.42).
     let mut written: BTreeSet<String> = BTreeSet::new();
     for &f in facts.iter().chain(solve_blocks) {
         arguments(ast, f, &mut written);
@@ -3399,7 +3303,8 @@ fn refuse_derived_relation_activators(
     }
 
     // `eq` at another arity, and each of the three words that head no value
-    // (M1f P1f.7's value rule): `eq`, `absent`, and `false` with an argument.
+    // (the value rule, Q-M1f.113): `eq`, `absent`, and `false` with an
+    // argument.
     for word in ["eq", "absent", "false"] {
         refuse_eq_at_another_arity(EqArity {
             ast,
@@ -3416,7 +3321,7 @@ fn refuse_derived_relation_activators(
     }
 
     // What the program passes where a relation name is held: a fact's
-    // argument, and a conclusion's (M1f S1f.7.8).
+    // argument, and a conclusion's.
     let mut places = RelationPlaces {
         positions: rp.keys().cloned().collect(),
         passed: BTreeSet::new(),
@@ -3459,16 +3364,16 @@ fn refuse_derived_relation_activators(
     }
 
     /// **A relation parameter that can be bound to `eq` heads a form of
-    /// another arity** — M1f S1f.5.9, W60, the shape S1f.5.18 found.
+    /// another arity** (W60).
     ///
-    /// `eq` is the relation of equality, between exactly two values (M1f
-    /// S1f.5.7), and the grammar refuses `(eq ?x)` wherever a premise or a
+    /// `eq` is the relation of equality, between exactly two values
+    /// (Q-M1e2.26), and the grammar refuses `(eq ?x)` wherever a premise or a
     /// conclusion is written; but a form whose relation is a parameter,
     /// `(?R ?x)`, is `(eq ?x)` once an activator binds `?R` to `eq`, a name a
-    /// fact may hold. Until S1f.5.9 such a premise loaded and stopped the run
-    /// where the activator's plan was compiled (M1e S1e.2.1's arity check, the
-    /// compiler's `CompileError`), at root, or only under a commitment, where
-    /// `ein saturate` answered; and such a conclusion stored `(eq a)`.
+    /// fact may hold. Unread here, such a premise would load and meet the
+    /// compiler's arity check (`CompileError`) only where the activator's plan
+    /// is compiled, at root or only under a commitment, and such a conclusion
+    /// would store `(eq a)`.
     ///
     /// Read as the check above reads relation names: a position that holds
     /// relation names can hold `eq` where a fact, a conclusion or a `(solve
@@ -3479,16 +3384,15 @@ fn refuse_derived_relation_activators(
     /// fixpoint. A parameter that can hold `eq` is refused for each premise or
     /// conclusion it heads whose arity is not 2, one line each.
     ///
-    /// **The same reading holds a parameter to the value rule** since M1f
-    /// S1f.7.7, S1f.7.6 and S1f.7.10 (the user's ruling of 2026-11-11: a value
-    /// is a name, or a fact a state could hold). `c.word` is `eq`, `absent` or
+    /// **The same reading holds a parameter to the value rule** (Q-M1f.113: a
+    /// value is a name, or a fact a state could hold). `c.word` is `eq`, `absent` or
     /// `false`, and a parameter that can hold it is refused for each premise
     /// or conclusion it heads that the grammar refuses written out, `(absent
     /// ?x)` at any arity and `(false ?x)` at one argument or more, and for
     /// each form it heads where a value goes, inside a pattern or a conclusion,
-    /// which for `eq` is `(q (?R ?x ?y))`. Until then `(?R ?x)` concluded with
-    /// `?R` bound to `absent` stored `(absent a)`, and `(q (?R ?x ?x))` with
-    /// `?R` bound to `eq` stored `(q (eq a a))`.
+    /// which for `eq` is `(q (?R ?x ?y))`. Unread, `(?R ?x)` concluded with
+    /// `?R` bound to `absent` would store `(absent a)`, and `(q (?R ?x ?x))`
+    /// with `?R` bound to `eq` would store `(q (eq a a))`.
     fn refuse_eq_at_another_arity(c: EqArity<'_>) {
         /// Why a position can hold `eq`: where it is written, or what passes
         /// it on from a position that can.
@@ -3775,9 +3679,9 @@ fn refuse_derived_relation_activators(
                             if n == 1 { "" } else { "s" },
                         ));
                     }
-                    // A value: a fact a state could hold (M1f P1f.7's value
-                    // rule), so never one of `eq` (S1f.7.10), of `absent`
-                    // (S1f.7.7) or of `false` with an argument (S1f.7.6).
+                    // A value: a fact a state could hold (the value rule,
+                    // Q-M1f.113), so never one of `eq`, of `absent` or of
+                    // `false` with an argument.
                     for form in values {
                         let n = c.ast.form_args(form).len();
                         if w == "false" && n == 0 {
@@ -3801,20 +3705,20 @@ fn refuse_derived_relation_activators(
     }
 }
 
-/// **A conclusion `(not ?x)` whose variable can hold a name** — M1f S1f.7.4,
-/// W84, under the value rule (the user's ruling of 2026-11-11, Q-M1f.113: *a
-/// value is a name, or a fact a state could hold: an atom of an ordinary
-/// relation, or its negation*). `not` of a name is the negation of no fact.
+/// **A conclusion `(not ?x)` whose variable can hold a name** (W84), under the
+/// value rule (Q-M1f.113: *a value is a name, or a fact a state could hold: an
+/// atom of an ordinary relation, or its negation*). `not` of a name is the
+/// negation of no fact.
 ///
 /// The grammar takes `(not Var)` as a conclusion, for a variable bound to a
 /// fact, `(hypothesis ?h)` then `(not ?h)`; whether it is bound to one depends
-/// on the data. Until S1f.7.4 a rule whose variable held a name stored `(not
-/// k)`, which no program can write and whose `--dump-answer` state file did not
-/// reload, and an hrule proposed it, so R held two states that differed in a
-/// fact nothing can read. A written `(not k)` is a parse error, and a macro's
-/// is refused by [`Shapes::negation`] (S1f.5.24, W68).
+/// on the data. Unread, a rule whose variable holds a name would store `(not
+/// k)`, which no program can write and whose `--dump-answer` state file would
+/// not reload, and an hrule would propose it, so R would hold two states that
+/// differ in a fact nothing can read. A written `(not k)` is a parse error,
+/// and a macro's is refused by [`Shapes::negation`] (W68).
 ///
-/// **What is read** (Q-M1f.127, the stage's default). A position, a relation
+/// **What is read** (Q-M1f.127). A position, a relation
 /// and an argument's index, *holds a name* where the program shows one there:
 /// a written fact, at any depth and under a `(not …)`; a `(relation …)`
 /// declaration; a rule's or an hrule's conclusion that writes a name, or a
@@ -4137,7 +4041,7 @@ fn refuse_negated_names(
     // state can hold a name at each of their positions. Not read where the
     // program writes the closure marker, which takes a relation out of them,
     // nor where it states `(solve :no-search)`, whose lattice is root alone
-    // and holds no commitment (M1f S1f.6.36).
+    // and holds no commitment.
     let closes = |node: NodeId| {
         let mut forms = Vec::new();
         sforms_under(ast, node, &mut forms);
@@ -4431,19 +4335,17 @@ fn refuse_negated_names(
     }
 }
 
-/// **A written fact of `eq` at another arity** — M1f S1f.5.9, W61, on the
-/// user's ruling of 2026-11-07 that `eq` is the relation of equality between
-/// two values (Q-M1e2.26), taken by default on the user's instruction of
-/// 2026-11-09 (Q-M1f.47).
+/// **A written fact of `eq` at another arity** (W61, Q-M1f.47): `eq` is the
+/// relation of equality between two values (Q-M1e2.26).
 ///
 /// `ingest_fact` reads a written fact of `eq`, or of `(not (eq …))`, as a
 /// conclusion with no premise, checked and never stored (Q-M1f.33): at two
 /// arguments. At any other, `(eq a)`, `(eq)`, `(eq a a a)` or `(not (eq a))`, it
 /// is no fact of equality, true or false, and the grammar refuses `(eq ?x)` as
-/// a premise and a conclusion; until S1f.5.9 it was stored as an ordinary fact
-/// (W61). One line per fact, `; `-joined with the loader's others. A nested
-/// `(box (eq a))` was a value until M1f S1f.7.10, as `(box (eq a b))` was, and
-/// loaded; since, `eq` heads no value, and each is a parse error.
+/// a premise and a conclusion; unread here, it would be stored as an ordinary
+/// fact (W61). One line per fact, `; `-joined with the loader's others. A
+/// nested `(box (eq a))` or `(box (eq a b))` is a parse error: `eq` heads no
+/// value.
 fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
     let terms_of = |node: NodeId| -> Vec<NodeId> {
         ast.form_args(node)
@@ -4499,20 +4401,18 @@ fn declared_counts(ast: &Ast, relations: &[NodeId]) -> Declared {
 }
 
 /// **A form headed by a declared relation has as many arguments as the
-/// declaration has types** — M1f
-/// [S1f.6.23](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md)
-/// (W89), on the user's ruling of 2026-11-12 on question 3 of P1f.6's
-/// `questions.md`, *"(a)"*: *every form headed by a declared relation, at any
-/// depth, in a fact, a rule or a query, refused at load with one line naming
-/// the relation, the count declared and the count written.*
+/// declaration has types** (W89, Q-M1f.315;
+/// [`diagnostics.md` § 2.26](../../../../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)):
+/// every form headed by a declared relation, at any depth, in a fact, a rule
+/// or a query, is refused at load with one line naming the relation, the
+/// count declared and the count written.
 ///
-/// Until S1f.6.23 no form was held to its relation's declaration. `(likes
-/// Bob)` beside `(relation likes Person Drink)` was stored; matching is by
-/// count, so a premise `(likes ?who)` matched no fact of the declared count
-/// and a conclusion `(fan ?who ?what)` derived facts no premise of it read;
-/// and the calculator's `(add (n z 5))`, one operand where `add` declares
-/// two, and a `std.math.num9` number of eight digits were answered by silence,
-/// exit 0 (E-2 of P1f.6's `findings.md`).
+/// Matching is by count, so unheld, `(likes Bob)` beside `(relation likes
+/// Person Drink)` would be stored, a premise `(likes ?who)` would match no
+/// fact of the declared count, and a conclusion `(fan ?who ?what)` would
+/// derive facts no premise of it reads; the calculator's `(add (n z 5))`, one
+/// operand where `add` declares two, and a `std.math.num9` number of eight
+/// digits would be answered by silence.
 ///
 /// This collects every such form at or under `node`, in the order written: a
 /// form whose head is the name of a relation the program declares, its own
@@ -4688,21 +4588,20 @@ fn refuse_wrong_counts_in_queries(
     }
 }
 
-/// **A macro's call is a premise, a conclusion or a goal, and never a fact** —
-/// M1f [S1f.7.12](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md)
-/// (W86).
+/// **A macro's call is a premise, a conclusion or a goal, and never a fact**
+/// (W86; [`diagnostics.md` § 2.24](../../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
 ///
 /// The loader expands a macro's call in a rule's or an hrule's `:match` and
-/// `:assert` and, since S1f.7.5, in a query's `:goal`. Until S1f.7.12 a fact
-/// headed by a macro's name, `(pp j)` beside `(macro pp (?a) (p ?a))`, was
-/// stored as a fact of a relation `pp`: the fact the body spells was not, no
+/// `:assert` and in a query's `:goal` (Q-M1f.130). A fact headed by a macro's
+/// name, `(pp j)` beside `(macro pp (?a) (p ?a))`, would otherwise be stored
+/// as a fact of a relation `pp`: the fact the body spells would not, no
 /// premise could read the one stored, since `(pp ?x)` in a `:match` is the
-/// call, and nothing said so. The same held at any depth, `(q (pp j))`, under
-/// `(not …)` and in a fact's `:using`, of an imported `std.macro` macro,
-/// `(unknown (p j))`, and of one the program did not import, which a rule's
-/// `:match` has been refused for since S1.8a.f20.
+/// call, and nothing would say so. The same holds at any depth, `(q (pp j))`,
+/// under `(not …)` and in a fact's `:using`, of an imported `std.macro` macro,
+/// `(unknown (p j))`, and of one the program does not import, which a rule's
+/// `:match` is refused for too (Q-M1f.132).
 ///
-/// Refused here, one line per call at the call (the stage's default (a)), and
+/// Refused here, one line per call at the call, and
 /// with it a `(relation …)` declared under a macro's name, of which no fact
 /// could be written and no premise read (Q-M1f.131). A call is not expanded
 /// into the fact its body spells: a body with a connective spells none, and
@@ -4775,10 +4674,10 @@ const MACRO_CALL_IS_NO_FACT: &str = "a macro is called in a :match, an :assert o
      its call is replaced by its body; a fact is not expanded, and no fact is of a macro: write \
      the fact itself";
 
-/// A claim that lists a macro's call — M1f S1f.7.12. A claim lists facts
+/// A claim that lists a macro's call (Q-M1f.133). A claim lists facts
 /// (Q-M1f.118), so the call is expanded in none: one inside a listed fact,
-/// `(model (q (pp j)))`, loaded and the claim failed against a state holding
-/// `(q (p j))`, the call *no class*. Refused as a written fact's is.
+/// `(model (q (pp j)))`, would load and the claim fail against a state
+/// holding `(q (p j))`, the call *no class*. Refused as a written fact's is.
 fn refuse_macro_claims(
     ast: &Ast,
     kb: &Kb,
@@ -4988,20 +4887,19 @@ fn rel_premises(
 ///
 /// Returns `true` when the rule is an **obligation** — its `:assert` is
 /// `(open …)` and nothing else — which routes it out of the saturation agenda
-/// (M1d P1d.2 [S1d.2.3]). Errors are pushed rather than returned so one
-/// malformed rule does not hide the next.
+/// ([the form](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)). Errors are pushed rather than returned
+/// so one malformed rule does not hide the next.
 ///
-/// **Where `open` stands is the grammar's since M1f S1f.5.23** (the user's
-/// ruling on Q-M1f.66, *"Refuse it"*): `open` is no name, and `ein.y`'s
-/// `Assert` is the one production that takes it, `(open)` or `(open ?R)`, a
-/// rule's whole `:assert`, its argument a variable or a relation's name. So no
-/// `(open …)` stands in a `:match`, inside a conclusion, beside another
-/// conclusion or with two arguments, written or through a macro, whose body and
-/// arguments write no `open` either; this pass refused each of those four, and
-/// an argument that was neither a variable nor a name, until then
-/// (`grammar_pages`' `DELETED`, the grammar's table holding each), and it holds
-/// that as an invariant now. What it still refuses is what only the program can
-/// tell, the projection:
+/// **Where `open` stands is the grammar's** (Q-M1f.66): `open` is no name,
+/// and `ein.y`'s `Assert` is the one production that takes it, `(open)` or
+/// `(open ?R)`, a rule's whole `:assert`, its argument a variable or a
+/// relation's name. So no `(open …)` stands in a `:match`, inside a
+/// conclusion, beside another conclusion or with two arguments, written or
+/// through a macro, whose body and arguments write no `open` either
+/// (Q-M1f.86); each of those, and an argument that is neither a variable nor
+/// a name, is a row of the grammar's table, and this pass holds it as an
+/// invariant. What it refuses is what only the program can tell, the
+/// projection:
 ///
 /// 1. **`(open ?R)` whose `?R` is not a parameter** — a relation variable is
 ///    bound by the activator, never by a premise, so it could never resolve;
@@ -5012,11 +4910,8 @@ fn rel_premises(
 ///    not already bind. None, two, or a ground body is refused rather than
 ///    guessed.
 ///
-/// Each line starts with the position the `(open …)` is written at, the
-/// spelling M1f S1f.5.21 gave a refusal; until S1f.5.23 each ended `at None`
-/// (F23's D-2), a rule being a form the parser keeps no position for.
-///
-/// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
+/// Each line starts with the position the `(open …)` is written at, as the
+/// loader's other clause refusals do.
 fn validate_open(
     ast: &Ast,
     head: &str,
@@ -5051,7 +4946,7 @@ fn validate_open(
         ),
     };
     // A variable relation head is bound by the activator, never by a
-    // premise (`compile.rs`: "M1 matches relations per activator"), so an
+    // premise (a rule compiles once per activator, Q29), so an
     // `(open ?R)` whose `?R` is not a parameter could never resolve.
     if is_var && !params.iter().any(|p| p == &rel) {
         errors.push(format!(
@@ -5130,9 +5025,8 @@ fn validate_projection(
         .filter(|&n| {
             let mut vs = BTreeSet::new();
             vars_under(ast, n, &mut vs);
-            // A wildcard was a slot the `absent` introduced, as a fresh
-            // variable is (M1e2 S1e2.2.20, W20), until S1f.5.5's swap refused
-            // a bare `_` (S1f.5.1).
+            // Only a variable is a slot the `absent` introduces: a bare `_`
+            // is refused at the parse (Q-M1e2.22).
             vs.iter().any(|v| !outside.contains(v))
         })
         .collect();
@@ -5264,8 +5158,7 @@ fn walk_pattern(ast: &Ast, node: NodeId, variables: &mut Vec<String>, relations:
 // ── Pass 3 — facts ─────────────────────────────────────────────────
 
 /// One fact, with its provenance. A fact's relation is a name (`ein.y`'s
-/// `FactHead`); until M1f S1f.5.5's T5 this pass refused one that was not,
-/// *fact with non-atom head*, which the grammar refuses since the swap.
+/// `FactHead`): the grammar refuses a fact whose relation is not.
 fn ingest_fact(
     ast: &Ast,
     terms: &mut Terms,
@@ -5319,15 +5212,13 @@ fn ingest_fact(
     };
     let prov: ProvId = terms.provs.push(prov);
 
-    // **A fact of `eq`, or the negation of one, is checked, never stored**
-    // (M1f S1f.5.7): `eq` and `neq` are relations whose facts are computed,
-    // and no fact changes them (the user's ruling of 2026-11-07 on
-    // Q-M1e2.26). One that holds adds nothing; one that does not is
-    // `(false)`, written where it is, as a rule's false conclusion of one is
-    // (G-21) — read as a conclusion with no premise (Q-M1f.31 and Q-M1f.33,
-    // taken by default on the user's instruction of 2026-11-09). Until then it
-    // was an ordinary fact, which no guard reads (W50, W51). `(neq …)` is no
-    // fact the grammar takes.
+    // **A fact of `eq`, or the negation of one, is checked, never stored**:
+    // `eq` and `neq` are relations whose facts are computed, and no fact
+    // changes them (Q-M1e2.26). One that holds adds nothing; one that does
+    // not is `(false)`, written where it is, as a rule's false conclusion of
+    // one is — read as a conclusion with no premise (Q-M1f.31 and Q-M1f.33).
+    // Stored, it would be an ordinary fact, which no guard reads (W50, W51).
+    // `(neq …)` is no fact the grammar takes.
     let mut head_name = head_name;
     let mut args = args;
     let computed: Option<(bool, Vec<NodeId>)> = match head_name.as_str() {
@@ -5376,14 +5267,12 @@ fn ingest_fact(
 /// `true` or `false` (`ein_core::config::FLAGS`). A repeated flag takes its
 /// last value.
 ///
-/// **Infallible since M1f S1f.5.5's T5.** A `(config …)` takes those two
-/// keywords and a `true` or a `false` after each (`ein.y`'s `ConfigClause`
-/// and `Bool`), so the grammar refuses what this function refused until then:
-/// a body that is not keyword pairs, an unknown flag, a flag retired at M1e2
-/// (its *was retired at* sentence a note on the parse error since the swap,
-/// read from `ein_core::config::RETIRED`), and a value that is no bool; and
-/// the integer, number and string coercions had no flag to reach since M1e2
-/// S1e2.1a.5 retired the last one.
+/// **Infallible.** A `(config …)` takes those two keywords and a `true` or a
+/// `false` after each (`ein.y`'s `ConfigClause` and `Bool`), so the grammar
+/// refuses a body that is not keyword pairs, an unknown flag, a retired flag
+/// (its sentence a note on the parse error, read from
+/// `ein_core::config::RETIRED`), and a value that is no bool. No flag takes
+/// an integer, a number or a string, so none is coerced.
 pub fn config_from_kw_pairs(ast: &Ast, args: &[NodeId]) -> SolverConfig {
     let mut config = SolverConfig::default();
     for (flag, value) in kw_pairs(ast, args) {
@@ -5432,8 +5321,7 @@ mod tests {
     }
 
     /// The parser's errors on `text`, which it must refuse, each `line:col:
-    /// what`: since M1f S1f.5.5's swap (T1f.5.5.4) the grammar refuses many
-    /// shapes the loader refused until then.
+    /// what`: the grammar refuses many shapes before the loader reads them.
     fn refused(text: &str) -> Vec<String> {
         parse(&mut Ast::new(), text, None)
             .expect_err("the parser refuses it")
@@ -5443,16 +5331,14 @@ mod tests {
             .collect()
     }
 
-    /// The reserved verdict atom, and the classification it drives — M1d
-    /// [S1d.2.3].
+    /// The reserved verdict atom, and the classification it drives
+    /// ([the form](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)).
     ///
     /// A rule whose `:assert` is `(open …)` and nothing else is an
     /// **obligation**: it derives nothing, so it never enters the saturator's
     /// agenda, and it is read once per quiescent KB after the fixpoint. The
     /// routing is the load-time half of that, and the assertion below is that
     /// `rules` stays empty while `obligations` gets it.
-    ///
-    /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
     #[test]
     fn an_open_assert_routes_the_rule_out_of_the_saturation_agenda() {
         let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n\
@@ -5497,12 +5383,9 @@ mod tests {
     /// **A variable used once is what to write where any value will do**, and
     /// it loads, in a pattern and in an obligation's witness premise.
     ///
-    /// Until M1f S1f.5.5's swap this test held a wildcard written as a
-    /// relation refused at load (M1e2 S1e2.2.20, W20), one line
-    /// per slot, and `_` as an argument loading; since the swap the grammar
-    /// refuses a bare `_` in every position (S1f.5.1), and T1f.5.5.5 deleted
-    /// the loader's line (`Found::WildHead`) and moved those cases to the
-    /// grammar's table (`ein-ir/tests/grammar_pages.rs`).
+    /// A bare `_` is refused at the parse in every position (Q-M1e2.22), so
+    /// a wildcard written as a relation or as an argument is a row of the
+    /// grammar's table (`ein-ir/tests/grammar_pages.rs`), not a case here.
     #[test]
     fn a_variable_used_once_loads_where_a_wildcard_was_written() {
         let pre = "(relation n T :why \"n holds of {?1}\") (relation hit T :why \"hit holds of {?1}\") (relation box T :why \"box holds of {?1}\") (relation tag T T :why \"tag holds of {?1} and {?2}\")\n(n 2)\n";
@@ -5514,30 +5397,25 @@ mod tests {
         ));
     }
 
-    /// **A rule shape that reads nothing is refused at load** — M1e2
-    /// S1e2.2.24, W24 (Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
+    /// **A rule shape that reads nothing is refused at load** (W24,
+    /// Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
     /// and an obligation, one line naming the rule and the clause; and what
     /// stays: a guard on values, a parameter head.
     ///
-    /// **Since M1f S1f.5.5's swap (T1f.5.5.4) half of the shapes are the
-    /// grammar's**, each a parse error at its place, and a row of the grammar's
-    /// table since T1f.5.5.5 deleted the loader's lines for them
+    /// **Half of the shapes are the grammar's**, each a parse error at its
+    /// place and a row of the grammar's table
     /// (`ein-ir/tests/grammar_pages.rs`): `_` as a guard's argument or as a
-    /// premise (S1f.5.1), a keyword pair as a guard's argument or inside a
-    /// pattern (S1f.5.11), a name, a variable or a string as a premise (the
-    /// paper grammar's own, and S1f.5.2 for the string). The loader keeps what
-    /// a context-free grammar does not see: a form that holds a variable as a
-    /// guard's argument (Q-M1f.30), a relation variable no parameter binds,
-    /// and an activator binding a relation parameter to a nested fact. What
-    /// this test held loading until the swap and the grammar refuses (a string
-    /// as a guard's argument, `:where` pairs (Q-M1e2.28), `_` as an argument) is
-    /// written in the final grammar below.
+    /// premise (Q-M1e2.22), a keyword pair as a guard's argument or inside a
+    /// pattern (Q-M1e2.28), a name, a variable or a string as a premise. The
+    /// loader keeps what a context-free grammar does not see: a form that
+    /// holds a variable as a guard's argument (Q-M1f.30), a relation variable
+    /// no parameter binds, and an activator binding a relation parameter to a
+    /// nested fact.
     ///
-    /// **Since M1f S1f.5.7 (T1f.5.7.3) two shapes load** that S1e2.2.24
-    /// refused, on the user's ruling of 2026-11-07 on Q-M1e2.26: a fact that
-    /// holds no variable as a guard's argument, a value, and a guard on a
-    /// variable no premise before it binds, which waits for the premise that
-    /// does, or ranges over the program's names where none does.
+    /// **Two shapes load** (Q-M1e2.26): a fact that holds no variable as a
+    /// guard's argument, a value, and a guard on a variable no premise before
+    /// it binds, which waits for the premise that does, or ranges over the
+    /// program's names where none does.
     #[test]
     fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
@@ -5613,12 +5491,10 @@ mod tests {
         }
         // What stays: a guard on values the premises before it bind, a
         // parameter head, a variable used once where any value will do, a
-        // guard under an `absent` on a variable the enclosing premises bound.
-        // Until the swap the first wrote `(neq ?x "b")`, a string, and three
-        // more `:where` and `_` as an argument, which the grammar
-        // refuses. And since S1f.5.7 what S1e2.2.24 refused: a fact that holds
-        // no variable as a guard's argument, and a guard on a variable no
-        // premise before it binds, in a conjunction and under an `absent`.
+        // guard under an `absent` on a variable the enclosing premises bound;
+        // and (Q-M1e2.26) a fact that holds no variable as a guard's
+        // argument, and a guard on a variable no premise before it binds, in
+        // a conjunction and under an `absent`.
         for rule in [
             "(rule e () :match (and (p ?x) (q ?y) (neq ?x ?y) (eq ?x a) (neq ?x b) (eq ?x 1)) \
              :assert (hit ?x) :why \"p holds of {?x} and q of {?y}, {?x} is not {?y} or b and is a and 1, so hit holds of {?x}\")",
@@ -5635,8 +5511,8 @@ mod tests {
         }
     }
 
-    /// **The compiler's three refusals a program reached, at load** — M1f
-    /// S1f.5.21 (W62, W63, W64; the close review's finding 1). An `(or …)`
+    /// **Three shapes the compiler cannot compile are refused at load** (W62,
+    /// W63, W64). An `(or …)`
     /// written as a premise, of an `(and …)`, an `(absent …)` or a top-level
     /// `(or …)`, in a rule's, an hrule's or a goal's clause, written or
     /// produced by a macro (Q-M1f.74); a `:match` or a `:goal` past the
@@ -5759,14 +5635,14 @@ mod tests {
         }
     }
 
-    /// **A macro's expansion is held to the grammar's shapes** — M1f S1f.5.24,
-    /// on the user's ruling on Q-M1f.67, W66 to W69.
+    /// **A macro's expansion is held to the grammar's shapes** (Q-M1f.67, W66
+    /// to W69).
     ///
     /// Each shape a macro's body or a call's argument can malform, in a rule's,
     /// an hrule's and an obligation's `:match` and as a conclusion, refused at
     /// load with one line naming the rule, the clause and the expanded form,
     /// the position where it is written first. Then what loads: an unused
-    /// malformed macro (the ruling), and every shape the grammar takes where a
+    /// malformed macro (Q-M1f.67), and every shape the grammar takes where a
     /// rule writes it, written and through a macro, so the walk refuses no
     /// written rule the grammar accepts.
     #[test]
@@ -5900,11 +5776,11 @@ mod tests {
         // What loads: every macro above, used by no rule; and every shape the
         // grammar takes where a rule writes it, written and through a macro.
         ok(&format!("{pre}{m}"));
-        // Seven shapes loaded here until M1f S1f.7.7, S1f.7.6, S1f.7.10 and
-        // S1f.7.3: a value is a name, or a fact a state could hold, so
-        // `absent`, `eq`, a connective and `false` with an argument head none,
-        // and no conclusion is of `absent`. The grammar refuses five written
-        // out, and the walk the two it cannot tell from a macro's call.
+        // Seven shapes refused by the value rule (Q-M1f.113): a value is a
+        // name, or a fact a state could hold, so `absent`, `eq`, a connective
+        // and `false` with an argument head none, and no conclusion is of
+        // `absent`. The grammar refuses five written out, and the walk the two
+        // it cannot tell from a macro's call.
         for (text, want) in [
             (
                 "(rule r () :match (and (a ?x) (absent (not (absent (p ?x))))) :assert (p ?x) :why \"r\")",
@@ -5955,7 +5831,7 @@ mod tests {
             "(rule r () :match (and (a ?x) (absent (false))) :assert (p ?x) :why \"r\")",
             // `(not ?x)` of a variable bound to a fact: `h` holds no name.
             // With `(a ?x)`, which `(a k)` binds to a name, it is refused
-            // since M1f S1f.7.4 (`a_conclusion_negating_a_name_is_refused_at_load`).
+            // (`a_conclusion_negating_a_name_is_refused_at_load`).
             "(h (p k))\n(rule r () :match (h ?x) :assert (not ?x) :why \"r\")",
             "(rule r () :match (a ?x) :assert (not (p ?x)) :why \"r\")",
             "(rule r () :match (a ?x) :assert (and (p ?x) (not (eq ?x k))) :why \"r\")",
@@ -5986,7 +5862,7 @@ mod tests {
     }
 
     /// **A conclusion `(not ?x)` whose variable can hold a name is refused at
-    /// load** — M1f S1f.7.4, W84, under the value rule (Q-M1f.113, Q-M1f.127).
+    /// load** (W84), under the value rule (Q-M1f.113, Q-M1f.127).
     ///
     /// Each way the program shows a name where the variable is bound: a
     /// written fact, at the top and inside another fact; a declaration; a
@@ -6142,16 +6018,14 @@ mod tests {
     }
 
     /// **A conclusion's every variable is bound, and is refused at load where
-    /// it is not** — M1f S1f.5.10, on the user's ruling of 2026-11-07 on
-    /// P1f.5's F13 (*"yes, file F13 with the refusal"*). Each shape the
-    /// stage file names, one line per variable naming the rule, the variable
+    /// it is not**. Each shape, one line per variable naming the rule, the variable
     /// and the two explicit spellings: a free variable, an `(or …)` arm, a
     /// variable seen only under an `(absent …)`, and an hrule; and a guard's
     /// under an `(absent …)`, a nested conclusion's, an empty `:match`'s, two
     /// variables in one conclusion and a `forall`'s. Then what binds, and
     /// loads: a parameter, a relation premise at any depth, a stored `(not
-    /// P)`, an `eq` or `neq` guard (M1f S1f.5.7), the acceptance's typed
-    /// premise, and an `(or …)` whose every arm binds.
+    /// P)`, an `eq` or `neq` guard (Q-M1e2.26), a typed premise,
+    /// `(is-a ?y House)`, and an `(or …)` whose every arm binds.
     #[test]
     fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
         let line = |head: &str, name: &str, var: &str, place: &str| {
@@ -6189,7 +6063,7 @@ mod tests {
                 "(hrule h () :match (p ?x) :assert (q ?y) :why \"p holds of {?x}: guess that q holds of a value no premise binds\")",
                 line("hrule", "h", "y", ""),
             ),
-            // Nested in a conclusion's argument, and an empty `:match` (F12).
+            // Nested in a conclusion's argument, and an empty `:match`.
             (
                 "(rule r () :match (p ?x) :assert (box (tag ?x ?y)) :why \"p holds of {?x}, so box holds of a tag of {?x} and a value no premise binds\")",
                 line("rule", "r", "y", ""),
@@ -6239,11 +6113,11 @@ mod tests {
     }
 
     /// **A rule that could derive an activator binding a relation parameter
-    /// to a fact is refused at load** — M1f S1f.5.18, on the user's ruling of
-    /// 2026-11-08 on Q-M1f.1 (b), [`refuse_derived_relation_activators`]:
-    /// each shape the stage file names, a variable from a value position and
-    /// a fact written where a relation is held, and the ones the reading of
-    /// Q-M1f.41 (b) and Q-M1f.42 (a) adds; and what loads, the zebra2 and
+    /// to a fact is refused at load** (Q-M1f.1,
+    /// [`refuse_derived_relation_activators`]): a variable from a value
+    /// position and a fact written where a relation is held, and the ones the
+    /// reading of
+    /// Q-M1f.41 and Q-M1f.42 adds; and what loads, the zebra2 and
     /// stdlib fan-outs among them.
     #[test]
     fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_refused_at_load() {
@@ -6345,7 +6219,7 @@ mod tests {
                 ),
             ),
             // A conclusion whose relation is a parameter writes into every rule
-            // of its arity whose name the program writes (Q-M1f.42 (a)).
+            // of its arity whose name the program writes (Q-M1f.42).
             (
                 format!(
                     "{pre}{r}\n(rule copy (?S ?T) :match (?S ?x) :assert (?T ?x) :why \"{{?S}} holds of {{?x}}, so {{?T}} holds of {{?x}}\")\n(copy item r)"
@@ -6398,8 +6272,8 @@ mod tests {
         }
     }
 
-    /// **`eq` at another arity is refused at load** — M1f S1f.5.9 (W60,
-    /// Q-M1f.46; W61, Q-M1f.47): a relation parameter that can hold `eq`
+    /// **`eq` at another arity is refused at load** (W60, Q-M1f.46; W61,
+    /// Q-M1f.47): a relation parameter that can hold `eq`
     /// heading a premise or a conclusion whose arity is not 2, read as the
     /// check above reads relation names, one line each; and a written fact of
     /// `eq`, or its negation, at another arity.
@@ -6504,9 +6378,9 @@ mod tests {
         ] {
             assert_eq!(err(&src), want, "{src}");
         }
-        // A parameter heading a pattern inside an argument, a value, loaded
-        // until M1f S1f.7.10: a value is no form of `eq`, at any arity. And a
-        // nested `(eq a)`, which loaded too, is a parse error since.
+        // A parameter heading a pattern inside an argument, a value: a value
+        // is no form of `eq`, at any arity. A nested `(eq a)` written out is
+        // a parse error.
         for (form, n) in [("(?R ?x)", 1), ("(?R ?x ?y)", 2)] {
             let got = err(&format!(
                 "{pre}(rule r (?R) :match (p {form}) :assert (hit ?x) :why \"p holds of ({{?R}} …), so hit holds of {{?x}}\")\n(r eq)"
@@ -6519,7 +6393,7 @@ mod tests {
                 "{n}: {got}"
             );
         }
-        // What loads: two arguments, the guard (S1f.5.7); a declared relation
+        // What loads: two arguments, the guard (Q-M1e2.26); a declared relation
         // of another arity, which matches nothing; a guard while `eq` is no
         // name of the program; and a written `(eq a b)`.
         for src in [
@@ -6536,27 +6410,24 @@ mod tests {
         }
     }
 
-    /// **The verdict atom refuses every shape it cannot resolve** — M1d
-    /// S1d.2.3, `defined_behaviour.md` § 4.2's table. **Since M1f S1f.5.5's
-    /// swap (T1f.5.5.4) the shapes a position states are the grammar's**: an
-    /// `(open …)` as a premise or beside another conclusion, with three
-    /// arguments, or with a term for its argument, and `open` bound by a
-    /// declarator, are parse errors at their place (`open` is a word a position
-    /// gives a meaning to, the paper grammar's default 1), each a row of the
-    /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`). **Since
-    /// M1f S1f.5.23 every other place is too**: `open` is no name (the user's
-    /// ruling on Q-M1f.66), so a pattern's argument, a conclusion's, a macro's
-    /// body and a call's argument write none, and the loader's lines for the
-    /// placements are deleted (`grammar_pages`' `DELETED`). Below are the
-    /// refusals a context-free grammar does not see: the projection's ways of
-    /// not resolving, each placed where the `(open …)` is written.
+    /// **The verdict atom refuses every shape it cannot resolve**
+    /// (`diagnostics.md` § 2.2's table). **The shapes a position states are
+    /// the grammar's**: an `(open …)` as a premise or beside another
+    /// conclusion, with three arguments, or with a term for its argument, and
+    /// `open` bound by a declarator, are parse errors at their place (`open`
+    /// is a word a position gives a meaning to), each a row of the grammar's
+    /// table (`ein-ir/tests/grammar_pages.rs`). **So is every other place**:
+    /// `open` is no name (Q-M1f.66), so a pattern's argument, a conclusion's,
+    /// a macro's body and a call's argument write none, and the loader has no
+    /// line for a placement. Below are the refusals a context-free grammar
+    /// does not see: the projection's ways of not resolving, each placed where
+    /// the `(open …)` is written.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
         let pre = "(relation is-a T T :why \"{?1} is a {?2}\")\n(relation r A B :why \"r holds of {?1} and {?2}\")\n";
-        // Nested rather than concluded, `(not (open ?R))`, was refused here
-        // until M1f S1f.5.23, and is refused at the parse since: the grammar
-        // writes `open` only as a rule's whole `:assert` (`grammar_pages`'
-        // table).
+        // Nested rather than concluded, `(not (open ?R))`, is refused at the
+        // parse: the grammar writes `open` only as a rule's whole `:assert`
+        // (`grammar_pages`' table).
         for (want, src) in [
             // The projection's three ways of not resolving.
             (
@@ -6597,7 +6468,7 @@ mod tests {
             ),
             // Written as a premise's relation too, the rule pass refuses it
             // first, as it refuses any relation variable no parameter binds
-            // (M1e2 S1e2.2.24, W24); until then this case reached the line above.
+            // (W24), before this check reads the projection.
             (
                 "with ?R as its relation, which no parameter binds",
                 format!(
@@ -6614,26 +6485,17 @@ mod tests {
         }
     }
 
-    /// The four duals the phase actually ships, resolved here before the stage
-    /// that ships them — M1d [S1d.2.3] T1d.2.3.3.
+    /// The stdlib's four obligations — `total-owed` and `surjective-owed` of
+    /// `std.algebra`, `slot-owed-room` and `slot-owed-fill` of `std.slots` —
+    /// written out here in their shapes, each resolves its projection and is
+    /// routed to the obligation pass
+    /// ([the stdlib's four](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-stdlibs-four)).
     ///
-    /// They are **not** in `stdlib/` yet, and that is deliberate rather than
-    /// unfinished. `ein-infer/tests/stdlib_coverage.rs` reads a module's own
-    /// `(rule …)` heads out of the raw forms and fails on any that no
-    /// `tests/stdlib/` program activates; an obligation rule cannot activate
-    /// anything until the post-fixpoint pass exists, so putting them in the
-    /// stdlib now would put two permanently-silent rules behind a gate whose
-    /// whole job is to forbid exactly that. S1d.2.4 adds the pass and the
-    /// rules together, with their conformance programs.
-    ///
-    /// What this stage owes is that the *projection resolves on the shapes the
-    /// phase ships*, and that is checkable without shipping them: the two
+    /// The projection resolves on the shapes the stdlib writes: the two
     /// `std.algebra` duals mirror `total` / `surjective`, and the two
     /// `std.slots` duals mirror `slot-no-room` / `slot-no-fill`, one modality
     /// down — scanning **absence** where those scan a stored `(not …)`, and
     /// saying *unfinished* where they say *dead*.
-    ///
-    /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
     #[test]
     fn the_stdlib_duals_resolve_before_the_stage_that_ships_them() {
         let src = "(relation is-a T T :why \"{?1} is a {?2}\")\n\
@@ -6709,12 +6571,11 @@ mod tests {
         );
     }
 
-    /// A nested form is a fact, interned and not believed. **Since M1f
-    /// S1f.5.5's swap (T1f.5.5.4)** a nested fact's head is a name: `(p (?q
-    /// a))`, a variable in a fact, is refused at the parse (S1f.5.2's G-6), so
-    /// no fact reaches the loader with a nested head that is not a name, and
-    /// the `#nested` rename it collapsed to (printed `(_ a)`) is reached by no
-    /// program; until then the second fact here was `(p (?q a))`.
+    /// A nested form is a fact, interned and not believed. A nested fact's
+    /// head is a name: `(p (?q a))`, a variable in a fact, is refused at the
+    /// parse, so no fact reaches the loader with a nested head that is not a
+    /// name, and the `#nested` rename such a head collapses to is reached by
+    /// no program.
     #[test]
     fn a_nested_form_becomes_a_relational_node() {
         assert_eq!(
@@ -6732,7 +6593,7 @@ mod tests {
         );
         let compacts = facts(&terms, &kb);
         assert_eq!(compacts[1], "(p (q a))", "{compacts:?}");
-        // The fact nested in `(p (q a))` is stated as written (M1f S1f.6.38),
+        // The fact nested in `(p (q a))` is stated as written,
         // and the negation's denied fact is not: it is no term the file writes.
         assert_eq!(compacts[2], "(written (q a))", "{compacts:?}");
         // The inner proposition is interned but not believed: it is not in
@@ -6745,10 +6606,9 @@ mod tests {
         assert!(kb.is_negated(inner));
     }
 
-    /// Since M1f S1f.5.5's swap (T1f.5.5.4) a fact's `:using` lists its
-    /// premises, each a fact (the paper grammar's default 2): `:using ((r a
-    /// b))`. Until then this test wrote `:using (p (r a b))`, a list whose head
-    /// the loader dropped, which the grammar refuses at the `p`.
+    /// A fact's `:using` lists its premises, each a fact: `:using ((r a
+    /// b))`. A list with a head, `:using (p (r a b))`, is refused at the
+    /// `p`.
     #[test]
     fn provenance_comes_from_source_or_from_rule_and_using() {
         assert_eq!(
@@ -6785,13 +6645,11 @@ mod tests {
         assert_eq!(terms.compact(prov.premises[0]), "(r a b)");
     }
 
-    /// A `:source` must be a string and a `:rule` a name. Until M1f S1f.5.5's
-    /// swap anything else was no error: it simply did not register, and
-    /// `(r a b :source sentence :rule "x")` loaded as a given fact with no
-    /// source. **Since the swap each keyword's value is the grammar's**, so
+    /// A `:source` must be a string and a `:rule` a name. **Each keyword's
+    /// value is the grammar's**, so in `(r a b :source sentence :rule "x")`
     /// the bare `sentence` is refused at the parse, and so is the string
-    /// `"x"` (S1f.5.2's ruling). What still reads as absent is a `:source`
-    /// with no `:rule`: a given fact, its sentence kept.
+    /// `"x"`. What reads as absent is a `:source` with no `:rule`: a given
+    /// fact, its sentence kept.
     #[test]
     fn a_present_but_unusable_annotation_reads_as_absent() {
         assert_eq!(
@@ -6809,22 +6667,15 @@ mod tests {
         );
     }
 
-    /// Was `the_last_query_and_the_last_config_win` until M1c S1c.1.2. Half of
-    /// what it pinned is deliberately gone: a second `(query …)` used to load
-    /// and be discarded in silence, which is the one thing a file carrying
-    /// `:expect` must not do. The config half is untouched, and is here in the
-    /// same test because the *contrast* is the decision — a config is a
-    /// setting, a query is content.
-    ///
-    /// Since M1f S1f.5.5's swap (T1f.5.5.4) the second query's `:mode all`
-    /// is `:over all` and the first config's retired `:print-alive` is
-    /// `:record-alternative-justifications false`: the grammar refuses a
-    /// keyword its form does not take (S1f.5.11), and both were, a row of the
-    /// grammar's table since T1f.5.5.5 (`ein-ir/tests/grammar_pages.rs`).
+    /// Every `(query …)` loads, and the last `(config …)` wins. A second
+    /// query discarded in silence is the one thing a file carrying `:expect`
+    /// must not do; the config half is here in the same test because the
+    /// *contrast* is the decision — a config is a setting, a query is
+    /// content.
     #[test]
     fn every_query_is_kept_and_the_last_config_still_wins() {
         // The facts make `a` and `b` relations of the program, which a goal
-        // asks about since M1f S1f.7.11.
+        // asks about (W78).
         let (_terms, kb) = ok(
             "(a k) (b k)\n(query :goal (a ?x))\n(query :goal (b ?x) :over all)\n\
              (config :record-alternative-justifications false)\n(config :lattice-sanity-check true)",
@@ -6846,15 +6697,13 @@ mod tests {
         );
     }
 
-    // ── `:expect`, at load — M1c S1c.1.2 T1c.1.2.5 ────────────────
+    // ── `:expect`, at load ─────────────────────────────────────────
     //
     // Every one of these is a load *error* rather than a run that checks
-    // nothing, which is the whole reason the keyword exists. Until M1f
-    // S1f.5.5's T5 so were an unknown query keyword, the obsolete `:mode` and a
-    // malformed `:expect`, the loader's lines until the swap made each a parse
-    // error; they are rows of the grammar's table since
-    // (`ein-ir/tests/grammar_pages.rs`), and what stays here is what a grammar
-    // cannot see.
+    // nothing, which is the whole reason the keyword exists. An unknown query
+    // keyword and a malformed `:expect` are parse errors, rows of the
+    // grammar's table (`ein-ir/tests/grammar_pages.rs`); what is here is what
+    // a grammar cannot see.
 
     #[test]
     fn an_expect_naming_a_relation_the_program_does_not_have_is_a_load_error() {
@@ -6864,8 +6713,8 @@ mod tests {
         );
         assert!(e.contains("nosuch"), "{e}");
         assert!(e.contains("the program names no relation nosuch"), "{e}");
-        // A relation only a rule's `:assert` derives is the program's (M1f
-        // S1f.7.11, W78): a claim may list a fact of it.
+        // A relation only a rule's `:assert` derives is the program's (W78):
+        // a claim may list a fact of it.
         ok(
             "(relation p T P :why \"p holds of {?1} and {?2}\")\n(p A H)\n\
              (rule r () :match (p ?a ?h) :assert (won ?a) :why \"{?a} won\")\n\
@@ -6873,7 +6722,7 @@ mod tests {
         );
     }
 
-    /// Since M1e2 S1e2.1a.5 a query's `:expect` lists projection classes —
+    /// A query's `:expect` lists projection classes —
     /// the goal's atoms under its rows — so a listed fact the goal does not
     /// match is refused, and the message names where a claim about the state
     /// belongs.
@@ -6940,8 +6789,7 @@ mod tests {
         assert_eq!(kb.program().queries.len(), 1);
     }
 
-    /// The second query writes `:over all` since M1f S1f.5.5's swap, where it
-    /// wrote `:mode all`, which the grammar refuses (S1f.5.11).
+    /// A later query, here one with `:over all`, is reached by its index.
     #[test]
     fn a_later_query_is_reachable_by_index() {
         let src = "(a k) (b k)\n(query :goal (a ?x))\n(query :goal (b ?x) :over all)";
@@ -6975,14 +6823,11 @@ mod tests {
         assert_eq!(names(&rule.params), vec!["p"]);
     }
 
-    /// Every pass accumulates rather than stopping at the first problem.
-    /// Since M1f S1f.5.5's swap (T1f.5.5.4) two of the three problems this
-    /// test wrote are the grammar's, `(relation)` with no name and a rule
-    /// named `absent`, so the parser reports both and the loader never sees
-    /// the file (a row of the grammar's table since T1f.5.5.5); the loader's
-    /// passes are held with problems it still owns: a macro declared twice
-    /// (pass 0), a relation declared twice (pass 1) and a rule named after a
-    /// kernel dunder (pass 2, T1f.5.5.11).
+    /// Every pass accumulates rather than stopping at the first problem,
+    /// held with problems the loader owns, not the grammar: a macro declared
+    /// twice (pass 0), a relation declared twice (pass 1) and a rule named
+    /// after a kernel dunder (pass 2). `(relation)` with no name and a rule
+    /// named `absent` are the grammar's, rows of its table.
     #[test]
     fn every_pass_accumulates_rather_than_stopping_at_the_first_problem() {
         let message = err(
@@ -6996,8 +6841,7 @@ mod tests {
         );
     }
 
-    /// **A macro's call written as a fact is refused at load** — M1f S1f.7.12
-    /// (W86): a fact headed by a macro's name, at any depth, one of
+    /// **A macro's call written as a fact is refused at load** (W86): a fact headed by a macro's name, at any depth, one of
     /// `std.macro`'s the program does not import, a relation declared under a
     /// macro's name, and a call inside a fact a claim lists. A call in a
     /// `:match`, an `:assert` or a `:goal` is expanded, and the name written

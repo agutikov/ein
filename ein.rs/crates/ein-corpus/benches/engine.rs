@@ -1,16 +1,14 @@
-//! The M1a benchmark set (T1a.0.4.5) —
+//! The benchmark set —
 //! [design/toolchain-and-layout.md § 8](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#8-benchmarks)
 //!
-//! Eight benches, named as every table in `baseline.md` is written against
-//! them.
+//! Eight benches, each a stage of a run: parsing, the load path, root's
+//! saturation, the matcher over a saturated root, the boundary, a fork, and
+//! the routes answering `-n 1` and `--single`.
 //!
-//! The set was fixed at P1a.0, before there was any result to be tempted by —
-//! a benchmark set chosen after seeing the numbers measures what the
-//! implementation happens to be good at — and each row went live as its engine
-//! landed. **As of S1a.4.5 none is pending**: the last two, `solve_fast` and
-//! `solve_exhaustive`, are the two the whole set exists for. Since M1e2
-//! S1e2.1c.5 they are `region_n1` and `region_single`, the same two questions
-//! asked of the routes, the walk they timed having been deleted.
+//! The set is fixed ahead of its results — a benchmark set chosen after
+//! seeing the numbers measures what the implementation happens to be good at.
+//! The last two, `region_n1` and `region_single`, are the two the whole set
+//! exists for: the two questions a puzzle is asked, of the routes.
 //!
 //! Refresh with `cargo bench`.
 
@@ -20,7 +18,7 @@ use criterion::{Criterion, criterion_group, criterion_main};
 
 /// The allocator `ein` ships with — see `ein-cli/src/main.rs`. Without this
 /// line the bench set would time the system allocator while the binary ran on
-/// snmalloc, and §6's table would stop agreeing with §1's.
+/// snmalloc, and measure a program other than the one that ships.
 /// `--no-default-features` is the system-allocator arm.
 #[cfg(feature = "snmalloc")]
 #[global_allocator]
@@ -34,8 +32,8 @@ fn repo_root() -> PathBuf {
         .expect("repo root")
 }
 
-/// `parse` — zebra2.ein, zebra.ein and the seven stdlib modules, in one
-/// measurement (S1a.1.1).
+/// `parse` — zebra2.ein, zebra.ein and every stdlib module, in one
+/// measurement.
 fn frontend(c: &mut Criterion) {
     let root = repo_root();
     let mut sources: Vec<(String, String)> = Vec::new();
@@ -44,8 +42,8 @@ fn frontend(c: &mut Criterion) {
         sources.push((rel.to_string(), std::fs::read_to_string(&path).expect(rel)));
     }
     let stdlib = root.join("stdlib");
-    // Every module at any depth: the calculator's are under `math/` since
-    // M1f S1f.6.31, named by their path from `stdlib/`.
+    // Every module at any depth (the calculator's are under `math/`), named
+    // by its path from `stdlib/`.
     for path in ein_corpus::ein_files_under(&stdlib) {
         let name = path
             .strip_prefix(&stdlib)
@@ -74,8 +72,8 @@ fn frontend(c: &mut Criterion) {
         })
     });
     group.bench_function("zebra2_resolve", |b| {
-        // P1a.1's acceptance number: parse **plus** import resolution and
-        // macro expansion of zebra2, which pulls three stdlib modules in.
+        // The front end whole: parse **plus** import resolution and macro
+        // expansion of zebra2, which pulls three stdlib modules in.
         let text = &sources[0].1;
         let base = root.join("examples");
         b.iter(|| {
@@ -93,7 +91,7 @@ fn frontend(c: &mut Criterion) {
     });
     group.finish();
 
-    // parse + import resolution + macro expansion + index build (S1a.2.3).
+    // parse + import resolution + macro expansion + index build.
     let mut group = c.benchmark_group("load");
     group.bench_function("zebra2", |b| {
         let path = root.join("examples/zebra2.ein");
@@ -128,7 +126,7 @@ fn zebra2_root() -> (ein_ir::Ast, ein_core::Terms, ein_core::Kb) {
 }
 
 fn deductive(c: &mut Criterion) {
-    // Root saturation from a freshly loaded KB (S1a.3.3).
+    // Root saturation from a freshly loaded KB.
     let mut group = c.benchmark_group("saturate_root");
     group.bench_function("zebra2", |b| {
         let path = repo_root().join("examples/zebra2.ein");
@@ -159,7 +157,8 @@ fn deductive(c: &mut Criterion) {
     group.finish();
 
     // `match::run` over the saturated root, every plan — the bench the
-    // register matcher (design/05) has to move.
+    // register matcher ([design/matcher.md](../../../../docs/ein/ein.rs/design/matcher.md))
+    // is shaped against.
     let (ast, terms, kb) = zebra2_root();
     let rules: Vec<_> = kb.program().rules.values().cloned().collect();
     let mut terms_mut = terms;
@@ -188,14 +187,14 @@ fn deductive(c: &mut Criterion) {
     });
     group.finish();
 
-    // The boundary (design/06 § Boundary) — **80 % of a `zebra` root
-    // saturation**, which is why the workload is that saturation rather than
-    // a single round: a round is not repeatable without rebuilding the state
-    // that produced it, and the state is the saturation.
-    // `examples/engine_cost.rs` reports the split, so the share this bench
-    // measures is a number rather than an assumption. **Both puzzles**:
-    // *zebra2* is the workload the other rows time, and `zebra` stays because
-    // design/README quotes its 80 % split.
+    // The boundary ([design/saturation.md § 1](../../../../docs/ein/ein.rs/design/saturation.md#1-two-phases)),
+    // timed over a whole root saturation rather than a single round: a round
+    // is not repeatable without rebuilding the state that produced it, and
+    // the state is the saturation. `ein-infer`'s `examples/engine_cost.rs`
+    // reports the boundary's share of each saturation, so the share this
+    // bench measures is a number rather than an assumption. **Both
+    // puzzles**: *zebra2* is the workload the other rows time, and `zebra` is
+    // the other program that example reports the split for.
     let mut group = c.benchmark_group("boundary");
     for rel in ["examples/zebra.ein", "examples/zebra2.ein"] {
         let name = rel.trim_start_matches("examples/").trim_end_matches(".ein");
@@ -226,9 +225,9 @@ fn deductive(c: &mut Criterion) {
         });
     }
     group.finish();
-    // Fork + first delta write. One fork is cheap; it is measured because
-    // P1a.7 needs hundreds of thousands of them, which is a different
-    // question from "is one fork fast" (S1a.2.2).
+    // Fork + first delta write. One fork is cheap; it is measured because a
+    // search takes a great many of them, which is a different question from
+    // "is one fork fast".
     let root = repo_root();
     let mut ast = ein_ir::Ast::new();
     let mut terms = ein_core::Terms::new();
@@ -261,11 +260,6 @@ fn deductive(c: &mut Criterion) {
 /// **These measure the search, not the run.** Parse and load have their own
 /// benches, so folding them in would credit this row with two others'
 /// results. What is timed is root's saturation, H and the route.
-///
-/// **They replace `solve_fast` and `solve_exhaustive`** (M1e2 S1e2.1c.5,
-/// 2026-11-03), which timed the walk, deleted on the user's ruling of that
-/// day. The new names are new rows, so that no table in `baseline.md` reads a
-/// route's number against the walk's.
 ///
 /// The batch reloads the KB every iteration, because a route saturates root in
 /// place, so a second run on the same KB would start from a fixpoint.

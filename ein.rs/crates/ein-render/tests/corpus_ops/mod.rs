@@ -1,9 +1,8 @@
 //! The corpus × op sweep, shared by the two tests that walk it.
 //!
 //! `id_order_invariance` runs every pair once, digests it against the golden
-//! (`corpus_shapes.rs` did, until M1f S1f.6.39) and runs it again under a
-//! permuted id space; `jobs_invariance` runs the pairs a job count reaches at
-//! `--jobs N`. Both need the same answer to "what are the observable
+//! and runs it again under a permuted id space; `jobs_invariance` runs the
+//! pairs a job count reaches at `--jobs N`. Both need the same answer to "what are the observable
 //! surfaces, and how is one produced", and a second copy of that list would be
 //! a second opinion about what the engine renders.
 //!
@@ -31,18 +30,14 @@ pub use searches::{SWEEP_BUDGET, SWEEP_LIMIT, searches};
 ///
 /// The list is every rendering built to be *comparable*: the frontend dumps,
 /// the loaded KB's shape, root saturation's verbose event stream, the plan,
-/// the match, the NAF map, the explain shapes, every DOT view, and — since
-/// M1e2 S1e2.1a.5's switch — what `ein solve` prints:
+/// the match, the NAF map, the explain shapes, every DOT view, and what
+/// `ein solve` prints:
 /// the read-out under each question, the region trace, and `ein render
-/// lattice`'s drawing of the nodes a description visits; and since M1e2
-/// S1e2.2.12 every core a run reports, under each question ([`core_ops`]),
+/// lattice`'s drawing of the nodes a description visits; every core a run
+/// reports, under each question ([`core_ops`]),
 /// and `ein oracle --dump`'s cube, which hold the dead nodes' cores no line
-/// of the read-out prints. The walk's surfaces
-/// (its solve table, trace, `--dump-states` tree, lattice proof and commit
-/// shape) left with its CLI path, and its three DOT views went with the walk
-/// at M1e2 S1e2.1c.5. Its generator's own pass, the `hyp` and `hyp+closed`
-/// digests, went with that pass: H is held by the read-out's `universe` rows
-/// and every answer. An id leak that reaches an output reaches
+/// of the read-out prints. H has no op of its own: the read-out's `universe`
+/// rows and every answer hold it. An id leak that reaches an output reaches
 /// one of these, and one that reaches nothing here reaches nothing a user can
 /// see.
 pub fn ops() -> Vec<Op> {
@@ -66,14 +61,15 @@ pub fn ops() -> Vec<Op> {
     out
 }
 
-/// Every core a run reports, under each of [`READ_OUT_MODES`]'s questions —
-/// M1e2 S1e2.2.12. The read-out prints root's core and four minimal holes';
+/// Every core a run reports, under each of [`READ_OUT_MODES`]'s questions.
+/// The read-out prints root's core and four minimal holes';
 /// what it does not print, every member of `N` and every dead node a route
 /// visited, a run writes into `--dump-answer`'s `nogoods.json` and
 /// `--dump-lattice`'s `nodes.json`, each with the rules that refuted it, and
-/// no op held those until these: a dead node's `refuted_by` moved with the
-/// interner on 19 corpus files, and on `examples/ein-bugs/fork-delta-order.ein`
-/// its core did (`W11/fork-delta-order`).
+/// these ops hold them: a dead node's `refuted_by` and its core are read off
+/// the order its fork's derivations arrive in, which is where an id order
+/// would show (`W11/fork-delta-order`,
+/// `examples/ein-bugs/fork-delta-order.ein`).
 pub fn core_ops() -> Vec<Op> {
     READ_OUT_MODES.iter().map(|(m, _)| Op::Cores(m)).collect()
 }
@@ -121,9 +117,9 @@ pub const READ_OUT_MODES: [(&str, Mode); 5] = [
 /// The frontend surfaces, which have no CLI of their own and are therefore
 /// invisible to a sweep over `ein` processes: `parse`'s accept/reject *and
 /// message*, the canonical and compact dumpers, and the two
-/// import-resolution ops. `minimize`, the tree-shake a `--dump-answer` state
-/// file's program went through, went at M1f S1f.6.35: an import brings its
-/// module whole, and the state file writes the program as `resolve` reads it.
+/// import-resolution ops. There is no tree-shake op: an import brings its
+/// module whole, and a `--dump-answer` state file writes the program as
+/// `resolve` reads it.
 pub const IR_MODES: [&str; 4] = ["parse", "dump-compact", "resolve", "expand"];
 
 #[derive(Clone, Copy)]
@@ -146,9 +142,9 @@ pub enum Op {
     /// `ein solve --trace`'s markdown, under describe.
     RegionTrace,
     /// `ein solve --dump-answer`'s state files, under describe, each fact with
-    /// its provenance and the fact in English — M1f S1f.5.14's T1f.5.14.2,
-    /// whose rendering reads a fact's first recorded justification and so has
-    /// to be held to the same invariance as the rest of the answer.
+    /// its provenance and the fact in English. The rendering reads a fact's
+    /// first recorded justification, and so is held to the same invariance
+    /// as the rest of the answer.
     States,
     /// `ein render lattice`'s DOT.
     RegionLattice,
@@ -187,11 +183,10 @@ impl Op {
     /// **Whether the op takes a job count**: the ones [`run_with`] hands to a
     /// region route, which fans a step's nodes out — the five read-outs, the
     /// region trace, the states, the lattice, the five core sets and the
-    /// oracle (M1f S1f.6.39 T1f.6.39.2). `run_with` dispatches on this, so
+    /// oracle. `run_with` dispatches on this, so
     /// an op outside it never sees the count, and `jobs_invariance` runs
-    /// these alone at `--jobs N`; the 27 others were one computation run
-    /// twice there until S1f.6.39. The DOT views took one until M1e2
-    /// S1e2.1c.5 (`ein_render::shape::dot_shape`'s note).
+    /// these alone at `--jobs N`: every other op, the DOT views among them,
+    /// runs no search, and is one computation at any job count.
     pub fn takes_jobs(self) -> bool {
         matches!(
             self,
@@ -213,10 +208,9 @@ impl Op {
     ///
     /// Under `EIN_NARRATION_STRICT=1` nothing is cut and every movement is
     /// reported, by op: the measurement of what the relaxation covers. Under a
-    /// permuted interner that was 66 renderings, and 158 at eight seeds
-    /// (2026-11-04), until M1e2 S1e2.2.12 stopped a fork's delta following
-    /// the ids: `id_order_invariance` passes strict since, and asserts that
-    /// nothing moves either way.
+    /// permuted interner nothing moves, since a resumed fork's delta is in the
+    /// order its facts were written and not in id order: `id_order_invariance`
+    /// passes strict, and asserts that nothing moves either way.
     pub fn narrow(self, text: &str) -> Option<String> {
         if ein_narration::strict() {
             return Some(text.to_string());
@@ -224,9 +218,9 @@ impl Op {
         Some(match self {
             Op::Dot(view) if ein_narration::is_narration(view) => return None,
             // The region trace is a derivation told step by step, which two
-            // runs may narrate differently — the walk's `markdown` was the same
-            // and compared for presence only (`ein_narration::is_narration`).
-            // The golden still digests it whole, in one id space.
+            // runs may narrate differently, so it is compared for presence
+            // only, as a rendered derivation is (`ein_narration::is_narration`).
+            // The golden digests it whole, in one id space.
             Op::RegionTrace => return None,
             // The three ops the relaxation never touches: the frontend modes,
             // the loaded KB's shape, and root saturation's event stream. None
@@ -250,12 +244,12 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
     run_with(terms, path, op, 1)
 }
 
-/// The same, at a chosen job count — [design/parallelism.md § 1](../../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
-/// T1a.7.5.3's axis.
+/// The same, at a chosen job count — the axis of
+/// [design/parallelism.md § 1](../../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract).
 ///
 /// It is a parameter and not a global because `jobs_invariance` runs the same
 /// op at two job counts inside one process. **Only an op [`Op::takes_jobs`]
-/// receives it** (M1f S1f.6.39 T1f.6.39.2): [`run_loaded`] dispatches on that
+/// receives it**: [`run_loaded`] dispatches on that
 /// predicate, and every other op is rendered by code that has no job count to
 /// read, so the set the count reaches is read off this code and not written
 /// down beside it.
@@ -278,7 +272,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
 impl Op {
     /// **Whether the op reads the loaded program**: every op but the frontend
     /// modes and the DOT views drawn off the parse. These are what [`Loads`]
-    /// runs on a copy of one load (M1f S1f.6.39); the others never
+    /// runs on a copy of one load; the others never
     /// load, and touch no `Terms`.
     pub fn loads(self) -> bool {
         match self {
@@ -406,20 +400,20 @@ struct Slot {
     searches: OnceLock<bool>,
 }
 
-/// **Each program loaded once, for every op a sweep runs over it** (M1f
-/// S1f.6.39): the first unit of a program
+/// **Each program loaded once, for every op a sweep runs over it**: the
+/// first unit of a program
 /// that needs the load makes it, every op runs on a copy of it (`Ast`,
 /// `Terms` and `Kb` are `Clone` for this), and the last unit of the program
 /// drops it, so the sweep holds the loads of the programs in flight and no
 /// more. A copy reads as the load it was taken from, ids and all, so every op
-/// renders what it rendered over a load of its own; the golden is the proof,
-/// unchanged by the change, and `id_order_invariance`'s permuted runs, which
+/// renders what it renders over a load of its own; the golden is the proof,
+/// the same either way, and `id_order_invariance`'s permuted runs, which
 /// load afresh into the permuted id space, compare against a run made this
 /// way.
 ///
 /// Import resolution, which reads and parses every stdlib module a program
-/// imports, was most of each op's cost: about 30 of the 41 ops resolved
-/// again (S1f.6.39 § T6).
+/// imports, is most of what an op that loads costs, and a program's ops
+/// share one.
 pub struct Loads {
     files: Vec<PathBuf>,
     slots: Vec<Slot>,
@@ -771,10 +765,10 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
             .resolve_imports(ast, forms, base)
             .map_err(|e| e.0)
             .and_then(|f| {
-                // One macro reading, the loader's, since M1e S1e.3.1 —
-                // `CO-M4`. A program the loader refuses is refused here too,
-                // with the same sentences, where the dump used to render the
-                // expansion of whichever duplicate came first.
+                // One macro reading, the loader's: a program the loader
+                // refuses is refused here too, with the same sentences, and
+                // never rendered as the expansion of whichever duplicate
+                // came first.
                 let macros = collect_macros(ast, &f).map_err(|problems| problems.join("; "))?;
                 expand_rule_clauses(ast, &f, &macros)
                     .map(|x| dump_canonical(ast, &x))
@@ -798,7 +792,7 @@ pub fn pair_name(rel: &Path, op: Op) -> String {
 /// `render::hashed_id` uses for a DOT node id. Not a security claim: the
 /// question is whether a rendering changed, and 64 bits answers it.
 ///
-/// One definition for the sweeps (M1f S1f.6.39): `id_order_invariance` banks
+/// One definition for the sweeps: `id_order_invariance` banks
 /// it, and `jobs_invariance` holds a `--jobs N` run to what it banked.
 pub fn digest(text: &str) -> String {
     use md5::Digest;
@@ -819,10 +813,9 @@ pub fn manifest_line(name: &str, text: &str) -> String {
 /// Two of the sweep's surfaces quote a *resolved* path back at the reader: a
 /// `ParseError` names the file it failed in, and `import cycle: …` names the
 /// chain, which `Resolver::locate` canonicalises so that two spellings of one
-/// file are one node in the cycle graph. Digested raw, both bank the blessing
-/// machine's checkout into a checked-in golden — green where it was blessed
-/// and red everywhere else, which is what CI caught on 107 of these lines
-/// while `cargo test --workspace` was clean locally.
+/// file are one node in the cycle graph. Digested raw, both would bank the
+/// blessing machine's checkout into a checked-in golden — green where it was
+/// blessed and red on every other checkout.
 ///
 /// `corpus_cli` gets the same normalisation for free by running the binary
 /// with the repo as its working directory and naming its cells relatively;
@@ -835,13 +828,13 @@ pub fn portable(root: &str, text: &str) -> String {
     text.replace(root, "<repo>")
 }
 
-/// **The golden as `name → digest`** (M1f S1f.6.39): what a `--jobs 1` run
+/// **The golden as `name → digest`**: what a `--jobs 1` run
 /// of each pair rendered when it was banked, the bytes [`digest`] reads,
 /// narration and all, the checkout made [`portable`].
 ///
 /// A sweep that finds its run's digest here has the `--jobs 1` rendering's
 /// digest without computing it. The premise is that the golden is today's,
-/// and `id_order_invariance` is what fails when it is not, in the same tier;
+/// and `id_order_invariance` is what fails when it is not;
 /// a pair whose digest differs, or that the golden lacks, computes the run.
 /// Empty if the file is missing.
 pub fn golden_digests() -> std::collections::BTreeMap<String, String> {

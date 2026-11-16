@@ -3,10 +3,6 @@
 //! quotes and an inline derivation slice — and an owing state's debts as
 //! lines. The region trace ([`super::region`]) tells root's derivation and
 //! each state's with them.
-//!
-//! The walk's linearizer, which turned one solve's lattice proof into a story
-//! with reductios and a closing lattice DAG, went with the walk at M1e2
-//! S1e2.1c.5 (2026-11-03); the module keeps its name.
 
 use ein_core::{FactId, Kb, ProvKind, Terms};
 use ein_infer::firing::Firing;
@@ -68,7 +64,7 @@ fn step_from_firing(
 ) -> TraceStep {
     // `firing.derived` is a tuple: the step is headed by its first
     // conclusion, which names its section, and carries the others in
-    // `more` (M1f S1f.6.25, E-5); the per-step slice renders the fan-out.
+    // `more` (Q-M1f.214); the per-step slice renders the fan-out.
     let derived = fact_ref(terms, firing.derived[0]);
     let mut step = TraceStep::new(n, terms.sym(firing.rule).to_string(), derived);
     step.premises = firing
@@ -116,8 +112,8 @@ fn step_from_firing(
     step
 }
 
-/// The steps of `firings`, numbered from 1, as the walk's trace builds them:
-/// what a region trace tells for root and for each state.
+/// The steps of `firings`, numbered from 1: what a region trace tells for
+/// root and for each state.
 pub fn steps_of(
     ast: &Ast,
     terms: &Terms,
@@ -130,7 +126,7 @@ pub fn steps_of(
 }
 
 /// [`steps_of`], and with `relevant` (`--relevant`) only the goal-relevant
-/// slice, as the walk's trace prunes it.
+/// slice ([`relevant_firings`]).
 pub fn steps_of_with(
     ast: &Ast,
     terms: &Terms,

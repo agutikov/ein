@@ -1,4 +1,4 @@
-//! The loader's contract — S1a.2.3's acceptance.
+//! The loader's contract.
 //!
 //! The KB has no CLI surface of its own: `ein_core::shape` renders the
 //! registries, the fact list and the seven indexes as one deterministic text.
@@ -11,10 +11,10 @@
 //! | the 32-body `(config …)` coercion | [`the_config_coercion_table_is_stable`], against a checked-in table |
 //! | the accumulated message | [`load_errors_accumulate_in_pass_order`], the same way |
 //! | 16 of the `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
-//! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag (M1f T1f.5.14.6) | [`require_why_refuses_each_form_without_one`] |
-//! | a macro is asked for a `:why` too, since S1f.5.5's swap made its parser the one that reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
-//! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB, and since M1f T1f.5.14.7 it refuses none | [`require_why_decides_loading_only`] |
-//! | the default requires a `:why` (M1f T1f.5.14.7), and `require_why: false` loads without one | [`the_default_requires_a_why_and_false_loads_without`] |
+//! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag | [`require_why_refuses_each_form_without_one`] |
+//! | a macro is asked for a `:why` too, since its parser reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
+//! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB, and it refuses none | [`require_why_decides_loading_only`] |
+//! | the default requires a `:why`, and `require_why: false` loads without one (Q-M1f.62) | [`the_default_requires_a_why_and_false_loads_without`] |
 
 use ein_core::{Terms, shape};
 use ein_corpus::{corpus_files, golden, golden_path, repo_root};
@@ -74,24 +74,19 @@ fn layering_holds_after_every_load() {
     assert!(loaded >= 60, "only {loaded} corpus files loaded");
 }
 
-/// The loader's own fixtures, against the committed `.expected` files. The
-/// eleven import ones landed with S1a.1.3.
+/// The loader's own fixtures, against the committed `.expected` files.
 ///
-/// **The four `reserved_open_*` are M1e S1e.2.1's**, and they are one
-/// declaration reached four ways: written directly, imported flat via
-/// `:symbols`, imported qualified, imported under `:as`. `CO-H2` is that the
-/// last two used to **load with exit 0** — `imports.rs` filtered its
-/// qualification against a hand-maintained copy of the reserved list, eight
-/// names where `ein-core` had nine, and M1d S1d.2.3 added `open` to one of
-/// them. Four files rather than one because the route is what differed, and a
-/// fixture that only ever took the route that worked is the fixture that let
-/// this ship. **Since M1f S1f.5.5's swap (T1f.5.5.4)** `open` is a word a
-/// position gives a meaning to and no name a declarator takes (the paper
-/// grammar's default 1), so `(macro open …)` is refused at the parse, and each
-/// of the four reports that error in `reserved_open_direct.ein`, the module
-/// every route reaches; the route-independence `CO-H2` was about is held
-/// since by `imports_semantics`' cells over a kernel dunder, which the grammar
-/// reads as a name.
+/// **The four `reserved_open_*`** are one declaration reached four ways:
+/// written directly, imported flat via `:symbols`, imported qualified,
+/// imported under `:as`. Four files rather than one because the route is what
+/// can differ: a module's declaration takes its full name, and one that did
+/// so against a copy of the reserved list of its own would let a reserved
+/// name load by two of the routes. `open` is a word a position gives a
+/// meaning to and no name a declarator takes, so `(macro open …)` is refused
+/// at the parse, and each of the four reports that error in
+/// `reserved_open_direct.ein`, the module every route reaches; the loader's
+/// route-independence is held by `imports_semantics`' cells over a kernel
+/// dunder, which the grammar reads as a name.
 #[test]
 fn the_load_negative_fixtures_are_byte_identical() {
     let root = repo_root();
@@ -101,16 +96,13 @@ fn the_load_negative_fixtures_are_byte_identical() {
         .unwrap_or_else(|_| root.join("stdlib"));
 
     let mut bad = Vec::new();
-    // Since M1f S1f.5.5's swap (T1f.5.5.4) nine of these are refused at the
-    // parse and moved to `examples/broken/`, where
+    // Nine more are refused at the parse, under `examples/broken/`, where
     // `grammar_decisions.rs` holds their reports: `config_bad_value`,
     // `config_unknown_flag`, `empty_absent`, `hrule_reserved_name`,
     // `macro_reserved_name`, `relation_malformed`, `relation_needs_a_name`,
-    // `relation_reserved_name` and `rule_reserved_name`; and
-    // `relation_parameter_int` retired (S1f.5.4's Q2 (a)), `(mirror 3)`
-    // naming the relation `3`.
-    // `eq_in_a_macro_body` since M1f S1f.5.24 (W66), which moved it from
-    // `examples/broken/compile/`: the loader holds a macro's expansion to the
+    // `relation_reserved_name` and `rule_reserved_name`; and `(mirror 3)`
+    // names the relation `3`, so it has no fixture here.
+    // `eq_in_a_macro_body` (W66): the loader holds a macro's expansion to the
     // grammar's shapes, its line the macro body's position first.
     for name in [
         "derivation_cycle",
@@ -160,20 +152,17 @@ fn the_load_negative_fixtures_are_byte_identical() {
 /// one file so a change reads as a diff of the affected bodies rather than as
 /// thirty-two separate failures.
 ///
-/// **Since M1f S1f.5.5's swap (T1f.5.5.4) most rows are parse errors**, the
-/// rows kept as the record of each path: a `(config …)` flag takes `true` or
-/// `false` and nothing else, so a string (S1f.5.2), a name of digits or any
-/// other name, a variable, a nested fact and a keyword no form takes are
-/// refused at the parse, each with its repairs, and a retired flag with the
-/// note naming the stage that retired it (the paper grammar's default 5). Only
-/// `true`, `false`, the empty block and the last-one-wins rows reach the
-/// loader; the coercion's other branches are reached by no program since, and
-/// go with T1f.5.5.5.
+/// **Most rows are parse errors**, each a path a body can take: a
+/// `(config …)` flag takes `true` or `false` and nothing else, so a string, a
+/// name of digits or any other name, a variable, a nested fact and a keyword
+/// no form takes are refused at the parse, each with its repairs, and a
+/// retired flag with its note. Only `true`, `false`, the empty block and the
+/// last-one-wins rows reach the loader; the coercion's other branches are
+/// reached by no program.
 #[test]
 fn the_config_coercion_table_is_stable() {
     let bodies = [
-        // Booleans: the atoms, the strings, and the wrong shapes. On
-        // `:warn-derived-naf` until M1e2 S1e2.2.5 retired it.
+        // Booleans: the atoms, the strings, and the wrong shapes.
         "(config :lattice-sanity-check true)",
         "(config :lattice-sanity-check false)",
         "(config :lattice-sanity-check \"true\")",
@@ -183,10 +172,10 @@ fn the_config_coercion_table_is_stable() {
         "(config :lattice-sanity-check ?x)",
         "(config :lattice-sanity-check 1..5)",
         "(config :lattice-sanity-check (nested a))",
-        // Since M1e2 S1e2.1a.5 every flag a program can set is a bool, and the
-        // string, int and float flags below are retired: their rows pin the
-        // refusal, which names why, and the coercions they reached are the
-        // container's alone.
+        // Every flag a program can set is a bool, and the string, int and
+        // float flags below are retired: their rows pin the refusal, which
+        // names why, and the coercions they would reach are the container's
+        // alone.
         // Strings: an atom and a string coerce, an int does not.
         "(config :hypgen-scoring most-constrained)",
         "(config :hypgen-scoring \"popularity\")",
@@ -271,11 +260,10 @@ fn load_shape_text(text: &str) -> Answer {
 /// reachable only by hand-building an AST, since `(?R a b)` is a parse
 /// error. Facts either parse or load.
 ///
-/// **Since M1f S1f.5.5's swap (T1f.5.5.4) the first four programs are parse
-/// errors**, kept as the record: `(relation)`, `(relation eq)`, `(relation r
-/// (A B))`, a rule or a macro named `absent` and an unknown `(config …)` flag
-/// are the grammar's, and the parse reports every one recovery reaches before
-/// the loader runs. The fifth, in the final grammar, holds the pass order with
+/// **The first four programs are parse errors**: `(relation)`, `(relation
+/// eq)`, `(relation r (A B))`, a rule or a macro named `absent` and an
+/// unknown `(config …)` flag are the grammar's, and the parse reports every
+/// one recovery reaches before the loader runs. The fifth holds the pass order with
 /// errors the loader still owns: a rule with no `:assert`, a relation declared
 /// twice, a macro declared twice and a derivation cycle.
 #[test]
@@ -293,9 +281,9 @@ fn load_errors_accumulate_in_pass_order() {
         // A macro rejected for its name is *not* registered, so the rule that
         // invokes it keeps the unexpanded form rather than expanding it.
         "(macro absent (?p) (rel ?p))\n(rule r () :match (absent ?a) :assert (y ?a))",
-        // One loader error per pass, in the final grammar.
-        // Each form carries its `:why`, the default since M1f T1f.5.14.7, so
-        // the loader's errors are the only lines.
+        // One loader error per pass.
+        // Each form carries its `:why`, which the default requires, so the
+        // loader's errors are the only lines.
         "(r a b :rule x :using ((r c d)))\n(r c d :rule x :using ((r a b)))\n\
          (rule r () :match (x ?a) :why \"x holds of {?a}, and with no :assert the rule concludes nothing\")\n\
          (relation dup :why \"dup holds\")\n(relation dup :why \"dup holds\")\n\
@@ -315,7 +303,7 @@ fn load_errors_accumulate_in_pass_order() {
     }
 }
 
-// ── `:why` required at load — M1f S1f.5.14, T1f.5.14.6 ─────────────────
+// ── `:why` required at load ────────────────────────────────────────────
 
 /// One program's load, under `require_why` or not, from text.
 fn load_text_with(text: &str, require_why: bool) -> Result<String, String> {
@@ -337,11 +325,10 @@ fn missing(head: &str, name: &str) -> String {
 }
 
 /// **With `require_why` on, a relation, a rule and an hrule without a `:why`
-/// are each refused with one line naming the form; with it off, the default,
-/// each loads** — the user's ruling of 2026-11-08: *":why is optional in
-/// grammar and loader has a flag that makes it required, start with default
-/// false"*. A `:why` that is not a string is no template (the loader's
-/// strings-only guard), so it is refused as none.
+/// are each refused with one line naming the form; with it off, each loads**
+/// (Q-M1f.62): the grammar takes a `:why` as optional, and the loader's flag
+/// requires it. A `:why` that is not a string is no template; the grammar
+/// refuses it at the parse.
 #[test]
 fn require_why_refuses_each_form_without_one() {
     // Every form carries its `:why`; each case takes one away.
@@ -371,9 +358,8 @@ fn require_why_refuses_each_form_without_one() {
             "guess",
         ),
     ];
-    // A `:why` that is no string was a fourth case until S1f.5.5's swap: the
-    // hand-written parser read one, and the loader's strings-only guard took
-    // it for none. The grammar refuses it at the parse.
+    // A `:why` that is no string is no fourth case: the grammar refuses it at
+    // the parse.
     assert!(
         ein_ir::parse(
             &mut Ast::new(),
@@ -413,9 +399,7 @@ fn require_why_refuses_each_form_without_one() {
 }
 
 /// **A macro is asked for its `:why`**, as a relation, a rule and an hrule
-/// are. Until S1f.5.5's swap (T1f.5.5.4) only a `generated-parser` build
-/// asked, since the hand-written parser, the shipped one, refused a macro's
-/// `:why`; the swap deleted that `cfg`, and this test's first arm with it.
+/// are (Q-M1f.59).
 #[test]
 fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
     let load = |text: &str| {
@@ -433,8 +417,7 @@ fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
     assert_eq!(load(without), Err(missing("macro", "owns")));
 }
 
-/// **The default requires it** since M1f S1f.5.14's T1f.5.14.7, the user's
-/// *"then after other stages finished swith to default true"*: `load`, the
+/// **The default requires it**: `load`, the
 /// entry with no options, refuses a declaration with no `:why`, and
 /// `require_why: false`, the CLI's `--no-require-why`, loads it (Q-M1f.62).
 #[test]
@@ -454,25 +437,21 @@ fn the_default_requires_a_why_and_false_loads_without() {
     assert!(load_text_with(text, false).is_ok());
 }
 
-/// **`require_why` decides only whether a program loads** — the user's
-/// ruling of 2026-11-08, *"yes, the flag only decides loading"*. Over every
-/// corpus program: one that does not load without the flag does not load with
-/// it; one the flag refuses is refused by `has no :why` lines and nothing
-/// else; and one it lets through loads to the same KB, registries, facts and
-/// indexes, as without it. The stdlib's modules are all let through: its 77
-/// rules and its two macros, `forall` and `unknown`, carry their `:why`
-/// (the macros' since S1f.5.5's swap), and it declares no relation and no
-/// hrule.
+/// **`require_why` decides only whether a program loads** (Q-M1f.62). Over
+/// every corpus program: one that does not load without the flag does not
+/// load with it; one the flag refuses is refused by `has no :why` lines and
+/// nothing else; and one it lets through loads to the same KB, registries,
+/// facts and indexes, as without it. The stdlib's modules are all let
+/// through: every relation, rule and macro of them carries its `:why`.
 ///
-/// **And it refuses none** since M1f S1f.5.14's T1f.5.14.7, which wrote every
-/// missing `:why` of the corpus: every program that loads without the flag
-/// loads with it, so the flag can be the default. Until then the sweep asked
-/// that both outcomes be reached, so that it was looking at something; a
-/// program written since without a `:why` fails it here, by name.
+/// **And it refuses none**: every corpus program carries its `:why`s
+/// (Q-M1f.57), so every program that loads without the flag loads with it,
+/// and the flag can be the default. A program written without a `:why` fails
+/// here, by name.
 #[test]
 fn require_why_decides_loading_only() {
     let (mut same, mut refused) = (0, 0);
-    // A file a unit on the corpus sweeps' pool (M1f S1f.6.39); a unit's
+    // A file a unit on the corpus sweeps' pool; a unit's
     // `(same, refused)`, summed in order.
     let files = corpus_files();
     let found = ein_corpus::pool::map(
@@ -531,7 +510,7 @@ fn require_why_decides_loading_only() {
         same += s;
         refused += r;
     }
-    // Every corpus program carries its `:why`s (T1f.5.14.7), and the sweep
+    // Every corpus program carries its `:why`s (Q-M1f.57), and the sweep
     // is looking at something.
     assert!(
         same > 300 && refused == 0,
@@ -540,12 +519,10 @@ fn require_why_decides_loading_only() {
     eprintln!("{same} let through, {refused} refused");
 }
 
-// ── A template names every variable it can reach — M1f S1f.5.4, T1f.5.4.5 ──
+// ── A template names every variable it can reach ──
 
 /// **A template that writes a reference to a variable holding `}` is refused,
-/// and one that reaches its variables loads** — M1f S1f.5.4's T1f.5.4.5
-/// (W37), the question its fix settles, taken by default on the user's
-/// instruction of 2026-11-09 as S1f.5.5's T9 review recommended.
+/// and one that reaches its variables loads** (W37, Q-M1f.11).
 ///
 /// A reference reads a variable's name up to its first `}`
 /// (`ein_core::why::render_why`), and `}` is one of the name rule's

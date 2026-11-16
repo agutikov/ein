@@ -1,26 +1,18 @@
-//! The rendered trace, against checked-in goldens — S1a.6.11's real solves.
+//! The rendered trace, against checked-in goldens over real solves.
 //!
 //! `tests/golden/trace_*.md` are real runs. A rendered trace is narration —
 //! two runs can narrate different amounts of the same derivation — so the
 //! invariance sweeps compare one for presence only and `corpus_shapes.md5`
-//! can only say that one moved; these say what. Since M1e2 S1e2.1a.5 they are
+//! can only say that one moved; these say what. They are
 //! **region traces**, `ein solve --trace`'s `# Region trace`
-//! ([`ein_render::trace::region`]).
-//!
-//! Until M1e2 S1e2.1c.5 a second kind sat beside them: `trace_3step.md`, a
-//! synthetic three-step trace through the walk's markdown renderer, and a
-//! test that its `--reorder` emitted every step once. That renderer had no
-//! producer since the walk's trace left its CLI path, and it went with the
-//! walk on the user's ruling of 2026-11-03; the region trace's `--reorder`
-//! is held by `ein-cli/tests/region_modes.rs`'s
-//! `the_trace_takes_its_three_shaping_flags`.
+//! ([`ein_render::trace::region`]). The trace's `--reorder` is held by
+//! `ein-cli/tests/region_modes.rs`'s `the_trace_takes_its_three_shaping_flags`.
 //!
 //! The one that matters most is the **root section**: root's derivation, then
 //! each state's from its commitment, `Assuming …`, with its own steps. That is
-//! the half of the trace
-//! [idea-08](../../../../plans/ideas/08-human-style-deductive-trace.md) is
-//! about, and it is what the accidental fork re-derivation used to stand in
-//! for.
+//! the half of a human-style deductive trace that says what is known before
+//! anything is supposed, and since a fork resumes root's saturation rather
+//! than re-deriving it, the root section is the one place it is told.
 //!
 //! ```text
 //! EIN_BLESS=1 cargo test -p ein-render          # regenerate every golden
@@ -35,7 +27,7 @@ use ein_corpus::{golden, golden_path, repo_root};
 use ein_infer::explore::{self, Ask, Mode as Asked, Which};
 use ein_ir::{Ast, parse};
 
-// ── S1a.6.11 — the goldens over *real* solves ──────────────────────
+// ── the goldens over *real* solves ─────────────────────────────────
 
 /// One fixture per trace shape, chosen small enough to read in a diff, each
 /// under the flag that asks its question.
