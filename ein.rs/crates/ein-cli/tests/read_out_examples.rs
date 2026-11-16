@@ -29,7 +29,7 @@ use std::process::{Command, Stdio};
 
 use ein_corpus::{Scratch, repo_root};
 
-const PAGE: &str = "docs/kernel/inference/read_out_examples.md";
+const PAGE: &str = "docs/ein/user/reference/read-out-examples.md";
 
 struct Block {
     line: usize,

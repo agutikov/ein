@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Write `docs/kernel/inference/read_out_examples.md`, the read-out in real runs.
+"""Write `docs/ein/user/reference/read-out-examples.md`, the read-out in real runs.
 
-The examples page of the read-out reference, `docs/kernel/inference/read_out.md`
-(M1f S1f.5.16, T1f.5.16.2; written for M1e2 T1e2.1a.5.2 under `plans/` until
-then, where that page stays frozen as the record). Every code block on the page
+The examples page of the read-out reference, `docs/ein/user/reference/read-out.md`
+(M1f S1f.5.16, T1f.5.16.2; moved into `docs/ein/user/` by S1f.20.3, which took
+the plan links and the history out of its prose). Every code block on the page
 is one `ein solve` or `ein oracle` run, as the binary prints it: stdout, then
 each stderr line as `stderr: …`, then `exit N`. A block captioned
 `--dump-answer DIR` is the `answer.txt` that run writes. The prose between
@@ -32,9 +32,10 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "docs/kernel/inference/read_out_examples.md"
-# M1e2's page, frozen at S1f.5.16: where the plan links go.
-PLAN = "../../../plans/m1e2_correctness/p1e2.1a_the_solution_region"
+OUT = ROOT / "docs/ein/user/reference/read-out-examples.md"
+# The pages the prose links, relative to OUT.
+QUERY = "../syntax-and-semantics/query.md"
+SOLUTION_SEMANTICS = "../../../kernel/inference/solution_semantics.md"
 
 ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 ap.add_argument("--bin", default=os.environ.get("EIN_BIN", str(ROOT / "ein.rs/target/release/ein")))
@@ -107,17 +108,11 @@ add = S.append
 
 add("""# The read-out in real runs
 
-**What this page is.** The examples for [`read_out.md`](read_out.md), the read-out reference: every block below is one
-run of the binary, written by [`utils/read_out_examples.py`](../../../utils/read_out_examples.py), stdout, then each
-stderr line as `stderr: …`, then the exit code. A block captioned `--dump-answer DIR` is the `DIR/answer.txt` that run
-writes: the read-out with no listing cut. [`ein-cli/tests/read_out_examples.rs`](../../../ein.rs/crates/ein-cli/tests/read_out_examples.rs)
-runs every caption again and compares the block, so the page is the read-out's golden, and
-`ein-cli/tests/read_out_reference.rs` holds that every row label the printer has is printed by one of the blocks. One
-block is not one whole run: X4's scratch variant, whose query block is quoted. Re-write it with
-`python3 utils/read_out_examples.py` in the commit that changes what the read-out prints.
-
-**Since M1f S1f.5.16** (2026-11-09, `79fc14b0`). Until then the page was M1e2's, written for the user's rulings of 2026-10-16; that
-page is frozen where it was, beside [`read_out.md`'s record]("""+PLAN+"""/read_out.md), and no test reads it.
+**What this page is.** The examples for [`read-out.md`](read-out.md), the read-out reference: every block below is one
+run of the binary, stdout, then each stderr line as `stderr: …`, then the exit code. A block captioned `--dump-answer
+DIR` is the `DIR/answer.txt` that run writes: the read-out with no listing cut. One block is not one whole run: X4's
+variant, whose query block is quoted. **The page is generated** from the binary's own runs and not edited by hand, and
+the test suite runs every caption again and compares the block, so every block is what the binary prints.
 
 """)
 add("""---
@@ -150,7 +145,7 @@ add("""---
 
 add("""## X1 — `branching/05_mini_zebra.ein`: everything at once
 
-[`region_examples.md`]("""+PLAN+"""/region_examples.md)'s E1. Two people, two drinks and two pets; the clues put Alice
+Two people, two drinks and two pets; the clues put Alice
 with the tea and the cat, and Bob is open. Every row of the default read-out is here. ∅ is in R, root being alive and
 owing nothing (the program states no obligation), so the minimal line is {∅}. The maximal state is reached by four commitments, three
 of them minimal, and that is the one `(merged …)`. The query asks who drinks the coffee and which pet they keep: on
@@ -161,7 +156,7 @@ add(block(["examples/branching/05_mini_zebra.ein"]))
 
 add("""## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
-[`solution_semantics.md` § 2.5](solution_semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
+[`solution_semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
 example: three candidates, every pair alive, the triple dead, no obligation. One run per question, so the same R can be
 read through each.
 
@@ -172,15 +167,15 @@ add("""**`--maximal`.** The line is listed as states, not as a `(region …)`: a
 (only a query's `:over` names one), and a `(region …)` read back would say that these three are all of R.
 """)
 add(block(["--maximal", "examples/lattice/02_genuine_3set_death.ein"]))
-add("""**`--minimal`.** ∅ is in R, so the line is {∅}: one saturation.
+add("""**`--minimal`.** ∅ is in R, so the line is {∅}, decided at root.
 """)
 add(block(["--minimal", "examples/lattice/02_genuine_3set_death.ein"]))
 add("""**`-n 2`.** The first two states in the route's order, the same two under every lever. Nothing is said about the
 rest, and the exit code is 0: a request, not an expectation.
 """)
 add(block(["-n", "2", "examples/lattice/02_genuine_3set_death.ein"]))
-add("""**`--single`.** The run's own expectation, so the verdict word is printed: `Ambiguity` after two saturations. It
-exits 0, as every answer does.
+add("""**`--single`.** The run's own expectation, so the verdict word is printed: `Ambiguity`, two states found. It exits
+0, as every answer does.
 """)
 add(block(["--single", "examples/lattice/02_genuine_3set_death.ein"]))
 add("""**`--maximal --single`.** The question a restrictions-only program means by *unique*: the maximal line has three
@@ -203,10 +198,9 @@ add(block(["-y", "examples/lattice/02_genuine_3set_death.ein"]))
 
 add("""## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
 
-[`region_examples.md`]("""+PLAN+"""/region_examples.md)'s E5. Two people, two seats, restrictions only. The query is
-`:over maximal`: over all of R the goal `(seat ?who ?slot)` would see every seat fact, so each state would be its own
-class and ∅ the undetermined one. Over the maximal line its answer is two classes, and its claim holds
-([`region_language.md` § 7]("""+PLAN+"""/region_language.md#7-the-migration-named) migrated it).
+Two people, two seats, restrictions only. The query is `:over maximal` ([`query.md`]("""+QUERY+""")): over all of R
+the goal `(seat ?who ?slot)` would see every seat fact, so each state would be its own class and ∅ the undetermined
+one. Over the maximal line its answer is two classes, and its claim holds.
 """)
 add(block(["examples/features/11_expect_ambiguity.ein"]))
 
@@ -218,7 +212,7 @@ lines coincide. The goal `(sits ?p ?s)` names the seats, so each state is its ow
 """)
 add(block(["examples/lattice/07_two_pairs_two_tables.ein"]))
 add("""A goal that hides the seat needs a relation that does not carry it: a projection class is the goal's **atoms**
-under its bindings. The program below is 07 with one relation and one rule added, and it is **not a corpus file**:
+under its bindings. The program below is 07 with one relation and one rule added, and it is **not an example file**:
 
 ```lisp
 (relation pair-at Group Table :why "pair {?1} sits at table {?2}")
@@ -240,7 +234,7 @@ add(f"`ein solve 07_two_pairs_two_tables+pair-at.ein`, the query block\n\n```tex
 add("""## X5 — `lattice/synth/merged_states.ein`: every state merged
 
 *A brings B* and *C brings D*; an obligation needs A or C, and A with C is dead. ∅ owes, so it is not in R, and the
-`owed` row under `∅` names the one instance it owes, through the obligation rule's `:why` (M1f S1f.6.26). The
+`owed` row under `∅` names the one instance it owes, through the obligation rule's `:why`. The
 minimal line is two states, each reached from one candidate. Every state is reached by exactly two commitments, its
 minimal one and that one plus what it brings, so every state gets a `(merged …)`: k_c = 16 against k_s = 8. The
 A-side and the C-side never meet, which is the two components.
@@ -250,13 +244,10 @@ add(block(["examples/lattice/synth/merged_states.ein"]))
 add("""## X6 — `tests/region/04_owing.ein`: R empty, alive nodes owe
 
 Root owes one `total-owed` instance, Ann's Food, and the program states `(solve :no-search)`, so nothing is proposed:
-no candidate, and R is empty of the second kind (between M1f S1f.6.34 and S1f.6.36 both foods were stored as ones Ann
-does not like, which refuted the obligation's two candidates; the keyword says it since).
-The `owing` rows are the frontier, the alive owing nodes with no alive node one fact up (here root itself), each with
+no candidate, and R is empty of the second kind. The `owing` rows are the frontier, the alive owing nodes with no alive node one fact up (here root itself), each with
 what it owes through the rule's `:why`. The printed form is `(region (owing (model)))`: it names no fact because the
 printer closes the **candidates'** relations, which tell R's states apart, and this program has none. The query's
-`over` row says which kind of empty R is: root is alive and owes one instance. (Until M1f S1f.6.34 the example was
-`tests/stdlib/closure/03_closed_and_owing.ein`, an obligation on a closed relation, refused at load since.)
+`over` row says which kind of empty R is: root is alive and owes one instance.
 """)
 add(block(["tests/region/04_owing.ein"]))
 add("""**`--single`.** Expected one state, found none of the owing kind: `Open`.
@@ -279,7 +270,7 @@ add("""## X8 — `lattice/04_obligation_trigger_hole.ein`: a hole
 A hole with no `absent` in any saturation rule. `total-owed meal is-a` makes every diner owe a meal, and
 `seated-dines` derives `(is-a ?g Diner)` from a seat, so the obligation's trigger grows with the commitment: `{(seats
 Ann C1)}` owes, between ∅ and `{(meal Ann Soup), (seats Ann C1)}`, both in R. The static check flags the program and
-route 2 takes the whole cube, four saturations. R is `{∅, {meal}, {meal, seats}}`, and `{seats}` is a **hole**: outside
+route 2 takes the whole cube. R is `{∅, {meal}, {meal, seats}}`, and `{seats}` is a **hole**: outside
 R, between two members of it. The `lattice` block is the detector's warning: what is assumed, the site and what it puts
 at stake, the status the cube shows (exercised, by `total-owed`), the state (no stale fact), the parent paths checked,
 and then each minimal hole with why it is out. The `E` row is the cube's alone.
@@ -303,8 +294,7 @@ printed whole, since it qualifies them. Its `paths` row says the spot check was 
 """)
 add(block(["--count", "examples/lattice/06_friends_tables.ein"]))
 add("""**`--minimal`** on the same program stops at root: ∅ is in R, so the minimal line is {∅} and no other state can be
-on it, decided after one saturation though the program is flagged and past the limit (M1f S1f.5.6). Until then it
-walked the cube to the limit, certified what describe certifies, and counted the other 20 members met.
+on it, decided at root though the program is flagged and past the limit.
 """)
 add(block(["--minimal", "examples/lattice/06_friends_tables.ein"]))
 add("""**`--maximal`** lists no state: the maximal line needs the whole cube, and the row says so, as describe's does.
@@ -343,9 +333,9 @@ states are what it lists. The other members it met go to `--dump-answer`, not to
 is printed without `as :expect`, since it is a lower bound.
 """)
 add(block(["examples/saturation/square-bwd/floors.ein"]))
-add("""**The first questions** cost what [`solve_interface.md` § 3.4]("""+PLAN+"""/solve_interface.md#34-what-it-costs)
-says they do: `-n 1` is root (one saturation), `--single` is `Ambiguity` in two, `--maximal -n 1` is the climb
-(eleven). The climb ends at ⊤, so every node is alive (L1) and ⊤ is the whole maximal line, and the run says so.
+add("""**The first questions** each read a few nodes, which the `work` row counts: `-n 1` is root, `--single` is `Ambiguity`
+after a second state, `--maximal -n 1` is the climb. The climb ends at ⊤, so every node is alive (L1) and ⊤ is the
+whole maximal line, and the run says so.
 """)
 add(block(["-n", "1", "examples/saturation/square-bwd/floors.ein"]))
 add(block(["--single", "examples/saturation/square-bwd/floors.ein"]))
@@ -353,9 +343,9 @@ add(block(["--maximal", "-n", "1", "examples/saturation/square-bwd/floors.ein"])
 
 add("""## X12 — `tests/region/03_merged_or.ein`: a program that states its region
 
-The fixture for `(merged …)` with `(or …)`: the colocation chain, [`region_examples.md`]("""+PLAN+"""/region_examples.md)'s
-E2. Its `(solve … :expect (region …))` is checked against the R the run described, and the `(region …)` printed above
-the query is that claim's own text: one form, both directions.
+A `(merged …)` with `(or …)`: the colocation chain. Its `(solve … :expect (region …))` ([`query.md`]("""+QUERY+"""))
+is checked against the R the run described, and the `(region …)` printed above the query is that claim's own text: one
+form, both directions.
 """)
 add(block(["tests/region/03_merged_or.ein"]))
 add("""**`--count`** on the same program checks no claim, since it reads no state, and says so in one `claims` row, with a
@@ -421,7 +411,7 @@ row, and `refuted by` names the step the core's derivation takes for each fact o
 the core holds.
 """)
 add(block(["examples/ein-bugs/zebra2-bad.ein"]))
-add("""**A core search cut at its budget** (`ein-bugs/wrong-answers/core-search-cut.ein`, W23's witness): the core
+add("""**A core search cut at its budget** (`ein-bugs/wrong-answers/core-search-cut.ein`): the core
 printed is one the search found within 64 environments per fact, and the `core search` row says that a smaller core may
 exist.
 """)
@@ -441,7 +431,7 @@ add(block(["examples/lattice/02_genuine_3set_death.ein"], cmd="oracle"))
 
 add("""## X18 — `tests/region/04_owing.ein --no-search`: root alone
 
-`--no-search` (M1f S1f.6.36) declines to discover R: it saturates root, reports what root is, as describe's `∅` row
+`--no-search` declines to discover R: it saturates root, reports what root is, as describe's `∅` row
 and `owed` block say it, and says in the `R` row that R was not searched. No row counts or lists R. The program states
 `(solve :no-search)` itself, so a bare run would describe R by root alone, as X6 does; the flag reads root the same way
 on any program. Root owes Ann a Food, so ∅ is not in R, the query has no state to answer from, and the claim, which is

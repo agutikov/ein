@@ -546,7 +546,7 @@ fn a_container_writes_the_directory_its_program_writes() {
 /// down to the sparse blocks, whose keys are data (M1e2 S1e2.3.1).
 #[test]
 fn every_summary_counter_is_defined_on_this_page() {
-    let page = std::fs::read_to_string(repo_root().join("docs/kernel/inference/answer_dump.md"))
+    let page = std::fs::read_to_string(repo_root().join("docs/ein/user/reference/answer-dump.md"))
         .expect("the page");
     let section = page
         .split("## The run summary")

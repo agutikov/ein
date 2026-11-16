@@ -51,7 +51,7 @@ use ein_corpus::{Scratch, repo_root};
 use ein_ir::Ast;
 
 /// The guide, repo-relative.
-const GUIDE: &str = "docs/guide";
+const GUIDE: &str = "docs/ein/user/guide";
 
 /// What marks an elision on a guide page.
 const ELLIPSIS: char = '…';
@@ -392,7 +392,7 @@ fn a_planted_refusal_in_a_copy_of_the_guide_fails_it() {
     let loads = scratch.join("loads");
     std::fs::create_dir_all(&copy).expect("the scratch is writable");
     std::fs::create_dir_all(&loads).expect("the scratch is writable");
-    for entry in std::fs::read_dir(repo_root().join(GUIDE)).expect("docs/guide") {
+    for entry in std::fs::read_dir(repo_root().join(GUIDE)).expect("docs/ein/user/guide") {
         let path = entry.expect("a directory entry").path();
         std::fs::copy(&path, copy.join(path.file_name().expect("a name"))).expect("a copy");
     }

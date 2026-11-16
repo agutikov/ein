@@ -1653,8 +1653,8 @@ fn the_pages_name_the_reports_schema() {
     let (name, version) = schema.split_once('/').expect("name/version");
     let version: u32 = version.parse().expect("a number");
     for page in [
-        "docs/kernel/defined_behaviour.md",
-        "docs/kernel/configuration.md",
+        "docs/ein/user/reference/cli.md",
+        "docs/ein/user/reference/config.md",
     ] {
         let text = std::fs::read_to_string(repo_root().join(page)).expect("the page");
         assert!(

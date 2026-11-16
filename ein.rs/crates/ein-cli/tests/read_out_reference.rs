@@ -50,8 +50,8 @@ use serde_json::Value as J;
 
 /// The page, at one path, as `embedding.rs` reads `rust.md`: S1f.20.5's
 /// rule moves a page and its test together.
-const PAGE: &str = "docs/kernel/inference/read_out.md";
-const EXAMPLES: &str = "docs/kernel/inference/read_out_examples.md";
+const PAGE: &str = "docs/ein/user/reference/read-out.md";
+const EXAMPLES: &str = "docs/ein/user/reference/read-out-examples.md";
 
 /// The seven keys the page defines; the others' owners are in its table.
 const ANSWER_KEYS: [&str; 7] = [

@@ -52,7 +52,7 @@ use lrlex::{DefaultLexerTypes, LRNonStreamingLexerDef, LexerDef};
 // ── The page ───────────────────────────────────────────────────────
 
 /// The page the blocks are written into.
-const PAGE: &str = "docs/kernel/ir/03-ein-lang/00_ebnf.md";
+const PAGE: &str = "docs/ein/user/reference/grammar.md";
 
 /// A grammar file, as `build.rs` reads it.
 fn source(name: &str) -> String {
@@ -114,9 +114,9 @@ fn lexical_block() -> String {
     let mut out = String::new();
     writeln!(
         out,
-        "/* ein-ir/src/ein.l, read by lrlex: a token's regular expression, the\n   \
-         start conditions it is tried in, the one it enters, and the name an\n   \
-         error gives it. Written by ein-ir/tests/grammar_pages.rs. */"
+        "/* ein.l: a token's regular expression, the start conditions it is\n   \
+         tried in, the one it enters, and the name an error gives it.\n   \
+         Generated from the grammar file; not edited by hand. */"
     )
     .unwrap();
     for s in def.iter_start_states().filter(|s| s.name() != "INITIAL") {
@@ -147,8 +147,8 @@ fn phrase_block() -> String {
     let mut out = String::new();
     writeln!(
         out,
-        "/* ein-ir/src/ein.y, read by cfgrammar: every rule and its alternatives.\n   \
-         Written by ein-ir/tests/grammar_pages.rs. The start rule is Program. */"
+        "/* ein.y: every rule and its alternatives. Generated from the grammar\n   \
+         file; not edited by hand. The start rule is Program. */"
     )
     .unwrap();
     let start = grm.start_rule_idx();

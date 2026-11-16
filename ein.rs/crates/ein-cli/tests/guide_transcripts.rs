@@ -47,13 +47,17 @@ use std::process::Command;
 use ein_corpus::repo_root;
 
 /// Every page that may carry a marked transcript, repo-relative.
-const PAGES: [&str; 6] = [
+const PAGES: [&str; 10] = [
     "README.md",
-    "docs/guide/README.md",
-    "docs/guide/01_objects_and_relations.md",
-    "docs/guide/02_first_rules.md",
-    "docs/guide/03_rule_families.md",
-    "docs/guide/04_solving_the_whole_puzzle.md",
+    "docs/ein/user/guide/README.md",
+    "docs/ein/user/guide/01_objects_and_relations.md",
+    "docs/ein/user/guide/02_first_rules.md",
+    "docs/ein/user/guide/03_rule_families.md",
+    "docs/ein/user/guide/04_solving_the_whole_puzzle.md",
+    "docs/ein/user/guide/05_jack_drinks_coffee.md",
+    "docs/ein/user/guide/06_zebra_walkthrough.md",
+    "docs/ein/user/guide/examples.md",
+    "docs/ein/user/guide/word-problems.md",
 ];
 
 const OPEN: &str = "<!-- transcript: ";

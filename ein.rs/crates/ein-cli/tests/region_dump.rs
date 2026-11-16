@@ -633,7 +633,7 @@ fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
 /// or an empty list stands in for its fields only where no run fills them.
 #[test]
 fn every_monotonicity_field_is_defined_on_the_page() {
-    let page = std::fs::read_to_string(repo_root().join("docs/kernel/inference/region_dump.md"))
+    let page = std::fs::read_to_string(repo_root().join("docs/ein/user/reference/region-dump.md"))
         .expect("the page");
     let section = page
         .split("### The `monotonicity` block, field by field")

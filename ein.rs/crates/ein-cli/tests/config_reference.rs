@@ -63,11 +63,11 @@ fn repo_root() -> PathBuf {
 }
 
 fn page_path() -> PathBuf {
-    repo_root().join("docs/kernel/configuration.md")
+    repo_root().join("docs/ein/user/reference/config.md")
 }
 
 fn page() -> String {
-    std::fs::read_to_string(page_path()).expect("docs/kernel/configuration.md")
+    std::fs::read_to_string(page_path()).expect("docs/ein/user/reference/config.md")
 }
 
 /// A fixture `<tag>.ein` in `dir`, a [`Scratch`] the calling test owns, so it
@@ -140,10 +140,10 @@ fn the_defaults_block_is_the_binarys_own_dump_config() {
     let text = page();
     let (before, rest) = text
         .split_once(BEGIN)
-        .expect("docs/kernel/configuration.md has no generated-block opening marker");
+        .expect("docs/ein/user/reference/config.md has no generated-block opening marker");
     let (got, after) = rest
         .split_once(END)
-        .expect("docs/kernel/configuration.md has no generated-block closing marker");
+        .expect("docs/ein/user/reference/config.md has no generated-block closing marker");
 
     if got == want {
         return;
@@ -154,7 +154,7 @@ fn the_defaults_block_is_the_binarys_own_dump_config() {
         return;
     }
     panic!(
-        "docs/kernel/configuration.md's generated block is not \
+        "docs/ein/user/reference/config.md's generated block is not \
          `ein solve --dump-config`'s output.\n\
          Re-bank it with `EIN_BLESS=1 cargo test -p ein-cli --test \
          config_reference`; never edit the block by hand.\n\n\
@@ -226,7 +226,7 @@ fn every_flag_has_a_row_and_no_row_is_orphaned() {
     let rows = judgement_rows(&text);
     assert!(
         !rows.is_empty(),
-        "found no table in docs/kernel/configuration.md whose first column is `flag`"
+        "found no table in docs/ein/user/reference/config.md whose first column is `flag`"
     );
 
     let want: Vec<&str> = FLAGS.iter().map(|(n, _)| *n).collect();
@@ -335,7 +335,7 @@ fn the_cli_counts_come_from_the_golden() {
         let want = format!("| `{cmd}` | {n} |");
         assert!(
             text.contains(&want),
-            "docs/kernel/configuration.md has no row `{want}` — the golden says \
+            "docs/ein/user/reference/config.md has no row `{want}` — the golden says \
              {cmd} takes {n} options"
         );
     }
@@ -668,7 +668,7 @@ fn require_why_decides_loading_only() {
     let text = page();
     assert!(
         text.contains("| `--no-require-why` |"),
-        "docs/kernel/configuration.md has no row for --no-require-why"
+        "docs/ein/user/reference/config.md has no row for --no-require-why"
     );
     let golden = std::fs::read_to_string(
         repo_root().join("ein.rs/crates/ein-cli/tests/golden/help_shape.txt"),

@@ -771,7 +771,7 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
     };
     out.push_str(&format!(
         "The lattice is over **{} root candidates** — the generator's list at root's \
-         fixpoint with no config switch applied (`docs/kernel/inference/region_dump.md`).\n\n",
+         fixpoint with no config switch applied (`docs/ein/user/reference/region-dump.md`).\n\n",
         candidates.len()
     ));
     for l in later_of(oracle) {
