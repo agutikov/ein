@@ -401,17 +401,21 @@ no-op, which stopped being survivable when a keyword could carry a *test*.
 
 What a commitment may be about is steered by five declarations, and a sixth mechanism, the blind enumerator, runs
 where none of the generating ones does. `hypgen`'s ladder: the hrules if the program declares any, and then the other
-two rungs never run; otherwise the obligations while root owes something they may branch on (a loaded obligation rule
-that owes nothing at root proposes nothing, and the blind enumerator does not run); otherwise, or where the
-obligations rung declines, the blind enumerator. H is built once, at root. The obligations rung proposes there too
+two rungs never run; otherwise, where an obligation is **activated** at root (a plan root's activators compile, and
+one with no parameters always), the obligations, which propose what would pay the debts root owes, so that a root that
+owes nothing under an activated obligation proposes nothing and is complete, and the blind enumerator does not run;
+otherwise, or where the obligations rung declines, the blind enumerator. An obligation rule that nothing activates
+chooses no rung: every import brings its module whole, so a program that imports `std.algebra` for `symmetric` loads
+its two obligation rules, and its own open relations are the blind enumerator's to guess. H is built once, at root.
+The obligations rung proposes there too
 what would pay a debt root does not owe, where a rule that reads a relation a commitment can change concludes the
 debt's activator ([`solution_semantics.md` § 1.4](../../inference/solution_semantics.md#14-candidate-and-universe)).
 
 | | mechanism | what it does | read by |
 |---|---|---|---|
 | H | `(hrule …)`, activated by `(solve :hrules …)` (one with no parameter always) | generates, rung 1, alone where declared | itself |
-| O | an obligation rule, `:assert (open ?R)`, activated by a fact such as `(total-owed R isa)` | two roles: a state that owes is not in R, whatever generated it; and, with no hrule, rung 2 proposes facts of the owed relation | the discharge test; rung 2 |
-| B | the blind enumerator | generates, rung 3: no hrule and no obligation rule loaded, or the obligations rung declined | — |
+| O | an obligation rule, `:assert (open ?R)`, activated by a fact such as `(total-owed R isa)` | two roles: a state that owes is not in R, whatever generated it; and, with no hrule and one activated at root, rung 2 proposes facts of the owed relation | the discharge test; rung 2 |
+| B | the blind enumerator | generates, rung 3: no hrule and no obligation activated at root, or the obligations rung declined | — |
 | HR | `(solve :hypothesis-relations …)` | a whitelist, *speculate only these*; `()` names none | rungs 2 and 3; the read-out's `outside` row |
 | NH | `(solve :no-hypothesis …)` | a blacklist, *never these* | rungs 2 and 3; the `outside` row |
 | C | `(__closed__ R)`, stated or derived | excludes R from rungs 2 and 3, and so keeps R out of `D`, which makes an `absent` over it closed-world | rungs 2 and 3; the `outside` row; no matcher |
@@ -434,8 +438,8 @@ at load on every command since S1f.6.34, [`defined_behaviour.md` §
 | HR + C | a **conflict** where a listed relation is closed |
 | NH + C | with no hrule, an overlap is **redundant**, a `note:`; never a conflict |
 
-An obligation is read as declared, a plan root's activators compile, whether or not root owes it; a derived closure
-and a derived activator are read where they are derived, at root's fixpoint.
+An obligation is read as declared, a plan root's activators compile, whether or not root owes it, by this check and by
+the ladder alike; a derived closure and a derived activator are read where they are derived, at root's fixpoint.
 
 **`:no-search` beside each** (M1f S1f.6.36): with O it is silent, the obligation judging root alone, which is its use,
 and with C silent too; with H one `note:`, *the hrule proposes no candidate*, and with HR or NH one, *the list filters

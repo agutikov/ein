@@ -138,11 +138,17 @@ positive, the obligations rung at its default order
 Which facts can be proposed at all is decided by:
 
 - the **generation ladder**: the program's own `(hrule …)` if it declares
-  one, else the facts that would discharge what root owes and what a
-  commitment can bring it to owe
-  ([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)), else the
-  blind combinatorial enumerator. The middle rung reads each obligation's
-  domain at root, so it **declines**, and the blind enumerator builds H, when
+  one; else, where an obligation is **activated** at root (a plan root's
+  activators compile, one with no parameters always), the facts that would
+  discharge what root owes and what a commitment can bring it to owe
+  ([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)), so a
+  root that owes nothing under an activated obligation proposes nothing;
+  else the blind combinatorial enumerator. An obligation rule the program
+  loads and nothing activates chooses no rung: an import brings its module
+  whole, and a module imported for another of its names leaves the
+  program's own open relations to the blind enumerator. The middle rung
+  reads each obligation's domain at root, so it **declines**, and the blind
+  enumerator builds H, when
   a domain could grow under it: a guard over a relation the rung proposes,
   and since M1e2 S1e2.2.15 a trigger or guard over a relation in D, one a
   commitment can change, at relation grain (the user's ruling of 2026-11-04,

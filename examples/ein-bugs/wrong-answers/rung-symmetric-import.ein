@@ -18,12 +18,14 @@
 ;;; Nothing refutes any of them, and `symmetric` makes each `near` fact bring
 ;;; the other: R is 16 commitments and 8 states, the control's answer.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; No candidate, and R is {∅}, one state: the loaded obligation rules take
-;;; the ladder's second rung, which owes nothing and proposes nothing. The
-;;; read-out names `near` as outside the universe and says nothing of
-;;; `likes`, which no rule concludes and no query asks about.
+;;; No candidate, and R {∅}, one state: the loaded obligation rules took the
+;;; ladder's second rung, which owed nothing and proposed nothing. The
+;;; read-out named `near` as outside the universe and said nothing of
+;;; `likes`, which no rule concludes and no query asks about. The second rung
+;;; is taken where an obligation is activated at root now, and the answer is
+;;; the one above.
 
 (import std.algebra :symbols (symmetric))
 (relation near Thing Thing :why "{?1} is near {?2}")

@@ -2994,7 +2994,7 @@ note   = "M1f W96 (`W96/as-value`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) 
 path   = "examples/ein-bugs/wrong-answers/rung-unactivated.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W97 (`W97/unactivated`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) from E-51 of P1f.6's `findings.md`, on the user's ruling on Q-M1f.308, (b): `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`, over one colour and two houses. The import loads the module's two obligation rules and nothing activates either; they take the ladder's second rung, which owes nothing: no candidate, and R {∅} where the blind enumerator's eleven candidates and 2 048 states are right, the control's."
+note   = "M1f W97 (`W97/unactivated`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) from E-51 of P1f.6's `findings.md`, on the user's ruling on Q-M1f.308, (b): `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`, over one colour and two houses. The import loads the module's two obligation rules and nothing activates either; they take the ladder's second rung, which owes nothing: no candidate, and R {∅} where the blind enumerator's eleven candidates and 2 048 states are right, the control's. Fixed by the same task: the second rung is taken where an obligation is activated at root, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein"
@@ -3012,7 +3012,7 @@ note   = "M1f W97's twin, filed by S1f.10.15's T1f.10.15.4: `rung-unactivated.ei
 path   = "examples/ein-bugs/wrong-answers/rung-symmetric-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W97 (`W97/symmetric-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The import's obligation rules, which nothing activates, take the ladder's second rung: no candidate, and R {∅} where four candidates and 8 states are right, the control's."
+note   = "M1f W97 (`W97/symmetric-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The import's obligation rules, which nothing activates, take the ladder's second rung: no candidate, and R {∅} where four candidates and 8 states are right, the control's, which it answers since the same task's fix."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/rung-symmetric-written.ein"
@@ -3024,7 +3024,7 @@ note   = "M1f W97's control for `W97/symmetric-import`, filed by S1f.10.15's T1f
 path   = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W97 (`W97/connex-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): Q-M1f.308's re-plan probe, `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The import's obligation rules, which nothing activates, take the ladder's second rung, which proposes nothing, so no commitment extends `lt` and `connex`'s `absent` is read closed-world: it loads, root dead, R empty. Right: the blind enumerator proposes `lt`, and *forbid* refuses `connex`, exit 1."
+note   = "M1f W97 (`W97/connex-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): Q-M1f.308's re-plan probe, `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The import's obligation rules, which nothing activates, take the ladder's second rung, which proposes nothing, so no commitment extends `lt` and `connex`'s `absent` is read closed-world: it loads, root dead, R empty. Right: the blind enumerator proposes `lt`, and *forbid* refuses `connex`, exit 1, which it does since the same task's fix: a program that loaded, refused at load."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

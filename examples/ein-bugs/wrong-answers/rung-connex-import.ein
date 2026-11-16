@@ -19,12 +19,15 @@
 ;;; question about a commitment exits 1, naming `connex` and its remedy,
 ;;; `(solve :no-hypothesis (lt))`; `ein saturate` still saturates.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; It loads: no candidate, root dead, R empty, and `lt` named outside the
-;;; universe, *no obligation owes it*. The loaded obligation rules take the
-;;; ladder's second rung, which owes nothing and proposes nothing, so no
-;;; commitment extends `lt` and the `absent` is read closed-world.
+;;; It loaded: no candidate, root dead, R empty, and `lt` named outside the
+;;; universe, *no obligation owes it*. The loaded obligation rules took the
+;;; ladder's second rung, which owed nothing and proposed nothing, so no
+;;; commitment extended `lt` and the `absent` was read closed-world. The
+;;; second rung is taken where an obligation is activated at root now, and
+;;; the program is refused at load, as above: a program that loaded, and
+;;; whose remedy is to say what it means, `(solve :no-hypothesis (lt))`.
 
 (import std.algebra :symbols (connex))
 (relation lt Node Node :why "{?1} is less than {?2}")

@@ -191,16 +191,13 @@ impl Proposers {
     ) -> Result<Proposers, crate::compile::CompileError> {
         if s.kb.program().hrules.is_empty() {
             let mut owed: Vec<(Symbol, Vec<String>)> = Vec::new();
-            if !s.kb.program().obligations.is_empty() {
-                let memo = s.memo.clone();
-                for p in crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)? {
-                    if let Some(rel) = crate::obligations::open_argument(&p, s.terms) {
-                        add_named(
-                            &mut owed,
-                            rel,
-                            format!("obligation '{}'", s.terms.sym(p.rule)),
-                        );
-                    }
+            for p in crate::mechanisms::obligation_plans(s)? {
+                if let Some(rel) = crate::obligations::open_argument(&p, s.terms) {
+                    add_named(
+                        &mut owed,
+                        rel,
+                        format!("obligation '{}'", s.terms.sym(p.rule)),
+                    );
                 }
             }
             return Ok(Proposers {

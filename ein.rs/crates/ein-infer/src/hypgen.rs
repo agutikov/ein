@@ -1,10 +1,17 @@
 //! Hypothesis generation — the enumerator that proposes what to guess.
 //!
 //! **Three** modes since M1d S1d.2.5, and the switch is a ladder: rule-driven
-//! when the puzzle declares any `(hrule …)` ([`crate::hrule`]), otherwise
-//! obligation-driven while the state owes something it may branch on
-//! ([`crate::oblgen`], which proposes for a debt a rule can bring a
-//! commitment to owe as well), otherwise blind combinatorial. Then an eight-stage
+//! when the puzzle declares any `(hrule …)` ([`crate::hrule`]); otherwise
+//! obligation-driven where an obligation is **activated** at the state, a plan
+//! its activators compile ([`crate::oblgen`], which proposes what would pay
+//! the debts the state owes, and for a debt a rule can bring a commitment to
+//! owe as well), so that under an activated obligation a state that owes
+//! nothing proposes nothing and is complete; otherwise, or where that rung
+//! declines, blind combinatorial. An obligation rule the program loads and
+//! nothing activates chooses no rung: every import brings its module whole,
+//! and a module imported for another of its names takes nothing off the blind
+//! enumerator. The switch is one function, `rung`, which
+//! [`eligible_relations`] reads too. Then an eight-stage
 //! filter pipeline whose **attribution** — which counter a drop lands in — is
 //! observable through [`HypGenStats`] and through the `hyp` / `hypskip`
 //! events, and every rung feeds it: what changes between them is which
@@ -374,6 +381,53 @@ impl GenOptions {
     };
 }
 
+/// The rung of the ladder a program takes at a state, before any rung runs:
+/// what [`rung`] decides.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) enum Rung {
+    /// `(solve :no-search)`: no rung runs.
+    NoSearch,
+    /// The program declares an `(hrule …)`: rung 1, alone.
+    Hrules,
+    /// An obligation is activated at the state: rung 2, which may still
+    /// decline to the blind enumerator ([`crate::oblgen::Mode::Declined`]).
+    Obligations,
+    /// Neither: rung 3, the blind enumerator. A program that loads an
+    /// obligation rule and activates none is here.
+    Blind,
+}
+
+/// **The switch**: which rung the ladder takes at `s`'s state, which is root
+/// wherever H is built. In order: `(solve :no-search)`; an hrule the program
+/// declares, active or not; an obligation **activated** at the state, a plan
+/// the state's activators compile, an obligation rule without parameters at
+/// every state ([`crate::mechanisms::obligation_plans`], the one reading of
+/// an obligation, which the mechanisms check reads too); otherwise the blind
+/// enumerator.
+///
+/// So the second rung is chosen by what the program states, an obligation
+/// with its activator, and not by what it loads: every import brings its
+/// module whole, obligation rules among it, and a rule nothing activates
+/// chooses no rung. Nor is it chosen by what the state happens to owe: under
+/// an activated obligation a discharged state proposes nothing and is
+/// complete, which is what *complete means discharged* has to mean.
+///
+/// [`generate`]'s ladder and [`eligible_relations`] read this one function,
+/// so the rung a call takes and the relations the advisory calls eligible
+/// are decided once.
+pub(crate) fn rung(s: &mut Session<'_>) -> Result<Rung, CompileError> {
+    if declares_no_search(s.kb.program(), s.ast) {
+        return Ok(Rung::NoSearch);
+    }
+    if !s.kb.program().hrules.is_empty() {
+        return Ok(Rung::Hrules);
+    }
+    if crate::mechanisms::obligation_plans(s)?.is_empty() {
+        return Ok(Rung::Blind);
+    }
+    Ok(Rung::Obligations)
+}
+
 /// Which rungs of the generation ladder a call is allowed to use.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Rungs {
@@ -408,11 +462,17 @@ fn generate_with(
     opts: Option<GenOptions>,
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
+    // The switch, [`rung`]; the probe takes the blind enumerator whatever the
+    // program declares.
+    let rung = match rungs {
+        Rungs::Ladder => rung(s)?,
+        Rungs::BlindOnly => Rung::Blind,
+    };
     // `(solve :no-search)` (M1f S1f.6.36): the program states that its
     // lattice is root alone, so no rung runs and nothing is proposed, whatever
     // hrules, obligations or lists it also declares. Before anything is
     // compiled, so the call narrates nothing.
-    if rungs == Rungs::Ladder && declares_no_search(s.kb.program(), s.ast) {
+    if rung == Rung::NoSearch {
         stats.rung.mode = crate::oblgen::Mode::NoSearch;
         return Ok(());
     }
@@ -440,7 +500,7 @@ fn generate_with(
         seen: FxHashSet::default(),
     };
 
-    if rungs == Rungs::Ladder && !s.kb.program().hrules.is_empty() {
+    if rung == Rung::Hrules {
         // Rung 1 — the user's own generator, an override. `(hrule …)` presence
         // *is* the switch, exactly as design/07 wrote it: a puzzle that says
         // what to guess is never second-guessed by what it owes.
@@ -450,10 +510,10 @@ fn generate_with(
         return Ok(());
     }
 
-    // Rung 2 — the theory's own generator: branch on what the state owes.
-    // `Mode::Declined` is the one answer that falls through, and it falls
-    // through having emitted nothing.
-    if rungs == Rungs::Ladder && !s.kb.program().obligations.is_empty() {
+    // Rung 2 — the theory's own generator: branch on what the state owes,
+    // where an obligation is activated. `Mode::Declined` is the one answer
+    // that falls through, and it falls through having emitted nothing.
+    if rung == Rung::Obligations {
         let closed = closed_relations(s.kb, s.terms);
         let report = crate::oblgen::generate(
             s,
@@ -929,14 +989,16 @@ pub(crate) fn scoping(
 /// eligibility M1e S1e.2.3's refutation warning is stated over.
 ///
 /// It reads the ladder rather than one rung, because the hazard is *the search
-/// can still add a fact of R*, and which rung would add it does not matter:
+/// can still add a fact of R*, and which rung would add it does not matter.
+/// The rung is the generator's own switch, `rung`, read once for both:
 ///
 /// - **hrules** are an override, so the eligible set is exactly what they
 ///   conclude. `closed` / `:hypothesis-relations` / `:no-hypothesis` are not
 ///   applied — `apply_filters` does not consult them and neither does
 ///   [`Hrules`], so a puzzle that declares a generator gets what it asked for.
-/// - **obligations** propose the facts that would discharge what the state
-///   owes, so the set is the `(open ?R)` arguments, scoped by all three. The
+/// - **obligations**, where one is activated, propose the facts that would
+///   discharge what the state owes, so the set is the `(open ?R)` arguments
+///   of the activated plans, scoped by all three. The
 ///   rung proposes for a debt a commitment can bring too
 ///   ([`crate::oblgen::LaterDebt`]), and that debt's relation is **not** in
 ///   this set: which debts those are is read from the rung's own scans, and
@@ -968,11 +1030,13 @@ pub(crate) fn scoping(
 /// the guard is judged at a fixpoint. This one is about a *commitment*
 /// discharging the guard in a world the search never enters.
 pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, CompileError> {
+    // The ladder's switch, read as the generator reads it.
+    let rung = rung(s)?;
     // `(solve :no-search)`: no rung proposes anything (M1f S1f.6.36).
-    if declares_no_search(s.kb.program(), s.ast) {
+    if rung == Rung::NoSearch {
         return Ok(FxHashSet::default());
     }
-    if !s.kb.program().hrules.is_empty() {
+    if rung == Rung::Hrules {
         let hrules = Hrules::new(s)?;
         return Ok(hrules.asserted_relations(s.terms));
     }
@@ -984,9 +1048,8 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
             && !excluded.contains(&r)
             && allowed.as_ref().is_none_or(|a| a.contains(&r))
     };
-    if !s.kb.program().obligations.is_empty() {
-        let memo = s.memo.clone();
-        let plans = crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?;
+    if rung == Rung::Obligations {
+        let plans = crate::mechanisms::obligation_plans(s)?;
         return Ok(plans
             .iter()
             .filter_map(|p| crate::obligations::open_argument(p, s.terms))

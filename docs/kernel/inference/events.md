@@ -277,15 +277,17 @@ only — `self_edge` alone fires once per (object, filler, relation, slot).
 Added by M1d
 [S1d.2.5](../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations),
 which turned hypothesis generation from a switch into a **ladder**: the user's
-`(hrule …)` if there is one, else the undischarged obligations, else the blind
-enumerator. One line per generation call, and **only** for a program that
-declares an obligation rule — the other 150 corpus files emit none, which is
-what keeps every pre-M1d stream byte-identical.
+`(hrule …)` if there is one, else, where an obligation is activated at the
+state, what would pay the debts it owes, else the blind enumerator. One line
+per generation call, and **only** where an obligation is activated at the
+state the call is made at: a program that activates none emits none, whatever
+obligation rules it loads, which is what keeps every pre-M1d stream
+byte-identical.
 
 **Rung 1 and rung 3 narrate nothing.** A puzzle with an `(hrule …)` and a
-puzzle with no obligation rule both emit exactly the stream they emitted before
-M1d, to the byte; a line appears only where the rung this stage added was
-actually consulted, and its `mode` says how that went:
+puzzle with no obligation activated both emit exactly the stream they emitted
+before M1d, to the byte; a line appears only where the rung this stage added
+was actually consulted, and its `mode` says how that went:
 
 | `mode` | what it means |
 |---|---|

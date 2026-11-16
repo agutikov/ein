@@ -5,10 +5,10 @@
 ;;; `std.algebra`'s `symmetric`, written in its place, word for word. No
 ;;; obligation rule is loaded, so the blind enumerator builds H: `(likes A
 ;;; B)`, `(likes B A)`, `(near A B)` and `(near B A)`, and R is 16
-;;; commitments and 8 states, the witness's right answer. A program that
-;;; imports a module for one rule and the same program with that rule
-;;; written out are one program: they take one rung, one H and one R
-;;; (`ein-cli/tests/import_invariance.rs`).
+;;; commitments and 8 states, the witness's right answer, and since the fix
+;;; its answer. A program that imports a module for one rule and the same
+;;; program with that rule written out are one program: they take one rung,
+;;; one H and one R (`ein-cli/tests/import_invariance.rs`).
 
 (relation near Thing Thing :why "{?1} is near {?2}")
 (relation likes Thing Thing :why "{?1} likes {?2}")

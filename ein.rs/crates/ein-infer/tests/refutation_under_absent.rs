@@ -82,7 +82,12 @@ const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 /// the nested twin's names its fact, `[activator (box a)]`, where it named
 /// none: `Plan::activator_args` keeps every argument (Q-M1f.43).
 /// `features/05` and `/12`, `direct` too, close
-/// the relation their refutations read and load. The set is exact because
+/// the relation their refutations read and load. `W97/connex-import` is the
+/// one row whose program loaded until the ladder's second rung was chosen by
+/// an obligation activated at root rather than by one loaded: `std.algebra`
+/// imported for `connex`, whose unactivated obligation rules kept `lt` off
+/// the blind enumerator, and so out of what a commitment can extend. The set
+/// is exact because
 /// both directions are findings: a new row is a program written with the
 /// shape, and a missing one is a rule rewritten or a refusal lost.
 const REFUSED: &str = "\
@@ -101,6 +106,7 @@ examples/ein-bugs/wrong-answers/forbid-chain-node-absent.ein::rule 'r2': conclud
 examples/ein-bugs/wrong-answers/forbid-chain-node-writes.ein::rule 'chk': concludes (false) from (absent \u{2026}) over x, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/forbid-chain-param-absent.ein::rule 'bad': concludes (false) from y, which rule 'watch' derives resting on (absent \u{2026}) over the relation its parameter ?R names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/naf-nowb.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/rung-connex-import.ein::rule 'connex' [activator lt instance Node]: concludes (false) from (absent \u{2026}) over lt, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend
 examples/ein-bugs/wrong-answers/stale-naf-fork.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend
 examples/lattice/synth/three_components.ein::rule 'dead-3': concludes (false) from (absent \u{2026}) over h, a relation a commitment can still extend
