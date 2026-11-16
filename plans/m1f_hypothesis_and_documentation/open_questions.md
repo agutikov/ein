@@ -317,6 +317,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, then, on S1f.10.17's measured *no* for the whole border route, *"2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one or another, verbose warning about budget"*. **Built** by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md)'s T3: `--describe-route tree|states`, the tree and the classes by default |
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **ruled 2026-11-16: (e)**, both ops removed and what only they read deleted; the user's choice at the phase's close; **built 2026-11-16** by [S1f.10.16's record as ruled](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#record-2026-11-16-as-ruled-at-the-close) (`26d0bc56`, the pages `ff63da53`): the golden's 1 322 `hyp` and `hyp+closed` lines gone, nothing else moved, and the walk's generator pass deleted with K-29 and K-30 |
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. **Built** by [S1f.10.19](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#record-2026-11-16-the-agenda): `pairs` everywhere, the engine's order |
+| [Q-M1f.314](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) | what the release-voice check reads, and what fails a line: the readings S1f.20.1 took where the stage file left them open | **defaulted 2026-11-16, to be shown at [S1f.20.2](p1f.20_docs_refactor/s1f.20.2_the_disposition_table.md)'s review**: every doc comment of a shipped crate, tests included; every `.ein` comment; every ISO date; the folder `plans/` named alone passes; a count that falls is reported, not failed; F-, E-, W-, K- and review ids and `:why` strings not read yet |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6813,3 +6814,37 @@ the written order alone, which no lever reaches, and `ein-infer/tests/agenda.rs`
 of every monotone corpus program alike under both. Of a flagged program nothing is held; the one gate test that held
 a flagged program's cube to what the written order shows, `region.rs`' `fact_grain_on_programs_written_to_test_it`,
 computes that cube under the switch, named in the test with why.
+
+### Q-M1f.314 — What the release-voice check reads, and what fails a line
+
+**Raised** 2026-11-16 by [S1f.20.1](p1f.20_docs_refactor/s1f.20.1_the_two_checks.md#record-2026-11-16)'s
+T1f.20.1.3. **Defaulted, to be shown at [S1f.20.2](p1f.20_docs_refactor/s1f.20.2_the_disposition_table.md)'s
+review**, with the sweep's defaults. The stage file names the check's scope (`docs/ein/`, the shipped crates' doc
+comments, `.ein` header comments, `corpus.toml`, `AGENTS.md` but § Where the work is, `README.md`) and what fails
+(a milestone, phase, stage or task id, a path into `plans/`, a date that dates a development event; a decision id
+passes). Seven readings it left open, each taken as below and built that way (`utils/check_release_voice.py`); the
+baseline, 6 743 lines in 1 041 files, is of these readings.
+
+1. **A shipped crate's doc comments** are every `///` and `//!` line of a `.rs` file under the six shipped crates,
+   their `tests/`, `examples/` and `benches/` included: 3 271 baseline lines. *Alternative:* `src/` only. Plain `//`
+   comments are not read; [S1f.20.9](p1f.20_docs_refactor/s1f.20.9_the_history_sweep.md) widens the check to code,
+   comments and tests.
+2. **A `.ein` file's comments** are all of them, not only the leading block: 2 501 baseline lines. One reader serves
+   both checks (`doc_audit.py`'s, the text after a `;` outside a string), and a body comment speaks the same voice
+   as the header. *Alternative:* the header block only.
+3. **A date** is any ISO date, `YYYY-MM-DD`, in scope: no rule tells a development event from another date, and
+   the escape, `release-voice-ok: <reason>`, covers the exception. *Alternative:* a date after *since*, *on*,
+   *ruled*, *measured* and the like.
+4. **A path into `plans/`** is `plans/` followed by a name, bare or relative; the folder named alone (*the stage
+   records under `plans/`*) passes. *Alternative:* the folder's name fails too.
+5. **What it does not read yet**: followup ids (`F21`), finding and register ids (`E-33`, `W93`, `K-82`), the M1e
+   review's ids (`CD-H1`, `TE-L3`), and the strings of a `.ein` file (`:why`, `:source`, `:goal-text`), of which at
+   least `stdlib/elim.ein`'s `:why "M1-blocking stdlib"` and the dates in `examples/lattice/synth/*.ein`'s carry
+   the development. S1f.20.9 counts `E-n` and `D-n` as plan ids, so it widens the patterns with the scope.
+6. **A count that falls is reported, not failed**: the check exits 0 and names the file to re-bank with `--bless`,
+   as the stage file states the failure (*"where a count rises or a new file appears"*). *Alternative:* fail both
+   ways, the baseline held exact as `tests/mutation_survivors.txt` is, so that a count lowered without a re-bank
+   cannot later rise back to its banked number unnoticed.
+7. **The check reads itself**, so its own docstring is held to the voice it enforces; its two lines of examples
+   carry the escape, which were its first findings.
+

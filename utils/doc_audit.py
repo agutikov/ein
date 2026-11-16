@@ -13,21 +13,45 @@ This is the milestone-independent half. It asks three mechanical questions of
 every page, none of which needs to know what changed:
 
     python3 utils/doc_audit.py                  # all three, as a report
-    python3 utils/doc_audit.py --links --check  # exit 1 on a broken link
+    python3 utils/doc_audit.py --links --check --tracked   # the gate step
+    python3 utils/doc_audit.py --inbound --tracked [--target docs/kernel]
     python3 utils/doc_audit.py --identifiers -k inference/lattice_dump.md
 
 The default tree is `docs/kernel`, which is what the three questions are
 *about*. The **links** half is not — a relative link resolves or it does not
-wherever it is written — so it takes any number of directories and files:
+wherever it is written — so it takes any number of directories and files, or
+`--tracked`: every file `git ls-files` lists of the four kinds it reads.
 
-    python3 utils/doc_audit.py --links --check docs plans \
-        README.md AGENTS.md corpus/README.md tests/README.md \
-        examples/README.md stdlib/README.md utils/README.md c/README.md
+**links** reads four kinds of referrer, and exits 1 under `--check` on a
+target that does not exist or an anchor no heading of the target has, naming
+the referrer and its line:
 
-That is the `DO-M2` sweep (M1e S1e.3.8), and it is one line rather than a
-second script.
+- **`.md`**: every markdown link, relative to the page, a reference-style
+  definition (`[label]: target`) too;
+- **`.rs`**: every markdown link in a `//`, `///` or `//!` comment line,
+  relative to the source file — the `](../../../docs/…)` form a crate cites a
+  page by, which `cargo doc` does not resolve. `ein.rs/vendor/` is not read:
+  its links are rustdoc's own, relative to the rendered HTML;
+- **`.ein`**: every **bare path** in a comment, the text after a `;` outside a
+  string;
+- **`corpus/corpus.toml`**: every bare path in the file.
 
-**links** — every relative markdown link resolves, file *and* `#anchor`, with
+A bare path starts at a top-level directory of the repository
+(`docs/kernel/README.md`), or at a crate's directory, which the repo writes
+short for `ein.rs/crates/<crate>/` (`ein-cli/tests/gate_steps.rs`), and names
+a file with an extension or a directory with a trailing `/`: `tests/stdlib/
+typing/03` is a prefix, not a path, and `ein-corpus/2` a schema. A path with
+`*`, `<` or `{` in it is a pattern and is not read; a missing one git would
+ignore (`ein.rs/target/…`, `build/…`) names an output, not a file of the tree,
+and is not a finding. A directory argument walks `.md` pages only, so a built
+tree such as the review bundle is read as pages and nothing else.
+
+**inbound** counts, for every file a reference resolves to, the references to
+it by referrer kind, with the `.md` ones from `plans/` and `docs/history/`
+counted apart: the count a page's move has to rewrite in the commit that
+moves it. `--target PREFIX` keeps the targets under a prefix.
+
+Each markdown link resolves, file *and* `#anchor`, with
 GitHub's slugification, **and stays inside the repository**: a target that
 escapes it is a finding on its own, because `exists()` on one would answer for
 the machine and not for the tree (three `../../acva/…` links passed this check
@@ -50,10 +74,9 @@ name that *looks* like the engine's and is not there.
 carries no banner, so what this reports is the pages that **do** claim to be
 superseded, for comparison against that README's table.
 
-**Not a gate.** `--check` exits 1 on the unambiguous half (links and prose
-§-references) so a pre-commit hook *could* run it; whether any of this belongs
-in CI is `DO-M2`'s question, and a markdown-link checker is its obvious
-candidate. What lives here is the instrument.
+**The links half is a gate step**, `--links --check --tracked`. The other two
+report and do not fail: `--check` exits 1 on the unambiguous half alone
+(links and prose §-references).
 
 What this cannot check, and what the checklist in `docs/kernel/README.md`
 § Keeping this true asks a reader to do by hand: run the commands a page
@@ -68,16 +91,26 @@ from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 from urllib.parse import unquote
 
 REPO = Path(__file__).resolve().parents[1]
 CRATES = REPO / "ein.rs" / "crates"
 DEFAULT_TREE = REPO / "docs" / "kernel"
+#: Third-party source, edited only through a patch: its doc links are
+#: rustdoc's, relative to the rendered HTML rather than to the file.
+VENDOR = REPO / "ein.rs" / "vendor"
+CORPUS_TOML = REPO / "corpus" / "corpus.toml"
 
 TICK = re.compile(r"`([^`\n]+)`")
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+#: A reference-style link's definition, `[label]: target`, at a line's start
+#: (up to three spaces in). A target in backticks is code, not a link, and a
+#: footnote's `[^n]:` is not a link either.
+REF_DEF = re.compile(r"(?m)^[ \t]{0,3}\[([^\]^\n][^\]\n]*)\]:[ \t]*<?([^\s>`][^\s>]*)>?")
 #: ``[`page.md`](page.md) §3d.vii`` and ``… § 3a + § 3d.iv`` — a section
 #: reference in prose, immediately after a link to the page it is about, and
 #: before the next link, whose own label may carry one for a different page.
@@ -189,23 +222,182 @@ def section_numbers_of(path: Path, _cache: dict[Path, set[str]] = {}) -> set[str
     return out
 
 
-def check_links(pages: list[Path], roots: tuple[Path, ...] = ()) -> list[tuple[Path, int, str, str]]:
-    bad = []
+# ── the referrers: which files, and the text of each that is read ──────────
+
+
+def kind_of(path: Path) -> str | None:
+    """Which of the four kinds of referrer a file is, if any."""
+    if path.suffix == ".md":
+        return "md"
+    if path.suffix == ".rs" and not path.is_relative_to(VENDOR):
+        return "rs"
+    if path.suffix == ".ein":
+        return "ein"
+    if path == CORPUS_TOML:
+        return "toml"
+    return None
+
+
+def tracked_referrers() -> list[Path]:
+    """Every file `git ls-files` lists of the four kinds, resolved, once each
+    (`CLAUDE.md` is a link to `AGENTS.md`)."""
+    out = subprocess.run(
+        ["git", "-C", str(REPO), "ls-files", "-z"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    pages = set()
+    for name in out.split("\0"):
+        if not name:
+            continue
+        path = (REPO / name).resolve()
+        if path.is_file() and kind_of(path):
+            pages.add(path)
+    return sorted(pages)
+
+
+def blank(m: re.Match) -> str:
+    """A match replaced by spaces, its newlines kept, so line numbers hold."""
+    return re.sub(r"[^\n]", " ", m.group(0))
+
+
+#: A full-line Rust comment: `//`, `///` or `//!`, and the text after it.
+RS_COMMENT = re.compile(r"^\s*//[/!]?(.*)$")
+
+
+def rust_comment_text(text: str) -> str:
+    """The text of every full-line comment, one line for each source line and
+    blank where the line is code, with fenced code blocks blanked: a link in a
+    doc comment's example is code."""
+    lines = []
+    for line in text.splitlines():
+        m = RS_COMMENT.match(line)
+        lines.append(m.group(1) if m else "")
+    body = "\n".join(lines)
+    return re.sub(r"(?ms)^\s*```.*?^\s*```", blank, body)
+
+
+def ein_comment_text(text: str) -> str:
+    """The text after every `;` that is not inside a string, one line for each
+    source line and blank where the line holds no comment."""
+    lines, in_string = [], False
+    for line in text.splitlines():
+        comment, i = "", 0
+        while i < len(line):
+            c = line[i]
+            if in_string:
+                if c == "\\":
+                    i += 1
+                elif c == '"':
+                    in_string = False
+            elif c == '"':
+                in_string = True
+            elif c == ";":
+                comment = line[i:]
+                break
+            i += 1
+        lines.append(comment)
+    return "\n".join(lines)
+
+
+def tops() -> tuple[set[str], set[str]]:
+    """The repository's top-level directories, and the crates' directories,
+    which the repo writes short for `ein.rs/crates/<crate>/`."""
+    top = {p.name for p in REPO.iterdir() if p.is_dir() and p.name != ".git"}
+    crates = {p.name for p in CRATES.iterdir() if p.is_dir()} if CRATES.is_dir() else set()
+    return top, crates
+
+
+def bare_path_pattern() -> re.Pattern:
+    top, crates = tops()
+    heads = "|".join(re.escape(h) for h in sorted(top | crates, key=len, reverse=True))
+    return re.compile(r"(?<![\w./\-#~$@])(?:" + heads + r")/[\w.\-/*<>{}]*")
+
+
+def bare_paths(text: str) -> list[tuple[int, str, Path]]:
+    """Every bare path in ``text``: its line, as written, and where it lands.
+
+    A path names a file with an extension or a directory with a trailing `/`;
+    one with a pattern character in it is not read."""
+    pat = bare_path_pattern()
+    _, crates = tops()
+    found = []
+    for m in pat.finditer(text):
+        written = m.group(0).rstrip(".,:;")
+        if any(c in written for c in "*<>{}"):
+            continue
+        last = written.rstrip("/").rsplit("/", 1)[-1]
+        if not written.endswith("/") and "." not in last:
+            continue
+        head = written.split("/", 1)[0]
+        base = CRATES if head in crates and not (REPO / head).is_dir() else REPO
+        line = text[: m.start()].count("\n") + 1
+        found.append((line, written, (base / written).resolve()))
+    return found
+
+
+def git_ignored(paths: list[Path]) -> set[Path]:
+    """The ones git would ignore: outputs of a build or a run, not files of
+    the tree, so their absence on a fresh checkout is not a finding."""
+    if not paths:
+        return set()
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(REPO), "check-ignore", "--stdin", "-z"],
+            input="\0".join(str(p) for p in paths), capture_output=True, text=True,
+        ).stdout
+    except OSError:
+        return set()
+    return {Path(p) for p in out.split("\0") if p}
+
+
+#: One reference: the referrer, its line, the target as written, where it
+#: resolves (`None` for an anchor in the referrer itself) and the referrer kind.
+Ref = tuple[Path, int, str, Path | None, str]
+
+
+def check_links(
+    pages: list[Path], roots: tuple[Path, ...] = (), refs: list[Ref] | None = None
+) -> list[tuple[Path, int, str, str]]:
+    """Every broken reference of ``pages``, as (referrer, line, target, why).
+    ``refs``, when given, collects every reference that resolves."""
+    bad: list[tuple[Path, int, str, str]] = []
+    missing_bare: list[tuple[Path, int, str, Path]] = []
     for page in pages:
-        # A page outside the repository — M1e2's review bundle, built into a
+        kind = kind_of(page) or "md"
+        raw = page.read_text(errors="replace")
+        if kind in ("ein", "toml"):
+            text = ein_comment_text(raw) if kind == "ein" else raw
+            for line, written, dest in bare_paths(text):
+                if dest.exists():
+                    if refs is not None:
+                        refs.append((page, line, written, dest, kind))
+                elif not dest.is_relative_to(REPO):
+                    bad.append((page, line, written, "outside the repo"))
+                else:
+                    missing_bare.append((page, line, written, dest))
+            continue
+        if kind == "rs":
+            text = rust_comment_text(raw)
+        else:
+            # A `[x](y)` inside a fenced code block is text, not a link — no
+            # viewer renders it as one. Blanked line for line, so a finding's
+            # line number is still the page's. The review bundle quotes whole
+            # programs in fences, and a program's comments may carry links of
+            # their own.
+            text = re.sub(r"(?ms)^```.*?^```", blank, raw)
+        # A page outside the repository — the review bundle, built into a
         # temporary directory by the gate's smoke step — may also link inside
         # the tree it was checked as part of. Its links into the repo are held
         # to the rule below like any other.
         own = next((r for r in roots if page.is_relative_to(r) and not r.is_relative_to(REPO)), None)
-        text = page.read_text(errors="replace")
-        # A `[x](y)` inside a fenced code block is text, not a link — no viewer
-        # renders it as one. Blanked line for line, so a finding's line number
-        # is still the page's. M1e2's review bundle quotes whole programs in
-        # fences, and a program's comments may carry links of their own.
-        text = re.sub(r"(?ms)^```.*?^```", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
-        for m in LINK.finditer(text):
+        found = [(m, False) for m in LINK.finditer(text)]
+        found += [(m, True) for m in REF_DEF.finditer(text)]
+        for m, is_def in sorted(found, key=lambda pair: pair[0].start()):
             target = m.group(2)
             if target.startswith(("http://", "https://", "mailto:")):
+                continue
+            # An anchor in a Rust comment is rustdoc's, into the rendered page.
+            if kind == "rs" and target.startswith("#"):
                 continue
             # Two shapes that are `[...](...)` and are not links, both found by
             # M1e S1e.3.8's sweep over `plans/`: a **placeholder** in the stage
@@ -238,6 +430,8 @@ def check_links(pages: list[Path], roots: tuple[Path, ...] = ()) -> list[tuple[P
             if not dest.exists():
                 bad.append((page, line, target, "file missing"))
                 continue
+            if refs is not None:
+                refs.append((page, line, target, dest, kind))
             if frag and dest.suffix == ".md":
                 if unquote(frag) not in anchors_of(dest):
                     bad.append((page, line, target, "anchor missing"))
@@ -246,7 +440,7 @@ def check_links(pages: list[Path], roots: tuple[Path, ...] = ()) -> list[tuple[P
             # label if it has one and otherwise in the text right after it.
             # Both are cut at the first `|` so a table row's next cell — and
             # the next row's link — cannot claim it.
-            if dest.suffix == ".md" and dest != page:
+            if dest.suffix == ".md" and dest != page and not is_def:
                 have = section_numbers_of(dest)
                 if not have:
                     continue
@@ -263,7 +457,35 @@ def check_links(pages: list[Path], roots: tuple[Path, ...] = ()) -> list[tuple[P
                         bad.append(
                             (page, line, f"{fpart} §{sec}", "prose § not a heading")
                         )
+    ignored = git_ignored([d for _, _, _, d in missing_bare])
+    for page, line, written, dest in missing_bare:
+        if dest not in ignored:
+            bad.append((page, line, written, "file missing"))
+    bad.sort(key=lambda b: (str(b[0]), b[1]))
     return bad
+
+
+def inbound(refs: list[Ref], prefixes: list[str]) -> list[tuple[str, Counter]]:
+    """Per target, the references to it by referrer kind: `md` (with `plans`
+    and `history` counting the `.md` ones from `plans/` and `docs/history/`
+    again), `rs`, `ein` and `toml`. A reference of a page to itself is not
+    counted."""
+    per: dict[str, Counter] = {}
+    for page, _, _, dest, kind in refs:
+        if dest is None or dest == page or not dest.is_relative_to(REPO):
+            continue
+        key = str(dest.relative_to(REPO)) + ("/" if dest.is_dir() else "")
+        if prefixes and not any(key.startswith(p) for p in prefixes):
+            continue
+        c = per.setdefault(key, Counter())
+        c[kind] += 1
+        if kind == "md":
+            src = page.relative_to(REPO) if page.is_relative_to(REPO) else page
+            if str(src).startswith("plans/"):
+                c["plans"] += 1
+            elif str(src).startswith("docs/history/"):
+                c["history"] += 1
+    return sorted(per.items(), key=lambda kv: (-sum(kv[1][k] for k in ("md", "rs", "ein", "toml")), kv[0]))
 
 
 # ── main ────────────────────────────────────────────────────────────────────
@@ -274,22 +496,40 @@ def main() -> int:
     ap.add_argument(
         "tree",
         nargs="*",
-        default=[str(DEFAULT_TREE)],
-        help="directories to walk and/or single .md files; default docs/kernel",
+        help="directories to walk for .md pages, and single files of the four "
+        "kinds; default docs/kernel, or nothing beside --tracked",
     )
     ap.add_argument("--links", action="store_true")
     ap.add_argument("--identifiers", action="store_true")
     ap.add_argument("--states", action="store_true")
+    ap.add_argument(
+        "--tracked",
+        action="store_true",
+        help="read every tracked .md, .rs (but ein.rs/vendor/), .ein and corpus/corpus.toml",
+    )
+    ap.add_argument(
+        "--inbound",
+        action="store_true",
+        help="print, per target file, the references that resolve to it, by referrer kind",
+    )
+    ap.add_argument(
+        "--target",
+        action="append",
+        default=[],
+        metavar="PREFIX",
+        help="with --inbound: only the targets under this repo-relative prefix (repeatable)",
+    )
     ap.add_argument("-k", "--only", help="substring of a page path")
     ap.add_argument("--check", action="store_true", help="exit 1 on a broken link")
     args = ap.parse_args()
-    if not (args.links or args.identifiers or args.states):
+    if not (args.links or args.identifiers or args.states or args.inbound):
         args.links = args.identifiers = args.states = True
+    if not args.tree and not args.tracked:
+        args.tree = [str(DEFAULT_TREE)]
 
     # `resolve()`, because `rel()` below subtracts REPO and a relative argv
-    # would not be under it — the reason this script could only ever be run
-    # with its own default until M1e S1e.3.8.
-    pages: list[Path] = []
+    # would not be under it.
+    pages: list[Path] = tracked_referrers() if args.tracked else []
     roots = tuple(Path(a).resolve() for a in args.tree)
     for arg in args.tree:
         root = Path(arg).resolve()
@@ -304,9 +544,13 @@ def main() -> int:
 
     failures = 0
 
+    if args.links or args.inbound:
+        refs: list[Ref] = []
+        bad = check_links(pages, roots, refs)
     if args.links:
-        bad = check_links(pages, roots)
-        print(f"── links ── {len(pages)} pages, {len(bad)} finding(s)")
+        kinds = Counter(kind_of(p) or "md" for p in pages)
+        read = ", ".join(f"{kinds[k]} {k}" for k in ("md", "rs", "ein", "toml") if kinds[k])
+        print(f"── links ── {len(pages)} files ({read}), {len(bad)} finding(s)")
         cur = None
         for page, line, target, why in bad:
             if page != cur:
@@ -314,6 +558,23 @@ def main() -> int:
                 cur = page
             print(f"     :{line:<5} {why:<22} {target}")
         failures += len(bad)
+
+    if args.inbound:
+        rows = inbound(refs, args.target)
+        print("── inbound ── references that resolve, per target, by referrer kind")
+        print("   (md counts every .md referrer; plans and history count those of")
+        print("   them under plans/ and docs/history/ again; a page's links to itself")
+        print("   are not counted)")
+        print(f"   {'all':>5} {'md':>5} {'plans':>5} {'hist':>5} {'rs':>5} {'ein':>5} {'toml':>5}  target")
+        for key, c in rows:
+            total = sum(c[k] for k in ("md", "rs", "ein", "toml"))
+            print(
+                f"   {total:>5} {c['md']:>5} {c['plans']:>5} {c['history']:>5} "
+                f"{c['rs']:>5} {c['ein']:>5} {c['toml']:>5}  {key}"
+            )
+        print(f"   {len(rows)} target(s)")
+
+    pages = [p for p in pages if p.suffix == ".md"]
 
     if args.identifiers:
         hay, files = haystack()

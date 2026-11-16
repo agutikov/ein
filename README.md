@@ -510,7 +510,7 @@ sub-language, the reserved names and the stdlib API are the rest of
 ### Development loop
 
 ```sh
-./run_tests.sh             # the gate: six static checks, cargo test --workspace and three more steps — 329 s on 2026-11-03
+./run_tests.sh             # the gate: seven static checks, cargo test --workspace and three more steps — 329 s on 2026-11-03
 ./run_tests.sh --slow      # + every test's slow half (EIN_CORPUS_SLOW=1), + 8 id-space seeds
 ./run_tests.sh --nightly   # instead of the gate: every step of .github/workflows/nightly.yml
 ./run_tests.sh --dev-host  # instead of the gate: the nightly at full budget, and the long steps CI does not run

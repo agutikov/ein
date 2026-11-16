@@ -940,7 +940,7 @@ note   = "M1e D1, the same defect between layers, whose trigger is the singleton
 path   = "examples/ein-bugs/closed-and-owing.ein"
 group  = "regression"
 runs   = ["solve", "saturate", "render rules"]
-note   = "M1f S1f.6.34's fixture of the refusal of an obligation on a closed relation (the user, 2026-11-13: *\"obligated relation can't be __closed__ also\"*): `(total-owed r is-a)` owes `r`, which `infer-closure` closes. Every command refuses it, one line, exit 1. Until then `tests/stdlib/closure/03_closed_and_owing.ein`, its twin `02_closed_and_satisfied.ein` with the witness edge deleted: the requirement unmet and unreachable, and from M1d S1d.2.6 the read-out `Open — owes 1 (r: 1)` against the twin's `Solution`."
+note   = "M1f S1f.6.34's fixture of the refusal of an obligation on a closed relation (the user, 2026-11-13: *\"obligated relation can't be __closed__ also\"*): `(total-owed r is-a)` owes `r`, which `infer-closure` closes. Every command refuses it, one line, exit 1. Until then the stdlib test `03_closed_and_owing.ein`, its twin `02_closed_and_satisfied.ein` with the witness edge deleted: the requirement unmet and unreachable, and from M1d S1d.2.6 the read-out `Open — owes 1 (r: 1)` against the twin's `Solution`."
 
 [[entry]]
 path   = "examples/ein-bugs/naf-upward-closure.ein"
@@ -3508,7 +3508,7 @@ note   = "M1f S1f.6.16 (2026-11-15): a library of facts, binary's four tables, `
 path   = "stdlib/math/convert.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.16 (2026-11-15): decimal to binary and back as requests, `(to-bin X)` answered by `(bin-of X B)` and `(to-dec B)` by `(dec-of B X)`: eleven rules over decimal's tagged division and addition walk and binary's strip, turn and top-first. `convert`, the closing rule, closes every relation, names every rule and both bases' entries. Moved from `examples/binary_arithmetic/conv.ein`. Alone it has no request: R {∅}."
+note   = "M1f S1f.6.16 (2026-11-15): decimal to binary and back as requests, `(to-bin X)` answered by `(bin-of X B)` and `(to-dec B)` by `(dec-of B X)`: eleven rules over decimal's tagged division and addition walk and binary's strip, turn and top-first. `convert`, the closing rule, closes every relation, names every rule and both bases' entries. Moved from the binary-arithmetic examples' `conv.ein`. Alone it has no request: R {∅}."
 
 [[entry]]
 path   = "stdlib/math/decimal.ein"
@@ -3549,7 +3549,7 @@ note   = "M1f S1f.6.17 (2026-11-14): a circuit's inputs as hypotheses, `(in WIRE
 path   = "stdlib/bool/props.ein"
 group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
-note   = "M1f S1f.6.17 (2026-11-14): what is known of the sixteen functions, thirty relations (the column, swap, complement, dual, the negated inputs, commutative, associative, idempotent, the inputs read, the one- and two-sided identity and absorbing bits, Post's five classes from inside and outside, complete alone), derived from the 64 rows by 31 monotone rules (the user's reply 20 (b)); moved from `examples/binary_logic/props_rules.ein`. Alone it derives them all: 405 firings beside `std.bool.gates`' 65, R {∅}."
+note   = "M1f S1f.6.17 (2026-11-14): what is known of the sixteen functions, thirty relations (the column, swap, complement, dual, the negated inputs, commutative, associative, idempotent, the inputs read, the one- and two-sided identity and absorbing bits, Post's five classes from inside and outside, complete alone), derived from the 64 rows by 31 monotone rules (the user's reply 20 (b)); moved from the binary-logic examples' `props_rules.ein`. Alone it derives them all: 405 firings beside `std.bool.gates`' 65, R {∅}."
 
 [[entry]]
 path   = "stdlib/closure.ein"
