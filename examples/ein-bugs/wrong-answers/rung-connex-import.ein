@@ -1,0 +1,34 @@
+;;; A refutation over a relation of the program's own read closed-world
+;;; because a module imported for it loads an obligation rule — **W97**,
+;;; register row `W97/connex-import` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.algebra` imported for `connex`, over `lt`, a relation the program
+;;; declares over three nodes and states two facts of, `(lt A B)` and `(lt B
+;;; C)`. It names no obligation and activates none, and nothing closes `lt`;
+;;; the import loads `std.algebra`'s two obligation rules with the module.
+;;; A and C are not compared, so `connex` concludes `(false)` at root.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; No hrule, and no obligation activated at root, so the blind enumerator
+;;; builds H, and it proposes `lt`: `(lt B A)`, `(lt C A)`, `(lt C B)` and
+;;; `(lt A C)`. `connex` concludes `(false)` from an `absent` over `lt`, a
+;;; relation a commitment can still extend, which *forbid* refuses: every
+;;; question about a commitment exits 1, naming `connex` and its remedy,
+;;; `(solve :no-hypothesis (lt))`; `ein saturate` still saturates.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; It loads: no candidate, root dead, R empty, and `lt` named outside the
+;;; universe, *no obligation owes it*. The loaded obligation rules take the
+;;; ladder's second rung, which owes nothing and proposes nothing, so no
+;;; commitment extends `lt` and the `absent` is read closed-world.
+
+(import std.algebra :symbols (connex))
+(relation lt Node Node :why "{?1} is less than {?2}")
+(instance A Node) (instance B Node) (instance C Node)
+(connex lt instance Node)
+(lt A B) (lt B C)
+(query :goal (lt ?x ?y))

@@ -1,0 +1,33 @@
+;;; The ladder's second rung taken by an obligation rule a program loads and
+;;; does not activate — **W97**, register row `W97/unactivated`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.algebra` imported for `total-owed`, which the program never writes,
+;;; beside two relations of its own that nothing closes, `at` and `near`,
+;;; over one colour and two houses. Every import brings its module whole, so
+;;; `std.algebra`'s two obligation rules, `total-owed` and `surjective-owed`,
+;;; are loaded; no fact activates either. The control,
+;;; `rung-unactivated-no-import.ein`, is this program with the import deleted.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Hypothesis generation is a ladder: the program's hrules, else what would
+;;; pay the debts of an obligation activated at root, else the blind
+;;; enumerator. Here there is no hrule and no obligation is activated, so H
+;;; is the blind enumerator's, eleven candidates of `at` and `near` over the
+;;; program's three names, and nothing restricts them: R is the whole cube,
+;;; 2 048 states, the control's answer.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; No candidate, and R is {∅}, one state: the second rung is taken wherever
+;;; an obligation rule is loaded, and with nothing owed it proposes nothing.
+
+(import std.algebra :symbols (total-owed))
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a H1 House) (is-a H2 House)
+(at Red H1)
+(solve)

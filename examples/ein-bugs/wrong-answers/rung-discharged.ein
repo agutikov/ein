@@ -1,0 +1,19 @@
+;;; The twin of `rung-unactivated.ein` that is not wrong — **W97**, register
+;;; row `W97/unactivated`'s twin (`corpus/wrong_answers.toml`).
+;;;
+;;; The same program with the obligation stated: `(total-owed at is-a)`
+;;; activates `std.algebra`'s `total-owed` over `at`, and Red, the one
+;;; colour, has a house, so root owes nothing. An obligation activated at root
+;;; takes the ladder's second rung, and a discharged state under it proposes
+;;; nothing and is complete: no candidate, and R is {∅}, one state. `near`,
+;;; which nothing owes, is the read-out's `outside` row. This is the answer
+;;; with the rung chosen by an obligation activated, as it was with the rung
+;;; chosen by an obligation rule loaded: the ruling does not move it.
+
+(import std.algebra :symbols (total-owed))
+(relation at Color House :why "{?1} is at {?2}")
+(relation near House House :why "{?1} is near {?2}")
+(is-a Red Color) (is-a H1 House) (is-a H2 House)
+(total-owed at is-a)
+(at Red H1)
+(solve)

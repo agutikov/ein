@@ -1,0 +1,33 @@
+;;; A relation of the program's own left unguessed because a module it
+;;; imports for another name loads an obligation rule — **W97**, register
+;;; row `W97/symmetric-import` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.algebra` imported for `symmetric`, which makes `near` symmetric,
+;;; beside `likes`, a relation the program declares and nothing closes, over
+;;; two things. The program names no obligation and activates none; the
+;;; import loads `std.algebra`'s two obligation rules with the module. The
+;;; control, `rung-symmetric-written.ein`, deletes the import and writes the
+;;; one rule it used, `std.algebra`'s `symmetric`, in its place.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; No hrule, and no obligation activated at root, so the blind enumerator
+;;; builds H: `(likes A B)`, `(likes B A)`, `(near A B)` and `(near B A)`.
+;;; Nothing refutes any of them, and `symmetric` makes each `near` fact bring
+;;; the other: R is 16 commitments and 8 states, the control's answer.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; No candidate, and R is {∅}, one state: the loaded obligation rules take
+;;; the ladder's second rung, which owes nothing and proposes nothing. The
+;;; read-out names `near` as outside the universe and says nothing of
+;;; `likes`, which no rule concludes and no query asks about.
+
+(import std.algebra :symbols (symmetric))
+(relation near Thing Thing :why "{?1} is near {?2}")
+(relation likes Thing Thing :why "{?1} likes {?2}")
+(thing A) (thing B)
+(symmetric near)
+(solve)

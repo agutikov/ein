@@ -1,0 +1,21 @@
+;;; The control of `rung-symmetric-import.ein` — **W97**, register row
+;;; `W97/symmetric-import`'s control (`corpus/wrong_answers.toml`).
+;;;
+;;; The same program with the import deleted and the one rule it used,
+;;; `std.algebra`'s `symmetric`, written in its place, word for word. No
+;;; obligation rule is loaded, so the blind enumerator builds H: `(likes A
+;;; B)`, `(likes B A)`, `(near A B)` and `(near B A)`, and R is 16
+;;; commitments and 8 states, the witness's right answer. A program that
+;;; imports a module for one rule and the same program with that rule
+;;; written out are one program: they take one rung, one H and one R
+;;; (`ein-cli/tests/import_invariance.rs`).
+
+(relation near Thing Thing :why "{?1} is near {?2}")
+(relation likes Thing Thing :why "{?1} likes {?2}")
+(thing A) (thing B)
+(rule symmetric (?rel)
+  :match  (?rel ?a ?b)
+  :assert (?rel ?b ?a)
+  :why    "{?rel} is symmetric: {?a} ↔ {?b}.")
+(symmetric near)
+(solve)

@@ -2991,6 +2991,42 @@ runs   = ["solve", "saturate"]
 note   = "M1f W96 (`W96/as-value`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b), wide: `__closed__` written as a value, a rule's relation parameter in `(lift complete __closed__)`, beside an open `total`. Two candidates, `(total __closed__)` and `(total a)`, and R four states where it is two, which it answers since the same task's fix."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/rung-unactivated.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W97 (`W97/unactivated`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) from E-51 of P1f.6's `findings.md`, on the user's ruling on Q-M1f.308, (b): `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`, over one colour and two houses. The import loads the module's two obligation rules and nothing activates either; they take the ladder's second rung, which owes nothing: no candidate, and R {∅} where the blind enumerator's eleven candidates and 2 048 states are right, the control's."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W97's control, filed by S1f.10.15's T1f.10.15.4: `rung-unactivated.ein` with the import deleted, which it never used. No obligation rule is loaded: the blind enumerator's eleven candidates, and R the whole cube, 2 048 states, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/rung-discharged.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W97's twin, filed by S1f.10.15's T1f.10.15.4: `rung-unactivated.ein` with the obligation stated, `(total-owed at is-a)`, and paid at root. An obligation activated at root takes the ladder's second rung, and a discharged root under it proposes nothing and is complete: no candidate, R {∅}, under the ruling as before it."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/rung-symmetric-import.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W97 (`W97/symmetric-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The import's obligation rules, which nothing activates, take the ladder's second rung: no candidate, and R {∅} where four candidates and 8 states are right, the control's."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/rung-symmetric-written.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W97's control for `W97/symmetric-import`, filed by S1f.10.15's T1f.10.15.4: the import deleted and `std.algebra`'s `symmetric` written in its place, word for word. No obligation rule is loaded: four candidates, and R 16 commitments and 8 states, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W97 (`W97/connex-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): Q-M1f.308's re-plan probe, `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The import's obligation rules, which nothing activates, take the ladder's second rung, which proposes nothing, so no commitment extends `lt` and `connex`'s `absent` is read closed-world: it loads, root dead, R empty. Right: the blind enumerator proposes `lt`, and *forbid* refuses `connex`, exit 1."
+
+[[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
