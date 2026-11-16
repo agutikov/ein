@@ -5,8 +5,8 @@
 whole at ~23.
 **Status:** created 2026-11-08 on the user's instruction: *"convert
 plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.20_docs_refactor.md into new phase
-p1f.20"*. **In progress** since 2026-11-16: [S1f.20.1](s1f.20.1_the_two_checks.md), the two checks and the
-census, is done; [S1f.20.2](s1f.20.2_the_disposition_table.md) is next.
+p1f.20"*. **In progress** since 2026-11-16: [S1f.20.1](s1f.20.1_the_two_checks.md), [S1f.20.2](s1f.20.2_the_disposition_table.md)
+and [S1f.20.8](s1f.20.8_decisions.md) are done; S1f.20.3 to S1f.20.5 are next.
 **Was S1f.5.20**, a stage of [P1f.5](../p1f.5_the_no_owner_items/README.md), until 2026-11-08. Since it
 was written on 2026-08-28, its § How to cut it had proposed splitting it into seven stages and left taking
 the split to the user. This phase takes it. No stage had run, so nothing shipped is renumbered:
@@ -427,7 +427,7 @@ meets that only by two rules, which the single stage did not need:
 | [S1f.20.5](s1f.20.5_ein_rs.md) | `docs/ein/ein.rs/` — the concrete implementation | 3 d | the concrete one, `rust.md`'s marked region intact |
 | [S1f.20.6](s1f.20.6_dehistoricise_the_code.md) | De-historicise the code, and dissolve `docs/history/` | 5 d | 0 ids outside `plans/`; `docs/history/` gone; `cargo doc` green |
 | [S1f.20.7](s1f.20.7_the_two_empty_homes.md) | The two empty homes | 1 d | `overview/` and `demo/`, indexed and owned |
-| [S1f.20.8](s1f.20.8_decisions.md) | The decisions, in `docs/decisions/` (the history sweep, first half; 2026-11-15) | — | every decision a file, the final one, ids kept; every cited id resolves |
+| [S1f.20.8](s1f.20.8_decisions.md) | The decisions, in `docs/decisions/` (the history sweep, first half; 2026-11-15) | — | every decision a file, the final one, ids kept; every cited id resolves. **Done 2026-11-17**: 348 files in 19 folders, the census held to them both ways, every decision id the project cites resolving in the link check's gate step |
 | [S1f.20.9](s1f.20.9_the_history_sweep.md) | The history sweep: finished plans and `docs/history/` removed, nothing outside `plans/` refers to a plan or a date (2026-11-15) | — | 0 such references, the check with no baseline; only unfinished work under `plans/` |
 
 **The order.** S1f.20.1, then S1f.20.2, before anything moves; S1f.20.2's review shows the decisions' layout
