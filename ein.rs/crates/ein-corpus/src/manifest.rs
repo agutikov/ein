@@ -380,10 +380,14 @@ mod tests {
             // 2026-10-18 (§ 8). `beyond_arith/send_more_money` joined when M1f
             // S1f.6.27 banked it, its bare `solve` describing R to the budget
             // in 7.47 s (`utils/bench_env.sh python3 utils/corpus_cost.py -k
-            // send_more_money --runs 3`, 2026-11-13).
+            // send_more_money --runs 3`, 2026-11-13). Its generated twin
+            // `send_more_money_written` is the sixteenth while `--single`
+            // stops at the budget on it, 6.53 s (2026-11-16): the name keeps
+            // its count until that run is decided and the flag re-taken.
             [
                 "examples/features/01_not_and_absent.ein",
                 "examples/beyond_arith/send_more_money.ein",
+                "examples/beyond_arith/send_more_money_written.ein",
                 "examples/lattice/06_friends_tables.ein",
                 "examples/lattice/07_two_pairs_two_tables.ein",
                 "examples/saturation/square-bwd/floors.ein",

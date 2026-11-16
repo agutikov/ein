@@ -295,6 +295,58 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
     );
 }
 
+/// **`send_more_money_written.ein` is `send_more_money.ein` with one line
+/// reordered**, and the generator's `--check` is what says so: the two are
+/// compared byte for byte through `examples/gen_send_written.py`, as the
+/// zebra2 variants are above. The pair is the witness that a search's work
+/// does not read the order a program's facts are written in, so a hand edit
+/// to either that the other does not follow would make that comparison one
+/// between two different programs.
+#[test]
+fn the_written_send_is_the_by_column_send_with_one_line_reordered() {
+    let read = |rel: &str| {
+        std::fs::read_to_string(repo_root().join(rel)).unwrap_or_else(|e| panic!("{rel}: {e}"))
+    };
+    let by_column = read("examples/beyond_arith/send_more_money.ein");
+    let written = read("examples/beyond_arith/send_more_money_written.ein");
+    // The structural half, which needs no interpreter: outside the header's
+    // comments the two differ in exactly one line, and that line holds the
+    // same eight facts.
+    let code = |s: &str| -> Vec<String> {
+        s.lines()
+            .filter(|l| !l.trim_start().starts_with(";;;"))
+            .map(str::to_string)
+            .collect()
+    };
+    let (a, b) = (code(&by_column), code(&written));
+    assert_eq!(a.len(), b.len(), "the two files have other lines of code");
+    let differing: Vec<(&String, &String)> = a.iter().zip(&b).filter(|(x, y)| x != y).collect();
+    assert_eq!(differing.len(), 1, "more than one line of code differs");
+    let facts = |l: &str| -> BTreeSet<String> {
+        l.split(") (")
+            .map(|f| f.trim_matches(|c| c == '(' || c == ')').to_string())
+            .collect()
+    };
+    assert_eq!(
+        facts(differing[0].0),
+        facts(differing[0].1),
+        "the differing line does not hold the same facts"
+    );
+    require_python3();
+    let out = Command::new("python3")
+        .arg("examples/gen_send_written.py")
+        .arg("--check")
+        .current_dir(repo_root())
+        .output()
+        .expect("python3 ran a moment ago");
+    assert!(
+        out.status.success(),
+        "the on-disk variant is stale — run `python3 examples/gen_send_written.py`\n{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr),
+    );
+}
+
 /// The one external tool the workspace still needs besides Graphviz, required
 /// the way `dot_wellformed::require_graphviz` requires that one.
 ///
