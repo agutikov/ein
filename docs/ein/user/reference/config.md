@@ -274,7 +274,7 @@ a program to answer about.
   both. The work differs, and so does where a budget stops each, which the `exhausted` row and the stderr `note:`
   say, with the forecast and the other route.
 - **The hypothesis space** — `ein render h-space`'s `--view`, `--dump`, `--supports`, `--region-budget` and
-  `-j`/`--jobs` ([`docs/kernel/inference/hypothesis-space.md`](../../reasoning/kb-evolution/hypothesis-space.md)). **Does
+  `-j`/`--jobs` ([`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](../../reasoning/kb-evolution/hypothesis-space.md)). **Does
   it change the answer: no.** The command asks about the hypothesis set H and not about R, and `ein solve` computes
   none of it ([Q-M1f.309](../../../decisions/cli/Q-M1f.309-ein-render-h-space-shows-the-hypothesis-space.md)).
   `--view` chooses what stdout holds: the read-out, one graph as DOT, or the document; `--dump DIR` writes the
@@ -312,7 +312,7 @@ a program to answer about.
   nothing near, says so in its block, and lists every unmatched model as missing or spurious.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary` (`ein-summary/2`), `--json-report`
   (`ein-test-report/5`), `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
-  ([`docs/kernel/inference/lattice-dump.md`](../../ein.rs/lattice-dump.md)), `--dump-answer`
+  ([`docs/ein/ein.rs/lattice-dump.md`](../../ein.rs/lattice-dump.md)), `--dump-answer`
   ([`answer-dump.md`](answer-dump.md)), and `ein oracle`'s `--dump` with `--states`
   ([`region-dump.md`](region-dump.md)). The directories are made before the run. **Additive** in the strict sense:
   stdout, stderr and the exit code are identical with them and without, and a write that fails after the run
@@ -331,7 +331,7 @@ render kb`, `ein render lattice`, `ein render h-space`, `ein render program`, `r
 show hyps` and `ein kb save` — and on none that loads nothing (`ein render region`). The views that draw a program
 as written read it through the loader first, and refuse what it refuses
 ([Q-M1f.71](../../../decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)), so they take it too. A
-program that embeds Ein sets the same option through the library ([`docs/api/api.md`](../../ein.rs/api.md)).
+program that embeds Ein sets the same option through the library ([`docs/ein/ein.rs/api.md`](../../ein.rs/api.md)).
 
 | option | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|

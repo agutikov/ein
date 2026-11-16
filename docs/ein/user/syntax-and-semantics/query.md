@@ -75,7 +75,7 @@ and `ein test FILE -v` says which question decided each:
 ok           claims.ein
   solve · :expect (region …) — holds (state route, k_s = 7, k_c = 7)
   :goal (seat ?who C1) — holds (describe: the maximal line, 2 classes over 2 states)
-1 file, 2 expectations: 2 held, 0 FAILED, 0 not checked, 0 errors  (0.00 s)
+1 file, 2 expectations: 2 held, 0 FAILED, 0 not checked, 0 errors  (… s)
 ```
 
 ## As a graph
