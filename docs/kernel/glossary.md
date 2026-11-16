@@ -577,7 +577,7 @@ A language whose source code is itself a value in the language —
 Lisp's `(list 1 2 3)` is both syntax and a list literal. ein-lang is
 homoiconic: rules, facts, and traces all share one S-expression
 grammar, so the engine can read its own traces. See
-[`ir/03-ein-lang/05_inspirations.md`](ir/03-ein-lang/05_inspirations.md).
+[`../ein/overview/inspirations.md`](../ein/overview/inspirations.md).
 
 ### DPO (double-pushout)
 A categorical formulation of graph rewriting where a rule is a span

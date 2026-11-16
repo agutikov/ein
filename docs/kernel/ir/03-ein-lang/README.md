@@ -30,7 +30,7 @@ model in [`../02-data-model/`](../02-data-model/).
 - [`04_dot_rendering.md`](04_dot_rendering.md) — IR ↔ DOT mapping;
   node-shape legend; Levi-bipartite hyperedge encoding; rule
   rendering modes; trace views; branch rendering.
-- [`05_inspirations.md`](05_inspirations.md) — design influences
+- [`../../../ein/overview/inspirations.md`](../../../ein/overview/inspirations.md) — design influences
   (SMT-LIB, miniKanren, AtomSpace, Datalog, DPO graph rewriting) and
   where ein-lang diverges.
 - [`06_reserved_names.md`](06_reserved_names.md) — the authoritative
@@ -60,7 +60,7 @@ For a quick orientation: read `01_grammar.md`, then look at
 `03_examples.md` to ground the syntax in working puzzles. The
 pattern sub-language (`02_patterns.md`) is needed only when writing
 rules. The DOT rendering chapter (`04_dot_rendering.md`) and the
-inspirations chapter (`05_inspirations.md`) are reference material.
+inspirations chapter (`docs/ein/overview/inspirations.md`) are reference material.
 
 ## Cross-cutting questions resolved here
 
