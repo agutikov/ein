@@ -14,7 +14,8 @@ Each question the repo has asked is in one of three classes:
     python3 utils/decision_census.py                 # every id, one line each
     python3 utils/decision_census.py --counts        # per ledger and class
     python3 utils/decision_census.py --subjects      # the proposed layout
-    python3 utils/decision_census.py --local-ids     # local number -> new id
+    python3 utils/decision_census.py --local-ids     # local number -> its id
+    python3 utils/decision_census.py --files         # the decisions against docs/decisions/
     python3 utils/decision_census.py --cited         # which ids code and docs cite
     python3 utils/decision_census.py --slug TITLE    # a decision file's name
     python3 utils/decision_census.py --check         # exit 1 on a gap
@@ -24,7 +25,23 @@ The ledgers read are every milestone's `open_questions.md` (under `plans/` and
 of `plans/followups/`, P1f.6's numbered questions with their replies, and the
 stage files that number questions of their own (`STAGE_LOCAL`). Where two
 ledgers use one number for two questions, the later one's key is qualified,
-`Q23@M2`; a local number's key is `P1f.6#5` or `S1f.5.4#Q1`.
+`Q23@M2`; a local number's key is `P1f.6#5` or `S1f.5.4#Q1`. A milestone's
+row moved into `plans/open_questions.md`, id kept (Q-M1e.19), is read there
+and not under `docs/history/`.
+
+**Ids given to rulings no ledger holds** (S1f.20.8's T3: the standing rules
+`AGENTS.md` states, the documentation rulings, P1f.6's `design.md`) have no
+ledger row: their hand row, flagged `given`, is their record, its note naming
+where the ruling is written. **A local number's id** is fixed in its hand row,
+a note that opens `as Q-M1f.316;`, as the user ruled the map (Q-M1e.23 to .26,
+Q-M1e2.29, Q-M1f.315 to .340); a local decision about the process takes none.
+
+**Carried** is a decision whose folder is not `process` or `gate` and which is
+not `pending`: the process's decisions stay with their plans, and a decision
+not built stays with the plan that builds it. `--check` holds the census to
+`docs/decisions/` both ways: every carried decision has exactly one file
+`<id>-<slug>.md`, in the folder its subject names, and every file there is a
+carried decision's.
 
 The rows are read from the ledgers as they stand. A row is classed by its
 state's first words; where those do not decide it, or where the row names a
@@ -33,7 +50,8 @@ class is **banked by hand** in `utils/decision_census.txt`, which also banks
 each decision's proposed subject under `docs/decisions/`. `--check` fails on a
 row with no class, a chain with no hand row, a decision with no subject, a
 subject that is not one of `SUBJECTS`, or a hand row whose id no ledger has,
-so the census is re-taken by running it again after a ledger moves.
+so the census is re-taken by running it again after a ledger moves; and on
+any break of the cross-check with `docs/decisions/` above.
 """
 
 from __future__ import annotations
@@ -47,6 +65,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 HAND = ROOT / "utils" / "decision_census.txt"
+DECISIONS = ROOT / "docs" / "decisions"
 
 # The proposed layout of `docs/decisions/`: one folder a subject.
 SUBJECTS = OrderedDict(
@@ -69,14 +88,19 @@ SUBJECTS = OrderedDict(
         ("stdlib/math/num9", "`std.math.num9`: nine digits by wide rules"),
         ("stdlib/bool", "Boolean functions and circuits: `std.bool.*`"),
         ("corpus", "the corpus, the wrong-answer register, fixtures, examples, the stdlib's test programs"),
-        ("gate", "the gate and the nightly: what runs, on what budget, under which profile"),
+        ("gate", "the gate and the nightly: what runs, on what budget, under which profile (not carried)"),
         ("docs", "the documentation: what a page may claim, how a claim is warranted"),
-        ("process", "plans and scheduling only: phase order, ownership, who runs what (proposed: not carried)"),
+        ("process", "plans and scheduling only: phase order, ownership, who runs what (not carried)"),
     ]
 )
+#: The subjects whose decisions are the process's and stay with their plans.
+NOT_CARRIED_SUBJECTS = ("gate", "process")
 
 CLASSES = ("decision", "open", "not-carried")
-FLAGS = ("pending", "verify", "conflict", "home")
+FLAGS = ("pending", "verify", "conflict", "home", "given")
+#: A hand row's note that fixes a local number's id: `as Q-M1f.316; …`.
+GIVEN_ID = re.compile(r"^as (Q-M\w+?\.\d+)\s*;\s*")
+DECISION_FILE = re.compile(r"^(Q-M\d+(?:[a-z]\d*)?\.\d+|Q\d+)-[a-z0-9][a-z0-9-]*\.md$")
 
 
 @dataclass
@@ -96,6 +120,18 @@ class Rec:
     answer: str = ""
     local: bool = False  # a local number, to be given a milestone id
     milestone: str = ""  # the milestone that asked it, for a local number
+    given_id: str = ""  # a local number's fixed id, from its hand row
+
+    @property
+    def carried(self) -> bool:
+        """A decision `docs/decisions/` holds: not the process's, and built."""
+        return self.cls == "decision" and self.subject not in NOT_CARRIED_SUBJECTS and "pending" not in self.flags
+
+    @property
+    def qid(self) -> str:
+        """The id the decision's file carries: a local number's given id, else
+        the key, which for a carried decision is never qualified."""
+        return self.given_id or (self.key if not self.local else "")
 
 
 # --------------------------------------------------------------------------
@@ -235,6 +271,11 @@ def global_ledger() -> list[Rec]:
     for qid, (title, body) in secs.items():
         if qid not in pointers:
             out.append(Rec(qid, rel, "global", title, section_status(body)))
+    # A milestone's row moved here, id kept, when its ledger left with
+    # `docs/history/`: read here, the copy there dropped (`all_records`).
+    moved = split_sections(text, r"^## *(?P<id>Q-M\w+?\.\d+) *[—–-]+ *(?P<title>.*)$")
+    for qid, (title, body) in moved.items():
+        out.append(Rec(qid, rel, "global", title, section_status(body) or "open"))
     return out
 
 
@@ -431,7 +472,8 @@ def all_records() -> list[Rec]:
     recs += review_ledger()
     recs += p1f6_ledger()
     recs += stage_local()
-    return recs
+    moved = {r.key for r in recs if r.ledger == "plans/open_questions.md" and r.key.startswith("Q-M")}
+    return [r for r in recs if not (r.key in moved and r.ledger.startswith("docs/history/"))]
 
 
 # --------------------------------------------------------------------------
@@ -548,6 +590,11 @@ def classify(recs: list[Rec], hand: dict) -> list[str]:
         h = hand.get(r.key)
         if h:
             r.subject, r.flags, r.note = h["subject"], h["flags"], h["note"]
+            m = GIVEN_ID.match(r.note)
+            if m:
+                r.given_id, r.note = m.group(1), r.note[m.end():]
+                if not r.local:
+                    errs.append(f"{r.key}: `as {r.given_id}` names an id for an id")
             if h["cls"]:
                 r.cls = h["cls"]
                 r.by_hand = True
@@ -577,29 +624,91 @@ def classify(recs: list[Rec], hand: dict) -> list[str]:
     for k, h in hand.items():
         if k not in keys:
             errs.append(f"{HAND.name}:{h['line']}: {k} is in no ledger")
+    # An id is one question's: a local number's given id, and a given row's,
+    # is no ledger's id and no other local number's.
+    ledger_ids = {r.key for r in recs if r.family != "given"}
+    owner = {}
+    for r in recs:
+        qid = r.given_id or (r.key if r.family == "given" else "")
+        if not qid:
+            continue
+        if qid in ledger_ids:
+            errs.append(f"{r.key}: its id {qid} is a ledger's id too")
+        if qid in owner:
+            errs.append(f"{r.key}: its id {qid} is {owner[qid]}'s too")
+        owner[qid] = r.key
+        if r.family == "given" and r.cls != "decision":
+            errs.append(f"{r.key}: a given id is a decision's, not {r.cls!r}")
+    return errs
+
+
+def given_records(hand: dict) -> list[Rec]:
+    """The rulings no ledger holds, each a hand row flagged `given`: the row
+    is the record, its note where the ruling is written."""
+    out = []
+    for k, h in hand.items():
+        if "given" in h["flags"]:
+            r = Rec(k, HAND.relative_to(ROOT).as_posix(), "given", h["note"], "given")
+            r.milestone = re.match(r"^Q-(M\w+?)\.", k).group(1) if k.startswith("Q-M") else ""
+            out.append(r)
+    return out
+
+
+def decision_files() -> dict[str, list[Path]]:
+    """Every file under `docs/decisions/` but the folders' `README.md`, by the
+    id its name opens with (`""` for a name that is not `<id>-<slug>.md`)."""
+    out = defaultdict(list)
+    for path in sorted(DECISIONS.rglob("*.md")) if DECISIONS.is_dir() else []:
+        if path.name == "README.md":
+            continue
+        m = DECISION_FILE.match(path.name)
+        out[m.group(1) if m else ""].append(path)
+    return out
+
+
+def files_check(recs: list[Rec]) -> list[str]:
+    """The census against `docs/decisions/`, both ways: every carried decision
+    has exactly one file, in its subject's folder, and every file is a carried
+    decision's."""
+    errs = []
+    files = decision_files()
+    for path in files.pop("", []):
+        errs.append(f"{path.relative_to(ROOT)}: not `<id>-<slug>.md`")
+    carried = {}
+    for r in recs:
+        if not r.carried:
+            continue
+        if not r.qid:
+            errs.append(f"{r.key}: a carried local number with no id (`as Q-…;` in its hand row)")
+            continue
+        carried[r.qid] = r
+        paths = files.get(r.qid, [])
+        if len(paths) != 1:
+            errs.append(f"{r.key}: {len(paths)} files for {r.qid} under docs/decisions/")
+            continue
+        folder = paths[0].parent.relative_to(DECISIONS).as_posix()
+        if folder != r.subject:
+            errs.append(f"{r.key}: its file is in {folder}/, its subject is {r.subject}")
+    for qid, paths in sorted(files.items()):
+        if qid not in carried:
+            for path in paths:
+                errs.append(f"{path.relative_to(ROOT)}: {qid} is no carried decision of the census")
     return errs
 
 
 # --------------------------------------------------------------------------
-# Local numbers: the next free id of the milestone that asked them
+# Local numbers: the id the user fixed for each
 
 
 def local_ids(recs: list[Rec]) -> list[tuple[str, str, str]]:
-    """(local key, proposed id, what) for every local-numbered decision: the
-    next free id of the milestone that asked it, never a gap's. A decision
-    about the system comes first, so that a `process` one, which may not be
-    carried at all, takes the last numbers."""
-    top = defaultdict(int)
-    for r in recs:
-        m = re.match(r"^Q-(M\w+?)\.(\d+)$", r.key)
-        if m:
-            top[m.group(1)] = max(top[m.group(1)], int(m.group(2)))
-    local = [r for r in recs if r.local and r.cls == "decision"]
-    out = []
-    for r in [r for r in local if r.subject != "process"] + [r for r in local if r.subject == "process"]:
-        top[r.milestone] += 1
-        out.append((r.key, f"Q-{r.milestone}.{top[r.milestone]}", r.subject))
-    return out
+    """(local key, its id, subject) for every local-numbered decision: the id
+    its hand row fixes (`as Q-…;`), as the user ruled the map, or `—` for one
+    about the process, which is not carried and takes none."""
+    return [
+        (r.key, r.given_id or "—", r.subject + (" (pending)" if "pending" in r.flags else ""))
+        for r in recs
+        if r.local and r.cls == "decision"
+    ]
 
 
 # --------------------------------------------------------------------------
@@ -725,13 +834,38 @@ def report_cited(recs: list[Rec]) -> str:
     return "\n".join(lines)
 
 
+def report_files(recs: list[Rec], ferrs: list[str]) -> str:
+    """The decisions by where they are: carried (a file each, by folder), and
+    the rest of the class with why each stays out."""
+    dec = [r for r in recs if r.cls == "decision"]
+    carried = [r for r in dec if r.carried]
+    lines = ["| folder | carried decisions |", "|---|---:|"]
+    c = Counter(r.subject for r in carried)
+    for s in SUBJECTS:
+        if c[s]:
+            lines.append(f"| `{s}/` | {c[s]} |")
+    lines.append(f"| **all** | **{len(carried)}** |")
+    out = Counter()
+    for r in dec:
+        if not r.carried:
+            out["pending: decided, not built" if "pending" in r.flags else f"{r.subject}: the process's"] += 1
+    lines += ["", "| decisions not carried | count |", "|---|---:|"]
+    lines += [f"| {k} | {v} |" for k, v in sorted(out.items())]
+    given = [r for r in recs if r.family == "given"]
+    local = [r for r in recs if r.given_id]
+    lines += ["", f"ids given to rulings no ledger holds: {len(given)}; local numbers with an id: {len(local)}"]
+    lines += ["", f"mismatches with docs/decisions/: {len(ferrs)}"] + [f"- {e}" for e in ferrs]
+    return "\n".join(lines)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--cited", action="store_true", help="which ids are cited outside plans/ and docs/history/")
     ap.add_argument("--slug", metavar="TITLE", help="print the file-name slug of a decision's title, and exit")
     ap.add_argument("--counts", action="store_true", help="counts per ledger, family and class")
     ap.add_argument("--subjects", action="store_true", help="decisions per proposed folder")
-    ap.add_argument("--local-ids", action="store_true", help="the proposed id of each local-numbered decision")
+    ap.add_argument("--local-ids", action="store_true", help="the id of each local-numbered decision")
+    ap.add_argument("--files", action="store_true", help="the carried decisions against docs/decisions/")
     ap.add_argument("--class", dest="only", choices=CLASSES, help="list only this class")
     ap.add_argument("--subject", help="list only the decisions of this folder")
     ap.add_argument("--unclassed", action="store_true", help="list the rows a hand row must class, with their state")
@@ -742,17 +876,23 @@ def main() -> int:
         return 0
     recs = all_records()
     hand = load_hand()
+    recs += given_records(hand)
     errs = classify(recs, hand)
+    ferrs = files_check(recs) if not errs else []
     if a.unclassed:
         for r in recs:
             if not r.cls or (r.chain and not (hand.get(r.key) or {}).get("cls")):
                 print(f"{r.key}\t{r.mech or '?'}\t{r.ledger}\t{r.title}\t{r.state}")
         return 0
     if a.check:
-        for e in errs:
+        for e in errs + ferrs:
             print(e, file=sys.stderr)
+        n = sum(1 for r in recs if r.carried)
         print(f"{len(recs)} ids; {len(errs)} gaps", file=sys.stderr)
-        return 1 if errs else 0
+        if not errs:
+            print(f"{n} carried decisions, {len(decision_files())} files under docs/decisions/; "
+                  f"{len(ferrs)} mismatches", file=sys.stderr)
+        return 1 if errs or ferrs else 0
     if errs:
         print(f"note: {len(errs)} gaps; run --check", file=sys.stderr)
     if a.counts:
@@ -761,6 +901,8 @@ def main() -> int:
         print(report_subjects(recs))
     elif a.cited:
         print(report_cited(recs))
+    elif a.files:
+        print(report_files(recs, ferrs))
     elif a.local_ids:
         for old, new, subject in local_ids(recs):
             print(f"{old}\t{new}\t{subject}")

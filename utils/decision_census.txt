@@ -6,70 +6,78 @@
 #          or `PHASE#n` / `STAGE#Qn` for a local number
 # class    decision | open | not-carried; empty keeps the class read off the
 #          ledger's state. A row with a class is counted as classed by hand.
-# subject  the proposed folder under `docs/decisions/` (the script's SUBJECTS);
+# subject  the folder under `docs/decisions/` (the script's SUBJECTS);
 #          every decision has one
 # flags    pending  answered, about work no plan has built yet: stays with its plan
 #          verify   the answer as written may not describe today's engine
 #          conflict the answer conflicts with a ruling that has no id
 #          home     open, in a ledger under `docs/history/`: needs a home in `plans/`
-# note     why, for a hand class; `-> ID` names the id that carries the decision
+#          given    an id given to a ruling no ledger row holds: this row is its record,
+#                   its note the ruling and where it is written
+# note     why, for a hand class; `-> ID` names the id that carries the decision;
+#          a local number's note opens `as ID;`, the id the user fixed for it
+#
+# A decision is carried into `docs/decisions/<subject>/` unless its subject is
+# `process` or `gate` (the work's, which stays with its plan) or it is `pending`;
+# `--check` holds every carried decision to exactly one file there, and every
+# file there to a carried decision.
 
 # ---------------------------------------------------------------- M1a
-Q-M1a.3 |  | diagnostics | verify |
-Q-M1a.6 |  |  | home | owned by F23 since (`at None` staying F23's, Q-M1f.75)
+Q-M1a.3 | decision | diagnostics |  | its chain's last word is (c), the generated grammar's error report, its position and token; the ledger's index says (a), whose kept quirks no longer hold (read at T3)
+Q-M1a.6 | decision | diagnostics |  | was open; written as what holds today, id kept (the user's ruling at S1f.20.2's review, item 10)
 Q-M1a.7 | decision | engine |  | the chain word is "0 moved", not a chain
 Q-M1a.8 | not-carried |  |  | closed as stated: the collision does not exist; refiled -> Q-M1e.16
 Q-M1a.9 |  | corpus |  |
 Q-M1a.10 |  | process |  | scheduling: what lands inside M1a
 Q-M1a.13 |  | cli |  |
-Q-M1a.16 |  | corpus | verify | the lever matrix: most levers retired since
-Q-M1a.17 |  | engine |  | a mechanism declined at its measured ceiling
+Q-M1a.16 |  | process |  | not carried: a `utils/` script drives the lever matrix, the work's (T3)
+Q-M1a.17 | not-carried |  |  | a mechanism declined on the deleted walk's measurement: nothing of it holds of today's engine (T3)
 Q-M1a.18 |  | engine |  |
 Q-M1a.22 |  | cli |  |
-Q-M1a.23 |  |  | home | deferred, with three trip-wires: no answer yet
+Q-M1a.23 | decision | engine |  | was deferred; written as what holds today, id kept (item 10)
 
 # ---------------------------------------------------------------- M1c
 Q-M1c.1 |  | language |  |
-Q-M1c.2 |  | language | verify | `(or …)` and `(model …)` as M1c wrote them; the claim forms grew since
-Q-M1c.6 |  |  | home |
-Q-M1c.7 |  |  | home |
+Q-M1c.2 |  | language |  | carried as the part that holds today (read at T3)
+Q-M1c.6 | decision | answer |  | was open; written as what holds today, id kept (item 10)
+Q-M1c.7 | decision | answer |  | was open; written as what holds today, id kept (item 10)
 
 # ---------------------------------------------------------------- M1d
-Q-M1d.1 | open |  | home | the word half settled; the stopping half is answered in practice by the region's questions (Q-M1e2.7), which the user has not said
+Q-M1d.1 | decision | answer |  | was open; written as what holds today, id kept (item 10): a search stops early only on a decided question
 Q-M1d.2 |  | hypotheses |  |
 Q-M1d.3 | decision | hypotheses |  | answered for obligations (`domain_contract.md`); the general lower-bound form is nobody's question
 Q-M1d.4 | not-carried |  |  | moot: the traversal it asks about was deleted with the walk
 Q-M1d.5 |  | read-out |  |
-Q-M1d.6 |  | answer | verify | restate in today's words: a state that owes what it can still pay is owing, not dead
+Q-M1d.6 |  | answer |  | holds today, in today's words: a state that owes what it can still pay is owing, not dead (read at T3)
 Q-M1d.7 |  | language |  |
 
 # ---------------------------------------------------------------- M1e
 Q-M1e.1 |  | docs |  |
 Q-M1e.2 |  | docs |  |
 Q-M1e.3 | not-carried |  |  | superseded by the user's rulings on the documentation tree (P1f.20's README), which carry no id: docs/history is removed
-Q-M1e.4 |  | docs | conflict | of its three warrants, "a date" conflicts with the rulings on the documentation tree (no dates); the command and the test stand
+Q-M1e.4 |  | docs |  | carried with the date warrant gone (the user's ruling at S1f.20.2's review, item 9): a number carries a command or a test
 Q-M1e.5 |  | answer |  |
 Q-M1e.6 |  | answer |  |
-Q-M1e.7 |  | read-out |  |
+Q-M1e.7 |  | answer |  | under answer/ (its read-out half is Q-M1f.18), moved from read-out/ at T3
 Q-M1e.8 | not-carried |  |  | overtaken: the answer is the region R (-> Q-M1e2.7); W1's rows are fixed
 Q-M1e.9 | not-carried |  |  | its language half is ruled by -> Q-M1e2.5 (forbid); the answer "no" is the reason, not a decision
-Q-M1e.10 | open |  | home | still inert, cited by `configuration.md`
+Q-M1e.10 | decision | language |  | was open; written as what holds today, id kept (item 10): the two inert flags are refused
 Q-M1e.11 |  | hypotheses |  | the same ruling as Q-M1f.307, which is not carried
 Q-M1e.12 |  | hypotheses |  |
-Q-M1e.13 | open |  | home | worked around by the register; the language gap stays open
-Q-M1e.14 | open |  | home |
+Q-M1e.13 | decision | answer |  | was open; written as what holds today, id kept (item 10)
+Q-M1e.14 | decision | engine |  | was open; written as what holds today, id kept (item 10)
 Q-M1e.15 | not-carried |  |  | the defect; its ruling is -> Q-M1e2.11
 Q-M1e.16 |  | engine |  |
 Q-M1e.17 | decision | cli |  | the chain word is "retired", not a chain
 Q-M1e.18 |  | language |  |
-Q-M1e.19 | open |  | home |
+Q-M1e.19 | open |  |  | moved to plans/open_questions.md, id kept: open, cited by nothing in the project (item 10)
 Q-M1e.20 | decision | cli |  | answered (a) on 2026-10-14 though the row starts "open"
 Q-M1e.21 |  | hypotheses |  |
-Q-M1e.22 |  |  | home | owned by M2's S2.1.2
+Q-M1e.22 | decision | cli |  | was open; written as what holds today, id kept (item 10)
 
 # ---------------------------------------------------------------- M1e2
 Q-M1e2.1 |  | answer |  |
-Q-M1e2.2 | open |  |  | deferred to F21, which owns it
+Q-M1e2.2 | decision | answer |  | was deferred to F21; written as what holds today, id kept (item 10): a node is a fork of root, an assumption stated
 Q-M1e2.3 |  | answer |  |
 Q-M1e2.4 | not-carried |  |  | superseded: a dead node's core may be empty, `[]` (-> Q-M1e2.27, Q-M1f.48)
 Q-M1e2.5 |  | language |  |
@@ -146,13 +154,13 @@ Q-M1f.45 |  | diagnostics |  |
 Q-M1f.46 |  | language |  |
 Q-M1f.47 |  | language |  |
 Q-M1f.48 |  | read-out |  |
-Q-M1f.50 |  | corpus |  |
+Q-M1f.50 |  | process |  | not carried: a corpus subject that is the work's (T3)
 Q-M1f.51 |  | gate |  | taken by tier
 Q-M1f.52 |  | process |  | re-opened and placed as a stage of its own
 Q-M1f.53 |  | gate |  |
 Q-M1f.54 | decision | process |  | where an inventory's evidence was moved
-Q-M1f.55 |  | corpus |  |
-Q-M1f.56 |  | corpus |  |
+Q-M1f.55 |  | process |  | not carried: a corpus subject that is the work's (T3)
+Q-M1f.56 |  | process |  | not carried: a corpus subject that is the work's (T3)
 Q-M1f.57 |  | corpus |  |
 Q-M1f.58 |  | read-out |  |
 Q-M1f.59 |  | read-out |  |
@@ -195,7 +203,7 @@ Q-M1f.95 |  | diagnostics |  |
 Q-M1f.96 |  | language |  |
 Q-M1f.97 |  | corpus |  |
 Q-M1f.98 |  | process |  | which moves are register rows
-Q-M1f.99 |  | corpus |  |
+Q-M1f.99 |  | process |  | not carried: a corpus subject that is the work's (T3)
 Q-M1f.100 |  | cli |  |
 Q-M1f.101 |  | cli |  |
 Q-M1f.102 | decision | gate |  | the chain word is "moved", of a budget
@@ -242,7 +250,7 @@ Q-M1f.142 | not-carried |  |  | "stands" by the ledger, but superseded: no selec
 Q-M1f.143 |  | imports |  |
 Q-M1f.144 |  | process |  | what a register row records
 Q-M1f.145 |  | gate |  |
-Q-M1f.146 |  | stdlib/math | verify | its "a direct importer lists `__closed__`" half was a selection's; today every import brings the module whole
+Q-M1f.146 |  | stdlib/math |  | rewritten to today's stdlib: every import brings the module whole (read at T3)
 Q-M1f.147 | not-carried |  |  | the same ruling as -> Q-M1f.153 (reply 45): skip big graphs
 Q-M1f.148 |  | stdlib/math |  |
 Q-M1f.149 |  | stdlib/math/decimal |  |
@@ -268,7 +276,7 @@ Q-M1f.168 |  | stdlib/math/num9 |  |
 Q-M1f.169 |  | stdlib/math/num9 |  |
 Q-M1f.170 |  | stdlib/math/num9 |  |
 Q-M1f.171 |  | stdlib/math/num9 |  |
-Q-M1f.172 |  | corpus |  |
+Q-M1f.172 |  | process |  | not carried: a corpus subject that is the work's (T3)
 Q-M1f.173 |  | engine |  |
 Q-M1f.174 |  | stdlib/math/int |  |
 Q-M1f.175 |  | stdlib/math/int |  |
@@ -284,10 +292,10 @@ Q-M1f.184 |  | corpus |  |
 Q-M1f.185 |  | engine |  |
 Q-M1f.186 |  | corpus |  |
 Q-M1f.187 |  | corpus |  |
-Q-M1f.188 |  | corpus |  |
+Q-M1f.188 |  | process |  | not carried: a corpus subject that is the work's (T3)
 Q-M1f.189 |  | stdlib/math |  |
 Q-M1f.190 |  | corpus |  |
-Q-M1f.191 | decision | corpus |  | the default superseded at P1f.6's close by a ruling recorded here: `gen_binary.py` retired, `utils/gen_gates.py` in the gate
+Q-M1f.191 | decision | process |  | not carried: the default superseded at P1f.6's close by a ruling recorded here, `gen_binary.py` retired, `utils/gen_gates.py` in the gate: the work's (T3)
 Q-M1f.192 | decision | stdlib/math |  | superseded at P1f.6's close by a ruling recorded here: one copy, `std.math.bits`
 Q-M1f.193 |  | corpus |  |
 Q-M1f.194 |  | corpus |  |
@@ -301,14 +309,14 @@ Q-M1f.201 |  | language |  |
 Q-M1f.202 |  | language |  |
 Q-M1f.203 |  | language |  |
 Q-M1f.204 |  | language |  |
-Q-M1f.205 |  | stdlib/math/decimal | verify | where the check runs, before the numeral became its representation's (Q-M1f.210, .273)
-Q-M1f.206 |  | stdlib/math/decimal | verify | `bad-operand` stands in `std.math.rat`; check the decimal half against Q-M1f.273
+Q-M1f.205 | not-carried |  |  | the operand pass, superseded by the numeral's check where it is written (-> Q-M1f.272, Q-M1f.273) (T3)
+Q-M1f.206 |  | stdlib/math/decimal |  | rewritten to today's stdlib, the decimal half checked against Q-M1f.273 (read at T3)
 Q-M1f.207 |  | stdlib/math/decimal |  |
-Q-M1f.208 |  | stdlib/math/decimal | verify | check against Q-M1f.273's `std.math.decimal`
+Q-M1f.208 |  | stdlib/math/decimal |  | rewritten to today's `std.math.decimal`, Q-M1f.273's (read at T3)
 Q-M1f.209 | not-carried |  |  | superseded: binary's numeral is `std.math.binary`'s (-> Q-M1f.295)
 Q-M1f.210 |  | stdlib/math |  |
 Q-M1f.211 |  | stdlib/math/decimal |  |
-Q-M1f.212 |  | corpus |  | what the register holds: the engine's wrong answers, not a theory's
+Q-M1f.212 |  | process |  | not carried: what the register holds, the engine's wrong answers, is the work's (T3)
 Q-M1f.213 | not-carried |  |  | superseded: the rule is `std.math.positional`'s, shared by both bases (-> Q-M1f.266, Q-M1f.269)
 Q-M1f.214 |  | read-out |  |
 Q-M1f.215 |  | imports |  |
@@ -323,7 +331,7 @@ Q-M1f.223 |  | read-out |  |
 Q-M1f.224 |  | read-out |  |
 Q-M1f.225 |  | gate |  |
 Q-M1f.226 |  | hypotheses |  |
-Q-M1f.227 |  | corpus |  |
+Q-M1f.227 |  | process |  | not carried: how a sweep was measured, the work's (T3)
 Q-M1f.228 |  | stdlib/math |  |
 Q-M1f.229 |  | process |  | how an investigation's census reads
 Q-M1f.230 |  | process |  | how an investigation's proposals are priced
@@ -339,7 +347,7 @@ Q-M1f.239 |  | imports |  |
 Q-M1f.240 |  | imports |  |
 Q-M1f.241 |  | imports |  |
 Q-M1f.242 | decision | hypotheses |  | the chain word is "moved", of an exit code
-Q-M1f.243 |  | hypotheses | verify | "as declared"; the rung reads an obligation activated at root (Q-M1f.308)
+Q-M1f.243 |  | hypotheses |  | holds today: the rung reads an obligation activated at root (Q-M1f.308) (read at T3)
 Q-M1f.244 |  | hypotheses |  |
 Q-M1f.245 |  | hypotheses |  |
 Q-M1f.246 |  | process |  | twenty-four corpus programs corrected
@@ -392,7 +400,7 @@ Q-M1f.292 |  | gate |  |
 Q-M1f.293 |  | gate |  |
 Q-M1f.294 |  | gate |  |
 Q-M1f.295 |  | stdlib/math/binary |  |
-Q-M1f.296 |  | stdlib/math |  |
+Q-M1f.296 |  | process |  | not carried: a `utils/` generator's (T3)
 Q-M1f.297 |  | stdlib/math/binary |  |
 Q-M1f.298 |  | stdlib/math |  |
 Q-M1f.299 |  | stdlib/math/gcd |  |
@@ -419,23 +427,23 @@ Q-M1h.4 |  | process | pending | the text a plan works on
 Q-M1h.21 |  | process | pending | the part of the text a plan works on
 
 # ---------------------------------------------------------------- plans/open_questions.md (the global pool and M1's)
-Q1 | decision | language | verify | a typed hypergraph with provenance; check "equality class ids" against today's KB
+Q1 | decision | language |  | carried as the part that holds: a typed hypergraph with provenance (read at T3)
 Q2 |  | engine |  | no hand-off to a solver
 Q3 | decision | language |  | an S-expression dialect; the section names no status word
 Q4 | decision | language |  | `(rule NAME :match … :assert … :why …)`, a small DSL
 Q5 | decision | process |  | M1's target: explanation-complete on Zebra
 Q6 |  | answer |  | symmetry is the ontology writer's, not the engine's
 Q15 | not-carried |  |  | a static priority class per rule: `:priority` is gone (-> Q-M1f.313)
-Q16 | decision | stdlib | verify | a universal core, and a puzzle's own rules in its own file
+Q16 | decision | stdlib |  | rewritten to today's stdlib (read at T3)
 Q17 | decision | language |  | spatial structure as facts and rules, no position arithmetic
-Q18 | decision | engine | verify | per-fact provenance; the section's text describes the 2021 Python data model
+Q18 | decision | engine |  | written from ein-core's provenance, per fact (read at T3)
 Q19 | decision | hypotheses |  | saturate first, commit a hypothesis only at quiescence
 Q20 | decision | read-out |  | the engine's order, and `--reorder` clusters by entity
-Q21 | decision | cli | verify | `ir → dot` is built; `dot → ir` was required and nothing builds it
+Q21 | decision | cli |  | carried for its built half, a fixed DOT shape and a free layout; the `dot → ir` half stays an open row of plans/open_questions.md (read at T3)
 Q22 | not-carried |  |  | closed as superseded: no `(ontology …)` block
 Q23 | decision | language |  | variables typed by premises; a relation has a signature, no type slot
 Q24 | not-carried |  |  | `:where` dropped by -> Q32, then refused by -> Q-M1e2.28
-Q25 | decision | stdlib | verify | ordinality derived from a chosen relation (transitivity), no ordinal form
+Q25 | decision | stdlib |  | rewritten to today's stdlib: ordinality derived from a chosen relation (read at T3)
 Q26 | open |  |  | the ledger: still open
 Q27 | decision | language |  | form (b): a declaration plus property facts
 Q28 | open |  |  | the ledger: still open; F23 notes that `()` at top level is a parse error today
@@ -444,7 +452,7 @@ Q30 | not-carried |  |  | deferred to P1.8, and overtaken by the stdlib and its 
 Q31 |  | language |  |
 Q32 | not-carried |  |  | its drop superseded by -> Q-M1e2.28: `:where` refused wherever written
 Q33 | not-carried |  |  | a registry of two predicates: superseded by -> Q-M1e2.26, `eq` and `neq` are relations
-Q40 | decision | language | verify | a fact may hold a fact as an argument; check whether the engine still states `(hypothesis …)`
+Q40 | decision | language |  | carried in part: a fact may hold a fact as an argument (read at T3)
 Q41 | not-carried |  |  | priority bands: `:priority` is gone (-> Q-M1f.313)
 Q42 |  | process |  | a phase's scope
 
@@ -481,60 +489,60 @@ Q34@F3 | open |  |  | F3, parked
 Q35@F3 | open |  |  | F3, parked
 
 # ---------------------------------------------------------------- the M1e review's Q1–Q10 (answers in M1e's README)
-Q1@M1e-review | decision | engine | verify | determinism under `--jobs`: the argument at `Nogoods`, its premise a freeze; check the store still exists
+Q1@M1e-review | decision | engine |  | as Q-M1e.23; today's argument for determinism under `--jobs`, the shared store gone (read at T3)
 Q2@M1e-review | not-carried |  |  | answered yes; its ruling is -> Q-M1e2.11
 Q3@M1e-review | not-carried |  |  | answered; refiled as -> Q-M1e.16
 Q4@M1e-review | not-carried |  |  | a defect, fixed; the walk it was on is gone
 Q5@M1e-review | not-carried |  |  | moot: the lever and the walk are gone
 Q6@M1e-review | not-carried |  |  | handed on; ruled as -> Q-M1e.11
-Q7@M1e-review | decision | cli |  | `-n 0` and a negative are refused, exit 2
-Q8@M1e-review | decision | corpus |  | each Zebra encoding pinned to the published grid by `acceptance.rs`
+Q7@M1e-review | decision | cli |  | as Q-M1e.24; `-n 0` and a negative are refused, exit 2
+Q8@M1e-review | decision | corpus |  | as Q-M1e.25; each Zebra encoding pinned to the published grid by `acceptance.rs`
 Q9@M1e-review | not-carried |  |  | a review's coverage; its findings are Q-M1e.18 and Q-M1e.19
-Q10@M1e-review | decision | gate |  | the release matrix's untried legs stated in `docs/install.md`
+Q10@M1e-review | decision | gate |  | as Q-M1e.26; the release matrix's untried legs stated in `docs/install.md`
 
 # ---------------------------------------------------------------- P1f.6's local numbers (questions.md, round 2, the replies' index)
 P1f.6#1 | not-carried |  |  | -> Q-M1f.179
 P1f.6#2 | not-carried |  |  | -> Q-M1f.179
-P1f.6#3 | decision | language |  | the loader refuses a form whose count of arguments is not its relation's
-P1f.6#4 | decision | stdlib/math |  | detection rules built; their place re-ruled by Q-M1f.210 and Q-M1f.273
-P1f.6#5 | decision | stdlib/math/decimal |  | (b), round 2: `(undeclared NAME REQUEST)`, then `(false)`
-P1f.6#6 | decision | stdlib/math |  | (a): no general mechanism; the page lists what stays silent
-P1f.6#7 | decision | imports |  | (a): no module reserves its names
+P1f.6#3 | decision | language |  | as Q-M1f.315; the loader refuses a form whose count of arguments is not its relation's
+P1f.6#4 | decision | stdlib/math |  | as Q-M1f.316; detection rules built; their place re-ruled by Q-M1f.210 and Q-M1f.273
+P1f.6#5 | decision | stdlib/math/decimal |  | as Q-M1f.317; (b), round 2: `(undeclared NAME REQUEST)`, then `(false)`
+P1f.6#6 | decision | stdlib/math |  | as Q-M1f.318; (a): no general mechanism; the page lists what stays silent
+P1f.6#7 | decision | imports |  | as Q-M1f.319; (a): no module reserves its names
 P1f.6#8 | not-carried |  |  | -> Q-M1f.151
-P1f.6#9 | decision | stdlib/math/num9 |  | (b): `std.math.num9` stays silent, an example of another representation
+P1f.6#9 | decision | stdlib/math/num9 |  | as Q-M1f.320; (b): `std.math.num9` stays silent, an example of another representation
 P1f.6#10 | not-carried |  |  | moved to a plan: expressions are M1g's P1g.10
 P1f.6#11 | not-carried |  |  | -> Q-M1f.149
 P1f.6#12 | not-carried |  |  | -> Q-M1f.175, Q-M1f.181
-P1f.6#13 | decision | stdlib/math/binary |  | (b): binary a theory of its own
+P1f.6#13 | decision | stdlib/math/binary |  | as Q-M1f.321; (b): binary a theory of its own
 P1f.6#14 | not-carried |  |  | -> Q-M1f.267, the `bin-` prefix
-P1f.6#15 | decision | stdlib/math |  | (a): one `z` for both bases
+P1f.6#15 | decision | stdlib/math |  | as Q-M1f.322; (a): one `z` for both bases
 P1f.6#16 | not-carried |  |  | -> Q-M1f.266 (the shared rules) and Q-M1f.261 (the name)
-P1f.6#17 | decision | stdlib/math |  | (b): the conversions a module of their own, `std.math.convert`
-P1f.6#18 | decision | stdlib/math/decimal |  | one division is enough: the shipped one stays
-P1f.6#19 | decision | stdlib/bool |  | (c): both layouts, a table and a relation each
-P1f.6#20 | decision | stdlib/bool |  | (b): the properties as rules, in a module of their own
-P1f.6#21 | decision | stdlib/bool |  | (b): the one-sided forms too
+P1f.6#17 | decision | stdlib/math |  | as Q-M1f.323; (b): the conversions a module of their own, `std.math.convert`
+P1f.6#18 | decision | stdlib/math/decimal |  | as Q-M1f.324; one division is enough: the shipped one stays
+P1f.6#19 | decision | stdlib/bool |  | as Q-M1f.325; (c): both layouts, a table and a relation each
+P1f.6#20 | decision | stdlib/bool |  | as Q-M1f.326; (b): the properties as rules, in a module of their own
+P1f.6#21 | decision | stdlib/bool |  | as Q-M1f.327; (b): the one-sided forms too
 P1f.6#22 | decision | process |  | three hand counts in a stage file corrected
-P1f.6#23 | decision | stdlib/bool |  | (a), round 2: shipped as `std.bool`
+P1f.6#23 | decision | stdlib/bool |  | as Q-M1f.328; (a), round 2: shipped as `std.bool`
 P1f.6#24 | not-carried |  |  | moved to a plan: M1g's P1g.7 and P1g.9
 P1f.6#25 | not-carried |  |  | moved to a plan: M1g's S1g.6.6
 P1f.6#26 | not-carried |  |  | moved to a plan: M1h's P1h.1
-P1f.6#27 | decision | corpus |  | (a) for the banked word theory; the rest is M1h's P1h.2
-P1f.6#28 | decision | corpus |  | the recommended form banked, "not only and not final"; the rest is M1h's P1h.3
-P1f.6#29 | decision | corpus |  | (a) for the banked word theory; the rest is M1h's P1h.3
+P1f.6#27 | decision | corpus |  | as Q-M1f.329; (a) for the banked word theory; the rest is M1h's P1h.2
+P1f.6#28 | decision | corpus |  | as Q-M1f.330; the recommended form banked, "not only and not final"; the rest is M1h's P1h.3
+P1f.6#29 | decision | corpus |  | as Q-M1f.331; (a) for the banked word theory; the rest is M1h's P1h.3
 P1f.6#30 | not-carried |  |  | (a), the row for what root owes -> Q-M1f.220
-P1f.6#31 | decision | corpus |  | a reading is always chosen: the readings always owed
-P1f.6#32 | decision | corpus |  | what is not listed is zero: a module of its own, not for Zebra
+P1f.6#31 | decision | corpus |  | as Q-M1f.332; a reading is always chosen: the readings always owed
+P1f.6#32 | decision | corpus |  | as Q-M1f.333; what is not listed is zero: a module of its own, not for Zebra
 P1f.6#33 | not-carried |  |  | moved to a plan: M1h's P1h.2 and P1h.3
-P1f.6#34 | decision | corpus |  | (a): the word theory is examples, for now
-P1f.6#35 | decision | corpus |  | only the readings needed now
+P1f.6#34 | decision | corpus |  | as Q-M1f.334; (a): the word theory is examples, for now
+P1f.6#35 | decision | corpus |  | as Q-M1f.335; only the readings needed now
 P1f.6#36 | not-carried |  |  | moved to a plan: M1h's P1h.4
 P1f.6#37 | not-carried |  |  | moved to a plan: M1g's P1g.9
-P1f.6#38 | decision | stdlib/math/gcd |  | (a), not in `std.arith`: `std.math.gcd`
+P1f.6#38 | decision | stdlib/math/gcd |  | as Q-M1f.336; (a), not in `std.arith`: `std.math.gcd`
 P1f.6#39 | not-carried |  |  | -> Q-M1f.221
 P1f.6#40 | not-carried |  |  | moved to a plan: P1f.10, closed, whose rulings are Q-M1f.305 to .313
 P1f.6#41 | not-carried |  |  | -> Q-M1f.189
-P1f.6#42 | decision | stdlib/math | pending | yes: a small cryptarithm theory, `std.math.crypt`, with no stage yet
+P1f.6#42 | decision | stdlib/math | pending | as Q-M1f.337; yes: a small cryptarithm theory, `std.math.crypt`, with no stage yet
 P1f.6#43 | not-carried |  |  | -> Q-M1f.186, Q-M1f.187, Q-M1f.188
 P1f.6#44 | not-carried |  |  | -> Q-M1f.185
 P1f.6#45 | not-carried |  |  | -> Q-M1f.153, Q-M1f.161
@@ -566,16 +574,16 @@ P1f.6#70 | decision | process |  | a finding's owner (E-26)
 P1f.6#71 | decision | process |  | a finding's owner (E-27)
 P1f.6#72 | decision | process |  | a finding's owner (E-31)
 P1f.6#73 | decision | process |  | a commit left as it is
-P1f.6#layout | decision | stdlib |  | the stdlib's layout: `std.math.*` and `std.bool.*`; the relation names stand
+P1f.6#layout | decision | stdlib |  | as Q-M1f.338; the stdlib's layout: `std.math.*` and `std.bool.*`; the relation names stand
 
 # ---------------------------------------------------------------- stage files' local numbers
 S1e2.3.4#Q4 | not-carried |  |  | -> Q-M1e.5
 S1e2.3.4#Q5 | not-carried |  |  | -> Q-M1e.17
-S1e2.3.4#Q6 | decision | corpus |  | (a): both witnesses pinned, each where its check looks
-S1f.5.4#Q1 | decision | language |  | the loader's synthetic names leave the name space: `#empty`, `#nested`, `#params`, `#query`
+S1e2.3.4#Q6 | decision | corpus |  | as Q-M1e2.29; (a): both witnesses pinned, each where its check looks
+S1f.5.4#Q1 | decision | language |  | as Q-M1f.339; the loader's synthetic names leave the name space: `#empty`, `#nested`, `#params`, `#query`
 S1f.5.4#Q2 | decision | process |  | a fixture retired
 S1f.5.4#Q3 | decision | process |  | a fixture's scope, ruled at S1f.5.5's review stop
-S1f.5.4#Q4 | decision | read-out |  | every name is a JSON string
+S1f.5.4#Q4 | decision | read-out |  | as Q-M1f.340; every name is a JSON string
 S1f.5.5#Q1 | not-carried |  |  | -> Q-M1f.1
 S1f.5.5#Q2 | not-carried |  |  | -> Q-M1f.2
 S1f.5.16#Q1 | not-carried |  |  | -> Q-M1f.18
@@ -588,3 +596,31 @@ P1f.6-malformed#Q6 | not-carried |  |  | -> P1f.6#9
 S1e.1.1#Q4 | not-carried |  |  | -> Q4@M1e-review
 S1e.1.1#Q5 | not-carried |  |  | -> Q5@M1e-review
 S1e.1.1#Q6 | not-carried |  |  | -> Q6@M1e-review
+
+# ---------------------------------------------------------------- ids given at S1f.20.8's T3 to rulings no ledger row holds
+# (the user's rulings at S1f.20.2's review, item 8: the next free id of the milestone that ruled them;
+#  M1e2's after Q-M1e2.29, M1f's after the local numbers' Q-M1f.315 to .340, P1f.6's design.md after .350)
+Q-M1e2.30 | decision | answer | given | no configuration option, lever or flag changes R; the user's ruling of 2026-10-15, a standing rule of AGENTS.md § The answer
+Q-M1e2.31 | decision | answer | given | each question about R does the least work it needs; the user's ruling of 2026-10-16, AGENTS.md § The answer
+Q-M1e2.32 | decision | answer | given | no two commands disagree, and the oracle is the reference; the user's ruling of 2026-10-16, AGENTS.md § The answer
+Q-M1e2.33 | decision | cli | given | every answer exits 0; the user's ruling of 2026-10-16, AGENTS.md § The answer
+Q-M1e2.34 | decision | read-out | given | stdout's listings share 100 lines, and a dump holds them whole; the user's ruling of 2026-10-16
+Q-M1e2.35 | decision | cli | given | the default region budget is 2^20 facts; the user's ruling, AGENTS.md § Where things live (corpus/)
+Q-M1e2.36 | decision | language | given | an empty `:match` is true and fires once; a standing rule of AGENTS.md § The language, ruled with Q-M1e2.26
+Q-M1e2.37 | decision | language | given | a conclusion's variable is bound by every way of satisfying the `:match`; AGENTS.md § The language, ruled with Q-M1e2.26
+Q-M1f.341 | decision | docs | given | the project documents only its current state; the user's rulings of 2026-11-15 (P1f.20's README)
+Q-M1f.342 | decision | docs | given | a decision is a question with its final answer, kept under its id; the user's rulings of 2026-11-15 (P1f.20's README)
+Q-M1f.343 | decision | docs | given | a page or a comment cites a decision by its id, never a plan or a date; the user's rulings of 2026-11-15 (P1f.20's README)
+Q-M1f.344 | decision | docs | given | each decision is one file, in a folder by subject; the user's ruling at S1f.20.2's review, item 5 (P1f.20's README)
+Q-M1f.345 | decision | docs | given | nothing in the project reads, links or names the work that produces it; the user's rulings on the boundary of 2026-11-17 (P1f.20's README)
+Q-M1f.346 | decision | docs | given | the decisions are about Ein, not about how the work on it is done; the user's ruling at S1f.20.2's review, item 6
+Q-M1f.347 | decision | docs | given | no open question is cited by the project; the user's ruling at S1f.20.2's review, item 10
+Q-M1f.348 | decision | docs | given | a generated file says it is generated and names no tool; the user's rulings on the boundary of 2026-11-17
+Q-M1f.349 | decision | docs | given | a page of the project states no measurement; the user's rulings on the boundary of 2026-11-17 (the censuses live with their tools)
+Q-M1f.350 | decision | corpus | given | a fixed wrong answer is a regression test; the user's ruling at S1f.20.2's review, items 6 and 12
+Q-M1f.361 | decision | stdlib/math/decimal | given | a natural number is a numeral of digit names, in reading order; P1f.6's design.md
+Q-M1f.362 | decision | stdlib/math | given | no rule of the calculator joins two facts on a number; P1f.6's design.md
+Q-M1f.363 | decision | stdlib/math | given | a calculation is a request fact, answered by a result fact that repeats its operands; P1f.6's design.md
+Q-M1f.364 | decision | stdlib/math/decimal | given | a subtraction answers the difference and the shortfall; P1f.6's design.md
+Q-M1f.365 | decision | stdlib/math | given | the calculator closes its own relations, so arithmetic searches nothing; P1f.6's design.md
+Q-M1f.366 | decision | stdlib/math | given | the calculator's tables are generated facts, every row held to the integers; P1f.6's design.md
