@@ -282,9 +282,11 @@ T3 and T4 ran, on the ruling of [Q-M1f.309](../open_questions.md#q-m1f309--how-e
 the owner module is built on, and no object is defined anew. In a worktree, on a branch of its own, over
 `a3c719bf`. No answer, route or line of `ein solve` moved. rustc 1.97.1.
 
-**Read this first.** Three things below are not verified, and one finding bears on how far the owner's own
+**Read this first.** Four things below are not verified, and one finding bears on how far the owner's own
 `Coupling::complete()` can be trusted:
 
+- **`master` moved while this ran, to an engine that builds H otherwise, and nothing here was run on the merged
+  tree** ([below](#master-moved-while-this-ran)). The merge is textually clean in a trial.
 - `./run_tests.sh`, the nightly and `utils/ci_container.sh` were not run, by instruction. **A DOT writer changed,
   so `utils/ci_container.sh` is part of done and is owed.**
 - **No wall was measured.** The machine ran the main tree's nightly throughout (load average 53 on 32 threads when
@@ -537,3 +539,29 @@ Each the user's or the main session's to revise.
   program and one count; the document under an import form that reorders the universe.
 - The worktree was at `dbedc535` and not at `a3c719bf` as briefed. The branch was fast-forwarded to `a3c719bf`
   before any work; `master` was not touched.
+
+### `master` moved while this ran
+
+Found after the commit, `6acaa3d7`, and so stated here in a second one. **Every result above was taken over
+`a3c719bf`, and none on a tree that holds what `master` gained since.**
+
+- `master` was at `3e59b90a` when this was committed: three commits past `a3c719bf`, the merge of
+  [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)'s task 4. By its message, on the obligations rung H now
+  also holds what would pay a debt a rule can bring a commitment to owe, `W26/oblig-derived-activator` is fixed,
+  and no other corpus program moves. It changes `oblgen.rs`, `hypgen.rs`, `region.rs`, `forbid.rs`, `compile.rs`,
+  `monotone.rs` and `scope.rs`, which build H and L5's table, and `ein-render/src/read_out.rs`; and it moved
+  `corpus_shapes.md5`, which this stage's commit did not.
+- **A trial merge is textually clean** (`git merge-tree --write-tree master 6acaa3d7`, which writes a tree and
+  touches no ref). Five files are changed by both: `AGENTS.md`, `docs/kernel/inference/implementation.md`,
+  `ein-render/src/read_out.rs`, this phase's `README.md` and `findings.md`.
+- **The merged tree was not built and not tested here.** The owner reads H and L5's table, so these are to be
+  taken again on it, each by a command already named above:
+  - that it compiles, and `structure_view`, `structure_invariance` and the `dot_wellformed` sweep pass;
+  - **the page's corpus figures**, 49 015 and 82 589 saturations with their facts and 173 nodes, which the
+    `dot_wellformed` test prints: a program whose H gained a candidate has other layers;
+  - the page's read-out of `zebra2.ein`, which a test holds and will say;
+  - that every corpus structure is still whole at the default budget, which the same sweep holds;
+  - K-17's witness figures on `zebra.ein`, 181 088 and 67 244, which
+    `a_whole_layer_with_its_holders_refused_is_not_called_whole` reads off the program and does not hard-code.
+- The phase README's sentence before this stage's still calls the stop pending: it is the main session's, and was
+  left as written.
