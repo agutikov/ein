@@ -1,5 +1,7 @@
 # P1f.10 — The structure of the hypothesis set
 
+**Where the phase stands: [`state.md`](state.md)**, written at the pause of 2026-11-16: the stages, the rulings,
+the branches, what is owed and the order to resume in.
 **Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands.
 [S1f.10.1](s1f.10.1_exclusion_census.md#record-2026-11-15) ran that day, and
 [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-stopped-at-the-control) stopped at its control: on I-Z2 no declared row or
