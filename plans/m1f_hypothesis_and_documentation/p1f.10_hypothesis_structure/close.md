@@ -3,7 +3,8 @@
 **Phase:** [P1f.10](README.md). Prepared 2026-11-16, once every stage was merged. **The user ruled Q-M1f.311 the
 same day, option (e), which adds [S1f.10.17](s1f.10.17_describe_by_borders.md), describe by borders: the close waits
 for it, and for [S1f.10.18](s1f.10.18_no_edge_no_death.md) and [S1f.10.19](s1f.10.19_a_dead_node_stopped_early.md),
-which the user took up the same day (*"Yes, both"*); this page is completed when they are merged.** It follows the pattern of
+which the user took up the same day (*"Yes, both"*). All three are merged, and the user's answers at the close are
+built ([§ The user's answers at the close](#the-users-answers-at-the-close-2026-11-16)).** It follows the pattern of
 [P1f.6's close](../p1f.6_calculator/close.md): where the phase stands, what each track delivered, the acceptance
 re-taken, the defaults, the findings, and what is left for the user. It proposes no `docs/history/` record: this
 directory stays where it is. [`state.md`](state.md), written at the pause, is folded in here and is kept only as the
@@ -11,11 +12,12 @@ record of the pause.
 
 ## Where the phase stands
 
-- **Every stage is done**: S1f.10.1 to .6 and .9 to .16; S1f.10.7 dropped and S1f.10.8 closed at the re-plan. The
-  commits are in [`state.md` § The stages](state.md#the-stages). No worktree or branch is left.
+- **Every stage is done**: S1f.10.1 to .6 and .9 to .19; S1f.10.7 dropped and S1f.10.8 closed at the re-plan. The
+  commits of .1 to .16 are in [`state.md` § The stages](state.md#the-stages); S1f.10.17 is `e546ad49`, S1f.10.18
+  `f9cc1153` (a written *no*), S1f.10.19 `f70552d5` and `5e761612`. No worktree or branch is left.
 - **The user's rulings at the stop** (Q-M1f.306 to .310, 2026-11-16) are built: [`open_questions.md`](../open_questions.md)
   has a *Built* paragraph on each.
-- **Two questions are put and not acted on**: Q-M1f.311 and Q-M1f.312, [§ What the user is asked](#what-the-user-is-asked).
+- **Every question of the phase is ruled**: Q-M1f.306 to .313, the last three at the close.
 - **The verification of the last batch**: [§ The gate](#the-gate).
 
 ## What each track delivered
@@ -52,6 +54,18 @@ built where it paid. Each figure is the `work` row of `ein solve FILE QUESTION`,
 | **L9**, a fact nothing proposes and nothing writes is in no state ([S1f.10.14](s1f.10.14_exactly_one_spent.md)) | an instance whose unpayable witnesses no rule writes is licensed | `lattice/06_friends_tables_everyone_sits.ein --single` 207 → 61; *go* for all eight questions, no loser |
 
 After the three, `zebra2.ein --single` is 7 saturations and `zebra.ein --single` 9, where the cube is 2⁵⁶.
+
+Then, on the user's rulings of the same day:
+
+| built | what it does | where it pays |
+|---|---|---|
+| **describe by the tree and the classes** ([S1f.10.17](s1f.10.17_describe_by_borders.md), Q-M1f.311 (e)) | where root owes a licensed instance, describe and `--count` take R's states from the exhausted tree and each state's class from dualize and advance inside it; N and an empty R's frontier are not computed and say so; `--describe-route states` asks the state route | over the 173 monotone programs that search, 1 234 652 saturations → 605 068; `send_more_money.ein`'s describe decided, one state in 18 127, where it stopped after 336 101 |
+| **a dead node stopped at its first contradiction** ([S1f.10.19](s1f.10.19_a_dead_node_stopped_early.md)) | on a monotone program's routes; the oracle and root run to quiescence; a printed core still taken at the fixpoint | facts: `--single` −21 %, `-n 1` −19 %, `--maximal` −22 %, describe −3 % |
+| **the fail-first agenda** (S1f.10.19, Q-M1f.313 (c)) | every saturation fires first what leads to `(false)`, a stored negation or a fact whose negation can be concluded, then FIFO | `--single` and `-n 1` −6.6 % facts beyond the stop; no answer moved on a monotone program |
+
+The whole border route, N found by dualize and advance over H, was measured *no* for describe on the corpus and is
+not built. [S1f.10.18](s1f.10.18_no_edge_no_death.md)'s licence, *a state that closes no coupling cannot die*, is
+false as stated (two programs banked) and is not built.
 
 **Measured as a loss, or not built, each with its next way** (in the stages' records):
 
@@ -122,6 +136,13 @@ held only by the way the corpus dealt it (seventeen programs, fourteen states, e
 floor is fixed as `979c0966`, and all four shards and the per-commit run are green here. The nightly stopped there,
 so its later steps have not run on part 2; S1f.10.17 changes a route, so the container's gate and nightly run once
 more on the batch's last commit after it.
+
+On `bb3579d1`: the container gate ran `lever_invariance` for over 45 minutes on one cell and was stopped; the
+cause was the library taking every dead node's core by default (fixed, `a9b3c9e4`). On `f7f7494c`: the gate failed
+on `alive_invariant`'s list, which the two `examples/beliefs` programs should have joined (`604b0e55`), and the
+nightly on `first_contradiction`'s per-shard floor of cores (`661f8739`). The whole workspace and every sharded
+nightly sweep, each of its four shards, are green here on `661f8739`. **The last run**: *(the container gate and
+nightly on `661f8739`, filled in when they finish)*.
 
 ## The defaults
 
