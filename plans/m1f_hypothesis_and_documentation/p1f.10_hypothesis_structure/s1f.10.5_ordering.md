@@ -469,11 +469,13 @@ finishes where `today` stops counts with what `today` spent there. A cell is *sa
 - **`coupled/k`**: the coupling first and the count second once the edges are read, and **each state that had
   chosen choosing again by the counts it had when it first chose**, so the edges move a choice and the memory
   does not; the tree starts again only where one falls otherwise. I-SEND and I-SENDW are both 18 030 · 221 803:
-  the 17 747 of the tree by column, the node, and 282 nodes of the first tree, under text, before the node was
-  within a twentieth.
+  a first tree under text, D and E and then M, 600 nodes under M before the node was within a twentieth; the
+  node, read at saturation 712; and the tree by the couplings, 318 nodes smaller than the 17 747 by column,
+  since the first tree's deaths of M's digits are known to it
+  ([§ The order built](#the-order-built) has the dump).
 - **`written+coupled/k`**, the same with the first reported among equals: a cell that never reads the node is
-  today's to the node, I-SEND is today's and the node, 17 748, and **I-SENDW is 19 433**, 1 685 nodes of a first
-  tree by S, E, N before the node was read.
+  today's to the node, I-SEND is today's and the node, 17 748, and **I-SENDW is 19 433**, after a first tree by
+  S, E and N whose node is read at saturation 1 872.
 - **The edges one application back**, `one-step@32`: both SENDs stopped. `{D, E}` and `{D, E, Y}` order three
   letters and leave five to text.
 - **The full structure**, `full`: decides both SENDs at 24 073, the same order as the node alone and 6 325
@@ -571,8 +573,8 @@ last letter. Both are a nogood's to remove, the pair of a death or its core
 ([S1f.10.3](s1f.10.3_the_restricted_join.md#the-pair-of-a-death-the-layer-by-need-and-a-deaths-core-on-top-of-the-denials)),
 and a `functional` that stores what it excludes (K-13). **What the order buys is that the cost no longer hangs
 on the declaration**: over the corpus with I-SENDW in it `--single` is 37 888 where it was 150 715 and stopped
-on one program, and over the 189 programs that finish both ways it is 19 858 where it was 19 581, the 277 more
-being I-SEND's first tree, the price of not reading the order it was declared in.
+on one program, and over the 189 programs that finish both ways it is 19 858 where it was 19 581: I-SEND's 283
+more, the price of not reading the order it was declared in, less six nodes on the zebra2 files.
 
 ### The order to be built, by the rule, per question
 
@@ -585,9 +587,9 @@ being I-SEND's first tree, the price of not reading the order it was declared in
 
 So **the order is one function of the question**: the coupling, then the count, then the last key, the node
 read within a twentieth of the run's facts after twenty saturations; and the last key is rendered text, but
-under `-n N` over all of `R`, where it is the reported order. The four cells measured are `--single`, `-n 1`
-and the two lines whole; the cells between, a line under `-n N` or `--single`, take the canonical key
-([§ Defaults taken](#defaults-taken)).
+under `-n N`, where it is the reported order. The four cells measured are `--single`, `-n 1` and the two lines
+whole; of the cells between, a line under `-n N` takes `-n N`'s key and a line under `--single` the canonical
+one ([§ Defaults taken](#defaults-taken)).
 
 ### What moves, named before the route changed
 
@@ -622,6 +624,77 @@ the programs now named. One not on this list that moves is a stop.
   `corpus_exits.txt`, its cells; `send_more_money.ein`'s header and note, which state 17 747, and the
   generator's anchor on that header, with the variant regenerated.
 
+### The order built
+
+T4, as committed: [`ein_infer::order`](../../../ein.rs/crates/ein-infer/src/order.rs)'s `Order::of`, a function of
+the question and of nothing else, which every tree a route opens takes where no `order::with` is running. An
+owing state branches on one licensed instance it owes, chosen once, by three keys in turn:
+
+1. **the closest to closing a coupling**, once the couplings are read: over the edges that hold the instance,
+   the fewest questions the state has not paid, the instance's own among them;
+2. **the fewest alternatives not known dead**, by the run's one memory, a death or a denial: the key the tree
+   had;
+3. **the first by rendered text**, the instances in the order of their alternatives; under `-n N`, of all of
+   `R` or of a line, the first the obligation pass reports.
+
+The queue is as it was, the smallest closure first. **What it reads**: the state and `known_dead`, for nothing,
+as before; and [`structure::NodeCoupling`](../../../ein.rs/crates/ein-infer/src/structure/coupling/node.rs), the
+coupling read from the whole node alone, **one saturation, its facts those of every candidate committed**,
+charged to the run, counted in its `work` row and listed among the nodes it visited (`Space::charge_whole_node`);
+a whole node found dead is also written to the run's memory as ⊤ dead, so no route of the same run saturates it
+again. **When**: at the first choice the count leaves tied, once the run has saturated twenty nodes
+(`order::READ_AFTER`) and within a twentieth of the facts it has derived (`READ_SHARE`), the node stopped at that
+bound where it needs more, what it derived counted, and tried again at four times the work. **When the couplings
+are read the choices made before are made again**, each by the counts its state had when it first chose, and the
+tree starts again from root where one falls otherwise (`Search::choose_again`): T3's `open-first/20` is why.
+
+**What the read-out says.** The `route` row of a mode the tree answers says the order the run took, after the
+route's name and before the licences (`explore::TreeOrder::words`):
+
+- *branching on the owed instance with the fewest alternatives left*, where no choice was tied;
+- *…, the first by text among equals*, or *the first written among equals* under `-n N`, where one was; with
+  *; no coupling read, the whole node costing more than a twentieth of the run* where the node was tried and
+  stopped;
+- *branching on the owed instance closest to closing a coupling, then the one with the fewest alternatives
+  left, then the first by text: 5 couplings read off the whole node at saturation 712, the tree started again*,
+  where the couplings were read.
+
+[`read_out.md` § 3.1](../../../docs/kernel/inference/read_out.md#31-what-order-the-obligation-tree-took) defines
+the words, `structure.md` § The coupling a route reads the reading, and `tree.rs`'s § Which instance is
+restated. No JSON field was added: `region.route` is `tree` as it was, and `explore::Answer::order` holds the
+order for a library's reader.
+
+**I-SEND and I-SENDW, before and after**, a cell *saturations · facts* (`price_list --orders --only
+today,routes`, `build/s5/m6/`; `routes` is the order the routes take with no `order::with`, and is
+`coupled/20`'s cells, and `written+coupled/20`'s under `-n N`, to the node):
+
+| | I-SEND before | I-SEND after | I-SENDW before | I-SENDW after |
+|---|---|---|---|---|
+| `--single` | *Solution*, 17 747 · 222 924 | *Solution*, 18 030 · 221 803 | stopped, 131 134, none listed | ***Solution*, 18 030 · 221 803** |
+| `-n 1` | 15 854 · 192 556 | 15 855 · 192 722 | stopped, none listed | 17 542 · 199 031 |
+| `--minimal` | stopped, 205 166 | stopped, 205 840 | stopped, 131 134, none listed | stopped, 205 840, its state listed |
+| `--maximal` | 17 754 · 223 050 | 18 030 · 221 803 | stopped, none listed | 18 030 · 221 803 |
+
+I-SEND's nodes under `--single` by the letters committed (`ein solve examples/beyond_arith/send_more_money.ein
+--single --dump-lattice DIR`, then a tally of `nodes.json`, whose 18 030 entries are the `work` row's
+saturations, the whole node among them):
+
+| letters committed | visited | dead | |
+|---|---:|---:|---|
+| none | 1 | 0 | root |
+| D | 10 | 0 | |
+| D E | 100 | 10 | |
+| D E M | 600 | 165 | **the first tree**, under text: M after D and E, until the node is within a twentieth of the facts derived |
+| all eighty candidates | 1 | 1 | **the whole node**, read at saturation 712: five couplings, and the tree started again |
+| D E Y | 900 | 828 | the tree by the couplings |
+| D E Y N | 720 | 216 | |
+| D E Y N R | 5 040 | 4 750 | |
+| D E Y N R O | 2 900 | 2 717 | |
+| D E Y N R O M | 1 512 | 890 | 318 fewer than the 1 830 of the tree by column: the first tree's deaths of M's digits are known |
+| all eight | 6 220 | 6 219 | and the state, in `R` |
+| the state's extensions | 26 | 26 | |
+| | **18 030** | | 17 747 by column, before |
+
 ### Defaults taken
 
 Each the user's to revise. The first three are how the measurement was read, written before the order is
@@ -632,7 +705,9 @@ built.
    orders spent its budget either way. A cell an order finishes where `today` stops counts with what `today`
    spent; so I-SENDW, stopped today, is in every total, and the totals over the programs that finish both ways
    are given beside.
-2. **A cell between the four measured takes the canonical last key**: a line under `-n N` or `--single`. Only
-   `-n N` over all of `R` keeps the reported order among equals.
+2. **Of the cells between the four measured, a line under `-n N` takes `-n N`'s last key, the reported
+   order, and a line under `--single` the canonical one.** A line's first state is the tree's first leaf, which
+   is `-n 1`'s question: `--maximal -n 1` on `zebra2.ein`, an example of the read-out's page, is the same
+   5 · 164 → 5 · 302 under a canonical key that sinks `-n 1`.
 3. **I-SENDW's `--check` is a cargo test's**, `cli_semantics.rs`, as the zebra2 variants' is; no static step
    was added to the gate's six.

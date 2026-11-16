@@ -8,7 +8,7 @@
 ;;;
 ;;; The claim is that answer, and `ein test` holds it: a claim of one class
 ;;; is asked `--single`'s question, which finds the state and shows that R
-;;; holds no other, in 17 747 saturations. Describing R, which a bare `ein
+;;; holds no other, in 18 030 saturations. Describing R, which a bare `ein
 ;;; solve` does, visits every partial assignment that is still alive and
 ;;; stops at the budget after 336 101, so the claim is a note there, not
 ;;; checked (M1f S1f.6.27, E-30).
@@ -17,9 +17,9 @@
 ;;; `send_more_money.ein` declares its letters by column, units first:
 ;;; D E Y, then N R, O, S M. This file declares them S E N D M O R Y, and
 ;;; changes nothing else: one line of `(is-a … Letter)` facts, reordered.
-;;; The two are one puzzle with one answer, and a search that reads the
-;;; order the letters are declared in does not do the same work on both.
-;;; Regenerate with examples/gen_send_written.py.
+;;; The two are one puzzle with one answer, and `--single` does the same
+;;; work on both: the search reads the columns off the program, not the
+;;; order. Regenerate with examples/gen_send_written.py.
 ;;;
 ;;; I + BB = ILL beside it, `cryptarithm.ein`, is the same rules on 30
 ;;; candidates. M1f P1f.6: `plans/…/p1f.6_calculator/beyond_arithmetic.md`

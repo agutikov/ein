@@ -1,5 +1,7 @@
 //! **The order of the obligation tree decides the work and never the
-//! answer**: `ein_infer::order`, held on the programs past the cube.
+//! answer**, and **the work does not read the order a program states its
+//! facts in**: `ein_infer::order`, held two ways on the programs past the
+//! cube.
 //!
 //! - **Every order, one answer.** Each of the four questions the tree
 //!   answers, `--single`, `-n 1`, `--minimal` and `--maximal`, on every
@@ -11,6 +13,14 @@
 //!   tree started again at its third node is held as the one that never is.
 //!   `ein_infer::order::with` chooses one for the calling thread; no lever
 //!   reaches it.
+//! - **The two SENDs.** `send_more_money.ein` and
+//!   `send_more_money_written.ein` are one program but for the order of
+//!   eight facts (`cli_semantics.rs` holds that), and under the order the
+//!   routes take `--single` and the two lines do the same work on both, to
+//!   the saturation and the fact, and list the same states. `-n N` is the
+//!   one question whose last key is the order the obligation pass reports,
+//!   so there the two find one state by different work, and the test says
+//!   so.
 //!
 //! The oracle holds every order on every cube it enumerates
 //! (`explore.rs`, `every_order_of_the_tree_is_the_oracle`); this file holds
@@ -76,6 +86,9 @@ fn rel_of(path: &Path) -> String {
 
 /// The programs every run reads, `slow` or not.
 const INSTANCES: [&str; 2] = ["examples/zebra.ein", "examples/zebra2.ein"];
+
+const SEND: &str = "examples/beyond_arith/send_more_money.ein";
+const SEND_WRITTEN: &str = "examples/beyond_arith/send_more_money_written.ein";
 
 /// Every corpus file and register witness, once: the `slow` entries that
 /// are not [`INSTANCES`] where `slow` is asked, and the others where it is
@@ -506,4 +519,80 @@ fn every_order_gives_one_answer() {
         all.other_work,
         all.other_states
     );
+}
+
+/// **The work does not read the order a program states its facts in.**
+/// The two SENDs differ in the order of eight facts and in nothing else, and
+/// under the routes' order `--single` and each line saturate the same number
+/// of nodes, derive the same number of facts and list the same states on
+/// both: `--single` answers *Solution* on each. `--minimal`, which the
+/// budget stops after some seconds on both, is read with the `slow`
+/// entries.
+///
+/// **What still reads the written order, and why**: `-n N`, whose last key, among instances equal in coupling and in count, is the
+/// first the obligation pass reports. It finds the one state on both, by a
+/// first tree that follows the declaration until the couplings are read,
+/// which is other work on the two files; that work is not compared.
+#[test]
+fn the_two_sends_take_the_same_work() {
+    let slow = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
+    let (send, written) = (repo_root().join(SEND), repo_root().join(SEND_WRITTEN));
+    for (flags, mode) in questions() {
+        if flags == "--minimal" && !slow {
+            continue;
+        }
+        let a = ask(&send, mode, None).expect("answers");
+        let b = ask(&written, mode, None).expect("answers");
+        if flags != "-n 1" {
+            assert_eq!(
+                (a.saturations, a.facts),
+                (b.saturations, b.facts),
+                "{flags}: the work, by column and as written"
+            );
+        }
+        assert_eq!(
+            (a.verdict, a.exhausted, a.stopped.is_some()),
+            (b.verdict, b.exhausted, b.stopped.is_some()),
+            "{flags}"
+        );
+        let texts = |x: &Answer| -> Vec<Vec<String>> {
+            x.states
+                .iter()
+                .map(|s| {
+                    s.closure
+                        .iter()
+                        .map(|&c| x.candidates[c as usize].text.clone())
+                        .collect()
+                })
+                .collect()
+        };
+        assert_eq!(texts(&a), texts(&b), "{flags}: the states listed");
+        if flags != "-n 1" {
+            assert_eq!(a.order, b.order, "{flags}: the order each run took");
+        }
+        if flags != "--minimal" {
+            assert!(a.stopped.is_none(), "{flags}: {SEND} is answered");
+            assert_eq!(a.states.len(), 1, "{flags}: the one state");
+        }
+        if mode.ask == Ask::Single {
+            assert_eq!(a.verdict, Some(Verdict::Solution), "{SEND}");
+            assert!(a.exhausted, "{SEND} is decided");
+            // The couplings were read, and are SEND's columns.
+            let order = a.order.expect("a tree's order");
+            assert_eq!(order.couplings.map(|c| c.0), Some(5), "{order:?}");
+        }
+    }
+    // The control: under the written order the two are two runs, and the
+    // one declared as the puzzle is written is not decided.
+    let single = questions()[0].1;
+    let a = ask(&send, single, Some(&Order::WRITTEN)).expect("answers");
+    assert_eq!(a.verdict, Some(Verdict::Solution));
+    if slow {
+        let b = ask(&written, single, Some(&Order::WRITTEN)).expect("answers");
+        assert!(
+            b.stopped.is_some() && b.verdict.is_none(),
+            "under the written order {SEND_WRITTEN} was stopped: {:?}",
+            b.verdict
+        );
+    }
 }

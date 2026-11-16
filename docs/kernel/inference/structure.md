@@ -9,9 +9,13 @@ arguments or a declaration of it.
 
 One module computes it, [`ein_infer::structure`](../../../ein.rs/crates/ein-infer/src/structure.rs),
 and one command shows it, `ein render structure FILE`
-([§ How to see it](#how-to-see-it)). **`ein solve` computes none of it**, and
-no route reads it: the structure is a set of statements about nodes, it moves
-no answer, and it is not free ([§ What it costs](#what-it-costs)).
+([§ How to see it](#how-to-see-it)). The structure is a set of statements
+about nodes, it moves no answer, and it is not free
+([§ What it costs](#what-it-costs)). **`ein solve` computes one object of it,
+and only where the run can pay for it**: the coupling read from the whole
+node alone, which orders the obligation tree's branches
+([§ The coupling a route reads](#the-coupling-a-route-reads-the-whole-node-alone)).
+No route reads a pair layer, the cover or the full coupling.
 
 The answer it is the structure *of* is the region R,
 [`solution_semantics.md`](solution_semantics.md). Every object here is a
@@ -207,6 +211,57 @@ together where they share a question or an edge holds a question of each.
 every member of N lies inside one edge of a conflict or a derivation, and R is
 the product over the first set.
 
+### The coupling a route reads: the whole node alone
+
+The coupling above takes its questions from the cover and drops, by root's
+pair layer, the ways no alive state has. Both layers cost thousands of
+saturations on a program whose search is tens, so no route reads them. One
+reading takes neither, `structure::NodeCoupling`, and costs **one
+saturation**:
+
+- **a question is what root owes**: the alternatives of an instance L5
+  licenses, *which of these*, read off L5's table, which the obligation tree
+  holds before its first node. Every other candidate is a question alone;
+- **the node** is the whole node with **every** candidate of H committed,
+  since which are alive alone is a layer's to say, read as above: every
+  application, every derived premise followed back to the candidates;
+- **an edge** is a set of two or more questions a conflict or a derivation of
+  that node needs a member of each of. The edges one application back are
+  kept beside, as above.
+
+**What it does not see**, each stated where it is computed:
+
+- **a conflict of exactly two candidates is no edge.** With no cover, a pair
+  two candidates of one group make cannot be told from a pair the puzzle's
+  statements make: both are one application over two candidates. The pairs
+  are counted and join the components, and the edges are of what no pair
+  shows;
+- **a way no alive state has is read**, since no pair layer says which those
+  are, so an edge may be coarser than the coupling's and is never finer for
+  that reason;
+- **a candidate dead alone is committed**, and read like any other;
+- **a group nothing owes is no question**: where only the letters of a sum owe
+  a digit, *who is 5* is none, and each candidate is read under the letter it
+  is a digit of.
+
+On SEND + MORE = MONEY the questions are the eight letters and the edges are
+`{D, E}`, the units column `{D, E, Y}`, and each column above with the letters
+its carry comes from, `{D, E, N, R}`, `{D, E, N, O, R}` and
+`{D, E, M, N, O, R, S}`: the coupling's five. `ein-infer/tests/node_coupling.rs`
+holds that, and holds the reading to the coupling on every corpus program that
+searches and both read whole: every edge read from the node alone lies inside
+one component of the coupling, so it ties nothing the coupling holds apart.
+The reading is the same under a permuted id space and under every import form
+(`structure_invariance.rs`), and the same whatever order a program states its
+facts in.
+
+**Who reads it**: the obligation tree, to choose the owed instance a state
+branches on ([`order.rs`](../../../ein.rs/crates/ein-infer/src/order.rs)). It
+reads it only when a choice is left tied, the run has saturated twenty nodes,
+and the node costs at most a twentieth of the facts the run has derived; the
+node is then one saturation of the run's `work` row and a node the run
+visited. `ein render structure` does not show it.
+
 ---
 
 ## The domain
@@ -270,6 +325,7 @@ In the read-out's units, saturations and facts beyond root:
 | the small KB's pair layer | the same over the same candidates, in the small KB, facts counted beyond its own root |
 | the cover, *exactly one*, the grids | no saturation: a clique enumeration, and two passes of root's matcher |
 | the coupling | one saturation, the whole node. The edges one application back are read off the same node |
+| the coupling a route reads | one saturation, the whole node with every candidate committed, and neither pair layer |
 | a support, where asked | its pair's node saturated a second time, and a search |
 
 `ein render structure` prints what one program's cost was, in its `work` row
@@ -277,7 +333,7 @@ and under `cost` in the document. On the declared control the two layers and
 the whole node are in [the read-out below](#the-read-out), and a describe of
 the same program is `ein solve examples/zebra2.ein`, whose own `work` row
 stands beside them: there the structure costs several times the answer. **No
-route pays for a structure**, and this page claims the comparison of no other
+route pays for a pair layer**, and this page claims the comparison of no other
 program: each has its two rows.
 
 **Over the corpus**, the sweep that draws every structure prints what reading

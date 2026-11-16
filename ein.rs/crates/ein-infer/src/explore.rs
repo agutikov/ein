@@ -328,6 +328,48 @@ pub struct TreeOrder {
     /// Attempts at the whole node the run stopped, the node needing more
     /// than the share of the run's facts an order may spend on it.
     pub unaffordable: u32,
+    /// Among instances equal in every other key the first the obligation
+    /// pass reports was taken, which is `-n N`'s last key; otherwise the
+    /// first by rendered text.
+    pub written: bool,
+}
+
+impl TreeOrder {
+    /// **The order in words**, as the read-out's `route` row has it after
+    /// the route's name: the keys that decided this run's branches, in
+    /// turn, and where the couplings were read, how many and when.
+    pub fn words(&self) -> String {
+        let last = if self.written {
+            "the first written"
+        } else {
+            "the first by text"
+        };
+        match self.couplings {
+            Some((edges, at)) => format!(
+                "branching on the owed instance closest to closing a coupling, then the one \
+                 with the fewest alternatives left, then {last}: {edges} coupling{} read off \
+                 the whole node at saturation {at}{}",
+                if edges == 1 { "" } else { "s" },
+                if self.started_again {
+                    ", the tree started again"
+                } else {
+                    ""
+                },
+            ),
+            None if !self.tied => {
+                "branching on the owed instance with the fewest alternatives left".to_string()
+            }
+            None => format!(
+                "branching on the owed instance with the fewest alternatives left, {last} among \
+                 equals{}",
+                if self.unaffordable > 0 {
+                    "; no coupling read, the whole node costing more than a twentieth of the run"
+                } else {
+                    ""
+                },
+            ),
+        }
+    }
 }
 
 /// One state the run prints.

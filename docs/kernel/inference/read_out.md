@@ -158,13 +158,48 @@ and nowhere else.
 | `lattice` | every mode | as describe's, with the holes only where the route knows them | around R | `monotonicity.sites` | [X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) |
 | `strata` | as describe's | as describe's | around R | — | [X14](read_out_examples.md#x14--features07_unstratifiableein-every-row-of-the-warning-and-the-strata) |
 | `universe` | every mode | H's size in candidates, and § 5.3's block | around R | `region.universe.candidates` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode) |
-| `route` | every mode | the route and the licences it used: a mode on the state route meets each state at most once | the run | `region.licences` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) |
+| `route` | every mode | the route and the licences it used: a mode on the state route meets each state at most once. **Where the route is the obligation tree, the order the run took**, in words, between the route's name and the licences ([§ 3.1](#31-what-order-the-obligation-tree-took)) | the run | `region.licences` | [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode), [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) |
 | `work` | every mode | saturations and facts beyond root | the run | `work.saturations`, `work.facts` | [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) |
 <!-- /rows -->
 
 A mode's count row counts the states the run lists: the summary's `region.states` whose `listed` is true. Past the
 limit a line mode meets members it does not list, so its row is describe's, read off the same description, and the
 other members met are counted on the listing's last line (M1e2 S1e2.2.26, W27).
+
+### 3.1 What order the obligation tree took
+
+An owing state of the obligation tree branches on **one** owed instance, and which one decides how many nodes the
+run saturates and nothing else: the verdict, R and what a stopped run claims are the same under every order, and
+only which members of R a question that stops early lists first is the order's. The order is the route's own, a
+function of the question, and no option, `(config …)` field or `EIN_*` name reaches it
+([`order.rs`](../../../ein.rs/crates/ein-infer/src/order.rs)). A state chooses by three keys in turn, and the
+`route` row says which of them this run came to use:
+
+- ***branching on the owed instance with the fewest alternatives left***: no state's choice was left tied by the
+  count, so nothing after it decided a branch. *Left* is not known dead: an alternative a saturation found dead
+  under the state, or one the state denies, is not counted;
+- ***…, the first by text among equals***: some choice was tied and the last key broke it, the instances taken in
+  the order of their alternatives as rendered text. Under `-n N`, of all of R or of a line, the row says ***the
+  first written***: there the last key is the order the obligation pass reports the instances in, which is the order
+  the program states its facts in;
+- ***…; no coupling read, the whole node costing more than a twentieth of the run***: the same, the run having
+  tried to read the couplings and stopped, as below;
+- ***branching on the owed instance closest to closing a coupling, then the one with the fewest alternatives left,
+  then the first by text: K couplings read off the whole node at saturation S***: the run read the couplings, and
+  from then on a state branches first on the instance the fewest unpaid instances away from completing one.
+  ***, the tree started again*** where a choice made before the couplings were read fell otherwise with them:
+  every such state chooses again, by the counts it had when it first chose, and the tree is walked again from
+  root over the nodes it has, each read from memory.
+
+**A coupling** is a set of owed instances that some conflict or some derivation needs a member of each of: the
+letters of one column of a sum, with the letters its carry comes from. It is read off **the whole node**, root
+with every candidate committed, saturated once ([`structure.md` § The coupling a route
+reads](structure.md#the-coupling-a-route-reads-the-whole-node-alone)). **That saturation is the run's**: it is one
+of the `work` row's saturations, with its facts, and one of the nodes a `--dump-lattice` lists, the node of every
+candidate. So the couplings are read only **when a choice is left tied, the run has saturated twenty nodes, and
+the node costs at most a twentieth of the facts the run has derived**: a question a few nodes answer reads none,
+and its row has no word of them. A node that needs more is stopped at that twentieth, what it derived is in the
+`work` row's facts, and it is tried again once the run has derived four times as much.
 
 **Where ∅ is in R, every minimal question stops at root** (M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16): ∅
 is below every commitment, so the minimal line is {∅}, and whether ∅ is in R is root's fixpoint alone. `--minimal`,

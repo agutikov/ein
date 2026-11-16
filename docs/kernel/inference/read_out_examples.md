@@ -1420,7 +1420,7 @@ solve · --maximal -n 1 examples/zebra2.ein
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
-  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first written among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
   work              5 saturations · 164 facts beyond root
 
   ;; state 1 of 1 — 18 candidates · maximal · from {(color-loc Green House-5), (color-loc Ivory House-4), (color-loc Red House-3), (drink-loc Coffee House-5), (drink-loc Juice House-4), (drink-loc Tea House-2), (nation-loc Englishman House-3), (nation-loc Japanese House-5), (nation-loc Spaniard House-4), (nation-loc Ukrainian House-2), (pet-loc Dog House-4), (pet-loc Fox House-1), (pet-loc Snail House-3), (pet-loc Zebra House-5), (smoke-loc Chesterfields House-2), (smoke-loc Lucky_Strike House-4), (smoke-loc Old_Gold House-3), (smoke-loc Parliament House-5)}
@@ -1460,10 +1460,10 @@ solve · --single examples/zebra2.ein
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
-  route             the obligation tree, over states — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              9 saturations · 892 facts beyond root
+  route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first by text among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              7 saturations · 666 facts beyond root
 
-  ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (nation-loc Spaniard House-4)}
+  ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (drink-loc Juice House-4)}
   (model (color-loc Blue House-2) (color-loc Green House-5)
          (color-loc Ivory House-4) (color-loc Red House-3)
          (color-loc Yellow House-1) (drink-loc Coffee House-5)

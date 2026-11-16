@@ -64,16 +64,24 @@
 //! engine defect, never an answer. The oracle holds the routes on every
 //! monotone cube it enumerates (`ein-infer/tests/explore.rs`).
 //!
-//! **Which instance.** An owing state branches on the licensed instance it
-//! owes with the fewest alternatives not already known dead, the first in
-//! report order on a tie. *Known dead* is the memory's word, so an
-//! alternative the state denies is not counted: a tree that reads denials
-//! can branch on another instance than one that learns from deaths alone,
-//! and reach the same part of `R` through other nodes. A state that owes no
-//! licensed instance branches on
-//! every extension, which is the state route's step and needs no licence: a
-//! member of `R` above an owing `C` is a proper superset of it. The order is
-//! the route's own and no lever reaches it (C4).
+//! **Which instance.** L5 holds of whichever licensed instance an owing
+//! state branches on, so which one is the route's to choose, and the choice
+//! decides the work and never the answer. [`crate::order`] has the order,
+//! a function of the question (`Order::of`): **the instance closest to
+//! closing a coupling**, once the couplings are read off the whole node;
+//! then **the one with the fewest alternatives not known dead**, *known
+//! dead* being the memory's word, a death or a denial; then the first by
+//! rendered text, or under `-n N` the first the obligation pass reports. The couplings cost one saturation, which the run counts,
+//! and are read only when a choice is left tied, the run has saturated
+//! twenty nodes and the node costs at most a twentieth of the facts the run
+//! has derived; the choices made before are then made again, each by the
+//! counts its state had, and the tree starts again from root where one
+//! falls otherwise, keeping every node it computed (`Search::choose_again`).
+//! A state that owes no licensed instance branches on every extension,
+//! which is the state route's step and needs no licence: a member of `R`
+//! above an owing `C` is a proper superset of it. No lever reaches the
+//! order (C4); the read-out's `route` row says in words what order a run
+//! took (`crate::explore::TreeOrder`).
 //!
 //! **The hrule rung.** L5's premise is about `H` as a set, not about the rung
 //! that proposed it, so it is checked the same way whatever the program
@@ -357,9 +365,10 @@ impl Search {
         sp: &Space<'_>,
         table: Option<Arc<Alternatives>>,
         root: &Seen,
+        mode: Mode,
     ) -> Result<Search, SolveError> {
         let n = sp.n();
-        let order = crate::order::current();
+        let order = crate::order::chosen().unwrap_or_else(|| Order::of(mode));
         // The instances by their alternatives, which are candidates in
         // rendered-text order; an unlicensed one is never chosen.
         let instances = table.as_ref().map_or(0, |t| t.instances.len());
@@ -787,6 +796,10 @@ impl Search {
         }
         if c.dead {
             sp.charge_whole_node(derived);
+            // ⊤ is dead, and the run knows it: it is not saturated a second
+            // time should a route ask.
+            let top: Vec<u32> = (0..self.n as u32).collect();
+            self.record_dead(&top);
         } else {
             // An alive whole node is ⊤'s, which the cache computes and
             // counts as it does any node; where the budget has no room for
@@ -1286,7 +1299,7 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
     if root.dead {
         return Err(refuse("root's node is dead and root's fixpoint is not"));
     }
-    let mut s = Search::new(sp, table, &root)?;
+    let mut s = Search::new(sp, table, &root, mode)?;
     let mut f = match (mode.which, mode.ask) {
         (Which::All, Ask::Find(want)) => find(sp, &mut s, want)?,
         (Which::All, Ask::Single) => single(sp, &mut s)?,
@@ -1298,7 +1311,13 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
     f.route = Some(s.route());
     f.licences = s.licences(&f.licences);
     f.denials = s.dead.denials_spent();
-    f.order = s.l5.then_some(s.took);
+    f.order = s.l5.then(|| TreeOrder {
+        written: matches!(
+            s.order.choice,
+            Choice::Written { .. } | Choice::Coupled { written: true }
+        ),
+        ..s.took
+    });
     Ok(f)
 }
 

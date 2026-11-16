@@ -8,8 +8,9 @@ declares them by column, D E Y N R O S M. The line of ``(is-a … Letter)``
 facts is reordered and the header's paragraph about the order is replaced;
 **nothing else changes**, which is this script's claim rather than a
 reader's. The two programs have one universe, one theory and one answer, so
-what a search does on one and not on the other is read off the order of
-eight facts and nothing else.
+whatever a search does on one and not on the other it read off the order of
+eight facts: ``ein-infer/tests/order.rs`` holds ``--single`` to the same
+work on both.
 
 Usage:  python3 examples/gen_send_written.py [--check]
         --check  exit non-zero if the on-disk variant is stale (the gate's
@@ -44,9 +45,9 @@ WRITTEN_MARK = (
     ";;; `send_more_money.ein` declares its letters by column, units first:\n"
     ";;; D E Y, then N R, O, S M. This file declares them S E N D M O R Y, and\n"
     ";;; changes nothing else: one line of `(is-a … Letter)` facts, reordered.\n"
-    ";;; The two are one puzzle with one answer, and a search that reads the\n"
-    ";;; order the letters are declared in does not do the same work on both.\n"
-    ";;; Regenerate with examples/gen_send_written.py.\n"
+    ";;; The two are one puzzle with one answer, and `--single` does the same\n"
+    ";;; work on both: the search reads the columns off the program, not the\n"
+    ";;; order. Regenerate with examples/gen_send_written.py.\n"
     ";;;\n"
 )
 

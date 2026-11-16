@@ -2106,10 +2106,16 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     later_rows(out, &a.root.later);
     outside_row(out, &a.root.outside);
     types_row(out, &a.root.types_as_objects);
+    // The tree says what order it took: which keys decided its branches,
+    // and where it read the couplings, how many and when.
+    let order = match (a.route, &a.order) {
+        (Route::Tree, Some(o)) => format!(", {}", o.words()),
+        _ => String::new(),
+    };
     out.row(
         Row::Route,
         format!(
-            "{} — {}",
+            "{}{order} — {}",
             match a.route {
                 Route::DownSet => "1, the alive down-set",
                 Route::Cube => "2, the cube",

@@ -303,7 +303,7 @@ one state: 25 facts over H
   h_zebra = House-5
   who_water = Norwegian
   who_zebra = Japanese
-saturations: 9, R listed whole: true
+saturations: 7, R listed whole: true
 trace: 581 steps
 ```
 
