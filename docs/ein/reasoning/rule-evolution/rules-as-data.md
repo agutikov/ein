@@ -5,7 +5,7 @@ own rules? The constraint is the point: a self-description that needs a second l
 describing itself, as a grammar of EBNF written in EBNF needs nothing but EBNF.
 
 The answer is a line through the four levels a knowledge base is read at
-([Rules as statements](../static-ir/rules-as-statements.md)): objects, facts and relations are data rules read and
+([Rules as statements](../static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in)): objects, facts and relations are data rules read and
 write, and a rule is not. This page states what is on each side of the line.
 
 ## 1. The toolbox: declarators and facts
@@ -122,7 +122,7 @@ it is loaded, and saturation and search change its facts and never its rules; no
 program does not have ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)).
 
 That is why the four levels form a stack in which each level is read only by the levels above it
-([Rules as statements](../static-ir/rules-as-statements.md)): the arrows *a rule reads a rule* and *a rule writes a
+([Rules as statements](../static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in)): the arrows *a rule reads a rule* and *a rule writes a
 declaration* do not exist.
 
 `relation` describes itself only in part. It is a reserved word a declarator never binds, so `(relation relation …)`

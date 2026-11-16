@@ -24,7 +24,7 @@ Three parts, in the order a program lives through them.
 1. [Names and atoms](static-ir/names-and-atoms.md): what a name is, and identity by name.
 2. [Relations and facts](static-ir/relations-and-facts.md): the knowledge base as facts and stored negations.
 3. [Values and their order](static-ir/values-and-order.md): the orders a reader can observe, and the identity of
-   a state.
+   a state and of a rule application.
 4. [Rules as statements](static-ir/rules-as-statements.md): the kinds of rule, a rule as a rewrite, and the four
    levels a knowledge base describes itself in.
 
