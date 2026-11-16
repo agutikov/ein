@@ -496,6 +496,7 @@ ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 r
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
 ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
 ein solve … --count                                          # M1e2: how many, R's two counts by describe's route, no state read
+ein solve … --describe-route tree|states                     # describe's and --count's route: the tree and the classes (default; no N, no empty R's owing frontier) or every alive state
 ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: every mode under every lever, + the slow pair's cells
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test answer_round_trip  # M1f S1f.5.13: every dump reloaded, + the slow and heavy_dump entries'
