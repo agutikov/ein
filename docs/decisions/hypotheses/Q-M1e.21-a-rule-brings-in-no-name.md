@@ -1,7 +1,7 @@
 # Q-M1e.21 — A rule brings in no name
 
 A constant a rule writes, in its `:assert` or its `:match`, is a name of the program, as a constant a fact writes at
-any depth is ([Q-M1e2.9](../language/Q-M1e2.9-a-name-of-the-program-is-a-constant-a-fact.md)). The blind
+any depth is ([Q-M1e2.9](../language/Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md)). The blind
 enumerator's objects are seeded with every such name, `ein_infer::invariant::program_names`, beside the names index
 at root's fixpoint, and then lose only what [Q-M1f.306](Q-M1f.306-the-blind-enumerators-objects-are-the-programs.md)
 takes out. So a model whose facts name a constant only a rule writes is in R, and the alive-set invariant, *no rule
