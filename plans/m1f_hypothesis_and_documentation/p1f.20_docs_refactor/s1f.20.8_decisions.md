@@ -208,3 +208,21 @@ L-12's owner); a row whose file stops citing its id is a finding.
   ledger links of decision ids, the allow-listed warning text, the census's dependency on `docs/history/`, and the
   register outside the release-voice check's scope.
 
+
+### The gate on the stage's batch (2026-11-17)
+
+The batch from `aa2b7093` (S1f.20.1's last green gate) to T4's last commit: **green on `2d040e98`**,
+`./run_tests.sh` exit 0, 163 test binaries, none failed. Two runs failed first, each on a side effect of task 2's
+citation rewrite, and neither moved an answer:
+
+- **`fb47433d`, `ein-cli/tests/wrong_answers.rs`**: W28's two fixed rows record their refusal's position, and the
+  rewritten header comments of 27 `.ein` files had grown or shrunk by one to three lines, moving it (line 32 to 33,
+  28 to 29). Fixed in `970defbe` by giving every such file its old line count back (a grown block's last lines
+  joined, a shrunk one padded with empty comment lines).
+- **`970defbe`, `ein-ir/tests/fuzz_properties.rs`**: `golden/fuzz_seeds.txt` quotes every fuzz seed's and finding's
+  text, comments included, and one seed's header lost a process id. Re-blessed in `2d040e98` after checking that
+  the quoted text differs in that one comment line and no parse line moved.
+
+**For every later stage that rewrites `.ein` comments** (S1f.20.6, S1f.20.9): keep each file's line count, and
+expect `fuzz_seeds.txt` to need a bless, checked to be comment-only. The background wrapper's exit code is not the
+gate's: read `exit` from the log.

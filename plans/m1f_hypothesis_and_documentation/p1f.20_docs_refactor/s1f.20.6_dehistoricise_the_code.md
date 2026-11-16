@@ -39,6 +39,9 @@ finished plans, once every decision is a file: this stage rewrites the reference
 
 ## The method
 
+**Before rewriting a `.ein` comment** ([S1f.20.8's gate](s1f.20.8_decisions.md#the-gate-on-the-stages-batch-2026-11-17)): keep the file's line count, since register rows and goldens record positions after it, and expect `ein-ir/tests/golden/fuzz_seeds.txt`, which quotes every fuzz seed's text, to need a bless checked to be comment-only.
+
+
 ### Task T1f.20.6.1 — the crates
 
 Substitutions 1, 3 and 4 over every shipped crate's doc comments and the tests. The release-voice baseline is
