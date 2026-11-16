@@ -489,7 +489,7 @@ prints *"(a solution — pass `--exhaustive` to certify uniqueness)"*, and a
 
 The **kernel** pages define the verdict by `k` and never mention exhaustion:
 `k = 0 → Contradiction` in
-[`reserved_engine_strings.md`](../../kernel/inference/reserved_engine_strings.md),
+[`reserved-engine-strings.md`](../../ein/ein.rs/reserved-engine-strings.md),
 `Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)` in
 [`architecture_and_algorithms.md`](../../kernel/inference/architecture_and_algorithms.md).
 By those, the engine is correct as written.

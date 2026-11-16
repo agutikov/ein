@@ -69,7 +69,7 @@ alternatives.
    [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 1.2 is restated; under
    (C), a `defined_behaviour.md` § 4 section and a `broken/load/` fixture; under (D), the row's status and the
    read-out's line with `read_out.md`. Q-M1e.11 recorded as ruled, in the user's words.
-   [`events.md`](../../../docs/kernel/inference/events.md)'s pointer to this stage restated to say what the
+   [`events.md`](../../../docs/ein/ein.rs/events.md)'s pointer to this stage restated to say what the
    engine does.
 
 ## Acceptance
@@ -774,7 +774,7 @@ print("%s | %d nodes, %d owing, %d dead | R %d commitments, %d states%s | %s" % 
 5. ***`monotone.rs` … follows activators***: `D` does not, `D⁺` does, and a static reading over `D` misses
    `lattice/12`'s shape.
 6. **`solution_semantics.md` § 1.2 is *Names*.** The universe, which task 4 restates under (A), is § 1.4.
-7. **[`events.md`](../../../docs/kernel/inference/events.md)'s paragraph that points here** describes the
+7. **[`events.md`](../../../docs/ein/ein.rs/events.md)'s paragraph that points here** describes the
    walk's `Run::tree_node`, deleted with the walk, and says *no corpus program reaches it — today's stdlib
    activators are all root-asserted*. Three corpus programs derive an obligation's activator at a node. Task 4
    restates it; it is as it was.
@@ -918,7 +918,7 @@ A tenth program, the witness under two hrules that propose a relation where its 
   says what H is on the obligations rung, with the three steps, the declines a later plan is held to, where
   the reading is over and under, and that it is not *the program with the activator stated*. (The stage file's
   task 4 says § 1.2, which is *Names*; the universe is § 1.4, as task 3's record noted.)
-- [`events.md`](../../../docs/kernel/inference/events.md): the `rung` row and its section name the two optional
+- [`events.md`](../../../docs/ein/ein.rs/events.md): the `rung` row and its section name the two optional
   fields, and the paragraph that pointed here says what the engine does. The section it sits in is the record
   of the walk's tree, and stays one.
 - [`read_out.md` § 5.3](../../../docs/kernel/inference/read_out.md#53-under-universe) has the `later debt`

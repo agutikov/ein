@@ -335,7 +335,7 @@ itself such a record:
   re-derivable is still a clue: a given stays given.
 - a rule-kind primary with an **empty** `premises_raw` is a synthetic
   engine writeback (`<forced-positive>` and friends, see
-  [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md))
+  [`../../../ein/ein.rs/reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md))
   whose contract is that provenance walks *ground out* on it.
 
 Two firings that consumed the same premises from the same activator are

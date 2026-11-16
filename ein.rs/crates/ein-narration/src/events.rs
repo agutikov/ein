@@ -1,6 +1,6 @@
 //! The event stream, compared for the derivation rather than the narration.
 //!
-//! Two [`--events`](../../../../docs/kernel/inference/events.md) logs in,
+//! Two [`--events`](../../../../docs/ein/ein.rs/events.md) logs in,
 //! a list of differences out. What calls it is
 //! `ein-infer/tests/event_cut_control.rs`, which mutates one real stream and
 //! checks the cut still reports the mutation. That test is not decoration:

@@ -71,7 +71,7 @@ T1d.10.1.1 adds it in two pieces.
 returns *which* of the filter's two questions rejected a candidate rather than
 a bare `bool`, and `LayerCensus`
 accumulates a sixteen-column row per layer, emitted as a `layer`
-event ([events.md](../../../docs/kernel/inference/events.md#layer--the-clause-yield-census)).
+event ([events.md](../../ein/ein.rs/events.md#search-layer)).
 Three design points are worth stating because each was a choice:
 
 - **The two `dropped_*` are attributed in check order.** A candidate can fail
@@ -84,7 +84,7 @@ Three design points are worth stating because each was a choice:
   an invariant a test checks rather than a hope.
 - **No timing in the event.** A `ms` field would make the stream
   non-deterministic and the goldens unreadable, and
-  [events.md](../../../docs/kernel/inference/events.md)'s fourth ground rule
+  [events.md](../../ein/ein.rs/events.md)'s fourth ground rule
   says an instrumented run is not a benchmark anyway.
 
 **It is unconditional, not behind a feature**, which is a departure from
@@ -474,7 +474,7 @@ name and its line count, and the same worktree build settles the rest: rendering
 the shape's retained event lines from both binaries and stripping `"n": N`
 gives **byte-identical output** on `branching/02` (68 lines), `zebra2` (128) and
 `branching/07` (116). The digests moved because a new event kind renumbers every
-`n` after it — [events.md](../../../docs/kernel/inference/events.md#comparison)
+`n` after it — [events.md](../../ein/ein.rs/events.md#comparison)
 says `n` is a position and not a field — and for nothing else.
 
 ## 10. The re-take — 2026-08-26, and what P1d.2 and P1d.3 moved
@@ -570,7 +570,7 @@ is 94 %.
 
 - [S1d.10.1](README.md#s1d101--why-it-does-not-finish) — the stage
 - [`utils/layer_census.py`](../../../utils/layer_census.py) — the instrument
-- [events.md § `layer`](../../../docs/kernel/inference/events.md#layer--the-clause-yield-census)
+- [events.md § `layer`](../../ein/ein.rs/events.md#search-layer)
   — the transport
 - `ein-infer/tests/layer_census.rs`
   — the arithmetic, and the inert filter arm

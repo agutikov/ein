@@ -87,7 +87,7 @@ the count rather than hiding it, because silent double-counting is how the
 first version read 129 firings for a rule that fires twice.
 
 **`normal` hides three rules** — the one the stage doc warned about, so it was
-never taken, only measured. [events.md § Levels](../../kernel/inference/events.md)
+never taken, only measured. [events.md § Levels](../../ein/ein.rs/events.md)
 says a redundant firing is counted but not emitted at `normal`, so a rule whose
 every firing re-derives an existing fact reads as zero — the trap
 [S1a.7.0](../m1a_rust/README.md#s1a70--the-speculation-audit)'s
@@ -684,7 +684,7 @@ rules that were never anybody's subject.
   in-process, 0.04 s, and scoped to `tests/stdlib/` — §12
 - [`stdlib/README.md`](../../../stdlib/README.md) — the module catalogue, and
   the `std.bijection` vs `std.slots` comparison §4 turns into a fragility
-- [`docs/kernel/inference/events.md`](../../kernel/inference/events.md)
+- [`docs/ein/ein.rs/events.md`](../../ein/ein.rs/events.md)
   § Levels — why the census runs at `verbose`
 - [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects) — the form these findings become
   expectations in; §7 and §8 are its two hardest cases

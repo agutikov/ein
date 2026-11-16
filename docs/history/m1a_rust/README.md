@@ -130,7 +130,7 @@ The corpus manifest, and the determinism audit
 #### S1a.0.2 — The event protocol
 `--events FILE` and `--events-level {normal,verbose}` on `solve` and
 `saturate`, 17 event kinds, versioned `ein-events/1` — the schema that is now
-[`docs/kernel/inference/events.md`](../../kernel/inference/events.md). It has
+[`docs/ein/ein.rs/events.md`](../../ein/ein.rs/events.md). It has
 `hypskip` as its own kind, and a `hyp` verdict that is a *filter name* rather
 than a boolean, so a counter difference locates itself.
 

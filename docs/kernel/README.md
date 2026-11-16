@@ -109,7 +109,7 @@ the hypothesis space and its structure, and 48 with
   | page | describes | current statement |
   |---|---|---|
   | [`inference/algorithm_layer_n.md`](inference/algorithm_layer_n.md) | the three sibling solve entries and the per-candidate flow of the 2026-05 design | [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md) §2, [`implementation.md`](inference/implementation.md) |
-  | [`inference/lattice_diagrams.md`](inference/lattice_diagrams.md) | the same design's search-lattice data model, as diagrams | same, plus [`lattice_dump.md`](inference/lattice_dump.md) for the artifact the search writes |
+  | [`inference/lattice_diagrams.md`](inference/lattice_diagrams.md) | the same design's search-lattice data model, as diagrams | same, plus [`lattice-dump.md`](../ein/ein.rs/lattice-dump.md) for the artifact the search writes |
   | [`inference/parity_baselines.md`](inference/parity_baselines.md) | the tree-vs-monotonic wall-clock table of 2026-05-28 | the `branching` corpus group, swept by `corpus_cli.rs` |
 
   A superseded page is **not** rewritten to match today's engine. A page
@@ -211,7 +211,7 @@ explicit audience banner.
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](ir/03-ein-lang/09_natural_language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`inference/read_out.md`](inference/read_out.md) (what `ein solve` prints, row by row, and what each number counts) |
 | **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
-| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`inference/read_out.md` § 11](inference/read_out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](inference/events.md). |
+| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`inference/read_out.md` § 11](inference/read_out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](../ein/ein.rs/events.md). |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs, and [`configuration.md`](configuration.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* and *does it change R* on every flag row |
 
 - **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
@@ -227,7 +227,7 @@ explicit audience banner.
   [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md) (the five steps, one worked example,
   then per-area detail), then `01-ein-graph` + `03-ein-lang` for the puzzles
   you load. From a non-Rust program the surface is the binary —
-  `--json-summary` and [`--events`](inference/events.md).
+  `--json-summary` and [`--events`](../ein/ein.rs/events.md).
 
 ## Cross-references
 

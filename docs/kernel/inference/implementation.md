@@ -132,7 +132,7 @@ and their rows are in the next table.
 | [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) | **the obligation pass** (M1d S1d.2.4) — `tally(kb, …) -> Owes`, one sweep over the quiescent KB *after* the fixpoint, over the rules in `Program::obligations` that neither the saturator nor `hypgen` walks. Reads `(open ?R)`'s argument off the compiled `:assert` (a `Slot::Const`, the activator having substituted the parameter), matches, judges the guards, and returns the undischarged instances with their rendered `:why`. **Never writes**: openness is a per-node verdict, not a fact, so the tally lives on the node — `owes` on `region.rs`'s node and the routes' states, the walk's `CommitmentSetResult.owes` until M1e2 S1e2.1c.5 deleted it (2026-11-03) — beside its dead bit. `Owes::default()` for a program that states no obligation. The walk skipped it on a dead node; a route reads it on dead nodes too, which the minimal discharging sets `E` need |
 | [`ein-core/src/why.rs`](../../../ein.rs/crates/ein-core/src/why.rs) | `:why` / `:goal-text` template rendering — text, so it lived in the renderer until M1d S1d.2.4, when the obligation pass needed it from *below* `ein-render`. `ein_render::render_why` still names it |
 | [`ein-core/src/config.rs`](../../../ein.rs/crates/ein-core/src/config.rs) | `SolverConfig` — the solver flags: the two live ones (`lattice_sanity_check`, `record_alternative_justifications`) and the fifteen retired ones (`enable_pre_branch_lookahead`, `hypgen_scoring`, `lattice_order`, …), which no engine code reads and the `.einb` layout keeps. In `ein-core` because the KB reads some of them |
-| [`events.rs`](../../../ein.rs/crates/ein-infer/src/events.rs) | the **event protocol** — `--events FILE`, one JSON object per line narrating every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence, alternative justification, hypothesis verdict, entering and layer; the walk's `nogood`, `writeback` and `traversal` went with it at M1e2 S1e2.1c.5 (2026-11-03). Off by default and free when off. Schema: [`events.md`](events.md). `ein-narration` is its one consumer |
+| [`events.rs`](../../../ein.rs/crates/ein-infer/src/events.rs) | the **event protocol** — `--events FILE`, one JSON object per line narrating every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence, alternative justification, hypothesis verdict, entering and layer; the walk's `nogood`, `writeback` and `traversal` went with it at M1e2 S1e2.1c.5 (2026-11-03). Off by default and free when off. Schema: [`../../ein/ein.rs/events.md`](../../ein/ein.rs/events.md). `ein-narration` is its one consumer |
 
 ## The fan-out — `--jobs N`
 
@@ -254,7 +254,7 @@ committing thread. `ein --version` is what says which build you have.
   take no alternatives — a `source` / `hypothesis` primary is the frontier, and
   a rule-kind primary with no premises is a synthetic engine writeback whose
   contract is that provenance walks ground out on it
-  ([`reserved_engine_strings.md`](reserved_engine_strings.md)).
+  ([`../../ein/ein.rs/reserved-engine-strings.md`](../../ein/ein.rs/reserved-engine-strings.md)).
 - **Negative dependence is recorded, not yet interpreted** — a firing admitted
   at the boundary carries the queries that had to fail on its provenance (one
   `(relation, args)` pattern each, a free marker where the query ranged free),
@@ -274,5 +274,5 @@ committing thread. `ein --version` is what says which build you have.
   E1, and the corollaries (C1–C7) the closure/boundary split rests on.
 - [`../defined_behaviour.md`](../defined_behaviour.md) — the diagnostics,
   orderings and error strings the engine defines.
-- [`reserved_engine_strings.md`](reserved_engine_strings.md) — the engine-internal
+- [`../../ein/ein.rs/reserved-engine-strings.md`](../../ein/ein.rs/reserved-engine-strings.md) — the engine-internal
   reserved atoms these modules key on.

@@ -1,4 +1,4 @@
-//! The `--events` protocol — `docs/kernel/inference/events.md`, engine side.
+//! The `--events` protocol — `docs/ein/ein.rs/events.md`, engine side.
 //!
 //! The engine narrates what it did: one JSON object per line, opt-in behind
 //! `--events FILE`. The schema is fixed (`ein-events/1`) and was designed as a
@@ -209,7 +209,7 @@ impl Events {
 
     /// [`Events::to`] with the CLI's own `run` fields appended — `impl`,
     /// `file`, `argv` and the resolved config, which
-    /// [`events.md`](../../../../docs/kernel/inference/events.md) lists after `version`
+    /// [`events.md`](../../../../docs/ein/ein.rs/events.md) lists after `version`
     /// and `level`. The engine has no argv, so the caller supplies them.
     pub fn to_with(
         sink: Box<dyn Write + Send>,

@@ -163,7 +163,7 @@ regenerate and repair, and it is kept as one — an arm for
   candidate model is a counterexample*) the ladder's F2–F7 realise;
   [F17](../../followups/f17_formal_verification/ideas.md) —
   `Spec₀ → verify → counterexample → Spec₁`.
-- [`docs/kernel/inference/events.md`](../../../docs/kernel/inference/events.md) —
+- [`docs/ein/ein.rs/events.md`](../../../docs/ein/ein.rs/events.md) —
   F7's source; the trace renderer (`--trace`, `--relevant`) — the human
   version of F7 that already exists.
 - [Idea 03](../../ideas/03-three-task-classes.md) — solve / gaps /

@@ -1170,7 +1170,7 @@ nothing per-hypothesis to record. For a
 every layer, with the firings each one emitted, survivors and
 casualties alike — run `solve` exhaustively (`stop_after=None`) with
 a `LatticeDumper`:
-see [`lattice_dump.md`](lattice_dump.md). That dump groups
+see [`../../ein/ein.rs/lattice-dump.md`](../../ein/ein.rs/lattice-dump.md). That dump groups
 `enterings/` and `kb_index/` by layer and writes
 `outcome.txt` + `firings.jsonl` + `unsat_core.jsonl` per
 commitment — the audit trail for debugging problem statements and

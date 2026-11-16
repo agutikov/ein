@@ -4,7 +4,7 @@ The **authoritative** list of names an ein puzzle author may *write* but
 not *redefine*: the kernel gives them fixed meaning. This is the
 surface-language view (what you type in a `.ein` file). For the
 engine-internal vocabulary (carrier heads, protocol enums) see
-[`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).
+[`../../../ein/ein.rs/reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md).
 
 After the S1.7.23/.24 kernel-purity pass, the reserved set is small: the
 kernel imposes **no type system** (`is-a` / `T` are ordinary
@@ -93,7 +93,7 @@ program uses and never binds
 S1f.6.38, `written`, the relation the loader states what a file writes in
 ([§ `written`](#written--what-a-file-writes-stated-by-the-loader-m1f-s1f638)). The engine's three
 writeback rule names are refused wherever a program writes them
-([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#synthetic-writeback-rule-names)). The thirteen reserved words
+([`reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md#synthetic-writeback-rule-names)). The thirteen reserved words
 (`not` / `and` / `or` / `neq` / the declarators but `relation` / `open`, the last since M1f S1f.5.23) can't be written as a declared
 name at all (parse error; *`SYMBOL`-excluded* until M1f S1f.5.5's swap). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `unknown` / `forall`
@@ -227,7 +227,7 @@ Three surfaces report it, and none of them is the fact store:
 
 | surface | what it carries |
 |---|---|
-| [`--events`](../../inference/events.md) | one `owe` line per undischarged instance per quiescent KB: `rule`, `activator`, `relation`, `bindings`, the rendered `:why` |
+| [`--events`](../../../ein/ein.rs/events.md) | one `owe` line per undischarged instance per quiescent KB: `rule`, `activator`, `relation`, `bindings`, the rendered `:why` |
 | `--json-summary` | an `owes` block — `root` and one entry per reported model, each with `total`, `by_relation` and the instances |
 | `--trace` | an **Outstanding obligations** section, the `:why`s as a list, rendered only when the state owes something |
 
@@ -284,7 +284,7 @@ hrule's conclusion nests where they hold no variable
 | who writes it | the loader alone. A fact of it, or its negation, written in a file, and a conclusion of it, are refused at load; no declarator binds the name (`ein_core::RESERVED`) |
 | who reads it | a rule's `:match` or a goal, `(written (n ?p ?a))`: a representation module's check of its own terms, `std.math.decimal`'s of a numeral, wherever the numeral is written |
 | the search | never a hypothesis target, no relation of the program's registry, and decided at root, so nothing that reads it is stale |
-| its provenance | the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`, one of [`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#names-the-parser-and-the-loader-make-up)'s made-up names), from the fact it was read in, so a core names the fact as written; from a rule's text, from no fact |
+| its provenance | the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`, one of [`reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md#names-the-parser-and-the-loader-make-up)'s made-up names), from the fact it was read in, so a core names the fact as written; from a rule's text, from no fact |
 
 It shows where `relation`'s mirror facts show, `ein saturate --dump`, a KB
 view and a `.einb`, and a `--dump-answer` state file writes none of it, the
@@ -373,7 +373,7 @@ and `not` does, a stored negation being a fact
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
 | `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-written, or derived by `std.closure` and by a module's closing rule; the engine infers it for no relation. Kept kernel mechanism for M1 (S1.7.10). Used as a relation or a value, never bound (M1f T1f.5.5.11), and never an object of the blind enumerator, whichever way it is used ([`solution_semantics.md` § 1.2](../../inference/solution_semantics.md#12-names)). Read by the generator's rungs 2 and 3 and the read-out's `outside` row, by no matcher (M1f S1f.6.34, E-52); no hrule proposes a closed relation and no obligation owes one (below). | `ein-infer/hypgen.rs` (`CLOSED = "__closed__"`); the hypgen filter |
-| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`), in the saturation the mark comes to hold in, whether written or derived by a rule ([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#__symmetric__--engine-effect)) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11), and never an object of the blind enumerator | `ein-infer/saturator.rs` (`SYMMETRIC`) |
+| `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`), in the saturation the mark comes to hold in, whether written or derived by a rule ([`reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md#__symmetric__--engine-effect)) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11), and never an object of the blind enumerator | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator and the obligations rung to the listed relations, never the hrule rung; every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are (M1f S1f.7.8, `defined_behaviour.md` § 4.20) | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire); read by the blind enumerator and the obligations rung, never the hrule rung | `hypgen` (`NO_HYPOTHESIS`) |
 | `no-search` | `(solve … :no-search)` | a flag, no value: the lattice is root alone, no rung runs and nothing is proposed, whatever else the program declares, so R is {∅} where root is alive and discharged and empty otherwise (M1f S1f.6.36); the way to say *judge root alone* | `hypgen` (`NO_SEARCH`, `declares_no_search`); `mechanisms` |

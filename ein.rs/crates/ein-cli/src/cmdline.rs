@@ -202,7 +202,7 @@ fn event_args(cmd: Command) -> Command {
                  (one JSON object per line). Off by default and \
                  additive: stdout, stderr and the exit code are \
                  unchanged. Schema: \
-                 docs/kernel/inference/events.md.",
+                 docs/ein/ein.rs/events.md.",
             ),
     )
     .arg(
@@ -862,7 +862,7 @@ fn solve_command() -> Command {
                 .help(
                     "write every node this run visited, in visit order, to DIR: \
                      nodes.json (ein-lattice/2) and nodes.md \
-                     (docs/kernel/inference/lattice_dump.md). DIR is made before \
+                     (docs/ein/ein.rs/lattice-dump.md). DIR is made before \
                      the run; past that, stdout, stderr and the exit code are \
                      unchanged.",
                 ),

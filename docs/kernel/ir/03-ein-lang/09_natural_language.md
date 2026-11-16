@@ -168,7 +168,7 @@ Taken by default on the user's instruction of 2026-11-09 (T1f.5.14.3), each a de
 stdlib's, which is a program. The engine fills them and never edits them. **The words around them are the
 engine's**: the read-out's labels ([`read_out.md`](../../inference/read_out.md)), the trace's headings and its
 *Derives* and *Premises*, the provenance words a state file writes (`source`, `rule`, `hypothesis`) and its separators
-(`: `, ` — `), and the verdict and protocol words [`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md)
+(`: `, ` — `), and the verdict and protocol words [`reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md)
 registers. The engine owns no domain word: it has no sentence for a relation that has none, and a `kernel` relation,
 `not`, `relation` or `written`, reads as its s-expression. A stage that adds a word to an output adds it on the engine's side,
 in `read_out.md` or `reserved_engine_strings.md`, and never in a renderer's vocabulary for the domain.

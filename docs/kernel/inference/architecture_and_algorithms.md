@@ -522,7 +522,7 @@ so the cap retains the *shortest*, and beside the list, since M1e2 S1e2.2.11,
 the arrival with the smallest closure, `Kb::best`; terminals take none — a `source`/`hypothesis`
 primary is the frontier, and a rule-kind primary with empty `premises_raw` is a
 synthetic engine writeback whose contract is that provenance grounds out on it,
-[`reserved_engine_strings.md`](reserved_engine_strings.md)). Recording is gated
+[`../../ein/ein.rs/reserved-engine-strings.md`](../../ein/ein.rs/reserved-engine-strings.md)). Recording is gated
 by `SolverConfig.record_alternative_justifications` (default on; measured +2.5 %
 median on an exhaustive `zebra2` solve). S1.21.8 added the *negative* half: a
 firing admitted at the NAF boundary (§O3) records the `(absent …)` queries

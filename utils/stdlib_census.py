@@ -37,7 +37,7 @@ Two halves, and only the second runs the engine:
 
 **Run it at `verbose`, which is the default here.** At `normal` a redundant
 firing is counted but not emitted
-([events.md § Levels](../docs/kernel/inference/events.md)), so a rule whose
+([events.md § Levels](../docs/ein/ein.rs/events.md)), so a rule whose
 every firing re-derives an existing fact reads as **zero** — the trap
 [S1a.7.0](../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s
 audit hit. `--level normal` is there to show the difference, not to be used.

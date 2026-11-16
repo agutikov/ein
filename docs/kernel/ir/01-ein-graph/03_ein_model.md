@@ -257,7 +257,7 @@ open-world relations, since the same atom is usually also a *rule* name.
 > two dedicated references — surface words in
 > [`../03-ein-lang/06_reserved_names.md`](../03-ein-lang/06_reserved_names.md)
 > and engine-internal strings in
-> [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).
+> [`../../../ein/ein.rs/reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md).
 > This section keeps only the **graph-node declarators** (the names that
 > introduce a node kind) plus the two `⊥` heads relevant to the graph
 > model; everything else is in those docs.

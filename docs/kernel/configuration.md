@@ -597,7 +597,7 @@ answer about.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
   (`ein-summary/2`), `--json-report` (`ein-test-report/5`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
-  ([`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer`
+  ([`lattice-dump.md`](../ein/ein.rs/lattice-dump.md)), `--dump-answer`
   ([`answer_dump.md`](inference/answer_dump.md)), and `ein oracle`'s `--dump`
   with `--states` ([`region_dump.md`](inference/region_dump.md)). The
   directories are made before the run. **Additive** in the strict sense:
@@ -807,7 +807,7 @@ is an environment variable and not a flag.
 whether the tree ran and what it took of the stop policy; `enter`, `layer`,
 `nogood` and `writeback` are **not emitted at all**, so the enterings are
 invisible in a stream that still counts them. The row and the reasons are
-[`inference/events.md` § `traversal`](inference/events.md#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
+[`../ein/ein.rs/events.md` § `traversal`](../ein/ein.rs/events.md#search-layer).
 
 **5 — the stop policy** is § [3.3](#33-what-an-option-can-do-to-the-answer):
 `-n` honoured, `-m` refused at exit 2 in all three subcommands.

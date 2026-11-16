@@ -38,7 +38,7 @@ a default.**
   - `--json-summary`, the `ein-summary/2` object, which is also `--dump-answer`'s `answer.json`
     ([`answer_dump.md`](../../docs/kernel/inference/answer_dump.md));
   - the event protocol, `--events`
-    ([`events.md`](../../docs/kernel/inference/events.md)), a stream and not a result;
+    ([`events.md`](../../docs/ein/ein.rs/events.md)), a stream and not a result;
   - `ein test --json-report`;
   - the text read-out ([`read_out.md`](../../docs/kernel/inference/read_out.md)) and a parse error's
     lines, which are written for a reader and may be what a model reads best.

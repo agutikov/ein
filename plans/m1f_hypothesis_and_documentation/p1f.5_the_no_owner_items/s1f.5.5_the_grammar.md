@@ -886,7 +886,7 @@ name rule too, and so are the dunders `__closed__` and `__symmetric__`, which a 
 the loader's, and nothing reads the first three by name: a record is a terminal by its empty premises
 (`Prov::is_terminal`), so a rule a program names `<forced-positive>` would share a printed name with the
 writeback and nothing else. The dunders are reserved names
-[`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md) documents.
+[`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md) documents.
 
 ### Task T1f.5.5.9 — every difference attributed, and one review stop
 
@@ -1087,7 +1087,7 @@ defaults was overruled.
   `<monotonic-unconditional>`, `<lookahead-dies-immediately>`, `__closed__` and `__symmetric__`. Each is
   reserved in the sense
   [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) and
-  [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md) give the word: written
+  [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md) give the word: written
   only with its fixed meaning, never redefined. Read as follows (the coordinator's reading, for the user to
   correct):
   - **The three writeback names** have no meaning a program can write. A program that writes one, anywhere, is

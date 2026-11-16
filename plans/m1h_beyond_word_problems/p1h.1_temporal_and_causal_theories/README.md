@@ -119,7 +119,7 @@ As the tree stands on 2026-11-13. Each figure is re-taken by the stage named bes
 - **The derivation tree.** Every derived fact records the rule and the premises that gave it:
   `ein saturate FILE --dump` writes a fact's `:rule`, `--trace` writes a step a firing, and `--events`'
   `fire` line carries `rule`, `premises` and `derived`
-  ([`events.md`](../../../docs/kernel/inference/events.md)).
+  ([`events.md`](../../../docs/ein/ein.rs/events.md)).
 
 **Names.** [S1f.6.31](../../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.31_the_stdlib_layout.md)
 moved the calculator's modules under `std.math` (2026-11-14): `std.arith` is `std.math.decimal-arith`, which this

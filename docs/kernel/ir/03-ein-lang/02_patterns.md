@@ -182,7 +182,7 @@ containing it loads, compiles and never fires. Measured, M1e S1e.2.2: exit 0,
 `Relation(declared=false)`
 ([`../02-data-model/02_store.md` §3](../02-data-model/02_store.md)). What
 catches a typo'd head is the *symptom*: a rule that never fires. Ask
-[`--events`](../../inference/events.md) for the `fire` stream, the way
+[`--events`](../../../ein/ein.rs/events.md) for the `fire` stream, the way
 [`utils/stdlib_census.py`](../../../../utils/stdlib_census.py) does for the
 whole stdlib.
 

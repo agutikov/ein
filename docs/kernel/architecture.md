@@ -48,7 +48,7 @@ over the region R since, and `--single`'s four words are read off R
 > `ein-bench` use, documented by
 > [S1a.9.4](../history/m1a_rust/README.md#s1a94--documentation).
 > From **anything else**, run the `ein` binary and read
-> `--json-summary` / [`--events`](inference/events.md).
+> `--json-summary` / [`--events`](../ein/ein.rs/events.md).
 
 ## Crate dependency map
 

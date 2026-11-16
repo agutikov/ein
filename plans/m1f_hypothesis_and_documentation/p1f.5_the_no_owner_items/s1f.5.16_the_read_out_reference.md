@@ -194,7 +194,7 @@ its test cannot see.
 - the `--dump-answer` directory, and the summary's `work` and `root` blocks:
   [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md);
 - the `monotonicity` block and the warning's theory: `region_dump.md`;
-- the `--events` stream: [`events.md`](../../../docs/kernel/inference/events.md);
+- the `--events` stream: [`events.md`](../../../docs/ein/ein.rs/events.md);
 - how each mode is computed, what it costs, and which command answers which question:
   [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3 and § 4, until
   P1f.20 re-homes it;

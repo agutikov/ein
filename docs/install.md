@@ -200,7 +200,7 @@ says when one is added: a consumer the binary cannot serve.
 To drive ein from Python today, run the binary and read its output: `ein solve
 … --json-summary out.json` for the verdict and counters, `--events e.jsonl`
 for the step-by-step narration
-([the protocol](kernel/inference/events.md)). To embed it in a Rust program,
+([the protocol](ein/ein.rs/events.md)). To embed it in a Rust program,
 link the crates.
 
 ## If you are developing ein

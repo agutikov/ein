@@ -39,7 +39,7 @@ models at depth 3 and does not finish at 5 — and it is why the depth is a
 column instead of a footnote.
 
 The transport is the `layer` event
-([events.md](../docs/kernel/inference/events.md)), added for this stage: one
+([events.md](../docs/ein/ein.rs/events.md)), added for this stage: one
 JSON line per layer carrying the row. Everything here is that line, tabulated
 — no counter is re-derived from the entering stream, because a census that
 reconstructs its own subject is a census that can disagree with the engine.
@@ -237,7 +237,7 @@ def measure(path: str, run: str, args, env: dict, out: Path) -> dict:
     """One (entry, run) cell — **two children**, and the split is the point.
 
     The first carries no `--events` and is what the `ms` and `MiB` columns
-    report: [events.md](../docs/kernel/inference/events.md)'s fourth ground
+    report: [events.md](../docs/ein/ein.rs/events.md)'s fourth ground
     rule is that an instrumented run is never a benchmark, and it is not idle
     advice — `zebra2-minus-15 -m 2` is 1.46 s bare and 5.0 s narrated. It also
     chooses the depth cap, so "does this entry finish" means what a reader

@@ -38,7 +38,7 @@ model in [`../02-data-model/`](../02-data-model/).
   primitives, predicates, `unknown`/`forall` sugar, `closed`,
   `hypothesis-relations` — plus the author **intent → atom**
   quick-reference card. (Engine-internal strings:
-  [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).)
+  [`../../../ein/ein.rs/reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md).)
 - [`07_stdlib_api.md`](07_stdlib_api.md) — the per-symbol `std.*`
   reference (macro / algebra / bijection / elim / typing / closure),
   companion to the module-level

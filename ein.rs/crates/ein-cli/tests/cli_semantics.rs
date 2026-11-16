@@ -8,7 +8,7 @@
 //! |---|---|
 //! | every subcommand | how a broken file is reported |
 //! | `ein solve` | the stop policy, the diagnostic flags, `--json-summary` |
-//! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/kernel/inference/events.md) |
+//! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/ein/ein.rs/events.md) |
 //! | the Zebra files | that `zebra2.ein` and its two variants stay one encoding |
 //! | the editor grammar | its three closed name sets |
 //!
@@ -2132,7 +2132,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 }
 
 /// The corpus fixtures that between them emit every kind
-/// [`events.md`](../../../../docs/kernel/inference/events.md) defines, and the
+/// [`events.md`](../../../../docs/ein/ein.rs/events.md) defines, and the
 /// kind each is here for.
 ///
 /// A six-file cover rather than the whole corpus: the sweep is 0.06 s this
@@ -2181,7 +2181,7 @@ const EVENT_COVER: [(&str, &str); 6] = [
 
 /// Where the `--events` schema lives: the protocol is a product surface — a
 /// debugging tool, and M20's likely feed.
-const EVENTS_DOC: &str = "docs/kernel/inference/events.md";
+const EVENTS_DOC: &str = "docs/ein/ein.rs/events.md";
 
 /// Every event kind the schema names, read out of the document itself.
 ///

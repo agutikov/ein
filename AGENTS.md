@@ -194,7 +194,7 @@ constrained-reasoning research.
   `stdlib/` or `tests/` with no entry fails a completeness check. What runs it
   is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the table of
   readers; the `--events` protocol is
-  [`docs/kernel/inference/events.md`](docs/kernel/inference/events.md).
+  [`docs/ein/ein.rs/events.md`](docs/ein/ein.rs/events.md).
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py` re-takes it;

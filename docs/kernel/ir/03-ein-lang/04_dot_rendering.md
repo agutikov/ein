@@ -202,7 +202,7 @@ The view names accept friendly aliases: `per-step` (a), `aggregate`
 > lattice` drew until S1e2.1a.5's switch. `ein render lattice` draws a region
 > run's nodes since, R green, owing amber, dead red
 > ([`ein_render::dump::region_lattice`](../../../../ein.rs/crates/ein-render/src/dump/region_lattice.rs),
-> [`lattice_dump.md` § Under a region mode](../../inference/lattice_dump.md#under-a-region-mode--nodesjson-and-nodesmd)).
+> [`lattice-dump.md` § Under a region mode](../../../ein/ein.rs/lattice-dump.md#under-a-region-mode--nodesjson-and-nodesmd)).
 
 The P1.5 ordered search tree was removed with the tree solver
 (2026-05-29); the engine now produces a **set-indexed commitment
@@ -239,7 +239,7 @@ S1.5b.31 shuffle-invariance guarantee).
 `ein render region DIR` draws an [`ein oracle --dump`](../../inference/region_dump.md)
 directory: the hypothesis lattice with every node classified by saturation
 alone. **`--visited DIR`** and **`--answer DIR`** put an `ein solve` run on
-it, from that run's own [`--dump-lattice`](../../inference/lattice_dump.md#under-a-region-mode--nodesjson-and-nodesmd)
+it, from that run's own [`--dump-lattice`](../../../ein/ein.rs/lattice-dump.md#under-a-region-mode--nodesjson-and-nodesmd)
 (`nodes.json`, every node it visited) and
 [`--dump-answer`](../../inference/answer_dump.md) (`index.json`, every state
 it reported). It reads those files and nothing else (no load, no solve), so

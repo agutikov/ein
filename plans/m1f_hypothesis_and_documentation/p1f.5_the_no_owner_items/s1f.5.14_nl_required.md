@@ -152,7 +152,7 @@ the rule the whole surface is built on:
 A mandate must not overturn that. There is engine English — `Solved in {n}
 steps`, `Lifted no-good:`, `Outstanding obligations`, `Assumed **X**; the
 branch derives ⊥.` — and it is the engine's to own, the way
-[`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md)
+[`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md)
 owns the engine's reserved *names*. The mandate is about **domain**
 vocabulary. Nothing registers that boundary today.
 
@@ -272,7 +272,7 @@ relation carries a `:why`, and the register:
 - **stdlib-derived** — asserted by a `std.*` rule (join against
   `stdlib_census.py`'s rule-head parse, which already exists);
 - **kernel** — `not`, `relation`, `is-a*`, `open`, and whatever else
-  [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md)
+  [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md)
   registers.
 
 The register split is the deliverable, not the total: a 5 % total is not

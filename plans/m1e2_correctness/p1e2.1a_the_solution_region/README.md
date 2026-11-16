@@ -324,7 +324,7 @@ among them, is the re-scoping P1e2.1c's last stage does.
   and [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
   are two of the ways R gets holes, and an obligation trigger is the third.
   All three are [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md)'s.
-- [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md) and
+- [`lattice-dump.md`](../../../docs/ein/ein.rs/lattice-dump.md) and
   [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
   are the pages the drawing extends.
 - [M1f S1f.10.3](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.3_the_restricted_join.md)
