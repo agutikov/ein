@@ -35,17 +35,20 @@
 //!   by `explore.rs`. A cell that rested on a denial, or lists other states
 //!   than the run from deaths alone, has its listing held by the describe or
 //!   by the line: there is none in the corpus that neither holds.
-//! - **Either stopped**: a describe's order does not depend on what is known
-//!   dead, so the run with the denials has met every state, every certified
+//! - **Either stopped**: a describe's order on the state route does not
+//!   depend on what is known dead, so the run with the denials has met every
+//!   state, every certified
 //!   minimal commitment and every member of `N` the run from deaths alone
 //!   met, its count of commitments is no lower, and it is complete at least
 //!   as far. Of any question: a verdict both reach is one verdict, and **a
 //!   run with the denials is never stopped where the run from deaths alone
 //!   finished**.
-//! - **The work**: with the denials a describe saturates no more nodes and
-//!   derives no more facts, on any program (its order is fixed, and a denial
-//!   only replaces a saturation). A tree's work is recorded and not held:
-//!   its order may move.
+//! - **The work**: with the denials a describe by the state route saturates
+//!   no more nodes and derives no more facts, on any program (its order is
+//!   fixed, and a denial only replaces a saturation). A tree's work is
+//!   recorded and not held, its order may move, and so is the work of
+//!   describe by the tree and the classes, which branch as a tree does: there
+//!   R's states found whole both ways are the same states.
 //!
 //! The corpus's `slow` entries are read under `EIN_CORPUS_SLOW=1`, the
 //! nightly's; the two zebra puzzles every run.
@@ -232,8 +235,12 @@ fn held(path: &Path) -> Tally {
             }
         };
         t.cells += 1;
-        t.saturations[0] += a.saturations;
-        t.saturations[1] += b.saturations;
+        // The work of the cells both finish: a cell the budget stops both
+        // ways spent the budget both ways, in as many nodes as it fitted.
+        if a.stopped.is_none() && b.stopped.is_none() {
+            t.saturations[0] += a.saturations;
+            t.saturations[1] += b.saturations;
+        }
         let l8 = a.licences.contains(&Licence::Denied);
         if l8 != (a.denials > 0) {
             t.failures.push(format!(
@@ -259,7 +266,11 @@ fn held(path: &Path) -> Tally {
             std::cmp::Ordering::Equal => {}
         }
         let describing = mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
-        if describing && (a.saturations > b.saturations || a.facts > b.facts) {
+        // Describe's order is fixed on the state route; the tree and the
+        // classes branch as a tree does, and their work is recorded and not
+        // held.
+        let fixed_order = a.route == explore::Route::States && b.route == explore::Route::States;
+        if describing && fixed_order && (a.saturations > b.saturations || a.facts > b.facts) {
             t.failures.push(format!(
                 "{at}: a describe does more with the denials: {} saturations and {} facts \
                  against {} and {}",
@@ -325,6 +336,18 @@ fn held(path: &Path) -> Tally {
                     let states = |d: &ein_infer::described::Described| -> BTreeSet<Vec<u32>> {
                         d.states.iter().map(|s| s.closure.to_vec()).collect()
                     };
+                    // The tree and the classes: where both found every state
+                    // of R, they found the same ones.
+                    let whole = |d: &ein_infer::described::Described| {
+                        d.exhausted
+                            || d.tree_partial.is_some_and(|p| {
+                                p.stopped_in > ein_infer::tree_classes::Part::States
+                            })
+                    };
+                    if !fixed_order && whole(da) && whole(db) && states(da) != states(db) {
+                        t.failures
+                            .push(format!("{at}: R's states, found whole both ways, differ"));
+                    }
                     let lines = |d: &ein_infer::described::Described| -> BTreeSet<Vec<u32>> {
                         d.minimal_commitments.iter().map(|g| g.to_vec()).collect()
                     };
@@ -335,7 +358,7 @@ fn held(path: &Path) -> Tally {
                         d.states_partial.and_then(|p| p.up_to)
                     };
                     let further = da.exhausted || up_to(da) >= up_to(db);
-                    if !states(db).is_subset(&states(da))
+                    if fixed_order && !states(db).is_subset(&states(da))
                         || !lines(db).is_subset(&lines(da))
                         || (!da.nogoods_skipped && !dead(db).is_subset(&dead(da)))
                         || da.k_c < db.k_c
@@ -449,7 +472,7 @@ fn every_question_answers_alike_with_the_denials_and_from_deaths_alone() {
         all.unheld
     );
     // Not vacuous: the programs that search are read, some rest on a denial,
-    // and where they do the work falls.
+    // and where they do the work of the cells both finish falls.
     assert!(
         programs >= 150 && all.cells >= 6 * 150,
         "{programs} programs, {} cells",
