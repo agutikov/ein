@@ -281,9 +281,9 @@ route pays for a structure**, and this page claims the comparison of no other
 program: each has its two rows.
 
 **Over the corpus**, the sweep that draws every structure prints what reading
-them cost. Over the 188 corpus programs that search: root's layers 49 015
-saturations and 1 389 866 facts beyond root, the small KBs' 82 589 saturations
-and 513 855 facts beyond their own roots, and 173 whole nodes, one a program
+them cost. Over the 188 corpus programs that search: root's layers 49 017
+saturations and 1 389 870 facts beyond root, the small KBs' 82 591 saturations
+and 513 859 facts beyond their own roots, and 173 whole nodes, one a program
 with a candidate alive alone.
 
 ```sh
