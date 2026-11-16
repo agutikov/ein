@@ -24,7 +24,29 @@
 //! makes it canonical"*), `seen`
 //! keyed on `(binding_key, guards)`, and `naf_dropped` structurally 0 — there
 //! is no enqueue/fire window left for a guard to go stale in.
+//!
+//! ### A fail-first agenda, for a measurement
+//!
+//! [`fail_first`] runs a closure with every saturation **built** on the
+//! calling thread ranking its candidates in two halves: those of a rule whose
+//! conclusion a contradiction can be made of first ([`FailFirst`] says which),
+//! then the rest, FIFO within each half; the boundary walks its parked
+//! candidates in the same order. M1f S1f.10.19 measures with it what such an
+//! order would save a dead node stopped at its first contradiction, which
+//! reopens Q-M1f.6's ruling and is put to the user as Q-M1f.313: no route
+//! takes it. It is no lever: no `(config …)` field, no option of `ein` and no
+//! `EIN_*` name reaches it. Not taken, a candidate's rank is its tiebreaker,
+//! as it was.
+//!
+//! [`stopping_at_first_contradiction`] is the same stage's other switch: a
+//! saturation built under it returns from [`Saturator::saturate`] at the
+//! first point its KB holds a contradiction, before any firing where the
+//! facts written before it already do and otherwise after the firing whose
+//! conclusions make one. It is how the stage reads what a dead node would
+//! report stopped there; nothing else takes it, and not taken, `saturate`
+//! runs to the fixpoint as it did.
 
+use std::cell::Cell;
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::ops::ControlFlow;
@@ -45,6 +67,67 @@ use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 /// `(__symmetric__ R)` has its extension closed under arg-swap directly by the
 /// saturator — no plan, no matcher.
 pub const SYMMETRIC: &str = ein_core::terms::SYMMETRIC;
+
+/// Which rules a saturation built under [`fail_first`] fires first: those
+/// whose `:assert` writes, by [`crate::monotone::writes_of`]'s reading of the
+/// compiled plan, a fact a contradiction can be made of.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FailFirst {
+    /// `(false)`, a stored negation `(not …)`, or a fact of a relation whose
+    /// negation some plan concludes or the KB holds: either side of a pair.
+    Pairs,
+    /// `(false)` or a stored negation: the side of a pair a rule supplies
+    /// against a fact already there.
+    Negations,
+}
+
+thread_local! {
+    static FAIL_FIRST: Cell<Option<FailFirst>> = const { Cell::new(None) };
+    static STOP_FIRST: Cell<bool> = const { Cell::new(false) };
+}
+
+/// The bit a candidate's rank carries under [`fail_first`] when its rule is
+/// not among the first: above every tiebreaker a run reaches, so it sorts
+/// after every candidate that is, and leaves FIFO within each half.
+const LATE: u64 = 1 << 62;
+
+/// Run `f` with every saturation built on this thread, by [`Saturator::new`]
+/// or [`Saturator::resume`], firing `which` rules first (the module's § A
+/// fail-first agenda). Restored when `f` returns or unwinds.
+pub fn fail_first<T>(which: FailFirst, f: impl FnOnce() -> T) -> T {
+    struct Restore(Option<FailFirst>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            FAIL_FIRST.with(|s| s.set(self.0));
+        }
+    }
+    let _restore = Restore(FAIL_FIRST.with(|s| s.replace(Some(which))));
+    f()
+}
+
+/// Which [`fail_first`] is running on this thread, if one is.
+pub fn is_fail_first() -> Option<FailFirst> {
+    FAIL_FIRST.with(Cell::get)
+}
+
+/// Run `f` with every saturation built on this thread stopping
+/// [`Saturator::saturate`] at its first contradiction (the module's § A
+/// fail-first agenda). Restored when `f` returns or unwinds.
+pub fn stopping_at_first_contradiction<T>(f: impl FnOnce() -> T) -> T {
+    struct Restore(bool);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            STOP_FIRST.with(|s| s.set(self.0));
+        }
+    }
+    let _restore = Restore(STOP_FIRST.with(|s| s.replace(true)));
+    f()
+}
+
+/// Whether [`stopping_at_first_contradiction`] is running on this thread.
+pub fn is_stopping_at_first_contradiction() -> bool {
+    STOP_FIRST.with(Cell::get)
+}
 
 /// Everything a saturation step reads and writes outside the saturator.
 pub struct Session<'a> {
@@ -276,6 +359,15 @@ pub struct Saturator {
     /// What the last application's universals read, where they are kept.
     last_universal: Box<[FactId]>,
     last_firing: Option<Firing>,
+    /// [`fail_first`] as it stood when this saturation was built; `None`,
+    /// the agenda is FIFO and every rank is its tiebreaker.
+    fail_first: Option<FailFirst>,
+    /// Under [`Self::fail_first`]: per plan, whether its rule fires first,
+    /// for every plan the engine holds ([`Saturator::refresh_first`]).
+    first: Vec<bool>,
+    /// [`stopping_at_first_contradiction`] as it stood when this saturation
+    /// was built.
+    stop_first: bool,
 
     // ── Observables ────────────────────────────────────────────────
     pub naf_rounds: u32,
@@ -420,6 +512,9 @@ impl Saturator {
             reading_universals: false,
             last_universal: Box::default(),
             last_firing: None,
+            fail_first: is_fail_first(),
+            first: Vec::new(),
+            stop_first: is_stopping_at_first_contradiction(),
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -533,6 +628,9 @@ impl Saturator {
             reading_universals: false,
             last_universal: Box::default(),
             last_firing: None,
+            fail_first: is_fail_first(),
+            first: Vec::new(),
+            stop_first: is_stopping_at_first_contradiction(),
             naf_rounds: 0,
             naf_admitted: 0,
             naf_retired: 0,
@@ -541,6 +639,23 @@ impl Saturator {
             guard_evals_monotone: 0,
             boundary_nanos: 0,
         };
+        if sat.fail_first.is_some() {
+            // What the snapshot holds was ranked by its tiebreaker alone:
+            // ranked again, so the order is this saturation's throughout.
+            sat.refresh_first(s);
+            let parked = std::mem::take(&mut sat.parked);
+            sat.parked = parked
+                .into_iter()
+                .map(|(tb, e)| ((tb & !LATE) | sat.late(sat.entries.get(e).plan), e))
+                .collect();
+            let queue = std::mem::take(&mut sat.queue);
+            sat.queue = queue
+                .into_iter()
+                .map(|Reverse((tb, e))| {
+                    Reverse(((tb & !LATE) | sat.late(sat.entries.get(e).plan), e))
+                })
+                .collect();
+        }
         if sat.mirror_seeded {
             let delta = sat.delta.clone().unwrap_or_default();
             sat.enqueue_mirror_sources(s, &delta);
@@ -592,7 +707,9 @@ impl Saturator {
     /// Run to the fixpoint, handing each firing to `f`.
     ///
     /// `max_steps` is the runaway-debugging budget; `None` runs to the
-    /// fixpoint.
+    /// fixpoint. Under [`stopping_at_first_contradiction`] it returns at the
+    /// KB's first contradiction instead, short of the fixpoint, which it then
+    /// does not mark.
     pub fn saturate(
         &mut self,
         s: &mut Session<'_>,
@@ -600,6 +717,9 @@ impl Saturator {
         f: &mut dyn FnMut(&Firing),
     ) -> Result<usize, SaturateError> {
         let mut i = 0;
+        if self.stop_first && crate::contradiction::has_contradiction(s.kb, s.terms) {
+            return Ok(0);
+        }
         loop {
             if max_steps.is_some_and(|m| i >= m) {
                 return Err(SaturateError::StepLimit(format!(
@@ -615,8 +735,17 @@ impl Saturator {
                 None => return Ok(i),
                 Some(firing) => {
                     f(&firing);
+                    let stop = self.stop_first
+                        && !firing.redundant
+                        && firing
+                            .derived
+                            .iter()
+                            .any(|&d| crate::contradiction::contradicts(s.kb, s.terms, d));
                     self.last_firing = Some(firing);
                     i += 1;
+                    if stop {
+                        return Ok(i);
+                    }
                 }
             }
         }
@@ -947,6 +1076,9 @@ impl Saturator {
         // reflective rule-implication case (S1.8.A9).
         self.engine.compile_all(s.ast, s.terms, s.kb, s.events)?;
         self.matched_plans.resize(self.engine.len(), false);
+        if self.fail_first.is_some() {
+            self.refresh_first(s);
+        }
         ein_core::counters::bump(|c| c.enqueue_pass += 1);
         let Some(delta) = delta else {
             for at in 0..self.engine.len() {
@@ -1092,6 +1224,7 @@ impl Saturator {
             });
         }
         let entry = self.entries.len() as u32;
+        let rank = self.tiebreaker | self.late(at);
         self.entries.push(Entry {
             plan: at,
             disjunct,
@@ -1103,10 +1236,67 @@ impl Saturator {
         });
         self.judged_at.push(0);
         if parked {
-            self.parked.insert((self.tiebreaker, entry));
+            self.parked.insert((rank, entry));
         } else {
-            self.queue.push(Reverse((self.tiebreaker, entry)));
+            self.queue.push(Reverse((rank, entry)));
         }
+    }
+
+    /// [`LATE`] for a candidate of plan `at` under [`fail_first`] whose rule
+    /// is not among the first; 0 otherwise, and always where the switch was
+    /// not taken.
+    #[inline]
+    fn late(&self, at: usize) -> u64 {
+        match self.fail_first {
+            None => 0,
+            Some(_) if self.first.get(at).copied().unwrap_or(false) => 0,
+            Some(_) => LATE,
+        }
+    }
+
+    /// Under [`fail_first`], read again which plans' rules fire first, once
+    /// the engine holds a plan this saturation has not read: a new plan's
+    /// negation can make another plan's conclusion one side of a pair.
+    fn refresh_first(&mut self, s: &Session<'_>) {
+        let Some(which) = self.fail_first else {
+            return;
+        };
+        let n = self.engine.len();
+        if self.first.len() == n {
+            return;
+        }
+        let (not, falsum) = (s.terms.kernel.not, s.terms.kernel.r#false);
+        let writes: Vec<Vec<crate::monotone::Rel>> = (0..n)
+            .map(|at| crate::monotone::writes_of(self.engine.plan(at), s.terms))
+            .collect();
+        // The relations a stored negation can be of: those a plan concludes
+        // the negation of, those the KB holds one of, and every relation
+        // where a plan concludes `(not ?x)` of a fact it does not name.
+        let mut negated: FxHashSet<Symbol> = FxHashSet::default();
+        let mut every = false;
+        if which == FailFirst::Pairs {
+            for w in writes.iter().flatten() {
+                if w.negated {
+                    every |= w.name == not;
+                    negated.insert(w.name);
+                }
+            }
+            for f in s.kb.facts_of(not) {
+                if let Some(inner) = s.terms.facts.args(f).first().and_then(|v| v.as_fact()) {
+                    negated.insert(s.terms.facts.rel(inner));
+                }
+            }
+        }
+        self.first = writes
+            .iter()
+            .map(|ws| {
+                ws.iter().any(|w| {
+                    w.name == falsum
+                        || w.negated
+                        || (which == FailFirst::Pairs && (every || negated.contains(&w.name)))
+                })
+            })
+            .collect();
     }
 
     /// The interned structural identity of a disjunct's guard tuple — see
@@ -1222,7 +1412,7 @@ impl Saturator {
                         let rule = s.terms.sym(plan.rule).to_string();
                         let round = self.naf_rounds as i64;
                         s.events.emit("admit", |l| {
-                            l.num("tiebreaker", tb as i64);
+                            l.num("tiebreaker", (tb & !LATE) as i64);
                             l.num("round", round);
                             l.str("rule", &rule);
                         });
@@ -1236,13 +1426,13 @@ impl Saturator {
                     retired.push(key);
                     self.naf_retired += 1;
                     if s.events.on() {
-                        emit_boundary(s, "retire", tb, self.naf_rounds, &plan, guards, g);
+                        emit_boundary(s, "retire", tb & !LATE, self.naf_rounds, &plan, guards, g);
                     }
                 }
                 Some(g) => {
                     self.judged_at[entry as usize] = self.epoch;
                     if s.events.on() {
-                        emit_boundary(s, "park", tb, self.naf_rounds, &plan, guards, g);
+                        emit_boundary(s, "park", tb & !LATE, self.naf_rounds, &plan, guards, g);
                     }
                 }
             }
@@ -1928,5 +2118,74 @@ mod tests {
         assert!(msg.contains("max_steps=2"), "{msg}");
         assert!(msg.contains("without reaching fixed point"), "{msg}");
         assert!(sat.last_firing().is_some());
+    }
+
+    /// A fail-first agenda, M1f S1f.10.19's measurement and Q-M1f.313's
+    /// question: under [`fail_first`] a rule whose conclusion a contradiction
+    /// can be made of fires before one written earlier whose conclusion is
+    /// not, the fixpoint is the same, and the switch holds only while it
+    /// runs. `Negations` puts a stored negation first; `Pairs` a positive fact
+    /// of a relation some rule denies as well.
+    #[test]
+    fn a_fail_first_agenda_moves_the_order_and_not_the_fixpoint() {
+        let src = "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
+                   (relation r T :why \"r holds of {?1}\")\n(relation s T :why \"s holds of {?1}\")\n\
+                   (rule to-q ()\n  :match (p ?x)\n  :assert (q ?x) :why \"p holds of {?x}, so q does\")\n\
+                   (rule to-r ()\n  :match (p ?x)\n  :assert (r ?x) :why \"p holds of {?x}, so r does\")\n\
+                   (rule not-s ()\n  :match (p ?x)\n  :assert (not (s ?x)) :why \"p holds of {?x}, so s does not\")\n\
+                   (rule not-r ()\n  :match (q ?x)\n  :assert (not (r ?x)) :why \"q holds of {?x}, so r does not\")\n\
+                   (p a)\n";
+        let sorted = |kb: &Kb, terms: &Terms| {
+            let mut v: Vec<String> = kb.facts().map(|f| events::sexpr(terms, f)).collect();
+            v.sort();
+            v
+        };
+        let (t, kb, fifo, _) = saturate(src);
+        assert_eq!(
+            fifo,
+            ["(q a)", "(r a)", "(not (s a))", "(not (r a))"],
+            "FIFO: the written order"
+        );
+        let (tn, kbn, negations, _) = fail_first(FailFirst::Negations, || saturate(src));
+        assert_eq!(
+            negations,
+            ["(not (s a))", "(q a)", "(not (r a))", "(r a)"],
+            "`not-r`, matched once `(q a)` lands, goes before `to-r`, queued earlier"
+        );
+        let (tp, kbp, pairs, _) = fail_first(FailFirst::Pairs, || saturate(src));
+        assert_eq!(
+            pairs,
+            ["(r a)", "(not (s a))", "(q a)", "(not (r a))"],
+            "`r` is denied by a rule, so `(r a)` is one side of a pair"
+        );
+        assert_eq!(sorted(&kb, &t), sorted(&kbn, &tn));
+        assert_eq!(sorted(&kb, &t), sorted(&kbp, &tp));
+        assert_eq!(is_fail_first(), None, "restored when it returns");
+        assert_eq!(saturate(src).2, fifo, "and FIFO again after it");
+    }
+
+    /// The stage's other switch: under [`stopping_at_first_contradiction`]
+    /// `saturate` returns after the firing whose conclusion makes the first
+    /// contradiction, and holds only while it runs.
+    #[test]
+    fn a_saturation_stopped_at_its_first_contradiction() {
+        let src = "(relation p T :why \"p holds of {?1}\")\n(relation q T :why \"q holds of {?1}\")\n\
+                   (relation r T :why \"r holds of {?1}\")\n\
+                   (rule to-q ()\n  :match (p ?x)\n  :assert (q ?x) :why \"p holds of {?x}, so q does\")\n\
+                   (rule not-q ()\n  :match (p ?x)\n  :assert (not (q ?x)) :why \"p holds of {?x}, so q does not\")\n\
+                   (rule to-r ()\n  :match (p ?x)\n  :assert (r ?x) :why \"p holds of {?x}, so r does\")\n\
+                   (p a)\n";
+        let (_, _, whole, _) = saturate(src);
+        assert_eq!(whole, ["(q a)", "(not (q a))", "(r a)"]);
+        let (_, _, stopped, _) = stopping_at_first_contradiction(|| saturate(src));
+        assert_eq!(stopped, ["(q a)", "(not (q a))"], "stopped at the pair");
+        assert!(!is_stopping_at_first_contradiction());
+        let (_, _, first, _) =
+            stopping_at_first_contradiction(|| fail_first(FailFirst::Negations, || saturate(src)));
+        assert_eq!(
+            first,
+            ["(not (q a))", "(q a)"],
+            "the pair, its negation first"
+        );
     }
 }

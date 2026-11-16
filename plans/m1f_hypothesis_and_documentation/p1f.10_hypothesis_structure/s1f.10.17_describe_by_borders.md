@@ -15,6 +15,20 @@ from k_c = k_s?"*. The user, the same day:
 
 > YES! a describe that visits each predicate's borders instead of every alive state - lets pick this variant
 
+## The ruling on the measurement (2026-11-16)
+
+T2 measured the whole border route *no* for describe on the corpus, and the cheap part, the tree and the classes,
+exact on R where the state route stops. The user, shown the table:
+
+> S1f.10.17 - 2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one
+> or another, verbose warning about budget so user knows about forecast and options.
+
+So **T3 is redefined**: describe and `--count` have two routes, the state route as it is and **the tree and the
+classes**, which is the default; a command-line option forces either; where a route's forecast passes the budget the
+run says so, with the forecast and the options. N by dualize and advance, the part that did not pay, is not a route.
+This ruling is the user's, and it supersedes the plan's *no lever chooses it*: the option chooses a route and never
+R.
+
 ## Context
 
 Describe takes the state route (`states.rs`). It visits every alive state, each once with its one-up extensions,
