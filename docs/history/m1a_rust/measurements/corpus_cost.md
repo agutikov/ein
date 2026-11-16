@@ -418,6 +418,24 @@ fourteen, and `zebra2`'s and `zebra2-obligations`' flags stay: eleven cells
 of about 0.57 s apiece, bare describes and their artefacts, are 6 s together.
 **No cell was dropped** for its cost.
 
+## 11. The fifth re-take — 2026-11-16, M1f P1f.10's routes
+
+**One entry left the slow set; six got cheaper or dearer within it.** M1f's P1f.10 gave describe and `--count` the
+tree and the classes as their default route where root owes a licensed instance, stopped a route's dead node at its
+first contradiction, and made the agenda fire first what leads to `(false)`.
+`utils/bench_env.sh --cores PT --require-ac python3 utils/corpus_cost.py --slow-only --check`, 2026-11-16, commit
+`5e761612`, release, P-cores, on AC, the machine otherwise idle:
+
+| entry | cost | slowest cell | flag |
+|---|---:|---|---|
+| `zebra` | 0.50 s | `render lattice`, 265 ms | **`slow` removed**; `cost_ms` 2 074 → 500 |
+| `zebra2`, `zebra2-obligations` | 2.47 / 2.37 s | `render lattice`, 816 ms | `cost_ms` 19 083 / 19 067 → 2 470 / 2 370 |
+| `beyond_arith/send_more_money` | 2.15 s | `test`, 716 ms | `cost_ms` 8 404 → 2 150: describe decides R |
+| `beyond_arith/send_more_money_written` | 1.43 s | `test`, 716 ms | `cost_ms` 1 590 → 1 430 |
+| `zebra2-minus-15`, `-obligations` | 11.03 / 11.06 s | bare `solve`, 10.92 / 10.99 s | `cost_ms` 7 860 / 7 870 → 11 030 / 11 060: describe stops in the classes, past more of the budget |
+
+Every other slow entry is within its recorded cost. The set is fifteen again. **No cell was dropped** for its cost.
+
 ## Reproducing this file
 
 ```sh

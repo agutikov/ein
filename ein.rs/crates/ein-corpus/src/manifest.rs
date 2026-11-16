@@ -383,8 +383,11 @@ mod tests {
             // send_more_money --runs 3`, 2026-11-13). Its generated twin
             // `send_more_money_written` is the sixteenth: `solve --single`
             // and `test` are 1.59 s together on an idle machine
-            // (`-k send_more_money_written --runs 5`). This test's name keeps
-            // its count of fifteen, which is one short.
+            // (`-k send_more_money_written --runs 5`). `zebra` left on
+            // 2026-11-16, its describe taking the tree and the classes, 500 ms
+            // together (`utils/bench_env.sh --cores PT --require-ac python3
+            // utils/corpus_cost.py --slow-only`), which brings the set back to
+            // the fifteen of this test's name.
             [
                 "examples/features/01_not_and_absent.ein",
                 "examples/beyond_arith/send_more_money.ein",
@@ -397,7 +400,6 @@ mod tests {
                 "examples/saturation/square-fwd/floors.ein",
                 "examples/saturation/square-fwd/houses.ein",
                 "examples/saturation/square-fwd/meetings.ein",
-                "examples/zebra.ein",
                 "examples/zebra2-minus-15.ein",
                 "examples/zebra2-minus-15-obligations.ein",
                 "examples/zebra2-obligations.ein",
