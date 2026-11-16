@@ -851,3 +851,199 @@ listed by `build/t4/shapes.py` (kept under the worktree's `build/`).
 - `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the batch's.
 - `cost_ms` (default 7).
 - S1f.10.17's border route was not merged on this branch; its dead sets are no question's.
+
+## The agenda: the inventory, before anything moved (2026-11-16)
+
+On the user's ruling of Q-M1f.313 that day, **(c)**: *"non-monotone programs still out of scope, we know about
+them, can detect them, can solve them somehow, but don't claim about solution soundness, correctness or completeness
+or anything."* Built after the stop under FIFO was committed and verified (`a761d181`, `24f6b478`), and committed
+before the code and before any golden moved.
+
+### What changes
+
+- **The engine's order is the agenda with the `pairs` half first**, `saturator::AGENDA`: first the rules whose
+  conclusion a contradiction can be made of, `(false)`, a stored negation, or a fact of a relation some plan
+  concludes the negation of or the KB holds a negation of; then the rest; FIFO in the written and arrival order
+  within each half; the boundary walks its parked candidates in the same order. Not behind a switch: every
+  saturation takes it, root's, every route's node, the oracle's, the whole node, every `region::Nodes` reader,
+  `ein saturate`, the stdlib's. `Saturator::new` takes the engine's; `Saturator::resume` its snapshot's (the
+  snapshot carries it, so a node on a worker thread follows its root).
+- **The switch** that stays: `saturator::fifo(f)`, the written order alone on the calling thread, and
+  `saturator::fail_first(w, f)` for a measurement's halves; no lever reaches either.
+- **The test**: `ein-infer/tests/agenda.rs`, every question and every claim of every monotone corpus program and
+  register witness alike under the agenda and under `fifo`, its definition written in its header before the cells
+  were read; flagged programs counted and not held.
+
+### What moves, by name
+
+Taken from a run of the built order before this commit, and checked against it: every program a line below moves
+for is monotone (`ein solve FILE --no-search`'s `lattice` row), and no flagged program's rendering moves.
+
+- **`ein-render/tests/golden/corpus_shapes.md5`**: 435 lines over 125 programs, only these ops: `saturate` (root's
+  event stream, the narration: 103), `dot[kb-since]` (the KB drawn by the step that derived each fact: 85),
+  `region-trace` (root's trace and the describe's `work` row: 115), `read-out[q]` (the `work` row, and the SENDs'
+  `route` row, which says at which saturation the couplings were read: 64), `cores[q]` (the run's `work`, and the
+  `facts`, `owes` and `closure` of the dead nodes a route stops: 66), and `states` on two programs
+  (`examples/zebra.ein`, `examples/zebra2-hints.ein`: the comment beside a fact naming the rule of its first
+  derivation, on 2 and 24 lines; every fact the same, read by a probe under both orders). No `hyp`, `hyp+closed`,
+  `explain`, `explain-noalts`, `plan`, `match`, `naf`, `oracle`, `load`, `ir[…]` or other `dot[…]` line moves.
+  By program, the questions `q` and the other ops:
+
+  | program | `read-out[q]` | `cores[q]` | also |
+  |---|---|---|---|
+  | `examples/arith/div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/beyond_arith/cryptarithm.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/beyond_arith/equation_by_search.ein` | maximal | maximal |  |
+  | `examples/beyond_arith/send_more_money.ein` | maximal minimal n2 single | maximal minimal n2 single |  |
+  | `examples/beyond_arith/send_more_money_written.ein` | maximal n2 single | maximal n2 single |  |
+  | `examples/binary_arithmetic/div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/binary_logic/knights.ein` | maximal minimal | maximal minimal |  |
+  | `examples/binary_logic/not_equivalent.ein` | maximal | maximal |  |
+  | `examples/binary_logic/satisfiable.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/synthesis.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/binary_logic/truth_table.ein` | maximal | maximal |  |
+  | `examples/binary_logic/unsatisfiable.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/branching/08_hypothesis_relation_whitelist.ein` |  |  | region-trace saturate |
+  | `examples/branching/12_typed_blind_solve.ein` |  |  | region-trace saturate |
+  | `examples/domain_elim/ab.ein` |  |  | region-trace saturate |
+  | `examples/domain_elim/b_only.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/alive-set-fresh-name-declared.ein` | describe maximal n2 single | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/alive-set-fresh-name.ein` | describe maximal n2 single | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/alt-cap-core-reordered.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/alt-cap-core.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/fork-delta-order.ein` | describe maximal | describe maximal | region-trace |
+  | `examples/ein-bugs/wrong-answers/alt-flag-two-derivations.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/closure-shared-given-control.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/closure-shared-given.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/fresh-name-default.ein` | describe maximal n2 single | describe maximal n2 single | region-trace |
+  | `examples/ein-bugs/wrong-answers/match-only-declared.ein` | maximal | maximal |  |
+  | `examples/ein-bugs/wrong-answers/match-only.ein` | maximal | maximal |  |
+  | `examples/ein-bugs/wrong-answers/oblig-derived-domain.ein` | maximal | maximal |  |
+  | `examples/ein-bugs/wrong-answers/or-one-key-twin.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/wrong-answers/underscore-core-two-ways-twin.ein` |  |  | region-trace saturate |
+  | `examples/ein-bugs/zebra2-bad.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/ein-bugs/zebra2-hints.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/features/09_adjacent_via_same_house.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/features/10_expect.ein` |  |  | region-trace saturate |
+  | `examples/features/13_mixed_solution_and_open.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `examples/lattice/synth/merged_states.ein` | describe maximal | describe maximal | region-trace |
+  | `examples/zebra.ein` |  | describe minimal | dot[kb-since] region-trace saturate states |
+  | `examples/zebra2-hints.ein` |  |  | dot[kb-since] region-trace saturate states |
+  | `examples/zebra2-minus-15-obligations.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/zebra2-minus-15.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/zebra2-obligations.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `examples/zebra2.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/region/02_merged_single.ein` | describe maximal | describe maximal | region-trace |
+  | `tests/stdlib/algebra/22_symmetric_negative.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/bijection/01_setup_and_negatives.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/bijection/02_domain_elimination.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/bijection/03_range_elimination.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/bijection/06_blind_enumeration.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/bool/circuit/02_one_value.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/bool/inputs/01_in_drives.ein` | maximal | maximal |  |
+  | `tests/stdlib/bool/inputs/02_required.ein` | describe maximal minimal n2 single | describe maximal minimal n2 single | region-trace |
+  | `tests/stdlib/math/binary/02_a_name_in_a_bits_place.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary/03_ends_in_a_bit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary/04_ends_in_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary/05_ends_in_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/08_div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/10_a_bit_as_an_operand.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/14_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/15_let_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/16_let_bit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/17_let_the_bit_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/18_let_to_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/19_let_to_a_bit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/binary-arith/20_let_to_the_bit_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal/02_in_a_let_nobody_asks_about.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal/03_in_a_fact_of_the_programs_own.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal/04_in_a_rules_conclusion.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/20_div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/21_div_by_zero_spelt_and_named.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/22_malformed_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/23_malformed_fact_as_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/24_malformed_ends_in_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/25_malformed_ends_in_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/26_malformed_ends_in_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/27_malformed_digit_as_number.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/28_malformed_zero_digit_as_number.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/31_malformed_through_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/32_malformed_name_for_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/33_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/36_let_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/37_let_zero_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/decimal-arith/39_div_call_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/12_div_euclid_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/13_div_trunc_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/14_div_floor_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/15_letter_in_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/16_letter_in_a_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/17_letter_in_the_second_operand.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/18_part_ends_in_a_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/19_part_ends_in_a_named_constant.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/23_digit_as_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/24_letter_through_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/25_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/26_let_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/29_named_constant_as_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/30_letter_in_a_division.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/31_digit_as_the_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/32_digit_zero_as_a_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/33_digit_zero_as_the_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/34_named_constant_as_the_negative_part.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/int/35_undeclared_divisor.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/num9/09_div_by_zero.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/10_div_by_zero_rational.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/11_zero_denominator_first.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/12_zero_denominator_second.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/13_zero_denominator_one_operand.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/14_letter_in_the_numerator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/15_letter_in_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/16_denominator_ends_in_a_digit.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/20_letter_through_a_name.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/21_let_twice.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/24_digit_as_the_numerator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/25_digit_zero_as_the_numerator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/27_digit_as_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/28_digit_zero_as_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/math/rat/29_named_constant_as_the_denominator.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/01_partition.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/02_negative.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/03_fill.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/04_elimination.ein` |  |  | dot[kb-since] region-trace saturate |
+  | `tests/stdlib/slots/05_no_room.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/06_no_fill.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/07_spatial_prune.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/08_spatial_adjacent.ein` |  |  | region-trace saturate |
+  | `tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein` |  |  | region-trace saturate |
+
+- **`docs/kernel/inference/read_out_examples.md`**, regenerated: X5's `work` row, `18 saturations · 45` → `44 facts`.
+- **`ein-render/tests/golden/trace_{ambiguous,one-hypothesis,unconditional}.md`**: root's steps in the agenda's
+  order (and with them the step numbers the prose cites). `trace_two-level.md`, `trace_dead.md` and
+  `trace_owing.md` do not move.
+- **`examples/README.md`'s anchor list** gains `ein-infer/tests/agenda.rs` (`world_anchors.rs`).
+- **The SENDs**: `send_more_money.ein` and `send_more_money_written.ein` under `--single` and `--maximal`, 18 031 →
+  18 032 saturations, 173 415 → 160 834 facts, the couplings read at saturation 722 → 732; `send_more_money.ein -n 1`
+  15 855 saturations either way, 151 744 → 140 324 facts, read at 652 → 722; `send_more_money_written.ein -n 1`
+  17 642 saturations, 158 962 → 147 725 facts, read at 1 972. So `finding_r.md` § 7's SEND row and three
+  `corpus/corpus.toml` notes.
+- **A gate test over a flagged program, named with why**: `ein-infer/tests/region.rs`'
+  `fact_grain_on_programs_written_to_test_it` holds each fact-grain prototype's cube to what it was written to show.
+  `even-depth` was written to show a hole the written order opens: `all-p`, written first, is admitted at the
+  boundary before `bad`, whose conclusion is `(false)`. Under the agenda `bad` goes first, its guard `(absent (done
+  W))` holds at that moment, and the node dies where it lived: no hole. The program is flagged, so the engine claims
+  nothing of its answer; the test computes these cubes under `saturator::fifo`, as written.
+- **The standing rule and pages**: `AGENTS.md`'s *the agenda is FIFO in written order*, restated in place;
+  `saturator.rs`' header; `finding_r.md` § 1 and § 8; every `docs/kernel/` page that states the order FIFO as the
+  engine's today (`inference/README.md`, `architecture_and_algorithms.md`, `absent_semantics.md`,
+  `implementation.md`, `monotonicity.md`, `events.md`, `glossary.md`, `architecture.md`, `ir/03-ein-lang/01_grammar.md`,
+  `ir/01-ein-graph/02_rules.md`; the names *the FIFO gap* and *FIFO race* of § 7 of `monotonicity.md` are a
+  phenomenon's, kept); `defined_behaviour.md` defines no order. Q-M1f.313's *Built* paragraph and index row,
+  Q-M1f.6's row.
+- **The nightly**: the new sweep's slow half, a step of `deep-corpus-shards`, in the workflow and `run_tests.sh`.
+- **Cores**, explanations the order moves (Q-M1f.6's ruling stands for them): N's cores move on 103 of the 3 804
+  members the per-commit describes take (`agenda.rs`' line), on the surfaces that print them (`nogoods.json`,
+  `--trace`, `cores[q]` above); `corpus_cores.rs` holds each still to its commitment and its contradiction.
+- **Not moving**: `corpus/wrong_answers.toml` (no open or fixed row's answer, cores among them), the README and
+  guide transcripts, `docs/api/rust.md`, `corpus_exits.txt`, every claim of the corpus (`ein test`), every lever
+  cell, the `.einb` tests, `cost_ms` (not re-taken: the machine was not idle).
