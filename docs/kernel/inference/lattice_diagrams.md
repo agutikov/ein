@@ -16,7 +16,7 @@
 > Kept in place, for the reason and by the rule stated in
 > [`algorithm_layer_n.md`](algorithm_layer_n.md)'s banner, and **not rewritten
 > to match today's engine**. What the search does now:
-> [`architecture_and_algorithms.md` §2](architecture_and_algorithms.md) and
+> [`firing.md` § The main steps](../../ein/reasoning/kb-evolution/firing.md#the-main-steps) and
 > [`implementation.md`](implementation.md); what it *writes*,
 > [`lattice_dump.md`](lattice_dump.md), which is current and golden-pinned.
 >

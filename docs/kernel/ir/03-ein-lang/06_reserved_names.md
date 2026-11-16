@@ -32,7 +32,7 @@ you can author a puzzle without reading engine source.
 | set a solver knob                            | `(config :flag v)`                      | §declarators |
 | import a stdlib module                       | `(import std.X :symbols (…))`           | §declarators |
 | conjoin / disjoin premises in `:match`       | `(and …)` / `(or …)`                    | §⊥ primitives |
-| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives; [semantics](../../inference/absent_semantics.md) |
+| match only when a pattern is **absent** (NAF)| `(absent P)`                            | §⊥ primitives; [semantics](../../../ein/reasoning/kb-evolution/absent-and-naf.md) |
 | match a **stored** negative                  | `(not P)` in `:match`                   | §⊥ primitives |
 | require two slots differ / are equal         | `(neq ?a ?b)` / `(eq ?a ?b)`            | §predicates |
 | declare this branch contradictory            | `:assert (false)`                       | §⊥ primitives |
@@ -301,7 +301,7 @@ Declared once in [`ein-core/terms.rs`](../../../../ein.rs/crates/ein-core/src/te
 | `false` | 0 | direct ⊥ — `(false)` asserts the firing rule reached a contradiction. It takes no argument, as a fact, a value, a premise and a conclusion: `(false k)` is refused since M1f S1f.7.6 (until then a written one was stored with its argument and killed root) | contradiction detector |
 | `and` | 2+ | conjunction; flattened into sibling premises of one plan | compiler (`compile.rs`) |
 | `or` | 2+ | disjunction; a **top-level** `(or …)` in a `:match` is lowered to one rule per disjunct at load time | loader (`kb.from_ir._match_disjuncts`) |
-| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom, so no fact, value or conclusion is headed by it: a written or concluded `(absent k)` is refused since M1f S1f.7.7 (until then it stored a fact no premise can read), and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent_semantics.md`](../../inference/absent_semantics.md) | compiler (the guard lift) + the saturator's boundary phase |
+| `absent` | 1 | negation-as-failure on a sub-pattern (`AbsentGuard`) — a fork-local *query*, never a stored atom, so no fact, value or conclusion is headed by it: a written or concluded `(absent k)` is refused since M1f S1f.7.7 (until then it stored a fact no premise can read), and a claim's class alone lists `(absent (q a))`, what a goal's `absent` says a state does not hold; lifted out of the match plan at compile time and decided once at the closure/world boundary, against the positive fixpoint (S1.21.8); normative semantics in [`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md) | compiler (the guard lift) + the saturator's boundary phase |
 
 ## Computed predicates
 
@@ -346,7 +346,7 @@ puzzle may even redefine them. A puzzle that wants them imports them
 | `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))` — guarded universal ∀b. G→B |
 
 Both expand to nested `absent`s, so their meaning is inherited from the
-[`absent` semantics](../../inference/absent_semantics.md): the ∀ arises
+[`absent` semantics](../../../ein/reasoning/kb-evolution/absent-and-naf.md): the ∀ arises
 as ¬∃¬ over the world at the closure boundary, and a nested absent is
 the one guard shape that can flip false→true during saturation — so its
 candidate stays parked and is re-judged at every later quiescence
@@ -372,7 +372,7 @@ and `not` does, a stored negation being a fact
 
 | name | form | meaning | engine site |
 |------|------|---------|-------------|
-| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-written, or derived by `std.closure` and by a module's closing rule; the engine infers it for no relation. Kept kernel mechanism for M1 (S1.7.10). Used as a relation or a value, never bound (M1f T1f.5.5.11), and never an object of the blind enumerator, whichever way it is used ([`solution_semantics.md` § 1.2](../../inference/solution_semantics.md#12-names)). Read by the generator's rungs 2 and 3 and the read-out's `outside` row, by no matcher (M1f S1f.6.34, E-52); no hrule proposes a closed relation and no obligation owes one (below). | `ein-infer/hypgen.rs` (`CLOSED = "__closed__"`); the hypgen filter |
+| `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-written, or derived by `std.closure` and by a module's closing rule; the engine infers it for no relation. Kept kernel mechanism for M1 (S1.7.10). Used as a relation or a value, never bound (M1f T1f.5.5.11), and never an object of the blind enumerator, whichever way it is used ([`solution_semantics.md` § 1.2](../../../ein/reasoning/kb-evolution/solution-semantics.md#12-names)). Read by the generator's rungs 2 and 3 and the read-out's `outside` row, by no matcher (M1f S1f.6.34, E-52); no hrule proposes a closed relation and no obligation owes one (below). | `ein-infer/hypgen.rs` (`CLOSED = "__closed__"`); the hypgen filter |
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`), in the saturation the mark comes to hold in, whether written or derived by a rule ([`reserved_engine_strings.md`](../../inference/reserved_engine_strings.md#__symmetric__--engine-effect)) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror). Used as a relation or a value, never bound (M1f T1f.5.5.11), and never an object of the blind enumerator | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator and the obligations rung to the listed relations, never the hrule rung; every name is a relation of the program, or the program is refused at load, as a `:no-hypothesis` name and an `:hrules` hrule and activator relation are (M1f S1f.7.8, `defined_behaviour.md` § 4.20) | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire); read by the blind enumerator and the obligations rung, never the hrule rung | `hypgen` (`NO_HYPOTHESIS`) |
@@ -409,7 +409,7 @@ chooses no rung: every import brings its module whole, so a program that imports
 its two obligation rules, and its own open relations are the blind enumerator's to guess. H is built once, at root.
 The obligations rung proposes there too
 what would pay a debt root does not owe, where a rule that reads a relation a commitment can change concludes the
-debt's activator ([`solution_semantics.md` § 1.4](../../inference/solution_semantics.md#14-candidate-and-universe)).
+debt's activator ([`solution_semantics.md` § 1.4](../../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 
 | | mechanism | what it does | read by |
 |---|---|---|---|
@@ -478,7 +478,7 @@ every row of the table stands beside it
   and both are just declared relations. Types *of relations* are legal for
   the same reason (`(is-a co-located EquivalenceRelation)` parses and
   stores; only a rule gives it meaning — relations are objects, see
-  [`../02-data-model/01_entities.md` §1.1](../02-data-model/01_entities.md)).
+  [names and atoms § A relation is an object](../../../ein/reasoning/static-ir/names-and-atoms.md#a-relation-is-an-object)).
 - **`symmetric`** (and `transitive` / `functional` / …) — plain user
   *property tags*, no kernel search-special-casing since
   S1.7.24;

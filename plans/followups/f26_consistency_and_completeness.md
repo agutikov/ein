@@ -100,7 +100,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   statements, checked on a bounded range, or induction as a rule schema.
 - **Self-reference needs rules as data.** The theorem's sentence speaks of its own provability. Ein programs
   cannot name their rules as values today ([F5](f5_rules_as_data.md),
-  [`08_self_describing.md`](../../docs/kernel/ir/03-ein-lang/08_self_describing.md)), and idea 09's liar's
+  [rules as data](../../docs/ein/reasoning/rule-evolution/rules-as-data.md)), and idea 09's liar's
   sentence is the puzzle form of it. An Ein that could write *this rule does not fire* would have to say what
   its answer is, and [F21](f21_non_monotone_programs_decided.md)'s cycles through `absent` are the nearest thing
   the engine has: a program with no stable reading.

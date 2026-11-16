@@ -643,13 +643,13 @@ note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)`
 path   = "examples/lattice/10_fifo_gap.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region", "solve --minimal --region-limit 1", "solve --maximal --region-limit 1"]
-note   = "the FIFO gap, monotonicity.md § 7.3's counter-example run: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, one priority, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative (M1e2 S1e2.1b.7, node_census.md § 12). The two line modes at `--region-limit 1` are M1e2 W27's smallest witness (`W27/fifo-gap-limit-1-minimal`, `-maximal`, S1e2.2.26): past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}; until S1e2.2.26 each line mode labelled both members with its line."
+note   = "the FIFO gap, monotonicity.md § 8.3's counter-example run: r2 `a ∧ b ∧ absent(q) → p` written before r1 `a ∧ absent(z) → q`, one priority, a stratified program. Built at once, {a, b} holds a stale p; by way of {a} it does not, so the state depends on the path while every node is in R and the cube calls the program conservative (M1e2 S1e2.1b.7, node_census.md § 12). The two line modes at `--region-limit 1` are M1e2 W27's smallest witness (`W27/fifo-gap-limit-1-minimal`, `-maximal`, S1e2.2.26): past the limit the run meets ∅ and {(a one)}, describe certifies ∅ minimal, and the oracle's lines are {∅} and {(a one), (b one)}; until S1e2.2.26 each line mode labelled both members with its line."
 
 [[entry]]
 path   = "examples/lattice/11_fifo_gap_static.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
-note   = "10_fifo_gap with `a` given and only `b` a candidate: `q` is static, the static check calls the program monotone, and route 1 answers it. Built from scratch, {b} holds a stale p that the fork, which inherits root's q, does not: a *Monotone* verdict is relative to root (monotonicity.md § 7.6; M1e2 S1e2.1b.7, node_census.md § 12)."
+note   = "10_fifo_gap with `a` given and only `b` a candidate: `q` is static, the static check calls the program monotone, and route 1 answers it. Built from scratch, {b} holds a stale p that the fork, which inherits root's q, does not: a *Monotone* verdict is relative to root (monotonicity.md § 3.4; M1e2 S1e2.1b.7, node_census.md § 12)."
 
 [[entry]]
 path   = "examples/lattice/12_activator_chain_hole.ein"
@@ -1219,7 +1219,7 @@ note   = "M1e2 W5's twin: owed-seats.ein with Ann renamed Zed, and a different t
 path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W6, contested (`W6/uncovered`): completeness.md § 3c's fixture. `exhausted = true` while `knows` is never hypothesised — exhaustive over alive₀, not over the program (Q-M1e2.3)."
+note   = "M1e2 W6, contested (`W6/uncovered`): docs/ein/reasoning/kb-evolution/satisfiability.md § 5's witness. `exhausted = true` while `knows` is never hypothesised — exhaustive over alive₀, not over the program (Q-M1e2.3)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"

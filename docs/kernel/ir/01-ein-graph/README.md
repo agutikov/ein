@@ -24,7 +24,7 @@ this tree describes Ein in graph-theory terms.
   worked example illustrating the type-as-relation-holder pattern.
   Stated four ways: natural language, ein-lang, compact graph,
   detailed Levi-bipartite graph.
-- [`05_four_level_kb.md`](05_four_level_kb.md) — The four-level KB
+- [rules as statements § The four levels](../../../ein/reasoning/static-ir/rules-as-statements.md#the-four-levels-a-knowledge-base-describes-itself-in) — The four-level KB
   (L0 objects / L1 facts / L2 relations / L3 rules) and the
   *consumes* stack; how the levels differ from a fact's origin.
 

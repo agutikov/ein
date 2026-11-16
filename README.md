@@ -222,13 +222,13 @@ other (3.6 s, 2026-10-18). `-n 1` prints it in 30 ms without the proof.
 
 The engine fuses a deductive database, a CSP/SAT search and an ATMS, split at
 the monotone / non-monotone seam
-([architecture_and_algorithms.md](docs/kernel/inference/architecture_and_algorithms.md#4-the-core-operations)):
+([firing.md](docs/ein/reasoning/kb-evolution/firing.md#the-core-operations)):
 
 | op | what Ein does | nearest analogs |
 |---|---|---|
 | O1 multi-way join | bind a rule body against the KB — a register matcher with a backtrack trail | relational join, RETE / LEAPS, worst-case-optimal joins |
 | O2 saturation | fire rules to a least fixpoint, semi-naive | Datalog bottom-up, magic sets, differential dataflow |
-| O3 negation as failure | `(absent P)` judged at the closure / world boundary ([absent_semantics.md](docs/kernel/inference/absent_semantics.md)) | stratified Datalog, CWA, stable models |
+| O3 negation as failure | `(absent P)` judged at the closure / world boundary ([absent-and-naf.md](docs/ein/reasoning/kb-evolution/absent-and-naf.md)) | stratified Datalog, CWA, stable models |
 | O4 equality | `EqClasses` — a stub | union-find, congruence closure, e-graphs |
 | O5 contradiction | `(X, ¬X)` or `(false)` | clause violation, tableau clash |
 | O6 provenance, unsat core | an AND/OR derivation DAG → the smallest source frontier | ATMS / JTMS justifications, provenance semirings, MUS |

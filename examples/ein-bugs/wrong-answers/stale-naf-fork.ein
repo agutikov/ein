@@ -16,7 +16,7 @@
 ;;;   Solution k = 1, `{(p one)}` plus `(not (q one))`, `exhausted = true`
 ;;;
 ;;; Committing `(q one)` falsifies `derive-p`'s guard, but nothing retracts
-;;; (`absent_semantics.md`: *retraction / truth maintenance: not provided*), so
+;;; (`absent-and-naf.md`: *retraction or truth maintenance: not provided*), so
 ;;; the fork held the stale `(p one)` beside `(q one)`, the clash fired, and
 ;;; the lookahead killed the candidate: the state `{(q one)}` was unreachable.
 ;;; R said the same once the walk was gone (S1e2.2.5's re-take, banked in

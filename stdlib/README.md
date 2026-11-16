@@ -102,7 +102,7 @@ section
 
 The first module here that holds **facts and no rule**: the *ontology* half
 of
-[`solution_semantics.md` § 1.1](../docs/kernel/inference/solution_semantics.md#11-context-and-problem),
+[`solution_semantics.md` § 1.1](../docs/ein/reasoning/kb-evolution/solution-semantics.md#11-context-and-problem),
 where every other module is theory. Ein has no numbers and no arithmetic (the
 user's ruling of 2026-11-06), so the ten digits `0` to `9` are plain names,
 and what school arithmetic knows about them is written down once, as tables,

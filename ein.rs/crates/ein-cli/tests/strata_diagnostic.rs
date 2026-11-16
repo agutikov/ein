@@ -1,5 +1,5 @@
-//! M1f S1f.5.15's T4 (T1f.5.15.4) — **the static non-stratifiability
-//! diagnostic**, through the binary.
+//! **The static non-stratifiability diagnostic**, through the binary
+//! ([Analysis of rules](../../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md)).
 //!
 //! A program whose rules' dependency graph has a cycle through an `absent`
 //! has no stratification, so its root fixpoint may depend on the boundary's
@@ -8,8 +8,8 @@
 //! nothing). `ein solve` says so in a `strata`
 //! row, and `ein saturate --dump` in its `;; Strata` line, each cycle named by
 //! its relations and the rules on its negative edges. It is a diagnostic and
-//! not a refusal: the run answers, and exits as it did. The fixtures are the
-//! stage's: `examples/features/07_unstratifiable.ein` trips it, and
+//! not a refusal: the run answers, and exits as it would. The fixtures:
+//! `examples/features/07_unstratifiable.ein` trips it, and
 //! `examples/features/01_not_and_absent.ein`, an `absent` over a relation no
 //! rule derives, does not.
 //!

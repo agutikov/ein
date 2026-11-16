@@ -1,11 +1,11 @@
-//! M1f S1f.5.15's T3 and T4 — **the rule dependency graph and its strata**,
-//! held on small programs and on the stage's two fixtures.
+//! **The rule dependency graph and its strata**
+//! ([Analysis of rules](../../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md)),
+//! held on small programs and on the diagnostic's two fixtures.
 //!
 //! `ein_infer::strata` builds the graph over the plans a run compiled, so each
-//! test saturates root first, as `naf_deps` asks. The band T3 derived from a
-//! rule's shape went with `:priority` (the user's ruling of 2026-11-08 on
-//! Q-M1f.6: *"plain FIFO"*); what the graph is for since is the
-//! stratification diagnostic and the stratum `ein saturate --dump` prints.
+//! test saturates root first, as `naf_deps` asks. The graph orders nothing
+//! (Q-M1f.313, Q-M1f.6): it is the stratification diagnostic's, and the
+//! stratum `ein saturate --dump` prints.
 //!
 //! ```text
 //! cargo test -p ein-infer --test strata

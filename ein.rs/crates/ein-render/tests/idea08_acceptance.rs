@@ -68,7 +68,7 @@ const FIRING_TARGET: [&str; 9] = [
 
 /// The generic-link encoding (S1.22.1a): `zebra.ein` reaches the same
 /// conclusions over one `co-located` equivalence instead of five typed
-/// relations. `docs/kernel/inference/README.md` documents the correspondence;
+/// relations. `docs/ein/reasoning/kb-evolution/saturation.md` documents the correspondence;
 /// this is its machine-checkable form.
 const WALKTHROUGH_RULES_GENERIC: [&str; 14] = [
     "slot-locate",

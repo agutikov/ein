@@ -17,7 +17,7 @@
 ;;; `{∅, {(p one)}}` where it is `{∅, {(q one)}}` (`ein solve FILE` and
 ;;; `ein oracle FILE` at `94c75204`, release and debug alike). The answer is
 ;;; not a function of the program: the config principle's *stable*
-;;; (`monotonicity.md` § 6.1, *it does not depend … on rule order*), which
+;;; (`monotonicity.md` § 12.1, *it does not depend … on rule order*), which
 ;;; today's node, a fork of root, breaks on this program and its twin alone of
 ;;; the 167 cubes `node_census -- --invariance` reorders (`node_census.md`
 ;;; § 7.1).

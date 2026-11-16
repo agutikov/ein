@@ -206,7 +206,7 @@ they write, so the names are written short
 ```
 
 The imported closures are **T2** rules
-([`../01-ein-graph/02_rules.md` §2.2](../01-ein-graph/02_rules.md)) —
+([rules as statements § Relation-polymorphic](../../../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic)) —
 parameterised over the relation, activated by a property fact:
 
 ```lisp
@@ -233,7 +233,7 @@ parameterised over the relation, activated by a property fact:
 `type-exclusivity` with a hardcoded `instance` head and a `co-located`
 literal in the conclusion. The **T1** shape (literal relation names in
 the LHS and RHS,
-[`../01-ein-graph/02_rules.md` §2.1](../01-ein-graph/02_rules.md)) is
+[rules as statements § First-order](../../../ein/reasoning/static-ir/rules-as-statements.md#first-order)) is
 still legal and still what a genuinely puzzle-specific rule looks like;
 it is simply not what either Zebra encoding needs.
 

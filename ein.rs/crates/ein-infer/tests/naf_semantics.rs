@@ -5,7 +5,7 @@
 //!
 //! | its side of the boundary |
 //! |---|
-//! | the probes P1–P8 of [`docs/kernel/inference/absent_semantics.md`](../../../../docs/kernel/inference/absent_semantics.md) — what `(absent P)` *means* |
+//! | the worked examples of [`absent-and-naf.md`](../../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#worked-examples) — what `(absent P)` *means* |
 //! | what the boundary *records*: the negative half of `Deps(Y)` |
 //! | the closure a guard is judged against, including one a rule built |
 //! | C1 — a NAF-derived fork fact is not a truth of root: the walk's, whose root writes it guarded; deleted with the walk on the user's ruling of 2026-11-03. A route writes nothing into root (`region.rs` § What a node is) |
@@ -202,8 +202,8 @@ fn gate_program(gate_first: bool) -> String {
     )
 }
 
-/// **The order no longer decides what is derivable** — P1 and P2 of
-/// `absent_semantics.md`, which is the same claim as "a guard is judged
+/// **The order no longer decides what is derivable** — the first worked
+/// example of `absent-and-naf.md`, which is the same claim as "a guard is judged
 /// against the closure fixpoint".
 ///
 /// *(work-list: `priority-does-not-decide-what-is-derivable` merged with

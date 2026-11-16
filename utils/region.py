@@ -3,8 +3,7 @@
 
     region.py [--json] FILE.ein FACT…   e.g.  region.py branching/15.ein '(p A)' '(p B)' '(p C)'
 
-Banked as plans/m1e2_correctness/probes/region.py when Q-M1e2.7 was filed and
-moved here by M1e2 S1e2.1a.1, which made it the **second route** the library
+It is the **second route** the library
 oracle (`ein oracle --dump`, `ein_infer::region`) is checked against:
 `ein-cli/tests/region_dump.rs` runs both on Q-M1e2.7's seven programs and
 compares them node for node. `--json` is the form that test reads.

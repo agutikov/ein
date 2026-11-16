@@ -9,12 +9,11 @@
 //!
 //! The central claim is `the_theory_finds_what_the_hrule_finds`, and it is a
 //! *model-set* comparison rather than a counter one on purpose: counters may
-//! move under a new traversal, answers may not. That they did **not** move
-//! either is the stage's measurement, banked
-//! in [the record], not asserted here — a counter equality pinned as a test
-//! would be a test of the fixtures' arithmetic rather than of the engine.
+//! move under a new traversal, answers may not, and a counter equality
+//! pinned as a test would be a test of the fixtures' arithmetic rather than
+//! of the engine. The ladder these tests hold is [the page's].
 //!
-//! [the record]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
+//! [the page's]: ../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#2-the-ladder
 
 //!
 //! **Since M1e2 S1e2.1c.5 (2026-11-03) it reads the routes**

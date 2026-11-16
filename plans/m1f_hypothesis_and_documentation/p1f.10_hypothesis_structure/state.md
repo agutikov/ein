@@ -64,7 +64,7 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
 
 - **`worktree-agent-a3b0431c091872649`, merged as `025c7b38`.** `ein render structure` is `ein render h-space`, with
   no alias; its document is `h-space.json`, its page
-  [`hypothesis_space.md`](../../../docs/kernel/inference/hypothesis_space.md). `ein show` is a new top-level command
+  [`hypothesis_space.md`](../../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). `ein show` is a new top-level command
   with one subcommand, `ein show hyps FILE`: H as Ein facts, one a line, uncut, for root's saturation and the
   generator. K-17 is fixed in the owner (`Space::cached`, `Coupling::payers_read`). It filed K-19, open: the
   support check's node read is dropped the same way past the budget, and only the census example asks for it.
@@ -120,7 +120,7 @@ S1f.10.16 are merged, with the container gate beside it.
 4. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
    findings below, this page folded in.
 
-**Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/kernel/inference/finding_r.md),
+**Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/ein/reasoning/kb-evolution/finding-r.md),
 how the oracle and the routes find `R`, as formulas: the licences L0 to L9, what a refuted candidate does, and how
 `--single` proves one state.
 

@@ -140,8 +140,8 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
 
 /// What the **blind** enumerator would still propose at one recorded state.
 ///
-/// The probe M1d [P1d.2 handed forward] and
-/// [S1d.3.1](../../../../docs/history/m1d_satisfiability/README.md#s1d31--what-the-models-differ-in)
+/// The probe of
+/// [what a state of R leaves open](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it)
 /// takes: `complete` means *the active rung proposes nothing*, and the active
 /// rung is whichever of the three the program earned. A node the hrule rung or
 /// the obligations rung called complete may still have facts the blind
@@ -160,8 +160,6 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
 /// The event log is silent for the same reason `--events` output is a
 /// contract: a probe nobody asked for must not narrate into a stream somebody
 /// is diffing.
-///
-/// [P1d.2 handed forward]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 fn leftover_at(
     ast: &Ast,
     terms: &mut Terms,

@@ -67,7 +67,7 @@ forced-positive cascade, so the two lists could differ, and `walk.json`'s
 ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped*): each relation the program can
 conclude or ask about, does not scope out itself, and of which the rung that
 built the list proposes no fact
-([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+([`solution_semantics.md` § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 `region.md` says it under its candidate count, as the read-out's `outside`
 row does, and `region.json` lists it as `outside`.
 
@@ -75,7 +75,7 @@ row does, and `region.json` lists it as `outside`.
 user's ruling of 2026-11-03 on Q-M1e.12, (a)): where the blind enumerator
 built the list, the names on the right of an `is-a` that a candidate names,
 the candidates' relations and how many there are
-([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+([`solution_semantics.md` § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 `region.md` says it as `**Types as objects**`, under its candidate count, as
 the read-out's `types` row does, and `region.json` carries it as
 `types_as_objects`.
@@ -217,7 +217,7 @@ was prototyped beside it and held to the cube, and it is not what ships.
 whose consequence operator the check approximates; the lattice is the domain,
 and is never itself monotone or not. A site can break two properties of the
 node functions, kept apart in
-[`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence):
+[`monotonicity.md` § 2](../../ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program):
 the **state**'s, monotone in C and, where saturation is cumulative,
 independent of the path that built the node, which only an `absent` breaks;
 and the **status**'s, which an obligation's trigger or an activator breaks
@@ -380,5 +380,5 @@ root's fixpoint.
   this directory drawn, with a region run on it, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this
   computes.
-- [`monotonicity.md`](monotonicity.md): what the static check's two verdicts
+- [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): what the static check's two verdicts
   mean for R, compared, with one fixture and one drawing per cause.

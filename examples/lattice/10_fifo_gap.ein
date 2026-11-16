@@ -1,5 +1,5 @@
-;;; The FIFO gap — M1e2 S1e2.1b.7, the counter-example of
-;;; docs/kernel/inference/monotonicity.md § 7.3 written out and run.
+;;; The FIFO gap, the counter-example of
+;;; docs/ein/reasoning/kb-evolution/monotonicity.md § 8.3 written out and run.
 ;;;
 ;;; Two `absent` rules at one priority, the reader written first:
 ;;;

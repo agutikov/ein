@@ -302,7 +302,7 @@ Each row of the §1 table maps onto a precise piece of the graph:
 
 The rules `inherit-rel-lhs` / `inherit-rel-rhs` (sketched in §2) are
 **T2 relation-polymorphic**
-([`02_rules.md` §2.2](02_rules.md)) — the relation variable `?r`
+([rules as statements § Relation-polymorphic](../../../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic)) — the relation variable `?r`
 ranges over relations marked as inheritable via property facts. The
 *structure* of each rule (match a relation with type ?t in one
 specific slot + an is-a edge for ?t, assert the relation on the

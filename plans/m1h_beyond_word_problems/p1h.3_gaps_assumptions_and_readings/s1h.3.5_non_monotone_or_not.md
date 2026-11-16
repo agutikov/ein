@@ -6,7 +6,7 @@
 **Depends on:** [S1h.3.1](s1h.3.1_the_three_forms_of_a_gap.md) to [S1h.3.4](s1h.3.4_readings.md), whose
 programs it runs through one check.
 **Read with:** [F21](../../followups/f21_non_monotone_programs_decided.md), which owns what a non-monotone
-program means, and [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), the kernel page.
+program means, and [`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md), the kernel page.
 
 ## What it rests on
 
