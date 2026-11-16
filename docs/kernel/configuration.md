@@ -267,7 +267,7 @@ facts of every state in R
 - **No lever changes R on 158 of the 159**, and 23 of the 24 change it on
   none. That is by construction for most of them: the oracle's universe is
   config-free and its nodes are built by saturation alone
-  ([`region_dump.md`](inference/region_dump.md#the-cube)).
+  ([`region-dump.md`](../ein/user/reference/region-dump.md#the-cube)).
 - **`enable-symmetric-mirror` changed R**, on `features/06`. The mirror is
   how `(__symmetric__ R)` means anything, so the flag switched off part of the
   program's theory. It was the one flag that **violated the principle**. The
@@ -410,7 +410,7 @@ command: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
 `--single` and `-n N` ask one question about it, answered by
 [`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs), held to
 the oracle by `ein-infer/tests/explore.rs`, and printed in the read-out
-[`inference/read_out.md`](inference/read_out.md) defines row by row. Every answer exits 0; a write to a stdout whose
+[`inference/read-out.md`](../ein/user/reference/read-out.md) defines row by row. Every answer exits 0; a write to a stdout whose
 reader has gone ends the run by `SIGPIPE` instead, which is no exit code and which no option changes (M1f S1f.5.25,
 [`defined_behaviour.md` § 4.19](defined_behaviour.md#419-a-closed-stdout-ends-ein-by-sigpipe--m1f-s1f525)). **Nine options retired** and stay in the
 parser hidden, so a stale argv is refused, exit 2, with what replaced it
@@ -484,7 +484,7 @@ answer about.
   or what it owes, through the node function every route uses, and builds no
   other node: `ein solve` prints root's standing, an `R` row that says R was not
   searched and no row that counts or lists R
-  ([`read_out.md` § 4.2](inference/read_out.md#42---no-search)), and `ein test`
+  ([`read-out.md` § 4.2](../ein/user/reference/read-out.md#42---no-search)), and `ein test`
   decides only what root decides, the rest NOT CHECKED with no exit code of its
   own ([Q-M1f.256](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f256--which-claims-root-decides-under---no-search),
   [.257](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f257--ein-test---no-searchs-exit-code)).
@@ -521,7 +521,7 @@ answer about.
   `lever_invariance.rs`' `the_describe_route_moves_no_part_of_r`, through the
   binary). The work differs, and so does where a budget stops each, which the
   `exhausted` row and the stderr `note:` say, with the forecast and the other
-  route ([`inference/read_out.md`](inference/read_out.md)).
+  route ([`inference/read-out.md`](../ein/user/reference/read-out.md)).
 - **The hypothesis space** — `ein render h-space`'s `--view`, `--dump`,
   `--supports`, `--region-budget` and `-j`/`--jobs`
   ([`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md)). **Does it change the
@@ -578,7 +578,7 @@ answer about.
   `-P`, `-f` and `--diff-models` are drawn from the states stdout showed and
   print what fits, at least one item, and then a line naming the rest; that
   rest is `--dump-answer DIR`'s `forms/<form>.txt`, uncut and drawn from every
-  listed state ([`answer_dump.md`](inference/answer_dump.md)). **Two of them compare the listed
+  listed state ([`answer-dump.md`](../ein/user/reference/answer-dump.md)). **Two of them compare the listed
   states pairwise, and each prices its pair table before it allocates it**
   (M1e2 [S1e2.4.2](../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md)).
   The bound is `ein_render::models::PAIR_TABLE_BOUND`, **16 MiB**, a constant
@@ -598,8 +598,8 @@ answer about.
   (`ein-summary/2`), `--json-report` (`ein-test-report/5`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
   ([`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer`
-  ([`answer_dump.md`](inference/answer_dump.md)), and `ein oracle`'s `--dump`
-  with `--states` ([`region_dump.md`](inference/region_dump.md)). The
+  ([`answer-dump.md`](../ein/user/reference/answer-dump.md)), and `ein oracle`'s `--dump`
+  with `--states` ([`region-dump.md`](../ein/user/reference/region-dump.md)). The
   directories are made before the run. **Additive** in the strict sense:
   stdout, stderr and the exit code are identical with them and without, and a
   write that fails after the run reports itself and leaves the answer's exit

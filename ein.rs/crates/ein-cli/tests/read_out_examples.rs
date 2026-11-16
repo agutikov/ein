@@ -3,7 +3,7 @@
 //! re-pointed by M1f
 //! [S1f.5.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s
 //! T1f.5.16.2 at the live page beside the reference,
-//! [`read_out_examples.md`](../../../../docs/kernel/inference/read_out_examples.md);
+//! [`read-out-examples.md`](../../../../docs/ein/user/reference/read-out-examples.md);
 //! M1e2's page under `plans/` is frozen, and nothing reads it.
 //!
 //! The page holds real runs: each block is captioned with the `ein solve` or

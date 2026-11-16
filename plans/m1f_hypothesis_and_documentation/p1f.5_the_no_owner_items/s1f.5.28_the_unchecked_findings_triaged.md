@@ -143,13 +143,13 @@ property 4's kept report altered fails at *iteration 4 … reported two ways*; p
 
 T1f.5.28.3 onward, the fixes, by kind; the files are listed in the coordinator's report for a commit per kind.
 
-- **Pages, each with its pin.** [`region_dump.md`](../../../docs/kernel/inference/region_dump.md) § The `monotonicity`
+- **Pages, each with its pin.** [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md) § The `monotonicity`
   block, field by field: a row per field, the summary's and `region.json`'s, held both ways by `region_dump.rs`'
   `every_monotonicity_field_is_defined_on_the_page` over nine runs that reach the five statuses, `paths.unprinted`,
   `-y` on a monotone program and `--monotone`, and an oracle dump (a dropped row and a stray row each fail it).
   [`configuration.md`](../../../docs/kernel/configuration.md)'s `EIN_LEFTOVER` row names `taken`, `states` and
   `states_by_relation`, held by `config_reference.rs`' `the_leftover_row_names_every_key_of_its_block` (it fails on
-  `089511fe`'s page). [`read_out.md`](../../../docs/kernel/inference/read_out.md) § 9 says every count prints in digit
+  `089511fe`'s page). [`read-out.md`](../../../docs/ein/user/reference/read-out.md#9--s--t-and-ein-oracles-line) § 9 says every count prints in digit
   groups, and § 4's partial-description paragraph says why no `ein` run prints route 1's stop, pinned by
   `read_out_reference.rs`' `the_clock_and_the_cube_group_their_counts` (it fails on `089511fe`'s printer: *2048
   saturations*) and `route_1_never_stops_on_an_ein_run`. [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)

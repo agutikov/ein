@@ -3,7 +3,7 @@
 //!
 //! M1e2 [S1e2.1a.1](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 //! Two files, documented in
-//! [`region_dump.md`](../../../../../docs/kernel/inference/region_dump.md):
+//! [`region-dump.md`](../../../../../docs/ein/user/reference/region-dump.md):
 //!
 //! - `region.json` — `ein_infer::region`'s cube: every node, its two bits and
 //!   their reasons, `R`'s lines, holes, components, sub-cubes, `N`, `E`, the

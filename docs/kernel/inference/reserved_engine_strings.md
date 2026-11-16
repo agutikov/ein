@@ -13,7 +13,7 @@ iff it appears here or in the surface doc*, and nothing is undocumented.
 **The words around a program's English are the engine's too** (M1f S1f.5.14):
 the provenance words a `--dump-answer` state file writes after a fact
 (`source`, `rule`, `hypothesis`), the trace's *Derives* and *Premises*, and
-the read-out's labels ([`read_out.md`](read_out.md)). Every text a program
+the read-out's labels ([`read-out.md`](../../ein/user/reference/read-out.md)). Every text a program
 writes, its `:why`s, `:source`s and `:goal-text`s, is the domain's, which the
 engine fills and never edits; where the line runs, and why a `kernel` relation
 such as `not` reads as its s-expression, is

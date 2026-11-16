@@ -237,7 +237,7 @@ As decided above, committed apart from the list (`fc86f98e`): [`ein_infer::unhel
 (the argument in its header; `Unwritten`, `breach`, the refusal, the two switches), `oblgen::Instance::unheld`
 and `Alternatives::with_l9`, `Space::route_alternatives` for the tree alone, the check in the node function and
 at the whole node, `Licence::Unheld` and its label, `tree.rs`'s header (§ L9, a witness no node can hold),
-[`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` row, the module's row in
+[`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s `route` row, the module's row in
 [`implementation.md`](../../../docs/kernel/inference/implementation.md), the fixture
 [`examples/lattice/14_seats_nothing_proposes.ein`](../../../examples/lattice/14_seats_nothing_proposes.ein) with its
 corpus entry and catalogue line, and [`ein-infer/tests/unheld.rs`](../../../ein.rs/crates/ein-infer/tests/unheld.rs):

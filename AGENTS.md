@@ -21,7 +21,7 @@ constrained-reasoning research.
   (§ 4 has one section per refusal);
   [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md),
   the answer as a region R;
-  [`inference/read_out.md`](docs/kernel/inference/read_out.md), every row
+  [`inference/read-out.md`](docs/ein/user/reference/read-out.md), every row
   `ein solve` prints and what it counts;
   [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
@@ -430,12 +430,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   zebra2 variants (`examples/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`examples/gen_send_written.py`);
-  `read_out_examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
+  `read-out-examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
   defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
   `--check` or a test in the gate.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
-- A change to what `ein solve` prints changes `read_out.md` in the same
+- A change to what `ein solve` prints changes `read-out.md` in the same
   commit. A shape the grammar newly refuses gets a row in the grammar page's
   table.
 - **A file that moves takes every reference to it along**, in the commit
@@ -543,10 +543,10 @@ python3 utils/history_census.py                              # the history censu
 ```
 
 The read-out's vocabulary is
-[`docs/kernel/inference/read_out.md`](docs/kernel/inference/read_out.md),
+[`docs/kernel/inference/read-out.md`](docs/ein/user/reference/read-out.md),
 every row `ein solve` prints and what it counts, and its golden page, written
 by the binary, is
-[`read_out_examples.md`](docs/kernel/inference/read_out_examples.md), both
+[`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
 held to the printer by `ein-cli/tests/read_out_reference.rs`. **The `EIN_*`
 names in the block above are the ones an agent needs, not the set**:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) is the census

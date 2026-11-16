@@ -4,7 +4,7 @@
 //! The flag writes the answer as files: the read-out, the summary, one
 //! loadable program per state the run reached, the owing frontier of an empty
 //! R, the minimal dead sets, and `index.json` naming each. Its page is
-//! [`docs/kernel/inference/answer_dump.md`](../../../../docs/kernel/inference/answer_dump.md),
+//! [`docs/kernel/inference/answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md),
 //! and these are the claims on it that a test can hold:
 //!
 //! - `answer.json` **is** `--json-summary`, and `answer.txt` stdout, byte for
@@ -539,7 +539,7 @@ fn a_container_writes_the_directory_its_program_writes() {
 }
 
 /// **Every `work` counter and every `root` field a summary carries is
-/// defined on the page.** The review bundle quotes `answer_dump.md` § The run
+/// defined on the page.** The review bundle quotes `answer-dump.md` § The run
 /// summary beside each number, so a counter without a row would be printed
 /// with no meaning — and a row for a counter no summary carries is a
 /// definition of nothing. A `root` field is a dotted row (`root.hypgen.raw`)

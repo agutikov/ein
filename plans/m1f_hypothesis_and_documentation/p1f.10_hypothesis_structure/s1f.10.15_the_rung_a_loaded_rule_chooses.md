@@ -64,7 +64,7 @@ anywhere. Its read-out: *universe — no candidate: R is {∅} or empty, decided
    row filed `open` before the fix where today's answer is wrong by the ruling; the switch in
    `hypgen::generate_with`; `06_reserved_names.md` § Hypothesis / query control and the ladder's sentence in
    `oblgen.rs`'s and `hypgen.rs`'s headers restated; the rows flipped in the fixing commit. Under (a): the
-   read-out's row, with [`read_out.md`](../../../docs/kernel/inference/read_out.md) and its reference test in
+   read-out's row, with [`read-out.md`](../../../docs/ein/user/reference/read-out.md) and its reference test in
    the same commit. E-51 closed in the calculator's `findings.md` with what was done.
 
 ## Acceptance
@@ -667,7 +667,7 @@ build/s15t4/b/ein` was run against the page.
 
 Nothing else moved: no other program's stdout, stderr, exit code, summary or event stream; no `ein test` read-out of
 the 358 (no `:expect` moves, and no exit code: `corpus_exits.txt` does not move); and
-[`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) is the binary's page as it is
+[`read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) is the binary's page as it is
 (`--check` exits 0; `tests/stdlib/algebra/09_irreflexive_violated.ein`, its X7 and X18, is among the 40 whose
 read-out does not move).
 

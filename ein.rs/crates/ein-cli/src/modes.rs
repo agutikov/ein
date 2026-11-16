@@ -3,7 +3,7 @@
 //! switch: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
 //! `--single` and `-n N` each ask one question about it, answered by
 //! [`ein_infer::explore`] and printed in the read-out
-//! [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines, by
+//! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines, by
 //! [`ein_render::read_out`]. The modes were built at S1e2.1a.9's
 //! T1e2.1a.9.4, and reached through a region flag until the switch.
 //!
@@ -601,7 +601,7 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     text.code
 }
 
-/// The `region` event that closes a region run's stream (`read_out.md`
+/// The `region` event that closes a region run's stream (`read-out.md`
 /// § 8.6): the summary's own blocks, as JSON on one line — what the run
 /// asked, R as it established it (its states are the summary's and the
 /// dump's), `--single`'s word, and the work. `ein solve` and `ein test` both
@@ -631,7 +631,7 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
     });
 }
 
-/// What a region run prints after its read-out when asked — `read_out.md`
+/// What a region run prints after its read-out when asked — `read-out.md`
 /// § 8.3 and § 8.6: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
 /// each its own form, then `--diff-models FILE`.
 ///

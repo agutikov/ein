@@ -506,7 +506,7 @@ How the schema of [`plans/README.md`](../README.md) was applied when the phases 
   [S1h.30.2](p1h.30_triz/s1h.30.2_the_plan_after_the_survey.md)) hold a place and nothing else.
 - **An engine stage says it is one,** and carries the repo's discipline: a wrong answer is an `open` row of
   [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml) before its fix; a change to what `ein solve`
-  prints moves [`read_out.md`](../../docs/kernel/inference/read_out.md) in the same commit; no answer, exit
+  prints moves [`read-out.md`](../../docs/ein/user/reference/read-out.md) in the same commit; no answer, exit
   code or R moves unless the stage is about that; a slice or a core is taken only where a surface prints it;
   config never changes an answer; the gate, then the nightly. The engine stages are S1h.2.5, S1h.2.6 and
   S1h.4.6.

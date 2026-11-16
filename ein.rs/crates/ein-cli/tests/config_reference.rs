@@ -805,7 +805,7 @@ fn the_surface_table_agrees_with_the_sections_it_summarises() {
 
 /// **The `EIN_LEFTOVER` row names every key of its block** (M1f S1f.5.28's
 /// item 2). The page owns `--json-summary`'s `leftover` block
-/// (`read_out.md`'s owners table), and its row described the block without
+/// (`read-out.md`'s owners table), and its row described the block without
 /// naming a key, `states_by_relation` among them. Both directions: every key
 /// a summary writes is a backticked name in the row, and the block is what the
 /// row says, `taken` the variable, `states` one count per listed state and

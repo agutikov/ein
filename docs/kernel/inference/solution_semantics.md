@@ -31,7 +31,7 @@
 > from the library only after that, until M1e2 S1e2.1c.5 deleted it
 > (2026-11-03), and its reproductions run against a binary built at or before
 > commit 7ec8a480. R by brute force is
-> [`ein oracle --dump`](region_dump.md), for n ≤ 16.
+> [`ein oracle --dump`](../../ein/user/reference/region-dump.md), for n ≤ 16.
 
 ---
 
@@ -349,7 +349,7 @@ A program is **monotone** when no read of its compiled plans can take a
 conclusion away or add a debt as the commitment grows: no `absent` at odd
 depth in a saturation rule over a relation a commitment can change, and no
 obligation trigger over one
-([`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check),
+([`region-dump.md` § Monotonicity](../../ein/user/reference/region-dump.md#monotonicity--the-static-check),
 [`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)).
 Then:
 
@@ -590,7 +590,7 @@ between two tables have one projection class per choice of table, and the
 seats inside it are hidden information. In a program with restrictions only,
 the goal has no row at ∅, so a query over R has to say *undetermined in these
 solutions*. Every query block of the read-out prints them, since M1e2
-S1e2.1a.5 ([`read_out.md` § 7](read_out.md#7-queries-and-claims));
+S1e2.1a.5 ([`read-out.md` § 7](../../ein/user/reference/read-out.md#7-queries-and-claims));
 [S1e2.1a.4](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md)
 gave the query its form.
 
@@ -632,10 +632,10 @@ Normative detail on what an obligation quantifies over:
 ### 5.1 Today
 
 What `ein solve` prints, row by row and number by number, is
-[`read_out.md`](read_out.md) (M1f S1f.5.16), which names for every row what
+[`read-out.md`](../../ein/user/reference/read-out.md) (M1f S1f.5.16), which names for every row what
 its numbers count, R, what lies around R, the run or the listing, and the
 summary field that holds the same number; every row is in a real run on
-[`read_out_examples.md`](read_out_examples.md). `ein-cli/tests/read_out_reference.rs`
+[`read-out-examples.md`](../../ein/user/reference/read-out-examples.md). `ein-cli/tests/read_out_reference.rs`
 and `read_out_examples.rs` hold both pages to the binary. By question: a bare
 `ein solve` describes all of R, with k_s and k_c, the two lines and the shape;
 `--minimal` and `--maximal` list a line; `-n N` lists N states of the part asked;
@@ -963,7 +963,7 @@ leave those out.
 
 - [`finding-r.md`](../../ein/reasoning/kb-evolution/finding-r.md): how R is found, the oracle's cube and the routes' licences, as
   formulas.
-- [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
+- [`region-dump.md`](../../ein/user/reference/region-dump.md): R by brute force, `ein oracle --dump`.
 - [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): the monotone and the non-monotone
   region compared, and how to solve each.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):

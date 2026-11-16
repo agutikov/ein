@@ -13,8 +13,8 @@
 //!   overlaid.
 //!
 //! Since T1e2.1a.5.2 the modes print the read-out
-//! `docs/kernel/inference/read_out.md` defines (since M1f S1f.5.16), whose
-//! golden is its `read_out_examples.md` (`read_out_examples.rs`); the rows
+//! `docs/ein/user/reference/read-out.md` defines (since M1f S1f.5.16), whose
+//! golden is its `read-out-examples.md` (`read_out_examples.rs`); the rows
 //! here are read by label.
 
 use std::process::Command;

@@ -92,7 +92,7 @@ branches on every extension and is the state route again.
    the claims (`claim_routes.rs`); `lever_invariance`, `route_invariance`, `answer_round_trip`; a run the budget
    stops says what it established and no more, its counts lower bounds. A sweep through `ein_corpus::pool::map`,
    its slow half on a nightly tier within five minutes a shard.
-5. **T1f.10.17.5 — the pages and the record.** [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` and
+5. **T1f.10.17.5 — the pages and the record.** [`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s `route` and
    `work` rows, `read_out_examples.md` regenerated,
    [`finding_r.md`](../../../docs/ein/reasoning/kb-evolution/finding-r.md) § 6 and the borders' formulas,
    `implementation.md`'s rows; the record here with every number's command; Q-M1f.311's *Built* paragraph.
@@ -506,7 +506,7 @@ visits every alive state and computes N
 
 (Each one line on stderr; wrapped here.) The `exhausted` row says the same in short. `note:` and not `warning:`:
 the read-out's stderr has no `warning:` line and every partial run's line is a `note:`
-([`read_out.md` § 10](../../../docs/kernel/inference/read_out.md#10-stderr)).
+([`read-out.md` § 10](../../../docs/ein/user/reference/read-out.md#10-stderr)).
 
 **What was removed**: T2's global border (`borders::global`, `Global`, `Met`, `known_dead`, the `global_*` and
 `maximal_alive` counters), `Route::Borders` (now `Route::TreeClasses`, with the words *the tree and the classes*),

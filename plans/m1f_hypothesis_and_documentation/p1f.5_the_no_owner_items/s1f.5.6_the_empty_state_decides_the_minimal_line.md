@@ -235,7 +235,7 @@ oracle`. The monotone routes are untouched: `tree::minimal` has stopped there si
 **What moved** is T1's list for the rule and nothing else: `corpus_shapes.md5`'s 46 renderings, `read-out[minimal]`
 and `cores[minimal]` of the 23 (`EIN_BLESS=1`, the manifest's diff read before it was kept); X9's `--minimal` block of
 the examples page and its prose; and the register's two W27 minimal rows, restated with schema `/11`'s rule as T1
-said. The live page, [`read_out.md`](../../../docs/kernel/inference/read_out.md) § 3, says it in the same commit: the
+said. The live page, [`read-out.md`](../../../docs/ein/user/reference/read-out.md#3-a-mode---minimal---maximal--n-n---single) § 3, says it in the same commit: the
 `verdict` and mode `minimal line` rows, and a paragraph under the table.
 
 **The tests**, the three the task names:
@@ -294,7 +294,7 @@ each held to `∅  in R — root is alive and owes nothing`, `minimal line  1 st
 
 ### Task T1f.5.6.4 — the pages
 
-The live read-out reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md) (S1f.5.16): its rows for `-n N` and `--single` past the
+The live read-out reference, [`read-out.md`](../../../docs/ein/user/reference/read-out.md) (S1f.5.16): its rows for `-n N` and `--single` past the
 limit, its `minimal line` row (no name for {∅}) and its summary fields, in the commit that changes the output;
 `solve_interface.md` § 3.3; and the read-out's golden page, re-written by `utils/read_out_examples.py`. M1e2's
 `read_out.md` is a record, and is not edited. The inventory's S-16, P-14, S-17 and F1 say what

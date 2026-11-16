@@ -10,4 +10,4 @@ root's, the same on every run. Adding the keys to `root` moves no other key, so 
 
 **Held by.** `ein-cli/tests/no_search.rs`: `the_summary_states_no_region_and_the_dump_writes_root`;
 `ein-cli/tests/lever_invariance.rs`: `no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r`. The keys:
-[read_out.md](../../kernel/inference/read_out.md) § 11.
+[read-out.md](../../ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) § 11.

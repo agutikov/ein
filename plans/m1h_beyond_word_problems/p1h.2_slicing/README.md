@@ -169,10 +169,10 @@ cites this section:
 - **Real computed examples first.** Every row, file and view proposed is shown on real programs, its content
   computed by S1h.2.1's script, before the printer moves (the user's rule of 2026-10-16).
 - **A change to what `ein solve` prints changes
-  [`read_out.md`](../../../docs/kernel/inference/read_out.md) in the same commit,** with
+  [`read-out.md`](../../../docs/ein/user/reference/read-out.md) in the same commit,** with
   `read_out_examples.md` re-written by `utils/read_out_examples.py`, and
   `ein-cli/tests/read_out_reference.rs` holds the page to the printer. A file added to `--dump-answer`'s
-  directory changes [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) in the same commit, and
+  directory changes [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md) in the same commit, and
   `ein-cli/tests/answer_round_trip.rs` holds what a dump reloads to.
 - **No answer moves.** R, N, H, every claim's outcome and every exit code are the same before and after, on
   every corpus program, by a sweep of the old binary against the new; `ein oracle` is the reference.

@@ -2,9 +2,9 @@
 //! under the region modes — M1e2
 //! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
 //! fifth step, the fields
-//! [`read_out.md` § 11](../../../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks)
+//! [`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
 //! defines (the directory is
-//! [`answer_dump.md`](../../../../docs/kernel/inference/answer_dump.md)'s).
+//! [`answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md)'s).
 //!
 //! - **one shape on every arm**: the summary's keys, and the `region` block's,
 //!   do not depend on the question or on what R turned out to be;

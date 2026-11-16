@@ -39,7 +39,7 @@ Commits are counted with `git log --format=%s | grep -c '^T1f\.5\.<n>\.'`.
 | [S1f.5.2](s1f.5.2_strings_are_natural_language.md) | done 2026-11-09 | A string appears only after `:why`, `:source` and `:goal-text`; a `\u{…}` that names no character is refused | 4 (`90774a44`..`1e751131`) | W38 filed and fixed |
 | [S1f.5.1](s1f.5.1_bare_underscore_refused.md) | done 2026-11-09 | A bare `_` is refused everywhere; `Slot::Any` and `Node::Wildcard` are gone | 4 (`728e716a`..`366877cc`) | W29 ×6 fixed; W39 filed, `open` (F22) |
 | [S1f.5.11](s1f.5.11_closed_keywords.md) | done 2026-11-09 | Each form takes a fixed list of keywords; `:where` is gone | 2 (`bb87d53e`..`06433b60`) | W32 ×7 fixed |
-| [S1f.5.16](s1f.5.16_the_read_out_reference.md) | done 2026-11-09 | The read-out reference: [`read_out.md`](../../../docs/kernel/inference/read_out.md) covers every row `ein solve` prints, and `read_out_reference.rs` holds it to the printer | 5 (`8b1bcabb`..`4aa9f3ef`) | — |
+| [S1f.5.16](s1f.5.16_the_read_out_reference.md) | done 2026-11-09 | The read-out reference: [`read-out.md`](../../../docs/ein/user/reference/read-out.md) covers every row `ein solve` prints, and `read_out_reference.rs` holds it to the printer | 5 (`8b1bcabb`..`4aa9f3ef`) | — |
 | [S1f.5.6](s1f.5.6_the_empty_state_decides_the_minimal_line.md) | done 2026-11-09 | Where ∅ is in R, every minimal-line question is decided at root, past `--region-limit` too | 6 (`eef535b2`..`114e8f26`) | W42 ×2 filed and fixed |
 | [S1f.5.12](s1f.5.12_cores_for_n_only.md) | done 2026-11-09 | A core is taken only for the nodes an output prints; `not-kept` retired | 5 (`87b7cb5a`..`e0162f7c`) | W43 filed and fixed |
 | [S1f.5.8](s1f.5.8_no_contradiction_no_core.md) | done 2026-11-09 | A node that is not dead has a `null` core on every JSON surface, not `[]` | 3 (`2b63223d`..`7bc6ea72`) | — |
@@ -243,7 +243,7 @@ with no test or command behind it. The fix is to cite the test and drop the numb
 **Ruled 2026-11-10.** The user: *"reduce nightly job, remove long running tests, we will eventually run them on dev host, retain critical tests in CI"* → [S1f.5.27](s1f.5.27_the_nightly_reduced.md).
 
 9. **Taken from the stage records and not re-checked today:**
-   - [`region_dump.md`](../../../docs/kernel/inference/region_dump.md) never names seven fields: `reads.dynamic_*`,
+   - [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md) never names seven fields: `reads.dynamic_*`,
      `absent_reads.dynamic_*`, `cycles[].negative`, `paths.dead_parents`, `paths.saturations`,
      `paths.unprinted.saturations` and `state.stale_nodes`.
      [`configuration.md`](../../../docs/kernel/configuration.md) never names `leftover.states_by_relation`

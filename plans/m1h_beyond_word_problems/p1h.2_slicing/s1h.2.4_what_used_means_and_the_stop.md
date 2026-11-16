@@ -53,7 +53,7 @@ stop is pages only.
    - **a read-out section:** rows under a query's answer, or a form asked for by an option, as `-H` and
      `--models` are; what is cut at 100 lines and what the last line says;
    - **`--dump-answer`:** *a file a slice*. Where the files sit in the directory
-     ([`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)), what a file holds, and one property
+     ([`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)), what a file holds, and one property
      the page tests on every banked problem: **the used part alone, loaded as a program, answers the query
      as the whole did.** Where it does not (a closing rule the answer never fired, an `absent` that held
      because of a fact now gone), the page shows the program and says what the file then is;

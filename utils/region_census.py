@@ -17,7 +17,7 @@ wrong-answer register names, through `ein oracle FILE --dump DIR`.
     utils/region_census.py --from c.json      # the tables again, running nothing
 
 **The transport is the oracle's own directory**, `region.json`
-([`region_dump.md`](../docs/kernel/inference/region_dump.md)). Nothing here
+([`region-dump.md`](../docs/ein/user/reference/region-dump.md)). Nothing here
 saturates or re-derives a node: a census that reconstructs its subject is a
 census that can disagree with it. What it adds is arithmetic over the node
 array — the count of R in **states** as well as in commitments (k_s and k_c,

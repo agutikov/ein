@@ -84,7 +84,7 @@ jobs:
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
-      # program (`docs/kernel/inference/answer_dump.md`). Per commit it leaves
+      # program (`docs/ein/user/reference/answer-dump.md`). Per commit it leaves
       # out the runs of the `heavy_dump` entries, W8's `square-unique` witness
       # among them, and this step reads them (M1f S1f.6.39, Q-M1f.294).
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-cli --profile gate --test answer_dump

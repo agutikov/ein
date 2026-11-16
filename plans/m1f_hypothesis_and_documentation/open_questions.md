@@ -996,7 +996,7 @@ hold for a class of program. On a monotone program the same stop has always prin
 
 **Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
 till the end of the phase"*. (a) moves no `route` row the rule does not already move, and the read-out's `minimal line`
-row on the live page says why the line is decided ([`read_out.md`](../../docs/kernel/inference/read_out.md) § 3).
+row on the live page says why the line is decided ([`read-out.md`](../../docs/ein/user/reference/read-out.md#3-a-mode---minimal---maximal--n-n---single) § 3).
 Re-opening it means (b), which is [Q-M1f.20](#q-m1f20--route-2s-licence-no-licence-on-one-row-l7-the-cube-on-another)'s
 neighbour: both ask what a route row's licence list is for.
 
@@ -1119,7 +1119,7 @@ core either. Root is dead, so its core exists.
 
 - **(a) `null`, documented**: the summary is stdout's facts, and `null` is where a key does not apply; the ruling reads
   `null` as *an object that does not exist or is not known*, and a count does not state root's core.
-  [`read_out.md` § 11](../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks) says so, from
+  [`read-out.md` § 11](../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) says so, from
   T1f.5.8.2 on.
 - **(b) Root's core under every question** whose summary says root is dead: `--count`'s summary, and its stdout's
   `unsat core` and `refuted by` rows, where a count prints no listing today.

@@ -10,4 +10,4 @@ mode prints neither; the summary's `region.root_owed` holds every instance on ev
 hundred instances cuts its own block, not the answer.
 
 **Held by.** `ein-cli/tests/read_out.rs`: `the_read_out_names_what_root_owes`; the row:
-[read_out.md](../../kernel/inference/read_out.md) § 2.
+[read-out.md](../../ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2.

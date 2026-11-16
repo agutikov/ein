@@ -849,7 +849,7 @@ fn solve_command() -> Command {
                      uncut), answer.json (= --json-summary), index.json, one \
                      loadable file per state, the owing frontier, N, and each \
                      form asked for (-H, --models, -p, -P, -f, --diff-models) \
-                     uncut under forms/ (docs/kernel/inference/answer_dump.md). \
+                     uncut under forms/ (docs/ein/user/reference/answer-dump.md). \
                      DIR is made before the run; past that, stdout, stderr and \
                      the exit code are unchanged.",
                 ),
@@ -1093,7 +1093,7 @@ fn oracle_command() -> Command {
                 .value_parser(artefact_path)
                 .help(
                     "also write the cube to DIR: region.json and region.md \
-                     (docs/kernel/inference/region_dump.md), which `ein render \
+                     (docs/ein/user/reference/region-dump.md), which `ein render \
                      region DIR` draws",
                 ),
         )

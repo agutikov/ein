@@ -87,7 +87,7 @@ wrong:
    under `examples/ein-bugs/wrong-answers/`; the fix in `invariant::program_names` or the enumerator; the
    sweep, old binary against new over the corpus, with every moved R listed; the rows flipped in the fixing
    commit; `solution_semantics.md` § 1.2 and `defined_behaviour.md` restated. Under (a): the read-out's
-   `universe` row and `root.hypgen` gain the count, with [`read_out.md`](../../../docs/kernel/inference/read_out.md)
+   `universe` row and `root.hypgen` gain the count, with [`read-out.md`](../../../docs/ein/user/reference/read-out.md)
    and its reference test in the same commit.
 
 ## Acceptance

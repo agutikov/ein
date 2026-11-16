@@ -780,7 +780,7 @@ fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
 /// point* on `colocation-chain.ein` at `--max-steps 1`, whose one firing is
 /// the whole saturation. The help said it *raises SaturatorStepLimitError*.
 /// A step limit leaves the KB where it stopped, which is what the flag asks
-/// for, so nothing goes to stderr and the exit code is 0 (`read_out.md` § 9).
+/// for, so nothing goes to stderr and the exit code is 0 (`read-out.md` § 9).
 #[test]
 fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
     const LINE: &str = "!! saturator step limit hit: ";

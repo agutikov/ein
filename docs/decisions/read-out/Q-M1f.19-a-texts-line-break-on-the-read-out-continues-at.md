@@ -9,6 +9,6 @@ text's first character is printed at, and each such line is one of stdout's 100.
 read-out's job is to keep it inside its row, not to rewrite it.
 
 **Held by.** `ein-cli/tests/natural_language_text.rs`: `the_read_out_prints_the_goal_text_as_written`, each line of
-the sentence after a break at its column. The rule: [read_out.md](../../kernel/inference/read_out.md) § 1. The
+the sentence after a break at its column. The rule: [read-out.md](../../ein/user/reference/read-out.md#1-how-a-row-reads) § 1. The
 trace's markdown takes the same text as a hard break
 ([Q-M1f.109](Q-M1f.109-a-texts-line-break-in-the-trace-is-a-markdown.md)).

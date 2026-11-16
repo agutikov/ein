@@ -122,7 +122,7 @@ user's rule of 2026-10-16 is that every answer exits 0 and a run that stops says
   first, since nothing reads a count that large as a number. `--count` and `--json-summary` say the same
   thing in their forms; `--count` on the witness had printed nothing when a 20 s limit ended it, which the
   task measures and reports and does not promise to cure.
-- [`read_out.md`](../../../docs/kernel/inference/read_out.md), `ein_render::read_out::Row` and
+- [`read-out.md`](../../../docs/ein/user/reference/read-out.md), `ein_render::read_out::Row` and
   `ein-cli/tests/read_out_reference.rs` move in the same commit as the printer; `lever_invariance` holds the
   new read-out under every lever; the row flips to `fixed` in the fixing commit.
 

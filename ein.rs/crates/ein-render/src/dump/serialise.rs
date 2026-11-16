@@ -14,7 +14,7 @@ use super::json::Json;
 /// A fact's provenance as the comment a state file writes after it: `;
 /// source "…"`, `; rule r` or `; hypothesis N`, and nothing for a fact with
 /// none (M1e2 S1e2.3.8, the inventory's S-5). A comment, so the loader skips
-/// it and a reloaded fact reads as given (`answer_dump.md`). Until S1e2.3.8
+/// it and a reloaded fact reads as given (`answer-dump.md`). Until S1e2.3.8
 /// these were keywords, `:source "…"`, `:rule "r"` and `:hypothesis N`, of
 /// which the loader read the first, took `:rule` only as an atom, and had no
 /// third, so a reloaded state's facts read as given anyway.

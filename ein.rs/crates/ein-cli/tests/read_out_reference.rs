@@ -1,4 +1,4 @@
-//! [`docs/kernel/inference/read_out.md`] — the read-out reference, pinned.
+//! [`docs/ein/user/reference/read-out.md`] — the read-out reference, pinned.
 //!
 //! M1f [S1f.5.16](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md),
 //! T1f.5.16.3. The page defines every row `ein solve` and `ein oracle` print:
@@ -7,7 +7,7 @@
 //! is, so its labels, its summary paths and its numbers are held here, both
 //! ways, against the printer's own list,
 //! [`ein_render::read_out::Row`], and against real runs: the blocks of the
-//! examples page, [`docs/kernel/inference/read_out_examples.md`], which
+//! examples page, [`docs/ein/user/reference/read-out-examples.md`], which
 //! `read_out_examples.rs` holds to the binary byte for byte. What no test
 //! reads is a row's *meaning*; the page quotes no printed value, so that only
 //! that column can drift. [`configuration.md`] with `config_reference.rs` is
@@ -36,8 +36,8 @@
 //!    describe takes route 1 on, at the smallest budget the command takes,
 //!    is exhausted (M1f S1f.5.28's item 4).
 //!
-//! [`docs/kernel/inference/read_out.md`]: ../../../../docs/kernel/inference/read_out.md
-//! [`docs/kernel/inference/read_out_examples.md`]: ../../../../docs/kernel/inference/read_out_examples.md
+//! [`docs/ein/user/reference/read-out.md`]: ../../../../docs/ein/user/reference/read-out.md
+//! [`docs/ein/user/reference/read-out-examples.md`]: ../../../../docs/ein/user/reference/read-out-examples.md
 //! [`configuration.md`]: ../../../../docs/kernel/configuration.md
 
 use std::collections::{BTreeMap, BTreeSet};

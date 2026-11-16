@@ -717,7 +717,7 @@ same word for *impose* and for *observe* would be a trap.
    every total assignment is dead and the run knows it. E-23.
 4. **The read-out of an R that is empty by owing prints no N row,** though the run has N, ten sets here, and
    `--dump-answer` writes it. For satisfiability N is the explanation. E-23 too; whether the read-out
-   should carry the row is [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s.
+   should carry the row is [`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s.
 5. **The blind enumerator is not narrowed by a relation's declared types:** 1 190 candidates for `in Input
    Bit` over three inputs and two bits. Known, [E-1](findings.md) and [E-7](findings.md)'s family; the
    obligation is what narrows.

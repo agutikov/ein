@@ -36,11 +36,11 @@ a default.**
 - **What a tool returns.** The machine surfaces that exist today are the candidates, and whether they
   suffice is the question:
   - `--json-summary`, the `ein-summary/2` object, which is also `--dump-answer`'s `answer.json`
-    ([`answer_dump.md`](../../docs/kernel/inference/answer_dump.md));
+    ([`answer-dump.md`](../../docs/ein/user/reference/answer-dump.md));
   - the event protocol, `--events`
     ([`events.md`](../../docs/kernel/inference/events.md)), a stream and not a result;
   - `ein test --json-report`;
-  - the text read-out ([`read_out.md`](../../docs/kernel/inference/read_out.md)) and a parse error's
+  - the text read-out ([`read-out.md`](../../docs/ein/user/reference/read-out.md)) and a parse error's
     lines, which are written for a reader and may be what a model reads best.
 - **How it is built on the engine.** As a process around the binary, or against the crates:
   [`docs/api/rust.md`](../../docs/api/rust.md) is how Ein is driven as a library (`ein-ir` to load,

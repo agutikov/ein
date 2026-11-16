@@ -10,7 +10,7 @@
 //! What the probe answers is the question a state's model cannot be asked:
 //! how many facts the **blind** enumerator would still propose there, outside
 //! H. Since M1e2 S1e2.1a.5 it is read per state the read-out lists
-//! (`read_out.md` § 12) — a question about the universe, not about a route.
+//! (`read-out.md` § 12) — a question about the universe, not about a route.
 //! Running it on a fork of the state's fixpoint is what makes it a read, and
 //! *that* is the claim worth a test, because it is the one that would fail
 //! silently. Since M1e2 S1e2.3.1 (the user's ruling of 2026-11-03) the pass is

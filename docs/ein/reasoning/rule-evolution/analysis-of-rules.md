@@ -92,7 +92,7 @@ that sees it.
   pass through an `absent`, and that root's fixpoint may depend on the boundary's admission order and need not be
   unique. A `negative cycle` row under it names each cycle: its relations, the rules on its negative edges, and
   what its parity allows. (`cycle`, without *negative*, is the monotonicity check's word for its own cycles.) The
-  rows are [`read_out.md`](../../../kernel/inference/read_out.md)'s.
+  rows are [`read-out.md`](../../user/reference/read-out.md)'s.
 - **`ein saturate --dump`** prints each rule's stratum beside it, and one `;; Strata` line: *stratified, k strata*,
   or *not stratifiable* with the same cycles.
 - A stratified program prints no `strata` row.

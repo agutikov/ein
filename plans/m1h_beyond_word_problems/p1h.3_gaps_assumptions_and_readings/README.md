@@ -140,7 +140,7 @@ As the tree stands on 2026-11-13. Each is re-taken by the stage that uses it.
   ([`words.ein`](../../../examples/word_problems/words.ein)'s `model-counts-only`).
 - **The read-out row for what root owes** (S1f.6.26, done 2026-11-13): where root is alive, owes, and R is
   not empty, `owed` rows under `∅` name each instance through its rule's `:why`
-  ([`read_out.md` § 2](../../../docs/kernel/inference/read_out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
+  ([`read-out.md` § 2](../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)).
   So the calculator's table of what each form of a gap prints
   ([`word_problems.md` § 3.6](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#36-what-each-mechanism-does))
   is out of date in one cell, *the gap is not printed*, and S1h.3.1 re-takes it whole.

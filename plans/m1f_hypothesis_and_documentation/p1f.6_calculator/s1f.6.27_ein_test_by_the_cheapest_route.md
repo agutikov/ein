@@ -455,7 +455,7 @@ it is not free by this task's rule. Filed as
 [Q-M1f.224](../open_questions.md#q-m1f224--what-a-bare-description-pays-for-n), defaulted to no change, the
 user's to revise; E-31's row says so.
 
-**The page:** [`read_out.md`](../../../docs/kernel/inference/read_out.md) § 2, the `--count` paragraph: it
+**The page:** [`read-out.md`](../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2, the `--count` paragraph: it
 prints no `N` row and takes no N where it writes no artefact that carries N's count.
 
 ### T1f.6.27.6 — SEND + MORE banked, done

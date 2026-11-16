@@ -420,7 +420,7 @@ it is what the puzzle did not say and the solution established. `ein solve
 -P` prints it. Distinct from a listing's `(model …)`, the region language's
 claim form, which holds a state's facts over the candidates' relations,
 root's included: the word names two objects, and
-[`inference/read_out.md` § 6](inference/read_out.md#6-the-listing) says which
+[`inference/read-out.md` § 6](../ein/user/reference/read-out.md#6-the-listing) says which
 surface prints which (M1f S1f.5.16, Q-M1f.18). A query sees a model's
 **projection**; models with one projection form a **projection class**.
 

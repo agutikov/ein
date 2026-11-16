@@ -14,7 +14,7 @@ does the least work it needs to give it
 both down as formulas, states each licence and the argument for it, and answers three questions: what happens to a
 candidate that is refuted, how a run proves that R is one state without visiting the lattice, and why nothing a node
 derives is written back into root. What a run prints about its route and its work is the read-out's
-([`read_out.md`](../../../kernel/inference/read_out.md)).
+([`read-out.md`](../../user/reference/read-out.md)).
 
 ## 1. A node
 

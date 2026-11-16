@@ -596,7 +596,7 @@ fn the_warning_says_what_is_assumed_where_there_is_a_site() {
     }
 }
 
-/// The block's fields as `region_dump.md` § The `monotonicity` block names
+/// The block's fields as `region-dump.md` § The `monotonicity` block names
 /// them: each leaf, a list of objects written `name[]` and its elements'
 /// fields under it, a `null` or an empty list being the field it stands in.
 fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
@@ -755,6 +755,6 @@ fn every_monotonicity_field_is_defined_on_the_page() {
     let unwritten: Vec<&String> = rows.difference(&leaves).collect();
     assert!(
         unnamed.is_empty() && unwritten.is_empty(),
-        "region_dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
+        "region-dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
     );
 }

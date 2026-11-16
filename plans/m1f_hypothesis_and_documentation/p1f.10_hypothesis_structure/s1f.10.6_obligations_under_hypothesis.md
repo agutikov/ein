@@ -921,10 +921,10 @@ A tenth program, the witness under two hrules that propose a relation where its 
 - [`events.md`](../../../docs/kernel/inference/events.md): the `rung` row and its section name the two optional
   fields, and the paragraph that pointed here says what the engine does. The section it sits in is the record
   of the walk's tree, and stays one.
-- [`read_out.md` § 5.3](../../../docs/kernel/inference/read_out.md#53-under-universe) has the `later debt`
+- [`read-out.md` § 5.3](../../../docs/ein/user/reference/read-out.md#53-under-universe) has the `later debt`
   row; `read_out_examples.md` has X20, written by `utils/read_out_examples.py`;
-  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) and
-  [`region_dump.md`](../../../docs/kernel/inference/region_dump.md) the JSON key;
+  [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md) and
+  [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md) the JSON key;
   [`implementation.md`](../../../docs/kernel/inference/implementation.md), the glossary and
   `06_reserved_names.md`'s ladder sentence say the rung proposes for a later debt too.
 - **Q-M1e.11 is recorded as ruled** in

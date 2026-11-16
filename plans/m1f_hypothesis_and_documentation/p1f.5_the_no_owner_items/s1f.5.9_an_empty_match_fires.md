@@ -369,7 +369,7 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
   places have engine semantics; `()` as a value, Q28's question, is a parse error.
 - [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md),
   [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 2.2 and
-  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md): no run reaches a value `#empty` since W34;
+  [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md): no run reaches a value `#empty` since W34;
   `defined_behaviour.md` § 4.13: the rule whose `:match` was empty fires since.
 - The inventory's [F12](../../m1e2_correctness/inventory_2026-11-06_no_owner.md), the census's
   [W34 finding](s1f.5.5_census.md#findings-outside-the-grammar) and

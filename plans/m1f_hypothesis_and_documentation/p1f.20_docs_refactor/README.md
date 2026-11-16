@@ -323,8 +323,8 @@ The plan was written on 2026-08-28. Taken on 2026-11-08:
   [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) describe what
   `ein solve` prints, and the map has no row for any of them. Since
   [S1f.5.16](../p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) the first two are records, and the live
-  pages are [`docs/kernel/inference/read_out.md`](../../../docs/kernel/inference/read_out.md) and its
-  [examples](../../../docs/kernel/inference/read_out_examples.md); `solve_interface.md` is the one left.
+  pages are [`docs/kernel/inference/read-out.md`](../../../docs/ein/user/reference/read-out.md) and its
+  [examples](../../../docs/ein/user/reference/read-out-examples.md); `solve_interface.md` is the one left.
 - **`CLAUDE.md` is a symlink to `AGENTS.md`.** Both names are one file.
 
 So [S1f.20.2](s1f.20.2_the_disposition_table.md) redraws the target tree against the tree as it is when the

@@ -142,7 +142,7 @@ sound for every answer Ein gives, and this program is the reason the scope is st
 ## 4. What the cube shows
 
 The oracle, `ein oracle FILE --dump DIR`, enumerates every node of a cube within its limit
-([`region_dump.md` § The limit](../../../kernel/inference/region_dump.md#the-limit)) and counts what a site did:
+([`region-dump.md` § The limit](../../user/reference/region-dump.md#the-limit)) and counts what a site did:
 
 - **holes**, nodes outside R between two members of R;
 - **dead nodes with an alive superset**;
@@ -385,7 +385,7 @@ Over a relation no commitment can extend, the same shape is closed-world reasoni
 
 On a flagged program, and only there, the read-out says more than *not monotone*. No option turns this on or off, and
 it decides nothing: no finding chooses a node, refuses a program or moves R. Where it is printed, row by row, is
-[`read_out.md`](../../../kernel/inference/read_out.md)'s `lattice` block; `ein solve FILE --monotone` prints its static
+[`read-out.md`](../../user/reference/read-out.md)'s `lattice` block; `ein solve FILE --monotone` prints its static
 half alone.
 
 ### 11.1 The static half

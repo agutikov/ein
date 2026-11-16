@@ -225,20 +225,20 @@ on every surface: `answer.json`, `index.json`, the oracle's summary and the `reg
 **What moved** is T1's list and nothing else. `corpus_shapes.md5`'s 1 505 renderings (`EIN_BLESS=1 cargo test -p
 ein-render --test corpus_shapes`, the manifest's diff read before it was kept: exactly the 1 505 lines T1 named, each
 a digest and no line count). The kernel pages that describe the spelling say it in the same commit:
-[`read_out.md` § 11](../../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks), where the
+[`read-out.md` § 11](../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks), where the
 summary's keys are defined, carries the rule, `[]` the empty set and `null` an object that does not exist or that the
 run does not state, with `--count`'s dead root
-([Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count)); [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s
+([Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count)); [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s
 `nodes` row, [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md)'s `nodes.json` and
 [`events.md`](../../../docs/kernel/inference/events.md)'s `enter` row say a node that is not dead has `null`; and
 [`glossary.md`](../../../docs/kernel/glossary.md) states the rule beside the core's definition.
-[`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) defines no summary field of its own, deferring them to
+[`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md) defines no summary field of its own, deferring them to
 `read_out.md` § 11, and its `nogoods.json` holds dead nodes alone, so it is unedited. No answer, exit code or register
 row moved.
 
 ### Task T1f.5.8.3 — the pages
 
-`region_dump.md`'s `nodes` row, `answer_dump.md`'s summary fields, and the live read-out reference's, [`read_out.md`](../../../docs/kernel/inference/read_out.md)
+`region_dump.md`'s `nodes` row, `answer_dump.md`'s summary fields, and the live read-out reference's, [`read-out.md`](../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
 § 11 (S1f.5.16), each
 with the rule: `null`, the core does not exist; `[]`, the empty set. The inventory's D-14 says what fixed it.
 

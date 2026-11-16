@@ -803,7 +803,7 @@ nothing else, and a container is refused where its `.ein` is and loaded with it 
   adds a fourth caller unless it lifts the shared function that
   [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) is already going to want.
   Sequence after it, or hand it the function. Since S1f.5.16 the read-out has one live reference,
-  [`read_out.md`](../../../docs/kernel/inference/read_out.md), held to the printer by `read_out_reference.rs`: the
+  [`read-out.md`](../../../docs/ein/user/reference/read-out.md), held to the printer by `read_out_reference.rs`: the
   NL answer table is a row or a form of it, written there in the commit that prints it.
 
 ## Notes

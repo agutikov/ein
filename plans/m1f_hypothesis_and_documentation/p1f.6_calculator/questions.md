@@ -553,7 +553,7 @@ The witness: `x × 7 = 862` asked by search is `Open`, its argument 28 dead sets
 saturation, where the table makes each digit unique, it is a dead root whose core is a three-row proof.
 
 **Recommended: none stated** in any of the three sources; they name the read-out row as
-[`read_out.md`](../../../docs/kernel/inference/read_out.md)'s question and (b) as M1g's.
+[`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s question and (b) as M1g's.
 
 **Reply:** solution of `x × 7 = 862` belongs yet to arithmetic or already to algebra? this question open vs. false is deep.
 What would give more benefits, I expect `open` will, but why? Can we change it quickly later? We already have core for dead state, do we have anything like this for open? What it could be used for, I remember we already use it for hypothesis generation? It is not the case here - we would not generate hypothesis like (let x <number>) for every numbers already present in KB. It looks like an entire separate phase.

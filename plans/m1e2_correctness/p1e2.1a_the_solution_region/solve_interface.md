@@ -220,7 +220,7 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
   projected cost. Passing a larger N is the request.
 - **`--dump DIR`** writes today's `region.json` and `region.md`, and
   `--states` keeps every node's state, as `--dump-region` and
-  `--region-states` do now ([`region_dump.md`](../../../docs/kernel/inference/region_dump.md)).
+  `--region-states` do now ([`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)).
   `walk.json` goes, since there is no walk to write.
 
 10 options. The census goes from 65 to 71: `solve` −5, `oracle` +10, and

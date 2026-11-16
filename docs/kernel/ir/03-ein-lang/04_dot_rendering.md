@@ -236,12 +236,12 @@ S1.5b.31 shuffle-invariance guarantee).
 
 <a id="region-rendering--the-cube-and-the-walk-s1e21a2"></a>
 
-`ein render region DIR` draws an [`ein oracle --dump`](../../inference/region_dump.md)
+`ein render region DIR` draws an [`ein oracle --dump`](../../../ein/user/reference/region-dump.md)
 directory: the hypothesis lattice with every node classified by saturation
 alone. **`--visited DIR`** and **`--answer DIR`** put an `ein solve` run on
 it, from that run's own [`--dump-lattice`](../../inference/lattice_dump.md#under-a-region-mode--nodesjson-and-nodesmd)
 (`nodes.json`, every node it visited) and
-[`--dump-answer`](../../inference/answer_dump.md) (`index.json`, every state
+[`--dump-answer`](../../../ein/user/reference/answer-dump.md) (`index.json`, every state
 it reported). It reads those files and nothing else (no load, no solve), so
 the picture is of the run whose answer it shows. The join of the run to the
 cube is
@@ -601,7 +601,7 @@ ein render kb out/models/02.ein --since out/root.ein    # model 2, what it added
 ```
 
 `FILE` is loaded and saturated, so a `--dump-answer` state file
-([`answer_dump.md`](../../inference/answer_dump.md)) is a `FILE`: it loads as
+([`answer-dump.md`](../../../ein/user/reference/answer-dump.md)) is a `FILE`: it loads as
 a program and saturates to itself. `--since FILE` loads a second one into the
 same interner and draws every fact it lacks at `penwidth=3` — the transition
 highlight below, *this step added E*, which nothing had asked for before.

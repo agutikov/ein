@@ -484,17 +484,17 @@ def root_page(p: Pages, summary: dict | None, trace: list[dict]) -> None:
         # The block is root's fixpoint and H as every route starts from them
         # (M1e2 S1e2.3.1, the user's ruling (a) of 2026-11-03), so its count
         # is the count of the KB the sentence above says is never written.
-        link = doc("docs/kernel/inference/answer_dump.md", page) + "#the-run-summary"
+        link = doc("docs/ein/user/reference/answer-dump.md", page) + "#the-run-summary"
         lines += ["## Facts by relation", "",
                   f"From `summary.json`'s `root` block — root's fixpoint, {root.get('facts', '?')} facts "
-                  f"(`root.facts`, [`answer_dump.md` § The run summary]({link})).", ""]
+                  f"(`root.facts`, [`answer-dump.md` § The run summary]({link})).", ""]
         lines += table(["relation", "facts"], [[r, n] for r, n in (root.get("facts_by_relation") or {}).items()])
         lines.append("")
         rest = root_rows(root, page, skip=("facts", "facts_by_relation"))
         if rest:
             lines += ["## The rest of the block", "",
                       f"`root.hypgen` is the pass that built H, the universe every route reads, so "
-                      f"`root.hypgen.emitted` is H's size. Meanings are [`answer_dump.md` § The run "
+                      f"`root.hypgen.emitted` is H's size. Meanings are [`answer-dump.md` § The run "
                       f"summary]({link})'s, quoted.", ""]
             lines += table(["field", "value", "meaning"], rest)
             lines.append("")
@@ -700,7 +700,7 @@ def region_pages(p: Pages) -> None:
     raw = p.raw / "region"
     rdir = p.dir / "region"
     index = rdir / "index.md"
-    defined = [("region_dump.md", "docs/kernel/inference/region_dump.md"),
+    defined = [("region-dump.md", "docs/ein/user/reference/region-dump.md"),
                ("04_dot_rendering.md § Region rendering",
                 "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")]
     oracle = p.inv.get("oracle")
@@ -862,7 +862,7 @@ def answer_pages(p: Pages, s: dict | None) -> None:
     index = load_json(raw / "index.json") or {}
     region = (s or {}).get("region") or index.get("region") or {}
     states = region.get("states") or []
-    defined = [("answer_dump.md", "docs/kernel/inference/answer_dump.md"),
+    defined = [("answer-dump.md", "docs/ein/user/reference/answer-dump.md"),
                ("solution_semantics.md", "docs/kernel/inference/solution_semantics.md")]
     listed = [x for x in states if x.get("listed")]
     lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: grid, graph, "
@@ -970,9 +970,9 @@ def nogood_core(x: dict) -> str:
 # ── summary, events, consistency ──────────────────────────────────────────────
 
 def counter_meanings() -> dict[str, str]:
-    """`answer_dump.md`'s counter table: `| `name` | meaning |`."""
+    """`answer-dump.md`'s counter table: `| `name` | meaning |`."""
     out = {}
-    text = read(REPO / "docs/kernel/inference/answer_dump.md")
+    text = read(REPO / "docs/ein/user/reference/answer-dump.md")
     sec = text.split("## The run summary", 1)[-1] if "## The run summary" in text else ""
     sec = sec.split("\n## ", 1)[0]
     for line in sec.splitlines():
@@ -984,7 +984,7 @@ def counter_meanings() -> dict[str, str]:
 
 def root_rows(root: dict, page: Path, skip: tuple = ()) -> list[list[str]]:
     """The `root` block as `[field, value, meaning]` rows, one per field
-    `answer_dump.md` defines: dotted down to the sparse blocks, whose keys are
+    `answer-dump.md` defines: dotted down to the sparse blocks, whose keys are
     data, and each meaning quoted from the page."""
     meanings = counter_meanings()
     sparse = ("facts_by_relation", "filtered", "pre_candidate")
@@ -998,7 +998,7 @@ def root_rows(root: dict, page: Path, skip: tuple = ()) -> list[list[str]]:
             else:
                 out.append([f"`{name}`", cell(child),
                             rebase(meanings.get(name, "**not defined on any page**"),
-                                   "docs/kernel/inference/answer_dump.md", page)])
+                                   "docs/ein/user/reference/answer-dump.md", page)])
 
     walk({k: v for k, v in root.items() if k not in skip}, "root")
     return out
@@ -1020,8 +1020,8 @@ def cell(v) -> str:
 def summary_page(p: Pages, s: dict | None) -> None:
     page = p.dir / "summary.md"
     raw = p.raw / "summary.json"
-    defined = [("answer_dump.md § The run summary", "docs/kernel/inference/answer_dump.md"),
-               ("read_out.md § 11", "docs/kernel/inference/read_out.md"),
+    defined = [("answer-dump.md § The run summary", "docs/ein/user/reference/answer-dump.md"),
+               ("read-out.md § 11", "docs/ein/user/reference/read-out.md"),
                ("configuration.md", "docs/kernel/configuration.md")]
     lines = header("The run summary", "`--json-summary` (`ein-summary/2`), as tables", "`--json-summary FILE`",
                    defined, [raw], page)
@@ -1040,16 +1040,16 @@ def summary_page(p: Pages, s: dict | None) -> None:
                      cell(q.get("expect"))] for q in qs]) if qs else ["_none_"]
     lines += ["", "## The claim", "", f"`{cell(s.get('claim'))}`", ""]
     meanings = counter_meanings()
-    link = doc("docs/kernel/inference/answer_dump.md", page) + "#the-run-summary"
-    lines += ["## Work", "", f"Meanings are [`answer_dump.md` § The run summary]({link})'s, quoted.", ""]
+    link = doc("docs/ein/user/reference/answer-dump.md", page) + "#the-run-summary"
+    lines += ["## Work", "", f"Meanings are [`answer-dump.md` § The run summary]({link})'s, quoted.", ""]
     lines += table(["counter", "value", "meaning"],
                    [[k, cell(val), rebase(meanings.get(k, "**not defined on any page**"),
-                                          "docs/kernel/inference/answer_dump.md", page)]
+                                          "docs/ein/user/reference/answer-dump.md", page)]
                     for k, val in (s.get("work") or {}).items()])
     lines += ["", "## Monotonicity", ""]
     lines += table(["field", "value"], [[k, cell(v)] for k, v in (s.get("monotonicity") or {}).items()])
     lines += ["", "## Root", "", "Root's fixpoint and how H was built, as every route starts from them; "
-              f"meanings are [`answer_dump.md` § The run summary]({link})'s, quoted.", ""]
+              f"meanings are [`answer-dump.md` § The run summary]({link})'s, quoted.", ""]
     lines += table(["field", "value", "meaning"], root_rows(s.get("root") or {}, page))
     lines += ["", "## Leftover", "", "```json", json.dumps(s.get("leftover"), indent=2, ensure_ascii=False), "```", ""]
     lines += ["## Resolved configuration", "",

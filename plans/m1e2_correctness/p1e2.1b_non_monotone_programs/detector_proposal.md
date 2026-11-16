@@ -605,7 +605,7 @@ commitment added, saturated. What a node is on such a program is open (Q-M1e2.2,
 Each *(assumes a monotone lattice)* becomes *(nodes by fork)*. `region.json`'s
 `assumes_monotone` keeps its name, which only `ein_render::dump::region`
 writes and no test or script reads, and
-[`region_dump.md`](../../../docs/kernel/inference/region_dump.md) gives it its
+[`region-dump.md`](../../../docs/ein/user/reference/region-dump.md) gives it its
 meaning: *the static check flags the program, and the lines and components are
 computed over nodes built by fork*.
 
@@ -729,7 +729,7 @@ against the 1 s line.
 | the event | the `monotonicity` event gains optional fields | no version bump; not in `corpus_shapes.md5` |
 | `region.md`, the `ein render region` label, the review bundle | reworded | no golden |
 | [`wrong_answers.toml`](../../../corpus/wrong_answers.toml) | 3 qualifiers, 2 `open_because` (§ 4.3) | 5 strings, data only |
-| the docs | [`events.md`](../../../docs/kernel/inference/events.md)'s `monotonicity` entry; [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve)'s *"under assumes a monotone lattice"*; `docs/kernel/inference/monotonicity.md` at `50739fdb` § 5 and § 8; [`configuration.md`](../../../docs/kernel/configuration.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
+| the docs | [`events.md`](../../../docs/kernel/inference/events.md)'s `monotonicity` entry; [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s stub paragraph and its `assumes_monotone` row; [`read_out.md` § 6.3](../p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent); [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve)'s *"under assumes a monotone lattice"*; `docs/kernel/inference/monotonicity.md` at `50739fdb` § 5 and § 8; [`configuration.md`](../../../docs/kernel/configuration.md)'s *"a node of a non-monotone lattice"*; the fixture headers and code comments naming P1e2.1b as the node's owner | the stage's list |
 
 **The spot check, if it ships**, adds one row inside the same 150 lines and no
 golden of its own.

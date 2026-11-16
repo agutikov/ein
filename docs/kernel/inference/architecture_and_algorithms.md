@@ -27,7 +27,7 @@
 > since, answered by a route over the region R
 > ([`solution_semantics.md`](solution_semantics.md)), each node a fork of root
 > saturated to quiescence with none of the walk's machinery
-> ([`region_dump.md`](region_dump.md)). So §§ 1–2's search layer, § 3's
+> ([`region-dump.md`](../../ein/user/reference/region-dump.md)). So §§ 1–2's search layer, § 3's
 > commitment-set, no-good, record and verdict rows, O5's fail-fast fork, and
 > the *Ein today* paragraphs of O7 and O8 are the record of what M1 built. The
 > deductive layer and the generator (`hypgen`, `hrule`, `oblgen`) are
@@ -500,7 +500,7 @@ it lands — and `try_commitment_set` stopped there
 (`enable_fail_fast_fork`, default on) until it went with the walk at M1e2
 S1e2.1c.5 (2026-11-03). A route's node is never stopped at the first
 contradiction, so a dead node's debts are its fixpoint's
-([`region_dump.md`](region_dump.md)). That is the cheap end of what watched
+([`region-dump.md`](../../ein/user/reference/region-dump.md)). That is the cheap end of what watched
 literals buy in SAT: not "cost-free until a literal flips", but "ask at
 insertion instead of at quiescence", which is where the waste actually was.
 
