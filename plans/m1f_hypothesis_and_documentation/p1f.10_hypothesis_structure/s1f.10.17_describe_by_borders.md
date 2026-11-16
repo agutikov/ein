@@ -210,7 +210,7 @@ answering, for **describe** and for **`--count`** apart (`--count` takes no `N`)
 **The verdict in one paragraph.** By the rule above, **describe is *no* on the corpus**: over the 171 monotone
 programs that search with an alive root, the border route's total is lower in saturations (817 794 against
 1 234 630, all of it the two SEND cells) and **higher in facts beyond root** (11 058 806 against 10 286 321), and
-20 programs are higher by more than a tenth, the four zebra puzzles among them. **`--count` is *go* on the corpus
+20 programs are higher by more than a tenth, five of the six zebra files among them. **`--count` is *go* on the corpus
 with 8 losers**: 626 673 saturations and 9 154 455 facts against 1 234 630 and 10 286 321, `send_more_money.ein`
 and its twin **decided in 18 127 saturations** where the state route stops after 336 101. The plan says a *no* for
 describe on the corpus is the user's to see before anything else is decided, so **nothing is built**: no question of
@@ -237,8 +237,9 @@ never finishes), so **T2 runs the route's own code, unwired** ([§ Defaults take
 - **Taken by no question**: `explore::describe_by(…, Route::Borders)` and the example below alone call it; `run`
   is as it was. [`ein-infer/tests/borders.rs`](../../../ein.rs/crates/ein-infer/tests/borders.rs), two tests per
   commit on seven programs (4.5 s): the border route's description is the state route's, `N` taken and not, and
-  the cube's where the oracle reaches; each fails when a description is mutated (tried on the final tree with three
-  mutations of the maximal line and of a class's generators, and reverted).
+  the cube's where the oracle reaches. Probed on the final tree and reverted: a maximal line read as *at most two
+  alive extensions* and a class's transversal taken for a generator one candidate short both fail both tests; a
+  maximal line read as *at most one* passes, no state of the seven having exactly one alive extension.
 - [`price_list --borders`](../../../ein.rs/crates/ein-infer/examples/price_list.rs), in
   [`examples/shared/borders.rs`](../../../ein.rs/crates/ein-infer/examples/shared/borders.rs): per program, describe
   and `--count` by both routes at the default budget with the options `ein solve` gives them (describe takes `N`,
