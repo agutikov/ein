@@ -2,7 +2,7 @@
 //! [S1e2.1a.6](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
 //! T1e2.1a.6.2, the config principle as a test.
 //!
-//! [`solve_interface.md` § 1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#1-the-contract)'s
+//! [`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract)'s
 //! C4: *no lever changes what is printed, cost counters aside — that includes
 //! which states `-n` prints*. The user's ruling of 2026-10-15 says the same of
 //! every configuration knob: *config may only affect search speed*. What a
@@ -524,7 +524,7 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
 /// search is offered each fact's first derivation alone, and the core it
 /// names can be another. The classic zebra puzzle's own `(config …)` sets
 /// it off for speed (0.95 s against 188 s, the same 458 cores, 2026-11-04;
-/// `configuration.md` § 2.2); `alt-cap-core.ein` is where it changes a core.
+/// `config.md` § 2.2); `alt-cap-core.ein` is where it changes a core.
 const CORE_FLAG: &str = "record-alternative-justifications";
 
 /// The programs on which [`CORE_FLAG`] moves `refuted by` beside a core that
@@ -840,7 +840,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         bad.is_empty(),
         "{} of {cells} (program, flag, question) cells printed something the \
          default does not. No config option may change the answer \
-         (configuration.md § 2.5) — this is a register row:\n\n{}",
+         (config.md § 2.5) — this is a register row:\n\n{}",
         bad.len(),
         bad.join("\n\n")
     );

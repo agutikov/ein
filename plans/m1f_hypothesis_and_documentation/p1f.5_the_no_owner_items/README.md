@@ -674,7 +674,7 @@ they are shown here:
 | [Q-M1f.86](../open_questions.md#q-m1f86--may-a-macros-body-write-open) | a macro's body may not write `open`; it is refused at the parse whether or not a rule calls the macro | it touches Q-M1f.67's ruling, under which an unused malformed macro loads |
 | [Q-M1f.90](../open_questions.md#q-m1f90--which-of-the-import-reads-moves-are-register-rows-and-where-their-witnesses-live) | a module that is not UTF-8, the close review's finding 2's own case, is held by the pin only, with no register row | the finding's own shape has no row: a non-UTF-8 file under a corpus root breaks the suites that read every corpus file as text |
 | [Q-M1f.94](../open_questions.md#q-m1f94--a-directorys-and-an-unreadable-modules-line-and-a-missing-ones-none) | a directory's and an unreadable module's line keep the main file's Python spelling, `IsADirectoryError: [Errno 21] …` | the stage file asked for the OS's reason in Ein's words; that spelling is F23's D-1 |
-| [Q-M1f.100](../open_questions.md#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone) | an artefact flag writing to a pipe whose reader has gone ends `ein` by `SIGPIPE` too | it narrows [`defined_behaviour.md` § 4.4](../../../docs/kernel/defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35), under which an artefact's failed write leaves the exit code unchanged |
+| [Q-M1f.100](../open_questions.md#q-m1f100--an-artefact-flag-that-writes-to-a-pipe-whose-reader-has-gone) | an artefact flag writing to a pipe whose reader has gone ends `ein` by `SIGPIPE` too | it narrows [`diagnostics.md` § 2.4](../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure), under which an artefact's failed write leaves the exit code unchanged |
 | [Q-M1f.101](../open_questions.md#q-m1f101--a-closed-stdout-on-windows) | Windows is left as it is: a closed stdout there still panics, exit 101 | no host here runs Windows, so no probe shows it |
 | [Q-M1f.107](../open_questions.md#q-m1f107--where-the-close-reviews-finding-7-is-fixed) | the close review's finding 7, the stale slow counts, is fixed in S1f.5.28 | the coordinator placed it there, after the user asked what *slow* means |
 | [Q-M1f.109](../open_questions.md#q-m1f109--a-texts-line-break-in-the-traces-markdown) | `--trace` writes each line break in a `:why` or `:source` as a markdown hard break | it moves the bytes Q-M1f.12 holds the trace to, and two `corpus_shapes` digests |
@@ -732,7 +732,7 @@ work: it removes a language keyword and replaces it with a static analysis.
 
 **The two that shipped stayed in M1e.** `S1e.5.1` (the configuration reference) and `S1e.5.2` (what a
 solution is, and what a model is) landed on 2026-08-28 under M1e's numbering, and the tree cites `S1e.5.1`
-as the stage that shipped [`configuration.md`](../../../docs/kernel/configuration.md).
+as the stage that shipped [`config.md`](../../../docs/ein/user/reference/config.md).
 [M1e's P1e.5](../../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other) keeps
 them. S1e.5.1 corrected five of the old phase's reconnaissance numbers; the record keeps that correction
 beside what it corrected.

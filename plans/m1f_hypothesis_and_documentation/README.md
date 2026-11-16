@@ -116,7 +116,7 @@ stage that owns it moved, would make every earlier citation of it false.
 **Two stages did not come.** `S1e.5.1` (the configuration reference) and
 `S1e.5.2` (what a solution is, and what a model is) had already shipped under
 M1e's numbering, and five places in the tree cite `S1e.5.1` as the stage that
-shipped [`configuration.md`](../../docs/kernel/configuration.md). They stayed,
+shipped [`config.md`](../../docs/ein/user/reference/config.md). They stayed,
 and [M1e's P1e.5](../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other)
 is now the one-stage record of what that phase delivered.
 

@@ -1022,7 +1022,7 @@ def summary_page(p: Pages, s: dict | None) -> None:
     raw = p.raw / "summary.json"
     defined = [("answer-dump.md § The run summary", "docs/ein/user/reference/answer-dump.md"),
                ("read-out.md § 11", "docs/ein/user/reference/read-out.md"),
-               ("configuration.md", "docs/kernel/configuration.md")]
+               ("config.md", "docs/ein/user/reference/config.md")]
     lines = header("The run summary", "`--json-summary` (`ein-summary/2`), as tables", "`--json-summary FILE`",
                    defined, [raw], page)
     if not s:
@@ -1053,7 +1053,7 @@ def summary_page(p: Pages, s: dict | None) -> None:
     lines += table(["field", "value", "meaning"], root_rows(s.get("root") or {}, page))
     lines += ["", "## Leftover", "", "```json", json.dumps(s.get("leftover"), indent=2, ensure_ascii=False), "```", ""]
     lines += ["## Resolved configuration", "",
-              f"Every flag is documented in [`configuration.md`]({doc('docs/kernel/configuration.md', page)}).", ""]
+              f"Every flag is documented in [`config.md`]({doc('docs/ein/user/reference/config.md', page)}).", ""]
     lines += table(["flag", "value"], [[k, cell(val)] for k, val in (s.get("config") or {}).items()])
     p.add("Summary", page, lines)
 

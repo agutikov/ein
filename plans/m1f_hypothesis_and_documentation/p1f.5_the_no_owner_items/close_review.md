@@ -246,7 +246,7 @@ with no test or command behind it. The fix is to cite the test and drop the numb
    - [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md) never names seven fields: `reads.dynamic_*`,
      `absent_reads.dynamic_*`, `cycles[].negative`, `paths.dead_parents`, `paths.saturations`,
      `paths.unprinted.saturations` and `state.stale_nodes`.
-     [`configuration.md`](../../../docs/kernel/configuration.md) never names `leftover.states_by_relation`
+     [`config.md`](../../../docs/ein/user/reference/config.md) never names `leftover.states_by_relation`
      (S1f.5.16).
    - `-t`'s `route` row and the cube's counts print without digit groups (S1f.5.16).
    - Route 1's "stopped before layer L" is reached by no CLI run (S1f.5.16).

@@ -63,7 +63,7 @@ and bounded:
 - **The closed-world caveat, tested:** `complement`, `difference` and `connex` read by failure. One program
   each showing the answer where the operand is determined by saturation, and one where it is decided by a
   hypothesis, with what *forbid*'s refusal
-  ([§ 4.7](../../../docs/kernel/defined_behaviour.md)) says of the second.
+  ([§ 2.7](../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)) says of the second.
 
 **4. Properties detected from facts.** F1b's TODO: *"properties detection - are rules able to detect
 properties from facts?"* A rule that derives `(symmetric R)` from R's extent has to say *every* edge has its

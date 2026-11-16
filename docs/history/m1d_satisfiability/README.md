@@ -39,7 +39,7 @@ before anything was built.
 | **The search branches on it** | the obligations rung of the generation ladder — `(hrule …)` if declared, else what the state owes, else the blind enumerator |
 | **The verdict reports it** | **`Open — owes n (rel: n, …)`**, the fourth verdict word, exit 0 like the other three |
 | **A model set has a compact form** | `ein solve --models key` — the smallest set of slots that tells the models apart, 49 lines against 516 on `zebra2-minus-15` |
-| **A count states its own guarantee** | *these are the models* against *these are models **found***, on all four verdicts — normative in [`defined_behaviour.md` §5](../../kernel/defined_behaviour.md) |
+| **A count states its own guarantee** | *these are the models* against *these are models **found***, on all four verdicts — normative in [`cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) |
 | **A second traversal** | `EIN_TRAVERSAL=tree`, one obligation per node: **86 enterings and 0.07 s** against the lattice's 17 204 592 and 1 496 s, same 32 models fact for fact |
 | **Four censuses** | `utils/openness_census.py`, `model_set_census.py`, `closure_census.py`, `layer_census.py` — and `ein test --json-report`, the read-out the third needed |
 

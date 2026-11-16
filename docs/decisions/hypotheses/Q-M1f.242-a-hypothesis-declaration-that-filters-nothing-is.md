@@ -14,5 +14,5 @@ moves no exit code, answer or stdout. A declaration that contradicts another is 
 wrote it believed it filtered something.
 
 **Held by.** `ein-cli/tests/mechanism_conflicts.rs`: `a_dead_or_redundant_list_is_a_note_and_a_silent_pair_says_nothing`;
-`ein_infer::mechanisms::check`; [`defined_behaviour.md`](../../kernel/defined_behaviour.md) § 4.27, with the wording of
+`ein_infer::mechanisms::check`; [`diagnostics.md`](../../ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27, with the wording of
 each note.

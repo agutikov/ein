@@ -36,7 +36,7 @@ P1h.2's slice drawn another way; an engine change where it is one, with the refe
 - **The pages shown first.** The stage's first task re-takes S1h.4.3's written-out pages on the day's
   binary beside what the printer will write, before the printer moves.
 - **The reference pages in the same commit:** a row of
-  [`configuration.md`](../../../docs/kernel/configuration.md) for a new option, held by
+  [`config.md`](../../../docs/ein/user/reference/config.md) for a new option, held by
   `config_reference.rs`; the trace's golden (`ein-render/tests/golden_trace.rs`) and the `region-trace`
   digests of `corpus_shapes.md5`, which a run without the option must leave unmoved.
 - **No answer moves;** stdout, stderr and the exit code of every run without the option, or without the

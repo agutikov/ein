@@ -68,7 +68,7 @@ EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "e
 CLI_LEVERS: tuple = ()
 
 # The environment levers that steer the search and sit outside `SolverConfig`
-# (`configuration.md` § 5). None is left: the walk's tree traversal,
+# (`config.md` § 5). None is left: the walk's tree traversal,
 # `EIN_TRAVERSAL`, went with the walk at M1e2 S1e2.1c.5, and the obligations
 # rung's order, `EIN_OBLIGATION_CHOICE`, was retired at S1e2.3.1 (the user's
 # ruling of 2026-11-03) once the summary's `root` block stopped running the

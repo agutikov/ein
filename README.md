@@ -370,7 +370,7 @@ were measured, not assumed:
 - **No config option changes an answer**, measured: the 2026-10-18 sweep of
   every flag over 173 programs moved one, `features/06` under
   `enable-symmetric-mirror`
-  ([`configuration.md` § 2.5](docs/kernel/configuration.md)). Under the walk a
+  ([`config.md` § 2.5](docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row)). Under the walk a
   performance lever decided a verdict, and both settings under-reported:
   [`branching/15`+`16`](examples/branching/15_lookahead_two_step_on.ein) said
   `Solution k=1` and `Contradiction k=0` where the hand-derived answer is two
@@ -454,12 +454,12 @@ ein oracle <file>                  # R by brute force, the cube every mode is he
 ```
 
 The flag names the part of R asked about, and each question does the least
-work it needs ([`solve_interface.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)).
+work it needs ([`cli.md`](docs/ein/user/reference/cli.md)).
 The budgets are `--region-budget F` (the facts a description may derive,
 default 1 048 576 = 2²⁰ since 2026-11-03 — past it the run stops with an answer, bounds and a
 `note:`), `--region-limit N` (the cube a flagged program may need) and
 `--max-time`. `--jobs N` changes the wall clock and nothing else, and no config
-option changes R ([`configuration.md` § 2.5](docs/kernel/configuration.md)).
+option changes R ([`config.md` § 2.5](docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
 Inspection: `-p` / `-P` (each listed state's facts), `-f` (its candidates),
 `-H` (H, the universe of candidates), `--models key|grid`, `--diff-models FILE`,
 `--dump-lattice DIR` (every node the run visited), `--timing`; the trace

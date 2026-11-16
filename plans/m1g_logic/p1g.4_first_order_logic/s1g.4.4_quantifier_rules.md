@@ -19,7 +19,7 @@ condition, and the side conditions are the stage.
 
 | rule | says | needs | expected |
 |---|---|---|---|
-| ∀ elimination | from `(All x F)`, `F[t/x]` for any term t | substitution; *t free for x in F*; and, forward, a choice of t | checking: possible. Applying it forward: t is unbound, the schema's wall again ([§ 4.13](../../../docs/kernel/defined_behaviour.md)); on request, or over the terms that occur in the proof so far |
+| ∀ elimination | from `(All x F)`, `F[t/x]` for any term t | substitution; *t free for x in F*; and, forward, a choice of t | checking: possible. Applying it forward: t is unbound, the schema's wall again ([§ 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)); on request, or over the terms that occur in the proof so far |
 | ∃ introduction | from `F[t/x]`, `(Ex x F)` | substitution, read backward: the line names t | checking: possible |
 | ∀ introduction | from F proved for an *arbitrary* x, `(All x F)` | **freshness:** x not free in any open assumption | checking: a walk over the context with `free-in`; the negative, *not free in*, has to be derived positively (a `not-free-in` relation by recursion on the formula), since the theory writes no `absent` |
 | ∃ elimination | from `(Ex x F)` and a derivation of G from `F[c/x]` with c **new**, G | freshness of c: not in G, not in the context; and a discharge, as `Or` elimination has | checking: as above, plus S1g.3.3's answer to discharge |

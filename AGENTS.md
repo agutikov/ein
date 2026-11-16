@@ -16,9 +16,9 @@ constrained-reasoning research.
   (`inference/`). Start here for any "what does Ein reason about / how"
   question. See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
   The pages an agent most often needs:
-  [`defined_behaviour.md`](docs/kernel/defined_behaviour.md), the
+  [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes), the
   diagnostics, orderings and load refusals the engine defines normatively
-  (§ 4 has one section per refusal);
+  (§ 2 has one section per refusal);
   [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md),
   the answer as a region R;
   [`inference/read-out.md`](docs/ein/user/reference/read-out.md), every row
@@ -26,7 +26,7 @@ constrained-reasoning research.
   [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
   `h-space.json`;
-  [`configuration.md`](docs/kernel/configuration.md), the `(config …)` flags,
+  [`config.md`](docs/ein/user/reference/config.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
   [`ir/03-ein-lang/01_grammar.md`](docs/kernel/ir/03-ein-lang/01_grammar.md)
@@ -308,7 +308,7 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
 ### The language
 
 Each of these is a refusal at load or at the parse, on every command, stated
-normatively in [`defined_behaviour.md`](docs/kernel/defined_behaviour.md) § 4
+normatively in [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) § 2
 or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 
 - **Ein has no numbers, no ranges and no int kind**, and none is planned.
@@ -430,7 +430,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   zebra2 variants (`examples/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`examples/gen_send_written.py`);
-  `read-out-examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
+  `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
   defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
   `--check` or a test in the gate.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
@@ -549,7 +549,7 @@ by the binary, is
 [`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
 held to the printer by `ein-cli/tests/read_out_reference.rs`. **The `EIN_*`
 names in the block above are the ones an agent needs, not the set**:
-[`docs/kernel/configuration.md`](docs/kernel/configuration.md) is the census
+[`docs/kernel/config.md`](docs/ein/user/reference/config.md) is the census
 of every `EIN_*` name, `(config …)` field and CLI option, with a *does it
 change the answer* column on every flag row, pinned by
 `ein-cli/tests/config_reference.rs`. The walk — `-e`, `-m`,

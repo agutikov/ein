@@ -256,7 +256,7 @@ facts of every state in R:
   `(knows Bob Ann)` the query's goal among them. The mirror is what
   `(__symmetric__ R)` means, so the flag switches off part of the program's
   theory. It is the one flag that violates the principle, and
-  [`configuration.md` § 2.5](../../../docs/kernel/configuration.md#25-the-config-principle-read-against-every-row)
+  [`config.md` § 2.5](../../../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row)
   names it.
 - **`-y` and `lattice-sanity-check` abort `d3-unsat-core.ein`**, flagged
   non-monotone, with *"Saturation commutativity violated"*: a fork and its

@@ -30,7 +30,7 @@ until the user says otherwise (a default is not a ruling, and any may be reopene
 ## Q-M1g.1 — The spelling of the connectives
 
 `and`, `or`, `eq`, `neq`, `absent` and `false` head no value
-([`defined_behaviour.md` § 4.22](../../docs/kernel/defined_behaviour.md)), and `(not F)` is the engine's
+([`diagnostics.md` § 2.22](../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)), and `(not F)` is the engine's
 stored negation of a fact, so a formula's negation spelt `not` would make `(holds (not p))` mean something to
 the engine that the theory did not say. The user, 2026-11-11: *"for "and" element, function can use _and,
 _and_, __and, AND, And, l_and, And2 - whatever"*.

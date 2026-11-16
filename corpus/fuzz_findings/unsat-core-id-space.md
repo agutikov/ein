@@ -87,7 +87,7 @@ goes.
 
 The paragraph above says this is one of two findings *"the corpus does not
 reach"*, and that was true for three days. Writing M1c
-[S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)'s
+[S1c.1.2](../../docs/ein/user/syntax-and-semantics/query.md#claims)'s
 `k = 0` fixture reached it on the first try, with no fuzzer and no generated
 input — the blind pigeonhole, three pigeons and two holes:
 

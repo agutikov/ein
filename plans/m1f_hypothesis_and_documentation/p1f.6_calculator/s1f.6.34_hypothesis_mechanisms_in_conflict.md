@@ -83,7 +83,7 @@ hrule supposing `(has ?p apples (n z 1) ?t)`, `(solve :hrules (maybe-apples) :no
    a finding, and the table is corrected. Recorded as the record's first section.
 2. **T1f.6.34.2 — the report.** A **conflict** is refused, one line per conflict, naming both declarations and
    the relation, with the load-error exit (1; `ein test`: 2), on every command, as
-   [`defined_behaviour.md` § 4.20](../../../docs/kernel/defined_behaviour.md#420-a-solve--list-names-what-the-program-has--m1f-s1f78)
+   [`diagnostics.md` § 2.20](../../../docs/ein/user/reference/diagnostics.md#220-a-solve--list-names-what-the-program-has)
    refuses a list that names nothing. A **dead** or **redundant** declaration prints one `note:` line on stderr
    and moves no exit code (the user: *"if not - then it filters nothing"*; Q-M1f row, defaulted). No lever,
    option or flag decides either. A corpus program in conflict is corrected where its conflict is an accident,

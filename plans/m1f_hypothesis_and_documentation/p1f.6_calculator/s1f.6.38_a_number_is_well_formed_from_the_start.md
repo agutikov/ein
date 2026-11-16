@@ -140,7 +140,7 @@ reads it wants a number, or of a `let`.
 | a fact of another relation where a number goes, `(add (pair 1 2) X)`, `(add (b 1 z) X)` | silent | an operand's | silent, as today |
 | a natural where an integer goes, an integer where a rational goes | silent | an operand's | int's, rat's: [§ 6, Q5 and Q6](#6-the-open-choices-each-with-a-proposed-default) |
 | a digit or a named constant inside an integer, `(int 7 z)`, `(int price z)` | silent | **the integer's** (int's own term) | int's (rat's for `rat`): Q5 |
-| a wrong count, `(n 1)`, `(n z 1 2)` (*whitespace* inside a numeral) | refused at load (S1f.6.23, [`defined_behaviour.md` § 4.26](../../../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)) | the loader's | already right away |
+| a wrong count, `(n 1)`, `(n z 1 2)` (*whitespace* inside a numeral) | refused at load (S1f.6.23, [`diagnostics.md` § 2.26](../../../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)) | the loader's | already right away |
 | a character that is not ASCII (*hieroglyphs*), a string where a value goes | refused at the parse (M1f S1f.5.22, S1f.5.2) | the parser's | already right away |
 | every malformation of `std.math.num9` | silent | num9's | silent, reply 9 (b) |
 

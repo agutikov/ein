@@ -316,7 +316,7 @@ The plan was written on 2026-08-28. Taken on 2026-11-08:
   S1e2.1c.5 (2026-11-03), so `search.md ← inference/algorithm_layer_n.md` maps a page onto a search that is
   gone: the answer is now the region R and its routes
   ([`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)). `inference/features.md`'s
-  levers are mostly retired ([`configuration.md`](../../../docs/kernel/configuration.md) lists them).
+  levers are mostly retired ([`config.md`](../../../docs/ein/user/reference/config.md) lists them).
 - **User-facing references live under `plans/`.** The read-out's vocabulary,
   [`read_out.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md), its golden page
   [`read_out_examples.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md), and

@@ -1,7 +1,7 @@
 //! `:expect` — what a `(query …)` says its own answer is.
 //!
 //! The form M1c
-//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
 //! settled, and the one part of it that is *shape* rather than comparison. The
 //! comparison is `ein_infer::expect`, which needs solutions; this module reads
 //! the claim the loader validates, so a program that checks nothing is

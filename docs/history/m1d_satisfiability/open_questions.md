@@ -609,7 +609,7 @@ exhausted**)"* — the word tied to more than `k`.
 ## Q-M1d.7 — May a program require its own model count?
 
 **Opened 2026-08-24**, from M1c
-[S1c.1.2](../m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
+[S1c.1.2](../../ein/user/syntax-and-semantics/query.md#claims).
 [P1d.4](README.md#p1d4--closing-the-model-set) is the phase.
 
 `:expect (or M₁ … M_k)` says *the model set is exactly these k*. A **test** may

@@ -79,7 +79,7 @@ kwarg - it is an error"*.
 | | `:expect` | a claim: the answer stated | no |
 | `solve` | `:hrules`, `:hypothesis-relations`, `:no-hypothesis` | what may be guessed: the lattice | no |
 | | `:expect` | a claim about the region | no |
-| `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags ([`configuration.md`](../../../docs/kernel/configuration.md)) | no |
+| `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags ([`config.md`](../../../docs/ein/user/reference/config.md)) | no |
 | `import` | `:symbols` | the names imported | no |
 | | `:as` | an alias | no |
 | `macro` | none | | |

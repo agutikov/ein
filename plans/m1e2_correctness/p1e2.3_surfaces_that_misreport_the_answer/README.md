@@ -519,7 +519,7 @@ record does not claim it.
 - [`read_out.md`](../p1e2.1a_the_solution_region/read_out.md): the six rules
   every surface follows (§ 3), the 100 lines (§ 4.1), the summary (§ 8.1),
   and the other surfaces (§ 8.6).
-- [`configuration.md` § 2.3](../../../docs/kernel/configuration.md): where S4 is
+- [`config.md` § 2.3](../../../docs/ein/user/reference/config.md#23-reading-the-judgement-columns): where S4 is
   written down today as the one exception to *a lever changes nothing
   printed*.
 - [`corpus/fuzz_findings/kwpair-below-the-filter.md`](../../../corpus/fuzz_findings/kwpair-below-the-filter.md):

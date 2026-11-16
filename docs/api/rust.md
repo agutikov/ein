@@ -67,7 +67,7 @@ other `unsafe` the engine ships is the binary's, not a library's:
 `ein-cli/src/main.rs`, its own crate root outside `lib.rs`'s `forbid`, calls
 `libc::signal(SIGPIPE, SIG_DFL)` once, as `main`'s first statement, so a
 closed stdout ends `ein` by `SIGPIPE` as it ends `cat` (M1f S1f.5.25,
-[`defined_behaviour.md` § 4.19](../kernel/defined_behaviour.md#419-a-closed-stdout-ends-ein-by-sigpipe--m1f-s1f525)).
+[`diagnostics.md` § 2.19](../ein/user/reference/diagnostics.md#219-a-closed-stdout-ends-ein-by-sigpipe)).
 A program that embeds the crates keeps its own disposition: the library
 `ein_cli::run` leaves it alone, and the engine crates write nothing to stdout
 (no `print!` in `ein-core`, `ein-ir`, `ein-infer`, `ein-einb` or

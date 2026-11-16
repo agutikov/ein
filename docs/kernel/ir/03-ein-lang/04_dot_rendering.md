@@ -71,7 +71,7 @@ via the library-level
 [`DotOpts.levi`](../../../../ein.rs/crates/ein-render/src/ir_dot.rs).
 (**There is no `EIN_RENDER_LEVI`.** This line claimed one until M1e S1e.2.2;
 no code path has ever read it —
-[`configuration.md` §4](../../configuration.md) files it among the greppable
+[`config.md` §4](../../../ein/user/reference/config.md#4-the-environment) files it among the greppable
 `EIN_*` names that are not environment variables, and `config_reference.rs`
 pins that.)
 

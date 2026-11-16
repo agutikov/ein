@@ -8,4 +8,4 @@ describes all of R. A value that is not an integer keeps the parser's own messag
 limit* is leaving `-n` out. Accepting it would make `-n 0` another spelling of some other count.
 
 **Held by.** `ein-cli/tests/cli_semantics.rs`: `solutions_takes_a_count_of_one_or_more_and_nothing_else`. The page:
-[defined_behaviour.md](../../kernel/defined_behaviour.md) § 5.
+[cli.md](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) § 5.

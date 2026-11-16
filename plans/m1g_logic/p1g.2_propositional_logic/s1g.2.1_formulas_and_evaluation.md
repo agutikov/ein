@@ -34,7 +34,7 @@ What the stage settles about it:
   ([Q-M1g.3](../open_questions.md#q-m1g3--the-two-truth-values)). `Top` and `Bot` have a value and no table.
 - **One rule for all binary connectives,** its table a parameter, `(value-binary And t-and)`: probe 1 wrote
   it so, and a relation parameter heading a nested pattern, `(eval (?C ?a ?b))`, loaded and matched. To be
-  confirmed against [`defined_behaviour.md` § 4.9](../../../docs/kernel/defined_behaviour.md) for every
+  confirmed against [`diagnostics.md` § 2.9](../../../docs/ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing) for every
   activator the theory writes.
 - **Demand.** A request for a compound asks for its parts; a value is derived only for what was asked. A
   formula never asked for has no value, and the page says so.

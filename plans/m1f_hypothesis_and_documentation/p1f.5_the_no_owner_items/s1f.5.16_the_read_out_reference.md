@@ -187,10 +187,10 @@ its test cannot see.
 - what R, k_s, k_c, a line and a model are:
   [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md);
 - exit codes, and which stream each byte goes to:
-  [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes) and
-  [§ 5](../../../docs/kernel/defined_behaviour.md#5-the-cli-surface). The stderr section lists the shapes of the
+  [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) and
+  [§ 5](../../../docs/ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line). The stderr section lists the shapes of the
   lines and links § 4 for the codes;
-- the options and their defaults: [`configuration.md`](../../../docs/kernel/configuration.md);
+- the options and their defaults: [`config.md`](../../../docs/ein/user/reference/config.md);
 - the `--dump-answer` directory, and the summary's `work` and `root` blocks:
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md);
 - the `monotonicity` block and the warning's theory: `region_dump.md`;
@@ -253,7 +253,7 @@ The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_an
 
 ### The test: `ein-cli/tests/read_out_reference.rs`
 
-The precedent is [`configuration.md`](../../../docs/kernel/configuration.md) with
+The precedent is [`config.md`](../../../docs/ein/user/reference/config.md) with
 [`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs). Its judgement table is
 hand-written and diffed against `ein_core::config::FLAGS`, *"what makes the prose columns safe to hand-write"*,
 and its defaults block is the binary's own output. A second precedent is [`docs/api/rust.md`](../../../docs/api/rust.md)
@@ -576,7 +576,7 @@ members, `route`'s and `over`'s other values and `expect`'s shape are new, as th
 gone. **The other five keys' owners**: `work` and `root` are [`answer-dump.md` § The run
 summary](../../../docs/ein/user/reference/answer-dump.md#the-run-summary)'s, held field by field by
 `answer_dump::every_summary_counter_is_defined_on_this_page`; `config` is
-[`configuration.md`](../../../docs/kernel/configuration.md)'s defaults block, held by `config_reference`; `leftover`
+[`config.md`](../../../docs/ein/user/reference/config.md)'s defaults block, held by `config_reference`; `leftover`
 is `configuration.md`'s `EIN_LEFTOVER` row, which names `taken` and `states` and not `states_by_relation`;
 `monotonicity` is [`region-dump.md` §
 Monotonicity](../../../docs/ein/user/reference/region-dump.md#monotonicity--the-static-check)'s, which names the block's

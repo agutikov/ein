@@ -68,7 +68,7 @@ two want opposite rules.
 
 ### Closed 2026-08-23 — (c), as recommended
 
-Built in [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects). What the
+Built in [S1c.1.2](../../ein/user/syntax-and-semantics/query.md#claims). What the
 build changed about the recommendation, and what it cost:
 
 - **The value needs a head.** The proposed shape — a bare list of facts,
@@ -166,7 +166,7 @@ cannot fail.
 
 ## Q-M1c.6 — How does an expectation say a relation is *empty*?
 
-**Opened 2026-08-23**, by building [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects).
+**Opened 2026-08-23**, by building [S1c.1.2](../../ein/user/syntax-and-semantics/query.md#claims).
 
 Relation-closure has one state it cannot express. Naming a relation closes it,
 and the only way to name one is to list a fact in it — so **"relation `r` is

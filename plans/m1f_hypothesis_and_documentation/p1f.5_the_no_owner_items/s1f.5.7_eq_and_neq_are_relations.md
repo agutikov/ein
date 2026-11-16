@@ -482,7 +482,7 @@ sentence that did says what it was and what it is since this stage.
 - [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) § Computed predicates, and
   [`implementation.md`](../../../docs/kernel/inference/implementation.md)'s `predicates.rs` row.
 - [`glossary.md`](../../../docs/kernel/glossary.md): an entry for `eq` and `neq`.
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.1's claim rows (a region claim naming
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals) § 2.1's claim rows (a region claim naming
   either, a goal's form that holds a variable) and § 4.9's guard rows and its paragraph.
 - The inventory's [S-18 and G-21](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) say what fixed them, and
   [Q-M1e2.18](../../m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) and

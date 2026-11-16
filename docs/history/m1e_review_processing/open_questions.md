@@ -309,7 +309,7 @@ question is still the right home for:
    not with a review-processing stage.
 2. *The general rule.* `EIN_TRAVERSAL=tree` is still the only surface in the
    system the word **experimental** applies to
-   ([`configuration.md` § 2.3](../../kernel/configuration.md)), and what
+   ([`config.md` § 2.3](../../ein/user/reference/config.md#23-reading-the-judgement-columns)), and what
    that word licenses is undecided. What S1e.2.1 establishes is only a lower
    bound on the answer: on this occasion the true read-out was **cheaper** than
    the refusal, so the question was not tested.
@@ -330,7 +330,7 @@ question is still the right home for:
    did not exhaust, so making the sentence true means giving `ein-infer` a
    reason type — which is the same question as *what does a tree report where a
    lattice reports layers*, i.e. `T1d.10.6.4` again. Documented meanwhile in
-   [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../kernel/configuration.md).
+   [`config.md` § What `EIN_TRAVERSAL=tree` reports](../../ein/user/reference/config.md).
 
 ### Closed 2026-11-03 — answered by the ruling of 2026-10-16
 
@@ -340,7 +340,7 @@ surface. The ruling of 2026-10-16 already says so, verbatim: *"I don't want to
 have two different commands that give different and inconsistent results"*,
 and *"results must be consistent: region is a region of oracle, maxline is
 part of region, any model also part of region, independent of monotonicity"*
-([`solve_interface.md` § 0](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#0-the-ruling)).
+([`Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md` § 0](../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)).
 It makes no exception for a surface called experimental, so the general rule
 (item 2 above) is written: no surface, experimental or not, may state what the
 oracle contradicts or disagree with another command.
@@ -1167,7 +1167,7 @@ cost question rather than a design one:
 > ([`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`](../../../examples/ein-bugs/wrong-answers/alt-cap-shared.ein)),
 > open and deferred to [F22](../../../plans/followups/f22_exact_core_past_the_cap.md);
 > and the flag may change the core and nothing else
-> ([`configuration.md` § 2.5](../../kernel/configuration.md#25-the-config-principle-read-against-every-row)).
+> ([`config.md` § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
 > What was built: beside the capped list each fact keeps the arrival with the
 > smallest closure (`Kb::closure`, `Kb::best`), which `Kb::justifications`
 > offers the search and the `.einb` keeps (format 1.1). The pair below report
@@ -1666,7 +1666,7 @@ pre-empts M20, which binds the same crates.
 > ([`defined_behaviour.md` § 3.3](../../kernel/defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
 > The residue below, a `(?R ?a ?b)` head bound to an integer, is refused at
 > load where the activator is written down and at compile where a rule
-> derives it ([§ 4.6](../../kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
+> derives it ([§ 2.6](../../ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number)).
 > **Widened 2026-11-04** by M1e2
 > [S1e2.2.14](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.14_unread_names.md),
 > on the user's ruling of that day
@@ -1737,7 +1737,7 @@ answering either one alone risks answering the other by accident.
 > alone."*
 
 **What was ruled.** A failed artefact write leaves the exit code alone —
-[`defined_behaviour.md` § 4.4](../../kernel/defined_behaviour.md), pinned
+[`diagnostics.md` § 2.4](../../ein/user/reference/diagnostics.md#24-an-artefact-flags-failure), pinned
 by `ein-cli/tests/artefact_contract.rs`. Four of the five options say
 *additive: stdout, stderr and the exit code are unchanged* in their own
 `--help`, and a failed write does not make that false: the answer on stdout is
@@ -1753,7 +1753,7 @@ means *usage error* **and** *budget abort*, which is
 [TE-M4](README.md#the-findings)'s finding read from the other end. A third
 meaning added to the same integer is not an improvement, and a fourth code is
 a CLI-vocabulary change with its own blast radius —
-[`defined_behaviour.md` § 4](../../kernel/defined_behaviour.md) is the
+[`diagnostics.md` § 2](../../ein/user/reference/diagnostics.md#2-errors-and-exit-codes) is the
 table it would have to move.
 
 ### The three shapes, and why none of them is obviously right

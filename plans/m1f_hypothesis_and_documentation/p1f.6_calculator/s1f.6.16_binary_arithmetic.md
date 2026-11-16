@@ -456,7 +456,7 @@ Every number below is the release binary at `24a7fb34` (sha256 `f9f9774c5c9ee47a
 ([`01_grammar.md` § Rules](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)), so 78 rules take 78 activators,
 and nothing lets one fact activate several rules. Not available: one activator relation for all 78 (two rules of
 one name are refused, *conflicting definitions*); a macro's call written as a fact (refused at load since
-S1f.7.12, [`defined_behaviour.md` § 4.24](../../../docs/kernel/defined_behaviour.md#424-a-macros-call-is-no-fact--m1f-s1f712));
+S1f.7.12, [`diagnostics.md` § 2.24](../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact));
 the base's names held in a fact of a declared relation that a rule reads (S1f.5.18 refuses it: an argument of a
 declared relation may hold a fact). **What does work is to derive the 78 activators from one form at root**:
 activation reads a derived activator as a written one, and the activated rules compile when it appears, as

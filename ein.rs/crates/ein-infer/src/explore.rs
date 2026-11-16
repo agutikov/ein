@@ -2,7 +2,7 @@
 //! work it needs — M1e2
 //! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
 //! T1e2.1a.9.4, the design the user approved on 2026-10-16
-//! ([`solve_interface.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)).
+//! ([`cli.md`](../../../../docs/ein/user/reference/cli.md)).
 //!
 //! A question is a [`Mode`]: **which** part of `R` (all of it, the minimal
 //! line, the maximal line) and **what is asked** (describe it, find `N` of

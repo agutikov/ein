@@ -3,7 +3,7 @@
 **Schema version:** `ein-events/1`
 
 `ein solve --events FILE`, `ein saturate --events FILE` and — since M1c
-[S1c.1.3](../../history/m1c_external_validation/README.md#s1c13--ein-test)
+[S1c.1.3](../../ein/user/reference/cli.md#23-ein-test)
 — `ein test --events FILE` make the engine narrate what it did: **one JSON
 object per line**, opt-in, off by default.
 Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,
@@ -137,7 +137,7 @@ the shape [Q-M1e2.5](../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest
 refuses) were opt-in behind `(config :warn-derived-naf true)`, and left when
 S1e2.2.5 retired that flag on the user's ruling of 2026-11-04: the second's
 sentence is *forbid*'s refusal now, a load error rather than a line
-([`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)),
+([`diagnostics.md` § 2.7](../../ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)),
 and every non-monotone site is the detector's warning on every surface that
 reports R (`monotonicity` below). The first is the library's
 `naf_deps::derived_naf_warnings`, which the corpus's `naf` shape op reads. No

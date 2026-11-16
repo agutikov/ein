@@ -12,7 +12,7 @@ loader has a flag that makes it required, start with default false so not break 
 stages finished swith to default true and fix remaining ein code"*. Asked whether the flag can change an answer:
 *"yes, the flag only decides loading"*. It decides whether a program loads, never what a loaded program answers,
 so it keeps the rule that config never changes the answer
-([`configuration.md`](../../../docs/kernel/configuration.md) § 2.5). What that settles here:
+([`config.md`](../../../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row) § 2.5). What that settles here:
 - **The grammar part is done.** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3 gave `(macro …)` an optional `:why`, once,
   after the body (`54715b5f`, `ein_ir::macros::Macro::why`), so in the generated grammar every form that can carry
   a template may: `:why` on a relation, a rule, an hrule and a macro, `:goal-text` on a query, `:source` on a fact.
@@ -213,7 +213,7 @@ re-derive the meaning of.
 - **The flag** (T1f.5.14.6), **met 2026-11-08**: with it on, a missing `:why` is a load error,
   one line naming the form; with it off, every program loads as before. It
   decides whether a program loads and nothing a loaded program answers, a test
-  holds both, and [`configuration.md`](../../../docs/kernel/configuration.md)
+  holds both, and [`config.md`](../../../docs/ein/user/reference/config.md)
   has its row ([§ T1f.5.14.6 record](#t1f5146-record-2026-11-08)).
 - **The flip** (T1f.5.14.7): the default is true, and every program under
   `examples/`, `tests/`, `corpus/` and `stdlib/`, and every inline program of
@@ -575,7 +575,7 @@ them in the tree:
   forms and a base directory, `from_ir.rs`), and one CLI option on every command that loads a program, so that a
   program without `:why` can still be loaded once the default is true.
 
-Wherever it lands, [`configuration.md`](../../../docs/kernel/configuration.md) gains a row, with *no: it decides
+Wherever it lands, [`config.md`](../../../docs/ein/user/reference/config.md) gains a row, with *no: it decides
 whether a program loads* in its *does it change the answer* column, and `config_reference.rs` pins it.
 
 **Its test:** with the flag on, a program missing a `:why` on each of the forms it requires is refused with one
@@ -617,8 +617,8 @@ on the agent's report: what the flag requires on the shipped path, the stdlib, t
   the command gives every load error (1, `ein test`'s 2):
   `relation 'p' has no :why "…", which this load requires of every relation, rule and hrule` (`… rule and hrule`
   becomes `… rule, hrule and macro` in a `generated-parser` build).
-  [`defined_behaviour.md` § 4.10](../../../docs/kernel/defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)
-  and [`configuration.md` § 3.4](../../../docs/kernel/configuration.md#34-the-option-that-decides-loading) state it.
+  [`diagnostics.md` § 2.10](../../../docs/ein/user/reference/diagnostics.md#210-a-form-with-no-why)
+  and [`config.md` § 3.4](../../../docs/ein/user/reference/config.md#34-the-option-that-decides-loading) state it.
 - **The tests.** `ein-ir/tests/load_semantics.rs`: `require_why_refuses_each_form_without_one` (each kind refused
   with its line, and loaded without the flag; the lines in pass order beside another refusal),
   `a_macro_needs_a_why_only_where_its_parser_reads_one` (both arms: the gate runs it without the feature, and it

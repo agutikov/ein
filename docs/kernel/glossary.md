@@ -177,7 +177,7 @@ re-derivations only under `:record-alternative-justifications`, on by
 default — off, each fact's first derivation is all the search is
 offered, which may name another core, and with it the rules `refuted by`
 names, and changes nothing else, the config principle's one exemption
-([`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row),
+([`config.md` § 2.5](../ein/user/reference/config.md#25-the-config-principle-read-against-every-row),
 the user's ruling of 2026-11-04).
 
 **A node that is not dead has no core** (M1f S1f.5.8, the user's ruling of 2026-11-07 on
@@ -445,7 +445,7 @@ a route's `exhausted` says: the part of R the run asked is all there.
 No config option affects the problem's lattice; config may only affect
 search speed (the user, 2026-10-15). A budget may stop a run, and the
 report then says it is partial. See
-[`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row).
+[`config.md` § 2.5](../ein/user/reference/config.md#25-the-config-principle-read-against-every-row).
 
 ---
 

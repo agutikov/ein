@@ -315,7 +315,7 @@ T1f.5.27.3, the pages:
   page did not have; § `heavy_dump` names `--dev-host`.
 - [`README.md`](../../../README.md)'s development loop, [`utils/README.md`](../../../utils/README.md)'s cadences
   (`stdlib_census.py`, the bundle, `check_test_scratch.py`, `doc_audit.py`, `ci_container.sh`),
-  [`configuration.md`](../../../docs/kernel/configuration.md)'s `EIN_FUZZ_ITERS`, `EIN_ID_SEEDS` and
+  [`config.md`](../../../docs/ein/user/reference/config.md)'s `EIN_FUZZ_ITERS`, `EIN_ID_SEEDS` and
   `EIN_CORPUS_SLOW` rows (the last now naming its eight readers), and `utils/ci_container.sh`'s usage.
 - The comments that named a moved step's tier: `stdlib_coverage.rs`, `stdlib_census.py`, `review_bundle.py`'s
   docstring, `fuzz_properties.rs`' budget and its refusal property's cost, `id_order_invariance.rs`, `region.rs`,

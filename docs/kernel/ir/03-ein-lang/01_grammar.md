@@ -154,7 +154,7 @@ Which keywords a form requires, and that each appears once, stay the loader's.
 | `solve` | `:hrules`, `:hypothesis-relations`, `:no-hypothesis` | what may be guessed: the lattice | no |
 | | `:no-search` | nothing: a flag, no value, the lattice root alone (M1f S1f.6.36) | no |
 | | `:expect` | a claim about the region | no |
-| `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags, `true` or `false` ([`configuration.md`](../../configuration.md)) | no |
+| `config` | `:lattice-sanity-check`, `:record-alternative-justifications` | the flags, `true` or `false` ([`config.md`](../../../ein/user/reference/config.md)) | no |
 | `import` | `:symbols` | the names imported, flat: each selects the module's declaration of it and its facts of that relation ([§ Import](#import)) | no |
 | | `:as` | an alias | no |
 | `macro` | `:why` | a string, after the body (the user's ruling of 2026-11-08) | at load, by default |
@@ -239,7 +239,7 @@ another count: a fact, a fact inside a fact at any depth, a pattern or a
 conclusion of a rule or an hrule, a goal's pattern and a fact a claim lists,
 one line a form, `t.ein:3:2: the fact (likes Bob) gives likes 1 argument, and
 (relation likes Person Drink) declares 2 — …`
-([`defined_behaviour.md` § 4.26](../../defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
+([`diagnostics.md` § 2.26](../../../ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)).
 A bare `(relation opaque)` declares none, so `(opaque)` is its one form. A
 keyword pair is no argument. A relation nothing declares has no count and is
 not held, a relation written as a variable, `(?R ?a ?b)`, is not read, and
@@ -286,7 +286,7 @@ hrule's conclusion that holds no variable; a stored negation's denied fact is
 no term, and what it nests is. A rule reads it, `:match (written (n ?p ?a))`,
 which is how a representation module checks every term of its own a file
 writes, wherever it sits; no program writes it
-([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638),
+([`diagnostics.md` § 2.30](../../../ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load),
 [`06_reserved_names.md` § `written`](06_reserved_names.md#written--what-a-file-writes-stated-by-the-loader-m1f-s1f638)):
 
 ```lisp
@@ -310,7 +310,7 @@ relation→verb vocabulary, so untemplated relations stay in IR. Optional in
 the grammar, on a relation, a rule, an hrule and a macro alike, and required at
 load by default since M1f S1f.5.14's T1f.5.14.7; `--no-require-why` loads a
 program without one (T1f.5.14.6, T1f.5.14.7,
-[`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)). Example:
+[`diagnostics.md` § 2.10](../../../ein/user/reference/diagnostics.md#210-a-form-with-no-why)). Example:
 
 ```lisp
 (relation drink-loc Drink House :why "{?1} is drunk in {?2}")
@@ -434,7 +434,7 @@ b))` never was (M1f S1f.7.10); no fact or value is headed `absent`, which is
 negation as failure, a premise's test, and the stored negation of a fact is
 `(not …)` (S1f.7.7); and `false` takes no argument, `(false)` alone, as a
 fact and as a value (S1f.7.6). Each is a parse error with a note
-([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)); until those stages each was
+([`diagnostics.md` § 2.22](../../../ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)); until those stages each was
 stored. And the
 declarators `rule` / `hrule` / `query` / `config` / `trace` cannot be fact
 heads either (each is a reserved word, never a name). Everything else —
@@ -468,7 +468,7 @@ via its `:source`; the un-annotated property tag is background):
 
 **A fact is not a macro's call** (M1f
 [S1f.7.12](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.12_a_macro_call_written_as_a_fact.md);
-[`defined_behaviour.md` § 4.24](../../defined_behaviour.md#424-a-macros-call-is-no-fact--m1f-s1f712)).
+[`diagnostics.md` § 2.24](../../../ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)).
 A `(macro …)` is called in a rule's or an hrule's `:match` and `:assert` and
 in a query's `:goal`, where the loader replaces the call by the macro's body.
 A fact is not expanded. So a fact headed by a macro's name, `(settled Ann)`
@@ -586,13 +586,13 @@ it, each alternative a state of R. Nor does it conclude a compound fact, a
 connective inside a fact or under a conclusion's `not`, since a value is a name
 or a fact a state could hold. Both are refused at the parse (the grammar's
 table, S1f.6.37's rows), and through a macro's expansion at load
-([`defined_behaviour.md` § 4.16](../../defined_behaviour.md#416-a-malformed-primitive-a-macros-expansion-writes-at-load--m1f-s1f524)).
+([`diagnostics.md` § 2.16](../../../ein/user/reference/diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes)).
 Until S1f.6.37 the compiler split the top `(and …)` alone, so an inner one,
 written or left by a macro's call written as one conjunct, was stored as one
 fact headed `and` and none of its members (E-63, W94).
 **An hrule proposes one fact per match**, each a commitment of its own, so its
 conclusion, read flat, is one conjunct: one of more is refused at load since
-S1f.6.37 ([`defined_behaviour.md` § 4.29](../../defined_behaviour.md#429-an-hrule-proposes-one-fact-per-match--m1f-s1f637),
+S1f.6.37 ([`diagnostics.md` § 2.29](../../../ein/user/reference/diagnostics.md#229-an-hrule-proposes-one-fact-per-match),
 Q-M1f.271's default, the user's to revise), where the hypothesis layer proposed
 the first and dropped the others in silence (E-65, W95). Write one hrule per
 conclusion.
@@ -606,12 +606,12 @@ nothing, and its parameter matched every value, W33). A parameter that names a
 relation, `?rel` above, binds a name: one its activator binds to a fact is
 refused at load, where the activator is written down and, since S1f.5.18, where
 a rule could derive it, which the loader reads off the program
-([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+([`diagnostics.md` § 2.9](../../../ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)).
 One that can be bound to `eq`, the relation of equality between two values,
 heads premises and conclusions of two arguments: one of another arity, `(?R
 ?x)` under `(r eq)`, is `(eq ?x)`, which the grammar refuses where it is
 written, and is refused at load since M1f S1f.5.9, read the same way
-([`defined_behaviour.md` § 4.14](../../defined_behaviour.md#414-eq-at-another-arity--m1f-s1f59));
+([`diagnostics.md` § 2.14](../../../ein/user/reference/diagnostics.md#214-eq-at-another-arity));
 until then the run stopped where the plan was compiled, or the conclusion
 stored `(eq a)` (W60).
 
@@ -663,7 +663,7 @@ activator binds to a name; its arguments are values, variables or patterns
 [S1e2.2.24](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.24_silent_patterns_refused.md)
 (W24, the user's rulings of 2026-11-05) the loader refuses, with one line
 naming the rule and the clause
-([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
+([`diagnostics.md` § 2.9](../../../ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)):
 an atom (a run of digits among them, an integer until M1f S1f.5.4), a
 variable, `_` or a string written where a premise goes (`_` and a string at
 the parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2); a relation written as a variable no parameter binds, at the top level
@@ -703,7 +703,7 @@ claim, `(solve …)` list, `:over`, import, trace step or macro body writes it, 
 each is refused at the parse, at the `open`, with the note *open is reserved: it
 is the verdict a rule's :assert states, written as the whole :assert, (open) or
 (open ?R), and nowhere else, so it names no relation and no value*
-([`defined_behaviour.md` § 4.17](../../defined_behaviour.md#417-open-is-written-only-as-a-rules-verdict--m1f-s1f523)).
+([`diagnostics.md` § 2.17](../../../ein/user/reference/diagnostics.md#217-open-is-written-only-as-a-rules-verdict)).
 A macro's body writes no `open` either, called or not
 ([Q-M1f.86](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f86--may-a-macros-body-write-open)):
 the verdict is written in the rule. Until S1f.5.23 `open` was a word a
@@ -730,7 +730,7 @@ negation: where the program shows that `?x` can hold a name, the rule or the
 hrule is refused at load, and where only a run meets the name the firing
 concludes nothing for it (M1f
 [S1f.7.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.4_the_negation_of_a_name_concluded.md);
-[`defined_behaviour.md` § 4.23](../../defined_behaviour.md#423-not-of-a-name-is-the-negation-of-no-fact-and-an-hrule-may-read-not--m1f-s1f74-s1f72)).
+[`diagnostics.md` § 2.23](../../../ein/user/reference/diagnostics.md#223-not-of-a-name-is-the-negation-of-no-fact-and-an-hrule-may-read-not)).
 Until S1f.7.4 it stored `(not k)`, which no program can write (W84).
 
 **Every variable a conclusion writes is bound** on every way the `:match` can
@@ -746,7 +746,7 @@ rule or an hrule that writes one nothing binds is refused at load, one line
 per variable naming the two explicit spellings of what the implicit form could
 mean: a premise such as `(is-a ?y T)`, *every object of a type*, or `(eq ?y
 ?y)`, *every name of the program*
-([`defined_behaviour.md` § 4.13](../../defined_behaviour.md#413-a-conclusions-variable-nothing-binds--m1f-s1f510)).
+([`diagnostics.md` § 2.13](../../../ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)).
 Until S1f.5.10 it loaded, and the run stopped where a firing reached the
 variable, or answered where none did (W57).
 
@@ -763,7 +763,7 @@ S1f.5.23; five more shapes were refused at load until then, each a parse error
 since).
 The form, the refusals and their messages are in
 [`06_reserved_names.md` § the verdict atom](06_reserved_names.md#the-verdict-atom--open-m1d-p1d2-s1d23-read-since-s1d24)
-and [`defined_behaviour.md` §4.2](../../defined_behaviour.md).
+and [`diagnostics.md` §2.2](../../../ein/user/reference/diagnostics.md#22-the-verdict-atoms-refusals).
 **The tally is read twice.** Since S1d.2.4
 [`obligations::tally`](../../../../ein.rs/crates/ein-infer/src/obligations.rs)
 reports it — on `--events` as one `owe` line per undischarged instance, in
@@ -931,10 +931,10 @@ region and about specific solutions"*.
   program states :no-search*. A value after it is refused at the parse, with a
   note that it takes none. It is the way to say *judge root alone*: a list
   that names what an obligation owes is refused
-  ([`defined_behaviour.md` § 4.27](../../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634)), and an hrule
+  ([`diagnostics.md` § 2.27](../../../ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)), and an hrule
   that proposes only what root holds is a workaround. `ein solve --no-search`
   is another thing, a command declining to discover R
-  ([`configuration.md` § 3.3](../../configuration.md#33-what-an-option-can-do-to-the-answer)).
+  ([`config.md` § 3.3](../../../ein/user/reference/config.md#33-what-an-option-can-do-to-the-answer)).
 - **`solve` lexes as a keyword**, as `query` and `config` do, so it cannot be
   a relation name ([`00_ebnf.md`](00_ebnf.md)).
 - `:hrules` is read by the hrule rung, the other two by the candidate filter
@@ -943,7 +943,7 @@ region and about specific solutions"*.
 - **The lists do not contradict the program's other hypothesis declarations**
   (M1f S1f.6.34, the user's ruling of 2026-11-13 on E-47), read on root's
   fixpoint, or the program is refused at load, one line per conflict, on every
-  command ([`defined_behaviour.md` § 4.27](../../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634)):
+  command ([`diagnostics.md` § 2.27](../../../ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)):
   no active hrule proposes a relation `:hypothesis-relations` leaves out or
   `:no-hypothesis` names; with no hrule, no obligation owes one; no relation is
   in both lists; and no listed relation is closed. An hrule's candidates are no
@@ -956,7 +956,7 @@ region and about specific solutions"*.
 - **Every name a list holds names something the program has** (M1f S1f.7.8,
   W76), or the program is refused at load, one line per name, on every
   command
-  ([`defined_behaviour.md` § 4.20](../../defined_behaviour.md#420-a-solve--list-names-what-the-program-has--m1f-s1f78)):
+  ([`diagnostics.md` § 2.20](../../../ein/user/reference/diagnostics.md#220-a-solve--list-names-what-the-program-has)):
   - `:hrules (h (a b) (c d) …)`: `h`, and every bare name after it, is an
     hrule the program declares. Each `(a b)` is an activator, which binds
     `h`'s parameters once, so it has as many arguments as `h` has parameters.
@@ -1052,7 +1052,7 @@ exists to prevent.
 
 **A file may carry several `(query …)` blocks**, each an independent question
 over the same ontology, rules, facts and, since M1e2 S1e2.1a.4, lattice. Before M1c
-[S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+[S1c.1.2](../../../ein/user/syntax-and-semantics/query.md#claims)
 the **last** one silently won and the rest were discarded at load. `ein solve`
 answers every one of them, printing `query <i> of <n>` above each. Since M1e2
 S1e2.1a.5 they are read off **one** run — R does not depend on the query, so a
@@ -1077,7 +1077,7 @@ any keyword a query does not take is (S1f.5.11's default).
 [S1f.7.5](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.5_a_macro_called_in_a_goal.md),
 [S1f.7.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.11_a_goal_over_a_relation_nothing_makes.md),
 [S1f.7.1](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.1_a_goals_variable_relation_in_a_nested_pattern.md);
-[`defined_behaviour.md` § 4.21](../../defined_behaviour.md#421-a-goal-is-held-to-what-a-rules-match-is-held-to--m1f-s1f75-s1f711-s1f71)).
+[`diagnostics.md` § 2.21](../../../ein/user/reference/diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)).
 Three things follow, each refused or done at load, on every command:
 
 - **A macro call in a goal is expanded**, as in a rule: `(query :goal (and
@@ -1103,7 +1103,7 @@ Three things follow, each refused or done at load, on every command:
   pattern, `(says (?R ?g))` (S1f.7.1).
 
 **`:expect` — what the answer should be (M1c
-[S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)).**
+[S1c.1.2](../../../ein/user/syntax-and-semantics/query.md#claims)).**
 A query may state its own answer, and the engine checks it: `ein solve` exits
 **1** when the claim is false, and prints what disagreed. Three shapes, and the
 verdict is *implied* by which one is used rather than asserted beside it:
@@ -1158,7 +1158,7 @@ a pattern) is a load error. `examples/features/10_expect.ein` is the worked
 fixture and `examples/broken/load/expect_*.ein` are the four refusals.
 
 **`ein test` is the runner** (M1c
-[S1c.1.3](../../../history/m1c_external_validation/README.md#s1c13--ein-test)).
+[S1c.1.3](../../../ein/user/reference/cli.md#23-ein-test)).
 `ein solve` checks an `:expect` because ignoring one would be worse than not
 having the keyword; `ein test <file|dir>…` exists so that a corpus of them is a
 **status code** rather than something to read:
@@ -1239,7 +1239,7 @@ program writes it after its `?`, up to the first `}`, so `{?isR*}` names
 reference took a letter or digit and then letters, digits, `_` and `-`, and
 printed any other as written), and a template naming a variable that holds a
 `}`, which no reference can reach, is refused at load
-([`defined_behaviour.md` § 4.11](../../defined_behaviour.md#411-a-template-reference-no-reference-can-reach--m1f-t1f545)). The vocabulary lives entirely in the
+([`diagnostics.md` § 2.11](../../../ein/user/reference/diagnostics.md#211-a-template-reference-no-reference-can-reach)). The vocabulary lives entirely in the
 puzzle; nothing is hardcoded in the renderer. The value is a **single** string
 literal (ein-lang does not concatenate adjacent strings). Example (the Zebra
 goal binds `?who_water` / `?h_zebra` / …):

@@ -316,7 +316,7 @@ multi-assert), looks each up, and:
 
 `build_fact` walks the template resolving `Reg`s; an unbound var in an
 `:assert` is a hard error — a typed error, rendered as a `KeyError` line
-([defined_behaviour.md](../../../kernel/defined_behaviour.md#4-errors-and-exit-codes)).
+([diagnostics.md](../../../ein/user/reference/diagnostics.md#2-errors-and-exit-codes)).
 
 ### Contradiction detection
 

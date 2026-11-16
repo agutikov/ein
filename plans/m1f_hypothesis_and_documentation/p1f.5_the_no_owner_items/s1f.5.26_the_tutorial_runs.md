@@ -24,7 +24,7 @@ The user, 2026-11-10: *"fix the tutorial, new stage"*.
 [`docs/guide/04_solving_the_whole_puzzle.md`](../../../docs/guide/04_solving_the_whole_puzzle.md) shows what
 `zebra2.ein` is made of in a `lisp` block whose first line is `(config :enable-pre-branch-lookahead true) ; an
 engine knob`. That flag was retired at M1e2 S1e2.1c.5, on 2026-11-03
-([`configuration.md`](../../../docs/kernel/configuration.md) lists it and the stage that retired it; this page said
+([`config.md`](../../../docs/ein/user/reference/config.md) lists it and the stage that retired it; this page said
 S1e2.1a.5 until T1 read the refusal's note), and `zebra2.ein` no longer writes it. A reader who copies the line gets
 the retired-flag refusal.
 

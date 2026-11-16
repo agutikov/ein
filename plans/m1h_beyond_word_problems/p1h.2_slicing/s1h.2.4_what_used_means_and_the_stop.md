@@ -59,7 +59,7 @@ stop is pages only.
      because of a fact now gone), the page shows the program and says what the file then is;
    - **`ein render program`:** the view with the two parts told apart, as DOT rendered for one program.
    For each: the option that would ask for it, counted against the CLI's options as
-   [`configuration.md`](../../../docs/kernel/configuration.md) lists them, and what it costs a run that asks
+   [`config.md`](../../../docs/ein/user/reference/config.md) lists them, and what it costs a run that asks
    and one that does not (nothing).
 6. **T1h.2.4.6 — the questions,** each beside its programs:
    [Q-M1h.11](../open_questions.md#q-m1h11--what-used-means), what *used* means;

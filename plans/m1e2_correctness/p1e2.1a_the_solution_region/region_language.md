@@ -9,7 +9,7 @@ for acceptance. **Nothing in the parser has moved.**
 [Q-M1e2.7](../open_questions.md#the-rulings-and-the-questions-back-2026-10-16),
 the third answer's sketch
 ([§ The third answer](../open_questions.md#the-third-answer-2026-10-16)), the
-approved interface ([`solve_interface.md`](solve_interface.md)), and one
+approved interface ([`cli.md`](../../../docs/ein/user/reference/cli.md#2-the-commands)), and one
 measurement (§ 2): every corpus `:expect` read against R, taken with
 `cargo run --release -p ein-infer --example expect_under_r` on 2026-10-16 at
 `b09123d4`.

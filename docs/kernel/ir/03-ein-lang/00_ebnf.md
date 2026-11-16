@@ -136,7 +136,7 @@ Six terminal facts that are load-bearing and easy to lose:
    an `absent` that opens a form, at an `eq` or `neq` that opens a form inside
    another, and at an argument written after `(false`, carries a note saying
    so
-   ([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
+   ([`diagnostics.md` § 2.22](../../../ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)).
    A keyword is `:` and
    a run of name characters the same way: `:why` is the token `':why'`, and
    `:where` a `KEYWORD`, which no production of §2 takes, so a keyword a form
@@ -412,7 +412,7 @@ different messages, and the corpus has a fixture directory for each
 > line, naming it and where Unicode is allowed (§1, fact 6). A loader error
 > about a top-level form ends `at None`. Both are
 > defined behaviour, stated in
-> [`defined_behaviour.md` §1](../../defined_behaviour.md), and every
+> [`diagnostics.md` §1](../../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics), and every
 > `.expected` file under `examples/broken/` is baselined against them.
 
 - **That a form's keywords are written, and once.** The grammar states which
@@ -427,7 +427,7 @@ different messages, and the corpus has a fixture directory for each
   against its `(relation …)` signature.
 - **Unbound variables**: a `:assert` variable that no `:match` premise binds,
   and a guard on a variable no premise before it binds
-  ([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+  ([`diagnostics.md` § 2.9](../../../ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)).
 - **What a macro's body expands to.** A `Template` takes any head at any
   arity, and a call takes any premise as an argument (`Arg`'s `Connective`), so
   a premise that is a name, `eq` or `absent` at another arity, a `not` of no
@@ -453,7 +453,7 @@ different messages, and the corpus has a fixture directory for each
   §2 refuses written out since S1f.7.7, S1f.7.6 and S1f.7.10: a fact, value
   or conclusion of `absent`, `false` with an argument, and `(eq …)` as a
   value
-  ([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
+  ([`diagnostics.md` § 2.22](../../../ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)).
 - **Where an `(or …)` sits, how many variables a clause writes, and a goal's
   relations.** `Connective` takes an `(or …)` wherever a premise goes, so an
   `(or …)` written as a premise of an `(and …)`, an `(absent …)` or a
@@ -462,7 +462,7 @@ different messages, and the corpus has a fixture directory for each
   loader refuses each since M1f S1f.5.21, a macro's expansion included; until
   then the compiler did, where it compiled a plan, so a command that never
   compiled it answered
-  ([`defined_behaviour.md` § 4.15](../../defined_behaviour.md#415-the-compilers-refusals-a-program-reached-at-load--m1f-s1f521)).
+  ([`diagnostics.md` § 2.15](../../../ein/user/reference/diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable)).
 - **The kernel's names.** A dunder, `__closed__` or `__symmetric__`, is a
   `NAME` the loader refuses where a program binds one (Q-M1f.7 (b), T11).
   Where `open` stands is the grammar's since M1f S1f.5.23, a rule's whole
@@ -482,7 +482,7 @@ A specification with no test is a wish. What pins the grammar:
 | | |
 |---|---|
 | [`ein-ir/tests/grammar_pages.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_pages.rs) | §1's and §2's blocks, written from `ein.l` and `ein.y` and failing when they differ; every token `ein.y` names a rule of `ein.l`; and **the grammar's table**, a refused program per place, its report banked in `tests/golden/grammar_table.txt`, with the loader lines the grammar took over named by its rows |
-| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt` (`grep -c '^=== ' ein.rs/crates/ein-ir/tests/golden/grammar_decisions.txt`, 2026-11-09): `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the thirty `examples/broken/*.ein` reports, whose `.expected` files are the engine's defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
+| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt` (`grep -c '^=== ' ein.rs/crates/ein-ir/tests/golden/grammar_decisions.txt`, 2026-11-09): `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the thirty `examples/broken/*.ein` reports, whose `.expected` files are the engine's defined output — [`diagnostics.md` §1](../../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics) |
 | the same file's `a_keyword_is_a_whole_word_in_every_place` | **53 460 parses** (M1e2 S1e2.2.22, restated at the swap): every word the hand-written parser matched as a literal and the kernel's eight other heads, each followed by a name character and an argument shape, in each of the twenty places the parser reads a keyword; no name split after a word, every trace word followed by a name character a parse error, and the 348 parses of a word before `-` and a digit each reading the name it spells (§1, fact 1) |
 | [`ein-cli/tests/unicode_only_in_a_string.rs`](../../../../ein.rs/crates/ein-cli/tests/unicode_only_in_a_string.rs) | a character that is not ASCII outside a string literal and a comment, every place a token can stand on every command, and twelve characters in each place through the parser, refused at the character with §1's fact 6's line; each in a string and a comment loading on every command; and an imported module that cannot be read as text refused as the program is (M1f S1f.5.22) |
 | [`ein-ir/tests/generated_parser.rs`](../../../../ein.rs/crates/ein-ir/tests/generated_parser.rs) | a report is the same twice (F11's patched `lrpar`); a report cut at the budget says so; the nesting limit; the end of input placed where the text ends; and the lexer's tokens held to T4's, kind and span, over 21 083 inputs (T1f.5.5.12) |

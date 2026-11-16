@@ -1,4 +1,4 @@
-//! [`docs/kernel/configuration.md`] — the configuration reference, pinned.
+//! [`docs/ein/user/reference/config.md`] — the configuration reference, pinned.
 //!
 //! M1e [S1e.5.1](../../../../docs/history/m1e_review_processing/README.md#s1e51--the-configuration-reference).
 //! The page enumerates three surfaces — the 17 `(config …)` flags, the CLI
@@ -45,7 +45,7 @@
 //!    name the two dev-only crates read has a row in the page's harness
 //!    class: the worker pool's `EIN_TEST_JOBS` among them (M1f S1f.6.39).
 //!
-//! [`docs/kernel/configuration.md`]: ../../../../docs/kernel/configuration.md
+//! [`docs/ein/user/reference/config.md`]: ../../../../docs/ein/user/reference/config.md
 
 use std::path::{Path, PathBuf};
 use std::process::Command;

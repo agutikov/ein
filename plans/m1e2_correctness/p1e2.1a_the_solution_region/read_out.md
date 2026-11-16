@@ -15,7 +15,7 @@ in `ein solve` has moved.** T1e2.1a.5.2 builds what this page says.
   [Q-M1e2.7](../open_questions.md#the-rulings-and-the-questions-back-2026-10-16),
   and the third answer's `(region …)` form
   ([§ The third answer](../open_questions.md#the-third-answer-2026-10-16));
-- the approved interface ([`solve_interface.md`](solve_interface.md)), whose
+- the approved interface ([`cli.md`](../../../docs/ein/user/reference/cli.md#21-ein-solve)), whose
   § 2.1 left *"how it is laid out"* and *"exit codes other than `--single`'s"*
   to this page;
 - the region language as built ([`region_language.md`](region_language.md),
@@ -688,7 +688,7 @@ solution of ein program is successful execution of ein tool"*.
   line, a budget), and asking one is the user's call. `ein test` keeps exit 1
   for it, since checking is all it does.
 - **`--single`'s exit codes, ruled in
-  [`solve_interface.md` § 2.1](solve_interface.md#21-ein-solve)
+  [`cli.md` § 2.1](../../../docs/ein/user/reference/cli.md#21-ein-solve)
   as 1 for `Ambiguity`, `Contradiction`, `Open` and *not decided*, are 0.**
   That rule was there so a shell could test uniqueness. A program that
   expects one solution can say so as a claim, and a refuted claim exits 1.

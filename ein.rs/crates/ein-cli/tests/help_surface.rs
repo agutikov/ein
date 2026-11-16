@@ -22,7 +22,7 @@ use ein_corpus::{Scratch, golden, golden_path};
 /// diff; it does not pass this.
 ///
 /// `ein test`'s nine are M1c
-/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
+/// [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)'s
 /// (plus M1d S1d.4.1's `--json-report`), and `ein kb save --saturate` exists
 /// only under the `einb` feature, so each is counted apart from the rest.
 ///
@@ -37,7 +37,7 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--diff-models` (S1e2.1.4), and S1e2.1a.1's `--dump-region`,
     // `--region-limit` and `--region-states`. And S1e2.1a.9's four region
     // flags, `--minimal`, `--maximal`, `--single` and `--region-budget`
-    // ([`solve_interface.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)):
+    // ([`cli.md`](../../../../docs/ein/user/reference/cli.md)):
     // At S1e2.1a.5's switch the walk's nine went (hidden, refused with what
     // replaced each): `-e`, `-m`, `-E`, `-o`, `-z`, `-d`, `-D`,
     // `--dump-region`, `--region-states`. S1e2.1b.5 added `--monotone`, the
@@ -71,7 +71,7 @@ const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein render region\n", 3),
 ];
 
-/// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
+/// M1c [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)'s
 /// parser. **Nine**: eight, and the number is the design, the two that decide
 /// whether a run can finish (`--region-budget`, `-T`; the walk's `-m` and `-E`
 /// retired with `solve`'s at M1e2 S1e2.1a.5), the two that decide how much of

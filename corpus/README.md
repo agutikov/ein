@@ -123,7 +123,7 @@ allowance: add the cell and the rule together, or the check cannot tell it from
 a stale argv.
 
 **`test` is the one run name that can fail on the file's own account.** M1c
-[S1c.1.3](../docs/history/m1c_external_validation/README.md#s1c13--ein-test)
+[S1c.1.3](../docs/ein/user/reference/cli.md#23-ein-test)
 added `ein test <path>`, which runs whatever `:expect` the file's queries carry
 and exits 1 when one of them is false — so a `test` cell in the exit golden is
 banking a claim the *program* makes, not one the engine happens to render. It
@@ -372,9 +372,9 @@ process sweep cannot flip them from outside.
 
 **Since the switch no route reads a lever**, and a cell is a claim that it
 changes nothing printed: C4 of
-[`solve_interface.md`](../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#1-the-contract),
+[`cli.md`](../docs/ein/user/reference/cli.md#1-the-contract),
 and the user's config principle of 2026-10-15
-([`configuration.md` § 2.5](../docs/kernel/configuration.md#25-the-config-principle-read-against-every-row)).
+([`config.md` § 2.5](../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
 `corpus_cli.rs` runs each cell for its exit code. Since M1e2 S1e2.1a.6
 **`ein-cli/tests/lever_invariance.rs` holds what it prints**: every declared
 cell under each of `ein solve`'s fifteen questions, stdout, stderr, the exit

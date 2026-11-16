@@ -148,7 +148,7 @@ import, each loading without a word:
 
 ## T4 record, 2026-11-11
 
-[`defined_behaviour.md` § 4.24](../../../docs/kernel/defined_behaviour.md#424-a-macros-call-is-no-fact--m1f-s1f712)
+[`diagnostics.md` § 2.24](../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact)
 is new: where a macro is called, the six lines, what is not expanded and what stays.
 [`01_grammar.md` § Facts](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) says a fact is not a macro's call,
 `06_reserved_names.md`'s `macro` row the same, and `examples/README.md` names the witnesses. `ein_ir::macros`'

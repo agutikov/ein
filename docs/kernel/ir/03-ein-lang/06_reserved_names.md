@@ -248,7 +248,7 @@ a model*, so `false` outranks it and a discharged model outranks it; it exits
 **0** like the other three. It is **scoped** — only a program that *states* an
 obligation can reach it, which is why the 92 corpus entries that declare none
 report exactly the words they did before P1d.2
-([`defined_behaviour.md` §5](../../defined_behaviour.md),
+([`cli.md` §5](../../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line),
 [the census](../../../history/m1d_satisfiability/openness_census.md)).
 
 `:expect` did **not** grow a word for it, and could not: all three of its forms
@@ -276,7 +276,7 @@ E1), and a kernel relation as `relation` is: the loader states
 a program's, a local module's or a stdlib module's (for a stored negation
 `(not P)`, the facts nested in P's arguments), and for the facts a rule's or an
 hrule's conclusion nests where they hold no variable
-([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)).
+([`diagnostics.md` § 2.30](../../../ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)).
 
 | | |
 |---|---|
@@ -366,7 +366,7 @@ rule calls loads ([`02_patterns.md`](02_patterns.md), `defined_behaviour.md` § 
 2026-11-11, M1f P1f.7's value rule): `eq`, `neq`, `absent`, `and`, `or` and
 `false` with an argument head no value, written or left by a macro's expansion,
 and `not` does, a stored negation being a fact
-([`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
+([`diagnostics.md` § 2.22](../../../ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)).
 
 ## Hypothesis / query control
 
@@ -394,7 +394,7 @@ whose note names `(solve …)`. Until
 T1f.5.5.5 the loader held the two lists, `QUERY_KEYWORDS` and `SOLVE_KEYWORDS`
 in [`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), which no
 program reached after the swap. The diagnostics are in
-[`defined_behaviour.md` §4.1](../../defined_behaviour.md). It was a silent
+[`diagnostics.md` §2.1](../../../ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals). It was a silent
 no-op, which stopped being survivable when a keyword could carry a *test*.
 
 ### The five mechanisms, and each pair — M1f S1f.6.34
@@ -422,8 +422,8 @@ debt's activator ([`solution_semantics.md` § 1.4](../../../ein/reasoning/kb-evo
 | NS | `(solve :no-search)` (M1f S1f.6.36) | no rung runs: H is empty, the lattice root alone; an obligation judges root and proposes nothing | the ladder, before rung 1 |
 
 No list and no closure filters an hrule's candidates. **The pairs** (the user's table of 2026-11-13, refused or noted
-at load on every command since S1f.6.34, [`defined_behaviour.md` §
-4.27](../../defined_behaviour.md#427-a-programs-hypothesis-mechanisms-do-not-contradict-one-another--m1f-s1f634)):
+at load on every command since S1f.6.34, [`diagnostics.md` §
+4.27](../../../ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)):
 
 | pair | verdict |
 |---|---|

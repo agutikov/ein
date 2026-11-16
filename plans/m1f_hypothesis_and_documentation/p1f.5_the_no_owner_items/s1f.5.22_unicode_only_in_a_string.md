@@ -328,10 +328,10 @@ string surface byte for byte, unchanged.
 - [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md): the lexical block re-blessed; § 1's preamble, fact 5
   (`Жук` no `BAD` token since) and a new fact 6, the refusal; § 4's note on what a parse error's message looks like; § 5's
   table, the pin.
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): § 1's opening (the line beside *no token starts
-  with*), a new [§ 1.6](../../../docs/kernel/defined_behaviour.md#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment--m1f-s1f522),
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics): § 1's opening (the line beside *no token starts
+  with*), a new [§ 1.6](../../../docs/ein/user/reference/diagnostics.md#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment),
   § 4's table (a row for an imported module that cannot be read) and its paragraph on the one read, and a new
-  [§ 4.18](../../../docs/kernel/defined_behaviour.md#418-an-imported-module-is-read-as-the-program-is--m1f-s1f522); § 1.5's
+  [§ 2.18](../../../docs/ein/user/reference/diagnostics.md#218-an-imported-module-is-read-as-the-program-is); § 1.5's
   count of `at None` fixtures is unmoved, no fixture under `examples/broken/load/` having moved.
 - [`03_implementation.md`](../../../docs/kernel/ir/02-data-model/03_implementation.md): `read.rs` in the module map,
   and the lexer's thirteen words (it said twelve, from before S1f.5.23).

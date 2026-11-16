@@ -18,6 +18,6 @@ filter follows, which `set -o pipefail` and every shell already read.
 `a_reader_closed_before_the_run_ends_every_run_by_sigpipe`,
 `a_reader_that_closes_after_the_first_line_ends_a_run_that_writes_again`,
 `a_command_that_writes_nothing_to_stdout_is_not_ended_by_a_closed_one`. The page:
-[defined_behaviour.md](../../kernel/defined_behaviour.md) § 4.19. An artefact's pipe:
+[diagnostics.md](../../ein/user/reference/diagnostics.md#219-a-closed-stdout-ends-ein-by-sigpipe) § 2.19. An artefact's pipe:
 [Q-M1f.100](Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md); off Unix:
 [Q-M1f.101](Q-M1f.101-off-unix-a-closed-stdout-is-left-to-rusts.md).

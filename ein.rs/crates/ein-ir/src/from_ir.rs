@@ -59,7 +59,7 @@ impl From<Overflow> for KbLoadError {
 /// with default false so not break everything"*, and, asked whether it can
 /// change an answer, *"yes, the flag only decides loading"*. A program it lets
 /// through loads to the same `Kb` it loads to without it, so it is not a lever
-/// under the config principle (`docs/kernel/configuration.md` § 2.5). It is
+/// under the config principle (`docs/ein/user/reference/config.md` § 2.5). It is
 /// not a `(config …)` field, which a program could set against itself and
 /// which the KB-shape digest renders, and not an `EIN_*` name; the CLI's
 /// `--no-require-why` turns it off on every command that loads a program.
@@ -543,7 +543,7 @@ fn intern_guard_facts(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<(), 
 /// `QueryClause`): any other is a parse error at its place, a query's lattice
 /// keyword with a note naming its home on `(solve …)`. Until T1f.5.5.5 each
 /// form had an allow-list here, `SOLVE_KEYWORDS` and `QUERY_KEYWORDS` (M1c
-/// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects),
+/// [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims),
 /// M1e2 S1e2.1a.4), which no program the grammar accepts reached since.
 fn validate_solve(
     ast: &Ast,

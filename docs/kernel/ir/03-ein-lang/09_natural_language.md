@@ -33,11 +33,11 @@ CJK, an emoji and every escape.
 ## 2. The mandate: every declaration carries a `:why`
 
 **A `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)` without `:why "…"` is refused at load**, one line per form
-([`defined_behaviour.md` § 4.10](../../defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)). The grammar keeps `:why` optional; the
+([`diagnostics.md` § 2.10](../../../ein/user/reference/diagnostics.md#210-a-form-with-no-why)). The grammar keeps `:why` optional; the
 loader decides, through [`ein_ir::LoadOptions::require_why`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs), **true by
 default since T1f.5.14.7** (2026-11-10), once every program the corpus, the stdlib and the Rust suites load carried
 one; `--no-require-why` on the seven commands that load a program loads one without
-([`configuration.md` § 3.4](../../configuration.md#34-the-option-that-decides-loading)), as `--require-why`, default
+([`config.md` § 3.4](../../../ein/user/reference/config.md#34-the-option-that-decides-loading)), as `--require-why`, default
 off, required one from T1f.5.14.6 until then. It decides whether a program loads and never what a loaded program answers (the user,
 2026-11-08: *"yes, the flag only decides loading"*). `:goal-text` and `:source` stay optional: a query's answer reads
 through its classes, and only a given has a sentence to quote.

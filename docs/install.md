@@ -185,7 +185,7 @@ command.
 `$EIN_STDLIB` is one of **eight** environment variables the shipped binary
 reads, and the only one a normal install needs. The whole set, with the three
 classes of name that are *not* that —
-[`docs/kernel/configuration.md` § The environment](kernel/configuration.md#4-the-environment).
+[`docs/kernel/config.md` § The environment](ein/user/reference/config.md#4-the-environment).
 
 ## There is no Python package
 

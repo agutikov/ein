@@ -117,7 +117,7 @@ The grammar's productions and the loader's check; the rows flipped; the `at None
 ### Task T1f.5.23.4 — the pages
 
 [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) (where `open` may be written),
-[`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes), `00_ebnf.md` re-blessed, the stage's records.
+[`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes), `00_ebnf.md` re-blessed, the stage's records.
 
 ## Acceptance
 
@@ -321,10 +321,10 @@ out, `(open ?S)` whose `?S` is no parameter in, with its position); `imports_sem
 - [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md): the thirteen reserved words, the
   two sets (five names in both, `relation` the one that decides it), the import routes' forty-eight cells, and § the
   verdict atom (written nowhere else; three of its refusals at the parse, two at load, placed).
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): § 1's notes, § 1.5's count (13 of 35 fixtures
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics): § 1's notes, § 1.5's count (13 of 35 fixtures
   end `at None`, `grep -L 'at None' examples/broken/load/*.expected | wc -l` 22, 2026-11-10), § 4.2 (the first five at
   the parse, the last five placed, the fixtures, and `open` among the words never a name), and a new
-  [§ 4.17](../../../docs/kernel/defined_behaviour.md#417-open-is-written-only-as-a-rules-verdict--m1f-s1f523): the
+  [§ 2.17](../../../docs/ein/user/reference/diagnostics.md#217-open-is-written-only-as-a-rules-verdict): the
   places, the line and note, a container and a `--diff-models` file, what it replaced, what pins it and what is not
   refused.
 - The fixture README (`examples/broken/load/`), `examples/README.md`'s catalogue (217 witnesses under

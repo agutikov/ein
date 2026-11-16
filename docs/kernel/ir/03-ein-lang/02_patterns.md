@@ -87,7 +87,7 @@ asks, the expanded goal is held to the table's shapes, and a `std.macro` call
 the program did not import is refused as it is in a rule. Until then only a
 rule's clauses were expanded, and a call in a goal was a pattern over a
 relation of the macro's name, which matched nothing
-([`defined_behaviour.md` § 4.21](../../defined_behaviour.md#421-a-goal-is-held-to-what-a-rules-match-is-held-to--m1f-s1f75-s1f711-s1f71)).
+([`diagnostics.md` § 2.21](../../../ein/user/reference/diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)).
 A macro call written as a fact, or listed in a claim, is not expanded.
 **A pattern's argument is what a value can be** since M1f
 [S1f.7.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/s1f.7.3_a_connective_as_a_patterns_argument.md): a name, a
@@ -101,7 +101,7 @@ an `(absent …)` held, so the rule fired (W83). The same rule, *a value is a
 name, or a fact a state could hold*, refuses at the parse a premise `(false
 ?s)`, a conclusion headed `absent`, and `(eq …)`, `(absent …)` or `(false k)`
 as a conclusion's or a guard's value (S1f.7.6, S1f.7.7, S1f.7.10;
-[`defined_behaviour.md` § 4.22](../../defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73)).
+[`diagnostics.md` § 2.22](../../../ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)).
 **A conclusion `(not ?x)` negates a fact**, the one a variable holds: `(rule
 hypothesis-contradiction () :match (and (hypothesis ?h) (contradiction-under
 ?h)) :assert (not ?h))` stores `(not (co-located Norwegian House-2))`. A name
@@ -114,7 +114,7 @@ are taken from, or a guard that alone binds it. Where only a run meets the
 name, through the relation of a parameter whose activator a rule derives, the
 firing stores nothing for that conclusion and an hrule proposes nothing. Until then the
 rule stored `(not k)`, which no program can write (W84;
-[`defined_behaviour.md` § 4.23](../../defined_behaviour.md#423-not-of-a-name-is-the-negation-of-no-fact-and-an-hrule-may-read-not--m1f-s1f74-s1f72)).
+[`diagnostics.md` § 2.23](../../../ein/user/reference/diagnostics.md#223-not-of-a-name-is-the-negation-of-no-fact-and-an-hrule-may-read-not)).
 **An hrule's `:match` may read `not`**, as a premise, under `(absent …)` and
 through `unknown`, and is answered as `ein oracle` answers it in every build
 since M1f
@@ -163,7 +163,7 @@ rules below.
 `(and …)` or `(or …)` of premises. An atom (a run of digits among them, an
 integer until M1f S1f.5.4), a variable, `_` or a string (the last two at the
 parse since M1f S1f.5.5's swap, S1f.5.1 and S1f.5.2) written where a premise goes is **refused at load** since M1e2
-S1e2.2.24 (W24, [`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)):
+S1e2.2.24 (W24, [`diagnostics.md` § 2.9](../../../ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)):
 until then the compiler dropped it in silence, so `:match _` fired with no
 premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. **A keyword
 pair anywhere in a premise is refused at the parse** since M1f S1f.5.5's swap
@@ -262,7 +262,7 @@ program's names, the list H's candidates are built from (Q-M1e2.9 (a)); an
 definition: a true one adds nothing, a false one is `(false)`. **From M1e2
 S1e2.2.24 to S1f.5.7** (W24) the loader refused a form as a guard's argument
 and a guard on a variable no premise before it binds
-([`defined_behaviour.md` § 4.9](../../defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)),
+([`diagnostics.md` § 2.9](../../../ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)),
 and **until S1e2.2.24** each read nothing: a raw node was equal to no value
 and an unbound variable compared as a null, so `(eq ?x (f a))` never held,
 even where `?x` was the fact `(f a)`, and `(and (neq ?x a) (p ?x))` fired for

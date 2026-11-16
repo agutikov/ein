@@ -6,7 +6,7 @@
 //! `(solve … :expect (region …))` is checked against the `R` the run
 //! described ([`crate::claim::check_described`]). The walk's comparison of a
 //! `:expect` against its verdict, `check`, which M1c
-//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
 //! T1c.1.2.4 wrote here with its relation-closure rule (*naming a relation
 //! asserts its complete extent*, now the claim's), had no caller since M1e2
 //! S1e2.1a.5's switch, and went with the walk at S1e2.1c.5 (2026-11-03).
@@ -59,7 +59,7 @@ impl Report {
 /// Why this fact is in the model — one line, because "and where did *that*
 /// come from" is `--trace`'s question and not this report's.
 ///
-/// A surplus fact is the case [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+/// A surplus fact is the case [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
 /// built relation-closure for, and the *next* thing its reader wants is the
 /// rule that put it there — the `disjunctive-prune` guard bug this milestone
 /// is written around was found exactly one step past "there is an extra fact

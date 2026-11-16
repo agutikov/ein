@@ -366,7 +366,7 @@ beside the status's and never folds one into the other.
 A rule that concludes `(false)` or a stored negation may not rest on an `(absent P)` over a relation a commitment can
 still extend: directly, through a fact a rule derives resting on such an `absent`, or through its activator
 ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md), the refusal and its
-message in [`defined_behaviour.md`](../../../kernel/defined_behaviour.md) § 4.7). *Extendable* is D followed through
+message in [`diagnostics.md`](../../user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill) § 2.7). *Extendable* is D followed through
 every rule with parameters whose activator relation it holds, each such rule read from its pattern, so that a chain
 of activators that first appears at a node is covered too
 ([`forbid-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/forbid-chain-1.ein) and its siblings). Over such a relation the shape judges a state that has not

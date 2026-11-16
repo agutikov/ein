@@ -10,7 +10,7 @@
 //! examples page, [`docs/ein/user/reference/read-out-examples.md`], which
 //! `read_out_examples.rs` holds to the binary byte for byte. What no test
 //! reads is a row's *meaning*; the page quotes no printed value, so that only
-//! that column can drift. [`configuration.md`] with `config_reference.rs` is
+//! that column can drift. [`config.md`] with `config_reference.rs` is
 //! the precedent.
 //!
 //! 1. [`every_row_label_has_a_row_and_no_row_is_orphaned`]: each row table
@@ -38,7 +38,7 @@
 //!
 //! [`docs/ein/user/reference/read-out.md`]: ../../../../docs/ein/user/reference/read-out.md
 //! [`docs/ein/user/reference/read-out-examples.md`]: ../../../../docs/ein/user/reference/read-out-examples.md
-//! [`configuration.md`]: ../../../../docs/kernel/configuration.md
+//! [`config.md`]: ../../../../docs/ein/user/reference/config.md
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::process::Command;

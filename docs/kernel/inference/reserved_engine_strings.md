@@ -119,7 +119,7 @@ could have written `(p (@empty))` and loaded the fact `(p ())`.
 | `#params` | `@params` | a rule's or a macro's parameter list | the list, with no head |
 | `#list` | `@list` | a fact's `:using` list, in the generated parser's tree | the list, with no head |
 | `#query` | `<query>` | the rule a query's `:goal` compiles to, so a binding has a rule to be reported under (`ein_core::terms::QUERY_RULE`) | a quoted name |
-| `#written` | — (M1f S1f.6.38) | the loader's step a `(written T)` fact is derived by, from the fact it was read in (`ein_core::terms::WRITTEN_STEP`; [`defined_behaviour.md` § 4.30](../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)) | a quoted name, `:rule "#written"` in `ein saturate --dump` |
+| `#written` | — (M1f S1f.6.38) | the loader's step a `(written T)` fact is derived by, from the fact it was read in (`ein_core::terms::WRITTEN_STEP`; [`diagnostics.md` § 2.30](../../ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)) | a quoted name, `:rule "#written"` in `ein saturate --dump` |
 
 No run reaches a value `#empty` since M1f
 [S1f.5.9](../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.9_an_empty_match_fires.md)'s
@@ -241,7 +241,7 @@ post-M1.
 
 The walk's hypgen scoring modes, `most-constrained` and `popularity`, went with
 the generator's scorer, which nothing called; `hypgen-scoring`, the flag that
-chose one, is refused at load ([`configuration.md` § 2.4](../configuration.md#24-the-fifteen-retired-flags)).
+chose one, is refused at load ([`config.md` § 2.4](../../ein/user/reference/config.md#24-the-fifteen-retired-flags)).
 
 ## `__closed__` — engine effect
 

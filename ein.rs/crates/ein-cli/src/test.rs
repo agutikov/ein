@@ -1,8 +1,8 @@
 //! `ein test` — the expectations a program states about itself, run.
 //!
 //! The fourth subcommand, and M1c
-//! [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
-//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+//! [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
+//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
 //! gave a `(query …)` a way to state its own answer; this is the runner that
 //! turns a directory of them into a status code, so that **nothing reads
 //! output**. Checking that a rule works used to mean running `solve` and

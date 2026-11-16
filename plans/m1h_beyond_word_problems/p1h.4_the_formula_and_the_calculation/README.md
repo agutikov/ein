@@ -172,7 +172,7 @@ Where the phase changes the engine or a surface (S1h.4.6), the repo's rules, whi
   printer moves.
 - **A change to what a surface prints moves its reference page in the same commit,** and the test that holds
   the page to the printer; a new option is a row of
-  [`configuration.md`](../../../docs/kernel/configuration.md), pinned by `ein-cli/tests/config_reference.rs`.
+  [`config.md`](../../../docs/ein/user/reference/config.md), pinned by `ein-cli/tests/config_reference.rs`.
 - **A change to the grammar needs the user's ruling,** on real programs shown first; the grammar's pages are
   generated from `ein.l` and `ein.y`, and a shape newly refused gets a row in the grammar page's table.
 - **No answer moves:** R, N, H, every claim's outcome and every exit code are the same before and after on

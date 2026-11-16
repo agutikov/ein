@@ -43,7 +43,7 @@
 //! - **`:record-alternative-justifications false` records no alternative**,
 //!   so the search is offered each fact's first derivation alone and the core
 //!   can be another: the one config flag that may change which core is
-//!   named, and nothing else (`configuration.md` § 2.5).
+//!   named, and nothing else (`config.md` § 2.5).
 //!
 //! It is not a soundness question either way: a larger frontier is still a
 //! real explanation.

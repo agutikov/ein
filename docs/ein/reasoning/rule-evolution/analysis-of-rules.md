@@ -114,7 +114,7 @@ page of what it serves:
   ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md));
 - **the rule shapes refused at load**, a conclusion's variable nothing binds, a rule that reads nothing, a rule
   that could derive an activator binding a relation parameter to a fact:
-  [`defined_behaviour.md` § 4](../../../kernel/defined_behaviour.md#4-errors-and-exit-codes).
+  [`diagnostics.md` § 2](../../user/reference/diagnostics.md#2-errors-and-exit-codes).
 
 What Ein does *to* a rule set, rather than reads from it, is
 [Transformations of a rule set](transformations.md)'s.

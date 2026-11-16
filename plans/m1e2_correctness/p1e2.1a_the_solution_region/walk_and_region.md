@@ -411,7 +411,7 @@ This page stated the consequence and did not rule on it. **It follows from the
 user's ruling of 2026-10-16**, given with question 3's answer: *"results must
 be consistent: region is a region of oracle"*. The oracle's node is
 `sat(root ∪ C)`, so R's is too
-([`solve_interface.md` § 0](solve_interface.md#0-the-ruling)).
+([`Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md` § 0](../../../docs/decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)).
 
 ## 8. What it leaves for the stages that follow
 

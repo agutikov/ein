@@ -121,7 +121,7 @@ when they do.
   that stops answering its right one does.
 - **The doors change no answer.** `corpus_exits.txt`, `corpus_shapes.md5` and
   every existing golden byte-identical. What moves is `help_shape.txt`, the
-  option census in [`configuration.md`](../../../docs/kernel/configuration.md)
+  option census in [`config.md`](../../../docs/ein/user/reference/config.md)
   (52 options plus the new ones), and `config_reference.rs`, all named in
   S1e2.1.3 before they move.
 - **The review is held and written down**, per case, in the register. P1e2.2's

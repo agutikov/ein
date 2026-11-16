@@ -1,7 +1,7 @@
 //! Every mode of `ein solve` against the oracle — M1e2
 //! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
 //! T1e2.1a.9.4, and the contract of
-//! [`solve_interface.md` § 1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#1-the-contract):
+//! [`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract):
 //!
 //! - **C1** every state a run prints is in the oracle's chosen part of `R`;
 //! - **C2** a run that says it exhausted that part printed all of it, and a

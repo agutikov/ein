@@ -394,7 +394,7 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
 /// parameter its activator binds to a nested fact read only by a conclusion
 /// (`W58/parameter-nested-assert`), answers since S1f.5.18 seeds the
 /// parameter, which retired `ein_infer::firing::FireError`'s `UnboundVar` and
-/// this line ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
+/// this line ([`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)).
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;
     use ein_infer::saturator::SaturateError;

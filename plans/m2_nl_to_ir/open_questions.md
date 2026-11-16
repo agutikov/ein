@@ -204,7 +204,7 @@ engine in-process, and that needed no argument. It is now open:
 | | how it reaches the engine | what it gets |
 |---|---|---|
 | **Rust** | links `ein-ir` / `ein-infer` as crates ([`docs/api/rust.md`](../../docs/api/rust.md)) | structured diagnostics as *values* — `ParseError` with its location, `KbLoadError` with the accumulated problems. No boundary, no mirrored data model, no exception hierarchy to design |
-| **Python** | drives the `ein` binary — `--json-summary` for the verdict and counters, `--events` for the narration | the ecosystem, and a frontend that can be rewritten without touching the engine. Diagnostics are **strings**: [`defined_behaviour.md` §1/§4](../../docs/kernel/defined_behaviour.md) pins them as such, and the CLI cannot grow a structured surface without breaking that |
+| **Python** | drives the `ein` binary — `--json-summary` for the verdict and counters, `--events` for the narration | the ecosystem, and a frontend that can be rewritten without touching the engine. Diagnostics are **strings**: [`diagnostics.md` §1/§4](../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics) pins them as such, and the CLI cannot grow a structured surface without breaking that |
 
 **What the reshape changes in the trade (2026-08-23).** The research plan's
 Stage A3 says *human-readable CLI output should not be used by the

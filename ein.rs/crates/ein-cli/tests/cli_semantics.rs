@@ -666,7 +666,7 @@ fn the_question_is_the_flags() {
 ///
 /// - the refusal, its exit code (**2**, a usage error) and its wording;
 /// - a **non-integer** still gets `int_arg`'s message, unchanged, because
-///   [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+///   [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
 ///   quotes that message verbatim and uses `--solutions` as its example.
 #[test]
 fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {

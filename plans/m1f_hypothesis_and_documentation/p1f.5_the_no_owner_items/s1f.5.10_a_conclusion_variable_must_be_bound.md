@@ -41,7 +41,7 @@ Taken on 2026-11-07 at `916d97ac`, on the release binary.
 |---|---|
 | `(p a)`, `(rule r () :match (p ?x) :assert (q ?y))` | loads; `ein solve` stops at the first firing, exit 1: `unbound var ?y in :assert — bindings: {'x': 'a'}`; `ein test`: an error, exit 2 |
 | the same rule over `(relation s Node)`, `:match (s ?x)`, no `s` fact | loads, root never fires it, and the run stops at a node whose commitment holds a candidate `(s a)`, with the same line |
-| [`examples/ein-bugs/unbound-assert-var.ein`](../../../examples/ein-bugs/unbound-assert-var.ein): `:match (or (r1 ?v1 ?v3) (r0 ?v0 ?v2)) :assert (not (r1 ?v0 ?v1))` | loads; stops at the first firing through an arm that does not bind `?v0` or `?v1`. `ein saturate` prints `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, the line [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes) defines |
+| [`examples/ein-bugs/unbound-assert-var.ein`](../../../examples/ein-bugs/unbound-assert-var.ein): `:match (or (r1 ?v1 ?v3) (r0 ?v0 ?v2)) :assert (not (r1 ?v0 ?v1))` | loads; stops at the first firing through an arm that does not bind `?v0` or `?v1`. `ein saturate` prints `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, the line [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) defines |
 
 `firing.rs`' `FireError::UnboundVar` says *"The matcher guarantees no unbound var reaches an `:assert`
 template, so this is an invariant violation"*. The rows above show the guarantee does not hold: the loader
@@ -260,9 +260,9 @@ uniq -c`, 2026-11-09).
 **The pages.** No current kernel page describes a conclusion's variable that nothing binds as loading, or the run's stop
 as what every such program meets:
 
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4's row says what still reaches the `KeyError`
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) § 2's row says what still reaches the `KeyError`
   line, a parameter its activator binds to a nested fact (W58, until S1f.5.18), and a new
-  [§ 4.13](../../../docs/kernel/defined_behaviour.md#413-a-conclusions-variable-nothing-binds--m1f-s1f510) states the
+  [§ 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds) states the
   refusal: the line and its disjunction form, what binds, what it replaced (W57), and what pins it.
 - [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s *Conclusion forms in `:assert`*: every variable
   a conclusion writes is bound, on every way the `:match` can hold, an hrule's too, and what the refusal names.

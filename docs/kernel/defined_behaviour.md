@@ -1300,7 +1300,7 @@ Until the swap a `(macro …)` was asked for one only in a build with `ein-ir`'s
 line read `… every relation, rule and hrule` elsewhere; the swap made the
 generated parser the only one, deleted the `cfg`, and wrote the stdlib's two
 macros, `forall` and `unknown`, their `:why`. `--no-require-why`
-([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)),
+([`config.md` § 3.4](../ein/user/reference/config.md#34-the-option-that-decides-loading)),
 or `require_why: false`, loads such a program, and nothing else moves; until
 T1f.5.14.7 that was the default, and `--require-why` turned the refusal on.
 Pinned by `ein-ir/tests/load_semantics.rs`'
@@ -1486,7 +1486,7 @@ other command refuses it. Until then they parsed it and never loaded it,
 so each drew a program every other command refused, exit 0; and `kb save`, which
 loads and never compiles, wrote a container of a program every command that
 opens one refused. Each view takes `--no-require-why`
-([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)).
+([`config.md` § 3.4](../ein/user/reference/config.md#34-the-option-that-decides-loading)).
 
 Pinned by `ein-ir`'s `from_ir::tests::the_compilers_refusals_a_program_reached_are_refused_at_load`,
 `ein-cli`'s `cli_semantics::a_compile_refusal_reads_the_same_on_every_command`
@@ -2493,7 +2493,7 @@ metavar, arity, default, choices and mutually-exclusive group, its help
 which stream each byte goes to.
 
 **`ein test` is the fourth**, added by M1c
-[S1c.1.3](../history/m1c_external_validation/README.md#s1c13--ein-test),
+[S1c.1.3](../ein/user/reference/cli.md#23-ein-test),
 and its exit codes **deliberately differ** from the other three's:
 
 | code | `solve` / `oracle` / `render` / `show` / `saturate` | `test` |
@@ -2539,7 +2539,7 @@ lines, at least one item each, and `--dump-answer DIR` writes each uncut, over
 every listed state, as `DIR/forms/<form>.txt` (`forms_cut.rs`). Past a 16 MiB pair table `key` declines
 before it allocates the table, with the numbers and exit 0, and so does
 `--diff-models`' near pairing (M1e2 S1e2.4.2, `ein-render/tests/key_declines.rs`;
-the bound is [`configuration.md` § 3](configuration.md)'s).
+the bound is [`config.md` § 3](../ein/user/reference/config.md#3-the-cli)'s).
 
 1 is taken there, and a runner that cannot tell a broken file from a false
 claim is the one failure mode a test runner must not have. 2 dominates 1 in a

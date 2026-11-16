@@ -165,7 +165,7 @@ Which facts can be proposed at all is decided by:
 The **universe** H is the candidate list, and n = |H|. It replaces `alive₀`
 as the space every later definition quantifies over: the user ruled on
 2026-10-15 that no config option may change the problem's lattice
-([configuration.md § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)),
+([config.md § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)),
 and the walk's `alive₀` was taken through its lookahead and after the
 forced-positive cascade (§ 6.3).
 
@@ -954,7 +954,7 @@ leave those out.
   `enable-symmetric-mirror` on
   [`features/06_symmetric_native.ein`](../../../examples/features/06_symmetric_native.ein),
   where it removes three facts from root
-  ([configuration.md § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)).
+  ([config.md § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
   M1e2 S1e2.1a.6 retired that flag (2026-11-01), and
   `ein-cli/tests/lever_invariance.rs` holds every mode's read-out under every
   lever to the default's on every program whose R is known.
@@ -970,7 +970,7 @@ leave those out.
   R drawn, `ein render region`.
 - [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md): worlds, the NAF boundary, and
   the corollaries a non-monotone program has to be read beside.
-- [`configuration.md`](../configuration.md): the config principle, and every
+- [`config.md`](../../ein/user/reference/config.md): the config principle, and every
   lever's row read against it.
 - [`satisfiability.md`](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive): why
   an obligation's alternatives are jointly exhaustive.

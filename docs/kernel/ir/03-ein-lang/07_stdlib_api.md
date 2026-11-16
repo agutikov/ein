@@ -225,7 +225,7 @@ representation: the numeral `(n PREFIX DIGIT)`, `named`, a name that stands for
 a number (which the module that declares `let` writes), and the numeral's
 check, which reads the facts the loader states of what a file writes,
 `(written T)`
-([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)),
+([`diagnostics.md` § 2.30](../../../ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)),
 so a malformed numeral is flagged wherever it is written, with no request
 reading it; entry `decimal`. Both come whole with `std.math.decimal-arith` and
 the modules over it; a program lists what it writes of them:

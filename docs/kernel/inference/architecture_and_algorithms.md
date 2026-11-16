@@ -602,7 +602,7 @@ on `(false)` in a dead node, and an uncapped store moved no core of theirs but
 `alt-cap-core.ein`'s (`ein solve FILE --events`, 2026-11-04). And a
 program that turns `:record-alternative-justifications` off keeps no
 alternative at all: the config principle's one exemption, the core and
-nothing else ([`configuration.md` § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)). (3) **Budgeted** — the
+nothing else ([`config.md` § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)). (3) **Budgeted** — the
 minimum-axiom-set / ATMS-label problem is worst-case exponential, so the search
 runs under an `ExplanationBudget` and `Explanation.exhausted` reports whether it
 completed, `Explanation.cut` at which cap; a truncated search is still sound,

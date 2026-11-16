@@ -44,7 +44,7 @@ leaving something alone holds only while its premise is enforced by something th
    without the user's word: it is part of the per-commit shape check.
 3. **T1f.10.16.3 — the headers.** Item 5's three, and any other T1 finds, restated to say what the engine
    does, with no stage id and no date.
-4. **T1f.10.16.4 — the pages.** [`configuration.md`](../../../docs/kernel/configuration.md)'s rows for every
+4. **T1f.10.16.4 — the pages.** [`config.md`](../../../docs/ein/user/reference/config.md)'s rows for every
    name touched, pinned by `config_reference.rs`; `docs/api/rust.md` if a `pub` item it shows goes.
 
 ## Acceptance

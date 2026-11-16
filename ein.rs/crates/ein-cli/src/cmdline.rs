@@ -62,7 +62,7 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
 /// Q-M1e.24.
 ///
 /// The non-integer message stays [`int_arg`]'s, because
-/// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+/// [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
 /// quotes it verbatim, with `--solutions` as its example.
 fn solutions_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
@@ -935,7 +935,7 @@ fn solve_command() -> Command {
 }
 
 /// `ein test` — M1c
-/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
+/// [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
 ///
 /// **Small on purpose.** The only engine knobs here are the ones that decide
 /// whether a run *can finish*, the two budgets, because everything else
@@ -1060,7 +1060,7 @@ fn test_command() -> Command {
 /// subset of the root candidates saturated, nothing skipped. It is the
 /// reference every `ein solve` mode is held to, and it costs `2ⁿ` on every
 /// program, so it runs only when asked for by name
-/// ([`solve_interface.md` § 2.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#22-ein-oracle)).
+/// ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
 fn oracle_command() -> Command {
     Command::new("oracle")
         .about("the solution region by brute force: every subset of the root candidates saturated (M1e2)")

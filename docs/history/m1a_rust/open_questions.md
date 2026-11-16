@@ -56,7 +56,7 @@ the two namespaces cannot collide. A closed id is never reused.
 
 ## Q-M1a.3 — Parse-error messages
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.1–1.4](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`docs/kernel/diagnostics.md` §1.1–1.4](../../ein/user/reference/diagnostics.md#11-the-end-of-input-is-where-the-text-ends) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 A parse error is `{file}:{line}:{col}: unexpected input\n{context}`.
 Observed quirks: EOF errors report `-1:-1`, and the caret lands one past
@@ -95,7 +95,7 @@ diagnostics — stays open.
 
 ## Q-M1a.6 — `at None` in loader messages
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.5](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`docs/kernel/diagnostics.md` §1.5](../../ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 Top-level `SForm`s are constructed without a `loc`
 ([design/04](design/04_ir_frontend.md) §3), so loader errors that
@@ -348,7 +348,7 @@ never an auth system inside the engine.
 
 ## Q-M1a.13 — Help and usage-error text
 
-> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §5](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
+> **Stated as ein's defined behaviour** — [`docs/kernel/cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 **Resolved 2026-08-18: (b), with (c)'s content half made binding.** ein.rs
 uses `clap`; `--help` layout *and* usage-error text are `clap`'s. Everything
@@ -734,7 +734,7 @@ from ids and paths. **The id stays reserved and is never reused.**
 
 **Moved 2026-08-21 to [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)**,
 with Q-M1a.19 and for the same reason — the two are one decision and
-[S1c.1.2](../m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+[S1c.1.2](../../ein/user/syntax-and-semantics/query.md#claims)
 still settles both.
 
 ## Q-M1a.21 — May the search stop before the lattice is exhausted?
@@ -817,7 +817,7 @@ seventeen scripts name their binary on purpose. That leaves
   is **C++**.
 - **The one thing that wanted the binding argues against it.** M2's
   validator/repair loop needs *why* a load failed, as data. The CLI cannot
-  supply that — [`defined_behaviour.md` §1/§4](../../kernel/defined_behaviour.md)
+  supply that — [`diagnostics.md` §1/§4](../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)
   pins those diagnostics as strings — so a binding would have had to grow a
   structured-diagnostics surface the engine does not have. A Rust frontend
   links `ein-ir` and has it with no boundary at all.

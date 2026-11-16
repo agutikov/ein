@@ -262,7 +262,7 @@ W15's, W14's, W7's `Y`, W16's `a` and W18's `lbl` — holds each to the seed, an
 outside the program's. The one shape that could name something else, a relation
 parameter bound to a nested fact, is refused at load or at compile, as one
 bound to an integer was until M1f S1f.5.4 retired the int
-([`defined_behaviour.md` § 4.6](../defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
+([`diagnostics.md` § 2.6](../../ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number)).
 A run of digits is a name since S1f.5.5's swap.
 
 Tracked at
@@ -535,7 +535,7 @@ ruled the shape *forbid* (S1e2.4.1, 2026-11-02) and its F2, *via*: a program
 whose refutation rests on such an `absent`, directly or through a fact a rule
 derived under one, is refused, and the second warning's sentence is the
 refusal's ([`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forbid.rs),
-[`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)).
+[`diagnostics.md` § 2.7](../../ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)).
 The `warn-derived-naf` flag retired with it, so the first is the library's
 `derived_naf_warnings` and the corpus's `naf` shape op, F18 closed without
 being done, and the `warn` event kind left the schema.

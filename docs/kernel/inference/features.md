@@ -2,7 +2,7 @@
 
 Which `SolverConfig` knobs are load-bearing for solving `zebra2`, with
 measured impact. The companion to the *definitional* config table in
-[`configuration.md`](../configuration.md) (what each knob does, whether it
+[`config.md`](../../ein/user/reference/config.md) (what each knob does, whether it
 changes the answer, and how far it may be depended on) and the engine
 narrative in
 [`architecture_and_algorithms.md`](architecture_and_algorithms.md) (how
@@ -15,7 +15,7 @@ each feature works).
 > S1e2.1a.5's switch (2026-10-18), which M1e2 S1e2.1c.5 deleted (2026-11-03).
 > `utils/feature_matrix.py` re-takes the matrix against a binary built at or
 > before `7ec8a480`, the last that ran it. Whether a lever changes the answer
-> today is [`configuration.md`](../configuration.md)'s *R?* column.
+> today is [`config.md`](../../ein/user/reference/config.md)'s *R?* column.
 
 ## Takeaway
 
@@ -183,7 +183,7 @@ extra commitments rather than a price per branch.
   S1e2.1a.6** (2026-11-01): on a program with no such rule,
   `features/06_symmetric_native.ein`, turning the mirror off changed the
   answer, so the mirror is always on and setting the flag is a load error
-  ([`configuration.md` § 2.4](../configuration.md#24-the-fifteen-retired-flags)).
+  ([`config.md` § 2.4](../../ein/user/reference/config.md#24-the-fifteen-retired-flags)).
   The rows here are the walk's record: `utils/feature_matrix.py` re-takes
   them against a binary built at or before `7ec8a480`, the last that ran the
   walk.
@@ -411,7 +411,7 @@ and update the provenance line. `--puzzle P` runs the matrix on another
 puzzle, `--cells SUBSTR` on a subset (the `baseline` and `control` rows always
 run), `$EIN_BIN` names a build other than `ein.rs/target/release/ein`. The
 *definitional* knob list lives in
-[`configuration.md`](../configuration.md); add a row there for any new flag —
+[`config.md`](../../ein/user/reference/config.md); add a row there for any new flag —
 and note that you must, because
 [`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs)
 diffs that page against `FIELDS` and fails on a flag it does not name.

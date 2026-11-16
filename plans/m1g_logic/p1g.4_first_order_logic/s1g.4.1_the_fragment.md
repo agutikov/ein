@@ -22,7 +22,7 @@ Ein form that is it or stands in for it, a program, and what the binary did.
 The **Ein** column is the coordinator's reading of the kernel pages
 ([`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md),
 [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md),
-[`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md)); each row is **to be confirmed by
+[`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)); each row is **to be confirmed by
 its program**.
 
 | construct | where | Ein | status expected |
@@ -37,10 +37,10 @@ its program**.
 | → | the rule | `:match` to `:assert` | native, one level; an implication as a premise or a conclusion is not a form |
 | ↔ | | two rules | derived |
 | ¬ | stored | `(not P)`: a fact of its own, derived or written, matched as a pattern; `P` and `(not P)` together are a contradiction by the kernel's pair check | native: explicit negation |
-| ¬ | by failure | `(absent P)`: a premise's test of the state at the closure boundary; refused where a refutation would rest on one a commitment can fill ([§ 4.7](../../../docs/kernel/defined_behaviour.md)) | native: non-monotone |
+| ¬ | by failure | `(absent P)`: a premise's test of the state at the closure boundary; refused where a refutation would rest on one a commitment can fill ([§ 2.7](../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)) | native: non-monotone |
 | ⊥ | head | `(false)` | native: an integrity constraint |
 | =, ≠ | body, head | `eq`, `neq`: identity of values, computed, never stored; a false one concluded is `(false)` | native; no equational theory |
-| function symbols | terms | a nested fact of an ordinary relation, under the value rule ([§ 4.22](../../../docs/kernel/defined_behaviour.md)): a free constructor | native since nested facts; uninterpreted |
+| function symbols | terms | a nested fact of an ordinary relation, under the value rule ([§ 2.22](../../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)): a free constructor | native since nested facts; uninterpreted |
 | quantifying over relations | | a rule's relation parameter, bound by an activator fact to a relation's *name* | first-order over names |
 | the closed world | | `(__closed__ R)`, and a claim that names a relation | per relation |
 | a third truth value | | `(unknown P)`: neither `P` nor `(not P)` | macro |

@@ -12,5 +12,5 @@ a negative has none.
 
 **Held by.** `ein-cli/tests/cli_semantics.rs`: `progress_every_is_zero_for_no_node_lines_and_refuses_a_negative`,
 `the_step_limit_is_one_line_in_eins_spelling_and_exits_0`. The page:
-[defined_behaviour.md](../../kernel/defined_behaviour.md) § 5. `-n`'s count:
+[cli.md](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) § 5. `-n`'s count:
 [Q-M1e.24](Q-M1e.24-n-takes-a-count-of-one-or-more.md).

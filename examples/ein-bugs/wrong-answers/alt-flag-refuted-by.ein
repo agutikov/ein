@@ -36,7 +36,7 @@
 ;;; ── Why it is wrong ────────────────────────────────────────────────────────
 ;;;
 ;;; No config option may change the answer (the user's ruling of 2026-10-15,
-;;; `configuration.md` § 2.5). The flag's one exemption is the core (M1e2
+;;; `config.md` § 2.5). The flag's one exemption is the core (M1e2
 ;;; S1e2.2.11, Q-M1e2.11 (ii)), and `refuted by` may follow it only where the
 ;;; core moved (S1e2.3.10, Q-M1e2.21 (a), argued from *"where the core is the
 ;;; same the primaries are a derivation from it"*). Here the core is the same

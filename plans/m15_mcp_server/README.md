@@ -65,5 +65,5 @@ a default.**
 - [M20](../m20_gui/README.md), the GUI: the other consumer of the crates.
 - [M2](../m2_nl_to_ir/README.md): its first phase is *the kernel as instrumentation*, the kernel's feedback
   as input to a model, which a tool-calling server would also deliver.
-- [`docs/api/`](../../docs/api/README.md) and [`docs/kernel/configuration.md`](../../docs/kernel/configuration.md),
+- [`docs/api/`](../../docs/api/README.md) and [`docs/kernel/config.md`](../../docs/ein/user/reference/config.md),
   the options a tool's schema would be drawn from.

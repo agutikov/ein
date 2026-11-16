@@ -84,7 +84,7 @@ and the declarations' mirrors, `(written T)` for each fact `T` nested in a
 fact a file writes, or in a rule's conclusion where it holds no variable:
 the loader's statement of what was written, derived from the fact it was
 read in, which a representation module reads to check its own terms
-([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)). See
+([`diagnostics.md` § 2.30](../../../ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)). See
 [Rules as data](../../../ein/reasoning/rule-evolution/rules-as-data.md)
 for what userspace builds on top of it.
 

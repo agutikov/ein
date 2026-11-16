@@ -13,4 +13,4 @@ where a line wraps, and a check of the structure catches a lost or renamed optio
 **Held by.** `ein-cli/tests/help_surface.rs`: `the_argument_surface_is_stable`, every parser rendered as
 `{command → {option → short, metavar, arity, default, choices, group, help}}` against
 `ein-cli/tests/golden/help_shape.txt`; `the_extractor_finds_the_whole_surface`, the options counted from the parsers;
-`a_renamed_short_key_fails`. The surface: [defined_behaviour.md](../../kernel/defined_behaviour.md) § 5.
+`a_renamed_short_key_fails`. The surface: [cli.md](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) § 5.

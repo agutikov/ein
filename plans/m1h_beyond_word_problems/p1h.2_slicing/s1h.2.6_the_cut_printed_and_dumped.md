@@ -32,7 +32,7 @@ S1h.2.5's cut and computes nothing of its own.
   file is a loadable program. A view:
   [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md), `dot_wellformed.rs`, and
   `utils/ci_container.sh` green on the commit, since a DOT writer changed. A new option: a row of
-  [`configuration.md`](../../../docs/kernel/configuration.md) and `config_reference.rs`.
+  [`config.md`](../../../docs/ein/user/reference/config.md) and `config_reference.rs`.
 - **The goldens counted and named before blessing.** A surface asked for by an option moves no golden of a
   run that does not pass it; the record says which digests of `corpus_shapes.md5` moved and why, by a
   command.

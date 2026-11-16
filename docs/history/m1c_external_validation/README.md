@@ -223,7 +223,7 @@ false, so a file carrying one is a test with no harness around it.
 | corpus files that relied on the last-query-wins discard | **0 of 128** |
 | goldens that moved | **0** — 188 golden lines added, all cells for new fixtures, none changed |
 | load-time refusals added | **5**, each with a `broken/load/` fixture: unknown keyword, malformed shape, unknown relation, omits the goal, not ground |
-| …and they **name no exception class** | which decided what [`defined_behaviour.md` §4](../../kernel/defined_behaviour.md) had left open: a new message carries none |
+| …and they **name no exception class** | which decided what [`diagnostics.md` §2](../../ein/user/reference/diagnostics.md#2-errors-and-exit-codes) had left open: a new message carries none |
 | the cost nobody predicted | an artefact flag names **one** path, so `--events` / `--trace` / `--json-summary` / `--dump-states` are refused (exit 2) on a file that asks more than one question |
 | tests added | **31** |
 

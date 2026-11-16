@@ -11,4 +11,4 @@ root; judged only where a command saturates, one program would load under one co
 
 **Held by.** `ein-cli/src/common.rs`, which calls `ein_infer::mechanisms::may_conflict` and then `check`;
 `ein-cli/tests/mechanism_conflicts.rs`: `a_conflict_is_refused_on_every_command`;
-[`defined_behaviour.md`](../../kernel/defined_behaviour.md) § 4.27.
+[`diagnostics.md`](../../ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.

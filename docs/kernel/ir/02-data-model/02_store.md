@@ -78,7 +78,7 @@ routing each by its **head**:
    - `(rule …)` / `(hrule …)` → `Rule` entity with `match` / `assert_`
      `Pattern` objects.
    - `(query …)` → **appended** to `queries`. Plural since M1c
-     [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects):
+     [S1c.1.2](../../../ein/user/syntax-and-semantics/query.md#claims):
      it was an `Option<Query>` filled by *the last block, silently*, and
      `ein solve` now runs every one of them in order. `(config …)` keeps
      last-wins — a config is a setting, a query is content

@@ -2298,8 +2298,8 @@ Re-opening it means (b).
 
 **Raised** 2026-11-10 by [S1f.5.23](p1f.5_the_no_owner_items/s1f.5.23_open_is_reserved.md)'s T3. The stage file
 sketches one line, *``<file>:<line>:<col>: `open` is the verdict a rule's :assert states, and is not a relation: …``*.
-Where the grammar refuses, the line is a parse error's ([`defined_behaviour.md`
-§ 1](../../docs/kernel/defined_behaviour.md#1-parse-and-load-diagnostics)): ``<file>:<line>:<col>: unexpected `open` ``,
+Where the grammar refuses, the line is a parse error's ([`diagnostics.md`
+§ 1](../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)): ``<file>:<line>:<col>: unexpected `open` ``,
 then the error's notes and repairs.
 
 - **(a) The parse error's line, and the stage's sentence as a note under it**, as S1f.5.1's `_` and S1f.5.2's string
@@ -2510,7 +2510,7 @@ builds them, its smoke a `W75/solve` case per commit. Re-opening it means (b).
 
 **Decision file:** [`docs/decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md`](../../docs/decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md)
 
-**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. [`defined_behaviour.md` § 4.4](../../docs/kernel/defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35)
+**Raised** 2026-11-10 by [S1f.5.25](p1f.5_the_no_owner_items/s1f.5.25_a_closed_stdout.md)'s T2. [`diagnostics.md` § 2.4](../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure)
 rules that an artefact flag's failed write prints `error: --<flag> <path>: <os error>` and leaves the exit code
 unchanged. Its census ran `--events`, `--json-summary`, `--trace` and `--json-report` on `/dev/stdout`: under `head
 -1`, `solve --trace /dev/stdout` and `--json-summary /dev/stdout` printed that line and exited 0, the read-out's one

@@ -193,7 +193,7 @@ program's imports once (the stage's record counts them); no answer moved.
 **The numeral's check reads what the loader states.** The loader states every
 fact nested in a fact a file writes, and in a rule's conclusion where it holds
 no variable, as `(written T)` (the kernel relation `written`,
-[`defined_behaviour.md` § 4.30](../docs/kernel/defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)),
+[`diagnostics.md` § 2.30](../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)),
 so `std.math.decimal`'s rules see every place of every numeral a file writes,
 wherever it sits, and flag a malformed one in root's first layer, with no
 request reading it: § [Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638)
@@ -801,7 +801,7 @@ program that states false facts means is M1g's
 **A number or a request with the wrong count of arguments
 is refused at load** since S1f.6.23, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`,
 each a form of a relation the module declares
-([`defined_behaviour.md` § 4.26](../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
+([`diagnostics.md` § 2.26](../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)).
 
 ### Malformed requests and numerals: what is flagged, where, and what stays silent (M1f S1f.6.12, S1f.6.38)
 

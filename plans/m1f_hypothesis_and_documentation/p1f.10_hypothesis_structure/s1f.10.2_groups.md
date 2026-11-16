@@ -344,7 +344,7 @@ The alternatives, each with the corpus program that falsifies it:
 - Docs: `structure.rs`'s row in [`implementation.md`](../../../docs/kernel/inference/implementation.md), the
   example's in [`utils/README.md`](../../../utils/README.md), the tier table of
   [`corpus/README.md`](../../../corpus/README.md) and `EIN_CORPUS_SLOW`'s readers in
-  [`configuration.md`](../../../docs/kernel/configuration.md).
+  [`config.md`](../../../docs/ein/user/reference/config.md).
 
 ### What a route would call
 
@@ -716,7 +716,7 @@ All are this run's, taken on 2026-11-15, and the user's to revise at the phase's
    (`EIN_CORPUS_SLOW=1 cargo test -p ein-infer --profile gate --test structure_invariance`, in `nightly.yml`'s
    `deep-corpus` job after `pair_layer`'s, in `run_tests.sh --nightly` and `--dev-host`, in
    [`corpus/README.md`](../../../corpus/README.md)'s tier table and
-   [`configuration.md`](../../../docs/kernel/configuration.md)'s readers). 21.3 s per commit and 56.8 s with the
+   [`config.md`](../../../docs/ein/user/reference/config.md)'s readers). 21.3 s per commit and 56.8 s with the
    flag, on four P-core threads with four workers.
 5. **A flagged program has a cover**, as it has a pair layer, and the cover says what it is about
    (`Cover::domain`); 29 of the 188.

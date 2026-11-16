@@ -8,5 +8,5 @@ a file is refused, aborted or states nothing to check (2). Without the flag, a c
 to search has not been refuted; it has not been asked.
 
 **Held by.** `ein-cli/tests/no_search.rs`: `test_decides_what_root_decides_and_a_claim_not_checked_exits_0`. The
-codes: [defined_behaviour.md](../../kernel/defined_behaviour.md) § 5. Which commands take the flag:
+codes: [cli.md](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) § 5. Which commands take the flag:
 [Q-M1f.258](Q-M1f.258-ein-solve-and-ein-test-take-no-search-and-ein.md).

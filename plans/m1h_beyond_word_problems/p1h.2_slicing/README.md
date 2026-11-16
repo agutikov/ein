@@ -178,7 +178,7 @@ cites this section:
   every corpus program, by a sweep of the old binary against the new; `ein oracle` is the reference.
 - **A slice is taken only where a surface prints it.** No run that did not ask for one pays for one.
 - **Config never changes an answer,** and a new option is a row of
-  [`configuration.md`](../../../docs/kernel/configuration.md) with its *does it change the answer* column,
+  [`config.md`](../../../docs/ein/user/reference/config.md) with its *does it change the answer* column,
   pinned by `ein-cli/tests/config_reference.rs`.
 - **Stdout listings share 100 lines;** `--dump-answer` writes a listing whole (the user's rule of
   2026-10-16).

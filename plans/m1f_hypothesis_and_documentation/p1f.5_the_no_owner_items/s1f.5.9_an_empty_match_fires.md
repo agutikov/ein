@@ -446,8 +446,8 @@ and `eq-arity-under-commitment`'s and `eq-arity-hrule`'s `saturate`; `corpus_sha
 added, each of the five witnesses losing the 21 renderings a loaded program draws and changing 7, none of any other
 program.
 
-**The pages.** [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.3 says only a macro's body
-reaches its `eq` row since, and a new [§ 4.14](../../../docs/kernel/defined_behaviour.md#414-eq-at-another-arity--m1f-s1f59)
+**The pages.** [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#23-eq-and-absent-at-another-arity) § 2.3 says only a macro's body
+reaches its `eq` row since, and a new [§ 2.14](../../../docs/ein/user/reference/diagnostics.md#214-eq-at-another-arity)
 states the two refusals, which parameters can hold `eq`, what loads, what they replaced (W60, W61) and what pins them;
 [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s parameter list and its written `eq` fact say
 so.

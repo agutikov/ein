@@ -27,7 +27,7 @@ one fails.
   asks about a commitment.
 - **The pages**: the corollary in
   [`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md), and
-  [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.7.
+  [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill) § 2.7.
 - **The census** it planned as its first task: `ein-infer/examples/refutation_census.rs`.
 - **`connex`**, the stdlib's one rule of the shape (`std.algebra`): unchanged, and judged per activator like
   any other rule. Over a relation no commitment extends it is closed-world reasoning and legal; over one a

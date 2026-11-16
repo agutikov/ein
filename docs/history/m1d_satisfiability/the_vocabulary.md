@@ -135,7 +135,7 @@ them is how (a) ships by accident.*
 
 **The exit code does not move.** `NOT CHECKED` is not a pass; a green line for
 a claim nobody checked is what the whole form exists to prevent
-([`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md)). It
+([`cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line)). It
 stays 1 under both `solve` and `test`, and it stays distinguishable from both
 pass and fail in the report.
 

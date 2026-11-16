@@ -1103,7 +1103,7 @@ pointer to the register's owners restored.
 
 **The words.** `candidate_objects` leaves out seven kernel words by name, `not false and or absent eq neq`.
 Four are never a name (`not`, `and`, `or`, `neq`: refused at the parse), so the ones a program can write as a
-value are `eq`, `absent` and `false`. [`defined_behaviour.md` § 4.22](../../../docs/kernel/defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73),
+value are `eq`, `absent` and `false`. [`diagnostics.md` § 2.22](../../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold),
 the user's value rule, keeps all three names: *`(h absent)`, `(h false)` and `(mk eq)` are facts*. So **no
 reading refuses them at load**: a refusal would undo § 4.22 and refuse `std.math.digits`, whose `cl` rows write
 `eq`. `relation` and `written`, the finding's other two, are relations of every program (`Program::categorise`),

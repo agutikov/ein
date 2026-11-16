@@ -6,13 +6,13 @@
 //! "registered so it appears in help, never actually parsed".
 //!
 //! Exit codes: 0 success, 1 load error, 2 usage error, and 2 again for a
-//! budget abort ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
+//! budget abort ([`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)).
 //! The last two collide.
 //!
 //! **`test` is the one exception, and it is deliberate**: there 1 means *an
 //! expectation is false* and a load error takes 2, because a test runner that
 //! cannot tell a broken file from a false claim is the failure mode M1c
-//! [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)
+//! [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)
 //! T1c.1.3.5 is written against.
 
 #![forbid(unsafe_code)]

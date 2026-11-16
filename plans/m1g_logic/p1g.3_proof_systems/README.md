@@ -27,7 +27,7 @@ three different answers in Ein:
 2. **How a proof is found.** Forward saturation derives every theorem it can reach, and a schema reaches
    everything, so it floods; and an axiom schema cannot even be written as a bare forward rule, since a
    conclusion's variable must be bound
-   ([`defined_behaviour.md` § 4.13](../../../docs/kernel/defined_behaviour.md)). The candidates are the
+   ([`diagnostics.md` § 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)). The candidates are the
    calculator's **request protocol** turned to goals (*prove this*, answered by a proof), and **search with
    hypotheses**, where a guess is a line or a cut formula. Which works, and how far, is to be tried.
 3. **Whether the system is sound and complete,** checked and not proved: on every formula up to a bound,

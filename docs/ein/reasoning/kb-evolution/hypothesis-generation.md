@@ -226,7 +226,7 @@ whatever generates ([Q-M1f.244](../../../decisions/hypotheses/Q-M1f.244-an-oblig
 a relation in both lists, or listed and closed. A declaration that contradicts nothing and filters nothing, a list
 beside an hrule or a redundant name, is a note
 ([Q-M1f.242](../../../decisions/hypotheses/Q-M1f.242-a-hypothesis-declaration-that-filters-nothing-is.md)). The
-refusals and notes, each worded, are [`defined_behaviour.md` § 4.27](../../../kernel/defined_behaviour.md).
+refusals and notes, each worded, are [`diagnostics.md` § 2.27](../../user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another).
 
 ## 7. What H does not depend on
 
