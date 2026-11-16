@@ -4,7 +4,6 @@
 # check, which fails where a file's count rises or a file not listed here
 # has one. A count only falls: the commit that lowers it re-banks this file,
 # and when every count is 0 the file is deleted with the baseline's reader.
-   54  AGENTS.md
   152  README.md
   765  corpus/corpus.toml
     1  corpus/fuzz_findings/activator-text-key.ein

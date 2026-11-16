@@ -14,8 +14,8 @@ check finds those lines where the released tree keeps its prose:
 - every comment of a tracked `.ein` file outside `plans/` and `docs/history/`
   (the text after a `;` outside a string, read by `doc_audit.py`'s reader);
 - `corpus/corpus.toml`, whole;
-- `AGENTS.md` (and so `CLAUDE.md`) but its § Where the work is, which points at
-  the current milestone's plan, and `README.md`;
+- `README.md`; not `AGENTS.md` (and so `CLAUDE.md`), which guides the
+  development and is part of it, as `plans/` and `utils/` are;
 - this script, which holds itself to the rule it states.
 
 A line fails on any of
@@ -38,7 +38,7 @@ baseline (`--bless`); when every count is 0 the baseline is empty and goes.
 
     python3 utils/check_release_voice.py               # exit 1 on a rise or a new file
     python3 utils/check_release_voice.py --list        # every failing line, file:line
-    python3 utils/check_release_voice.py --list AGENTS.md ein.rs/crates/ein-ir
+    python3 utils/check_release_voice.py --list README.md ein.rs/crates/ein-ir
     python3 utils/check_release_voice.py --bless       # re-bank the baseline
 """
 from __future__ import annotations
@@ -59,8 +59,6 @@ SELF = Path(__file__).resolve()
 #: The crates that ship; `ein-corpus` and `ein-narration` are dev-only.
 SHIPPED = ("ein-core", "ein-ir", "ein-infer", "ein-einb", "ein-render", "ein-cli")
 
-#: The section of `AGENTS.md` that points at the current plan, by its heading.
-WHERE_THE_WORK_IS = "## Where the work is"
 
 #: A milestone number: `1`, `10`, `1f`, `1e2`. An id is not preceded by a word
 #: character or a `-`, which is what lets a decision id's `Q-M…` through.
@@ -104,27 +102,18 @@ def in_scope(rel: str) -> bool:
         return True
     if rel.endswith(".ein") and not rel.startswith(("plans/", "docs/history/")):
         return True
-    return rel in ("corpus/corpus.toml", "AGENTS.md", "README.md")
+    return rel in ("corpus/corpus.toml", "README.md")
 
 
 def read_lines(path: Path) -> list[str]:
     """The text of each line that is read, `""` for one that is not, so that a
     finding's line number is the file's."""
     text = path.read_text(errors="replace")
-    rel = path.relative_to(REPO).as_posix()
     if path.suffix == ".rs":
         return [line if DOC_COMMENT.match(line) else "" for line in text.splitlines()]
     if path.suffix == ".ein":
         return ein_comment_text(text).splitlines()
-    lines = text.splitlines()
-    if rel == "AGENTS.md":
-        out, skip = [], False
-        for line in lines:
-            if line.startswith("## "):
-                skip = line.strip() == WHERE_THE_WORK_IS
-            out.append("" if skip else line)
-        return out
-    return lines
+    return text.splitlines()
 
 
 def scope() -> list[Path]:

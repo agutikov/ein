@@ -448,6 +448,16 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   a path into `plans/` or a date rises above `utils/release_voice_baseline.txt`,
   or a file not listed there has one. A decision id passes. The commit that
   lowers a count re-banks the baseline (`--bless`).
+- **The project and the process are two things, and the dependency runs one
+  way.** The project is `README.md`, `ein.rs/` with its tests, `stdlib/`,
+  `examples/`, `tests/`, `corpus/` and `docs/` but `docs/lib/`; the process is
+  `plans/`, `utils/`, the gate and CI (`run_tests.sh`, `.github/workflows/`)
+  and this file; `c/`, `nl2smt/` and `docs/lib/` are external to both. The
+  process reads the project, which it sees in many states; nothing in the
+  project reads, links or names the process. A decision about the process
+  stays in `plans/`; a generated project file says it is generated and names
+  no tool; a measurement lives beside the script that takes it. P1f.20 brings
+  the tree there (the user's rulings of 2026-11-17).
 - **A wrong answer** is filed as an `open` row of the register, with a
   witness under `examples/ein-bugs/wrong-answers/` and a corpus entry, in a
   commit of its own; the fix flips the row, and any `:expect` that stated the

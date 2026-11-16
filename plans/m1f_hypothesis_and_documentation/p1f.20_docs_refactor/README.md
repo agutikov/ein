@@ -99,6 +99,25 @@ What they change:
   takes the next free id of its milestone after those, Q-M1f.341 on for M1f's.
 - Everything else as the defaults were written; Q-M1f.314 is ruled as defaulted.
 
+**The boundary, the same day.** The user: *"yes, utils/ containing tooling used for development also should
+belong to process"*; then, asked where the boundary runs: **process** is `plans/`, `utils/`, the gate and CI
+(`run_tests.sh`, `.github/workflows/`) and `AGENTS.md` (so `CLAUDE.md`); *"c/, nl2smt/, docs/lib - are outside of
+the process also, like external resources"*, neither project nor process; **the project** is the rest: `README.md`,
+`ein.rs/` with its tests, `stdlib/`, `examples/`, `tests/`, `corpus/`, `docs/` but `docs/lib/`. And:
+
+- **The censuses kept (item 2) live with their tools**, on the process side: no project page states a measured
+  number or names a `utils/` command. `docs/ein/ein.rs/benchmarks/` is not built; the table's *evidence* rows go
+  beside their scripts.
+- **A generated project file says it is generated** and not edited by hand, and names no tool; which script
+  writes it is recorded on the process side (`utils/README.md`).
+- **A crate test that reads a process file or runs a process tool** (`gate_steps.rs` and `nightly_steps.rs`,
+  which diff `run_tests.sh` against the workflows; the tests that spawn a `utils/` generator's `--check` *"so that
+  it is in the gate"*): the user asked what they are for; **default, the user's to correct**: the diffs become a
+  `utils/` check and the generators' checks plain gate steps, so `cargo test` reads only the project. S1f.20.9.
+- **Decisions about process are not carried**: the 32 the census files under `gate/`, and every one about a
+  `utils/` script, beside the 64 `process` ones. A decision file names only project artefacts in *Held by*.
+- **`AGENTS.md` leaves the release-voice check's scope**: it is process, and may point at plans.
+
 ## The user's rulings (2026-11-15)
 
 The user, 2026-11-15, verbatim:
