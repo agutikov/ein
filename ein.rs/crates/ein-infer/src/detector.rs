@@ -1,11 +1,9 @@
-//! The detector: what a program the static check flags is warned of — M1e2
-//! [S1e2.1b.5](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md),
-//! the design the user approved on 2026-11-03
-//! ([`detector_proposal.md`](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)).
+//! The detector: what a program the static check flags is warned of
+//! ([`monotonicity.md` § 11](../../../../docs/ein/reasoning/kb-evolution/monotonicity.md#11-the-detector)).
 //!
 //! [`crate::monotone::classify`] answers *is this program monotone?* from the
 //! compiled plans. On a program it flags, this module says more, in the words
-//! of `docs/kernel/inference/monotonicity.md` § 7: which property of a node
+//! of `docs/ein/reasoning/kb-evolution/monotonicity.md` § 2: which property of a node
 //! each site puts at stake (the **state**, or the **status**), whether a
 //! **cycle** runs through an `absent` over `D`, and whether the boundary's
 //! **order** of admission can decide what a node holds. That is the static
@@ -49,7 +47,7 @@
 //! **On an unflagged program the detector has nothing to find**, on every node
 //! built by fork from root — which is how every shipped route builds one — and
 //! on every split `sat(sat(P ∪ C1) ∪ (C \ C1))` from a fixpoint that already
-//! holds root's. The argument is `monotonicity.md` § 5.1's theorem: a program
+//! holds root's. The argument is `monotonicity.md` § 11.3, from § 3.2's theorem: a program
 //! with no site reads no relation in `D` under an odd `absent`, so its graph
 //! over `D` has no negative edge (no cycle through an `absent` over `D`), no
 //! `absent` rule reads under an `absent` a relation in `D` another concludes
@@ -134,7 +132,7 @@ impl Concludes {
     }
 }
 
-/// Which property of a node a site puts at stake — `monotonicity.md` § 7.6's
+/// Which property of a node a site puts at stake — `monotonicity.md` § 2's
 /// table, read per site: an `absent` puts the **state** at stake, and `dead`
 /// with it when it refutes; a trigger puts the **status** (`owes`); an
 /// activator, either, through the plan a node compiles.
@@ -380,7 +378,7 @@ fn cycles_over(
 /// relation in `D` which a deferred rule B concludes — directly, or through
 /// rules that are not deferred, which fire before the boundary speaks — can be
 /// admitted before B and keep a fact B's conclusion then falsifies (the FIFO
-/// gap, `monotonicity.md` § 7.3). At one priority the written order decides
+/// gap, `monotonicity.md` § 8.3). At one priority the written order decides
 /// which goes first; with A's priority earlier, A goes first in every order
 /// (`fifo_gap_priority`, the proposal's § 7). B earlier is the stratified
 /// order.
@@ -561,7 +559,7 @@ pub struct Paths {
 /// The dynamic half: whether a flagged site bit, in the status (the cube) and
 /// in the state (stale facts, parent paths). Reported apart, because the cube
 /// reads only the status: five programs it calls conservative have a broken
-/// state (`monotonicity.md` § 7.9).
+/// state (`monotonicity.md` § 9).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Warning {
     pub status: Status,

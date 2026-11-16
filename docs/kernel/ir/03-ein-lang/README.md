@@ -43,7 +43,7 @@ model in [`../02-data-model/`](../02-data-model/).
   reference (macro / algebra / bijection / elim / typing / closure),
   companion to the module-level
   [`stdlib/README.md`](../../../../stdlib/README.md).
-- [`08_self_describing.md`](08_self_describing.md) — Ein's own model
+- [Rules as data](../../../ein/reasoning/rule-evolution/rules-as-data.md) — Ein's own model
   expressed in ein-lang itself, using only real syntax (is-a kinds,
   relation signatures, the property algebra). Operational for L0/L1/L2
   today; the L3-on-L3 frontier (rules as data) is design-only, F5.

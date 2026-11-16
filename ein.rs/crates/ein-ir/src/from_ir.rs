@@ -5212,7 +5212,7 @@ fn pattern_from_ir(ast: &Ast, terms: &mut Terms, expr: NodeId) -> Result<Pattern
 /// relations an expectation has to list the complete extent of. `ein test
 /// --json-report` publishes the list per query, because the **write cost** of
 /// a closure claim is `relations x models x facts` and the first factor is
-/// this one (M1d [S1d.4.1](../../../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)).
+/// this one ([claims about a set of states](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states)).
 ///
 /// Connectives (`and`, `or`, `not`, `neq`, `eq`, `=`) and the two macro
 /// internals are not relations and do not appear; a `(?rel ?a ?b)` head binds

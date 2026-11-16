@@ -37,7 +37,7 @@ the same day. What is below is kept as the record of the theme.
 `dead` is not upward-closed under `absent`. `sat` is *inflationary* — the KB is
 append-only and nothing retracts — but that is not the same as *monotone in its
 input*, and `absent` is exactly what separates them
-([`absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md) C3:
+([`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md) C3:
 *removing a fact can flip an absent and fabricate a contradiction the full KB
 never had*).
 
@@ -102,7 +102,7 @@ does.
   because D4 goes with M1e's plan tree and the fixture does not: its `:expect`
   states today's wrong answer and **breaks when this theme lands**, which is
   the acceptance test a proposal here does not have to write.
-- [`docs/kernel/inference/absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md)
+- [`docs/kernel/inference/absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md)
   — C1–C6, and C3 in particular.
 - [design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
   — the monotonicity definition this theme exists because of, and the worked

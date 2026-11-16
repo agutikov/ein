@@ -7,7 +7,7 @@
     guard_split.py … --json            one JSON row per program
     guard_split.py … --keep DIR        keep every cell program it writes
 
-**The strategy** (docs/kernel/inference/monotonicity.md § How to solve). A
+**The strategy** (docs/ein/reasoning/kb-evolution/monotonicity.md § How each kind is solved). A
 program the static check flags has *guards*: the ground facts a third-kind
 read can see change as the commitment grows. Fix the truth of each, a *guess*
 γ, and the program becomes monotone: the cell program P_γ. In it

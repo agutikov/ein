@@ -1,7 +1,5 @@
-//! The rule dependency graph and its strata — M1f
-//! [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.15_rule_priority.md)'s
-//! T3 and T4, on the user's note of 2026-08-28, *"remove `:priority`
-//! completely / analyze rules structure instead"*.
+//! The rule dependency graph and its strata
+//! ([Analysis of rules](../../../../docs/ein/reasoning/rule-evolution/analysis-of-rules.md)).
 //!
 //! **The graph.** An edge from each relation a compiled plan reads to each it
 //! writes, negative where the read is under an odd number of `absent`s, and a
@@ -19,13 +17,10 @@
 //! is a **negative cycle**, where no stratification exists ([`Cycle`]). A
 //! rule's stratum is the highest of the relations its plans write.
 //!
-//! **What it is for.** S1f.5.15 began by deriving a band per rule from its
-//! shape, to order the agenda where `:priority` had (T3, the diff against the
-//! typed numbers: 275 of 471 agreed). The user ruled on 2026-11-08 (Q-M1f.6,
-//! *"plain FIFO, core is an explanation, F22 makes it canonical"*) that nothing
-//! orders the agenda or the boundary but the written and arrival order, so the
-//! band went with `:priority`, and the graph is the stratification diagnostic's
-//! (T4: [`crate::monotone::Monotonicity::negative_cycles`]) and the stratum
+//! **What it is for.** Not an order: the agenda and the boundary take the one
+//! order `saturator::AGENDA` gives them (Q-M1f.313), and a dead node's core is
+//! an explanation (Q-M1f.6). The graph is the stratification diagnostic's
+//! ([`crate::monotone::Monotonicity::negative_cycles`]) and the stratum
 //! `ein saturate --dump` prints beside each rule ([`rule_strata`]).
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -55,8 +50,8 @@ pub struct Cycle {
 }
 
 impl Cycle {
-    /// The cycle as the stratification diagnostic says it (M1f S1f.5.15's
-    /// T4): its relations, its negative edges, and what the parity may mean
+    /// The cycle as the stratification diagnostic says it: its relations,
+    /// its negative edges, and what the parity may mean
     /// for root's fixpoint. A possibility the graph licenses, never a fact
     /// about a run: a cycle whose rules never fire changes nothing.
     pub fn stratum_text(&self) -> String {
@@ -76,7 +71,7 @@ impl Cycle {
 }
 
 /// The saturation rules' dependency graph over every relation their plans
-/// name (`node_census.md` § 5's): an edge from each relation a plan reads to
+/// name: an edge from each relation a plan reads to
 /// each it writes, negative at odd `absent` depth, and a positive one from an
 /// activator relation to what the rule's plans write. A wildcard negative read,
 /// `(not ?)`, reads every stored negative the graph names.

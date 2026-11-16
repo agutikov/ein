@@ -196,7 +196,7 @@ hole the one-fact test sees the hole and not the node of R beyond it.
 dead hole (`naf-upward-closure`, `naf-nowb`, `three_components`, `trigger_hole`,
 `via_hole`, both written programs) and on `06` and `maximal_not_top`; it holds
 on `lattice/04`, `08`, `09`, `local_not_global`, `07_cube` and the three
-owing probes. That is [`monotonicity.md` § 3](../../../docs/kernel/inference/monotonicity.md#3-the-comparison)'s
+owing probes. That is [`monotonicity.md` § 6](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)'s
 row, measured over more programs.
 
 **Repair edges.** One per hole and missing fact, from the hole to a node of R.
@@ -274,7 +274,7 @@ read-out says about them is its D4.
 ## 8. The attribution gap, closed
 
 S1e2.1b.6's re-take of the site census printed *a violation no site is named
-for: 2* ([`monotonicity.md` § 5.2](../../../docs/kernel/inference/monotonicity.md#52-on-the-cube)).
+for: 2* ([`monotonicity.md` § 4](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#4-what-the-cube-shows)).
 `site_census` named a site for a dead node by its `absent` premises, and for
 an owing node by the trigger sites of what it owes. The owing holes of
 `lattice/08` and `lattice/09` fit neither rule: `lattice/08` owes because an

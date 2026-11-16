@@ -24,7 +24,7 @@ is everything established on 2026-11-02, and [§ The decisions](#the-decisions)
 is every decision P1e2.1b was to take, with its options, its evidence, and
 what the engine does until it is taken. The docs half of the analysis, each
 claim labelled by its standing, is
-[`monotonicity.md` § 7](../../docs/kernel/inference/monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence).
+[`monotonicity.md` § 2](../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program).
 Each option's measured consequences per program are P1e2.1b's
 [S1e2.1b.7](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md)'s.
 
@@ -179,7 +179,7 @@ fails.
   `state(C′)`. Saturation is **cumulative** when X ⊆ Y ⊆ sat(X) ⇒
   sat(Y) = sat(X).
 - **⇒ always holds.** Construction is append-only: the KB never retracts
-  ([`absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md):
+  ([`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*). Take C ⊆ C′ and build
   C′ by way of C. The result holds `state(C)`, and by path independence it is
   `state(C′)`.
@@ -263,11 +263,11 @@ approximates: a site says the operator is not monotone over D. The node
 functions can still be monotone on the program's own lattice, and those are
 the check's **conservative** flags: 8 of the 18 flagged programs within the
 limit at `4562bf70`
-([`monotonicity.md` § 5.2](../../docs/kernel/inference/monotonicity.md#52-on-the-cube)).
+([`monotonicity.md` § 4](../../docs/ein/reasoning/kb-evolution/monotonicity.md#4-what-the-cube-shows)).
 
 **The check's verdict is relative to root**, which the analysis above did not
 say and the docs now do
-([`monotonicity.md` § 7.6](../../docs/kernel/inference/monotonicity.md#76-the-program-the-third-stronger-property)).
+([`monotonicity.md` § 2](../../docs/ein/reasoning/kb-evolution/monotonicity.md#2-the-state-the-status-and-the-program)).
 A read outside D is static because root completes it and a fork never
 re-derives it. A scratch build re-derives root in every node, so the FIFO race
 can reach a static read: with `a` given and only `b` a candidate, r2
@@ -350,8 +350,8 @@ were false"*.
   (`6e7dfc49`). Under F1 (b) and F2 with `via`, (E) refuses 8 programs
   *forbid* does not, 9 since S1e2.1b.7 banked `lattice/10_fifo_gap`. Under F1
   (c), fact grain, `features/05` and `/12` load under both. **Each reading,
-  measured**: [`monotonicity.md` § 8.1, D1](../../docs/kernel/inference/monotonicity.md#d1-option-e-under-each-reading-of-f1-and-f2).
-  **What each would be rewritten as**: [§ 8.2](../../docs/kernel/inference/monotonicity.md#82-es-rewrites) there, a
+  measured**: `docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D1.
+  **What each would be rewritten as**: § 8.2 (`docs/kernel/inference/monotonicity.md` at `50739fdb`) there, a
   probe each. Within the limit 5 of 6 keep R; `d3-unsat-core` has no rewrite
   that keeps R found.
 - **(E) is an option, not a ruling.**
@@ -373,8 +373,8 @@ itself, through `via` (`d3-unsat-core`, `stale-naf-fork` and its twin), and
 
 [§ Option (E)](#option-e-and-its-13-programs) above. **Its consequences,
 per program and per reading of F1 and F2**:
-[`monotonicity.md` § 8.1, D1](../../docs/kernel/inference/monotonicity.md#d1-option-e-under-each-reading-of-f1-and-f2),
-and the rewrites (E) would ask for, [§ 8.2](../../docs/kernel/inference/monotonicity.md#82-es-rewrites). **Until
+`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D1,
+and the rewrites (E) would ask for, § 8.2 (`docs/kernel/inference/monotonicity.md` at `50739fdb`). **Until
 decided:** *forbid* as ruled, and the 13 programs load, 14 with
 `lattice/10_fifo_gap`.
 
@@ -399,7 +399,7 @@ which closes the FIFO gap. Evidence:
 not the user's: (B) with (D), admission in stratum order. The register's W8
 `right` blocks are (B)'s answer (§ 9 there). Stratum-order admission,
 emulated, is measured in § 12.4 there. **Each option's consequences, per
-program**: [`monotonicity.md` § 8.1, D2](../../docs/kernel/inference/monotonicity.md#d2-what-a-nodes-state-is).
+program**: `docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D2.
 **Until decided:** (A).
 
 **Since 2026-11-04 one of W8's two witnesses is refused**: S1e2.2.5's F2 took
@@ -440,7 +440,7 @@ node from a parent's fixpoint agrees with the oracle?
 
 Evidence: § 6.1 there, and S1e2.1b.7's path and cumulativity censuses
 ([§ 11–12 there](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#11-the-path-census--s1e21b7)). **The consequences for
-P1e2.1c**: [`monotonicity.md` § 8.1, D3](../../docs/kernel/inference/monotonicity.md#d3-path-dependence-as-a-constraint-on-p1e21c).
+P1e2.1c**: `docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D3.
 **Until decided:** (ii). P1e2.1c's S1e2.1c.2 and .4 are scoped to monotone
 programs.
 
@@ -471,7 +471,7 @@ words, (d4) `lattice/04`'s register row. Evidence:
 The agent's recommendation, not the user's: (a), with dead and owing holes
 named apart and the dead row naming the `absent` its refutation rests on
 (§ 10 there). The counts re-taken with the fixtures S1e2.1b.7 banked:
-[`monotonicity.md` § 8.1, D4](../../docs/kernel/inference/monotonicity.md#d4-what-is-reported-when-r-has-holes).
+`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D4.
 **Until decided:** the listing is R, and the `lattice` row names up to four
 minimal holes with why each is out
 ([`read_out.md` § 6.3](../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent)).
@@ -517,7 +517,7 @@ stage put it: (b), with the taint following each plan's activator, which the
 test holds; (a) if that walk is not what is built.
 
 Its consequences beside the path census:
-[`monotonicity.md` § 8.1, D6](../../docs/kernel/inference/monotonicity.md#d6-what-a-route-may-learn-from-a-refutation-resting-on-an-absent).
+`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D6.
 
 **Closed 2026-11-04**, by D6's (c) in the form this paragraph names: the
 refusal shipped (M1e2 S1e2.2.5) and covers every refutation a route can learn
@@ -538,12 +538,12 @@ has to be taken, for `ACTIVATOR_UNDER_ABSENT` to be covered.
 Was M1e2's [S1e2.1c.3](../m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.3_the_non_monotone_search.md),
 moved here 2026-11-02; its file keeps the design notes. (a) the guard split;
 (b) the cube past the limit when asked by name, `--region-limit`; (c) partial,
-C3. Evidence: [`monotonicity.md` § 6.4](../../docs/kernel/inference/monotonicity.md#64-the-guard-split-prototyped):
+C3. Evidence: `docs/kernel/inference/monotonicity.md` at `50739fdb` § 6.4:
 the split agrees with the oracle on 19 of 21 cubes and disagrees on W8's two,
 because a cell builds its node from scratch; g ≪ n on 2 of the 8 flagged
 programs past the limit, and g = n = 19 on `lattice/06_friends_tables`. The
 split presumes D2. Re-taken by S1e2.1b.7, 20 of 22 agree:
-[`monotonicity.md` § 8.1, D7](../../docs/kernel/inference/monotonicity.md#d7-the-search-past-the-oracles-limit).
+`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1, D7.
 **Until decided:** (c), and (b) when asked.
 
 ## Handed over by M1e2's inventory, 2026-11-05
@@ -663,7 +663,7 @@ this page.
 - Each option moves answers or refuses programs that are named, and the
   measurements are in. What none of them has is a program that needs the
   decision: within the oracle's limit, every flagged cube with a violation was
-  written to show one ([`monotonicity.md` § 2](../../docs/kernel/inference/monotonicity.md#2-the-ladder)).
+  written to show one ([`monotonicity.md` § 5](../../docs/ein/reasoning/kb-evolution/monotonicity.md#5-the-ladder)).
   `lattice/06`'s conditional obligation is the exception the user wrote, and
   it is past the limit.
 - Until a decision, what holds is documented and every surface that reports R
@@ -671,19 +671,19 @@ this page.
 
 ## Read before deciding
 
-- [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md): the two
+- [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md): the two
   kinds of program compared; § 7, this analysis with every claim labelled by
   its standing; § 8, what is open.
 - [`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
   (D2, D3), [`site_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md)
   (D1, D7), S1e2.1b.3's `hole_census.md` (D4), S1e2.1b.4's taint census (D6),
-  S1e2.1b.7's consequences ([`monotonicity.md` § 8.1–8.2](../../docs/kernel/inference/monotonicity.md#81-each-options-consequences-per-program),
+  S1e2.1b.7's consequences (`docs/kernel/inference/monotonicity.md` at `50739fdb` § 8.1–8.2,
   all) and its path and cumulativity censuses
   ([`node_census.md` § 11–12](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#11-the-path-census--s1e21b7), D2 and D3).
-  The causes as one table: [`monotonicity.md` § 7.9](../../docs/kernel/inference/monotonicity.md#79-the-causes-as-one-table).
+  The causes as one table: [`monotonicity.md` § 9](../../docs/ein/reasoning/kb-evolution/monotonicity.md#9-the-causes).
 - [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md):
   *forbid*, its F1–F5, the `via` set and the rewrites that keep R.
-- [`absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md):
+- [`absent_semantics.md`](../../docs/ein/reasoning/kb-evolution/absent-and-naf.md):
   *"Retraction / truth maintenance: not provided"*, which D2's (B) and (C)
   would qualify.
 - [F18](f18_world_aware_negatives.md), whose closure rode on *forbid* (D6).

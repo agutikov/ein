@@ -118,7 +118,7 @@ Frontier terminals take no alternatives: a given stays given. A
 the `(absent …)` queries that had to *fail* at the boundary for the
 firing to be admitted; recorded to make negative dependence visible,
 not yet interpreted by any walk. See
-[`ir/02-data-model/01_entities.md` §3](ir/02-data-model/01_entities.md).
+[relations and facts § Provenance](../ein/reasoning/static-ir/relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations).
 
 ### Derivation DAG
 The transitive closure of `rule`-kind provenance — from a derived
@@ -129,7 +129,7 @@ follows every recorded one, giving an AND/OR graph whose
 per-justification premise groups are in `and_nodes` (`is_or_graph`;
 `to_dot()` then draws a diamond per justification). Cycles are broken
 at re-visit — the revisited fact is a node but is not re-expanded. See
-[`ir/02-data-model/02_store.md` §7](ir/02-data-model/02_store.md).
+[relations and facts § Provenance](../ein/reasoning/static-ir/relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations).
 
 ### Unsat core
 The frontier of given facts across a set of conflicting facts, per
@@ -287,13 +287,13 @@ but `alt-cap-core.ein`'s (M1e2 S1e2.2.11, `ein solve FILE --events`,
 [`explain::smallest_contradiction_frontier`](../../ein.rs/crates/ein-infer/src/explain.rs)
 over the **ATMS label** search in
 [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs). See
-[`inference/architecture_and_algorithms.md` §O6](inference/architecture_and_algorithms.md).
+[`cores.md`](../ein/reasoning/kb-evolution/cores.md).
 
 ### Fork
 A hypothesis branch — a `KnowledgeBase` that shares the loaded entities
 with its parent by reference, but isolates the branch's own derivations.
 See
-[`ir/02-data-model/02_store.md` §5](ir/02-data-model/02_store.md).
+[relations and facts § A fork](../ein/reasoning/static-ir/relations-and-facts.md#a-fork).
 
 ### World
 One `KnowledgeBase` instance under saturation: the root, or a fork
@@ -309,7 +309,7 @@ does. It is a **read-only view taken at a positive quiescence**, not
 a snapshot and not an owner of the KB — saturating past that point
 invalidates it, so the saturator builds a fresh one per boundary
 round. See
-[`inference/absent_semantics.md` §Worlds](inference/absent_semantics.md#worlds).
+[`absent-and-naf.md` § Worlds](../ein/reasoning/kb-evolution/absent-and-naf.md#worlds).
 
 ### Equality class
 A union-find class of objects the engine has concluded are *the same*.
@@ -336,14 +336,14 @@ A fact the generator proposes at root, with no config switch applied. Which
 ones exist is the **generation ladder**'s answer — the program's own
 `(hrule …)`, else the facts that would discharge what root owes and what a
 rule can bring a commitment to owe
-([`solution_semantics.md` § 1.4](inference/solution_semantics.md#14-candidate-and-universe)),
+([`solution_semantics.md` § 1.4](../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)),
 else the blind enumerator. Scoping (`:hypothesis-relations`, `:no-hypothesis`,
 `(__closed__ R)`) decides eligibility, so a fact of an excluded relation is
 not a hypothesis at all. The blind enumerator proposes about its **objects**:
 the program's names, less a signature's type roles, the kernel's words, every
 relation and rule the registry holds, and the kernel's two dunders,
 `__closed__` and `__symmetric__`, which are never an object
-([`solution_semantics.md` § 1.2](inference/solution_semantics.md#12-names)).
+([`solution_semantics.md` § 1.2](../ein/reasoning/kb-evolution/solution-semantics.md#12-names)).
 
 ### Universe (H)
 The candidate list, n = |H|: **the space every definition quantifies over**.
@@ -454,25 +454,25 @@ report then says it is partial. See
 ### T1 rule (first-order)
 A rule whose LHS quantifies only over object variables; relation
 names are literal. Cheap to match (one indexed lookup per relation).
-See [`ir/01-ein-graph/02_rules.md` §2.1](ir/01-ein-graph/02_rules.md).
+See [rules as statements § First-order](../ein/reasoning/static-ir/rules-as-statements.md#first-order).
 
 ### T2 rule (relation-polymorphic / higher-order)
 A rule with at least one relation variable in its LHS or RHS. Fires
 only when activated by a **property fact** (a fact whose head is the
 rule's name). Most of M1's rule library is T2. See
-[`ir/01-ein-graph/02_rules.md` §2.2](ir/01-ein-graph/02_rules.md).
+[rules as statements § Relation-polymorphic](../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic).
 
 ### T3 rule (structural / aggregate)
 A rule whose LHS uses an aggregate predicate (count, uniqueness,
 position) — a property of the whole graph, not a local subgraph
 match. Bridges graph rewriting and CSP arc-consistency. See
-[`ir/01-ein-graph/02_rules.md` §2.3](ir/01-ein-graph/02_rules.md).
+[rules as statements § Structural](../ein/reasoning/static-ir/rules-as-statements.md#structural).
 
 ### Property fact
 A fact whose head matches a rule's name; its arguments supply the
 rule's parameter bindings. Example: `(symmetric co-located)` is a
 property fact that activates the `symmetric` rule on the `co-located`
-relation. See [`ir/01-ein-graph/02_rules.md` §2.2](ir/01-ein-graph/02_rules.md).
+relation. See [rules as statements § Relation-polymorphic](../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic).
 
 ### Kernel meta-primitive
 A shape-pinned reserved word in the IR grammar: `instance`, `not`,
@@ -490,7 +490,7 @@ most one is admitted, re-entering the closure; the loop ends when a
 quiescence admits nothing. The default M1 strategy is still lazy:
 saturate before branching. See
 [`inference/README.md`](inference/README.md) and
-[`inference/absent_semantics.md` §Evaluation points](inference/absent_semantics.md#evaluation-points).
+[`absent-and-naf.md` § The boundary](../ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary).
 
 ### Absent / negation-as-failure (NAF)
 `(absent P)` in a `:match` — a **query** "this world holds no fact
@@ -510,9 +510,9 @@ made of first, then the rest, each half in the written and arrival order);
 on others it can be fixed by boundary-admission order, which is the
 agenda's too (see [Stratification](#stratification)).
 Normative page:
-[`inference/absent_semantics.md`](inference/absent_semantics.md);
+[`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md);
 operational how:
-[`inference/README.md` §NAF](inference/README.md#naf-semantics--the-closureworld-boundary-s1218).
+[`absent-and-naf.md` § The boundary](../ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary).
 
 ### Stratification
 The property of a rule set that no `(absent …)` guard watches a
@@ -533,7 +533,7 @@ the firing order; on unstratified ones
 picked by boundary-admission order; since S1f.5.15 the `strata` row
 says that the fixpoint may depend on that order and need not be unique,
 what the graph licenses, without naming any other model. See
-[`inference/absent_semantics.md` §Explicitly not provided](inference/absent_semantics.md#explicitly-not-provided).
+[`absent-and-naf.md` § What is not provided](../ein/reasoning/kb-evolution/absent-and-naf.md#what-is-not-provided).
 
 ---
 
@@ -650,7 +650,7 @@ forms are just facts and any type projection is a user-space rule.
 ### Open-world
 The KB loader tolerates references to undeclared types and relations
 — they auto-vivify with a `declared=False` flag rather than fail. See
-[`ir/02-data-model/01_entities.md` §1.3](ir/02-data-model/01_entities.md).
+[names and atoms § A relation is an object](../ein/reasoning/static-ir/names-and-atoms.md#a-relation-is-an-object).
 
 ### Three task classes
 Solve / find-gaps / find-contradictions — the three modes a

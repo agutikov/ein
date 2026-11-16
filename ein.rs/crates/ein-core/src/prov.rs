@@ -155,7 +155,7 @@ pub struct Prov {
     pub bindings: Box<[(Symbol, Value)]>,
     /// S1.21.8's negative premises. **Recorded, not yet interpreted** by any
     /// walk: making a walk honour them is a semantics change that
-    /// `absent_semantics.md` explicitly leaves open.
+    /// `docs/ein/reasoning/kb-evolution/absent-and-naf.md` leaves out.
     pub absent: Box<[NafRef]>,
     pub branch: Option<u32>,
     pub loc: Option<Loc>,

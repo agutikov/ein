@@ -328,7 +328,7 @@ pub enum Route {
 }
 
 /// A theorem a mode used to skip work —
-/// [`solve_interface.md` § 3.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#31-the-licences).
+/// [the licences](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Licence {
     /// L0: a fork only adds — every node is root's fixpoint and more, so when

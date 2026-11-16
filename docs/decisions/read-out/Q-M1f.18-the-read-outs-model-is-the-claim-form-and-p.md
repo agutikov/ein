@@ -10,4 +10,4 @@ name on the screen that holds the claim blocks would give one word two sets in o
 
 **Held by.** [read_out.md](../../kernel/inference/read_out.md) § 6 and § 8, held to the printer by
 `ein-cli/tests/read_out_reference.rs`; the model's definition:
-[solution_semantics.md](../../kernel/inference/solution_semantics.md) § 3.
+[Solution semantics](../../ein/reasoning/kb-evolution/solution-semantics.md) § 3.

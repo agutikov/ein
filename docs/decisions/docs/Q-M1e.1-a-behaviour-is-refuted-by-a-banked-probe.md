@@ -16,5 +16,5 @@ thing that would contradict it; and a risk is a statement about what could happe
 happen closes.
 
 **Held by.** `docs/kernel/standard_of_proof.md`, Rule 1, which states it and calibrates it; the pages that apply it,
-`docs/kernel/inference/monotonicity.md` (each claim labelled by what holds it) and
+[`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md) (each claim beside the test that holds it) and
 `docs/kernel/defined_behaviour.md`.

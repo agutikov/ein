@@ -41,7 +41,7 @@ rests on is checked by something that fails when it stops being true.
 |---|---|---|---|
 | [design/02](../history/m1a_rust/design/02_determinism_and_order.md)'s determinism argument | canonical ordering everywhere a traversal reads | yes, by the ordering tests | the argument is enough |
 | `EqClasses` auto-vivification | *nothing fires equality propagation* | **the named test does not enforce it — 2026-09-01** | the row was **misattributed**, and the hazard was removed instead (M1e [S1e.4.3](../history/m1e_review_processing/README.md#s1e43--state-model-low)) |
-| the alive-set invariant | *rules assert no new objects or relations* | **checked since 2026-08-31, and it fails** | the check was built (M1e [S1e.3.3](../history/m1e_review_processing/README.md#s1e33--state-model-medium)) and found the premise **false on two corpus programs**. So the argument was never available: what stands in its place is a named breach set, a measurement that neither breach costs anything, and an eleven-line fixture on which one does — `k = 0, exhausted = true` where a model exists. § 3.3 of [`defined_behaviour.md`](defined_behaviour.md#33-the-m1-alive-set-invariant-operationally). **Restated 2026-10-16, enforced 2026-11-04**: the user ruled a rule's constant a name of the program (Q-M1e.21 (b)), so the premise reads *no rule asserts a name the program lacks*, and M1e2 S1e2.2.4 seeds the universe with every such constant and refuses, at load or at compile, the one shape that could name something else; `ein-infer/tests/alive_invariant.rs` fails when a run reaches a name outside it. **Widened 2026-11-04**: a name is any constant a fact names at any depth or a rule's `:match` or `:assert` names (Q-M1e2.9 (a)), and M1e2 S1e2.2.14 seeds the universe with all of them |
+| the alive-set invariant | *rules assert no new objects or relations* | **checked since 2026-08-31, and it fails** | the check was built (M1e [S1e.3.3](../history/m1e_review_processing/README.md#s1e33--state-model-medium)) and found the premise **false on two corpus programs**. So the argument was never available: what stands in its place is a named breach set, a measurement that neither breach costs anything, and an eleven-line fixture on which one does — `k = 0, exhausted = true` where a model exists. [`saturation.md` § The alive-set invariant](../ein/reasoning/kb-evolution/saturation.md#the-alive-set-invariant). **Restated 2026-10-16, enforced 2026-11-04**: the user ruled a rule's constant a name of the program (Q-M1e.21 (b)), so the premise reads *no rule asserts a name the program lacks*, and M1e2 S1e2.2.4 seeds the universe with every such constant and refuses, at load or at compile, the one shape that could name something else; `ein-infer/tests/alive_invariant.rs` fails when a run reaches a name outside it. **Widened 2026-11-04**: a name is any constant a fact names at any depth or a rule's `:match` or `:assert` names (Q-M1e2.9 (a)), and M1e2 S1e2.2.14 seeds the universe with all of them |
 | [design/08](../history/m1a_rust/design/08_parallelism.md)'s `dead` is monotone | *the KB is append-only, so nothing retracts* | **no** | broken by a twenty-line program — see below |
 
 One of the four is the pattern working; three are the pattern's absence, and
@@ -94,7 +94,7 @@ cache, the singleton writeback, and the no-good store's width-1 clause — and o
 2026-08-28 a twenty-line program broke it: with a rule that refutes `(p A)`
 only while `(q A)` is missing, `{(p A)}` is dead and `{(p A), (q A)}` is alive,
 so `dead` is not upward-closed under `absent`
-([`absent_semantics.md`](inference/absent_semantics.md) C3 had stated the
+([`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md) C3 had stated the
 caveat, unreconciled, the whole time; a refutation of that shape is refused
 since, [Q-M1e2.5](../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
 
@@ -109,7 +109,7 @@ a year. That is what Rule 2 is for.
   a page applying Rule 1 to itself: a soundness row that said *yes* was
   withdrawn on 2026-08-28 when the probe that tested it came back the other
   way.
-- [`inference/absent_semantics.md`](inference/absent_semantics.md) — C1–C6,
+- [`absent-and-naf.md`](../ein/reasoning/kb-evolution/absent-and-naf.md) — C1–C6,
   the corollaries the `dead`-monotonicity premise has to be read beside.
 - [M1e's open questions](../history/m1e_review_processing/open_questions.md)
   — where the two rules were argued, and the ledger that records what each

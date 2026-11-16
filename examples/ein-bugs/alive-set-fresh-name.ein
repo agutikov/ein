@@ -4,7 +4,7 @@
 ;;;
 ;;; ── The premise this tested ────────────────────────────────────────────
 ;;;
-;;; `docs/kernel/inference/README.md` § M1 invariant, as M1 wrote it:
+;;; `docs/ein/reasoning/kb-evolution/saturation.md` § The alive-set invariant, first written as:
 ;;;
 ;;;   1. No new objects. Rules don't `:assert` facts whose args introduce
 ;;;      names that weren't already in the ontology / facts.

@@ -35,7 +35,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs/ein/user/reference/read-out-examples.md"
 # The pages the prose links, relative to OUT.
 QUERY = "../syntax-and-semantics/query.md"
-SOLUTION_SEMANTICS = "../../../kernel/inference/solution_semantics.md"
+SOLUTION_SEMANTICS = "../../reasoning/kb-evolution/solution-semantics.md"
 
 ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 ap.add_argument("--bin", default=os.environ.get("EIN_BIN", str(ROOT / "ein.rs/target/release/ein")))
@@ -156,7 +156,7 @@ add(block(["examples/branching/05_mini_zebra.ein"]))
 
 add("""## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
-[`solution_semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
+[`solution-semantics.md` § 2.5]("""+SOLUTION_SEMANTICS+"""#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
 example: three candidates, every pair alive, the triple dead, no obligation. One run per question, so the same R can be
 read through each.
 

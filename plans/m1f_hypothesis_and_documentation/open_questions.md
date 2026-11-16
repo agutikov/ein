@@ -6671,7 +6671,7 @@ by *forbid* and have no R.
   ([H6-2](p1f.10_hypothesis_structure/findings.md#h6-2--under-b-q-m1f306-bears-on-two-more-programs-and-marks-nothing-on-them)).
 - **(C)** turns three or four corpus programs into refusals. Two of them, `lattice/09` and `/12`, are not
   wrong in H today: they are the corpus's two exercised activator sites, which
-  [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md) and `ein-infer`'s detector tests read by
+  [`monotonicity.md`](../../docs/ein/reasoning/kb-evolution/monotonicity.md) and `ein-infer`'s detector tests read by
   name, and F21's examples of the third cause of a non-monotone program.
 - **(D)** changes no answer and keeps an empty R where a model exists.
 
@@ -6920,7 +6920,7 @@ also can we get plain dump of hypothesis? we should be able to"*. The view shows
 set H alone, so it is renamed: **`ein render h-space FILE`**, the main session's choice between the user's two
 examples and a default the user may change, with no alias; its document is `h-space.json`, schema
 `ein-h-space/1`, and its page
-[`docs/kernel/inference/hypothesis_space.md`](../../docs/kernel/inference/hypothesis_space.md). And of the dump,
+[`docs/kernel/inference/hypothesis_space.md`](../../docs/ein/reasoning/kb-evolution/hypothesis-space.md). And of the dump,
 the same day: *"ein render writes dot, by listing hypothesis I meant listing them as ein facts, so add one more
 top level command `show` and one sub-command `show hyps` that lists them"*. So: **`ein show hyps FILE`**, a new
 top-level command with one subcommand, prints H as Ein facts, one candidate a line and nothing else on stdout,

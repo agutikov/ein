@@ -85,7 +85,7 @@ fact a file writes, or in a rule's conclusion where it holds no variable:
 the loader's statement of what was written, derived from the fact it was
 read in, which a representation module reads to check its own terms
 ([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)). See
-[`../03-ein-lang/08_self_describing.md`](../03-ein-lang/08_self_describing.md)
+[Rules as data](../../../ein/reasoning/rule-evolution/rules-as-data.md)
 for what userspace builds on top of it.
 
 The `signature` holds the argument-position type **names** (opaque
@@ -102,7 +102,7 @@ Cross-references:
   relation's name.
 - `rel.properties` → `tuple[Fact, ...]` — rule-application facts
   targeting this relation (T2 activators from
-  [`../01-ein-graph/02_rules.md` §2.2](../01-ein-graph/02_rules.md)).
+  [rules as statements § Relation-polymorphic](../../../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic)).
 - `rel.rules` → `tuple[Rule, ...]` — rules naming this relation, OR
   whose name appears as a property-fact head on this relation.
 - `rel.rule` → `Rule | None` — if this relation's *name* matches a
@@ -261,7 +261,7 @@ Contrast with `type-exclusivity`'s LHS `(and (is-a ?a ?T) (is-a ?b ?T))`:
 
 ## 3. `Provenance` — where each fact came from
 
-Per [`../01-ein-graph/01_kb.md` §5](../01-ein-graph/01_kb.md), every
+Per [`cores.md` § A derivation record](../../../ein/reasoning/kb-evolution/cores.md#a-derivation-record), every
 fact carries a `Provenance` record of one of four kinds. The
 record:
 
@@ -443,7 +443,7 @@ Two entities are equal iff their identity tuples are equal — `loc` and
 provenance never affect equality. **Facts are
 also totally *ordered*** wherever the engine has to sort them, by a rule that
 is stated rather than inherited:
-[`defined_behaviour.md` §2.1](../../defined_behaviour.md). For
+[values and their order § Values are totally ordered](../../../ein/reasoning/static-ir/values-and-order.md#values-are-totally-ordered). For
 nested-fact args, equality cascades pointwise: outer Facts are
 equal iff their nested Fact args are equal (which they are iff
 *their* `(relation_name, args)` match, recursively).

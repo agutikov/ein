@@ -23,7 +23,7 @@ constrained-reasoning research.
   the answer as a region R;
   [`inference/read_out.md`](docs/kernel/inference/read_out.md), every row
   `ein solve` prints and what it counts;
-  [`inference/hypothesis_space.md`](docs/kernel/inference/hypothesis_space.md),
+  [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
   `h-space.json`;
   [`configuration.md`](docs/kernel/configuration.md), the `(config …)` flags,
