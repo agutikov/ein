@@ -196,11 +196,11 @@ the switch, and the user retired them on 2026-11-03 (§ 2.4); the fifth,
 M1e2 S1e2.1a.5's switch retired nine, S1e2.1a.6 a tenth, S1e2.1c.5 four more,
 and S1e2.2.5 a fifteenth, each refused at load with the stage and the reason below
 (`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at their
-defaults — the lookahead and the kill cache read there only by the walk's
-generator, `hypgen::generate`, which no command runs since M1e2 S1e2.3.1 and
-which `shape.rs`'s `hyp_shape` still runs for the corpus's `hyp` digest; the
-rest for nothing — and the `.einb` container
-round-trips all seventeen, so its format did not move. A container stores its program as
+defaults. The lookahead's and the kill cache's are read there by the walk's
+generator, `hypgen::generate`, which no command runs and the shape golden's
+`hyp` and `hyp+closed` ops do; no code reads the other thirteen. The `.einb`
+container round-trips all seventeen, so its format did not move: removing a
+field is a change of its layout. A container stores its program as
 text and re-loads it on open, so one saved before a retirement whose program
 sets the flag is refused, as the `.ein` is.
 
@@ -661,8 +661,9 @@ order, so its one reader after S1e2.1c.5 was `--json-summary`'s `root` block,
 which ran the walk's generator on a fork of root. Once that block became root's
 fixpoint and H as the routes have them, the variable changed nothing the binary
 prints, and `oblgen::Choice::from_env` went: a binary that sets it runs as one
-that does not, with no warning, as for the five above. The rung's order stays
-pinned at `rule-order`.
+that does not, with no warning, as for the five above. The rung has one order,
+report order, which its `rung` line names `rule-order`; the two others went
+with `Choice`, which no call chose.
 
 ### Read by the test harness
 

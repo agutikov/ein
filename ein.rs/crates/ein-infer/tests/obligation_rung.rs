@@ -33,7 +33,7 @@ use ein_corpus::{Scratch, repo_root};
 use ein_infer::SharedMemo;
 use ein_infer::events::{Buffer, Events, Level};
 use ein_infer::explore::{self, Answer, Ask, Mode as Question, Which};
-use ein_infer::oblgen::{Choice, Mode};
+use ein_infer::oblgen::{Mode, ORDER};
 use ein_ir::{Ast, load_file};
 
 /// Ask one question about one file, optionally narrating.
@@ -374,13 +374,11 @@ fn the_theory_finds_what_the_hrule_finds() {
     }
 }
 
-/// The two names the lever answers to, and the mode names the schema
-/// documents — spelled once, here, so a rename has to come through a test.
+/// The order the `rung` line names and the mode names the schema documents —
+/// spelled once, here, so a rename has to come through a test.
 #[test]
-fn the_lever_and_the_modes_keep_their_names() {
-    assert_eq!(Choice::RuleOrder.as_str(), "rule-order");
-    assert_eq!(Choice::FailFirst.as_str(), "fail-first");
-    assert_eq!(Choice::Off.as_str(), "off");
+fn the_order_and_the_modes_keep_their_names() {
+    assert_eq!(ORDER, "rule-order");
     assert_eq!(Mode::default(), Mode::Blind);
     for (m, s) in [
         (Mode::Blind, "blind"),

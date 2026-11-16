@@ -629,10 +629,12 @@ direction's NAF explicit in its own match clause.
 > solver's** (`_candidates_for` / `_candidate_sort_key`). The ordering that
 > replaced them, `apriori::order_candidates`
 > (+ `_set_score`), applied by
-> `solve.rs`, was deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03);
-> [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) was its
-> score key. The *principle* below — sort candidates by a content key, never by
-> hash iteration order — is unchanged.
+> `solve.rs`, was deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03), and
+> the generator's scorer, its score key, which nothing called after it, is
+> deleted too. The *principle* below — sort candidates by a content key, never
+> by hash iteration order — is unchanged: H is sorted by its candidates' raw
+> text ([`region.rs`](../../../ein.rs/crates/ein-infer/src/region.rs)'s
+> `order_key`).
 
 `solve()` visits hypothesis branches in the order `_candidates_for`
 returns them. Pre-S1.5a.1a that list was the iteration order of a **hash

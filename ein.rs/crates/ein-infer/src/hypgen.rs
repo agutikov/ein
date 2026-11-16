@@ -23,8 +23,12 @@
 //!   and the counters are observable. A reordering that looks like an
 //!   optimisation changes them
 //!   ([S1a.4.1](../../../../docs/history/m1a_rust/README.md#s1a41--hypothesis-generation)).
-//! - **The candidate order.** It becomes `layer_1`'s singleton order and
-//!   therefore the whole traversal.
+//! - **The candidate order.** A route reads it only as a tie-break: H is
+//!   sorted by each candidate's raw text and deduped before any route sees it
+//!   (`region::order_key`), and the generator's order decides only between
+//!   two candidates of one raw text. It is observable all the same: it is the
+//!   order the `hyp` events narrate a call in, under `--events`, and it
+//!   decides which repeat of a candidate `seen_in_call` counts.
 //! - **The kernel imposes no type system** (S1.7.23). The enumerator proposes
 //!   type-blind and the puzzle's own rules do the pruning; Rust code that
 //!   reaches for `is-a` here is reintroducing what that stage removed. The
@@ -154,13 +158,6 @@ pub struct HypGenStats {
     /// that declares no obligation rule, which is the shape every counter
     /// baseline was taken under.
     pub rung: crate::oblgen::RungReport,
-    /// The candidates the one-step lookahead dropped, in drop order — M1e2
-    /// S1e2.1a.1. With them, `emitted` is the list the generator would have
-    /// proposed had the lookahead been off, which is the config-free universe
-    /// [`crate::monotone`] and [`crate::region`] are about; the lookahead is a
-    /// config switch, so what it drops is still part of the lattice. Pushed
-    /// only on a kill, so a run without the lookahead pays nothing.
-    pub lookahead_killed: Vec<FactId>,
     /// The debts the state does not owe and a commitment can bring, each with
     /// the candidates this call emitted for it — the obligations rung's
     /// ([`crate::oblgen::LaterDebt`]). Empty on every other rung, and on a
@@ -254,14 +251,24 @@ pub const CLOSED: &str = ein_core::terms::CLOSED;
 
 // ── The generator ──────────────────────────────────────────────────
 
-/// Yield candidate hypothesis facts in priority order, calling `f` per
-/// survivor.
+/// Yield candidate hypothesis facts in the ladder's order, calling `f` per
+/// survivor, with the two filters the program's config switches on.
+///
+/// **No command runs it.** H, the universe every route and the oracle read,
+/// is [`generate_config_free`]'s list. This is the ladder with the walk's
+/// one-step lookahead ([`Lookahead`]) and its kill cache, read from
+/// `enable_pre_branch_lookahead` and `enable_lookahead_kill_cache`; both are
+/// retired, so a program cannot set them and both are on. What runs it is the
+/// shape golden's `hyp` and `hyp+closed` ops (`crate::shape::hyp_shape_with`),
+/// which digest its narration and counters on every corpus program, with
+/// [`complete`] and [`open_hypotheses`] over it, and the tests: so it stays
+/// while those ops read it.
 ///
 /// A callback rather than an iterator because the enumeration is **not pure**:
-/// with `enable_lookahead_kill_cache` on, a lookahead kill writes `(not h)`
-/// into the KB and later candidates in the *same call* observe it through the
-/// `negated_fact` filter. A `ControlFlow::Break` stops the walk, which is what
-/// keeps `complete`'s short-circuit (S1.9.E16) — and the feed-forward is why
+/// with the kill cache on, a lookahead kill writes `(not h)` into the KB and
+/// later candidates in the *same call* observe it through the `negated_fact`
+/// filter. A `ControlFlow::Break` stops the walk, which is what keeps
+/// `complete`'s short-circuit (S1.9.E16) — and the feed-forward is why
 /// [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §7 refuses
 /// to parallelise this pipeline.
 pub fn generate(
@@ -269,40 +276,7 @@ pub fn generate(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_rungs(s, stats, f, Rungs::Ladder, false)
-}
-
-/// [`generate`], but **one owed instance's alternatives** instead of the union.
-///
-/// The ladder is walked exactly as [`generate`] walks it and every candidate
-/// goes through the same filters; what differs is that the obligations rung
-/// stops after the instance [`crate::oblgen::Choice`] picks. M1d
-/// [T1d.10.6.3](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
-/// — a depth-first traversal branches on one instance because one instance's
-/// set is jointly exhaustive *by the obligation's meaning*, where the union is
-/// merely a superset of each.
-///
-/// **Only the obligations rung honours it.** An hrule's candidates and the
-/// blind enumerator's are not an owed instance's alternatives and are not
-/// jointly exhaustive, so those rungs return everything they would have; the
-/// caller checks [`HypGenStats::rung`]'s mode before treating the answer as a
-/// branch.
-pub fn generate_one_branch(
-    s: &mut Session<'_>,
-    stats: &mut HypGenStats,
-) -> Result<Vec<FactId>, CompileError> {
-    let mut out = Vec::new();
-    generate_rungs(
-        s,
-        stats,
-        &mut |fact| {
-            out.push(fact);
-            ControlFlow::Continue(())
-        },
-        Rungs::Ladder,
-        true,
-    )?;
-    Ok(out)
+    generate_with(s, stats, f, Rungs::Ladder, None)
 }
 
 /// The blind combinatorial enumerator alone, whatever the program declares,
@@ -330,38 +304,24 @@ pub fn generate_blind(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_with(
-        s,
-        stats,
-        f,
-        Rungs::BlindOnly,
-        false,
-        Some(GenOptions::CONFIG_FREE),
-    )
+    generate_with(s, stats, f, Rungs::BlindOnly, Some(GenOptions::CONFIG_FREE))
 }
 
-/// The **config-free** candidate list: [`generate`] with the lookahead filter
-/// and its kill cache off and the obligations rung at its default order,
-/// whatever the program's `(config …)` says — M1e2
-/// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+/// The **config-free** candidate list: the ladder with neither the lookahead
+/// filter nor its kill cache, whatever the program's `(config …)` says. It is
+/// the list H is built from at root's fixpoint (`region::prepare_with`), so
+/// every command and the oracle read it.
 ///
-/// The user ruled on 2026-10-15 that no config option may change the
-/// problem's lattice, so the lattice's universe cannot be the list a switch
-/// filtered. This is the list the switches filter, and it writes nothing: with
-/// the kill cache off the walk is pure apart from interning its candidates.
+/// No config option may change R, so the lattice's universe cannot be a list a
+/// switch filtered. This is the list the switches filter, and it writes
+/// nothing: with the kill cache off the call is pure apart from interning its
+/// candidates.
 pub fn generate_config_free(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_with(
-        s,
-        stats,
-        f,
-        Rungs::Ladder,
-        false,
-        Some(GenOptions::CONFIG_FREE),
-    )
+    generate_with(s, stats, f, Rungs::Ladder, Some(GenOptions::CONFIG_FREE))
 }
 
 /// What a call reads from the config, when the caller does not let it.
@@ -369,15 +329,13 @@ pub fn generate_config_free(
 struct GenOptions {
     lookahead: bool,
     kill_cache: bool,
-    choice: crate::oblgen::Choice,
 }
 
 impl GenOptions {
-    /// No filter a switch applies, and the rung in report order.
+    /// No filter a switch applies.
     const CONFIG_FREE: GenOptions = GenOptions {
         lookahead: false,
         kill_cache: false,
-        choice: crate::oblgen::Choice::RuleOrder,
     };
 }
 
@@ -437,28 +395,17 @@ enum Rungs {
     BlindOnly,
 }
 
-/// The ladder, with the rungs the caller is allowed to use.
+/// The ladder, with the rungs the caller is allowed to use, and the two
+/// filters `opts` names, or the program's config where it is `None`.
 ///
-/// One body for both entry points, because the setup — the lookahead, the
+/// One body for every entry point, because the setup — the lookahead, the
 /// `(query …)` relation lists, the per-call `Ctx` — is what every rung shares,
 /// and a second copy of it is a second place for the filter order to drift.
-fn generate_rungs(
-    s: &mut Session<'_>,
-    stats: &mut HypGenStats,
-    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
-    rungs: Rungs,
-    one_branch: bool,
-) -> Result<(), CompileError> {
-    generate_with(s, stats, f, rungs, one_branch, None)
-}
-
-/// [`generate_rungs`], with the config overridable.
 fn generate_with(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
     rungs: Rungs,
-    one_branch: bool,
     opts: Option<GenOptions>,
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
@@ -477,12 +424,9 @@ fn generate_with(
         return Ok(());
     }
     let cfg = s.kb.program().config.clone().unwrap_or_default();
-    // The rung order is pinned: `EIN_OBLIGATION_CHOICE`, which could set it,
-    // was retired at M1e2 S1e2.3.1 (the user's ruling of 2026-11-03).
     let opts = opts.unwrap_or(GenOptions {
         lookahead: cfg.enable_pre_branch_lookahead,
         kill_cache: cfg.enable_lookahead_kill_cache,
-        choice: crate::oblgen::Choice::RuleOrder,
     });
     // Built once per call (it compiles the rule plans, emitting `compile`
     // events as `Engine::compile_all` does) and reused per candidate.
@@ -520,10 +464,8 @@ fn generate_with(
             &allowed,
             &excluded,
             &closed,
-            opts.choice,
             stats,
             &mut |s, stats, fact| emit(s, &mut ctx, stats, fact, f),
-            one_branch,
         )?;
         stats.rung = report;
         if report.mode != crate::oblgen::Mode::Declined {
@@ -618,7 +560,6 @@ fn apply_filters(
         && l.dies_immediately(s, &mut ctx.matcher, fact)
     {
         stats.bump(Drop::LookaheadKilled);
-        stats.lookahead_killed.push(fact);
         if ctx.kill_cache {
             write_negated(s, fact);
         }
@@ -1008,9 +949,9 @@ pub(crate) fn scoping(
 ///   less the three scopings — `relation_plan`'s filter, read off the same
 ///   helpers so the two cannot drift.
 ///
-/// Note the closed set is the one **in the KB**, not `emit_closed`'s: that
-/// pass runs on a fork for `--hyp-stats` and the summary, so a solve sees only
-/// authored and `std.closure`-derived markers ([`crate::closed`]).
+/// Note the closed set is the one **in the KB**, not `emit_closed`'s: no
+/// command runs that pass, so a solve sees only authored and
+/// `std.closure`-derived markers ([`crate::closed`]).
 ///
 /// **One residual, written down rather than papered over.** The obligations
 /// rung can *decline* — a bare `(open)`, a projection that will not resolve
@@ -1132,72 +1073,6 @@ fn coerce_relation_names(s: &Session<'_>, value: ein_ir::NodeId) -> (FxHashSet<S
     (out, declared)
 }
 
-// ── Scoring ────────────────────────────────────────────────────────
-
-/// Ordering score for a hypothesis — higher means tried first.
-///
-/// `"most-constrained"` returns `0.0`, so the sort falls through to the
-/// content tiebreakers and the S1.5a.1a determinism property is preserved.
-/// `"popularity"` is `rel_w · |extent(R)| + obj_w · Σ |names[arg].as_arg|` over
-/// **string** args only — a nested fact has no name to index by and
-/// contributes nothing.
-///
-/// The two reserved modes and the unknown-mode case return an error with a
-/// fixed message; both are surfaced at first call rather than at load.
-pub fn score_hypothesis(kb: &Kb, terms: &Terms, fact: FactId) -> Result<f64, ScoreError> {
-    // The *generator* falls back to `SolverConfig::default()`; scoring does
-    // **not**. With no `(config …)` block the mode is `"most-constrained"`,
-    // so such a KB falls to the neutral score rather than to the default's
-    // `"popularity"` — and the two differ, since the default flipped in
-    // S1.5a.7. Kept, not tidied.
-    let Some(cfg) = kb.program().config.clone() else {
-        return Ok(0.0);
-    };
-    match cfg.hypgen_scoring.as_str() {
-        "most-constrained" => Ok(0.0),
-        "popularity" => {
-            let (rel, args) = terms.facts.get(fact);
-            let rel_count = kb.n_facts_of(rel) as f64;
-            let obj_count_sum: f64 = args
-                .iter()
-                .filter_map(|a| a.as_sym())
-                .map(|sym| kb.name_as_arg(sym).count() as f64)
-                .sum();
-            Ok(cfg.hypgen_rel_weight * rel_count + cfg.hypgen_obj_weight * obj_count_sum)
-        }
-        mode @ ("branch-info" | "popularity+branch-info") => {
-            Err(ScoreError::NotImplemented(format!(
-                "hypgen-scoring={} is reserved for a follow-up stage; today \
-                 only 'most-constrained' and 'popularity' are wired. See \
-                 M1 P1.5as1.5a.7_hypgen_scoring_branch_info.md § T1.5a.7.3.",
-                ein_core::repr::repr_str(mode)
-            )))
-        }
-        mode => Err(ScoreError::Unknown(format!(
-            "unknown hypgen-scoring mode: {} (expected 'most-constrained' or \
-             'popularity')",
-            ein_core::repr::repr_str(mode)
-        ))),
-    }
-}
-
-/// Two *different* failures, and a caller may tell them apart.
-#[derive(Clone, PartialEq, Eq, Debug)]
-pub enum ScoreError {
-    /// A reserved mode that is not wired yet.
-    NotImplemented(String),
-    /// A mode that does not exist.
-    Unknown(String),
-}
-
-impl std::fmt::Display for ScoreError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ScoreError::NotImplemented(m) | ScoreError::Unknown(m) => f.write_str(m),
-        }
-    }
-}
-
 // ── Solution predicates ────────────────────────────────────────────
 
 /// The open set — viable, not-yet-decided hypotheses.
@@ -1212,18 +1087,8 @@ impl std::fmt::Display for ScoreError {
 /// recovered generically at the `state_key` dedup, because the *user's* rule
 /// established the equivalence.
 pub fn open_hypotheses(s: &mut Session<'_>) -> Result<FxHashSet<FactId>, CompileError> {
-    open_hypotheses_counted(s, &mut HypGenStats::new())
-}
-
-/// [`open_hypotheses`], keeping the call's stats — the root call's
-/// [`HypGenStats::lookahead_killed`] is how a solve reads the config-free
-/// universe without a second walk.
-pub fn open_hypotheses_counted(
-    s: &mut Session<'_>,
-    stats: &mut HypGenStats,
-) -> Result<FxHashSet<FactId>, CompileError> {
     let mut open = FxHashSet::default();
-    generate(s, stats, &mut |fact| {
+    generate(s, &mut HypGenStats::new(), &mut |fact| {
         open.insert(fact);
         ControlFlow::Continue(())
     })?;
@@ -1276,7 +1141,6 @@ pub fn is_solution_node(s: &mut Session<'_>) -> Result<bool, CompileError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ein_core::SolverConfig;
     use ein_ir::{Ast, from_ir::load, parse};
 
     fn kb_of(src: &str) -> (Ast, Terms, Kb) {
@@ -1285,65 +1149,6 @@ mod tests {
         let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
         let kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
         (ast, terms, kb)
-    }
-
-    fn scored(src: &str, mode: Option<&str>) -> Result<f64, ScoreError> {
-        let (_ast, mut terms, mut kb) = kb_of(src);
-        if let Some(m) = mode {
-            kb.program_mut().config = Some(SolverConfig {
-                hypgen_scoring: m.to_string(),
-                ..SolverConfig::default()
-            });
-        }
-        let r = terms.syms.get("r").expect("r is interned");
-        let a = terms.syms.get("A").expect("A is interned");
-        let fact = terms.intern_fact(r, &[Value::sym(a)]).expect("room");
-        score_hypothesis(&kb, &terms, fact)
-    }
-
-    const SRC: &str = "(relation r T :why \"r holds of {?1}\")\n(r A)";
-
-    /// A KB with no `(config …)` block scores **0.0**, not the default mode's
-    /// popularity — `score_hypothesis` reads the mode off `kb.config` and
-    /// falls back to `"most-constrained"` when there is none, while the
-    /// `SolverConfig` default has been `"popularity"` since S1.5a.7. Two
-    /// different fallbacks for the same field, and both are kept.
-    #[test]
-    fn no_config_block_scores_neutral_not_popular() {
-        assert_eq!(scored(SRC, None), Ok(0.0));
-        assert_eq!(scored(SRC, Some("popularity")), Ok(2.0));
-    }
-
-    /// `rel_w · |extent(R)| + obj_w · Σ |names[arg].as_arg|` — one `r`-fact
-    /// and one appearance of `A` as an argument.
-    #[test]
-    fn popularity_weighs_the_relation_and_each_named_argument() {
-        assert_eq!(scored(SRC, Some("popularity")), Ok(2.0));
-        assert_eq!(scored(SRC, Some("most-constrained")), Ok(0.0));
-    }
-
-    /// The two reserved modes and the unknown case, byte-for-byte — they are
-    /// user-visible text.
-    #[test]
-    fn the_unwired_modes_report_their_fixed_text() {
-        assert_eq!(
-            scored(SRC, Some("branch-info")),
-            Err(ScoreError::NotImplemented(
-                "hypgen-scoring='branch-info' is reserved for a follow-up \
-                 stage; today only 'most-constrained' and 'popularity' are \
-                 wired. See M1 P1.5as1.5a.7_hypgen_scoring_branch_info.md \
-                 § T1.5a.7.3."
-                    .to_string()
-            ))
-        );
-        assert_eq!(
-            scored(SRC, Some("nonsense")),
-            Err(ScoreError::Unknown(
-                "unknown hypgen-scoring mode: 'nonsense' (expected \
-                 'most-constrained' or 'popularity')"
-                    .to_string()
-            ))
-        );
     }
 
     /// `report_lines`' field widths and its sorted, sparse key walk — a

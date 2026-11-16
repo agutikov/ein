@@ -296,9 +296,9 @@ was actually consulted, and its `mode` says how that went:
 | `declined` | it refused the whole call and the blind enumerator ran instead — an obligation whose guard scans a relation the rung itself proposes (the [domain contract](../../../docs/history/m1d_satisfiability/domain_contract.md)'s C4); since M1e2 S1e2.2.15, one whose trigger or guard beside its witness reads a relation a commitment can change (D, C4 over derivation, Q-M1e2.10 (a)); or a projection that did not resolve for this activator |
 
 `reason` is the C4 or projection sentence for `declined` (C4 over D's: *an
-obligation scans `food`, a relation a commitment can change*), and the walk order
-otherwise: `rule-order` on every call since M1e2 S1e2.3.1 retired
-`EIN_OBLIGATION_CHOICE`, which could set `fail-first`. `owed` counts
+obligation scans `food`, a relation a commitment can change*), and otherwise
+`rule-order`, the one order the rung emits in: the owed instances' candidates
+in report order, plan by plan and match by match. `owed` counts
 the undischarged instances at this quiescence, `branches` those branched on,
 `declined` those scoped out — `owed = branches + declined` — and `candidates`
 the facts proposed before the filter pipeline, which is the `hyp` stream's

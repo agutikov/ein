@@ -6,18 +6,24 @@
 //! cargo run --release -p ein-infer --example hypgen_calls
 //! ```
 //!
+//! **The calls it times are the walk's**, the generator with the one-step
+//! lookahead and its kill cache on (`ein_infer::generate`), which no command
+//! runs: H is the config-free pass, taken once at root. The walk asked them
+//! once per alive entering and once per layer; what runs them today is the
+//! shape golden's `hyp` ops, once each per program. So the numbers are the
+//! record of those calls' shapes, not of a route's cost.
+//!
 //! `hypgen_cost` times a *pass* and reports the mean over 100 rounds. That
 //! number is dominated by round 1 — the round whose lookahead probes fill the
 //! kill cache, after which every later candidate dies at `negated_fact` for a
-//! bit test — so it answers "what does the first enumeration cost", which is
-//! not the question the search asks. The search asks two others, and they have
-//! very different shapes:
+//! bit test — so it answers "what does the first enumeration cost". The two
+//! predicates over the generator have very different shapes:
 //!
 //! - **`complete()`** — is there *any* undecided candidate? Short-circuits on
 //!   the first survivor (S1.9.E16), so its cost is the fixed setup plus one
-//!   candidate. Called once per alive entering.
+//!   candidate.
 //! - **`open_hypotheses()`** — the whole open set. Runs the pipeline over every
-//!   candidate. Called once per layer.
+//!   candidate.
 //!
 //! The **setup** is the third column and the reason this example exists: every
 //! call rebuilds a fresh [`Lookahead`], and a fresh `Lookahead` walks
@@ -73,7 +79,7 @@ fn main() {
         sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
 
         // Warm-up: the kill cache is written by the first pass, and every call
-        // the search makes after the first sees it already written.
+        // after the first sees it already written.
         let mut warm = HypGenStats::new();
         ein_infer::generate(&mut s, &mut warm, &mut |_| {
             std::ops::ControlFlow::Continue(())

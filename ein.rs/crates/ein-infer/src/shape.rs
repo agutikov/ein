@@ -219,22 +219,30 @@ pub fn saturate_events(
 /// `compile` event per pair, so running the tail with the log open would
 /// triple the file for no signal.
 ///
-/// The event stream **is** the observable: candidate order decides `layer_1`'s
-/// singleton order and therefore the whole traversal, and which counter a drop
-/// lands in is observable in the stats in its own right. So there is no second
-/// rendering of the candidate list that would have to agree with this one.
-/// What the trailing block adds is what the events do not carry — the
-/// `--hyp-stats` report, its `raw == emitted + sum(filtered)` invariant, and
-/// two facts about the predicates built on the generator. `COMPLETE`'s `raw=`
-/// is the third line's point: the S1.9.E16 short-circuit is invisible in the
-/// boolean and visible in how many candidates were built to reach it.
+/// **What it runs is the walk's generator, which no command runs.**
+/// [`crate::generate`] is the ladder with the one-step lookahead and its kill
+/// cache on; H, which every command builds, is the same ladder with both off
+/// (`hypgen::generate_config_free`). The candidate stream is H's pass's,
+/// candidate for candidate; what this adds to it is the lookahead's `compile`
+/// events and `lookahead_killed` verdicts, and the kill cache's
+/// `negated_fact` for a repeat of a killed candidate. It is the corpus's `hyp`
+/// and `hyp+closed` ops, and the reason the lookahead, its kill cache and the
+/// generator's config reading stay.
 ///
-/// `closed` runs the auto-closure pass first — the *other* regime the walk's
-/// generator was asked in. Without it what this sees is the `(__closed__ R)`
-/// facts a puzzle authored or `std.closure` derived, which is also what every
-/// route sees. Since M1e2 S1e2.3.1 no command runs `emit_closed`: the JSON
-/// summary's `root` block, which ran it on a fork, is root's fixpoint and H as
-/// the routes have them, so this is the pass's one caller.
+/// The event stream is the observable: the candidate order is the order a
+/// call narrates in, and which counter a drop lands in is observable in the
+/// stats in its own right. So there is no second rendering of the candidate
+/// list that would have to agree with this one. What the trailing block adds
+/// is what the events do not carry — the stats report, its
+/// `raw == emitted + sum(filtered)` invariant, and two facts about the
+/// predicates built on the generator. `COMPLETE`'s `raw=` is the third line's
+/// point: the S1.9.E16 short-circuit is invisible in the boolean and visible
+/// in how many candidates were built to reach it.
+///
+/// `closed` runs the auto-closure pass first. Without it what this sees is
+/// the `(__closed__ R)` facts a puzzle authored or `std.closure` derived,
+/// which is also what every route sees. No command runs `emit_closed`, so this
+/// is the pass's one caller outside the tests.
 pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
     hyp_shape_with(ast, terms, kb, false)
 }

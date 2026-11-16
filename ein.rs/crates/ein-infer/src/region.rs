@@ -37,10 +37,10 @@
 //! ### The universe
 //!
 //! The generator's list at root's fixpoint, **config-free**
-//! ([`crate::hypgen::generate_config_free`]): the lookahead is a config switch,
-//! so the candidates it would have dropped are nodes of the lattice. Today's
-//! `alive₀` is taken after the forced-positive cascade and through the
-//! lookahead, so the two can differ, and the caller reports where they do.
+//! ([`crate::hypgen::generate_config_free`]), sorted by raw text (`order_key`)
+//! and deduped: no filter a switch could apply drops a candidate, so a candidate
+//! the walk's one-step lookahead would have dropped is a node of the lattice
+//! like any other, judged by its own saturation.
 //!
 //! ### What it costs
 //!

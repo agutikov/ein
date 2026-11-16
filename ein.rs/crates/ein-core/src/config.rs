@@ -54,11 +54,11 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// `warn-derived-naf` at S1e2.2.5, when its refutation half became *forbid*'s
 /// refusal (the user's ruling of 2026-11-04). Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
-/// container, which round-trips [`FIELDS`]; the lookahead and kill-cache
-/// fields are still read, at their defaults, by the walk's generator
-/// (`hypgen::generate`), which no command runs since S1e2.3.1 made the
-/// summary's `root` block and `EIN_LEFTOVER`'s block config-free, and which
-/// `shape.rs`'s `hyp_shape` still runs for the corpus's `hyp` digest.
+/// container, which writes and reads every entry of [`FIELDS`] in order, so
+/// removing one is a change of its layout. Of the code, only the walk's
+/// generator (`hypgen::generate`) reads any of them, the lookahead and
+/// kill-cache fields, at their defaults; no command runs it, and the shape
+/// golden's `hyp` and `hyp+closed` ops do. Nothing reads the other thirteen.
 pub const RETIRED: &[(&str, &str, &str)] = &[
     (
         "hypgen-scoring",
@@ -175,28 +175,25 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
-    /// Topic B Tier B — the one-step rule simulator, `Lookahead::dies_immediately`.
-    /// **Retired at M1e2 S1e2.1c.5**: a program cannot set it, and the walk's
-    /// generator, which no command runs since S1e2.3.1, reads it at its
-    /// default.
+    /// The walk's one-step rule simulator, `Lookahead::dies_immediately`.
+    /// **Retired**: a program that sets it is refused at load. The walk's
+    /// generator, `hypgen::generate`, reads it at its default; no command runs
+    /// that generator, and the shape golden's `hyp` ops do.
     pub enable_pre_branch_lookahead: bool,
     /// Cache a lookahead kill as a `(not h)` fact, so later enumerations skip
     /// `h` through the O(1) negated index instead of re-running the match.
-    /// **Retired at M1e2 S1e2.1c.5**, as the lookahead is.
+    /// **Retired**, and read where the lookahead is.
     pub enable_lookahead_kill_cache: bool,
-    /// `"popularity"` (the default since S1.5a.7) or `"most-constrained"`.
+    /// **Retired**, as are the two weights below, and read by nothing: the
+    /// walk's scoring of a candidate, which ordered its lattice, went with it.
+    /// Kept at its default for the `.einb` layout.
     pub hypgen_scoring: String,
     pub hypgen_rel_weight: f64,
     pub hypgen_obj_weight: f64,
-    /// **Inert** — parsed, type-checked, dumped, echoed into
-    /// `--json-summary`, rendered into the KB-shape digest and round-tripped
-    /// through `.einb`, and read by no code path. What it names — the inherited
-    /// alive-set size and the per-filter prune counts of each layer — is
-    /// what `--verbose`, `--layer-progress` and `--events`' `layer` counters
-    /// say. Held by
-    /// `ein-cli/tests/config_reference.rs::the_two_inert_flags_are_still_inert`
-    /// and filed as
-    /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
+    /// **Retired**, and read by nothing; kept at its default for the `.einb`
+    /// layout. It was inert before it was retired, which
+    /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)
+    /// recorded.
     pub print_alive: bool,
     /// **Retired at M1e2 S1e2.2.5** (the user's ruling of 2026-11-04): a
     /// program cannot set it, and nothing reads it. It was: warn about an
@@ -224,15 +221,12 @@ pub struct SolverConfig {
     ///
     /// [Q-M1e.9]: ../../../../docs/history/m1e_review_processing/open_questions.md
     pub warn_derived_naf: bool,
-    /// Meant as: negative means the S1.5a.1a content sort; non-negative
-    /// applies a per-branch deterministic permutation of it. Nothing
-    /// implements that — the field is [`print_alive`]'s twin and equally
-    /// **inert**: nothing outside the loader, the four renderers and the
-    /// container reads it, and the per-layer shuffle that *is* wired is
-    /// [`SolverConfig::lattice_order_seed`]. The first sentence is kept because
-    /// it is the only statement of what the flag was for, which is the input to
-    /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
-    /// option (a).
+    /// **Retired**, and read by nothing; kept at its default for the `.einb`
+    /// layout. Meant as: negative means the walk's content sort of a layer's
+    /// candidates, non-negative a per-branch deterministic permutation of it.
+    /// Nothing ever implemented that, and it was inert before it was retired,
+    /// as [`print_alive`] was
+    /// ([Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
     ///
     /// [`print_alive`]: SolverConfig::print_alive
     pub candidate_order_seed: i64,
@@ -244,11 +238,12 @@ pub struct SolverConfig {
     /// parent path that reaches another state contradicts the § 5.1 theorem,
     /// and the run is an engine error. Its cost is outside the `work` block.
     pub lattice_sanity_check: bool,
-    /// `"lex"` (the default, and what the baselines were recorded under) or
-    /// `"score-sum"`.
+    /// **Retired**, as is the seed below, and read by nothing; kept at its
+    /// default for the `.einb` layout. It chose the walk's layer order; every
+    /// route's order is part of its definition, and no lever reaches one.
     pub lattice_order: String,
-    /// `None` disables the per-layer shuffle; a seed makes traversal order a
-    /// deterministic permutation, which is how shuffle-invariance is probed.
+    /// **Retired**, and read by nothing; kept at its default, `None`, for the
+    /// `.einb` layout. It seeded a shuffle of the walk's layers.
     pub lattice_order_seed: Option<i64>,
     /// **Retired at M1e2 S1e2.1c.5, and read by nothing**: the walk's learned
     /// clauses.
@@ -259,6 +254,9 @@ pub struct SolverConfig {
     /// which no config option may (`configuration.md` § 2.5). The field stays,
     /// at `true`, because the `.einb` container round-trips [`FIELDS`].
     pub enable_symmetric_mirror: bool,
+    /// **Retired**, as is the next, and read by nothing; kept at its default
+    /// for the `.einb` layout. Both wrote what the walk learned into root,
+    /// which no route does.
     pub enable_singleton_writeback: bool,
     pub enable_forced_positive: bool,
     /// S1.21.7 — record a re-derivation as an alternative justification
