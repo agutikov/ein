@@ -30,9 +30,9 @@ nightly or the runner's container** when this was written; § Owed says where th
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | at most one, spent | done for denials (licence L8); the pair of a death re-priced, still *go*, **not built** | `f8751257` |
 | [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | what the blind enumerator takes for an object | done: Q-M1f.306, W96 fixed, the `relation names` row | `bc3eb522` |
 | [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | done: the order built for six of eight questions, E-29 closed | `2e7cde48` |
-| [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | the rung a loaded rule chooses | tasks 1 to 3 done; **task 4 not started**, ruled (b) | — |
-| [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | exactly one, spent | not started | — |
-| [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | what the walk left | not started | — |
+| [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | the rung a loaded rule chooses | done: Q-M1f.308 (b), W97 fixed, E-51 closed | `060576ec` |
+| [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | exactly one, spent | done: T1 *no* (`13_witness_of_two.ein`), licence L9 built, Q-M1f.311 put | `44889fba` |
+| [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | what the walk left | **running** in a worktree; Q-M1f.312 is its | — |
 | S1f.10.7, S1f.10.8 | — | dropped; closed | stubs | — |
 
 ## What the user ruled at the stop (2026-11-16)
@@ -108,16 +108,15 @@ S1f.10.16 are merged, with the container gate beside it.
 
 ## Then, in this order
 
-1. **S1f.10.15 task 4**, Q-M1f.308 (b). S1f.10.9's branch is merged, so it can start: under (b) `features/09`'s read-out
-   needs the count E-7's naming adds. The entry says no tracked program's answer shows the change, so the task
-   adds a witness.
-2. **S1f.10.14**, exactly one, spent. After S1f.10.5 is merged (both edit `tree.rs`). S1f.10.3 left it this: a
-   wiped-out owed group is now visible to the tree before any saturation. S1f.10.13 left it the *alive and owing*
-   shares, and that no visited state of `zebra.ein` owes only unlicensed instances.
-3. **S1f.10.16**, what the walk left. After S1f.10.15's task 4 (both edit `hypgen.rs`). It also inherits the
-   `hyp+closed` digest, which runs a pass no command calls (H9-5).
-4. **The phase's close**: every default taken in part 2 shown to the user, the findings below, this page folded
-   in.
+1. **S1f.10.16**, what the walk left: running. It files Q-M1f.312 on the `hyp` and `hyp+closed` digests (H9-5).
+2. **The container gate and the container nightly**, once, on the batch's last commit, as § Owed says, and the
+   walls of the nightly steps that grew on a quiet machine.
+3. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
+   findings below, this page folded in.
+
+**Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/kernel/inference/finding_r.md),
+how the oracle and the routes find `R`, as formulas: the licences L0 to L9, what a refuted candidate does, and how
+`--single` proves one state.
 
 ## Defaults taken in part 2 that the user has not seen ruled
 
@@ -131,6 +130,11 @@ S1f.10.16 are merged, with the container gate beside it.
   worth 433 saturations under describe and needs the state route's layer cut into steps.
 - **S1f.10.9, the goldens of the generator's narration re-banked** (`hyp` on 22 programs, `hyp+closed` on 185)
   as the consequence of the ruling, no program's H, R, read-out or exit code moving.
+- **S1f.10.14, L9 built though the plan builds T2 only if T1 holds**: T1's claim is false, and L9 is a narrower
+  licence with its own argument (`unheld.rs`), its premise checked on every node; *go* for all eight questions the
+  tree answers with no loser, on two programs.
+- **S1f.10.15, the re-plan's probe banked in its dead-root form**, and the refusal banked as register data rather
+  than under `examples/broken/load/`.
 - Each stage's own list is under *Defaults taken* in its record.
 
 ## Findings that want the user
@@ -149,6 +153,8 @@ All are in [`findings.md`](findings.md); these read as wrong answers or stale st
 - **K-21**: a describe its budget stops saturates ⊤ though its own memory says ⊤ is dead.
 - **K-19**: a support's check is dropped without a word where root's layer has spent its budget (the census
   example alone asks for it).
+- **H15-6**: `register_region.rs`'s bless inserts a region block at the first `[case.right]` text in a row, a
+  quoted note's included.
 - K-5, K-9: the classes of program the small-KB rule does not fit. K-20: stale counts in a test's comment.
 
 ## How to resume
