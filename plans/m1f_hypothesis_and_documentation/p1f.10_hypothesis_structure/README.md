@@ -65,6 +65,12 @@ the pair of a death is still *go* for describe, `--count` and `--minimal` on top
 reading"*, (a) for E-7 and (d) for E-54: the blind enumerator takes no kernel dunder for an object, the
 register's W96 is filed and fixed, and a relation's name bound as an object is named by the read-out; **it is
 the phase's second exception to *no answer changes***, the four witnesses' answers alone, by their rows.
+[S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)'s task 4 ran on 2026-11-16, on
+the user's ruling of that day on Q-M1f.308, (b): the ladder's second rung is taken where an obligation is activated
+at root, by the reading the mechanisms check has, and the register's W97 is filed and fixed; **it is the phase's
+third exception to *no answer changes***, the three witnesses' answers alone, by their rows: two answer their
+controls' R, and the third, Q-M1f.308's re-plan probe, which loaded, is refused at load by *forbid*. On the corpus
+41 programs change rung and `features/09` changes H, all dead; no R moves.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.
@@ -393,7 +399,9 @@ A ruling of track H that changes H re-takes the census for the programs it names
 - Each finding has its witness, its census and the user's ruling; where an answer moves, it moves by a
   register row filed `open` before its fix, and this README names the stage as an exception to *no answer
   changes*. **S1f.10.6 is one** (2026-11-16): `W26/oblig-derived-activator`, filed `open` by M1e2's S1e2.2.25,
-  answers its control's R, and no other corpus program's H, R, read-out or golden moved.
+  answers its control's R, and no other corpus program's H, R, read-out or golden moved. **S1f.10.15 is another**
+  (2026-11-16): W97's three witnesses, one of them a program that loaded and is refused at load; on the corpus,
+  `features/09`'s H and read-out moved and no R.
 
 **The phase**
 
