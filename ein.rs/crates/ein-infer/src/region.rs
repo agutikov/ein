@@ -1117,6 +1117,12 @@ pub(crate) struct NodeOut {
     /// ([`Axes::owing_of`]), in report order; `u32::MAX` for one the table
     /// does not hold. Empty when the axes carry no table.
     pub owed: Vec<u32>,
+    /// **L9's premise, broken**: a fact of its fixpoint beyond root's, no
+    /// candidate, of a relation the axes' table says no node can hold a fact
+    /// of ([`crate::oblgen::Alternatives::unheld_relations`]), rendered; the
+    /// first by text. `None` where there is none, or the table relies on no
+    /// such relation. A route refuses the run on one ([`crate::unheld`]).
+    pub unheld: Option<String>,
 }
 
 #[cfg(feature = "parallel")]
@@ -1843,6 +1849,12 @@ fn node_in_region(
             node.beyond_hypothesised += 1;
         }
     }
+    // L9's premise at this node, where the table relies on it.
+    let unheld = axes.instances.as_ref().and_then(|t| {
+        crate::unheld::breach(&fork, root, terms, &t.unheld_relations, |f| {
+            axes.is_candidate.contains(&f)
+        })
+    });
     Ok(NodeOut {
         dead: !contradictions.is_empty(),
         owes: node.owes,
@@ -1858,6 +1870,7 @@ fn node_in_region(
         events: axes.narration.map(|_| ev),
         stale,
         owed,
+        unheld,
     })
 }
 

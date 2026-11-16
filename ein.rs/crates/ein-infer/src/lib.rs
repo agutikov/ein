@@ -66,6 +66,7 @@ pub mod structure;
 pub mod transversal;
 pub(crate) mod tree;
 pub mod types_as_objects;
+pub mod unheld;
 pub mod verdict;
 
 pub use canon::{state_digest, state_key};

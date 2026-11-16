@@ -94,6 +94,22 @@
 //! `(co-located House-n v)`, which the hrule never proposes. A state there
 //! that owes only the second kind branches on every extension.
 //!
+//! **L9, a witness no node can hold.** An instance L5 refuses only because
+//! some of its witnesses are no candidate and not denied at root is
+//! licensed all the same where every such witness is of a relation no plan
+//! root compiled writes and the kernel does not mirror, and some witness is
+//! a candidate: such a fact is in no node's fixpoint, alive or dead, so it
+//! is counted with the denied ones, and the instance's alternatives are the
+//! candidates among its witnesses. [`crate::unheld`] has the argument. The
+//! route's table takes it (`Space::route_alternatives`); every node a route
+//! computes with that table reports a fact of such a relation beyond root's
+//! that is no candidate, and the run refuses on one; and the `route` row
+//! names L9 where a branch took such an instance. `zebra.ein`'s
+//! `slot-owed-fill` witnesses are of `co-located`, which the slot rules
+//! write and the kernel mirrors, so L9 does not take them; a witness a
+//! candidate's closure holds does not stand for that candidate, which
+//! `examples/lattice/13_witness_of_two.ein` shows.
+//!
 //! ### The routes
 //!
 //! - **`-n N`**: the tree's leaves in its own order — owing states by size,
@@ -300,6 +316,8 @@ pub(crate) struct Search {
     r_met: Vec<u32>,
     /// Some branch took an instance's alternatives (L5).
     pub(crate) l5: bool,
+    /// Some branch took an instance L9 licenses ([`crate::unheld`]).
+    l9: bool,
     /// Some state met denies a candidate: an extension is then closed under
     /// what the run knows before it is saturated ([`Self::denied_through`]).
     any_denied: bool,
@@ -404,6 +422,7 @@ impl Search {
             leaves: VecDeque::new(),
             r_met: Vec::new(),
             l5: false,
+            l9: false,
             any_denied: false,
             order,
             rank,
@@ -956,8 +975,9 @@ impl Search {
                 Chosen::Branch(c) => c,
                 Chosen::Restarted => return Ok(None),
             };
-            if choice.is_some() {
+            if let Some(i) = choice {
                 self.l5 = true;
+                self.l9 |= self.table.as_ref().is_some_and(|t| t.by_l9(i));
             }
             self.st[s as usize].branch = Some(choice);
         }
@@ -1280,6 +1300,9 @@ impl Search {
         if self.dead.denials_spent() > 0 {
             v.push(Licence::Denied);
         }
+        if self.l9 {
+            v.push(Licence::Unheld);
+        }
         v.sort();
         v
     }
@@ -1288,8 +1311,10 @@ impl Search {
 /// Answer `mode` on a monotone program whose root is alive: the module's
 /// routes. Describe is not asked here.
 pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError> {
-    // L5's table first: every node, root's included, names what it owes.
-    let table = sp.alternatives()?;
+    // The route's table first, L5's with what L9 licenses: every node,
+    // root's included, names what it owes and reports a breach of L9's
+    // premise.
+    let table = sp.route_alternatives()?;
     let root = match sp.eval(&[Box::default()])? {
         Ok(mut v) => v.pop().expect("one"),
         Err(stop) => {

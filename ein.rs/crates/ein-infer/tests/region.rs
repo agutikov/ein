@@ -2292,7 +2292,12 @@ fn a_witness_two_candidates_derive_together_stands_for_neither() {
         .copied()
         .filter(|&m| r.nodes[m as usize].closure & implied == 0)
         .collect();
-    assert_eq!(missed, vec![cooks | shops], "{rel}: {:?}", names(&r, &missed));
+    assert_eq!(
+        missed,
+        vec![cooks | shops],
+        "{rel}: {:?}",
+        names(&r, &missed)
+    );
 }
 
 /// **A dead node's core follows the activator its refutation rests on, where
