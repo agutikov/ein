@@ -590,6 +590,73 @@ is a reading the static check makes of a program's rules, and it is decided with
 |---|---|---|
 | E-66 | the static map of what rules derive, `ein_infer::compile::asserted_relation` and `negated_relation`, reads a plan's first conclusion alone (`plan.assert_template()`), so a relation a rule concludes only as its second or a later conjunct is not *producible* to it: `naf_deps::compute_naf_map` files an `(absent …)` over it as watching a declared-only relation, so the stratification advisory (*watches rule-derived relation(s)*) is not given for it, and `closed::emit_closed`, the auto-closure pass, closes it; `naf_deps::refuting_conclusion` reads every conclusion. No command prints either: the shape digests (`shape::naf_map`, `hyp_shape_with`) and tests read them. Reading every conclusion moves those digests on each program whose rule concludes two relations and reads the second under `absent` elsewhere | [S1f.6.37](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.37_conclusion_shapes.md)'s T1f.6.37.2, the inventory of what reads a conclusion (2026-11-14) |
 
+## Handed over by M1f, 2026-11-16: rewriting a non-monotone program
+
+**The question**, the user's, verbatim:
+
+> into F21: is it possible to rewrite some or any non-monotone program preserving semantics? what means this
+> rewriting? example - replacement of refutation under absent with debt under absent.
+
+**Its setting.** The same day the user put non-monotone programs out of scope of any claim (Q-M1f.313's ruling):
+*"we know about them, can detect them, can solve them somehow, but don't claim about solution soundness,
+correctness or completeness or anything"*, and gave the reason: *"for non-monotone programs `sat(root + C1 + C2) =
+sat(sat(root + C1) + C2)` is not always true"*. So a non-monotone program has no one region to preserve: the engine
+computes the region of its own construction of a node (a fork of root's fixpoint with all of C written at once, D2
+above), and that is a convention, not a meaning.
+
+**What a rewriting would be** (the main session's reading, for the user to correct). A transformation T of a
+program's text, total on a class of programs the static check flags, such that:
+
+1. **T(P) passes the static check**: it is monotone, so every licence applies to it and the engine can claim of it
+   what it claims of any monotone program;
+2. **it preserves a named semantics of P**: R(T(P)) = R(P) over the same H, or, where T adds candidates, the
+   projection of R(T(P)) onto H is R(P). *Which* semantics of P is preserved has to be chosen first: the region
+   of today's construction (D2's fork route), the region of another construction (from scratch), or an intended
+   reading of `absent` (stratified, stable, well-founded). Choosing it is D2 in another form;
+3. **it is checked, not argued**: P and T(P) are held to one region by the oracle on every cube within its limit,
+   the *two forms, one answer* invariance the gate already uses for the import forms and the id order.
+
+It could be offered three ways: a load-time rewrite (the program as run is T(P)), a suggestion beside the
+refusal or the warning (the author writes T(P)), or a check (`ein` says which flagged programs have a rewrite).
+
+**The example: a refutation under `absent` → a debt under `absent`.**
+
+```text
+P:     p(x) ∧ absent q(x)  ⇒  (false)          a refutation: the state is dead
+T(P):  p(x) ∧ absent q(x)  ⇒  owe q(x)         an obligation: the state owes q(x), and a witness q(x) pays it
+```
+
+- **Same R, where it applies.** R is the alive and discharged commitments, so a state that holds `p(x)` and not
+  `q(x)` at its fixpoint is outside R either way: dead in P, owing in T(P). A state that holds `q(x)` is not refuted
+  in P and owes nothing in T(P). A `(false)` derives nothing further, so the rest of the fixpoint is the same.
+- **Why T(P) can be monotone where P is not.** In P, *dead* is not upward-closed: `C` without `q(x)` is dead and
+  `C ∪ {q(x)}` alive, which L1 would get wrong, and which is why *forbid* refuses such a refutation over a relation a
+  commitment can extend (§ What *forbid* covers). In T(P) the same set *owes*, and *discharged* stays upward-closed:
+  a witness, once in a state, stays. The obligation is read on the quiescent KB, where `absent q(x)` is read today.
+- **Where it does not apply.** T(P) is monotone only if the debt's **trigger**, `p(x)`, is static: if a commitment
+  can bring `p(x)`, the obligation's trigger site flags T(P) as it flags any obligation over a relation a commitment
+  can change (`lattice/04`, `lattice/06`'s conditional obligation). And where `q` is a relation no commitment can
+  extend, P is not flagged and needs no rewrite.
+- **What differs beyond R.** A dead node and an owing node report different things: a core and a place in N against
+  a debt and a place in the owing frontier; L1 no longer prunes above the set (correctly, now), and L5 can branch on
+  `q(x)`'s candidates where its premise holds. So the surfaces move and R does not.
+- **It is what *forbid* refuses today.** Such a P does not load. T would turn a refusal into a monotone program with
+  the region P's fork construction gives, which the refusal's message could name.
+
+**Some, not any.** Over the same H, no: a monotone program's region is convex (an alive down-set met with a
+discharged up-set, so no holes, § Paths above), and a non-monotone program's region can be any subset of the cube
+(`utils/region_synth.py` writes a program for any target). A region with a hole has no monotone program over the
+same H. Over a larger H, perhaps every one: add a candidate for each `absent`'s truth value, guess it, and check
+the guess by obligations and refutations, the guess-and-check of answer-set programming. That preserves a chosen
+semantics, the stable one, which need not be the fork construction's region: so *any* is possible only by deciding
+what the program means, which is D2.
+
+**What picking it up would take**: the flagged corpus programs by the class of their non-monotone site (the taint
+census's classes: a refutation under `absent`, an `absent` that concludes a positive fact, the `via` class, the
+activator classes, obligation triggers); for each class whether a rewrite exists and under which semantics; each
+rewrite held to the oracle on both forms; and the semantics chosen. Nothing is built; it is parked with the rest of
+this page.
+
 ## Why it is parked
 
 - The user's direction, above.
