@@ -104,33 +104,30 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
     files
 }
 
-/// What one program's two routes say against each other: failures, and
-/// whether both finished.
-fn held(path: &Path) -> (Vec<String>, bool) {
+/// The four descriptions [`held`] compares, in its order: `N` taken, then
+/// not, each by the state route and then the tree and the classes.
+const RUNS: [(bool, Route); 4] = [
+    (true, Route::States),
+    (true, Route::TreeClasses),
+    (false, Route::States),
+    (false, Route::TreeClasses),
+];
+
+/// What one program's two routes say against each other, from its four
+/// descriptions ([`RUNS`], each a unit of the sweep): failures, and whether
+/// both finished.
+fn held(path: &Path, runs: &[Option<Described>]) -> (Vec<String>, bool) {
     let rel = rel_of(path);
     let mut bad: Vec<String> = Vec::new();
     let mut compared = false;
-    for nogoods in [true, false] {
-        let (Some(s), Some(t)) = (
-            by(
-                path,
-                Route::States,
-                nogoods,
-                ein_infer::downset::DEFAULT_BUDGET,
-            ),
-            by(
-                path,
-                Route::TreeClasses,
-                nogoods,
-                ein_infer::downset::DEFAULT_BUDGET,
-            ),
-        ) else {
+    for (pair, nogoods) in runs.chunks(2).zip([true, false]) {
+        let (Some(s), Some(t)) = (&pair[0], &pair[1]) else {
             return (bad, false);
         };
         match (s.exhausted, t.exhausted) {
             (true, true) => {
                 compared = true;
-                let d = s.differences(&t);
+                let d = s.differences(t);
                 if !d.is_empty() {
                     bad.push(format!("{rel}, N asked {nogoods}: {d:?} differ"));
                 }
@@ -171,12 +168,35 @@ fn held(path: &Path) -> (Vec<String>, bool) {
 fn every_field_both_routes_compute_is_one_on_the_corpus() {
     let slow_too = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
     let files = files(slow_too);
-    let results = ein_corpus::pool::map(
+    // One unit per (program, description), so that a program's four run side
+    // by side; folded per program, in the programs' order. Where a route does
+    // not take the program, [`held`] reads the first two alone; the other two
+    // are asked all the same, so that no pass waits on another, and each ends
+    // at the program's root.
+    let units: Vec<(usize, usize)> = (0..files.len())
+        .flat_map(|f| (0..RUNS.len()).map(move |r| (f, r)))
+        .collect();
+    let described = ein_corpus::pool::map(
         "tree_classes::both_routes",
-        &files,
-        |p| (rel_of(p), String::new()),
-        |p| held(p),
+        &units,
+        |&(f, r)| {
+            let (nogoods, route) = RUNS[r];
+            (rel_of(&files[f]), format!("{route:?}, N asked {nogoods}"))
+        },
+        |&(f, r)| {
+            let (nogoods, route) = RUNS[r];
+            by(
+                &files[f],
+                route,
+                nogoods,
+                ein_infer::downset::DEFAULT_BUDGET,
+            )
+        },
     );
+    let results = files
+        .iter()
+        .zip(described.chunks(RUNS.len()))
+        .map(|(p, runs)| held(p, runs));
     let mut bad: Vec<String> = Vec::new();
     let mut compared = 0usize;
     for (b, c) in results {

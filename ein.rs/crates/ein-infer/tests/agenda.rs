@@ -252,20 +252,46 @@ struct Tally {
     unheld: Vec<String>,
 }
 
-/// One program: its questions and its claims under both orders, held
-/// to the module's definition of *the same answer*.
-fn held(path: &Path) -> Tally {
+/// What the sweep reads of a program before its questions, a unit of its
+/// first pass: `None` where it does not load, else the two questions its
+/// claims are read off, the one `ein test` asks first and the describing
+/// one, where it states a claim ([`claims_held`]).
+fn claimed(path: &Path) -> Option<Option<[Mode; 2]>> {
+    let (kb, _, ast) = loaded(path)?;
+    let program = kb.program();
+    let stated = program
+        .queries
+        .iter()
+        .any(|q| ein_infer::query_value(&ast, q, "expect").is_some())
+        || program
+            .solve()
+            .is_some_and(|s| ein_infer::solve_value(&ast, s, "expect").is_some());
+    Some(stated.then(|| {
+        [
+            ein_infer::read_out::least(&kb, &ast),
+            ein_infer::read_out::describing(&kb, &ast),
+        ]
+    }))
+}
+
+/// One program that loads: its questions under both orders, held to the
+/// module's definition of *the same answer*. `answers` are the runs, each
+/// question's under the agenda and then in the written order, in
+/// [`questions`]' order, each a unit of the sweep; a program found flagged
+/// at its first question that answers is left there, and the runs after it
+/// need not be given.
+fn held(path: &Path, answers: Vec<Result<Answer, String>>) -> Tally {
     let mut t = Tally::default();
-    if loaded(path).is_none() {
-        return t;
-    }
     let rel = rel_of(path);
     let mut r: Option<BTreeSet<Vec<u32>>> = None;
     let mut line: Option<BTreeSet<Vec<u32>>> = None;
     let mut listed: Vec<(String, BTreeSet<Vec<u32>>)> = Vec::new();
+    let mut answers = answers.into_iter();
     for (flags, mode) in questions() {
         let at = format!("{rel} {flags}");
-        let (a, b) = match (ask(path, mode, true), ask(path, mode, false)) {
+        let agenda = answers.next().expect("the run under the agenda");
+        let written = answers.next().expect("the run in the written order");
+        let (a, b) = match (agenda, written) {
             (Ok(a), Ok(b)) => (a, b),
             (Err(x), Err(y)) if x == y => continue,
             (x, y) => {
@@ -399,37 +425,30 @@ fn held(path: &Path) -> Tally {
         return t;
     }
     t.monotone += 1;
-    // Every claim, off the question `ein test` asks first and the describing
-    // one.
-    let (kb, _, ast) = loaded(path).expect("loaded once already");
-    let program = kb.program();
-    let stated = program
-        .queries
-        .iter()
-        .any(|q| ein_infer::query_value(&ast, q, "expect").is_some())
-        || program
-            .solve()
-            .is_some_and(|s| ein_infer::solve_value(&ast, s, "expect").is_some());
-    if stated {
-        t.claimed += 1;
-        let modes = [
-            ein_infer::read_out::least(&kb, &ast),
-            ein_infer::read_out::describing(&kb, &ast),
-        ];
-        for mode in modes {
-            t.claims += 1;
-            match (claims(path, mode, true), claims(path, mode, false)) {
-                (Ok(x), Ok(y)) if x == y => {}
-                (Err(x), Err(y)) if x == y => {}
-                (x, y) => t.failures.push(format!(
-                    "{rel} {}: the claims read {x:?} under the agenda and {y:?} in the written \
-                     order",
-                    mode.flags()
-                )),
-            }
+    t
+}
+
+/// Every claim of a monotone program that states one, off its two
+/// questions ([`claimed`]): `read` is each question's claims under the
+/// agenda and then in the written order, each run a unit of the sweep.
+fn claims_held(path: &Path, modes: &[Mode; 2], read: Vec<Result<String, String>>, t: &mut Tally) {
+    let rel = rel_of(path);
+    t.claimed += 1;
+    let mut read = read.into_iter();
+    for mode in modes {
+        t.claims += 1;
+        let agenda = read.next().expect("the claims under the agenda");
+        let written = read.next().expect("the claims in the written order");
+        match (agenda, written) {
+            (Ok(x), Ok(y)) if x == y => {}
+            (Err(x), Err(y)) if x == y => {}
+            (x, y) => t.failures.push(format!(
+                "{rel} {}: the claims read {x:?} under the agenda and {y:?} in the written \
+                 order",
+                mode.flags()
+            )),
         }
     }
-    t
 }
 
 /// **Every question and every claim answers alike under the agenda and in
@@ -441,12 +460,96 @@ fn every_question_and_claim_answers_alike_under_the_agenda_and_the_written_order
     // test of this binary that reads the flag.
     let slow_too = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
     let files = files(slow_too);
-    let results = ein_corpus::pool::map(
-        "agenda::under_both_orders",
+    // Each run a unit of its own, so that a program's runs go side by side,
+    // in four passes folded per program in the programs' order: which
+    // programs load and the questions their claims are read off; each
+    // one's first question under both orders, which says whether it is
+    // flagged; the other questions of those that are not; and the claims of
+    // the monotone ones that state one.
+    const SWEEP: &str = "agenda::under_both_orders";
+    let asked = questions();
+    let at = |f: usize, q: usize, agenda: bool| {
+        (
+            rel_of(&files[f]),
+            format!(
+                "{} {}",
+                asked[q].0,
+                if agenda { "agenda" } else { "written order" }
+            ),
+        )
+    };
+    let pre = ein_corpus::pool::map(
+        SWEEP,
         &files,
-        |p| (rel_of(p), String::new()),
-        |p| held(p),
+        |p| (rel_of(p), "load".into()),
+        |p| claimed(p),
     );
+    let firsts: Vec<(usize, usize, bool)> = (0..files.len())
+        .filter(|&f| pre[f].is_some())
+        .flat_map(|f| [(f, 0, true), (f, 0, false)])
+        .collect();
+    let first = ein_corpus::pool::map(
+        SWEEP,
+        &firsts,
+        |&(f, q, agenda)| at(f, q, agenda),
+        |&(f, q, agenda)| ask(&files[f], asked[q].1, agenda),
+    );
+    let flagged_at_first = |pair: &[Result<Answer, String>]| matches!(pair, [Ok(a), Ok(_)] if !a.monotonicity.is_monotone());
+    let loaded_files: Vec<usize> = (0..files.len()).filter(|&f| pre[f].is_some()).collect();
+    let rests: Vec<(usize, usize, bool)> = loaded_files
+        .iter()
+        .zip(first.chunks(2))
+        .filter(|(_, pair)| !flagged_at_first(pair))
+        .flat_map(|(&f, _)| (1..asked.len()).flat_map(move |q| [(f, q, true), (f, q, false)]))
+        .collect();
+    let rest = ein_corpus::pool::map(
+        SWEEP,
+        &rests,
+        |&(f, q, agenda)| at(f, q, agenda),
+        |&(f, q, agenda)| ask(&files[f], asked[q].1, agenda),
+    );
+    let mut first = first.into_iter();
+    let mut rest = rest.into_iter();
+    let mut results: Vec<Tally> = Vec::new();
+    for f in 0..files.len() {
+        if pre[f].is_none() {
+            results.push(Tally::default());
+            continue;
+        }
+        let mut answers: Vec<Result<Answer, String>> = first.by_ref().take(2).collect();
+        if !flagged_at_first(&answers) {
+            answers.extend(rest.by_ref().take(2 * (asked.len() - 1)));
+        }
+        results.push(held(&files[f], answers));
+    }
+    let claimed_by: Vec<(usize, usize, bool)> = (0..files.len())
+        .filter(|&f| results[f].cells > 0 && matches!(pre[f], Some(Some(_))))
+        .flat_map(|f| (0..2).flat_map(move |m| [(f, m, true), (f, m, false)]))
+        .collect();
+    let modes_of = |f: usize| pre[f].as_ref().and_then(|m| m.as_ref()).expect("stated");
+    let read = ein_corpus::pool::map(
+        SWEEP,
+        &claimed_by,
+        |&(f, m, agenda)| {
+            (
+                rel_of(&files[f]),
+                format!(
+                    "claims {} {}",
+                    modes_of(f)[m].flags(),
+                    if agenda { "agenda" } else { "written order" }
+                ),
+            )
+        },
+        |&(f, m, agenda)| claims(&files[f], modes_of(f)[m], agenda),
+    );
+    let mut read = read.into_iter();
+    for (f, t) in results.iter_mut().enumerate() {
+        if t.cells > 0
+            && let Some(Some(modes)) = &pre[f]
+        {
+            claims_held(&files[f], modes, read.by_ref().take(4).collect(), t);
+        }
+    }
     let mut all = Tally::default();
     for t in results {
         all.failures.extend(t.failures);

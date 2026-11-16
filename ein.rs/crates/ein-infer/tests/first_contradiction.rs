@@ -235,23 +235,30 @@ struct Tally {
     unheld: Vec<String>,
 }
 
-/// One program that searches: its six questions both ways, held to the
-/// module's definition of *the same answer*.
-fn held(path: &Path) -> Tally {
-    let mut t = Tally::default();
+/// Whether the sweep reads `path`: it loads, and it searches.
+fn searches(path: &Path) -> bool {
     let Some((mut kb, mut terms, ast)) = loaded(path) else {
-        return t;
+        return false;
     };
-    if !searching::searches(&ast, &mut terms, &mut kb) {
-        return t;
-    }
+    searching::searches(&ast, &mut terms, &mut kb)
+}
+
+/// One program that searches: its six questions both ways, held to the
+/// module's definition of *the same answer*. `answers` are the twelve runs,
+/// each question's with the stop and then without, in [`questions`]' order,
+/// each a unit of the sweep.
+fn held(path: &Path, answers: Vec<Result<Answer, String>>) -> Tally {
+    let mut t = Tally::default();
     let rel = rel_of(path);
     let mut r: Option<BTreeSet<Vec<u32>>> = None;
     let mut line: Option<BTreeSet<Vec<u32>>> = None;
     let mut listed: Vec<(String, BTreeSet<Vec<u32>>)> = Vec::new();
+    let mut answers = answers.into_iter();
     for (flags, mode) in questions() {
         let at = format!("{rel} {flags}");
-        let (a, b) = match (ask(path, mode, true), ask(path, mode, false)) {
+        let with = answers.next().expect("the run with the stop");
+        let without = answers.next().expect("the run without it");
+        let (a, b) = match (with, without) {
             (Ok(a), Ok(b)) => (a, b),
             (Err(x), Err(y)) if x == y => continue,
             (x, y) => {
@@ -453,12 +460,48 @@ fn every_question_answers_alike_with_the_stop_and_without() {
     // test of this binary that reads the flag.
     let slow_too = std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1");
     let files = files(slow_too);
-    let results = ein_corpus::pool::map(
+    // The programs that search, then one unit per (program, question, run),
+    // so that a program's twelve runs go side by side; folded per program,
+    // in the programs' order.
+    let read = ein_corpus::pool::map(
         "first_contradiction::with_and_without",
         &files,
-        |p| (rel_of(p), String::new()),
-        |p| held(p),
+        |p| (rel_of(p), "searches".to_string()),
+        |p| searches(p),
     );
+    let files: Vec<&PathBuf> = files
+        .iter()
+        .zip(read)
+        .filter_map(|(p, read)| read.then_some(p))
+        .collect();
+    let asked = questions();
+    let units: Vec<(usize, usize, bool)> = (0..files.len())
+        .flat_map(|f| (0..asked.len()).flat_map(move |q| [(f, q, true), (f, q, false)]))
+        .collect();
+    let mut answers = ein_corpus::pool::map(
+        "first_contradiction::with_and_without",
+        &units,
+        |&(f, q, stop)| {
+            (
+                rel_of(files[f]),
+                format!(
+                    "{} {}",
+                    asked[q].0,
+                    if stop {
+                        "with the stop"
+                    } else {
+                        "to quiescence"
+                    }
+                ),
+            )
+        },
+        |&(f, q, stop)| ask(files[f], asked[q].1, stop),
+    )
+    .into_iter();
+    let results: Vec<Tally> = files
+        .iter()
+        .map(|p| held(p, answers.by_ref().take(2 * asked.len()).collect()))
+        .collect();
     let mut all = Tally::default();
     let mut programs = 0usize;
     for t in results {
