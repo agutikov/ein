@@ -8,10 +8,10 @@
 ;;;
 ;;; The claim is that answer, and `ein test` holds it: a claim of one class
 ;;; is asked `--single`'s question, which finds the state and shows that R
-;;; holds no other, in 18 030 saturations. Describing R, which a bare `ein
-;;; solve` does, visits every partial assignment that is still alive and
-;;; stops at the budget after 336 101, so the claim is a note there, not
-;;; checked (M1f S1f.6.27, E-30).
+;;; holds no other. A bare `ein solve` describes R whole, by the obligation
+;;; tree and the classes, within the default budget, and finds the same one
+;;; state, so the claim holds there too; each run prints the saturations it
+;;; took on its `work` row (`ein solve FILE --single`, `ein solve FILE`).
 ;;;
 ;;; ──── The letters as the puzzle is written (generated) ──────
 ;;; `send_more_money.ein` declares its letters by column, units first:
@@ -22,8 +22,8 @@
 ;;; order. Regenerate with examples/gen_send_written.py.
 ;;;
 ;;; I + BB = ILL beside it, `cryptarithm.ein`, is the same rules on 30
-;;; candidates. M1f P1f.6: `docs/ein/user/guide/word-problems.md`
-;;; § 3 has the probe both were banked from, and what each costs.
+;;; candidates; `docs/ein/user/guide/word-problems.md` § Cryptarithms
+;;; reads both.
 (import std.math.digits :symbols (fa nz __closed__))
 (import std.algebra :symbols (total-owed functional injective))
 
