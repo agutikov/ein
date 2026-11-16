@@ -30,17 +30,7 @@ Derives `functional-negative(color-of)`.
 
 <dot>
 
-### Step 2 — `derive-injective-negative`
-
-> color-of injective ⟹ injective-negative active.
-
-Premises: `injective(color-of)`
-
-Derives `injective-negative(color-of)`.
-
-<dot>
-
-### Step 3 — `functional-negative`
+### Step 2 — `functional-negative`
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Green)).
 
@@ -50,13 +40,23 @@ Derives `not(color-of(H1, Green))`.
 
 <dot>
 
-### Step 4 — `functional-negative`
+### Step 3 — `functional-negative`
 
 > color-of functional: (color-of H1 Red) ⟹ (not (color-of H1 Blue)).
 
 Premises: `color-of(H1, Red)`, `relation(color-of, House, Color)`, `is-a(Blue, Color)` — from (1) H1 is Red
 
 Derives `not(color-of(H1, Blue))`.
+
+<dot>
+
+### Step 4 — `derive-injective-negative`
+
+> color-of injective ⟹ injective-negative active.
+
+Premises: `injective(color-of)`
+
+Derives `injective-negative(color-of)`.
 
 <dot>
 

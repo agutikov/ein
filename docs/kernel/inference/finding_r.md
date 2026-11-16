@@ -25,6 +25,15 @@ The rows `ein solve` prints about this, `route` and `work`, are
 node is a copy-on-write fork of it, read and thrown away, so nothing a node derives ever reaches root
 or another node.
 
+**`sat` fires in the engine's order, the agenda**: first the rules whose conclusion a contradiction
+can be made of, `(false)`, a stored negation, or a fact of a relation whose negation some rule
+concludes or the KB holds; then the rest; FIFO in the written and arrival order within each half.
+Root, every route's node, the oracle's and every reader saturate so. On a monotone program the order
+decides no fixpoint and no answer (`ein-infer/tests/agenda.rs` holds every question and every claim
+alike under the agenda and the written order alone); it decides when a fact is derived, so where a
+dead node stops, its narration, and which derivation a fact's record keeps first, which a core is
+explained from. Of a flagged program the engine claims no answer.
+
 **H**, the universe of candidates, is built once at root by the hypothesis ladder
 ([`solution_semantics.md`](solution_semantics.md) § 1.4). It is listed by `ein show hyps FILE` and
 its structure is described in [`hypothesis_space.md`](hypothesis_space.md).
@@ -240,7 +249,7 @@ can still be large. Each figure below is the `work` row of the command beside it
 |---|---:|---|---:|
 | `examples/zebra2.ein` | 56 | *Solution — R is one state*, 7 saturations | 2⁵⁶ |
 | `examples/zebra.ein` | 56 | *Solution — R is one state*, 9 saturations | 2⁵⁶ |
-| `examples/beyond_arith/send_more_money.ein` | 80 | *Solution — R is one state*, 18 031 saturations | 2⁸⁰ |
+| `examples/beyond_arith/send_more_money.ein` | 80 | *Solution — R is one state*, 18 032 saturations | 2⁸⁰ |
 
 On a flagged program none of this holds. A dead set can have an alive superset, so the only proof
 is the cube.
@@ -254,6 +263,7 @@ is the cube.
 | no lever, option or flag changes `R` | `ein-cli/tests/lever_invariance.rs` |
 | a denial kills exactly where a computed node would, on every monotone cube; the run with and without the memory's denials gives one answer | `ein-infer/tests/known_dead.rs` |
 | a route's dead node stopped at its first contradiction gives every question the answer the node run to quiescence gives | `ein-infer/tests/first_contradiction.rs` |
+| the agenda gives every question and every claim the answer the written order alone gives, on every monotone program | `ein-infer/tests/agenda.rs` |
 | every order the tree can take gives the oracle's answer | `ein-infer/tests/explore.rs` (`every_order_of_the_tree_is_the_oracle`), `ein-infer/tests/order.rs` |
 
 ## Cross-references

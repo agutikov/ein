@@ -646,7 +646,7 @@ solve · examples/lattice/synth/merged_states.ein
   lattice           monotone (the static check) — R is convex: no hole
   universe          5 candidates, 0 dead alone
   route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              18 saturations · 45 facts beyond root · 6 layers
+  work              18 saturations · 44 facts beyond root · 6 layers
 
   (region
     ;; state 1 of 8 — 2 candidates · minimal · 2 commitments, 1 minimal

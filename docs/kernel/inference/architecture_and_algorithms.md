@@ -117,7 +117,7 @@ copy does.
   │   Saturator::saturate() ── two phases to fixpoint ──      │
   │    CLOSURE  (purely positive — no negation consulted)     │
   │     match (multi-way join)  → fire  → append fact         │
-  │     ▲ FIFO queue, delta-driven (semi-naive, S1.8.B2v)     │
+  │     ▲ the agenda's queue, delta-driven (semi-naive)       │
   │     │ a NAF-guarded match is PARKED, never enqueued       │
   │    BOUNDARY  at quiescence: the KB judges the parked      │
   │     └ candidates, admits ONE → back into the closure      │
@@ -166,9 +166,11 @@ S1.21.8 that sequence is **purely positive**: the guard lift in `compile.rs`
 takes every top-level `(absent …)` premise out into a `NafGuard`, one guard
 span per `(or …)` disjunct, which `Plan::guards` pairs back with its steps. The
 `Saturator` then alternates two phases (`step()`). In the **closure** phase it
-runs a FIFO queue of enqueued `(plan, binding)` firings (a priority
-queue until M1f S1f.5.15 removed `:priority`); each
-`closure_step()` pops the oldest unfired binding, applies it
+runs the agenda's queue of enqueued `(plan, binding)` firings: those of a
+rule whose conclusion a contradiction can be made of first, then the rest,
+FIFO within each half (FIFO alone before the agenda, a priority queue until
+M1f S1f.5.15 removed `:priority`); each `closure_step()` pops the first
+unfired binding, applies it
 (`firing::fire` → append a derived fact with provenance), and
 re-enqueues the matches the new fact enables — consulting no negation
 anywhere. A match whose disjunct carries guards never enters that queue: it is
@@ -360,8 +362,10 @@ goal-directed bottom-up evaluation (sideways information passing). **DRed**
 incremental + iterative dataflows. Production engines (Soufflé) compile to
 semi-naive loops over specialised index structures (Brie, B-tree).
 
-**Ein today.** A FIFO saturator (rules fire in the order their candidates
-were enqueued; until M1f S1f.5.15 a **priority-banded** one, rules firing in
+**Ein today.** A saturator whose agenda fires first the rules whose
+conclusion a contradiction can be made of, then the rest, each half in the
+order its candidates were enqueued (FIFO alone before the agenda; until M1f
+S1f.5.15 a **priority-banded** one, rules firing in
 priority order — a scheduling refinement over pure rounds). It was *naive* (re-match
 everything each pass); **S1.8.B2v D2** made the within-run re-enqueue
 delta-driven (semi-naive at the *which-plans* granularity), and **D5** made

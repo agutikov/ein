@@ -295,10 +295,11 @@ The four moving parts, and where each lives:
 | negative provenance | `Saturator::negative_premises` → the firing's [provenance](../../ein.rs/crates/ein-core/src/prov.rs) via `fire` | records what the firing depended on *not* holding — see **L6**: recorded, not yet interpreted |
 
 Three consequences worth knowing before writing rules. No rule has a
-priority since M1f S1f.5.15: the agenda and the boundary are FIFO, the
-written and arrival order, and on a stratified program the result does not
-depend on that order, only the trace and the derivation a core is explained
-from do. A rule that used to
+priority since M1f S1f.5.15: the agenda and the boundary fire first the
+rules whose conclusion a contradiction can be made of, then the rest, each
+half in the written and arrival order, and on a monotone program the result
+does not depend on that order, only the trace and the derivation a core is
+explained from do. A rule that used to
 fire because its watched fact had not been derived *yet* no longer does —
 the closure is complete before any guard is asked. And a non-stratified
 program is still answered by operational order (now boundary-admission
@@ -400,7 +401,7 @@ two need distinct names and a line at each saying what the other is.
 | add a **stdlib** rule/module        | `stdlib/<m>.ein` + a `tests/` exercise; document in [`ir/03-ein-lang/07_stdlib_api.md`](ir/03-ein-lang/07_stdlib_api.md) |
 | add a **kernel primitive** (`absent`-like) | `ein-core/src/terms.rs` (the reserved atom) or `ein-infer/src/predicates.rs` + `compile.rs` + `match_.rs` + tests; a *negative* one also touches the saturator's boundary phase |
 | add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
-| change **saturation order**         | `ein-infer/src/saturator.rs` (FIFO since M1f S1f.5.15; the priority bands until then) |
+| change **saturation order**         | `ein-infer/src/saturator.rs` (the agenda, `saturator::AGENDA`: what leads to `(false)` first, FIFO within each half; FIFO alone before it, the priority bands until M1f S1f.5.15) |
 | change **search / verdict**         | `ein-infer/src/explore.rs` and the route it takes (`downset.rs`, `states.rs`, `tree.rs`, `region.rs`) + `read_out.rs`; it was `solve.rs` + `verdict.rs` until the walk was deleted at M1e2 S1e2.1c.5 (2026-11-03) |
 | add a **verdict word or count qualifier** | `ein-infer/src/explore.rs`'s `Verdict` (`--single`'s words) and the read-out, `ein-infer/src/read_out.rs` + `ein-render/src/read_out.rs`; until M1e2 S1e2.1c.5 (2026-11-03) it was `verdict.rs` alone — `Verdict::read_out` was what every surface printed (M1e S1e.3.4) |
 | add a **config knob**               | `ein-core/src/config.rs` (`SolverConfig`) + its read site + the CLI flag in `ein-cli/src/cmdline.rs` |

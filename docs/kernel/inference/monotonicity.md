@@ -666,8 +666,8 @@ each fact a node's fixpoint derived before saturating and compares the
 fixpoint (§ 12.3 there).
 
 **The engine's boundary breaks cumulativity.** It admits candidates one a
-round in FIFO order ((priority, FIFO) until M1f S1f.5.15), not in stratum
-order
+round in the agenda's order (FIFO before it, (priority, FIFO) until M1f
+S1f.5.15), not in stratum order
 (`node_census.md` § 4). Take r2 `a ∧ b ∧ absent(q) → p`, written before r1
 `a ∧ absent(z) → q`. Built at once, {a, b} gives {a, b, p, q}, with `p`
 stale; by way of {a} it gives {a, b, q}. The state function is monotone and

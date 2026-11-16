@@ -587,8 +587,15 @@ fn fact_grain_on_programs_written_to_test_it() {
         assert_eq!(monotone, leaves, "{name}: leaves the set at fact grain");
         assert_eq!(whole, complete, "{name}: the closure is complete");
         let (mut kb, mut terms, ast) = loaded_text(name, text);
-        let Outcome::Region(r) = forbid::studying(|| {
-            region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+        // Each cube in the written order, which these programs were written
+        // to expose: every one is flagged, and of a flagged program the
+        // engine claims no answer. Under the engine's agenda `even-depth`
+        // admits `bad`, whose conclusion is `(false)`, before `all-p`, and the
+        // hole it was written to show does not open.
+        let Outcome::Region(r) = ein_infer::saturator::fifo(|| {
+            forbid::studying(|| {
+                region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+            })
         })
         .expect("computes") else {
             panic!("{name}: within the limit");

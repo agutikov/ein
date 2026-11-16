@@ -295,6 +295,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus-shards 1/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
 
+    nightly_step "deep-corpus-shards 1/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
+
     nightly_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -315,6 +318,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus-shards 2/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
+
+    nightly_step "deep-corpus-shards 2/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
 
     nightly_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -337,6 +343,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
     nightly_step "deep-corpus-shards 3/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
 
+    nightly_step "deep-corpus-shards 3/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
+
     nightly_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -357,6 +366,9 @@ if [[ "${NIGHTLY}" == 1 ]]; then
 
     nightly_step "deep-corpus-shards 4/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
+
+    nightly_step "deep-corpus-shards 4/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
 
     nightly_step "deep-corpus-shards 4/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -546,6 +558,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus-shards 1/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
 
+    dev_host_step "deep-corpus-shards 1/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="1/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
+
     dev_host_step "deep-corpus-shards 1/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -566,6 +581,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus-shards 2/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
+
+    dev_host_step "deep-corpus-shards 2/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="2/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
 
     dev_host_step "deep-corpus-shards 2/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
@@ -588,6 +606,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
     dev_host_step "deep-corpus-shards 3/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
 
+    dev_host_step "deep-corpus-shards 3/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="3/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
+
     dev_host_step "deep-corpus-shards 3/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
@@ -608,6 +629,9 @@ if [[ "${DEV_HOST}" == 1 ]]; then
 
     dev_host_step "deep-corpus-shards 4/4: first_contradiction, a dead node stopped and run to quiescence one answer, the slow entries too"
     EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test first_contradiction
+
+    dev_host_step "deep-corpus-shards 4/4: agenda, the agenda and the written order one answer, the slow entries too"
+    EIN_CORPUS_SLOW="1" EIN_TEST_SHARD="4/4" TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" -p ein-infer --profile gate --test agenda
 
     dev_host_step "deep-corpus-shards 4/4: utils/check_test_scratch.py"
     python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"

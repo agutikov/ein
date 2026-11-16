@@ -138,6 +138,7 @@ ein-einb/tests/corruption.rs
 ein-einb/tests/invalidation.rs
 ein-einb/tests/roundtrip.rs
 ein-infer/tests/acceptance.rs
+ein-infer/tests/agenda.rs
 ein-infer/tests/coupling.rs
 ein-infer/tests/cover.rs
 ein-infer/tests/exactly_one.rs

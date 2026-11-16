@@ -40,37 +40,7 @@ Derives `functional-negative(color-loc)`.
 
 <dot>
 
-### Step 3 — `derive-domain-elimination`
-
-> color-loc functional + total ⟹ domain-elimination active.
-
-Premises: `functional(color-loc)`, `total(color-loc)`
-
-Derives `domain-elimination(color-loc)`.
-
-<dot>
-
-### Step 4 — `derive-injective-negative`
-
-> color-loc injective ⟹ injective-negative active.
-
-Premises: `injective(color-loc)`
-
-Derives `injective-negative(color-loc)`.
-
-<dot>
-
-### Step 5 — `derive-range-elimination`
-
-> color-loc injective + surjective ⟹ range-elimination active.
-
-Premises: `injective(color-loc)`, `surjective(color-loc)`
-
-Derives `range-elimination(color-loc)`.
-
-<dot>
-
-### Step 6 — `functional-negative`
+### Step 3 — `functional-negative`
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H1)).
 
@@ -80,7 +50,7 @@ Derives `not(color-loc(Red, H1))`.
 
 <dot>
 
-### Step 7 — `functional-negative`
+### Step 4 — `functional-negative`
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H3)).
 
@@ -90,7 +60,7 @@ Derives `not(color-loc(Red, H3))`.
 
 <dot>
 
-### Step 8 — `functional-negative`
+### Step 5 — `functional-negative`
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H1)).
 
@@ -100,7 +70,7 @@ Derives `not(color-loc(Green, H1))`.
 
 <dot>
 
-### Step 9 — `functional-negative`
+### Step 6 — `functional-negative`
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H2)).
 
@@ -110,7 +80,27 @@ Derives `not(color-loc(Green, H2))`.
 
 <dot>
 
-### Step 10 — `injective-negative`
+### Step 7 — `derive-domain-elimination`
+
+> color-loc functional + total ⟹ domain-elimination active.
+
+Premises: `functional(color-loc)`, `total(color-loc)`
+
+Derives `domain-elimination(color-loc)`.
+
+<dot>
+
+### Step 8 — `derive-injective-negative`
+
+> color-loc injective ⟹ injective-negative active.
+
+Premises: `injective(color-loc)`
+
+Derives `injective-negative(color-loc)`.
+
+<dot>
+
+### Step 9 — `injective-negative`
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Green H2)).
 
@@ -120,7 +110,7 @@ Derives `not(color-loc(Green, H2))`.
 
 <dot>
 
-### Step 11 — `injective-negative`
+### Step 10 — `injective-negative`
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Blue H2)).
 
@@ -130,7 +120,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 <dot>
 
-### Step 12 — `injective-negative`
+### Step 11 — `injective-negative`
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Red H3)).
 
@@ -140,13 +130,23 @@ Derives `not(color-loc(Red, H3))`.
 
 <dot>
 
-### Step 13 — `injective-negative`
+### Step 12 — `injective-negative`
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Blue H3)).
 
 Premises: `color-loc(Green, H3)`, `relation(color-loc, Color, House)`, `is-a(Blue, Color)` — from (2) Green is in house 3
 
 Derives `not(color-loc(Blue, H3))`.
+
+<dot>
+
+### Step 13 — `derive-range-elimination`
+
+> color-loc injective + surjective ⟹ range-elimination active.
+
+Premises: `injective(color-loc)`, `surjective(color-loc)`
+
+Derives `range-elimination(color-loc)`.
 
 <dot>
 
