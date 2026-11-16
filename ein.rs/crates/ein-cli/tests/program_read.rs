@@ -237,7 +237,7 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
 /// provenance table held) and the same line (Q-M1f.15).
 ///
 /// The program is one whose error names a position: a macro whose template
-/// writes `eq` with one argument (`02_patterns.md`). Since M1f S1f.5.24 the
+/// writes `eq` with one argument (`syntax.md`). Since M1f S1f.5.24 the
 /// loader refuses it, `g.ein:3:18:` first, the macro body's position (W66,
 /// Q-M1f.80), so `ein kb save` does too, and the container is written here
 /// through `ein_einb::save` with that program stored beside a KB that loads:

@@ -31,7 +31,7 @@
 ;;; ── What the expectation can and cannot observe ────────────────────────────
 ;;;
 ;;; `:expect` has three forms and all three are assertions about **facts**
-;;; (`01_grammar.md` § Query). An `open` conclusion is by construction never a
+;;; (`syntax.md` § Query). An `open` conclusion is by construction never a
 ;;; fact — it is a tally on the search-lattice node, because a stored one would
 ;;; survive its own discharge in a fork that paid it — so no expectation here
 ;;; can say "owes 1". The claim below is therefore about the model, which is

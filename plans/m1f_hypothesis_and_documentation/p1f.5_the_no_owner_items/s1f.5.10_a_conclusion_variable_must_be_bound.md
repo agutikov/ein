@@ -264,7 +264,7 @@ as what every such program meets:
   line, a parameter its activator binds to a nested fact (W58, until S1f.5.18), and a new
   [§ 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds) states the
   refusal: the line and its disjunction form, what binds, what it replaced (W57), and what pins it.
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s *Conclusion forms in `:assert`*: every variable
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s *Conclusion forms in `:assert`*: every variable
   a conclusion writes is bound, on every way the `:match` can hold, an hrule's too, and what the refusal names.
 - The inventory's [F13](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) and
   [G-14](../../m1e2_correctness/inventory_2026-11-06.md) say what did it, G-14's derived activator left to S1f.5.18;

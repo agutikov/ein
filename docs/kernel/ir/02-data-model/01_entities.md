@@ -95,7 +95,7 @@ bare `(relation R)` declares a relation node with no declared arg types,
 and is thereby not a hypothesis target (S1.22.4). It is **not** a kernel
 type annotation: rules read the atoms as types, the kernel reads only
 the tuple's shape. Definitive account of that split:
-[`../03-ein-lang/01_grammar.md` §what the signature means](../03-ein-lang/01_grammar.md#what-the-signature-means--userspace-types-kernel-structure).
+[`../03-ein-lang/syntax.md` §what the signature means](../../../ein/user/reference/syntax.md#what-the-signature-means--userspace-types-kernel-structure).
 
 Cross-references:
 - `rel.facts` → `tuple[Fact, ...]` — all facts whose head is this

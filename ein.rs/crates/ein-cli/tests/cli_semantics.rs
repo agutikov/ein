@@ -2437,7 +2437,7 @@ const GRAMMAR: &str = "utils/vscode-ein/ein.tmLanguage.json";
 
 /// The closed declarator set — P1.7c, plus S1.5.9's `macro`, S1.8.A2's
 /// `import` and M1e2 S1e2.1a.4's `solve`. Source of truth:
-/// [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md).
+/// [`docs/ein/user/reference/reserved-names.md`](../../../../docs/ein/user/reference/reserved-names.md).
 const DECLARATORS: [&str; 9] = [
     "config", "hrule", "import", "macro", "query", "relation", "rule", "solve", "trace",
 ];
@@ -2546,7 +2546,7 @@ fn the_textmate_grammar_is_the_ein_grammar() {
 /// Closed is the operative word: the eight are the only heads the *loader*
 /// treats as declarations, so a ninth in the grammar promises a syntax that
 /// does not exist and a missing one leaves a real declarator looking like an
-/// ordinary fact. `06_reserved_names.md` is the source of truth and the list
+/// ordinary fact. `reserved-names.md` is the source of truth and the list
 /// here mirrors it.
 #[test]
 fn the_grammars_declarators_are_the_closed_set() {

@@ -30,7 +30,7 @@ S1h.2.5's cut and computes nothing of its own.
   `utils/read_out_examples.py`, and `ein-cli/tests/read_out_reference.rs`. A dump file:
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md), and `answer_round_trip.rs` if a slice
   file is a loadable program. A view:
-  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md), `dot_wellformed.rs`, and
+  [`rendering.md`](../../../docs/ein/user/reference/rendering.md), `dot_wellformed.rs`, and
   `utils/ci_container.sh` green on the commit, since a DOT writer changed. A new option: a row of
   [`config.md`](../../../docs/ein/user/reference/config.md) and `config_reference.rs`.
 - **The goldens counted and named before blessing.** A surface asked for by an option moves no golden of a

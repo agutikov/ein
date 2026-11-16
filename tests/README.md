@@ -694,7 +694,7 @@ put it back.
 ### What a mutation sweep says about them
 
 **A verdict word is not what an expectation claims.** All three `:expect`
-forms are assertions about **facts** (`01_grammar.md` § Query), so no fixture
+forms are assertions about **facts** (`syntax.md` § Query), so no fixture
 here says `Solution`, `Open` or `Contradiction` — it says what the answer's
 fact set is. M1d S1d.2.6 is the proof that this was the right shape: twelve of
 these programs changed verdict word that day, from `Solution` to `Open`, and
@@ -981,7 +981,7 @@ is the one the cargo test re-implements, and the two have to stay one rule.
 Since M1f S1f.6.27 that is the least question that can decide them, `--single`
 or `-n k+1` for queries' claims over one part of R and the description for a
 region claim, and then the description for whatever that left undecided
-([`01_grammar.md` § Query](../docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
+([`syntax.md` § Query](../docs/ein/user/reference/syntax.md#query)).
 So a query's claim on a search too large to describe can go in where the
 question decides it, which is what `examples/beyond_arith/send_more_money.ein`
 is; a region claim on such a program still cannot. Where both questions stop

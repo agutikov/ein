@@ -69,7 +69,7 @@ opening fence, as it stood at `52e759e7`.
 | `01_objects_and_relations.md:47` | whole, 1 / 0 | the same | — |
 | `01_objects_and_relations.md:75` | whole, 1 / 0 | the same (`nation-loc` undeclared, which loads) | — |
 | `01_objects_and_relations.md:102` | whole, 1 / 0 | the same | — |
-| `01_objects_and_relations.md:123` | whole, 4 / 0 | answered: R is 32 states over 5 candidates, the blind enumerator's pairs of the program's names, `(nation-loc House-1 Englishman)` among them, since the kernel has no type system ([`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)); the page claims no answer | its four forms are `zebra2.ein`'s |
+| `01_objects_and_relations.md:123` | whole, 4 / 0 | answered: R is 32 states over 5 candidates, the blind enumerator's pairs of the program's names, `(nation-loc House-1 Englishman)` among them, since the kernel has no type system ([`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md)); the page claims no answer | its four forms are `zebra2.ein`'s |
 | `02_first_rules.md:11` | excerpt, 0 / 1 | the template `(rule NAME (params…) …)`: nothing to load | — |
 | `02_first_rules.md:28` | whole, 5 / 0 | answered: one state, the goal holds, as the page's run of the file says | `saturation/symmetric/neighbours.ein`, form for form |
 | `02_first_rules.md:85` | whole, 5 / 0 | **answered otherwise than the page says**: one state, where the page's run of the file it quotes says four. It leaves out the file's `(relation is-a T T …)`, so no `is-a` fact is a candidate | `saturation/transitive/taxonomy.ein`, without its `relation` line and its two facts' `:source` |
@@ -90,7 +90,7 @@ the file the same way, 2026-11-10).
 **The prose beside the blocks**, read as the blocks were. Four sentences are false today:
 
 - chapter 1: *"`is-a` (used above) is a built-in two-slot relation"* (`b4d51580`, 2026-06-17). `is-a` is an ordinary
-  relation since S1.7.23 ([`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)), which
+  relation since S1.7.23 ([`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md)), which
   is why chapter 2's transitive block, lacking the declaration, answers one state;
 - chapter 4: a bare `ein solve examples/zebra2.ein` *"stops at its default budget before it has shown there is no
   other, and says so on stderr"* (`fbcae3b2`, 2026-10-18). Today it prints `exhausted yes — every commitment is

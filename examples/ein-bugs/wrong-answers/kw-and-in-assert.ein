@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
 ;;;
-;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; A keyword is a whole word: `grammar.md` § 1, fact 1, excludes a reserved
 ;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
 ;;; `SYMBOL`; `neq_test` is), so `andz` is a name like any other. `r`
 ;;; concludes `(andz a)`: root holds `(andz a)` and `(p a)`, H is empty and R
@@ -24,7 +24,7 @@
 ;;; stopped at `r`'s first firing: every command that saturated exited 1 with
 ;;; *rule 'r': its :assert concludes z, which is not a fact — …*. (`ein solve
 ;;; FILE` at `35186bc0`, release and debug; every mode and `ein oracle` the
-;;; same.) Since then a keyword is a whole word, at the boundary `00_ebnf.md`
+;;; same.) Since then a keyword is a whole word, at the boundary `grammar.md`
 ;;; § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 

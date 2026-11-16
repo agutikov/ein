@@ -7,7 +7,7 @@
 ;;;
 ;;; Four `holds` facts: the int `1`, the string `"1"`, the atom `a` and the
 ;;; string `"b"`. The loader holds a string written as a fact's argument as
-;;; the symbol it names (`01_grammar.md`'s `STRING` row), so `(holds "b")` is
+;;; the symbol it names (`syntax.md`'s `STRING` row), so `(holds "b")` is
 ;;; the fact `(holds b)`, and `(holds "1")` holds the symbol `1`, a value
 ;;; apart from the int. Three rules match one `holds` fact each: `s` writes
 ;;; the string `"1"`, `t` the atom `b`, `u` the int `1`. `t` and `u` are the

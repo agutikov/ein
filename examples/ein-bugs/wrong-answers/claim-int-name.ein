@@ -8,7 +8,7 @@
 ;;;
 ;;; One fact, `(holds "1")`: the loader holds a string written as a fact's
 ;;; argument as the name it spells, so this is the name `1`, a value apart
-;;; from the int `1` (`01_grammar.md`'s `STRING` row). The query's `:expect`
+;;; from the int `1` (`syntax.md`'s `STRING` row). The query's `:expect`
 ;;; claims the one class `(model (holds 1))`, written with the int. The claim
 ;;; is the witness: it is false, and it stays written as it is.
 ;;;

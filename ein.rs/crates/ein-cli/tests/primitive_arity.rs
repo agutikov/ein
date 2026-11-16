@@ -9,7 +9,7 @@
 //! > **The grammar shape-pins four of the seven kernel meta-primitives and
 //! > leaves three unpinned.** `NotForm`, `NeqForm`, `AndForm` and `OrForm` are
 //! > productions with a fixed or bounded arity
-//! > ([`00_ebnf.md` §2](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md));
+//! > ([`grammar.md` §2](../../../../docs/ein/user/reference/grammar.md#2-phrase-grammar));
 //! > `eq`, `absent` and `false` are ordinary `GenericList`s, and the only
 //! > thing between them and the engine was a runtime `assert!`.
 //!
@@ -133,7 +133,7 @@ fn cell(scratch: &Scratch, n: usize, guard: &str) -> Cell {
 /// **The four the grammar pins refuse a wrong arity, positioned.**
 ///
 /// `not`, `and`, `or` and `neq` are productions in
-/// [`00_ebnf.md` §2](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)'s
+/// [`grammar.md` §2](../../../../docs/ein/user/reference/grammar.md#2-phrase-grammar)'s
 /// *Kernel meta-primitives (shape-pinned)* block, so a wrong arity is a
 /// **parse** error with a line and a column — the cheapest diagnostic the
 /// engine has, and the one a generated program most needs.

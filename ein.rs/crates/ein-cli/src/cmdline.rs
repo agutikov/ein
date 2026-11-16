@@ -343,7 +343,7 @@ fn render_command() -> Command {
                     "the solution region as a Hasse diagram: DIR is an `ein oracle \
                      --dump` directory, drawn with a `solve` run on it when --visited \
                      or --answer names its dumps \
-                     (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)",
+                     (docs/ein/user/reference/rendering.md)",
                 )
                 .arg(Arg::new("dir").required(true))
                 .arg(Arg::new("visited").long("visited").value_name("DIR").help(

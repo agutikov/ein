@@ -20,8 +20,8 @@ Ein form that is it or stands in for it, a program, and what the binary did.
 ## The table to fill
 
 The **Ein** column is the coordinator's reading of the kernel pages
-([`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md),
-[`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md),
+([`syntax.md`](../../../docs/ein/user/reference/syntax.md),
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns),
 [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)); each row is **to be confirmed by
 its program**.
 

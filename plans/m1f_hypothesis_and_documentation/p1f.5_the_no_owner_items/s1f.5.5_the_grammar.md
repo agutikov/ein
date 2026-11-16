@@ -1086,7 +1086,7 @@ defaults was overruled.
   leaving them as ordinary names. The five keep their spellings: `<forced-positive>`,
   `<monotonic-unconditional>`, `<lookahead-dies-immediately>`, `__closed__` and `__symmetric__`. Each is
   reserved in the sense
-  [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) and
+  [`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md) and
   [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md) give the word: written
   only with its fixed meaning, never redefined. Read as follows (the coordinator's reading, for the user to
   correct):

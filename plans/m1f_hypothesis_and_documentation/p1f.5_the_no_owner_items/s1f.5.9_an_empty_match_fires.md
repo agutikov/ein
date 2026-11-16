@@ -360,10 +360,10 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
 **The pages.** No current kernel page describes an empty `:match` as reading nothing, `:assert ()` as storing a fact,
 `#empty` as a value a run reaches, or `(and)`'s refusal as saying nothing of the empty conjunction:
 
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s rule section: an empty `:match` is the empty
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s rule section: an empty `:match` is the empty
   conjunction, true, fires once or once per activator, an hrule's likewise; `()` its one spelling, `(and)` and `(or)`
   refused with a note; `:assert ()` asserts nothing; and the dead root's core `[]`.
-- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md): the primitives' table's `and` / `or` row, and a
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns): the primitives' table's `and` / `or` row, and a
   paragraph on the empty conjunction.
 - [`03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md) § 7.1 and its table: two of `()`'s three
   places have engine semantics; `()` as a value, Q28's question, is a parse error.
@@ -449,7 +449,7 @@ program.
 **The pages.** [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#23-eq-and-absent-at-another-arity) § 2.3 says only a macro's body
 reaches its `eq` row since, and a new [§ 2.14](../../../docs/ein/user/reference/diagnostics.md#214-eq-at-another-arity)
 states the two refusals, which parameters can hold `eq`, what loads, what they replaced (W60, W61) and what pins them;
-[`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s parameter list and its written `eq` fact say
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s parameter list and its written `eq` fact say
 so.
 
 ## Acceptance re-taken (2026-11-09)

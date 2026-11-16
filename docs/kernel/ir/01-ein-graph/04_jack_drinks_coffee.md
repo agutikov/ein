@@ -344,5 +344,5 @@ cartesian closure.
   example exercises.
 - [`02_rules.md`](02_rules.md) — T2 rules (relation polymorphism)
   which the `inherit-rel` rule above is an instance of.
-- [`../03-ein-lang/02_patterns.md`](../03-ein-lang/02_patterns.md) —
+- [`../03-ein-lang/syntax.md`](../../../ein/user/reference/syntax.md#3-patterns) —
   the pattern sub-language for the `:match` clause.

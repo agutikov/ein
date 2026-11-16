@@ -237,7 +237,7 @@ first preparation does, and with the alternatives cap raised to 1 000 000 both g
 scratch build, `build/s1f.5.12/s1f512_member.rs`, 2026-11-09), so the cap decides it all and the row stays open, F22's.
 The kernel pages that said `not-kept` say what replaced it in the same commit:
 [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s `nogoods.json` paragraph and its file list,
-[`glossary.md`](../../../docs/kernel/glossary.md)'s core statuses and
+[`glossary.md`](../../../docs/ein/user/reference/glossary.md)'s core statuses and
 [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s `core_status` row. The live read-out reference has
 no row whose words move.
 
@@ -265,7 +265,7 @@ The cost after, beside step 1's. The pages:
 - the live read-out reference, [`read-out.md`](../../../docs/ein/user/reference/read-out.md) (S1f.5.16), where a row's words move, and
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s list of core statuses; M1e2's `read_out.md`
   § 6.2 and § 8.2 are a record, and are not edited;
-- [`glossary.md`](../../../docs/kernel/glossary.md)'s list of the core statuses;
+- [`glossary.md`](../../../docs/ein/user/reference/glossary.md)'s list of the core statuses;
 - [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s note that the oracle never writes
   `not-kept`;
 - `CLAUDE.md`'s S1e2.3.9 paragraph;
@@ -313,7 +313,7 @@ work.
 
 **The pages** each output-changing commit did not already carry:
 - **T2 and T5 carried the kernel pages**: [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s
-  `nogoods.json` paragraph, its file list and its `.einb` line, [`glossary.md`](../../../docs/kernel/glossary.md)'s core
+  `nogoods.json` paragraph, its file list and its `.einb` line, [`glossary.md`](../../../docs/ein/user/reference/glossary.md)'s core
   statuses and [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s `core_status` row. The live read-out
   reference, [`read-out.md`](../../../docs/ein/user/reference/read-out.md), has no row whose words moved: stdout prints no
   member of N's core and no row of a `.einb`'s dump. M1e2's `read_out.md` § 6.2 and § 8.2 are a record and are not

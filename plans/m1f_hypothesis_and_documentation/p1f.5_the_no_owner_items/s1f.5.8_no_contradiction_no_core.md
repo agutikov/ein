@@ -231,7 +231,7 @@ run does not state, with `--count`'s dead root
 ([Q-M1f.29](../open_questions.md#q-m1f29--a-dead-roots-core-under---count)); [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s
 `nodes` row, [`lattice-dump.md`](../../../docs/ein/ein.rs/lattice-dump.md)'s `nodes.json` and
 [`events.md`](../../../docs/ein/ein.rs/events.md)'s `enter` row say a node that is not dead has `null`; and
-[`glossary.md`](../../../docs/kernel/glossary.md) states the rule beside the core's definition.
+[`glossary.md`](../../../docs/ein/user/reference/glossary.md) states the rule beside the core's definition.
 [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md) defines no summary field of its own, deferring them to
 `read_out.md` § 11, and its `nogoods.json` holds dead nodes alone, so it is unedited. No answer, exit code or register
 row moved.
@@ -250,7 +250,7 @@ T2 carried the kernel pages, in the commit that moved the spelling. This task wr
   summary table and under its item, which stays as it was taken.
 - **[Q-M1e2.27](../../m1e2_correctness/open_questions.md#q-m1e227--what-do--and-null-mean-in-eins-json)** says what
   built it, in its table and its section.
-- **[`glossary.md`](../../../docs/kernel/glossary.md)**'s sentence on which surfaces take a core, which still said
+- **[`glossary.md`](../../../docs/ein/user/reference/glossary.md)**'s sentence on which surfaces take a core, which still said
   `--dump-answer` and `--trace` take every dead node's they visit (T1's second finding): `--dump-lattice`, `--events`
   and `ein render lattice` take every dead node's they visit, `--dump-answer` and `--trace` each member of N's after
   the walk (S1f.5.12), and `ein oracle --dump` every dead node's of the cube.

@@ -223,7 +223,7 @@ not special syntax, it is a one-slot relational node.
 and loads, as does the bare `(relation opaque)` — the grammar takes a name
 and zero or more names (`Relation ::= '(' 'relation' DeclName Names …`;
 `SYMBOL*` until M1f S1f.5.5's swap) — see
-[`../03-ein-lang/01_grammar.md` §relation declarator](../03-ein-lang/01_grammar.md).
+[`../03-ein-lang/syntax.md` §relation declarator](../../../ein/user/reference/syntax.md).
 The property tags above simply don't bother: they are auto-vivified
 open-world relations, since the same atom is usually also a *rule* name.
 
@@ -241,7 +241,7 @@ open-world relations, since the same atom is usually also a *rule* name.
 - **Rendering.** The compact DOT view draws a unary fact as a labelled
   **self-loop** `a → a [label="rel"]` — the degenerate case of the binary
   collapse, with source and target the same node
-  ([`../03-ein-lang/04_dot_rendering.md`](../03-ein-lang/04_dot_rendering.md)).
+  ([`../03-ein-lang/rendering.md`](../../../ein/user/reference/rendering.md)).
   The Levi view keeps the one-armed octagon. In a strict node-and-arrow
   drawing a unary edge would otherwise have to start at the object and end
   nowhere; the self-loop is the compact answer and the Levi encoding is the
@@ -255,7 +255,7 @@ open-world relations, since the same atom is usually also a *rule* name.
 
 > **Authoritative lists (S1.7.25):** the full reserved vocabulary lives in
 > two dedicated references — surface words in
-> [`../03-ein-lang/06_reserved_names.md`](../03-ein-lang/06_reserved_names.md)
+> [`../03-ein-lang/reserved-names.md`](../../../ein/user/reference/reserved-names.md)
 > and engine-internal strings in
 > [`../../../ein/ein.rs/reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md).
 > This section keeps only the **graph-node declarators** (the names that
@@ -374,7 +374,7 @@ Candidates:
 
 What `()` would mean as a value is not decided.
 The grammar parses `()` as a form over a placeholder head `#empty`
-(see [the grammar](../03-ein-lang/00_ebnf.md)), a name no program can
+(see [the grammar](../../../ein/user/reference/grammar.md)), a name no program can
 write (`@empty` until M1f S1f.5.5's T1f.5.5.8, 2026-11-08), and since
 S1f.5.5's swap only in three places: a whole `:match`, a whole `:assert`
 and an empty name list. **Two of them have engine semantics since M1f

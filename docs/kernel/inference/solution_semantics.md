@@ -38,7 +38,7 @@
 ## 1. The vocabulary, in dependency order
 
 Each term is defined using only the ones above it. The one-line versions are
-in the [glossary](../glossary.md#search-and-answers).
+in the [glossary](../../ein/user/reference/glossary.md#the-answer).
 
 ### 1.1 Context and problem
 
@@ -62,7 +62,7 @@ either half of a context** since M1f S1f.6.11 (the user, 2026-11-11:
 *"together with theory libs that are rule libs we probably would want to have
 ontology libs that are facts libs"*): an import brings a library's facts
 as it brings its rules
-([`01_grammar.md` § Import](../ir/03-ein-lang/01_grammar.md#import)), and an
+([`syntax.md` § Import](../../ein/user/reference/syntax.md#import)), and an
 imported fact is a fact of the program, its constants names of the program
 (§ 1.2). **R is a property of a
 problem in a context**: the same problem in another context has another
@@ -515,7 +515,7 @@ fixture is named for.
 
 ![lattice/02's region, with a bare ein solve on it](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.svg)
 
-Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
+Drawn by [`ein render region`](../../ein/user/reference/rendering.md#the-region--ein-render-region)
 ([`.dot`](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
 on the cube (M1e2 S1e2.1a.7, 2026-11-01). Re-made with:
 
@@ -758,7 +758,7 @@ the KB it guards, and two writers run after it:
 
 Neither write can create a contradiction by itself: `h` is neither asserted
 nor negated when it is proposed. But `(not P)` is an ordinary match form
-([`02_patterns.md`](../ir/03-ein-lang/02_patterns.md)), so a rule may read
+([`syntax.md`](../../ein/user/reference/syntax.md#3-patterns)), so a rule may read
 these facts. Write `K` for what the search wrote: **the engine recorded
 `S ∪ K` and had checked the criteria against `S`.**
 
@@ -966,7 +966,7 @@ leave those out.
 - [`region-dump.md`](../../ein/user/reference/region-dump.md): R by brute force, `ein oracle --dump`.
 - [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): the monotone and the non-monotone
   region compared, and how to solve each.
-- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
+- [`rendering.md` § Region rendering](../../ein/user/reference/rendering.md#the-region--ein-render-region):
   R drawn, `ein render region`.
 - [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md): worlds, the NAF boundary, and
   the corollaries a non-monotone program has to be read beside.
@@ -977,7 +977,7 @@ leave those out.
 - [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md):
   C1–C4, what an obligation quantifies over.
 - [`features.md`](features.md): the measured feature × config matrix.
-- [`glossary.md`](../glossary.md#search-and-answers): one-line entries for
+- [`glossary.md`](../../ein/user/reference/glossary.md#the-answer): one-line entries for
   every term on this page.
 - [`definitions.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/definitions.md):
   the plan's table this page was written from, with each term's status and

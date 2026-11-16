@@ -93,7 +93,7 @@ about to change, so the review waits.
 
 The second reason is the user's: **the lattice has to be seen.** Every W1
 row was decided by looking at a handful of nodes, and nothing in the bundle
-draws them. [`ein render lattice`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+draws them. [`ein render lattice`](../../../docs/ein/user/reference/rendering.md)
 shows survivors and their pruned siblings only, and its `--view full` falls
 back to that. The brute-force script behind Q-M1e2.7's table,
 `probes/region.py` (now [`utils/region.py`](../../../utils/region.py)), listed the whole lattice for seven
@@ -325,7 +325,7 @@ among them, is the re-scoping P1e2.1c's last stage does.
   are two of the ways R gets holes, and an obligation trigger is the third.
   All three are [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md)'s.
 - [`lattice-dump.md`](../../../docs/ein/ein.rs/lattice-dump.md) and
-  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+  [`rendering.md`](../../../docs/ein/user/reference/rendering.md)
   are the pages the drawing extends.
 - [M1f S1f.10.3](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.3_the_restricted_join.md)
   restricts the join and claims *not one model moved*. The oracle is what

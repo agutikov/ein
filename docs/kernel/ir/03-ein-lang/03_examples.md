@@ -259,7 +259,7 @@ derivations on reload):
 > **Note** — the `:using` IR syntax above isn't yet round-trippable
 > through the current grammar; the engine populates rule provenance
 > programmatically. See
-> [`01_grammar.md` §Reasoning](01_grammar.md) for the deferral.
+> [`syntax.md` §Reasoning](../../../ein/user/reference/syntax.md) for the deferral.
 
 ## See also
 
@@ -272,9 +272,9 @@ derivations on reload):
   premises → conclusion, with the four `d=1` hypothesis branches and
   their learnt no-good clauses spelled out. M1 target (the inference
   column) and M2 target (the full NL ⇄ IR ⇄ NL row).
-- [`01_grammar.md`](01_grammar.md) — the form-level grammar for what
+- [`syntax.md`](../../../ein/user/reference/syntax.md) — the form-level grammar for what
   you see above.
-- [`02_patterns.md`](02_patterns.md) — the pattern sub-language
+- [`syntax.md`](../../../ein/user/reference/syntax.md#3-patterns) — the pattern sub-language
   inside rule bodies.
-- [`04_dot_rendering.md`](04_dot_rendering.md) — how these
+- [`rendering.md`](../../../ein/user/reference/rendering.md) — how these
   fragments render visually.

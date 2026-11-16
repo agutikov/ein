@@ -50,7 +50,7 @@ command.
 
 ### T1f.7.1.4 — the pages
 
-[`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query), `defined_behaviour.md` § 4,
+[`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query), `defined_behaviour.md` § 4,
 and the stage's records.
 
 ## Acceptance

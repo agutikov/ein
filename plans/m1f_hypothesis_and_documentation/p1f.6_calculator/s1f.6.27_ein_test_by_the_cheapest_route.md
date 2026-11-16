@@ -65,7 +65,7 @@ byte-identical after. Anything more is a finding with an owner, not this stage's
 ## Tasks
 
 1. **T1f.6.27.1 — read-only: the table, on real programs.** Every claim shape of
-   [`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query), with the mode
+   [`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query), with the mode
    proposed for it, and for each a corpus program on which describe and the proposed mode are both run and
    compared: the outcome (held, FAILED, NOT CHECKED), the saturations, the time. SEND + MORE
    (`build/s1f.6.10/p/p3_send_expect.ein`) and the search programs of `examples/beyond_arith/` and
@@ -87,7 +87,7 @@ byte-identical after. Anything more is a finding with an owner, not this stage's
    entry, declared by column (E-29: declared as written it has no answer in 600 s, which is P1f.10's), once
    `ein test` holds it. It is the stage's witness in the corpus. Whether it is `slow` is measured, as every
    entry's is.
-7. **T1f.6.27.7 — the pages:** [`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)
+7. **T1f.6.27.7 — the pages:** [`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query)
    and the runner's page (what `ein test` runs for which claim); `tests/README.md`;
    [`beyond_arithmetic.md`](beyond_arithmetic.md) gets a closing note on its question 2;
    `AGENTS.md`, whose S1c.1.3 sentence *it exhausts* is restated; E-30 and E-31 closed or re-owned in
@@ -374,7 +374,7 @@ row's `exact: false`, and `ein solve --single` on the same file keeping its note
 name the schema the binary writes. `the_verbose_header_and_the_report_row_agree_field_for_field` reads the
 question off the row, so the two surfaces are held to each other on it over the corpus.
 
-**The pages, in the same commit:** [`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query),
+**The pages, in the same commit:** [`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query),
 the table and why a claim is held only by an exhausted answer; `defined_behaviour.md`, the *not checked*
 paragraph and the report's schema, which the page had at `/2` while the binary wrote `/4`
 ([E-46](findings.md), filed and fixed here); `configuration.md`; `events.md` and `read_out.md` § 7 and § 12;

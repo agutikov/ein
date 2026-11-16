@@ -190,7 +190,7 @@ re-derive the meaning of.
   provisional — P1e.2's triage may move the tree), stating the four registers,
   the four provenance kinds and what renders each, the fallback ladder, and
   **where the boundary between domain and engine vocabulary is**. Linked from
-  [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s
+  [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s
   § `:why` and from `docs/kernel/README.md`.
 - **Fact-level rendering from provenance ships**, or the stage records a
   written *no* with the reason. If it ships, `zebra2`'s model coverage moves
@@ -820,7 +820,7 @@ the answer, which is backwards.
 
 ## Connections
 
-- [`docs/kernel/ir/03-ein-lang/01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)
+- [`docs/kernel/ir/03-ein-lang/syntax.md`](../../../docs/ein/user/reference/syntax.md)
   § `:why` render template and § the division of labour — the normative
   statement the new page extends rather than restates.
 - [`docs/kernel/inference/zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)

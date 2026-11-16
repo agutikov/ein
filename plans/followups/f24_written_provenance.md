@@ -22,7 +22,7 @@ whose refutation rests on a written one.
 they are, moves two corpus fixtures (`examples/syntax/unary-and-nary.ein`, `examples/broken/load/derivation_cycle.ein`)
 and four test files that write provenance by hand (`ein-ir/tests/kb_semantics.rs`, `ir_semantics.rs`,
 `load_semantics.rs`, `ein-render/tests/golden_dot.rs`), and
-[`01_grammar.md` § Derived facts](../../docs/kernel/ir/03-ein-lang/01_grammar.md) documents the form as the
+[`syntax.md` § Derived facts](../../docs/ein/user/reference/syntax.md) documents the form as the
 engine's working memory. What a written provenance may claim is the question, and it is the user's.
 
 **The question.**

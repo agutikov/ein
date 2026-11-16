@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
 ;;;
-;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; A keyword is a whole word: `grammar.md` § 1, fact 1, excludes a reserved
 ;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
 ;;; `SYMBOL`; `neq_test` is), so `andz` is a name like any other. The query's
 ;;; one class is `?y = a`, so the claim holds: `ein test` exits 0, and R is
@@ -24,7 +24,7 @@
 ;;; command exited 1 (`ein test`: 2) with *kb load error: :expect names and,
 ;;; which no declaration or fact makes a relation*. (`ein solve FILE` at
 ;;; `35186bc0`, release and debug; every mode and `ein oracle` the same.)
-;;; Since then a keyword is a whole word, at the boundary `00_ebnf.md` § 1
+;;; Since then a keyword is a whole word, at the boundary `grammar.md` § 1
 ;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 

@@ -70,7 +70,7 @@ Entities reach these through accessors that take the KB (e.g.
 ## 3. Loading from IR — `KnowledgeBase.from_ir(forms)`
 
 The loader walks the **flat sequence of forms** (P1.7c — no block
-wrappers; see [`../03-ein-lang/06_reserved_names.md`](../03-ein-lang/06_reserved_names.md)),
+wrappers; see [`../03-ein-lang/reserved-names.md`](../../../ein/user/reference/reserved-names.md)),
 routing each by its **head**:
 
 1. **Declarators** (by head):
@@ -82,7 +82,7 @@ routing each by its **head**:
      it was an `Option<Query>` filled by *the last block, silently*, and
      `ein solve` now runs every one of them in order. `(config …)` keeps
      last-wins — a config is a setting, a query is content
-     ([`../03-ein-lang/01_grammar.md` § Query](../03-ein-lang/01_grammar.md#query)).
+     ([`../03-ein-lang/syntax.md` § Query](../../../ein/user/reference/syntax.md#query)).
 2. **Facts** (any other head — `=`, `not`, or a generic `(NAME …)`):
    - membership facts are ordinary `Fact`s (no
      `Type` / `Instance` entities; they are plain facts on user-space

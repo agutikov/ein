@@ -50,7 +50,7 @@ grammar takes the refusal. A test holds every witness on every command.
 
 ### T1f.7.3.4 — the pages
 
-[`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md), `00_ebnf.md` (re-blessed if the grammar
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns), `00_ebnf.md` (re-blessed if the grammar
 moves), `defined_behaviour.md` § 4.16, and the stage's records.
 
 ## Acceptance

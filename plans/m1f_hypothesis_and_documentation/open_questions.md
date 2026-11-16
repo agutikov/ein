@@ -4341,7 +4341,7 @@ option's own words), and not the relations that answer them.
 
 **Raised** 2026-11-12 by [S1f.6.23](p1f.6_calculator/s1f.6.23_the_loaders_arity_check.md), whose T1 names it: the ruling holds a form to *the count declared*, and a
 declaration with no type atom, `(relation flag)`, is legal
-([`01_grammar.md` § Relation](../../docs/kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)): *a relation
+([`syntax.md` § Relation](../../docs/ein/user/reference/syntax.md#relation-declarator)): *a relation
 node with no declared arg types*.
 
 - **(a) It declares none,** so `(flag)` is its one form and `(flag up)` is refused. The count is the count of

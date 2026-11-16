@@ -21,7 +21,7 @@ P1h.2's slice drawn another way; an engine change where it is one, with the refe
   what [S1h.4.3](s1h.4.3_the_trace_as_the_pupils_page.md)'s second task found the engine must know: a
   rule's module, and where a call starts and ends.
 - **A property of an import:** a grammar change. `ein.l` and `ein.y`; the grammar's pages re-generated
-  (`EIN_BLESS=1`), a row in [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) for the new
+  (`EIN_BLESS=1`), a row in [`syntax.md`](../../../docs/ein/user/reference/syntax.md) for the new
   keyword and one in its table for each shape newly refused; what the keyword means to every command that
   reads a program, since every command reads one by one path; and then the fold as above.
 - **The slice drawn another way:** no trace change; the page is a rendering of P1h.2's cut, and this stage

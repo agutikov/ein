@@ -3,7 +3,7 @@
 //! `stdlib_coverage.rs`'s sibling, and it exists for a reason that is stated
 //! in every fixture it reads: `:expect` has three forms and all three are
 //! assertions about **facts** (`(model …)`, `(or (model …) …)`, `(false)` —
-//! `01_grammar.md` § Query). An `open` conclusion is by construction never a
+//! `syntax.md` § Query). An `open` conclusion is by construction never a
 //! fact — it is a tally on the search-lattice node, because a stored one would
 //! survive its own discharge in a fork that paid it — so **no expectation can
 //! observe an owe count**. Meanwhile the coverage gate demands that every

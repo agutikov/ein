@@ -6,7 +6,7 @@ imported, and the package layout — lives in
 [`stdlib/README.md`](../../../../stdlib/README.md);
 this page documents each rule/macro's *activator form* and *effect*. For
 the kernel atoms these build on (`and`/`absent`/`not`/`neq`/`relation`/…),
-see [`06_reserved_names.md`](06_reserved_names.md).
+see [`reserved-names.md`](../../../ein/user/reference/reserved-names.md).
 
 > **Import recap.** Since M1f S1f.6.35 every import brings its module
 > whole, with the modules it imports, one copy per program; `:symbols`
@@ -15,7 +15,7 @@ see [`06_reserved_names.md`](06_reserved_names.md).
 > A name the file writes and does not list is its own. A symbol you invoke
 > in your *own* rule — `forall`/`unknown` — is listed from the module that
 > declares it, `(import std.macro :symbols (forall))`, whichever module
-> imported it first ([`01_grammar.md` § Import](01_grammar.md#import)).
+> imported it first ([`syntax.md` § Import](../../../ein/user/reference/syntax.md#import)).
 > A module's name is its path under `stdlib/`, a dot a directory: the
 > calculator's modules are `std.math.*`, `std.math.decimal-arith` in
 > `stdlib/math/decimal-arith.ein`, since M1f S1f.6.31
@@ -552,8 +552,8 @@ on the request, `(undeclared NAME REQUEST)` or `(malformed REQUEST)`, and
 
 - [`stdlib/README.md`](../../../../stdlib/README.md)
   — module overview, importing, package layout.
-- [`06_reserved_names.md`](06_reserved_names.md) — the kernel atoms these build on
+- [`reserved-names.md`](../../../ein/user/reference/reserved-names.md) — the kernel atoms these build on
   (+ the author quick-reference card).
-- [`02_patterns.md`](02_patterns.md) — the pattern sub-language (`absent` / `forall` / `not`).
+- [`syntax.md`](../../../ein/user/reference/syntax.md#3-patterns) — the pattern sub-language (`absent` / `forall` / `not`).
 - [`examples/zebra2.ein`](../../../../examples/zebra2.ein) — the worked
   consumer (`bijective` / `domain-elimination` / `symmetric` / `includes`).

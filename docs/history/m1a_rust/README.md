@@ -717,8 +717,8 @@ prints.
 #### S1a.10.5 — The grammar as EBNF
 **Shipped 2026-08-21.** The grammar was written down as EBNF — the user's own
 requirement, promoted to the stage's first task and now
-[`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md), which
-[`01_grammar.md`](../../kernel/ir/03-ein-lang/01_grammar.md) names in its
+[`grammar.md`](../../ein/user/reference/grammar.md), which
+[`syntax.md`](../../ein/user/reference/syntax.md) names in its
 first line as the source of truth for syntax — and one
 acceptance line was **amended on evidence**: "`nlp/` and `smt/` gone" is true
 of the active tree and the wrong test, because every file in them has a named

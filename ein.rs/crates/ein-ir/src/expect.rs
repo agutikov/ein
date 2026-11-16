@@ -30,7 +30,7 @@
 //! *every* form to buy one keyword's ergonomics, where a `SYMBOL` head cost
 //! nothing. Since M1f S1f.5.5's swap `model` is a word a position gives a
 //! meaning to, and still a name wherever a name goes, so a relation of that
-//! name is unaffected ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)).
+//! name is unaffected ([`grammar.md`](../../../../docs/ein/user/reference/grammar.md)).
 //!
 //! **The verdict is implied, never asserted.** One `(model …)` means
 //! `Solution`; `(or …)` means `Ambiguity` with `k` equal to the number of

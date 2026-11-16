@@ -75,7 +75,7 @@ build changed about the recommendation, and what it cost:
   `:expect ((p A H1) (q B H2))` — **does not parse**, and the reason is
   structural rather than incidental: `ListHead ::= SYMBOL | VAR | WILDCARD |
   EQ` and never a list
-  ([`00_ebnf.md` §2](../../kernel/ir/03-ein-lang/00_ebnf.md)). Widening
+  ([`grammar.md` §2](../../ein/user/reference/grammar.md#2-phrase-grammar)). Widening
   `ListHead` would change the grammar of *every* form to buy one keyword its
   ergonomics. The shape is therefore `(model <fact>*)`, whose `SYMBOL` head
   costs nothing: it parses, dumps and round-trips today, `(or (model …)

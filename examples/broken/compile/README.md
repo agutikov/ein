@@ -89,7 +89,7 @@ therefore pins two things at once: the message a direct caller of
 with a runtime `assert!`'s internal message for a diagnostic. S1e.1.6's sweep over
 every kernel meta-primitive at every arity turned it into a rule:
 
-> [`00_ebnf.md` §2](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) has a block
+> [`grammar.md` §2](../../../docs/ein/user/reference/grammar.md#2-phrase-grammar) has a block
 > headed **Kernel meta-primitives (shape-pinned)** with four productions —
 > `NotForm`, `NeqForm`, `AndForm`, `OrForm`. The engine has **seven** such
 > primitives. Every cell that panicked or silently misbehaved was one of the

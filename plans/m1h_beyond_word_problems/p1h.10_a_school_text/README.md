@@ -77,7 +77,7 @@ no sentence states, and the theory that supplies them is the measured thing.*
   file (a scratch program of four forms on the release binary, 2026-11-13). So a text in another language
   than English can stand beside its facts, with its people and things under transliterated names.
 - **A query states its expected answer** with `:expect`, and `ein test` holds it
-  ([`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)). A claim on a query
+  ([`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query)). A claim on a query
   closes the goal's relations over the class, so a claim lists exactly what the goal matches.
 - **Two scripts that already read programs as text or count what reads as English:**
   [`utils/rule_census.py`](../../../utils/rule_census.py), M12's census of rule shapes, with an S-expression

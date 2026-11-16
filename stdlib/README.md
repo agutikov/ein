@@ -96,7 +96,7 @@ They derive nothing and are not in the saturation agenda; what reads them is
 one pass over the quiescent KB, reported through `--events`' `owe` lines,
 `--json-summary`'s `owes` block and the trace's *Outstanding obligations*
 section
-([`06_reserved_names.md` § the verdict atom](../docs/kernel/ir/03-ein-lang/06_reserved_names.md)).
+([`reserved-names.md` § the verdict atom](../docs/ein/user/reference/reserved-names.md)).
 
 ## `std.math.digits`: a library of facts (M1f S1f.6.2)
 
@@ -1842,7 +1842,7 @@ brings with the module. `:as` and `:symbols` are mutually exclusive. A
 module's name is its path: `std.x.y` under this directory, any other name a
 path from the **program file's** directory, a dot per directory, `..`
 refused. The whole rule, the refusals and what prints are
-[`01_grammar.md` § Import](../docs/kernel/ir/03-ein-lang/01_grammar.md#import)
+[`syntax.md` § Import](../docs/ein/user/reference/syntax.md#import)
 and `defined_behaviour.md` § 4.28.
 
 To inline a puzzle's imports into a single standalone file — **there is no CLI

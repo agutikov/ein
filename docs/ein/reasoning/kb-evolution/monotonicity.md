@@ -197,7 +197,7 @@ must sit*, owes every seat from root, where a seat can only pay, and its region 
 ## 7. The drawings
 
 Seven regions drawn by `ein render region`
-([`04_dot_rendering.md` § Region rendering](../../../kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)),
+([`rendering.md` § Region rendering](../../user/reference/rendering.md#the-region--ein-render-region)),
 each with a bare `ein solve` on its cube. Fill is the node's status, shape is what the run did there, and border is
 the lines and the defects; a purple border is a hole, and a `+fact` edge is the repair that takes it back into R. On a
 monotone program the run reads the alive states and their extensions; on a flagged one it classifies every node

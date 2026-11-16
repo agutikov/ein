@@ -42,7 +42,7 @@ question. Their probes are banked under [`findings/`](inventory_2026-11-05/findi
 - **F1 (W). A rule pattern splits a name that begins with `neq`, `or` or
   `and`.** Inside a rule pattern, `(neqw ?x)` parses as `(neq w ?x)`, and the
   same happens to `(orz ?x)` and `(andz ?x)`. The grammar says the opposite:
-  [`00_ebnf.md` § 1](../../docs/kernel/ir/03-ein-lang/00_ebnf.md), fact 1 reads
+  [`grammar.md` § 1](../../docs/ein/user/reference/grammar.md#1-lexical-grammar), fact 1 reads
   *"`neq` is not a SYMBOL; `neq_test` is"*. Three things follow, all silently:
   - a rule stores a fact of the reserved relation `neq` or `or`;
   - `w` becomes a name of the program;

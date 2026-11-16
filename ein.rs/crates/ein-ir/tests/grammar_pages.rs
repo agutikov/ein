@@ -3,7 +3,7 @@
 //! The generated parser is the grammar: `src/ein.l` and `src/ein.y`, which
 //! `build.rs` compiles. This file keeps two things in step with them.
 //!
-//! - **The page.** `docs/kernel/ir/03-ein-lang/00_ebnf.md`'s two grammar
+//! - **The page.** `docs/ein/user/reference/grammar.md`'s two grammar
 //!   blocks are written here, from the two files, read through grmtools'
 //!   public readers (`lrlex`'s `LRNonStreamingLexerDef` and `cfgrammar`'s
 //!   `YaccGrammar`), so the page cannot state a token or a production the
@@ -204,7 +204,7 @@ fn page_with(page: &str, blocks: &[(&str, String)]) -> String {
     out
 }
 
-/// **`00_ebnf.md`'s blocks are the grammar's.** Each is generated from the
+/// **`grammar.md`'s blocks are the grammar's.** Each is generated from the
 /// file `build.rs` compiles; a page that differs fails, and `EIN_BLESS=1`
 /// writes the blocks into it.
 #[test]

@@ -149,9 +149,9 @@ So of the user's list, *whitespace* and *hieroglyphs* are refused before anythin
 
 ### 2. How a representation module can see every numeral a program writes
 
-**What Ein has** ([`01_grammar.md` § Rules](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#rules)): a premise's
+**What Ein has** ([`syntax.md` § Rules](../../../docs/ein/user/reference/syntax.md#rules)): a premise's
 head may be a variable only as a parameter its activator binds; the loader stores each declaration as a fact,
-`(relation R T1 … Tk)` ([§ Relation declarator](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)),
+`(relation R T1 … Tk)` ([§ Relation declarator](../../../docs/ein/user/reference/syntax.md#relation-declarator)),
 so activators can be derived from the declarations; **no premise tells a written fact from a derived one**; and an
 `(absent …)` premise is decided at the closure/world boundary, after the positive closure stalls
 ([`absent_semantics.md`](../../../docs/ein/reasoning/kb-evolution/absent-and-naf.md#the-boundary)).
@@ -250,7 +250,7 @@ or a query's text where the argument is a constant, so `(n ?p x)` in a conclusio
 paper analogy taken literally (*not a decimal number from the beginning*), and costs nothing at run time. Against it:
 **a malformed program becomes a load error**, which the plan says is not a default without the user's word, and
 today's claim `(solve :expect (false))` of every malformed test becomes a refusal; it is a type check in the kernel,
-which has none ([§ What the signature means](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#what-the-signature-means--userspace-types-kernel-structure));
+which has none ([§ What the signature means](../../../docs/ein/user/reference/syntax.md#what-the-signature-means--userspace-types-kernel-structure));
 and *what a decimal digit is* moves from the module's rules into a declaration the engine reads.
 
 ### 3. The layout, beside S1f.6.16's design

@@ -1601,7 +1601,7 @@ past the refusal, a label (S1e2.2.19 § Notes).
 
 Found 2026-11-04 by [S1e2.2.18](p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md)'s
 T3 writing the pages, and parked in its [§ Notes](p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md#notes).
-[`01_grammar.md`](../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s token
+[`syntax.md`](../../docs/ein/user/reference/syntax.md)'s token
 table calls `_` a *head / arg wildcard in patterns*, and a `RANGE` such as
 `1..3` UML-style cardinality. The rule compiler lowers both, in a `:match`,
 as an opaque slot that matches nothing: `(rule w () :match (holds _) …)`
@@ -1915,7 +1915,7 @@ Put to the user on 2026-11-05 by
 [S1e2.2.22](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md)'s step 1
 ([T1e2.2.22.1](p1e2.2_wrong_answers/s1e2.2.22_keyword_prefix_split.md#task-t1e22221--the-witnesses-banked-w22-filed-every-move-listed)).
 The stage makes a keyword a whole word wherever the parser reads one, as
-[`00_ebnf.md`](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) § 1, fact 1,
+[`grammar.md`](../../docs/ein/user/reference/grammar.md#1-lexical-grammar) § 1, fact 1,
 says. Step 1 parsed every reserved word in `lex.rs`'s `LITERALS`, the 19 the
 parser matches as a literal, followed by each of eleven name characters, in
 every place the parser reads one, under nine argument shapes, with the

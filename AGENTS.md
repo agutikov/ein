@@ -29,8 +29,8 @@ constrained-reasoning research.
   [`config.md`](docs/ein/user/reference/config.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
-  [`ir/03-ein-lang/01_grammar.md`](docs/kernel/ir/03-ein-lang/01_grammar.md)
-  and `00_ebnf.md`, the language;
+  [`syntax.md`](docs/ein/user/reference/syntax.md)
+  and `grammar.md`, the language;
   [`ir/03-ein-lang/09_natural_language.md`](docs/kernel/ir/03-ein-lang/09_natural_language.md),
   `:why` texts and how a fact reads as English; and
   [`docs/ein/ein.rs/architecture.md`](docs/ein/ein.rs/architecture.md), the
@@ -422,7 +422,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ### Edits that go together
 
 - **Generated, never edited by hand** (edit the generator and re-run):
-  `00_ebnf.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
+  `grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
   (`utils/gen_num9.py`); `stdlib/bool/gates.ein`'s rows and the programs

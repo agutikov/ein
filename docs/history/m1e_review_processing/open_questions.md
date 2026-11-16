@@ -1042,7 +1042,7 @@ kb load error: :expect does not name p, which the query's :goal asks about
 
 and so does `(model)`, and so does any list of facts that does not mention `p`.
 The rule is
-[`01_grammar.md` § Query](../../kernel/ir/03-ein-lang/01_grammar.md#query)'s
+[`syntax.md` § Query](../../ein/user/reference/syntax.md#query)'s
 first: *the goal's relations are mandatory; an expectation that does not pin
 what the query asked is not an expectation.* Its reasoning is sound. Its
 consequence is that **an answer whose goal extent is empty is unstatable**,
@@ -1465,7 +1465,7 @@ more.
 > rule, so fixing the cell alone would have left five worse ones standing; T1
 > took the rule. See § The answer at the end.
 
-[`00_ebnf.md` §2](../../kernel/ir/03-ein-lang/00_ebnf.md) has a block
+[`grammar.md` §2](../../ein/user/reference/grammar.md#2-phrase-grammar) has a block
 headed *Kernel meta-primitives (shape-pinned)* with **four** productions —
 `NotForm`, `NeqForm`, `AndForm`, `OrForm`. The engine has **seven** such
 primitives. `eq`, `absent` and `false` are ordinary `GenericList`s, so their
@@ -1510,7 +1510,7 @@ of the unpinned three. Both halves are banked as
    defensible languages, and either is a feature rather than a repair.
 
 (1) and (2) are the repair; (3) is a language decision and would need
-[`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md) and
+[`grammar.md`](../../ein/user/reference/grammar.md) and
 `defined_behaviour.md` to move together. What none of them may do is nothing:
 the current state is that two of the seven primitives read fewer arguments
 than they are given, in silence.
@@ -1592,7 +1592,7 @@ Routing it here, with what the stage measured.
 | artifact | what it is | who can ask for it |
 |---|---|---|
 | the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice-dump.md`](../../ein/ein.rs/lattice-dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
-| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
+| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`rendering.md`](../../ein/user/reference/rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
 
 Both are `pub`, both are exercised by the gate — `golden_dump.rs` for the first, `dot_wellformed.rs` over the whole corpus for
 the second — and neither is documented anywhere a caller would look:

@@ -12,7 +12,7 @@ write, and a rule is not. This page states what is on each side of the line.
 
 A program has two kinds of form. A **declarator** heads a form the loader reads as a declaration or an
 instruction: `relation`, `rule`, `hrule`, `macro`, `import`, `query`, `solve` and `config`
-([`06_reserved_names.md`](../../../kernel/ir/03-ein-lang/06_reserved_names.md) lists them). **Any other head is a
+([`reserved-names.md`](../../user/reference/reserved-names.md) lists them). **Any other head is a
 fact.** Each form takes a closed list of keywords, and a fact takes only `:source`, `:rule` and `:using`
 ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); a keyword pair is
 only ever a form's own clause, never part of a term
@@ -81,7 +81,7 @@ it: `std.bijection`'s type check reads each declaration's argument types, and `s
 two signatures to refuse an ill-typed inverse (`converse-illtyped-dom`, `converse-illtyped-ran`). The engine reads
 the same declaration only for its shape, how many arguments a relation takes; it never reads an atom as a type
 ([Q23](../../../decisions/language/Q23-a-premise-types-a-variable-and-no-entity-has.md); the signature's two
-readings are [`01_grammar.md` § Relation declarator](../../../kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)).
+readings are [`syntax.md` § Relation declarator](../../user/reference/syntax.md#relation-declarator)).
 
 **The property algebra is Ein in Ein.** `symmetric`, `transitive`, `functional`, `injective`, `total`,
 `surjective`, `bijective`, `converse`, `compose`, `meet`, `join`, `includes` and the rest are not primitives of the

@@ -41,7 +41,7 @@ Reasons, in order of weight:
 
 **Risk and mitigation.** A general parser explores tokenizations; a
 greedy lexer does not. The grammar
-([`00_ebnf.md`](../../../kernel/ir/03-ein-lang/00_ebnf.md)) is tuned for
+([`grammar.md`](../../../ein/user/reference/grammar.md)) is tuned for
 maximal munch (the
 `WILDCARD: /_(?![A-Za-z0-9_])/` lookahead exists precisely so `__closed__`
 does not lex as `_`,`_`,`closed__`, and `SYMBOL`'s reserved-word
@@ -288,5 +288,5 @@ output) is the fixture.
 
 - [03 — Data model](03_data_model.md) — where parsed atoms go.
 - [11 — Shared assets](11_shared_assets.md) — stdlib resolution.
-- [`docs/kernel/ir/03-ein-lang/`](../../../kernel/ir/03-ein-lang/README.md)
+- [`docs/kernel/ir/03-ein-lang/`](../../../ein/user/reference/README.md)
   — the language reference the grammar implements.

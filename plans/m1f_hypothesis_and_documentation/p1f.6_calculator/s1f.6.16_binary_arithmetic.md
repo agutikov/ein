@@ -453,7 +453,7 @@ Every number below is the release binary at `24a7fb34` (sha256 `f9f9774c5c9ee47a
 #### 1. One hand-written form connects a base: yes
 
 **What the engine has.** A rule with parameters fires for a fact headed by its own name, one plan a fact
-([`01_grammar.md` § Rules](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)), so 78 rules take 78 activators,
+([`syntax.md` § Rules](../../../docs/ein/user/reference/syntax.md)), so 78 rules take 78 activators,
 and nothing lets one fact activate several rules. Not available: one activator relation for all 78 (two rules of
 one name are refused, *conflicting definitions*); a macro's call written as a fact (refused at load since
 S1f.7.12, [`diagnostics.md` § 2.24](../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact));

@@ -306,7 +306,7 @@ co-located(House-3, Ivory)."*
 > `domain-elimination` / `range-elimination`, `std.slots`' `slot-elimination`
 > / `slot-fill`. So the aggregate is expressed in the pattern language rather
 > than beneath it, which is what keeps the trace able to name the firing.
-> [`../03-ein-lang/02_patterns.md` § Predicate registry](../03-ein-lang/02_patterns.md)
+> [`../03-ein-lang/syntax.md` § Predicate registry](../../../ein/user/reference/syntax.md#3-patterns)
 > is the surface-language statement of the same thing.
 
 T3 is the bridge between graph rewriting and classical CSP /
@@ -612,7 +612,7 @@ authoring rules is in
 - [`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md) —
   what a negative premise means and where the closure/world boundary
   decides it.
-- [`../03-ein-lang/02_patterns.md`](../03-ein-lang/02_patterns.md) —
+- [`../03-ein-lang/syntax.md`](../../../ein/user/reference/syntax.md#3-patterns) —
   the surface pattern language.
 - [`../../../ideas/06-inference-rules-completeness.md`](../../../../plans/ideas/06-inference-rules-completeness.md) —
   the rule-family taxonomy that motivates the M1 rule registry.

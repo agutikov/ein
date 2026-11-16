@@ -35,7 +35,7 @@ digraph { rankdir=LR; node [shape=box];
 
 (The precise model — names vs. nodes, "atoms" vs. "objects" — is
 [`ir/01-ein-graph/03_ein_model.md`](../kernel/ir/01-ein-graph/03_ein_model.md);
-the [glossary](../kernel/glossary.md) defines *Levi-bipartite*.)
+the [glossary](../ein/user/reference/glossary.md) defines *Levi-bipartite*.)
 
 ## Relations — how things connect
 
@@ -62,7 +62,7 @@ declare it once, naming the types of its slots:
 it is not built in, since Ein has no type system of its own, and a puzzle
 whose `is-a` facts Ein may guess declares it as it does any other relation,
 `(relation is-a T T :why "{?1} is a {?2}")`
-([`06_reserved_names.md`](../kernel/ir/03-ein-lang/06_reserved_names.md)).
+([`reserved-names.md`](../ein/user/reference/reserved-names.md)).
 Every relation carries its rendering text, a
 `:why` — e.g. `(relation nation-loc Nationality House :why "the {?1} lives in
 {?2}")` — which says what one of its facts reads as in English; the loader
@@ -146,6 +146,6 @@ So far nothing is *derived* — these are all things we stated. In
 new facts on its own.
 
 > **Reference:** the full grammar is
-> [`ir/03-ein-lang/01_grammar.md`](../kernel/ir/03-ein-lang/01_grammar.md);
+> [`syntax.md`](../ein/user/reference/syntax.md);
 > the kernel forms (`relation`, `rule`, `query`, …) are
-> [`06_reserved_names.md`](../kernel/ir/03-ein-lang/06_reserved_names.md).
+> [`reserved-names.md`](../ein/user/reference/reserved-names.md).

@@ -62,7 +62,7 @@ And two facts about the language that decide half the design space:
 - **`:cardinality <RANGE>` already parses and means nothing.** `RANGE` is a
   lexer terminal (`[0-9]+\.\.([0-9]+|\*)`), `:cardinality` is in the `relation`
   declarator's grammar
-  ([`01_grammar.md` § Relation declarator](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#relation-declarator)),
+  ([`syntax.md` § Relation declarator](../../ein/user/reference/syntax.md#relation-declarator)),
   and `ir_semantics.rs`'s round-trip suite pins `0..0`, `0..*`, `9999..*`.
   **No engine code reads it.**
 - **Macros expand in `:assert`, not only in `:match`.**
@@ -473,7 +473,7 @@ which side.
 - **[Q-M1d.2](open_questions.md#q-m1d2--where-does-a-requirement-live)
   answered at (c)** — a rule shape, the answer under which "the phase is much
   smaller than it looks": one reserved atom, a tally per KB, rows in
-  [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md);
+  [`reserved-names.md`](../../ein/user/reference/reserved-names.md);
   no data-model object, nothing in `.einb`, nothing in the renderers' types.
 - **The verdict is the content.** G is the only form whose primary output is
   the three-state read-out —
@@ -666,7 +666,7 @@ corpus-wide.
 | **P1** | `open` (keep) | **`owe`** | **zero** — one reserved-name row | fact-states stay the note's; debt words match the ledger/discharge mechanism; the slot argument is natural |
 | **P2** | `open` (keep) | `incomplete` | zero | verdict-adjective symmetry with `(false)`; but instances want a slot and an adjective holds none |
 | **P3 — chosen** | `unknown` | `open` | 12 programs + macro + manifest + docs | the proposal's original spelling for the KB state; costs the note's fact-word and re-invites the two-opens confusion |
-| **P4** | `unknown` or `undetermined` | `incomplete` | the same 12 — and bare `open` becomes a **free userspace name**, the `closed` → `__closed__` precedent ([`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)) | the clean slate: standard words both sides, the overloaded word evacuated |
+| **P4** | `unknown` or `undetermined` | `incomplete` | the same 12 — and bare `open` becomes a **free userspace name**, the `closed` → `__closed__` precedent ([`reserved-names.md`](../../ein/user/reference/reserved-names.md)) | the clean slate: standard words both sides, the overloaded word evacuated |
 | **P5** | `open` | `open`, position-split | zero files, one fragile expander rule | dual positions get dual *words* elsewhere on this page — `forall` (match) / `at-least` (assert) is D's own precedent — and the fact/KB conflation stays; still rejected on sight |
 
 One decoupling softens P2's loss and P4's cost: **the atom's name need not be
@@ -703,7 +703,7 @@ the phase since it only frees a name):
   [`examples/features/04_open.ein`](../../../examples/features/04_open.ein)
   keeps its *file name*: its subject is open **domains**, not the macro.
 - The pages that teach the idiom:
-  [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
+  [`reserved-names.md`](../../ein/user/reference/reserved-names.md)
   § macro sugar, `07_stdlib_api.md`, `tests/README.md`'s idiom list, and
   AGENTS.md's `tests/` bullet.
 - Goldens: routine — `EIN_BLESS=1` re-banks them as usual.

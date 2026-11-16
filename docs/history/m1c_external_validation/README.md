@@ -242,8 +242,8 @@ expectation is an answer and a pattern there would match whatever the engine
 happened to derive — a test that cannot fail.
 
 **Where the spec of record is.** The grammar of record is
-[`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md), and it carries the form
-as **§4, what the grammar deliberately does not enforce**, because
+[`grammar.md`](../../ein/user/reference/grammar.md#3-what-the-grammar-leaves-to-the-loader), and it carries the form
+as **§3, what the grammar deliberately does not enforce**, because
 `KwPair ::= KEYWORD Value` already admits every shape `:expect` uses. The
 cross-milestone edit [M2](../../../plans/m2_nl_to_ir/README.md)'s GBNF lift
 reads is therefore one paragraph rather than a grammar change.
@@ -407,7 +407,7 @@ milestone's own `:expect` work**, and nothing anywhere would have said so.
   wrote, its four idioms, and the mutation survivor
 - [`stdlib/README.md`](../../../stdlib/README.md) — the seven modules under
   test, and the growth rule the gate now enforces
-- [`docs/kernel/ir/03-ein-lang/01_grammar.md` § Query](../../kernel/ir/03-ein-lang/01_grammar.md#query)
+- [`docs/kernel/ir/03-ein-lang/syntax.md` § Query](../../ein/user/reference/syntax.md#query)
   — `:expect` as it is specified today
 - [`utils/stdlib_census.py`](../../../utils/stdlib_census.py) — the instrument,
   still runnable; `--check` is the corpus-wide measurement, not the gate

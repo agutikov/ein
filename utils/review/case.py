@@ -221,7 +221,7 @@ def look(r: RunResult, pointer: str, page: Path) -> str:
 # has every one.
 STATES_IN_A_CELL = 20
 
-LEGEND = "docs/kernel/ir/03-ein-lang/04_dot_rendering.md"
+LEGEND = "docs/ein/user/reference/rendering.md"
 
 
 def sets_cell(sets, link=None) -> str:

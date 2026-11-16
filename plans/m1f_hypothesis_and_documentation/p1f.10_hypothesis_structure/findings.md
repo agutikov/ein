@@ -515,7 +515,7 @@ put back gives 9 states, 4 of them maximal); it is left as written.
 ### H15-4 — The ladder is stated in five places, and three of them read as option (c)
 
 Two say what the engine does.
-[`06_reserved_names.md` § Hypothesis / query control](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md#hypothesis--query-control),
+[`reserved-names.md` § Hypothesis / query control](../../../docs/ein/user/reference/reserved-names.md#hypothesis-and-query-control),
 since S1f.6.34 corrected it: *a loaded obligation rule that owes nothing at root proposes nothing, and the
 blind enumerator does not run*. And `oblgen.rs`'s header: *the middle row is about what the program declares,
 not about what this state happens to owe*.

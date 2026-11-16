@@ -13,4 +13,4 @@ Graphviz while leaving the drawing to the tool that draws.
 **Held by.** `ein_render::ir_dot` and `ein_render::kb_dot`; `ein-render/tests/dot_wellformed.rs`, the views of the
 corpus programs accepted by `dot`; `ein-render/tests/id_order_invariance.rs`:
 `every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order`, every DOT view's bytes held to a digest.
-The shapes: [04_dot_rendering.md](../../kernel/ir/03-ein-lang/04_dot_rendering.md).
+The shapes: [rendering.md](../../ein/user/reference/rendering.md).

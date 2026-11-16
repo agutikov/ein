@@ -70,7 +70,7 @@ on the dev host it is one line of `nightly_steps.rs`'s `DEV_HOST_ONLY`; the stag
      gate step of its own*;
    - [`stdlib/README.md`](../../../stdlib/README.md), where it says a batch's cost is held per commit;
    - [`tests/README.md`](../../../tests/README.md), where it names the counters step;
-   - [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md), where it describes the
+   - [`rendering.md`](../../../docs/ein/user/reference/rendering.md), where it describes the
      bounded layout;
    - this phase's README, § Acceptance, whose line *a batch of requests costs in proportion to its count, by
      a deterministic measure of the matcher's work* becomes *held by a test run by hand*;

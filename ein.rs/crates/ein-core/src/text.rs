@@ -93,7 +93,7 @@ pub fn is_symbol(s: &str) -> bool {
 
 /// `s` as a `STRING` literal: `\` `"` newline, tab and carriage return
 /// escaped (`\\` `\"` `\n` `\t` `\r`), every other character as itself. The
-/// lexer's unescape is the inverse (`00_ebnf.md` § 1, fact 4), and since a
+/// lexer's unescape is the inverse (`grammar.md` § 1, fact 4), and since a
 /// newline is escaped a printed value is always one line.
 pub fn quote(s: &str) -> String {
     let mut out = String::with_capacity(s.len() + 2);

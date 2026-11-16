@@ -312,7 +312,7 @@ genuinely three-way, which is what the program is named for.
 
 ![lattice/02's region, with a bare ein solve on it](diagrams/region_02_genuine_3set_death.svg)
 
-Drawn by [`ein render region`](../../../kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
+Drawn by [`ein render region`](../../user/reference/rendering.md#the-region--ein-render-region)
 ([`.dot`](diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve` on the cube. Re-made with:
 
 ```sh

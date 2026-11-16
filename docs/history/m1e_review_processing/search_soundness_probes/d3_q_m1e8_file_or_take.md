@@ -101,7 +101,7 @@ established at every site before the last write into the KB it guards.** Said
 without the table: **the engine records `S ∪ K`, and checked the criteria
 against `S`** — where `K` is what the search wrote into that KB for its own
 bookkeeping. `(not P)` is an ordinary match form
-([`02_patterns.md`](../../../kernel/ir/03-ein-lang/02_patterns.md)), so
+([`syntax.md`](../../../ein/user/reference/syntax.md#3-patterns)), so
 a program may read `K`; when it does, `S ∪ K` is not saturated and can be
 inconsistent.
 

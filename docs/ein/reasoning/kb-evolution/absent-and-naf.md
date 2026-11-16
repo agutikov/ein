@@ -10,7 +10,7 @@ negation as failure a reasoner could take, closed-world, stratified and world-re
 third; the worked examples below are where the other two give other answers.
 
 The surface forms that write it, `(absent P)` in a `:match` and the `forall` and `unknown` macros of `std.macro`, are
-the grammar's ([`01_grammar.md`](../../../kernel/ir/03-ein-lang/01_grammar.md#premise-forms-in-match)).
+the grammar's ([`syntax.md`](../../user/reference/syntax.md#premise-forms-in-match)).
 
 ## Two halves: a positive closure and a boundary
 

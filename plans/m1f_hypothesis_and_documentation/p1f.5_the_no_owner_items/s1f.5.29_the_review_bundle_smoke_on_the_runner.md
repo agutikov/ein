@@ -232,7 +232,7 @@ lays it out. Three fixes, each shown above to draw all 3 885 on the runner's bui
   (`tests/golden/dot/kb_render_to_dot.dot`, `slice_render_solution.dot`, `slice_render_state.dot`,
   `tests/golden/kb_zebra_unified.dot`), at least the 2 346 `dot[kb…]` lines of `corpus_shapes.md5` (six KB views
   × 391 files), the worked fragment in
-  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md), and every KB drawing the user
+  [`rendering.md`](../../../docs/ein/user/reference/rendering.md), and every KB drawing the user
   reviews, from force-directed to ranked.
 
 The stage asked for a fix of (c)'s kind on the presumption of S1f.5.17's cause. The cause is a package, so the choice

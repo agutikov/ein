@@ -174,7 +174,7 @@ taken out the first two tests fail.
 
 - [`diagnostics.md` § 2.20](../../../docs/ein/user/reference/diagnostics.md#220-a-solve--list-names-what-the-program-has),
   new: the four lines, what a relation of the program is, what is not refused, the pin.
-- [`01_grammar.md` § Solve](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#solve): what each list's names must
+- [`syntax.md` § Solve](../../../docs/ein/user/reference/syntax.md#solve): what each list's names must
   be.
 - `06_reserved_names.md`'s `hypothesis-relations` row.
 - `examples/README.md`'s count of witnesses, `query-full.ein`'s header, and the guide's chapter 4 block (T3).

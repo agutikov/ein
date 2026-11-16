@@ -449,7 +449,7 @@ def program_page(p: Pages) -> None:
     # shows the refusal under each view, where it drew the rules until then.
     lines = header("The program", "the source, and three views of it, drawn as written once the loader has read it",
                    "`ein render program`, `ein render rules`, `ein render constraints`",
-                   [("04_dot_rendering.md", "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")],
+                   [("rendering.md", "docs/ein/user/reference/rendering.md")],
                    [src, p.raw / "render-program.stdout.txt", p.raw / "render-rules.stdout.txt",
                     p.raw / "render-constraints.stdout.txt"], page)
     if p.spec.source:
@@ -701,8 +701,8 @@ def region_pages(p: Pages) -> None:
     rdir = p.dir / "region"
     index = rdir / "index.md"
     defined = [("region-dump.md", "docs/ein/user/reference/region-dump.md"),
-               ("04_dot_rendering.md § Region rendering",
-                "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")]
+               ("rendering.md § Region rendering",
+                "docs/ein/user/reference/rendering.md")]
     oracle = p.inv.get("oracle")
     region = load_json(raw / "region.json") or {}
     r = region.get("region")

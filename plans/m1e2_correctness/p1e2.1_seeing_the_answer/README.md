@@ -159,7 +159,7 @@ when they do.
 
 - [Q-M1e.20](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)
   is answered by S1e2.1.3.
-- [`docs/kernel/ir/03-ein-lang/04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+- [`docs/kernel/ir/03-ein-lang/rendering.md`](../../../docs/ein/user/reference/rendering.md)
   covers the views and their legend. § How to ask for this view is rewritten
   when the door exists.
 - [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)

@@ -502,7 +502,7 @@ fn what_is_not_a_declared_relations_form_loads() {
             "(rule mirror (?R)\n  :match (?R ?a)\n  :assert (?R ?a ?a ?a)\n  \
              :why \"{?R} holds of {?a}\")\n(mirror likes)\n",
         ),
-        // The declaration's own fact, read at any count (`01_grammar.md`).
+        // The declaration's own fact, read at any count (`syntax.md`).
         (
             "the-declaration-as-a-pattern",
             "(rule s ()\n  :match (relation likes ?t)\n  :assert (seen ?t)\n  \

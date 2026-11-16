@@ -377,7 +377,7 @@ same surface symptom — one name, two arrays — with the opposite fix. The
 lexer's is `LEXER_KEYWORDS` now, `ein_core::RESERVED` keeps the word the
 *language* uses for it (the loader's message says *shadows a reserved kernel
 name*, six `examples/broken/load/` fixtures are named for it, and a whole
-kernel page is `06_reserved_names.md`), and each doc comment carries a table
+kernel page is `reserved-names.md`), and each doc comment carries a table
 saying what the other set is. What made the pair worth a rename rather than a
 shrug: the two docs were individually accurate and a reader of both concluded
 the lexer's eleven had become **twelve** when `open` joined the other one —
@@ -402,7 +402,7 @@ two need distinct names and a line at each saying what the other is.
 | add/adjust a **puzzle** rule        | the `.ein` file itself, or import from [`stdlib/`](../../stdlib/) |
 | add a **stdlib** rule/module        | `stdlib/<m>.ein` + a `tests/` exercise; document in [`ir/03-ein-lang/07_stdlib_api.md`](ir/03-ein-lang/07_stdlib_api.md) |
 | add a **kernel primitive** (`absent`-like) | `ein-core/src/terms.rs` (the reserved atom) or `ein-infer/src/predicates.rs` + `compile.rs` + `match_.rs` + tests; a *negative* one also touches the saturator's boundary phase |
-| add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
+| add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`grammar.md`](../ein/user/reference/grammar.md) and [`reserved-names.md`](../ein/user/reference/reserved-names.md) |
 | change **saturation order**         | `ein-infer/src/saturator.rs` (the agenda, `saturator::AGENDA`: what leads to `(false)` first, FIFO within each half; FIFO alone before it, the priority bands until M1f S1f.5.15) |
 | change **search / verdict**         | `ein-infer/src/explore.rs` and the route it takes (`downset.rs`, `states.rs`, `tree.rs`, `region.rs`) + `read_out.rs`; it was `solve.rs` + `verdict.rs` until the walk was deleted at M1e2 S1e2.1c.5 (2026-11-03) |
 | add a **verdict word or count qualifier** | `ein-infer/src/explore.rs`'s `Verdict` (`--single`'s words) and the read-out, `ein-infer/src/read_out.rs` + `ein-render/src/read_out.rs`; until M1e2 S1e2.1c.5 (2026-11-03) it was `verdict.rs` alone — `Verdict::read_out` was what every surface printed (M1e S1e.3.4) |
@@ -429,5 +429,5 @@ The per-module detail behind these is
   orderings and error strings the engine defines, stated as normative.
 - [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md) — this pipeline as a library API: the
   crates, with a worked example the gate runs.
-- [`glossary.md`](glossary.md) — kernel vocabulary.
+- [`glossary.md`](../ein/user/reference/glossary.md) — kernel vocabulary.
 - [`plans/README.md`](../../plans/README.md) — the milestone roadmap.

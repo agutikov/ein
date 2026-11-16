@@ -45,7 +45,7 @@ state it is owed in reports *Open — owes n*. Four stdlib rules are written thi
 **Where the grammar lets a program write it.** `open` is one of the grammar's *position words*: a token of its
 own that is a keyword in one position and a name everywhere else. That is the design S1f.5.5's paper grammar took
 for `model`, `region` and the rest (Q-M1e2.17). The productions that admit it are `Name`, `FactHead` and `ArgHead`
-in [`00_ebnf.md` § 2](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md#2-phrase-grammar). The loader then refuses one
+in [`grammar.md` § 2](../../../docs/ein/user/reference/grammar.md#2-phrase-grammar). The loader then refuses one
 case: an `(open …)` form under a rule's `:match` (`from_ir.rs`'s `validate_open`).
 
 | program | `open` stands as | today | under the ruling |
@@ -116,7 +116,7 @@ The grammar's productions and the loader's check; the rows flipped; the `at None
 
 ### Task T1f.5.23.4 — the pages
 
-[`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) (where `open` may be written),
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md) (where `open` may be written),
 [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes), `00_ebnf.md` re-blessed, the stage's records.
 
 ## Acceptance
@@ -312,13 +312,13 @@ out, `(open ?S)` whose `?S` is no parameter in, with its position); `imports_sem
 ## T4 record, 2026-11-10
 
 **The pages.**
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s conclusion forms: `open` is written there and
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s conclusion forms: `open` is written there and
   nowhere else, every place it was written until then, the note, and the projection refused at load, placed.
-- [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md): the phrase block re-blessed; § 1's fact 1 (thirteen
+- [`grammar.md`](../../../docs/ein/user/reference/grammar.md#1-lexical-grammar): the phrase block re-blessed; § 1's fact 1 (thirteen
   words never a name, ten position words, `open` the thirteenth and its note); § 4's *kernel's names* (where `open`
   stands is the grammar's, what the loader keeps; and `eq`'s and `neq`'s arity through a macro the loader's since
   S1f.5.24, which the bullet still gave the compiler).
-- [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md): the thirteen reserved words, the
+- [`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md): the thirteen reserved words, the
   two sets (five names in both, `relation` the one that decides it), the import routes' forty-eight cells, and § the
   verdict atom (written nowhere else; three of its refusals at the parse, two at load, placed).
 - [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics): § 1's notes, § 1.5's count (13 of 35 fixtures

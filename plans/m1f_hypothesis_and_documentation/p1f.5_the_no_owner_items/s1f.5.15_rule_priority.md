@@ -108,7 +108,7 @@ The stdlib is 79 of the 353. The values are not arbitrary — `ein saturate
 
 ### It has been advisory for a milestone, and the repo says so
 
-[`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) § Premise
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md) § Premise
 forms, since S1.21.8:
 
 > **`:priority` no longer decides what is derivable.** On a stratified rule set
@@ -944,7 +944,7 @@ first code commit, T1f.5.15.7's, which writes the ruling there.
 
 ## Connections
 
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) § Rules
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md) § Rules
   and § Premise forms — where `:priority` is specified and where it is already
   called advisory.
 - [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) — the

@@ -401,7 +401,7 @@ The question reads as one global switch and the engine does not have one. What
 it has is a program saying which of *its* relations it means to close:
 
 - **`:expect` — *naming a relation closes it***
-  ([grammar § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)),
+  ([grammar § Query](../../ein/user/reference/syntax.md#query)),
   M1c S1c.1.2. If an expectation mentions `pet-loc` at all, the listed
   `pet-loc` facts are that relation's **complete positive extent** in the
   model, and relations it never mentions are unconstrained. Closure is scoped

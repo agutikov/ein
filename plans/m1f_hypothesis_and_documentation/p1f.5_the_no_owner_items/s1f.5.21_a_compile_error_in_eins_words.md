@@ -346,12 +346,12 @@ one rewritten).
   what is not refused; § 1.5's count (14 of 34 fixtures end `at None`, `grep -L 'at None'
   examples/broken/load/*.expected` names twenty, 2026-11-10) and `macro_arity_mismatch`'s position in the new spelling;
   § 4.8's history of the `_` head names the compile row as it read then.
-- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md)'s *where a malformed primitive is caught*:
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns)'s *where a malformed primitive is caught*:
   the macro body's arity lines are the only compile refusals a program reaches, their line in Ein's words and what it
   was, where a macro body's primitive is refused is S1f.5.24's, and a nested `(or …)` is the loader's.
-- [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) § 4: what the grammar does not refuse gains *where an
+- [`grammar.md`](../../../docs/ein/user/reference/grammar.md#3-what-the-grammar-leaves-to-the-loader) § 3: what the grammar does not refuse gains *where an
   `(or …)` sits, how many variables a clause writes, and a goal's relations*, each the loader's since.
-- [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md): `render program` reads the program
+- [`rendering.md`](../../../docs/ein/user/reference/rendering.md): `render program` reads the program
   through the loader first; [`config.md`](../../../docs/ein/user/reference/config.md) § 3.1 and § 3.4, 82 options,
   `--no-require-why` on eleven commands; [`ein.rs/architecture.md`](../../../docs/ein/ein.rs/architecture.md),
   the register ceiling refused at load.

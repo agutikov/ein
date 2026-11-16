@@ -15,5 +15,5 @@ region claim names it by another state that holds one.
 
 **Held by.** `ein-infer/tests/expect_semantics.rs`: `an_undetermined_goal_is_the_empty_class`, and
 `over_selects_the_states_and_a_missing_class_is_named` for the failing direction. The page:
-[`01_grammar.md`](../../kernel/ir/03-ein-lang/01_grammar.md) § The expected region and § Query. An answer whose goal
+[`syntax.md`](../../ein/user/reference/syntax.md) § The expected region and § Query. An answer whose goal
 extent is empty: [Q-M1e.13](Q-M1e.13-a-claim-can-state-an-empty-goal-extent.md).

@@ -10,4 +10,4 @@ instance would reach a state of R a second time, and a false one would put in N 
 **Held by.** `ein_infer::hrule`, whose plan proposes only an `:assert` template that `firing::computed` does not
 answer; `examples/ein-bugs/wrong-answers/hrule-eq.ein`, whose H is empty and R {∅};
 `ein-infer/tests/claim_round_trip.rs`: `every_printed_region_holds_as_its_own_claim`, since no claim names `eq` or
-`neq`; [`01_grammar.md`](../../kernel/ir/03-ein-lang/01_grammar.md), on a conclusion of `eq` or `neq`.
+`neq`; [`syntax.md`](../../ein/user/reference/syntax.md), on a conclusion of `eq` or `neq`.

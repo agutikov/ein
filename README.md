@@ -503,7 +503,7 @@ by its head:
 
 Kernel meta-primitives (`=`, `instance`, `not`, `and`, `or`, `neq`) are
 shape-pinned reserved words: wrong arity is a parse error. The complete grammar
-is [`00_ebnf.md`](docs/kernel/ir/03-ein-lang/00_ebnf.md); the pattern
+is [`grammar.md`](docs/ein/user/reference/grammar.md); the pattern
 sub-language, the reserved names and the stdlib API are the rest of
 [`ir/03-ein-lang/`](docs/kernel/ir/03-ein-lang/).
 

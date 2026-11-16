@@ -15,7 +15,7 @@ every fact, match, every Ein statement can be converted to NL."* The return leg,
 ## 1. The four texts
 
 A string is natural-language text, written only after `:why`, `:source` and `:goal-text`
-([`01_grammar.md`](01_grammar.md), M1f S1f.5.2), Unicode with the escapes `\n \t \r \" \\ \u{…}`. A template fills
+([`syntax.md`](../../../ein/user/reference/syntax.md), M1f S1f.5.2), Unicode with the escapes `\n \t \r \" \\ \u{…}`. A template fills
 `{?ref}` from bindings ([`ein_core::render_why`](../../../../ein.rs/crates/ein-core/src/why.rs)) and leaves a
 reference nothing binds as written, which is why [§ 7](#7-what-holds-this-page)'s first check exists.
 
