@@ -1,8 +1,7 @@
 //! The dumps' shared serialisers.
 //!
 //! Engine-agnostic projections of a fact, a firing or a whole KB into ein
-//! source text or machine-parseable JSON. The walk's `00_timeline.jsonl`
-//! writer went with the walk at M1e2 S1e2.1c.5.
+//! source text or machine-parseable JSON.
 
 use ein_core::{FactId, Kb, ProvKind, Tag, Terms, Value};
 
@@ -13,14 +12,12 @@ use super::json::Json;
 
 /// A fact's provenance as the comment a state file writes after it: `;
 /// source "…"`, `; rule r` or `; hypothesis N`, and nothing for a fact with
-/// none (M1e2 S1e2.3.8, the inventory's S-5). A comment, so the loader skips
-/// it and a reloaded fact reads as given (`answer-dump.md`). Until S1e2.3.8
-/// these were keywords, `:source "…"`, `:rule "r"` and `:hypothesis N`, of
-/// which the loader read the first, took `:rule` only as an atom, and had no
-/// third, so a reloaded state's facts read as given anyway.
+/// none. A comment, so the loader skips it and a reloaded fact reads as
+/// given
+/// ([`answer-dump.md`](../../../../../docs/ein/user/reference/answer-dump.md#every-state-file-loads-and-is-a-fixpoint)).
 ///
-/// **And the fact in English** since M1f S1f.5.14's T1f.5.14.2
-/// ([`crate::sentence`]): a rule's `:why` filled with the firing's bindings
+/// **And the fact in English** ([`crate::sentence`]): a rule's `:why` filled
+/// with the firing's bindings
 /// after `: `, and the fact's statement, its relation's `:why`, after ` — `
 /// (alone, for a given with no sentence): `; rule r: <reason> — <statement>`.
 /// A line break in either starts a new comment line ([`crate::sentence::as_comment`]).
@@ -67,7 +64,7 @@ fn fact_line(kb: &Kb, terms: &Terms, f: FactId) -> String {
 /// and refuses as a second one if the file states it. So the companion is left
 /// out wherever its declaration is written, and the file loads back to the
 /// same facts. So is every `(written T)`, which the loader states from the
-/// facts the file holds and refuses where a file writes it (M1f S1f.6.38).
+/// facts the file holds and refuses where a file writes it.
 pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
     let relation = terms.kernel.relation;
     let written = terms.kernel.written;
@@ -106,8 +103,8 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
 /// line, each with the provenance comment [`kb_to_ein_text`] gives it: the
 /// text loads back to the same facts, and every fact reloads as given.
 ///
-/// M1e2 S1e2.1.2's: a `--dump-answer` state file chooses its facts (the
-/// program's schema is not repeated, so the file loads) and their order
+/// A `--dump-answer` state file chooses its facts (the program's schema is
+/// not repeated, so the file loads) and their order
 /// (sorted, so two model files diff line by line), which the whole-KB writer
 /// above does not let a caller do.
 pub fn facts_to_ein_text(kb: &Kb, terms: &Terms, facts: &[FactId]) -> String {

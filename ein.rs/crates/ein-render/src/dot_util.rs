@@ -1,8 +1,8 @@
 //! The low-level DOT helpers every renderer shares.
 //!
-//! It exists because S1.7c.25 collapsed four hand-rolled copies of the
-//! node-id scheme onto one definition, and a renderer that re-hand-rolled one
-//! would re-acquire the drift that collapse removed.
+//! The node-id scheme has one definition here, so that no two renderers can
+//! drift apart in how they name a node: a renderer that hand-rolled its own
+//! would.
 
 use ein_core::{FactId, Tag, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
@@ -39,8 +39,7 @@ pub fn hashed_id(prefix: &str, seed: &str, quoted: bool) -> String {
 ///
 /// Not recursive — a nested fact argument is its s-expression, which is what
 /// `ein-core`'s `Terms::display` renders, so callers pass the already-rendered
-/// arguments (the one printer's text since M1e2 S1e2.3.8, where a nested fact
-/// was its `repr`).
+/// arguments, the one printer's text.
 pub fn fact_key(relation_name: &str, args: &[String]) -> String {
     format!("{relation_name}|{}", args.join(","))
 }
@@ -61,7 +60,7 @@ pub const VAR_SHAPE: &str = "diamond";
 
 /// The rank separation of a digraph whose diamonds and octagons stand outside
 /// any cluster: a rule's overlay, and a [`Builder`](crate::builder::Builder)
-/// digraph that holds a hyperedge node. M1f S1f.5.17.
+/// digraph that holds a hyperedge node.
 ///
 /// An edge label makes `dot` halve the rank separation (`rank.c`,
 /// `edgelabel_ranks`), and the default 0.5 in becomes 18 pt, the half-height
@@ -69,11 +68,11 @@ pub const VAR_SHAPE: &str = "diamond";
 /// `libpathplan` orientation test is contracted into a fused multiply-add,
 /// that puts the slanted side of a diamond or an octagon through exactly
 /// collinear corners, and the spline router writes `triangulation failed`.
-/// 0.55 in halves to 20 pt. Every other `ranksep` tried gave no such warning
-/// on any corpus view. The default gave one on 3 to 22 views at every
-/// `nodesep` from 0.20 to 0.40. The side-by-side rules draw theirs inside
-/// clusters and were never refused, nor were the KB and constraint views
-/// (the stage file's § Step 1). `dot_wellformed.rs` keeps that true.
+/// 0.55 in halves to 20 pt, and no corpus view gives the warning at it,
+/// where the default gives it on several at every `nodesep` from 0.20 to
+/// 0.40. The side-by-side rules draw theirs inside clusters and are not
+/// refused, nor are the KB and constraint views. `dot_wellformed.rs` keeps
+/// that true.
 pub const POLYGON_RANKSEP: &str = "ranksep=0.55";
 
 /// A quoted DOT label whose non-empty parts are joined by the two-character
@@ -139,24 +138,19 @@ pub fn fact_label_parts(terms: &Terms, relation_name: &str, args: &[Value]) -> S
 ///
 /// A value holds no [`Node::KwPair`] (`ein.y`'s `FactArg`, `Arg` and `Term`):
 /// a keyword pair is a form's own clause, which each view reads or filters
-/// before it labels the form's arguments, and since M1f S1f.5.5's swap no
-/// keyword pair parses inside a term or a nested fact (S1f.5.11's ruling).
-/// One below the filter used to panic here (*not a value node: KwPair*, exit
-/// 101 on `render constraints` and `render program`), and from M1e2 S1e2.3.2,
-/// the user's ruling (a) of 2026-11-03, it was labelled `:key value`; the
-/// witness, `examples/broken/kwpair-below-the-filter.ein`, is refused at the
-/// parse since the swap. The review stop's item 11 retired the arm with
-/// S1f.5.11's T1f.5.11.2, shown unreachable first; it names the grammar.
+/// before it labels the form's arguments, and no keyword pair parses inside a
+/// term or a nested fact, so the arm for one is unreachable and names the
+/// grammar (Q-M1f.14). A pair below a form,
+/// `examples/broken/kwpair-below-the-filter.ein`, is refused at the parse.
 pub fn value_label(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(s) => ast.sym(s).to_string(),
         Node::Var(s) => format!("?{}", ast.sym(s)),
         Node::Keyword(s) => format!(":{}", ast.sym(s)),
-        // A string is natural-language text since M1f S1f.5.5's swap, which
-        // reaches this label only as a keyword's value, `:goal-text "…"` in a
-        // query's note. It is labelled as the one printer prints a name, as
-        // it was when a string was the name it spells (M1e2 S1e2.3.8): quoted,
-        // and bare where it lexes as one name.
+        // A string is natural-language text, which reaches this label only
+        // as a keyword's value, `:goal-text "…"` in a query's note. It is
+        // labelled as the one printer prints a name: quoted, and bare where
+        // it lexes as one name.
         Node::Str(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::SForm { head, args } => {
             let inner: Vec<String> = ast
@@ -181,13 +175,10 @@ pub fn value_label(ast: &Ast, id: NodeId) -> String {
 mod tests {
     use super::*;
 
-    /// **No keyword pair reaches a value's label** — M1f S1f.5.11's
-    /// T1f.5.11.2, which retired `value_label`'s arm for one (the review stop's
-    /// item 11). Until M1e2 S1e2.3.2 a keyword pair below a form panicked here,
-    /// and from it (ruling (a)) was labelled `:key value`. The fuzz witness's
-    /// first step is refused at the parse since M1f S1f.5.5's swap, at its
-    /// first `:rule`: no keyword pair parses inside a term or a nested fact
-    /// (S1f.5.11's ruling). A pair is a form's own clause, and each view reads
+    /// **No keyword pair reaches a value's label.** The fuzz witness's first
+    /// step is refused at the parse, at its first `:rule`: no keyword pair
+    /// parses inside a term or a nested fact. A pair is a form's own clause,
+    /// and each view reads
     /// the fact's arguments without it: a fact carrying its own `:rule` and
     /// `:using` is drawn by both views that drew the witness, its arguments
     /// labelled and its pairs read as provenance.

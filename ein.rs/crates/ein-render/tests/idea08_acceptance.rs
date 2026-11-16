@@ -1,31 +1,29 @@
-//! idea-08 trace fidelity, on the engine that ships — T1a.6.11.2.
+//! Trace fidelity, on the engine that ships: the human-style deductive trace
+//! of the Zebra puzzle.
 //!
 //! Every named move in the human zebra walkthrough must correspond to a named
 //! rule firing in the engine, and the proof a user is handed must *exhibit*
-//! it. That has been the assertion since M1 S1.6.5, and this file exists
-//! because of how nearly it was lost.
+//! it.
 //!
-//! **The near-miss.** `--trace` renders one node's firings, and until
-//! [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
-//! every fork re-derived root's whole closure into them — so the trace was
-//! getting root's proof *by accident*. Take the re-derivation away and the
-//! solution node's trace covered 12 distinct rules instead of 24, with
-//! `symmetric` — which closes `next-to` at root and nowhere else — missing
-//! entirely. A rendered trace is narration, so no invariance sweep compares
-//! one byte for byte, and without this file the same regression would be
-//! silent.
+//! **Why the root section is asserted.** A fork resumes root's saturation
+//! rather than re-deriving root's closure
+//! ([design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)),
+//! so a node's own firings hold none of root's proof: `symmetric`, which
+//! closes `next-to` at root and nowhere else, is not among the solution
+//! node's. Root's proof reaches the reader only through the trace's root
+//! section. A rendered trace is narration, so no invariance sweep compares
+//! one byte for byte, and without this file a trace that dropped it would
+//! pass.
 //!
 //! Two levels, and both run here: the library
 //! **defines** the rules, and they actually **fire** — asserted against the
 //! rendered markdown rather than against the firing list, because the
 //! markdown is what a reader gets and the root section is part of it.
 //!
-//! **Since M1e2 S1e2.1c.5 (2026-11-03) the trace is the region trace**
+//! **The trace is the region trace**
 //! (`ein solve FILE --single --trace FILE.md`,
 //! [`ein_render::trace::region`]): root's derivation, then each state the
-//! read-out prints, derived from its first minimal commitment. The walk's
-//! `linearize` trace these tests first read was deleted with the walk, on the
-//! user's ruling of that day.
+//! read-out prints, derived from its first minimal commitment.
 
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
@@ -34,7 +32,7 @@ use ein_ir::{Ast, parse};
 use std::collections::BTreeSet;
 use std::path::Path;
 
-/// Rules the idea-08 walkthrough names, ∩ the zebra2 library — the frozen
+/// Rules the human walkthrough names, ∩ the zebra2 library — the frozen
 /// regression target.
 const WALKTHROUGH_RULES: [&str; 9] = [
     "adjacent-via-fwd",
@@ -66,7 +64,7 @@ const FIRING_TARGET: [&str; 9] = [
     "symmetric",
 ];
 
-/// The generic-link encoding (S1.22.1a): `zebra.ein` reaches the same
+/// The generic-link encoding: `zebra.ein` reaches the same
 /// conclusions over one `co-located` equivalence instead of five typed
 /// relations. `docs/ein/reasoning/kb-evolution/saturation.md` documents the correspondence;
 /// this is its machine-checkable form.
@@ -124,7 +122,7 @@ fn load(rel: &str) -> (Ast, Terms, Kb) {
 /// The rules the puzzle **provides**, imports resolved — so a rule promoted to
 /// the stdlib counts as provided, not just one still defined inline. Read by
 /// the names the stdlib writes: a rule the puzzle does not list prints by its
-/// full name since M1f S1f.6.35, `std.bijection.domain-elimination`.
+/// full name, `std.bijection.domain-elimination`.
 fn provided(rel: &str) -> BTreeSet<String> {
     let (_, terms, kb) = load(rel);
     let p = kb.program();
@@ -138,7 +136,7 @@ fn provided(rel: &str) -> BTreeSet<String> {
 /// The rules the **rendered trace** exhibits — `### Step N — \`rule\``.
 ///
 /// Read out of the markdown rather than out of the firings on purpose: what
-/// idea-08 promises is about the document, so the document is what is
+/// a deductive trace promises is about the document, so the document is what is
 /// asserted. The question is `--single`, the one that decides uniqueness, so
 /// the trace is root's derivation and the one state's, as `ein solve FILE
 /// --single --trace FILE.md` writes it.
@@ -216,8 +214,8 @@ fn the_generic_library_defines_the_walkthrough_rules() {
 
 // ── and the trace exhibits them ────────────────────────────────────
 
-/// The assertion S1a.6.9 nearly lost, on the question that certifies the
-/// answer unique.
+/// The root section's assertion, on the question that certifies the answer
+/// unique.
 #[test]
 fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
     let fired = rules_in_trace("examples/zebra2.ein");
@@ -229,7 +227,7 @@ fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
     );
     // `symmetric` fires **only at root**, so it is in the trace only because
     // root's section is. Named separately from the set
-    // above because it is the exact rule the near-miss dropped, and a set
+    // above because it is the rule a trace without root's section loses, and a set
     // assertion says "one of nine is missing" where this says which.
     assert!(
         fired.contains("symmetric"),

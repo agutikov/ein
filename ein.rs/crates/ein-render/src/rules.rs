@@ -57,8 +57,7 @@ impl RuleMode {
 ///
 /// `std.macro`'s `forall` reads as `forall` under either of its names: the
 /// short one a program that lists it writes, and the full one a rule of a
-/// module that imports it prints under since M1f S1f.6.35, where the program
-/// does not list it.
+/// module that imports it prints under, where the program does not list it.
 fn head_name(ast: &Ast, expr: NodeId) -> Option<&str> {
     match ast.node(expr) {
         Node::SForm { head, .. } => match ast.node(head) {
@@ -77,9 +76,7 @@ fn is_guard(ast: &Ast, expr: NodeId) -> bool {
 }
 
 /// A clause's arguments: every one, since a term holds no keyword pair
-/// (`ein.y`'s `Args` and `Terms`). Until M1f S1f.5.5's swap a pair written
-/// inside a pattern was filtered here, as the compiler dropped one, and
-/// S1f.5.11's T1f.5.11.2 retired the filter.
+/// (`ein.y`'s `Args` and `Terms`; Q-M1f.14), so there is nothing to filter.
 fn positional(ast: &Ast, expr: NodeId) -> Vec<NodeId> {
     ast.form_args(expr).to_vec()
 }
@@ -192,8 +189,8 @@ fn home_of(homes: &[(String, Home)], label: &str) -> Option<Home> {
 // ── shapes / ids ───────────────────────────────────────────────────
 
 fn shape_attrs(nodelabel: &str) -> String {
-    // A `_` label was a wildcard's, drawn dashed, until M1f S1f.5.1's
-    // T1f.5.1.3 retired the node.
+    // A variable is a diamond, anything else a rectangle; `_` is refused at
+    // the parse, so no label is a wildcard's.
     if nodelabel.starts_with('?') {
         format!("shape={VAR_SHAPE}")
     } else {
@@ -363,9 +360,8 @@ impl RuleRenderer {
             return (decls, body);
         };
         // The clause's conjuncts, an `(and …)` read flat at any depth
-        // (`ein_ir::Ast::conjuncts`): the compiler's reading of a premise, and
-        // since M1f S1f.6.37 of a conclusion too. Until then the top `(and …)`
-        // alone was split here, and an inner one was drawn by `clause_lines`.
+        // (`ein_ir::Ast::conjuncts`): the compiler's reading of a premise and
+        // of a conclusion alike.
         let clauses: Vec<NodeId> = ast
             .conjuncts(pattern)
             .into_iter()
@@ -524,7 +520,8 @@ fn render_overlay(
         decls_setdefault(&mut merged, k, v);
     }
     // No cluster holds the diamonds and octagons here, unlike the side-by-side
-    // view's, so the overlay sets the rank separation (M1f S1f.5.17).
+    // view's, so the overlay sets the rank separation
+    // (`dot_util::POLYGON_RANKSEP`).
     let mut out = vec![
         format!("digraph rule_{safe}_overlay {{"),
         format!("  label={}; labelloc=t;", quote(name)),

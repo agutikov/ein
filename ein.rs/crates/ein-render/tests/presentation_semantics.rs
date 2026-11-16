@@ -1,4 +1,4 @@
-//! T1a.10.2.2 — presentation as **behaviour**, not as bytes.
+//! Presentation as **behaviour**, not as bytes.
 //!
 //! The bytes of every renderer are already pinned twice over:
 //! `id_order_invariance.rs` digests the DOT views of every corpus entry
@@ -13,17 +13,13 @@
 //!
 //! - the derivation-DAG trace view;
 //! - `render rules` / `render rule --name` as *static file views*;
-//! - the `→ ⊥` edge order (hazard H4);
+//! - the `→ ⊥` edge order;
 //! - the per-form dispatch's own shapes, and mode/view name resolution;
-//! - the read-out's **dead hole**, which no program that loads has since
-//!   *forbid* (M1e2 S1e2.2.5), read at library level past the refusal.
+//! - the read-out's **dead hole**, which *forbid* keeps out of every program
+//!   that loads, read at library level past the refusal.
 //!
-//! Until M1e2 S1e2.1c.5 three more: the walk's lattice under a shuffled
-//! traversal and its no-good back-edge, the walk's answer table and where its
-//! English came from, and what the four `--trace` flags did to the walk's
-//! trace. They went with the walk on the user's ruling of 2026-11-03. The
-//! read-out's English is held by `ein-cli/tests/acceptance_cli.rs`, and the
-//! region trace's flags by `ein-cli/tests/region_modes.rs`.
+//! The read-out's English is held by `ein-cli/tests/acceptance_cli.rs`, and
+//! the region trace's flags by `ein-cli/tests/region_modes.rs`.
 //!
 //! **On the subcommands.** `ein-render` cannot
 //! depend on `ein-cli` — that is the dependency edge, backwards — so what is
@@ -118,13 +114,10 @@ fn the_dag_trace_view_chains_through_derived_facts() {
 
 /// **non-step-trace-events-render-as-ellipses.** Only a `step` is a box.
 ///
-/// Until M1f S1f.5.5's swap the trace AST was open — `branch-open`,
-/// `branch-close`, `contradiction`, `symmetry-class` were events with the
-/// same `(head name :using …)` shape as a step, drawn as ellipses labelled
-/// `"{kind}: {name}"` so the reader told narration from inference. Since the
-/// swap a `(trace …)` takes `step` alone, with its five keywords (the paper
-/// grammar's default 8), so a trace that writes another event is refused at
-/// the parse at it, and every event a trace can hold is a box.
+/// A `(trace …)` takes `step` alone, with its five keywords, so a trace that
+/// writes another event — `branch-open`, `branch-close`, `contradiction`,
+/// `symmetry-class` — is refused at the parse at it, and every event a trace
+/// can hold is a box: no ellipse is drawn.
 #[test]
 fn only_a_step_event_is_a_box_the_rest_are_ellipses() {
     let refused = parse(
@@ -202,11 +195,10 @@ fn an_equality_fact_draws_a_class_node_rather_than_an_arrow() {
 /// no relation *name* to colour or label an edge with. Dropping the clause —
 /// the easy failure, since every other path reads a head atom — would render
 /// a rule library in which the generic rules are blank, and the rules that
-/// quantify over relations are the interesting ones. Until M1f S1f.5.5's swap
-/// `(_ ?a ?b)` was the other, labelled `_`; since, a bare `_` is refused at
-/// the parse in every position (S1f.5.1), and so is a variable as a whole
-/// conclusion, `:assert ?a` (G-14), which both rules wrote, so the rule that
-/// keeps its picture concludes a fact.
+/// quantify over relations are the interesting ones. A bare `_`, as in
+/// `(_ ?a ?b)`, is refused at the parse in every position, and so is a
+/// variable as a whole conclusion, `:assert ?a`, so the rule whose picture
+/// is held concludes a fact.
 #[test]
 fn a_wildcard_or_variable_pattern_head_still_labels_its_edge() {
     let refused = parse(
@@ -405,12 +397,13 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
 /// **bottom-edges-sorted-by-repr.** The `→ ⊥` edges are in `repr` order,
 /// whatever order the detector collected the core in.
 ///
-/// M1a hazard H4, and the reason it mattered: this DOT block is embedded
+/// It matters because this DOT block is embedded
 /// verbatim in the `--trace` markdown, so an edge order that followed a hash
-/// set's iteration order made one puzzle produce two different trace files
-/// across runs. `repr` rather than a native comparison because a core can hold
-/// facts with mixed argument types, which have no total order otherwise
-/// (`docs/ein/reasoning/static-ir/values-and-order.md` § How a value is printed). Six facts, fed in scrambled order, so a collection order that
+/// set's iteration order would make one puzzle produce two different trace
+/// files across runs. `repr` rather than a native comparison because a core
+/// can hold facts with mixed argument types, which have no total order
+/// otherwise ([values-and-order.md § How a value is printed](../../../../docs/ein/reasoning/static-ir/values-and-order.md#how-a-value-is-printed)).
+/// Six facts, fed in scrambled order, so a collection order that
 /// happens to match sorted order is 1-in-720 rather than a coin flip.
 #[test]
 fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
@@ -479,10 +472,10 @@ fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
 
 /// **A dead hole is read out as dead, with what it died of.** The read-out
 /// has a line for a minimal hole of each kind, `— owes n` and `— dead: core`,
-/// and the cube's status counts dead nodes with an alive superset. Since M1e2
-/// S1e2.2.5 *forbid* refuses every program of the corpus with a dead hole —
-/// they were W3's four witnesses — so no `ein solve` prints the second kind,
-/// and the line is held here: `naf-upward-closure.ein`, D4's probe, read
+/// and the cube's status counts dead nodes with an alive superset. *Forbid*
+/// refuses every program of the corpus with a dead hole — W3's four
+/// witnesses among them — so no `ein solve` prints the second kind,
+/// and the line is held here: `naf-upward-closure.ein`, read
 /// through `forbid::studying`, the library-level way past the refusal that no
 /// CLI path takes. The program is refused outside it, which is the other half.
 #[test]

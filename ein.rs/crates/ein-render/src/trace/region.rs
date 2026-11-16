@@ -1,17 +1,16 @@
-//! The region trace: `--trace FILE.md` under a region mode — M1e2
-//! [T1e2.1a.5.2](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-//! seventh step, [`read_out.md` § 8.4](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#84---trace-filemd).
+//! The region trace: `--trace FILE.md` under a region mode
+//! ([`rendering.md` § The trace](../../../../../docs/ein/user/reference/rendering.md#the-trace--ein-solve---trace)).
 //!
-//! **What R is made of, told in the walk's steps.** The headline is the
-//! read-out's own rows, so the trace cannot say *No solution* over a run
-//! with states (P1e2.3's S2). Then root's derivation; then each state the
-//! read-out printed, derived from its first minimal commitment; then `N`,
-//! each minimal dead set with why it is dead, where the walk had its refuted
-//! hypotheses; and, for an empty R that owes, the frontier. A description is
-//! traced as far as stdout lists it, and the trace says where it stopped.
+//! **What R is made of, told step by step.** The headline is the read-out's
+//! own rows ([`read-out.md`](../../../../../docs/ein/user/reference/read-out.md)), so the trace cannot
+//! say *No solution* over a run with states. Then root's derivation; then
+//! each state the read-out printed, derived from its first minimal
+//! commitment; then `N`, each minimal dead set with why it is dead; and, for
+//! an empty R that owes, the frontier. A description is traced as far as
+//! stdout lists it, and the trace says where it stopped.
 //!
-//! The walk's three trace flags read here as they did there: `--relevant`
-//! keeps the goal-relevant slice of each derivation, `--reorder` groups each
+//! Three flags shape it: `--relevant` keeps the goal-relevant slice of each
+//! derivation, `--reorder` groups each
 //! section's steps by the entity they are about, and `--full-kb-snapshots`
 //! appends each state's whole KB.
 
@@ -38,7 +37,7 @@ pub struct StateTrace {
 pub struct DeadTrace {
     pub set: String,
     pub core: Vec<String>,
-    /// What the core's search established (M1e2 S1e2.2.23).
+    /// What the core's search established.
     pub core_status: Option<ein_infer::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
 }
@@ -65,14 +64,13 @@ pub struct RegionTrace {
 }
 
 /// `Derives `(f)`.`, and what the fact says where its relation carries a
-/// `:why` (M1f S1f.5.14's T1f.5.14.2): `Derives `(f)` — <statement>`, the
+/// `:why`: `Derives `(f)` — <statement>`, the
 /// statement as its template writes it.
 ///
-/// **Every conclusion the firing stored, in the order the rule writes them**
-/// (M1f S1f.6.25, E-5), each with its statement, `; ` between two: `Derives
-/// `(f)` — <statement>; `(g)`.` Until that stage the line named the first
-/// alone, so a second conclusion was stored and nowhere named. A rule of one
-/// conclusion prints the line it always did.
+/// **Every conclusion the firing stored, in the order the rule writes
+/// them**, each with its statement, `; ` between two: `Derives `(f)` —
+/// <statement>; `(g)`.`, so no conclusion is stored and nowhere named
+/// (Q-M1f.214). A rule of one conclusion prints one.
 fn derives_line(step: &TraceStep) -> String {
     let one = |label: String, says: &Option<String>| match says {
         Some(s) => format!("`{label}` — {}", md_text(s, "")),
@@ -236,9 +234,9 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             lines.push(format!("<summary>{} — dead</summary>", d.set));
             lines.push(String::new());
             if d.core.is_empty() {
-                // Taken, and the empty set (M1f S1f.5.9, Q-M1f.48): every member
-                // of N carries its core since S1f.5.12, and none was empty until
-                // S1f.5.9 made `:match ()` fire.
+                // Taken, and the empty set (Q-M1f.48): a contradiction that
+                // rests on no fact, as a rule with an empty `:match` that
+                // concludes `(false)` gives.
                 lines.push(format!(
                     "Core: {}, {}.",
                     ein_infer::explain::EMPTY_CORE,
@@ -276,7 +274,8 @@ pub struct Shape {
 
 /// `ein solve --trace FILE.md`: root's derivation, then each state stdout
 /// printed, derived from its first minimal commitment, then N and the owing
-/// frontier (`read_out.md` § 8.4). `root_firings` are root's own saturation's
+/// frontier ([`rendering.md` § The trace](../../../../../docs/ein/user/reference/rendering.md#the-trace--ein-solve---trace)).
+/// `root_firings` are root's own saturation's
 /// ([`ein_infer::region::root_firings`]), and `options` the read-out's, whose
 /// summary rows head the trace and whose listing says which states it traces.
 pub fn of_read_out(
@@ -352,9 +351,9 @@ pub fn of_read_out(
     }
     let mut dead: Vec<DeadTrace> = Vec::new();
     if let Some(d) = r.described() {
-        // Every member's core is the run's, taken after the walk where the
-        // walk took none (M1f S1f.5.12, `region::Cores::nogoods`); a member
-        // with none was described by a run not asked for N's cores.
+        // Every member's core is the run's, taken after the route where the
+        // route took none (Q-M1f.26, `region::Cores::nogoods`); a member with
+        // none was described by a run not asked for N's cores.
         for x in &d.dead {
             if x.core_status.is_none() {
                 return Err(format!(

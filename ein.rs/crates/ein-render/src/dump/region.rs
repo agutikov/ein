@@ -1,7 +1,6 @@
 //! `ein oracle --dump DIR` — the solution region, the cube
 //! ([`write_cube_dir`]).
 //!
-//! M1e2 [S1e2.1a.1](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 //! Two files, documented in
 //! [`region-dump.md`](../../../../../docs/ein/user/reference/region-dump.md):
 //!
@@ -10,10 +9,9 @@
 //!   duality, the violations, and [`ein_infer::monotone`]'s verdict;
 //! - `region.md` — the same for a reader, and the cost.
 //!
-//! A third, `walk.json`, was what the walk did with the lattice, written by
-//! the retired `ein solve --dump-region`; it went with the walk at M1e2
-//! S1e2.1c.5 (2026-11-03). A directory an older binary wrote may still hold
-//! one, and [`write_cube_dir`] removes it.
+//! No command writes a `walk.json` beside them; one found in the directory
+//! is removed by [`write_cube_dir`], so no drawing overlays a run this one did
+//! not make.
 
 use std::path::Path;
 
@@ -33,9 +31,9 @@ pub struct RegionInputs<'a> {
     pub limit: u32,
 }
 
-/// Write `region.json` and `region.md` into `dir`, with no walk: what
-/// `ein oracle --dump DIR` asks for, M1e2 T1e2.1a.9.4. `ein render region`
-/// draws such a directory with no run overlaid.
+/// Write `region.json` and `region.md` into `dir`: what `ein oracle --dump
+/// DIR` asks for. `ein render region` draws such a directory with no run
+/// overlaid.
 pub fn write_cube_dir(
     dir: &Path,
     oracle: &Outcome,
@@ -43,8 +41,8 @@ pub fn write_cube_dir(
     inputs: &RegionInputs,
 ) -> std::io::Result<()> {
     std::fs::create_dir_all(dir)?;
-    // A previous `--dump-region` into the same directory leaves a walk this
-    // run did not take: it goes, so the drawing cannot overlay it.
+    // A `walk.json` in the directory is no file this run wrote: it goes, so
+    // the drawing cannot overlay it.
     match std::fs::remove_file(dir.join("walk.json")) {
         Ok(()) => {}
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
@@ -153,8 +151,8 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
                             ("relation", Json::str(s.relation.label(terms))),
                             ("depth", Json::int(s.depth as i64)),
                         ];
-                        // The detector's reading of the site (M1e2
-                        // S1e2.1b.5): additive, and on a flagged program only.
+                        // The detector's reading of the site: additive, and
+                        // on a flagged program only.
                         if let Some(stake) = m.detector.stakes.get(i) {
                             site.push(("concludes", Json::str(stake.concludes.as_str())));
                             site.push(("at_stake", Json::str(stake.at_stake.key())));
@@ -169,8 +167,8 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
     Json::obj(pairs)
 }
 
-/// The detector's static half, after the static check's fields (M1e2
-/// S1e2.1b.5): what is assumed, the cycles through an `absent` over D, the
+/// The detector's static half, after the static check's fields: what is
+/// assumed, the cycles through an `absent` over D, the
 /// order findings. Every key on every run, as `ein-summary/2` has one shape:
 /// on a monotone program the detector reads nothing, so `assumes` is `null`
 /// and the two lists are empty.
@@ -221,7 +219,7 @@ fn static_half(m: &Monotonicity) -> Vec<(&'static str, Json)> {
     ]
 }
 
-/// The detector's dynamic half (M1e2 S1e2.1b.5), after the static half:
+/// The detector's dynamic half, after the static half:
 /// `status`, `state` and `paths`, each `null` where the run has none — on a
 /// monotone program, which the detector never reads, and `paths` where no
 /// read-out ran. Every key on every run, as `ein-summary/2` has one shape.
@@ -230,7 +228,7 @@ pub fn warning_json(w: Option<&Warning>) -> Vec<(&'static str, Json)> {
 }
 
 /// The spot check's `paths` object: what it read, and what differed. `bound`
-/// is `null` under `-y`, which reads every parent (M1e2 S1e2.1c.5).
+/// is `null` under `-y`, which reads every parent.
 pub fn paths_json(p: &ein_infer::detector::Paths) -> Json {
     Json::obj(vec![
         ("bound", p.bound.map_or(Json::Null, |b| Json::int(b as i64))),
@@ -367,7 +365,7 @@ fn absents_json(m: &Monotonicity, terms: &Terms) -> Json {
     )
 }
 
-/// What the universe leaves out, as data — M1e2 S1e2.2.8: one object per
+/// What the universe leaves out, as data (Q-M1e2.3): one object per
 /// relation [`ein_infer::scope`] names, sorted, `[]` when it names none.
 /// `--json-summary`'s `root.hypgen.outside` and `region.json`'s `outside`.
 pub fn outside_json(outside: &[ein_infer::scope::Outside]) -> Json {
@@ -385,7 +383,7 @@ pub fn outside_json(outside: &[ein_infer::scope::Outside]) -> Json {
     )
 }
 
-/// What the untyped rung bound as an object, as data — M1e2 S1e2.2.10: the
+/// What the untyped rung bound as an object, as data (Q-M1e.12): the
 /// objects and relations [`ein_infer::types_as_objects`] names and the
 /// candidates' count, both lists `[]` and the count 0 when nothing.
 /// `--json-summary`'s `root.hypgen.types_as_objects` and `region.json`'s
@@ -486,7 +484,7 @@ fn outside_of(oracle: &Outcome) -> &[ein_infer::scope::Outside] {
 }
 
 /// `region.json`, as [`write_cube_dir`] writes it — public for the corpus
-/// sweeps, which compare it in-process (M1e2 S1e2.2.12).
+/// sweeps, which compare it in-process.
 pub fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
     let (candidates, monotonicity) = match oracle {
         Outcome::Region(r) => (&r.candidates, &r.monotonicity),
@@ -589,7 +587,7 @@ fn region_block(r: &Region) -> Json {
         .map(|m| {
             let i = m as usize;
             let node = &r.nodes[i];
-            // A node that is not dead has no core (M1f S1f.5.8, D-14).
+            // A node that is not dead has no core (Q-M1e2.27).
             let dead = r.status[i] & ein_infer::region::DEAD != 0;
             let comp = t.component_of[i];
             let mut pairs = vec![
@@ -800,8 +798,7 @@ pub fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> Str
             m.absent_reads.dynamic_monotone
         ));
     } else {
-        // The warning, as the read-out's `lattice` block says it (M1e2
-        // S1e2.1b.5, approved 2026-11-03).
+        // The warning, as the read-out's `lattice` block says it.
         out.push_str(&format!(
             "**Not monotone: {} site{}.** A commitment can take a conclusion away or add a \
              debt, so the region may have holes and its two lines may not describe it. \

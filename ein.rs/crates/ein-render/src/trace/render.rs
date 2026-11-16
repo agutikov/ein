@@ -1,9 +1,6 @@
 //! The markdown pieces a trace's steps are rendered with: a step's premises
 //! line and its inline `dot` block — the region trace's
 //! ([`super::region`]).
-//!
-//! The walk's trace renderer — one narrative per solve, its reductios and its
-//! closing lattice DAG — went with the walk at M1e2 S1e2.1c.5 (2026-11-03).
 
 use super::ast::TraceStep;
 
@@ -23,10 +20,10 @@ pub(crate) fn dot_block(dot: Option<&String>) -> Vec<String> {
 /// and list items: each line break it holds, `\n` and `\r` alike, a **hard
 /// break** (two spaces before it), and each line after it led by `lead`, its
 /// block's own marker (`"> "` in a quote, the item's indent in a list), so the
-/// text keeps its lines where the trace is rendered. Until M1f S1f.5.28 the
-/// break was written as it stands, which markdown reads as a soft break,
-/// joining the text's lines into one (its item 5, Q-M1f.109; the read-out's
-/// own rows break at their column, S1f.5.16's Q-M1f.19). A `\r\n` pair is one
+/// text keeps its lines where the trace is rendered (Q-M1f.109; the
+/// read-out's own rows break at their column, Q-M1f.19). A break written as
+/// it stands would be a soft break to markdown, joining the text's lines
+/// into one. A `\r\n` pair is one
 /// break, not two with an empty line between them, which markdown would read
 /// as a new paragraph. A text with no break is itself.
 pub(crate) fn md_text(text: &str, lead: &str) -> String {

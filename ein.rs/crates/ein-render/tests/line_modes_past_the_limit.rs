@@ -1,13 +1,12 @@
-//! M1e2 S1e2.2.26 (W27) — **past `--region-limit`, a line mode certifies
-//! what describe certifies**, the user's ruling of 2026-11-05 on Q-M1e2.19.
+//! **Past `--region-limit`, a line mode certifies what describe certifies**
+//! (W27, Q-M1e2.19).
 //!
 //! On a program the static check flags, a question that needs the whole cube
 //! is answered past the limit from the members the run met in layer order
-//! (`solve_interface.md` § 3.3). Describe certifies a member met with no
-//! member of R met below it as minimal, `{∅}` when ∅ is in R, and says the
-//! maximal line is not known. Until S1e2.2.26 `--minimal` and `--maximal`
-//! labelled every member met as on their line: 65 214 states on
-//! `square-unique/corner-house`, where describe certifies one.
+//! ([finding-r.md § 3](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#3-a-program-the-static-check-flags)).
+//! Describe certifies a member met with no member of R met below it as
+//! minimal, `{∅}` when ∅ is in R, and says the maximal line is not known;
+//! `--minimal` and `--maximal` label no other member met as on their line.
 //!
 //! `ein-infer/tests/explore.rs` holds every mode to the oracle within the
 //! limit; this file holds the line modes past it, on every corpus program
@@ -24,13 +23,10 @@
 //! - **to the oracle**, where its R is known (17 candidates or fewer): every
 //!   state a mode labels on a line is on the oracle's line.
 //!
-//! **Since M1f S1f.5.6 a minimal question stops at root where ∅ is in R**
-//! (the user's ruling of 2026-11-07 on S-16, *"b, use the ∅ rule in both"*):
+//! **A minimal question stops at root where ∅ is in R** (Q-M1f.23):
 //! ∅ is below every commitment, so the minimal line is {∅}, and `--minimal`,
 //! `--minimal -n N` and `--minimal --single` each list ∅ alone, decided,
-//! after one saturation, at every limit. Until then `-n N` and `--single`
-//! were left out of the row check, and past the limit `--single` said *not
-//! decided* and `-n 2` a lower bound where describe certified {∅}.
+//! after one saturation, at every limit.
 //!
 //! ```text
 //! cargo test -p ein-render --test line_modes_past_the_limit
@@ -198,12 +194,8 @@ fn oracle_line(r: &Region, which: Which) -> BTreeSet<u64> {
 
 /// **The flagged programs whose oracle stops**, each the witness of an open
 /// register row, so named rather than failed, and held both ways: a program
-/// here whose oracle answers is its row fixed. M1f S1f.5.9's T1f.5.9.1 banked
-/// W60's `eq-arity-under-commitment` (2026-11-09), whose `r` is an `activator`
-/// site, so the static check flags it, and whose activator, `(r eq)`, only a
-/// commitment derives, where its plan is compiled and the run stops; its
-/// T1f.5.9.4 refused the program at load the same day, and took it off the
-/// list. Empty since.
+/// here whose oracle answers is its row fixed. The list is empty: no flagged
+/// program's oracle stops.
 const ORACLE_STOPS: [&str; 0] = [];
 
 /// **Every line mode past the limit certifies what describe certifies**, the
@@ -269,7 +261,7 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
                 let (r, out, summary) = read(&path, mode, limit);
                 runs += 1;
                 let tag = tag(mode);
-                // The ∅ rule (M1f S1f.5.6): where describe says ∅ is in R,
+                // The ∅ rule (Q-M1f.23): where describe says ∅ is in R,
                 // every minimal question lists ∅ alone, the state describe
                 // certifies, decided after one saturation, and its row says
                 // so.
@@ -458,11 +450,11 @@ fn past_the_limit_a_line_mode_certifies_what_describe_does() {
         "{programs} flagged programs, {runs} line-mode runs past the limit, {empty_ruled} of them \
          a minimal question where ∅ is in R"
     );
-    // Coverage, so a sweep that reached nothing cannot pass: 29 flagged
-    // programs and 800 line-mode runs past the limit on 2026-11-05.
+    // Coverage, so a sweep that reached nothing cannot pass; the line above
+    // prints the counts these floors are under.
     assert!(programs >= 25, "{programs} flagged programs");
     assert!(runs >= 700, "{runs} line-mode runs past the limit");
-    // The ∅ rule reached: 324 of the 800 on 2026-11-09 (M1f S1f.5.6).
+    // The ∅ rule reached, on its share of those runs.
     assert!(
         empty_ruled >= 300,
         "{empty_ruled} minimal runs where ∅ is in R"

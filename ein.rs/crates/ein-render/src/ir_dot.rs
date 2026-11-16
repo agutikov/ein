@@ -3,7 +3,7 @@
 //! Implements `docs/ein/user/reference/rendering.md`. The default
 //! view is **compact**: a binary fact `(rel a b)` collapses to one labelled,
 //! relation-coloured arrow, and a unary fact to a labelled self-loop (the
-//! predicate-as-subset idiom, S1.22.4). `levi = true` keeps the canonical
+//! predicate-as-subset idiom). `levi = true` keeps the canonical
 //! Levi-bipartite octagon for both; every other arity renders bipartite in
 //! either mode, because DOT has no native hyperedge.
 //!
@@ -93,9 +93,8 @@ fn atom_id_for_value(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(_) | Node::Var(_) => atom_id(ast, id),
         Node::SForm { .. } => quote(&value_label(ast, id)),
-        // A string's node was its name as the one printer prints it (M1e2
-        // S1e2.3.8), until M1f S1f.5.5's swap made a string natural-language
-        // text, which is no value (S1f.5.2; T1f.5.2.3 retired the arm).
+        // A string is natural-language text, which is no value, so it has
+        // no node.
         Node::Str(_) | Node::Keyword(_) | Node::KwPair { .. } => {
             panic!("cannot use as DOT node id")
         }
@@ -331,7 +330,7 @@ pub fn render_query(ast: &Ast, form: NodeId) -> String {
     render_note(ast, form, "query")
 }
 
-/// A keyword block — `(query …)` or, since M1e2 S1e2.1a.4, `(solve …)` — as
+/// A keyword block — `(query …)` or `(solve …)` — as
 /// one note listing its keywords.
 fn render_note(ast: &Ast, form: NodeId, head: &str) -> String {
     let mut b = Builder::new(head);
@@ -343,9 +342,8 @@ fn render_note(ast: &Ast, form: NodeId, head: &str) -> String {
             parts.push(format!(":{} {}", ast.sym(s), value_label(ast, value)));
         }
     }
-    // Each line escaped for DOT: since M1e2 S1e2.3.8 a string value prints
-    // quoted, as the one printer prints it, and a quote inside a label must
-    // be escaped (it always had to; no program wrote one).
+    // Each line escaped for DOT: a string value prints quoted, as the one
+    // printer prints it, and a quote inside a label must be escaped.
     let label = if parts.is_empty() {
         quote(head)
     } else {
@@ -482,9 +480,8 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
 /// Which DOT group a flat fact form belongs to, from its provenance
 /// kw-pairs: `:rule` / `:using` → reasoning, `:source` → fact, else ontology.
 ///
-/// S1.22.1b: render-bucket names, not knowledge layers — the `Layer` enum is
-/// gone. The grouping survives only because three sub-graphs read better than
-/// one.
+/// Render-bucket names, not knowledge layers: the grouping is there only
+/// because three sub-graphs read better than one.
 fn render_group(ast: &Ast, form: NodeId) -> &'static str {
     let kw = kw_names(ast, form);
     if kw.contains(&"rule") || kw.contains(&"using") {
