@@ -658,6 +658,18 @@ runs   = ["solve", "saturate", "render lattice", "solve --single", "solve --maxi
 note   = "06_friends_tables_everyone_sits made small enough for the oracle, 12 candidates: everyone owes a seat, the duo fits only the big table, and the two small-table seats that can pay Cat's and Dan's debts are proposed by nothing and written by no rule. L9 licenses those two debts, their alternatives the big table's two seats; the oracle holds the licence at all 4 096 nodes (`ein-infer/tests/unheld.rs`). R is four seatings."
 
 [[entry]]
+path   = "examples/lattice/15_union_label_dead.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render lattice", "solve --maximal", "oracle --dump {out}/region"]
+note   = "an extension that closes no coupling edge, and dies: `(flag X)` comes from `(a-prop X)` alone or `(b-prop X)` alone, and the whole node reads its label as the union of both questions, so the death of {a, c, d} is read as needing b too. {c, d} is an alive state, {a, c, d} is dead, and no edge through a is met, in the reading the tree takes, the structure's, and each one application back. The program that breaks the claim that a state closing no edge through its last candidate cannot die (`ein-infer/tests/no_edge.rs`). R is thirteen states, the oracle's."
+
+[[entry]]
+path   = "examples/lattice/16_pair_through_closure.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render lattice", "solve --maximal", "oracle --dump {out}/region"]
+note   = "a pair the coupling reads over commitments, met through a closure: p with r brings q, and one rule forbids p with q. Every label of the whole node is one class; the tree's reading makes the conflict of the two candidates a pair and no edge, so {p, r}, dead because it derives q, meets no pair, no edge through p and no question with p. The same claim as 15_union_label_dead, broken with no union label (`ein-infer/tests/no_edge.rs`). R is five states, the oracle's."
+
+[[entry]]
 path   = "examples/lattice/synth/local_not_global.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
