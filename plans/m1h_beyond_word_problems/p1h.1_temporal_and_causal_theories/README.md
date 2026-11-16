@@ -95,7 +95,7 @@ As the tree stands on 2026-11-13. Each figure is re-taken by the stage named bes
   `(has WHO KIND NUMBER MOMENT)` and `(gave WHO WHOM KIND NUMBER BEFORE AFTER)`: a moment is a name (`t0`,
   `t1`, or `now` where a problem has no event), an event names the moment before it and the moment after, and
   **no fact relates two moments**: the order is the two names on the event.
-  [`word_problems.md` § 1](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#1-how-a-problem-is-written)
+  [`word-problems.md` § A problem, and the theory of its words](../../../docs/ein/user/guide/word-problems.md#a-problem-and-the-theory-of-its-words)
   ran the same problem in two more forms, nested events (`(after EVENT MOMENT)`) and a chain of numbered
   sentences (`(next s1 s2)`), with its table of what each costs.
 - **One direction of time.** The rules for *gave* plan from a later moment to an earlier one

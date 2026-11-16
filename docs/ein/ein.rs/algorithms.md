@@ -49,5 +49,5 @@ held for every mode under every lever by `ein-cli/tests/lever_invariance.rs`.
 | `(config :record-alternative-justifications false)` | alternatives not recorded; the one lever that may change a dead node's core, never `R` |
 
 Every field the `(config …)` form accepts, every option and every `EIN_*` name is listed, with whether it changes the
-answer, in the configuration reference (today [`docs/kernel/configuration.md`](../../kernel/configuration.md)); a
+answer, in the configuration reference (today [`docs/ein/user/reference/config.md`](../user/reference/config.md)); a
 field that is retired is refused at load with the reason (`ein_core::config::RETIRED`).

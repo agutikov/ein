@@ -15,6 +15,6 @@ claim. A probe banked as a test settles a behaviour for as long as the test runs
 thing that would contradict it; and a risk is a statement about what could happen, which no account of what does
 happen closes.
 
-**Held by.** `docs/kernel/standard_of_proof.md`, Rule 1, which states it and calibrates it; the pages that apply it,
+**Held by.** `docs/ein/standard-of-proof.md`, Rule 1, which states it and calibrates it; the pages that apply it,
 [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md) (each claim beside the test that holds it) and
 `docs/kernel/defined_behaviour.md`.

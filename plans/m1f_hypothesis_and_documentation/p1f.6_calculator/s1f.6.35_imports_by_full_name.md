@@ -64,7 +64,7 @@ on every corpus program that imports; the moves against the engine before the st
    forms only; every local module located against the program file's directory, a module's own imports
    included (today they resolve against the module's directory); the closure (ii); the union of edges, deduplicated by full name; the load errors of § 7 (one
    short name to two full names; a full name of a module no import brings; a declaration under an imported
-   module's full name), each a section of [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md)
+   module's full name), each a section of [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
    and a row of the grammar page's table where it is a shape. The grammar is unchanged: an import keeps its three
    shapes.
 3. **T1f.6.35.3 — what prints.** A state, a trace, a core and every read-out row print the main file's short

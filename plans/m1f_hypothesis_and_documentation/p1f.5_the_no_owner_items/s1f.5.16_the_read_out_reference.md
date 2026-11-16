@@ -84,7 +84,7 @@ rows are what a first read found.
 | § 8.1's block names neither `schema` nor `source` | both are top-level keys of every summary | the same |
 
 One kernel page also says something the read-out has disproved.
-[`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model) says *"No surface
+[`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model) says *"No surface
 computes projection classes yet"*, and every query block has printed them since M1e2 S1e2.1a.5.
 
 None of these is a wrong answer. Each is prose that fell behind the printer, which is what happens to a page
@@ -113,7 +113,7 @@ first argument of `row`, `sub_row` and `row_text` (2026-11-08):
 
 Q-M1e.7's ruling: *"the recorded object is the solution state. `model` is a projection of it, computed at the
 read-out: the positive part minus the positive initial KB"*, and `ein solve` and `--json-summary` print it
-*"under that name"*. [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model)
+*"under that name"*. [`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)
 states the definition. Here is what prints today (`ein solve examples/branching/05_mini_zebra.ein`, with and
 without `-P`, 2026-11-08):
 
@@ -173,7 +173,7 @@ its test cannot see.
 3. a mode's rows;
 4. `--monotone`'s rows;
 5. the `lattice` block's sub-rows and what each counts, with the theory left to
-   [`region_dump.md` § Monotonicity](../../../docs/kernel/inference/region_dump.md#monotonicity--the-static-check);
+   [`region-dump.md` § Monotonicity](../../../docs/ein/user/reference/region-dump.md#monotonicity--the-static-check);
 6. the listing, the 100-line cut, and which object each `(model …)` holds;
 7. queries and claims;
 8. the forms after the read-out, with the object each prints and the numbers in its head;
@@ -187,12 +187,12 @@ its test cannot see.
 - what R, k_s, k_c, a line and a model are:
   [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md);
 - exit codes, and which stream each byte goes to:
-  [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes) and
-  [§ 5](../../../docs/kernel/defined_behaviour.md#5-the-cli-surface). The stderr section lists the shapes of the
+  [`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) and
+  [§ 5](../../../docs/ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line). The stderr section lists the shapes of the
   lines and links § 4 for the codes;
-- the options and their defaults: [`configuration.md`](../../../docs/kernel/configuration.md);
+- the options and their defaults: [`config.md`](../../../docs/ein/user/reference/config.md);
 - the `--dump-answer` directory, and the summary's `work` and `root` blocks:
-  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md);
+  [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md);
 - the `monotonicity` block and the warning's theory: `region_dump.md`;
 - the `--events` stream: [`events.md`](../../../docs/ein/ein.rs/events.md);
 - how each mode is computed, what it costs, and which command answers which question:
@@ -220,7 +220,7 @@ The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_an
   `lines` and `listed`, `frontier`, and the rest that T1 finds. Defining these fields on a page about the summary
   would split each number from the row that prints it, and that split is SE-M1's shape again.
 - **Not on this page: `work`, `root`, `monotonicity`, `config` and `leftover`.** Each already has an owner.
-  `work` and `root` are defined in [`answer_dump.md` § The run summary](../../../docs/kernel/inference/answer_dump.md#the-run-summary),
+  `work` and `root` are defined in [`answer-dump.md` § The run summary](../../../docs/ein/user/reference/answer-dump.md#the-run-summary),
   held field by field by `answer_dump::every_summary_counter_is_defined_on_this_page`. `monotonicity` is
   `region_dump.md`'s. `config` and `leftover` are `configuration.md`'s, in its defaults block and its
   `EIN_LEFTOVER` row. A second definition here would be the very copy this stage exists to remove. The `work`
@@ -253,7 +253,7 @@ The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_an
 
 ### The test: `ein-cli/tests/read_out_reference.rs`
 
-The precedent is [`configuration.md`](../../../docs/kernel/configuration.md) with
+The precedent is [`config.md`](../../../docs/ein/user/reference/config.md) with
 [`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs). Its judgement table is
 hand-written and diffed against `ein_core::config::FLAGS`, *"what makes the prose columns safe to hand-write"*,
 and its defaults block is the binary's own output. A second precedent is [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md)
@@ -500,8 +500,8 @@ another number than its field**:
   without digit groups. The `bit` row's *2^n = x saturations* and `paths`' *would cost up to x saturations* are their
   own numbers, each said by its row.
 - *model*: a listing's `(model …)` is a state's facts over the candidates' relations (`ein_infer::read_out::Listed`'s
-  `model`, the summary's `region.states[].facts`); `-P` prints [`solution_semantics.md` §
-  3](../../../docs/kernel/inference/solution_semantics.md#3-model)'s model, under the head *final-state facts (beyond the
+  `model`, the summary's `region.states[].facts`); `-P` prints [`solution-semantics.md` §
+  3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)'s model, under the head *final-state facts (beyond the
   program as loaded, (not …) omitted …)*; and `-t`'s `read-out` row, *each listed state's model*, means the listing's.
   Two objects, one word: [Q1](#q1--q-m1e7s-read-out-half), below.
 - *states*: `states (k_s)` counts R's; a mode's count row the states listed; `over`'s *n states* the states its classes
@@ -536,7 +536,7 @@ another number than its field**:
 | § 8.6 `ein oracle`: *every hole row* | at most four, as describe (§ 6.3 says so) | the prose fell behind |
 | § 8.6 `ein oracle`: *today's `the cube` line* | `the cube   n dead nodes with an alive superset · m discharged nodes with an owing superset`, then whether the static verdict held; *contradicted* exits 1 | unspecified; the page states it |
 | no mention of `-t` | five rows | the page has them |
-| [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model): *No surface computes projection classes yet* | every query block prints them since M1e2 S1e2.1a.5 | a kernel sentence the read-out disproved; T4 corrects it |
+| [`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model): *No surface computes projection classes yet* | every query block prints them since M1e2 S1e2.1a.5 | a kernel sentence the read-out disproved; T4 corrects it |
 
 **Findings: a line that says something false or ambiguous.** None misstates an answer, so none is a register row;
 each is P1e2.3's class (*a surface that misreports*), shown and not fixed here, as the method says:
@@ -573,13 +573,13 @@ lines, listed}`, `region.frontier[].{facts, set, owes, owed}`; `verdict.{word, w
 `queries[].classes[].{facts, states}`, `queries[].classes[].rows[]`, a map from each goal variable to its value, and
 `queries[].expect.{outcome, lines}`; `claim.{outcome, lines}`. Against § 8.1: `schema`, `source`, `stopped`'s
 members, `route`'s and `over`'s other values and `expect`'s shape are new, as the table says; nothing § 8.1 names is
-gone. **The other five keys' owners**: `work` and `root` are [`answer_dump.md` § The run
-summary](../../../docs/kernel/inference/answer_dump.md#the-run-summary)'s, held field by field by
+gone. **The other five keys' owners**: `work` and `root` are [`answer-dump.md` § The run
+summary](../../../docs/ein/user/reference/answer-dump.md#the-run-summary)'s, held field by field by
 `answer_dump::every_summary_counter_is_defined_on_this_page`; `config` is
-[`configuration.md`](../../../docs/kernel/configuration.md)'s defaults block, held by `config_reference`; `leftover`
+[`config.md`](../../../docs/ein/user/reference/config.md)'s defaults block, held by `config_reference`; `leftover`
 is `configuration.md`'s `EIN_LEFTOVER` row, which names `taken` and `states` and not `states_by_relation`;
-`monotonicity` is [`region_dump.md` §
-Monotonicity](../../../docs/kernel/inference/region_dump.md#monotonicity--the-static-check)'s, which names the block's
+`monotonicity` is [`region-dump.md` §
+Monotonicity](../../../docs/ein/user/reference/region-dump.md#monotonicity--the-static-check)'s, which names the block's
 keys (`concludes`, `at_stake`, `assumes`, `cycles`, `order`, `status`, `state`, `paths`) and not these leaves:
 `reads` and `absent_reads`' `dynamic_monotone` and `dynamic_non_monotone`, `cycles[].negative`, `paths.dead_parents`,
 `paths.saturations`, `paths.unprinted.saturations` and `state.stale_nodes`. Those gaps are their owners', listed here
@@ -624,7 +624,7 @@ T4 has no head to edit.
 
 ### T2 record, 2026-11-09
 
-**The page**, [`docs/kernel/inference/read_out.md`](../../../docs/kernel/inference/read_out.md), current and with no
+**The page**, [`docs/kernel/inference/read-out.md`](../../../docs/ein/user/reference/read-out.md), current and with no
 banner, written from T1's census in the spec's twelve sections. Its row tables are marked, `<!-- rows: NAME -->`, one
 per printer section: `describe` (a bare `ein solve`, `--count`'s subset and `ein oracle`), `mode`, `monotone`,
 `lattice`, `strata`, `universe`, `empty` (why R is empty), `queries`, `claims`, `clock` (`-s` and `-t`) and `oracle`
@@ -638,7 +638,7 @@ owners of the other five keys a third, § 11.1. § 6 names the two objects calle
 are stated where their rows are (`route`, § 11.2's `region.licences` and `region.stopped.layer`). The clock rows'
 masked run is a marked block in § 9, for T3's test to compare.
 
-**The live examples**, [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md),
+**The live examples**, [`docs/kernel/inference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md),
 written by `utils/read_out_examples.py`, re-pointed: 41 blocks, 40 of them whole runs, where M1e2's page had 32 and 31. X1 to
 X13 keep their numbers, headings and anchors, their prose re-voiced as reference and its plan links re-pointed; X2
 gains `--monotone` and `-y`; four new sections print every label no block printed: X14

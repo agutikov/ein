@@ -225,10 +225,10 @@ program having none; `[case.fixed]` carries the null id in the fixing commit and
 register reads 312 fixed, 16 open and 1 not wrong (`grep '^status' corpus/wrong_answers.toml | sort | uniq -c`,
 2026-11-12).
 
-**The pages**: [`defined_behaviour.md` § 4.26](../../../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623);
+**The pages**: [`diagnostics.md` § 2.26](../../../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments);
 `01_grammar.md` § Relation declarator, that a declaration's count is held; `stdlib/README.md`'s two sentences
 on a malformed number, `std.arith`'s and `std.num9`'s, each losing its wrong-count case to *refused at load*
-([`malformed_numbers.md`](malformed_numbers.md) is S1f.6.12's record and is not edited: its rows m6 to m6d are
+([`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#malformed-numbers-what-is-flagged-and-where) is S1f.6.12's record and is not edited: its rows m6 to m6d are
 this stage's); `examples/README.md`; `AGENTS.md`; and E-2 of [`findings.md`](findings.md), closed.
 
 **Found outside the stage's scope**, each in `findings.md` with its probe: E-34, an activator of another

@@ -12,7 +12,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A guard compares two values, and `_` names none: it stands for an
-;;; argument of a pattern (`01_grammar.md`'s `WILDCARD` row). The user ruled
+;;; argument of a pattern (`syntax.md`'s `WILDCARD` row). The user ruled
 ;;; that such a guard is refused at load, as a range and a head `_` are, with
 ;;; a line in Ein's spelling naming the rule and the clause. Every command
 ;;; that loads the program exits 1 (`ein test`: 2).

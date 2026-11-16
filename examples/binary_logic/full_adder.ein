@@ -13,7 +13,7 @@
 ;;; module that declares it). A program that writes `gate` itself lists it
 ;;; from `std.bool.circuit`.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
+;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md` § 4.
 (import std.bool.circuit :symbols (gate))
 (import std.bool.gates :symbols (Xor And Or))
 

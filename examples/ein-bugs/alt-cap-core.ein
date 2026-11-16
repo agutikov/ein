@@ -72,7 +72,7 @@
 ;;; both (P1e2.3's N7). With `(config :record-alternative-justifications
 ;;; false)` this file reports the 3-fact core again, refuted by `narrow`: the
 ;;; flag may change the core, and its rule with it, and nothing else
-;;; (`configuration.md` § 2.5). And a saving *between* two facts, behind
+;;; (`config.md` § 2.5). And a saving *between* two facts, behind
 ;;; a full list, is still refused —
 ;;; [`wrong-answers/alt-cap-shared.ein`](wrong-answers/alt-cap-shared.ein),
 ;;; deferred to F22.

@@ -59,7 +59,7 @@ brings none of the three.
   module's declarations and facts and none of them.
 - **The census before the fix:** every tracked module and every inline one in the Rust suites that is
   imported qualified or bare and holds one of the three forms. What would move is shown before it moves.
-- The pin in `ein-ir/tests/imports_semantics.rs`; [`01_grammar.md` § Import](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#import)
+- The pin in `ein-ir/tests/imports_semantics.rs`; [`syntax.md` § Import](../../../docs/ein/user/reference/syntax.md#import)
   and `defined_behaviour.md` § 4.25 say it; the rows flip to `fixed` in the fixing commit.
 
 ### T1f.6.25.3 — E-11: the program a `--dump-answer` state file re-writes keeps a rule a selection names
@@ -87,7 +87,7 @@ workaround.
 Today a flat import of a theory built on another theory leaves the lower theory's rules behind in silence:
 the closure reaches the lower theory's relation declarations and not its entry's name. The symptom is far
 from the cause (no request answered, the lower theory's relations open, 660 candidates, and E-22's exit).
-It was met three times (row 66). The rule itself is as [`01_grammar.md` § Import](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#import)
+It was met three times (row 66). The rule itself is as [`syntax.md` § Import](../../../docs/ein/user/reference/syntax.md#import)
 states it and **is not changed**: a selection is a selection.
 
 - **A diagnostic, not a refusal.** One line on stderr at load, naming the importing form, the module, the
@@ -122,7 +122,7 @@ user's rule of 2026-10-16 is that every answer exits 0 and a run that stops says
   first, since nothing reads a count that large as a number. `--count` and `--json-summary` say the same
   thing in their forms; `--count` on the witness had printed nothing when a 20 s limit ended it, which the
   task measures and reports and does not promise to cure.
-- [`read_out.md`](../../../docs/kernel/inference/read_out.md), `ein_render::read_out::Row` and
+- [`read-out.md`](../../../docs/ein/user/reference/read-out.md), `ein_render::read_out::Row` and
   `ein-cli/tests/read_out_reference.rs` move in the same commit as the printer; `lever_invariance` holds the
   new read-out under every lever; the row flips to `fixed` in the fixing commit.
 

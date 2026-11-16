@@ -29,7 +29,7 @@ scripts under `utils/` for the same reason.
 
 **M1e is the one whose subject was the tree itself** rather than a feature:
 a full review, processed finding by finding, under a standard of proof it
-wrote into [`docs/kernel/standard_of_proof.md`](../kernel/standard_of_proof.md).
+wrote into [`docs/kernel/standard-of-proof.md`](../ein/standard-of-proof.md).
 Read its § What this milestone may claim before citing it as evidence that
 anything is clean. It says what was not swept, and that the engine's answers
 were not what it checked.

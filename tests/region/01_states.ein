@@ -5,7 +5,7 @@
 ;;; the three relations, so its model is `(model)`), the three singletons and
 ;;; the three pairs. Naming a relation closes it across the whole claim.
 ;;; The program is examples/lattice/02_genuine_3set_death.ein's; the claim is
-;;; plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md's E4.
+;;; docs/ein/user/syntax-and-semantics/query.md's E4.
 
 (rule three-conflict ()
   :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))

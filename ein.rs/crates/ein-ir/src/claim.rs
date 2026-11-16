@@ -3,7 +3,7 @@
 //!
 //! The shape, which the loader validates; the comparison against R is
 //! `ein_infer::claim`. The grammar is the one the user ruled on 2026-10-16
-//! ([`region_examples.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)):
+//! ([`query.md`](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)):
 //!
 //! ```lisp
 //! (solve :expect (false))                          ; every node dead

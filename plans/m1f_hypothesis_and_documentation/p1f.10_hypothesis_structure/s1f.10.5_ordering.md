@@ -87,7 +87,7 @@ and E-29 stays open, shown.
 4. **T1f.10.5.4 — the order, built.** One strategy becomes the tree's own order. No lever chooses it. The
    `route` row of the read-out says in words what order the run took, since E-29's second half is that
    *nothing in the read-out says the order mattered*;
-   [`read_out.md`](../../../docs/kernel/inference/read_out.md) and its examples in the same commit, and
+   [`read-out.md`](../../../docs/ein/user/reference/read-out.md) and its examples in the same commit, and
    `tree.rs`'s § Which instance restated.
 5. **T1f.10.5.5 — the invariances**, as tests in the gate:
    - **every order gives one answer**: the tree under the written order, its reverse, the order built and
@@ -190,7 +190,7 @@ whose `--single`, `-n`, `--minimal` or `--maximal` names L5:
 
 | golden | which part | re-banked by |
 |---|---|---|
-| [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) | every example under a mode whose route is the tree: the `route` row, which gains the order's words on every one of them, and the `work` row and the state's `from {…}` where the order moves the nodes | `python3 utils/read_out_examples.py` |
+| [`docs/kernel/inference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) | every example under a mode whose route is the tree: the `route` row, which gains the order's words on every one of them, and the `work` row and the state's `from {…}` where the order moves the nodes | `python3 utils/read_out_examples.py` |
 | `ein-render/tests/golden/corpus_shapes.md5` | for each such program its `read-out[…]`, `region-trace`, `region-lattice` and `cores[…]` lines of the modes, and no `states` line and no describe's line | `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance` |
 | `ein-render/tests/golden/trace_*.md` | a trace of a mode that takes the tree | `EIN_BLESS=1 cargo test … -p ein-render --test golden_trace` |
 | `README.md` and `docs/guide/04_solving_the_whole_puzzle.md`, the marked transcript | `ein solve examples/zebra2.ein --single`: the `route` row, and the `work` row and `from {…}` if they move | `EIN_BLESS=1 cargo test … -p ein-cli --test guide_transcripts` |
@@ -617,7 +617,7 @@ the programs now named. One not on this list that moves is a stop.
   of whose modes names L5, 36 of the 190 under `--single`. So in `corpus_shapes.md5`, for each such program, its
   `read-out[single]`, `read-out[n2]`, `read-out[minimal]` and `read-out[maximal]` lines where that mode takes
   the tree, and `region-trace` where the trace quotes the row; in
-  [`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) every example whose route is the
+  [`read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) every example whose route is the
   tree; in `README.md` and `docs/guide/04_solving_the_whole_puzzle.md` the transcript's `route` row.
 - **Where the work or the states move as well**, the ten programs of the table: the `work` row and the listed
   state's `from {…}` on the same lines, and those programs' `cores[…]` and `region-lattice` lines where the
@@ -669,7 +669,7 @@ route's name and before the licences (`explore::TreeOrder::words`):
   left, then the first by text: 5 couplings read off the whole node at saturation 712, the tree started again*,
   where the couplings were read.
 
-[`read_out.md` § 3.1](../../../docs/kernel/inference/read_out.md#31-what-order-the-obligation-tree-took) defines
+[`read-out.md` § 3.1](../../../docs/ein/user/reference/read-out.md#31-what-order-the-obligation-tree-took) defines
 the words, `hypothesis_space.md` (until the rename, `structure.md`) § The coupling a route reads the reading, and `tree.rs`'s § Which instance is
 restated. No JSON field was added: `region.route` is `tree` as it was, and `explore::Answer::order` holds the
 order for a library's reader.

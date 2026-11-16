@@ -57,7 +57,7 @@ L8's and L9's are.
 ## Tasks
 
 1. **T1f.10.18.1 — the argument**, written in this file under
-   [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md)'s rule 2, with every item above settled, or
+   [`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md)'s rule 2, with every item above settled, or
    the program that breaks it banked under `examples/` with a corpus entry, which ends the stage at a written *no*.
 2. **T1f.10.18.2 — measured with no route changed**: on the visited nodes of every corpus program that searches,
    every question, the nodes that close no edge through their last candidate; how many of them were alive (the
@@ -166,7 +166,7 @@ be an alive state and `b ∉ S` a candidate **alive alone**. If `S ∪ {b}` is d
 
 So where none of the three holds, `S ∪ {b}` is alive.
 
-**The argument**, under [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md)'s rule 2.
+**The argument**, under [`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md)'s rule 2.
 
 1. *Every application of `st(S ∪ {b})` is an application of `W`.* The program is monotone: no read of a plan can
    take a conclusion away as a commitment grows, an `absent` reads only relations no commitment extends, and so the

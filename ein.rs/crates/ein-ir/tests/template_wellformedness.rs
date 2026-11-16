@@ -1,6 +1,6 @@
 //! **Every `{?ref}` a corpus or stdlib `:why` writes names something its form
 //! can fill** — M1f S1f.5.14's T1f.5.14.5, the first of the stage's two
-//! checks ([`09_natural_language.md` § 7](../../../../docs/kernel/ir/03-ein-lang/09_natural_language.md#7-what-holds-this-page)).
+//! checks ([`natural-language.md` § 7](../../../../docs/ein/user/syntax-and-semantics/natural-language.md#7-what-is-checked)).
 //!
 //! [`ein_core::render_why`] leaves a reference nothing binds as written, so a
 //! typo reaches a user's output as `{?huse}`; the effect is held where a
@@ -17,7 +17,7 @@
 //! - a **macro**'s name a parameter.
 //!
 //! And **no `{x}` is a reference with its `?` missing**: a bare `{x}` is a
-//! literal (`01_grammar.md` § `:why`), so `{1}` in a relation's `:why`, or
+//! literal (`syntax.md` § `:why`), so `{1}` in a relation's `:why`, or
 //! `{a}` in a rule's that binds `?a`, prints as written where a reference was
 //! meant. When it was written (2026-11-10, at `5e4ecb93`) it found 66 over
 //! the 893 templates it read: 58 such literals in 45 relation `:why`s over 13

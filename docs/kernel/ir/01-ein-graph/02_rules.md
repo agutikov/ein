@@ -2,7 +2,7 @@
 
 > **No language, no code here.** This document describes rules in
 > graph-rewriting terms. The S-expression syntax that declares rules
-> is in [`../03-ein-lang/`](../03-ein-lang/); the `Rule` / `Pattern`
+> is in [`../reference/`](../../../ein/user/reference/); the `Rule` / `Pattern`
 > records are in [`../02-data-model/`](../02-data-model/).
 
 A **rule** is a graph rewriting rule over the knowledge base. The
@@ -15,7 +15,7 @@ nodes or existing facts. The closest thing to deletion is a
 **negative fact** (`(not X)`), which is itself a fact node asserting
 that some proposition does not hold. Removal of an entire reasoning
 branch is the *fork* mechanism (see
-[`01_kb.md` §6](01_kb.md), not a rule action).
+[`facts.md` §Facts in a state](../../../ein/user/syntax-and-semantics/facts.md#facts-in-a-state), not a rule action).
 
 ---
 
@@ -306,7 +306,7 @@ co-located(House-3, Ivory)."*
 > `domain-elimination` / `range-elimination`, `std.slots`' `slot-elimination`
 > / `slot-fill`. So the aggregate is expressed in the pattern language rather
 > than beneath it, which is what keeps the trace able to name the firing.
-> [`../03-ein-lang/02_patterns.md` § Predicate registry](../03-ein-lang/02_patterns.md)
+> [`../03-ein-lang/syntax.md` § Predicate registry](../../../ein/user/reference/syntax.md#3-patterns)
 > is the surface-language statement of the same thing.
 
 T3 is the bridge between graph rewriting and classical CSP /
@@ -582,7 +582,7 @@ The saturation loop's design is in P1.3 S1.3.3.
 
 When saturation stalls and the puzzle isn't yet solved, the engine
 **branches**: pick an undetermined slot, hypothesise each candidate
-in turn (a fork — see [`01_kb.md` §6](01_kb.md)), saturate each
+in turn (a fork — see [`facts.md` §Facts in a state](../../../ein/user/syntax-and-semantics/facts.md#facts-in-a-state)), saturate each
 branch, retract on contradiction, commit on uniqueness. This is the
 **hypothesis loop**, designed in P1.5.
 
@@ -602,7 +602,7 @@ branch, retract on contradiction, commit on uniqueness. This is the
 The data-model mapping is detailed in
 [`../02-data-model/`](../02-data-model/); the surface syntax for
 authoring rules is in
-[`../03-ein-lang/`](../03-ein-lang/) §pattern sub-language.
+[`../reference/`](../../../ein/user/reference/) §pattern sub-language.
 
 ## See also
 
@@ -612,7 +612,7 @@ authoring rules is in
 - [`absent-and-naf.md`](../../../ein/reasoning/kb-evolution/absent-and-naf.md) —
   what a negative premise means and where the closure/world boundary
   decides it.
-- [`../03-ein-lang/02_patterns.md`](../03-ein-lang/02_patterns.md) —
+- [`../03-ein-lang/syntax.md`](../../../ein/user/reference/syntax.md#3-patterns) —
   the surface pattern language.
 - [`../../../ideas/06-inference-rules-completeness.md`](../../../../plans/ideas/06-inference-rules-completeness.md) —
   the rule-family taxonomy that motivates the M1 rule registry.

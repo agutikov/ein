@@ -1,5 +1,5 @@
 //! `ein test` — M1c
-//! [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)
+//! [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test)
 //! T1c.1.3.5, **the tests for the tester**.
 //!
 //! A test runner that reports success on a broken expectation is the worst
@@ -1653,8 +1653,8 @@ fn the_pages_name_the_reports_schema() {
     let (name, version) = schema.split_once('/').expect("name/version");
     let version: u32 = version.parse().expect("a number");
     for page in [
-        "docs/kernel/defined_behaviour.md",
-        "docs/kernel/configuration.md",
+        "docs/ein/user/reference/cli.md",
+        "docs/ein/user/reference/config.md",
     ] {
         let text = std::fs::read_to_string(repo_root().join(page)).expect("the page");
         assert!(

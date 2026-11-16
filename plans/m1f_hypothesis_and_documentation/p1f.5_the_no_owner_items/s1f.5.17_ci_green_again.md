@@ -293,7 +293,7 @@ load. The suite noticed the defect: the kill is real, and T1f.5.17.2 re-banks it
 **T1f.5.17.2, `76ede241`.** The view-side fix of § Step 1: `dot_util::POLYGON_RANKSEP`, `ranksep=0.55`,
 written by a rule's overlay digraph (`rules.rs`, `render_overlay`) and by a `Builder` digraph that holds an
 octagon hyperedge node (`builder.rs`, `build`), each with its reason in a doc comment, and in
-[`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md) under the overlay. Named
+[`rendering.md`](../../../docs/ein/user/reference/rendering.md) under the overlay. Named
 before they moved, from `cargo test`'s own list before `EIN_BLESS`: `ein-render`'s `corpus_shapes.md5`,
 **1 198 lines over 384 corpus files**, `ir-levi` 351, `ir-overlay` 317, `rules-overlay` 278, and `ir`,
 `ir-forms` and `ir-trace-dag` 84 each, each digraph one line longer, the prototype's count. No DOT golden,

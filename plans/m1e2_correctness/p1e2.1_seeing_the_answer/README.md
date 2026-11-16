@@ -43,7 +43,7 @@ existing wrong solutions and initial problems."*
 
 Every wrong answer in [P1e2.2](../p1e2.2_wrong_answers/README.md) was found by
 someone **reading** it: a hand derivation in
-[`solution_semantics.md` § 2](../../../docs/kernel/inference/solution_semantics.md),
+[`solution-semantics.md` § 2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r),
 a probe written for a question, a twin fixture one fact apart. None of them was
 found by looking at what the engine answered. Today that is hard to do. A
 model is a block of facts on stdout, a refutation is a fenced `dot` block that
@@ -121,7 +121,7 @@ when they do.
   that stops answering its right one does.
 - **The doors change no answer.** `corpus_exits.txt`, `corpus_shapes.md5` and
   every existing golden byte-identical. What moves is `help_shape.txt`, the
-  option census in [`configuration.md`](../../../docs/kernel/configuration.md)
+  option census in [`config.md`](../../../docs/ein/user/reference/config.md)
   (52 options plus the new ones), and `config_reference.rs`, all named in
   S1e2.1.3 before they move.
 - **The review is held and written down**, per case, in the register. P1e2.2's
@@ -159,7 +159,7 @@ when they do.
 
 - [Q-M1e.20](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)
   is answered by S1e2.1.3.
-- [`docs/kernel/ir/03-ein-lang/04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+- [`docs/kernel/ir/03-ein-lang/rendering.md`](../../../docs/ein/user/reference/rendering.md)
   covers the views and their legend. § How to ask for this view is rewritten
   when the door exists.
 - [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)

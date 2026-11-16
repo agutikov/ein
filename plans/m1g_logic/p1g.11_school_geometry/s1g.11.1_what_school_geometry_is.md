@@ -23,7 +23,7 @@ into this stage, which already stopped for the user, so that P1g.11 has a stop o
 it was written there, with nothing added:
 
 **The page.** `p1g.11_school_geometry/design.md`, as the calculator's
-[`design.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md) is: target programs written
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) is: target programs written
 for a prototype under `build/s1g.11/`, each run on the release binary, each shown with every artefact a run
 writes (`ein solve`, `ein saturate --dump`, `ein test`, `--trace`, `--dump-answer`), and after them the
 conventions proposed and the questions, each with a recommendation that a run supports. The commit at the stop
@@ -118,7 +118,7 @@ The figure is facts. Points are names. Everything else is a choice, and the stag
 
 **Objects as values.** `(seg A B)`, `(ang A B C)` (the angle at B), `(tri A B C)`, `(line A B)`: nested facts of
 ordinary relations, values under the value rule
-([`defined_behaviour.md` § 4.22](../../../docs/kernel/defined_behaviour.md)). A named line, `l`, is a name.
+([`diagnostics.md` § 2.22](../../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold)). A named line, `l`, is a name.
 
 **Relations.** As planned: `(on P l)` incidence; `(collinear A B C)`; `(between A B C)`, B between A and C;
 `(parallel l m)`, `(perp l m)`; `(seg-eq S T)`, equal length; `(ang-eq X Y)`; `(cong T U)`, congruent with
@@ -160,7 +160,7 @@ the user (question g of the [README](README.md#the-questions-for-the-user)).
 
 **How the nested values read.** F-3 of [`findings.md`](findings.md): a `:why` prints `(seg A C)` as written, not
 *the segment AC*. A two-column proof whose statements read *(ang A B C) equals (ang A C B)* is not yet a school
-proof. The stage establishes what [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+proof. The stage establishes what [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md)
 says of a nested value inside a template, and files the row as a request or as a wrong answer accordingly.
 
 ## Sketch

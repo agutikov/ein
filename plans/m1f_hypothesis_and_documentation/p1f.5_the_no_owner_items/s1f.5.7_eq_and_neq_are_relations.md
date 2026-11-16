@@ -250,7 +250,7 @@ agreeing on each.
 `01_grammar.md` § Query (a goal may name `eq` and `neq`, and what their facts are) and its rule section (a
 premise in any order, a conclusion checked), the glossary's `eq` and `neq` (relations of equality and
 non-equality, computed, never stored), `02_patterns.md` where it calls them guards, `defined_behaviour.md`
-where it states a guard's refusals, and the live read-out reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md) (S1f.5.16), where a row's
+where it states a guard's refusals, and the live read-out reference, [`read-out.md`](../../../docs/ein/user/reference/read-out.md) (S1f.5.16), where a row's
 wording moves. The inventory's S-18 and G-21 say what
 fixed them. Q-M1e2.18 says what superseded its (ii)(a).
 
@@ -473,16 +473,16 @@ sort | uniq -c`, 2026-11-09).
 no premise before it binds or a form as a guard's argument as refused, or a conclusion of either as stored: each
 sentence that did says what it was and what it is since this stage.
 
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md): a fact's relation (a written `(eq a b)` checked,
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md): a fact's relation (a written `(eq a b)` checked,
   `(neq …)` no fact), what a premise may be, a conclusion of `eq` or `neq` (G-21), *Premise order around a guard*
   rewritten (a premise in any order, a free variable over the program's names, Q-M1f.34), and § Query (a goal over
   `eq` and `neq`, a claim naming either, the empty row's two sentences, a region claim refused).
-- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md): the closure line, the computed-equality row,
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns): the closure line, the computed-equality row,
   and the registry's table and its paragraph.
-- [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) § Computed predicates, and
+- [`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md) § Computed predicates, and
   [`architecture.md`](../../../docs/ein/ein.rs/architecture.md)'s `predicates.rs` row.
-- [`glossary.md`](../../../docs/kernel/glossary.md): an entry for `eq` and `neq`.
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.1's claim rows (a region claim naming
+- [`glossary.md`](../../../docs/ein/user/reference/glossary.md): an entry for `eq` and `neq`.
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals) § 2.1's claim rows (a region claim naming
   either, a goal's form that holds a variable) and § 4.9's guard rows and its paragraph.
 - The inventory's [S-18 and G-21](../../m1e2_correctness/inventory_2026-11-06_no_owner.md) say what fixed them, and
   [Q-M1e2.18](../../m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence) and

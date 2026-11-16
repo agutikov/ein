@@ -122,7 +122,7 @@ and it is not a new mechanism. They enter **zero commitments**: saturation
 reaches a state the generator calls complete and the tally calls discharged,
 and the verdict is read off it. The engine's `complete(kb)` plus S1d.2.6's
 discharge test *is* (c)'s useful half, shipped at
-[S1d.2.4](README.md#s1d24--obligations-in-the-saturator)–[S1d.2.6](README.md#s1d26--verdicts-counters-corpus).
+[S1d.2.4](../../ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)–[S1d.2.6](README.md#s1d26--verdicts-counters-corpus).
 The one claim that needs a search is the one claim about a *set*.
 
 ---
@@ -135,7 +135,7 @@ them is how (a) ships by accident.*
 
 **The exit code does not move.** `NOT CHECKED` is not a pass; a green line for
 a claim nobody checked is what the whole form exists to prevent
-([`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md)). It
+([`cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line)). It
 stays 1 under both `solve` and `test`, and it stays distinguishable from both
 pass and fail in the report.
 

@@ -71,13 +71,13 @@ no sentence states, and the theory that supplies them is the measured thing.*
 - **The word problems' way of writing a text:** one fact a sentence where it can be, each with its sentence
   as `:source`, and a `:why` on every relation so that an answer reads as a sentence
   ([`examples/word_problems/README.md`](../../../examples/word_problems/README.md);
-  [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)).
+  [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md)).
 - **A string holds any Unicode; a name is ASCII.** `(went Vanya forest :source "Ваня пошёл в лес.")` loads,
   answers, and is written back with its sentence by `ein saturate --dump` and by a `--dump-answer` state
   file (a scratch program of four forms on the release binary, 2026-11-13). So a text in another language
   than English can stand beside its facts, with its people and things under transliterated names.
 - **A query states its expected answer** with `:expect`, and `ein test` holds it
-  ([`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)). A claim on a query
+  ([`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query)). A claim on a query
   closes the goal's relations over the class, so a claim lists exactly what the goal matches.
 - **Two scripts that already read programs as text or count what reads as English:**
   [`utils/rule_census.py`](../../../utils/rule_census.py), M12's census of rule shapes, with an S-expression

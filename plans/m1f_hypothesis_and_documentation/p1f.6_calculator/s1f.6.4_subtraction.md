@@ -5,7 +5,7 @@
 by the two numbers of `(diff-of X Y D R)`, `(cmp X Y)` by `(cmp-of X Y lt|eq|gt)`, both held to Rust's integers,
 search-free, and under the rule of the theory on the text and on the counter; four decisions taken by default,
 Q-M1f.155 to .158, and one finding, E-12 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08;
-re-planned 2026-11-11 to [the rulings](design.md#the-rulings-2026-11-11).
+re-planned 2026-11-11 to [the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath).
 **Depends on:** [S1f.6.3](s1f.6.3_addition.md).
 
 ## What it builds

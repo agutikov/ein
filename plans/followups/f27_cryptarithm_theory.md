@@ -16,7 +16,7 @@ decision file is written as `docs/decisions/stdlib/math/Q-M1f.337-<slug>.md` and
 
 **What it is.** The column rules of an addition with the digit tables read in every direction, written once, so a
 cryptarithm states only its letters and its columns; SEND + MORE = MONEY its example. The question's source is
-[`beyond_arithmetic.md`](../m1f_hypothesis_and_documentation/p1f.6_calculator/beyond_arithmetic.md) § 3 and its
+[`word-problems.md`](../../docs/ein/user/guide/word-problems.md#cryptarithms) § 3 and its
 question 7: the same puzzle as a plain search takes 17 747 search nodes, with the tables read backwards as
 propagation 639, and a human a dozen deductions. *"A cryptarithm theory in the stdlib, with those rules written
 once, would be to arithmetic puzzles what `std.bijection`'s elimination rules are to the zebra."* What the corpus

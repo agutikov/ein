@@ -19,7 +19,7 @@ that output unless it names another command.
 
 **What it reads.** `ein solve FILE --dump-region DIR`, the oracle's
 `region.json` and `walk.json`
-([`region_dump.md`](../../docs/kernel/inference/region_dump.md)), and under
+([`region-dump.md`](../../docs/ein/user/reference/region-dump.md)), and under
 `--levers` also `--region-states` and `ein saturate --dump`. It saturates
 nothing itself. What it adds is arithmetic over the node array: the count of
 R in states (k_s) beside commitments (k_c), each state's minimal generators,
@@ -256,7 +256,7 @@ facts of every state in R:
   `(knows Bob Ann)` the query's goal among them. The mirror is what
   `(__symmetric__ R)` means, so the flag switches off part of the program's
   theory. It is the one flag that violates the principle, and
-  [`configuration.md` § 2.5](../../docs/kernel/configuration.md#25-the-config-principle-read-against-every-row)
+  [`config.md` § 2.5](../../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row)
   names it.
 - **`-y` and `lattice-sanity-check` abort `d3-unsat-core.ein`**, flagged
   non-monotone, with *"Saturation commutativity violated"*: a fork and its

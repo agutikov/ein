@@ -135,7 +135,7 @@ rewrite, mechanical, one commit, before the lexer refuses it.
 
 ### Task T1f.5.22.4 — the pages (done, [its record](#t4-record-2026-11-10))
 
-[`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) (what a program's text may hold),
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md#1-lexical-rules) (what a program's text may hold),
 `defined_behaviour.md` § 1 (the lexer's lines), and the stage's records.
 
 ## Acceptance
@@ -322,16 +322,16 @@ string surface byte for byte, unchanged.
 ## T4 record, 2026-11-10
 
 **The pages.**
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md): a new § *What a program's text may hold*,
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md): a new § *What a program's text may hold*,
   the line and where Unicode may stand, a separator ASCII's whitespace, what it was until the stage, and an imported
   module read as the program is; the `NAME` row's `Жук`.
-- [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md): the lexical block re-blessed; § 1's preamble, fact 5
+- [`grammar.md`](../../../docs/ein/user/reference/grammar.md#1-lexical-grammar): the lexical block re-blessed; § 1's preamble, fact 5
   (`Жук` no `BAD` token since) and a new fact 6, the refusal; § 4's note on what a parse error's message looks like; § 5's
   table, the pin.
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): § 1's opening (the line beside *no token starts
-  with*), a new [§ 1.6](../../../docs/kernel/defined_behaviour.md#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment--m1f-s1f522),
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics): § 1's opening (the line beside *no token starts
+  with*), a new [§ 1.6](../../../docs/ein/user/reference/diagnostics.md#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment),
   § 4's table (a row for an imported module that cannot be read) and its paragraph on the one read, and a new
-  [§ 4.18](../../../docs/kernel/defined_behaviour.md#418-an-imported-module-is-read-as-the-program-is--m1f-s1f522); § 1.5's
+  [§ 2.18](../../../docs/ein/user/reference/diagnostics.md#218-an-imported-module-is-read-as-the-program-is); § 1.5's
   count of `at None` fixtures is unmoved, no fixture under `examples/broken/load/` having moved.
 - [`architecture.md`](../../../docs/ein/ein.rs/architecture.md): `read.rs` in the module map,
   and the lexer's thirteen words (it said twelve, from before S1f.5.23).

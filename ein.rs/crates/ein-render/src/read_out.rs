@@ -1,6 +1,6 @@
 //! The read-out as text: what `ein solve` and `ein oracle` print — M1e2
 //! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
-//! the layout [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines row by row since M1f
+//! the layout [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines row by row since M1f
 //! S1f.5.16, from [`ein_infer::read_out::ReadOut`]; every label is a [`Row`].
 //!
 //! [`render`] returns stdout, the stderr lines and the exit code, and prints
@@ -63,7 +63,7 @@ macro_rules! rows {
         /// oracle`'s, `-s`'s and `-t`'s — M1f S1f.5.16's T1f.5.16.3. A row is
         /// printed only through one ([`line()`], and the read-out's private
         /// printers), so a label the reference page,
-        /// `docs/kernel/inference/read_out.md`, lacks cannot be printed
+        /// `docs/ein/user/reference/read-out.md`, lacks cannot be printed
         /// without being here, and `ein-cli/tests/read_out_reference.rs`
         /// holds every one to a row of the page's [`Row::TABLES`] table, both
         /// ways and in printing order. Two rows share a label, `…`, and two
@@ -1359,7 +1359,7 @@ const ROOT_ROUTE: &str = "none — --no-search: root's node, and no node past it
 /// first, as describe's `∅` row and its `owed` block say it, then the `R` row
 /// that says it was not searched, the static check, `H` built and not
 /// visited, and root's one saturation; a dead root's core; each query read at
-/// root, and each claim as root alone decides it (`read_out.md` § 4.2).
+/// root, and each claim as root alone decides it (`read-out.md` § 4.2).
 pub fn render_root(r: &ReadOut, o: &Options) -> Text {
     let mut out = Out {
         text: String::new(),
@@ -1498,7 +1498,7 @@ fn licences(l: &[Licence]) -> String {
 /// `--count`'s one row for the claims the program states, when it states
 /// any: none is checked, since `--count` reads no state, and none is skipped
 /// silently (M1e2 T1e2.1c.4.6). stderr gets one `note:` per claim, as a claim
-/// describe could not check does (`read_out.md` § 9).
+/// describe could not check does (`read-out.md` § 9).
 fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
     let n_q = r.queries.len();
     let mut notes: Vec<String> = Vec::new();

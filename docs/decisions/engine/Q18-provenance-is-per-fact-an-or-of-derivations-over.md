@@ -16,4 +16,4 @@ and its premises is what lets a trace, a `:why` text and a core all be read off 
 `a_rebuild_preserves_the_alternative_justifications`,
 `a_full_list_keeps_the_smallest_closure_and_the_pair_report_one_core`. What may be recorded is a
 `(config …)` flag, `:record-alternative-justifications`, documented in
-[configuration.md](../../kernel/configuration.md).
+[config.md](../../ein/user/reference/config.md).

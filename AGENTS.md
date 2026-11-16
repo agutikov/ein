@@ -16,22 +16,22 @@ constrained-reasoning research.
   (`inference/`). Start here for any "what does Ein reason about / how"
   question. See [`docs/kernel/README.md`](docs/kernel/README.md) for orientation.
   The pages an agent most often needs:
-  [`defined_behaviour.md`](docs/kernel/defined_behaviour.md), the
+  [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes), the
   diagnostics, orderings and load refusals the engine defines normatively
-  (§ 4 has one section per refusal);
+  (§ 2 has one section per refusal);
   [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md),
   the answer as a region R;
-  [`inference/read_out.md`](docs/kernel/inference/read_out.md), every row
+  [`read-out.md`](docs/ein/user/reference/read-out.md), every row
   `ein solve` prints and what it counts;
   [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
   `h-space.json`;
-  [`configuration.md`](docs/kernel/configuration.md), the `(config …)` flags,
+  [`config.md`](docs/ein/user/reference/config.md), the `(config …)` flags,
   the CLI options and the `EIN_*` names, each with a *does it change the
   answer* column;
-  [`ir/03-ein-lang/01_grammar.md`](docs/kernel/ir/03-ein-lang/01_grammar.md)
-  and `00_ebnf.md`, the language;
-  [`ir/03-ein-lang/09_natural_language.md`](docs/kernel/ir/03-ein-lang/09_natural_language.md),
+  [`syntax.md`](docs/ein/user/reference/syntax.md)
+  and `grammar.md`, the language;
+  [`natural-language.md`](docs/ein/user/syntax-and-semantics/natural-language.md),
   `:why` texts and how a fact reads as English; and
   [`docs/ein/ein.rs/architecture.md`](docs/ein/ein.rs/architecture.md), the
   module map, with the design contracts under `docs/ein/ein.rs/design/`. What is true of the language and the answer today is
@@ -46,7 +46,7 @@ constrained-reasoning research.
   re-takes it or the **test** that pins it, and a number that can carry
   neither is not written down (a date is no warrant).
   What it takes to call a claim *settled* is
-  [`standard_of_proof.md`](docs/kernel/standard_of_proof.md): a behaviour is
+  [`standard-of-proof.md`](docs/ein/standard-of-proof.md): a behaviour is
   refuted only by a banked probe, an absence by naming the thing that checks
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
@@ -70,13 +70,13 @@ constrained-reasoning research.
   [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and
   a test in that file diffs the two, so `cargo test --workspace` keeps the
   page true — *edit the test, run it, paste; never edit the block by hand*.
-- **`docs/install.md`** — the install page: the two channels (a release
+- **`docs/ein/user/install.md`** — the install page: the two channels (a release
   binary, `cargo install --path`), what `ein --version`'s five lines mean, how
   to check a binary's stdlib against the checkout's manifest, and
   `$EIN_STDLIB`. **`pip install` is not a channel.**
-- **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
+- **`docs/ein/user/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
   Zebra puzzle"). User-facing; references `docs/kernel/` + `docs/ein/`, never
-  explains internals; complements `inference/zebra_walkthrough.md`.
+  explains internals; complements `docs/ein/user/guide/06_zebra_walkthrough.md`.
 - **`docs/history/`** — **shipped milestones, kept as record**
   ([`docs/history/README.md`](docs/history/README.md)): a document goes there,
   rather than staying only in git, when it is still read, as a specification,
@@ -104,7 +104,7 @@ constrained-reasoning research.
   and [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
   `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
   `(solve … :hrules …)` clause **deleted and nothing else**.
-- **`docs/kernel/inference/zebra_walkthrough.md`** — the Wikipedia human
+- **`docs/ein/user/guide/06_zebra_walkthrough.md`** — the Wikipedia human
   Zebra walkthrough annotated as ein inference: the **M1 target trace** for
   the engine and the **M2 target** for the NL ⇄ IR round-trip.
 - **`stdlib/`** — the ein-lang standard library (`std.*`), the single source
@@ -310,7 +310,7 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
 ### The language
 
 Each of these is a refusal at load or at the parse, on every command, stated
-normatively in [`defined_behaviour.md`](docs/kernel/defined_behaviour.md) § 4
+normatively in [`diagnostics.md`](docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) § 2
 or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 
 - **Ein has no numbers, no ranges and no int kind**, and none is planned.
@@ -422,7 +422,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
 ### Edits that go together
 
 - **Generated, never edited by hand** (edit the generator and re-run):
-  `00_ebnf.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
+  `grammar.md`'s two grammar blocks (from `ein.l` and `ein.y`, `EIN_BLESS=1`);
   `stdlib/math/digits.ein` and `stdlib/math/bits.ein`
   (`utils/gen_arith_tables.py`, then `utils/stdlib_manifest.py --write`); `stdlib/math/num9.ein`
   (`utils/gen_num9.py`); `stdlib/bool/gates.ein`'s rows and the programs
@@ -432,12 +432,12 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   zebra2 variants (`examples/gen_zebra2_variants.py`);
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`examples/gen_send_written.py`);
-  `read_out_examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
+  `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
   defaults block and `docs/ein/ein.rs/api.md`'s `rust` block. All of those have a
   `--check` or a test in the gate.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
-- A change to what `ein solve` prints changes `read_out.md` in the same
+- A change to what `ein solve` prints changes `read-out.md` in the same
   commit. A shape the grammar newly refuses gets a row in the grammar page's
   table.
 - **A file that moves takes every reference to it along**, in the commit
@@ -545,13 +545,13 @@ python3 utils/history_census.py                              # the history censu
 ```
 
 The read-out's vocabulary is
-[`docs/kernel/inference/read_out.md`](docs/kernel/inference/read_out.md),
+[`docs/ein/user/reference/read-out.md`](docs/ein/user/reference/read-out.md),
 every row `ein solve` prints and what it counts, and its golden page, written
 by the binary, is
-[`read_out_examples.md`](docs/kernel/inference/read_out_examples.md), both
+[`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
 held to the printer by `ein-cli/tests/read_out_reference.rs`. **The `EIN_*`
 names in the block above are the ones an agent needs, not the set**:
-[`docs/kernel/configuration.md`](docs/kernel/configuration.md) is the census
+[`docs/ein/user/reference/config.md`](docs/ein/user/reference/config.md) is the census
 of every `EIN_*` name, `(config …)` field and CLI option, with a *does it
 change the answer* column on every flag row, pinned by
 `ein-cli/tests/config_reference.rs`. The walk — `-e`, `-m`,

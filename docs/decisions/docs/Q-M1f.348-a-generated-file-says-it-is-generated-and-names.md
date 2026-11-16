@@ -11,4 +11,4 @@ about the work, which changes with the work.
 **Held by.** The heads of the generated files: `stdlib/math/digits.ein`, `stdlib/math/bits.ein` and
 `stdlib/math/num9.ein`, the rows of `stdlib/bool/gates.ein`, the generated programs of `examples/arith/`
 (`long_numbers.ein`, `many_calculations.ein`, `factorial.ein`), and the two grammar blocks of
-`docs/kernel/ir/03-ein-lang/00_ebnf.md`, marked `generated` where they start and end.
+`docs/ein/user/reference/grammar.md`, marked `generated` where they start and end.

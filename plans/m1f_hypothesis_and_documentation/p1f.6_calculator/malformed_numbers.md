@@ -1,5 +1,10 @@
 # S1f.6.12 T1 — malformed numbers and occupied names: what the theory can detect, and what it costs
 
+> **Kept as a ledger, not as documentation** (S1f.20.3, 2026-11-17). What this page established is rewritten into
+> [`stdlib.md` § Malformed numbers](../../../docs/ein/user/reference/stdlib.md#malformed-numbers-what-is-flagged-and-where),
+> and every reference to the page is re-aimed there. The file stays only because `utils/decision_census.py` reads its
+> questions as a ledger (the census's L-17); it goes with P1f.6's folder at S1f.20.9.
+
 **Phase:** [P1f.6](README.md) · **Stage:** [S1f.6.12](s1f.6.12_malformed_numbers.md), its first task and its
 second task's probes.
 **Status:** taken 2026-11-11, on the shipped `std.arith` (89 rules, `8860d616`). **Stops for the user:**

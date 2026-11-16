@@ -1,7 +1,7 @@
 //! `:expect` — what a `(query …)` says its own answer is.
 //!
 //! The form M1c
-//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
+//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
 //! settled, and the one part of it that is *shape* rather than comparison. The
 //! comparison is `ein_infer::expect`, which needs solutions; this module reads
 //! the claim the loader validates, so a program that checks nothing is
@@ -30,7 +30,7 @@
 //! *every* form to buy one keyword's ergonomics, where a `SYMBOL` head cost
 //! nothing. Since M1f S1f.5.5's swap `model` is a word a position gives a
 //! meaning to, and still a name wherever a name goes, so a relation of that
-//! name is unaffected ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)).
+//! name is unaffected ([`grammar.md`](../../../../docs/ein/user/reference/grammar.md)).
 //!
 //! **The verdict is implied, never asserted.** One `(model …)` means
 //! `Solution`; `(or …)` means `Ambiguity` with `k` equal to the number of
@@ -90,7 +90,7 @@ impl Expectation {
 }
 
 /// A query's `:over` — which states of R its classes are over (M1e2
-/// T1e2.1a.5.3, `region_language.md` § 5). All of R by default.
+/// T1e2.1a.5.3, `query.md`). All of R by default.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Over {
     #[default]

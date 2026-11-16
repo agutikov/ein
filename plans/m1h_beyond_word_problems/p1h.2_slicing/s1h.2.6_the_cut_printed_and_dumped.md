@@ -26,13 +26,13 @@ S1h.2.5's cut and computes nothing of its own.
 - **The rows shown first.** The stage's first task re-takes S1h.2.4's written-out surfaces on the day's
   binary, beside what the printer will print, before the printer moves.
 - **The pages in the same commit as the printer.** A read-out row:
-  [`read_out.md`](../../../docs/kernel/inference/read_out.md), `read_out_examples.md` by
+  [`read-out.md`](../../../docs/ein/user/reference/read-out.md), `read_out_examples.md` by
   `utils/read_out_examples.py`, and `ein-cli/tests/read_out_reference.rs`. A dump file:
-  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md), and `answer_round_trip.rs` if a slice
+  [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md), and `answer_round_trip.rs` if a slice
   file is a loadable program. A view:
-  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md), `dot_wellformed.rs`, and
+  [`rendering.md`](../../../docs/ein/user/reference/rendering.md), `dot_wellformed.rs`, and
   `utils/ci_container.sh` green on the commit, since a DOT writer changed. A new option: a row of
-  [`configuration.md`](../../../docs/kernel/configuration.md) and `config_reference.rs`.
+  [`config.md`](../../../docs/ein/user/reference/config.md) and `config_reference.rs`.
 - **The goldens counted and named before blessing.** A surface asked for by an option moves no golden of a
   run that does not pass it; the record says which digests of `corpus_shapes.md5` moved and why, by a
   command.

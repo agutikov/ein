@@ -1,4 +1,4 @@
-//! [`docs/kernel/configuration.md`] — the configuration reference, pinned.
+//! [`docs/ein/user/reference/config.md`] — the configuration reference, pinned.
 //!
 //! M1e [S1e.5.1](../../../../docs/history/m1e_review_processing/README.md#s1e51--the-configuration-reference).
 //! The page enumerates three surfaces — the 17 `(config …)` flags, the CLI
@@ -45,7 +45,7 @@
 //!    name the two dev-only crates read has a row in the page's harness
 //!    class: the worker pool's `EIN_TEST_JOBS` among them (M1f S1f.6.39).
 //!
-//! [`docs/kernel/configuration.md`]: ../../../../docs/kernel/configuration.md
+//! [`docs/ein/user/reference/config.md`]: ../../../../docs/ein/user/reference/config.md
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -63,11 +63,11 @@ fn repo_root() -> PathBuf {
 }
 
 fn page_path() -> PathBuf {
-    repo_root().join("docs/kernel/configuration.md")
+    repo_root().join("docs/ein/user/reference/config.md")
 }
 
 fn page() -> String {
-    std::fs::read_to_string(page_path()).expect("docs/kernel/configuration.md")
+    std::fs::read_to_string(page_path()).expect("docs/ein/user/reference/config.md")
 }
 
 /// A fixture `<tag>.ein` in `dir`, a [`Scratch`] the calling test owns, so it
@@ -140,10 +140,10 @@ fn the_defaults_block_is_the_binarys_own_dump_config() {
     let text = page();
     let (before, rest) = text
         .split_once(BEGIN)
-        .expect("docs/kernel/configuration.md has no generated-block opening marker");
+        .expect("docs/ein/user/reference/config.md has no generated-block opening marker");
     let (got, after) = rest
         .split_once(END)
-        .expect("docs/kernel/configuration.md has no generated-block closing marker");
+        .expect("docs/ein/user/reference/config.md has no generated-block closing marker");
 
     if got == want {
         return;
@@ -154,7 +154,7 @@ fn the_defaults_block_is_the_binarys_own_dump_config() {
         return;
     }
     panic!(
-        "docs/kernel/configuration.md's generated block is not \
+        "docs/ein/user/reference/config.md's generated block is not \
          `ein solve --dump-config`'s output.\n\
          Re-bank it with `EIN_BLESS=1 cargo test -p ein-cli --test \
          config_reference`; never edit the block by hand.\n\n\
@@ -226,7 +226,7 @@ fn every_flag_has_a_row_and_no_row_is_orphaned() {
     let rows = judgement_rows(&text);
     assert!(
         !rows.is_empty(),
-        "found no table in docs/kernel/configuration.md whose first column is `flag`"
+        "found no table in docs/ein/user/reference/config.md whose first column is `flag`"
     );
 
     let want: Vec<&str> = FLAGS.iter().map(|(n, _)| *n).collect();
@@ -335,7 +335,7 @@ fn the_cli_counts_come_from_the_golden() {
         let want = format!("| `{cmd}` | {n} |");
         assert!(
             text.contains(&want),
-            "docs/kernel/configuration.md has no row `{want}` — the golden says \
+            "docs/ein/user/reference/config.md has no row `{want}` — the golden says \
              {cmd} takes {n} options"
         );
     }
@@ -668,7 +668,7 @@ fn require_why_decides_loading_only() {
     let text = page();
     assert!(
         text.contains("| `--no-require-why` |"),
-        "docs/kernel/configuration.md has no row for --no-require-why"
+        "docs/ein/user/reference/config.md has no row for --no-require-why"
     );
     let golden = std::fs::read_to_string(
         repo_root().join("ein.rs/crates/ein-cli/tests/golden/help_shape.txt"),
@@ -805,7 +805,7 @@ fn the_surface_table_agrees_with_the_sections_it_summarises() {
 
 /// **The `EIN_LEFTOVER` row names every key of its block** (M1f S1f.5.28's
 /// item 2). The page owns `--json-summary`'s `leftover` block
-/// (`read_out.md`'s owners table), and its row described the block without
+/// (`read-out.md`'s owners table), and its row described the block without
 /// naming a key, `states_by_relation` among them. Both directions: every key
 /// a summary writes is a backticked name in the row, and the block is what the
 /// row says, `taken` the variable, `states` one count per listed state and

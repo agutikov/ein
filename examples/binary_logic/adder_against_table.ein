@@ -23,7 +23,7 @@
 ;;; acceptance line, *the gate-built full adder equals the binary adder's
 ;;; table*.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 4.
+;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md` § 4.
 (import std.bool.gates :symbols (gate2))
 (import std.bool.circuit :symbols (gate))   ; the relation full_adder's gates are facts of
 (import std.math.bits :symbols (bin-fa))

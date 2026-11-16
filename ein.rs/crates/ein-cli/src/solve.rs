@@ -177,7 +177,7 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
 /// because the answer on stdout is correct and complete and the artefact is
 /// paperwork. `--dump-states` is the exception and states why at its call
 /// site. The ruling and the reasoning are
-/// [`defined_behaviour.md` § 4.4](../../../../docs/kernel/defined_behaviour.md),
+/// [`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure),
 /// and the additive arm has no exit code of its own
 /// ([Q-M1e.22](../../../../docs/decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)).
 pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display) {

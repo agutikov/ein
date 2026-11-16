@@ -666,7 +666,7 @@ fn the_question_is_the_flags() {
 ///
 /// - the refusal, its exit code (**2**, a usage error) and its wording;
 /// - a **non-integer** still gets `int_arg`'s message, unchanged, because
-///   [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+///   [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
 ///   quotes that message verbatim and uses `--solutions` as its example.
 #[test]
 fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
@@ -780,7 +780,7 @@ fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
 /// point* on `colocation-chain.ein` at `--max-steps 1`, whose one firing is
 /// the whole saturation. The help said it *raises SaturatorStepLimitError*.
 /// A step limit leaves the KB where it stopped, which is what the flag asks
-/// for, so nothing goes to stderr and the exit code is 0 (`read_out.md` § 9).
+/// for, so nothing goes to stderr and the exit code is 0 (`read-out.md` § 9).
 #[test]
 fn the_step_limit_is_one_line_in_eins_spelling_and_exits_0() {
     const LINE: &str = "!! saturator step limit hit: ";
@@ -2437,7 +2437,7 @@ const GRAMMAR: &str = "utils/vscode-ein/ein.tmLanguage.json";
 
 /// The closed declarator set — P1.7c, plus S1.5.9's `macro`, S1.8.A2's
 /// `import` and M1e2 S1e2.1a.4's `solve`. Source of truth:
-/// [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md).
+/// [`docs/ein/user/reference/reserved-names.md`](../../../../docs/ein/user/reference/reserved-names.md).
 const DECLARATORS: [&str; 9] = [
     "config", "hrule", "import", "macro", "query", "relation", "rule", "solve", "trace",
 ];
@@ -2546,7 +2546,7 @@ fn the_textmate_grammar_is_the_ein_grammar() {
 /// Closed is the operative word: the eight are the only heads the *loader*
 /// treats as declarations, so a ninth in the grammar promises a syntax that
 /// does not exist and a missing one leaves a real declarator looking like an
-/// ordinary fact. `06_reserved_names.md` is the source of truth and the list
+/// ordinary fact. `reserved-names.md` is the source of truth and the list
 /// here mirrors it.
 #[test]
 fn the_grammars_declarators_are_the_closed_set() {

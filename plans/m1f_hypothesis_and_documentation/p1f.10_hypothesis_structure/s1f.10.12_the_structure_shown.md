@@ -69,7 +69,7 @@ rule; and every default the stages of part 1 took.
 Under (a) or (c): the view in `ein-render`, reading the one owner S1f.10.2 named; a test that holds the view's
 `structure.json` to the census on every instance; `dot_wellformed` over its graphs, which makes
 `utils/ci_container.sh` part of done for this task; the view in `ein render --help`. Under (b) or (c): the
-row, with [`read_out.md`](../../../docs/kernel/inference/read_out.md), `read_out_examples.md` and their
+row, with [`read-out.md`](../../../docs/ein/user/reference/read-out.md), `read_out_examples.md` and their
 reference test in the same commit.
 
 ### T1f.10.12.4 — the page

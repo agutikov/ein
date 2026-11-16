@@ -3,7 +3,7 @@
 //! drew the cube and the walk; since
 //! [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)
 //! the run is a region run's (`--visited`, `--answer`). The legend is
-//! [`04_dot_rendering.md` § Region rendering](../../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run).
+//! [`rendering.md` § Region rendering](../../../../docs/ein/user/reference/rendering.md#the-region--ein-render-region).
 //!
 //! **The nodes are the pure cube**: every subset `C` of the root candidates
 //! `H₁`, one rank per layer, `L0` at the top, and a thin edge for adding one

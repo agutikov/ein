@@ -4,14 +4,14 @@
 **Status:** **done 2026-11-11** (`3bd448a5`): `stdlib/digits.ein`, 1 664 rows in seven tables, generated, held to Rust's
 integers, importable flat and closed; four decisions taken by default, Q-M1f.145 to .148, and two findings, E-9
 and E-10 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08; re-planned 2026-11-11 to
-[the rulings](design.md#the-rulings-2026-11-11).
+[the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath).
 **Depends on:** [S1f.6.11](s1f.6.11_importing_facts.md), so a library of facts can be imported flat.
 
 ## What it builds
 
 The theory's gates, as **plain facts** (the user, 2026-11-11: *"yes plain facts"*), in a module of their own,
 `stdlib/digits.ein`, imported as `std.digits`. It is the stdlib's first library of facts, the *ontology* half of
-[`solution_semantics.md` § 1.1](../../../docs/kernel/inference/solution_semantics.md#11-context-and-problem), and
+[`solution-semantics.md` § 1.1](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#11-context-and-problem), and
 both arithmetic modules import it: `std.arith` (S1f.6.3 to S1f.6.6) and `std.num9`
 ([S1f.6.13](s1f.6.13_num9.md)).
 
@@ -26,7 +26,7 @@ both arithmetic modules import it: `std.arith` (S1f.6.3 to S1f.6.6) and `std.num
 | `adj` | two bounds | nothing lies between them | 10 |
 
 These are the tables of the prototype's `build/s1f.6/prototype/r3/k.ein`
-([design.md § Round 3](design.md#round-3-2026-11-11-several-representations-at-once)). The digit product with a
+([stdlib.md § Round 3](../../../docs/ein/user/reference/stdlib.md#stdmathnum9--nine-digits-in-one-fact)). The digit product with a
 carry in replaces the plan's separate product and short-division tables: division bisects the divisor's
 multiples and needs neither. `std.num9` adds its step counter in its own module.
 
@@ -47,7 +47,7 @@ multiples and needs neither. `std.num9` adds its step counter in its own module.
 - Every table, its rows held to the integers by a test, and `--check` in the gate.
 - A program that imports `std.digits` and nothing else: H empty, k_s 1, R {∅}.
 - A core that passes through a table names its rows, which is the measured cost of plain facts
-  ([design.md § G](design.md#g-the-flat-import-finding-a-specification-for-importing-facts)); the stage records
+  ([stdlib.md § G](../../../docs/ein/user/reference/stdlib.md#importing-a-module)); the stage records
   one such core.
 - No engine change in this stage.
 

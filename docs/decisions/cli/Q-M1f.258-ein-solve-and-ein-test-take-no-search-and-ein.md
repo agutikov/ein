@@ -18,4 +18,4 @@ answer another question.
 **Held by.** `ein-cli/tests/no_search.rs`: `the_oracle_and_the_question_flags_refuse_it`,
 `solve_reports_root_and_says_r_was_not_searched`, `the_summary_states_no_region_and_the_dump_writes_root`;
 `ein-cli/tests/lever_invariance.rs`: `no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r`. The row:
-[configuration.md](../../kernel/configuration.md).
+[config.md](../../ein/user/reference/config.md).

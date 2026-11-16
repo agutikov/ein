@@ -12,4 +12,4 @@ say one thing. A core printed fact by fact would print nothing, which reads as *
 
 **Held by.** `ein_infer::explain::EMPTY_CORE` and `core_text`, which every text surface writes a core through;
 `ein-infer/tests/corpus_cores.rs`: `a_rule_with_no_premise_refutes_root_with_the_empty_core`. The row:
-[read_out.md](../../kernel/inference/read_out.md) § 6.
+[read-out.md](../../ein/user/reference/read-out.md#6-the-listing) § 6.

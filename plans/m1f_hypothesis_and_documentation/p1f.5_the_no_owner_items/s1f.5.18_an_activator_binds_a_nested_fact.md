@@ -367,7 +367,7 @@ or a derived activator binding a relation parameter to a fact as loading:
   table, the derived activator's row the loader's line and a row for a fact written where a relation name is passed on,
   and a paragraph for the check, its reading (Q-M1f.41, Q-M1f.42), what it replaced (W59) and the compiler's line as the
   backstop; and § 4.13, nothing reaching the retired line since.
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md): the parameter list says an activator binds each
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md): the parameter list says an activator binds each
   parameter to its argument, any value, a nested fact included, and a relation parameter bound to a fact is refused where
   written and where a rule could derive it; *What a premise may be* names the derived case.
 - The inventory's [G-14](../../m1e2_correctness/inventory_2026-11-06.md) says its derived activator is done, and the

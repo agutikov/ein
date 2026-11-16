@@ -142,7 +142,7 @@ sound for every answer Ein gives, and this program is the reason the scope is st
 ## 4. What the cube shows
 
 The oracle, `ein oracle FILE --dump DIR`, enumerates every node of a cube within its limit
-([`region_dump.md` § The limit](../../../kernel/inference/region_dump.md#the-limit)) and counts what a site did:
+([`region-dump.md` § The limit](../../user/reference/region-dump.md#the-limit)) and counts what a site did:
 
 - **holes**, nodes outside R between two members of R;
 - **dead nodes with an alive superset**;
@@ -197,7 +197,7 @@ must sit*, owes every seat from root, where a seat can only pay, and its region 
 ## 7. The drawings
 
 Seven regions drawn by `ein render region`
-([`04_dot_rendering.md` § Region rendering](../../../kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)),
+([`rendering.md` § Region rendering](../../user/reference/rendering.md#the-region--ein-render-region)),
 each with a bare `ein solve` on its cube. Fill is the node's status, shape is what the run did there, and border is
 the lines and the defects; a purple border is a hole, and a `+fact` edge is the repair that takes it back into R. On a
 monotone program the run reads the alive states and their extensions; on a flagged one it classifies every node
@@ -366,7 +366,7 @@ beside the status's and never folds one into the other.
 A rule that concludes `(false)` or a stored negation may not rest on an `(absent P)` over a relation a commitment can
 still extend: directly, through a fact a rule derives resting on such an `absent`, or through its activator
 ([Q-M1e2.5](../../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md), the refusal and its
-message in [`defined_behaviour.md`](../../../kernel/defined_behaviour.md) § 4.7). *Extendable* is D followed through
+message in [`diagnostics.md`](../../user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill) § 2.7). *Extendable* is D followed through
 every rule with parameters whose activator relation it holds, each such rule read from its pattern, so that a chain
 of activators that first appears at a node is covered too
 ([`forbid-chain-1.ein`](../../../../examples/ein-bugs/wrong-answers/forbid-chain-1.ein) and its siblings). Over such a relation the shape judges a state that has not
@@ -385,7 +385,7 @@ Over a relation no commitment can extend, the same shape is closed-world reasoni
 
 On a flagged program, and only there, the read-out says more than *not monotone*. No option turns this on or off, and
 it decides nothing: no finding chooses a node, refuses a program or moves R. Where it is printed, row by row, is
-[`read_out.md`](../../../kernel/inference/read_out.md)'s `lattice` block; `ein solve FILE --monotone` prints its static
+[`read-out.md`](../../user/reference/read-out.md)'s `lattice` block; `ein solve FILE --monotone` prints its static
 half alone.
 
 ### 11.1 The static half

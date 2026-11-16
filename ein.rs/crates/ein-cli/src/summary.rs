@@ -1,6 +1,6 @@
 //! `ein solve --json-summary FILE` — the structured run summary, since M1e2
 //! S1e2.1a.5's switch `ein-summary/2`: the read-out as data
-//! ([`read_out.md` § 11](../../../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks)).
+//! ([`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)).
 //!
 //! Four properties: **additive** (writes a file, never stdout/stderr/the exit
 //! code), **order-free** (every set-shaped observable sorted, so a difference
@@ -203,7 +203,7 @@ fn leftover_at(
 }
 
 /// `EIN_LEFTOVER=1`'s block for a region run — M1d S1d.3.1's probe, re-read
-/// per listed state at M1e2 S1e2.1a.5 (`read_out.md` § 12): what the
+/// per listed state at M1e2 S1e2.1a.5 (`read-out.md` § 12): what the
 /// **blind** enumerator would still propose at each state the read-out
 /// listed, outside H — a question about the universe, not about a route.
 ///
@@ -268,7 +268,7 @@ fn config_block(cfg: &SolverConfig) -> Json {
 
 /// The summary of a region run, `ein-summary/2` — M1e2 T1e2.1a.5.2, its
 /// answer blocks defined by
-/// [`read_out.md` § 11](../../../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks).
+/// [`read-out.md` § 11](../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks).
 /// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
 /// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
 /// program's: the static check, `EIN_LEFTOVER`'s block, root's fixpoint and H

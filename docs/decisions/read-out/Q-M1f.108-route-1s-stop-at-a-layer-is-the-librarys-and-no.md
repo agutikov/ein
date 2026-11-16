@@ -10,4 +10,4 @@ option of `ein` chooses route 1.
 is printed, so a row no command prints is stated, not hidden.
 
 **Held by.** `ein-cli/tests/read_out_reference.rs`: `route_1_never_stops_on_an_ein_run`, the one shape describe takes
-route 1 on exhausting at `--region-budget 1`. The row: [read_out.md](../../kernel/inference/read_out.md) § 2.
+route 1 on exhausting at `--region-budget 1`. The row: [read-out.md](../../ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2.

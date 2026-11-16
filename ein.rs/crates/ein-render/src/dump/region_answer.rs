@@ -2,7 +2,7 @@
 //! `--dump-answer DIR` as `ein-answer/2` — M1e2
 //! [T1e2.1a.5.2](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
 //! fifth step, the fields
-//! [`read_out.md` § 11](../../../../../docs/kernel/inference/read_out.md#11---json-summary-the-answer-blocks)
+//! [`read-out.md` § 11](../../../../../docs/ein/user/reference/read-out.md#11---json-summary-the-answer-blocks)
 //! defines.
 //!
 //! **The same facts as stdout**, from the same [`ReadOut`]: what was asked,

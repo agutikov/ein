@@ -116,7 +116,7 @@ from the repo root. `probes/` is [`../probes/`](../probes/).
 *Live* means the same surface still states the false thing. *Moved* means the
 false statement now sits on another surface. *Gone* means no surface states it,
 and the row names what removed it and what fails if it comes back, or says
-that nothing checks it ([`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md):
+that nothing checks it ([`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md):
 an absence is settled by naming the thing that checks it).
 
 | id | the witness, re-taken | today | class | removed by, and what holds it |
@@ -519,7 +519,7 @@ record does not claim it.
 - [`read_out.md`](../p1e2.1a_the_solution_region/read_out.md): the six rules
   every surface follows (§ 3), the 100 lines (§ 4.1), the summary (§ 8.1),
   and the other surfaces (§ 8.6).
-- [`configuration.md` § 2.3](../../../docs/kernel/configuration.md): where S4 is
+- [`config.md` § 2.3](../../../docs/ein/user/reference/config.md#23-reading-the-judgement-columns): where S4 is
   written down today as the one exception to *a lever changes nothing
   printed*.
 - [`corpus/fuzz_findings/kwpair-below-the-filter.md`](../../../corpus/fuzz_findings/kwpair-below-the-filter.md):

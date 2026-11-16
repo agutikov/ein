@@ -11,7 +11,7 @@
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A file-relative `(import …)` resolves against the importing file's own
-;;; directory (`01_grammar.md` § Imports), and the user's rule is one tool,
+;;; directory (`syntax.md` § Imports), and the user's rule is one tool,
 ;;; consistent answers: `ein saturate` loads this program as `ein solve` does,
 ;;; and answers it, exit 0.
 ;;;

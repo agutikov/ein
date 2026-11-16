@@ -4,14 +4,14 @@
 # check, which fails where a file's count rises or a file not listed here
 # has one. A count only falls: the commit that lowers it re-banks this file,
 # and when every count is 0 the file is deleted with the baseline's reader.
-  151  README.md
+  150  README.md
   765  corpus/corpus.toml
     1  corpus/fuzz_findings/activator-text-key.ein
     2  corpus/fuzz_findings/binding-key-layout-swapped.ein
     3  corpus/fuzz_findings/binding-key-layout.ein
     3  corpus/fuzz_findings/fork-delta-order.ein
   142  docs/ein/README.md
-   24  ein.rs/crates/ein-cli/src/cmdline.rs
+   23  ein.rs/crates/ein-cli/src/cmdline.rs
    20  ein.rs/crates/ein-cli/src/common.rs
     3  ein.rs/crates/ein-cli/src/kb.rs
     3  ein.rs/crates/ein-cli/src/lib.rs
@@ -49,7 +49,7 @@
     2  ein.rs/crates/ein-cli/tests/import_invariance.rs
     2  ein.rs/crates/ein-cli/tests/imports_by_full_name.rs
     3  ein.rs/crates/ein-cli/tests/leftover_probe.rs
-   34  ein.rs/crates/ein-cli/tests/lever_invariance.rs
+   33  ein.rs/crates/ein-cli/tests/lever_invariance.rs
     3  ein.rs/crates/ein-cli/tests/macro_bodies.rs
     2  ein.rs/crates/ein-cli/tests/macro_facts.rs
     8  ein.rs/crates/ein-cli/tests/mechanism_conflicts.rs
@@ -71,7 +71,7 @@
    29  ein.rs/crates/ein-cli/tests/region_modes.rs
    11  ein.rs/crates/ein-cli/tests/region_render.rs
     7  ein.rs/crates/ein-cli/tests/render_doors.rs
-   14  ein.rs/crates/ein-cli/tests/route_invariance.rs
+   13  ein.rs/crates/ein-cli/tests/route_invariance.rs
     3  ein.rs/crates/ein-cli/tests/solve_lists.rs
     1  ein.rs/crates/ein-cli/tests/steps/mod.rs
     7  ein.rs/crates/ein-cli/tests/summary_properties.rs
@@ -187,7 +187,7 @@
     3  ein.rs/crates/ein-infer/tests/event_cut_control.rs
     1  ein.rs/crates/ein-infer/tests/expect_semantics.rs
    25  ein.rs/crates/ein-infer/tests/explain_semantics.rs
-   22  ein.rs/crates/ein-infer/tests/explore.rs
+   21  ein.rs/crates/ein-infer/tests/explore.rs
     5  ein.rs/crates/ein-infer/tests/gcd_theory.rs
    14  ein.rs/crates/ein-infer/tests/int_theory.rs
     9  ein.rs/crates/ein-infer/tests/interning.rs
@@ -211,7 +211,7 @@
     3  ein.rs/crates/ein-ir/examples/generated_parser.rs
     1  ein.rs/crates/ein-ir/examples/load_rss.rs
    13  ein.rs/crates/ein-ir/src/ast.rs
-    9  ein.rs/crates/ein-ir/src/claim.rs
+    8  ein.rs/crates/ein-ir/src/claim.rs
     6  ein.rs/crates/ein-ir/src/dump.rs
    15  ein.rs/crates/ein-ir/src/expect.rs
   180  ein.rs/crates/ein-ir/src/from_ir.rs
@@ -803,7 +803,7 @@
     1  tests/imports/lower.ein
     2  tests/imports/upper.ein
     2  tests/imports/upper_without_entry.ein
-    2  tests/region/01_states.ein
+    1  tests/region/01_states.ein
     1  tests/region/02_merged_single.ein
     1  tests/region/03_merged_or.ein
     5  tests/region/04_owing.ein

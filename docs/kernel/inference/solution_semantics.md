@@ -31,14 +31,14 @@
 > from the library only after that, until M1e2 S1e2.1c.5 deleted it
 > (2026-11-03), and its reproductions run against a binary built at or before
 > commit 7ec8a480. R by brute force is
-> [`ein oracle --dump`](region_dump.md), for n ≤ 16.
+> [`ein oracle --dump`](../../ein/user/reference/region-dump.md), for n ≤ 16.
 
 ---
 
 ## 1. The vocabulary, in dependency order
 
 Each term is defined using only the ones above it. The one-line versions are
-in the [glossary](../glossary.md#search-and-answers).
+in the [glossary](../../ein/user/reference/glossary.md#the-answer).
 
 ### 1.1 Context and problem
 
@@ -62,7 +62,7 @@ either half of a context** since M1f S1f.6.11 (the user, 2026-11-11:
 *"together with theory libs that are rule libs we probably would want to have
 ontology libs that are facts libs"*): an import brings a library's facts
 as it brings its rules
-([`01_grammar.md` § Import](../ir/03-ein-lang/01_grammar.md#import)), and an
+([`syntax.md` § Import](../../ein/user/reference/syntax.md#import)), and an
 imported fact is a fact of the program, its constants names of the program
 (§ 1.2). **R is a property of a
 problem in a context**: the same problem in another context has another
@@ -165,7 +165,7 @@ Which facts can be proposed at all is decided by:
 The **universe** H is the candidate list, and n = |H|. It replaces `alive₀`
 as the space every later definition quantifies over: the user ruled on
 2026-10-15 that no config option may change the problem's lattice
-([configuration.md § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)),
+([config.md § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)),
 and the walk's `alive₀` was taken through its lookahead and after the
 forced-positive cascade (§ 6.3).
 
@@ -349,7 +349,7 @@ A program is **monotone** when no read of its compiled plans can take a
 conclusion away or add a debt as the commitment grows: no `absent` at odd
 depth in a saturation rule over a relation a commitment can change, and no
 obligation trigger over one
-([`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check),
+([`region-dump.md` § Monotonicity](../../ein/user/reference/region-dump.md#monotonicity--the-static-check),
 [`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)).
 Then:
 
@@ -515,7 +515,7 @@ fixture is named for.
 
 ![lattice/02's region, with a bare ein solve on it](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.svg)
 
-Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
+Drawn by [`ein render region`](../../ein/user/reference/rendering.md#the-region--ein-render-region)
 ([`.dot`](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
 on the cube (M1e2 S1e2.1a.7, 2026-11-01). Re-made with:
 
@@ -590,7 +590,7 @@ between two tables have one projection class per choice of table, and the
 seats inside it are hidden information. In a program with restrictions only,
 the goal has no row at ∅, so a query over R has to say *undetermined in these
 solutions*. Every query block of the read-out prints them, since M1e2
-S1e2.1a.5 ([`read_out.md` § 7](read_out.md#7-queries-and-claims));
+S1e2.1a.5 ([`read-out.md` § 7](../../ein/user/reference/read-out.md#7-queries-and-claims));
 [S1e2.1a.4](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md)
 gave the query its form.
 
@@ -621,7 +621,7 @@ measured the scope rule over the corpus is
 openness_census.md.
 
 Normative detail on what an obligation quantifies over:
-[`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md)
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
 (C1–C4) and
 [why an obligation's alternatives are jointly exhaustive](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive).
 
@@ -632,10 +632,10 @@ Normative detail on what an obligation quantifies over:
 ### 5.1 Today
 
 What `ein solve` prints, row by row and number by number, is
-[`read_out.md`](read_out.md) (M1f S1f.5.16), which names for every row what
+[`read-out.md`](../../ein/user/reference/read-out.md) (M1f S1f.5.16), which names for every row what
 its numbers count, R, what lies around R, the run or the listing, and the
 summary field that holds the same number; every row is in a real run on
-[`read_out_examples.md`](read_out_examples.md). `ein-cli/tests/read_out_reference.rs`
+[`read-out-examples.md`](../../ein/user/reference/read-out-examples.md). `ein-cli/tests/read_out_reference.rs`
 and `read_out_examples.rs` hold both pages to the binary. By question: a bare
 `ein solve` describes all of R, with k_s and k_c, the two lines and the shape;
 `--minimal` and `--maximal` list a line; `-n N` lists N states of the part asked;
@@ -660,7 +660,7 @@ blind enumerator binds a type as an object (§ 1.4).
 | the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle. **One tool, consistent with the oracle**: every question about R is a mode of `ein solve` that does the least work it needs, the cube is `ein oracle`, and there is no `ein walk` (the user, 2026-10-16). The interface was approved the same day ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)). **Its modes are built** ([`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs), held to the oracle by `ein-infer/tests/explore.rs`): `ein solve --minimal`, `--maximal`, `--single`, `--region-budget`, and `ein oracle`; since S1e2.1a.5 a bare `ein solve` describes R | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
 | (i) | **the verdict words judge a stated expectation.** `Ambiguity` is relevant where exactly one solution is expected, `Contradiction` where some is. Without an expectation, `solve` explores and describes R | S1e2.1a.5 |
 | (g) | **`exhausted` means the reported region is all of R.** A run a budget stopped (`-m`, `-E`, `-T`) reports what it found as a lower bound, and every node in it is checked | S1e2.1a.5, S1e2.1a.9 |
-| (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, and since the grammar's ruling of 2026-10-16 states the expected region as its `:expect (region …)`; `(query :goal … :expect …)` asks about the goal's projection classes. `(solve …)` exists since T1e2.1a.4.2 | S1e2.1a.4 ([`region_language.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_language.md), [`region_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)) |
+| (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, and since the grammar's ruling of 2026-10-16 states the expected region as its `:expect (region …)`; `(query :goal … :expect …)` asks about the goal's projection classes. `(solve …)` exists since T1e2.1a.4.2 | S1e2.1a.4 ([`query.md`](../../ein/user/syntax-and-semantics/query.md), [`query.md`](../../ein/user/syntax-and-semantics/query.md#claims)) |
 | (e) | **the region's printed form**: every state of R, and each state with several generating commitments with its minimal ones, as `(region (model …) …)` with `(merged <to> <from>)` | S1e2.1a.4, S1e2.1a.5 |
 
 **Empty R has two kinds**, and the read-out keeps them apart:
@@ -758,7 +758,7 @@ the KB it guards, and two writers run after it:
 
 Neither write can create a contradiction by itself: `h` is neither asserted
 nor negated when it is proposed. But `(not P)` is an ordinary match form
-([`02_patterns.md`](../ir/03-ein-lang/02_patterns.md)), so a rule may read
+([`syntax.md`](../../ein/user/reference/syntax.md#3-patterns)), so a rule may read
 these facts. Write `K` for what the search wrote: **the engine recorded
 `S ∪ K` and had checked the criteria against `S`.**
 
@@ -954,7 +954,7 @@ leave those out.
   `enable-symmetric-mirror` on
   [`features/06_symmetric_native.ein`](../../../examples/features/06_symmetric_native.ein),
   where it removes three facts from root
-  ([configuration.md § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)).
+  ([config.md § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
   M1e2 S1e2.1a.6 retired that flag (2026-11-01), and
   `ein-cli/tests/lever_invariance.rs` holds every mode's read-out under every
   lever to the default's on every program whose R is known.
@@ -963,21 +963,21 @@ leave those out.
 
 - [`finding-r.md`](../../ein/reasoning/kb-evolution/finding-r.md): how R is found, the oracle's cube and the routes' licences, as
   formulas.
-- [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
+- [`region-dump.md`](../../ein/user/reference/region-dump.md): R by brute force, `ein oracle --dump`.
 - [`monotonicity.md`](../../ein/reasoning/kb-evolution/monotonicity.md): the monotone and the non-monotone
   region compared, and how to solve each.
-- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
+- [`rendering.md` § Region rendering](../../ein/user/reference/rendering.md#the-region--ein-render-region):
   R drawn, `ein render region`.
 - [`absent-and-naf.md`](../../ein/reasoning/kb-evolution/absent-and-naf.md): worlds, the NAF boundary, and
   the corollaries a non-monotone program has to be read beside.
-- [`configuration.md`](../configuration.md): the config principle, and every
+- [`config.md`](../../ein/user/reference/config.md): the config principle, and every
   lever's row read against it.
 - [`satisfiability.md`](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive): why
   an obligation's alternatives are jointly exhaustive.
-- [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md):
+- [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over):
   C1–C4, what an obligation quantifies over.
 - [`features.md`](features.md): the measured feature × config matrix.
-- [`glossary.md`](../glossary.md#search-and-answers): one-line entries for
+- [`glossary.md`](../../ein/user/reference/glossary.md#the-answer): one-line entries for
   every term on this page.
 - [`definitions.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/definitions.md):
   the plan's table this page was written from, with each term's status and

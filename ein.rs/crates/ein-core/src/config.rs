@@ -20,7 +20,7 @@
 //!
 //! Every flag, with its default, what it changes, whether it changes the
 //! answer and what depending on it commits you to:
-//! [`docs/kernel/configuration.md`](../../../../docs/kernel/configuration.md),
+//! [`docs/ein/user/reference/config.md`](../../../../docs/ein/user/reference/config.md),
 //! whose defaults block is `--dump-config`'s own output and whose flag list is
 //! diffed against [`FIELDS`] by `ein-cli/tests/config_reference.rs`.
 
@@ -248,7 +248,7 @@ pub struct SolverConfig {
     /// **Retired at M1e2 S1e2.1a.6, and read by nothing.** The saturator
     /// mirrors every relation marked `(__symmetric__ R)`, always; off, this
     /// flag took the mirror's facts out of root's fixpoint and so changed R,
-    /// which no config option may (`configuration.md` § 2.5). The field stays,
+    /// which no config option may (`config.md` § 2.5). The field stays,
     /// at `true`, because the `.einb` container round-trips [`FIELDS`].
     pub enable_symmetric_mirror: bool,
     /// **Retired**, as is the next, and read by nothing; kept at its default

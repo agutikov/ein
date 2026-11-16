@@ -18,7 +18,7 @@ this page is where the user answers on evidence.
 
 `design.md` in this directory, whole: the four stages' sections brought to one page, the proposals, and the
 questions. The model is the calculator's
-[`design.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md): target programs, each run
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath): target programs, each run
 on the release binary and shown with what the run wrote, then the conventions proposed, then the questions,
 each with a recommendation that a run supports or with none. The commit at the stop is pages only.
 

@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day ([§ The instruction](#the-instruction)).
-**T1 done 2026-11-11, and stopped for the user:** the prototype and the page, [`word_problems.md`](word_problems.md),
+**T1 done 2026-11-11, and stopped for the user:** the prototype and the page, [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md),
 29 programs under `build/s1f.6.20/` on the release binary, every problem of the table answered, the three gap
 mechanisms and the three forms of a missing reading each run, twelve questions with recommendations, and E-17 to
 E-20 in [`findings.md`](findings.md). Nothing shipped; T2 onward wait for the rulings.
@@ -13,7 +13,7 @@ test of the gate does not end on it (E-33). The twelve questions stay open, and 
 rulings.
 Its first task **stops for the user** with example programs before any theory is written.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md), the four operations. The protocol is ruled
-([the rulings](design.md#the-rulings-2026-11-11)): request facts, result facts read by a goal with a variable in
+([the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)): request facts, result facts read by a goal with a variable in
 the result's place, and named constants. **No expression layer is in the core:** every *"together means sum"* is a
 rule of the problem's theory from facts to a request. How that reads, and how often a quantity needs two or three
 operations, is the evidence [S1f.6.14](s1f.6.14_expressions.md)'s question to the user waits for. It does not need
@@ -79,7 +79,7 @@ theory and a set of problems, each run on the release binary, every answer compu
 | the same with the assumption stated, *Alice had none* | the gap closed by an assumption, and the answer marked as resting on it |
 | *Bob has 5 apples and gave 7 to Alice* | a contradiction in the problem's facts: what the program says, `(false)` or a flag, as the user ruled for division by zero |
 | *Bob has 5 apples, Alice has 3 pears. How many apples do they have together?* | two kinds of thing: a sum only over the kind asked about |
-| *12 boxes of 144 pencils, 250 go to the office, the rest shared among 31 classes* | several steps, a product, a difference, a quotient and a remainder ([`design.md`](design.md)'s word problem, with its words as facts rather than as `let` lines) |
+| *12 boxes of 144 pencils, 250 go to the office, the rest shared among 31 classes* | several steps, a product, a difference, a quotient and a remainder ([`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)'s word problem, with its words as facts rather than as `let` lines) |
 | a *who has more, and by how much* problem | the comparison |
 | *Bob has 5 apples, Alice has 7. A box holds 3. How many boxes do they need?* (the user's, 2026-11-11) | **three numbers, two steps, and the program explains the plan**: which operations, in what order, and why. *They* fill the boxes together, so the apples are summed first, 5 + 7 = 12; a box *holds* 3, so the boxes are a division, 12 ÷ 3 = 4. See [§ The plan is explained](#the-plan-is-explained) |
 | the same with *Alice has 8* (the coordinator's variant) | the division leaves a remainder, 13 ÷ 3 = 4 and 1 over: whether *need* means a fifth box is a reading of the word, and the program says which reading it took |
@@ -203,7 +203,7 @@ holds each gap problem to its named gap.
 
 **The instruction.** The user, 2026-11-12: *"bank word problems into examples/word_problems with recommended
 variants"*. It is an instruction for the examples. **It is not a ruling on the twelve questions of
-[`word_problems.md` § 11](word_problems.md#11-the-questions-for-the-user), which stay open**; a ruling that
+[`word-problems.md` § 11](../../../docs/ein/user/guide/word-problems.md), which stay open**; a ruling that
 differs from a recommendation moves the banked files. No stdlib module and no engine source moved.
 
 **What is banked**, under [`examples/word_problems/`](../../../examples/word_problems/README.md): sixteen
@@ -313,7 +313,7 @@ gains thirteen of the files, the `z` inside a nested number they write or the ca
 `readings.ein` and `boxes12.ein` the hrule's name its closing rule concludes. No engine source moved.
 
 **Pages:** `examples/word_problems/README.md`, new; `examples/README.md`, a row for the directory;
-[`word_problems.md`](word_problems.md), *Where it is banked* and the table of names; `findings.md`;
+[`word-problems.md`](../../../docs/ein/user/guide/word-problems.md), *Where it is banked* and the table of names; `findings.md`;
 `open_questions.md`; the phase README's row; `corpus/corpus.toml`; `AGENTS.md`. `questions.md`, which holds the
 user's replies in progress, was not touched: its section F says the problems were banked, and Q-M1f.194 to .198
 and E-33 are not yet in its sections I and J.

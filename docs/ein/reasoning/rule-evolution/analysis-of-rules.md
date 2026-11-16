@@ -92,7 +92,7 @@ that sees it.
   pass through an `absent`, and that root's fixpoint may depend on the boundary's admission order and need not be
   unique. A `negative cycle` row under it names each cycle: its relations, the rules on its negative edges, and
   what its parity allows. (`cycle`, without *negative*, is the monotonicity check's word for its own cycles.) The
-  rows are [`read_out.md`](../../../kernel/inference/read_out.md)'s.
+  rows are [`read-out.md`](../../user/reference/read-out.md)'s.
 - **`ein saturate --dump`** prints each rule's stratum beside it, and one `;; Strata` line: *stratified, k strata*,
   or *not stratifiable* with the same cycles.
 - A stratified program prints no `strata` row.
@@ -114,7 +114,7 @@ page of what it serves:
   ([Q-M1f.245](../../../decisions/hypotheses/Q-M1f.245-the-hypothesis-mechanisms-are-judged-at-load-on.md));
 - **the rule shapes refused at load**, a conclusion's variable nothing binds, a rule that reads nothing, a rule
   that could derive an activator binding a relation parameter to a fact:
-  [`defined_behaviour.md` § 4](../../../kernel/defined_behaviour.md#4-errors-and-exit-codes).
+  [`diagnostics.md` § 2](../../user/reference/diagnostics.md#2-errors-and-exit-codes).
 
 What Ein does *to* a rule set, rather than reads from it, is
 [Transformations of a rule set](transformations.md)'s.

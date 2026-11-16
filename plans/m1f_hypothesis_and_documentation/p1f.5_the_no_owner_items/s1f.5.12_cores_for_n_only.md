@@ -236,9 +236,9 @@ what decided its member's core. It is restated: the walk's snapshot gives the sa
 first preparation does, and with the alternatives cap raised to 1 000 000 both give the 17 its `right` states (a
 scratch build, `build/s1f.5.12/s1f512_member.rs`, 2026-11-09), so the cap decides it all and the row stays open, F22's.
 The kernel pages that said `not-kept` say what replaced it in the same commit:
-[`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s `nogoods.json` paragraph and its file list,
-[`glossary.md`](../../../docs/kernel/glossary.md)'s core statuses and
-[`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s `core_status` row. The live read-out reference has
+[`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s `nogoods.json` paragraph and its file list,
+[`glossary.md`](../../../docs/ein/user/reference/glossary.md)'s core statuses and
+[`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s `core_status` row. The live read-out reference has
 no row whose words move.
 
 **The tests** (each run on the commit's build, release, 2026-11-09):
@@ -260,13 +260,13 @@ no row whose words move.
 ### Task T1f.5.12.3 — the cost after, and the pages
 
 The cost after, beside step 1's. The pages:
-- [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s `nogoods.json` row: each member's core
+- [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s `nogoods.json` row: each member's core
   is taken after the walk, and is the core an eager run takes;
-- the live read-out reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md) (S1f.5.16), where a row's words move, and
-  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s list of core statuses; M1e2's `read_out.md`
+- the live read-out reference, [`read-out.md`](../../../docs/ein/user/reference/read-out.md) (S1f.5.16), where a row's words move, and
+  [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s list of core statuses; M1e2's `read_out.md`
   § 6.2 and § 8.2 are a record, and are not edited;
-- [`glossary.md`](../../../docs/kernel/glossary.md)'s list of the core statuses;
-- [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s note that the oracle never writes
+- [`glossary.md`](../../../docs/ein/user/reference/glossary.md)'s list of the core statuses;
+- [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s note that the oracle never writes
   `not-kept`;
 - `CLAUDE.md`'s S1e2.3.9 paragraph;
 - the inventory's P-15, which says what fixed it.
@@ -312,10 +312,10 @@ work.
 66 688 dead nodes over the corpus on 2026-11-09 (held to at least 1 000).
 
 **The pages** each output-changing commit did not already carry:
-- **T2 and T5 carried the kernel pages**: [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md)'s
-  `nogoods.json` paragraph, its file list and its `.einb` line, [`glossary.md`](../../../docs/kernel/glossary.md)'s core
-  statuses and [`region_dump.md`](../../../docs/kernel/inference/region_dump.md)'s `core_status` row. The live read-out
-  reference, [`read_out.md`](../../../docs/kernel/inference/read_out.md), has no row whose words moved: stdout prints no
+- **T2 and T5 carried the kernel pages**: [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md)'s
+  `nogoods.json` paragraph, its file list and its `.einb` line, [`glossary.md`](../../../docs/ein/user/reference/glossary.md)'s core
+  statuses and [`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)'s `core_status` row. The live read-out
+  reference, [`read-out.md`](../../../docs/ein/user/reference/read-out.md), has no row whose words moved: stdout prints no
   member of N's core and no row of a `.einb`'s dump. M1e2's `read_out.md` § 6.2 and § 8.2 are a record and are not
   edited.
 - **AGENTS.md**: S1e2.3.9's paragraph says what retired `not-kept`, and the P1f.5 account says what the stage did.
@@ -397,7 +397,7 @@ the path, and on `zebra2-hints` each state file's header and state. `answer_dump
 fixpoint of its program, and N's member with its core. The register's `W43/einb-dump-answer` is fixed: its `now` is
 `solve` on the container, which `wrong_answers.rs` runs with `--dump-answer`, exit 0, R's three states and N's member
 with its core, (p a) (p b), read off the container's `nogoods.json`, as its `right` states them; and its
-`[case.fixed]` carries the null id, which T1f.5.12.3 writes. [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md) says a `.einb` writes the
+`[case.fixed]` carries the null id, which T1f.5.12.3 writes. [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md) says a `.einb` writes the
 directory its `.ein` writes, where it said it was refused.
 
 The register reads **129 fixed, 22 open and 1 not wrong** (`grep '^status' corpus/wrong_answers.toml | sort | uniq

@@ -86,7 +86,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   program can be incomplete, as an ambiguous puzzle is, and the engine **shows** the incompleteness as a region.
   Nothing there is undecidable.
 - **Nested facts change the class.** A rule may conclude a fact nested deeper than its premises
-  ([P1f.6](../m1f_hypothesis_and_documentation/p1f.6_calculator/design.md)'s numbers are that:
+  ([P1f.6](../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)'s numbers are that:
   `(n (n (n z 1) 2) 3)`), so the facts a program can derive are no longer bounded by its names, and saturation
   need not stop. That is Horn clauses with function symbols, which compute anything computable. So whether root
   derives `(false)`, **consistency itself**, is then undecidable in general: the halting problem, Turing's and
@@ -106,7 +106,7 @@ interprets enough arithmetic** (Robinson's Q is enough). The sketch, to be check
   the engine has: a program with no stable reading.
 - **The second theorem, and what a certificate is.** A system of that strength cannot prove its own
   consistency. Ein's practical form of the question is what `exhausted` and a green gate license one to say,
-  which [`standard_of_proof.md`](../../docs/kernel/standard_of_proof.md) answers for the repo and not for the
+  which [`standard-of-proof.md`](../../docs/ein/standard-of-proof.md) answers for the repo and not for the
   logic.
 
 ## And common sense

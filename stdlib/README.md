@@ -96,7 +96,7 @@ They derive nothing and are not in the saturation agenda; what reads them is
 one pass over the quiescent KB, reported through `--events`' `owe` lines,
 `--json-summary`'s `owes` block and the trace's *Outstanding obligations*
 section
-([`06_reserved_names.md` § the verdict atom](../docs/kernel/ir/03-ein-lang/06_reserved_names.md)).
+([`reserved-names.md` § the verdict atom](../docs/ein/user/reference/reserved-names.md)).
 
 ## `std.math.digits`: a library of facts (M1f S1f.6.2)
 
@@ -193,7 +193,7 @@ program's imports once (the stage's record counts them); no answer moved.
 **The numeral's check reads what the loader states.** The loader states every
 fact nested in a fact a file writes, and in a rule's conclusion where it holds
 no variable, as `(written T)` (the kernel relation `written`,
-[`defined_behaviour.md` § 4.30](../docs/kernel/defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)),
+[`diagnostics.md` § 2.30](../docs/ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)),
 so `std.math.decimal`'s rules see every place of every numeral a file writes,
 wherever it sits, and flag a malformed one in root's first layer, with no
 request reading it: § [Malformed requests and numerals](#malformed-requests-and-numerals-what-is-flagged-where-and-what-stays-silent-m1f-s1f612-s1f638)
@@ -299,7 +299,7 @@ with another count of arguments, or a walk started from another place, fails
 per commit.
 
 **How it computes** (design K of the phase's
-[`design.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#k-an-accumulator-in-the-other-order-and-a-continuation-on-every-call)):
+[`stdlib.md`](../docs/ein/user/reference/stdlib.md#stdmathdecimal-arith--school-arithmetic-on-natural-numbers)):
 each operand is looked up; one walk from the units takes each column through
 the full adder's table and puts its digit in front of an accumulator, `(b
 DIGIT REST)`, which so holds the answer most significant digit outermost;
@@ -801,7 +801,7 @@ program that states false facts means is M1g's
 **A number or a request with the wrong count of arguments
 is refused at load** since S1f.6.23, `(n 1)`, `(n z 1 2)`, `(add (n z 5))`,
 each a form of a relation the module declares
-([`defined_behaviour.md` § 4.26](../docs/kernel/defined_behaviour.md#426-a-form-of-a-declared-relation-has-the-declared-count-of-arguments--m1f-s1f623)).
+([`diagnostics.md` § 2.26](../docs/ein/user/reference/diagnostics.md#226-a-form-of-a-declared-relation-has-the-declared-count-of-arguments)).
 
 ### Malformed requests and numerals: what is flagged, where, and what stays silent (M1f S1f.6.12, S1f.6.38)
 
@@ -980,7 +980,7 @@ Binary arithmetic as a theory of its own, beside decimal (P1f.6's reply 13,
 way (b)): its own numeral, its own names, the same rules where they are the
 same. The user, 2026-11-11: *"arithmetic with binary numbers, I suspect simpler
 rules"*; what got simpler is
-[`binary_arithmetic.md` § What shipped](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md#what-shipped-2026-11-15).
+[`stdlib.md` § What shipped](../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
 
 | module | what it is |
 |---|---|
@@ -1132,7 +1132,7 @@ held by the same two tests (`num9_theory.rs` on the text, per commit, and
 `arith_batch.rs` on the matcher's count, by hand since M1f S1f.6.21). It is what the design's prototype did not do: its step
 rule joined a division's state with the divisor's multiples on the divisor, a
 nested fact, and 4 000 divisions took 8.1 s where 250 took 0.19
-([`design.md` § 4](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md#4-the-table)).
+([`stdlib.md` § std.math.num9 — nine digits in one fact](../docs/ein/user/reference/stdlib.md#stdmathnum9--nine-digits-in-one-fact)).
 With the multiples in the state, and a product's rows computed inside its
 step, a batch costs in proportion to its count: 362, 362, 901, 10 409 and
 26 889 candidates a request for a sum, a difference, a comparison, a product
@@ -1560,7 +1560,7 @@ with it.
 Four modules under `bool/`, the user's rulings of 2026-11-12 on P1f.6's
 questions 19 to 23 and round 2's item 23 (*"std.bool"*); the stage that built
 them is [S1f.6.17](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.17_binary_logic.md),
-and its plan page, [`binary_logic.md`](../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md),
+and its plan page, [`stdlib.md`](../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool),
 the prototype they come from. The two bits are the names `0` and `1`, which
 are decimal's digits too: Ein has no truth values of its own, as it has no
 numbers. Each module comes whole with what it imports (M1f S1f.6.35), and
@@ -1688,7 +1688,7 @@ optimisation of the first. A saturation rule reaches the agenda and emits
 agenda, so its evidence is the `owe` its post-fixpoint pass emits. Both the
 gate and the census read both kinds. Counting only `fire` would have put the
 four duals below permanently in the zero set, which is why
-[S1d.2.3](../docs/history/m1d_satisfiability/README.md#s1d23--the-form)
+[S1d.2.3](../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
 deferred shipping them until the pass existed.
 
 Adding a rule here therefore means adding a program there, and the gate says so
@@ -1842,7 +1842,7 @@ brings with the module. `:as` and `:symbols` are mutually exclusive. A
 module's name is its path: `std.x.y` under this directory, any other name a
 path from the **program file's** directory, a dot per directory, `..`
 refused. The whole rule, the refusals and what prints are
-[`01_grammar.md` § Import](../docs/kernel/ir/03-ein-lang/01_grammar.md#import)
+[`syntax.md` § Import](../docs/ein/user/reference/syntax.md#import)
 and `defined_behaviour.md` § 4.28.
 
 To inline a puzzle's imports into a single standalone file — **there is no CLI

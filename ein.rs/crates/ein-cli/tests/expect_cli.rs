@@ -1,5 +1,5 @@
 //! `:expect` through the CLI — M1c
-//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
+//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims).
 //!
 //! The comparison itself is `ein-infer`'s `expect_semantics` (a query's
 //! classes) and `claim_round_trip` (the region claim); what is here is the part

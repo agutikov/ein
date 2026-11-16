@@ -1017,7 +1017,7 @@ fn print_for_inspection() {
     }
 }
 
-/// The corpus census behind `region_dump.md § Monotonicity`'s numbers — off
+/// The corpus census behind `region-dump.md § Monotonicity`'s numbers — off
 /// unless `EIN_REGION_CENSUS` is set, because it is a measurement and not a
 /// claim. Re-take: `EIN_REGION_CENSUS=1 cargo test --release -p ein-infer
 /// --test region census_for_inspection -- --nocapture`.

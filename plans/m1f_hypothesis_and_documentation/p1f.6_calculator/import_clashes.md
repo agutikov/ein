@@ -40,7 +40,7 @@ that loads has the same head: one state, R = {∅}, no candidate, one saturation
 
 ## 1. How an import works today
 
-[`01_grammar.md` § Import](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#import) states it, and
+[`syntax.md` § Import](../../../docs/ein/user/reference/syntax.md#import) states it, and
 `ein_ir::imports` does it, before the loader runs: each `(import …)` is replaced by forms of the module.
 
 - **A flat import, `:symbols (…)`,** keeps the listed names and their closure (every name a kept declaration

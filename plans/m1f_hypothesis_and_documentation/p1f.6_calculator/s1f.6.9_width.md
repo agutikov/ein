@@ -7,7 +7,7 @@ choice between (a), (b) and (c) is the user's,**
 [Q-M1f.185](../open_questions.md#q-m1f185--a-state-file-nested-past-the-parsers-limit), with each option's probe
 below ([§ T1 record](#t1-record-2026-11-12-the-limit-re-taken) onward). E-4 is re-taken and waits for that
 ruling. Planned 2026-11-08; **restated 2026-11-11**: the representation question it was to put to the user is
-ruled ([the rulings](design.md#the-rulings-2026-11-11)), and most of the stage dissolved with it.
+ruled ([the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)), and most of the stage dissolved with it.
 **Depends on:** [S1f.6.6](s1f.6.6_division.md). It may run beside S1f.6.7 and S1f.6.8.
 
 ## What dissolved

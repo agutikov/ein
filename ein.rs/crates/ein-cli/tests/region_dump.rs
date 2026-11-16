@@ -596,7 +596,7 @@ fn the_warning_says_what_is_assumed_where_there_is_a_site() {
     }
 }
 
-/// The block's fields as `region_dump.md` § The `monotonicity` block names
+/// The block's fields as `region-dump.md` § The `monotonicity` block names
 /// them: each leaf, a list of objects written `name[]` and its elements'
 /// fields under it, a `null` or an empty list being the field it stands in.
 fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
@@ -633,7 +633,7 @@ fn monotonicity_fields(v: &J, at: &str, out: &mut BTreeSet<String>) {
 /// or an empty list stands in for its fields only where no run fills them.
 #[test]
 fn every_monotonicity_field_is_defined_on_the_page() {
-    let page = std::fs::read_to_string(repo_root().join("docs/kernel/inference/region_dump.md"))
+    let page = std::fs::read_to_string(repo_root().join("docs/ein/user/reference/region-dump.md"))
         .expect("the page");
     let section = page
         .split("### The `monotonicity` block, field by field")
@@ -755,6 +755,6 @@ fn every_monotonicity_field_is_defined_on_the_page() {
     let unwritten: Vec<&String> = rows.difference(&leaves).collect();
     assert!(
         unnamed.is_empty() && unwritten.is_empty(),
-        "region_dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
+        "region-dump.md's `monotonicity` fields and the block's differ:\n  written, no row: {unnamed:?}\n  a row, never written: {unwritten:?}"
     );
 }

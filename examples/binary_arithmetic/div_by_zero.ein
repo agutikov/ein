@@ -13,7 +13,7 @@
 ;;; The sum beside it is a good request. It loses its answer with the rest of
 ;;; the program, so the only claim such a program can make is this one.
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
+;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
 ;;; the prototype this program was banked from, its counts and its costs.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-div))
 (import std.math.binary :symbols (b2))

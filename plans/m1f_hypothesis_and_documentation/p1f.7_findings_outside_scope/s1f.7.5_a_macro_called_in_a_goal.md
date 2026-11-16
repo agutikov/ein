@@ -52,7 +52,7 @@ expansion. The rows are flipped. A test holds every witness on every command.
 
 ### T1f.7.5.4 — the pages
 
-[`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query), the macro page under
+[`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query), the macro page under
 `docs/kernel/ir/03-ein-lang/`, `defined_behaviour.md`, and the stage's records.
 
 ## Acceptance
@@ -181,9 +181,9 @@ reaches.
 
 ## T4 record, 2026-11-11
 
-- [`defined_behaviour.md` § 4.21](../../../docs/kernel/defined_behaviour.md#421-a-goal-is-held-to-what-a-rules-match-is-held-to--m1f-s1f75-s1f711-s1f71),
+- [`diagnostics.md` § 2.21](../../../docs/ein/user/reference/diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to),
   new, for the three stages: what a goal is held to, the lines, what is not refused, the pin.
-- [`01_grammar.md` § Query](../../../docs/kernel/ir/03-ein-lang/01_grammar.md#query): a goal is a premise, with the
+- [`syntax.md` § Query](../../../docs/ein/user/reference/syntax.md#query): a goal is a premise, with the
   three consequences.
 - `02_patterns.md`'s paragraph on a macro's expansion and `06_reserved_names.md`'s `macro` row: a goal's calls are
   expanded.

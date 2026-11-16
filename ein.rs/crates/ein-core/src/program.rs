@@ -42,7 +42,7 @@ pub struct Program {
     pub obligations: Registry<Rule>,
     pub macros: Registry<Macro>,
     /// **Every** `(query …)` block, in source order — plural since M1c
-    /// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
+    /// [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims).
     ///
     /// It was `Option<Query>` filled by *the last block, silently*, which is
     /// the one failure mode a file carrying `:expect` must not have: a second

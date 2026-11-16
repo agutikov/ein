@@ -105,8 +105,8 @@ passed, inside a string too, so `(y";"{` reported `1:6` and `(y";"{?`
 `1:7`, the `;` in the string a comment one character longer
 (`parse::death_position`, which went with `parse.rs`). Both report `1:2`
 since, at `y"`, one token that is not a name: a token ends only at a space, a
-paren, a comment or the end of input ([`00_ebnf.md`
-§ 1](ir/03-ein-lang/00_ebnf.md#1-lexical-grammar), fact 5).
+paren, a comment or the end of input ([`grammar.md`
+§ 1](../ein/user/reference/grammar.md#1-lexical-grammar), fact 5).
 
 ### 1.4 No ambiguity, and a tie goes to the earlier rule
 
@@ -115,7 +115,7 @@ and a conflict fails the build, so no input has two parses. The lexer's one
 choice is between two rules that match the same length, where the rule
 written first wins: each reserved word and keyword is written before `NAME`
 and `KEYWORD`, so `neq` is the token `'neq'` and `neqw`, the longer match, a
-`NAME` ([`00_ebnf.md` § 1](ir/03-ein-lang/00_ebnf.md#1-lexical-grammar),
+`NAME` ([`grammar.md` § 1](../ein/user/reference/grammar.md#1-lexical-grammar),
 fact 1). `(relation R A B)` is a declaration and `(relation)` a parse error,
 a declaration needing a name.
 
@@ -717,7 +717,7 @@ a nested keyword pair and the two relation variables among them), and
 the second, which a macro reached until S1f.5.24 and the loader refuses since. A **string** reached this line
 until the same stage, which lowered a string in a rule as the loader lowers
 one in a fact, the symbol it names (M1e2's W18;
-[`01_grammar.md`'s `STRING` row](ir/03-ein-lang/01_grammar.md)).
+[`syntax.md`'s `STRING` row](../ein/user/reference/syntax.md)).
 
 The last row is the odd one out and belongs to §5 rather than here: it is
 `clap`'s wording, and what is fixed about it is the **exit code and the
@@ -751,7 +751,7 @@ names the ones no command prints.
 ### 4.1 The first errors that name no exception class — M1c S1c.1.2
 
 Five arrived on 2026-08-23 with
-[`:expect`](ir/03-ein-lang/01_grammar.md#query), and what they decided is:
+[`:expect`](../ein/user/reference/syntax.md#query), and what they decided is:
 **a diagnostic not in the table above names no exception class.** It is a
 `kb load error:` like any other loader message, in ein's own words.
 
@@ -804,7 +804,7 @@ is a `note:` on stderr and the run exits **0**, because the run answered what
 it was asked and an answer is not an error. Under `ein test` it takes **1**,
 because `ein test` asks the question the claims are and then, of what that
 leaves undecided, the describing one (M1f S1f.6.27,
-[`01_grammar.md` § Query](ir/03-ein-lang/01_grammar.md#query)), so a claim it
+[`syntax.md` § Query](../ein/user/reference/syntax.md#query)), so a claim it
 could not decide is a claim it failed to check — and a green line for a claim
 nobody checked is what the whole form exists to prevent. **Under `ein test` a
 run that did not exhaust what a claim is about still refutes it**, by a class
@@ -819,7 +819,7 @@ The words are S1e2.1a.5's
 
 Ten more, and by §4.1's rule they name no exception class either. They all
 concern `open`, the reserved verdict atom
-([`06_reserved_names.md` § the verdict atom](ir/03-ein-lang/06_reserved_names.md)),
+([`reserved-names.md` § the verdict atom](../ein/user/reference/reserved-names.md)),
 and every one of them is a place the engine would otherwise have had to guess.
 `<k>` is `rule` or `hrule`, `<n>` the rule's name. **Since M1f S1f.5.23 the
 first five are refused at the parse**, `open` being no name and `ein.y`'s
@@ -904,7 +904,7 @@ holds it, on `examples/broken/load/eq_in_a_macro_body.ein`, under
 **Why only two rows for seven wrong cells.** The
 [S1e.1.6 sweep](../history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10) found
 the rule behind them:
-[`00_ebnf.md` §2](ir/03-ein-lang/00_ebnf.md)'s *Kernel meta-primitives
+[`grammar.md` §2](../ein/user/reference/grammar.md#2-phrase-grammar)'s *Kernel meta-primitives
 (shape-pinned)* block names **four** productions and the engine has **seven**
 primitives, so `eq`, `absent` and `false` are ordinary `GenericList`s whose
 arity is checked by whatever reads them. `neq` is pinned and its wrong arities
@@ -1145,7 +1145,7 @@ A keyword's value inside a clause, `(n ?x :where v)`, was no slot, which
 the compiler dropped, and loaded, until the swap refused a keyword pair inside
 a term at the parse (S1f.5.11); S1f.5.11's T1f.5.11.2 retired the drop. A `_` as an argument matched any value, until
 the swap
-([`01_grammar.md`'s `WILDCARD` row](ir/03-ein-lang/01_grammar.md#1-lexical-rules)).
+([`syntax.md`'s `WILDCARD` row](../ein/user/reference/syntax.md#1-lexical-rules)).
 Pinned by `ein-cli/tests/cli_semantics.rs`'
 `a_wildcard_relation_in_a_rule_is_refused_at_load` (at the parse since the
 swap) and `a_bare_underscore_names_nothing_in_every_place` (T1f.5.1.3), by
@@ -1243,7 +1243,7 @@ for the relation premise that binds its variable, so its place among the
 relation premises does not change what the premise means, and binds one nothing
 binds where it is written, `eq` to the other side and `neq` over the program's
 names, so the order of two guards on such a variable does (M1f E-37;
-§ 01_grammar.md's *Premise order around a guard*). From S1e2.2.24 until then a guard's variable counted as bound
+§ syntax.md's *Premise order around a guard*). From S1e2.2.24 until then a guard's variable counted as bound
 by the rule's parameters and by the variables of the positive patterns written
 before it; under an `(absent …)`, by those the enclosing premises bound before
 it and the `absent`'s own earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
@@ -1300,7 +1300,7 @@ Until the swap a `(macro …)` was asked for one only in a build with `ein-ir`'s
 line read `… every relation, rule and hrule` elsewhere; the swap made the
 generated parser the only one, deleted the `cfg`, and wrote the stdlib's two
 macros, `forall` and `unknown`, their `:why`. `--no-require-why`
-([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)),
+([`config.md` § 3.4](../ein/user/reference/config.md#34-the-option-that-decides-loading)),
 or `require_why: false`, loads such a program, and nothing else moves; until
 T1f.5.14.7 that was the default, and `--require-why` turned the refusal on.
 Pinned by `ein-ir/tests/load_semantics.rs`'
@@ -1355,7 +1355,7 @@ a program; exit 1 (`ein test`: 2):
 Each is followed by the error's ranked repairs (§ 1). A string reads `\n` `\t`
 `\r` `\"` `\\` and `\u{…}`, and holds any other character as itself, a raw
 newline and any Unicode among them
-([`00_ebnf.md` § 1](ir/03-ein-lang/00_ebnf.md#1-lexical-grammar), fact 4). Until
+([`grammar.md` § 1](../ein/user/reference/grammar.md#1-lexical-grammar), fact 4). Until
 the swap a string was also the name it spells wherever a value went (M1e2
 S1e2.2.16 in a fact, S1e2.2.18 in a rule), a variable in a fact the name `?x`,
 and an unknown escape lost its backslash in silence; until S1f.5.2's T1f.5.2.5
@@ -1486,7 +1486,7 @@ other command refuses it. Until then they parsed it and never loaded it,
 so each drew a program every other command refused, exit 0; and `kb save`, which
 loads and never compiles, wrote a container of a program every command that
 opens one refused. Each view takes `--no-require-why`
-([`configuration.md` § 3.4](configuration.md#34-the-option-that-decides-loading)).
+([`config.md` § 3.4](../ein/user/reference/config.md#34-the-option-that-decides-loading)).
 
 Pinned by `ein-ir`'s `from_ir::tests::the_compilers_refusals_a_program_reached_are_refused_at_load`,
 `ein-cli`'s `cli_semantics::a_compile_refusal_reads_the_same_on_every_command`
@@ -1882,7 +1882,7 @@ among them (Q-M1f.122 to .126, defaulted):
 
 The grammar refuses each shape a program writes, at the parse (`ein.y`'s
 `FactHead`, `ValueHead`, `NestedFact`, `Premise`, `Pattern` and `Negated`;
-[`00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)), and the error carries a note:
+[`grammar.md`](../ein/user/reference/grammar.md)), and the error carries a note:
 
 | the program writes | the error is at | the note |
 |---|---|---|
@@ -2112,7 +2112,7 @@ difference only in names"* ([Q-M1f.247](../decisions/imports/Q-M1f.247-every-imp
 
 **Every import brings every declaration and every fact of its module**, with
 the module's own imports, one copy per program, under full names
-([`01_grammar.md` § Import](ir/03-ein-lang/01_grammar.md#import)):
+([`syntax.md` § Import](../ein/user/reference/syntax.md#import)):
 
 | of the module | `(import M)` | `(import M :as o)` | `(import M :symbols (n …))` |
 |---|---|---|---|
@@ -2246,8 +2246,8 @@ W89 rows.
 Five declarations steer what a commitment may be about: an `(hrule …)` (**H**, with its `:hrules` activators), an
 obligation rule, `:assert (open ?R)` (**O**, with its activators), `(solve :hypothesis-relations …)` (**HR**),
 `(solve :no-hypothesis …)` (**NH**) and `(__closed__ R)`, written or derived (**C**); the blind enumerator runs where
-none of the generating ones does ([`06_reserved_names.md` § Hypothesis / query
-control](ir/03-ein-lang/06_reserved_names.md#hypothesis--query-control)). The user ruled on 2026-11-13, on E-47,
+none of the generating ones does ([`reserved-names.md` § Hypothesis / query
+control](../ein/user/reference/reserved-names.md#hypothesis-and-query-control)). The user ruled on 2026-11-13, on E-47,
 *"report conflict if any hypothesis mechanism constradicts itself"*, and gave the pairs the same day. Since M1f
 [S1f.6.34](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.34_hypothesis_mechanisms_in_conflict.md)
 a program whose two declarations say opposite things of one relation is refused, one line per conflict, and a
@@ -2335,7 +2335,7 @@ Every import brings its module whole (§ 4.25); a name a module declares has
 one full name, `M.name`, the module's name a path from the program file's
 directory or `std.x`; a file writes short the names it declares, lists or
 prefixes with an alias, and any other short name it writes is its own
-([`01_grammar.md` § Import](ir/03-ein-lang/01_grammar.md#import)). Each of
+([`syntax.md` § Import](../ein/user/reference/syntax.md#import)). Each of
 the following is refused at load, on every command, one `kb load error:`
 line at the command's load-error exit (1; `ein test` 2), placed where the
 form or the name is written:
@@ -2436,7 +2436,7 @@ nothing. A fact of `eq`, which is checked and never stored, states nothing.
 | `(rule r () :match (s ?x) :assert (p (q a) (k ?x)) …)` | `(written (q a))`, from the rule's text |
 
 `written` is a **kernel relation**, as `relation` is: reserved, so no
-declarator binds it ([`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md));
+declarator binds it ([`reserved-names.md`](../ein/user/reference/reserved-names.md));
 never a hypothesis target, no relation of the program's registry; and decided
 at root, since nothing but the loader states it. Each `(written T)` is derived
 by the loader's step `#written` (`ein_core::terms::WRITTEN_STEP`, one of the
@@ -2493,7 +2493,7 @@ metavar, arity, default, choices and mutually-exclusive group, its help
 which stream each byte goes to.
 
 **`ein test` is the fourth**, added by M1c
-[S1c.1.3](../history/m1c_external_validation/README.md#s1c13--ein-test),
+[S1c.1.3](../ein/user/reference/cli.md#23-ein-test),
 and its exit codes **deliberately differ** from the other three's:
 
 | code | `solve` / `oracle` / `render` / `show` / `saturate` | `test` |
@@ -2539,7 +2539,7 @@ lines, at least one item each, and `--dump-answer DIR` writes each uncut, over
 every listed state, as `DIR/forms/<form>.txt` (`forms_cut.rs`). Past a 16 MiB pair table `key` declines
 before it allocates the table, with the numbers and exit 0, and so does
 `--diff-models`' near pairing (M1e2 S1e2.4.2, `ein-render/tests/key_declines.rs`;
-the bound is [`configuration.md` § 3](configuration.md)'s).
+the bound is [`config.md` § 3](../ein/user/reference/config.md#3-the-cli)'s).
 
 1 is taken there, and a runner that cannot tell a broken file from a false
 claim is the one failure mode a test runner must not have. 2 dominates 1 in a
@@ -2892,6 +2892,6 @@ on every commit. The two items are kept as the record of what was filed:
   — the other kind of thing that is defined only because the engine does it.
 - [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md) — where each
   behaviour above is implemented.
-- [`standard_of_proof.md`](standard_of_proof.md) — its opposite number: this
+- [`standard-of-proof.md`](../ein/standard-of-proof.md) — its opposite number: this
   page states what the engine **does**, that one states what it takes to know
   it, and what an argument for leaving a behaviour alone has to rest on.

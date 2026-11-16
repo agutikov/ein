@@ -2,7 +2,7 @@
 
 > **Decided 2026-08-28 by the user: option B — and B's content is a
 > double-check that the existing implementation meets the solution criteria of
-> [`solution_semantics.md`](../../../kernel/inference/solution_semantics.md)
+> [`solution-semantics.md`](../../../ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r)
 > § 2, not the maximality fix.** That answers the objection this file raised
 > against B: a conformance check changes no verdict, so the stage keeps its
 > acceptance. The **fix** still has C's home — see
@@ -101,7 +101,7 @@ established at every site before the last write into the KB it guards.** Said
 without the table: **the engine records `S ∪ K`, and checked the criteria
 against `S`** — where `K` is what the search wrote into that KB for its own
 bookkeeping. `(not P)` is an ordinary match form
-([`02_patterns.md`](../../../kernel/ir/03-ein-lang/02_patterns.md)), so
+([`syntax.md`](../../../ein/user/reference/syntax.md#3-patterns)), so
 a program may read `K`; when it does, `S ∪ K` is not saturated and can be
 inconsistent.
 

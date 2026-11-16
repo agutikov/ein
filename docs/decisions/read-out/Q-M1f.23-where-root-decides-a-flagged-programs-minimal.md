@@ -11,4 +11,4 @@ added to the vocabulary.
 
 **Held by.** `ein-cli/tests/region_modes.rs`: `where_empty_is_in_r_every_minimal_question_stops_at_root`, one
 saturation and the line's rows under `--minimal`, `-n` and `--single`. The `route` row on such a run:
-[read_out_examples.md](../../kernel/inference/read_out_examples.md), written by the binary.
+[read-out-examples.md](../../ein/user/reference/read-out-examples.md), written by the binary.

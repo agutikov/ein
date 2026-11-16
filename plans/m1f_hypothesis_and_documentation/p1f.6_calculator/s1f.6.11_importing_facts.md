@@ -7,7 +7,7 @@ Q-M1f.141 to .144 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-1
 that day. **It ran first:** the theory stages write their tables as plain facts and import them flat. An engine
 stage.
 **Depends on:** nothing in the phase. Its specification is
-[design.md § G](design.md#g-the-flat-import-finding-a-specification-for-importing-facts).
+[stdlib.md § G](../../../docs/ein/user/reference/stdlib.md#importing-a-module).
 
 ## The rulings
 
@@ -80,7 +80,7 @@ them again with their probes re-run.
 Read-only, on the release binary built at `7f574423` and kept as `build/s1f.6.11/ein-old`.
 
 **The probes of `build/s1f.6/prototype/g/imp/` re-run** (`ein saturate --dump` on each): every cell of
-[design.md § G](design.md#1-what-each-import-form-does-today)'s table reproduced. The table as the stage banks
+[stdlib.md § G](../../../docs/ein/user/reference/stdlib.md#importing-a-module)'s table reproduced. The table as the stage banks
 it, *before* that binary and *after* the fix, a cell that moved in bold:
 
 | of the module | `(import onto)`, `(import onto :as o)` | `:symbols`, its name in the closure, before | after | `:symbols`, its name not in the closure |

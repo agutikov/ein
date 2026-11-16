@@ -216,7 +216,7 @@ What is true at `dbedc535`, each line with where it is stated:
 - **No lever reaches an order.** `-o/--lattice-order` is retired, and each route's order is part of its
   definition (`tree.rs`, § Which instance).
 - **The read-out prints the work**: `work  374 saturations · 42 705 facts beyond root`, with `N`, `universe …
-  dead alone` and the `route` row's licences ([`read_out.md`](../../../docs/kernel/inference/read_out.md)).
+  dead alone` and the `route` row's licences ([`read-out.md`](../../../docs/ein/user/reference/read-out.md)).
 - **What structure the engine already has.** Declared: the five mechanisms read at root (`mechanisms.rs`) and
   the owed instances with their alternatives, licensed or not (`oblgen::Alternatives`). Of R, once a describe
   is exhausted: N, the components, the sub-cubes and the merged states (`described.rs`). **It has no structure
@@ -466,7 +466,7 @@ The defaults the re-plan took are
 
 - [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) — the
   answer as a region R; the structure is of the lattice R is a region of.
-- [`docs/kernel/standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) — an argument for a skip
+- [`docs/kernel/standard-of-proof.md`](../../../docs/ein/standard-of-proof.md) — an argument for a skip
   holds only while its premise is enforced by something that fails; every licence track R adds is held so.
 - [`docs/kernel/inference/domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md)
   — the same structure as a saturation rule (`domain-elimination`, `no-room-left`). S1f.10.13 says why a

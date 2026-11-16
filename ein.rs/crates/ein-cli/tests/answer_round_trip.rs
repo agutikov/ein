@@ -1,7 +1,7 @@
 //! M1e2 S1e2.3.8 — **every state `--dump-answer` writes reloads to its own
 //! facts, by value**, on every corpus program.
 //!
-//! [`answer_dump.md`](../../../../docs/kernel/inference/answer_dump.md) says
+//! [`answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md) says
 //! each state file loads, and since S1e2.3.8 says what it loads to: the
 //! state's facts, each a value the one printer (`ein_core::text`) wrote as text
 //! the loader reads back to the same value, and each **as given**, since a

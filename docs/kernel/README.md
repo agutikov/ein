@@ -14,7 +14,7 @@ kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
 > implementation**: a claim here is checked by `cargo test --workspace` and by
 > nothing else. Behaviours whose only other statement would be the source are
 > stated in [`defined_behaviour.md`](defined_behaviour.md), and what it takes
-> to call a claim here settled is [`standard_of_proof.md`](standard_of_proof.md) — two
+> to call a claim here settled is [`standard-of-proof.md`](../ein/standard-of-proof.md) — two
 > rules, ratified 2026-08-28.
 
 ## Reading order
@@ -33,7 +33,7 @@ The four sub-trees layer on each other:
    store with its registries, indexes, the fact view, hypothesis forks,
    derivation DAGs. Maps the semantics in (1) onto concrete shapes.
 
-3. **[`ir/03-ein-lang/`](ir/03-ein-lang/)** — the **surface
+3. **[`ir/reference/`](../ein/user/reference/)** — the **surface
    syntax**. The S-expression IR that users author and the engine
    dumps. Lexical rules, the **flat sequence of forms** classified by
    head (P1.7c removed the `(ontology …)` / `(facts …)` /
@@ -84,12 +84,12 @@ Every page in this tree is in exactly **one** of three states, and the state is
 visible from the page itself. Triaged page by page at M1e
 [S1e.2.2](../history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree)
 (2026-08-30), 40 pages; 41 since M1e2 S1e2.1.2 added
-[`inference/answer_dump.md`](inference/answer_dump.md), 42 since S1e2.1a.1
-added [`inference/region_dump.md`](inference/region_dump.md), 43 since
+[`answer-dump.md`](../ein/user/reference/answer-dump.md), 42 since S1e2.1a.1
+added [`region-dump.md`](../ein/user/reference/region-dump.md), 43 since
 S1e2.1b.6 added [`inference/monotonicity.md`](../ein/reasoning/kb-evolution/monotonicity.md), 45
-since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
-[`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
-M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
+since M1f S1f.5.16 added [`read-out.md`](../ein/user/reference/read-out.md) and
+[`read-out-examples.md`](../ein/user/reference/read-out-examples.md), 46 since
+M1f S1f.5.14 added [`natural-language.md`](../ein/user/syntax-and-semantics/natural-language.md)
 (2026-11-10), 47 with [`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md),
 the hypothesis space and its structure, and 48 with
 [`finding-r.md`](../ein/reasoning/kb-evolution/finding-r.md), how the oracle and the routes find `R`
@@ -139,7 +139,7 @@ meet it.
 [S1a.10.6](../history/m1a_rust/README.md#s1a106--defined-behaviour) was
 a doc pass over this tree, and it missed **every** page M1e's review later
 found — `algorithm_layer_n.md`, `lattice_dump.md`, `02_store.md`,
-`02_patterns.md`, `04_dot_rendering.md`, `inference/README.md`, this README —
+`syntax.md`, `rendering.md`, `inference/README.md`, this README —
 plus four more the review itself did not name (`reserved_engine_strings.md`,
 `02_rules.md`, `01_entities.md`, `features.md`). The reason is structural, not
 carelessness: **a doc pass driven by what the milestone changed cannot catch a
@@ -153,7 +153,7 @@ needs to know what changed; each asks a question of a page in isolation.
 | | the check | what it caught, M1e S1e.2.2 |
 |---|---|---|
 | 1 | **Every code identifier resolves.** Every backticked `EIN_*` / `foo.rs` / `fn()` / `Type` / `snake_case` / `a::b` is findable in `ein.rs/crates/`. Report, not gate, and it can never be one: `Human` and DOT node ids are not identifiers, and — the sharper reason — **a page that correctly says a name is gone still names it**, so the count *rises* as the tree gets more honest. It went 86 → 92 across S1e.2.2's own fixes. Skim it for a name that looks like the engine's and is not accounted for; never count it | a `Mode` enum with three members that no crate has; `add_type` / `add_instance`; `from_dot`; a `_kb` back-pointer a page's own §5 says is gone. **Four of the eleven pages that needed work were found only this way** |
-| 2 | **Every environment variable greps non-empty.** A special case of (1), worth naming because it is the cheapest and the most often wrong | `EIN_RENDER_LEVI`, claimed by `04_dot_rendering.md` and read by no code path, ever |
+| 2 | **Every environment variable greps non-empty.** A special case of (1), worth naming because it is the cheapest and the most often wrong | `EIN_RENDER_LEVI`, claimed by `rendering.md` and read by no code path, ever |
 | 3 | **Every link and anchor resolves** — file *and* `#fragment`, GitHub-slugified — **and points inside the repository**, which is a finding of its own because `exists()` on a target that escapes the checkout answers for the machine rather than for the tree: three `../../acva/…` links passed this check on the author's workstation and failed CI (2026-09-01), and the fix at such a site is the repo's standing one — a reference that cannot be a link is still fine as `` `code` ``. **In the gate since S1e.3.8**, over the whole tree | 4 broken anchors here, all from a heading that grew words and a link that did not follow — and **264** once it was pointed at the rest of the repo |
 | 4 | **Every prose `§x.y` names a heading that exists.** A section number written *after* a link, or inside its label, is **not part of the link**, so no link checker sees it. In the gate with (3) | **six** citations naming **four** sections `algorithm_layer_n.md` has never had, plus two into a `§1.5` that does not exist. This class had survived every previous pass |
 | 5 | **Every command a page shows runs, and produces what the page says.** No script does this; it is a shell and ten minutes | a CLI line promising two artifacts it has never written; a claim that `(instnce ?a ?T)` is caught at parse time, which the parser accepts and the engine happily solves |
@@ -190,7 +190,7 @@ its row gives. Check 5 has no instrument and is the one that found the most,
 which is worth remembering when the temptation is to automate the cheap half
 and call the pass done.
 
-**One thing the checks cannot see**, and the reason `02_patterns.md` was the
+**One thing the checks cannot see**, and the reason `syntax.md` was the
 hardest page in the triage: they find machinery that was **removed**, because
 the identifier used to resolve and stopped. Machinery that was **planned and
 never built** resolves at no point in the repo's history, reads exactly like a
@@ -207,13 +207,13 @@ explicit audience banner.
 
 | audience | pages |
 |----------|-------|
-| **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
-| **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](ir/03-ein-lang/09_natural_language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`inference/read_out.md`](inference/read_out.md) (what `ein solve` prints, row by row, and what each number counts) |
+| **newcomer** | [`../guide/`](../ein/user/guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
+| **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](../ein/user/syntax-and-semantics/natural-language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`read-out.md`](../ein/user/reference/read-out.md) (what `ein solve` prints, row by row, and what each number counts) |
 | **dev**  | [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md); `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
-| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`inference/read_out.md` § 11](inference/read_out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](../ein/ein.rs/events.md). |
-| **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs, and [`configuration.md`](configuration.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* and *does it change R* on every flag row |
+| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`read-out.md` § 11](../ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](../ein/ein.rs/events.md). |
+| **both** | this README, [`glossary.md`](../ein/user/reference/glossary.md), the per-subtree READMEs, and [`config.md`](../ein/user/reference/config.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* and *does it change R* on every flag row |
 
-- **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
+- **Newcomer path** (never seen Ein): the [guide](../ein/user/guide/) end-to-end
   (Ch.1 → Ch.4), then the user path below for depth.
 - **User path** (author a puzzle): glossary → `01-ein-graph` →
   `03-ein-lang` (grammar → patterns → `06_reserved_names` →
@@ -230,13 +230,13 @@ explicit audience banner.
 
 ## Cross-references
 
-- **Glossary**: [`glossary.md`](glossary.md) — definitions for terms
+- **Glossary**: [`glossary.md`](../ein/user/reference/glossary.md) — definitions for terms
   this tree uses with technical meaning (homoiconic, Levi-bipartite,
   T1/T2/T3 rules, ATMS, e-graph, encoding-agnostic, …).
 - **Architecture**: [`architecture.md`](architecture.md) — the
   structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
-- **Configuration**: [`configuration.md`](configuration.md) — every knob, on
+- **Configuration**: [`config.md`](../ein/user/reference/config.md) — every knob, on
   all three surfaces: the 2 `(config …)` flags a program can set and the
   fifteen retired ones (M1e2 S1e2.2.5, `ein-cli/tests/config_reference.rs`),
   the 82 CLI options (`--no-require-why` among them since M1f T1f.5.14.7, `--require-why` from T1f.5.14.6, on the four views too since S1f.5.21), the `EIN_*` environment, and the precedence between them. Each flag row carries
@@ -250,7 +250,7 @@ explicit audience banner.
   record is [`docs/history/m1a_rust/`](../history/m1a_rust/README.md)).
 - Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
-- Source of truth for parsing: [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)
+- Source of truth for parsing: [`grammar.md`](../ein/user/reference/grammar.md)
   — the complete grammar, `ein.l` and `ein.y` as the parser is generated from
   them (a hand-written EBNF until M1f S1f.5.5's swap).
 - Source of truth for the KB: [`ein-core`](../../ein.rs/crates/ein-core/src/).
@@ -258,7 +258,7 @@ explicit audience banner.
   thirteen diagnostics, orderings and error strings the engine defines, stated
   as normative rather than left to the source.
 - **End-to-end target trace**:
-  [`inference/zebra_walkthrough.md`](inference/zebra_walkthrough.md) — the human
+  [`06_zebra_walkthrough.md`](../ein/user/guide/06_zebra_walkthrough.md) — the human
   Wikipedia Zebra solution annotated as ein inference (NL ↔ ein
   rule ↔ branch-depth, contradictions, learnt no-goods). The
   *inference* column is what the M1 kernel + engine must reproduce;
@@ -276,7 +276,7 @@ explicit audience banner.
 - Cross-references inside the kernel tree use relative paths that
   resolve regardless of repo root.
 - A claim on these pages is subject to
-  [`standard_of_proof.md`](standard_of_proof.md): a behaviour is refuted only
+  [`standard-of-proof.md`](../ein/standard-of-proof.md): a behaviour is refuted only
   by a banked probe, and an argument for leaving something as it is holds only
   while its premise is enforced by something that fails when it stops being
   true.

@@ -62,7 +62,7 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
 /// Q-M1e.24.
 ///
 /// The non-integer message stays [`int_arg`]'s, because
-/// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+/// [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
 /// quotes it verbatim, with `--solutions` as its example.
 fn solutions_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
@@ -343,7 +343,7 @@ fn render_command() -> Command {
                     "the solution region as a Hasse diagram: DIR is an `ein oracle \
                      --dump` directory, drawn with a `solve` run on it when --visited \
                      or --answer names its dumps \
-                     (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)",
+                     (docs/ein/user/reference/rendering.md)",
                 )
                 .arg(Arg::new("dir").required(true))
                 .arg(Arg::new("visited").long("visited").value_name("DIR").help(
@@ -849,7 +849,7 @@ fn solve_command() -> Command {
                      uncut), answer.json (= --json-summary), index.json, one \
                      loadable file per state, the owing frontier, N, and each \
                      form asked for (-H, --models, -p, -P, -f, --diff-models) \
-                     uncut under forms/ (docs/kernel/inference/answer_dump.md). \
+                     uncut under forms/ (docs/ein/user/reference/answer-dump.md). \
                      DIR is made before the run; past that, stdout, stderr and \
                      the exit code are unchanged.",
                 ),
@@ -935,7 +935,7 @@ fn solve_command() -> Command {
 }
 
 /// `ein test` — M1c
-/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
+/// [S1c.1.3](../../../../docs/ein/user/reference/cli.md#23-ein-test).
 ///
 /// **Small on purpose.** The only engine knobs here are the ones that decide
 /// whether a run *can finish*, the two budgets, because everything else
@@ -1060,7 +1060,7 @@ fn test_command() -> Command {
 /// subset of the root candidates saturated, nothing skipped. It is the
 /// reference every `ein solve` mode is held to, and it costs `2ⁿ` on every
 /// program, so it runs only when asked for by name
-/// ([`solve_interface.md` § 2.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#22-ein-oracle)).
+/// ([`cli.md` § 2.2](../../../../docs/ein/user/reference/cli.md#22-ein-oracle)).
 fn oracle_command() -> Command {
     Command::new("oracle")
         .about("the solution region by brute force: every subset of the root candidates saturated (M1e2)")
@@ -1093,7 +1093,7 @@ fn oracle_command() -> Command {
                 .value_parser(artefact_path)
                 .help(
                     "also write the cube to DIR: region.json and region.md \
-                     (docs/kernel/inference/region_dump.md), which `ein render \
+                     (docs/ein/user/reference/region-dump.md), which `ein render \
                      region DIR` draws",
                 ),
         )

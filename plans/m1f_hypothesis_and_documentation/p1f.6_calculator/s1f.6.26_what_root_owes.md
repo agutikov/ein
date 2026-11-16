@@ -65,8 +65,8 @@ an open state; any change to what `Open` or `(false)` mean. Those are
    shows where it is cut and what the cut line says.
 2. **T1f.6.26.2 — the printer.** A variant of `ein_render::read_out::Row` for the owed instances under an
    alive root that is not in R, and the query row's two wordings. **In the same commit:**
-   [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s table,
-   [`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) re-written by
+   [`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s table,
+   [`read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) re-written by
    `utils/read_out_examples.py`, and `ein-cli/tests/read_out_reference.rs`, which fails otherwise.
 3. **T1f.6.26.3 — the other surfaces agree.** `--trace` names the same instances; `--json-summary` already
    carries the owing holes, and the task checks that root's are among them and adds nothing if so;
@@ -80,7 +80,7 @@ an open state; any change to what `Open` or `(false)` mean. Those are
    rows: they are counted with a command and named in the record before blessing. `lever_invariance` holds
    the read-out under every lever.
 6. **T1f.6.26.6 — the pages and the rows:** E-19 closed and E-18 marked *the row built, the claim asked* in
-   [`findings.md`](findings.md); `AGENTS.md`; [`word_problems.md`](word_problems.md)'s § 3.5 gets a pointer
+   [`findings.md`](findings.md); `AGENTS.md`; [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#when-the-reader-assumes-a-number)'s § 3.5 gets a pointer
    from the stage that edits that page next, not from this one.
 
 ## Acceptance
@@ -288,11 +288,11 @@ shown, on the binary at `e9d692e0`.
   corpus cell: `region.root_owed` names exactly `region.root_owes` instances and is `null` with it, and a
   root in R owes nothing.
 
-**The pages, in the same commit.** [`read_out.md`](../../../docs/kernel/inference/read_out.md): the `owed`
+**The pages, in the same commit.** [`read-out.md`](../../../docs/ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle): the `owed`
 row in § 2's table, its summary column `region.root_owed[k]`, and a paragraph under the table on what is
 printed where, the cut and where the rest is; § 7's `over` row and a paragraph on the two wordings and the
 claim under them; § 6's sentence on what is never cut; § 11.2's sentence on a mode's `null`.
-[`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md), re-written by
+[`read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md), re-written by
 `utils/read_out_examples.py`: 69 lines came and 17 went (`git diff --numstat`), the `owed` rows of X4, X5
 and X10 (four and the line on stdout, all 36 in X10's `answer.txt` block), the `over` rows of X6, X7 and
 X16, and the script's prose for them. `answer_dump.md`: `answer.txt` holds every `owed` row.
@@ -379,7 +379,7 @@ above the claim says which empty R is, and `as :expect (false)` under it is what
 - **`AGENTS.md` is not edited.** This file's T6 lists it; the user ruled on 2026-11-13 that it holds
   standing rules, locations and commands and no stage's history, and none of the three changed: a new row
   of the read-out is `read_out.md`'s.
-- [`word_problems.md`](word_problems.md) § 3.5 is not edited: its pointer is the next stage's that edits the
+- [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#when-the-reader-assumes-a-number) § 3.5 is not edited: its pointer is the next stage's that edits the
   page, as the task has it.
 
 ### The stage, closed

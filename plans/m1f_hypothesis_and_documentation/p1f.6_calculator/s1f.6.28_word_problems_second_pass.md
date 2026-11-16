@@ -146,7 +146,7 @@ where one of the problems above needs it, and the record names each.
    question, and the second meets [M1g's P1g.9](../../m1g_logic/p1g.9_one_equation_three_methods/README.md).
    When either lands, the file's claim moves to 7 in that commit.
 6. **T1f.6.28.6 — the README and the pages:** `examples/word_problems/README.md` as in 4 above;
-   [`word_problems.md`](word_problems.md) gets a closing section that records the replies and points here,
+   [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md) gets a closing section that records the replies and points here,
    and is otherwise left as the investigation's page; `examples/README.md`; `AGENTS.md`; E-33 closed in
    [`findings.md`](findings.md), Q-M1f.198 marked answered.
 
@@ -278,7 +278,7 @@ wider sweeps run with T5, which adds the programs.
 ### T1f.6.28.2 — the readings rebuilt, shown before they are banked, done
 
 **`readings.ein`, always owed** (`build/s1f.6.28/p2/readings.ein`, the page's `readings_always` of
-[`word_problems.md` § 4.3](word_problems.md#43-the-three-ways-to-write-readings-as-hypotheses)). Against the
+[`word-problems.md` § When a word has two readings](../../../docs/ein/user/guide/word-problems.md#when-a-word-has-two-readings)). Against the
 module as banked at `f3fe6ff0` (the page's `readings_plain`, nothing owed):
 
 - **an obligation, `reading-owed`**: where a question asks how many containers are needed, `(wanted (needed C K
@@ -504,7 +504,7 @@ missing 7 is the theory's, which reads *gave* one way, and not the engine's, whi
   the only one and not the final one*, the subject M1h's; with reply 28 quoted. The problems' table gains
   `boxes13.ein`, `kinds_listed.ein` and `before.ein`, and `boxes12.ein`'s row says two states and one answer; the
   vocabulary gains `adopted`, the modules' paragraph `reading-owed` and `listed_is_all.ein` with its Zebra sentence.
-- [`word_problems.md`](word_problems.md) § 13, *After the replies*: the replies by the page's questions and what
+- [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md#the-theory-of-the-examples) § 13, *After the replies*: the replies by the page's questions and what
   each moved in the directory, with a pointer here; the rest of the page is left as the investigation's.
 - [`examples/README.md`](../../../examples/README.md)'s line for the directory: four modules and sixteen problems,
   the readings owed, `boxes13.ein`, `listed_is_all.ein`, `before.ein`, and *"not only and not final"*.

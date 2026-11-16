@@ -303,7 +303,7 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
 /// the same thing here: this program activated that rule and observed what it
 /// concluded. Reading only `fire` would have put every obligation rule
 /// permanently in the zero set — which is why
-/// [S1d.2.3](../../../../docs/history/m1d_satisfiability/README.md#s1d23--the-form)
+/// [S1d.2.3](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
 /// deferred shipping the duals until this pass existed.
 fn read_activations(path: &Path, log: &str) -> Vec<(String, usize)> {
     let mut out = Vec::new();

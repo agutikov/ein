@@ -60,7 +60,7 @@ one-liner.
    tenth on some program does not get the source.
 5. **T1f.10.3.5 — the fixture**: a small bijection under `tests/` or `examples/`, with an `:expect`, on which a
    test pins how many extensions were known dead by a pair. It is what fails if a later change drops the step.
-6. **T1f.10.3.6 — the pages**: [`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` and
+6. **T1f.10.3.6 — the pages**: [`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s `route` and
    `work` rows, and the routes' module headers, stating what the engine does, with no stage id and no date.
 
 ## Acceptance
@@ -144,7 +144,7 @@ and bytes with the step and without.
 
 | golden | which part | re-banked by |
 |---|---|---|
-| [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) | X10 (`zebra2.ein`) and X13 (`type-exclusivity/colors.ein`): the `route` and `work` rows, the summary's `licences` and `work`, a partial run's rows where the budget now reaches further | `python3 utils/read_out_examples.py` |
+| [`docs/kernel/inference/read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md) | X10 (`zebra2.ein`) and X13 (`type-exclusivity/colors.ein`): the `route` and `work` rows, the summary's `licences` and `work`, a partial run's rows where the budget now reaches further | `python3 utils/read_out_examples.py` |
 | `ein-render/tests/golden/corpus_shapes.md5` | the ten programs' lines `read-out[…]`, `region-trace`, `states`, `region-lattice` and `cores[…]`; no other program's line and none of their other ops | `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance` |
 | `ein-render/tests/golden/trace_one-hypothesis.md`, `trace_ambiguous.md` | `branching/12_typed_blind_solve.ein` under `--maximal` and described: the `route` and `work` rows | `EIN_BLESS=1 cargo test … -p ein-render --test golden_trace` |
 | `README.md` and `docs/guide/04_solving_the_whole_puzzle.md`, the marked transcript | `ein solve examples/zebra2.ein --single`: the `route` and `work` rows | `EIN_BLESS=1 cargo test … -p ein-cli --test guide_transcripts` |
@@ -421,7 +421,7 @@ The table at the head of this file, row by row.
 
 Every one is on T1's list, and each was re-banked by the command the list names:
 
-- [`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md), 11 lines: X10's `route` and
+- [`read-out-examples.md`](../../../docs/ein/user/reference/read-out-examples.md), 11 lines: X10's `route` and
   `work` rows under describe (twice), `-n` and `--single`, with the state's `from {…}`, the commitment the tree
   first met it by; X13's two rows.
 - `ein-render/tests/golden/corpus_shapes.md5`: 88 lines, all of the ten programs and of no other: for each its

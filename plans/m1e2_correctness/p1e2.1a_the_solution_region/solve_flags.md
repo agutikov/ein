@@ -120,7 +120,7 @@ same commit.
 ## 5. Where today's walk goes
 
 > **Superseded 2026-10-16** by the user's ruling in
-> [`solve_interface.md` § 0](solve_interface.md#0-the-ruling): *"I don't want
+> [`Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md` § 0](../../../docs/decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md): *"I don't want
 > to have two different commands that give different and inconsistent
 > results"*. There is no `ein walk`. `ein solve --maximal` answers what the
 > walk was for, under R's node, and the walk stops being reachable when the
@@ -249,7 +249,7 @@ and the interface are [`solve_interface.md`](solve_interface.md).
 
 ## 10. Decided here unless the user objects
 
-[`solve_interface.md` § 7](solve_interface.md#7-decided-here-unless-the-user-objects)
+[`Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md` § 7](../../../docs/decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)
 keeps these, except the route-3 bullet: a run past every route's reach
 prints its certified part and its bounds, and runs no walk.
 

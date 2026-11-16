@@ -11,4 +11,4 @@ whether or not it asks for a search.
 
 **Held by.** `ein-cli/tests/mechanism_conflicts.rs`: `no_search_relaxes_no_conflict`,
 `no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead`;
-[`defined_behaviour.md`](../../kernel/defined_behaviour.md) § 4.27.
+[`diagnostics.md`](../../ein/user/reference/diagnostics.md#227-a-programs-hypothesis-mechanisms-do-not-contradict-one-another) § 2.27.

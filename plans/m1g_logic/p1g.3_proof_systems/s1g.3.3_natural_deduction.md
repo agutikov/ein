@@ -24,7 +24,7 @@ The coordinator's sorting, each row **to be tried**:
 | rule | shape | in Ein |
 |---|---|---|
 | `And` elimination, `Imp` elimination (modus ponens), `Iff` elimination, `Not` elimination, double-negation elimination | from formulas that hold, a formula that holds | a forward rule over `(holds F)`. Saturation applies it |
-| `And` introduction, `Or` introduction, `Iff` introduction (from both implications), `Bot` elimination (*ex falso*) | from formulas that hold, a *larger* formula, or (*ex falso*) any formula | a forward rule would build every conjunction of everything: a flood; and *ex falso*'s conclusion has a variable no premise binds, which the loader refuses ([`defined_behaviour.md` § 4.13](../../../docs/kernel/defined_behaviour.md)). On request, `(want (And A B))` asks for A and for B: the goal's shape decides the step |
+| `And` introduction, `Or` introduction, `Iff` introduction (from both implications), `Bot` elimination (*ex falso*) | from formulas that hold, a *larger* formula, or (*ex falso*) any formula | a forward rule would build every conjunction of everything: a flood; and *ex falso*'s conclusion has a variable no premise binds, which the loader refuses ([`diagnostics.md` § 2.13](../../../docs/ein/user/reference/diagnostics.md#213-a-conclusions-variable-nothing-binds)). On request, `(want (And A B))` asks for A and for B: the goal's shape decides the step |
 | `Imp` introduction, `Not` introduction (reductio), `Or` elimination (cases), `Iff` introduction (from two derivations) | from a *derivation under an assumption*, a formula with the assumption **discharged** | the question of this stage |
 
 The third group is where the two readings part. (`Bot` elimination was in the first group until 2026-11-14:

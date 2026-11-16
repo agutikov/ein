@@ -159,7 +159,7 @@ which changes what several of the others are about.
 ### Task T1e.1.1.1 — Ratify the standard of proof — **both rules** ✅
 
 > **Done 2026-08-28.** Both rules are
-> [`docs/kernel/standard_of_proof.md`](../../../kernel/standard_of_proof.md),
+> [`docs/kernel/standard-of-proof.md`](../../../ein/standard-of-proof.md),
 > the register marks both questions decided, the milestone README carries the
 > one-line version, and `docs/kernel/README.md` points at the page from its
 > load-bearing-claims note and its Conventions.
@@ -315,7 +315,7 @@ enumeration written outside the engine on the day**.
 A day — half for the matrix, half for the ruling in step 4 — and it is
 [D3](d3_q_m1e8_file_or_take.md)'s option **B**, chosen 2026-08-28: not the maximality fix — which stays filed for P1e.2 — but a
 **double-check that the implementation meets
-[`solution_semantics.md`](../../../kernel/inference/solution_semantics.md)
+[`solution-semantics.md`](../../../ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r)
 § 2's three conjuncts.** A check changes no verdict, so the stage's acceptance
 survives it, and the matrix already exists
 ([`probes/run_record_sites.sh`](probes/run_record_sites.sh)).

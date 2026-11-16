@@ -24,5 +24,5 @@ was bounded would too.
 **Held by.** `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle`, every mode of `ein solve` against the
 oracle's region on every corpus program it enumerates, and a stop inside the oracle's limit a failure;
 `ein-cli/tests/test_cli.rs`: `a_budget_stopped_run_is_not_checked_and_says_why`; `ein-cli/tests/cli_semantics.rs`:
-`a_stopped_run_writes_its_summary_and_says_why`. The page: [`read_out.md`](../../kernel/inference/read_out.md),
+`a_stopped_run_writes_its_summary_and_says_why`. The page: [`read-out.md`](../../ein/user/reference/read-out.md),
 the rows `exhausted` and `decided`.

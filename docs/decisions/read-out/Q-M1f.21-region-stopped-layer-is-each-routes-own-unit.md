@@ -9,4 +9,4 @@ and `null` on the state route, whose *complete up to* no field holds.
 on the unit.
 
 **Held by.** `ein_render::dump::region_answer`, the summary's writer;
-[read_out.md](../../kernel/inference/read_out.md) § 11, held to the printer by `ein-cli/tests/read_out_reference.rs`.
+[read-out.md](../../ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) § 11, held to the printer by `ein-cli/tests/read_out_reference.rs`.

@@ -16,4 +16,4 @@ together by tests; and a refused file reports the same errors on every run and e
 `a_report_cut_at_the_budget_says_so`; `ein-ir/tests/fuzz_properties.rs`:
 `a_generated_refusal_is_the_same_twice_and_within_its_budget`; `ein-ir/tests/grammar_pages.rs`:
 `the_pages_grammar_blocks_are_the_parsers`, which holds the grammar's page,
-[00_ebnf.md](../../kernel/ir/03-ein-lang/00_ebnf.md), to the two files.
+[grammar.md](../../ein/user/reference/grammar.md), to the two files.

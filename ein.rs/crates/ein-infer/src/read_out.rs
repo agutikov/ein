@@ -2,7 +2,7 @@
 //! once — M1e2
 //! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
 //! third step, for the layout
-//! [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines.
+//! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines.
 //!
 //! [`run`] asks [`crate::explore`] the question, then reads every state it
 //! lists through **the node function every route uses**
@@ -861,7 +861,7 @@ struct Coverage {
     exact: bool,
 }
 
-/// A query's `:expect` against its classes (`region_language.md` § 5): the
+/// A query's `:expect` against its classes (`query.md`): the
 /// classes it lists, as a set, are the query's. Checked when the classes are
 /// over the set the query asks about and complete; otherwise not checked,
 /// with why. With `refute` ([`explore::Options::refute`], M1f S1f.6.27),

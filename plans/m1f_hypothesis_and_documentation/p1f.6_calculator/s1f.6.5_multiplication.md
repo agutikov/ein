@@ -5,7 +5,7 @@
 answered by `(product-of X Y P)`, held to Rust's integers, search-free, and under the rule of the theory on the
 text and on the counter; four decisions taken by default, Q-M1f.159 to .162, and no finding
 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08; re-planned 2026-11-11 to
-[the rulings](design.md#the-rulings-2026-11-11).
+[the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath).
 **Depends on:** [S1f.6.3](s1f.6.3_addition.md).
 
 ## What it builds

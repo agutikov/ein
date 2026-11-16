@@ -145,7 +145,7 @@ whichever comes before it, and the row is flipped.
 ### Task T1f.5.24.4 — the pages
 
 `02_patterns.md`'s *where a malformed primitive is caught*, `00_ebnf.md` § 4 (what the grammar does not refuse),
-[`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md), `defined_behaviour.md` § 4, the
+[`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md), `defined_behaviour.md` § 4, the
 stage's records.
 
 ## Acceptance
@@ -348,19 +348,19 @@ the run was handed, as `wrong_answers.rs` does (schema `/16`), the first refused
 ## T4 record, 2026-11-10
 
 **The pages.**
-- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md)'s *where a malformed primitive is caught*:
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns)'s *where a malformed primitive is caught*:
   the grammar where a rule writes a primitive and the loader, after expansion, where a macro's body or a call's
   argument does; what the loader reads, the line, an unused macro loading, and what the compiler and the firing met
   until S1f.5.24 (W66 to W69).
-- [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) § 4: *what a macro's body expands to* names every
+- [`grammar.md`](../../../docs/ein/user/reference/grammar.md#3-what-the-grammar-leaves-to-the-loader) § 3: *what a macro's body expands to* names every
   shape the loader refuses since, and that a macro no rule calls is not read.
-- [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md): `unknown`'s expansion is held
+- [`reserved-names.md`](../../../docs/ein/user/reference/reserved-names.md): `unknown`'s expansion is held
   to the grammar, `(unknown (and …))` refused (W67).
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4: the compile row (no program reaches a
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) § 2: the compile row (no program reaches a
   compile refusal) and the conclusion row (no program reaches the firing's line), § 4.3's closing paragraph, § 4's
   conclusion lines' history, § 1.5's count (14 of 35 fixtures end `at None`, `grep -L 'at None'
   examples/broken/load/*.expected | wc -l` 21, 2026-11-10), and a new
-  [§ 4.16](../../../docs/kernel/defined_behaviour.md#416-a-malformed-primitive-a-macros-expansion-writes-at-load--m1f-s1f524),
+  [§ 2.16](../../../docs/ein/user/reference/diagnostics.md#216-a-malformed-primitive-a-macros-expansion-writes),
   every line, the position, what each replaced, what pins it and what is not refused.
 - The fixture READMEs (`examples/broken/compile/`, `examples/broken/load/`), `examples/README.md`'s catalogue (193
   witnesses under `ein-bugs/wrong-answers/`, `ls examples/ein-bugs/wrong-answers | wc -l`, 2026-11-10, the `macro-*`

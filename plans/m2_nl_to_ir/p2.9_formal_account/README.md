@@ -84,7 +84,7 @@ the kernel does them and a reader who checks will find them:
 
 - [`EinAf.md` § Stage M](../EinAf.md#stage-m--formalize-the-conceptual-model).
 - [`docs/kernel/`](../../../docs/kernel/README.md) — the specification the
-  account formalises; [`glossary.md`](../../../docs/kernel/glossary.md).
+  account formalises; [`glossary.md`](../../../docs/ein/user/reference/glossary.md).
 - [F1](../../followups/f1_categorical_formulation.md), [F1b](../../followups/f1b_logical_formulation.md),
   [F12](../../followups/f12_rules_and_relations/ideas.md), [F15](../../followups/f15_math_formulae/ideas.md)
   (rules as formulae, the algebraic signature of a theory — the notation

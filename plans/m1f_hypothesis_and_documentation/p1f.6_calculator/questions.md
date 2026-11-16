@@ -11,7 +11,7 @@ lettered; *ok* takes the recommendation. An empty reply leaves the question open
 is built. Sections [I](#i-defaults-taken-during-the-phase-everything-else) and
 [J](#j-findings-that-need-an-owner) are tables with one reply block each.
 
-**What is already ruled is not asked again:** [`design.md` § The rulings](design.md#the-rulings-2026-11-11)
+**What is already ruled is not asked again:** [`stdlib.md` § The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)
 stands. What was merged or dropped on the way here is listed [at the end](#merged-and-dropped).
 
 ## Blocking: answer these first
@@ -93,7 +93,7 @@ number*, leans to (a); the prototype answers an integer.
 Today a request the theory cannot read derives nothing: exit 0 and no word. You ruled that the theory detects
 what it can, and that a detected one derives `(malformed REQUEST)` and then `(false)`, as a division by zero
 does. The investigation ran on prototypes of the shipped `std.arith`. Source:
-[`malformed_numbers.md` § 8](malformed_numbers.md#8-the-questions-for-the-user).
+[`stdlib.md` § Malformed numbers: what is flagged, and where](../../../docs/ein/user/reference/stdlib.md#malformed-numbers-what-is-flagged-and-where).
 
 <a id="q3"></a>
 
@@ -176,7 +176,7 @@ silent: a name no `let` states, a number that ends in a name that is neither a d
 fact of another relation where a number goes. A natural number where `std.int` expects an integer is silent
 too, and the shipped division run over binary tables loaded and answered nothing. *This request has no answer*
 is an absence, so no monotone rule can say it. Sources: malformed_numbers.md § 7, objection 2;
-[binary_arithmetic.md Q7](binary_arithmetic.md#questions-for-the-user).
+[stdlib.md Q7](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
 
 - **(a) No general mechanism.** Each module's page says *a flag means malformed; no flag does not mean
   well-formed*, and lists what stays silent.
@@ -253,7 +253,7 @@ answer and asks the next thing. An expression layer would let one fact hold a tr
 N3)))`, evaluated on demand, and `(let NAME E)` name its value. You called it questionable on 2026-11-11
 (*"Ein is not Lisp, is it?"*), and it was to be asked again once the word problems showed the need. Source:
 [S1f.6.14](s1f.6.14_expressions.md#what-the-user-is-asked-when-the-need-shows);
-[word_problems.md Q12](word_problems.md#11-the-questions-for-the-user).
+[word-problems.md Q12](../../../docs/ein/user/guide/word-problems.md).
 
 - **(a) No expression layer.** Every composition is a rule of the program's. The smallest theory.
 - **(b) `(let NAME E)` only:** named quantities, no anonymous `calc`; say whether E is one level deep or any
@@ -275,7 +275,7 @@ Already settled if it is ruled in: `sub` inside an expression is strict, and div
 ### 11. What does `(let NAME NUMBER)` let a request do?
 
 You ruled named constants in. The reading built was the coordinator's default. Source: [Q-M1f.149](../open_questions.md#q-m1f149--what-let-name-number-does-as-built);
-[`design.md` § What is open](design.md#what-is-open-after-the-rulings), item 2.
+[`stdlib.md` § What is open](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath), item 2.
 
 - **(a) A request may name an operand** (built): `(add price qty)` is answered by `(sum-of price qty S)`, the
   names repeated. The same sum written with numbers is another request with its own answer. Every request
@@ -311,7 +311,7 @@ Nothing is in the stdlib; three ways were built on a prototype, and whatever of 
 `examples/` does not settle these questions. What the measurement found: addition, subtraction
 and comparison need **no rule changed**, only smaller tables; multiplication and division get simpler rules;
 every number is 3.3 times longer. Source:
-[`binary_arithmetic.md` § Questions](binary_arithmetic.md#questions-for-the-user).
+[`stdlib.md` § Questions](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith).
 
 <a id="q13"></a>
 
@@ -435,7 +435,7 @@ where the shipped one is 36. Source: binary_arithmetic.md Q6.
 Nothing is in the stdlib, and whatever of the prototype is banked under `examples/` does not settle these
 questions. On a prototype: the sixteen two-input boolean functions as facts, thirty properties
 derived from their rows, a circuit simulated by saturation, and six applications. Source:
-[`binary_logic.md` § Questions](binary_logic.md#questions-for-the-user).
+[`stdlib.md` § Questions](../../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool).
 
 <a id="q19"></a>
 
@@ -539,8 +539,8 @@ that each owe a value, every complete assignment is dead but the partial ones ar
 completed. So R is empty as *every alive node owes*, `ein solve --single` answers `Open` with *decided: yes*,
 and the read-out prints the owing nodes and **no row for N**, the minimal dead sets with their cores, which is
 the explanation; those are in `--dump-answer`'s `nogoods.json` and `--trace` only. `Open` reads as *not yet*
-where the run has shown *never*. Sources: [binary_logic.md Q6](binary_logic.md#3-satisfiability);
-[beyond_arithmetic.md Q6](beyond_arithmetic.md#6b-a-proof-of-no-solution-three-forms-one-of-them-a-proof);
+where the run has shown *never*. Sources: [stdlib.md Q6](../../../docs/ein/user/reference/stdlib.md#stdboolinputs--inputs-as-hypotheses);
+[word-problems.md Q6](../../../docs/ein/user/guide/word-problems.md#an-equation-with-no-solution-three-ways);
 E-23 of [`findings.md`](findings.md); [M1g's probe 1b](../../m1g_logic/README.md#first-probes-2026-11-11).
 
 - **(a) Keep the words,** and add the N row to the read-out of an R that is empty by owing, so the reasons are
@@ -553,7 +553,7 @@ The witness: `x × 7 = 862` asked by search is `Open`, its argument 28 dead sets
 saturation, where the table makes each digit unique, it is a dead root whose core is a three-row proof.
 
 **Recommended: none stated** in any of the three sources; they name the read-out row as
-[`read_out.md`](../../../docs/kernel/inference/read_out.md)'s question and (b) as M1g's.
+[`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s question and (b) as M1g's.
 
 **Reply:** solution of `x × 7 = 862` belongs yet to arithmetic or already to algebra? this question open vs. false is deep.
 What would give more benefits, I expect `open` will, but why? Can we change it quickly later? We already have core for dead state, do we have anything like this for open? What it could be used for, I remember we already use it for hypothesis generation? It is not the case here - we would not generate hypothesis like (let x <number>) for every numbers already present in KB. It looks like an entire separate phase.
@@ -596,7 +596,7 @@ A prototype theory of what the words of a school problem mean (*has*, *gave*, *t
 calculator, with 29 programs. **The problems were banked on 2026-11-12 under `examples/word_problems/`, in the
 page's recommended variants, on your instruction; the questions below stay open,** and an answer other than
 the recommendation changes those files. [question 10](#q10), on expressions, took the page's twelfth question. Source:
-[`word_problems.md` § 11](word_problems.md#11-the-questions-for-the-user).
+[`word-problems.md` § 11](../../../docs/ein/user/guide/word-problems.md).
 
 <a id="q26"></a>
 
@@ -802,7 +802,7 @@ The same reasoning also reads *(n z 5) + (n z 7) = (n (n z 1) 2)*, which is [que
 ## G. Inverse requests, and what the investigation proposed
 
 S1f.6.10 asked what the tables do besides arithmetic. Source:
-[`beyond_arithmetic.md` § Questions](beyond_arithmetic.md#questions-for-the-user).
+[`word-problems.md` § Questions](../../../docs/ein/user/guide/word-problems.md).
 
 <a id="q37"></a>
 
@@ -894,7 +894,7 @@ engine answers such a join by a scan. Inside, the theory calls itself with a tag
 `(add-walk TAG X Y 0 z)`, `(mul-call TAG X Y)`, `(div-call TAG X Y)`, `(cmp-walk TAG X Y eq)`, answered by
 `(done TAG A)`, `(div-done TAG Q R)`, `(order-is TAG O)`. `std.int` and `std.rat` use them; so do eight banked
 examples and the prototype conversions; the module's header calls them *the circuit's own*, not a promise.
-Sources: beyond_arithmetic.md Q4; [binary_arithmetic.md Q5](binary_arithmetic.md#questions-for-the-user);
+Sources: beyond_arithmetic.md Q4; [stdlib.md Q5](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith);
 [Q-M1f.189](../open_questions.md#q-m1f189--a-users-program-calling-stdariths-tagged-calls).
 
 - **(a) Yes:** the module's page names them as what a theory built on it calls, and a test holds their shapes.
@@ -1312,7 +1312,7 @@ That commit of 2026-11-11 is titled as an M2 plan change (the reasoning as a pro
 - **The gate names of `binary_logic.md` Q2.** You ruled on 2026-11-11 that any spelling other than the
   engine's own words will do and that the stage picks one convention and does not stop for it. The proposed
   names stand; [question 19](#q19) has a line for an objection.
-- **Everything [`design.md` § The rulings](design.md#the-rulings-2026-11-11) settles:** the number's shape,
+- **Everything [`stdlib.md` § The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath) settles:** the number's shape,
   the protocol, subtraction's two numbers, a strict `sub` inside an expression, division by zero as a flag and
   then `(false)`, the tables as generated plain facts, the flat import of facts, that the theory detects
   malformed numbers where it can, and that a program's own open relations beside the theory are left as they

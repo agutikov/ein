@@ -87,7 +87,7 @@ wrong:
    under `examples/ein-bugs/wrong-answers/`; the fix in `invariant::program_names` or the enumerator; the
    sweep, old binary against new over the corpus, with every moved R listed; the rows flipped in the fixing
    commit; `solution_semantics.md` § 1.2 and `defined_behaviour.md` restated. Under (a): the read-out's
-   `universe` row and `root.hypgen` gain the count, with [`read_out.md`](../../../docs/kernel/inference/read_out.md)
+   `universe` row and `root.hypgen` gain the count, with [`read-out.md`](../../../docs/ein/user/reference/read-out.md)
    and its reference test in the same commit.
 
 ## Acceptance
@@ -994,7 +994,7 @@ its control's. Three things on the pages say so, and none says otherwise:
   the native mirror is *a performance optimization, NOT a capability*, computing *the identical closure as the
   stdlib `symmetric` rule*. That rule is activated by `(symmetric R)` however the fact came to hold, a rule's
   conclusion among them, so the identical closure reads a derived mark too.
-- [`solution_semantics.md` § 1.3](../../../docs/kernel/inference/solution_semantics.md#13-root): root is the
+- [`solution-semantics.md` § 1.3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#13-root): root is the
   program's facts saturated to quiescence. A root whose first saturation leaves a mirror underived is not.
 - A program may conclude a dunder's fact (`reserved_engine_strings.md`'s table: *use it … as the relation of …
   a conclusion*), and the user's ruling on Q-M1f.306 held one closure stated two ways to one answer.
@@ -1103,7 +1103,7 @@ pointer to the register's owners restored.
 
 **The words.** `candidate_objects` leaves out seven kernel words by name, `not false and or absent eq neq`.
 Four are never a name (`not`, `and`, `or`, `neq`: refused at the parse), so the ones a program can write as a
-value are `eq`, `absent` and `false`. [`defined_behaviour.md` § 4.22](../../../docs/kernel/defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73),
+value are `eq`, `absent` and `false`. [`diagnostics.md` § 2.22](../../../docs/ein/user/reference/diagnostics.md#222-a-value-is-a-name-or-a-fact-a-state-could-hold),
 the user's value rule, keeps all three names: *`(h absent)`, `(h false)` and `(mk eq)` are facts*. So **no
 reading refuses them at load**: a refusal would undo § 4.22 and refuse `std.math.digits`, whose `cl` rows write
 `eq`. `relation` and `written`, the finding's other two, are relations of every program (`Program::categorise`),
@@ -1114,7 +1114,7 @@ left; no reading below moves them.
 
 - [Q-M1e2.9](../../m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program) (a),
   ruled 2026-11-04, *meant literally*: every constant in an argument position is a name of the program, and
-  [`solution_semantics.md` § 1.2](../../../docs/kernel/inference/solution_semantics.md#12-names) says every name
+  [`solution-semantics.md` § 1.2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names) says every name
   is in the candidate list, a list that left one out an engine bug (W4, W15). Read so, `eq` in `(order eq)` is
   an object, and H9-1 is a wrong answer. The close's line was this reading.
 - [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations), ruled 2026-11-07:

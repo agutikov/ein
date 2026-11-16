@@ -709,13 +709,13 @@ impl<'a> Compiler<'a> {
         //
         // **Exactly one argument, checked here since M1e S1e.2.1.** `absent`
         // is one of the three kernel meta-primitives the grammar does not
-        // shape-pin ([`00_ebnf.md` §2] names four of seven), so what its arity
+        // shape-pin ([`grammar.md` §2] names four of seven), so what its arity
         // is checked by is whatever reads it — and until this line nothing
         // did: `(absent)` fell through to the ordinary relation path and
         // retired the rule in silence, while `(absent A B)` read `args[0]` and
         // dropped the rest, firing a guard weaker than the one written.
         //
-        // [`00_ebnf.md` §2]: ../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md
+        // [`grammar.md` §2]: ../../../../docs/ein/user/reference/grammar.md
         //
         // **An invariant since M1f S1f.5.24** (W66): the grammar takes `absent`
         // at one premise since S1f.5.5's swap, and what a macro's expansion

@@ -9,4 +9,4 @@ program.
 be a second reason for one fact.
 
 **Held by.** `ein_render::sentence`, whose reason reads a rule's or hrule's `:why` and no macro's;
-[09_natural_language.md](../../kernel/ir/03-ein-lang/09_natural_language.md) § 2 and § 5.
+[natural-language.md](../../ein/user/syntax-and-semantics/natural-language.md#2-every-declaration-carries-a-why) § 2 and § 5.

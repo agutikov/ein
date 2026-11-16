@@ -19,7 +19,7 @@
 ;;;
 ;;;   ein solve examples/binary_arithmetic/first.ein
 ;;;
-;;; M1f P1f.6 (S1f.6.16): `plans/…/p1f.6_calculator/binary_arithmetic.md` has
+;;; M1f P1f.6 (S1f.6.16): `docs/ein/user/reference/stdlib.md` has
 ;;; the prototype this program was banked from, its counts and its costs; the
 ;;; theory is the stdlib's since the stage's build.
 (import std.math.binary-arith :symbols (binary-arith bin-add bin-let bin-sub bin-sum-of bin-diff-of))

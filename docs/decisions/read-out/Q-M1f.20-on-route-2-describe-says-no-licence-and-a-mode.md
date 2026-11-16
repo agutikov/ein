@@ -9,5 +9,5 @@ a node; L7 is the cube's own, which holds of every program.
 lists the licence the route stands on. Neither misstates an answer.
 
 **Held by.** `ein_render::read_out`'s `describe_rows`, which writes describe's row;
-[read_out.md](../../kernel/inference/read_out.md) § 2's `route` row and § 11's `region.licences`, held to the printer
+[read-out.md](../../ein/user/reference/read-out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle) § 2's `route` row and § 11's `region.licences`, held to the printer
 by `ein-cli/tests/read_out_reference.rs`.

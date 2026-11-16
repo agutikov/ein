@@ -2,13 +2,13 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** **done 2026-11-12** (`47982ced`)**, and shown to the user**, who decides what becomes a stage: the seven groups of
-probes run, [`beyond_arithmetic.md`](beyond_arithmetic.md) written, sixteen probes banked under
+probes run, [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md) written, sixteen probes banked under
 [`examples/beyond_arith/`](../../../examples/beyond_arith/), three findings filed (E-29 to E-31), four decisions
 taken by default (Q-M1f.186 to .189), eight questions put ([§ T1 record](#t1-record-2026-11-12) onward). No
 stdlib module and no engine source moved. Planned 2026-11-08 as a report: probes and a page, no change to the
 theory unless the user rules one.
 **Depends on:** [S1f.6.8](s1f.6.8_rational_numbers.md) and [S1f.6.9](s1f.6.9_width.md). It works on the ruled design of
-2026-11-11 ([the rulings](design.md#the-rulings-2026-11-11)): nested numbers of any length, so a bound in a probe is a
+2026-11-11 ([the rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)): nested numbers of any length, so a bound in a probe is a
 choice of the probe and no longer the theory's width.
 
 ## The question
@@ -75,7 +75,7 @@ saturation-only theory gives besides.
 ## T1 record, 2026-11-12
 
 **The probes.** All seven groups ran on the release binary, under `build/s1f.6.10/` (generators, runners, the
-programs under `p/`, the read-outs under `out/`). The page is [`beyond_arithmetic.md`](beyond_arithmetic.md);
+programs under `p/`, the read-outs under `out/`). The page is [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md);
 each number there carries its command. In brief:
 
 | group | result |
@@ -128,7 +128,7 @@ was edited by hand, as S1f.6.7's and S1f.6.8's were: `ein-infer/tests/alive_inva
 eleven of the programs, the `z` inside a nested number they write or the theory's own, and the `e` the three
 inverse walks start their accumulator at. No engine source moved.
 
-**Pages:** [`beyond_arithmetic.md`](beyond_arithmetic.md), new; `findings.md`; `open_questions.md`; the phase
+**Pages:** [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md), new; `findings.md`; `open_questions.md`; the phase
 README; `examples/README.md`, a row for the directory; `corpus/corpus.toml`, sixteen entries; `AGENTS.md`.
 
 ## After the commit, 2026-11-12: the nightly
@@ -142,7 +142,7 @@ the fuzzer at both seeds and the bench smoke. The gate before the commit is `bui
 
 ## Acceptance re-taken, 2026-11-12
 
-- **The page, every claim on it carrying its command, date or test:** [`beyond_arithmetic.md`](beyond_arithmetic.md).
+- **The page, every claim on it carrying its command, date or test:** [`word-problems.md`](../../../docs/ein/user/guide/word-problems.md).
   The times of the search tables were taken while other runs of the stage shared the machine.
 - **The probes banked:** sixteen, each with a corpus entry and a claim; the expensive ones under `build/` with
   their numbers on the page.

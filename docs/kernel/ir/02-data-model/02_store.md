@@ -70,7 +70,7 @@ Entities reach these through accessors that take the KB (e.g.
 ## 3. Loading from IR — `KnowledgeBase.from_ir(forms)`
 
 The loader walks the **flat sequence of forms** (P1.7c — no block
-wrappers; see [`../03-ein-lang/06_reserved_names.md`](../03-ein-lang/06_reserved_names.md)),
+wrappers; see [`../03-ein-lang/reserved-names.md`](../../../ein/user/reference/reserved-names.md)),
 routing each by its **head**:
 
 1. **Declarators** (by head):
@@ -78,11 +78,11 @@ routing each by its **head**:
    - `(rule …)` / `(hrule …)` → `Rule` entity with `match` / `assert_`
      `Pattern` objects.
    - `(query …)` → **appended** to `queries`. Plural since M1c
-     [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects):
+     [S1c.1.2](../../../ein/user/syntax-and-semantics/query.md#claims):
      it was an `Option<Query>` filled by *the last block, silently*, and
      `ein solve` now runs every one of them in order. `(config …)` keeps
      last-wins — a config is a setting, a query is content
-     ([`../03-ein-lang/01_grammar.md` § Query](../03-ein-lang/01_grammar.md#query)).
+     ([`../03-ein-lang/syntax.md` § Query](../../../ein/user/reference/syntax.md#query)).
 2. **Facts** (any other head — `=`, `not`, or a generic `(NAME …)`):
    - membership facts are ordinary `Fact`s (no
      `Type` / `Instance` entities; they are plain facts on user-space
@@ -133,7 +133,7 @@ executes it against the KB's indexes
 ## 5. Fork — `kb.fork()`
 
 A `fork` is a hypothesis branch (per
-[`../01-ein-graph/01_kb.md` §6](../01-ein-graph/01_kb.md)). The
+[`../01-ein-graph/facts.md` §Facts in a state](../../../ein/user/syntax-and-semantics/facts.md#facts-in-a-state)). The
 contract:
 
 ```text
@@ -358,7 +358,7 @@ entity-view, so a membership fact is an ordinary fact and goes in through
 `add_fact` like any other — §6.)
 
 The engine doesn't *remove* facts (the graph is monotonic — see
-[`../01-ein-graph/02_rules.md` §1](../01-ein-graph/02_rules.md));
+[`../01-ein-graph/rules.md` §In Ein](../../../ein/user/syntax-and-semantics/rules.md#in-ein));
 retraction happens via *forking* (the speculative branch is
 discarded) rather than mutation.
 
@@ -367,7 +367,7 @@ discarded) rather than mutation.
 - [`01_entities.md`](01_entities.md) — the records this store
   owns.
 - [`../01-ein-graph/`](../01-ein-graph/) — the conceptual model.
-- [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax the
+- [`../reference/`](../../../ein/user/reference/) — the surface syntax the
   loader parses.
 - [`../../inference/`](../../inference/) — the engine that produces derived
   facts via rule firings. It shipped across P1.3–P1.6.

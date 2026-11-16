@@ -11,4 +11,4 @@ R would no longer be every alive, discharged node.
 
 **Held by.** `ein oracle`, which classifies every subset of H, and `ein-infer/tests/explore.rs`:
 `every_mode_is_the_oracle`, so no route drops a state as another's mirror; the remark on numbering direction in
-[zebra_walkthrough.md](../../kernel/inference/zebra_walkthrough.md).
+[06_zebra_walkthrough.md](../../ein/user/guide/06_zebra_walkthrough.md).

@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; `_` in a rule's pattern matches any value (`01_grammar.md`'s token table,
+;;; `_` in a rule's pattern matches any value (`syntax.md`'s token table,
 ;;; *head / arg wildcard in patterns*, and the user's ruling), so `w` fires on
 ;;; `(holds a)` and root holds `(hit w)`. The blind enumerator proposes
 ;;; `(hit a)`, so R is two states, `{(hit w)}` and `{(hit a), (hit w)}`. It

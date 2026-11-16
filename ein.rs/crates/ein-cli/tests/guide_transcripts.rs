@@ -1,6 +1,6 @@
 //! **A marked transcript is a real run** — M1e `CD-L2`.
 //!
-//! [`docs/guide/`](../../../../docs/guide/) is the newcomer's first contact
+//! [`docs/ein/user/guide/`](../../../../docs/ein/user/guide/) is the newcomer's first contact
 //! with the tool, and nothing ran its transcripts. Chapter 4's — the tutorial's
 //! final page, the payoff — differed from the binary in two places: it packed
 //! four sorted bindings two-per-line, and it dropped the 62-character rule the
@@ -27,7 +27,7 @@
 //! them would push seven lines of `(query has no :goal-text template)` into a
 //! tutorial to satisfy a test. Their lines are byte-correct today; that they
 //! are excerpts is stated in
-//! [`docs/guide/README.md`](../../../../docs/guide/README.md), which is where
+//! [`docs/ein/user/guide/README.md`](../../../../docs/ein/user/guide/README.md), which is where
 //! a reader who wonders why one page is generated and another is not will
 //! look.
 //!
@@ -47,13 +47,17 @@ use std::process::Command;
 use ein_corpus::repo_root;
 
 /// Every page that may carry a marked transcript, repo-relative.
-const PAGES: [&str; 6] = [
+const PAGES: [&str; 10] = [
     "README.md",
-    "docs/guide/README.md",
-    "docs/guide/01_objects_and_relations.md",
-    "docs/guide/02_first_rules.md",
-    "docs/guide/03_rule_families.md",
-    "docs/guide/04_solving_the_whole_puzzle.md",
+    "docs/ein/user/guide/README.md",
+    "docs/ein/user/guide/01_objects_and_relations.md",
+    "docs/ein/user/guide/02_first_rules.md",
+    "docs/ein/user/guide/03_rule_families.md",
+    "docs/ein/user/guide/04_solving_the_whole_puzzle.md",
+    "docs/ein/user/guide/05_jack_drinks_coffee.md",
+    "docs/ein/user/guide/06_zebra_walkthrough.md",
+    "docs/ein/user/guide/examples.md",
+    "docs/ein/user/guide/word-problems.md",
 ];
 
 const OPEN: &str = "<!-- transcript: ";

@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
-page shown to the user: [`binary_logic.md`](binary_logic.md).** Nothing shipped; T2 and T3 wait for the user's
+page shown to the user: [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool).** Nothing shipped; T2 and T3 wait for the user's
 rulings on that page's questions. T1 re-counted this page's tables from the rows and corrected three hand
 counts, each marked below. **The recommended variants banked as examples 2026-11-12** (`9612b350`), on the user's instruction
 of that day: [`examples/binary_logic/`](../../../examples/binary_logic/README.md); the
@@ -318,7 +318,7 @@ the table `gate2`); question 19 left a line for an objection and none was typed.
    `equivalent.ein` go on claiming the owing frontier and `(false)` for the query (E-23; question 24 is not
    ruled, and its subject is [M1g's P1g.7](../../m1g_logic/p1g.7_unsatisfiable_against_owing/README.md)).
    The sizes stay the corpus's: three inputs for every search.
-6. **T1f.6.17.9 — the pages:** [`binary_logic.md`](binary_logic.md) gets a closing section, what shipped and
+6. **T1f.6.17.9 — the pages:** [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool) gets a closing section, what shipped and
    what each ruling made of its questions; [`stdlib/README.md`](../../../stdlib/README.md) a section a
    module; `examples/binary_logic/README.md`; `AGENTS.md`; [M1g's README](../../m1g_logic/README.md) is told
    where its starting point now lives.
@@ -481,7 +481,7 @@ corpus's, three inputs for every search.
 
 ### T1f.6.17.9 — the pages, done
 
-[`binary_logic.md`](binary_logic.md) § What shipped, each of its eight questions with the reply and what it made;
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool) § What shipped, each of its eight questions with the reply and what it made;
 its table of banked files re-pointed to where they went, the text kept (Q-M1f.262's default);
 [`stdlib/README.md`](../../../stdlib/README.md) § `std.bool`, a subsection a module, the layout's and the module
 table's rows, and the coverage count re-taken (423 of 423, its command and date);

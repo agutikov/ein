@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
 ;;;
-;;; A keyword is a whole word: `00_ebnf.md` § 1, fact 1, excludes a reserved
+;;; A keyword is a whole word: `grammar.md` § 1, fact 1, excludes a reserved
 ;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
 ;;; `SYMBOL`; `neq_test` is), so `orz` is a name like any other. `r` concludes
 ;;; `(orz a)`: root holds `(orz a)` and `(p a)`, H is empty and R is {∅}. The
@@ -25,7 +25,7 @@
 ;;; z)`, and R was their eight subsets. The query printed as `(or z ?y)`.
 ;;; (`ein solve FILE` at `35186bc0`, release and debug; every mode and `ein
 ;;; oracle` the same.) Since then a keyword is a whole word, at the boundary
-;;; `00_ebnf.md` § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17),
+;;; `grammar.md` § 1 states (the user's ruling of 2026-11-05 on Q-M1e2.17),
 ;;; and the program answers its twin's R.
 
 (relation p Node :why "p holds of {?1}") (relation orz Node :why "orz holds of {?1}")

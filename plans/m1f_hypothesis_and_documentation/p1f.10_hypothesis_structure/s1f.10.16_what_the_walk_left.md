@@ -20,7 +20,7 @@ The walk was deleted on 2026-11-03 and the generator stayed, because H is built 
 stayed has no reader on any command's path. This phase is about to write code beside it and pages about it, so
 it settles each piece first: deleted, or kept with the reader that needs it named at the item. An argument for
 leaving something alone holds only while its premise is enforced by something that fails
-([`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md)).
+([`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md)).
 
 ## The items, as found on 2026-11-15 at `dbedc535`
 
@@ -44,7 +44,7 @@ leaving something alone holds only while its premise is enforced by something th
    without the user's word: it is part of the per-commit shape check.
 3. **T1f.10.16.3 — the headers.** Item 5's three, and any other T1 finds, restated to say what the engine
    does, with no stage id and no date.
-4. **T1f.10.16.4 — the pages.** [`configuration.md`](../../../docs/kernel/configuration.md)'s rows for every
+4. **T1f.10.16.4 — the pages.** [`config.md`](../../../docs/ein/user/reference/config.md)'s rows for every
    name touched, pinned by `config_reference.rs`; `docs/api/rust.md` if a `pub` item it shows goes.
 
 ## Acceptance

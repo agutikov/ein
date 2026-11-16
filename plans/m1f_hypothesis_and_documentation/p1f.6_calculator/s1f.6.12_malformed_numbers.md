@@ -1,7 +1,7 @@
 # S1f.6.12 — Malformed numbers, and the names the theory occupies
 
 **Phase:** [P1f.6](README.md)
-**Status:** **T1 done 2026-11-11, stopped for the user:** [`malformed_numbers.md`](malformed_numbers.md) is what it
+**Status:** **T1 done 2026-11-11, stopped for the user:** [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#malformed-numbers-what-is-flagged-and-where) is what it
 found, on the shipped `std.arith`, with T2's probes: the table, a recommendation a row, and six questions
 ([§ T1 record](#t1-record-2026-11-11)). Nothing is built. Planned 2026-11-11, on the user's ruling of that day.
 **The build is ruled and planned (2026-11-12):** the user's replies to the page's questions are in
@@ -17,7 +17,7 @@ The user, 2026-11-11: *"with theory loaded names `n`, `d`, `z`, `sum-of` etc bec
 used with other meaning, so if theory can detect malformed numbers - do it, what cons/objections?"*
 
 Today a request the theory cannot read derives nothing: exit 0 and no word
-([design.md, round 1's finding 3 and round 2 § A](design.md)). The ruled direction: the theory detects what it
+([stdlib.md, round 1's finding 3 and round 2 § A](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)). The ruled direction: the theory detects what it
 can, a malformed request derives `(malformed <request>)`, and a second rule derives `(false)` from the flag, as
 division by zero does.
 
@@ -92,7 +92,7 @@ at load, is a language question the stage puts to the user with the probes and d
 
 Taken on the shipped `std.arith` (89 rules), not on the prototype `r3/k.ein` the plan named: S1f.6.6 was done, so
 the experiment could be made on what a detection would be built into. The page is
-[`malformed_numbers.md`](malformed_numbers.md); the probes, three prototype theories (`stdlib-b1`, `-b2`, `-a`,
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#malformed-numbers-what-is-flagged-and-where); the probes, three prototype theories (`stdlib-b1`, `-b2`, `-a`,
 written by `proto.py` from the shipped `stdlib/`) and the scripts are under `build/s1f.6.12/`.
 
 **What it found, in the table's order:**
@@ -228,7 +228,7 @@ count of arguments is refused at load once S1f.6.23 has landed, and until then i
    own; the theory's claim about `absent`, restated. `std.num9`'s section: silent on a non-digit, by the
    user's ruling. `AGENTS.md`'s calculator paragraphs; this phase's README (§ The principle says *no
    `absent` and no `not` premise anywhere in the theory*, and § Acceptance holds it by a test);
-   [`malformed_numbers.md`](malformed_numbers.md) gets a closing note that points here and is otherwise
+   [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#malformed-numbers-what-is-flagged-and-where) gets a closing note that points here and is otherwise
    left as the investigation's record.
 
 ### Acceptance

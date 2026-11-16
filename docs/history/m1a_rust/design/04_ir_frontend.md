@@ -15,7 +15,7 @@ Reasons, in order of weight:
 1. **Error-message control is the whole job.** The message is
    `"{file}:{line}:{col}: unexpected input\n{context}"` where `context`
    is the offending source line plus a caret
-   ([defined_behaviour.md §1](../../../kernel/defined_behaviour.md#1-parse-and-load-diagnostics)). A generated parser's
+   ([diagnostics.md §1](../../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)). A generated parser's
    diagnostics are the generator's; a hand-written parser is the only way
    to control the byte output. The shapes:
 
@@ -41,7 +41,7 @@ Reasons, in order of weight:
 
 **Risk and mitigation.** A general parser explores tokenizations; a
 greedy lexer does not. The grammar
-([`00_ebnf.md`](../../../kernel/ir/03-ein-lang/00_ebnf.md)) is tuned for
+([`grammar.md`](../../../ein/user/reference/grammar.md)) is tuned for
 maximal munch (the
 `WILDCARD: /_(?![A-Za-z0-9_])/` lookahead exists precisely so `__closed__`
 does not lex as `_`,`_`,`closed__`, and `SYMBOL`'s reserved-word
@@ -103,7 +103,7 @@ explicitly:
   Rule: **try `relation_decl`'s shape first; on shape failure, fall back
   to `generic_fact`.** So `(relation R (T1 T2))` parses as a *fact* and
   is then rejected by the loader
-  ([defined_behaviour.md §1](../../../kernel/defined_behaviour.md#1-parse-and-load-diagnostics)).
+  ([diagnostics.md §1](../../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)).
 - **`value*` then `kw_pair*`** in `generic_fact` / `relation_decl`: read
   values until a `Keyword` appears, then read `:kw value` pairs to the
   close paren. A value *after* a kw-pair is a parse error — pin it.
@@ -147,7 +147,7 @@ Two AST details that leak into observable output:
   fact, `=`-fact, `not`, rule, … — is built without one; only a nested
   list takes its head's. So a loader error that interpolates the form's
   location prints `at None` for a top-level form
-  ([defined_behaviour.md §1](../../../kernel/defined_behaviour.md#1-parse-and-load-diagnostics)). It is a genuine usability
+  ([diagnostics.md §1](../../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)). It is a genuine usability
   bug, tracked as Q-M1a.6, and kept so that fixing it is one visible
   re-baseline.
 
@@ -175,7 +175,7 @@ Each behaviour is pinned by a fixture from `examples/broken/`:
 
 The `-1:-1` case is the awkward one: the parser has to *choose* to report
 `-1` on EOF, and it does
-([defined_behaviour.md §1](../../../kernel/defined_behaviour.md#1-parse-and-load-diagnostics)); improving it is Q-M1a.3's
+([diagnostics.md §1](../../../ein/user/reference/diagnostics.md#1-parse-and-load-diagnostics)); improving it is Q-M1a.3's
 option (c).
 
 A parse error is a typed error whose `Display` is that string; the CLI
@@ -288,5 +288,5 @@ output) is the fixture.
 
 - [03 — Data model](03_data_model.md) — where parsed atoms go.
 - [11 — Shared assets](11_shared_assets.md) — stdlib resolution.
-- [`docs/kernel/ir/03-ein-lang/`](../../../kernel/ir/03-ein-lang/README.md)
+- [`docs/kernel/ir/03-ein-lang/`](../../../ein/user/reference/README.md)
   — the language reference the grammar implements.

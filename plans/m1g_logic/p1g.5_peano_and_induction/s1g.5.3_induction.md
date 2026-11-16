@@ -72,7 +72,7 @@ hypothesis: the classic circular proof, which the checker must reject); and what
 
 The page's closing table, in the vocabulary of
 [S1g.1.2](../p1g.1_survey_and_design/s1g.1.2_two_levels.md) and against
-[`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md):
+[`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md):
 
 | way | what was established | by whom | what it rests on |
 |---|---|---|---|

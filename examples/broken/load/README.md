@@ -65,8 +65,8 @@ these four is a way to write one:
 | `expect_is_a_pattern.ein` | whatever the engine derived — a `?var` matches it |
 
 They are also the first loader messages in the repo that name no exception
-class, which is what [`defined_behaviour.md`
-§4.1](../../../docs/kernel/defined_behaviour.md) is about.
+class, which is what [`diagnostics.md`
+§2.1](../../../docs/ein/user/reference/diagnostics.md#21-a-querys-a-solves-and-a-claims-refusals) is about.
 
 ## Format
 
@@ -111,7 +111,7 @@ Almost every message ends `at None`. The loader interpolates the form's
 The two exceptions are `macro_arity_mismatch`, raised during expansion on a
 nested (located) node, and `relation_parameter_int` (M1e2 S1e2.2.4), which
 positions its message at the activator's integer for the same reason. It is a real usability bug, and
-[`defined_behaviour.md` §1.5](../../../docs/kernel/defined_behaviour.md)
+[`diagnostics.md` §1.5](../../../docs/ein/user/reference/diagnostics.md#15-loader-messages-about-a-top-level-form-end-in-at-none)
 states `at None` as the behaviour until it is fixed.
 
 Reserved-name shadowing has one fixture per declarator namespace
@@ -131,7 +131,7 @@ refuses the activator where it is written down — a fact, as here, or a literal
 in an `:assert`. One a rule derives through a variable was refused by the
 compiler, and had no fixture here because it loaded, until M1f S1f.5.18 refused
 it at load (below; `ein-infer/tests/compile_semantics.rs`;
-[`defined_behaviour.md` § 4.6](../../../docs/kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
+[`diagnostics.md` § 2.6](../../../docs/ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number)).
 
 A nested fact in that place is refused the same way since M1e2 S1e2.2.24
 (W24, Q-M1e2.18 (iv)): it binds no parameter, so the relation it would name
@@ -152,7 +152,7 @@ Q-M1f.1 (b)), one line naming the deriving rule, the activated rule and the
 parameter. Until S1f.5.18 the first stopped where `r`'s plan was compiled, the
 compiler's `CompileError` the section above names, and the second answered, 64
 states; each is a row of the register, W59
-([`defined_behaviour.md` § 4.9](../../../docs/kernel/defined_behaviour.md#49-a-rule-shape-that-reads-nothing--m1e2-s1e2224)).
+([`diagnostics.md` § 2.9](../../../docs/ein/user/reference/diagnostics.md#29-a-rule-shape-that-reads-nothing)).
 A marker's argument, `(bijective ?R)`, passes a relation name on and loads: the
 loader reads what the program does with it (Q-M1f.41).
 

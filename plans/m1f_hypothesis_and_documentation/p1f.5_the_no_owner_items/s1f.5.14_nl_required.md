@@ -12,7 +12,7 @@ loader has a flag that makes it required, start with default false so not break 
 stages finished swith to default true and fix remaining ein code"*. Asked whether the flag can change an answer:
 *"yes, the flag only decides loading"*. It decides whether a program loads, never what a loaded program answers,
 so it keeps the rule that config never changes the answer
-([`configuration.md`](../../../docs/kernel/configuration.md) § 2.5). What that settles here:
+([`config.md`](../../../docs/ein/user/reference/config.md#25-the-config-principle-read-against-every-row) § 2.5). What that settles here:
 - **The grammar part is done.** [S1f.5.5](s1f.5.5_the_grammar.md)'s T3 gave `(macro …)` an optional `:why`, once,
   after the body (`54715b5f`, `ein_ir::macros::Macro::why`), so in the generated grammar every form that can carry
   a template may: `:why` on a relation, a rule, an hrule and a macro, `:goal-text` on a query, `:source` on a fact.
@@ -35,7 +35,7 @@ and [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1
 which decide **which fact set** the claim quantifies over — the model or the
 solution KB. Both are ratified.
 **Blocks:** nothing in M1e. It is the IR→NL half of the round trip
-[`zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
+[`06_zebra_walkthrough.md`](../../../docs/ein/user/guide/06_zebra_walkthrough.md)
 calls the M2 target, and the channel
 [`EinAf.md`](../../m2_nl_to_ir/EinAf.md#f7--provenance)'s F6/F7 feedback grades
 are written against.
@@ -190,7 +190,7 @@ re-derive the meaning of.
   provisional — P1e.2's triage may move the tree), stating the four registers,
   the four provenance kinds and what renders each, the fallback ladder, and
   **where the boundary between domain and engine vocabulary is**. Linked from
-  [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s
+  [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s
   § `:why` and from `docs/kernel/README.md`.
 - **Fact-level rendering from provenance ships**, or the stage records a
   written *no* with the reason. If it ships, `zebra2`'s model coverage moves
@@ -213,7 +213,7 @@ re-derive the meaning of.
 - **The flag** (T1f.5.14.6), **met 2026-11-08**: with it on, a missing `:why` is a load error,
   one line naming the form; with it off, every program loads as before. It
   decides whether a program loads and nothing a loaded program answers, a test
-  holds both, and [`configuration.md`](../../../docs/kernel/configuration.md)
+  holds both, and [`config.md`](../../../docs/ein/user/reference/config.md)
   has its row ([§ T1f.5.14.6 record](#t1f5146-record-2026-11-08)).
 - **The flip** (T1f.5.14.7): the default is true, and every program under
   `examples/`, `tests/`, `corpus/` and `stdlib/`, and every inline program of
@@ -231,7 +231,7 @@ Each item of § Acceptance, against the tree at the flip, `4b231abd`:
   render from a text, the fallbacks and the register each is in (puzzle, stdlib, kernel, undeclared); one number per
   entry and one for the corpus, with the entries that render every fact. Re-taken before the migration and after it
   (§ T1's and § T7's records).
-- **One page — met.** [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+- **One page — met.** [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md#4-the-four-registers)
   (`5e4ecb93`): the four registers (§ 4), the four provenance kinds and what renders each (§ 3), the fallback ladder
   (§ 3), and the boundary between the domain's words and the engine's (§ 6), beside `reserved_engine_strings.md`,
   which points at it. Linked from `01_grammar.md`'s `:why` paragraph and from `docs/kernel/README.md`; pinned by
@@ -492,7 +492,7 @@ ruling it is this stage's T1f.5.14.7, not a separate stage.*
 
 **Rung (d), through the loader flag**, as the user ruled on 2026-11-08; § T4's recommendation stays above as the record
 of what the user overrode and of the risk T7 answers. The page is
-[`docs/kernel/ir/03-ein-lang/09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md),
+[`docs/kernel/ir/03-ein-lang/natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md),
 *current*, 46 kernel pages since (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-10): the four texts and where
 each is printed (§ 1), the mandate and what an honest `:why` says per form (§ 2), a fact in English, the four
 provenance kinds and the fallback ladder, with a state file's lines (§ 3), the four registers and the census's numbers
@@ -575,7 +575,7 @@ them in the tree:
   forms and a base directory, `from_ir.rs`), and one CLI option on every command that loads a program, so that a
   program without `:why` can still be loaded once the default is true.
 
-Wherever it lands, [`configuration.md`](../../../docs/kernel/configuration.md) gains a row, with *no: it decides
+Wherever it lands, [`config.md`](../../../docs/ein/user/reference/config.md) gains a row, with *no: it decides
 whether a program loads* in its *does it change the answer* column, and `config_reference.rs` pins it.
 
 **Its test:** with the flag on, a program missing a `:why` on each of the forms it requires is refused with one
@@ -617,8 +617,8 @@ on the agent's report: what the flag requires on the shipped path, the stdlib, t
   the command gives every load error (1, `ein test`'s 2):
   `relation 'p' has no :why "…", which this load requires of every relation, rule and hrule` (`… rule and hrule`
   becomes `… rule, hrule and macro` in a `generated-parser` build).
-  [`defined_behaviour.md` § 4.10](../../../docs/kernel/defined_behaviour.md#410-a-form-with-no-why--m1f-t1f5146-t1f5147)
-  and [`configuration.md` § 3.4](../../../docs/kernel/configuration.md#34-the-option-that-decides-loading) state it.
+  [`diagnostics.md` § 2.10](../../../docs/ein/user/reference/diagnostics.md#210-a-form-with-no-why)
+  and [`config.md` § 3.4](../../../docs/ein/user/reference/config.md#34-the-option-that-decides-loading) state it.
 - **The tests.** `ein-ir/tests/load_semantics.rs`: `require_why_refuses_each_form_without_one` (each kind refused
   with its line, and loaded without the flag; the lines in pass order beside another refusal),
   `a_macro_needs_a_why_only_where_its_parser_reads_one` (both arms: the gate runs it without the feature, and it
@@ -803,7 +803,7 @@ nothing else, and a container is refused where its `.ein` is and loaded with it 
   adds a fourth caller unless it lifts the shared function that
   [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) is already going to want.
   Sequence after it, or hand it the function. Since S1f.5.16 the read-out has one live reference,
-  [`read_out.md`](../../../docs/kernel/inference/read_out.md), held to the printer by `read_out_reference.rs`: the
+  [`read-out.md`](../../../docs/ein/user/reference/read-out.md), held to the printer by `read_out_reference.rs`: the
   NL answer table is a row or a form of it, written there in the commit that prints it.
 
 ## Notes
@@ -820,10 +820,10 @@ the answer, which is backwards.
 
 ## Connections
 
-- [`docs/kernel/ir/03-ein-lang/01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)
+- [`docs/kernel/ir/03-ein-lang/syntax.md`](../../../docs/ein/user/reference/syntax.md)
   § `:why` render template and § the division of labour — the normative
   statement the new page extends rather than restates.
-- [`docs/kernel/inference/zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md)
+- [`docs/kernel/inference/06_zebra_walkthrough.md`](../../../docs/ein/user/guide/06_zebra_walkthrough.md)
   — the NL ⇄ ein-rule table, and the target this stage is the return leg of.
 - [`plans/ideas/08-human-style-deductive-trace.md`](../../ideas/08-human-style-deductive-trace.md)
   — the user's own framing, authoritative on intent.

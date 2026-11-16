@@ -315,7 +315,7 @@ The block is the binary's output, held to it by a test ([§ What holds it](#what
 - **Exit codes**: 0 for every H, empty or not, a dead root's among them. A program the loader refuses, or the engine
   refuses to read, exits 1 with the line every command gives it.
 - It takes no option but `--no-require-why`
-  ([`configuration.md` § 3.4](../../../kernel/configuration.md#34-the-option-that-decides-loading)): nothing moves H.
+  ([`config.md` § 3.4](../../user/reference/config.md#34-the-option-that-decides-loading)): nothing moves H.
   `FILE` is a `.ein` or a `.einb`.
 
 ### The structure
@@ -335,9 +335,9 @@ exit 1, with the loader's line. **Every structure exits 0**, whole or not.
 | `--supports` | also reads the support of every pair root excludes. The groups, the grids and the components are the same with it |
 | `--region-budget` | each pair layer's budget |
 | `-j`, `--jobs` | threads for each step's nodes. The same structure, byte for byte |
-| `--no-require-why` | loads a program that carries no `:why` ([`configuration.md` § 3.4](../../../kernel/configuration.md#34-the-option-that-decides-loading)) |
+| `--no-require-why` | loads a program that carries no `:why` ([`config.md` § 3.4](../../user/reference/config.md#34-the-option-that-decides-loading)) |
 
-None of them changes an answer ([`configuration.md` § 3.3](../../../kernel/configuration.md#33-what-an-option-can-do-to-the-answer)).
+None of them changes an answer ([`config.md` § 3.3](../../user/reference/config.md#33-what-an-option-can-do-to-the-answer)).
 The view draws no SVG, as no `ein render` view does: a graph is DOT for Graphviz to lay out.
 
 ### The read-out

@@ -16,7 +16,7 @@ authoritative for field shapes, and the pseudo-code notation is
 ## 1. The three entity classes
 
 Each kind of graph node from
-[`../01-ein-graph/01_kb.md` §1](../01-ein-graph/01_kb.md) that the
+[`../01-ein-graph/objects.md` §In Ein](../../../ein/user/syntax-and-semantics/objects.md#in-ein) that the
 engine reasons over has a corresponding immutable record. Identity
 follows the table:
 
@@ -40,7 +40,7 @@ follows the table:
 Metadata fields (`loc`, `provenance`, `raw`) are
 **excluded** from identity — two facts with the same `(rel, args)`
 but different provenance are *the same fact* for dedup
-purposes (see [`../01-ein-graph/01_kb.md` §4](../01-ein-graph/01_kb.md)).
+purposes (see [`../01-ein-graph/facts.md` §A fact is stated once, and may be derived many times](../../../ein/user/syntax-and-semantics/facts.md#a-fact-is-stated-once-and-may-be-derived-many-times)).
 
 ### 1.1 `Relation`
 
@@ -84,7 +84,7 @@ and the declarations' mirrors, `(written T)` for each fact `T` nested in a
 fact a file writes, or in a rule's conclusion where it holds no variable:
 the loader's statement of what was written, derived from the fact it was
 read in, which a representation module reads to check its own terms
-([`defined_behaviour.md` § 4.30](../../defined_behaviour.md#430-written-is-the-loaders-what-a-file-writes-stated-at-load--m1f-s1f638)). See
+([`diagnostics.md` § 2.30](../../../ein/user/reference/diagnostics.md#230-written-is-the-loaders-what-a-file-writes-stated-at-load)). See
 [Rules as data](../../../ein/reasoning/rule-evolution/rules-as-data.md)
 for what userspace builds on top of it.
 
@@ -95,7 +95,7 @@ bare `(relation R)` declares a relation node with no declared arg types,
 and is thereby not a hypothesis target (S1.22.4). It is **not** a kernel
 type annotation: rules read the atoms as types, the kernel reads only
 the tuple's shape. Definitive account of that split:
-[`../03-ein-lang/01_grammar.md` §what the signature means](../03-ein-lang/01_grammar.md#what-the-signature-means--userspace-types-kernel-structure).
+[`../03-ein-lang/syntax.md` §what the signature means](../../../ein/user/reference/syntax.md#what-the-signature-means--userspace-types-kernel-structure).
 
 Cross-references:
 - `rel.facts` → `tuple[Fact, ...]` — all facts whose head is this
@@ -157,7 +157,7 @@ Fact(
 Arguments admit two shapes (three until M1f S1f.5.4 retired the `int`: a
 run of digits is a name since S1f.5.5's swap), matching the kernel ein model's
 **named** vs **relational** node duality
-([`../01-ein-graph/03_ein_model.md` §3](../01-ein-graph/03_ein_model.md)):
+([`../01-ein-graph/ontology.md` §Five words](../../../ein/user/syntax-and-semantics/ontology.md#five-words)):
 
 - `str` — a named node (an object name or a Relation name); `7` and `07` are
   two.
@@ -464,7 +464,7 @@ rule over the same premises collapse however they were bound.
   DAG.
 - [`../01-ein-graph/01_kb.md`](../01-ein-graph/01_kb.md) — the
   conceptual model these records implement.
-- [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax that
+- [`../reference/`](../../../ein/user/reference/) — the surface syntax that
   produces these entities at load.
 - [`../../inference/`](../../inference/) — the engine that *adds* derived
   facts via rule firings.

@@ -51,7 +51,7 @@ const WALKTHROUGH_RULES: [&str; 9] = [
 /// What must actually **fire** on a zebra2 solve. The property rules
 /// `functional` / `total` surface as their consequences — see the
 /// structural-equivalence notes in
-/// [`zebra_walkthrough.md`](../../../../docs/kernel/inference/zebra_walkthrough.md)
+/// [`06_zebra_walkthrough.md`](../../../../docs/ein/user/guide/06_zebra_walkthrough.md)
 /// — so the firing target maps `functional` → `functional-negative` and adds
 /// the `-bwd` dual.
 const FIRING_TARGET: [&str; 9] = [

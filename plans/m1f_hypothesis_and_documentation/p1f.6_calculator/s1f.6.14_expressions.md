@@ -16,7 +16,7 @@ composes them with rules of its own: a rule from an answer to the next request, 
 program, its gcd and its factorial do. Named constants, `(let NAME NUMBER)`, are in the core (S1f.6.3).
 
 Round 2 built an expression layer on the prototype and it worked
-([design.md § C](design.md#ii-nested-expressions-evaluated-on-demand)): one fact holds a tree,
+([stdlib.md § C](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath)): one fact holds a tree,
 `(calc (add N1 (div N2 N3)))`, three rules per operator evaluate it on demand, and `(let NAME E)` names a value.
 What it would be is a second way to say what rules already say, in a shape that looks like calling functions.
 That is the user's objection, and this stage does not argue with it.

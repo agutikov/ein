@@ -1,5 +1,5 @@
 //! A query's `:expect` — the comparison, since M1e2 S1e2.1a.5 over
-//! **projection classes** (`region_language.md` § 5).
+//! **projection classes** (`query.md`).
 //!
 //! A query's `:expect` lists its classes: each `(model …)` is the goal's atoms
 //! under one class of rows over the set its `:over` names, `(model)` the class

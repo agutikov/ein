@@ -25,7 +25,7 @@ oracle. **The rest of the phase was re-ordered the same day**
 ([§ Stages](#stages)), because the switch needs two pieces of work the plan
 had after it.
 S1e2.1a.4's grammar is ruled, its real examples
-([`region_examples.md`](region_examples.md)) accepted, and the build done:
+([`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)) accepted, and the build done:
 `(solve …)` with the lattice keywords moved off `(query …)`, and the region
 claim checked by `ein test` against R. The query's new `:expect` lands with the
 switch. S1e2.1a.10 is done: the census
@@ -93,7 +93,7 @@ about to change, so the review waits.
 
 The second reason is the user's: **the lattice has to be seen.** Every W1
 row was decided by looking at a handful of nodes, and nothing in the bundle
-draws them. [`ein render lattice`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+draws them. [`ein render lattice`](../../../docs/ein/user/reference/rendering.md)
 shows survivors and their pruned siblings only, and its `--view full` falls
 back to that. The brute-force script behind Q-M1e2.7's table,
 `probes/region.py` (now [`utils/region.py`](../../../utils/region.py)), listed the whole lattice for seven
@@ -171,7 +171,7 @@ Taken 2026-10-15 against `caef67a`.
 
 | want | what exists | the gap |
 |---|---|---|
-| R, defined | [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 2: a solution is a saturated, consistent state that owes nothing **or** is maximal (Q-M1e.6) | no region, no minimal line, no holes; `alive₀` is defined after the forced-positive cascade, so the universe depends on config |
+| R, defined | [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r) § 2: a solution is a saturated, consistent state that owes nothing **or** is maximal (Q-M1e.6) | no region, no minimal line, no holes; `alive₀` is defined after the forced-positive cascade, so the universe depends on config |
 | R, computed | nothing. The engine's walk is the only computation, and it is what is being checked | an **oracle**: every node of the lattice classified by saturation alone |
 | R, drawn | `ein render lattice` (survivors + pruned siblings), `--dump-lattice` (one page per entering), the bundle's `pages/lattice/` | the **whole lattice**, every node's status and the reason for it, R's lines and holes, with the engine's walk overlaid |
 | R, stated by a program | `:expect (model …)`, `(or (model …) …)`, `(false)`: one model set | no way to say *which line*, or to state a region |
@@ -325,7 +325,7 @@ among them, is the re-scoping P1e2.1c's last stage does.
   are two of the ways R gets holes, and an obligation trigger is the third.
   All three are [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md)'s.
 - [`lattice-dump.md`](../../../docs/ein/ein.rs/lattice-dump.md) and
-  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+  [`rendering.md`](../../../docs/ein/user/reference/rendering.md)
   are the pages the drawing extends.
 - [M1f S1f.10.3](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.3_the_restricted_join.md)
   restricts the join and claims *not one model moved*. The oracle is what

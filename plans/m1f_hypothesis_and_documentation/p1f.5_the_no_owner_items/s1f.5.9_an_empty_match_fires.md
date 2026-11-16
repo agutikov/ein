@@ -360,16 +360,16 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
 **The pages.** No current kernel page describes an empty `:match` as reading nothing, `:assert ()` as storing a fact,
 `#empty` as a value a run reaches, or `(and)`'s refusal as saying nothing of the empty conjunction:
 
-- [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s rule section: an empty `:match` is the empty
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s rule section: an empty `:match` is the empty
   conjunction, true, fires once or once per activator, an hrule's likewise; `()` its one spelling, `(and)` and `(or)`
   refused with a note; `:assert ()` asserts nothing; and the dead root's core `[]`.
-- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md): the primitives' table's `and` / `or` row, and a
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns): the primitives' table's `and` / `or` row, and a
   paragraph on the empty conjunction.
-- [`03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md) § 7.1 and its table: two of `()`'s three
+- [`ontology.md`](../../../docs/ein/user/syntax-and-semantics/ontology.md#two-forms-that-look-alike) § 7.1 and its table: two of `()`'s three
   places have engine semantics; `()` as a value, Q28's question, is a parse error.
 - [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md),
   [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 2.2 and
-  [`answer_dump.md`](../../../docs/kernel/inference/answer_dump.md): no run reaches a value `#empty` since W34;
+  [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md): no run reaches a value `#empty` since W34;
   `defined_behaviour.md` § 4.13: the rule whose `:match` was empty fires since.
 - The inventory's [F12](../../m1e2_correctness/inventory_2026-11-06_no_owner.md), the census's
   [W34 finding](s1f.5.5_census.md#findings-outside-the-grammar) and
@@ -446,10 +446,10 @@ and `eq-arity-under-commitment`'s and `eq-arity-hrule`'s `saturate`; `corpus_sha
 added, each of the five witnesses losing the 21 renderings a loaded program draws and changing 7, none of any other
 program.
 
-**The pages.** [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4.3 says only a macro's body
-reaches its `eq` row since, and a new [§ 4.14](../../../docs/kernel/defined_behaviour.md#414-eq-at-another-arity--m1f-s1f59)
+**The pages.** [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#23-eq-and-absent-at-another-arity) § 2.3 says only a macro's body
+reaches its `eq` row since, and a new [§ 2.14](../../../docs/ein/user/reference/diagnostics.md#214-eq-at-another-arity)
 states the two refusals, which parameters can hold `eq`, what loads, what they replaced (W60, W61) and what pins them;
-[`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)'s parameter list and its written `eq` fact say
+[`syntax.md`](../../../docs/ein/user/reference/syntax.md)'s parameter list and its written `eq` fact say
 so.
 
 ## Acceptance re-taken (2026-11-09)

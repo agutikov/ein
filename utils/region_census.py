@@ -17,7 +17,7 @@ wrong-answer register names, through `ein oracle FILE --dump DIR`.
     utils/region_census.py --from c.json      # the tables again, running nothing
 
 **The transport is the oracle's own directory**, `region.json`
-([`region_dump.md`](../docs/kernel/inference/region_dump.md)). Nothing here
+([`region-dump.md`](../docs/ein/user/reference/region-dump.md)). Nothing here
 saturates or re-derives a node: a census that reconstructs its subject is a
 census that can disagree with it. What it adds is arithmetic over the node
 array — the count of R in **states** as well as in commitments (k_s and k_c,
@@ -68,7 +68,7 @@ EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "e
 CLI_LEVERS: tuple = ()
 
 # The environment levers that steer the search and sit outside `SolverConfig`
-# (`configuration.md` § 5). None is left: the walk's tree traversal,
+# (`config.md` § 5). None is left: the walk's tree traversal,
 # `EIN_TRAVERSAL`, went with the walk at M1e2 S1e2.1c.5, and the obligations
 # rung's order, `EIN_OBLIGATION_CHOICE`, was retired at S1e2.3.1 (the user's
 # ruling of 2026-11-03) once the summary's `root` block stopped running the

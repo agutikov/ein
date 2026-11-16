@@ -32,7 +32,7 @@ Three places where the engine has an *exactly one* it does not spend, in rising 
    candidate, each in the closure of some candidate, and let `A(I)` be the candidates whose closure holds a
    witness. If every other read of `I`'s guard is static, as L5's premise already requires, then every member
    of R above a state owing `I` holds a member of `A(I)`. Written out as `tree.rs` writes L5's argument, under
-   [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md): the premise checked at load by
+   [`standard-of-proof.md`](../../../docs/ein/standard-of-proof.md): the premise checked at load by
    `oblgen::alternatives` and on every node the route computes, a node that breaks it refusing the run. The
    gap to close in writing: a witness could also be **derived** at a node by no single candidate, which the
    premise must exclude or the claim is false.
@@ -237,7 +237,7 @@ As decided above, committed apart from the list (`fc86f98e`): [`ein_infer::unhel
 (the argument in its header; `Unwritten`, `breach`, the refusal, the two switches), `oblgen::Instance::unheld`
 and `Alternatives::with_l9`, `Space::route_alternatives` for the tree alone, the check in the node function and
 at the whole node, `Licence::Unheld` and its label, `tree.rs`'s header (§ L9, a witness no node can hold),
-[`read_out.md`](../../../docs/kernel/inference/read_out.md)'s `route` row, the module's row in
+[`read-out.md`](../../../docs/ein/user/reference/read-out.md)'s `route` row, the module's row in
 [`architecture.md`](../../../docs/ein/ein.rs/architecture.md), the fixture
 [`examples/lattice/14_seats_nothing_proposes.ein`](../../../examples/lattice/14_seats_nothing_proposes.ein) with its
 corpus entry and catalogue line, and [`ein-infer/tests/unheld.rs`](../../../ein.rs/crates/ein-infer/tests/unheld.rs):

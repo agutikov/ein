@@ -740,7 +740,7 @@ milestone cites them across the boundary, as M1f does.
   and filed.
 - [`docs/kernel/inference/solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md):
   the definition every right answer is derived against.
-- [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md):
+- [`docs/kernel/standard-of-proof.md`](../../docs/ein/standard-of-proof.md):
   what *fixed*, *refuted* and *not-wrong* have to rest on.
 - [M2 P2.1](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/README.md): the
   next consumer of the verdict vocabulary, and the reason a false

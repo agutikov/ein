@@ -6,7 +6,7 @@
 ;;; saturator closes R's extension under arg-swap directly (pop `(R a b)`,
 ;;; write `(R b a)`), skipping the JoinPlan + matcher the stdlib `symmetric`
 ;;; rule pays per mirror. Identical closure, one kernel fast-path —
-;;; `docs/kernel/ir/03-ein-lang/06_reserved_names.md` for the reference, and
+;;; `docs/ein/user/reference/reserved-names.md` for the reference, and
 ;;; `utils/feature_matrix.py`'s `no-symmetric-mirror` cell for what the mirror
 ;;; was worth to the walk.
 ;;;

@@ -39,7 +39,7 @@ before anything was built.
 | **The search branches on it** | the obligations rung of the generation ladder — `(hrule …)` if declared, else what the state owes, else the blind enumerator |
 | **The verdict reports it** | **`Open — owes n (rel: n, …)`**, the fourth verdict word, exit 0 like the other three |
 | **A model set has a compact form** | `ein solve --models key` — the smallest set of slots that tells the models apart, 49 lines against 516 on `zebra2-minus-15` |
-| **A count states its own guarantee** | *these are the models* against *these are models **found***, on all four verdicts — normative in [`defined_behaviour.md` §5](../../kernel/defined_behaviour.md) |
+| **A count states its own guarantee** | *these are the models* against *these are models **found***, on all four verdicts — normative in [`cli.md` §5](../../ein/user/reference/cli.md#5-what-is-fixed-about-the-command-line) |
 | **A second traversal** | `EIN_TRAVERSAL=tree`, one obligation per node: **86 enterings and 0.07 s** against the lattice's 17 204 592 and 1 496 s, same 32 models fact for fact |
 | **Four censuses** | `utils/openness_census.py`, `model_set_census.py`, `closure_census.py`, `layer_census.py` — and `ein test --json-report`, the read-out the third needed |
 
@@ -70,14 +70,14 @@ no middle**: everything the stdlib expresses is either an upper bound enforced b
 refutation or a completion once alternatives run out.
 
 ### S1d.2.2 — The domain contract
-[`domain_contract.md`](domain_contract.md), C1–C4. **12 of 49** searching entries
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over), C1–C4. **12 of 49** searching entries
 propose `is-a` arrows, which is exactly where C4 declines: *a branch is jointly
 exhaustive only while the candidate set cannot grow underneath it*, so an
 obligation whose guard scans a relation the rung itself proposes is declined and
 the call falls back to the blind generator.
 
 ### S1d.2.3 — The form
-[`obligation_forms.md`](obligation_forms.md) is the full menu, A through G, and
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md) is the full menu, A through G, and
 **form G won**: a rule shape asserting a reserved atom. Not a kernel primitive
 (form A), not a first-class object (form E), not a stdlib convention. **Nine**
 new load refusals. The user settled two sub-questions:
@@ -428,8 +428,8 @@ the corpus owes, `utils/openness_census.py`),
 ladder cost).
 
 **Arguments and specifications** —
-[`property_audit.md`](property_audit.md), [`domain_contract.md`](domain_contract.md)
-(C1–C4), [`obligation_forms.md`](obligation_forms.md) (the menu A–G and why G),
+[`property_audit.md`](property_audit.md), [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
+(C1–C4), [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md) (the menu A–G and why G),
 [`representations.md`](representations.md) (five forms priced),
 [`the_verdict.md`](the_verdict.md), [`the_boundary.md`](the_boundary.md),
 [`the_vocabulary.md`](the_vocabulary.md), [`completeness.md`](completeness.md).

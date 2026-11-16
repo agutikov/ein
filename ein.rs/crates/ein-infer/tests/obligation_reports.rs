@@ -3,7 +3,7 @@
 //! `stdlib_coverage.rs`'s sibling, and it exists for a reason that is stated
 //! in every fixture it reads: `:expect` has three forms and all three are
 //! assertions about **facts** (`(model …)`, `(or (model …) …)`, `(false)` —
-//! `01_grammar.md` § Query). An `open` conclusion is by construction never a
+//! `syntax.md` § Query). An `open` conclusion is by construction never a
 //! fact — it is a tally on the search-lattice node, because a stored one would
 //! survive its own discharge in a fork that paid it — so **no expectation can
 //! observe an owe count**. Meanwhile the coverage gate demands that every
@@ -316,7 +316,7 @@ fn the_closed_and_owing_corner_is_a_conflict() {
 
 /// **`zebra2-minus-15` owes 46 at root** — the hand census, reproduced.
 ///
-/// `obligation_forms.md` §5 counted this by hand on 2026-08-24, before the
+/// `obligations.md` counted this by hand on 2026-08-24, before the
 /// form had a name: five `(bijective R)` declarations imply 5 × 5 × 2 = **50**
 /// obligations, the two arrows already true at root discharge 2 × 2 = 4 of
 /// them, and 23 forward + 23 backward = **46** remain. The engine reproducing

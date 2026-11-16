@@ -1,6 +1,6 @@
 # The read-out speaks R — the page diff for the vocabulary
 
-> **The record, not the reference.** Since M1f [S1f.5.16](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) (`79fc14b0`, 2026-11-09) the read-out's live vocabulary is [`docs/kernel/inference/read_out.md`](../../../docs/kernel/inference/read_out.md), held to the printer by `ein-cli/tests/read_out_reference.rs`. This page records the rulings of 2026-10-16 and what M1e2's stages amended, and is not kept current; its examples are the frozen [`read_out_examples.md`](read_out_examples.md).
+> **The record, not the reference.** Since M1f [S1f.5.16](../../m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md) (`79fc14b0`, 2026-11-09) the read-out's live vocabulary is [`docs/kernel/inference/read-out.md`](../../../docs/ein/user/reference/read-out.md), held to the printer by `ein-cli/tests/read_out_reference.rs`. This page records the rulings of 2026-10-16 and what M1e2's stages amended, and is not kept current; its examples are the frozen [`read_out_examples.md`](read_out_examples.md).
 
 **Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), task T1e2.1a.5.1.
 **Status:** proposed 2026-10-16, and **ruled the same day**: the user
@@ -15,11 +15,11 @@ in `ein solve` has moved.** T1e2.1a.5.2 builds what this page says.
   [Q-M1e2.7](../open_questions.md#the-rulings-and-the-questions-back-2026-10-16),
   and the third answer's `(region …)` form
   ([§ The third answer](../open_questions.md#the-third-answer-2026-10-16));
-- the approved interface ([`solve_interface.md`](solve_interface.md)), whose
+- the approved interface ([`cli.md`](../../../docs/ein/user/reference/cli.md#21-ein-solve)), whose
   § 2.1 left *"how it is laid out"* and *"exit codes other than `--single`'s"*
   to this page;
-- the region language as built ([`region_language.md`](region_language.md),
-  [`region_examples.md`](region_examples.md)), whose query `:expect` lands at
+- the region language as built ([`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md),
+  [`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)), whose query `:expect` lands at
   this stage's switch.
 
 **The examples are real.** [`read_out_examples.md`](read_out_examples.md)
@@ -481,7 +481,7 @@ A select-list on the query is a new form, and not built here (§ 12).
 Since S1e2.1a.4 `ein test` checks a `(solve … :expect …)`, and `ein solve` does
 not until the switch. After it, `ein solve` checks every claim the program
 states against what the run computed. Both a flag and a claim are checked,
-and neither wins ([`region_language.md` § 6](region_language.md#6-a-flag-beside-a-form)).
+and neither wins ([`query.md` § Who checks a claim](../../../docs/ein/user/syntax-and-semantics/query.md#who-checks-a-claim)).
 The preview prints the first row below (X12). The other two are sketches of
 the reasons T1e2.1a.5.2 writes, since the query's new `:expect` does not
 parse yet:
@@ -637,7 +637,7 @@ oracle`'s read-out named a flag it refuses:
 
 - **`-p` and `-P` print each listed state's facts beyond the program as
   loaded**, every one or the positive ones. `-P`'s set is the state's model as
-  [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model)
+  [`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)
   defines it, and that model holds root's own derivations. *Facts beyond
   root* is the `work` row's set, which leaves them out. 148 corpus programs
   list ∅ under `ein solve FILE -p`, and on 77 of them ∅'s block holds facts,
@@ -688,7 +688,7 @@ solution of ein program is successful execution of ein tool"*.
   line, a budget), and asking one is the user's call. `ein test` keeps exit 1
   for it, since checking is all it does.
 - **`--single`'s exit codes, ruled in
-  [`solve_interface.md` § 2.1](solve_interface.md#21-ein-solve)
+  [`cli.md` § 2.1](../../../docs/ein/user/reference/cli.md#21-ein-solve)
   as 1 for `Ambiguity`, `Contradiction`, `Open` and *not decided*, are 0.**
   That rule was there so a shell could test uniqueness. A program that
   expects one solution can say so as a claim, and a refuted claim exits 1.

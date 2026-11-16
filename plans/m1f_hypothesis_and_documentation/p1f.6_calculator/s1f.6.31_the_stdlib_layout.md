@@ -241,7 +241,7 @@ a bare import's full names and a selection), `(import std.math)` is refused, *mo
 …/math.ein*, and the old name of a module that moved is refused, *module not found at …/probe.ein*.
 `ein --version`'s stdlib line on the checkout and on the embedded build is
 `sha256:48e3244e…138b`, which is `sha256sum stdlib/MANIFEST.sha256` of the worktree, so
-[`docs/install.md`](../../../docs/install.md)'s check holds as written; `sha256sum -c MANIFEST.sha256` from inside
+[`docs/install.md`](../../../docs/ein/user/install.md)'s check holds as written; `sha256sum -c MANIFEST.sha256` from inside
 `stdlib/` reads `math/probe.ein: OK`.
 
 **What does not see a subdirectory**, each a check rather than the resolution, and each fixed with the move (T3,

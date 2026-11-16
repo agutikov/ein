@@ -131,7 +131,7 @@ state a signal, [T2](#t2-record-2026-11-10)), filed before the fix. Bless no gol
 
 ### Task T1f.5.25.3 — the pages (done, [its record](#t4-record-2026-11-10))
 
-[`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes) (exit codes), `configuration.md` if an exit code is listed there, the stage's records.
+[`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) (exit codes), `configuration.md` if an exit code is listed there, the stage's records.
 
 ## Acceptance
 
@@ -246,11 +246,11 @@ on its 101s; the precondition and the control pass; with the stage's tree, all f
 
 **The pages.**
 - [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md): a new
-  [§ 4.19](../../../docs/kernel/defined_behaviour.md#419-a-closed-stdout-ends-ein-by-sigpipe--m1f-s1f525), what a closed
+  [§ 2.19](../../../docs/ein/user/reference/diagnostics.md#219-a-closed-stdout-ends-ein-by-sigpipe), what a closed
   stdout does since and until, the race under `| head`, why it is no exit code, where the disposition lives and what an
   embedder keeps; § 4.4's table, a row for a pipe whose reader has gone (Q-M1f.100); § 5, a paragraph under the exit
   codes' table.
-- [`configuration.md`](../../../docs/kernel/configuration.md) § 3.1, beside *every answer exits 0*: a closed stdout ends a
+- [`config.md`](../../../docs/ein/user/reference/config.md#31-where-the-option-list-lives) § 3.1, beside *every answer exits 0*: a closed stdout ends a
   run by `SIGPIPE`, which no option changes.
 - The `unsafe` policy, on every live page that states it: [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md) (every library
   `forbid` but `ein-einb`, the binary's one call, what an embedder keeps), the repository's

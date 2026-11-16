@@ -1,4 +1,4 @@
-//! **[`09_natural_language.md`](../../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+//! **[`natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)
 //! is held to the engine** — M1f S1f.5.14's T1f.5.14.4, under the phase's rule
 //! that a page the stage adds is pinned by something that runs.
 //!
@@ -15,7 +15,7 @@ use std::process::Command;
 
 use ein_corpus::{Scratch, repo_root};
 
-const PAGE: &str = "docs/kernel/ir/03-ein-lang/09_natural_language.md";
+const PAGE: &str = "docs/ein/user/syntax-and-semantics/natural-language.md";
 const CENSUS: &str = "utils/nl_census.py";
 const OPEN: &str = "<!-- state-file: ";
 const CLOSE: &str = "<!-- /state-file -->";

@@ -1,8 +1,8 @@
 # S1f.6.1 — The design proposal: representations, the request protocol, and target programs computed on a prototype
 
 **Phase:** [P1f.6](README.md)
-**Status:** **done 2026-11-11.** Three rounds on a prototype, [`design.md`](design.md), and the user's rulings of
-that day, recorded in [§ The rulings](design.md#the-rulings-2026-11-11). The phase was re-planned to them the same
+**Status:** **done 2026-11-11.** Three rounds on a prototype, [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath), and the user's rulings of
+that day, recorded in [§ The rulings](../../../docs/ein/user/reference/stdlib.md#the-calculator-stdmath). The phase was re-planned to them the same
 day. Planned 2026-11-08.
 **Depends on:** S1f.5.5's swap, so its programs are written in the final grammar, with digits as names.
 

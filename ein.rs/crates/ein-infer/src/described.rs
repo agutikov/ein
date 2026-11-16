@@ -2,7 +2,7 @@
 //! M1e2
 //! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
 //! second step, for the read-out
-//! [`read_out.md`](../../../../docs/kernel/inference/read_out.md) defines.
+//! [`read-out.md`](../../../../docs/ein/user/reference/read-out.md) defines.
 //!
 //! A [`Described`] is read off route 1's down-set ([`of_downset`]) or off the
 //! cube ([`of_cube`]), and nothing else computes one: the read-out, the

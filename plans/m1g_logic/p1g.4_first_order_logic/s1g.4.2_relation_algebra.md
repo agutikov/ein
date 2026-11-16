@@ -24,7 +24,7 @@ as a formula, what the algebra's laws say of the rules, and F1b's two open TODO 
 (reflexive, irreflexive, symmetric, antisymmetric, asymmetric, transitive, connex, functional, injective,
 total, surjective, difunctional, and the ones F1b's TODO names as missing: *coreflexive, etc.*), against the
 stdlib activator that gives it, read off
-[`07_stdlib_api.md`](../../../docs/kernel/ir/03-ein-lang/07_stdlib_api.md) and the module. For each: whether
+[`stdlib.md`](../../../docs/ein/user/reference/stdlib.md) and the module. For each: whether
 it **derives** edges (a closure), **checks** (a restriction, `(false)` on violation), or **owes** (an
 obligation); whether it is intrinsic or ranges over a typed universe; and whether it is sound open-world or
 only for a closed relation. Gaps are listed, and F1b's *"converse - what? rule?"* is answered from the
@@ -63,7 +63,7 @@ and bounded:
 - **The closed-world caveat, tested:** `complement`, `difference` and `connex` read by failure. One program
   each showing the answer where the operand is determined by saturation, and one where it is decided by a
   hypothesis, with what *forbid*'s refusal
-  ([§ 4.7](../../../docs/kernel/defined_behaviour.md)) says of the second.
+  ([§ 2.7](../../../docs/ein/user/reference/diagnostics.md#27-a-refutation-resting-on-an-absent-a-commitment-can-fill)) says of the second.
 
 **4. Properties detected from facts.** F1b's TODO: *"properties detection - are rules able to detect
 properties from facts?"* A rule that derives `(symmetric R)` from R's extent has to say *every* edge has its

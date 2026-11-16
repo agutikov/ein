@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.6](README.md)
 **Status:** planned 2026-11-11, on the user's instruction of that day. **T1 done 2026-11-11, as a prototype and a
-page shown to the user: [`binary_arithmetic.md`](binary_arithmetic.md)**, the three ways each tried and measured,
+page shown to the user: [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)**, the three ways each tried and measured,
 with a recommendation of (b). Nothing shipped; T2 to T4 wait for the user's ruling on that page's questions.
 **Way (b) banked as examples 2026-11-12** (`9612b350`), on the user's instruction of that day:
 [`examples/binary_arithmetic/`](../../../examples/binary_arithmetic/README.md); the [record](#record-2026-11-12-way-b-banked-as-examples)
@@ -234,7 +234,7 @@ parse, load and compile 5.8 ms against 26.8. Under (b), 51 of the 67 rules are `
    the trial succeeded, or the generator moves to `utils/` with its `--check` in the gate if the copy is
    generated. `examples/binary_logic/bits.ein`, the copy E-32 forced, goes either way. No claim of any
    example changes; the request names in them do.
-7. **T1f.6.16.11 — the comparison page,** task 4 of the old list: [`binary_arithmetic.md`](binary_arithmetic.md)
+7. **T1f.6.16.11 — the comparison page,** task 4 of the old list: [`stdlib.md`](../../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith)
    gets a closing section, what shipped and what each ruling made of the page's questions;
    [`stdlib/README.md`](../../../stdlib/README.md) a section a module; `AGENTS.md`.
 
@@ -453,10 +453,10 @@ Every number below is the release binary at `24a7fb34` (sha256 `f9f9774c5c9ee47a
 #### 1. One hand-written form connects a base: yes
 
 **What the engine has.** A rule with parameters fires for a fact headed by its own name, one plan a fact
-([`01_grammar.md` § Rules](../../../docs/kernel/ir/03-ein-lang/01_grammar.md)), so 78 rules take 78 activators,
+([`syntax.md` § Rules](../../../docs/ein/user/reference/syntax.md)), so 78 rules take 78 activators,
 and nothing lets one fact activate several rules. Not available: one activator relation for all 78 (two rules of
 one name are refused, *conflicting definitions*); a macro's call written as a fact (refused at load since
-S1f.7.12, [`defined_behaviour.md` § 4.24](../../../docs/kernel/defined_behaviour.md#424-a-macros-call-is-no-fact--m1f-s1f712));
+S1f.7.12, [`diagnostics.md` § 2.24](../../../docs/ein/user/reference/diagnostics.md#224-a-macros-call-is-no-fact));
 the base's names held in a fact of a declared relation that a rule reads (S1f.5.18 refuses it: an argument of a
 declared relation may hold a fact). **What does work is to derive the 78 activators from one form at root**:
 activation reads a derived activator as a written one, and the activated rules compile when it appears, as

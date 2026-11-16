@@ -49,7 +49,7 @@ sentences of the reply each with the program that answers it, and a list handed 
    gap, with a supposition and without; the two ways to write an assumption; *what is not listed is zero*;
    each form of a reading) under `ein solve --monotone`, and, where the static check flags it, under a bare
    `ein solve`, whose `lattice` block says what the cube showed: the sites, what each puts at stake, a hole,
-   a stale fact ([`read_out.md` § 5.1](../../../docs/kernel/inference/read_out.md#51-under-lattice-and-monotone-the-warning)).
+   a stale fact ([`read-out.md` § 5.1](../../../docs/ein/user/reference/read-out.md#51-under-lattice-and-monotone-the-warning)).
    One table: the form, the verdict, the site if any, and whether the answer a reader takes from the
    read-out is affected.
 2. **T1h.3.5.2 — the reply's three sentences, each on a program.**

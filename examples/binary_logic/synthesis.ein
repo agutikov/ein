@@ -18,7 +18,7 @@
 ;;;
 ;;; The claim was computed in Python by enumeration.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 5.6.
+;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md`.
 (import std.bool.gates :symbols (gate2 column-name Xor And Or))
 (import std.math.bits :symbols (bin-fa))
 (import std.algebra :symbols (total-owed functional))

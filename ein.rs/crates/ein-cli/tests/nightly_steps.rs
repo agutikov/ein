@@ -667,7 +667,7 @@ fn every_slow_half_runs_on_a_tier() {
     for (package, target) in &readers {
         if let Some((_, why)) = NO_SLOW_TIER.iter().find(|(t, _)| t == target) {
             if target == "read_out_examples" {
-                let page = read("docs/kernel/inference/read_out_examples.md");
+                let page = read("docs/ein/user/reference/read-out-examples.md");
                 assert!(
                     !page.contains("33554432"),
                     "NO_SLOW_TIER excuses `{target}` ({why}), and the page has a \

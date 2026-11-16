@@ -39,7 +39,7 @@
 //! the user's *owing meets dead*, which ends the branch.
 //!
 //! **The argument**, under
-//! [`standard_of_proof.md`](../../../../docs/kernel/standard_of_proof.md)'s
+//! [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
 //! rule 2. Let `D ⊇ C` be a member of `R`. The program is monotone, so `I`'s
 //! trigger reads only relations no commitment changes ([`crate::monotone`]):
 //! `I` is an instance at `D` too, and `D` is discharged, so a guard of `I`

@@ -30,11 +30,11 @@ with it.*
 - **Today's trace.** `ein solve examples/word_problems/boxes12.ein -G --trace T.md` writes 145 steps
   (2026-11-13); twelve are by rules the three word modules declare. `-l` keeps 137. `-R` clusters a
   section's steps by the entity they are about, and `-F` appends each state's whole KB
-  ([`configuration.md`](../../../docs/kernel/configuration.md), the trace's four modifiers).
+  ([`config.md`](../../../docs/ein/user/reference/config.md), the trace's four modifiers).
 - **The investigation's filter,** `build/s1f.6.20/pupil.py`: it keeps the steps whose rule is declared in
   the prototype's files, by reading those files, and prints each one's `:why` and first conclusion. Scratch,
   not tracked; its output for the two-step problem is on
-  [`word_problems.md` § 2.2](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#22-the-two-step-problem-in-full).
+  [`word-problems.md` § The plan, and in what order](../../../docs/ein/user/guide/word-problems.md#the-plan-and-in-what-order).
 - **A call.** A word rule asks the calculator by concluding a request, `(div 12 3)`, and reads its answer,
   `(quot-of 12 3 4 z)`. Between the two are the calculator's steps. The calculator's own tagged calls
   (`add-walk`, `mul-call`, `div-call`, `cmp-walk`) are named as an interface by
@@ -83,7 +83,7 @@ a remainder, where the fold must still show it); `pencils` (three operations, 29
    number is [M1g's S1g.6.3](../../m1g_logic/p1g.6_engine_requirements/s1g.6.3_seeing_nested_facts.md)'s
    question and is not taken here.
 7. **T1h.4.3.7 — the page,** with Q-M1h.16 and what each form would change: a row of
-   [`configuration.md`](../../../docs/kernel/configuration.md) and the trace's printer; `ein.l`, `ein.y`
+   [`config.md`](../../../docs/ein/user/reference/config.md) and the trace's printer; `ein.l`, `ein.y`
    and the grammar's pages; or nothing beyond P1h.2's surfaces.
 
 ## Acceptance

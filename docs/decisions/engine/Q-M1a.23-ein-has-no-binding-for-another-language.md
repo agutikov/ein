@@ -16,4 +16,4 @@ expects a module.
 **Held by.** `ein-cli/tests/embedding.rs`: `the_worked_example_runs` and `the_page_quotes_this_file`, the
 embedding example of [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md) run as a test. The pages:
 [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md) § 7;
-[`docs/install.md`](../../install.md) § There is no Python package.
+[`docs/ein/user/install.md`](../../ein/user/install.md) § There is no Python package.

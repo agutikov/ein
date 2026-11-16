@@ -7,7 +7,7 @@
 //! `--json-summary` write and a failed `--trace` write each print a line and
 //! the run exits as if the artefact existed. The stage's job was to *rule* on
 //! that rather than call it arguably fine, and the ruling is
-//! [`defined_behaviour.md` § 4.4](../../../../docs/kernel/defined_behaviour.md):
+//! [`diagnostics.md` § 2.4](../../../../docs/ein/user/reference/diagnostics.md#24-an-artefact-flags-failure):
 //! the additive four leave the exit code alone, `--dump-states` does not, and
 //! every one of them says the same sentence.
 //!

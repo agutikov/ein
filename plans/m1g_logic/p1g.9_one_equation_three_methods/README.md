@@ -41,7 +41,7 @@ moved here on this reply.
 ## The three methods
 
 From round 2, with the figures of question 24 and of
-[`beyond_arithmetic.md`](../../m1f_hypothesis_and_documentation/p1f.6_calculator/beyond_arithmetic.md):
+[`word-problems.md`](../../../docs/ein/user/guide/word-problems.md):
 
 | | 1. arithmetic read backwards | 2. search | 3. algebra |
 |---|---|---|---|

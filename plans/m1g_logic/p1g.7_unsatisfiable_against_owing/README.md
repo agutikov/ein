@@ -118,7 +118,7 @@ A core is an explanation and may vary with rule order (the user's ruling of 2026
 inherits that.
 
 It changes what `ein solve` prints for an R that is empty by owing, so
-[`read_out.md`](../../../docs/kernel/inference/read_out.md) and its reference test move in the same commit,
+[`read-out.md`](../../../docs/ein/user/reference/read-out.md) and its reference test move in the same commit,
 and the user sees the rows on real programs before the printer moves.
 
 ### S1g.7.3 — May a finished search call an unpayable debt dead?

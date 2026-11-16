@@ -1,7 +1,7 @@
 //! **Two routes, one read-out** — M1e2
 //! [S1e2.1c.2](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md)
 //! T1e2.1c.2.4, in the form of C4
-//! ([`solve_interface.md` § 1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#1-the-contract)).
+//! ([`cli.md` § 1](../../../../docs/ein/user/reference/cli.md#1-the-contract)).
 //!
 //! Since this stage, describe on a monotone program takes the state route
 //! ([`ein_infer::states`]) and route 1 ([`ein_infer::downset`]) answers it no
@@ -19,7 +19,7 @@
 //! - **the premise of the rule**: the state route saturates no more nodes and
 //!   derives no more facts than route 1. The day a program breaks it, the rule
 //!   is revisited, which is what lets the rule rest on a measurement
-//!   (`standard_of_proof.md`).
+//!   (`standard-of-proof.md`).
 //!
 //! **Where route 1 is cut and the state route is not**, at the default
 //! budget, the read-outs are not compared and the premise is held by the

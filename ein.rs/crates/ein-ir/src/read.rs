@@ -74,7 +74,7 @@ impl std::error::Error for ReadError {}
 /// A file that cannot be read gives one line naming the error class, the
 /// errno text and the quoted path (`FileNotFoundError: [Errno 2] No such file
 /// or directory: '<path>'`, and its two siblings below), the spelling
-/// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+/// [`diagnostics.md` §2](../../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes)
 /// states and parks for the user (F23's D-1). A file that is neither a
 /// container nor UTF-8 gives [`not_utf8_line`], in Ein's own words since M1f
 /// S1f.5.5's T1f.5.5.13.

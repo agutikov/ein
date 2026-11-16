@@ -30,7 +30,7 @@
 //! node of `S ∪ {b}` is dead, and by L1 so is every node above it.
 //!
 //! **The argument**, under
-//! [`standard_of_proof.md`](../../../../docs/kernel/standard_of_proof.md)'s
+//! [`standard-of-proof.md`](../../../../docs/ein/standard-of-proof.md)'s
 //! rule 2. Three facts, none of them about `b`'s relation, a closure or how
 //! the negation came to be stored:
 //!

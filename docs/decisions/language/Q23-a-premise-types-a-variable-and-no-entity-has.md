@@ -11,4 +11,4 @@ does any fact; a slot would be a second record of what a fact already says.
 
 **Held by.** `ein-cli/tests/declared_counts.rs`: `what_is_not_a_declared_relations_form_loads`, the case
 `not-a-type-check`; `tests/stdlib/typing/03_type_hierarchy_welltyped.ein`, a type hierarchy checked by rules. The
-signature's two readings: `01_grammar.md` § Relation declarator.
+signature's two readings: `syntax.md` § Relation declarator.

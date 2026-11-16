@@ -312,7 +312,7 @@ genuinely three-way, which is what the program is named for.
 
 ![lattice/02's region, with a bare ein solve on it](diagrams/region_02_genuine_3set_death.svg)
 
-Drawn by [`ein render region`](../../../kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
+Drawn by [`ein render region`](../../user/reference/rendering.md#the-region--ein-render-region)
 ([`.dot`](diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve` on the cube. Re-made with:
 
 ```sh
@@ -373,7 +373,7 @@ R's lower bound is where the debts are paid.
 
 There is one definition for every program: a program that states no obligation simply has ∅ in R when its root is
 consistent. What an obligation quantifies over is its domain contract,
-[C1–C4](../../../history/m1d_satisfiability/domain_contract.md); why an owed instance's alternatives are jointly
+[C1–C4](../../user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over); why an owed instance's alternatives are jointly
 exhaustive, which the obligation tree rests on, is [Satisfiability](satisfiability.md).
 
 ---

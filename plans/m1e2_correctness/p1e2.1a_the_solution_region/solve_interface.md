@@ -220,7 +220,7 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
   projected cost. Passing a larger N is the request.
 - **`--dump DIR`** writes today's `region.json` and `region.md`, and
   `--states` keeps every node's state, as `--dump-region` and
-  `--region-states` do now ([`region_dump.md`](../../../docs/kernel/inference/region_dump.md)).
+  `--region-states` do now ([`region-dump.md`](../../../docs/ein/user/reference/region-dump.md)).
   `walk.json` goes, since there is no walk to write.
 
 10 options. The census goes from 65 to 71: `solve` −5, `oracle` +10, and
@@ -282,7 +282,7 @@ class.
 | **L6** | trivial lines | the program's shape | restrictions only: the minimal line is {∅} when root is alive, one saturation. Obligations only: the maximal line is {⊤}, one saturation |
 | **L7** | the cube | always | 2ⁿ saturations decide everything. That is `ein oracle`, and route 2 inside `solve` |
 
-L1–L4 and L6 are [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+L1–L4 and L6 are [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#15-commitment-node-state)
 §§ 1.5, 1.6 and 2.4, and the corpus agrees with them on every monotone cube
 (§ 8 there). **L3 is built since M1e2
 [S1e2.1c.2](../p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md)**

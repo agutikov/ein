@@ -20,7 +20,7 @@
 ;;; Search-free: one saturation. The claims were computed in Python from the
 ;;; functions' columns.
 ;;;
-;;; M1f P1f.6 (S1f.6.17): `plans/…/p1f.6_calculator/binary_logic.md` § 6.
+;;; M1f P1f.6 (S1f.6.17): `docs/ein/user/reference/stdlib.md` § 6.
 (import std.bool.props :symbols (identity-of absorbing-of commutative))
 (import std.bool.gates :symbols (And Or Xor Andn))
 

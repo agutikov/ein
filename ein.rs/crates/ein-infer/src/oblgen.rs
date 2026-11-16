@@ -1,7 +1,7 @@
 //! The obligations rung — hypotheses from what a state still owes.
 //!
 //! [The ladder's second rung](../../../../docs/ein/reasoning/kb-evolution/hypothesis-generation.md#4-the-obligations-rung-what-would-pay-a-debt).
-//! [The pass over a quiescent state](../../../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
+//! [The pass over a quiescent state](../../../../docs/ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)
 //! makes it able to say what it owes; this makes the debt a
 //! *choice point*.
 //!
@@ -37,7 +37,7 @@
 //! guard's own sub-plan with the witness step **skipped**
 //! ([`crate::match_::Matcher::scan_without`]). Nothing restates the domain:
 //! the branch set is the guard, evaluated at this quiescence, which is
-//! [`domain_contract.md`](../../../../docs/history/m1d_satisfiability/domain_contract.md)
+//! [`obligations.md`](../../../../docs/ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
 //! C1 and C4 in one call.
 //!
 //! ### What it proposes, and why it is the union

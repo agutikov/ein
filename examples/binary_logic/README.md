@@ -11,7 +11,7 @@ The theory is in the stdlib since the stage's build (2026-11-14), as the user ru
 [`std.bool.inputs`](../../stdlib/bool/inputs.ein), inputs as hypotheses that each owe one value, and the
 values a program requires. [`stdlib/README.md`](../../stdlib/README.md#stdbool-the-sixteen-functions-of-two-inputs-and-circuits-m1f-s1f617)
 has a section on each. The plan page,
-[`binary_logic.md`](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md), has the
+[`stdlib.md`](../../docs/ein/user/reference/stdlib.md#boolean-functions-and-circuits-stdbool), has the
 prototype these were banked from, every read-out, and what a search costs as the inputs grow.
 
 **A function's name is `std.bool.gates`'.** Each of the sixteen is declared there, as the relation of

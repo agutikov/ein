@@ -1226,7 +1226,7 @@ fn permutations(v: &[usize]) -> Vec<Vec<usize>> {
     out
 }
 
-/// The two `(config …)` flags and their defaults (`configuration.md` § 2.1),
+/// The two `(config …)` flags and their defaults (`config.md` § 2.1),
 /// since M1e2 S1e2.2.5 retired `warn-derived-naf` (three after S1e2.1c.5
 /// retired the four `enable-*` levers).
 const FLAGS: &[(&str, bool)] = &[

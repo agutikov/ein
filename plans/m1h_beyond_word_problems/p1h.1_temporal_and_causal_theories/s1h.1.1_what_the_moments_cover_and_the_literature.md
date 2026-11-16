@@ -38,7 +38,7 @@ The first three sections of `design.md` in this directory, and scratch programs 
    relates `t0` and `t1`); what carries a state across an event (`bystander-plan`, `bystander-keeps`, a rule a
    kind of event); in which direction the plan and the computation run. Then the same reading of the two
    forms the calculator's investigation ran and did not bank, nested events and a chain of sentences
-   ([`word_problems.md` § 1](../../m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md#1-how-a-problem-is-written)):
+   ([`word-problems.md` § A problem, and the theory of its words](../../../docs/ein/user/guide/word-problems.md#a-problem-and-the-theory-of-its-words)):
    each is already an order of another kind, and the table says which.
 2. **T1h.1.1.2 — the stdlib's order, measured.** A scratch program with a chain of n moments and one stated
    relation between neighbours, under [`std.algebra`](../../../stdlib/algebra.ein)'s `transitive`, with

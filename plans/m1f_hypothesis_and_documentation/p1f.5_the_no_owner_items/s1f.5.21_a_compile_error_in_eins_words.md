@@ -108,7 +108,7 @@ are now load refusals to `examples/broken/load/`, rewrite their `.expected`, and
 
 ### Task T1f.5.21.3 — the pages
 
-[`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md#4-errors-and-exit-codes) (the refusal lines and exit codes), `02_patterns.md`'s
+[`diagnostics.md` § 2](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) (the refusal lines and exit codes), `02_patterns.md`'s
 *where a malformed primitive is caught*, F23's D-1 row (what this stage took), and the stage's records.
 
 ## Acceptance
@@ -337,22 +337,22 @@ one rewritten).
 ## T3 record, 2026-11-10
 
 **The pages.**
-- [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 4: the compile row is the macro body's line,
+- [`diagnostics.md`](../../../docs/ein/user/reference/diagnostics.md#2-errors-and-exit-codes) § 2: the compile row is the macro body's line,
   naming no class; the paragraph on class names says `CompileError` went and `FileNotFoundError`, the read path's, is
   F23's D-1; § 4.3's two rows in the new spelling, the position first, the same on every command that compiles, the
   views and `kb save` accepting the program (Q-M1f.67); a new
-  [§ 4.15](../../../docs/kernel/defined_behaviour.md#415-the-compilers-refusals-a-program-reached-at-load--m1f-s1f521),
+  [§ 2.15](../../../docs/ein/user/reference/diagnostics.md#215-a-nested-or--a-wide-match-and-a-goals-relation-variable),
   the three refusals at load, what each replaced (W62 to W64), the views' refusal (W65, Q-M1f.71), what pins them and
   what is not refused; § 1.5's count (14 of 34 fixtures end `at None`, `grep -L 'at None'
   examples/broken/load/*.expected` names twenty, 2026-11-10) and `macro_arity_mismatch`'s position in the new spelling;
   § 4.8's history of the `_` head names the compile row as it read then.
-- [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md)'s *where a malformed primitive is caught*:
+- [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns)'s *where a malformed primitive is caught*:
   the macro body's arity lines are the only compile refusals a program reaches, their line in Ein's words and what it
   was, where a macro body's primitive is refused is S1f.5.24's, and a nested `(or …)` is the loader's.
-- [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) § 4: what the grammar does not refuse gains *where an
+- [`grammar.md`](../../../docs/ein/user/reference/grammar.md#3-what-the-grammar-leaves-to-the-loader) § 3: what the grammar does not refuse gains *where an
   `(or …)` sits, how many variables a clause writes, and a goal's relations*, each the loader's since.
-- [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md): `render program` reads the program
-  through the loader first; [`configuration.md`](../../../docs/kernel/configuration.md) § 3.1 and § 3.4, 82 options,
+- [`rendering.md`](../../../docs/ein/user/reference/rendering.md): `render program` reads the program
+  through the loader first; [`config.md`](../../../docs/ein/user/reference/config.md) § 3.1 and § 3.4, 82 options,
   `--no-require-why` on eleven commands; [`ein.rs/architecture.md`](../../../docs/ein/ein.rs/architecture.md),
   the register ceiling refused at load.
 - [F23](../../followups/f23_diagnostics_in_eins_words.md)'s D-1 row: its `CompileError` half taken here,

@@ -16,8 +16,8 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
-| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
+| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1. The destination was already written into [`docs/history/README.md`](../README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | **answered 2026-08-31 — yes, if the sentence carries the warrant**, and there are three: a **command** that re-takes it, a **date**, or a **test** that pins it. A count that can carry none is deleted. Which warrant fits follows from what the number *is* — a **size** takes the command (and all nine drifted counts are sizes), a **measurement** takes the date, a **test-pinned** count takes the test's name. The fourth shape the question lists — a checker asserting prose against a command — is **refused**: the counts that are right are the ones behind an instrument that is *run*, not one that exists |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | **closed 2026-11-03 — no**, by the user's ruling (a) on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q4: the ruling of 2026-10-16 answers it — *no two commands may disagree, and every answer agrees with the oracle* — and makes no exception for a surface called experimental ([§ Closed](#closed-2026-11-03--answered-by-the-ruling-of-2026-10-16)). Both instances are gone: `ein test`'s sentence at M1e2 S1e2.1a.5's switch, the tree with the walk at S1e2.1c.5. The learning half, learning on tree deaths, is M1f's [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md) |
@@ -45,7 +45,7 @@ records which question became which id.
 
 > **Decided 2026-08-28 and written down.** Both this and
 > [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) are now
-> [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md),
+> [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md),
 > which carries the two rules, the four-row calibration table and the worked
 > example. This entry stays as the argument that produced them. Later stages
 > **cite the page**, not this entry.
@@ -76,7 +76,7 @@ binding on every stage:
 
 > **Decided 2026-08-28, beside Q-M1e.1** — *an argument suffices when its
 > premise is itself enforced* — and written into
-> [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md)
+> [`docs/kernel/standard-of-proof.md`](../../ein/standard-of-proof.md)
 > as Rule 2.
 
 Several findings are of the form *this is stated but not enforced*
@@ -113,7 +113,7 @@ named test — so a comment at the future wiring point is enough.
 > **harder** to see than an uncited one, because the citation is what stops
 > anybody looking. The hazard was removed instead of documented (a
 > non-vivifying `find`, ten lines), and
-> [`standard_of_proof.md`](../../kernel/standard_of_proof.md) Rule 2 now
+> [`standard-of-proof.md`](../../ein/standard-of-proof.md) Rule 2 now
 > carries the second question: *does the named test enforce the premise, or
 > something adjacent to it?*
 
@@ -309,7 +309,7 @@ question is still the right home for:
    not with a review-processing stage.
 2. *The general rule.* `EIN_TRAVERSAL=tree` is still the only surface in the
    system the word **experimental** applies to
-   ([`configuration.md` § 2.3](../../kernel/configuration.md)), and what
+   ([`config.md` § 2.3](../../ein/user/reference/config.md#23-reading-the-judgement-columns)), and what
    that word licenses is undecided. What S1e.2.1 establishes is only a lower
    bound on the answer: on this occasion the true read-out was **cheaper** than
    the refusal, so the question was not tested.
@@ -330,7 +330,7 @@ question is still the right home for:
    did not exhaust, so making the sentence true means giving `ein-infer` a
    reason type — which is the same question as *what does a tree report where a
    lattice reports layers*, i.e. `T1d.10.6.4` again. Documented meanwhile in
-   [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../kernel/configuration.md).
+   [`config.md` § What `EIN_TRAVERSAL=tree` reports](../../ein/user/reference/config.md).
 
 ### Closed 2026-11-03 — answered by the ruling of 2026-10-16
 
@@ -340,7 +340,7 @@ surface. The ruling of 2026-10-16 already says so, verbatim: *"I don't want to
 have two different commands that give different and inconsistent results"*,
 and *"results must be consistent: region is a region of oracle, maxline is
 part of region, any model also part of region, independent of monotonicity"*
-([`solve_interface.md` § 0](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#0-the-ruling)).
+([`Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md` § 0](../../decisions/answer/Q-M1e2.32-no-two-commands-disagree-and-the-oracle-is.md)).
 It makes no exception for a surface called experimental, so the general rule
 (item 2 above) is written: no surface, experimental or not, may state what the
 oracle contradicts or disagree with another command.
@@ -859,7 +859,7 @@ about the **structure of the hypothesis set**, not about a traversal:
 
 - The candidate set **grew underneath a branch** that was entered because its
   alternatives were jointly exhaustive.
-  [`domain_contract.md`](../m1d_satisfiability/domain_contract.md)
+  [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
   C4 states the contract exactly — *a branch is jointly exhaustive only while
   the candidate set cannot grow underneath it* — and says nothing about what
   to do when it does.
@@ -1042,7 +1042,7 @@ kb load error: :expect does not name p, which the query's :goal asks about
 
 and so does `(model)`, and so does any list of facts that does not mention `p`.
 The rule is
-[`01_grammar.md` § Query](../../kernel/ir/03-ein-lang/01_grammar.md#query)'s
+[`syntax.md` § Query](../../ein/user/reference/syntax.md#query)'s
 first: *the goal's relations are mandatory; an expectation that does not pin
 what the query asked is not an expectation.* Its reasoning is sound. Its
 consequence is that **an answer whose goal extent is empty is unstatable**,
@@ -1139,7 +1139,7 @@ cost question rather than a design one:
 3. **Leave it**, on the argument that the read side is a pure function of
    `(joined, alive, store)` and all three are pinned. That is an argument whose
    premise is enforced, so it is admissible under
-   [`standard_of_proof.md`](../../kernel/standard_of_proof.md) Rule 2 —
+   [`standard-of-proof.md`](../../ein/standard-of-proof.md) Rule 2 —
    but it should then be *written*, because "we compare that column" and "that
    column is entailed by three we compare" are different claims and the tree
    currently makes the first.
@@ -1167,7 +1167,7 @@ cost question rather than a design one:
 > ([`examples/ein-bugs/wrong-answers/alt-cap-shared.ein`](../../../examples/ein-bugs/wrong-answers/alt-cap-shared.ein)),
 > open and deferred to [F22](../../../plans/followups/f22_exact_core_past_the_cap.md);
 > and the flag may change the core and nothing else
-> ([`configuration.md` § 2.5](../../kernel/configuration.md#25-the-config-principle-read-against-every-row)).
+> ([`config.md` § 2.5](../../ein/user/reference/config.md#25-the-config-principle-read-against-every-row)).
 > What was built: beside the capped list each fact keeps the arrival with the
 > smallest closure (`Kb::closure`, `Kb::best`), which `Kb::justifications`
 > offers the search and the `.einb` keeps (format 1.1). The pair below report
@@ -1465,7 +1465,7 @@ more.
 > rule, so fixing the cell alone would have left five worse ones standing; T1
 > took the rule. See § The answer at the end.
 
-[`00_ebnf.md` §2](../../kernel/ir/03-ein-lang/00_ebnf.md) has a block
+[`grammar.md` §2](../../ein/user/reference/grammar.md#2-phrase-grammar) has a block
 headed *Kernel meta-primitives (shape-pinned)* with **four** productions —
 `NotForm`, `NeqForm`, `AndForm`, `OrForm`. The engine has **seven** such
 primitives. `eq`, `absent` and `false` are ordinary `GenericList`s, so their
@@ -1510,7 +1510,7 @@ of the unpinned three. Both halves are banked as
    defensible languages, and either is a feature rather than a repair.
 
 (1) and (2) are the repair; (3) is a language decision and would need
-[`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md) and
+[`grammar.md`](../../ein/user/reference/grammar.md) and
 `defined_behaviour.md` to move together. What none of them may do is nothing:
 the current state is that two of the seven primitives read fewer arguments
 than they are given, in silence.
@@ -1592,7 +1592,7 @@ Routing it here, with what the stage measured.
 | artifact | what it is | who can ask for it |
 |---|---|---|
 | the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice-dump.md`](../../ein/ein.rs/lattice-dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
-| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
+| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`rendering.md`](../../ein/user/reference/rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
 
 Both are `pub`, both are exercised by the gate — `golden_dump.rs` for the first, `dot_wellformed.rs` over the whole corpus for
 the second — and neither is documented anywhere a caller would look:
@@ -1666,7 +1666,7 @@ pre-empts M20, which binds the same crates.
 > ([`defined_behaviour.md` § 3.3](../../kernel/defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
 > The residue below, a `(?R ?a ?b)` head bound to an integer, is refused at
 > load where the activator is written down and at compile where a rule
-> derives it ([§ 4.6](../../kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
+> derives it ([§ 2.6](../../ein/user/reference/diagnostics.md#26-a-relation-named-by-a-number)).
 > **Widened 2026-11-04** by M1e2
 > [S1e2.2.14](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.14_unread_names.md),
 > on the user's ruling of that day
@@ -1737,7 +1737,7 @@ answering either one alone risks answering the other by accident.
 > alone."*
 
 **What was ruled.** A failed artefact write leaves the exit code alone —
-[`defined_behaviour.md` § 4.4](../../kernel/defined_behaviour.md), pinned
+[`diagnostics.md` § 2.4](../../ein/user/reference/diagnostics.md#24-an-artefact-flags-failure), pinned
 by `ein-cli/tests/artefact_contract.rs`. Four of the five options say
 *additive: stdout, stderr and the exit code are unchanged* in their own
 `--help`, and a failed write does not make that false: the answer on stdout is
@@ -1753,7 +1753,7 @@ means *usage error* **and** *budget abort*, which is
 [TE-M4](README.md#the-findings)'s finding read from the other end. A third
 meaning added to the same integer is not an improvement, and a fourth code is
 a CLI-vocabulary change with its own blast radius —
-[`defined_behaviour.md` § 4](../../kernel/defined_behaviour.md) is the
+[`diagnostics.md` § 2](../../ein/user/reference/diagnostics.md#2-errors-and-exit-codes) is the
 table it would have to move.
 
 ### The three shapes, and why none of them is obviously right

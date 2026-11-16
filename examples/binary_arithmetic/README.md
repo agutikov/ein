@@ -8,7 +8,7 @@ ways: programs over the stdlib's [`std.math.binary-arith`](../../stdlib/math/bin
 The theory was banked here as an example on 2026-11-12, the plan page's way (b) generated from decimal's
 module, and became the stdlib's at the stage's build (2026-11-15): the rules both bases share are written
 once, in [`std.math.positional`](../../stdlib/math/positional.ein), and each base connects them by one call.
-The plan page, [`binary_arithmetic.md`](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md),
+The plan page, [`stdlib.md`](../../docs/ein/user/reference/stdlib.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith),
 has the prototype, the counts, the costs, the comparison with decimal and what each of the user's rulings
 made of it; [`stdlib/README.md`](../../stdlib/README.md#binary-stdmathbits-stdmathbinary-and-stdmathbinary-arith-m1f-s1f616)
 has the modules.

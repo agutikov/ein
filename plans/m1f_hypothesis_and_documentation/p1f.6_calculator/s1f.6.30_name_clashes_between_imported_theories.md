@@ -34,7 +34,7 @@ takes their names into account.* **The user's reply there, committed as `dc88520
 
 ## What is known
 
-From [`malformed_numbers.md` § 6](malformed_numbers.md#6-the-names-the-theory-occupies-what-a-clash-does-today)
+From [`stdlib.md` § Importing a module](../../../docs/ein/user/reference/stdlib.md#importing-a-module)
 (S1f.6.12's T2, 2026-11-11), on the shipped theory:
 
 - a second *declaration* of any name of the theory is refused at load, with the name in the message;

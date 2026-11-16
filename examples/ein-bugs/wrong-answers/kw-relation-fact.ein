@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
 ;;;
-;;; A keyword is a whole word (`00_ebnf.md` § 1, fact 1), so `relationship` is
+;;; A keyword is a whole word (`grammar.md` § 1, fact 1), so `relationship` is
 ;;; a name, and the fact is a fact. Root holds `(relationship alice bob)`; the
 ;;; blind enumerator proposes `(relationship bob alice)`, and R is two states:
 ;;; the answer of `kw-relation-fact-twin.ein`.
@@ -23,7 +23,7 @@
 ;;; signature is `alice bob`, so the program stated no `relationship` fact.
 ;;; `alice` and `bob` were types, H was empty and R was {∅}. (`ein solve FILE`
 ;;; at `35186bc0`, release and debug; every mode and `ein oracle` the same.)
-;;; Since then a keyword is a whole word, at the boundary `00_ebnf.md` § 1
+;;; Since then a keyword is a whole word, at the boundary `grammar.md` § 1
 ;;; states (the user's ruling of 2026-11-05 on Q-M1e2.17), and the program
 ;;; answers its twin's R.
 

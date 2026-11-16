@@ -44,7 +44,7 @@ Three places, in increasing order of consequence:
 2. **`?h = Color` is a read-out nobody would defend.** It is not wrong by the
    engine's semantics — `co-located` really is unconstrained — but a query
    binding naming a type where the puzzle means a house is the sort of thing
-   [`docs/guide/`](../../../guide/README.md) would have to explain
+   [`docs/guide/`](../../../ein/user/guide/README.md) would have to explain
    away.
 3. **It is the standing proof for [S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
    loss mechanism.** The blind rung keeps proposing long after any real debt
