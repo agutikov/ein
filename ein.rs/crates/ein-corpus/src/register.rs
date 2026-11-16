@@ -1,12 +1,9 @@
 //! The wrong-answer register — `corpus/wrong_answers.toml`.
 //!
 //! One row per **witness** of every known wrong answer, with the answer the
-//! engine gives today and the one it should give, as data. M1e2
-//! [S1e2.1.1](../../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.1_the_case_register.md)
-//! wrote it because the cases lived in five registers that did not know about
-//! each other — question entries, fixture headers, `:expect` clauses stating
-//! today's answer on purpose, probe scripts and a milestone table — and a
-//! renderer needs one list while a fix stage needs one place to say *done*.
+//! engine gives today and the one it should give, as data: the one list of
+//! them, since a renderer needs one list and a fix needs one place to say
+//! *done*.
 //!
 //! The format, the field reference and the rule for a witness that also
 //! carries an `:expect` are the file's own header. This module reads it and
@@ -26,110 +23,113 @@ use serde::Deserialize;
 use std::path::Path;
 
 /// The register's path, repo-root-relative — beside `corpus.toml` because it
-/// is a corpus reader's table, and not under `plans/` because a plan is deleted
-/// when its milestone closes and a register guarding fixed cases has to
-/// outlive it.
+/// is a corpus reader's table: a register guarding fixed cases is test data,
+/// and lives as long as the tests that read it.
 pub const REGISTER: &str = "corpus/wrong_answers.toml";
 
-/// `/2` since M1e2 S1e2.1a.10 (2026-10-16): every row states its witness's R,
-/// [`Region`]. `/3` since S1e2.1a.5's switch (2026-10-18): every row states
-/// [`Now`], the region run that asks its question, and the walk's blocks are
-/// the record of what the walk said. `/4` since M1e2 S1e2.2.5 (2026-11-04):
-/// a right answer and a `now` can be a **refusal** ([`Right::refused`],
-/// [`Now::refused`]), *forbid*'s, and a refused row states no [`Region`].
-/// `/5` since M1e2 S1e2.2.8 (2026-11-04): a `now` records the relations its
-/// run names outside the universe ([`Now::outside`], the summary's
-/// `root.hypgen.outside`), and a right answer can state them
-/// ([`Right::outside`]), W6's on Q-M1e2.3 (a). `/6` since M1e2 S1e2.2.11
-/// (2026-11-04): a `now` whose `right` states a core records the core its run
-/// reports ([`Now::core`], the summary's `region.core`), W10's. `/7` since
-/// M1e2 S1e2.2.18 (2026-11-04): a recorded answer and a `now` can be a run
-/// that **ended in an error** before it answered ([`Answer::error`],
-/// [`Now::error`]), exit 1 with no verdict, W18's `str-in-assert`; such a
-/// `now` is never `right`, and states no [`Region`]. `/8` since M1e2
-/// S1e2.2.19 (2026-11-04): a `now` whose `right` states the cores of `N`'s
-/// members records the cores its run reports ([`Now::nogoods`],
-/// `--dump-answer`'s `nogoods.json`), W19's: a dead node's core, where
-/// [`Now::core`] is root's. `/9` since M1e2 S1e2.2.23 (2026-11-05): a `now`
-/// whose `right` states a core's status records the status its run reports
-/// beside root's core ([`Now::core_status`], the summary's
-/// `region.core_status`), W23's: whether the core search was cut at its
-/// budget. `/10` since M1e2 S1e2.2.25 (2026-11-05): a `now` can record how
-/// many members of R hold a stale fact ([`Now::stale`], the summary's
-/// `monotonicity.state`) where `right` states it ([`Right::stale`]), W8's rows
-/// past the oracle's limit; a region can be a **stopped** description
-/// ([`Region::stopped`]), its counts lower bounds and its maximal line not
-/// known; `now` can compare `N` on the members it lists alone
-/// ([`Now::nogoods_listed`], a program whose `N` is hundreds of sets); and a
-/// `deferred` row can be owned by another milestone's stage (S1f.10.6) as
-/// well as by a followup. `/11` since M1e2 S1e2.2.26 (2026-11-05): a `now`
-/// records how many members of R it met and counts without listing them
-/// ([`Now::others`], the summary's states with `listed = false`) where
-/// `right` states it ([`Right::others`]), W27's: a line mode past
-/// `--region-limit`, whose listed states are the line members it certifies
-/// and make no verdict. `/12` since M1e2 S1e2.3.8 (2026-11-06): a `now`
-/// records the outcome of the program's solve-form claim ([`Now::claim`],
-/// the summary's `claim.outcome`) and each query's class count and claim
-/// outcome ([`Now::queries`], the summary's `queries`) where `right` states
-/// them, W28's: a claim and a query's classes compared printed text, in which
-/// the int `1` and the name `"1"` were one. A run whose recorded claim is
-/// `failed` exits 1, as a refuted claim does ([`Now::refutes`]). `/13` since
-/// M1f S1f.5.0 (2026-11-08): where `right` is a **refusal**, a `now` may record
-/// the core and the claims its run reports ([`Now::core`], [`Now::claim`],
-/// [`Now::queries`]), what the refusal replaces, W29's
-/// (`W29/core-two-ways`'s core, a bare `_` in a rule; `W29/goal-arg`'s and
-/// `W32/kwpair-in-goal`'s query); a refused `now` records none of them.
-/// `/14` since M1f S1f.5.15 (2026-11-08): a `now` records the rules root's
-/// `refuted by` names ([`Now::refuted_by`], the summary's `region.refuted_by`)
-/// where `right` states them ([`Right::refuted_by`]), W36's: under
-/// `:record-alternative-justifications false` the row names other rules
-/// beside the same core, which the config principle does not exempt.
-/// `/15` since M1f S1f.5.5 (2026-11-08): a `now` records the sentences the
-/// read-out prints for a query's `:goal-text` ([`Now::goal_text`], its `“…”`
-/// lines, which the summary does not carry) where `right` states them
-/// ([`Right::goal_text`]), W37's: a template reference that names a variable
-/// with a character other than a letter, a digit, `_` or `-` is printed as
-/// written. `/16` since M1f S1f.5.5 (T1f.5.5.13, 2026-11-09): a `now` can be
-/// a **command's** run, any `ein` run that is not a solve ([`Now::is_command`]),
-/// which writes no summary: its answer is a refusal or an error, as a solve's
-/// can be, or that it answered ([`Now::answered`], [`Right::answered`]), exit 0
-/// with nothing on stderr; a `now` can read the witness through a `.einb`
-/// ([`Now::container`]), saved by `ein kb save` first, and then answers what the
-/// same run answers on the witness; and a recorded answer can be a command's
-/// ([`Answer::by`] `command`, with [`Answer::refused`]), W40's and W41's: one
-/// command refused a program another answered. `/17` since M1f S1f.5.6
-/// (T1f.5.6.5, 2026-11-09): a `now` records lines the run prints, each found
-/// by the label it begins with, on stdout or in `--dump-answer`'s
-/// `answer.txt` ([`Now::printed`], [`Printed`]), where `right` states them
-/// ([`Right::printed`]), W42's: a label as long as its column glued to its
-/// value, so `class 100 of 277` and `28 states` read as `class 100 of 27728
-/// states`. `/19` since M1f S1f.5.12 (T1f.5.12.4, 2026-11-09): a refusal a
-/// solve's run answers with can exit 2 ([`Now::exit`], [`Answer::exit`]), a
-/// usage refusal of what the run was asked to write while the library answers
-/// the program, so the row states its [`Region`]; and `{out}` in a recorded
-/// line is the run's scratch directory, as `run`'s `{out}` is, W43's: `ein
-/// solve X.einb --dump-answer DIR` refused the container. (`/18` is the second
-/// lane's.) `/20` since M1f S1f.5.21 (T1f.5.21.1, 2026-11-10): a recorded
-/// answer can be that a command's run **answered** ([`Answer::answered`]),
-/// exit 0, where the right answer is a refusal, W65's: a view and `kb save`
-/// answered a program every other command refused; and a row whose right
-/// answer is a refusal states no [`Region`] whatever its `now` runs, a
-/// command's included, since a program refused at load has no R, W62 to W65's.
-/// `/21` since M1f S1f.5.25 (T1f.5.25.2, 2026-11-10): a `now` can run with its
-/// **stdout closed** ([`Now::stdout`], [`STDOUT_CLOSED`]), a pipe whose reader
-/// closed before the run started, so every write to it is a write after its
-/// reader has gone; such a run is a command's whatever its subcommand
-/// ([`Now::is_command`]), and its answer is how it ended: by a signal, with
-/// nothing on stderr ([`Now::signal`], [`Right::signal`], [`SIGPIPE`]), or by
-/// a panic, exit 101 ([`Now::panicked`], [`Answer::panicked`]), W75's: every
-/// command's first write to such a pipe panicked with *failed printing to
-/// stdout: Broken pipe*, where the user ruled that `ein` die by `SIGPIPE`, as
-/// `cat` does (Q-M1f.68 (b)). `/22` since M1f S1f.6.25 (T1f.6.25.3,
-/// 2026-11-13): a printed line can be read in a **state file**
-/// `--dump-answer` writes, `models/NN.ein` ([`printed_file`]), and a line
-/// recorded empty says that no line of the file begins with the label
-/// ([`Printed::line`]), W91's: the program a state file re-writes dropped a
-/// rule only a selection names, and the relation only that rule names.
+/// The register's schema, `ein-wrong-answers/N`. Each version adds to the one
+/// before it:
+///
+/// - `/2`: every row states its witness's R, [`Region`].
+/// - `/3`: every row states [`Now`], the region run that asks its question;
+///   the recorded answers of the walk, a search no command runs, are kept as
+///   what it said.
+/// - `/4`: a right answer and a `now` can be a **refusal** ([`Right::refused`],
+///   [`Now::refused`]), *forbid*'s, and a refused row states no [`Region`].
+/// - `/5`: a `now` records the relations its run names outside the universe
+///   ([`Now::outside`], the summary's `root.hypgen.outside`), and a right
+///   answer can state them ([`Right::outside`]), W6's (Q-M1e2.3).
+/// - `/6`: a `now` whose `right` states a core records the core its run
+///   reports ([`Now::core`], the summary's `region.core`), W10's.
+/// - `/7`: a recorded answer and a `now` can be a run that **ended in an
+///   error** before it answered ([`Answer::error`], [`Now::error`]), exit 1
+///   with no verdict, W18's `str-in-assert`; such a `now` is never `right`,
+///   and states no [`Region`].
+/// - `/8`: a `now` whose `right` states the cores of `N`'s members records the
+///   cores its run reports ([`Now::nogoods`], `--dump-answer`'s
+///   `nogoods.json`), W19's: a dead node's core, where [`Now::core`] is
+///   root's.
+/// - `/9`: a `now` whose `right` states a core's status records the status
+///   its run reports beside root's core ([`Now::core_status`], the summary's
+///   `region.core_status`), W23's: whether the core search was cut at its
+///   budget.
+/// - `/10`: a `now` can record how many members of R hold a stale fact
+///   ([`Now::stale`], the summary's `monotonicity.state`) where `right` states
+///   it ([`Right::stale`]), W8's rows past the oracle's limit; a region can be
+///   a **stopped** description ([`Region::stopped`]), its counts lower bounds
+///   and its maximal line not known; `now` can compare `N` on the members it
+///   lists alone ([`Now::nogoods_listed`], a program whose `N` is hundreds of
+///   sets); and a `deferred` row can be owned by a stage of another plan as
+///   well as by a followup.
+/// - `/11`: a `now` records how many members of R it met and counts without
+///   listing them ([`Now::others`], the summary's states with
+///   `listed = false`) where `right` states it ([`Right::others`]), W27's: a
+///   line mode past `--region-limit`, whose listed states are the line
+///   members it certifies and make no verdict.
+/// - `/12`: a `now` records the outcome of the program's solve-form claim
+///   ([`Now::claim`], the summary's `claim.outcome`) and each query's class
+///   count and claim outcome ([`Now::queries`], the summary's `queries`)
+///   where `right` states them, W28's: a claim and a query's classes
+///   compared printed text, in which the int `1` and the name `"1"` were one.
+///   A run whose recorded claim is `failed` exits 1, as a refuted claim does
+///   ([`Now::refutes`]).
+/// - `/13`: where `right` is a **refusal**, a `now` may record the core and
+///   the claims its run reports ([`Now::core`], [`Now::claim`],
+///   [`Now::queries`]), what the refusal replaces, W29's
+///   (`W29/core-two-ways`'s core, a bare `_` in a rule; `W29/goal-arg`'s and
+///   `W32/kwpair-in-goal`'s query); a refused `now` records none of them.
+/// - `/14`: a `now` records the rules root's `refuted by` names
+///   ([`Now::refuted_by`], the summary's `region.refuted_by`) where `right`
+///   states them ([`Right::refuted_by`]), W36's: under
+///   `:record-alternative-justifications false` the row names other rules
+///   beside the same core, which the config principle does not exempt.
+/// - `/15`: a `now` records the sentences the read-out prints for a query's
+///   `:goal-text` ([`Now::goal_text`], its `“…”` lines, which the summary does
+///   not carry) where `right` states them ([`Right::goal_text`]), W37's: a
+///   template reference that names a variable with a character other than a
+///   letter, a digit, `_` or `-` is printed as written.
+/// - `/16`: a `now` can be a **command's** run, any `ein` run that is not a
+///   solve ([`Now::is_command`]), which writes no summary: its answer is a
+///   refusal or an error, as a solve's can be, or that it answered
+///   ([`Now::answered`], [`Right::answered`]), exit 0 with nothing on stderr;
+///   a `now` can read the witness through a `.einb` ([`Now::container`]),
+///   saved by `ein kb save` first, and then answers what the same run answers
+///   on the witness; and a recorded answer can be a command's
+///   ([`Answer::by`] `command`, with [`Answer::refused`]), W40's and W41's:
+///   one command refused a program another answered.
+/// - `/17`: a `now` records lines the run prints, each found by the label it
+///   begins with, on stdout or in `--dump-answer`'s `answer.txt`
+///   ([`Now::printed`], [`Printed`]), where `right` states them
+///   ([`Right::printed`]), W42's: a label as long as its column glued to its
+///   value, so `class 100 of 277` and `28 states` read as
+///   `class 100 of 27728 states`.
+/// - `/18` names no version.
+/// - `/19`: a refusal a solve's run answers with can exit 2 ([`Now::exit`],
+///   [`Answer::exit`]), a usage refusal of what the run was asked to write
+///   while the library answers the program, so the row states its
+///   [`Region`]; and `{out}` in a recorded line is the run's scratch
+///   directory, as `run`'s `{out}` is, W43's: `ein solve X.einb
+///   --dump-answer DIR` refused the container.
+/// - `/20`: a recorded answer can be that a command's run **answered**
+///   ([`Answer::answered`]), exit 0, where the right answer is a refusal,
+///   W65's: a view and `kb save` answered a program every other command
+///   refused; and a row whose right answer is a refusal states no [`Region`]
+///   whatever its `now` runs, a command's included, since a program refused
+///   at load has no R, W62 to W65's.
+/// - `/21`: a `now` can run with its **stdout closed** ([`Now::stdout`],
+///   [`STDOUT_CLOSED`]), a pipe whose reader closed before the run started,
+///   so every write to it is a write after its reader has gone; such a run is
+///   a command's whatever its subcommand ([`Now::is_command`]), and its answer
+///   is how it ended: by a signal, with nothing on stderr ([`Now::signal`],
+///   [`Right::signal`], [`SIGPIPE`]), or by a panic, exit 101
+///   ([`Now::panicked`], [`Answer::panicked`]), W75's: every command's first
+///   write to such a pipe panicked with *failed printing to stdout: Broken
+///   pipe*, where `ein` dies by `SIGPIPE`, as `cat` does (Q-M1f.68).
+/// - `/22`: a printed line can be read in a **state file** `--dump-answer`
+///   writes, `models/NN.ein` ([`printed_file`]), and a line recorded empty
+///   says that no line of the file begins with the label
+///   ([`Printed::line`]), W91's: the program a state file re-writes dropped a
+///   rule only a selection names, and the relation only that rule names.
 pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/22";
 
 /// What a run's stdout is when it is not read in full (schema /21,
@@ -148,7 +148,7 @@ pub const SIGPIPE: i32 = 13;
 pub const PRINTED_FILES: [&str; 2] = ["stdout", "answer.txt"];
 
 /// Whether a [`Printed`] line can be read in `file`: one of
-/// [`PRINTED_FILES`], or since schema `/22` a state file `--dump-answer DIR`
+/// [`PRINTED_FILES`], or (schema `/22`) a state file `--dump-answer DIR`
 /// writes, `models/NN.ein`.
 pub fn printed_file(file: &str) -> bool {
     PRINTED_FILES.contains(&file)
@@ -158,7 +158,7 @@ pub fn printed_file(file: &str) -> bool {
             .is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()))
 }
 
-/// A line a run prints — schema `/17` (M1f S1f.5.6, W42): the first line of
+/// A line a run prints — schema `/17` (W42): the first line of
 /// [`Self::file`] that begins, past its indent, with [`Self::label`], as
 /// printed, its trailing spaces aside.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -169,8 +169,8 @@ pub struct Printed {
     /// What the line begins with, past its indent: a row's label, or `-H`'s
     /// relation.
     pub label: String,
-    /// The whole line; or since schema `/22` empty, where no line of the
-    /// file begins with the label.
+    /// The whole line; or (schema `/22`) empty, where no line of the file
+    /// begins with the label.
     pub line: String,
 }
 
@@ -198,18 +198,17 @@ pub const EMPTY_KINDS: [&str; 2] = ["no-alive", "all-owe"];
 /// What a row may say about itself.
 pub const STATUSES: [&str; 3] = ["open", "fixed", "not-wrong"];
 
-/// What gave a recorded [`Answer`]: the walk, which no command has run since
-/// M1e2 S1e2.1a.5's switch, a region run (W13's `wrong`, M1e2 S1e2.1a.7), or
-/// since schema /16 a command's run that is not a solve (W40's and W41's
-/// `wrong`, M1f T1f.5.5.13).
+/// What gave a recorded [`Answer`]: the walk, a search no command runs, a
+/// region run (W13's `wrong`), or (schema /16) a command's run that is not a
+/// solve (W40's and W41's `wrong`).
 pub const ANSWERED_BY: [&str; 3] = ["walk", "region", "command"];
 
 /// The verdict words, as `--json-summary`'s `verdict.type` spells them.
 pub const VERDICTS: [&str; 4] = ["Solution", "Ambiguity", "Contradiction", "Open"];
 
-/// What the review (M1e2 S1e2.1.7) may rule on a row. `deferred` since
-/// 2026-11-03, the user's ruling on W8: the row's reading waits on a followup,
-/// and the row stays `open` with that followup as its `owner`.
+/// What the review may rule on a row. `deferred`: the row's reading waits on
+/// a followup, and the row stays `open` with that followup as its `owner`
+/// (W8's).
 pub const REVIEW_VERDICTS: [&str; 6] = [
     "confirmed",
     "right-answer-corrected",
@@ -256,13 +255,13 @@ pub struct Register {
 pub struct Row {
     /// `<case>/<witness>` — stable, and the review bundle's directory name.
     pub id: String,
-    /// The inventory's id: `W1`…`W12`, `C1`.
+    /// The case's id: `W1`, `W2`, …, `C1`.
     pub case: String,
     pub title: String,
     pub class: String,
     /// `default`, or the lever the wrong answer needs.
     pub settings: String,
-    /// The P1e2.2 stage that fixes it.
+    /// The plan's stage, or the followup, that fixes it.
     pub owner: String,
     /// What the case is about: decision ids, each a file under
     /// `docs/decisions/`, and the findings it was filed from.
@@ -278,16 +277,15 @@ pub struct Row {
     #[serde(default)]
     pub note: Option<String>,
     /// Where in a run the case goes wrong — the review bundle's links into
-    /// the run directories (M1e2 S1e2.1.6). Written once, here, so the fixing
+    /// the run directories. Written once, here, so the fixing
     /// stage reads the same pointers the reviewer followed. The vocabulary is
     /// [`LOOK_AT`].
     #[serde(default)]
     pub look_at: Vec<String>,
-    /// What the walk answered. Since M1e2 S1e2.1a.5 no command runs the
-    /// walk, so this, [`Self::control`] and [`Self::twin`] are the record of
-    /// what it said, and [`Self::now`] is what is run. A row filed after the
-    /// switch records a region run's wrong answer, and says so
-    /// ([`Answer::by`], W13's).
+    /// The wrong answer, as recorded. On most rows it is the walk's, a search
+    /// no command runs, so this, [`Self::control`] and [`Self::twin`] are the
+    /// record of what it said, and [`Self::now`] is what is run; a row whose
+    /// wrong answer is a region run's says so ([`Answer::by`], W13's).
     pub wrong: Answer,
     /// A run that gets it right today.
     #[serde(default)]
@@ -300,20 +298,20 @@ pub struct Row {
     /// and `ein-infer/tests/register_region.rs` holds it to `explore`.
     #[serde(default)]
     pub region: Option<Region>,
-    /// The region run that asks the row's question, and what it answers —
-    /// M1e2 S1e2.1a.5. `ein-cli/tests/wrong_answers.rs` runs it.
+    /// The region run that asks the row's question, and what it answers.
+    /// `ein-cli/tests/wrong_answers.rs` runs it.
     pub now: Now,
     /// Why an `open` row's [`Self::now`] is still not [`Self::right`]: what R
     /// shares with the case, or which reading the case waits on. Required
     /// exactly when the row is open.
     #[serde(default)]
     pub open_because: Option<String>,
-    /// The user's verdict on the row (S1e2.1.7). Absent until it is reviewed.
+    /// The user's verdict on the row. Absent until it is reviewed.
     #[serde(default)]
     pub review: Option<Review>,
     /// What made a `fixed` row's [`Self::now`] answer [`Self::right`]: the
-    /// commit, the work it was, and its date — M1e2 S1e2.1a.7, so a case page
-    /// says what fixed it. Stated exactly when the row is fixed.
+    /// commit, the work it was, and its date, so a case page says what fixed
+    /// it. Stated exactly when the row is fixed.
     #[serde(default)]
     pub fixed: Option<Fixed>,
 }
@@ -347,10 +345,8 @@ fn is_commit(c: &str) -> bool {
 /// A core's status as the register spells it (schema /9): `none`,
 /// `within-budget`, or `cut-` and one or more of the caps, in order —
 /// `ein_infer::explain::CoreStatus::word`'s words for a core a search took,
-/// and `none`. Not `not-kept`, M1e2 S1e2.3.9's word for a member of N a run
-/// past `--region-limit` printed with no core, retired by M1f S1f.5.12: a
-/// row records the summary's `region.core_status`, root's, which a run
-/// always takes.
+/// and `none`. Not `not-kept`, which no run writes: a row records the
+/// summary's `region.core_status`, root's, which a run always takes.
 fn is_core_status(s: &str) -> bool {
     if s == "none" || s == "within-budget" {
         return true;
@@ -369,15 +365,15 @@ fn is_core_status(s: &str) -> bool {
     true
 }
 
-/// A followup's id, `F<n>`, as `plans/followups/` names them.
+/// A followup's id, `F<n>`.
 fn is_followup(o: &str) -> bool {
     o.strip_prefix('F')
         .is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()))
 }
 
-/// Another milestone's stage, `S1f.10.6` (schema /10, M1e2 S1e2.2.25): a
-/// stage id whose milestone is not M1e2's, which a `deferred` row may wait on
-/// as it waits on a followup (W26's).
+/// A stage of another plan (schema /10): a stage id, three dot-separated
+/// parts, outside the register's own milestone, which a `deferred` row may
+/// wait on as it waits on a followup (W26's).
 fn is_other_milestone_stage(o: &str) -> bool {
     let parts: Vec<&str> = o.split('.').collect();
     parts.len() == 3
@@ -425,21 +421,21 @@ impl Row {
     }
 }
 
-/// What a region run answers — M1e2 S1e2.1a.5, `ein-summary/2`'s fields.
+/// What a region run answers: `ein-summary/2`'s fields.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Now {
     /// A corpus run name: the mode that asks the row's question, `solve
-    /// --maximal` for a model-set row; or since schema /16 a command's run
-    /// that is not a solve, `saturate --dump` or `render rules`
+    /// --maximal` for a model-set row; or (schema /16) a command's run that
+    /// is not a solve, `saturate --dump` or `render rules`
     /// ([`Self::is_command`]).
     pub run: String,
     /// One of [`LINES`]: which part of R its states are. Empty on a
     /// command's run (schema /16), which lists no state.
     #[serde(default)]
     pub line: String,
-    /// The run reads the witness through a `.einb` (schema /16, M1f
-    /// T1f.5.5.13, W40): `ein kb save WITNESS DIR/<stem>.einb` first, then
+    /// The run reads the witness through a `.einb` (schema /16, W40):
+    /// `ein kb save WITNESS DIR/<stem>.einb` first, then
     /// the run on the container.
     #[serde(default)]
     pub container: bool,
@@ -450,13 +446,13 @@ pub struct Now {
     /// aside. A command's `now` is a refusal, an error or this.
     #[serde(default)]
     pub answered: bool,
-    /// The run refuses the program — M1e2 S1e2.2.5, *forbid*: exit 1, and
+    /// The run refuses the program — *forbid*: exit 1, and
     /// this is the first line of its stderr. A refused run lists nothing, so
     /// the fields below keep their defaults.
     #[serde(default)]
     pub refused: Option<String>,
-    /// The run ended in an error before it answered — M1e2 S1e2.2.18 (W18):
-    /// exit 1, and this is the first line of its stderr. Not a refusal: the
+    /// The run ended in an error before it answered (W18): exit 1, and this
+    /// is the first line of its stderr. Not a refusal: the
     /// program was accepted and a firing stopped the run, so the library
     /// returns a saturation error where a refusal returns
     /// `SolveError::Refused`. Such a run lists nothing, and is never
@@ -465,12 +461,12 @@ pub struct Now {
     #[serde(default)]
     pub error: Option<String>,
     /// The exit code a [`Self::refused`] run ends with, where it is not 1 —
-    /// schema /19 (M1f S1f.5.12, W43): `2`, a usage refusal of what a solve's
+    /// schema /19 (W43): `2`, a usage refusal of what a solve's
     /// run was asked to write, the library answering the program, so the row
     /// states its [`Region`] (W43's open `now`: `--dump-answer` on a `.einb`).
     #[serde(default)]
     pub exit: Option<i32>,
-    /// The run's stdout is not read in full (schema /21, M1f S1f.5.25, W75):
+    /// The run's stdout is not read in full (schema /21, W75):
     /// [`STDOUT_CLOSED`], a pipe whose reader closed before the run started.
     /// Such a run is a command's ([`Self::is_command`]), whatever its
     /// subcommand, and its answer is how it ended: [`Self::signal`] or
@@ -478,8 +474,7 @@ pub struct Now {
     #[serde(default)]
     pub stdout: Option<String>,
     /// The signal that ended a run whose stdout is closed (schema /21), with
-    /// nothing on stderr: [`SIGPIPE`], as `cat` ends, the user's ruling on
-    /// Q-M1f.68 (b).
+    /// nothing on stderr: [`SIGPIPE`], as `cat` ends (Q-M1f.68).
     #[serde(default)]
     pub signal: Option<i32>,
     /// A run whose stdout is closed panicked (schema /21, W75's open `now`):
@@ -504,80 +499,80 @@ pub struct Now {
     #[serde(default)]
     pub models: Vec<Vec<String>>,
     /// The relations the run names outside the universe, sorted — the
-    /// summary's `root.hypgen.outside` (M1e2 S1e2.2.8): what the program can
+    /// summary's `root.hypgen.outside`: what the program can
     /// conclude or ask about and the rung that built H proposes no fact of.
     #[serde(default)]
     pub outside: Vec<String>,
-    /// The unsat core the run reports, sorted — the summary's `region.core`
-    /// (M1e2 S1e2.2.11). Recorded exactly where [`Right::core`] is stated,
-    /// which is a core row's: what W10 is about.
+    /// The unsat core the run reports, sorted — the summary's `region.core`.
+    /// Recorded exactly where [`Right::core`] is stated, which is a core
+    /// row's: what W10 is about.
     #[serde(default)]
     pub core: Option<Vec<String>>,
     /// Each member of `N` the run reports and its core — `--dump-answer`'s
-    /// `nogoods.json` (M1e2 S1e2.2.19, W19), each set and core sorted, the
+    /// `nogoods.json` (W19), each set and core sorted, the
     /// list sorted by set. Recorded exactly where [`Right::nogoods`] is
     /// stated: [`Self::core`] is root's, and a dead node's core is not.
     #[serde(default)]
     pub nogoods: Option<Vec<Nogood>>,
     /// The status the run reports beside root's core — the summary's
-    /// `region.core_status` (M1e2 S1e2.2.23, W23): `within-budget`, `cut-`
+    /// `region.core_status` (W23): `within-budget`, `cut-`
     /// and the caps its search stopped at, or `none` where the summary
-    /// states none (a `null`, or a run before S1e2.2.23, which wrote no such
-    /// field). Recorded exactly where [`Right::core_status`] is stated.
+    /// states none (a `null`, or no such field). Recorded exactly where
+    /// [`Right::core_status`] is stated.
     #[serde(default)]
     pub core_status: Option<String>,
     /// How many members of R the run met hold a stale fact, and of how many
-    /// nodes — the summary's `monotonicity.state` (schema /10, M1e2
-    /// S1e2.2.25): its `stale` entries of class `R`, and its `nodes`.
+    /// nodes — the summary's `monotonicity.state` (schema /10): its `stale`
+    /// entries of class `R`, and its `nodes`.
     /// Recorded exactly where [`Right::stale`] is stated (W8's rows past the
     /// oracle's limit, whose states are not listed).
     #[serde(default)]
     pub stale: Option<Stale>,
     /// [`Self::nogoods`] lists some members of `N`, and the run's `N` is
     /// compared on those sets alone, each of which it must report (schema
-    /// /10, M1e2 S1e2.2.25): `zebra2.ein`'s `N` is 366 sets.
+    /// /10): `zebra2.ein`'s `N` is 366 sets.
     #[serde(default)]
     pub nogoods_listed: bool,
     /// How many members of R the run met and counts without listing them —
-    /// the summary's states with `listed = false` (schema /11, M1e2
-    /// S1e2.2.26): what a line mode past `--region-limit` leaves to
+    /// the summary's states with `listed = false` (schema /11): what a line
+    /// mode past `--region-limit` leaves to
     /// `--dump-answer`. Recorded exactly where [`Right::others`] is stated
     /// (W27's rows).
     #[serde(default)]
     pub others: Option<u64>,
     /// The outcome of the program's `(solve … :expect …)` claim — the
     /// summary's `claim.outcome`, one of [`CLAIM_OUTCOMES`], `none` where the
-    /// summary states none (schema /12, M1e2 S1e2.3.8, W28). Recorded exactly
+    /// summary states none (schema /12, W28). Recorded exactly
     /// where [`Right::claim`] is stated.
     #[serde(default)]
     pub claim: Option<String>,
     /// Each query's projection classes and claim, in program order — the
-    /// summary's `queries` (schema /12, M1e2 S1e2.3.8, W28). Recorded
+    /// summary's `queries` (schema /12, W28). Recorded
     /// exactly where [`Right::queries`] is stated.
     #[serde(default)]
     pub queries: Option<Vec<QueryAnswer>>,
     /// The rules root's `refuted by` row names, in the order it prints them —
-    /// the summary's `region.refuted_by` (schema /14, M1f S1f.5.15, W36),
+    /// the summary's `region.refuted_by` (schema /14, W36),
     /// empty where the summary states none. Recorded exactly where
     /// [`Right::refuted_by`] is stated.
     #[serde(default)]
     pub refuted_by: Option<Vec<String>>,
     /// Each sentence the read-out prints for a query's `:goal-text`, one per
-    /// row of a projection class, in the order printed (schema /15, M1f
-    /// S1f.5.5, W37): the read-out's `“…”` lines, since the summary carries
+    /// row of a projection class, in the order printed (schema /15, W37):
+    /// the read-out's `“…”` lines, since the summary carries
     /// the rows and not the sentences. Recorded exactly where
     /// [`Right::goal_text`] is stated.
     #[serde(default)]
     pub goal_text: Option<Vec<String>>,
-    /// Lines the run prints, each found by its label (schema /17, M1f
-    /// S1f.5.6, W42): on stdout, or in `--dump-answer`'s `answer.txt`, which
+    /// Lines the run prints, each found by its label (schema /17, W42): on
+    /// stdout, or in `--dump-answer`'s `answer.txt`, which
     /// the run then writes. Recorded exactly where [`Right::printed`] is
     /// stated.
     #[serde(default)]
     pub printed: Option<Vec<Printed>>,
 }
 
-/// One query's answer — schema `/12` (M1e2 S1e2.3.8, W28): how many
+/// One query's answer — schema `/12` (W28): how many
 /// projection classes it has over the states it asks about, and what its
 /// `:expect` came to.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -591,7 +586,7 @@ pub struct QueryAnswer {
 }
 
 /// Members of R holding a stale fact, of the nodes a run computed — schema
-/// `/10` (M1e2 S1e2.2.25).
+/// `/10`.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Stale {
@@ -602,7 +597,7 @@ pub struct Stale {
 }
 
 /// A minimal dead set and the core its run reports for it — schema `/8`
-/// (M1e2 S1e2.2.19, W19): one entry of `--dump-answer`'s `nogoods.json`,
+/// (W19): one entry of `--dump-answer`'s `nogoods.json`,
 /// its `refuted_by` left out.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -770,7 +765,7 @@ impl Now {
                 out.push(format!("core: right {want:?}, now {:?}", self.core));
             }
         }
-        // The rules `refuted by` names (schema /14, M1f S1f.5.15, W36).
+        // The rules `refuted by` names (schema /14, W36).
         if let Some(w) = &right.refuted_by
             && Some(w) != self.refuted_by.as_ref()
         {
@@ -779,19 +774,19 @@ impl Now {
                 self.refuted_by
             ));
         }
-        // A query's sentences (schema /15, M1f S1f.5.5, W37), in order.
+        // A query's sentences (schema /15, W37), in order.
         if let Some(w) = &right.goal_text
             && Some(w) != self.goal_text.as_ref()
         {
             out.push(format!("goal text: right {w:?}, now {:?}", self.goal_text));
         }
-        // The lines printed (schema /17, M1f S1f.5.6, W42).
+        // The lines printed (schema /17, W42).
         if let Some(w) = &right.printed
             && Some(w) != self.printed.as_ref()
         {
             out.push(format!("printed: right {w:?}, now {:?}", self.printed));
         }
-        // The core's status (schema /9, M1e2 S1e2.2.23, W23).
+        // The core's status (schema /9, W23).
         if let Some(s) = &right.core_status
             && Some(s) != self.core_status.as_ref()
         {
@@ -800,7 +795,7 @@ impl Now {
                 self.core_status
             ));
         }
-        // The claims and the classes (schema /12, M1e2 S1e2.3.8, W28).
+        // The claims and the classes (schema /12, W28).
         if let Some(c) = &right.claim
             && Some(c) != self.claim.as_ref()
         {
@@ -811,7 +806,7 @@ impl Now {
         {
             out.push(format!("queries: right {q:?}, now {:?}", self.queries));
         }
-        // The members met and not listed (schema /11, M1e2 S1e2.2.26).
+        // The members met and not listed (schema /11).
         if let Some(o) = right.others
             && Some(o) != self.others
         {
@@ -820,7 +815,7 @@ impl Now {
                 self.others
             ));
         }
-        // Stale members of R (schema /10, M1e2 S1e2.2.25).
+        // Stale members of R (schema /10).
         if let Some(w) = right.stale
             && Some(w) != self.stale.as_ref().map(|s| s.in_r)
         {
@@ -829,7 +824,7 @@ impl Now {
                 self.stale.as_ref().map(|s| s.in_r)
             ));
         }
-        // N's cores (schema /8, M1e2 S1e2.2.19, W19).
+        // N's cores (schema /8, W19).
         if let Some(n) = &right.nogoods {
             let want = sorted_nogoods(n);
             let got = self.nogoods.as_deref().map(sorted_nogoods);
@@ -917,7 +912,7 @@ pub struct Answer {
     /// `exhausted` are not stated. A record (W41's `wrong`).
     #[serde(default)]
     pub refused: Option<String>,
-    /// A command's run answered (schema /20, M1f S1f.5.21): exit 0, the
+    /// A command's run answered (schema /20): exit 0, the
     /// program read and drawn or written, where the right answer is a
     /// refusal, and `verdict`, `k` and `exhausted` are not stated. A record
     /// (W65's `wrong`: `render program`, `render rules`, `render rule`,
@@ -928,8 +923,8 @@ pub struct Answer {
     /// The run's stdout was closed, as [`Now::stdout`] (schema /21). A record.
     #[serde(default)]
     pub stdout: Option<String>,
-    /// A run whose stdout was closed panicked (schema /21, M1f S1f.5.25,
-    /// W75's `wrong`): `exit` is 101 and this is the panic's message, as
+    /// A run whose stdout was closed panicked (schema /21, W75's `wrong`):
+    /// `exit` is 101 and this is the panic's message, as
     /// [`Now::panicked`]; `verdict`, `k` and `exhausted` are not stated. A
     /// record.
     #[serde(default)]
@@ -942,8 +937,8 @@ pub struct Answer {
     pub why: Option<String>,
     #[serde(default)]
     pub exit: i32,
-    /// The run ended in an error before it answered — M1e2 S1e2.2.18 (W18):
-    /// `exit` is 1 and this is the first line of its stderr, and `verdict`,
+    /// The run ended in an error before it answered (W18): `exit` is 1 and
+    /// this is the first line of its stderr, and `verdict`,
     /// `k` and `exhausted` are not stated.
     #[serde(default)]
     pub error: Option<String>,
@@ -956,7 +951,7 @@ pub struct Answer {
     #[serde(default)]
     pub core: Option<Vec<String>>,
     /// Each member of `N` and its core, as the run reported them — schema
-    /// `/8` (M1e2 S1e2.2.19, W19's `wrong`).
+    /// `/8` (W19's `wrong`).
     #[serde(default)]
     pub nogoods: Option<Vec<Nogood>>,
     #[serde(default)]
@@ -968,15 +963,14 @@ pub struct Answer {
     #[serde(default)]
     pub owes: Option<Vec<u64>>,
     /// In a build with debug assertions the run aborted with this text on
-    /// stderr; every other field is the release build's. A record: W7's,
-    /// which M1e2 S1e2.2.7 fixed, and W16's order pair's, which M1e2
-    /// S1e2.2.16 fixed; no test skips a row on it since.
+    /// stderr; every other field is the release build's. A record: W7's and
+    /// W16's order pair's, both fixed; no test skips a row on it.
     #[serde(default)]
     pub debug_panic: Option<String>,
     #[serde(default)]
     pub id_order: Option<IdOrder>,
     /// The solve-form claim's outcome, as [`Now::claim`] — schema `/12`
-    /// (M1e2 S1e2.3.8, W28's `wrong`). A record.
+    /// (W28's `wrong`). A record.
     #[serde(default)]
     pub claim: Option<String>,
     /// Each query's classes and claim outcome, as [`Now::queries`] — schema
@@ -984,21 +978,21 @@ pub struct Answer {
     #[serde(default)]
     pub queries: Option<Vec<QueryAnswer>>,
     /// The rules root's `refuted by` names, as [`Now::refuted_by`] — schema
-    /// `/14` (M1f S1f.5.15, W36's `wrong`). A record.
+    /// `/14` (W36's `wrong`). A record.
     #[serde(default)]
     pub refuted_by: Option<Vec<String>>,
     /// The sentences the read-out printed for a query's `:goal-text`, as
-    /// [`Now::goal_text`] — schema `/15` (M1f S1f.5.5, W37's `wrong`). A
+    /// [`Now::goal_text`] — schema `/15` (W37's `wrong`). A
     /// record.
     #[serde(default)]
     pub goal_text: Option<Vec<String>>,
-    /// The lines printed, as [`Now::printed`] — schema `/17` (M1f S1f.5.6,
-    /// W42's `wrong`). A record.
+    /// The lines printed, as [`Now::printed`] — schema `/17` (W42's
+    /// `wrong`). A record.
     #[serde(default)]
     pub printed: Option<Vec<Printed>>,
 }
 
-/// The witness's `R` — M1e2 S1e2.1a.10. What `ein solve` describes, in its
+/// The witness's `R`: what `ein solve` describes, in its
 /// own vocabulary: the lines are **commitments**, each the candidates it
 /// holds, sorted. The walk's vocabulary, models projected over `closes`, stays
 /// in [`Answer`] and [`Right`].
@@ -1008,7 +1002,8 @@ pub struct Region {
     /// One of [`ROUTES`].
     pub route: String,
     /// The static check's verdict. A flagged program's `R` is the cube's,
-    /// every node a fork of root; what a node should be is F21's D2.
+    /// every node a fork of root, an assumption the engine answers under and
+    /// claims nothing beyond (Q-M1e2.2).
     pub monotone: bool,
     /// `|R|` in states.
     pub k_s: u64,
@@ -1020,7 +1015,7 @@ pub struct Region {
     pub minimal: Vec<Vec<String>>,
     pub maximal: Vec<Vec<String>>,
     /// One of [`STOPS`] where the description stopped before R was exhausted
-    /// (schema /10, M1e2 S1e2.2.25): `k_s` and `k_c` are then the lower
+    /// (schema /10): `k_s` and `k_c` are then the lower
     /// bounds it reached, `minimal` the line members it certified, and
     /// `maximal` is empty, not known (W8's rows past the oracle's limit).
     #[serde(default)]
@@ -1044,20 +1039,20 @@ pub struct Right {
     pub reading: Option<String>,
     /// From what the answer was derived.
     pub derived: String,
-    /// The answer is a **refusal** — M1e2 S1e2.2.5, *forbid*: the program is
+    /// The answer is a **refusal** — *forbid*: the program is
     /// refused before any question about a commitment, a load error's exit.
     /// A refusal states no verdict, `k` or model.
     #[serde(default)]
     pub refused: bool,
-    /// The answer is that a command's run **answers** (schema /16, M1f
-    /// T1f.5.5.13, W40, W41): a program another command answers is answered
+    /// The answer is that a command's run **answers** (schema /16, W40,
+    /// W41): a program another command answers is answered
     /// by this one too, exit 0, which [`Now::answered`] records. It states no
     /// verdict, `k` or model.
     #[serde(default)]
     pub answered: bool,
     /// The answer is that a run whose stdout is closed ends by this signal,
-    /// with nothing on stderr (schema /21, M1f S1f.5.25, W75): [`SIGPIPE`],
-    /// as `cat` ends, the user's ruling on Q-M1f.68 (b). It states no
+    /// with nothing on stderr (schema /21, W75): [`SIGPIPE`],
+    /// as `cat` ends (Q-M1f.68). It states no
     /// refusal, verdict, `k` or model. Compared with [`Now::signal`].
     #[serde(default)]
     pub signal: Option<i32>,
@@ -1070,50 +1065,50 @@ pub struct Right {
     #[serde(default)]
     pub core: Option<Vec<String>>,
     /// Each member of `N` and the core the definitions give it — schema `/8`
-    /// (M1e2 S1e2.2.19, W19): the facts its refutation rests on, which name
+    /// (W19): the facts its refutation rests on, which name
     /// the commitment.
     #[serde(default)]
     pub nogoods: Option<Vec<Nogood>>,
     /// The status the right read-out reports beside root's core — schema
-    /// `/9` (M1e2 S1e2.2.23, W23): `cut-` and the caps a search stopped at,
+    /// `/9` (W23): `cut-` and the caps a search stopped at,
     /// where a cut core says so.
     #[serde(default)]
     pub core_status: Option<String>,
     /// How many members of R hold a stale fact under the reading — schema
-    /// `/10` (M1e2 S1e2.2.25): compared with [`Now::stale`]'s `in_r`.
+    /// `/10`: compared with [`Now::stale`]'s `in_r`.
     #[serde(default)]
     pub stale: Option<u64>,
     /// How many members of R the right read-out meets and counts without
-    /// listing them — schema `/11` (M1e2 S1e2.2.26, W27): a line mode past
+    /// listing them — schema `/11` (W27): a line mode past
     /// `--region-limit` lists the line members it certifies, [`Self::k`] of
     /// them, which make no verdict, so a right that states `others` states
     /// `k` and `exhausted` and no verdict, and `exhausted = false` where it
     /// meets a member it does not list. A minimal question where ∅ is in R
-    /// is decided at root, past the limit too (M1f S1f.5.6), so it meets
+    /// is decided at root, past the limit too, so it meets
     /// none: `others = 0` and `exhausted = true`. Compared with
     /// [`Now::others`].
     #[serde(default)]
     pub others: Option<u64>,
     /// The outcome the program's solve-form claim should come to — schema
-    /// `/12` (M1e2 S1e2.3.8, W28). Compared with [`Now::claim`].
+    /// `/12` (W28). Compared with [`Now::claim`].
     #[serde(default)]
     pub claim: Option<String>,
     /// Each query's classes and claim outcome, in program order, as the
-    /// definitions give them — schema `/12` (M1e2 S1e2.3.8, W28). Compared
+    /// definitions give them — schema `/12` (W28). Compared
     /// with [`Now::queries`].
     #[serde(default)]
     pub queries: Option<Vec<QueryAnswer>>,
     /// The rules root's `refuted by` should name, in order — schema `/14`
-    /// (M1f S1f.5.15, W36). Compared with [`Now::refuted_by`].
+    /// (W36). Compared with [`Now::refuted_by`].
     #[serde(default)]
     pub refuted_by: Option<Vec<String>>,
     /// The sentences the read-out should print for a query's `:goal-text`,
-    /// in order, each template's references filled — schema `/15` (M1f
-    /// S1f.5.5, W37). Compared with [`Now::goal_text`].
+    /// in order, each template's references filled — schema `/15` (W37).
+    /// Compared with [`Now::goal_text`].
     #[serde(default)]
     pub goal_text: Option<Vec<String>>,
     /// The lines the run should print, each found by its label — schema
-    /// `/17` (M1f S1f.5.6, W42). Compared with [`Now::printed`].
+    /// `/17` (W42). Compared with [`Now::printed`].
     #[serde(default)]
     pub printed: Option<Vec<Printed>>,
     #[serde(default)]
@@ -1131,8 +1126,7 @@ pub struct Right {
     #[serde(default)]
     pub qualifier: Option<String>,
     /// The relations the right read-out names outside the universe, sorted —
-    /// M1e2 S1e2.2.8, Q-M1e2.3 (a): R is over H, and the read-out says what
-    /// H leaves out.
+    /// Q-M1e2.3: R is over H, and the read-out says what H leaves out.
     #[serde(default)]
     pub outside: Option<Vec<String>>,
     /// The answer under each other reading of a contested case.
@@ -1196,8 +1190,8 @@ impl Register {
             {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
             }
-            // Since M1f S1f.5.6 a line decided at root meets no member it does
-            // not list, and is exhausted: `others = 0`.
+            // A line decided at root meets no member it does not list, and
+            // is exhausted: `others = 0`.
             if let Some(o) = r.right.others
                 && (r.right.verdict.is_some()
                     || r.right.exhausted.is_none()
@@ -1209,12 +1203,12 @@ impl Register {
                         .to_string(),
                 ));
             }
-            // What `now` records beside `right` (schema /13, M1f S1f.5.0):
+            // What `now` records beside `right` (schema /13):
             // a field `right` states, or, where `right` is a refusal, the core
             // and the claims today's answer reports, which the refusal
             // replaces (W29's).
             let recorded = |now: bool, right: bool| now == right || (r.right.refused && !right);
-            // The claims and the classes (schema /12, M1e2 S1e2.3.8).
+            // The claims and the classes (schema /12).
             if !recorded(r.now.claim.is_some(), r.right.claim.is_some())
                 || !recorded(r.now.queries.is_some(), r.right.queries.is_some())
             {
@@ -1238,21 +1232,21 @@ impl Register {
                     )));
                 }
             }
-            // The rules `refuted by` names (schema /14, M1f S1f.5.15).
+            // The rules `refuted by` names (schema /14).
             if r.now.refuted_by.is_some() != r.right.refuted_by.is_some() {
                 out.push(at(
                     "[now] records what `refuted by` names exactly when [right] states it"
                         .to_string(),
                 ));
             }
-            // A query's sentences (schema /15, M1f S1f.5.5).
+            // A query's sentences (schema /15).
             if r.now.goal_text.is_some() != r.right.goal_text.is_some() {
                 out.push(at(
                     "[now] records a query's sentences exactly when [right] states them"
                         .to_string(),
                 ));
             }
-            // The lines printed (schema /17, M1f S1f.5.6): exactly when
+            // The lines printed (schema /17): exactly when
             // [right] states them, label for label, each read where it can be.
             if r.now.printed.is_some() != r.right.printed.is_some() {
                 out.push(at(
@@ -1294,7 +1288,7 @@ impl Register {
                     "[right] states what `refuted by` names beside its core".to_string()
                 ));
             }
-            // The members met and not listed (schema /11, M1e2 S1e2.2.26).
+            // The members met and not listed (schema /11).
             if r.now.others.is_some() != r.right.others.is_some() {
                 out.push(at(
                     "[now] records the members it does not list exactly when [right] states them"
@@ -1422,7 +1416,7 @@ impl Register {
                         .to_string(),
                 ));
             }
-            // A run whose stdout is closed (schema /21, M1f S1f.5.25, W75): its
+            // A run whose stdout is closed (schema /21, W75): its
             // answer is how it ended, a signal or a panic, and a right that is
             // a signal is such a run's.
             if let Some(o) = &r.now.stdout
@@ -1488,7 +1482,7 @@ impl Register {
             {
                 out.push(at("[now] core is sorted".to_string()));
             }
-            // The core's status (schema /9, M1e2 S1e2.2.23).
+            // The core's status (schema /9).
             if r.now.core_status.is_some() != r.right.core_status.is_some() {
                 out.push(at(
                     "[now] records a core's status exactly when [right] states one".to_string(),
@@ -1509,7 +1503,7 @@ impl Register {
                     )));
                 }
             }
-            // Stale members of R (schema /10, M1e2 S1e2.2.25).
+            // Stale members of R (schema /10).
             if r.now.stale.is_some() != r.right.stale.is_some() {
                 out.push(at(
                     "[now] records stale members of R exactly when [right] states them".to_string(),
@@ -1521,7 +1515,7 @@ impl Register {
                         .to_string(),
                 ));
             }
-            // N's cores (schema /8, M1e2 S1e2.2.19).
+            // N's cores (schema /8).
             if r.now.nogoods.is_some() != r.right.nogoods.is_some() {
                 out.push(at(
                     "[now] records N's cores exactly when [right] states them".to_string(),
@@ -1697,8 +1691,7 @@ impl Register {
                         ));
                     }
                 } else if a.error.is_some() {
-                    // A run that ended in an error before it answered (M1e2
-                    // S1e2.2.18).
+                    // A run that ended in an error before it answered.
                     if a.exit != 1
                         || !a.verdict.is_empty()
                         || a.k != 0
@@ -1778,14 +1771,14 @@ impl Register {
                 }
             }
             match &r.region {
-                // A refused row states no region (M1e2 S1e2.2.5), nor one
-                // whose run ends in an error (S1e2.2.18): checked above. A
+                // A refused row states no region, nor one
+                // whose run ends in an error: checked above. A
                 // command's row states its witness's (schema /16).
                 None if (r.now.refused.is_some() || r.now.error.is_some())
                     && !r.now.is_command() => {}
                 // A program refused at load has no R, so a row whose right
                 // answer is a refusal states none, whatever its `now` runs
-                // (schema /20, M1f S1f.5.21, W62 to W65).
+                // (schema /20, W62 to W65).
                 None if r.right.refused => {}
                 None => out.push(format!("{}: no [case.region]", r.id)),
                 Some(g) => {
@@ -1848,10 +1841,9 @@ impl Register {
         // The rows of one case describe one case: one title, and one owner
         // per status, since a fixed row names the stage that fixed it and an
         // open one the stage that will. A row the review re-opened can move
-        // to another stage (M1e2 S1e2.1.7: `W1/alive-empty-interlayer`'s
-        // refusal was S1e2.2.5's while W1's fixed rows stayed S1e2.1a.5's),
-        // and so fixed rows share an owner per commit that fixed them (M1e2
-        // S1e2.2.5 fixed two W1 rows beside the switch's twelve).
+        // to another stage (`W1/alive-empty-interlayer`'s refusal has another
+        // owner than W1's other fixed rows), and so fixed rows share an owner
+        // per commit that fixed them.
         let mut by_case = std::collections::BTreeMap::<&str, &str>::new();
         let mut by_status = std::collections::BTreeMap::<(&str, &str, Option<&str>), &str>::new();
         for r in &self.case {
@@ -1910,8 +1902,8 @@ mod tests {
         );
     }
 
-    /// **A core's status is a word the engine writes** (schema /9, M1e2
-    /// S1e2.2.23): `none`, `within-budget`, or `cut-` and the caps in
+    /// **A core's status is a word the engine writes** (schema /9): `none`,
+    /// `within-budget`, or `cut-` and the caps in
     /// `explain::Cut`'s order.
     #[test]
     fn a_core_status_is_a_word_the_engine_writes() {
@@ -1961,7 +1953,7 @@ mod tests {
         assert!(bad.is_empty(), "{}", bad.join("\n"));
     }
 
-    /// **What fixed a row, and what gave its `wrong`**, M1e2 S1e2.1a.7: a
+    /// **What fixed a row, and what gave its `wrong`**: a
     /// fixed row states `[case.fixed]` and no other row does, and a recorded
     /// answer a region run gave says how it was taken.
     #[test]
@@ -1971,8 +1963,8 @@ mod tests {
         let mut row = reg
             .case
             .iter()
-            // The first *fixed* one: W10/alt-cap-shared, filed open by M1e2
-            // S1e2.2.11, comes before W13 and is a region run's too.
+            // The first *fixed* one: W10/alt-cap-shared, filed open, comes
+            // before W13 and is a region run's too.
             .find(|r| r.wrong.by.as_deref() == Some("region") && r.status == "fixed")
             .expect("W13's wrong is a region run's")
             .clone();
@@ -1997,20 +1989,18 @@ mod tests {
         assert!(defects(&row).iter().any(|d| d.contains("is not one of")));
     }
 
-    /// **An open row is open by the method**, M1e2 S1e2.1c.5's step 2,
-    /// questions (i) and (iii), held without a run. A row whose `[case.now]`
+    /// **An open row is open by the method**, held without a run. A row whose
+    /// `[case.now]`
     /// answers its `right` on every field the register records closes by
     /// construction, unless its reading is contested: a contested row keeps
-    /// its stage and its question, and the revisit (S1e2.1.7) reads it. A
+    /// its stage and its question, and the revisit reads it. A
     /// `right` that states what `[case.now]` does not record keeps the row
     /// open on that field, and the row's run shows it, not this comparison:
     /// a refusal, which states no verdict; a qualifier the register
-    /// does not record as `outside` (M1e2 S1e2.2.8); or facts over
+    /// does not record as `outside`; or facts over
     /// a relation no candidate is over, since a state's `(model …)` names H's
-    /// relations only (W7's `noted`, W8's `p`). Taken 2026-11-03: no row
-    /// closed, and W12 is the one contested row (i) holds for. A core has
-    /// been recorded since M1e2 S1e2.2.11 ([`Now::core`]), so it is compared,
-    /// not exempt.
+    /// relations only (W7's `noted`, W8's `p`). A core is recorded
+    /// ([`Now::core`]), so it is compared, not exempt.
     #[test]
     fn an_open_row_is_open_by_the_method() {
         let mut bad = Vec::new();
@@ -2032,7 +2022,7 @@ mod tests {
                 (beyond_h, "facts over a relation no candidate is over"),
                 // An answer under a permuted interner, which a run of the
                 // binary cannot be asked for: `id_order_invariance` holds
-                // that half (M1e2 S1e2.2.12, `W11/fork-delta-order`).
+                // that half (`W11/fork-delta-order`).
                 (
                     r.wrong.id_order.is_some(),
                     "an answer under a permuted interner",
@@ -2054,8 +2044,8 @@ mod tests {
         assert!(bad.is_empty(), "{}", bad.join("\n"));
     }
 
-    /// **A deferred row**, M1e2 S1e2.1.7: the user deferred W8's reading to
-    /// F21 on 2026-11-03, so its rows stay open and the followup owns them.
+    /// **A deferred row**: W8's reading waits on a followup, so its rows stay
+    /// open and the followup owns them.
     /// A `deferred` review on a row that is not open, or that a stage owns, is
     /// a defect.
     #[test]
@@ -2079,27 +2069,26 @@ mod tests {
         row.status = "not-wrong".to_string();
         assert!(defects(&row).iter().any(|d| d.contains("`deferred`")));
         assert!(is_followup("F21") && !is_followup("F") && !is_followup("S1e2.2.6"));
-        // Another milestone's stage may own a deferred row (schema /10, M1e2
-        // S1e2.2.25: W26's, S1f.10.6); a stage of M1e2's may not.
+        // A stage of another plan may own a deferred row (schema /10, W26's);
+        // a stage of the register's own milestone may not.
         assert!(is_other_milestone_stage("S1f.10.6"));
         for bad in ["S1e2.2.6", "S1f.10", "F21", "S1f.10.x", "S.1.2"] {
             assert!(!is_other_milestone_stage(bad), "{bad}");
         }
     }
 
-    /// A row as it stood before M1f S1f.5.5's swap (T1f.5.5.4) restated it,
-    /// for the schema tests whose live example the swap turned into a refusal:
-    /// W28's solve-form claim (its classes until M1f S1f.5.7's W54 and W55
-    /// stated a query's again, live), and W29's core and query beside a
-    /// refusal, each recorded at `977829bf` with its long strings cut; and W37's open
-    /// `now`, recorded at `410a3388`, before M1f S1f.5.4's T1f.5.4.5 fixed it.
+    /// A row as it was recorded before it was restated, for the schema tests
+    /// whose live example is a refusal: W28's solve-form claim (W54's and
+    /// W55's rows state a query's classes live), and W29's core and query
+    /// beside a refusal, each recorded at `977829bf` with its long strings
+    /// cut; and W37's open `now`, recorded at `410a3388`, before it was fixed.
     fn as_it_stood(row: &str) -> Row {
         let reg: Register = toml::from_str(&format!("schema = \"{REGISTER_SCHEMA}\"\n{row}"))
             .expect("the row as it stood parses");
         reg.case.into_iter().next().expect("one row")
     }
 
-    /// `W28/claim-int-name-solve` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    /// `W28/claim-int-name-solve` as recorded at `977829bf`, before it was restated as a refusal.
     const W28_CLAIM_SOLVE: &str = r##"
 [[case]]
 id       = "W28/claim-int-name-solve"
@@ -2153,7 +2142,7 @@ models    = [
 claim     = "failed"
 "##;
 
-    /// `W29/core-two-ways` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    /// `W29/core-two-ways` as recorded at `977829bf`, before it was restated as a refusal.
     const W29_CORE: &str = r##"
 [[case]]
 id       = "W29/core-two-ways"
@@ -2213,7 +2202,7 @@ models    = []
 core      = ["(big b0)", "(big2 b0)", "(big3 b0)", "(c x)"]
 "##;
 
-    /// `W29/goal-arg` as it stood at `977829bf`, before S1f.5.5's swap restated it.
+    /// `W29/goal-arg` as recorded at `977829bf`, before it was restated as a refusal.
     const W29_GOAL: &str = r##"
 [[case]]
 id       = "W29/goal-arg"
@@ -2263,13 +2252,12 @@ models    = [
 queries   = [{ classes = 1, expect = "none" }]
 "##;
 
-    /// **A run that ends in an error**, schema /7 (M1e2 S1e2.2.18):
+    /// **A run that ends in an error**, schema /7:
     /// `W18/str-in-assert`'s `wrong` ended in one before it answered, exit 1,
     /// and states no verdict. Such a `now` lists nothing, states no region, is
     /// not also a refusal, and is never `right`, so a fixed row whose `now`
-    /// ends in an error is a defect. The row's `right` is a refusal since M1f
-    /// S1f.5.5's swap (S1f.5.2's ruling: a string is no value), so the error is
-    /// held against a refusal; it was held against an answer until then.
+    /// ends in an error is a defect. The row's `right` is a refusal (a string
+    /// is no value), so the error is held against a refusal.
     #[test]
     fn a_run_that_ends_in_an_error_is_no_answer() {
         let row = register()
@@ -2353,7 +2341,7 @@ queries   = [{ classes = 1, expect = "none" }]
         );
     }
 
-    /// **N's cores**, schema /8 (M1e2 S1e2.2.19, W19): a `now` records them
+    /// **N's cores**, schema /8 (W19): a `now` records them
     /// exactly where `right` states them, sorted, and a fixed row's must be
     /// `right`'s, set for set.
     #[test]
@@ -2404,7 +2392,7 @@ queries   = [{ classes = 1, expect = "none" }]
         );
     }
 
-    /// **Schema /10** (M1e2 S1e2.2.25): a stale count is compared where
+    /// **Schema /10**: a stale count is compared where
     /// `right` states one, a stopped region states no maximal line, and a
     /// `now` that compares N on the sets it lists lists some.
     #[test]
@@ -2468,11 +2456,11 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(defects(&r).iter().any(|d| d.contains("nogoods_listed")));
     }
 
-    /// **Schema /11** (M1e2 S1e2.2.26, W27): the members a line mode past the
+    /// **Schema /11** (W27): the members a line mode past the
     /// limit meets and does not list are compared where `right` states them,
-    /// and such a right states `k`, `exhausted = false` and no verdict; since
-    /// M1f S1f.5.6 a minimal line decided at root meets none, `others = 0`,
-    /// and is exhausted.
+    /// and such a right states `k`, `exhausted = false` and no verdict; a
+    /// minimal line decided at root meets none, `others = 0`, and is
+    /// exhausted.
     #[test]
     fn a_line_past_the_limit_counts_what_it_does_not_list() {
         let reg = register();
@@ -2523,7 +2511,7 @@ queries   = [{ classes = 1, expect = "none" }]
         let mut r = row;
         r.right.exhausted = Some(true);
         assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
-        // A line decided at root meets none, and is exhausted (M1f S1f.5.6);
+        // A line decided at root meets none, and is exhausted;
         // it still makes no verdict.
         assert!(defects(&decided).is_empty(), "{:?}", defects(&decided));
         assert_eq!(decided.right.exhausted, Some(true));
@@ -2532,7 +2520,7 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(defects(&r).iter().any(|d| d.contains("no verdict")));
     }
 
-    /// **Schema /12** (M1e2 S1e2.3.8, W28): a claim's outcome and a query's
+    /// **Schema /12** (W28): a claim's outcome and a query's
     /// classes are compared where `right` states them, recorded on both sides
     /// or neither, in the summary's words; and a run whose claim is `failed`
     /// refutes it, which is an exit 1.
@@ -2546,10 +2534,9 @@ queries   = [{ classes = 1, expect = "none" }]
             }
             .defects()
         };
-        // No live row states a solve form's claim since M1f S1f.5.5's swap
-        // restated W28's to the refusal, so that row as it stood; a query's
-        // classes are stated by W54's and W55's rows since M1f S1f.5.7
-        // (T1f.5.7.1), and the first is used.
+        // No live row states a solve form's claim, W28's being a refusal, so
+        // that row as it was recorded; a query's classes are stated by W54's
+        // and W55's rows, and the first is used.
         assert!(
             reg.case.iter().all(|r| r.right.claim.is_none()),
             "a live row states a claim again: use it"
@@ -2615,7 +2602,7 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(!r.now.refutes());
     }
 
-    /// **Schema /13** (M1f S1f.5.0, W29 and W32): beside a `right` that is a
+    /// **Schema /13** (W29 and W32): beside a `right` that is a
     /// refusal, `now` may record the core and the claims today's answer
     /// reports, which the refusal replaces; anywhere else a core or a claim is
     /// recorded exactly where `right` states one, and a refused `now` records
@@ -2630,9 +2617,9 @@ queries   = [{ classes = 1, expect = "none" }]
             }
             .defects()
         };
-        // No live row records an answer beside a refusal since M1f S1f.5.5's
-        // swap fixed W29's and W32's, each `now` the parse refusal, so the rows
-        // as they stood.
+        // No live row records an answer beside a refusal, W29's and W32's
+        // being fixed, each `now` the parse refusal, so the rows as they were
+        // recorded.
         assert!(
             reg.case
                 .iter()
@@ -2679,8 +2666,8 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(defects(&r).is_empty(), "{:?}", defects(&r));
     }
 
-    /// **What `refuted by` names is an answer**, schema /14 (M1f S1f.5.15,
-    /// W36): the rules root's row names, recorded exactly where `right`
+    /// **What `refuted by` names is an answer**, schema /14 (W36): the rules
+    /// root's row names, recorded exactly where `right`
     /// states them and compared in the order printed. W36's `now` names
     /// `forced, occupied` beside the core whose right names `no-room`, so it
     /// is open by the method; the same `now` naming `no-room` answers it.
@@ -2694,8 +2681,8 @@ queries   = [{ classes = 1, expect = "none" }]
             }
             .defects()
         };
-        // W36's row, open: since M1f S1f.5.9 `W31/empty-match-false`, fixed,
-        // states what its dead root's `refuted by` names too, and answers it.
+        // W36's row, open: `W31/empty-match-false`, fixed, states what its
+        // dead root's `refuted by` names too, and answers it.
         let row = reg
             .case
             .iter()
@@ -2731,8 +2718,8 @@ queries   = [{ classes = 1, expect = "none" }]
         assert!(defects(&r).iter().any(|d| d.contains("beside its core")));
     }
 
-    /// `W37/template-var-star` as it stood at `410a3388`, before M1f S1f.5.4's
-    /// T1f.5.4.5 fixed it: `open`, its `now` the template as written.
+    /// `W37/template-var-star` as recorded at `410a3388`, before it was fixed:
+    /// `open`, its `now` the template as written.
     const W37_OPEN: &str = r##"
 [[case]]
 id       = "W37/template-var-star"
@@ -2789,7 +2776,7 @@ models    = [
 goal_text = ["{?n*} is a q"]
 "##;
 
-    /// **A line a run prints is an answer**, schema /17 (M1f S1f.5.6, W42):
+    /// **A line a run prints is an answer**, schema /17 (W42):
     /// recorded exactly where `right` states lines, the same labels in the
     /// same files, each file one the test reads and each line beginning with
     /// its label; compared whole, so a label glued to its value is another
@@ -2851,7 +2838,7 @@ goal_text = ["{?n*} is a q"]
         }
     }
 
-    /// **A solve's usage refusal exits 2**, schema /19 (M1f S1f.5.12, W43):
+    /// **A solve's usage refusal exits 2**, schema /19 (W43):
     /// `ein solve X.einb --dump-answer DIR` refused the container before the
     /// run while the library answered the program. W43's `wrong` records it,
     /// and a `now` refused the same way is well formed, its region stated; the
@@ -2949,13 +2936,12 @@ goal_text = ["{?n*} is a q"]
         );
     }
 
-    /// **What a query's `:goal-text` prints is an answer**, schema /15 (M1f
-    /// S1f.5.5, W37): the read-out's sentences, recorded exactly where `right`
+    /// **What a query's `:goal-text` prints is an answer**, schema /15 (W37):
+    /// the read-out's sentences, recorded exactly where `right`
     /// states them and compared in the order printed. W37's `now` printed the
     /// template as written where its right fills the reference, so it was open
-    /// by the method (the row as it stood at `410a3388`); the same `now`
-    /// printing the filled sentence answers it, as the live row does since M1f
-    /// S1f.5.4's T1f.5.4.5.
+    /// by the method (the row as recorded at `410a3388`); the same `now`
+    /// printing the filled sentence answers it, as the live row does.
     #[test]
     fn what_a_goal_text_prints_is_an_answer() {
         let reg = register();
@@ -3012,7 +2998,7 @@ goal_text = ["{?n*} is a q"]
     }
 
     /// **A run whose stdout is closed answers by how it ended**, schema /21
-    /// (M1f S1f.5.25, W75): a signal with nothing on stderr, or a panic, exit
+    /// (W75): a signal with nothing on stderr, or a panic, exit
     /// 101, exactly one; such a run is a command's whatever its subcommand;
     /// and a right that is a signal is such a run's, SIGPIPE's.
     #[test]

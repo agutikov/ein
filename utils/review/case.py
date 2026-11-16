@@ -279,7 +279,7 @@ def region_section(r: RunResult, page: Path, row: dict | None = None, heading: s
              + 
              f"`--visited` {dump_link(raw, 'lattice', '`lattice/`', page, main)} `--answer` "
              f"{dump_link(raw, 'answer', '`answer/`', page, main)} "
-             f"([legend]({doc(LEGEND, page)}#region-rendering--the-cube-and-a-region-run)). "
+             f"([legend]({doc(LEGEND, page)}#the-region--ein-render-region)). "
              f"[Every node]({rel(rpage, page)}), by layer, with what the run did there.", ""]
     reg = (row or {}).get("region")
     if cube.get("region") is None:

@@ -12,4 +12,4 @@ and `refuted by` name the facts written and the rules that derived the rest.
 
 **Held by.** The store, `ein_core::kb::Kb`, and its provenance, `ein_core::prov::ProvKind`;
 `ein-infer/tests/naf_semantics.rs`: `matching_does_not_resolve_equality_classes`; `ein-core/src/kb.rs`'s unit test
-`equality_classes_are_copied_and_stay_inert`. The graph's own description: `01_kb.md`.
+`equality_classes_are_copied_and_stay_inert`. The graph's own description: [objects](../../ein/user/syntax-and-semantics/objects.md), [relations](../../ein/user/syntax-and-semantics/relations.md) and [facts](../../ein/user/syntax-and-semantics/facts.md).

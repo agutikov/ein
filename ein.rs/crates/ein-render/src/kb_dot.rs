@@ -234,9 +234,8 @@ fn is_derived(kb: &Kb, terms: &Terms, f: FactId) -> bool {
 }
 
 /// Rule-application meta-facts — a head that names a `Rule` — are suppressed
-/// as meta rather than data; so are `not`-headed facts, whose inner
-/// proposition the loader collapses (an M1 punt, revisited when `Fact.raw`
-/// preserves nested SForm args).
+/// as meta rather than data; so are `not`-headed facts, the stored
+/// negations, which this view does not draw.
 fn suppress(kb: &Kb, terms: &Terms, f: FactId) -> bool {
     let (rel, _) = terms.fact(f);
     kb.program().rules.get(rel).is_some() || rel == terms.kernel.not

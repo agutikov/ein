@@ -2,7 +2,7 @@
 //! read at: one definition.
 //!
 //! Shared by `#[path]`, since a test tree's functions are no crate's:
-//! `corpus_ops` scopes the determinism sweeps by it per commit,
+//! `corpus_ops` scopes the determinism sweeps by it without `EIN_CORPUS_SLOW`,
 //! `ein-infer/examples/pair_layer.rs` its census's tables, and
 //! `ein-infer/tests/structure_invariance.rs` its own sweep.
 
@@ -20,7 +20,7 @@ pub const SWEEP_LIMIT: u32 = 10;
 /// job: the programs whose region routes have more than one node to fan out
 /// and more than one fixpoint to intern into, which is where a job count and
 /// an id order can reach an output past root's. The determinism sweeps run
-/// over these per commit; computed from the program,
+/// over these without `EIN_CORPUS_SLOW`; computed from the program,
 /// never a list. A program that does not load does not search.
 pub fn searches(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> bool {
     let mut opts = explore::Options::new(Mode {

@@ -1,11 +1,9 @@
-//! T1a.10.1.4 and T1a.10.1.2 — **every rendering of every corpus file,
-//! banked, and none of them depending on the order ids were assigned in.**
+//! **Every rendering of every corpus file, banked, and none of them
+//! depending on the order ids were assigned in.**
 //!
-//! Two claims over one pass since M1f S1f.6.39: every (file, op) pair of [`corpus_ops`] is
+//! Two claims over one pass: every (file, op) pair of [`corpus_ops`] is
 //! rendered once in the ordinary id space and digested against the golden,
 //! and the same rendering is the baseline a permuted id space is held to.
-//! `corpus_shapes.rs` made the first pass until then, and this sweep computed
-//! the same bytes again for its baseline (S1f.6.39's E-72).
 //!
 //! ## The golden
 //!
@@ -44,8 +42,9 @@
 //! [`ein_core::intern`](../../ein-core/src/intern.rs) says so —
 //! `Symbol` deliberately has no `Ord`, observable sorts go through
 //! `Interner::rank`, and iterating an `FxHashMap` keyed on one is the thing
-//! `utils/check_hashmap_iteration.py` greps for
-//! ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)).
+//! a static check greps for, each such line carrying its `determinism-ok:`
+//! reason
+//! ([design/determinism-and-order.md § 2.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#23-hash-containers)).
 //! Every one of those claims is falsified by the same experiment: **assign the
 //! ids in a different order and see whether anything moves.**
 //!
@@ -57,8 +56,7 @@
 //! the same code, and the only difference is which integer each name got.
 //! Both runs must produce the same bytes. The shuffled table is a permutation
 //! of *the first run's own* names and facts, the ones its forks derived
-//! among them, so the first run cannot be read off the golden instead
-//! (E-72).
+//! among them, so the first run cannot be read off the golden instead.
 //!
 //! This is strictly stronger than the grep. The grep finds an iteration whose
 //! order *could* reach an output; this finds one that *does*, and it finds the
@@ -67,25 +65,25 @@
 //! order. It is strictly weaker in one direction: it only sees what the
 //! corpus reaches.
 //!
-//! ## Which programs, per commit and in the nightly
+//! ## Which programs
 //!
-//! **Per commit** the golden holds every program **outside `tests/`**, whose programs are each
-//! one stdlib rule's claim and are checked by their claims (`ein test`, the
-//! coverage census, the mutants); and the permutation runs over those of them
-//! that **search**, whose describe saturates more than root
-//! (`corpus_ops::searches`, computed from the program, never a list): where
-//! the region routes fan out and intern what their forks derive. **The
-//! nightly**, `EIN_CORPUS_SLOW=1`, holds every corpus program to both, the
-//! golden's every line, in shards (`EIN_TEST_SHARD=k/n`, `ein_corpus::shard`).
-//! A per-commit run compares the golden's lines of the programs
-//! it reads and leaves the others' to the nightly, and `EIN_BLESS=1` re-banks
-//! the lines it computed and keeps the others; a line whose program is no
-//! corpus file fails every run. Each program is loaded once and every op runs
-//! on a copy (`corpus_ops::Loads`); a permuted run loads afresh,
-//! into its own id space.
+//! **Without `EIN_CORPUS_SLOW`** the golden holds every program **outside
+//! `tests/`**, whose programs are each one stdlib rule's claim and are
+//! checked by their claims (`ein test`, the coverage census, the mutants);
+//! and the permutation runs over those of them that **search**, whose
+//! describe saturates more than root (`corpus_ops::searches`, computed from
+//! the program, never a list): where the region routes fan out and intern
+//! what their forks derive. **`EIN_CORPUS_SLOW=1`** holds every corpus
+//! program to both, the golden's every line, in shards (`EIN_TEST_SHARD=k/n`,
+//! `ein_corpus::shard`). A run without it compares the golden's lines of the
+//! programs it reads and leaves the others' to a run with it, and
+//! `EIN_BLESS=1` re-banks the lines it computed and keeps the others; a line
+//! whose program is no corpus file fails every run. Each program is loaded
+//! once and every op runs on a copy (`corpus_ops::Loads`); a permuted run
+//! loads afresh, into its own id space.
 //!
 //! ```text
-//! cargo test -p ein-render --test id_order_invariance                  # what moved, per commit
+//! cargo test -p ein-render --test id_order_invariance                  # what moved
 //! EIN_BLESS=1 cargo test -p ein-render --test id_order_invariance      # accept it, outside tests/
 //! EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test -p ein-render --test id_order_invariance   # every line
 //! ```
@@ -93,22 +91,19 @@
 //! ## The seam
 //!
 //! `EIN_ID_FILES=<dir>` sweeps every `.ein` under `<dir>` instead of the
-//! corpus, every one permuted and none banked. One caller:
-//! `utils/fuzz_engine.py`, whose third property is *the same program under a
+//! corpus, every one permuted and none banked. Its caller is the engine
+//! fuzzer, whose third property is *the same program under a
 //! permuted interner answers the same way*, **applied to generated input
 //! rather than to the corpus**. The instrument for that is this file and
 //! there is no second copy of it, so the fuzzer writes a batch to a directory
 //! and points this sweep at it. The assertions about the *corpus* rather than
 //! about the engine — the coverage floors and the golden — are skipped under
-//! the override, named as skipped in the summary line. Since M1e2 S1e2.2.12
-//! the claim is that nothing moves, narration included: a resumed fork's
-//! delta was in `FactId` order, which made a dead node's derivations arrive in
-//! interning order, and the floor that asked for *some rendering moved*, the
-//! narration cut's evidence of use, turned over with it.
+//! the override, named as skipped in the summary line. The claim is that
+//! nothing moves, narration included: a resumed fork's delta is in the order
+//! its facts were written, not in `FactId` order, so a dead node's
+//! derivations do not arrive in interning order.
 //!
-//! The per-commit tier runs one permutation; eight are the dev host's,
-//! `./run_tests.sh --dev-host`, since M1f S1f.5.27, the CI nightly's until
-//! then.
+//! A run takes one permutation unless `EIN_ID_SEEDS` asks for more.
 //!
 //! ```text
 //! EIN_ID_SEEDS=8 EIN_CORPUS_SLOW=1 cargo test -p ein-render --test id_order_invariance
@@ -139,8 +134,8 @@ fn seeds() -> Vec<i64> {
     (0..n.max(1) as i64).map(|i| 1 + i * 7919).collect()
 }
 
-/// `EIN_CORPUS_SLOW=1`: the nightly's sweep, every corpus program banked and
-/// permuted; unset, the per-commit one (the module note).
+/// `EIN_CORPUS_SLOW=1`: every corpus program banked and permuted; unset,
+/// the programs outside `tests/` (the module note).
 fn slow_too() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
@@ -155,7 +150,7 @@ struct Sweep {
     permute_all: bool,
 }
 
-/// The file set: per commit every corpus program outside `tests/`, under
+/// The file set: without `EIN_CORPUS_SLOW` every corpus program outside `tests/`, under
 /// `EIN_CORPUS_SLOW=1` every one, either way this run's shard of it; or
 /// `EIN_ID_FILES`'s.
 ///
@@ -215,10 +210,10 @@ enum Outcome {
 /// permutation is built from, and a permuted run per seed, each held to it
 /// through the cut. `None` where the plain run has nothing for the op.
 ///
-/// The plain run is the one the golden digests (M1f S1f.6.39),
+/// The plain run is the one the golden digests,
 /// computed here and not read off the golden as `jobs_invariance`'s baseline
 /// is: the permuted id space is a permutation of *that run's* names and
-/// facts, which no digest holds (S1f.6.39's E-72). `run` is `corpus_ops::run` in the sweep; a test passes
+/// facts, which no digest holds. `run` is `corpus_ops::run` in the sweep; a test passes
 /// one with an id leaked into it
 /// ([`an_id_order_that_reaches_an_output_is_caught`]).
 fn pair(
@@ -316,7 +311,7 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
         );
     }
 
-    // The pairs, on the pool (M1f S1f.6.39 T1f.6.39.4), read back in their
+    // The pairs, on the pool, read back in their
     // order, so every count, the manifest and the first twenty reports are
     // the serial loop's. The plain run on a copy of the program's one load;
     // the permuted ones load into their own id space.
@@ -459,15 +454,13 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
         "the weakest permutation moved {moved} of {permutable} ids — \
          the sweep is comparing a run against itself"
     );
-    // Nothing moves, narration included — M1e2 S1e2.2.12. The cut above was
-    // load-bearing here until a resumed fork's delta stopped being sorted by
-    // `FactId`: a dead node's derivations arrived in interning order, so which
-    // of a fact's equally good derivations a fork recorded first, the rules
-    // `refuted_by` names, and the core a full list leaves, moved with the ids
-    // (158 renderings over the corpus at eight seeds, 2026-11-04). The delta
-    // is in the order the caller wrote it since, and a rendering that moves
-    // at all is the id leak this sweep exists for, whichever side of the cut
-    // it falls on.
+    // Nothing moves, narration included. Were a resumed fork's delta sorted
+    // by `FactId`, a dead node's derivations would arrive in interning order,
+    // so which of a fact's equally good derivations a fork recorded first,
+    // the rules `refuted_by` names, and the core a full list leaves, would
+    // move with the ids. The delta is in the order the caller wrote it, and a
+    // rendering that moves at all is the id leak this sweep exists for,
+    // whichever side of the cut it falls on.
     assert!(
         moved_at_all == 0,
         "{moved_at_all} renderings moved under a permuted id space \
@@ -502,7 +495,7 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
             compared - vacuous
         );
         // **The programs that search are a part of what is banked, and a
-        // real one**: per commit the permutation runs over them,
+        // real one**: without `EIN_CORPUS_SLOW` the permutation runs over them,
         // so a predicate that held of none would leave the id order checked
         // nowhere, and one that held of all would be no reduction.
         if !permute_all {
@@ -547,11 +540,12 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
 ///
 /// The golden holds every corpus program's lines; a run compares those of
 /// the programs it read (`covered`) and leaves the rest to the run that reads
-/// them, the nightly's for `tests/` and the other shards'. A line whose
-/// program is no corpus file is gone, and fails every run. Blessed, the
-/// golden is the run's lines and every other corpus program's lines as they
-/// were, in the corpus's order, so a per-commit bless and a full one write
-/// the same file when nothing outside the per-commit set moved.
+/// them, an `EIN_CORPUS_SLOW=1` run's for `tests/` and the other shards'. A
+/// line whose program is no corpus file is gone, and fails every run.
+/// Blessed, the golden is the run's lines and every other corpus program's
+/// lines as they were, in the corpus's order, so a bless without
+/// `EIN_CORPUS_SLOW` and a full one write the same file when nothing outside
+/// the smaller set moved.
 fn held_to_the_golden(got: &[String], covered: &BTreeSet<String>) -> Option<String> {
     let path = golden_path("ein-render", "corpus_shapes.md5");
     let root = repo_root();
@@ -628,8 +622,8 @@ fn held_to_the_golden(got: &[String], covered: &BTreeSet<String>) -> Option<Stri
     }
     // A corpus program this run does not read still has its lines: a program
     // added under `tests/` is banked by a run that reads it, and is caught
-    // here, per commit, when nothing has. Unsharded runs only, since a shard
-    // leaves the other shards' programs unread.
+    // here, by a run without `EIN_CORPUS_SLOW`, when nothing has. Unsharded
+    // runs only, since a shard leaves the other shards' programs unread.
     if shard::current().is_none() {
         let banked: BTreeSet<String> = kept.iter().map(|l| program(&name(l))).collect();
         for p in corpus.keys() {
@@ -691,7 +685,7 @@ fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
     }
 }
 
-/// **The per-commit sets keep their meaning** (M1f S1f.6.39). `tests/` is a
+/// **The sets a run without `EIN_CORPUS_SLOW` reads keep their meaning**. `tests/` is a
 /// path test, and the corpus has
 /// programs on both sides of it; *searches* holds of a program whose
 /// describe forks and of none whose describe is root alone, a dead root, a
@@ -744,17 +738,17 @@ const SEARCHES: [(&str, bool); 5] = [
     ("examples/broken/bare_top_level_atom.ein", false),
 ];
 
-/// M1e2 S1e2.1.1 — **the register's id-order rows**, whose walk answer was
-/// visible only under a permuted interner (W11).
+/// **The register's id-order rows**, whose wrong answer was visible only
+/// under a permuted interner (W11).
 ///
 /// `corpus/wrong_answers.toml` is otherwise held by
 /// `ein-cli/tests/wrong_answers.rs`, through the binary; a permutation is not
 /// something the binary can be asked for, so a row carrying `wrong.id_order`
-/// has its second half here, where the permutation is. Since M1e2 S1e2.1a.5
-/// the walk op it names is the record of what moved, and what is run is the
-/// row's `[case.now]` question at the same seed: its read-out, and since
-/// S1e2.2.12 every core the run reports (`corpus_ops::core_ops`), the core of a member
-/// of `N` being one the read-out does not print. A **fixed** row's must not
+/// has its second half here, where the permutation is. The op the row names
+/// is the record of what moved, and what is run is the row's `[case.now]`
+/// question at the same seed: its read-out, and every core the run reports
+/// (`corpus_ops::core_ops`), the core of a member of `N` being one the
+/// read-out does not print. A **fixed** row's must not
 /// move by the cut the sweep applies, and an **open** one's must still. The
 /// witnesses are under `corpus/fuzz_findings/` while a row is open, for the
 /// reason this file is: as corpus entries they would fail the sweep above.
@@ -806,8 +800,7 @@ fn the_register_s_id_order_rows_answer_what_they_record() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **An id order that reaches an output is caught** (M1f S1f.6.39, the
-/// stage's probe kept as a test): a run that writes the name holding the
+/// **An id order that reaches an output is caught**: a run that writes the name holding the
 /// first id after the kernel's into its rendering — the shape of a sort that
 /// fell back on `Symbol`'s numeric order — moves the answer under a permuted
 /// id space, and the honest run moves nothing.

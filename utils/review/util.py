@@ -120,10 +120,11 @@ def rebase(text: str, source: str, page: Path) -> str:
     re-aimed so they resolve from `page` instead."""
     def fix(m: re.Match) -> str:
         label, target = m.group(1), m.group(2)
-        if target.startswith(("http://", "https://", "mailto:", "#")):
+        if target.startswith(("http://", "https://", "mailto:")):
             return m.group(0)
         path, _, frag = target.partition("#")
-        dest = os.path.normpath(os.path.join(os.path.dirname(source), path))
+        # An anchor alone is a section of `source` itself, which the page quoting it is not.
+        dest = os.path.normpath(os.path.join(os.path.dirname(source), path)) if path else source
         return f"[{label}]({doc(dest, page)}{'#' + frag if frag else ''})"
     return re.sub(r"\[([^\]]*)\]\(([^)\s]+)\)", fix, text)
 

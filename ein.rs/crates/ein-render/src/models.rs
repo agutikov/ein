@@ -2,31 +2,27 @@
 //! [determining key](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims),
 //! the answer to *print or describe*.
 //!
-//! Five ways to say *"there are 32 models"* were priced on four columns — produce ·
-//! size · exact · read — and the one that won is **(b)**: the smallest set of
-//! slots that tells every model apart, plus the table of the combinations that
-//! occur. On `examples/zebra2-minus-15.ein` that is 4 columns of 23 and 32
-//! rows, 2 506 bytes against the model set's 13 920 fact lines, and it is
-//! *exact*: appending a row to the puzzle and re-solving recovers that model
-//! to the fact, on 30 of the 32 rows without entering a single commitment
-//! ([`representations.md` §4.1](../../../../docs/history/m1d_satisfiability/representations.md)).
+//! The form is the smallest set of slots that tells every model apart, plus
+//! the table of the combinations that occur. On
+//! `examples/zebra2-minus-15.ein` that is 4 columns of 23 and 32 rows, where
+//! the model set is 32 blocks of facts, and it is *exact*: a row's values pick
+//! out its model among those listed, so appending a row to the puzzle and
+//! re-solving recovers that model to the fact.
 //!
 //! **It is a rendering and never a replacement.** `verdict.solutions`,
 //! `--json-summary`, `--events` and `:expect` are untouched by
 //! [`ModelsForm`]; the flag chooses which projection of the same model set
 //! `ein solve` puts on stdout, and the models stay enumerable everywhere a
 //! consumer reads them. When no key is affordable the form *is* the
-//! enumeration — [`KeyOutcome::Unaffordable`], and (e) was a legitimate
-//! winner of the pricing all along. *Affordable* is priced before it is
-//! spent: in memory by [`PAIR_TABLE_BOUND`], since M1e2 S1e2.4.2, and in
-//! search nodes by the two budgets below.
+//! enumeration — [`KeyOutcome::Unaffordable`], itself an exact description
+//! of the set. *Affordable* is priced before it is spent: in memory by
+//! [`PAIR_TABLE_BOUND`], and in search nodes by the two budgets below.
 //!
 //! ## What a decision variable is
 //!
 //! A model set varies in *facts*; a key is a claim about *variables*, so
-//! something has to turn one into the other. Two rules, and they are the
-//! census's (`model_set_census.md`
-//! §1):
+//! something has to turn one into the other. Two rules
+//! ([`satisfiability.md` § 6](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)):
 //!
 //! 1. **Every varying positive atom is a Boolean variable.** A fact is in a
 //!    model or it is not; no declaration needed.
@@ -63,7 +59,7 @@ pub enum ModelsForm {
     List,
     Key,
     /// Each model as the grid a person would draw, where the program licenses
-    /// one — M1e2 S1e2.1.4, [`crate::grid`]. Read by every arm that prints a
+    /// one — [`crate::grid`]. Read by every arm that prints a
     /// state, `Solution` and `Open` included.
     Grid,
 }
@@ -72,20 +68,19 @@ pub enum ModelsForm {
 /// between `--models key` and a hang.
 ///
 /// Finding a *minimum* determining set is a minimum hitting set over the model
-/// pairs, which is NP-hard, and the corpus held the program that shows it:
-/// `examples/branching/06_lookahead_on.ein`, untyped as it was until M1e2
-/// S1e2.2.10, has 42 varying slots and 22 models, its minimum key is **8**,
-/// and proving that no 7-set works costs 12 s in `utils/model_set_census.py`
-/// — forty times its own solve. A representation may not cost more than the
-/// answer it describes, so the search is bounded and the over-budget outcome
-/// is *the enumeration*.
+/// pairs, which is NP-hard. `examples/branching/06_lookahead_on.ein` with
+/// its `co-located` relation untyped shows it: 42 varying slots and 22
+/// models, a minimum key of **8**, and proving that no 7-set works searches
+/// up to `C(42, 7)` candidate sets, far more work than its own solve. A
+/// representation may not cost more than the answer it describes, so the
+/// search is bounded and the over-budget outcome is *the enumeration*.
 ///
-/// Calibrated on the two cases it has to separate: `zebra2-minus-15` (23
+/// Set between the two cases it has to separate: `zebra2-minus-15` (23
 /// slots, 32 models, key size 4) finds its key well inside the budget, and
-/// that untyped `branching/06` exceeds it. S1e2.2.10 typed the fixture, which
-/// leaves one state on its maximal line, and `model_set_report.rs` keeps the
-/// untyped program, written from the fixture with its old signature, as the
-/// case that exceeds the budget: no corpus entry reaches it since.
+/// that untyped `branching/06` exceeds it. The fixture itself is typed, which
+/// leaves one state on its maximal line, so no corpus entry reaches the
+/// budget; `ein-cli/tests/model_set_report.rs` writes the untyped program
+/// from the fixture and holds it to the over-budget outcome.
 const KEY_NODE_BUDGET: u64 = 2_000_000;
 
 /// Beyond this many `C(varying, size)` candidate sets the *count* of minimum
@@ -94,13 +89,12 @@ const KEY_NODE_BUDGET: u64 = 2_000_000;
 /// A second budget rather than the same one, because the two searches answer
 /// different questions: the first finds *a* size, the second enumerates
 /// **every** key of that size to answer *"why these"*
-/// ([`representations.md` §4.2](../../../../docs/history/m1d_satisfiability/representations.md)).
+/// ([`satisfiability.md` § 6](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)).
 /// A form that printed one key without being able to say how many others there
-/// are would be exactly the arbitrary basis S1d.3.2 warned about.
+/// are would present an arbitrary basis as if it were the only one.
 const KEY_TABLE_BUDGET: u128 = 4_000_000;
 
-/// **The memory bound on a pair table, in bytes**: 16 MiB. M1e2
-/// [S1e2.4.2](../../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md).
+/// **The memory bound on a pair table, in bytes**: 16 MiB.
 ///
 /// Two forms compare the listed states **pairwise**, and a table over pairs
 /// is quadratic in them. The key form holds a mask of k(k−1)/2 bits per
@@ -111,15 +105,15 @@ const KEY_TABLE_BUDGET: u128 = 4_000_000;
 /// it either way.
 ///
 /// The node budgets bound how long a search runs, and this bounds what it
-/// holds. Before it, `ein solve examples/saturation/type-exclusivity/pets.ein
-/// --models key` held 8.1 GB for its 11 339 states (2026-11-02), and was
-/// OOM-killed on a machine that had less. The corpus has ten runs, `--maximal` or `--minimal`
-/// over 64 000 states, that no machine could finish.
+/// holds: a table over the 11 339 states of `ein solve
+/// examples/saturation/type-exclusivity/pets.ein --models key` runs to
+/// gigabytes, more than a machine may have, and a `--maximal` or `--minimal`
+/// line over tens of thousands of states to more.
 ///
-/// Calibrated on the corpus (2026-11-02): the largest table it answers is
-/// `colors.ein`'s, 169 states over 8 slots, 88 752 bytes. The smallest it
-/// declines is `constraint-scopes.ein`'s, 4 096 states over 9, 52 MiB, which
-/// the node budget declined anyway.
+/// Set against the corpus by [`key_pair_table_bytes`]: the largest table it
+/// answers is `colors.ein`'s, 169 states over 8 slots, 88 752 bytes. The
+/// smallest it declines is `constraint-scopes.ein`'s, 4 096 states over 9,
+/// 52 MiB, which the node budget declines anyway.
 pub const PAIR_TABLE_BOUND: u64 = 16 << 20;
 
 /// The bytes the key form holds for `k` distinct states over `n` varying
@@ -292,8 +286,7 @@ fn variables(terms: &Terms, models: &[&Kb]) -> Option<Vars> {
     }
 
     // Print order: the Boolean atoms first, then the slots, each group by its
-    // label — the census's order, so a table printed here and a table printed
-    // by `utils/model_set_census.py --form key` have the same columns.
+    // label.
     let mut names: Vec<Var> = Vec::new();
     for (v, _, _) in &var_of {
         if !names.contains(v) {
@@ -439,10 +432,10 @@ fn min_key_size(sep: &[Mask], full: &Mask, bits: usize, budget: &mut Budget) -> 
 /// Every pair, fewest separating variables first and in bit order among
 /// equals: a counting sort on the width, so the order is 4 bytes a pair.
 ///
-/// It replaced a list of the separating variables per pair, sorted (M1e2
-/// S1e2.4.2): the same order, but on `pets.ein`'s 64 280 791 pairs the lists
-/// were 6 833 MiB and the sort's scratch 982 MiB. A node now reads a pair's
-/// variables off the masks, which is `O(variables)` and allocates nothing.
+/// A list of the separating variables per pair, sorted, would give the same
+/// order, but over `pets.ein`'s 64 280 791 pairs the lists alone run to
+/// gigabytes. A node reads a pair's variables off the masks instead, which is
+/// `O(variables)` and allocates nothing.
 fn hardest_first(sep: &[Mask], bits: usize) -> Vec<u32> {
     let width = |b: usize| sep.iter().filter(|m| m.get(b)).count();
     let mut start = vec![0usize; sep.len() + 2];
@@ -640,19 +633,19 @@ pub fn key_table(terms: &Terms, models: &[&Kb], exhausted: bool, indent: &str) -
 /// sentence gives.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum KeyOf {
-    /// The walk's models.
+    /// A set of models, as [`key_table`] is handed one.
     Models,
-    /// States of R (M1e2 T1e2.1a.5.2). `maximal`: every one is on the maximal
+    /// States of R. `maximal`: every one is on the maximal
     /// line, so a row added to the program leaves R that state alone; a
     /// state below the line leaves R the states above it.
     States { maximal: bool },
-    /// The states stdout showed, a part of the `listed` the run listed (M1e2
-    /// S1e2.3.3): the rows tell these apart and no more, since a state not
+    /// The states stdout showed, a part of the `listed` the run listed: the
+    /// rows tell these apart and no more, since a state not
     /// shown may share a row, so the table claims nothing of R.
     Shown { listed: usize },
 }
 
-/// A key table in its three parts — M1e2 S1e2.3.3, so a caller that shares
+/// A key table in its three parts, so a caller that shares
 /// stdout's lines can cut the rows and keep the rest: the lines above the
 /// rows (the size, why these, the column heads), one line per row, and the
 /// guarantee under them.
@@ -701,13 +694,14 @@ fn key_build(
     // variable separates, so the hitting set would be unsatisfiable and the
     // search would spend its whole budget proving it — a wrong answer arrived
     // at expensively, which is the worst of both. This is public, so it cannot
-    // assume its caller deduplicated: `answer.rs` hands it `Verdict::models`,
-    // which is distinct by construction, and an embedder may hand it anything.
+    // assume its caller deduplicated: `ein solve` hands it R's states, which
+    // are distinct by construction, and an embedder may hand it anything.
     //
-    // **Priced before anything quadratic is allocated** (S1e2.4.2): first on
-    // k alone, then on the real n. The first price takes k by sorting the
-    // keys, `O(k log k)`, because `distinct_by_state`'s scan is `O(k²)` and
-    // spent 6.2 s of a 64 514-state line's 8.0 s before it could decline.
+    // **Priced before anything quadratic is allocated**: first on k alone,
+    // then on the real n. The first price takes k by sorting the keys,
+    // `O(k log k)`, because `distinct_by_state`'s scan is `O(k²)`, quadratic
+    // in a line that can hold tens of thousands of states before it could
+    // decline.
     let k = {
         let keys: Vec<Box<[FactId]>> = models
             .iter()
@@ -877,9 +871,8 @@ fn key_build(
     })
 }
 
-/// Greedy wrap at 78 columns, indent included — the width the record prices
-/// (b) at, and the reason it beat the envelope on the *read* column: a form
-/// that does not fit a page is a form nobody reads.
+/// Greedy wrap at 78 columns, indent included: a form that does not fit a
+/// page is a form nobody reads.
 pub fn wrap(text: &str, indent: &str) -> Vec<String> {
     // A grouped number is one word. `group` separates its triples with an
     // ordinary space — the repo's typography everywhere else — so the wrapper
@@ -948,8 +941,8 @@ fn binomial(n: usize, k: usize) -> u128 {
     acc
 }
 
-/// `118 030 185` — thin-space grouping, the census's, so a nine-digit
-/// candidate count reads as one number.
+/// `118 030 185` — digit groups of three, so a nine-digit candidate count
+/// reads as one number ([`wrap`] keeps a group with its number).
 fn group(n: u128) -> String {
     let s = n.to_string();
     let mut out = String::new();
@@ -962,7 +955,7 @@ fn group(n: u128) -> String {
     out
 }
 
-// ── two model sets, compared — M1e2 S1e2.1.4 ─────────────────────────
+// ── two model sets, compared ──────────────────────────────────────────
 
 /// One recorded model that nearly matches an expected one: paired because they
 /// share most of their facts, and printed as the facts that differ — so a
@@ -989,7 +982,7 @@ pub struct SetDiff {
     /// Recorded models nothing expected.
     pub spurious: Vec<usize>,
     /// Why nothing was paired *near*, when the candidates would have passed
-    /// [`PAIR_TABLE_BOUND`] (M1e2 S1e2.4.2). Every unmatched model is then a
+    /// [`PAIR_TABLE_BOUND`]. Every unmatched model is then a
     /// missing or a spurious one, which is what it is.
     pub unpaired: Option<String>,
 }
@@ -1009,11 +1002,11 @@ impl SetDiff {
 /// larger model (and at least one fact), so two unrelated models stay a
 /// *missing* and a *spurious* rather than becoming a misleading pair.
 ///
-/// **The near pairing is priced before it is taken** (M1e2 S1e2.4.2). It
-/// holds every unmatched (got, want) pair within the distance bound, 24 bytes
-/// each, which is quadratic: 889 MiB on `pets.ein`'s 11 339 states against a
-/// file of them each one fact off (2026-11-02). Past [`PAIR_TABLE_BOUND`] it pairs nothing
-/// and says why in [`SetDiff::unpaired`].
+/// **The near pairing is priced before it is taken.** It holds every
+/// unmatched (got, want) pair within the distance bound, 24 bytes each, which
+/// is quadratic in the models: `pets.ein`'s 11 339 states against a file of
+/// them each one fact off hold hundreds of MiB of pairs. Past
+/// [`PAIR_TABLE_BOUND`] it pairs nothing and says why in [`SetDiff::unpaired`].
 pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
     use std::collections::BTreeSet;
     let g: Vec<BTreeSet<&str>> = got
@@ -1102,14 +1095,13 @@ pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
 /// model is compared as its positive facts minus the program's given ones
 /// ([the model](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)).
 ///
-/// **A model's facts are Ein, compared by value** — M1f S1f.5.5, T1f.5.5.6
-/// (S-15, the user's ruling of 2026-11-07). The text between two `model`
+/// **A model's facts are Ein, compared by value.** The text between two `model`
 /// lines is read by the generated parser as facts, so a fact may span lines
 /// and carry a comment, and each is printed by the one printer
 /// ([`Terms::fact_text`]), which prints the states' facts too: `(p  a)`,
-/// `( p a )` and `(p a) ; the fact` are all `(p a)`. Until then each line that
-/// started with `(` was kept as written and compared as text, so the same fact
-/// in another spelling matched nothing, and `(p a` was a fact.
+/// `( p a )` and `(p a) ; the fact` are all `(p a)`. A line is never kept as
+/// written and compared as text, which would let the same fact in another
+/// spelling match nothing and `(p a` pass for a fact.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Expected {
     pub closes: Option<Vec<String>>,
@@ -1183,7 +1175,7 @@ pub fn parse_expected(text: &str, file: &str) -> Result<Expected, ExpectedError>
     // Each model's text, every other line blank, so that a parse error's
     // line and column are the file's; it ends with the model's last line, so
     // that a model's facts end where the next `model` line begins, and the
-    // end of its input is there (M1f S1f.5.5, T1f.5.5.13).
+    // end of its input is there.
     let mut refused: Vec<ein_ir::ParseError> = Vec::new();
     for seg in &segments {
         let end = seg.last().map_or(0, |&i| i + 1);
@@ -1234,7 +1226,7 @@ fn model_facts(
     let mut terms = Terms::new();
     let kb = ein_ir::load(ast, &mut terms, forms, None)
         .map_err(|e| ExpectedError::NotFacts(format!("a model's facts do not load: {e}")))?;
-    // The loader's `(written T)` is no fact the model lists (M1f S1f.6.38).
+    // The loader's `(written T)` is no fact the model lists.
     let mut facts: Vec<String> = kb
         .facts()
         .filter(|&f| terms.fact(f).0 != terms.kernel.written)
@@ -1262,7 +1254,7 @@ fn first_loc(ast: &ein_ir::Ast, node: ein_ir::NodeId) -> Option<ein_ir::Loc> {
 /// A recorded state's facts the way an [`Expected`] compares them: over
 /// `closes` when it names relations, otherwise every positive fact that is not
 /// a given (`:source`) one, not a relation declaration and not the loader's
-/// `(written T)` (M1f S1f.6.38).
+/// `(written T)`.
 pub fn comparable_facts(terms: &Terms, kb: &Kb, closes: Option<&[String]>) -> Vec<String> {
     let mut out: Vec<String> = kb
         .facts()
@@ -1303,8 +1295,7 @@ pub fn diff_lines(
 
 /// [`diff_lines`] as its head (what was compared, the counts, why nothing
 /// paired) and its items, one per matched pair, near pair, missing model and
-/// spurious state — M1e2 S1e2.3.3, so a caller that shares stdout's lines can
-/// cut the items.
+/// spurious state, so a caller that shares stdout's lines can cut the items.
 pub fn diff_parts(
     diff: &SetDiff,
     what: &str,
@@ -1363,10 +1354,10 @@ pub fn diff_parts(
 mod key_tests {
     use super::*;
 
-    /// **The counting sort is the order the stable sort gave** (S1e2.4.2):
-    /// the pairs by how many variables separate them, ties in bit order. The
-    /// list it replaced is rebuilt here, the way `min_key_size` built it, and
-    /// compared on masks where widths repeat, so ties are exercised.
+    /// **The counting sort is the order a stable sort gives**: the pairs by
+    /// how many variables separate them, ties in bit order. A per-pair list of
+    /// the separating variables, stably sorted, is built here and compared on
+    /// masks where widths repeat, so ties are exercised.
     #[test]
     fn the_hardest_first_order_is_the_sorted_lists_order() {
         let bits = 997;
@@ -1477,9 +1468,8 @@ mod diff_tests {
     }
 
     /// The format's own refusals keep their `line n:` sentences; a model's
-    /// facts are the parser's (M1f S1f.5.5, T1f.5.5.6), so `p A` is refused
-    /// where it was a line the format did not know, and a form that is no
-    /// fact is refused with its position.
+    /// facts are the parser's, so `p A` is refused as a line the format does
+    /// not know, and a form that is no fact is refused with its position.
     #[test]
     fn the_file_format_refuses_what_it_cannot_read() {
         let err = |t: &str| parse_expected(t, "<want>").expect_err(t).to_string();

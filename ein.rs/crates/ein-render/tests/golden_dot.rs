@@ -1,12 +1,10 @@
-//! S1a.5.1 acceptance — the checked-in DOT goldens, byte for byte.
+//! The checked-in DOT goldens, byte for byte.
 //!
-//! Fourteen files under `ein.rs/crates/ein-render/tests/golden/dot/` (the
-//! fifteenth, `lattice_render.dot`, went with the walk's lattice DAG at M1e2
-//! S1e2.1c.5), plus
+//! Fourteen files under `ein.rs/crates/ein-render/tests/golden/dot/`, plus
 //! `kb_zebra_unified.dot` beside them, lock the bytes of every DOT emitter.
 //! Each case builds a deterministic input and renders it. One is covered
-//! elsewhere and is not repeated: `kb_provenance_dag` by `derivation_dot.rs`,
-//! which landed with the provenance walk it renders.
+//! elsewhere and is not repeated: `kb_provenance_dag`, by `derivation_dot.rs`,
+//! beside the provenance walk it renders.
 //!
 //! ```text
 //! EIN_BLESS=1 cargo test -p ein-render --test golden_dot   # regenerate them
@@ -59,10 +57,9 @@ const SMALL_KB: &str = concat!(
     "(r a b :source \"(1)\")\n(tern a b c :source \"(2)\")\n",
 );
 
-/// A two-step trace. Since M1f S1f.5.5's swap a step's `:using` lists the
-/// steps and givens it used by name, `(c10)` or `(and s1 c15)` (the paper
-/// grammar's default 8), so `s2`'s, which wrote the fact it used, `(and
-/// (lives-in Norwegian House-1))`, names its step and a given instead.
+/// A two-step trace. A step's `:using` lists the steps and givens it used
+/// by name, `(c10)` or `(and s1 c15)`, so `s2`'s names the step that derived
+/// the fact it used, `s1`, and a given, `c15`.
 const TRACE: &str = concat!(
     "(trace (step s1 :rule from-condition :using (c10) ",
     ":derives (lives-in Norwegian House-1))",
@@ -94,9 +91,7 @@ fn the_per_form_ir_goldens_reproduce() {
             "ir_to_dot_neg",
             "(not (co-located Spaniard Coffee) :source \"(1)\")",
         ),
-        // A fact's `:using` lists its premises, each a fact, since M1f
-        // S1f.5.5's swap (the paper grammar's default 2); it wrote `(c10)`, a
-        // list whose head the loader dropped, until then.
+        // A fact's `:using` lists its premises, each a fact.
         (
             "ir_to_dot_reasoning",
             "(co-located Blue House-2 :rule square-fwd :using ((co-located Norwegian House-1)))",

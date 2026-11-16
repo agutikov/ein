@@ -24,7 +24,7 @@ use ein_ir::{Ast, Node, NodeId};
 use rustc_hash::FxHashSet;
 
 /// Relation names the puzzle solves for — the query goal's relations plus the
-/// `:hrules` targets, which `(solve …)` holds since M1e2 S1e2.1a.4. Empty when
+/// `:hrules` targets, which `(solve …)` holds. Empty when
 /// there is no query.
 fn solution_relations(ast: &Ast, kb: &Kb, terms: &Terms) -> FxHashSet<ein_core::Symbol> {
     let mut rels: FxHashSet<ein_core::Symbol> = FxHashSet::default();

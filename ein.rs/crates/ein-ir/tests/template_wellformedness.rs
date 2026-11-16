@@ -1,6 +1,5 @@
 //! **Every `{?ref}` a corpus or stdlib `:why` writes names something its form
-//! can fill** — M1f S1f.5.14's T1f.5.14.5, the first of the stage's two
-//! checks ([`natural-language.md` § 7](../../../../docs/ein/user/syntax-and-semantics/natural-language.md#7-what-is-checked)).
+//! can fill** ([`natural-language.md` § 7](../../../../docs/ein/user/syntax-and-semantics/natural-language.md#7-what-is-checked)).
 //!
 //! [`ein_core::render_why`] leaves a reference nothing binds as written, so a
 //! typo reaches a user's output as `{?huse}`; the effect is held where a
@@ -19,16 +18,8 @@
 //! And **no `{x}` is a reference with its `?` missing**: a bare `{x}` is a
 //! literal (`syntax.md` § `:why`), so `{1}` in a relation's `:why`, or
 //! `{a}` in a rule's that binds `?a`, prints as written where a reference was
-//! meant. When it was written (2026-11-10, at `5e4ecb93`) it found 66 over
-//! the 893 templates it read: 58 such literals in 45 relation `:why`s over 13
-//! files, `"{1} is a {2}"` for `"{?1} is a {?2}"`, and the rule
-//! `knows-is-mutual`'s `"{?1} knows {?2}, …"` in
-//! `examples/ein-bugs/wrong-answers/uncovered.ein` and its `-knows` twin,
-//! which binds `?a` and `?b`: every one printed as written. The stage file's
-//! § T1f.5.14.5 record names them; each was fixed in the commit that banked
-//! this, and it is a regression guard since. The stage file expected 0 of 544;
-//! a probe that comes back with findings is a result, as one that comes back
-//! clean would have been.
+//! meant: `"{1} is a {2}"` for `"{?1} is a {?2}"`, or `"{?1} knows {?2}, …"`
+//! in a rule that binds `?a` and `?b`, each of which would print as written.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};

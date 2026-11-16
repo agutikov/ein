@@ -1,4 +1,4 @@
-//! Every DOT view of a file, as one text — the S1a.5.1 diff.
+//! Every DOT view of a file, as one text.
 //!
 //! The renderers *do* have a CLI surface, but not all of it and not in every
 //! combination: `ein render` reaches four of them, `kb_dot::to_dot`'s option
@@ -7,13 +7,11 @@
 //! So the renderers are pinned the way the loader and the compiler are: every
 //! view is rendered over the whole corpus and the texts are digested
 //! (`ein-render/tests/golden/corpus_shapes.md5`, which
-//! `ein-render/tests/id_order_invariance.rs` holds every rendering to since
-//! M1f S1f.6.39).
+//! `ein-render/tests/id_order_invariance.rs` holds every rendering to).
 //!
 //! Unlike `plan-shape` or `kb-shape` this invents no rendering of its own.
 //! Every view calls a renderer entry point exactly as a CLI subcommand or the
-//! trace calls it, so what the diff compares is the artefact a user sees —
-//! which is the whole point of the byte gate.
+//! trace calls it, so what the digest compares is the artefact a user sees.
 
 use std::path::Path;
 
@@ -173,11 +171,8 @@ fn saturate(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<(), String> {
     Ok(())
 }
 
-/// Render one view of a parsed program.
-///
-/// It took a `jobs` count until M1e2 S1e2.1c.5, for the three views that ran
-/// the walk (`lattice`, `lattice-full`, `slice`); they went with the walk,
-/// and no view left runs a search.
+/// Render one view of a parsed program. No view runs a search, so none
+/// takes a job count.
 pub fn dot_shape(
     ast: &mut Ast,
     terms: &mut Terms,
@@ -194,8 +189,8 @@ pub fn dot_shape(
 
 /// One of [`KB_VIEWS`] over a KB already loaded from the file, by the same
 /// renderer call as [`dot_shape`]'s, so the same text: for a caller that
-/// loads a program once and draws each view from a copy of the load (M1f
-/// S1f.6.39, the corpus sweeps' one load a program).
+/// loads a program once and draws each view from a copy of the load, as the
+/// corpus sweeps do.
 pub fn kb_dot_shape(
     ast: &Ast,
     terms: &mut Terms,

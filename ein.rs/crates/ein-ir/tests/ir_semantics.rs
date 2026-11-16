@@ -1,7 +1,5 @@
-//! The IR contract — what ein-lang *is*, written down as answers.
-//!
-//! Stage **T1a.10.2.2** of
-//! [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests).
+//! The IR contract — what ein-lang *is*, written down as answers
+//! ([design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)).
 //! Three surfaces: the grammar (what is accepted and what is rejected),
 //! lowering (the node a text becomes, and the `dump ∘ parse` round trip), and
 //! macros (expansion, and the names a macro may not take).
@@ -123,8 +121,8 @@ fn load_macro_names(text: &str) -> Result<Vec<String>, String> {
 /// separate branch in `substitute`, and forgetting it produces a form still
 /// headed `?R` that compiles into a pattern matching nothing — a silent
 /// never-fires, not a crash. This is the relation-polymorphic shape the
-/// `imply` / `converse` family needs (S1.8.A7); no stdlib macro uses it yet,
-/// which is exactly why it needs a test of its own.
+/// `imply` / `converse` family needs; no stdlib macro uses it, which is
+/// exactly why it needs a test of its own.
 #[test]
 fn a_macro_parameter_in_head_position_is_substituted() {
     let (ast, m) = expanded_match(
@@ -161,34 +159,22 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `reserved-macro-names-beyond-absent` — the loader's shadowing check covers
 /// the whole kernel vocabulary, not just `absent`.
 ///
-/// [`ein_core::RESERVED`] is **eleven** names, and four of them (`not` / `and`
-/// / `or` / `neq`) cannot even be *written* as a macro name — the grammar stops
-/// them first (see `a_reserved_keyword_cannot_be_written_as_a_macro_name`).
-/// The other seven are ordinary SYMBOLs, so nothing but this check stands
-/// between a puzzle and a macro called `eq` silently shadowing the equality
-/// predicate in every rule that mentions it. The second half of the test is
-/// what makes the claim "exactly": `forall` and `unknown` are kernel *sugar*
-/// and look just as reserved, but they are stdlib macros — a puzzle must be
-/// free to define its own.
-///
-/// **`open` is the fifth, and it was missing here until M1e S1e.2.1.** M1d
-/// S1d.2.3 made it the verdict atom and added it to `RESERVED`; this list, the
-/// sentence above it (which still called `open` a stdlib macro) and
-/// `imports.rs`'s second copy of `RESERVED` all stayed at eight. The last of
-/// those three was [`CO-H2`], a shipped defect; the first two were only ever
-/// this comment being wrong, which is the same drift one layer out.
-///
-/// **The kernel's two dunders are the sixth and the seventh since M1f
-/// S1f.5.5's T1f.5.5.11** (Q-M1f.7 (b)): `__closed__` and `__symmetric__` are
-/// used, never bound.
-///
-/// **Since M1f S1f.5.5's swap (T1f.5.5.4) only the two dunders reach this
-/// check**: the other five are words a position gives a meaning to, tokens of
-/// their own that no declarator takes (the paper grammar's default 1), so a
-/// macro named one is refused at the parse, at the name, as `not` is (the next
-/// test).
-///
-/// [`CO-H2`]: ../../../../docs/history/m1e_review_processing/review/correctness/high.md
+/// [`ein_core::RESERVED`] is **twelve** names, and four of them (`not` /
+/// `and` / `or` / `neq`) cannot even be *written* as a macro name — the
+/// grammar stops them first (see
+/// `a_reserved_keyword_cannot_be_written_as_a_macro_name`). Five more,
+/// `absent`, `eq`, `false`, `open` (the verdict atom) and `relation`, are
+/// words a position gives a meaning to, tokens of their own that no
+/// declarator takes, so a macro named one is refused at the parse, at the
+/// name, as `not` is. The kernel's two dunders, `__closed__` and
+/// `__symmetric__`, are used and never bound (Q-M1f.7): they are names the
+/// grammar reads, so nothing but this check stands between a puzzle and a
+/// macro called `__closed__` silently shadowing the kernel's marker in every
+/// rule that mentions it. (`written`, the twelfth, is the loader's, and no
+/// declarator binds it either.) The last half of the test is what makes the
+/// claim "exactly": `forall` and `unknown` are kernel *sugar* and look just
+/// as reserved, but they are stdlib macros — a puzzle must be free to define
+/// its own.
 #[test]
 fn the_kernel_names_a_macro_may_not_shadow() {
     for name in ["absent", "eq", "false", "open", "relation"] {
@@ -221,10 +207,9 @@ fn the_kernel_names_a_macro_may_not_shadow() {
 /// The two failures look alike from a terminal and are not alike at all:
 /// `not` / `and` / `or` / `neq` are never a name, so the `macro` production
 /// never gets one and the form is not ein-lang; `__closed__` is a perfectly
-/// good name that the loader then refuses. Until M1f S1f.5.5's swap
-/// (T1f.5.5.4) the contrast was `absent`, which the hand-written lexer read as
-/// a `SYMBOL`; since, `absent` is a token of its own that no declarator takes,
-/// refused at the parse too (the test above), and the contrast is a dunder.
+/// good name that the loader then refuses. `absent` is no contrast: it is a
+/// token of its own that no declarator takes, refused at the parse too (the
+/// test above).
 #[test]
 fn a_reserved_keyword_cannot_be_written_as_a_macro_name() {
     for name in ["not", "and", "or", "neq"] {
@@ -271,8 +256,8 @@ fn equality_lowers_to_an_eq_headed_form() {
 
     // Inside a `:match`, identically — `=` is a `list_head`, not only a fact
     // head. No corpus file contains this, which is why it is written down.
-    // Its conclusion is `(q ?a)` since M1f S1f.5.5's swap, which refuses a
-    // variable as a whole conclusion (G-14, Q-M1f.1 (b)); it was `?a`.
+    // Its conclusion is `(q ?a)`: the grammar refuses a variable as a whole
+    // conclusion (`ein.y`'s `Assert`).
     let rule = one_form(
         &mut ast,
         "(rule eq-elim () :match (= ?a ?b) :assert (q ?a))",
@@ -297,7 +282,7 @@ fn equality_lowers_to_an_eq_headed_form() {
 
 /// `wildcard-and-var-head-lowering` (and the `_` half of
 /// `eq-and-wildcard-heads-parse-in-a-pattern`) — `?r` in head position stays
-/// a `Var`, and until M1f S1f.5.5's swap `_` stayed a `Wildcard`.
+/// a `Var`, and `_` is refused.
 ///
 /// The tempting lowering is an atom named `?r`, and it would even print back
 /// the same. It is wrong where it matters: the compiler asks "is this head
@@ -305,10 +290,9 @@ fn equality_lowers_to_an_eq_headed_form() {
 /// them, and an atom answers yes. So the assertion is on the node *kind*, and
 /// the round trip is the second half — a head that survives lowering but not
 /// `dump ∘ parse` breaks `--dump-states` and every trace that re-reads its own
-/// output. **Since the swap (T1f.5.5.4) a bare `_` is refused at the parse in
-/// every position** (S1f.5.1's ruling), so its half is the refusal, at the
-/// `_`; and the conclusion is `(q ?a)`, a variable being no whole conclusion
-/// (G-14, Q-M1f.1 (b)).
+/// output. **A bare `_` is refused at the parse in every position**
+/// (Q-M1e2.22), so its half is the refusal, at the `_`; and the conclusion is
+/// `(q ?a)`, a variable being no whole conclusion (`ein.y`'s `Assert`).
 #[test]
 fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
     let e = rejected("(rule any () :match (_ ?a ?b) :assert (q ?a))");
@@ -348,17 +332,14 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// decorated name, and has no reason to. Those are precisely the shapes where
 /// a dumper regression hides, because nothing else would ever print one.
 ///
-/// **Restated in the final grammar at M1f S1f.5.5's swap (T1f.5.5.4)**: each
-/// case the grammar refuses was rewritten to the shape it stands for, so the
-/// table still covers what the language admits. A `:where` guard is a
-/// positional premise (S1f.5.11); a conclusion is a fact, never `?a` or a name
-/// (G-14); a trace takes `step` alone (default 8); `_` is gone (S1f.5.1); a
-/// fact's `:using` lists facts (default 2); `:priority` is gone (S1f.5.15), so
-/// the three kw-pair orderings are `:match`, `:assert` and `:why`, and its
-/// integers are names of digits; `(not (not …))`, which nothing wrote, is
-/// refused (`not` negates a fact); a rule named `eq` is refused (`eq` is no
-/// declarator's name); and the name rule's decorators and a macro's `:why` are
-/// added.
+/// **Each case is written in the shape the grammar admits**, so the table
+/// covers what the language admits: a guard is a positional premise
+/// (Q-M1e2.28); a conclusion is a fact, never `?a` or a name; a trace takes
+/// `step` alone; `_` is no name (Q-M1e2.22); a fact's `:using` lists facts; a
+/// rule's three kw-pair orderings are `:match`, `:assert` and `:why`; a run
+/// of digits is a name (Q-M1e2.24); `(not (not …))` is refused (`not`
+/// negates a fact); a rule named `eq` is refused (`eq` is no declarator's
+/// name); and the name rule's decorators and a macro's `:why` are written.
 ///
 /// The property is stronger than "it prints something readable": `Loc` lives
 /// in a side table specifically so structural equality cannot see a position,
@@ -412,7 +393,7 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         "(co-located Blue House-2 :rule square-fwd :using ((c10) (c15)))",
         // Names of digits: zero, negative, wide, a leading zero.
         "(r 0 -0 -7 9999 007 7)",
-        // A former declarator head is now an ordinary relation.
+        // A word that names no form is an ordinary relation.
         "(instance Norwegian Nationality)",
         "(rule i () :match (instance ?a ?T) :assert (q ?a) :why \"i\")",
         "(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))",
@@ -425,7 +406,7 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         "(rel $x [y] {z} it's a/b <= !x @x ~ %)",
         // The empty conclusion.
         "(rule e () :match () :assert () :why \"e\")",
-        // The reserved verdict atom, both forms (M1d S1d.2.3). Nullary like
+        // The reserved verdict atom, both forms. Nullary like
         // `(false)`, and the unary one names the incomplete relation.
         "(rule owes () :match (absent (r a b)) :assert (open) :why \"o\")",
         "(rule owed (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
@@ -466,8 +447,7 @@ fn every_syntactic_shape_survives_dump_then_parse() {
 /// never a name, so they cannot even fall through to a generic fact — and the
 /// error lands on the reserved word itself, at column 2, which is the
 /// diagnostic a puzzle author sees when they try to write a conjunction as a
-/// fact. Since M1f S1f.5.5's swap (T1f.5.5.4) it names the word, where it said
-/// `unexpected input`, and its one repair deletes it.
+/// fact. It names the word, and its one repair deletes it.
 #[test]
 fn and_or_and_neq_are_not_top_level_facts_but_not_is() {
     for (src, word) in [
@@ -502,13 +482,11 @@ fn and_or_and_neq_are_not_top_level_facts_but_not_is() {
 /// worse, a `(neq ?a)` buried in a `:match` would have to be found by a walk
 /// nobody writes. Pinning it in the grammar makes both a position in the file.
 ///
-/// Since M1f S1f.5.5's swap (T1f.5.5.4) `not` negates a fact, so `(not a b)`
-/// is refused at the bare `a` (the paper grammar's default 3; until then at
-/// the `b`, column 8), and a fact's keyword pairs are its provenance, so
-/// `(not A :k 1)`, which this test accepted as the boundary case, is refused
-/// at the `A`; the boundary is `(not (a) :source "s")`. `(neq Norwegian)` at
-/// the top level is refused at `neq`, which no fact takes, and the guard in a
-/// `:match` is positional, its `:where` gone (S1f.5.11).
+/// `not` negates a fact, so `(not a b)` is refused at the bare `a`, and a
+/// fact's keyword pairs are its provenance, so `(not A :k 1)` is refused at
+/// the `A`; the boundary is `(not (a) :source "s")`. `(neq Norwegian)` at the
+/// top level is refused at `neq`, which no fact takes, and the guard in a
+/// `:match` is positional, with no `:where` (Q-M1e2.28).
 #[test]
 fn not_is_unary_and_neq_is_binary_by_grammar() {
     for (src, line, col) in [
@@ -570,10 +548,10 @@ fn the_top_level_admits_only_parenthesised_forms() {
 /// would silently swallow the *next* keyword and the form would still parse,
 /// one kw-pair short — the worst kind of typo, because the file still loads.
 ///
-/// Since M1f S1f.5.5's swap (T1f.5.5.4) each form takes a fixed set of
-/// keywords (S1f.5.11), so the legal contrast is a fact's provenance pair,
-/// `(foo bar :source "baz")`, where until then it was `(foo :bar baz)`, which
-/// is refused at `:bar`; and the third rejection's conclusion is `(q a)`.
+/// Each form takes a fixed set of keywords (Q-M1e2.28), so the legal
+/// contrast is a fact's provenance pair, `(foo bar :source "baz")`, while
+/// `(foo :bar baz)` is refused at `:bar`; and the third rejection's
+/// conclusion is `(q a)`.
 #[test]
 fn a_keyword_is_never_a_value_nor_a_head() {
     for src in [
@@ -656,14 +634,12 @@ fn the_import_declarator_needs_a_module_symbol() {
 /// query needs at least one kw-pair.
 ///
 /// `(rule x ())` is the interesting case: it is a syntactically complete
-/// declaration of a rule that does nothing. Until M1f S1f.5.5's swap
-/// (T1f.5.5.4) `kw_pair+` refused it at the grammar; since, the grammar takes
-/// a rule's clauses as a list a form may leave empty, and the loader, which
-/// says which clause is missing, refuses it (T9's attribution: *the loader
-/// asks for `:match` and `:assert`*). The contrast case is `(config)`, whose
-/// kw-pairs are `*` — an empty config block legitimately means "all
-/// defaults". A name is no premise or conclusion since the swap, so the
-/// accepted rules write `(a)` and `(b)`.
+/// declaration of a rule that does nothing. The grammar takes a rule's
+/// clauses as a list a form may leave empty, and the loader, which says which
+/// clause is missing, refuses it: *the loader asks for `:match` and
+/// `:assert`*. The contrast case is `(config)`, whose kw-pairs are `*` — an
+/// empty config block legitimately means "all defaults". A name is no premise
+/// or conclusion, so the accepted rules write `(a)` and `(b)`.
 #[test]
 fn a_rule_needs_params_and_a_query_needs_a_kw_pair() {
     for src in [
@@ -703,12 +679,10 @@ fn a_rule_needs_params_and_a_query_needs_a_kw_pair() {
 /// wanted — `step` is a perfectly good relation name for a puzzle about
 /// staircases.
 ///
-/// Since M1f S1f.5.5's swap (T1f.5.5.4) a trace takes `step` alone, with its
-/// five keywords (the paper grammar's default 8): `branch-open`,
+/// A trace takes `step` alone, with its five keywords: `branch-open`,
 /// `contradiction`, `branch-close` and `symmetry-class`, which no engine
-/// output has written since the walk went, are names, refused as an event,
-/// and their keyword pairs at the top level as any keyword a fact does not
-/// take (S1f.5.11).
+/// output writes, are names, refused as an event, and their keyword pairs at
+/// the top level as any keyword a fact does not take (Q-M1e2.28).
 #[test]
 fn trace_events_are_shape_pinned_only_inside_a_trace() {
     rejected("(trace (foo s1 :rule x))");
@@ -737,17 +711,17 @@ fn trace_events_are_shape_pinned_only_inside_a_trace() {
 /// everything outside it is a fact with unchecked arity.
 ///
 /// "Detect facts by *not* being reserved" is the whole flat-top-level design,
-/// and it is falsifiable in two directions. Outward: an unknown head, a former
-/// wrapper (`ontology`), a former declarator (`a-priori`, `instance`) all
-/// parse, at any arity — arity belongs to the loader, which can say which
+/// and it is falsifiable in two directions. Outward: an unknown head, and
+/// words that look like a form's but name none (`ontology`, `a-priori`,
+/// `instance`), all parse, at any arity — arity belongs to the loader, which can say which
 /// relation was declared with what signature. Inward: each of the seven
 /// words that are never a name cannot be a fact head at all, so `(query a b
 /// c)` is a syntax error rather than a fact named `query`. `relation` is the
 /// documented exception — it is a name wherever a name goes, so rules can
 /// match `(relation ?R ?A ?B)` — and it is the one word in the set that `(w a
-/// b c)` accepts. Since M1f S1f.5.5's swap (T1f.5.5.4) a fact takes no keyword
-/// but its provenance's (S1f.5.11), so the former wrapper's case is
-/// `(ontology bar)`, where it was `(ontology :foo bar)`, refused at `:foo`.
+/// b c)` accepts. A fact takes no keyword but its provenance's (Q-M1e2.28),
+/// so `(ontology bar)` is a fact and `(ontology :foo bar)` is refused at
+/// `:foo`.
 #[test]
 fn any_head_outside_the_declarator_set_is_a_generic_fact() {
     let mut ast = Ast::new();
@@ -786,19 +760,16 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
 /// `the-documented-ambiguities` — the seventy-eight cases where the reading
 /// is not obvious, with the reading itself written down.
 ///
-/// Until M1f S1f.5.5's swap (T1f.5.5.4) the hand-written parser read these by
-/// backtracking, every terminal on offer at every position. Since, the parser
-/// is generated from S1f.5.5's grammar and the table records what it reads,
-/// case for case: the cases stay, as the record of where the reading is not
-/// obvious, and each answer is the one the rulings give. A reserved word is a
-/// whole token, so `(rulex A)`, `(rule-x A)` and `(rule.x A)` are facts named
-/// as written (the name rule overrides Q-M1e2.17 (i)(a), where the word before
-/// `-` or `.` was the keyword); a variable, a string or `_` in a fact, a
+/// The parser is generated from the grammar, and the table records what it
+/// reads, case for case: the cases are the places where the reading is not
+/// obvious, and each answer is the one the decisions give. A reserved word is
+/// a whole token, so `(rulex A)`, `(rule-x A)` and `(rule.x A)` are facts
+/// named as written (Q-M1e2.17); a variable, a string or `_` in a fact, a
 /// keyword pair a fact does not take, and `()` or a parameter list where a
-/// fact's argument goes are refused (S1f.5.2, S1f.5.11, S1f.5.1, the paper
-/// grammar's default 7); a run of digits, a range and `_x` are names, printed
-/// as written (S1f.5.4); `=` is a name, so `(= a b c)` is a fact; `not` negates
-/// a fact; a trace takes `step` alone (default 8); a name is no premise and
+/// fact's argument goes are refused (Q-M1e2.23, Q-M1e2.28, Q-M1e2.22); a run
+/// of digits, a range and `_x` are names, printed as written (Q-M1e2.24);
+/// `=` is a name, so `(= a b c)` is a fact; `not` negates
+/// a fact; a trace takes `step` alone; a name is no premise and
 /// no macro body; and a block comment never closed is no token.
 ///
 /// Asserting the **compact dump** rather than mere acceptance is what makes

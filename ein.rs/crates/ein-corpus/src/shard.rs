@@ -1,7 +1,6 @@
-//! **The nightly's shards** — M1f S1f.6.39 T1f.6.39.7: a nightly step that
-//! takes more than five minutes at the runner's four threads is split into
-//! parallel nightly jobs, each a shard of it, so that every step stays inside
-//! the nightly's five minutes a step and nothing leaves CI.
+//! **A sweep's shards**: a sweep too long for one job is split into
+//! parallel jobs, each a shard of it, which together do what the whole sweep
+//! does.
 //!
 //! `EIN_TEST_SHARD=k/n`, `1 ≤ k ≤ n`, makes a run shard `k` of `n`. A sweep
 //! that is sharded keeps the programs [`assign`] deals to its shard, through
@@ -11,7 +10,7 @@
 //! than a sweep runs whole in one shard, [`whole_in`]. Unset, a run is the
 //! whole run, and a value that is not a shard is a panic, not the whole run,
 //! as `EIN_TEST_JOBS` is: a mistyped shard that ran everything would be a
-//! nightly job doing another's work with nothing to say so.
+//! job doing another's work with nothing to say so.
 //!
 //! **How the programs are dealt.** In the order the pool starts them (the
 //! heavy lane first, then the programs with a long unit, then by the

@@ -1,10 +1,10 @@
-//! **The corpus sweeps' worker pool** — M1f S1f.6.39 T1f.6.39.4.
+//! **The corpus sweeps' worker pool.**
 //!
 //! Cargo runs the test binaries one after another, and inside one the
 //! harness runs the test *functions* in parallel; but a sweep over the corpus
-//! is one `#[test]` with a loop, so until S1f.6.39 the gate kept one of this
-//! machine's 32 hardware threads busy for most of its hour. A sweep hands its
-//! loop here instead: its work is a list of **units** — a (program, output)
+//! is one `#[test]` with a loop, which on its own keeps one hardware thread
+//! busy however many the machine has. A sweep hands its loop here instead:
+//! its work is a list of **units** — a (program, output)
 //! pair, or a program, or a CLI cell — and [`map`] runs them on
 //! [`jobs`] workers and returns their results **in the units' order**.
 //!
@@ -25,13 +25,13 @@
 //!   (`install_hook`).
 //!
 //! **The count** is `EIN_TEST_JOBS` (default [`DEFAULT_JOBS`]), never more
-//! than the machine's threads: a GitHub runner has four. Every pool in a
+//! than the machine's threads. Every pool in a
 //! process shares it — two sweeps of one binary that the harness runs at
 //! once run at most [`jobs`] units between them — and a unit that calls
 //! [`map`] runs its own units inline, so nothing waits on a permit it holds.
 //!
-//! **The heavy lane.** A program on [`HEAVY`], the corpus programs T1 measured
-//! at the largest peak resident memory, runs at most [`heavy_jobs`] units at
+//! **The heavy lane.** A program on [`HEAVY`], the corpus programs with the
+//! largest peak resident memory, runs at most [`heavy_jobs`] units at
 //! a time, so the pool's peak stays under the bound written beside the list.
 //! Units are started heaviest first, then the programs on [`LONG`], then by
 //! the manifest's `cost_ms`, so the last unit to finish is not a long one
@@ -39,8 +39,8 @@
 //!
 //! **The instrument.** `EIN_TEST_UNITS=<file>` appends one line per unit,
 //! `sweep  program  output  ms  peak_kb`, sorted, after each map: what each
-//! unit cost, which is how a sweep's cost per (program, output) is read
-//! (S1f.6.39 § T1). The peak is taken at `EIN_TEST_JOBS=1` only, where one
+//! unit cost, which is how a sweep's cost per (program, output) is read.
+//! The peak is taken at `EIN_TEST_JOBS=1` only, where one
 //! unit runs at a time: the process's peak resident set is reset before the
 //! unit (`/proc/self/clear_refs`) and read after it (`VmHWM`), less the
 //! resident set the unit started from, so it is the unit's own growth over
@@ -54,35 +54,31 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Condvar, Mutex, OnceLock};
 use std::time::Instant;
 
-/// The worker count when `EIN_TEST_JOBS` is unset: half this machine's 32
-/// threads, all its P-core threads (S1f.6.39 T1's measurements), and over
-/// the runner's four, so the cap below is what binds there.
+/// The worker count when `EIN_TEST_JOBS` is unset: the performance-core
+/// threads of a 32-thread machine, half its threads; on a machine with fewer
+/// threads, the cap to the machine's threads is what binds.
 pub const DEFAULT_JOBS: usize = 16;
 
 /// **The programs that run in the heavy lane**, repo-relative: the corpus
-/// programs whose peak resident memory S1f.6.39's T1 measured at 256 MB or
-/// more (2026-11-15, the record's § T1).
+/// programs whose peak resident memory is 256 MB or more.
 ///
 /// Through the CLI, `ein solve FILE` at the default region budget and `ein
-/// oracle FILE`, each process's `ru_maxrss` by `os.wait4`
-/// (`build/s1f.6.39/cli_rss.py`): `send_more_money` 529 MB and `04_open`
-/// 266 MB, every other program 187 MB or less. In-process, every unit of
-/// `corpus_shapes` (the golden's sweep until S1f.6.39) at `EIN_TEST_JOBS=1`
-/// under `EIN_TEST_UNITS` left the whole
-/// test process under 272 MB. So the bound is loose: four of these at once
-/// and twelve of the next-heaviest come to under 5 GB, against the 24 GB the
-/// pool is held to (the record's per-binary peaks, `utils/gate_times.py`).
-/// A program not on the list that grows past the line is not refused; it is
-/// the record that goes stale.
+/// oracle FILE`, each process's `ru_maxrss`: `send_more_money` 529 MB and
+/// `04_open` 266 MB, every other program 187 MB or less. In-process, every
+/// unit of the shape golden's sweep at `EIN_TEST_JOBS=1` under
+/// `EIN_TEST_UNITS` left the whole test process under 272 MB. So the bound is
+/// loose: four of these at once and twelve of the next-heaviest come to under
+/// 5 GB. A program not on the list that grows past the line is not refused;
+/// it is the list that goes stale.
 pub const HEAVY: &[&str] = &[
     "examples/beyond_arith/send_more_money.ein",
     "examples/features/04_open.ein",
 ];
 
 /// **The programs whose units start first**, repo-relative: those with a unit
-/// of 5 s or more at `EIN_TEST_JOBS=1` in a pooled sweep (S1f.6.39's T1,
-/// `EIN_TEST_UNITS` over the whole workspace at the gate profile,
-/// 2026-11-15). A sweep's wall clock is at least its longest unit, and a long
+/// of 5 s or more at `EIN_TEST_JOBS=1` in a pooled sweep (`EIN_TEST_UNITS`
+/// over the whole workspace's tests at `--profile gate`). A sweep's wall
+/// clock is at least its longest unit, and a long
 /// one started last adds itself to the rest; the manifest's `cost_ms`, the
 /// order after these, is measured on the declared CLI runs alone and misses
 /// most of them. Starting order reaches no result.
@@ -249,8 +245,8 @@ fn cost_of(program: &str) -> u64 {
 /// **The order the pool starts units in**, as indices into `programs` (each
 /// a unit's program): the [`HEAVY`] programs first, then the [`LONG`] ones,
 /// then by the manifest's `cost_ms`, longest first, then in the list's own
-/// order. No result reads it; `crate::shard` deals programs to the nightly's
-/// shards in it, so the long ones are spread first.
+/// order. No result reads it; `crate::shard` deals programs to the shards in
+/// it, so the long ones are spread first.
 pub fn start_order(programs: &[String]) -> Vec<usize> {
     let mut order: Vec<usize> = (0..programs.len()).collect();
     order.sort_by_key(|&i| {

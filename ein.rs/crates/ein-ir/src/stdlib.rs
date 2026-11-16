@@ -1,9 +1,9 @@
 //! Where `std.*` comes from
-//! (M1a S1a.0.3, [design/shared-assets.md](../../../../docs/ein/ein.rs/design/shared-assets.md)).
+//! ([design/shared-assets.md](../../../../docs/ein/ein.rs/design/shared-assets.md)).
 //!
 //! The stdlib is checked in **once**, at repo-root `stdlib/`, and everything
-//! reads those bytes. It is not test data: 1 231 lines of ein-lang across
-//! seven modules, three of which `zebra2.ein` imports from. A second copy
+//! reads those bytes. It is not test data: it is the library programs import
+//! (`zebra2.ein` imports `std.algebra` and `std.bijection`). A second copy
 //! would let two runs disagree because the *programs* differ.
 //!
 //! Two sources behind one trait, resolved in three steps:
@@ -25,8 +25,8 @@ use std::path::{Path, PathBuf};
 
 /// Identifies a directory as the stdlib. *Presence* is what the walk tests,
 /// because a directory called `stdlib/` proves nothing on its own; the
-/// content is checked by `tests::the_embedded_copy_matches_the_manifest`,
-/// and written by `utils/stdlib_manifest.py --write`, which is the half no
+/// content is checked by `tests::the_embedded_copy_matches_the_manifest`.
+/// The manifest is generated and not edited by hand, which is the half no
 /// test can do (a test that rewrote the file it checks would check nothing).
 pub const MARKER: &str = "MANIFEST.sha256";
 
@@ -65,14 +65,12 @@ impl Source {
     /// Why this source cannot be a stdlib — `None` when it can.
     ///
     /// **Only `$EIN_STDLIB` can answer anything but `None`**, and that
-    /// asymmetry is the finding (M1e
-    /// [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
-    /// `EH-M2`). The checkout walk *requires* [`MARKER`] — the marker exists
-    /// precisely because a directory called `stdlib/` proves nothing — and the
-    /// embedded copy is checked against the manifest at build time by
-    /// `tests::the_embedded_copy_matches_the_manifest`. The
-    /// highest-precedence source was the one that skipped the proof: an
-    /// override was taken on faith, and a typo or a stale tree surfaced as
+    /// asymmetry is why this exists. The checkout walk *requires* [`MARKER`] —
+    /// the marker exists precisely because a directory called `stdlib/` proves
+    /// nothing — and the embedded copy is checked against the manifest by
+    /// `tests::the_embedded_copy_matches_the_manifest`. Without this the
+    /// highest-precedence source would be the one that skips the proof: an
+    /// override taken on faith turns a typo or a stale tree into
     /// *"module not found at &lt;path&gt;/algebra.ein"* — a true sentence that
     /// names the module and never mentions the variable that chose the
     /// directory.
@@ -122,7 +120,7 @@ impl Source {
     /// (`algebra.ein`, `math/decimal-arith.ein`), sorted. Sorted because the
     /// caller may report them and iteration order must not reach an observable
     /// ([design/determinism-and-order.md](../../../../docs/ein/ein.rs/design/determinism-and-order.md)).
-    /// At any depth because `std.math.x` is `math/x.ein` (M1f S1f.6.31): a
+    /// At any depth because `std.math.x` is `math/x.ein`: a
     /// list of one directory would leave such a module out of the check that
     /// reads this, in silence. Read by tests; no command lists the stdlib.
     pub fn modules(&self) -> Vec<String> {
@@ -193,12 +191,10 @@ pub fn resolve(from: &Path) -> Source {
 ///
 /// The three tiers as a **pure function**, so a test can drive each of them
 /// without writing to the process environment — which, in a `#[test]` running
-/// as one thread of a shared binary, is a write every other test can see. The
-/// tier tests used to be guarded on `EIN_STDLIB` being unset and returned
-/// early when it was not; a check that answers *nothing* when the harness is
-/// configured one way is [TE-M1](../../../../docs/history/m1e_review_processing/README.md#s1e36--tests-medium)'s
-/// shape, and M1e S1e.3.5 removed it here rather than leave two of the three
-/// tiers conditionally unchecked.
+/// as one thread of a shared binary, is a write every other test can see. A
+/// tier test guarded on `EIN_STDLIB` being unset would answer *nothing* when
+/// the harness sets it; driven through this function, each of the three tiers
+/// is checked whatever the environment holds.
 pub fn resolve_with(from: &Path, over: Option<PathBuf>) -> Source {
     if let Some(over) = over {
         return Source::Override(over);
@@ -260,9 +256,9 @@ mod tests {
     }
 
     /// The checkout's modules, at any depth, are the manifest's, and some are
-    /// under a subdirectory (M1f S1f.6.31, T1f.6.31.7). `std.math.x` is
-    /// `math/x.ein`; before that stage both readers listed one directory, so a
-    /// module there was embedded and checked by nothing.
+    /// under a subdirectory. `std.math.x` is `math/x.ein`; a reader that listed
+    /// one directory would leave a module there embedded and checked by
+    /// nothing.
     #[test]
     fn the_checkout_has_no_module_the_manifest_does_not_list() {
         let root = crate_dir().join("../../../stdlib");
@@ -282,9 +278,8 @@ mod tests {
 
     /// **Tier 2 — the checkout walk**, driven with the override absent.
     ///
-    /// Unconditional since M1e S1e.3.5: it used to `return` when
-    /// `EIN_STDLIB` was set, which made it a test that answered nothing under
-    /// exactly the configuration the review believed the harness used.
+    /// Unconditional: the override is passed as absent rather than read, so
+    /// the test answers whether or not `EIN_STDLIB` is set.
     #[test]
     fn a_checkout_wins_over_the_embedded_copy() {
         match resolve_with(&crate_dir(), None) {
@@ -302,8 +297,8 @@ mod tests {
         // A bare `stdlib/` with no marker, and every ancestor of `temp_dir`
         // above it — on a machine where `/tmp` sits inside a checkout the walk
         // would find *that* marker, so the claim is asserted as the rule
-        // rather than as the outcome. Under `./run_tests.sh` it does: the
-        // gate's `TMPDIR` is in `build/` (M1e2 S1e2.3.5).
+        // rather than as the outcome. A test run whose `TMPDIR` is inside the
+        // checkout is such a machine.
         match resolve_with(&tmp, None) {
             Source::Embedded => {}
             Source::Checkout(p) => assert!(
@@ -317,11 +312,10 @@ mod tests {
 
     /// **Tier 1 — the override**, and the three answers it can give.
     ///
-    /// M1e S1e.3.5, `EH-M2`. The override was taken on faith: the *checkout*
-    /// walk requires the marker and the highest-precedence source did not, so
-    /// a typo surfaced as "module not found at <typo>/algebra.ein" — a
-    /// sentence that names the module and never the variable that chose the
-    /// directory.
+    /// The *checkout* walk requires the marker, and so does the
+    /// highest-precedence source: taken on faith, a typo would surface as
+    /// "module not found at <typo>/algebra.ein" — a sentence that names the
+    /// module and never the variable that chose the directory.
     #[test]
     fn an_override_has_to_prove_itself() {
         let root = crate_dir().join("../../../stdlib");

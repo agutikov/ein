@@ -133,7 +133,7 @@ entry. The whole run takes some ten minutes; `--quick` is the first two tables.
 
 ## T4 record, 2026-11-11: the page, and where the time goes
 
-[`stdlib/README.md` § What a program pays](../../../stdlib/README.md#what-a-program-pays-the-tables-the-parse-the-calculation)
+[`stdlib/README.md` § What a program pays](../../../utils/censuses/arith-cost.md#what-a-program-pays-the-tables-the-parse-the-calculation)
 is the script's output of 2026-11-11 and what it says. The coordinator's first measurement, re-taken:
 
 | | the first measurement, addition alone | re-taken, the whole theory |

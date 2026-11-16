@@ -1,8 +1,5 @@
-//! `ein render region DIR` — the cube drawn, with a region run on it.
-//! M1e2 [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)
-//! drew the cube and the walk; since
-//! [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)
-//! the run is a region run's (`--visited`, `--answer`). The legend is
+//! `ein render region DIR` — the cube drawn, with a region run on it
+//! (`--visited`, `--answer`). The legend is
 //! [`rendering.md` § Region rendering](../../../../docs/ein/user/reference/rendering.md#the-region--ein-render-region).
 //!
 //! **The nodes are the pure cube**: every subset `C` of the root candidates
@@ -23,8 +20,9 @@
 //! reached, magenta: spurious, the run against the cube, or an unsound
 //! exclusion), and **edges** are classed by the statuses at their two ends.
 //!
-//! Four views ([`View`]), because a cube has `2ⁿ` nodes. The cutoffs are
-//! measured, and the stage file says on what.
+//! Four views ([`View`]), because a cube has `2ⁿ` nodes: the whole cube up
+//! to [`FULL_MAX_N`], *R and its border* up to [`BORDER_MAX_NODES`] nodes,
+//! past that the lines, and the table at any `n`.
 
 use std::fmt::Write as _;
 
@@ -118,7 +116,7 @@ pub fn render(doc: &RegionDoc, run: &RunDoc, view: View) -> String {
 // ── which nodes ─────────────────────────────────────────────────────
 
 /// ` (1 site): status exercised · no stale fact` — what the title says of a
-/// flagged program, as the read-out's warning does (M1e2 S1e2.1b.5).
+/// flagged program, as the read-out's warning does.
 fn flagged_words(doc: &RegionDoc) -> String {
     let n = doc.sites.len();
     let mut s = format!(" ({n} {})", if n == 1 { "site" } else { "sites" });
@@ -1094,7 +1092,7 @@ fn node_link(doc: &RegionDoc, m: u64) -> String {
 /// The table's head names at most this many nodes per list. Every row's
 /// status or run cell carries the same mark, so the rest are a search away;
 /// a run a budget stopped on a 2²⁰ cube that is all R leaves a million nodes
-/// *not reached*, and the head listed every one (S1e2.1a.7's gallery, 2026-11-01).
+/// *not reached*, which a head that listed every one would print.
 pub const HEAD_LIST_MAX: usize = 50;
 
 /// At most [`HEAD_LIST_MAX`] items, and how many there are when more.

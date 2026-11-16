@@ -1,14 +1,10 @@
-//! The parser: S1f.5.5's grammar, `src/ein.l` and `src/ein.y` in grmtools'
-//! notation, compiled by `build.rs` (M1f S1f.5.5). Since the swap,
-//! T1f.5.5.4, it is the only parser: [`crate::parse()`] is [`parse`], and the
-//! hand-written lexer and parser, `lex.rs` and `parse.rs`, are gone.
+//! The parser: the grammar, `src/ein.l` and `src/ein.y` in grmtools'
+//! notation, compiled by `build.rs` (Q-M1e2.25). It is the only parser:
+//! [`crate::parse()`] is [`parse`].
 //!
 //! **What it builds is the tree the loader reads**, node for node and
 //! [`Loc`](crate::Loc) for `Loc`, through one builder call per grammar action
-//! (`grammar/build_ast.rs`): the tree the hand-written parser built, where the
-//! two languages agree, and where they differ, by a ruling of this phase,
-//! each attributed file by file before the swap (T1f.5.5.9,
-//! `plans/…/s1f.5.5_attribution.md`).
+//! (`grammar/build_ast.rs`).
 //!
 //! **A refused file reports every error recovery reaches** ([`ParseError`]),
 //! each with its true position, what was found there, its notes, and at most
@@ -16,9 +12,8 @@
 //! on with, then a count of the rest. Where a place takes a name, the ten
 //! words a position gives a meaning to ([`POSITION_WORDS`]) are names there
 //! too, so the repairs that differ only in which of them, or which name, they
-//! insert are one repair, *Insert a name* (the user's ruling of 2026-11-08 on
-//! the review stop's item 6). Recovery is deterministic: `lrpar` is the
-//! patched copy under `ein.rs/vendor/lrpar` (F11), which ranks equal repairs
+//! insert are one repair, *Insert a name*. Recovery is deterministic: `lrpar`
+//! is the patched copy under `ein.rs/vendor/lrpar`, which ranks equal repairs
 //! in the order its search found them and stops at a count of search steps,
 //! [`RECOVERY_STEP_BUDGET`], rather than at a wall-clock time; a report cut
 //! there says so after its last error. A file that parses pays nothing for
@@ -26,8 +21,9 @@
 //! refused**: the repairs are advice, and no repaired program is loaded.
 //!
 //! **A program nested past [`NESTING_LIMIT`] is refused before it is parsed**
-//! (F10). The LR parser survives any depth, but macro expansion, the loader
-//! and the dumper recurse over the tree it builds.
+//! ([design/ir-frontend.md § 3.4](../../../../docs/ein/ein.rs/design/ir-frontend.md#34-the-nesting-limit)).
+//! The LR parser survives any depth, but macro expansion, the loader and the
+//! dumper recurse over the tree it builds.
 
 use std::fmt;
 use std::sync::OnceLock;
@@ -46,14 +42,13 @@ lrlex::lrlex_mod!("ein.l");
 lrpar::lrpar_mod!("ein.y");
 
 /// How deep a program may nest its parentheses: a top-level form is depth 1.
-/// One past it is refused at the parse, with a line (F10). The stage's
-/// default, 1 000, checked on a debug build in a test thread's stack through
-/// the dumper, macro expansion and the loader
-/// (`ein-ir/tests/generated_parser.rs`).
+/// One past it is refused at the parse, with a line. 1 000 is checked on a
+/// debug build in a test thread's stack through the dumper, macro expansion
+/// and the loader (`ein-ir/tests/generated_parser.rs`).
 pub const NESTING_LIMIT: usize = 1000;
 
 /// The search steps error recovery may take over one parse, `lrpar`'s patched
-/// constant (F11), re-exported so that a report can name it.
+/// constant, re-exported so that a report can name it.
 pub use lrpar::parser::RECOVERY_STEP_BUDGET;
 
 /// How many of an error's ranked repairs a report lists before it counts the
@@ -63,37 +58,32 @@ pub const REPAIRS_SHOWN: usize = 3;
 /// The thirteen words that are never a name: tokens of their own in `ein.l`,
 /// each a declarator, a kernel connective, or `open`, the verdict, which is
 /// written only as a rule's whole `:assert`, `(open)` or `(open ?R)` (`ein.y`'s
-/// `Assert`; M1f S1f.5.23, the user's ruling on Q-M1f.66: a position word
-/// until then). `ein_core::text::LEXER_KEYWORDS` is the printer's copy, which
+/// `Assert`; Q-M1f.66). `ein_core::text::LEXER_KEYWORDS` is the printer's copy, which
 /// `the_reserved_words_are_the_printers` holds to this one.
 pub const RESERVED_WORDS: [&str; 13] = [
     "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
     "import", "open",
 ];
 
-/// The ten words a position gives a meaning to (the paper grammar's
-/// default 1): tokens of their own in `ein.l`, and names wherever a name goes
-/// (`ein.y`'s `Name`), so `(p model)` is a fact and `(relation step T)` a
-/// declaration. `open` was the eleventh until M1f S1f.5.23.
+/// The ten words a position gives a meaning to: tokens of their own in
+/// `ein.l`, and names wherever a name goes (`ein.y`'s `Name`), so `(p model)`
+/// is a fact and `(relation step T)` a declaration.
 pub const POSITION_WORDS: [&str; 10] = [
     "relation", "step", "eq", "absent", "false", "true", "model", "region", "merged", "owing",
 ];
 
-/// What a parse error found at an `open` says (M1f S1f.5.23, the user's
-/// ruling on Q-M1f.66, *"Refuse it"*): the one place it is written, and that
-/// it names nothing.
+/// What a parse error found at an `open` says (Q-M1f.88): the one place it is
+/// written, and that it names nothing.
 pub const OPEN_NOTE: &str = "open is reserved: it is the verdict a rule's :assert states, written as the \
      whole :assert, (open) or (open ?R), and nowhere else, so it names no relation and no value";
 
 /// Where a character that is not ASCII may be written, as the line that
-/// refuses one anywhere else says it (M1f S1f.5.22, the user's ruling of
-/// 2026-11-10, *"Unicode is not allowed anywhere else than inside string
-/// literals, and the error must say it explicitely"*, and Q-M1f.65 (b): a
-/// comment may hold Unicode). [`not_ascii`] writes the line.
+/// refuses one anywhere else says it (Q-M1f.95; a comment may hold any
+/// character, Q-M1f.65). [`not_ascii`] writes the line.
 pub const UNICODE_ALLOWED: &str = "Unicode is allowed only inside a string literal (after :why, :source or :goal-text) or in a comment";
 
 /// The line a character that is not ASCII is refused with, outside a string
-/// literal and a comment (M1f S1f.5.22): the character, quoted, and its code
+/// literal and a comment: the character, quoted, and its code
 /// point, then where Unicode is allowed ([`UNICODE_ALLOWED`]).
 ///
 /// ```text
@@ -142,8 +132,8 @@ pub fn shown_char(c: char) -> String {
 }
 
 /// The `(query …)` keywords that choose the lattice, which belong on
-/// `(solve …)` (M1e2 S1e2.1a.4): a query that writes one is refused at the
-/// keyword, with a note saying where it goes (the paper grammar's default 5).
+/// `(solve …)`, one program having one lattice: a query that writes one is
+/// refused at the keyword, with a note saying where it goes.
 const LATTICE_KEYWORDS: [&str; 4] = [
     ":hrules",
     ":hypothesis-relations",
@@ -161,10 +151,9 @@ pub struct SyntaxError {
     /// What is wrong there: `unexpected …`, a character no token starts
     /// with, or the nesting limit.
     pub what: String,
-    /// What the error means, where a ruling of this phase says more than the
-    /// token does: a bare `_` (S1f.5.1), a string as a value (S1f.5.2), a
-    /// query's lattice keyword and a retired `(config …)` flag (the paper
-    /// grammar's default 5).
+    /// What the error means, where the language says more than the token
+    /// does: a bare `_` (Q-M1e2.22), a string as a value (Q-M1e2.23), a
+    /// query's lattice keyword and a retired `(config …)` flag.
     pub notes: Vec<String>,
     /// The first [`REPAIRS_SHOWN`] repairs recovery ranked, each a sequence of
     /// steps, synonyms folded into one ([`crate::grammar`]); the first is the
@@ -238,15 +227,15 @@ fn lexerdef() -> &'static Def {
 }
 
 thread_local! {
-    /// This thread's copy of [`lexerdef`], which every lex goes through
-    /// (T1f.5.5.12). A clone shares the compiled regular expressions and has
+    /// This thread's copy of [`lexerdef`], which every lex goes through. A
+    /// clone shares the compiled regular expressions and has
     /// its own pool of their search caches, and a pool hands its cache out
     /// cheaply only to the first thread that used it: every other thread
     /// takes a lock per search, and a fresh cache where the lock is taken.
     /// lrlex searches with every rule at every position, so a thread lexing
-    /// through another thread's pool lexed 1.8 times slower alone and 3.1
-    /// times slower beside seven others (the T12 record), which is every
-    /// parse of a test thread but the first.
+    /// through another thread's pool is slower alone and slower still beside
+    /// other threads, and that would be every parse of a test thread but the
+    /// first.
     static LEXER: Def = lexerdef().clone();
 }
 
@@ -306,8 +295,7 @@ fn parse_with(
 /// its own and no `NAME`, and so is a run with a character the rule leaves
 /// out. The printer's statement of it, `ein_core::text::is_symbol`, is held
 /// to this one (`the_printers_symbol_is_the_lexers`), and every name the
-/// loader makes up is held not to be one (`ein_core::text::INTERNAL_NAMES`,
-/// T1f.5.5.8).
+/// loader makes up is held not to be one (`ein_core::text::INTERNAL_NAMES`).
 pub fn is_one_name(text: &str) -> bool {
     LEXER.with(|def| {
         let lexer = def.lexer(text);
@@ -369,8 +357,8 @@ fn report(
                 }
                 let (line, col) = lines.line_col(at);
                 let what = match text[at..].chars().next() {
-                    // M1f S1f.5.22: no rule but a string's and the skip rule's
-                    // comments matches a character that is not ASCII.
+                    // No rule but a string's and the skip rule's comments
+                    // matches a character that is not ASCII.
                     Some(c) if !c.is_ascii() => not_ascii(c),
                     c => format!(
                         "no token starts with {}",
@@ -391,9 +379,9 @@ fn report(
                 steps = p.recovery_steps();
                 let l = p.lexeme();
                 // The end of the input is where the text ends: `lrpar` makes
-                // its end-of-input lexeme at the end of the last token, so
-                // `(p a` and a newline reported `1:5` where the input ends at
-                // `2:1` (M1f S1f.5.5, T1f.5.5.13).
+                // its end-of-input lexeme at the end of the last token, which
+                // for `(p a` and a newline is `1:5` where the input ends at
+                // `2:1`.
                 let at = match token_display(l.tok_id()) {
                     None => text.len(),
                     Some(_) => l.span().start(),
@@ -440,16 +428,15 @@ fn rule_name(tok: u32) -> Option<&'static str> {
         .name()
 }
 
-/// What a ruling of this phase says about the token an error found, beyond
-/// the token itself: the review stop's item 3 (S1f.5.1's and S1f.5.2's
-/// sentences), the paper grammar's default 5 (the loader's two lines a
-/// keyword's position no longer reaches), on a string with an escape it does
-/// not read, each such escape and where it is (S1f.5.2's escapes, T1f.5.2.5),
-/// at an `open`, where the verdict is written (S1f.5.23, [`OPEN_NOTE`]), and,
-/// since M1f S1f.7.7, S1f.7.6 and S1f.7.10, at a word the value rule keeps out
-/// of a value: an `absent` that opens a form ([`ABSENT_NOTE`]), an `eq` or a
-/// `neq` that opens a form inside another, and an argument written after
-/// `(false` ([`FALSE_NOTE`]).
+/// What the language says about the token an error found, beyond the token
+/// itself: at a bare `_` and at a string written as a value; at a query's
+/// keyword that belongs on `(solve …)` and a retired `(config …)` flag, whose
+/// lines the parse says before the loader could; on a string with an escape
+/// it does not read, each such escape and where it is; at an `open`, where the
+/// verdict is written ([`OPEN_NOTE`]); and at a word the value rule keeps out
+/// of a value (Q-M1f.113): an `absent` that opens a form ([`ABSENT_NOTE`]), an
+/// `eq` or a `neq` that opens a form inside another, and an argument written
+/// after `(false` ([`FALSE_NOTE`]).
 fn notes(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
     lines: &b::Lines,
@@ -489,8 +476,8 @@ fn notes(
             ));
         }
         Some(")") => out.extend(empty_connective(lexer, at)),
-        // A value after `(solve :no-search …)`, the one keyword that takes none
-        // (M1f S1f.6.36).
+        // A value after `(solve :no-search …)`, the one keyword that takes
+        // none.
         _ if !found.starts_with(':')
             && found != ")"
             && written_before(lexer, at, 1) == [":no-search"] =>
@@ -529,14 +516,14 @@ fn notes(
     out
 }
 
-/// What an `absent` that is no premise's connective is told (M1f S1f.7.7): a
+/// What an `absent` that is no premise's connective is told: a
 /// fact, a value or a conclusion headed `absent` is refused, and the author who
 /// wrote one where a negation was meant is pointed at `(not …)`.
 const ABSENT_NOTE: &str = "absent is negation as failure, a test a premise makes of a state, \
                            (absent <premise>) in a :match or a :goal, so no fact, value or \
                            conclusion is of it: the stored negation of a fact is (not …)";
 
-/// What an argument written after `false` is told (M1f S1f.7.6).
+/// What an argument written after `false` is told (Q-M1f.123).
 const FALSE_NOTE: &str = "false takes no argument: (false) says that the state is impossible, \
                           and names nothing";
 
@@ -577,9 +564,8 @@ fn written_before<'i>(
 }
 
 /// `(and)` and `(or)`, which the grammar refuses, `and` and `or` each taking
-/// one premise or more (M1f S1f.5.9, the user's ruling of 2026-11-07 on F12:
-/// *"reject (and) while it is the same as () and `and` should have
-/// arguments"*): where the `)` closes one, the note names the rule and the
+/// one premise or more, `()` being the one spelling of the empty conjunction
+/// (Q-M1f.45): where the `)` closes one, the note names the rule and the
 /// clause it is written in, and says that the empty conjunction a `:match`
 /// holds, or the empty conclusion an `:assert` holds, is written `()`.
 fn empty_connective(
@@ -701,7 +687,7 @@ fn token(tok: u32) -> String {
 }
 
 /// The ranked repairs as a report lists them, best first, with synonyms
-/// folded (the review stop's item 6): where a place takes a name, each of the
+/// folded: where a place takes a name, each of the
 /// [`POSITION_WORDS`] is a name there too, so repairs that differ only in which
 /// of them, or which name, they insert are one repair, *Insert a name*, listed
 /// at the rank of the first of them. A place takes a name where a repair
@@ -806,10 +792,10 @@ mod tests {
         }
     }
 
-    /// M1e2 S1e2.3.8, restated at the swap (T1f.5.5.4): the one printer
-    /// prints a name bare exactly where this lexer reads the bare text back
-    /// as one `NAME` spelling it, or as one of the [`POSITION_WORDS`], which
-    /// are names wherever a name goes ([`ein_core::text::is_symbol`]), over
+    /// The one printer prints a name bare exactly where this lexer reads the
+    /// bare text back as one `NAME` spelling it, or as one of the
+    /// [`POSITION_WORDS`], which are names wherever a name goes
+    /// ([`ein_core::text::is_symbol`]), over
     /// every reserved and position word, each followed and preceded by every
     /// character class the name rule tests, and every ASCII character in
     /// every position of a short name.

@@ -5,8 +5,8 @@
 //! where some fact has more than one recorded derivation — additionally draws
 //! a small diamond per justification, with the premises feeding *it* and it
 //! feeding the conclusion, so alternative derivations read as alternatives
-//! instead of as one big conjunction. A single-derivation DAG renders exactly
-//! as it did before S1.21.7.
+//! instead of as one big conjunction. A single-derivation DAG draws no
+//! diamond.
 
 use crate::dot_util::{fact_key, hashed_id};
 use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};

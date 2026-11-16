@@ -1,4 +1,4 @@
-//! **The grammar's pages** — M1f S1f.5.5, T1f.5.5.5.
+//! **The grammar's pages.**
 //!
 //! The generated parser is the grammar: `src/ein.l` and `src/ein.y`, which
 //! `build.rs` compiles. This file keeps two things in step with them.
@@ -11,33 +11,27 @@
 //!   `EIN_BLESS=1` rewrites the two marked regions, as
 //!   `ein-cli/tests/embedding.rs` does for `docs/ein/ein.rs/api.md`.
 //! - **The grammar's table** ([`TABLE`]). One row for each shape the grammar
-//!   refuses where the loader, the compiler or the firing refused it until the
-//!   swap (T1f.5.5.4), with the parse error it is refused with, banked in
-//!   `tests/golden/grammar_table.txt`. Each of those lines was deleted at
-//!   T1f.5.5.5, every one shown unreachable first (the stage's § T5 record),
-//!   and each row names the line it replaced ([`DELETED`]), so a deleted line
-//!   with no row fails here. The lines the swap left reachable stay where they
-//!   are, and [`the_lines_the_grammar_does_not_cover_are_still_reached`] holds
-//!   a program reaching each. The four language stages add their positions as
-//!   rows after this task: S1f.5.1's `_`, S1f.5.2's string, S1f.5.4's names
-//!   and S1f.5.11's keywords, each in every place. S1f.5.4's are in, at the
-//!   table's end (T1f.5.4.3): a token that is no name, in every place a name
-//!   goes, where until the swap it loaded split or was refused at a character.
-//!   S1f.5.2's follow (T1f.5.2.2), a string and a variable in a fact wherever
-//!   a value goes, S1f.5.1's after them (T1f.5.1.3): a bare `_` and `?_` in
-//!   each place of S1f.5.1's table and wherever a name or a variable goes, and
-//!   S1f.5.11's last (T1f.5.11.2): a keyword each form does not take, one row
-//!   a form, and a keyword pair in each place in a term. S1f.5.9's follow
-//!   (T1f.5.9.3): `(and)` and `(or)`, which the grammar refused already, each
-//!   with the note naming the rule and the clause that the ruling on F12 asks
-//!   for, in each place a connective is written. S1f.7.7's, S1f.7.6's and
-//!   S1f.7.10's are the last (T1f.7.7.3): `absent` as a fact's, a value's and
-//!   a conclusion's relation, `false` with an argument, and `(eq …)` as a
-//!   value, each in every place the grammar takes the refusal. S1f.6.36's
-//!   `:no-search` follows them, and S1f.6.37's close the table (T1f.6.37.4):
-//!   what a rule may not conclude, a disjunction, whole or inside an `(and …)`
-//!   at any depth, and a connective as a conclusion's argument or under its
-//!   `not`, each refused at the parse already.
+//!   refuses at the parse, with the parse error it is refused with, banked in
+//!   `tests/golden/grammar_table.txt`. A row that names a refusal line
+//!   ([`DELETED`]) is a shape the loader, the compiler or the firing refused
+//!   before the grammar did; that line has no code left, and a listed line
+//!   with no row fails here. The refusals the grammar does not cover stay
+//!   where they are, and
+//!   [`the_lines_the_grammar_does_not_cover_are_still_reached`] holds a
+//!   program reaching each. After the rows of the forms, place by place, come
+//!   the language's refusals, each in every place it applies: a token that is
+//!   no name, in every place a name goes; a string and a variable in a fact,
+//!   wherever a value goes; a bare `_` and `?_`, wherever a name or a variable
+//!   goes; a keyword each form does not take, one row a form, and a keyword
+//!   pair in each place in a term; `(and)` and `(or)`, each with the note
+//!   naming the rule and the clause, in each place a connective is written;
+//!   `open` outside a rule's whole conclusion; a character that is not ASCII
+//!   outside a string and a comment; `absent` as a fact's, a value's and a
+//!   conclusion's relation, `false` with an argument, and `(eq …)` as a
+//!   value, each in every place the grammar takes the refusal; `:no-search`
+//!   on a query or with a value; and what a rule may not conclude, a disjunction, whole or
+//!   inside an `(and …)` at any depth, and a connective as a conclusion's
+//!   argument or under its `not`.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -253,12 +247,12 @@ fn every_token_the_phrase_block_writes_the_lexical_block_defines() {
 
 // ── The grammar's table ────────────────────────────────────────────
 
-/// A line the loader, the compiler or the firing refused a program with until
-/// M1f S1f.5.5's T5 deleted it, the grammar having refused that shape at the
-/// parse since the swap: its id, the file it was in, and its sentence as the
-/// program read it. The last five are the verdict's placements, `validate_open`'s,
-/// which a pattern's argument and a macro's body reached until M1f S1f.5.23
-/// made `open` no name (the user's ruling on Q-M1f.66), deleted by that stage.
+/// A refusal line of the loader, the compiler or the firing that has no code
+/// left, because the grammar refuses its shape at the parse: its id, the file
+/// it was in, and its sentence as the program read it. The last five are the
+/// verdict's placements, `validate_open`'s, which only a pattern's argument
+/// and a macro's body could reach while `open` was a name; `open` is no name
+/// (Q-M1f.66).
 const DELETED: &[(&str, &str, &str)] = &[
     (
         "top-level-form",
@@ -550,9 +544,9 @@ const DELETED: &[(&str, &str, &str)] = &[
     ),
 ];
 
-/// One refusal: the place in the grammar, the deleted lines that refused the
-/// shape before the swap (empty where none did: the shape loaded, or was
-/// dropped, and the row is a ruling's), and the program.
+/// One refusal: the place in the grammar, the [`DELETED`] lines that refused
+/// the shape before the grammar did (empty where none did: the shape loaded,
+/// or was dropped, and the row is a decision's), and the program.
 struct Row {
     place: &'static str,
     was: &'static [&'static str],
@@ -572,7 +566,8 @@ const fn row(place: &'static str, was: &'static [&'static str], program: &'stati
 const RULES: &str = "(relation n T) (relation p T) (relation q T) (relation hit T)\n\
                      (relation box T) (relation tag T T)\n";
 
-/// **The grammar's table.** Its rows were the tests of the lines T5 deleted:
+/// **The grammar's table.** Its first rows are the tests the [`DELETED`]
+/// lines had:
 /// `from_ir`'s unit tests of the wildcard relation, the shapes that read
 /// nothing, the verdict atom's placements, an unknown query keyword, `:mode`, a
 /// malformed `:expect` and the accumulating passes; `expect`'s of a claim's
@@ -1164,14 +1159,14 @@ const TABLE: &[Row] = &[
         &["config-bool"],
         "(config :lattice-sanity-check TRUE)",
     ),
-    // ── S1f.5.4's names: a token that is no name, where a name goes ──
-    // The name rule (the user, 2026-11-07, on F2 and F8): a name is a run of
-    // ASCII letters, digits, connectors and decorators up to a separator, and
-    // `?` and `:` only in front of a variable and a keyword. So a token that
-    // runs on past one of those, or holds a character no name has, is no name
-    // in any place one goes. Until the swap `a?x` loaded as `a` and `?x`, `"a"b`
-    // as a string and a name, and `a:b`, `a,b` and `Жук` were refused at the
-    // character. A run of digits in each place is a name, which
+    // ── Names: a token that is no name, where a name goes ──
+    // The name rule (Q-M1e2.24): a name is a run of ASCII letters, digits,
+    // connectors and decorators up to a separator, and `?` and `:` only in
+    // front of a variable and a keyword. So a token that runs on past one of
+    // those, or holds a character no name has, is no name in any place one
+    // goes: `a?x` is not `a` and `?x`, nor `"a"b` a string and a name, and
+    // `a:b`, `a,b` and `Жук` are each one token the grammar refuses. A run of
+    // digits in each place is a name, which
     // `ein-cli/tests/cli_semantics.rs`' `a_run_of_digits_is_a_name_in_every_place`
     // holds.
     row("a fact's argument", &[], "(relation p T) (p a?x)"),
@@ -1232,14 +1227,12 @@ const TABLE: &[Row] = &[
     ),
     row("an import's alias", &[], "(import std.macro :as a?x)"),
     row("a macro's name", &[], "(macro a?x (?a) (p ?a))"),
-    // ── S1f.5.2's strings: a string is natural-language text, and no value ──
-    // The user, 2026-11-06 (Q-M1e2.23): a string is written only after `:why`,
-    // `:source` or `:goal-text`, *"(p "1") has to be refused"*; and G-6, ruled
-    // the same day: a variable in a fact is refused. Until the swap a string
-    // anywhere else was the name it spells (`(p "a")` was `(p a)`, M1e2
-    // S1e2.2.16 and S1e2.2.18), and a variable in a fact the name `?x`, printed
-    // `"?x"`. Each is refused at the parse, a string with S1f.5.2's note; the
-    // rows above that write a string (a form's head, an import's alias, an
+    // ── Strings: a string is natural-language text, and no value ──
+    // A string is written only after `:why`, `:source` or `:goal-text`
+    // (Q-M1e2.23), so `(p "1")` is refused, and so is a variable in a fact:
+    // neither is read as the name it spells (`(p "a")` is not `(p a)`, nor
+    // `?x` in a fact the name `"?x"`). Each is refused at the parse, a string
+    // with its note; the rows above that write a string (a form's head, an import's alias, an
     // `absent`'s premise, a conclusion's argument, a conclusion's `:source`,
     // an `:expect`, a claim's fact, a config flag's value) hold it in their
     // places. The three keywords' text loads and reaches every surface that
@@ -1432,18 +1425,16 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (query :goal (p ?x) :why \"text\")",
     ),
-    // ── S1f.5.1's `_`: a bare `_` and `?_` name nothing ──
-    // The user, 2026-11-06 (Q-M1e2.22): *"simple `_` reserved and refused
-    // because of potential ambiguity, but remain valid in any place in atom and
-    // variable names"*; `?_` with it (S1f.5.1's default 1: two `?_` in one rule
-    // would bind one value, the opposite of what the spelling suggests). Each is
-    // a token no production takes (`ein.l`'s `UNDERSCORE` and `VARUNDERSCORE`),
-    // refused at the parse with S1f.5.1's note, in every place of S1f.5.1's
-    // table and every place a name or a variable goes. Until the swap `_` was
-    // dropped from a fact, an activator and a nested fact (W-22, W29), matched
-    // any value in a rule's pattern (W20), and was refused at load as a
-    // relation, a guard's argument or a premise (the rows above that write it,
-    // T5's); `?_` was refused at the lexer. Every command that reads a program
+    // ── `_`: a bare `_` and `?_` name nothing ──
+    // A bare `_` is reserved and refused, and stays an ordinary character
+    // inside a name or a variable (Q-M1e2.22); `?_` with it, since two `?_` in
+    // one rule would bind one value, the opposite of what the spelling
+    // suggests. Each is a token no production takes (`ein.l`'s `UNDERSCORE`
+    // and `VARUNDERSCORE`), refused at the parse with its note, in every place
+    // a name or a variable goes: neither is dropped from a fact, an activator
+    // or a nested fact (W-22, W29), nor matches any value in a rule's pattern
+    // (W20); the rows above that write `_` as a relation, a guard's argument
+    // or a premise are the [`DELETED`] lines'. Every command that reads a program
     // refuses both, which `ein-cli/tests/cli_semantics.rs`'
     // `a_bare_underscore_names_nothing_in_every_place` holds.
     row("a fact's argument", &[], "(relation r T T) (r _ a)"),
@@ -1680,20 +1671,16 @@ const TABLE: &[Row] = &[
         &[],
         "(trace (step s1 :derives (p ?_)))",
     ),
-    // ── S1f.5.11's keywords: each form takes a fixed set, and a term none ──
-    // The user, 2026-11-07 (Q-M1e2.28, D-15, G-15, G-22): *"there are fixed set
-    // of allowed kwargs, if parser sees :k or :G :notes or whatever else
-    // unknown kwarg - it is an error"*, and *"yes, plan to remove `:where`"*.
-    // Each form's keywords are its tokens in `ein.y` (S1f.5.11's § The lists),
-    // and no production of a term or a nested fact takes one, so a keyword a
-    // form does not list, `:where`, `:cardinality` and `:mode` among them, is
-    // refused at the parse, and so is any keyword pair inside a term. Until
-    // the swap only `query`, `solve` and `config` refused an unknown keyword
-    // (their rows are T5's, above); every other form, and every term, dropped
-    // one in silence: a `:match`'s or a goal's pair was dropped by the compiler
-    // (refused since: Q-M1e2.28), a macro call's by the expander's arity filter, both retired by
-    // S1f.5.11's T1f.5.11.2, and an annotation's by the loader. W32's seven
-    // rows were the wrong answers. One row for each form, then one for each
+    // ── Keywords: each form takes a fixed set, and a term none ──
+    // Each form takes a closed list of keywords, and any other is an error
+    // (Q-M1e2.28). Each form's keywords are its tokens in `ein.y`, and no
+    // production of a term or a nested fact takes one, so a keyword a form
+    // does not list, `:where`, `:cardinality` and `:mode` among them, is
+    // refused at the parse, and so is any keyword pair inside a term: none is
+    // dropped in silence, by the compiler from a `:match` or a goal, by the
+    // expander from a macro call, or by the loader from an annotation (W32's
+    // seven rows). The rows above for `query`, `solve` and `config` are the
+    // [`DELETED`] lines'. One row for each form, then one for each
     // place in a term; `fuzz_properties`' last property holds the lists on
     // every program the fuzzer's stream accepts.
     row(
@@ -1825,7 +1812,7 @@ const TABLE: &[Row] = &[
         &[],
         "(trace (step s1 :derives (q a :k v)))",
     ),
-    // ── S1f.5.9's empty connective: `and` and `or` take one argument or more ──
+    // ── The empty connective: `and` and `or` take one argument or more ──
     row(
         "a rule's :match, the empty conjunction",
         &[],
@@ -1857,7 +1844,7 @@ const TABLE: &[Row] = &[
         "(relation p T) (p a) (query :goal (and))",
     ),
     row("a macro's template", &[], "(macro m (?x) (and))"),
-    // ── S1f.5.23: `open`, the verdict, is written only as a rule's whole
+    // ── `open`, the verdict, is written only as a rule's whole
     // :assert, `(open)` or `(open ?R)`, and is no name (Q-M1f.66) ──
     row("a top-level fact's relation", &[], "(open x)"),
     row(
@@ -2019,9 +2006,8 @@ const TABLE: &[Row] = &[
         "(trace (step s1 :derives (open k)))",
     ),
     // ── A character that is not ASCII, outside a string literal and a
-    // comment (M1f S1f.5.22, the user's ruling of 2026-11-10, Q-M1f.65 (b)):
-    // refused at the lexer, at the character, in every place; a Unicode space
-    // among them, which until then was a separator (W73) ──
+    // comment (Q-M1f.65): refused at the lexer, at the character, in every
+    // place; a Unicode space among them, which is no separator (W73) ──
     row("a fact's relation", &[], "(p\u{e9} k)"),
     row("a fact's value", &[], "(relation p T) (p caf\u{e9})"),
     row("a value alone", &[], "(relation p T) (p \u{2192})"),
@@ -2084,7 +2070,7 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (p k\u{202e}j)",
     ),
-    // ── S1f.7.7: `absent` is negation as failure, a premise's test, and heads
+    // ── `absent` is negation as failure, a premise's test, and heads
     // no fact, value or conclusion (the value rule, Q-M1f.113) ──
     row("a top-level fact's relation", &[], "(absent k)"),
     row(
@@ -2133,7 +2119,7 @@ const TABLE: &[Row] = &[
         &[],
         "(rule r () :match (and (n ?x) (neq ?x (absent k))) :assert (hit ?x))",
     ),
-    // ── S1f.7.6: `false` takes no argument, wherever it is written ──
+    // ── `false` takes no argument, wherever it is written ──
     row("a top-level fact's relation", &[], "(false k)"),
     row(
         "a nested fact's relation",
@@ -2187,7 +2173,7 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (query :goal (p ?x) :expect (model (false k)))",
     ),
-    // ── S1f.7.10: `(eq …)`, computed and never stored, is no value, as
+    // ── `(eq …)`, computed and never stored, is no value, as
     // `(neq …)` is none ──
     row(
         "a nested fact's relation",
@@ -2229,10 +2215,9 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (query :goal (p ?x) :expect (model (p (eq a b))))",
     ),
-    // ── `(solve :no-search)`, a flag (M1f S1f.6.36) ──
-    // Before the swap each keyword a form did not know was its unknown
-    // keyword; `:no-search` is a token since S1f.6.36, a lattice keyword a
-    // query does not take, and a flag that takes no value.
+    // ── `(solve :no-search)`, a flag ──
+    // `:no-search` is a token: a lattice keyword a query does not take, and a
+    // flag that takes no value.
     row(
         "a query's keyword",
         &["query-keyword"],
@@ -2243,11 +2228,11 @@ const TABLE: &[Row] = &[
         &["solve-keyword"],
         "(relation p T) (solve :no-search (p))",
     ),
-    // ── What a rule concludes (M1f S1f.6.37, T1f.6.37.4): a conjunction of
-    // facts and stored negations, `(false)` or a check, read flat at any depth;
-    // no disjunction, whole or inside an `(and …)` however deep, and no
-    // connective inside a fact or under a conclusion's `not`. Each was refused
-    // at the parse already; these rows pin the stage's table ──
+    // ── What a rule concludes: a conjunction of facts and stored negations,
+    // `(false)` or a check, read flat at any depth; no disjunction, whole or
+    // inside an `(and …)` however deep, and no connective inside a fact or
+    // under a conclusion's `not`. Each is refused at the parse; these rows pin
+    // each place ──
     row(
         "a rule's :assert",
         &[],
@@ -2305,8 +2290,8 @@ fn text(r: &Row) -> String {
 
 /// **Every shape the table holds is refused at the parse**, with the report
 /// `tests/golden/grammar_table.txt` banks: every error, its notes, its ranked
-/// repairs. Before the swap each was refused by the line its row names, or
-/// loaded.
+/// repairs. A row whose `was` names a [`DELETED`] line is a shape that line
+/// refused before the grammar did; one that names none loaded.
 #[test]
 fn every_row_of_the_grammars_table_is_refused_at_the_parse() {
     let mut out = String::new();
@@ -2367,15 +2352,14 @@ fn load_error(text: &str) -> String {
 }
 
 /// **The lines the grammar does not cover are still reached**, each by a
-/// program the grammar accepts — which is why S1f.5.5's T5 kept them, where the
-/// census counted them the grammar's (`s1f.5.5_census.md` § The refusal lines).
+/// program the grammar accepts, which is why the loader keeps them.
 ///
 /// - **A reserved name a declarator binds**: the kernel's two dunders are names
-///   (Q-M1f.7 (b), T1f.5.5.11), so the loader refuses `__closed__` bound by a
+///   (Q-M1f.7), so the loader refuses `__closed__` bound by a
 ///   relation, a rule, a macro or an import's `:as`; the other reserved words
 ///   are tokens no declarator takes, refused at the parse (the table above).
-/// - **The verdict's projection** (`validate_open`): since M1f S1f.5.23 the
-///   grammar writes `open` only as a rule's whole `:assert`, `(open)` or
+/// - **The verdict's projection** (`validate_open`): the grammar writes
+///   `open` only as a rule's whole `:assert`, `(open)` or
 ///   `(open ?R)`, so its placements are the table's; that `?R` is a parameter
 ///   and resolves against the rule's own `absent` is the program's to tell, and
 ///   each line starts with where the `(open …)` is written.
@@ -2383,14 +2367,13 @@ fn load_error(text: &str) -> String {
 ///   is a bare parameter puts its argument where a premise goes.
 ///
 /// - **A kernel primitive in another shape than the grammar gives it**
-///   (`refuse_malformed_primitives`, M1f S1f.5.24, W66 to W69): a macro's
+///   (`refuse_malformed_primitives`, W66 to W69, Q-M1f.80): a macro's
 ///   body writes `eq` or `absent` at any arity, `false` with an argument and
 ///   an `(or …)` as a conclusion, and a call's argument puts a connective where
 ///   `not` takes a pattern or a guard a value; a body that is a bare parameter
-///   leaves a conclusion that is no form. Until S1f.5.24 the compiler refused
-///   the two arities where it compiled the plan and the firing the bare
-///   conclusion where it fired, and the rest were matched or concluded; every
-///   shape on every command is `ein-cli/tests/macro_bodies.rs`'.
+///   leaves a conclusion that is no form. The loader refuses each after
+///   expansion, before the compiler or a firing sees it; every shape on every
+///   command is `ein-cli/tests/macro_bodies.rs`'.
 #[test]
 fn the_lines_the_grammar_does_not_cover_are_still_reached() {
     for (text, want) in [

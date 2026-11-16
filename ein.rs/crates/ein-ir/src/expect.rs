@@ -1,14 +1,14 @@
 //! `:expect` — what a `(query …)` says its own answer is.
 //!
-//! The form M1c
-//! [S1c.1.2](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)
-//! settled, and the one part of it that is *shape* rather than comparison. The
+//! The query's claim
+//! ([`query.md` § Claims](../../../../docs/ein/user/syntax-and-semantics/query.md#claims)),
+//! and the one part of it that is *shape* rather than comparison. The
 //! comparison is `ein_infer::expect`, which needs solutions; this module reads
 //! the claim the loader validates, so a program that checks nothing is
-//! rejected before anything runs. Since M1f S1f.5.5's swap the shape itself is
-//! the grammar's (`ein.y`'s `Claim`), and what the loader still checks is what
-//! a grammar cannot see: that a listed relation is the program's, and that a
-//! listed fact is one the query's goal matches.
+//! rejected before anything runs. The shape itself is the grammar's
+//! (`ein.y`'s `Claim`), and what the loader checks is what a grammar cannot
+//! see: that a listed relation is the program's, and that a listed fact is one
+//! the query's goal matches.
 //!
 //! ```lisp
 //! (query :goal   (pet-loc Zebra ?h)
@@ -22,15 +22,12 @@
 //! (query :goal (p A ?h) :expect (false))
 //! ```
 //!
-//! **Why a `(model …)` head.** The proposed shape was a bare list of facts —
-//! `:expect ((p A H1) (p B H2))` — and it did not parse under the hand-written
-//! grammar, whose `ListHead ::= SYMBOL | VAR | WILDCARD | EQ` (`WILDCARD` a
-//! bare `_`, refused since the swap, S1f.5.1) a list is none
-//! of. Widening `ListHead` to admit a list would have changed the grammar of
-//! *every* form to buy one keyword's ergonomics, where a `SYMBOL` head cost
-//! nothing. Since M1f S1f.5.5's swap `model` is a word a position gives a
-//! meaning to, and still a name wherever a name goes, so a relation of that
-//! name is unaffected ([`grammar.md`](../../../../docs/ein/user/reference/grammar.md)).
+//! **Why a `(model …)` head.** A bare list of facts —
+//! `:expect ((p A H1) (p B H2))` — would need a form whose head is a list, and
+//! admitting one would change the grammar of *every* form to buy one keyword's
+//! ergonomics, where a name head costs nothing. `model` is a word a position
+//! gives a meaning to, and still a name wherever a name goes, so a relation of
+//! that name is unaffected ([`grammar.md`](../../../../docs/ein/user/reference/grammar.md)).
 //!
 //! **The verdict is implied, never asserted.** One `(model …)` means
 //! `Solution`; `(or …)` means `Ambiguity` with `k` equal to the number of
@@ -43,7 +40,7 @@
 //! the stdlib asserts (`std.elim`'s `no-room-left`, `std.algebra`'s `total`,
 //! `std.slots`' `slot-no-room`, …). A form that spelled contradiction any
 //! other way would be introducing a second word for something the language
-//! already says. It was `none` until the day it shipped.
+//! already says.
 
 use crate::ast::{Ast, Node, NodeId};
 
@@ -89,8 +86,9 @@ impl Expectation {
     }
 }
 
-/// A query's `:over` — which states of R its classes are over (M1e2
-/// T1e2.1a.5.3, `query.md`). All of R by default.
+/// A query's `:over` — which states of R its classes are over
+/// ([`query.md`](../../../../docs/ein/user/syntax-and-semantics/query.md#query--one-question-about-r)).
+/// All of R by default.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Over {
     #[default]
@@ -101,9 +99,8 @@ pub enum Over {
 
 impl Over {
     /// Read `:over`'s value, a name (`ein.y`'s `QueryClause`), or say what
-    /// is wrong with it: which name, the grammar does not say. Until M1f
-    /// S1f.5.5's T5 a value that was no name was refused here too, which the
-    /// grammar refuses since the swap.
+    /// is wrong with it: which name, the grammar does not say. A value that is
+    /// no name the grammar refuses.
     pub fn parse(ast: &Ast, node: NodeId) -> Result<Over, String> {
         match ast
             .atom_name(node)
@@ -129,8 +126,8 @@ impl Over {
 }
 
 /// The goal's atoms: its conjuncts, `(and …)` flattened at any depth
-/// ([`Ast::conjuncts`], which a conclusion is read by too since M1f
-/// S1f.6.37). A class is these atoms under its rows, so a query's `:expect`
+/// ([`Ast::conjuncts`], which a conclusion is read by too). A class is these
+/// atoms under its rows, so a query's `:expect`
 /// may list only facts one of them matches.
 pub fn goal_atoms(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
     ast.conjuncts(goal)
@@ -185,14 +182,13 @@ pub struct ExpectFact<'a> {
 
 /// Read a `:expect` value.
 ///
-/// **Its shape is the grammar's** since M1f S1f.5.5's swap (`ein.y`'s
-/// `Claim`, `Model` and `ClaimFact`): `(false)`, one `(model …)`, or an
-/// `(or …)` of one or more, each listing ground facts, stored negations and
-/// `neq` facts. Until T1f.5.5.5 this function refused every other shape with
-/// a line that started `:expect`, seventeen of them (a bare atom, `(false …)`
-/// with arguments, `(or)`, a disjunct that is not a `(model …)`, `(and …)`, a
-/// listed fact that is no fact, a variable or `_` in one); since the swap the
-/// parse refuses each first, at its token, and the loader never reads one.
+/// **Its shape is the grammar's** (`ein.y`'s `Claim`, `Model` and
+/// `ClaimFact`): `(false)`, one `(model …)`, or an `(or …)` of one or more,
+/// each listing ground facts, stored negations and `neq` facts. Every other
+/// shape (a bare atom, `(false …)` with arguments, `(or)`, a disjunct that is
+/// not a `(model …)`, `(and …)`, a listed fact that is no fact, a variable or
+/// `_` in one) the parse refuses first, at its token, and the loader never
+/// reads one.
 pub fn parse(ast: &Ast, node: NodeId) -> Expectation {
     let (name, items) = form(ast, node).expect("a claim is a form (ein.y's Claim)");
     match name {
@@ -228,9 +224,8 @@ fn form(ast: &Ast, node: NodeId) -> Option<(&str, &[NodeId])> {
 ///
 /// Ground is the whole of the rule: an expectation is an answer, and an answer
 /// with a `?var` in it is a pattern. A variable here would silently match
-/// anything, which is the one outcome this form exists to prevent; since M1f
-/// S1f.5.5's swap it is the grammar that refuses one, a claim's fact holding
-/// names and facts.
+/// anything, which is the one outcome this form exists to prevent; the grammar
+/// refuses one, a claim's fact holding names and facts.
 pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> ExpectFact<'a> {
     let (negated, inner) = match form(ast, node) {
         Some(("not", [one])) => (true, *one),
@@ -248,17 +243,15 @@ pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> ExpectFact<'a> {
 ///
 /// **This must agree with `ein_infer::events::sexpr` byte for byte**, since
 /// that is what the comparison holds it against — a fact is compared by
-/// *content*, never by `FactId`, because two runs do not share an interner
-/// (`fork_audit`'s reason). `ein-infer`'s `rendering_agrees_with_the_fact_dump`
+/// *content*, never by `FactId`, because two runs do not share an interner.
+/// `ein-infer`'s `rendering_agrees_with_the_fact_dump`
 /// is what keeps the two honest.
 pub fn render(ast: &Ast, node: NodeId) -> String {
     match ast.node(node) {
         // An atom is the name it spells once loaded, so it prints as the one
-        // printer prints that name (M1e2 S1e2.3.8): bare where it lexes as
-        // itself, else quoted, which is what `Terms::display` prints for the
-        // interned value. A string was the name it spells too, until M1f
-        // S1f.5.5's swap refused one in a claim (S1f.5.2; T1f.5.2.3 retired
-        // the arm).
+        // printer prints that name: bare where it lexes as itself, else
+        // quoted, which is what `Terms::display` prints for the interned
+        // value. The grammar refuses a string in a claim.
         Node::Atom(s) => ein_core::text::symbol(ast.sym(s)).into_owned(),
         Node::Str(_) => unreachable!("a claim's fact holds no string (ein.y's ClaimFact)"),
         Node::Var(s) => format!("?{}", ast.sym(s)),
@@ -307,8 +300,7 @@ mod tests {
         parse(&ast, node)
     }
 
-    // The shapes a claim may not take, which this module refused until M1f
-    // S1f.5.5's T5, are rows of the grammar's table since
+    // The shapes a claim may not take are rows of the grammar's table
     // (`ein-ir/tests/grammar_pages.rs`): a variable or `_` in a fact, a bare
     // `false`, `(false A)`, `(and …)`, `(models …)`, `(or)`, a disjunct that
     // is no `(model …)`, and `(not …)` of two facts.

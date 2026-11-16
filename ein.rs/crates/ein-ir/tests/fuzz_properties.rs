@@ -1,7 +1,6 @@
-//! The frontend fuzzer, on **self-checkable properties** — T1a.1.1.4's
-//! generator.
+//! The frontend fuzzer, on **self-checkable properties**.
 //!
-//! The grammar admits every tokenization; recursive descent commits to one.
+//! The grammar admits every tokenization; the lexer commits to one.
 //! That is the one structural risk in the parser
 //! ([design/ir-frontend.md § 3.3](../../../../docs/ein/ein.rs/design/ir-frontend.md#33-the-lexer)),
 //! and the fuzzer probes it by generating malformed and nearly-well-formed
@@ -9,7 +8,7 @@
 //! properties:
 //!
 //! 1. **It never panics.** Generated input either parses or is *diagnosed* —
-//!    a recursive-descent parser that unwrapped an assumption would show up
+//!    a parser that unwrapped an assumption would show up
 //!    here as a crash rather than as a wrong answer.
 //! 2. **What parses round-trips.** `dump_canonical → parse → dump_canonical`
 //!    is a fixed point on every mutation that parses. This is the strongest
@@ -18,42 +17,39 @@
 //! 3. **The recorded findings still parse the way they parsed.** Every seed
 //!    and every checked-in `corpus/fuzz_findings/*.ein` against a table —
 //!    which is what makes a find a regression test rather than a souvenir.
-//! 4. **The generated parser's refusal is the same twice, within its budget**
-//!    (M1f S1f.5.5 F11, T1f.5.5.3): generated input the generated parser
+//! 4. **The generated parser's refusal is the same twice, within its budget**:
+//!    generated input the generated parser
 //!    refuses is parsed again and reports the same, byte for byte, and its
 //!    recovery took at most `lrpar`'s step budget, all of it only where the
 //!    report says it was cut.
-//! 5. **No accepted program carries a keyword its form does not list** (M1f
-//!    S1f.5.11, T1f.5.11.2): each keyword pair an accepted program holds is a
+//! 5. **No accepted program carries a keyword its form does not list**
+//!    (Q-M1e2.28): each keyword pair an accepted program holds is a
 //!    form's own, on the form's list, and no term or nested fact holds one.
-//! 6. **No firing meets an unbound variable** (M1f S1f.5.10, P1f.5's F13):
-//!    every plan the compiler builds for an accepted program's rules and
-//!    hrules reads, in each conclusion, only registers each disjunct binds,
-//!    so a loader that lets one through shows here. It compiles with
-//!    `ein-infer`, a dev-dependency since S1f.5.10.
-//! 7. **The compiler refuses nothing the loader accepts** (M1f S1f.5.21, the
-//!    close review's finding 1): every plan of an accepted program's rules,
-//!    hrules and obligations, one per activator, and every query's goal
-//!    compiles, but where a macro's body wrote a primitive at another arity
-//!    (S1f.5.24's); a nested `(or …)`, a clause past the register file and a
-//!    goal's relation variable are the loader's, and the compiler's arms for
-//!    them are invariants, which a panic here would show.
+//! 6. **No firing meets an unbound variable** (Q-M1e2.37): every plan the
+//!    compiler builds for an accepted program's rules and hrules reads, in
+//!    each conclusion, only registers each disjunct binds, so a loader that
+//!    lets one through shows here. It compiles with `ein-infer`, a
+//!    dev-dependency.
+//! 7. **The compiler refuses nothing the loader accepts** (Q-M1f.84): every
+//!    plan of an accepted program's rules, hrules and obligations, one per
+//!    activator, and every query's goal compiles; a nested `(or …)`, a
+//!    clause past the register file, a goal's relation variable and a
+//!    primitive a macro's expansion writes in another shape (Q-M1f.80) are the
+//!    loader's, and the compiler's arms for them are invariants, which a
+//!    panic here would show.
 //! 8. **No accepted program holds a form of a declared relation at another
-//!    count** (M1f S1f.6.23, W89): no fact the loaded store holds, at any
+//!    count** (W89, Q-M1f.315): no fact the loaded store holds, at any
 //!    depth, and no premise, nested pattern or conclusion of a plan of a rule
 //!    without parameters, gives a declared relation another count of
 //!    arguments than its declaration has types.
 //!
-//! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
-//! the CI nightly raises it to 20 000 a seed and the dev host to P1a.1's
-//! 1 000 000 (M1f S1f.5.27, `ein-cli/tests/nightly_steps.rs`). `EIN_FUZZ_SEED`
-//! moves the stream. Both are deterministic: the same pair reproduces the same
-//! run, which is what makes a find replayable.
+//! Budget is `EIN_FUZZ_ITERS` (default 2 000); a longer run raises it.
+//! `EIN_FUZZ_SEED` moves the stream. Both are deterministic: the same pair
+//! reproduces the same run, which is what makes a find replayable.
 //!
-//! **The stream is parsed once** ([`stream`], M1f S1f.5.28's item 10). The
-//! parse is the cost, 99 % of an input's, most of it a refusal's recovery
-//! search (S1f.5.27's T1), and five properties each generated and parsed the
-//! whole stream for itself. Property 1 is that one parse, spread over the
+//! **The stream is parsed once** ([`stream`]). The parse is the cost, most of
+//! it a refusal's recovery search, so no property parses the whole stream
+//! for itself. Property 1 is that one parse, spread over the
 //! threads the process may use; each other property regenerates the stream,
 //! which costs microseconds, and reads again only the inputs it accepted,
 //! which parse in tens of them. A property still reads every input it read,
@@ -157,7 +153,7 @@ const SPLICES: &[&str] = &[
     "__closed__",
     "?x",
     ":why",
-    // S1f.5.11's keywords (T1f.5.11.2): one a fact takes, and four no form
+    // Keywords: one a fact takes, and four no form
     // does, so the stream writes a pair beside a form's own and inside a term.
     ":source",
     ":where",
@@ -250,9 +246,7 @@ fn mutate(seed: &str, rng: &mut Rng) -> String {
 /// Delta-debug a failing input down to something a human can read: drop lines
 /// while it still fails, then characters.
 ///
-/// The predicate is the caller's, which is the only change S1a.10.2 made here:
-/// it used to be "the two parsers disagree" and it is now "the property still
-/// does not hold".
+/// The predicate is the caller's: "the property still does not hold".
 fn minimise(input: &str, fails: impl Fn(&str) -> bool) -> String {
     let mut best = input.to_string();
     let mut improved = true;
@@ -598,8 +592,7 @@ fn every_seed_and_finding_parses_the_way_it_was_recorded() {
     }
 }
 
-/// **The generated parser's refusal is the same twice, and within its budget**
-/// (M1f S1f.5.5 F11, T1f.5.5.3).
+/// **The generated parser's refusal is the same twice, and within its budget**.
 ///
 /// Every generated input, through the generated parser twice in this one
 /// process, whose `HashSet`s each draw their own hash keys: a refusal reports
@@ -608,20 +601,15 @@ fn every_seed_and_finding_parses_the_way_it_was_recorded() {
 /// Recovery is bounded by a count of search steps rather than the clock, so
 /// the property also holds under any load; and a refusal took at most
 /// `RECOVERY_STEP_BUDGET` steps, all of them only where the report says it
-/// was cut there. The hand-written parser's verdict is not compared: where
-/// the two languages differ is T1f.5.5.9's to attribute.
+/// was cut there.
 ///
 /// It reads every fourth input of the stream, and at most 10 000 of it,
-/// spread evenly: a refusal costs the generated parser milliseconds, most of
-/// them its recovery search (M1f S1f.5.27's T1: the 2.6 % of refused inputs
-/// that take 10 000 steps or more are three quarters of the stream's parse
-/// time, and an accepted input parses in tens of microseconds), and three in
-/// four of these inputs are refused, so the dev
-/// host's 1 000 000 would take an hour a seed. 500 inputs per commit, 5 000 a
-/// seed in the CI nightly's 20 000, and 10 000 a seed on the dev host (M1f
-/// S1f.5.27). The first of the two parses is the stream's ([`stream`], M1f
-/// S1f.5.28), which kept each read input's report, so each is parsed here
-/// once more.
+/// spread evenly ([`Stream::stride`]): a refusal costs the generated parser
+/// far more than an acceptance, most of it its recovery search, and most of
+/// these inputs are refused, so reading every input of a long run would cost
+/// more than the rest of the test. At the default budget that is 500 inputs.
+/// The first of the two parses is the stream's ([`stream`]), which kept each
+/// read input's report, so each is parsed here once more.
 #[test]
 fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
     use ein_ir::grammar::{self, RECOVERY_STEP_BUDGET};
@@ -659,9 +647,8 @@ fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
     );
 }
 
-/// The keywords a form takes: S1f.5.11's § The lists, as the user ruled them on
-/// 2026-11-07 (Q-M1e2.28), less `:priority`, which S1f.5.15 removed before the
-/// swap, and with a macro's `:why`, the user's ruling of 2026-11-08. A form is
+/// The keywords a form takes (Q-M1e2.28): each form's closed list, a
+/// macro's `:why` among them. A form is
 /// named by its head: every declarator's word is reserved, so no fact is headed
 /// by one, and `not` heads a stored negation, a fact. A trace takes none, and
 /// [`STEP`] is what each of its steps takes.
@@ -741,23 +728,20 @@ fn keywords_listed(
     Ok(())
 }
 
-/// **No accepted program carries a keyword its form does not list** (M1f
-/// S1f.5.11, T1f.5.11.2).
+/// **No accepted program carries a keyword its form does not list**
+/// (Q-M1e2.28).
 ///
-/// The user, 2026-11-07: *"there are fixed set of allowed kwargs, if parser sees
-/// :k or :G :notes or whatever else unknown kwarg - it is an error"*. Each form
-/// takes the keywords [`listed`] names, as its tokens in `ein.y`, and a term or
-/// a nested fact takes none, so every program the parser accepts holds keyword
-/// pairs only as a form's own clauses, each on its form's list. Until the swap
-/// only `query`, `solve` and `config` refused one they did not know; a pair in a
-/// `:match` or a macro call was dropped (refused since: Q-M1e2.28), and S1f.5.11's T1f.5.11.2
-/// retired the drops. Every input of the stream the parser accepts is read, and
-/// the pairs it holds are counted, so a stream that carried few would fail here
-/// rather than pass empty: at least one pair for four accepted programs, where
-/// the per-commit stream carries 261 in 442 (`cargo test -p ein-ir --test
-/// fuzz_properties`, 2026-11-09). The generator splices `:source`, `:where`,
-/// `:cardinality`, `:mode` and `:k` since this property came, so the refused
-/// side of the stream writes a pair inside a term too.
+/// Each form takes a closed list of keywords, and any other is an error. Each
+/// form takes the keywords [`listed`] names, as its tokens in `ein.y`, and a
+/// term or a nested fact takes none, so every program the parser accepts
+/// holds keyword pairs only as a form's own clauses, each on its form's list:
+/// none is dropped in silence from a `:match` or a macro call. Every input of
+/// the stream the parser accepts is read, and the pairs it holds are counted,
+/// so a stream that carried few would fail here rather than pass empty: at
+/// least one pair for four accepted programs (`cargo test -p ein-ir --test
+/// fuzz_properties` prints the count). The generator splices `:source`,
+/// `:where`, `:cardinality`, `:mode` and `:k`, so the refused side of the
+/// stream writes a pair inside a term too.
 #[test]
 fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
     let seed = stream().seed;
@@ -789,15 +773,12 @@ fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
 /// A disjunct binds the activator's seed (the registers before the first free
 /// variable's, `ein_infer::plan`'s register spaces), every register a relation
 /// premise's slots hold at any depth, and every register an `eq` or `neq`
-/// guard reads, which it binds where nothing else does (M1f S1f.5.7). An
+/// guard reads, which it binds where nothing else does. An
 /// `(absent …)`, lifted or nested, binds nothing outside it. A rule with
 /// parameters is compiled only from an activator, which seeds every one, a
-/// nested fact too since S1f.5.18, so a conclusion reads a parameter as a
-/// constant of the plan; one no activator activates compiles no plan. **A
-/// parameter was excepted until S1f.5.18**, which seeded a nested fact (W33's
-/// cause; W58 was the stop it made where only the conclusion read the
-/// parameter), and until then the plan of a rule with parameters and no
-/// activator was compiled here with none, its parameters unbound.
+/// nested fact too, so a conclusion reads a parameter as a constant of the
+/// plan (W33, W58); one no activator activates compiles no plan, so no
+/// parameter is excepted here.
 fn unbound_conclusion(text: &str) -> Option<String> {
     use ein_infer::plan::{GuardArgKind, Plan, Slot, Step};
     fn regs(plan: &Plan, slot: Slot, out: &mut Vec<u16>) {
@@ -867,20 +848,18 @@ fn unbound_conclusion(text: &str) -> Option<String> {
     None
 }
 
-/// **No firing meets an unbound variable** (M1f S1f.5.10, P1f.5's F13).
+/// **No firing meets an unbound variable**.
 ///
 /// The loader refuses a rule or an hrule whose conclusion writes a variable
-/// some way of satisfying its `:match` leaves unbound (the user's ruling of
-/// 2026-11-07, *"yes, file F13 with the refusal"*). So, for every generated
+/// some way of satisfying its `:match` leaves unbound (Q-M1e2.37). So, for every generated
 /// program the loader accepts, every plan the compiler builds for its rules
 /// and hrules reads, in each conclusion, only registers each disjunct binds
 /// ([`unbound_conclusion`]). A firing builds its conclusion from the registers
 /// a match through one disjunct bound, so this holds every firing at once: an
-/// hrule's, whose template built no fact and proposed nothing in silence
-/// until S1f.5.10, and a rule's that no state fires among them. It holds the
-/// loader's reading of what binds to the compiler's. Until S1f.5.10 the loader
-/// did not check it, and the run stopped at the first firing that met one,
-/// `ein_infer::firing::FireError::UnboundVar`.
+/// hrule's, whose template would otherwise build no fact and propose nothing
+/// in silence, and a rule's that no state fires among them. It holds the
+/// loader's reading of what binds to the compiler's; a firing that met one
+/// would stop the run, `ein_infer::firing::FireError::UnboundVar`.
 ///
 /// The programs of the stream the loader refuses with the line are counted,
 /// as are those it accepts, so a stream that reached neither would say so.
@@ -917,9 +896,7 @@ fn no_firing_meets_an_unbound_variable() {
 /// The first refusal the compiler makes of a plan of `text`, which the loader
 /// accepts, as `rule 'r': …`: every rule's, hrule's and obligation's plan, one
 /// per activator as the engine compiles them, and every query's goal. `None`
-/// where `text` does not load, or every plan compiles, or the one refusal is a
-/// macro body's primitive at another arity, which the compiler is the first to
-/// read (S1f.5.24's, Q-M1f.67).
+/// where `text` does not load, or every plan compiles.
 fn compile_refusal(text: &str) -> Option<String> {
     let mut ast = Ast::new();
     let forms = parse(&mut ast, text, None).ok()?;
@@ -954,20 +931,17 @@ fn compile_refusal(text: &str) -> Option<String> {
     refusals.into_iter().next()
 }
 
-/// **The compiler refuses nothing the loader accepts** (M1f S1f.5.21, the
-/// close review's finding 1).
+/// **The compiler refuses nothing the loader accepts** (Q-M1f.84).
 ///
-/// A refusal the compiler made a program reach was met only where a plan was
-/// compiled, so a command that never compiled it answered what one that did
-/// stopped on; and each was printed in the Python IR's spelling. The loader
-/// refuses each since (a nested `(or …)`, W62; a clause past the register
-/// file, W63; a goal's relation variable, W64), and since M1f S1f.5.24 a
-/// primitive a macro's expansion writes in another shape than the grammar's,
-/// `eq` or `absent` at another arity among them (W66 to W69), which the
-/// compiler met only where it compiled the plan. So for every generated
+/// A refusal the compiler made a program reach would be met only where a plan
+/// is compiled, so a command that never compiled it would answer what one that
+/// did stopped on. The loader refuses each (a nested `(or …)`, W62; a clause
+/// past the register file, W63; a goal's relation variable, W64; a primitive a
+/// macro's expansion writes in another shape than the grammar's, `eq` or
+/// `absent` at another arity among them, W66 to W69). So for every generated
 /// program it accepts, every plan compiles ([`compile_refusal`]). The
-/// compiler's arms for each are invariants since, so one the loader let
-/// through would panic here.
+/// compiler's arms for each are invariants, so one the loader let through
+/// would panic here.
 #[test]
 fn the_compiler_refuses_nothing_the_loader_accepts() {
     let (iters, seed) = (stream().iters, stream().seed);
@@ -1102,16 +1076,15 @@ fn wrong_count(text: &str) -> Option<String> {
 }
 
 /// **No accepted program holds a form of a declared relation at another
-/// count** (M1f S1f.6.23, W89).
+/// count** (W89).
 ///
 /// The loader refuses a form headed by a declared relation whose arguments
-/// are not as many as the declaration's types (the user's ruling of
-/// 2026-11-12 on question 3 of P1f.6's `questions.md`, *"(a)"*). So, for
+/// are not as many as the declaration's types (Q-M1f.315). So, for
 /// every generated program the loader accepts, no fact the store holds, at
 /// any depth, and no premise, nested pattern or conclusion of a plan of a
 /// rule without parameters is one ([`wrong_count`]), read off what the loader
 /// built and the compiler compiled and not off the forms the loader's check
-/// walks. Until S1f.6.23 the loader did not check it.
+/// walks.
 ///
 /// The programs of the stream the loader refuses with the line are counted,
 /// as are those it accepts, so a stream that reached neither would say so.

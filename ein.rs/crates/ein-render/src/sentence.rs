@@ -1,5 +1,5 @@
-//! A fact in English — M1f S1f.5.14's T1f.5.14.2, fact-level rendering from
-//! provenance ([`docs/ein/user/syntax-and-semantics/natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)).
+//! A fact in English: fact-level rendering from provenance
+//! ([`docs/ein/user/syntax-and-semantics/natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)).
 //!
 //! **Two texts a fact can have, from two places.** Its *statement* is what the
 //! fact says, its relation's `:why` with the fact's arguments in its
@@ -13,15 +13,16 @@
 //! **Which justification: the first recorded**, the one a fact's provenance
 //! names before its alternatives. A fact can carry up to
 //! `MAX_ALT_JUSTIFICATIONS` more, and which arrived first can move with rule
-//! order; a reason is an explanation, as a core is, and the user's ruling of
-//! 2026-11-08 leaves both to F22 to make canonical. Recording order is
-//! deterministic in a run (design/02), so the text is under the same invariance
+//! order; a reason is an explanation, as a core is (Q-M1f.6), and neither is
+//! canonical. Recording order is deterministic in a run
+//! ([`determinism-and-order.md`](../../../../docs/ein/ein.rs/design/determinism-and-order.md)),
+//! so the text is under the same invariance
 //! `id_order_invariance` and `jobs_invariance` hold the rest of the answer to.
 //!
 //! **No invented prose.** A fact whose relation carries no `:why` has no
 //! statement, and one whose justification has no text has no reason; where
-//! both are missing the fact reads as its s-expression, as every surface wrote
-//! it before. The engine adds the provenance's own words (`rule r`, `source
+//! both are missing the fact reads as its s-expression. The engine adds the
+//! provenance's own words (`rule r`, `source
 //! "…"`, `hypothesis N`), which `reserved-engine-strings.md` owns, and nothing
 //! of the domain's.
 
@@ -91,8 +92,8 @@ pub struct FactSentence {
 
 impl FactSentence {
     /// Does any text of the program's render this fact — a `:source`, a rule's
-    /// `:why`, or its relation's? The census's *rendered*: where this is
-    /// false the fact reads as its s-expression.
+    /// `:why`, or its relation's? Where this is false the fact reads as its
+    /// s-expression.
     pub fn renders(&self) -> bool {
         matches!(self.origin, Origin::Source(_))
             || self.reason.is_some()

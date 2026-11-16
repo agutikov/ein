@@ -1,4 +1,4 @@
-//! S1a.2.4 acceptance — [`derivation_dag_to_dot`] byte-for-byte.
+//! [`derivation_dag_to_dot`], byte for byte.
 //!
 //! The fixture is a two-premise derivation built directly against the data
 //! model, and its rendering is the checked-in
