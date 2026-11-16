@@ -26,8 +26,9 @@
 ;;;
 ;;; ── The answer, by hand: a reading ─────────────────────────────────────────
 ;;;
-;;; Q-M1e2.2 — does a guard's `absent` premise bind the state the search ends
-;;; in?
+;;; Does a guard's `absent` premise bind the state the search ends in? Ein
+;;; does not decide it: a node is a fork of root, an assumption on a program
+;;; the check flags (Q-M1e2.2). The readings:
 ;;;
 ;;;   guards are premises   committing `(q one)` withdraws `(p one)`, the
 ;;;                         clash never fires, `{(q one)}` is alive, and root
@@ -53,7 +54,7 @@
 ;;; refused at load, every question about a commitment exits 1 naming
 ;;; `p-and-q-clash`, `derive-p` and `q`, and register row W8/stale-naf-fork
 ;;; left F21's deferral, fixed with the refusal as its right answer. The two
-;;; readings above are what Q-M1e2.2 (F21's D2) asks of a program that loads;
+;;; readings above are what a program that loads leaves undecided (Q-M1e2.2);
 ;;; this one no longer does, and `W8/features-07` keeps the question.
 ;;;
 ;;; Re-taken at M1e2 S1e2.2.6 (2026-11-04): `ein solve` in every mode,

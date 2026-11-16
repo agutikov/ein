@@ -308,7 +308,7 @@ each names why a fix exists, and the fixed behaviour is stated in `defined_behav
 | `m1d_satisfiability/the_vocabulary.md` | — | deleted | 7 | *no keyword*: a decision, and its file |
 | `m1e_review_processing/README.md` | — | deleted | 204 | the record; its 29 Rust references name why a fix exists, and the fixed behaviour is stated in `defined_behaviour.md` and `configuration.md` already |
 | `m1e_review_processing/open_questions.md` | `docs/decisions/` | deleted | 246 | a ledger (Q-M1e.1 and .2 are `standard_of_proof.md`) |
-| `m1e_review_processing/review/open-questions.md` | `docs/decisions/` | deleted | 5 | the review's Q1–Q10, answered in M1e's P1e.1; their ids collide with the global `Q1`–`Q10` (§ For the review) |
+| `m1e_review_processing/review/open-questions.md` | `docs/decisions/` | deleted | 5 | the review's Q1–Q10, answered in M1e's P1e.1; their ids collide with the global ledger's first ten (§ For the review) |
 | `m1e_review_processing/review/summary.md` | — | deleted | 5 | the review's reports, verbatim; every finding was dispositioned |
 | `m1e_review_processing/review/architecture/medium.md` | — | deleted | 1 | same |
 | `m1e_review_processing/review/code-doc-consistency/high.md` | — | deleted | 0 | same |
@@ -332,8 +332,8 @@ each names why a fix exists, and the fixed behaviour is stated in `defined_behav
 | `m1e_review_processing/search_soundness_probes/README.md` | — | deleted | 24 | S1e.1.1's record; its rulings are Q-M1e decisions |
 | `m1e_review_processing/search_soundness_probes/d1_q4_which_route_reaches_the_site.md` | — | deleted | 14 | a decision record; the fixtures are banked in `examples/ein-bugs/` |
 | `m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md` | — | deleted | 10 | moved to P1f.10 as a stage, now closed |
-| `m1e_review_processing/search_soundness_probes/d3_q_m1e8_file_or_take.md` | — | deleted | 13 | Q-M1e.8's record |
-| `m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md` | — | deleted | 16 | Q-M1e.9's record; the refusal is `defined_behaviour.md` § 4.7, the witness `examples/ein-bugs/naf-upward-closure.ein` |
+| `m1e_review_processing/search_soundness_probes/d3_q_m1e8_file_or_take.md` | — | deleted | 13 | the record of a question the region R overtook (Q-M1e2.7) |
+| `m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md` | — | deleted | 16 | the record of the upward-closure question, ruled as Q-M1e2.5; the refusal is `defined_behaviour.md` § 4.7, the witness `examples/ein-bugs/naf-upward-closure.ein` |
 | `m1e_review_processing/search_soundness_probes/d5_does_t1_ratify_q_m1e2.md` | — | deleted | 11 | the ratification; its content is `standard_of_proof.md` |
 | `m1e_review_processing/search_soundness_probes/d6_the_new_q5_fixture.md` | — | deleted | 7 | a stage file's earlier copy |
 | `m1e_review_processing/search_soundness_probes/d7_the_diff_instrument.md` | — | deleted | 4 | a decision record |
@@ -521,7 +521,7 @@ the walk's instruments too).
    (default for `corpus_cost`, `stdlib_census` and M1e2's five), or delete every census and keep only the command
    in `utils/README.md`?
 3. **P1f.6's results pages**: documentation to rewrite (default), or investigation records to delete?
-4. **The review's Q1–Q10** (M1e): they collide with the global `Q1`–`Q10`. By S1f.20.8's default 3 each answered one
+4. **The review's Q1–Q10** (M1e): they collide with the global ledger's first ten. By S1f.20.8's default 3 each answered one
    takes the next free Q-M1e id; the alternative is a prefix, `Q-M1e.R1`.
 5. **The walk's seven instruments in `utils/`**, which this table leaves without a page: delete them in S1f.20.9?
    (§ Findings 5.)
@@ -531,8 +531,8 @@ the walk's instruments too).
 - `defined_behaviour.md` § 6, *What is not defined, and is filed*: work items. A followup row, or nothing.
 - `04_dot_rendering.md` § Reverse parse, *designed, never built*, and `08_self_describing.md`'s design-only half:
   designs nothing implements are plans, so a `plans/ideas/` note or M12's, not docs.
-- `03_ein_model.md` § 7, the open design seams resolved on 2026-05-20: their answers are rows of the global ledger
-  (Q27, Q28) and become decisions; the prose has nowhere to go.
+- `03_ein_model.md` § 7, the open design seams resolved on 2026-05-20: their answers are rows of the global ledger:
+  Q27, the body form, is a decision, and what `()` means stays open; the prose has nowhere to go.
 - `kernel/architecture.md` § Milestone boundaries and `kernel/README.md` § Which pages to trust: history and a
   rule the rulings retire.
 - `glossary.md`'s *Process / project terms* (three task classes, trace fidelity): `overview/` perhaps, once M5 writes it.

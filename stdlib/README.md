@@ -130,24 +130,20 @@ writes, and a second computation of every row from Rust's integers, none
 missing and none twice. `stdlib_coverage.rs` has no rule here to ask about and
 names the module as rule-free, beside `std.macro`.
 
-**Importing.** Flat, like any library of facts. A listed table brings its
-declaration and its rows (M1f S1f.6.11), and a table not listed is not loaded:
+**Importing.** Flat, like any library of facts. An import brings the module
+whole, every table's declaration and its rows
+([Q-M1f.247](../docs/decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md)),
+and the list names what the file writes short:
 
 ```lisp
 (import std.math.digits :symbols (fa nz __closed__))
 ```
 
-**Closed, and why `__closed__` is in that list.** A table is complete, so a
-row is never a hypothesis, and the module says so with one written
-`(__closed__ R)` fact per table. Those are facts of the relation
-`__closed__`, and a selection brings a fact when its relation's name is in
-the closure
-([Q-M1f.142](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f142--a-stored-negation-and-a-fact-of-a-kernel-relation-under-a-selection)):
-listed, as above, they come, all seven, and the universe has no candidate
-among the tables. Not listed, they stay behind, and `nz` and `adj`, of one
-and two arguments, are relations the search may guess rows of: on a program
-that imports `(fa nz adj)` alone, `ein solve` stops with *a state's
-commitments pass 2^128* (2026-11-11). A theory that reads the tables closes
+**Closed.** A table is complete, so a row is never a hypothesis, and the
+module says so with one written `(__closed__ R)` fact per table. Those are
+facts of the relation `__closed__`, and they come with the module, all seven,
+whatever the list names, so the universe has no candidate among the tables.
+A theory that reads the tables closes
 the ones it reads in its own closing rule, as `std.math.decimal-arith` does, and its
 importer lists nothing of this module.
 [`tests/stdlib/math/digits/01_tables.ein`](../tests/stdlib/math/digits/01_tables.ein)
@@ -613,8 +609,7 @@ dev-host step writes or runs one. `utils/bench_env.sh python3
 utils/arith_cost.py --biggest` searched the sizes on 2026-11-13, on cpu4, a
 P-core, under the `powersave` governor. Each run was one process in a cgroup
 of its own, capped at 16.0 GB with no swap (`systemd-run --user --scope -p
-MemoryMax=16000000000 -p MemorySwapMax=0`,
-[Q-M1f.227](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f227--how-a-run-of-the-biggest-calculation-is-held-to-about-16-gb-and-how-long-it-may-take))
+MemoryMax=16000000000 -p MemorySwapMax=0`)
 and killed past 600 s. The search doubled a size, then narrowed to 3 %, and
 measured each size once. The binary was the release build at `2ef68530`, with
 that commit's stdlib. Five of the sweep's smaller programs, one of each shape
@@ -1701,9 +1696,9 @@ rather than a README. It is the same discipline as the corpus's growth rule,
 one level up: a rule with no activating program is not tested, it is merely not
 contradicted.
 
-## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
+## Location decision ([Q16](../docs/decisions/stdlib/Q16-general-rule-families-are-stdlib-modules.md))
 
-**Q30 → (c) hybrid.** Puzzle-*agnostic* vocabulary (the pattern macros today;
+**Hybrid.** Puzzle-*agnostic* vocabulary (the pattern macros today;
 the relation-algebra / type rule families as they land) lives here as
 importable modules; puzzle-*specific* content (a puzzle's activator facts,
 its bespoke spatial/typecheck rules) stays inline in the puzzle file. A

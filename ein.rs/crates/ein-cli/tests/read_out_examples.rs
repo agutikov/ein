@@ -139,8 +139,8 @@ fn every_block_is_what_ein_solve_prints() {
         })
         .filter(|b| slow || !b.args.iter().any(|a| a == "33554432"))
         .collect();
-    // Every block's run on the corpus sweeps' pool (M1f S1f.6.39, the user's
-    // ruling on Q-M1f.294), read back in the page's order.
+    // Every block's run on the corpus sweeps' pool (M1f S1f.6.39), read back
+    // in the page's order.
     let printed_all = ein_corpus::pool::map(
         "read_out_examples",
         &runs,

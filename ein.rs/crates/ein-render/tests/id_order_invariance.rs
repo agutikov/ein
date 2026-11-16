@@ -1,8 +1,7 @@
 //! T1a.10.1.4 and T1a.10.1.2 — **every rendering of every corpus file,
 //! banked, and none of them depending on the order ids were assigned in.**
 //!
-//! Two claims over one pass since M1f S1f.6.39 (the user's ruling of
-//! 2026-11-15 on Q-M1f.287): every (file, op) pair of [`corpus_ops`] is
+//! Two claims over one pass since M1f S1f.6.39: every (file, op) pair of [`corpus_ops`] is
 //! rendered once in the ordinary id space and digested against the golden,
 //! and the same rendering is the baseline a permuted id space is held to.
 //! `corpus_shapes.rs` made the first pass until then, and this sweep computed
@@ -70,20 +69,19 @@
 //!
 //! ## Which programs, per commit and in the nightly
 //!
-//! The user's rulings of 2026-11-15 on Q-M1f.289 and .290. **Per commit** the
-//! golden holds every program **outside `tests/`**, whose programs are each
+//! **Per commit** the golden holds every program **outside `tests/`**, whose programs are each
 //! one stdlib rule's claim and are checked by their claims (`ein test`, the
 //! coverage census, the mutants); and the permutation runs over those of them
 //! that **search**, whose describe saturates more than root
 //! (`corpus_ops::searches`, computed from the program, never a list): where
 //! the region routes fan out and intern what their forks derive. **The
 //! nightly**, `EIN_CORPUS_SLOW=1`, holds every corpus program to both, the
-//! golden's every line, in shards (`EIN_TEST_SHARD=k/n`, `ein_corpus::shard`,
-//! Q-M1f.293). A per-commit run compares the golden's lines of the programs
+//! golden's every line, in shards (`EIN_TEST_SHARD=k/n`, `ein_corpus::shard`).
+//! A per-commit run compares the golden's lines of the programs
 //! it reads and leaves the others' to the nightly, and `EIN_BLESS=1` re-banks
 //! the lines it computed and keeps the others; a line whose program is no
 //! corpus file fails every run. Each program is loaded once and every op runs
-//! on a copy (`corpus_ops::Loads`, Q-M1f.292); a permuted run loads afresh,
+//! on a copy (`corpus_ops::Loads`); a permuted run loads afresh,
 //! into its own id space.
 //!
 //! ```text
@@ -217,7 +215,7 @@ enum Outcome {
 /// permutation is built from, and a permuted run per seed, each held to it
 /// through the cut. `None` where the plain run has nothing for the op.
 ///
-/// The plain run is the one the golden digests (M1f S1f.6.39, Q-M1f.287),
+/// The plain run is the one the golden digests (M1f S1f.6.39),
 /// computed here and not read off the golden as `jobs_invariance`'s baseline
 /// is: the permuted id space is a permutation of *that run's* names and
 /// facts, which no digest holds (S1f.6.39's E-72). `run` is `corpus_ops::run` in the sweep; a test passes
@@ -320,8 +318,8 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
 
     // The pairs, on the pool (M1f S1f.6.39 T1f.6.39.4), read back in their
     // order, so every count, the manifest and the first twenty reports are
-    // the serial loop's. The plain run on a copy of the program's one load
-    // (Q-M1f.292); the permuted ones load into their own id space.
+    // the serial loop's. The plain run on a copy of the program's one load;
+    // the permuted ones load into their own id space.
     let units: Vec<(usize, usize)> = (0..files.len())
         .flat_map(|f| (0..ops.len()).map(move |o| (f, o)))
         .collect();
@@ -504,7 +502,7 @@ fn every_rendering_reproduces_its_digest_and_none_depends_on_the_id_order() {
             compared - vacuous
         );
         // **The programs that search are a part of what is banked, and a
-        // real one** (Q-M1f.289): per commit the permutation runs over them,
+        // real one**: per commit the permutation runs over them,
         // so a predicate that held of none would leave the id order checked
         // nowhere, and one that held of all would be no reduction.
         if !permute_all {
@@ -693,8 +691,8 @@ fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
     }
 }
 
-/// **The per-commit sets keep their meaning** (M1f S1f.6.39, the user's
-/// rulings on Q-M1f.288 to .290). `tests/` is a path test, and the corpus has
+/// **The per-commit sets keep their meaning** (M1f S1f.6.39). `tests/` is a
+/// path test, and the corpus has
 /// programs on both sides of it; *searches* holds of a program whose
 /// describe forks and of none whose describe is root alone, a dead root, a
 /// load error or a parse error. The sweep itself asserts that the programs
@@ -710,7 +708,7 @@ fn the_per_commit_sets_keep_their_meaning() {
     assert!(
         inside >= 100 && rels.len() - inside >= 400,
         "{inside} of the {} corpus programs are under tests/: the per-commit sweeps leave \
-         those out, so the split has stopped meaning what Q-M1f.290 ruled on",
+         those out, so the split has stopped meaning what it was made for",
         rels.len()
     );
     assert!(under_tests(Path::new(

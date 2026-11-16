@@ -1,9 +1,7 @@
-//! **The nightly's shards** — M1f S1f.6.39 T1f.6.39.7, the user's ruling of
-//! 2026-11-15 on Q-M1f.293: a nightly step that takes more than five minutes
-//! at the runner's four threads is split into parallel nightly jobs, each a
-//! shard of it, so that every step stays inside
-//! [Q-M1f.102](../../../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)'s
-//! five minutes and nothing leaves CI.
+//! **The nightly's shards** — M1f S1f.6.39 T1f.6.39.7: a nightly step that
+//! takes more than five minutes at the runner's four threads is split into
+//! parallel nightly jobs, each a shard of it, so that every step stays inside
+//! the nightly's five minutes a step and nothing leaves CI.
 //!
 //! `EIN_TEST_SHARD=k/n`, `1 ≤ k ≤ n`, makes a run shard `k` of `n`. A sweep
 //! that is sharded keeps the programs [`assign`] deals to its shard, through

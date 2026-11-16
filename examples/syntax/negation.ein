@@ -4,7 +4,7 @@
 ;;; one carrying a `:source`. What `not` negates is a fact, so the nullary
 ;;; one is `(not (plain))`; `(not plain)`, a negation of a bare name, which
 ;;; the fixture wrote until M1f S1f.5.5's swap, is refused at the parse (the
-;;; paper grammar's default 3), Q-M1f.2 (a)'s rewrite.
+;;; paper grammar's default 3), and rewritten.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is

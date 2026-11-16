@@ -33,7 +33,7 @@
 //!
 //! ## The second question — a refutation resting on an `absent` (M1e S1e.2.3)
 //!
-//! [`Q-M1e.9`] reproduced, 2026-08-28: **`dead` is not upward-closed under
+//! Reproduced, 2026-08-28, and why [`Q-M1e2.5`] refuses it: **`dead` is not upward-closed under
 //! `absent`**. A rule
 //!
 //! ```lisp
@@ -71,7 +71,7 @@
 //! [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
 //! Promoting warn → refuse afterwards is a one-line change here.
 //!
-//! [`Q-M1e.9`]: ../../../../docs/history/m1e_review_processing/open_questions.md
+//! [`Q-M1e2.5`]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
 
 use ein_core::{Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
@@ -92,14 +92,14 @@ pub struct NafDep {
     pub activator: Box<[Value]>,
     pub derived: Box<[String]>,
     pub declared_only: Box<[String]>,
-    /// M1e S1e.2.3 — [`Q-M1e.9`]'s exposure, or `None`.
+    /// M1e S1e.2.3 — the exposure [`Q-M1e2.5`] refuses, or `None`.
     ///
     /// `Some` **only** when both halves hold: the `:assert` refutes, and at
     /// least one watched relation is one the program's generator can still
     /// propose. The field's presence is the finding, so a caller never has to
     /// re-derive the conjunction.
     ///
-    /// [`Q-M1e.9`]: ../../../../docs/history/m1e_review_processing/open_questions.md
+    /// [`Q-M1e2.5`]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
     pub refutation: Option<Refutation>,
 }
 

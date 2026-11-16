@@ -248,8 +248,8 @@ const OPS: [Op; 5] = [
 /// An operand as written, and its value.
 type Operand = (String, u128);
 
-/// **`f` for every operation, on the corpus sweeps' pool** (M1f S1f.6.39,
-/// the user's ruling on Q-M1f.294): each operation's program is its own unit,
+/// **`f` for every operation, on the corpus sweeps' pool** (M1f S1f.6.39):
+/// each operation's program is its own unit,
 /// and a failing one is reported as the first in `OPS`' order, with its own
 /// message, as the loop it replaced reported it.
 fn on_the_pool(sweep: &str, f: impl Fn(&Op) + Sync) {

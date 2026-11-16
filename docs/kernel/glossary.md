@@ -62,8 +62,8 @@ in the compact view for binary facts. See
 ### Rule
 A graph rewriting rule with `:match` LHS, whose guards, `(neq ?a ?b)`, are
 premises in it / `:assert` RHS / optional `:why` template, and no other keyword:
-a `:where` guard, which Q32 dropped in 2026-05, is refused at the parse since
-M1f S1f.5.11. Three families (T1/T2/T3) by what the LHS quantifies
+a `:where` guard is refused at the parse
+([Q-M1e2.28](../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)). Three families (T1/T2/T3) by what the LHS quantifies
 over. See [`ir/01-ein-graph/02_rules.md`](ir/01-ein-graph/02_rules.md).
 
 ### `eq`, `neq`
@@ -231,9 +231,7 @@ s2)`. Since S1e2.2.21 every core the corpus reports for a dead node on an
 alive root names its commitment and, with root, derives its contradiction,
 which `ein-infer/tests/corpus_cores.rs` holds.
 
-**A core cut at its budget says so** (M1e2 S1e2.2.23, W23, the user's
-ruling of 2026-11-05 on
-[Q-M1e2.16](../../plans/m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)):
+**A core cut at its budget says so** (M1e2 S1e2.2.23, W23):
 the search keeps its budget, and every surface that prints a core prints its
 status beside it. Every JSON writes `core_status`: `within-budget`, `cut-`
 and the caps the search stopped at (`cut-environments`, `cut-rounds`,
@@ -269,8 +267,7 @@ run takes (`explore.rs`' `a_run_that_prints_no_core_takes_none_and_answers_alike
 **What the store keeps of every derivation**: a fact's primary, up to 32
 alternatives with the fewest premises (`MAX_ALT_JUSTIFICATIONS`), and,
 beside them, the arrival with the smallest closure (M1e2 S1e2.2.11,
-[Q-M1e.15](../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)'s
-(3)). Until then a full list could refuse the derivation with the
+[Q-M1e2.11](../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)). Until then a full list could refuse the derivation with the
 smaller frontier, and the reported core depended on which rule fired
 first: `examples/ein-bugs/alt-cap-core.ein` reported 3 facts where its
 `-reordered` twin, one `:priority` apart (one rule's written place apart
@@ -557,8 +554,7 @@ the full 2⁷ cartesian product discussion.
 `R(x,x)` holds for every `x` in the relation's domain. Example:
 `co-located` mathematically (every node is co-located with itself);
 Ein's M1 doesn't materialise the self-edges, since they add no inference
-power for Zebra-class puzzles ([F4
-Q34](../../plans/followups/f4_cross_cutting.md)). Where a genuine
+power for Zebra-class puzzles. Where a genuine
 preorder is wanted, `std.typing`'s `(reflexive R)` closes one.
 
 ### Asymmetric

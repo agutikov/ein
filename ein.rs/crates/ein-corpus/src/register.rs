@@ -19,8 +19,8 @@
 //! pointer to its owner, and one stating the wrong answer — as
 //! `branching/15`+`16` do — pins the defect and says nothing about what the
 //! answer should be. The register says both, and it can say what `:expect`
-//! cannot: a model with an empty goal extent (Q-M1e.13), a core, a lever
-//! read through an environment variable.
+//! cannot: a core, and a lever read through an environment variable. (An
+//! answer whose goal extent is empty a claim states as any other, Q-M1e.13.)
 
 use serde::Deserialize;
 use std::path::Path;
@@ -264,7 +264,8 @@ pub struct Row {
     pub settings: String,
     /// The P1e2.2 stage that fixes it.
     pub owner: String,
-    /// The ids that carried the case before the register.
+    /// What the case is about: decision ids, each a file under
+    /// `docs/decisions/`, and the findings it was filed from.
     #[serde(default)]
     pub question: Vec<String>,
     pub witness: String,
@@ -376,7 +377,7 @@ fn is_followup(o: &str) -> bool {
 
 /// Another milestone's stage, `S1f.10.6` (schema /10, M1e2 S1e2.2.25): a
 /// stage id whose milestone is not M1e2's, which a `deferred` row may wait on
-/// as it waits on a followup (W26's, Q-M1e2.16 (5)).
+/// as it waits on a followup (W26's).
 fn is_other_milestone_stage(o: &str) -> bool {
     let parts: Vec<&str> = o.split('.').collect();
     parts.len() == 3
@@ -1075,7 +1076,7 @@ pub struct Right {
     pub nogoods: Option<Vec<Nogood>>,
     /// The status the right read-out reports beside root's core — schema
     /// `/9` (M1e2 S1e2.2.23, W23): `cut-` and the caps a search stopped at,
-    /// where the user ruled that a cut core says so (Q-M1e2.16).
+    /// where a cut core says so.
     #[serde(default)]
     pub core_status: Option<String>,
     /// How many members of R hold a stale fact under the reading — schema
@@ -2107,7 +2108,6 @@ title    = "a claim and a query's projection classes compare printed text, which
 class    = "claim"
 settings = "default"
 owner    = "S1e2.3.8"
-question = ["Q-M1e2.20"]
 witness  = "examples/ein-bugs/wrong-answers/claim-int-name-solve.ein"
 status   = "fixed"
 look_at  = ["answer", "summary"]
@@ -2115,7 +2115,7 @@ note     = "Filed by S1e2.3.8 (T1e2.3.8.2, 2026-11-06), beside W28/claim-int-nam
 
 [case.fixed]
 commit = "712f23fd"
-by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values (Q-M1e2.20 (a))"
+by     = "S1e2.3.8 (T1e2.3.8.3): the one printer, a value as Ein text the loader reads back to the same value, so a claim and a query's classes, which compare its text, compare values"
 date   = "2026-11-06"
 
 [case.wrong]
@@ -2136,7 +2136,7 @@ minimal  = [[]]
 maximal  = [[]]
 
 [case.right]
-derived   = "Q-M1e2.20 (a), the user's ruling of 2026-11-06: a claim compares values. R is …"
+derived   = "A claim compares values. R is …"
 verdict   = "Solution"
 k         = 1
 exhausted = true

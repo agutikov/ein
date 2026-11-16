@@ -5,7 +5,7 @@
 ;;; corpus and found `examples/features/12_expect_false.ein`, so written,
 ;;; printing a different `refuted by` under `:record-alternative-justifications
 ;;; false` than without it, beside the same five-fact core. The user ruled
-;;; Q-M1f.5 (a) the same day, *"Register row W36"*: an `open` row, owned by F22,
+;;; the same day, *"Register row W36"*: an `open` row, owned by F22,
 ;;; this file its witness, and `lever_invariance` exempting it until F22 fixes
 ;;; it. This is `features/12` with its four priorities taken out
 ;;; (`ein_corpus::mutants::without_priority`), a `:why` on `instance`, and the

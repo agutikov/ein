@@ -36,15 +36,15 @@
 //! `syntax/arg-kinds`, skipped so until S1f.6.39 for a cube of 41 candidates
 //! no budget described, is compared: its R is {∅} today.
 //!
-//! **No run here passes the default budget** (Q-M1f.304 ruled (d), the user,
-//! 2026-11-15). Until then a second test, the dev host's, compared the
+//! **No run here passes the default budget**, as no test does. Until then a
+//! second test, the dev host's, compared the
 //! programs route 1 describes only past the default at `--region-budget` 2²⁵:
 //! `explore::describe_by` at 32 times the 2²⁰ the user ruled on 2026-11-03,
 //! after 2²⁴ ran the gate out of memory, on a route no command sends a
 //! monotone program.
 //!
 //! **Per commit, every program but the manifest's `slow` entries** (M1f
-//! S1f.6.39, the user's ruling of 2026-11-15 on Q-M1f.291): the zebra family
+//! S1f.6.39): the zebra family
 //! and `send_more_money` were most of the per-commit time.
 //! `EIN_CORPUS_SLOW=1` reads them too; the CI nightly runs the test with the
 //! flag, by name.

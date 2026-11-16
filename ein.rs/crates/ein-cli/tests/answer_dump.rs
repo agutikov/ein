@@ -21,9 +21,8 @@
 //!
 //! **Per commit, every recorded run but those of the manifest's
 //! `heavy_dump` entries**, whose dumps write tens of thousands of state files;
-//! `EIN_CORPUS_SLOW=1`, the nightly's, every one (M1f S1f.6.39, the user's
-//! ruling of 2026-11-15 on Q-M1f.294, as `answer_round_trip` since the
-//! ruling of 2026-11-08 on P-16).
+//! `EIN_CORPUS_SLOW=1`, the nightly's, every one, as `answer_round_trip`
+//! reads them.
 //!
 //! ```text
 //! cargo test -p ein-cli --test answer_dump
@@ -276,7 +275,7 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     }
     runs.sort();
     runs.dedup();
-    // The `heavy_dump` entries' runs are the nightly's (Q-M1f.294).
+    // The `heavy_dump` entries' runs are the nightly's.
     let heavy: std::collections::BTreeSet<String> = ein_corpus::corpus()
         .entry
         .into_iter()

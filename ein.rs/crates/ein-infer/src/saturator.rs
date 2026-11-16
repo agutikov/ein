@@ -1528,7 +1528,7 @@ impl Saturator {
     /// `(rule, activator)` binding-key space. **The second cannot happen since
     /// M1e2 S1e2.2.7**: the activator id is the compile key's list, every
     /// argument, so each plan has a space of its own. Until then it was the
-    /// symbol list, the Q-M1a.8 asymmetry, and two activators differing only
+    /// symbol list, the asymmetry Q-M1e.16 settles, and two activators differing only
     /// in a **nested `Fact`** shared a space (not in an `int`, which binds a
     /// parameter and so seeds a register — M1e
     /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
@@ -1634,8 +1634,8 @@ impl Saturator {
             ein_core::counters::bump(|c| c.guard_query += 1);
             self.guard_evals += 1;
             self.guard_evals_monotone += g.monotone as u64;
-            // The same two, summed over every fork of a solve — Q-M1a.17's
-            // exhaustive half, which a per-saturation field cannot answer.
+            // The same two, summed over every fork of a solve, which a
+            // per-saturation field cannot answer.
             ein_core::counters::bump(|c| {
                 c.guard_eval += 1;
                 c.guard_eval_monotone += g.monotone as u64;

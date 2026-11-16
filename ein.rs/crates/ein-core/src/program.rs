@@ -15,7 +15,7 @@ use crate::intern::Symbol;
 use crate::terms::Terms;
 
 /// `Clone` is for [`Kb`](crate::Kb)'s, which copies the registries rather
-/// than sharing them (M1f S1f.6.39, Q-M1f.292).
+/// than sharing them (M1f S1f.6.39).
 #[derive(Clone, Default, Debug)]
 pub struct Program {
     pub relations: Registry<Relation>,

@@ -1,13 +1,13 @@
 ;;; `std.algebra/empty` — R = 0: any edge at all in a relation declared empty
 ;;; is ⊥.
 ;;;
-;;; The smallest check in the module — no guard, no types, one premise — and
-;;; the one whose satisfied direction an expectation cannot state, because a
-;;; relation with no facts is a relation `:expect` cannot name
-;;; (Q-M1c.6, in docs/history/m1c_external_validation/open_questions.md).
-;;; `08_checks_satisfied.ein` carries `(empty nothing)` for exactly that
-;;; reason: there the claim is the *verdict* — a model exists, so `empty` did
-;;; not fire — and here it is the fact.
+;;; The smallest check in the module — no guard, no types, one premise. Its
+;;; satisfied direction is a relation with no facts, which a region claim
+;;; names only through another state that holds one, and a query over it
+;;; states by claiming `(model)` (Q-M1c.6). `08_checks_satisfied.ein` carries
+;;; `(empty nothing)` beside its other checks: there the claim is the
+;;; *verdict* — a model exists, so `empty` did not fire — and here it is the
+;;; fact.
 
 (import std.algebra :symbols (empty))
 

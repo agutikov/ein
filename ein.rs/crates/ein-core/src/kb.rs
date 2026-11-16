@@ -54,10 +54,10 @@ use std::sync::Arc;
 /// the first and loses the second, so a full list refused the derivation with
 /// the smaller frontier: `examples/ein-bugs/alt-cap-core.ein` reported a
 /// 3-fact core where a 2-fact one exists, and its `-reordered` twin, one
-/// `:priority` apart, the 2-fact one (W10, `Q-M1e.15`).
+/// `:priority` apart, the 2-fact one (W10).
 ///
 /// **Since M1e2 S1e2.2.11 a fact also keeps, beside the list, the arrival with
-/// the smallest closure** ([`Kb::closure`], [`Kb::best`]), Q-M1e.15's (3), so
+/// the smallest closure** ([`Kb::closure`], [`Kb::best`]; Q-M1e2.11), so
 /// the pair report the same 2-fact core. The list is unchanged: every list a
 /// corpus program keeps is kept as it was.
 ///
@@ -189,7 +189,7 @@ pub struct Layer {
     alts: FxHashMap<FactId, Box<[ProvId]>>,
     /// The smallest **closure** a fact has been given so far — the frontier
     /// estimate [`Kb::record_justification`] compares arrivals by (M1e2
-    /// S1e2.2.11, Q-M1e.15's (3)). Set for a derived fact, a writeback's 0
+    /// S1e2.2.11, Q-M1e2.11). Set for a derived fact, a writeback's 0
     /// among them, when it is first derived; lowered by an arrival with a
     /// smaller one. A fact with no entry is a leaf, 1. Last layer wins, as
     /// `primary` does.
@@ -616,8 +616,8 @@ pub struct Kb {
 /// no layer, so the copy reads, layer for layer, as the KB it was taken from,
 /// and the copy's [`Kb::program_mut`] works as the original's did. For a
 /// caller that loads a program once and runs several things over it, each on
-/// its own copy (M1f S1f.6.39, the corpus sweeps' one load a program,
-/// Q-M1f.292); the engine forks.
+/// its own copy (M1f S1f.6.39, the corpus sweeps' one load a program); the
+/// engine forks.
 impl Clone for Kb {
     fn clone(&self) -> Kb {
         Kb {
@@ -1720,7 +1720,7 @@ impl Kb {
     /// still a clue. A derivation the fact already holds, in the list or
     /// beside it, is not recorded twice.
     ///
-    /// What is kept is two things (M1e2 S1e2.2.11, Q-M1e.15's (3)):
+    /// What is kept is two things (M1e2 S1e2.2.11, Q-M1e2.11):
     ///
     /// - **The list**, capped at [`MAX_ALT_JUSTIFICATIONS`] and kept **sorted
     ///   by premise count**, so at the cap an arrival with fewer premises
@@ -2314,7 +2314,7 @@ mod tests {
     }
 
     /// **A full list keeps the smallest-closure arrival beside it** — M1e2
-    /// S1e2.2.11, Q-M1e.15's (3), `alt-cap-core.ein`'s shape in miniature.
+    /// S1e2.2.11, Q-M1e2.11, `alt-cap-core.ein`'s shape in miniature.
     /// The primary and 32 alternatives each rest on one derived premise three
     /// leaves deep (closure 3); a two-premise arrival over two leaves
     /// (closure 2) is refused by the list's premise count and kept beside it.

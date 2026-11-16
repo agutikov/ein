@@ -36,7 +36,7 @@
 //! workers shared, its learned clauses, and the **mechanism** that kept a
 //! worker from observing a clause arriving is
 //! [design/02 §6a](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
-//! (M1e S1e.1.2, the review's Q1); the store went with the walk, and a route's
+//! (M1e S1e.1.2, Q-M1e.23); the store went with the walk, and a route's
 //! node is a fork of root that no other node reads.
 //!
 //! ## What it runs, and against what (M1f S1f.6.39)
@@ -60,8 +60,7 @@
 //! it is not; a stale golden costs this test time, never a verdict, since a
 //! mismatch is what computes the baseline.
 //!
-//! **Which programs** (the user's rulings of 2026-11-15 on Q-M1f.288 and
-//! .290). Per commit, the programs outside `tests/` that **search**, whose
+//! **Which programs.** Per commit, the programs outside `tests/` that **search**, whose
 //! describe saturates more than root (`corpus_ops::searches`, computed from
 //! the program): a job count reaches only a region route's fan-out, which has
 //! more than one node to fan out only there. `EIN_CORPUS_SLOW=1`, the
@@ -241,8 +240,7 @@ fn jobs_does_not_move_any_observable() {
             .unwrap_or(&files[f])
             .to_path_buf()
     };
-    // Each program loaded once, every cell on a copy (M1f S1f.6.39,
-    // Q-M1f.292).
+    // Each program loaded once, every cell on a copy (M1f S1f.6.39).
     let loads = Loads::new(&files, &vec![ops.len() * n_counts; files.len()]);
     let cells = pool::map(
         "jobs_invariance",
@@ -326,8 +324,8 @@ fn jobs_does_not_move_any_observable() {
          that can differ by job count are the ones that search, and this \
          sweep has stopped reaching them"
     );
-    // Per commit the programs that search are what the sweep reads
-    // (Q-M1f.288): a predicate that held of none would check nothing, and
+    // Per commit the programs that search are what the sweep reads: a
+    // predicate that held of none would check nothing, and
     // one that held of all would be no reduction.
     if !slow {
         assert!(

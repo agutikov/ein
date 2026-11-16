@@ -31,8 +31,9 @@
 ;;; nothing, it carries one authored edge, and the expectation closes it there.
 ;;; A copier that leaked into it would show up as a surplus `(p-untouched A B)`.
 ;;;
-;;; (Closing an *empty* relation is what the form cannot do — Q-M1c.6 — so the
-;;; scope claim is written with one edge rather than with none.)
+;;; (A relation with no fact is said empty by a query over it that claims
+;;; `(model)`, Q-M1c.6; this scope claim is written with one edge instead, so
+;;; that the region claim closes it.)
 
 (import std.algebra :symbols (converse imply1 imply2-fwd imply2-reverse includes))
 

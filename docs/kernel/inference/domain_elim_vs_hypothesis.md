@@ -153,20 +153,20 @@ fork-and-refute search only surfaces when **all three** are removed.
 
 ## D. Answers to the stage's questions
 
-- **Q1 — per-set analog / double-counting?** Pathway B *is* the
+- **1 — per-set analog / double-counting?** Pathway B *is* the
   lattice (powerset enumeration is structural). When A fires it
   prunes the lattice to **0 sets** — no double-counting. When A is
   absent the lattice does real work (1 set with a shortcut, 7 sets
   without).
-- **Q2 — does A fire under commitment-set semantics?** Yes — §A and
+- **2 — does A fire under commitment-set semantics?** Yes — §A and
   the `ab` rows of §B/§C show `range-elimination` firing inside
   saturation and solving at root, on the single-solution run and in
   both proof views alike.
-- **Q3 — is B's per-set saturation wasted when A would have fired?**
+- **3 — is B's per-set saturation wasted when A would have fired?**
   Yes, relative to A: `b_branch` enters 7 sets where `ab` enters 0.
   But A eliminates that work entirely whenever its rule is in scope,
   so the waste is avoidable, not inherent.
-- **Q4 — recommendation:** **Pathway A as default, B as fallback.**
+- **4 — recommendation:** **Pathway A as default, B as fallback.**
   When the rule library carries `domain-/range-elimination` + the
   negative-completion they consume, A solves at root saturation —
   fewest saturations, no forced-positive round-trip, no lattice

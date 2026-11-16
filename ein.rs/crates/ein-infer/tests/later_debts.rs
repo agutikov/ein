@@ -1,7 +1,7 @@
 //! **A debt root does not owe: what H holds for it** — the obligations
 //! rung's reading of the activators a commitment can derive
-//! ([`ein_infer::oblgen`], § *A debt root is not told of*; Q-M1f.307 (A), by
-//! the static reading).
+//! ([`ein_infer::oblgen`], § *A debt root is not told of*; Q-M1e.11, by the
+//! static reading).
 //!
 //! H is taken once, at root. A rule can derive an obligation's activator at a
 //! node, and that node then owes what root, which never held the activator,

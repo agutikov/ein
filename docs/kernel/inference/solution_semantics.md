@@ -182,7 +182,8 @@ every type-correct ground atom of every hypothesisable relation, is what a
 check of the generator would be held to, and is not written yet.
 
 **On the obligations rung H holds what a debt root does not owe would
-propose** (Q-M1f.307 (A), by the static reading, which answers Q-M1e.11). H
+propose** (by the static reading,
+[Q-M1e.11](../../decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md)). H
 is taken once, at root, and an obligation's activator is an ordinary fact, so
 a rule can derive one at a node: that node owes what the activator's plan
 matches, and root, which never held the activator, proposed nothing that pays
@@ -837,9 +838,9 @@ overlay, which `ein render region` drew until S1e2.1a.7. It is kept as drawn:
 it is the record of this section's claim.)
 
 *The lattice was walked to the end* and *every solution in it was recognised*
-are two claims, and only the first is what `exhausted` tracks today
-([Q-M1e.8](../../history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
-Ruling (g) makes it the second, § 5.2.
+are two claims, and only the first was what `exhausted` tracked. Ruling (g)
+makes it the second, § 5.2
+([Q-M1e2.7](../../decisions/answer/Q-M1e2.7-the-answer-is-a-region-r-of-the-hypothesis.md)).
 
 ### 6.5 The premise the walk prunes by
 
@@ -853,8 +854,9 @@ every monotone corpus program (§ 8). **Under `absent` it fails.** Probed on
 2026-08-28: a twenty-line program in which a rule refutes `(p A)` only while
 `(q A)` is missing has `{(p A)}` dead and `{(p A), (q A)}` alive, and five of
 six shipped configurations answer it wrongly. In R's terms, `{(p A)}` is a
-**hole** ([W3](../../../corpus/wrong_answers.toml),
-[Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)).
+**hole** ([W3](../../../corpus/wrong_answers.toml)); a refutation that rests
+on such an `absent` is refused
+([Q-M1e2.5](../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
 An obligation whose trigger a commitment can grow makes a hole too
 ([`lattice/04`](../../../examples/lattice/04_obligation_trigger_hole.ein)).
 What the walk should do on such a program is

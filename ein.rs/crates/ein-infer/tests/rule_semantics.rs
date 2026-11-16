@@ -669,7 +669,7 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
     );
 }
 
-// ── the activator's identity — Q-M1a.8, Q-M1e.16 ───────────────────────────
+// ── the activator's identity — Q-M1e.16 ────────────────────────────────────
 //
 // `BindingKey` is `(rule, activator, values)`, and three keys read one
 // activator:
@@ -822,8 +822,8 @@ fn activators_differing_only_by_a_nested_fact_argument_both_fire() {
 
 /// **An `int` in the position another activator gives a nested `Fact` loses
 /// no derivation, in either order and in either build** — M1e2 S1e2.2.7's
-/// regression for the latent bug behind `Q-M1a.8`, which until then this test
-/// pinned as a defect. The `int` is the name `1` since M1f S1f.5.4, and since
+/// regression for a latent bug of the binding key, which until then this test
+/// pinned as a defect (Q-M1e.16). The `int` is the name `1` since M1f S1f.5.4, and since
 /// M1f S1f.5.18 (W33) the nested `Fact` binds `?f` too, so each plan derives
 /// its own `(noted ?a ?f)`, and the two together their union.
 ///
@@ -1039,7 +1039,7 @@ fn a_string_in_a_rule_means_what_it_means_in_a_fact() {
     );
 }
 
-/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard in a pattern matched
+/// M1e2 S1e2.2.20 (W20) — **a wildcard in a pattern matched
 /// any value and bound nothing**, in either build (until S1e2.2.20 the rule
 /// compiler lowered `_` as an opaque slot, so `w` never fired on `(holds a)`).
 /// **Since M1f S1f.5.5's swap a bare `_` is refused at the parse, in every

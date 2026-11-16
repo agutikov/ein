@@ -37,7 +37,7 @@ pub struct Entry {
     pub runs: Vec<String>,
     /// Extra flag strings, each appended to a plain `solve` to make one more
     /// run. The `SolverConfig` lever matrix, restricted to what the CLI can
-    /// express today (Q-M1a.16).
+    /// express today.
     #[serde(default)]
     pub levers: Vec<String>,
     /// Nightly tier only — see [`SLOW_MS`], which is the threshold it is a

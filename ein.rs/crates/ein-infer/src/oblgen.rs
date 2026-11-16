@@ -86,7 +86,7 @@
 //! fact: a rule can derive one at a node. That node owes what the activator's
 //! plan matches, and root, which never held the activator, proposed nothing
 //! that pays it. So **the rung also proposes what such a debt would**
-//! (Q-M1f.307 (A), by the static reading; Q-M1e.11's answer):
+//! (Q-M1e.11, by the static reading):
 //!
 //! 1. the **activators a commitment can derive** are read off the rules and
 //!    root's plans, with no saturation

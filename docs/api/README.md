@@ -21,8 +21,8 @@ consumer — [M20](../../plans/m20_gui/README.md) links the crates,
 shell out to be a fair measurement, and
 [M2](../../plans/m2_nl_to_ir/README.md)'s premise turned out to be an HTTP
 server rather than a C library.
-[Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
-holds the three trip-wires that would revive it.
+[Q-M1a.23](../decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)
+says when one is added: a consumer the binary cannot serve.
 
 To drive ein from another language **today**, run the binary and read its
 output: `--json-summary` for the verdict, the model and the counters as data,

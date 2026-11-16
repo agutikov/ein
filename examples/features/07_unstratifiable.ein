@@ -29,8 +29,9 @@
 ; read-out carries P1e2.1b's detector: not monotone, two `absent` sites in an
 ; even cycle, and the stale fact, `(p one) ← derive-p (absent (q one))`, in R.
 ;
-; Whether that is wrong is Q-M1e2.2, what a node holds when a guard's witness
-; arrives in its commitment: register row `W8/features-07`
+; Whether that is wrong, what a node holds when a guard's witness arrives in
+; its commitment, is not decided: a node is a fork of root, an assumption on a
+; flagged program (Q-M1e2.2). Register row `W8/features-07`
 ; (`corpus/wrong_answers.toml`), contested. Under *guards are premises* the
 ; maximal state is `{(q one)}` alone; under *refuse what cannot be stratified*
 ; this file is a load error; under *append-only* today's R stands. The user

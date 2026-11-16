@@ -149,13 +149,14 @@ fn refused(text: &str) -> ein_ir::ParseError {
 
 // ── The in-`:match` keyword pair ───────────────────────────────────
 
-/// **A guard is a positional premise, and it compiles** — the test of Q32's
-/// drop, restated by M1f S1f.5.11's T1f.5.11.2, which retired the drop.
+/// **A guard is a positional premise, and it compiles** — the test of the
+/// `:where` drop, restated by M1f S1f.5.11's T1f.5.11.2, which retired the
+/// drop.
 ///
 /// Until M1f S1f.5.5's swap `:where (neq ?a ?b)` inside a `:match` conjunction
 /// was dropped (work-list `an-in-match-keyword-pair-is-dropped-not-compiled`):
-/// Q32 moved guards from a `:where` clause to positional `(neq …)` premises
-/// and chose tolerance over a loud failure, so the old spelling survived the
+/// guards had moved from a `:where` clause to positional `(neq …)` premises
+/// with tolerance chosen over a loud failure, so the old spelling survived the
 /// parser and vanished, and the rule compiled to one `SCAN` and no guard,
 /// firing unguarded; this test held the drop. Since the swap the pair is
 /// refused at the parse, at the keyword: each form takes a fixed set of
@@ -247,7 +248,7 @@ fn a_string_in_a_rule_is_the_symbol_it_names() {
     assert!(shape.contains("    SCAN holds ['1']"), "{shape}");
 }
 
-/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard in a rule's pattern
+/// M1e2 S1e2.2.20 (W20) — **a wildcard in a rule's pattern
 /// matched any value**, at the top of a premise, in a nested fact, under a
 /// `not` and under an `absent`, two of them independently: the program
 /// concluded what the same program with each `_` written as a fresh variable
@@ -318,7 +319,7 @@ fn a_wildcard_in_a_rule_matches_what_a_fresh_variable_does() {
 ///
 /// **Two since M1f S1f.5.5's swap**: the grammar states `eq`'s and `absent`'s
 /// shapes, so the four M1e fixtures below are parse errors, and they moved to
-/// `examples/broken/` beside the parse-negatives (Q-M1f.2 (a)), each
+/// `examples/broken/` beside the parse-negatives, each
 /// `.expected` the parse report, which
 /// `ein-ir/tests/grammar_decisions.rs` holds.
 ///

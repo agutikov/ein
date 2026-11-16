@@ -1,5 +1,5 @@
-;;; `dead` is NOT upward-closed under `absent` — M1e Q-M1e.9, reproduced
-;;; 2026-08-28 and banked here at S1e.2.3.
+;;; `dead` is NOT upward-closed under `absent`, which is why a refutation may
+;;; not rest on an `absent` a commitment can still fill (Q-M1e2.5).
 ;;;
 ;;; ── The premise this refutes ───────────────────────────────────────────
 ;;;
@@ -42,8 +42,9 @@
 ;;; the answer it stated.
 ;;;
 ;;; The goal is `is-a` rather than `p`, because the model the walk reached
-;;; contained no `p` fact at all and an expectation cannot state an answer
-;;; with an empty goal extent — Q-M1e.13.
+;;; contained no `p` fact at all. An answer with an empty goal extent is a
+;;; claim like any other, `(model)` the class of a state where the goal has
+;;; no row (Q-M1e.13); the goal stays as it was written.
 ;;;
 ;;; ── The user's reading, 2026-08-28 ─────────────────────────────────────
 ;;;

@@ -34,13 +34,12 @@
 ;; Register rows W9/alive-empty-phase1-K and W12/alive-empty-phase1, confirmed
 ;; at the revisit (M1e2 S1e2.1.7, 2026-11-03).
 ;;
-;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
+;; ── The `:expect` ──────────────────────────────────────────────────────────
 ;;
-;; The banked claim was `(model (is-a A T) (is-a B T))` with the goal moved off
-;; `p`, because an expectation must name the goal's relations and the recorded
-;; model contained no `p` fact at all — Q-M1e.13. `(false)` names nothing, so
-;; the fix removes the need for the workaround and the goal goes back to the
-;; question the file is about. Q-M1e.13 itself is still open.
+;; The banked claim was `(model (is-a A T) (is-a B T))`, with the goal moved off
+;; `p` because the recorded model contained no `p` fact at all. `(false)` names
+;; nothing, so the goal is back on the question the file is about; an answer
+;; with an empty goal extent is a claim like any other (Q-M1e.13).
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation p T :why "p holds of {?1}")

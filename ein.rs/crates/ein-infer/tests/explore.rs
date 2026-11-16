@@ -992,7 +992,7 @@ fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
     assert_eq!((min.saturations, min.minimal.len()), (1, 1), "∅ ∈ R");
 }
 
-/// M1e2 S1e2.2.20 (W20, Q-M1e2.13 (a)) — **a wildcard answered what a fresh
+/// M1e2 S1e2.2.20 (W20) — **a wildcard answered what a fresh
 /// variable does**: on each program below, `_` in a rule's, an hrule's or an
 /// obligation's pattern gave the same candidates, the same root and the same
 /// R as the program with each `_` written `?wN`, a variable read nowhere else.

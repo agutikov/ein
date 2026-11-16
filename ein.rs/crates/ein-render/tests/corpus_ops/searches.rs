@@ -20,7 +20,7 @@ pub const SWEEP_LIMIT: u32 = 10;
 /// job: the programs whose region routes have more than one node to fan out
 /// and more than one fixpoint to intern into, which is where a job count and
 /// an id order can reach an output past root's. The determinism sweeps run
-/// over these per commit (Q-M1f.288 and .289); computed from the program,
+/// over these per commit; computed from the program,
 /// never a list. A program that does not load does not search.
 pub fn searches(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> bool {
     let mut opts = explore::Options::new(Mode {

@@ -425,8 +425,8 @@ Three consequences, all load-bearing:
 - **Order-independence on stratified programs.** A guard is judged against a
   positive fixpoint, so `W ⊭ ∃x̄.Pθ` is literal rather than approximated by
   fire-time re-checking, and *what is derivable no longer depends on rule
-  priority*. The Q41 priority bands drop from load-bearing to **advisory**
-  scheduling.
+  priority*. The agenda's order drops from load-bearing to **advisory**
+  scheduling ([Q-M1f.313](../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)).
 - **Negative dependence is recorded.** An admitted firing writes the queries
   that had to fail into `Prov.absent` (§O6) — recorded, not
   yet interpreted.
@@ -583,9 +583,8 @@ are the firings the saturator attempted, so minimality stays relative to the
 rule set and the saturation strategy, and the store keeps, of each fact's, the
 primary, up to `MAX_ALT_JUSTIFICATIONS = 32` with the fewest premises, and
 the one with the smallest closure. **The third is M1e2 S1e2.2.11's**
-([Q-M1e.15](../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)'s
-(3), the user's ruling of 2026-11-04 on
-[Q-M1e2.11](../../../plans/m1e2_correctness/open_questions.md#q-m1e211--which-derivations-is-the-unsat-core-the-smallest-over-and-may-a-config-flag-change-it)):
+(the user's ruling of 2026-11-04,
+[Q-M1e2.11](../../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)):
 the list ranks by *premise count* while this search minimises *frontier
 size*, two metrics that disagree whenever a short step's premise unfolds into
 a long chain, so a full list refused the derivation with the smaller frontier

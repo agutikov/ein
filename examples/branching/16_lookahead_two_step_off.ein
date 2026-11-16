@@ -50,13 +50,11 @@
 ;;; Neither is the definition, so neither side of the lever is "the right one"
 ;;; — the answer is k=2 and the lever chooses between two wrong numbers.
 ;;;
-;;; ── The `:expect` states TODAY's answer, and is meant to break ─────────────
+;;; ── The `:expect` ───────────────────────────────────────────────────────────
 ;;;
-;;; Recording the *right* answer would leave a red fixture in the corpus. This
-;;; states what the engine says now, so that the stage which fixes maximality
-;;; (Q-M1e.8 — record a surviving commitment whose every superset died) has to
-;;; move the golden and declare itself. It is the route
-;;; `tests/stdlib/closure/02|03` took, cashed at M1d S1d.2.6.
+;;; The answer is the region R (Q-M1e2.7), every alive state: its two maximal
+;;; states are {(p A)} and {(p B), (p C)}, the k = 2 derived by hand above.
+;;; The `:expect` lists R, and no lever moves it.
 
 ;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
 ;; when the user retired the flag: no route reads it, and a program that sets

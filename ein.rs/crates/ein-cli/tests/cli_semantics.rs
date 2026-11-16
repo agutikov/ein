@@ -655,7 +655,7 @@ fn the_question_is_the_flags() {
 /// **`-n/--solutions` takes a count of one or more, and refuses everything
 /// else** — M1e
 /// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
-/// the review's `Q7`.
+/// Q-M1e.24.
 ///
 /// `-n 0` used to be accepted, and what it *did* was `-n 1`. Neither reading a
 /// user could mean was available — *record nothing* is not what it did, and
@@ -908,9 +908,9 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
     }
 }
 
-/// **A wildcard written as a relation is refused** — M1e2 S1e2.2.20 (W20), on
-/// the user's ruling of 2026-11-05 (Q-M1e2.14 (c)), and at the parse since M1f
-/// S1f.5.5's swap (S1f.5.1: a bare `_` is refused in every position).
+/// **A wildcard written as a relation is refused** — M1e2 S1e2.2.20 (W20),
+/// and at the parse since M1f S1f.5.5's swap (S1f.5.1: a bare `_` is refused
+/// in every position, Q-M1e2.22).
 ///
 /// One report, from every command that reads the program: `ein saturate`,
 /// `ein solve` and `ein oracle` exit 1 and `ein test` 2. Until S1e2.2.20 a
@@ -918,8 +918,8 @@ fn a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling() {
 /// ?Wildcard() in a premise of `SForm(…)``, the Python IR's spelling; from
 /// then until the swap the loader refused it with one line naming the rule
 /// and the slot. A range in a rule was refused here too, from S1e2.2.20
-/// (Q-M1e2.13 (a)) until M1f S1f.5.3 retired the token; the test below holds
-/// what it is since.
+/// until M1f S1f.5.3 retired the token (Ein has no ranges, Q-M1e2.24); the
+/// test below holds what it is since.
 #[test]
 fn a_wildcard_relation_in_a_rule_is_refused_at_load() {
     let scratch = ein_corpus::Scratch::new("ein-refused-at-load");
@@ -1337,9 +1337,9 @@ fn a_run_of_digits_is_a_name_in_every_place() {
     }
 }
 
-/// **A rule shape that reads nothing is refused** — M1e2 S1e2.2.24 (W24), on
-/// the user's rulings of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18), and since M1f
-/// S1f.5.5's swap at the parse wherever the grammar states the place.
+/// **A rule shape that reads nothing is refused** — M1e2 S1e2.2.24 (W24,
+/// Q-M1e2.18), and since M1f S1f.5.5's swap at the parse wherever the grammar
+/// states the place.
 ///
 /// Each of W24's seven witnesses, from every command that loads it: `ein
 /// saturate`, `ein solve` and `ein oracle` exit 1 and `ein test` 2. Until
@@ -1550,8 +1550,8 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
 /// answered; and the third and the fourth answered on every command. What
 /// loads: a variable a typed premise, an `eq` guard or a parameter binds. And
 /// W58's witness, a parameter its activator binds to a nested fact, which
-/// stopped the run with the same line until S1f.5.18 seeded the parameter
-/// (Q-M1f.37), answers on every command.
+/// stopped the run with the same line until S1f.5.18 seeded the parameter,
+/// answers on every command.
 #[test]
 fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     let line = |head: &str, name: &str, var: &str, place: &str| {
@@ -1876,8 +1876,7 @@ fn the_json_summary_declares_its_schema_and_its_block_shape() {
 }
 
 /// **A goal binding of digits is a JSON *string*** — at any width, and as
-/// written. Restated at M1f S1f.5.5's swap, on S1f.5.4's Q4 (a), decided
-/// 2026-11-08.
+/// written. Restated at M1f S1f.5.5's swap (Q-M1f.340).
 ///
 /// Until the swap a goal binding was the *stored* argument, so an IR `INT` was
 /// an integer and writing it as `"8"` was a type error a consumer could not
@@ -3053,10 +3052,9 @@ fn a_name_that_starts_with_a_keyword_answers_as_its_twin_does() {
 // ── A core search cut at its budget says so — M1e2 S1e2.2.23 (W23) ────────
 
 /// **A core whose search was cut says so on every surface that prints it, and
-/// one whose search was not prints nothing new** — M1e2 S1e2.2.23, W23, on
-/// the user's ruling of 2026-11-05 (Q-M1e2.16): the core search keeps its
-/// budget, `explain::ExplanationBudget`, and a core it cut is qualified as
-/// cut, at the cap it stopped at.
+/// one whose search was not prints nothing new** — M1e2 S1e2.2.23, W23: the
+/// core search keeps its budget, `explain::ExplanationBudget`, and a core it
+/// cut is qualified as cut, at the cap it stopped at.
 ///
 /// `core-search-cut.ein`'s `(A k)` has 256 environments, past the 64 per
 /// fact the search keeps, and its root core is ten facts where eight

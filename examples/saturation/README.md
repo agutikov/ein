@@ -9,8 +9,8 @@ Every demo file has the same shape:
 1. **Header comment** — NL prose for the ontology (background
    assumptions), the facts (what the puzzle states explicitly), the
    question, and the expected one-step derivation.
-2. **`(rules …)`** — the single rule the demo exercises (inline per
-   Q30 / P1.8 deferral).
+2. **`(rules …)`** — the single rule the demo exercises, inline: a
+   problem's own rules are in its own file (Q16).
 3. **`(ontology …)`** — minimum schema + activator facts.
 4. **`(facts …)`** or **`(reasoning …)`** — the premises that
    trigger the rule.

@@ -195,7 +195,7 @@ pub fn dot_shape(
 /// One of [`KB_VIEWS`] over a KB already loaded from the file, by the same
 /// renderer call as [`dot_shape`]'s, so the same text: for a caller that
 /// loads a program once and draws each view from a copy of the load (M1f
-/// S1f.6.39, the corpus sweeps' one load a program, Q-M1f.292).
+/// S1f.6.39, the corpus sweeps' one load a program).
 pub fn kb_dot_shape(
     ast: &Ast,
     terms: &mut Terms,

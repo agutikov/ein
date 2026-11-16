@@ -12,7 +12,7 @@
 ;;; A nested fact takes no keyword (Q-M1e2.28, S1f.5.11's default), so the
 ;;; inner facts carry none. Until M1f S1f.5.5's T1f.5.5.10 (2026-11-08) they
 ;;; carried `:source "(1)"` and `:rule sym :using (x)`, which the loader
-;;; dropped, so no stored fact moved when they went (Q-M1f.2 (a)).
+;;; dropped, so no stored fact moved when they went.
 
 (ontology (relation r T T) (is-a a T))
 (facts (r a b))

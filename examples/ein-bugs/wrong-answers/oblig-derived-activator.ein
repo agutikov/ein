@@ -2,7 +2,7 @@
 ;;; register row `W26/oblig-derived-activator` (`corpus/wrong_answers.toml`),
 ;;; banked by S1e2.2.25 (2026-11-05) for the inventory of 2026-11-05's W-15
 ;;; (Q-M1e.11), which had no witness, and filed `open`, deferred to M1f's
-;;; S1f.10.6 on the user's ruling of that day (Q-M1e2.16 (5)). Its control is
+;;; S1f.10.6 on the user's ruling of that day. Its control is
 ;;; `oblig-derived-activator-declared.ein`, which states the activator.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
@@ -19,8 +19,8 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The by-hand answer, since M1f S1f.10.6 (Q-M1f.307 (A), by the static
-;;; reading, which answers Q-M1e.11): the obligations rung reads the activator
+;;; The by-hand answer, since M1f S1f.10.6 (Q-M1e.11, by the static
+;;; reading): the obligations rung reads the activator
 ;;; off `arm`'s `:assert` and proposes at root what the debt it brings would,
 ;;; so H is `{(drinks Ann Tea), (likes Ann Soup)}`, the read-out's
 ;;; `later debt` row says which candidate is there for which activator, and R

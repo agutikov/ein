@@ -18,7 +18,7 @@
 ;;; parameter, the activator the program states binds it, so the loader sees
 ;;; it: the program is refused at load, one line naming `r`, `?R`, the form
 ;;; and the activator, and every command that loads it exits 1 (`ein test`:
-;;; 2). A run that stops is no answer (Q-M1f.36's reading).
+;;; 2). A run that stops is no answer.
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;

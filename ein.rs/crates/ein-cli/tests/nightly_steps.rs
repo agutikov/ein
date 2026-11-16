@@ -31,7 +31,7 @@
 //! CI"*: the nightly keeps the steps that guard an answer or a contract no
 //! per-commit step guards, each at a budget that fits in 5 min on the runner,
 //! and `./run_tests.sh --dev-host` runs every one of them at full budget and
-//! the steps that left (Q-M1f.102). Its banners are `dev_host_step "…"`, read
+//! the steps that left. Its banners are `dev_host_step "…"`, read
 //! the same way. [`the_dev_host_runs_the_nightly_and_what_left_it`] holds the
 //! two lists together: every nightly step is in the dev host's, in order, the
 //! fuzz budget read as the dev host's ([`DEV_HOST_FUZZ_ITERS`]), and every
@@ -41,11 +41,11 @@
 //! [`the_fuzzer_runs_at_each_tiers_budget`] pins the two budgets, which the
 //! diff reads past, and [`every_slow_half_runs_on_a_tier`] fails on a test
 //! target that reads `EIN_CORPUS_SLOW` and that neither list runs with it, as
-//! three did until S1f.5.27 (Q-M1f.51).
+//! three did until S1f.5.27.
 //!
 //! ## The shards (M1f S1f.6.39)
 //!
-//! The user's ruling of 2026-11-15 on Q-M1f.293: a nightly step over five
+//! A nightly step over five
 //! minutes at the runner's four threads is split into parallel jobs, each a
 //! shard of it, `EIN_TEST_SHARD=k/n` (`ein_corpus::shard`), a job's
 //! `matrix: { shard: [...] }` naming its shards. `--nightly` runs a sharded
@@ -87,7 +87,7 @@ const NOT_NIGHTLY_STEPS: &[(&str, &str)] = &[
 
 /// The dev host's steps that the nightly does not run, with why: each left the
 /// nightly at M1f S1f.5.27, or never ran in it, and is over 5 min on the
-/// runner or measures rather than checks (Q-M1f.102). A step that leaves the
+/// runner or measures rather than checks. A step that leaves the
 /// nightly and stays in `--dev-host` is named here, or
 /// [`the_dev_host_runs_the_nightly_and_what_left_it`] fails.
 const DEV_HOST_ONLY: &[(&str, &str)] = &[
@@ -96,7 +96,7 @@ const DEV_HOST_ONLY: &[(&str, &str)] = &[
         "left the nightly at S1f.5.27: 452 s on the runner (run 42802597417, \
          2026-11-10); the nightly runs one permutation of every corpus \
          program, in shards, and the per-commit tier one of every program \
-         outside tests/ that searches (S1f.6.39, Q-M1f.289)",
+         outside tests/ that searches (S1f.6.39)",
     ),
     (
         "python3 utils/stdlib_census.py --check",
@@ -115,8 +115,7 @@ const DEV_HOST_ONLY: &[(&str, &str)] = &[
 ];
 
 /// The fuzzer's budget on the dev host: P1a.1's acceptance number, which the
-/// nightly ran until S1f.5.27 and runs at a budget that fits since
-/// (Q-M1f.103).
+/// nightly ran until S1f.5.27 and runs at a budget that fits since.
 const DEV_HOST_FUZZ_ITERS: u64 = 1_000_000;
 
 /// The per-commit tier's budget, `EIN_FUZZ_ITERS`' default in
@@ -387,8 +386,8 @@ fn unsharded(step: &str) -> (String, Option<(usize, usize)>) {
     )
 }
 
-/// **Every sharded step runs every one of its shards** (M1f S1f.6.39,
-/// Q-M1f.293): a step the nightly runs with `EIN_TEST_SHARD="k/n"` is run for
+/// **Every sharded step runs every one of its shards** (M1f S1f.6.39): a
+/// step the nightly runs with `EIN_TEST_SHARD="k/n"` is run for
 /// each `k` from 1 to `n`, one `n`, once each, so every program its sweep
 /// deals is in a shard a job runs. The dev host's list is held to the
 /// nightly's by [`the_dev_host_runs_the_nightly_and_what_left_it`].
@@ -403,7 +402,7 @@ fn every_sharded_step_runs_every_shard() {
     }
     assert!(
         !shards.is_empty(),
-        "no nightly step is sharded: the steps Q-M1f.293 split are back in one job each"
+        "no nightly step is sharded: the steps split into shards are back in one job each"
     );
     for (cmd, mut got) in shards {
         got.sort();
@@ -453,7 +452,7 @@ fn the_dev_host_runs_the_nightly_and_what_left_it() {
     );
     // A floor, so a step taken out of all three copies is seen: seventeen at
     // S1f.5.27, the nightly's fourteen of that day at their budgets and the
-    // three slow halves Q-M1f.51 placed.
+    // three slow halves it placed.
     assert!(
         dev.len() >= 17,
         "only {} steps parsed out of run_tests.sh's --dev-host: {dev:#?}",
@@ -461,7 +460,7 @@ fn the_dev_host_runs_the_nightly_and_what_left_it() {
     );
 }
 
-/// **Each tier sets the fuzzer's budget** (M1f S1f.5.27, Q-M1f.103). The diff
+/// **Each tier sets the fuzzer's budget** (M1f S1f.5.27). The diff
 /// above reads past the budget, so it is pinned here: every fuzz step of the
 /// nightly sets one above the per-commit default and below the dev host's, and
 /// every fuzz step of the dev host sets P1a.1's million. A budget dropped from
@@ -548,9 +547,8 @@ fn every_dev_host_test_step_runs_under_the_checked_tmpdir() {
 /// code reads `EIN_CORPUS_SLOW` (`region`'s, `route_invariance`'s), or the
 /// dev host runs the whole target with the flag, a step [`DEV_HOST_ONLY`]
 /// names with why. So a second test that reads the flag runs on some tier.
-/// The second way had one instance, `route_invariance`'s 2²⁵ half, until
-/// Q-M1f.304 was ruled (d), no test past the default budget (the user,
-/// 2026-11-15).
+/// The second way had one instance, `route_invariance`'s 2²⁵ half, until no
+/// test ran past the default budget.
 #[test]
 fn a_slow_half_run_by_name_leaves_nothing_out() {
     let (nightly, _) = workflow_steps(&read(".github/workflows/nightly.yml"));
@@ -647,7 +645,7 @@ fn slow_readers() -> Vec<(String, String)> {
     out
 }
 
-/// **Every slow half runs on a tier** (M1f S1f.5.27, Q-M1f.51's (b)). A test
+/// **Every slow half runs on a tier** (M1f S1f.5.27). A test
 /// target that reads `EIN_CORPUS_SLOW` has a step in the nightly or on the dev
 /// host that runs it under `--profile gate` with the flag, or is named in
 /// [`NO_SLOW_TIER`] with a premise this test checks. Three targets' slow
@@ -691,7 +689,7 @@ fn every_slow_half_runs_on_a_tier() {
             runs(&nightly) || runs(&dev),
             "{package}'s `{target}` reads EIN_CORPUS_SLOW, and neither the nightly \
              nor --dev-host runs it under --profile gate with the flag, so its slow \
-             half runs on no tier (Q-M1f.51)"
+             half runs on no tier"
         );
     }
     for (target, why) in NO_SLOW_TIER {

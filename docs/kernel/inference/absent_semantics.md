@@ -217,8 +217,8 @@ Each is already enforced locally; this page is the shared reason.
   `(absent P)` over a relation the hypothesis generator can still propose:
   `{(p A)}` dies, `{(p A), (q A)}` would live, and three mechanisms the walk
   shipped made sure the second was never reached — the lookahead kill cache,
-  the singleton writeback, and the width-1 no-good clause. Reproduced
-  ([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)),
+  the singleton writeback, and the width-1 no-good clause. Reproduced, refused today
+  ([Q-M1e2.5](../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)),
   banked as
   [`examples/ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein),
   and **diagnosed rather than fixed** at M1e: `warn_derived_naf` emitted a

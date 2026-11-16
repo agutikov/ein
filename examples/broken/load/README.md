@@ -36,8 +36,8 @@ since, *open is reserved: …*; and `open_compound_witness`, the one verdict
 fixture the loader still refuses, starts its line with where its `(open ?R)` is
 written, `{FILE}:10:12:`, where it ended `at None`.
 
-**Twenty-one moved to `../` at M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09,
-Q-M1f.2 (a)), each refused at the parse since, its `.expected` the parse
+**Twenty-one moved to `../` at M1f S1f.5.5's swap** (T1f.5.5.4, 2026-11-09),
+each refused at the parse since, its `.expected` the parse
 report: `config_bad_value`, `config_retired_flag`, `config_unknown_flag`,
 `empty_absent`, `expect_is_a_pattern`, `expect_unknown_keyword`,
 `hrule_reserved_name`, `import_alias_not_a_name`, `import_symbols_empty`,

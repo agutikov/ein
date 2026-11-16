@@ -2,7 +2,7 @@
 ;;; register row `W10/closure-shared-given` (`corpus/wrong_answers.toml`),
 ;;; banked by S1e2.2.25 (2026-11-05) for the inventory of 2026-11-05's W-10,
 ;;; which had no witness, and filed `open`, deferred to F22 on the user's
-;;; ruling of that day (Q-M1e2.16 (2), (5)). Its control is
+;;; ruling of that day. Its control is
 ;;; `closure-shared-given-control.ein`, the same program with two `x-cd`
 ;;; derivations fewer.
 ;;;
@@ -25,7 +25,7 @@
 ;;; `(x K)`'s primary and its 32 alternatives are `x-cd`'s first 33, so its
 ;;; list is full when `x-uv` arrives, with as many premises as the list's
 ;;; longest, and refused. Beside a full list the store keeps the arrival with
-;;; the smallest closure estimate (M1e2 S1e2.2.11, Q-M1e.15's (3)), and the
+;;; the smallest closure estimate (M1e2 S1e2.2.11), and the
 ;;; estimate is a sum over the premises: `(u K)` 1 and `(v K)` 1, so 2, the
 ;;; given `(g K)` counted twice, which does not lower `x-cd`'s 2. So `x-uv` is
 ;;; dropped, and the core is `(c C01) (d C01)` (`ein solve FILE`, release and

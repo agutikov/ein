@@ -40,7 +40,7 @@ fn answer(text: &str, filename: Option<&str>) -> String {
 /// four, each `{FILE}:line:col: unexpected input` and a caret. The
 /// twenty-five refusal fixtures whose refusal the grammar took over from the
 /// loader and the compiler moved here from `examples/broken/load/` and
-/// `examples/broken/compile/` (Q-M1f.2 (a)), and so did
+/// `examples/broken/compile/`, and so did
 /// `kwpair-below-the-filter` from `examples/ein-bugs/` (S1f.5.11's default).
 ///
 /// The digest in `corpus_shapes.md5` covers these too, but as sixteen hex

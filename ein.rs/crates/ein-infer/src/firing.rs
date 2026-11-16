@@ -76,7 +76,7 @@ pub struct Firing {
 /// (F13, W57). One path was left, a parameter its activator bound to a nested
 /// fact, which the compiler did not seed (W33's cause), read only by a
 /// conclusion (`W58/parameter-nested-assert`); S1f.5.18 seeds it and retired
-/// the variant (Q-M1f.37). What holds it since is `resolve`'s assertion,
+/// the variant. What holds it since is `resolve`'s assertion,
 /// and `ein-ir`'s `fuzz_properties::no_firing_meets_an_unbound_variable`.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FireError {
@@ -393,7 +393,7 @@ pub fn new_prov(
 /// seeds a register and arrives in `values`, and two activators differing
 /// only in one had two keys (M1e
 /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
-/// which refuted Q-M1a.8's claim with
+/// which showed it with
 /// `rule_semantics::activators_differing_only_by_an_int_argument_both_fire`).
 /// A nested `Fact` binds nothing and reached neither half: two activators
 /// differing only there shared a key, and the dropped application was a

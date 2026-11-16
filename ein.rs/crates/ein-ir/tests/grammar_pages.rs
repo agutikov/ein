@@ -1691,7 +1691,7 @@ const TABLE: &[Row] = &[
     // the swap only `query`, `solve` and `config` refused an unknown keyword
     // (their rows are T5's, above); every other form, and every term, dropped
     // one in silence: a `:match`'s or a goal's pair was dropped by the compiler
-    // (Q32), a macro call's by the expander's arity filter, both retired by
+    // (refused since: Q-M1e2.28), a macro call's by the expander's arity filter, both retired by
     // S1f.5.11's T1f.5.11.2, and an annotation's by the loader. W32's seven
     // rows were the wrong answers. One row for each form, then one for each
     // place in a term; `fuzz_properties`' last property holds the lists on

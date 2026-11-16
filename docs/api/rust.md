@@ -35,7 +35,7 @@ red.
 |---|---|---|
 | [M20](../../plans/m20_gui/README.md) — the GUI | the crates, into a Tauri backend | the backend **is** the Rust process; there is no server between them |
 | [M10](../../plans/m10_external_benchmarks/README.md) — external benchmarks | `ein-bench`, which shells out | a linked rival and a subprocess rival are not comparable measurements |
-| [M2](../../plans/m2_nl_to_ir/README.md) — the EinAf loop | undecided ([Q25](../../plans/m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in), taken in [S2.1.3](../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.3_boundary.md)) | its loop wants *why* a load failed as data; linking gives `ParseError`'s fields for free, and for the rest M2's [S2.1.2](../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md) builds a versioned feedback object the CLI can write, which moves the boundary to a protocol |
+| [M2](../../plans/m2_nl_to_ir/README.md) — the EinAf loop | undecided (taken in [S2.1.3](../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.3_boundary.md)) | its loop wants *why* a load failed as data; linking gives `ParseError`'s fields for free, and for the rest M2's [S2.1.2](../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md) builds a versioned feedback object the CLI can write, which moves the boundary to a protocol |
 
 ## Adding the dependency
 

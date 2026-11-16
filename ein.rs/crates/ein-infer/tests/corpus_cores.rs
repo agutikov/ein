@@ -59,7 +59,7 @@
 //! primaries, `bijection/06`'s cube most of them.
 //!
 //! The slow half runs in the CI nightly in shards, `EIN_TEST_SHARD=k/n`
-//! (M1f S1f.6.39, the user's ruling on Q-M1f.293): each shard reads the
+//! (M1f S1f.6.39): each shard reads the
 //! programs `ein_corpus::shard` deals it, and holds its share of the programs
 //! floor; the floors on what the cores are hold per commit.
 //!
@@ -111,8 +111,7 @@ fn files() -> Vec<PathBuf> {
     files.sort();
     files.dedup();
     files.retain(|f| slow_too() || !slow.contains(f));
-    // The nightly's shard of them (`EIN_TEST_SHARD`, M1f S1f.6.39,
-    // Q-M1f.293).
+    // The nightly's shard of them (`EIN_TEST_SHARD`, M1f S1f.6.39).
     ein_corpus::shard::keep(files, |f| rel_of(f))
 }
 

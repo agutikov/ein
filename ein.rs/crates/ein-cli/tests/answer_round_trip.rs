@@ -688,8 +688,8 @@ fn shard(k: usize) {
         .into_iter()
         .filter(|e| slow || !e.heavy_dump)
         .collect();
-    // The nightly's shard of them (`EIN_TEST_SHARD`, M1f S1f.6.39,
-    // Q-M1f.293), before the eight tests split it.
+    // The nightly's shard of them (`EIN_TEST_SHARD`), before the eight
+    // tests split it.
     let selected = ein_corpus::shard::keep(selected, |e| e.path.clone());
     // The shard's entries on the corpus sweeps' pool (M1f S1f.6.39), which
     // the eight shards share, each entry with its own tallies, folded back in

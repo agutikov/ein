@@ -138,7 +138,7 @@ impl StrTable {
 ///
 /// `Clone` is a copy of the whole arena, for a caller that loads a program
 /// once and runs several things over it, each on its own copy (M1f
-/// S1f.6.39, the corpus sweeps' one load a program, Q-M1f.292): a copy reads
+/// S1f.6.39, the corpus sweeps' one load a program): a copy reads
 /// as the arena it was taken from, ids and all.
 #[derive(Clone, Default, Debug)]
 pub struct Ast {

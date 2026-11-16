@@ -372,7 +372,7 @@ Candidates:
 - **Forbidden** — `()` is a parse error and there's no syntactic
   hole notation.
 
-Parked at [M1 Q28](../../../../plans/open_questions.md#q28--empty-parens--node-semantics).
+What `()` would mean as a value is not decided.
 The grammar parses `()` as a form over a placeholder head `#empty`
 (see [the grammar](../03-ein-lang/00_ebnf.md)), a name no program can
 write (`@empty` until M1f S1f.5.5's T1f.5.5.8, 2026-11-08), and since
@@ -382,7 +382,7 @@ and an empty name list. **Two of them have engine semantics since M1f
 (the user's ruling of 2026-11-07 on F12): `:match ()` is the empty
 conjunction, which is true, so the rule fires once, or once per activator;
 and `:assert ()` is the empty conclusion, which asserts nothing. `()` as a
-value, the question Q28 parks, is a parse error.
+value is a parse error.
 
 ### 7.2 Relation declaration shape — body form and args grouping
 
@@ -473,7 +473,7 @@ implementation phase (P1.2b):
 | claim                                | open                                                          |
 |--------------------------------------|---------------------------------------------------------------|
 | `(rule …)` can produce `(rule …)`     | F5 (rules-as-data); P1.3 matcher needs an extension           |
-| `()` empty paren has engine semantics | Q28 — no decision for a value, which is a parse error; a whole `:match ()` is the empty conjunction and `:assert ()` the empty conclusion since M1f S1f.5.9 |
+| `()` empty paren has engine semantics | no decision for a value, which is a parse error; a whole `:match ()` is the empty conjunction and `:assert ()` the empty conclusion since M1f S1f.5.9 |
 | relation-args flat (no inner group)   | §7.2 resolved; grammar/example migration owned by P1.3 R10 |
 | declaration body form (a) is sugar    | Q27 — form (b) ships in M1; form (a) reserved as future sugar |
 
@@ -481,8 +481,8 @@ implementation phase (P1.2b):
 in this document does NOT require new implementation in M1. The
 existing P1.2 (S1.2.1–S1.2.4) data model covers it; all 144 kb tests
 pass; no acceptance criteria fail; no new entity / index / grammar
-shapes are needed. Q27 (body-form sugar) and Q28 (`()` semantics)
-remain parked as future-work seams, not blockers. Audit trail and
+shapes are needed. Q27's form (a), sugar, and what `()` means
+remain future-work seams, not blockers. Audit trail and
 verdict in [plans/ideas.md](../../../../plans/ideas.md) → *Promoted /
 pruned*.
 

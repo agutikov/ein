@@ -21,7 +21,7 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; The pair is dropped (Q32), so `r` fires for every `p`: root derives `(q a)`
+;;; The pair is dropped, so `r` fires for every `p`: root derives `(q a)`
 ;;; and `(q b)`, with no line (`ein saturate FILE --dump`), and R is four
 ;;; states over the candidates `(hit a)` and `(hit b)`, exit 0 (`ein solve
 ;;; FILE` and `ein oracle FILE` at `ec004a48`, the engine `916d97ac`'s,

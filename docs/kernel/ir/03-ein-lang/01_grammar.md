@@ -25,13 +25,13 @@ documentation split.
 | `NAME`     | ``[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `has-color`, `House-1`, `is-a*`, `7`, `-7`, `1..5`, `=`, `<=`, `a/b`, `f'` | atoms; a pattern's or a fact's relation; rule / type / step names. **The name rule** (M1f [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md), the user's ruling of 2026-11-06): a run of ASCII name characters, ASCII forever, each printed as written and reloading to itself, so `7` and `07` are two names; no character has a meaning of its own, `*` among them (the transitive-closure convention `R*`, S1.5.8c.2). A reserved word is never a name and a position word is one wherever a name goes ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 1); a token ends only at a space, a paren, a comment or the end of input, so `a?x` and `a,b` are each one token that is not a name, refused (fact 5), and `Жук` is refused at its `Ж`, a character that is not ASCII outside a string (fact 6, [below](#what-a-programs-text-may-hold)). Until S1f.5.5's swap this row was `SYMBOL`, `[A-Za-z][A-Za-z0-9_*-]*`, a letter first, a run of digits an `INT` and `=` a reserved head |
 | `VAR`      | ``\?[A-Za-z0-9_.\-$%^*+=<>!&@~/'`\[\]{}]+`` | `?a`, `?house`, `?T`, `?R*`, `?_x`, `?a.b` | pattern variables — bound by `:match`, reused in `:assert`: `?` and a name's characters. Until the swap `\?[A-Za-z][A-Za-z0-9_*-]*` |
 | `KEYWORD`  | `:[a-z][A-Za-z0-9_-]*`         | `:match`, `:rule`, `:source`             | a form's clause markers, each **always** followed by its value but `(solve …)`'s `:no-search`, a flag (M1f S1f.6.36). **Each form takes a fixed set** ([§ 2's table](#the-keywords-each-form-takes)), each keyword a token of the forms that take it, and any other keyword, `:where`, `:cardinality` and `:mode` among them, is refused at the parse, as is any keyword pair inside a term or a nested fact (M1f [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md), the user's ruling of 2026-11-07, [Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)). Until S1f.5.5's swap a keyword was one token for every form: only `query`, `solve` and `config` refused one they did not know, and every other form, and every term, dropped one in silence (D-15, G-15, G-22; W32's seven rows); S1f.5.11's T1f.5.11.2 retired the compiler's and the macro expander's drops |
-| `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05, Q-M1e2.13 (a)); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (Q-M1e2.14 (c), S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
+| `WILDCARD` | —                              | —                                        | **none since M1f S1f.5.5's swap**: a bare `_` and `?_` are tokens no production takes, refused at the parse wherever either is written, with the note *`_ is reserved and names nothing: where any value will do, write a variable used once`* (S1f.5.1's ruling, the user's of 2026-11-06, [Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)); `_` anywhere else in a word is a name character, so `_a_in_b_`, `_______01` and `A________B` are names and `?_x` a variable. A variable used once is what to write where any value will do. Until the swap `WILDCARD` was the argument wildcard of a rule's pattern: in a `:match`, at any depth, `_` matched any value and bound nothing (M1e2 [S1e2.2.20](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.20_wildcard_and_range_in_a_rule.md), 2026-11-05); written as a relation, `(_ a)`, as a guard's argument or as a premise it was refused at load (S1e2.2.24); in an `:assert` the run stopped at the rule's first firing; and in a fact, a nested fact or an activator it was dropped in silence, `(r _ a)` stored as `(r a)` (W-22, W29). Until S1e2.2.20 the rule compiler lowered it as a slot that matched nothing (W20). S1f.5.1's T1f.5.1.3 retired the AST's `Wildcard` node and the compiler's `Slot::Any` (`ef5374a1`) |
 | `INT`      | —                              | —                                        | **none since M1f S1f.5.5's swap**: a run of digits is a `NAME` like any other (S1f.5.4's ruling, the user's of 2026-11-06), so `7`, `07` and `-7` are three names, each printed as written, and a fact of one is never a fact of another. Until the swap `INT`, `-?[0-9]+`, lexed *integer atoms*, `007` and `7` one value; `:priority 10`, the one keyword that took one, went with S1f.5.15. The int value kind went with [S1f.5.4](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.4_digits_are_names.md)'s T1f.5.4.3 (2026-11-09): a value is a name or a nested fact |
 | `TEXT`     | `"…"`, the escapes `\n \t \r \" \\` and `\u{…}` | `"condition (10)"`, `"{?r} is transitive"`, `"Жилец {?who}"` | **natural-language text, and nothing else since M1f S1f.5.5's swap**, where this row was `STRING` (S1f.5.2's ruling, the user's of 2026-11-06, [Q-M1e2.23](../../../../plans/m1e2_correctness/open_questions.md#q-m1e223--what-is-a-string-for)): the value of `:why` (a template), `:source` (a source sentence) or `:goal-text` (a template), in any Unicode, which the read-out, `--trace`, `saturate --dump`, a state file and `render program` carry byte for byte (`ein-cli/tests/natural_language_text.rs`). Written anywhere else, a fact's or a rule's argument, a name, a keyword's value, it is a parse error at the string with a note saying so, and the name written bare is what it meant: `(p "1")` is refused, `(p 1)` is the fact. A `\u{…}` names a Unicode scalar value ([`00_ebnf.md` § 1](00_ebnf.md#1-lexical-grammar), fact 4). **Until the swap** a string was also a **fact's argument**, top-level or nested, the name its body spells: `"foo"` and `foo` were one value (M1e2 S1e2.2.16, 2026-11-04); and in a **rule** the symbol it names at any depth, a name of the program as that atom is (M1e2 [S1e2.2.18](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.18_strings_in_rules.md), 2026-11-04), where until then the rule compiler did not lower one (W18) |
 
 **There is no `RANGE`**, and no number of any kind: Ein has no numbers and no
 ranges, and none is planned (the user, 2026-11-06,
-[Q-M1e2.24](../../../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)).
+[Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)).
 M1f [S1f.5.3](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.3_range_retired.md)
 retired the token on 2026-11-08, so `1..5` was the `INT` `1` and then `..5`,
 no token, and a parse error wherever it was written, until S1f.5.5's swap
@@ -39,7 +39,7 @@ made it one name (S1f.5.4's ruling): `(r 1..5 a)` is a fact of the name
 `1..5` since. Until S1f.5.3 `RANGE`, `[0-9]+\.\.([0-9]+|\*)`, was *UML-style
 cardinality* for a `:cardinality` no program wrote and no code read: in a fact
 it stored the name `1..5`, as a keyword's value it was dropped, and in a rule
-the loader refused it (M1e2 S1e2.2.20, Q-M1e2.13 (a)).
+the loader refused it (M1e2 S1e2.2.20).
 
 The regexes above are the readable form.
 [`00_ebnf.md` §1](00_ebnf.md#1-lexical-grammar) is the exact one, `ein.l` as
@@ -164,7 +164,7 @@ Which keywords a form requires, and that each appears once, stay the loader's.
 Until S1f.5.5's swap (2026-11-09) only `query`, `solve` and `config` refused a
 keyword they did not list, at load. Every other form dropped one, and so did
 every term: a keyword pair in a `:match` or a `:goal` was dropped by the
-compiler (Q32), one in a macro call by the expander's arity filter, and an
+compiler, one in a macro call by the expander's arity filter, and an
 annotation such as `(relation s Node :cardinality 1..1)` or `(q c :why
 "text")` by the loader, so a written condition or conclusion read as nothing
 (W32's seven rows, fixed by the swap). `:cardinality` and a query's `:mode`,
@@ -416,8 +416,8 @@ NestedFact FactClauses ')'`, one fact, so a wrong arity is a parse error
 (`=` was one too, two arguments, until M1f S1f.5.5's swap made it a name,
 S1f.5.4's ruling, so `(= a b c)` is a fact). `and` / `or` / `neq` are kernel
 meta-primitives that belong inside
-`:match` premises (a guard is a premise, `(neq ?a ?c)`, since Q32 dropped the
-`:where` clause), never a top-level fact head. **`eq` and `neq` are relations
+`:match` premises (a guard is a premise, `(neq ?a ?c)`; there is no
+`:where` clause, [Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)), never a top-level fact head. **`eq` and `neq` are relations
 whose facts are computed** since M1f
 [S1f.5.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.7_eq_and_neq_are_relations.md) (below,
 [§ Premise order around a guard](#premise-order-around-a-guard)), so no fact
@@ -532,9 +532,9 @@ since M1f [S1f.5.15](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_th
 explanation, F22 makes it canonical"*): the saturation agenda and the
 `absent` boundary were FIFO, the order rules are written in and facts
 arrive in, until the agenda took the rules whose conclusion a
-contradiction can be made of first, FIFO within each half. Until then `:priority <INT>` ordered the agenda, lower
-first, which resolved [Q15](../../../../plans/open_questions.md#q15--rule-ordering)
-(rule ordering) with static per-rule numbers. A `:priority` written
+contradiction can be made of first, FIFO within each half
+([Q-M1f.313](../../../decisions/engine/Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md)). Until then `:priority <INT>` ordered the agenda, lower
+first, by static per-rule numbers. A `:priority` written
 anyway is refused at the parse since S1f.5.5's swap, as every keyword a
 rule does not take is (S1f.5.11); from S1f.5.15 to the swap the loader
 did not read it and dropped it, as it dropped any (D-15). No corpus
@@ -675,8 +675,8 @@ S1f.5.18, one a rule could derive (Q-M1f.1 (b)). Until then each read nothing, i
 not a form was dropped, so the rule fired as if it were not written, and the
 rest matched nothing, where the same relation variable at the top level
 stopped compilation in the Python IR's spelling. A keyword pair at a
-pattern's top level, or as a premise of an `(and …)`, was Q32's, dropped by
-the compiler, until the swap refused it at the parse; S1f.5.11's T1f.5.11.2
+pattern's top level, or as a premise of an `(and …)`, was dropped by
+the compiler until the swap refused it at the parse ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); S1f.5.11's T1f.5.11.2
 retired the drop.
 
 #### Conclusion forms in `:assert`

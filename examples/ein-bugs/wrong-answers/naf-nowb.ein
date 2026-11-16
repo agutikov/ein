@@ -5,7 +5,7 @@
 ;;;
 ;;; Below this header the program is `../naf-upward-closure.ein` with
 ;;; `:enable-singleton-writeback false` added to its `(config …)` line and
-;;; nothing else; that file's header is the argument (Q-M1e.9, D4).
+;;; nothing else; that file's header is the argument (*forbid*, Q-M1e2.5).
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────────
 ;;;

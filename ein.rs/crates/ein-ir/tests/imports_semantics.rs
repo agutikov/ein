@@ -904,10 +904,10 @@ fn no_import_brings_a_modules_query_solve_or_config() {
     assert!(kb.program().config.is_none(), "the module's config came");
 }
 
-/// **A selection names; the module comes whole** — M1f S1f.6.35. Until then
-/// a selection's closure followed the names a kept declaration writes and not
-/// the names inside a kept fact (Q-M1f.141), and a fact of the marker came
-/// where the marker was listed or written (Q-M1f.142). Every form, the facts
+/// **A selection names; the module comes whole** — M1f S1f.6.35, Q-M1f.247.
+/// Until then a selection's closure followed the names a kept declaration
+/// writes and not the names inside a kept fact, and a fact of the marker came
+/// where the marker was listed or written. Every form, the facts
 /// of the marker among them; a value the module declares as a relation, the
 /// `cat` of `(owns Ann cat)`, is read under its full name as the relation is.
 #[test]

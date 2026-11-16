@@ -736,7 +736,7 @@ fn the_modules_write_no_negation() {
 /// `utils/gen_gates.py --check`, run here so that it is in the gate: the
 /// per-commit tier runs `cargo test --workspace`, and its job installs a
 /// `python3` for `cli_semantics.rs`'s `gen_zebra2_variants.py --check`, the
-/// same shape as `ein-ir/tests/digit_tables.rs`' (Q-M1f.145).
+/// same shape as `ein-ir/tests/digit_tables.rs`'.
 #[test]
 fn the_files_are_what_the_generator_writes() {
     let probe = Command::new("python3")

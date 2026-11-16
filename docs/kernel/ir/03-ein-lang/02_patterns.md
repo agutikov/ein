@@ -24,9 +24,8 @@ takes none: `:where`, the filter clause this page described until M1f
 [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md),
 is refused at the parse wherever it is written (the user's ruling of
 2026-11-07,
-[Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
-[Q32](../../../../plans/open_questions.md#q32--where-semantics) dropped
-`:where` for the positional premise on 2026-05-20, and a pair written anyway
+[Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
+`:where` was dropped for the positional premise on 2026-05-20, and a pair written anyway
 was dropped by the compiler, in silence, until S1f.5.5's swap refused it;
 S1f.5.11's T1f.5.11.2 retired the drop.
 
@@ -149,15 +148,15 @@ rules below.
 | ground atoms             | `Red`, `House-1`                        | —         | match literally                                 |
 | relation pattern         | `(?R ?a ?b [?c …])`                     | —         | the VAR head is one of the rule's parameters, which its activator binds to a relation's name; args bind positions. A head variable no parameter binds, at the top level or inside a pattern, in either clause, is **refused at load** since M1e2 S1e2.2.24 (W24): this row read *VAR head binds the relation name*, and a premise binding it, `(and (rel ?r) (box (?r b)))`, bound nothing — the pattern inside matched nothing, in silence, and one at the top level stopped compilation. A parameter its activator binds to a nested fact is refused too, at load where the activator is written and by the compiler where a rule derives it |
 | named relation pattern   | `(co-located ?a ?b)`                    | —         | match a specific relation's instances                  |
-| ~~argument wildcard~~    | `(holds _)`, `(pair ?a _)`              | —         | **refused at the parse** since M1f S1f.5.5's swap, in every position (S1f.5.1, [Q-M1e2.22](../../../../plans/m1e2_correctness/open_questions.md#q-m1e222--does-ein-need-a-wildcard)): write a variable used once, `(holds ?any)`, which matches any value and is read nowhere else. This row read *match any value, binding nothing; two are independent* (M1e2 S1e2.2.20 until the swap), and `(eq ?x _)` was refused at load from S1e2.2.24; S1f.5.1's T1f.5.1.3 retired the slot (`ef5374a1`) |
-| ~~head wildcard~~        | `(_ ?a ?b)`                             | —         | **refused at the parse** since M1f S1f.5.5's swap, as every bare `_` is (S1f.5.1), and at load from M1e2 S1e2.2.20 (Q-M1e2.14 (c)): a relation is a name or a parameter its activator binds. This row read *match any binary list head*, which no engine did: the compiler stopped on it (W20) |
+| ~~argument wildcard~~    | `(holds _)`, `(pair ?a _)`              | —         | **refused at the parse** since M1f S1f.5.5's swap, in every position (S1f.5.1, [Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)): write a variable used once, `(holds ?any)`, which matches any value and is read nowhere else. This row read *match any value, binding nothing; two are independent* (M1e2 S1e2.2.20 until the swap), and `(eq ?x _)` was refused at load from S1e2.2.24; S1f.5.1's T1f.5.1.3 retired the slot (`ef5374a1`) |
+| ~~head wildcard~~        | `(_ ?a ?b)`                             | —         | **refused at the parse** since M1f S1f.5.5's swap, as every bare `_` is (S1f.5.1), and at load from M1e2 S1e2.2.20 ([Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)): a relation is a name or a parameter its activator binds. This row read *match any binary list head*, which no engine did: the compiler stopped on it (W20) |
 | **conjunction**          | `(and <p1> <p2> …)`                     | ✓ AND    | conjunctive match (kernel primitive)             |
 | **disjunction**          | `(or  <p1> <p2> …)`                     | ✓ OR     | disjunctive match (grammar-reserved; engine semantics in P1.3) |
 | **negation**             | `(not <p>)`                             | ✓ NOT    | wrapped premise must not hold                    |
 | equality fact            | `(= ?a ?b)`                             | —         | matches a **stored** `(= …)` fact — see below; `=` is a name since M1f S1f.5.5's swap (S1f.5.4's name rule), and this row's mark was ✓ EQ, the hand-written grammar's reserved head, until then |
 | **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the relations of equality and non-equality, computed and never stored: a test where both sides are bound, and a binding where one is free (since M1f S1f.5.7; until then two predicates that compared the bindings and bound nothing) |
 | membership check         | `(is-a ?a ?T)`                          | —         | ordinary relation pattern; this row's mark was ✓ RELATION until M1f S1f.5.5's swap, though no production was ever `is-a`'s |
-| ~~`:where` filter~~      | `:where (transitive ?r) (neq ?a ?b)`    | —         | **refused at the parse** since M1f S1f.5.5's swap, as every keyword a rule does not take and every keyword pair inside a term is (S1f.5.11, Q-M1e2.28): write each guard as a premise beside the patterns, `(and (?r ?a ?b) (?r ?b ?c) (neq ?a ?c))`. This row read *type / inequality / structural-predicate filters*; Q32 (2026-05-20) dropped `:where` for the positional premise, and the compiler dropped a pair written anyway, in silence, until the swap; S1f.5.11's T1f.5.11.2 retired the drop |
+| ~~`:where` filter~~      | `:where (transitive ?r) (neq ?a ?b)`    | —         | **refused at the parse** since M1f S1f.5.5's swap, as every keyword a rule does not take and every keyword pair inside a term is (S1f.5.11, Q-M1e2.28): write each guard as a premise beside the patterns, `(and (?r ?a ?b) (?r ?b ?c) (neq ?a ?c))`. This row read *type / inequality / structural-predicate filters*; `:where` was dropped for the positional premise on 2026-05-20, and the compiler dropped a pair written anyway, in silence, until the swap; S1f.5.11's T1f.5.11.2 retired the drop |
 | relation-property tag    | `(transitive ?r)`                       | —         | an ordinary premise matching a stored property fact, a join and not a test; this row wrote it `:where (transitive ?r)` until S1f.5.11 |
 
 **A premise is a form** — a pattern, a guard, an `(absent …)`, or an
@@ -169,7 +168,7 @@ until then the compiler dropped it in silence, so `:match _` fired with no
 premise at all and `(and (hit ?y) foo)` on `(hit ?y)` alone. **A keyword
 pair anywhere in a premise is refused at the parse** since M1f S1f.5.5's swap
 (S1f.5.11): a term takes no keyword. Until then one as a premise of an `(and
-…)`, Q32's `:where`, was dropped, as was one at a pattern's top level, and
+…)`, a `:where` among them, was dropped, as was one at a pattern's top level, and
 one inside a pattern inside a pattern, `(box (a b :k v))`, matched nothing
 until S1e2.2.24 refused it at load.
 
@@ -270,7 +269,7 @@ even where `?x` was the fact `(f a)`, and `(and (neq ?x a) (p ?x))` fired for
 `a`. A range was refused there too, from S1e2.2.20, until M1f S1f.5.3 retired
 the token: `1..3` is a parse error since.
 
-Q33 caps it there for a stated reason: *a predicate's truth is **computed**
+It stays at `eq` and `neq` ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)) for a stated reason: *a predicate's truth is **computed**
 from the bindings, where a relation's truth is **data***. Ein has no numbers
 and none is planned (the user, 2026-11-06, Q-M1e2.24), so no numeric,
 cardinality or aggregation primitive is either.
@@ -279,8 +278,8 @@ cardinality or aggregation primitive is either.
 were — they are ordinary relation patterns matching a stored property fact
 that the puzzle or the stdlib asserted. Written as a premise, what one does
 is a join, not a computation. Written in a `:where`, as this page showed until
-M1f S1f.5.11, it was dropped with the pair (Q32), so it gated nothing, until
-S1f.5.5's swap refused it at the parse.
+M1f S1f.5.11, it was dropped with the pair, so it gated nothing, until
+S1f.5.5's swap refused it at the parse ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
 
 > **The aggregate registry was designed and never built.** An earlier draft of
 > this page listed `unique-remaining`, `no-remaining-option` and
@@ -332,7 +331,7 @@ kb load error: rule 'triangle-composition': its :match writes (?r ?a ?b) with ?r
 
 With `?r` a parameter the rule is the T2 form below. Until M1f S1f.5.11 this
 section wrote the tag `:where (transitive ?r)`, a keyword pair the compiler
-dropped (Q32), so the guard read nothing even before the loader refused the
+dropped, so the guard read nothing even before the loader refused the
 relation variable; since S1f.5.5's swap that spelling is a parse error at
 `:where`.
 
@@ -353,8 +352,8 @@ relations explicitly tagged. The T2 form is the one the stdlib ships,
 with `(co-located a b)` and `(co-located b c)` it derives `(co-located a c
 :rule transitive)` (`ein saturate FILE --dump`, 2026-11-09). Its guard is the
 premise `(neq ?a ?c)`; until M1f S1f.5.11 this page wrote it `:where (neq ?a
-?c)`, which the compiler dropped (Q32), so the rule fired unguarded, and which
-is a parse error since S1f.5.5's swap.
+?c)`, which the compiler dropped, so the rule fired unguarded, and which
+is a parse error since S1f.5.5's swap ([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
 
 The two forms were meant to differ in *trace shape*: the T3 form would name
 `triangle-composition` in the firing, the T2 form names `transitive`. Only the

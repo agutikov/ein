@@ -324,7 +324,7 @@ fn the_module_is_seven_closed_tables_and_nothing_else() {
 /// for both of its files, `std.math.digits` and, since S1f.6.16, `std.math.bits`:
 /// the per-commit tier runs `cargo test --workspace`, and its job installs a
 /// `python3` for `cli_semantics.rs`'s `gen_zebra2_variants.py --check`, the
-/// same shape (Q-M1f.145).
+/// same shape.
 #[test]
 fn the_file_is_what_the_generator_writes() {
     let probe = Command::new("python3")

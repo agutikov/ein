@@ -160,7 +160,7 @@ S1f.5.5's swap, and `reserved_open_symbols` at its own `:symbols (open)` since
 S1f.5.23, `open` being no name. On 2026-08-31 it was 11 of 41; the swap moved twenty-one of
 them to `examples/broken/`, each refused at the parse since.
 
-*Why.* [Q-M1a.6](../history/m1a_rust/open_questions.md#q-m1a6--at-none-in-loader-messages)
+*Why.* [Q-M1a.6](../decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md)
 — a genuine usability bug, kept deliberately so that fixing it is one
 visible re-baseline rather than noise. It is the clearest
 candidate on this page for being **fixed** rather than documented; what it
@@ -652,7 +652,7 @@ names the failure's class, and exiting non-zero:
 | an argument the CLI rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 **`KeyError` left the table at M1f
-[S1f.5.18](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)** (2026-11-09, Q-M1f.37):
+[S1f.5.18](../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.18_an_activator_binds_a_nested_fact.md)** (2026-11-09):
 `KeyError: "unbound var ?y in :assert — bindings: {…}"`, exit 1, its message
 printed as its `repr` (§2.2), quotes and all, where a conclusion read a variable
 its match left unbound. Since M1f S1f.5.10 a conclusion variable no premise or
@@ -960,7 +960,7 @@ already means *usage error* and *budget abort* in this tool
 ([TE-M4](../history/m1e_review_processing/README.md#s1e36--tests-medium)).
 A third meaning is a CLI-vocabulary change and belongs with that overload
 rather than beside it —
-[Q-M1e.22](../history/m1e_review_processing/open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own).
+[Q-M1e.22](../decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md).
 Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all seven
 options.
 
@@ -1131,11 +1131,10 @@ follows is the section as it stood from S1e2.2.20 to the swap.
 
 A wildcard `_` stands for an argument, and a relation is named by a name or
 by a parameter its activator binds (Q29). So, on the user's ruling of
-2026-11-05
-([Q-M1e2.14](../../plans/m1e2_correctness/open_questions.md#q-m1e214--how-does-a-head-wildcard-match-every-relation)
-(c)), the loader refuses a `_` written as a form's relation, `(_ a)`, at any
+2026-11-05, the loader refuses a `_` written as a form's relation, `(_ a)`, at any
 depth of a rule's `:match` or `:assert`, in a rule, an hrule or an
-obligation. One line per slot, `; `-joined with every other loader error, in
+obligation; a bare `_` is refused at the parse wherever it is written since
+([Q-M1e2.22](../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)). One line per slot, `; `-joined with every other loader error, in
 ein's own words:
 
 | input | message | exit |
@@ -1155,14 +1154,12 @@ the rows of `ein-ir/tests/grammar_pages.rs`' table that write `_` and `?_`
 `corpus/wrong_answers.toml`'s `W20/wild-in-head`.
 
 **A range was refused here too, until M1f S1f.5.3** (2026-11-08). From
-S1e2.2.20, on the user's ruling of 2026-11-04
-([Q-M1e2.13](../../plans/m1e2_correctness/open_questions.md#q-m1e213--what-does-a-wildcard-or-a-range-in-a-rules-pattern-mean)
-(a)), the loader refused a range, `1..3` or `2..*`, written where a pattern's
+S1e2.2.20, on the user's ruling of 2026-11-04, the loader refused a range, `1..3` or `2..*`, written where a pattern's
 argument goes or as a whole clause, with *`rule 'r': its :match writes 1..3
 as an argument of n, and no fact can hold it — a range is cardinality
 metadata, and a rule matches and concludes facts`*. Ein has no numbers and no
 ranges (the user, 2026-11-06,
-[Q-M1e2.24](../../plans/m1e2_correctness/open_questions.md#q-m1e224--are-there-numbers-in-ein)),
+[Q-M1e2.24](../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)),
 and S1f.5.3 retired the token, so `1..3` was a parse error wherever it was
 written (§ 1), from every command that read the program, exit 1 (`ein
 test`: 2), until S1f.5.5's swap made it one name (S1f.5.4's ruling): since,
@@ -1194,8 +1191,8 @@ called as `(id foo)`, which S1f.5.5's T5 kept
 Each shape below loaded until 2026-11-05 and read nothing, in silence: no
 fact could make it hold, or it held whatever the facts. On the user's rulings
 of that day
-([Q-M1e2.16](../../plans/m1e2_correctness/open_questions.md#q-m1e216--what-does-the-close-do-with-the-inventorys-items)
-(1) and [Q-M1e2.18](../../plans/m1e2_correctness/open_questions.md#q-m1e218--what-else-in-a-rule-reads-nothing-in-silence)),
+([Q-M1e2.18](../decisions/language/Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md);
+`_` is [Q-M1e2.22](../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)'s, a keyword pair in a term [Q-M1e2.28](../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)'s),
 the loader refuses each in a rule, an hrule and an obligation, in the same
 pass as § 4.8's, one line per slot, `; `-joined with every other loader
 error, in ein's own words; exit 1 (`ein test`: 2):
@@ -1251,9 +1248,10 @@ by the rule's parameters and by the variables of the positive patterns written
 before it; under an `(absent …)`, by those the enclosing premises bound before
 it and the `absent`'s own earlier premises. What stayed until M1f S1f.5.5's swap: a keyword pair at a
 pattern's top level or as a premise of an `(and …)`, which the compiler
-dropped (Q32); `_` as a pattern's argument; `_` and a keyword pair at a
+dropped; `_` as a pattern's argument; `_` and a keyword pair at a
 conclusion's top level, which stopped the firing with § 4's line. Each is a
-parse error since the swap (`_` § 4.8, S1f.5.1; the keyword pair S1f.5.11),
+parse error since the swap (`_` § 4.8, S1f.5.1; the keyword pair S1f.5.11,
+[Q-M1e2.28](../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)),
 and S1f.5.11's T1f.5.11.2 retired the compiler's drop. **Until S1e2.2.24** (W24): a guard compared `_`, a
 form or a keyword pair as a raw IR node, equal to no value, and a variable
 not yet bound as a null, so `(eq ?x _)` never held and `(and (neq ?x a) (p
@@ -1402,7 +1400,7 @@ fires since M1f S1f.5.9), its activator never written or its `(absent …)` neve
 holding, loaded and answered. **Nothing reaches § 4's retired `KeyError` line since M1f
 S1f.5.18**: the one input S1f.5.10 left, a value parameter its activator binds
 to a nested fact, read only by a conclusion, which the compiler did not seed
-(W33's cause), is bound since (`W58`, Q-M1f.37), and the line and
+(W33's cause), is bound since (`W58`), and the line and
 `FireError::UnboundVar` are gone. Pinned by `ein-ir`'s `from_ir.rs`
 `a_conclusion_variable_nothing_binds_is_refused_at_load`, `ein-cli`'s
 `cli_semantics.rs` test of the same name, `fuzz_properties`'
@@ -1619,7 +1617,7 @@ pattern and a claim's fact; a relation parameter bound to it, which read a
 relation `open`, or an obligation's, which every state owed; `open` as a value,
 a name of the program the blind enumerator proposed facts about; and a
 macro's body stating the verdict for a rule. Twenty-four register rows, W70 to
-W72, filed and fixed by the stage (Q-M1f.89). No corpus program wrote `open`
+W72, filed and fixed by the stage. No corpus program wrote `open`
 but as a rule's whole `:assert`, so no corpus answer moved.
 
 Pinned by `ein-cli`'s `open_reserved.rs` (the fifty-two places and the
@@ -2107,11 +2105,10 @@ body spells and no fact of the macro's name), `ein-ir`'s `from_ir` unit test
 A stage of M1f
 [P1f.6](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/README.md),
 [S1f.6.11](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.11_importing_facts.md),
-on the user's ruling of 2026-11-11, *"importing facts is mandatory"*
-(Q-M1f.135 to .144, defaulted); since
+on the user's ruling of 2026-11-11, *"importing facts is mandatory"*; since
 [S1f.6.35](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.35_imports_by_full_name.md),
 on the user's ruling of 2026-11-14, *"in all cases we import everything, the
-difference only in names"* (§ 4.28).
+difference only in names"* ([Q-M1f.247](../decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md), § 4.28).
 
 **Every import brings every declaration and every fact of its module**, with
 the module's own imports, one copy per program, under full names
@@ -2150,8 +2147,7 @@ the module's own imports, one copy per program, under full names
 of what their declarations write and the facts of every relation in it,
 unrenamed, so an unlisted rule stayed behind even where the facts would fire
 it, and the loader said so in a `note:` line where a selection brought a
-relation's declaration and no rule that derives it (S1f.6.25, E-20,
-Q-M1f.217); a qualified import renamed a copy of the module's subtree under
+relation's declaration and no rule that derives it (S1f.6.25, E-20); a qualified import renamed a copy of the module's subtree under
 its prefix, so the facts of `o.is-a` never joined the program's `is-a`, and two
 prefixes were two copies. Nothing is left behind since, and the line is
 retired. **Until S1f.6.11** a selection kept declarations alone, and a
@@ -2308,14 +2304,14 @@ empty (O + HR, O + NH, O + C). E-47 met H + NH on S1f.6.28's word problems, wher
 named the list the program already wrote. The corpus carried twenty-four programs in conflict, every one a
 deliberate fixture that switched an obligation's generating role off to ask about root alone: fourteen answer as
 before, nine state the R their edit gives, and `tests/stdlib/closure/03_closed_and_owing.ein` is
-`examples/ein-bugs/closed-and-owing.ein`, the refusal's fixture (Q-M1f.246). No program that loads with no conflict
+`examples/ein-bugs/closed-and-owing.ein`, the refusal's fixture. No program that loads with no conflict
 moved.
 
 **`(solve :no-search)`** (M1f [S1f.6.36](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md),
 the user's words of 2026-11-13, *"maybe some explicit flag in (solve ) ? instead of abusing bugs"*) states that the
 lattice is root alone: no rung runs, so every generating mechanism proposes nothing, and an obligation judges root
 alone. It is the sanctioned way to say what the twenty-four programs said with a list; twenty-one of them say it with
-the keyword since (Q-M1f.260). Beside an obligation or a closure it is silent; beside an hrule, `:hypothesis-relations`
+the keyword since. Beside an obligation or a closure it is silent; beside an hrule, `:hypothesis-relations`
 or `:no-hypothesis` it is one `note:` each, *FILE:L:C: solve: its :no-search states the lattice is root alone, so hrule
 'guess' proposes no candidate* and *FILE:L:C: solve: its :no-hypothesis filters no candidate — the program states
 :no-search, whose lattice is root alone*, which replace the notes above. **It relaxes no conflict**: H, O and the lists
@@ -2618,10 +2614,11 @@ stays `Contradiction`, which is the same shape S1d.3.3 held to. `Open` at
 `exhausted = false` is unreachable on today's corpus — every `Open` in it is
 exhausted — so that row is written to be right rather than because a cell moved.
 
-What remains of [Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
-after this is the *stopping* half, not the vocabulary half: whether a search
-may stop early on purpose, and what would license it. The word it used to be
-about is settled: a refutation said under a depth cap is not a refutation, and
+The *stopping* half beside the vocabulary is
+[Q-M1d.1](../decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md):
+a search stops early only where its question is decided, on a property the
+route proves, or where a bound stops it and the run says so. The word is
+settled too: a refutation said under a depth cap is not a refutation, and
 it no longer says it is.
 
 **M1d [S1d.4.1](../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)
@@ -2724,7 +2721,7 @@ Two things the fix decides rather than assumes:
   this cap's shape to begin with: **12** corpus entries report `Contradiction`
   with a 0-fact core under their ordinary `solve` run, every one of them at
   `exhausted = false`. Whether that pair may keep the *word* is
-  [Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+  [Q-M1d.1](../decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md)'s
   and is untouched here — no exit code moved, and `corpus_exits.txt` is
   unchanged.
 
@@ -2887,9 +2884,10 @@ on every commit. The two items are kept as the record of what was filed:
 
 ## See also
 
-- [`../../docs/history/m1a_rust/open_questions.md`](../history/m1a_rust/open_questions.md)
-  — Q-M1a.3 / .4 / .5 / .6 / .8 / .13 / .14 / .15, the resolutions this page
-  restates.
+- [Q-M1a.3](../decisions/diagnostics/Q-M1a.3-a-parse-error-names-its-position-and-its-token.md),
+  [Q-M1a.6](../decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md) and
+  [Q-M1a.13](../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md)
+  — the decisions this page restates.
 - [`inference/reserved_engine_strings.md`](inference/reserved_engine_strings.md)
   — the other kind of thing that is defined only because the engine does it.
 - [`inference/implementation.md`](inference/implementation.md) — where each

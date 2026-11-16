@@ -1,9 +1,8 @@
 //! **A refutation resting on an `absent` a commitment can still fill** — M1e
 //! [S1e.2.3](../../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)'s
-//! containment for
-//! [Q-M1e.9](../../../../docs/history/m1e_review_processing/open_questions.md),
-//! refused since M1e2
-//! [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md).
+//! containment, refused since M1e2
+//! [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
+//! ([Q-M1e2.5](../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
 //!
 //! ## What is unsound
 //!

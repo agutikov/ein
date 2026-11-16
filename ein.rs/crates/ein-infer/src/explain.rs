@@ -22,7 +22,7 @@
 //! [`ein_core::Kb::justifications`]: the primary, up to
 //! [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`] alternatives kept by **premise
 //! count**, and, beside them, the arrival with the **smallest closure**
-//! ([`ein_core::Kb::best`], M1e2 S1e2.2.11, Q-M1e.15's (3)). The promise is
+//! ([`ein_core::Kb::best`], M1e2 S1e2.2.11, Q-M1e2.11). The promise is
 //! the smallest frontier over **every derivation the program records**, and
 //! the third is what keeps a full list from hiding the derivation this search
 //! would choose: premise count is local and frontier size transitive, so a
@@ -59,8 +59,8 @@
 //! frontier and dropped the rest, so a cut core was printed as the core
 //! (W23): `examples/ein-bugs/wrong-answers/core-search-cut.ein`'s `(A k)` has
 //! 256 environments, and its root core was ten facts where eight suffice. The
-//! user ruled on 2026-11-05 (Q-M1e2.16) that the search keeps its budget and a
-//! cut core says so; the exact core past the budget is F22's. The corpus cuts
+//! search keeps its budget and a cut core says so; the exact core past the
+//! budget is F22's. The corpus cuts
 //! 19 of the 5 442 cores `--dump-answer` reports for N, `zebra.ein`'s at the
 //! rounds and the `zebra2` family's at the environments, and a budget sixteen
 //! times larger gives each the same core (S1e2.2.23 T1, 2026-11-05).

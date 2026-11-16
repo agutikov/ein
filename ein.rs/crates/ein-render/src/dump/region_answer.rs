@@ -440,11 +440,11 @@ fn licences(r: &ReadOut) -> Json {
 /// `source` before them and the program's own blocks after.
 /// One binding's value: a JSON string, whatever it spells — a name, a
 /// nested fact's s-expression. Since S1f.5.5's swap a run of digits is a name
-/// (S1f.5.4's ruling), and S1f.5.4's Q4 (a), decided 2026-11-08, keeps every
-/// name a string here, so that `(p 007)` and `(p 7)` stay two. Until then an
-/// integer was a JSON number, its digits unclamped (`Json::BigInt` past
-/// `i64`), what M1e's fuzzer found the walk's summary quoting. No reader of
-/// `ein-summary/2` reads a binding's JSON type, so the schema id stays.
+/// (S1f.5.4's ruling), and every name is a string here (Q-M1f.340), so
+/// that `(p 007)` and `(p 7)` stay two. Until then an integer was a JSON
+/// number, its digits unclamped (`Json::BigInt` past `i64`), what M1e's
+/// fuzzer found the walk's summary quoting. No reader of `ein-summary/2`
+/// reads a binding's JSON type, so the schema id stays.
 fn binding(v: &str) -> Json {
     Json::str(v)
 }

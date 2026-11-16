@@ -202,8 +202,9 @@ pub struct SolverConfig {
     /// - `RefutationUnderAbsentWarning`, M1e S1e.2.3's: the rule concludes
     ///   `(false)` or a `(not …)` from a guard over a relation the program's
     ///   **hypothesis generator can still propose**. That one *is* a
-    ///   soundness signal — `dead` is not upward-closed under `absent`
-    ///   ([Q-M1e.9]) — and it rides this flag rather than an eighteenth
+    ///   soundness signal — `dead` is not upward-closed under `absent`, which
+    ///   is why such a program is refused ([Q-M1e2.5]) — and it rides this
+    ///   flag rather than an eighteenth
     ///   field because `SolverConfig` is rendered into the KB-shape digest,
     ///   so a new field re-blesses every shape golden in the corpus.
     ///
@@ -215,7 +216,7 @@ pub struct SolverConfig {
     /// example is one that gets turned off. The set is named and pinned in
     /// `ein-infer/tests/refutation_under_absent.rs`.
     ///
-    /// [Q-M1e.9]: ../../../../docs/history/m1e_review_processing/open_questions.md
+    /// [Q-M1e2.5]: ../../../../docs/decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md
     pub warn_derived_naf: bool,
     /// **Retired**, and read by nothing; kept at its default for the `.einb`
     /// layout. Meant as: negative means the walk's content sort of a layer's

@@ -53,8 +53,8 @@
 //! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
 //! [`the_core_exemption_is_one_flag_and_the_core_rows`] holds it that narrow.
 //!
-//! **And one register row** (M1f S1f.5.15, the user's ruling of 2026-11-08 on
-//! Q-M1f.5 (a)): W36's witness prints another `refuted by` under that flag
+//! **And one register row** (M1f S1f.5.15): W36's witness prints another
+//! `refuted by` under that flag
 //! beside the same core, which the exemption does not cover. It is a wrong
 //! answer, `open` and owned by F22, and its program is compared less that row
 //! until F22 fixes it ([`REFUTED_BY_OPEN`]);
@@ -529,7 +529,7 @@ const CORE_FLAG: &str = "record-alternative-justifications";
 
 /// The programs on which [`CORE_FLAG`] moves `refuted by` beside a core that
 /// did not move, each under a register row `open` and owned by F22:
-/// `W36/alt-flag-refuted-by` (M1f S1f.5.15, Q-M1f.5 (a)), on its witness and,
+/// `W36/alt-flag-refuted-by` (M1f S1f.5.15), on its witness and,
 /// since S1f.5.15 took every `:priority` out, on `features/12`, the program
 /// the witness was written from, which no typed order hides any more; and
 /// `W36/alt-flag-two-derivations`, the witness no rule order hides. Each is
@@ -815,7 +815,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
                 if want != got {
                     exempt.insert(rel.clone());
                 }
-                // W36's program: `refuted by` too, until F22 (Q-M1f.5 (a)).
+                // W36's program: `refuted by` too, until F22.
                 let moved = core_moved(want, got) || REFUTED_BY_OPEN.iter().any(|(_, w)| *w == rel);
                 (without_core(want, moved), without_core(got, moved))
             } else {
@@ -948,8 +948,7 @@ fn the_librarys_question_does_the_binarys_work() {
     );
 }
 
-/// **W36 is exempt from `refuted by` until F22 fixes it** (M1f S1f.5.15, the
-/// user's ruling of 2026-11-08 on Q-M1f.5 (a)).
+/// **W36 is exempt from `refuted by` until F22 fixes it** (M1f S1f.5.15).
 ///
 /// Each [`REFUTED_BY_OPEN`] entry names a register row that is `open` and
 /// owned by F22, and a program that is its witness or that its note names;

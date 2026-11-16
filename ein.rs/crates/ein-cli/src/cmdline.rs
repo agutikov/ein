@@ -59,7 +59,7 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
 /// Refusing them moves no recorded output: no golden under `tests/golden/` is
 /// a `solve` invocation at all, and every `-n` in the corpus is `-n 3`. M1e
 /// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
-/// the review's `Q7`.
+/// Q-M1e.24.
 ///
 /// The non-integer message stays [`int_arg`]'s, because
 /// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)

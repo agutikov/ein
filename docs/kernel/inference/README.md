@@ -518,8 +518,8 @@ and it is deliberately the *other* NAF hazard rather than a refinement of
 this one. `RefutationUnderAbsentWarning` fires when a rule concludes
 `(false)` or a `(not …)` from a guard over a relation the program's
 **hypothesis generator can still propose** — the shape on which `dead` is
-**not** upward-closed
-([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent):
+**not** upward-closed, which *forbid* refuses
+([Q-M1e2.5](../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md):
 `{(p A)}` dies while `{(p A), (q A)}` would live, and the walk's kill cache,
 singleton writeback and width-1 clause each made sure the second was
 never reached). The two questions share one walk of the guards and differ

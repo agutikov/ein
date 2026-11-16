@@ -22,7 +22,7 @@
 ;;; smallest first, and `(A k)`'s 256 are all of size 8, so which 64 it keeps
 ;;; is the tie-break's and the all-`y` one is not among them. The core it
 ;;; reports is the smallest union of a kept `(A k)` environment with `(B k)`'s,
-;;; ten facts. The user ruled on 2026-11-05 (Q-M1e2.16) that the core search
+;;; ten facts. The user ruled on 2026-11-05 that the core search
 ;;; keeps its budget and **says the core was cut**; the exact core past the
 ;;; budget is F22's. So the right answer is that core, qualified as cut.
 ;;;

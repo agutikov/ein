@@ -1,7 +1,7 @@
 ;;; A wildcard `_` in a rule's `:match` matches nothing — M1e2 **W20**,
 ;;; register row `W20/wild-in-match` (`corpus/wrong_answers.toml`), banked by
 ;;; S1e2.2.20 (2026-11-05) from S1e2.2.18's parked note, ruled by the user on
-;;; 2026-11-04 (Q-M1e2.13 (a)).
+;;; 2026-11-04; a bare `_` is reserved and refused today (Q-M1e2.22).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

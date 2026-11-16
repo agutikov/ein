@@ -331,7 +331,7 @@ pub struct ProvArena {
 }
 
 /// A copy of the whole arena, its records in an `Arc` of the copy's own
-/// (M1f S1f.6.39, Q-M1f.292): `ProvArena::promote` grows the arena only
+/// (M1f S1f.6.39): `ProvArena::promote` grows the arena only
 /// where nothing else holds it, so a copy that shared the original's records
 /// could not be grown.
 impl Clone for ProvArena {

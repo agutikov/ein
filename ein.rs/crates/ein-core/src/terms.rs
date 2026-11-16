@@ -168,7 +168,7 @@ impl Default for Terms {
 /// the derivation records under the same ids, the kernel's words where they
 /// were. A caller that loads a program once and runs several things over it
 /// runs each on a copy of the loaded `Terms` (M1f S1f.6.39, the corpus
-/// sweeps' one load a program, Q-M1f.292), and a copy interns from where the
+/// sweeps' one load a program), and a copy interns from where the
 /// original stood, so every id it hands out is the one the original would.
 impl Clone for Terms {
     fn clone(&self) -> Terms {

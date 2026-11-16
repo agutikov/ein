@@ -2,7 +2,7 @@
 ;;; **W25**, register row `W25/guard-only-second` (`corpus/wrong_answers.toml`),
 ;;; banked by S1e2.2.25 (2026-11-05) from the inventory of 2026-11-05's W-8
 ;;; (its probe `guard_only_second.ein`, the program unchanged), filed `open`
-;;; and deferred to F22 on the user's ruling of that day (Q-M1e2.16 (2), (5)).
+;;; and deferred to F22 on the user's ruling of that day.
 ;;; Its control is `guard-only-first.ein`: until M1f S1f.5.15 the same program
 ;;; with the two refuting rules' priorities swapped, and since then, no rule
 ;;; having a priority, the same program with `early` reading `(pp ?x)`, which a

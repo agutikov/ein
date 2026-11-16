@@ -68,7 +68,7 @@
 ;; which its activator binds, and a query has none. `ein solve` and `ein
 ;; oracle` refused that goal where a state was answered from it, in the Python
 ;; IR's spelling, while this file's declared runs never asked it; the loader
-;; refuses it since, on every command (W64, Q-M1f.76), and the goal is the
+;; refuses it since, on every command (W64), and the goal is the
 ;; closure edge the demo is about.
 (query
   :goal (is-a* Rex Animal))

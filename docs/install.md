@@ -194,8 +194,8 @@ PyO3 binding was **deferred on 2026-08-21** for want of a consumer —
 [M20](../plans/m20_gui/README.md) links the crates, [M10](../plans/m10_external_benchmarks/README.md)'s
 benchmark runner must shell out to be a fair measurement, and
 [M2](../plans/m2_nl_to_ir/README.md)'s reason turned out to be an HTTP server.
-[Q-M1a.23](history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
-holds the three conditions that would revive it.
+[Q-M1a.23](decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)
+says when one is added: a consumer the binary cannot serve.
 
 To drive ein from Python today, run the binary and read its output: `ein solve
 … --json-summary out.json` for the verdict and counters, `--events e.jsonl`

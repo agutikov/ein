@@ -141,7 +141,7 @@ fn a_true_expectation_exits_zero() {
 /// messages themselves are the `load-negative` and `parse-negative` corpus
 /// groups'. Since M1f S1f.5.5's swap two are the grammar's (an unknown
 /// keyword, S1f.5.11; a variable in a claim's fact, S1f.5.2's G-6), refused at
-/// the parse and moved to `examples/broken/` (Q-M1f.2 (a)), their `.expected`
+/// the parse and moved to `examples/broken/`, their `.expected`
 /// the parse report with the file written `{FILE}`; the other two stay the
 /// loader's.
 #[test]

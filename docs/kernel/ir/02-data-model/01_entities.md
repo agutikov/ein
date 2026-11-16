@@ -365,7 +365,7 @@ frontier is smaller. A full list refused the derivation the
 explanation search would have chosen, and
 `examples/ein-bugs/alt-cap-core.ein` reported a 3-fact unsat core where
 a 2-fact one exists (M1e S1e.1.3, the review's Q2;
-[Q-M1e.15](../../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+[Q-M1e2.11](../../../decisions/answer/Q-M1e2.11-a-core-is-the-smallest-over-every-derivation.md)).
 The smallest-closure arrival is what keeps it since: a closure is the
 estimate of a derivation's frontier, 1 for a leaf, 0 for a writeback,
 and for a derivation the sum of its premises'. It is still not every

@@ -112,8 +112,8 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 /// `(rule_name, the activator's arguments)` — the compile cache's key.
 ///
 /// It keeps **all** the activator's arguments, as values, while
-/// [`Plan::activator_args`] keeps only the symbol ones. That asymmetry is
-/// Q-M1a.8. Since M1e2 S1e2.2.7 it reaches no identity: the engine interns
+/// [`Plan::activator_args`] keeps only the symbol ones. Since M1e2 S1e2.2.7
+/// that asymmetry reaches no identity (Q-M1e.16): the engine interns
 /// *this* list as [`crate::firing::BindingKey`]'s activator half, so the
 /// compile key and the binding key are one list, and `Plan::activator_args`
 /// is what the narration and the static checks read. Until then the binding
@@ -675,8 +675,8 @@ impl<'a> Compiler<'a> {
         match self.ast.node(node) {
             Node::SForm { .. } => {}
             // A keyword pair, `:where (neq ?a ?b)` beside a conjunction's
-            // members, was dropped here (Q32, 2026-05-20: tolerance chosen over
-            // a loud failure), so the rule compiled and fired unguarded, until
+            // members, was dropped here (tolerance chosen over a loud
+            // failure), so the rule compiled and fired unguarded, until
             // M1f S1f.5.5's swap refused a keyword pair inside a term at the
             // parse (S1f.5.11's ruling, D-15; Q-M1e2.28). S1f.5.11's T1f.5.11.2
             // retired the drop, each path shown unreachable first.
@@ -687,7 +687,7 @@ impl<'a> Compiler<'a> {
             }
             // A premise that is not a form — an atom, a variable, `_`, a
             // string. The loader refuses each in a rule since
-            // M1e2 S1e2.2.24 (W24, Q-M1e2.16 (1)), so no program it accepts
+            // M1e2 S1e2.2.24 (W24), so no program it accepts
             // reaches this arm. Until then one did, and the premise was
             // dropped in silence: `:match _` fired with no premise at all,
             // `(and (hit ?y) _)` on `(hit ?y)` alone, and `(absent ?x)` was
@@ -996,7 +996,7 @@ impl<'a> Compiler<'a> {
     /// refusal (`from_ir`'s `NotAForm`, which a macro's body can still reach),
     /// and every form a premise can be compiles to a step, so no program
     /// reaches one. The last that did, `(absent :k v)`, a keyword pair the
-    /// compiler dropped (Q32), is a parse error since the swap.
+    /// compiler dropped, is a parse error since the swap (Q-M1e2.28).
     fn empty_sub_plan(&self, node: NodeId) -> String {
         format!(
             "`(absent …)` sub-plan compiled to no steps in {} — the guard \
@@ -1072,7 +1072,7 @@ impl<'a> Compiler<'a> {
             // A premise's relation is a name or a variable (`ein.y`'s
             // `PremiseHead`). Until M1f S1f.5.5's swap the parser also
             // admitted `_`, which the loader refused as a relation from M1e2
-            // S1e2.2.20 (Q-M1e2.14 (c)), and `(_ a)` printed the unbound-head
+            // S1e2.2.20, and `(_ a)` printed the unbound-head
             // line until then; the swap refuses a bare `_` at the parse
             // (S1f.5.1), and S1f.5.21 made the arm an invariant (Q-M1f.9 (a)).
             _ => unreachable!("a premise's relation is a name or a variable (ein.y's PremiseHead)"),
@@ -1306,19 +1306,19 @@ impl<'a> Compiler<'a> {
     /// conclusion's top level, where it stopped the firing, until M1f
     /// S1f.5.5's swap refused a keyword pair inside a term at the parse
     /// (S1f.5.11). The relation compiler skipped one at a premise's top level
-    /// (Q32's drop) until then; S1f.5.11's T1f.5.11.2 retired the skip, and
+    /// until then (refused since: Q-M1e2.28); S1f.5.11's T1f.5.11.2 retired the skip, and
     /// the arm is unreachable.
     ///
     /// **A string was such a node until M1e2 S1e2.2.18** (W18, 2026-11-04):
     /// `(rule s () :match (holds "1") …)` never fired though `(holds "1")` is
     /// a fact, an `(absent …)` over a string always held, and a string in an
     /// `:assert` stopped saturation. **So were a wildcard and a range until
-    /// M1e2 S1e2.2.20** (W20, 2026-11-05, Q-M1e2.13 (a)): `(rule w () :match
+    /// M1e2 S1e2.2.20** (W20; a bare `_` is refused since, Q-M1e2.22): `(rule w () :match
     /// (holds _) …)` never fired on `(holds a)`, an `(absent …)` over a `_`
     /// always held, an hrule with one proposed nothing, and `(n 1..3)` matched
     /// nothing, in silence. **So were a keyword pair inside a pattern inside a
     /// pattern and a relation variable no parameter binds until M1e2
-    /// S1e2.2.24** (W24, Q-M1e2.16 (1)): `(box (?r b))` never matched, and
+    /// S1e2.2.24** (W24): `(box (?r b))` never matched, and
     /// an `(absent …)` over one always held, in silence.
     fn slot(&mut self, node: NodeId) -> Result<Slot, CompileError> {
         match self.ast.node(node) {

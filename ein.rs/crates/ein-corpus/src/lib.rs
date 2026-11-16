@@ -10,7 +10,7 @@
 //! | [`plan`] | a run name → an `ein` argv, which is what makes a manifest row executable |
 //! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one (M1e2 S1e2.1.1) |
 //! | [`pool`] | the corpus sweeps' worker pool: a sweep's units on `EIN_TEST_JOBS` workers, the results in the units' order, so no verdict depends on the count (M1f S1f.6.39) |
-//! | [`shard`] | the nightly's shards: `EIN_TEST_SHARD=k/n` keeps the programs dealt to shard `k`, so `n` parallel jobs hold every program a sweep holds (M1f S1f.6.39, Q-M1f.293) |
+//! | [`shard`] | the nightly's shards: `EIN_TEST_SHARD=k/n` keeps the programs dealt to shard `k`, so `n` parallel jobs hold every program a sweep holds (M1f S1f.6.39) |
 //! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere; and [`Scratch`], the one way a test makes a directory it does not keep |
 //!
 //! What is *not* here is a `skip` helper. A skip that prints to stderr —
@@ -337,8 +337,7 @@ pub fn corpus_files() -> Vec<PathBuf> {
 /// per-commit render and determinism sweeps (`id_order_invariance`'s golden
 /// and permutation, `jobs_invariance`, `dot_wellformed`) leave those out,
 /// each one stdlib rule's claim and checked by its claims under `ein test`,
-/// and the nightly reads them (M1f S1f.6.39, the user's ruling of 2026-11-15
-/// on Q-M1f.290). A path test, never a list.
+/// and the nightly reads them (M1f S1f.6.39). A path test, never a list.
 pub fn under_tests(rel: &Path) -> bool {
     rel.starts_with("tests")
 }

@@ -7,8 +7,8 @@
 //! authority on whether the grammar and the attribute values are real.
 //!
 //! **Per commit, every corpus program outside `tests/`; in the nightly,
-//! `EIN_CORPUS_SLOW=1`, every one** (M1f S1f.6.39, the user's ruling of
-//! 2026-11-15 on Q-M1f.290): the programs under `tests/` are each one stdlib
+//! `EIN_CORPUS_SLOW=1`, every one** (M1f S1f.6.39): the programs under
+//! `tests/` are each one stdlib
 //! rule's claim, drawn by the writers every other program is drawn by.
 //!
 //! ## When Graphviz is the one that is broken
@@ -137,7 +137,7 @@ const DOT_LAYOUT_BOUND: usize = 1000;
 /// dot_wellformed -- --nocapture`). A view skipped anywhere else fails the sweep until its
 /// directory is named here, which is where a bound that has started to skip
 /// what it used to check is noticed. A per-commit run reads no program under
-/// `tests/` (Q-M1f.290), and holds the directories it reads to the entries
+/// `tests/`, and holds the directories it reads to the entries
 /// outside it; the nightly's, to every entry.
 const SKIPPING: [&str; 17] = [
     "examples/arith",
@@ -306,8 +306,8 @@ fn sweep_file(path: &std::path::Path, views: &[&'static str]) -> FileSweep {
     // A file that does not parse has no view, one that does not load has
     // no KB view, and one whose root does not saturate has no `kb-since`:
     // the corpus's load- and compile-error fixtures. The file is loaded once
-    // and every KB view drawn from a copy of the load (M1f S1f.6.39,
-    // Q-M1f.292), as `id_order_invariance` digests them.
+    // and every KB view drawn from a copy of the load (M1f S1f.6.39), as
+    // `id_order_invariance` digests them.
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {

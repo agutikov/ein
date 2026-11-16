@@ -41,10 +41,9 @@ on `EIN_TEST_JOBS` workers, default 16, read back in their order, so no
 verdict and no failure's text depends on the count. A sweep whose cells it
 times, `corpus_cli`, times each beside the cells the other workers run. The
 sweeps over (file, op) pairs load each file once and run every op on a copy
-of the load (`corpus_ops::Loads`, Q-M1f.292).
+of the load (`corpus_ops::Loads`).
 
-**Which files, per commit and in the nightly** (the user's rulings of
-2026-11-15 on Q-M1f.287 to .291). Per commit the golden and `dot_wellformed`
+**Which files, per commit and in the nightly.** Per commit the golden and `dot_wellformed`
 read every file outside `tests/`, whose programs are each one stdlib rule's
 claim and are held by their claims; the two determinism sweeps read those of
 them that **search**, whose describe saturates more than root
@@ -329,8 +328,7 @@ long running tests, we will eventually run them on dev host, retain critical tes
 (`./run_tests.sh`, `per-commit.yml`), the CI nightly (`./run_tests.sh --nightly`, `nightly.yml`) and the dev host
 (`./run_tests.sh --dev-host`), which nothing schedules. The nightly keeps a step that guards an answer or a contract no
 per-commit step guards, at a budget that fits in 5 min on the runner; a step past that, or one that measures rather
-than checks, is the dev host's, which also runs every nightly step at full budget
-([Q-M1f.102](../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
+than checks, is the dev host's, which also runs every nightly step at full budget.
 `ein-cli/tests/gate_steps.rs` holds the gate's list to its workflow, and `nightly_steps.rs` the nightly's to its
 workflow and the dev host's to the nightly's.
 
@@ -346,7 +344,7 @@ workflow and the dev host's to the nightly's.
 | `theory_share` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half | as the nightly |
 | `cover` | every entry but the `slow` ones, and the instances it names | the same: it has no slow half | as the nightly |
 | `structure_invariance` | every program that searches but the `slow` ones, and three named instances | the `slow` ones too | as the nightly |
-| `route_invariance` | every monotone program both routes describe at the default budget, but the `slow` entries | the `slow` ones too | as the nightly; nothing past the default budget since Q-M1f.304's (d) (2026-11-15), where the 2²⁵ half ran |
+| `route_invariance` | every monotone program both routes describe at the default budget, but the `slow` entries | the `slow` ones too | as the nightly; no test runs past the default region budget |
 | `id_order_invariance` | one permutation of the id space | — | eight |
 | `fuzz_properties` | 2 000 inputs | 20 000 a seed, two seeds | 1 000 000 a seed |
 | `utils/stdlib_mutants.py --check` | — | yes | yes |
@@ -370,8 +368,7 @@ and before and after the pool and the profile in
 **Twelve entries declare 30 cells** (2026-11-01). `-o score-sum` was the fourth until M1e2
 S1e2.1a.5's switch retired it with the walk's order levers. The other flags a
 program can set are reachable only through its own `(config …)` block, so a
-process sweep cannot flip them from outside
-([Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-corpus-drive-the-lever-matrix)).
+process sweep cannot flip them from outside.
 
 **Since the switch no route reads a lever**, and a cell is a claim that it
 changes nothing printed: C4 of

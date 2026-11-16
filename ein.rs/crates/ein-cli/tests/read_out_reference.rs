@@ -257,8 +257,7 @@ fn ein(args: &[String]) -> std::process::Output {
 }
 
 /// Every example block's run, with its summary: run once for tests 2–4, on
-/// the corpus sweeps' pool (M1f S1f.6.39, the user's ruling on Q-M1f.294),
-/// in the page's order.
+/// the corpus sweeps' pool (M1f S1f.6.39), in the page's order.
 fn runs() -> &'static [Run] {
     static RUNS: OnceLock<Vec<Run>> = OnceLock::new();
     RUNS.get_or_init(|| {

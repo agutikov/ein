@@ -1,7 +1,7 @@
 ;;; A wildcard `_` as a pattern's relation head stopped the run with a Python
 ;;; spelling — M1e2 **W20**, register row `W20/wild-in-head`
 ;;; (`corpus/wrong_answers.toml`), banked by S1e2.2.20 (2026-11-05) from the
-;;; user's ruling of 2026-11-04 (Q-M1e2.13 (a)).
+;;; user's ruling of 2026-11-04.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -14,10 +14,10 @@
 ;;; A relation is named by a name or by a parameter its activator binds
 ;;; (Q29), and `_` stands for an argument: the user ruled on 2026-11-05 that
 ;;; a wildcard written as a relation is refused at load, as a range is
-;;; (Q-M1e2.14 (c)), with a line in Ein's spelling naming the rule and the
+;;; (a bare `_` is refused, Q-M1e2.22), with a line in Ein's spelling naming the rule and the
 ;;; slot. Every command that loads the program exits 1 (`ein test`: 2). Until
 ;;; that ruling the right answer was `wild-in-head-twin.ein`'s, `(_ a)`
-;;; matching every fact of one argument `a` (Q-M1e2.13 (a)); a fresh head
+;;; matching every fact of one argument `a`; a fresh head
 ;;; variable is no twin, since M1 refuses `(?r a)` with no parameter `?r` as
 ;;; it refused `_`.
 ;;;

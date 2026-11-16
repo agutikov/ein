@@ -4,7 +4,7 @@
 # check, which fails where a file's count rises or a file not listed here
 # has one. A count only falls: the commit that lowers it re-banks this file,
 # and when every count is 0 the file is deleted with the baseline's reader.
-  152  README.md
+  151  README.md
   765  corpus/corpus.toml
     1  corpus/fuzz_findings/activator-text-key.ein
     2  corpus/fuzz_findings/binding-key-layout-swapped.ein
@@ -25,11 +25,11 @@
    30  ein.rs/crates/ein-cli/src/test.rs
     3  ein.rs/crates/ein-cli/src/version.rs
     2  ein.rs/crates/ein-cli/tests/acceptance_cli.rs
-   22  ein.rs/crates/ein-cli/tests/answer_dump.rs
+   19  ein.rs/crates/ein-cli/tests/answer_dump.rs
    45  ein.rs/crates/ein-cli/tests/answer_round_trip.rs
    27  ein.rs/crates/ein-cli/tests/arith_search_free.rs
     3  ein.rs/crates/ein-cli/tests/artefact_contract.rs
-  112  ein.rs/crates/ein-cli/tests/cli_semantics.rs
+  108  ein.rs/crates/ein-cli/tests/cli_semantics.rs
     4  ein.rs/crates/ein-cli/tests/closed_stdout.rs
     7  ein.rs/crates/ein-cli/tests/conclusion_shapes.rs
    21  ein.rs/crates/ein-cli/tests/config_reference.rs
@@ -50,7 +50,7 @@
     2  ein.rs/crates/ein-cli/tests/import_invariance.rs
     2  ein.rs/crates/ein-cli/tests/imports_by_full_name.rs
     3  ein.rs/crates/ein-cli/tests/leftover_probe.rs
-   35  ein.rs/crates/ein-cli/tests/lever_invariance.rs
+   34  ein.rs/crates/ein-cli/tests/lever_invariance.rs
     3  ein.rs/crates/ein-cli/tests/macro_bodies.rs
     2  ein.rs/crates/ein-cli/tests/macro_facts.rs
     8  ein.rs/crates/ein-cli/tests/mechanism_conflicts.rs
@@ -59,7 +59,7 @@
     2  ein.rs/crates/ein-cli/tests/natural_language_page.rs
    10  ein.rs/crates/ein-cli/tests/natural_language_text.rs
     3  ein.rs/crates/ein-cli/tests/negated_names.rs
-   28  ein.rs/crates/ein-cli/tests/nightly_steps.rs
+   26  ein.rs/crates/ein-cli/tests/nightly_steps.rs
     4  ein.rs/crates/ein-cli/tests/no_search.rs
     6  ein.rs/crates/ein-cli/tests/open_reserved.rs
    16  ein.rs/crates/ein-cli/tests/primitive_arity.rs
@@ -72,7 +72,7 @@
    29  ein.rs/crates/ein-cli/tests/region_modes.rs
    11  ein.rs/crates/ein-cli/tests/region_render.rs
     7  ein.rs/crates/ein-cli/tests/render_doors.rs
-   15  ein.rs/crates/ein-cli/tests/route_invariance.rs
+   14  ein.rs/crates/ein-cli/tests/route_invariance.rs
     3  ein.rs/crates/ein-cli/tests/solve_lists.rs
     1  ein.rs/crates/ein-cli/tests/steps/mod.rs
     1  ein.rs/crates/ein-cli/tests/strata_diagnostic.rs
@@ -148,7 +148,7 @@
     7  ein.rs/crates/ein-infer/src/error.rs
     4  ein.rs/crates/ein-infer/src/events.rs
     7  ein.rs/crates/ein-infer/src/expect.rs
-   43  ein.rs/crates/ein-infer/src/explain.rs
+   42  ein.rs/crates/ein-infer/src/explain.rs
    43  ein.rs/crates/ein-infer/src/explore.rs
    22  ein.rs/crates/ein-infer/src/firing.rs
    15  ein.rs/crates/ein-infer/src/forbid.rs
@@ -163,7 +163,7 @@
    19  ein.rs/crates/ein-infer/src/oblgen.rs
     4  ein.rs/crates/ein-infer/src/obligations.rs
    28  ein.rs/crates/ein-infer/src/plan.rs
-   11  ein.rs/crates/ein-infer/src/predicates.rs
+   10  ein.rs/crates/ein-infer/src/predicates.rs
    19  ein.rs/crates/ein-infer/src/read_out.rs
    42  ein.rs/crates/ein-infer/src/region.rs
    24  ein.rs/crates/ein-infer/src/saturator.rs
@@ -220,7 +220,7 @@
     9  ein.rs/crates/ein-ir/src/claim.rs
     6  ein.rs/crates/ein-ir/src/dump.rs
    15  ein.rs/crates/ein-ir/src/expect.rs
-  185  ein.rs/crates/ein-ir/src/from_ir.rs
+  183  ein.rs/crates/ein-ir/src/from_ir.rs
    23  ein.rs/crates/ein-ir/src/grammar.rs
     9  ein.rs/crates/ein-ir/src/grammar/build_ast.rs
    11  ein.rs/crates/ein-ir/src/imports.rs
@@ -232,7 +232,7 @@
     2  ein.rs/crates/ein-ir/tests/dump_goldens.rs
     4  ein.rs/crates/ein-ir/tests/engine_names.rs
    41  ein.rs/crates/ein-ir/tests/fuzz_properties.rs
-   25  ein.rs/crates/ein-ir/tests/generated_parser.rs
+   24  ein.rs/crates/ein-ir/tests/generated_parser.rs
     1  ein.rs/crates/ein-ir/tests/golden/recovery_cut.ein
    10  ein.rs/crates/ein-ir/tests/grammar_decisions.rs
    23  ein.rs/crates/ein-ir/tests/grammar_pages.rs
@@ -271,12 +271,12 @@
     3  ein.rs/crates/ein-render/src/trace/render.rs
    21  ein.rs/crates/ein-render/tests/corpus_ops/mod.rs
     1  ein.rs/crates/ein-render/tests/derivation_dot.rs
-   20  ein.rs/crates/ein-render/tests/dot_wellformed.rs
+   19  ein.rs/crates/ein-render/tests/dot_wellformed.rs
     4  ein.rs/crates/ein-render/tests/golden_dot.rs
     5  ein.rs/crates/ein-render/tests/golden_trace.rs
-   14  ein.rs/crates/ein-render/tests/id_order_invariance.rs
+   12  ein.rs/crates/ein-render/tests/id_order_invariance.rs
     7  ein.rs/crates/ein-render/tests/idea08_acceptance.rs
-   11  ein.rs/crates/ein-render/tests/jobs_invariance.rs
+   10  ein.rs/crates/ein-render/tests/jobs_invariance.rs
     2  ein.rs/crates/ein-render/tests/key_declines.rs
     8  ein.rs/crates/ein-render/tests/line_modes_past_the_limit.rs
    10  ein.rs/crates/ein-render/tests/presentation_semantics.rs
@@ -343,8 +343,8 @@
     7  examples/branching/12_typed_blind_solve.ein
     8  examples/branching/13_lookahead_naf_world.ein
     6  examples/branching/14_lookahead_unjudgeable.ein
-    3  examples/branching/15_lookahead_two_step_on.ein
-    3  examples/branching/16_lookahead_two_step_off.ein
+    2  examples/branching/15_lookahead_two_step_on.ein
+    2  examples/branching/16_lookahead_two_step_off.ein
     2  examples/broken/absent_arity_high.ein
     2  examples/broken/absent_arity_zero.ein
     2  examples/broken/compile/activator_arity.ein
@@ -392,7 +392,7 @@
     9  examples/ein-bugs/alive-empty-interlayer.ein
     5  examples/ein-bugs/alive-empty-phase1.ein
     5  examples/ein-bugs/alive-set-fresh-name-declared.ein
-   12  examples/ein-bugs/alive-set-fresh-name.ein
+   11  examples/ein-bugs/alive-set-fresh-name.ein
     5  examples/ein-bugs/alt-cap-core-reordered.ein
    13  examples/ein-bugs/alt-cap-core.ein
    16  examples/ein-bugs/binding-key-both.ein
@@ -405,11 +405,11 @@
     6  examples/ein-bugs/d3-unsat-core.ein
     1  examples/ein-bugs/fact-goal-binding.ein
     7  examples/ein-bugs/fork-delta-order.ein
-    5  examples/ein-bugs/int-goal-binding.ein
+    4  examples/ein-bugs/int-goal-binding.ein
     3  examples/ein-bugs/minimal-line-stated-obligation-control.ein
     8  examples/ein-bugs/minimal-line-stated-obligation.ein
     2  examples/ein-bugs/mixed-type-hypothesis.ein
-   11  examples/ein-bugs/naf-upward-closure.ein
+    9  examples/ein-bugs/naf-upward-closure.ein
     4  examples/ein-bugs/nested-core.ein
     4  examples/ein-bugs/nested-fact-hypothesis.ein
     1  examples/ein-bugs/query-goal-free-head-unsat.ein

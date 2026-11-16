@@ -8,8 +8,8 @@
 //! over such a relation, `(absent P)` ⟹ `(false)` or `(not …)` is an
 //! obligation written as a refutation. It judges a state that has not yet
 //! decided `P` as if `P` were false, so it says *contradiction* where the
-//! truth is *not yet*, and `dead` stops being upward-closed (Q-M1e.9: a
-//! commitment of `P` lifts it). A program that writes it is refused, and the
+//! truth is *not yet*, and `dead` stops being upward-closed (a commitment of
+//! `P` lifts it). A program that writes it is refused (Q-M1e2.5), and the
 //! message names a form that says what was meant. Over a relation no
 //! commitment can extend the same shape is closed-world reasoning, and stays
 //! legal.

@@ -311,7 +311,7 @@ fn a_strings_escapes_are_the_rulings() {
 }
 
 /// **No name the loader makes up is a name a program can write** (T1f.5.5.8,
-/// on S1f.5.4's Q1, decided (a) on 2026-11-08).
+/// Q-M1f.339).
 ///
 /// The parser, the loader and the engine name what a program writes no name
 /// for: the empty form `()`, a nested form whose head is not a name, a

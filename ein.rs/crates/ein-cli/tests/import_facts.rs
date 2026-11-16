@@ -1,5 +1,5 @@
 //! **An import brings a module's facts, on every command** — M1f S1f.6.11
-//! (W88; Q-M1f.135 to .144), and since S1f.6.35 the whole module.
+//! (W88), and since S1f.6.35 the whole module (Q-M1f.247).
 //!
 //! `(import M :symbols (…))` kept the listed declarations and their closure
 //! and dropped every fact of `M`, in silence, so a library of facts, an

@@ -180,7 +180,7 @@ fn expand(
                 // `Conclusion`), which holds no keyword pair. Until M1f
                 // S1f.5.5's swap a call's trailing keyword pairs were metadata,
                 // dropped here and not counted toward its arity (the compiler
-                // dropped them downstream, Q32), so `(forall G B :k v)` expanded
+                // dropped them downstream), so `(forall G B :k v)` expanded
                 // as `(forall G B)`; S1f.5.11's T1f.5.11.2 retired the filter.
                 let actual: Vec<NodeId> = ast.args(args).to_vec();
                 if actual.len() != m.params.len() {

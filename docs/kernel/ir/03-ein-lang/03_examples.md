@@ -26,7 +26,8 @@ The `transitive` rule is [`std.algebra`](../../../../stdlib/algebra.ein)'s, its
 guard the premise `(neq ?a ?c)`. Until M1f
 [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md)
 this page wrote it `:where (neq ?a ?c)`, which loaded with its guard dropped
-(Q32) until S1f.5.5's swap refused the keyword at the parse.
+until S1f.5.5's swap refused the keyword at the parse
+([Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
 
 ```lisp
 (rule transitive (?rel)

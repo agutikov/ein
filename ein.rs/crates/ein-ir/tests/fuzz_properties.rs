@@ -750,7 +750,7 @@ fn keywords_listed(
 /// a nested fact takes none, so every program the parser accepts holds keyword
 /// pairs only as a form's own clauses, each on its form's list. Until the swap
 /// only `query`, `solve` and `config` refused one they did not know; a pair in a
-/// `:match` or a macro call was dropped (Q32), and S1f.5.11's T1f.5.11.2
+/// `:match` or a macro call was dropped (refused since: Q-M1e2.28), and S1f.5.11's T1f.5.11.2
 /// retired the drops. Every input of the stream the parser accepts is read, and
 /// the pairs it holds are counted, so a stream that carried few would fail here
 /// rather than pass empty: at least one pair for four accepted programs, where
@@ -878,8 +878,7 @@ fn unbound_conclusion(text: &str) -> Option<String> {
 /// a match through one disjunct bound, so this holds every firing at once: an
 /// hrule's, whose template built no fact and proposed nothing in silence
 /// until S1f.5.10, and a rule's that no state fires among them. It holds the
-/// loader's reading of what binds to the compiler's (Q-M1f.40, taken by
-/// default on the user's instruction of 2026-11-09). Until S1f.5.10 the loader
+/// loader's reading of what binds to the compiler's. Until S1f.5.10 the loader
 /// did not check it, and the run stopped at the first firing that met one,
 /// `ein_infer::firing::FireError::UnboundVar`.
 ///

@@ -992,7 +992,7 @@ fn validate_queries(
                 // Q-M1e2.26): their facts are computed, so no declaration or
                 // fact makes them one, and the check below is the goal's. So
                 // is an `(absent …)` the goal writes, whose instance a class
-                // lists beside the rest (S1f.5.7's T1f.5.7.6, W56, Q-M1f.35).
+                // lists beside the rest (S1f.5.7's T1f.5.7.6, W56).
                 //
                 // Since M1f S1f.7.11 (W78) the rest is a relation of the
                 // program, [`program_relations`]: until then one a declaration
@@ -1589,8 +1589,8 @@ fn ingest_rules(
                 }
             }
         };
-        // A wildcard as a relation, in a rule — M1e2 S1e2.2.20 (W20,
-        // Q-M1e2.14 (c)) — and the shapes S1e2.2.24 refuses (W24).
+        // A wildcard as a relation, in a rule — M1e2 S1e2.2.20 (W20) — and
+        // the shapes S1e2.2.24 refuses (W24).
         let n_refused = errors.len();
         let param_vars: Vec<&str> = ast
             .form_args(params_form)
@@ -1749,9 +1749,8 @@ fn ingest_rules(
 }
 
 /// **What no fact can hold, and what reads nothing, in a rule is refused** —
-/// M1e2 S1e2.2.20, W20, on the user's rulings of 2026-11-04 (Q-M1e2.13 (a))
-/// and 2026-11-05 (Q-M1e2.14 (c)); and S1e2.2.24, W24, on the user's rulings
-/// of 2026-11-05 (Q-M1e2.16 (1), Q-M1e2.18).
+/// M1e2 S1e2.2.20, W20, and S1e2.2.24, W24 (Q-M1e2.18; a bare `_` is refused
+/// at the parse since, Q-M1e2.22).
 ///
 /// The pass reads a rule's clauses as the compiler does: a `:match` as
 /// premises, each pattern's arguments as slots, and an `:assert` as
@@ -1787,7 +1786,7 @@ fn ingest_rules(
 /// **Until the swap three more shapes were not refused here.** A keyword pair
 /// at a pattern's top level, `(n ?x :where v)`, or as a premise of an `(and
 /// …)`, `:where (neq ?a ?b)`, which this walk skipped and the compiler dropped
-/// (Q32), so the rule fired as if it were not written; `_` as a pattern's
+/// (refused since: Q-M1e2.28), so the rule fired as if it were not written; `_` as a pattern's
 /// argument, which matched any value (W20, S1e2.2.20); and `_` or a keyword
 /// pair at an `:assert`'s conclusion's top level, which stopped the firing with
 /// the line `ein_infer::firing::FireError::NotAFact` printed. The grammar
@@ -1875,7 +1874,7 @@ fn refuse_no_fact_holds(
         }
         /// A pattern written as a premise or a conclusion: its relation, and
         /// its arguments as slots. Until M1f S1f.5.5's swap its own keyword
-        /// pairs were skipped here, the compiler's to drop (Q32) or the
+        /// pairs were skipped here, the compiler's to drop or the
         /// firing's to refuse; since, a pattern holds none (`ein.y`'s `Args`
         /// and `Terms`), and S1f.5.11's T1f.5.11.2 retired the skip.
         fn pattern(&mut self, node: NodeId, bound: Option<&mut Vec<String>>) {
@@ -1927,7 +1926,7 @@ fn refuse_no_fact_holds(
         /// scopes a guard.
         fn premise(&mut self, node: NodeId, within: Option<NodeId>, bound: &mut Vec<String>) {
             let ast = self.ast;
-            // A keyword pair was skipped here, a premise Q32 dropped, until
+            // A keyword pair was skipped here, a premise the compiler dropped, until
             // S1f.5.11's T1f.5.11.2; no premise is one since M1f S1f.5.5's
             // swap, and one met would be a premise that is no form.
             match ast.node(node) {
@@ -5499,7 +5498,7 @@ mod tests {
     /// it loads, in a pattern and in an obligation's witness premise.
     ///
     /// Until M1f S1f.5.5's swap this test held a wildcard written as a
-    /// relation refused at load (M1e2 S1e2.2.20, W20, Q-M1e2.14 (c)), one line
+    /// relation refused at load (M1e2 S1e2.2.20, W20), one line
     /// per slot, and `_` as an argument loading; since the swap the grammar
     /// refuses a bare `_` in every position (S1f.5.1), and T1f.5.5.5 deleted
     /// the loader's line (`Found::WildHead`) and moved those cases to the
@@ -5516,8 +5515,7 @@ mod tests {
     }
 
     /// **A rule shape that reads nothing is refused at load** — M1e2
-    /// S1e2.2.24, W24, on the user's rulings of 2026-11-05 (Q-M1e2.16 (1),
-    /// Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
+    /// S1e2.2.24, W24 (Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
     /// and an obligation, one line naming the rule and the clause; and what
     /// stays: a guard on values, a parameter head.
     ///
@@ -5532,7 +5530,7 @@ mod tests {
     /// guard's argument (Q-M1f.30), a relation variable no parameter binds,
     /// and an activator binding a relation parameter to a nested fact. What
     /// this test held loading until the swap and the grammar refuses (a string
-    /// as a guard's argument, Q32's `:where` pairs, `_` as an argument) is
+    /// as a guard's argument, `:where` pairs (Q-M1e2.28), `_` as an argument) is
     /// written in the final grammar below.
     ///
     /// **Since M1f S1f.5.7 (T1f.5.7.3) two shapes load** that S1e2.2.24
@@ -5617,7 +5615,7 @@ mod tests {
         // parameter head, a variable used once where any value will do, a
         // guard under an `absent` on a variable the enclosing premises bound.
         // Until the swap the first wrote `(neq ?x "b")`, a string, and three
-        // more Q32's `:where` and `_` as an argument, which the grammar
+        // more `:where` and `_` as an argument, which the grammar
         // refuses. And since S1f.5.7 what S1e2.2.24 refused: a fact that holds
         // no variable as a guard's argument, and a guard on a variable no
         // premise before it binds, in a conjunction and under an `absent`.

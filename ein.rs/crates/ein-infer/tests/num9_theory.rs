@@ -572,7 +572,7 @@ fn the_circuit_of_each_operation() {
 
 /// `utils/gen_num9.py --check`, run here so that it is in the gate: the
 /// per-commit tier runs `cargo test --workspace`, and its job installs a
-/// `python3`, as for `utils/gen_arith_tables.py --check` (Q-M1f.145).
+/// `python3`, as for `utils/gen_arith_tables.py --check`.
 #[test]
 fn the_file_is_what_the_generator_writes() {
     let out = generator(&["--check"]);

@@ -247,9 +247,9 @@ pub struct Counters {
     ///
     /// The `Saturator` counts both per saturation
     /// (`guard_evals` / `guard_evals_monotone`); these are the same two summed
-    /// over every fork of a whole solve, which is what
-    /// [Q-M1a.17](../../../../docs/history/m1a_rust/open_questions.md#q-m1a17--win-bs--80--assumed-monotone-guards-dominate)
-    /// asks for and no per-saturation field can answer: design/06 § Win B's
+    /// over every fork of a whole solve, which is what a memo for monotone
+    /// guards would be judged by and no per-saturation field can answer:
+    /// design/06 § Win B's
     /// mechanism only reaches a *monotone* guard, its projection is ≥ 80 %, and
     /// at root scale the measured mix was 11–30 % the other way.
     pub guard_eval: u64,

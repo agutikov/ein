@@ -1,7 +1,8 @@
 //! The built-in predicate registry — `eq` and `neq`, and nothing else.
 //!
-//! Q33 caps the M1 registry at two: a predicate's truth is *computed* from the
-//! bindings, where a relation's truth is *data*. Ein has no numbers and none
+//! `eq` and `neq` are relations whose facts are computed, never stored
+//! (Q-M1e2.26), and the registry holds those two: a predicate's truth is
+//! *computed* from the bindings, where a relation's truth is *data*. Ein has no numbers and none
 //! is planned (the user, 2026-11-06, Q-M1e2.24), so no numeric, cardinality
 //! or aggregation primitive is either.
 //!

@@ -317,8 +317,7 @@ fn fact_set(f: &Fixture) -> Vec<String> {
 /// | `alt-cap-core.ein` | `narrow`, one premise three givens deep | 3 — `(p1 Y01) (p2 Y01) (p3 Y01)` | **2** — `(w1 X) (w2 X)` |
 /// | `alt-cap-core-reordered.ein` | `wide`, two premises over givens | 2 | 2 |
 ///
-/// Since S1e2.2.11 (Q-M1e.15's (3), the user's ruling of 2026-11-04 on
-/// Q-M1e2.11) a fact keeps beside its list the arrival with the smallest
+/// Since S1e2.2.11 (Q-M1e2.11) a fact keeps beside its list the arrival with the smallest
 /// closure, so `wide`'s two-given derivation is offered to the search in the
 /// first file too, and the core is the one an uncapped store reports
 /// (`MAX_ALT_JUSTIFICATIONS = 1_000_000`, measured 2026-11-04). The list

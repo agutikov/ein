@@ -178,8 +178,8 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
 /// paperwork. `--dump-states` is the exception and states why at its call
 /// site. The ruling and the reasoning are
 /// [`defined_behaviour.md` § 4.4](../../../../docs/kernel/defined_behaviour.md),
-/// and whether the additive arm should have an exit code of its own is
-/// [Q-M1e.22](../../../../docs/history/m1e_review_processing/open_questions.md).
+/// and the additive arm has no exit code of its own
+/// ([Q-M1e.22](../../../../docs/decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)).
 pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display) {
     eprintln!("error: --{flag} {path}: {e}");
 }

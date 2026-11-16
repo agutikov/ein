@@ -5,8 +5,8 @@
 ;;; S1f.5.3, and S1f.5.4's name rule reads each as the name it spells), a name
 ;;; with connectors and decorators, a nested fact, and a stored negation as a
 ;;; value. The string, the bare `_` and the variable it carried until M1f
-;;; S1f.5.5's swap are refused at the parse (S1f.5.2 and S1f.5.1), Q-M1f.2
-;;; (a)'s rewrite.
+;;; S1f.5.5's swap are refused at the parse (S1f.5.2 and S1f.5.1), and
+;;; rewritten out.
 ;;;
 ;;; Its `(solve …)` holds `r` out of the hypotheses (the user's ruling of
 ;;; 2026-11-08 on S1f.5.5's review stop, item 1, *"Scope the solve"*): the

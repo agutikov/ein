@@ -33,14 +33,11 @@
 ;;; and friends) never appears because both rules quantify over the declared
 ;;; type, not over the value universe.
 ;;;
-;;; The two setup rules are checked **at one remove**, and this is a limitation
-;;; of the form rather than a choice: their whole output is derived activator
-;;; facts, and `:expect` may only name a relation some declaration or fact in
-;;; the *program text* already makes. `domain-elimination`, `functional-negative`
-;;; and the rest exist only after saturation, so they cannot be named — the
-;;; same shape as Q-M1c.6's empty-relation gap, and recorded beside it as
-;;; Q-M1c.7 — both in docs/history/m1c_external_validation/open_questions.md.
-;;; What stands in for the missing clause: `functional-negative` and
+;;; The two setup rules are checked **at one remove**: their whole output is
+;;; derived activator facts, `domain-elimination`, `functional-negative` and
+;;; the rest, which exist only after saturation. A claim may name a relation
+;;; only a rule derives, by the short name the import lists (Q-M1c.7); this
+;;; file states their effect instead: `functional-negative` and
 ;;; `injective-negative` have no other activator, so a `bijective-setup` that
 ;;; dropped one of them leaves this file with two negatives instead of four.
 ;;;

@@ -657,9 +657,10 @@ extent, so a rule that derived one fact too many fails the file. That is what
 makes a "must not fire" case checkable at all for the 33 rules that carry no
 guard: their only *must not* is scope, and scope is a claim about a whole
 relation. Where a rule needs a relation to stay untouched, the fixture gives it
-one authored edge and closes it there —
-[Q-M1c.6](../docs/history/m1c_external_validation/open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty)
-is why an *empty* relation cannot be named.
+one authored edge and closes it there. A relation with no fact at all is
+said empty another way: a query over it claims `(model)`, the class of a state
+where its goal has no row, or a region claim names it in another state
+([Q-M1c.6](../docs/decisions/answer/Q-M1c.6-a-claim-can-say-that-a-relation-is-empty.md)).
 
 **`(unknown …)` is how a fixture says a negative was *not* invented.** Stored
 negatives are deliberately not closed by an expectation, so listing the
@@ -747,7 +748,7 @@ prints or compares anything, so its report and `--check`'s verdict are the
 same text at any count: 572 mutants one at a time had grown to about 49 min
 of the nightly (gate #3, 2026-11-15). **The nightly runs it in shards**, a
 parallel job each (`--shard k/n`, `$EIN_TEST_SHARD`, every `n`-th mutant from
-the `k`-th; the user's ruling of 2026-11-15 on Q-M1f.293), on the gate
+the `k`-th), on the gate
 profile's `ein` (`--bin ein.rs/target/gate/ein`), which the job builds; each
 shard's `--check` holds its own mutants' survivors to their banked lines, and
 `--bless` is a whole run. The survivors are banked
@@ -935,8 +936,8 @@ which is not a number this page has to keep because
 `stdlib_coverage.rs::every_stdlib_rule_is_activated_by_a_program` fails
 the moment it stops being true.
 
-**They leave the render and determinism sweeps per commit** (M1f S1f.6.39,
-the user's ruling of 2026-11-15 on Q-M1f.290): the golden of every rendering
+**They leave the render and determinism sweeps per commit** (M1f S1f.6.39):
+the golden of every rendering
 (`ein-render/tests/id_order_invariance.rs`), the job count's and the id
 order's sweeps and `dot_wellformed` read every corpus program outside
 `tests/` per commit, and the nightly reads these too, in shards. Per commit a

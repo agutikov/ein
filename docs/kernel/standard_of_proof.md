@@ -47,7 +47,7 @@ rests on is checked by something that fails when it stops being true.
 One of the four is the pattern working; three are the pattern's absence, and
 one of those is what settled the rule. **All three of the absent rows have
 since been probed and all three premises failed** — `dead` is monotone by a
-twenty-line program (Q-M1e.9, 2026-08-28), the alive-set invariant by an
+twenty-line program (2026-08-28; the shape is refused since, Q-M1e2.5), the alive-set invariant by an
 eleven-line one (Q-M1e.21, 2026-08-31), and `EqClasses` by a mutation
 (S1e.4.3, 2026-09-01). Three for three is not a sample, but it is the only
 evidence there is about what an unenforced premise is worth.
@@ -94,9 +94,9 @@ cache, the singleton writeback, and the no-good store's width-1 clause — and o
 2026-08-28 a twenty-line program broke it: with a rule that refutes `(p A)`
 only while `(q A)` is missing, `{(p A)}` is dead and `{(p A), (q A)}` is alive,
 so `dead` is not upward-closed under `absent`
-([Q-M1e.9](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent);
-[`absent_semantics.md`](inference/absent_semantics.md) C3 had stated the
-caveat, unreconciled, the whole time).
+([`absent_semantics.md`](inference/absent_semantics.md) C3 had stated the
+caveat, unreconciled, the whole time; a refutation of that shape is refused
+since, [Q-M1e2.5](../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)).
 
 The premise was written down, was believed, was load-bearing, and was wrong for
 a year. That is what Rule 2 is for.

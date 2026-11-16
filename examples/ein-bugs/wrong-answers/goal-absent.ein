@@ -1,7 +1,7 @@
 ;;; A goal's `(absent …)` is not judged, and a claim that lists its instance is
 ;;; refused — M1f **W56**, register row `W56/goal-absent`
 ;;; (`corpus/wrong_answers.toml`), filed by S1f.5.7 (T1f.5.7.5, 2026-11-09),
-;;; `open` and owned by S1f.5.7 (Q-M1f.35, taken by default on the user's
+;;; `open` and owned by S1f.5.7 (taken by default on the user's
 ;;; instruction of 2026-11-09): found where the stage's test of a goal's empty
 ;;; row wrote a goal whose only variable is an `(absent …)`'s own.
 ;;;

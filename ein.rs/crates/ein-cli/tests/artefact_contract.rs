@@ -154,9 +154,10 @@ fn every_artefact_failure_names_its_flag_and_its_path() {
 /// family has. `--dump-states` was the first such directory, and retired with
 /// the walk.
 ///
-/// Whether the additive arm should have a code of its own is
-/// [Q-M1e.22](../../../../docs/history/m1e_review_processing/open_questions.md),
-/// filed with `TE-M4`'s exit-2 overload because the two are one conversation.
+/// The additive arm has no code of its own
+/// ([Q-M1e.22](../../../../docs/decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)):
+/// a lost artefact would be one more meaning on a code that already has one,
+/// and the exit codes change, if they do, as a whole.
 #[test]
 fn a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_directories() {
     let ro = ReadOnly::new("exit");

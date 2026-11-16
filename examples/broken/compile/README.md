@@ -28,7 +28,7 @@ program, which none of them executes.
 `nested_or` and `activator_arity`. The grammar states `eq`'s and `absent`'s shapes, `eq`
 taking two terms and `absent` one premise, so the second batch below is
 refused at the parse, and its four fixtures moved to `../` beside the
-parse-negatives (Q-M1f.2 (a)), each `.expected` the parse report; what
+parse-negatives, each `.expected` the parse report; what
 follows is their record.
 
 **Six, in two batches, until then.** S1.22.0's four are below, two of them

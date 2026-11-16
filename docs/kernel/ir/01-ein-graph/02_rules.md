@@ -49,11 +49,10 @@ Guards are positive (the predicate must hold). This section called them the
 **:where** clause, with structural properties (`(transitive ?R)`) and
 aggregates (`(unique-remaining ?slot ?type)`) among them, until M1f
 [S1f.5.11](../../../../plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/s1f.5.11_closed_keywords.md):
-[Q32](../../../../plans/open_questions.md#q32--where-semantics) dropped
-`:where` for the positional premise on 2026-05-20, a `:where` written anyway
+`:where` was dropped for the positional premise on 2026-05-20, a `:where` written anyway
 was dropped in silence, and since S1f.5.5's swap it is refused at the parse,
 as every keyword a rule does not take is (the user's ruling of 2026-11-07,
-[Q-M1e2.28](../../../../plans/m1e2_correctness/open_questions.md#q-m1e228--which-keywords-does-each-form-take)).
+[Q-M1e2.28](../../../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)).
 
 The **RHS** is a small graph fragment that *appends* to working
 memory upon firing. RHS nodes that are variables are *resolved* to
@@ -295,8 +294,10 @@ co-located(House-3, Ivory)."*
 > to list as *"examples in the project (planned for P1.3)"* —
 > `elimination-by-exhaustion`, `arc-consistency-propagate`,
 > `global-cardinality`, `forced-by-unique-position` — appear **nowhere** in the
-> crates, in `stdlib/`, or in any `.ein` file (checked M1e S1e.2.2). Q33 caps
-> the registry at two for a stated reason: a predicate's truth is *computed*
+> crates, in `stdlib/`, or in any `.ein` file (checked M1e S1e.2.2). The registry
+> stays at two, `eq` and `neq`
+> ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)),
+> for a stated reason: a predicate's truth is *computed*
 > from the bindings, where a relation's truth is *data*.
 >
 > The reasoning power is reached a different way, and reached: "only one

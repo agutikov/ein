@@ -51,8 +51,8 @@
 
 (solve
   :no-hypothesis (p)
-  ;; Today's answer. The truth is root itself, which has no `q` row — so it
-  ;; is also an answer `:expect` cannot state (Q-M1e.13).
+  ;; R is root itself, which has no `q` row: an empty goal extent is a claim
+  ;; like any other (Q-M1e.13).
   :expect (region
             ;; state 1 of 1 — ∅, root itself · minimal and maximal
             (model)))

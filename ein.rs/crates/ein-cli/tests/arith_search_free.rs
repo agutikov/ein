@@ -752,7 +752,7 @@ fn every_arithmetic_program_is_search_free() {
 /// The test above then holds each of them search-free, and `ein test` holds
 /// the claims to the engine's own answers. The per-commit tier installs a
 /// `python3`, as for `utils/gen_arith_tables.py --check`
-/// (`ein-ir/tests/digit_tables.rs`, Q-M1f.145).
+/// (`ein-ir/tests/digit_tables.rs`).
 #[test]
 fn the_generated_examples_are_what_the_generator_writes() {
     let probe = Command::new("python3")

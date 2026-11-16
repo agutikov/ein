@@ -278,7 +278,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
 impl Op {
     /// **Whether the op reads the loaded program**: every op but the frontend
     /// modes and the DOT views drawn off the parse. These are what [`Loads`]
-    /// runs on a copy of one load (M1f S1f.6.39, Q-M1f.292); the others never
+    /// runs on a copy of one load (M1f S1f.6.39); the others never
     /// load, and touch no `Terms`.
     pub fn loads(self) -> bool {
         match self {
@@ -407,7 +407,7 @@ struct Slot {
 }
 
 /// **Each program loaded once, for every op a sweep runs over it** (M1f
-/// S1f.6.39, the user's ruling on Q-M1f.292): the first unit of a program
+/// S1f.6.39): the first unit of a program
 /// that needs the load makes it, every op runs on a copy of it (`Ast`,
 /// `Terms` and `Kb` are `Clone` for this), and the last unit of the program
 /// drops it, so the sweep holds the loads of the programs in flight and no

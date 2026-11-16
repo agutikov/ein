@@ -133,8 +133,8 @@ left at M1e2 S1e2.2.4, when the universe was seeded with a rule's constants
 ([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
 `DerivedNafWarning` (a rule's `(absent …)` reads a relation some rule
 derives) and `RefutationUnderAbsentWarning` (…and concludes a refutation,
-[Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s
-shape) were opt-in behind `(config :warn-derived-naf true)`, and left when
+the shape [Q-M1e2.5](../../decisions/language/Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md)
+refuses) were opt-in behind `(config :warn-derived-naf true)`, and left when
 S1e2.2.5 retired that flag on the user's ruling of 2026-11-04: the second's
 sentence is *forbid*'s refusal now, a load error rather than a line
 ([`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)),

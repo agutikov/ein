@@ -35,11 +35,11 @@
 ;;
 ;; ── Why this file now carries an `:expect` ────────────────────────────────
 ;;
-;; It could not before. Its two models populated **different** relations —
-;; `{(q A)}` and `{(p A), (p B)}` — and every arm of an `(or (model …) …)`
-;; must name the goal's relations, so whichever relation was the goal, one arm
-;; could not name it and the file would not load (Q-M1e.13). With one model
-;; left there is one relation to ask about, and the goal moves to it. Remove
+;; It did not before. Its two models populated **different** relations —
+;; `{(q A)}` and `{(p A), (p B)}` — and whichever relation was the goal, one
+;; of them held no row of it; a claim states that model as the class `(model)`
+;; (Q-M1e.13). With one model left there is one relation to ask about, and the
+;; goal moves to it. Remove
 ;; the guard and this answers `Ambiguity` with k = 2, and the claim fails.
 
 (relation is-a T T :why "{?1} is a {?2}")

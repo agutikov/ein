@@ -102,7 +102,7 @@ fn the_load_negative_fixtures_are_byte_identical() {
 
     let mut bad = Vec::new();
     // Since M1f S1f.5.5's swap (T1f.5.5.4) nine of these are refused at the
-    // parse and moved to `examples/broken/` (Q-M1f.2 (a)), where
+    // parse and moved to `examples/broken/`, where
     // `grammar_decisions.rs` holds their reports: `config_bad_value`,
     // `config_unknown_flag`, `empty_absent`, `hrule_reserved_name`,
     // `macro_reserved_name`, `relation_malformed`, `relation_needs_a_name`,
