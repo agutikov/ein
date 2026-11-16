@@ -90,12 +90,13 @@ S1e2.1b.6 added [`inference/monotonicity.md`](inference/monotonicity.md), 45
 since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
 [`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
 M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
-(2026-11-10), and 47 with [`inference/hypothesis_space.md`](inference/hypothesis_space.md),
-the hypothesis space and its structure
+(2026-11-10), 47 with [`inference/hypothesis_space.md`](inference/hypothesis_space.md),
+the hypothesis space and its structure, and 48 with
+[`inference/finding_r.md`](inference/finding_r.md), how the oracle and the routes find `R`
 (`git ls-files 'docs/kernel/*.md' | wc -l`), current:
 
 - **current** — every claim holds of the engine that ships. No banner; this is
-  the default and 44 of the 47 pages are here. What makes it checkable rather
+  the default and 45 of the 48 pages are here. What makes it checkable rather
   than aspirational is the test in [§ Keeping this
   true](#keeping-this-true) below: every code identifier the page names
   resolves in `ein.rs/crates/`, and every environment variable and CLI

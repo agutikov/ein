@@ -928,6 +928,8 @@ leave those out.
 
 ## Cross-references
 
+- [`finding_r.md`](finding_r.md): how R is found, the oracle's cube and the routes' licences, as
+  formulas.
 - [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
 - [`monotonicity.md`](monotonicity.md): the monotone and the non-monotone
   region compared, and how to solve each.

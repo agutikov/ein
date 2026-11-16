@@ -85,6 +85,10 @@ docs/kernel/inference/
 │                                     share, groups, owed groups and grids,
 │                                     the coupling; `ein render h-space`
 │                                     and `h-space.json`
+├── finding_r.md                   ← how R is found: the oracle's cube, the
+│                                     licences, the memory of what is known
+│                                     dead, each question's route, and how
+│                                     `--single` proves one state
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,
