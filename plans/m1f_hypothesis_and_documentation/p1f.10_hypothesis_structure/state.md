@@ -32,7 +32,7 @@ nightly or the runner's container** when this was written; § Owed says where th
 | [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | done: the order built for six of eight questions, E-29 closed | `2e7cde48` |
 | [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | the rung a loaded rule chooses | done: Q-M1f.308 (b), W97 fixed, E-51 closed | `060576ec` |
 | [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | exactly one, spent | done: T1 *no* (`13_witness_of_two.ein`), licence L9 built, Q-M1f.311 put | `44889fba` |
-| [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | what the walk left | **running** in a worktree; Q-M1f.312 is its | — |
+| [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | what the walk left | done: the walk's unread generator pieces deleted, the read ones kept with their reader named, Q-M1f.312 put | `50f3e01c` |
 | S1f.10.7, S1f.10.8 | — | dropped; closed | stubs | — |
 
 ## What the user ruled at the stop (2026-11-16)
@@ -108,10 +108,9 @@ S1f.10.16 are merged, with the container gate beside it.
 
 ## Then, in this order
 
-1. **S1f.10.16**, what the walk left: running. It files Q-M1f.312 on the `hyp` and `hyp+closed` digests (H9-5).
-2. **The container gate and the container nightly**, once, on the batch's last commit, as § Owed says, and the
+1. **The container gate and the container nightly**, once, on the batch's last commit, as § Owed says, and the
    walls of the nightly steps that grew on a quiet machine.
-3. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
+2. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
    findings below, this page folded in.
 
 **Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/kernel/inference/finding_r.md),
@@ -155,6 +154,8 @@ All are in [`findings.md`](findings.md); these read as wrong answers or stale st
   example alone asks for it).
 - **H15-6**: `register_region.rs`'s bless inserts a region block at the first `[case.right]` text in a row, a
   quoted note's included.
+- **K-29**: `ein_core::Kb`'s learned no-good store is the deleted walk's, and its doc calls it part of the engine.
+- **K-30**: `hypgen::is_solution_node` and `consistent` are the walk's definition of an answer, read by one test.
 - K-5, K-9: the classes of program the small-KB rule does not fit. K-20: stale counts in a test's comment.
 
 ## How to resume
