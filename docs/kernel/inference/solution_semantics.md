@@ -382,7 +382,17 @@ The user, 2026-10-16: *"In general non-monotonic case R is completely defined
 only by full set of nodes … Let's go from it, and simplify the results if our
 case allows or if it is requested explicitly."*
 
-That is exact. A non-monotone program can have any subset of the cube as its
+On a monotone program that is exact. **On a non-monotone program it is not**,
+and the engine claims nothing of its answer there: not soundness, correctness
+or completeness. A node's state can depend on the path it is built by,
+`sat(root + C₁ + C₂) ≠ sat(sat(root + C₁) + C₂)`, and on the agenda's order
+([`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence)),
+so *the full set of nodes* is not one object. The engine builds every node one
+way, the fork route of § 1.5, and R on a flagged program is the region of that
+construction: every command agrees on it, and nothing more is claimed
+(the ruling of Q-M1f.313).
+
+A non-monotone program can have any subset of the cube as its
 region: [`utils/region_synth.py`](../../../utils/region_synth.py) writes a
 program for any target, except a dead root under a non-empty R (M1e2
 [S1e2.1a.8](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.8_region_to_program.md)).

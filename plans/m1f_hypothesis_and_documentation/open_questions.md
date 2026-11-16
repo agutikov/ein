@@ -6769,3 +6769,8 @@ can solve them somehow, but don't claim about solution soundness, correctness or
 supersedes Q-M1f.6's *plain FIFO* for the agenda's order; a core stays an explanation. On a monotone program the
 fixpoint does not depend on the order; on a program the static check flags, the engine claims nothing of its answer
 under any order. Built by S1f.10.19 after its T4.
+
+**The user's reason, the same day**, on being asked what the earlier position had been: *"yes, we don't claim
+anything because even first "non-monotonic case R is completely defined only by full set of nodes" is not true,
+because for non-monotone programs `sat(root + C1 + C2) = sat(sat(root + C1) + C2)` is not always true"*. So the
+2026-10-16 position quoted in `solution_semantics.md` § 2.1 holds of monotone programs only, and the page says so.

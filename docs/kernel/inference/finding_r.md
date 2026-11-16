@@ -54,8 +54,9 @@ for every C ⊆ H:                  2ⁿ nodes, n = |H|
 R = { C : ¬dead(C) ∧ owes(C) = ∅ }
 ```
 
-It skips nothing (`L7 the cube`) and assumes nothing about the program, so it is right for every
-program, monotone or not. It also reads off what a description of `R` needs:
+It skips nothing (`L7 the cube`), so on a monotone program it is `R` by definition. On a program the static
+check flags it is the region of the engine's own construction of a node, and no more (§ 3). It also reads off what
+a description of `R` needs:
 
 - `N`, the minimal dead sets;
 - the two lines, minimal and maximal;
@@ -74,7 +75,20 @@ oracle does (route 2). It takes the cube in layer order where its question can b
 cube ends.
 
 The one licence a flagged program keeps is **L0**: a fork only adds, so when root is dead every node
-is. So `ein solve` is right on every program; what the licences below buy is speed, on monotone ones.
+is. So `ein solve` agrees with the oracle on every program, and what the licences below buy is speed, on monotone
+ones.
+
+**On a flagged program the engine claims nothing of its answer**: not soundness, not correctness, not completeness.
+Saturation there can depend on the path a node is built by,
+
+```text
+sat(root + C₁ + C₂)  ≠  sat(sat(root + C₁) + C₂)        possible on a non-monotone program
+```
+
+and on the agenda's order, so *the set of nodes* is not one object. The engine builds every node one way, a fork of
+root's fixpoint with all of `C` written at once (`st(C)` above), and the oracle and every mode compute the region
+of that construction. They agree with each other, which the gate holds; that the region is the program's meaning is
+not claimed ([`monotonicity.md`](monotonicity.md) § 7).
 
 ## 4. A monotone program: three properties and the licences
 
