@@ -125,6 +125,52 @@ all; and the second-preparation row needs the search to read the
 derivations a node's own preparation recorded, which re-deriving on demand
 gives by construction.
 
+## Handed over by M1f, 2026-11-16: the core search has no bound on its work (K-82)
+
+**What happens.** A copy of `examples/zebra.ein` with `:record-alternative-justifications true` (its own config
+sets `false`, with a comment saying why), asked a question that prints every dead node's core:
+
+```sh
+sed 's/:record-alternative-justifications false/:record-alternative-justifications true/' \
+    examples/zebra.ein > build/scratch/zebra_alt.ein
+ein solve build/scratch/zebra_alt.ein --minimal --events build/scratch/z_on.jsonl
+```
+
+took 60 s to narrate 2 of its 99 dead nodes (2026-11-16, release binary of `f7f7494c`, the machine loaded by a
+container gate), where the shipped file narrates all 99 with their cores in 0.9 s and the flagged copy without
+`--events` answers in 0.2 s. Each core is `explain::contradiction_frontier`'s search for a small frontier in the
+node's AND/OR proof graph; with every derivation of every fact recorded, zebra's generic `co-located`, closed under
+symmetry and transitivity over about twenty-five entities, has many alternative derivations per fact, and the
+search weighs their combinations. Its `ExplanationBudget` caps environments, rounds and facts, each of which
+ends the search with a `Cut` core, but nothing bounds the work done before a cap is reached: about 20 to 30 s a
+node here. The same shape hung `ein-cli/tests/lever_invariance.rs` for 45 minutes until `explore::Options::new`
+stopped taking every node's core by default (merge `a9b3c9e4`); `--events`, `--dump-lattice` and `ein render
+lattice` still take them.
+
+**The user's question**, on being told that a work budget would make *some cores and their cut status differ
+from today*, verbatim: *"some cores and their cut status would differ from today - how they could differ if now
+you don't get them at all because of timeout?"*
+
+**The answer, as precisely as it can be put.** Today every core *is* obtained: each search ends at one of its
+caps, so the run above finishes, after half an hour or more, with a `Cut` or `WithinBudget` core per node. What
+a person sees is nothing, because they stop it first. A work budget would change, and only change:
+
+- **a core whose search today does more work than the budget allows**: it would end earlier, as `Cut`, with the
+  frontier found by then, which can be larger than, or other than, the one today's longer search returns, and a
+  core today marked `WithinBudget` could become `Cut`;
+- **nothing else**: a core whose search finishes within the budget is the same core with the same status, R and
+  every answer are untouched (a core is an explanation, and `record-alternative-justifications` is already the
+  one flag allowed to change one), and only surfaces that print a core can show the difference.
+
+So the cores that would move are exactly the ones that today arrive too late to be read: on a program like this
+one, all of them; on the corpus as shipped, the measurement to take first is which, if any, of today's cores
+take more work than a candidate budget, by the counters `--events` already writes.
+
+**What it bears on here.** F22's aim is the smallest frontier over every derivation the program records, made
+canonical. A work budget is the opposite trade, a bounded answer that says it is cut, and the two meet where the
+alternatives list is long: F22 decides whether a bound on work belongs in the exact core's design or beside it,
+and what `Cut` then promises.
+
 ## Trigger
 
 Any one:
