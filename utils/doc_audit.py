@@ -13,7 +13,7 @@ This is the milestone-independent half. It asks three mechanical questions of
 every page, none of which needs to know what changed:
 
     python3 utils/doc_audit.py                  # all three, as a report
-    python3 utils/doc_audit.py --links --check --tracked   # the gate step
+    python3 utils/doc_audit.py --links --check --tracked   # the gate step, decision ids too
     python3 utils/doc_audit.py --inbound --tracked [--target docs/kernel]
     python3 utils/doc_audit.py --identifiers -k inference/lattice_dump.md
 
@@ -46,6 +46,47 @@ ignore (`ein.rs/target/…`, `build/…`) names an output, not a file of the tre
 and is not a finding. A directory argument walks `.md` pages only, so a built
 tree such as the review bundle is read as pages and nothing else.
 
+**decision ids**, under `--links --tracked`: every decision id the
+**project** cites resolves to exactly one decision file,
+`docs/decisions/**/<id>-<slug>.md`, and no id has two. The project is what the
+process is not: `plans/`, `utils/`, the gate and CI (`run_tests.sh`,
+`.github/`) and `AGENTS.md` are the process, `c/`, `nl2smt/` and `docs/lib/`
+are external, and `docs/history/` and `ein.rs/vendor/` are not read. What is
+read of the rest:
+
+- every project `.md`, whole;
+- every `.rs` under `ein.rs/crates/`: its comments (`//`, `///`, `//!`,
+  `/* */`, at a line's start or after code) and its string literals, raw and
+  byte strings too, since the binary prints some;
+- every `.ein`'s comments, the text after a `;` outside a string;
+- `corpus/*.toml`, whole.
+
+An id is read in two shapes:
+
+- **`Q-M<milestone>.<n>`**, `Q-M1e2.24`, and every `.n` that continues it in
+  a list or a range written short — `Q-M1f.135, .141 and .142`,
+  `Q-M1f.315 to .340` — each the same milestone's id (a range's two ends are
+  read, not what lies between);
+- **a bare `Q<n>`**, the global ledger's numbering, `Q23`, where it is
+  written as a decision id. It is not one where it is part of a longer name
+  (`Q1.5b.7`, `S1f.5.4#Q1`, `Q23@M2`), and not where the words beside it say
+  which other ledger numbered it: the word before it is a possessive (`the
+  review's Q2`, `S1f.5.4's Q4`), a followup or milestone id (`F4 Q30`,
+  `M1 Q26`), a stage id and a slash (`S1e.1.3 / Q2`) or a file
+  (`f4_cross_cutting.md Q40`); it is followed by `of <file>.md`; or it opens a
+  quoted reply, `"Q3 - as recommended"`. The second end of a range,
+  `Q1–Q10`, is read as its first is. Such a number is a plan's local number,
+  not a decision id, and removing it is the plan-reference sweep's.
+
+A finding names the referrer, its line and the id: *no decision file* where
+none matches, *N decision files* where more than one does. A file under
+`docs/decisions/` that is not a `README.md` and whose name is not
+`<id>-<slug>.md` is a finding too, and so is an id two files carry. One
+short allow-list, `DECISION_IDS_ALLOWED`, lets an id stand in a file where
+re-aiming it would move a golden, each row with why and removed by the stage
+that re-aims the engine's own ids; a row whose file no longer cites its id is
+a finding.
+
 **inbound** counts, for every file a reference resolves to, the references to
 it by referrer kind, with the `.md` ones from `plans/` and `docs/history/`
 counted apart: the count a page's move has to rewrite in the commit that
@@ -74,9 +115,9 @@ name that *looks* like the engine's and is not there.
 carries no banner, so what this reports is the pages that **do** claim to be
 superseded, for comparison against that README's table.
 
-**The links half is a gate step**, `--links --check --tracked`. The other two
-report and do not fail: `--check` exits 1 on the unambiguous half alone
-(links and prose §-references).
+**The links half is a gate step**, `--links --check --tracked`, the decision
+ids with it. The other two report and do not fail: `--check` exits 1 on the
+unambiguous half alone (links, prose §-references and decision ids).
 
 What this cannot check, and what the checklist in `docs/kernel/README.md`
 § Keeping this true asks a reader to do by hand: run the commands a page
@@ -465,6 +506,207 @@ def check_links(
     return bad
 
 
+# ── decision ids ────────────────────────────────────────────────────────────
+
+DECISIONS = REPO / "docs" / "decisions"
+#: What is not the project, and so not read for decision ids: the process
+#: (the plans, the scripts, the gate and CI, the agents' guide), what is
+#: external to both, the history record and third-party source.
+NOT_PROJECT = (
+    "plans/", "utils/", ".github/", "run_tests.sh", "AGENTS.md", "CLAUDE.md",
+    "c/", "nl2smt/", "docs/lib/", "docs/history/", "ein.rs/vendor/",
+)
+#: A decision file's name: its id, then the slug of its title.
+DECISION_FILE = re.compile(r"^(Q-M\d+(?:[a-z]\d*)?\.\d+|Q\d+)-[a-z0-9][a-z0-9-]*\.md$")
+#: A milestone-scoped id, and the `.n` that continue it written short, in a
+#: list or a range: `Q-M1f.135, .141 and .142`, `Q-M1f.315 to .340`.
+QM_ID = re.compile(
+    r"(?<![\w-])Q-M(\d+(?:[a-z]\d*)?)\.(\d+)(?!\d)"
+    r"((?:\s*(?:,|and|or|to|–|-|/)\s*\.\d+(?!\d))*)"
+)
+#: A bare `Q<n>`, the global ledger's numbering, not inside a longer name:
+#: `Q1.5b.7`, `S1f.5.4#Q1`, `Q23@M2` and `Q-M1f.6` hold none.
+BARE_Q = re.compile(r"(?<![\w#@./\\$-])Q(\d+)(?![\w@#]|\.\d)")
+#: The word before a bare `Q<n>` that names the ledger which numbered it.
+LEDGER_BEFORE = re.compile(
+    r"(?:\b(?:review's|milestone's|F\d+|M\d+(?:[a-z]\d*)?"
+    r"|[SPT]\d+(?:[a-z]\d*)?(?:\.\d+[a-z]?)+(?:'s)?(?:\s+census)?)"
+    r"|[\w.-]+\.md)\s*(?:/\s*)?[`*\[(]*$"
+)
+#: …or the words after it: `Q1 of malformed_numbers.md`, `"Q3 - as recommended"`.
+LEDGER_AFTER = re.compile(r"^`?\s+of\s+`?[\w./-]+\.md|^\s+-\s")
+#: A range's first end, right before its second: `Q1–Q10`, `` `Q1`–`Q10` ``.
+RANGE_BEFORE = re.compile(r"Q\d+`?\s*[–-]\s*`?$")
+
+#: Decision ids let stand where they are, (file, id) -> why. Each is an id in
+#: text the engine produces and a golden digests, so that re-aiming it moves the
+#: golden: the stage that re-aims the engine's own ids (P1f.20's finding L-12)
+#: removes the row with the golden's re-bank. A row whose id its file no longer
+#: cites is a finding, so the list cannot outlive what it excuses.
+DECISION_IDS_ALLOWED = {
+    ("ein.rs/crates/ein-infer/src/naf_deps.rs", "Q-M1e.9"): (
+        "the refutation-under-absent warning's text, which the shape golden's `naf` op "
+        "digests (ein-render/tests/golden/corpus_shapes.md5); the decision is Q-M1e2.5's"
+    ),
+}
+
+#: Rust: a char literal (so that `'"'` opens no string), and a raw string's
+#: opening, `r"`, `r#"`, `br#"`.
+RS_CHAR = re.compile(r"'(?:[^'\\\n]|\\(?:x[0-9a-fA-F]{2}|u\{[0-9a-fA-F]{1,6}\}|.))'")
+RS_RAW = re.compile(r'(?:b|c)?r(#*)"')
+
+
+def rust_comments_and_strings(text: str) -> str:
+    """Every comment and every string literal of a Rust source, all else
+    blanked to spaces, its newlines kept, so a line number is the file's.
+    Comments at a line's start or after code, block comments nested; strings
+    plain, byte and raw."""
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        c = text[i]
+        if text.startswith("//", i):
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+        elif text.startswith("/*", i):
+            depth, j = 1, i + 2
+            while j < n and depth:
+                if text.startswith("/*", j):
+                    depth, j = depth + 1, j + 2
+                elif text.startswith("*/", j):
+                    depth, j = depth - 1, j + 2
+                else:
+                    j += 1
+        elif c in "bcr" and (i == 0 or not (text[i - 1].isalnum() or text[i - 1] == "_")) \
+                and (m := RS_RAW.match(text, i)):
+            close = '"' + m.group(1)
+            j = text.find(close, m.end())
+            j = n if j < 0 else j + len(close)
+        elif c == '"':
+            j = i + 1
+            while j < n and text[j] != '"':
+                j += 2 if text[j] == "\\" else 1
+            j = min(j + 1, n)
+        else:
+            m = RS_CHAR.match(text, i) if c == "'" else None
+            j = m.end() if m else i + 1
+            out.append(re.sub(r"[^\n]", " ", text[i:j]))
+            i = j
+            continue
+        out.append(text[i:j])
+        i = j
+    return "".join(out)
+
+
+def project_referrers() -> list[Path]:
+    """Every tracked file of the project that may cite a decision: a `.md`, a
+    crate's `.rs`, a `.ein` and `corpus/*.toml`."""
+    out = subprocess.run(
+        ["git", "-C", str(REPO), "ls-files", "-z"], capture_output=True, text=True, check=True
+    ).stdout
+    files = set()
+    for rel in out.split("\0"):
+        if not rel or rel.startswith(NOT_PROJECT):
+            continue
+        if (
+            rel.endswith((".md", ".ein"))
+            or (rel.endswith(".rs") and rel.startswith("ein.rs/crates/"))
+            or (rel.startswith("corpus/") and rel.endswith(".toml") and rel.count("/") == 1)
+        ):
+            path = REPO / rel
+            if path.is_file() and not path.is_symlink():
+                files.add(path)
+    return sorted(files)
+
+
+def decision_files() -> tuple[dict[str, list[Path]], list[Path]]:
+    """Every decision file by its id, and the files under `docs/decisions/`
+    that are neither a `README.md` nor named `<id>-<slug>.md`."""
+    by_id: dict[str, list[Path]] = {}
+    misnamed = []
+    for path in sorted(DECISIONS.rglob("*.md")) if DECISIONS.is_dir() else []:
+        if path.name == "README.md":
+            continue
+        m = DECISION_FILE.match(path.name)
+        if m:
+            by_id.setdefault(m.group(1), []).append(path)
+        else:
+            misnamed.append(path)
+    return by_id, misnamed
+
+
+def bare_q_is_decision(line: str, m: re.Match) -> bool:
+    """Whether a bare `Q<n>` is written as a decision id, or names the ledger
+    that numbered it (see the module's docstring)."""
+    before = line[: m.start()]
+    if RANGE_BEFORE.search(before):
+        first = list(re.finditer(r"Q\d+", before))[-1]
+        return bare_q_is_decision(line, first)
+    return not (LEDGER_BEFORE.search(before) or LEDGER_AFTER.match(line[m.end():]))
+
+
+def decision_ids_of(text: str) -> list[tuple[int, str]]:
+    """Every decision id in ``text``, as (line, id), in order."""
+    found = []
+    for ln, line in enumerate(text.split("\n"), start=1):
+        for m in QM_ID.finditer(line):
+            ms = m.group(1)
+            found.append((m.start(), ln, f"Q-M{ms}.{m.group(2)}"))
+            for c in re.finditer(r"\.(\d+)", m.group(3)):
+                found.append((m.start(3) + c.start(), ln, f"Q-M{ms}.{c.group(1)}"))
+        for m in BARE_Q.finditer(line):
+            if bare_q_is_decision(line, m):
+                found.append((m.start(), ln, f"Q{m.group(1)}"))
+    found.sort(key=lambda f: (f[1], f[0]))
+    return [(ln, qid) for _, ln, qid in found]
+
+
+def check_decisions(
+    pages: list[Path],
+) -> tuple[list[tuple[Path, int, str, str]], int, int]:
+    """Every decision id ``pages`` cite that does not resolve to exactly one
+    decision file, as (referrer, line, id, why), with the findings of
+    `docs/decisions/` itself and of the allow-list; how many citations were
+    read; and how many the allow-list let stand."""
+    by_id, misnamed = decision_files()
+    allowed_seen: set[tuple[str, str]] = set()
+    allowed = 0
+    bad: list[tuple[Path, int, str, str]] = []
+    for path in misnamed:
+        bad.append((path, 0, path.name, "not <id>-<slug>.md"))
+    for qid, paths in sorted(by_id.items()):
+        if len(paths) > 1:
+            for path in paths:
+                bad.append((path, 0, qid, f"{len(paths)} decision files"))
+    read = 0
+    for page in pages:
+        raw = page.read_text(errors="replace")
+        if page.suffix == ".rs":
+            text = rust_comments_and_strings(raw)
+        elif page.suffix == ".ein":
+            text = ein_comment_text(raw)
+        else:
+            text = raw
+        rel = page.relative_to(REPO).as_posix() if page.is_relative_to(REPO) else str(page)
+        for line, qid in decision_ids_of(text):
+            read += 1
+            n = len(by_id.get(qid, []))
+            if n != 1 and (rel, qid) in DECISION_IDS_ALLOWED:
+                allowed_seen.add((rel, qid))
+                allowed += 1
+                continue
+            if n == 0:
+                bad.append((page, line, qid, "no decision file"))
+            elif n > 1:
+                bad.append((page, line, qid, f"{n} decision files"))
+    read_rels = {p.relative_to(REPO).as_posix() for p in pages if p.is_relative_to(REPO)}
+    for rel, qid in sorted(DECISION_IDS_ALLOWED):
+        if rel in read_rels and (rel, qid) not in allowed_seen:
+            bad.append((REPO / rel, 0, qid, "allowed, not cited"))
+    bad.sort(key=lambda b: (str(b[0]), b[1]))
+    return bad, read, allowed
+
+
 def inbound(refs: list[Ref], prefixes: list[str]) -> list[tuple[str, Counter]]:
     """Per target, the references to it by referrer kind: `md` (with `plans`
     and `history` counting the `.md` ones from `plans/` and `docs/history/`
@@ -537,7 +779,14 @@ def main() -> int:
     pages = sorted(set(pages))
     if args.only:
         pages = [p for p in pages if args.only in str(p)]
-    if not pages:
+    # The decision half reads the project's files, which `-k` may narrow to
+    # some the link half does not read (`corpus/wrong_answers.toml`).
+    cited: list[Path] = []
+    if args.links and args.tracked:
+        cited = project_referrers()
+        if args.only:
+            cited = [p for p in cited if args.only in str(p)]
+    if not pages and not cited:
         print(f"no pages under {' '.join(args.tree)}", file=sys.stderr)
         return 2
     rel = lambda p: p.relative_to(REPO) if p.is_relative_to(REPO) else p  # noqa: E731
@@ -558,6 +807,20 @@ def main() -> int:
                 cur = page
             print(f"     :{line:<5} {why:<22} {target}")
         failures += len(bad)
+
+    if args.links and args.tracked:
+        dbad, read, allowed = check_decisions(cited)
+        print(
+            f"── decision ids ── {read} cited in {len(cited)} project files, "
+            f"{allowed} let stand by DECISION_IDS_ALLOWED, {len(dbad)} finding(s)"
+        )
+        cur = None
+        for page, line, qid, why in dbad:
+            if page != cur:
+                print(f"   {rel(page)}")
+                cur = page
+            print(f"     :{line:<5} {why:<22} {qid}")
+        failures += len(dbad)
 
     if args.inbound:
         rows = inbound(refs, args.target)

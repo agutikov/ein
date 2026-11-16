@@ -757,7 +757,9 @@ if [[ "${CHECKS}" == 1 ]]; then
     # in a Rust comment, and the bare paths in a `.ein` comment and in
     # `corpus/corpus.toml`. Not scoped to `docs/kernel/`, which `doc_audit.py`
     # defaults to: a relative link resolves or it does not wherever it is
-    # written, and a page that moves takes every reference to it along.
+    # written, and a page that moves takes every reference to it along. With
+    # them, every decision id the project cites names exactly one file under
+    # `docs/decisions/`.
     step "utils/doc_audit.py --links --check"
     python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check --tracked
 
