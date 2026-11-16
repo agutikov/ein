@@ -1,5 +1,4 @@
-//! The round trip — [design/binary-format.md § 7](../../../../docs/ein/ein.rs/design/binary-format.md#7-tests),
-//! P1a.8's acceptance.
+//! The round trip — [design/binary-format.md § 7](../../../../docs/ein/ein.rs/design/binary-format.md#7-tests).
 //!
 //! `save(kb) → open()` has to be **identical**: the same facts in the same
 //! order, the same provenance, the same indexes, in both the empty-interner
@@ -80,7 +79,7 @@ fn saved(kb: &Kb, terms: &Terms, ast: &mut Ast, forms: &[ein_ir::NodeId], path: 
 #[test]
 fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
     let (mut checked, mut remapped) = (0usize, 0usize);
-    // On the corpus sweeps' pool (M1f S1f.6.39): a file a unit, its
+    // On the corpus sweeps' pool: a file a unit, its
     // `Some(remapped)` or `None` where it does not load, read back in order.
     let files = corpus_files();
     let done = ein_corpus::pool::map(
@@ -155,7 +154,7 @@ fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
 /// The saturated case — the one the format exists for, and the one with
 /// derived provenance, alternative justifications and a `(not …)` index in it.
 /// `alt-cap-core.ein` is the one whose full list keeps an arrival beside it
-/// (format 1.1's `CLOSURE`, M1e2 S1e2.2.11), which `Kb::diff` compares.
+/// (`CLOSURE`), which `Kb::diff` compares.
 #[test]
 fn a_saturated_kb_round_trips_with_its_derivations() {
     for rel in [
@@ -220,20 +219,16 @@ fn a_saturated_kb_round_trips_with_its_derivations() {
     }
 }
 
-/// design/10 §6's two numbers: a saturated `zebra2` under 64 KB, 80 KB since
-/// M1f S1f.6.35, and a cold open within its budget — under a millisecond until
-/// M1f S1f.5.5's swap, under 6 ms since (the user's ruling of 2026-11-08 on its
-/// review stop, item 12, *"Restate the budget"*).
+/// Two ceilings: a saturated `zebra2` under 80 KB, and a cold open whose
+/// median is under 6 ms in a build without debug assertions and under 20 ms
+/// in one with them.
 ///
 /// The open is timed as a *median* of eleven, because a single one on a shared
 /// runner measures the runner. It is still the whole job — digest check,
 /// re-intern, re-parse of `PROGRAM`, registry rebuild, fact replay, index
-/// rebuild — and not a subset chosen to make the number. The re-parse is what
-/// the swap moved: the generated parser reads `PROGRAM`'s 10 960 bytes in
-/// about 3 ms where the hand-written one took a fraction of one, the price the
-/// user accepted with the generator (*"if speed will ever become an issue -
-/// will add super-optimized hand-written parser"*); keeping the parsed tree
-/// in the container, a format bump, waits until the millisecond is wanted.
+/// rebuild — and not a subset chosen to make the number. The re-parse by the
+/// generated parser is most of it; keeping the parsed tree in the container
+/// would be a format bump.
 #[test]
 fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
     let path = repo_root().join("examples/zebra2.ein");
@@ -251,14 +246,10 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
         },
     )
     .expect("save");
-    // Restated from design/10 §6's 64 KB at M1f S1f.6.35, a default the
-    // user's to revise: every import brings its module whole since, so the
-    // container stores `std.algebra`, `std.bijection` and `std.macro` whole,
-    // 142 top-level forms where it stored 111 and 60 rules where it held 30
-    // (`Program` 17 920 bytes), and two more facts, `std.algebra`'s lemmas',
-    // with their provenance (390); 73 648 bytes where it was 62 720 (`ein kb
-    // save -s examples/zebra2.ein`, the release binaries of the stage and of
-    // `4676a5de`, 2026-11-14). The cold open measured 4.68 ms here then.
+    // Every import brings its module whole, so the container stores
+    // `std.algebra`, `std.bijection` and `std.macro` whole, with their rules
+    // and `std.algebra`'s lemmas. `ein kb save -s examples/zebra2.ein` writes
+    // the file, and the line below prints each section's bytes.
     assert!(
         bytes.len() < 80 * 1024,
         "a saturated zebra2 is {} bytes, over the 80 KB design/10 §6's 64 KB \
@@ -283,17 +274,13 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
     }
     times.sort_by(f64::total_cmp);
     let median = times[times.len() / 2];
-    // design/10 §6's number is about the **shipped** engine. `cargo test`
-    // builds the dev profile — `opt-level = 1` with debug assertions on — and
-    // CI runs it on a shared machine, so gating the design's number on an
-    // unoptimised build on a borrowed core would be measuring the runner. The
-    // number is printed either way, which is what a regression is read off;
-    // what differs is the ceiling that fails the test. Restated at M1f
-    // S1f.5.5's swap from 1 ms (release) and 5 ms (dev), measured then at 0.61
-    // and 0.83 ms, to 6 ms and 20 ms: the generated parser's open measured
-    // 3.83 to 3.89 ms release and 5.40 to 5.48 ms dev, three runs each
-    // (`cargo test [--release] -p ein-einb --test roundtrip a_saturated_zebra2
-    // -- --nocapture`, 2026-11-09).
+    // The tight ceiling is about the **shipped** engine. A build with debug
+    // assertions on (`cargo test`'s dev profile, `opt-level = 1`, or the
+    // `gate` profile) runs on a shared machine, so gating the tight number on
+    // it would be measuring the runner. The number is printed either way,
+    // which is what a regression is read off (`cargo test [--release] -p
+    // ein-einb --test roundtrip a_saturated_zebra2 -- --nocapture`); what
+    // differs is the ceiling that fails the test.
     let budget = if cfg!(debug_assertions) { 20.0 } else { 6.0 };
     eprintln!(
         "einb: saturated zebra2 = {} bytes ({}), {} facts, cold open {median:.3} ms",
@@ -301,12 +288,9 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
         breakdown.join(" "),
         kb.n_facts()
     );
-    // The message names the budget, the profile and the suspect — M1e
-    // S1e.4.5, `TE-L1`, which found this site while auditing two others and
-    // did not list it. It was the workspace's second-tightest wall clock
-    // (measured 0.96 ms against the 5.0 ms dev budget, 2026-09-01, so 5.2×)
-    // and its failure said only what it took. Since the swap 5.45 ms against
-    // 20 ms, so 3.7×.
+    // The message names the budget, the profile and the suspect: a wall
+    // clock this tight can fail for the machine's sake, and a failure that
+    // said only what it took would not say which.
     assert!(
         median < budget,
         "cold open took {median:.3} ms against a {budget} ms {} budget \
@@ -321,10 +305,8 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
 
 /// A solved KB, its models stored as deltas, and a model put back together.
 ///
-/// The model is R's one state, as `ein solve --single` decides it: since M1e2
-/// S1e2.1c.5 a route's, the walk this first stored having been deleted on the
-/// user's ruling of 2026-11-03. No command writes the section, so this is its
-/// one writer.
+/// The model is R's one state, as `ein solve --single` decides it. No command
+/// writes the section, so this is its one writer.
 #[test]
 fn a_stored_solution_reconstitutes_the_model_it_was_taken_from() {
     use ein_infer::explore::{self, Ask, Mode, Verdict, Which};
@@ -398,8 +380,9 @@ fn a_stored_solution_reconstitutes_the_model_it_was_taken_from() {
     assert!(model.n_facts() > opened.kb.n_facts());
 }
 
-/// `ein solve` must not be able to *read* a stored answer — F9's hazard, and
-/// the reason the mitigation is structural rather than a note.
+/// `ein solve` must not be able to *read* a stored answer — a stored answer
+/// memoises the puzzle rather than improving the reasoner, and the
+/// mitigation is structural rather than a note.
 #[test]
 fn nothing_in_the_solve_path_reads_the_solution_store() {
     let cli = repo_root().join("ein.rs/crates/ein-cli/src");
@@ -413,10 +396,9 @@ fn nothing_in_the_solve_path_reads_the_solution_store() {
             // the writer, which is not the hazard.
             //
             // It is a textual check and therefore a coarse one: any field
-            // named `solutions` on any type trips it. That has cost one
-            // rename already — M1d S1d.2.4's `OwesReport` calls its per-model
-            // tallies `models` for this reason, and its own doc says so — and
-            // a rename is the right price for a guard this cheap.
+            // named `solutions` on any type trips it, so the solve path names
+            // no field so, and a rename is the right price for a guard this
+            // cheap.
             if text.contains(".solutions") {
                 offenders.push(path.display().to_string());
             }

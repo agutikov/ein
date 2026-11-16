@@ -1,6 +1,5 @@
 //! `.einb` — the binary knowledge-base container
-//! ([design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md),
-//! [design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md)).
+//! ([design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md)).
 //!
 //! A loaded — and optionally saturated — KB on disk, in a form the engine
 //! opens with no import resolution, no macro expansion and no filesystem walk.
@@ -18,42 +17,37 @@
 //! (which of those facts this KB believes, in
 //! insertion order), `PROV` (the derivation records and the per-fact primary /
 //! alternative tables), `PROGRAM` (the resolved, import-flattened form list),
-//! and optionally `SOLUTIONS`, since format 1.1 (M1e2
-//! S1e2.2.11) `CLOSURE` (each derived fact's closure and smallest-closure
-//! arrival, which a full alternatives list keeps beside it), and since format
-//! 1.2 (M1e2 S1e2.2.21) `UNIVERSAL` (the facts each derivation's universals
-//! read, which a core follows). **Format 2.0** (2026-11-13) is 1.2 with no
-//! time in `META`, so a save is a function of what was saved ([`Meta`]), and
-//! with no `INTS` (below); this reader opens 2.x alone, and a 1.x file is
-//! refused with the version line.
+//! and optionally `SOLUTIONS`, `CLOSURE` (each derived fact's closure and
+//! smallest-closure arrival, which a full alternatives list keeps beside it)
+//! and `UNIVERSAL` (the facts each derivation's universals read, which a core
+//! follows). The format is **2.0**: no time in `META`, so a save is a
+//! function of what was saved ([`Meta`], Q-M1f.110), and no integer table
+//! (below). This reader opens 2.x alone, and refuses another major with the
+//! version line.
 //!
-//! **No `INTS`, and a value with an int's tag is refused** (M1f S1f.5.4).
-//! Ein has no int since S1f.5.5's swap, which made a run of digits a name, so
-//! the int pool and its id space are gone. Through format 1.2 the integer
-//! table stayed in the layout, written empty and required, so that no version
-//! moved (design/10 §4 bumps the major on a layout change; M1f Q-M1f.10's
-//! default (a)); 2.0, whose major moved for `META`, dropped it (Q-M1f.10 (b),
-//! the user's word of 2026-11-13), and its kind number, 3, is not reused. A
-//! value tagged `0b01`, which only a 1.x writer wrote, for a program with an
-//! int, is refused, [`EinbError::Int`], never read as a name or a fact.
+//! **No integer table, and a value with the tag bits `0b01` is refused**
+//! (Q-M1f.10). Ein has no integers — a run of digits is a name — so there is
+//! no int pool and no id space for one. The integer table's kind number, 3,
+//! is not reused. A stored value tagged `0b01` is refused,
+//! [`EinbError::Int`], never read as a name or a fact.
 //!
 //! ## What is not a section
 //!
-//! **`INDEXES`.** design/10 lists it as optional and this writer never emits
+//! **`INDEXES`.** The kind is known and this writer never emits
 //! one: every reverse index is a projection of the fact list in insertion
 //! order, and [`Kb::rebuild_indexes`] is the projection — the same function
 //! the loader ends with, so a rebuilt index is not *equal to* the original by
 //! argument, it is produced by the code that defines what the original is. It
-//! costs one linear pass on open (`zebra2` saturated: 378 facts) against
-//! roughly doubling the file, and a stored index is a second encoding of
+//! costs one linear pass on open against a larger file, and a stored index is
+//! a second encoding of
 //! derived state for a round trip to disagree about. A reader still skips a
 //! kind-8 section rather than refusing it, so a writer that changes its mind
 //! does not need a major bump.
 //!
-//! **The equality classes.** [`ein_core::EqClasses`] is the M1 placeholder for
-//! F4's e-graph and the engine never unions — the only caller in the tree is
-//! one test. A `.einb` of a KB with equality classes would lose them, and
-//! there is no way to make one.
+//! **The equality classes.** [`ein_core::EqClasses`] is inert: the engine
+//! never unions, and the only callers in the tree are tests (Q1). A `.einb`
+//! of a KB with equality classes would lose them, and there is no way to make
+//! one.
 //!
 //! ## Ids across the boundary
 //!
@@ -62,7 +56,9 @@
 //! table per space; every other section is remapped through them in one linear
 //! pass, and the pass is skipped when the tables come back the identity —
 //! which is what a fresh process opening one file gets. [`tables`] is that,
-//! and [design/10 §3] is why.
+//! and
+//! [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary)
+//! is why.
 //!
 //! ## Trusting a file
 //!
@@ -73,13 +69,11 @@
 //! `PROGRAM` — re-loading it is exactly what reading the `.ein` would have
 //! done — and drops everything derived. See [`meta`].
 //!
-//! ### The `u32`-offset sweep — M1e S1e.4.1
+//! ### The `u32` offsets
 //!
-//! `CO-L1` found `ein-core` narrowing a `len()` into a `u32` arena offset with
-//! only an *id-count* guard behind it, and asked whether this container has
-//! the same shape. It is the crate worth asking about, because it is the one
-//! [`cast`] permits `unsafe` in and the one that reads bytes it did not write.
-//! The answer, swept 2026-09-01:
+//! `ein-core` narrows a `len()` into a `u32` arena offset, and this container
+//! is the crate where that shape matters most: it is the one [`cast`] permits
+//! `unsafe` in and the one that reads bytes it did not write.
 //!
 //! - **The reader is covered, and not by the digest.** A string table's
 //!   offsets must *close* (`offsets[count] == blob.len()`) and be *sorted*,
@@ -87,17 +81,17 @@
 //!   named refusals in [`sections`], on the path a forged file takes after
 //!   the digest has already been made to match.
 //! - **The writer is not**, and does not need to be while every offset it
-//!   writes comes from a `Terms` that now refuses to exceed
-//!   [`ein_core::intern::ARENA_CAPACITY`]. The bound moved one crate down,
-//!   which is where it belongs: a container cannot serialise a store that
-//!   cannot exist.
-//! - **The one hole was not an offset.** It was `FactStore::intern`'s arity
-//!   `expect`, two crates below this one and reachable from *both* directions
-//!   — a 65 536-argument fact in a `.ein`, or a forged `Facts` row here. It is
-//!   a refusal now, so this reader's `?` carries it, and the fuzzers in
-//!   `tests/corruption.rs` could never have found it: they mutate bytes of a
-//!   20 KB seed whose widest row has 147 arguments, and a byte flip cannot
-//!   manufacture 65 536.
+//!   writes comes from a `Terms` that refuses to exceed
+//!   [`ein_core::intern::ARENA_CAPACITY`]. The bound is one crate down, which
+//!   is where it belongs: a container cannot serialise a store that cannot
+//!   exist.
+//! - **A fact's arity is no offset and is bounded the same way.**
+//!   `FactStore::intern`, two crates below this one, refuses a fact wider than
+//!   its arity field from *both* directions — a 65 536-argument fact in a
+//!   `.ein`, or a forged `Facts` row here — so this reader's `?` carries it.
+//!   The fuzzers in `tests/corruption.rs` cannot reach it: they mutate the
+//!   bytes of a seed with narrow rows, and a byte flip cannot manufacture
+//!   65 536 arguments.
 
 #![deny(unsafe_code)]
 
@@ -153,9 +147,8 @@ pub enum EinbError {
     /// The file disagrees with itself: re-interning entry *i* did not yield
     /// the id the file says it has.
     NotInjective(&'static str),
-    /// The file holds an integer — a value with an int's tag bits — which only
-    /// a 1.x writer wrote, for a program with an int, before M1f S1f.5.4
-    /// retired the kind. There is no value to read it as.
+    /// The file holds a value with the tag bits `0b01`, which no value has
+    /// (Q-M1f.10). There is no value to read it as.
     Int,
 }
 
@@ -320,27 +313,28 @@ pub struct OpenOptions {
     /// The inputs as they are *now*, for the cache-miss test. Empty means
     /// "did not look", which claims nothing.
     pub sources: Vec<Source>,
-    /// `--trust-cache` turns this off (design/10 §4). On by default, because a
-    /// digest over 30 KB is microseconds and a silently misread KB is a wrong
-    /// answer with a straight face.
+    /// `--trust-cache` turns this off
+    /// ([design/binary-format.md § 4.2](../../../../docs/ein/ein.rs/design/binary-format.md#42-a-file-refused)).
+    /// On by default, because a digest is cheap and a silently misread KB is a
+    /// wrong answer with a straight face.
     pub verify_digest: bool,
     /// The engine asking. Defaults to this build's.
     pub engine: String,
-    /// Which `(query …)` block the rebuilt program is *about* — M1c S1c.1.2.
+    /// Which `(query …)` block the rebuilt program is *about*.
     ///
     /// A container stores its program as canonical text and re-parses it, so
     /// every query in the source is in the file; without this the reader would
     /// always rebuild about the first one, and `ein solve x.einb` would answer
     /// question 1 while saying it answered question 2.
     pub query: usize,
-    /// What the rebuilt program's load requires — M1f T1f.5.14.6. A container
+    /// What the rebuilt program's load requires. A container
     /// re-loads its program from the text it stores, so the requirement of a
-    /// `:why`, the default since T1f.5.14.7, refuses a `.einb` exactly where it
+    /// `:why`, the default, refuses a `.einb` exactly where it
     /// refuses the `.ein` it was saved from, and `--no-require-why` loads both.
     pub load: ein_ir::LoadOptions,
     /// The container's own name, its path as the caller was handed it, which
     /// every position in the stored program names through [`program_name`]
-    /// (M1f S1f.5.5, T1f.5.5.13). [`open`] fills it from its path; `None` is a
+    /// (Q-M1f.15). [`open`] fills it from its path; `None` is a
     /// container read from bytes with no name.
     pub name: Option<String>,
 }
@@ -360,17 +354,15 @@ impl Default for OpenOptions {
 
 /// The name a container's stored program is parsed under, and so the file
 /// every position in it names: `<program stored in x.einb>`, or `<program
-/// stored in a .einb>` for a container read from bytes with no name (M1f
-/// S1f.5.5, T1f.5.5.13, [Q-M1f.15]).
+/// stored in a .einb>` for a container read from bytes with no name
+/// (Q-M1f.15).
 ///
 /// A line and column of it are the stored text's, the resolved and
 /// import-flattened program [`ein_ir::dump_canonical`] wrote, and not the
 /// source's: the container keeps no source position past the provenance
-/// table's, by design/10's measurement (`sections::program_section`). The
+/// table's (`sections::program_section`). The
 /// name says which text the position is in, in brackets as `<string>` is,
 /// since no file holds it.
-///
-/// [Q-M1f.15]: ../../../../plans/m1f_hypothesis_and_documentation/open_questions.md
 pub fn program_name(container: Option<&str>) -> String {
     match container {
         Some(path) => format!("<program stored in {path}>"),
@@ -386,7 +378,7 @@ pub struct Opened {
     pub ast: Ast,
     /// The stored program's top-level forms in [`Self::ast`]: the resolved,
     /// import-flattened program, which is what a caller that re-saves the
-    /// container hands [`save`] (M1f S1f.5.5, T1f.5.5.13).
+    /// container hands [`save`].
     pub forms: Vec<NodeId>,
     pub meta: Meta,
     pub freshness: Freshness,
@@ -396,8 +388,9 @@ pub struct Opened {
     pub derived_dropped: bool,
     /// Present only when the file carried one *and* it was believed.
     pub solutions: Option<Solutions>,
-    /// False when every id space came back the identity — design/10 §3's fast
-    /// path, and the number a benchmark wants to know it took.
+    /// False when every id space came back the identity — the fast path of
+    /// [design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary),
+    /// and the number a benchmark wants to know it took.
     pub remapped: bool,
 }
 
@@ -426,7 +419,7 @@ pub fn open_bytes(bytes: &[u8], terms: &mut Terms, opts: &OpenOptions) -> Result
         let end = off.checked_add(len).ok_or(EinbError::Truncated)?;
         let body = bytes.get(off..end).ok_or(EinbError::Truncated)?;
         // An unknown kind in this major is skipped, not refused: that is what
-        // makes a minor bump additive (design/10 §4).
+        // makes a minor bump additive (binary-format.md § 4.1).
         if let Some(kind) = Kind::from_u32(e.kind) {
             found[kind as usize] = Some(body);
         }
@@ -524,8 +517,9 @@ pub fn meta_of(bytes: &[u8]) -> Result<Meta> {
 
 /// What each section costs, without opening the file.
 ///
-/// The size acceptance is a number about a whole file (design/10 §6), and a
-/// whole-file number tells nobody which section grew. This is what a test — or
+/// The size ceiling is a number about a whole file
+/// (`tests/roundtrip.rs`' `a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond`),
+/// and a whole-file number tells nobody which section grew. This is what a test — or
 /// anyone holding a `.einb` that got big — reads instead.
 pub fn section_sizes(bytes: &[u8]) -> Result<Vec<(Kind, u64)>> {
     let mut r = Reader::new(bytes);
@@ -542,7 +536,7 @@ pub fn section_sizes(bytes: &[u8]) -> Result<Vec<(Kind, u64)>> {
 
 /// The program a container stores, as text, without opening its KB: what a
 /// command that parses a program and never loads it reads from a `.einb`
-/// (`ein render rules`, `constraints`, `program`), M1f S1f.5.5, T1f.5.5.13.
+/// (`ein render rules`, `constraints`, `program`).
 ///
 /// The header and, with `verify_digest`, the digest are checked as
 /// [`open_bytes`] checks them, so a damaged file is refused here as it is

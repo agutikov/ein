@@ -1,5 +1,5 @@
 //! `SOLUTIONS` — what a search found, as a delta against the KB in the same
-//! file (T1a.8.1.6, [design/binary-format.md § 6](../../../../docs/ein/ein.rs/design/binary-format.md#6-the-solution-store)).
+//! file ([design/binary-format.md § 6](../../../../docs/ein/ein.rs/design/binary-format.md#6-the-solution-store)).
 //!
 //! A model is a `Kb`, and a `Kb` is a stack of layers over a base. Storing one
 //! whole would store the base again per solution; storing the **delta** — the
@@ -9,9 +9,8 @@
 //!
 //! ## The measurement hazard, and what is done about it
 //!
-//! [F9](../../../../plans/followups/f9_e_catalog.md) says it about this
-//! section's ancestor: **a stored answer memoises the puzzle rather than
-//! improving the reasoner.** The mitigation here is structural rather than
+//! **A stored answer memoises the puzzle rather than improving the
+//! reasoner.** The mitigation here is structural rather than
 //! advisory — nothing in the CLI's solve path reads this section, so no
 //! benchmark can accidentally time a lookup, and a reader that wants a stored
 //! model has to ask for it by name. What a file carries and what a run
@@ -29,10 +28,8 @@ use crate::{EinbError, Result};
 
 /// The walk's per-candidate counters, as the section stores them.
 ///
-/// They were `ein_infer::solve`'s until M1e2 S1e2.1c.5 deleted the walk on
-/// the user's ruling of 2026-11-03. The section's format did not move with
-/// it: no command writes the section, and a container that carries one still
-/// reads.
+/// No route keeps them, and the section's format keeps them: no command
+/// writes the section, and a container that carries one still reads.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub struct BaseStats {
     pub enterings_total: u64,
@@ -69,8 +66,8 @@ pub enum VerdictKind {
     Contradiction,
     /// A budget was spent. Not a verdict; recorded so a reader is not told one.
     Aborted,
-    /// `k = 0` **models**, and a stated obligation is unwitnessed — M1d
-    /// S1d.2.6. Its `nodes` are the *open* states, stored like models because
+    /// `k = 0` **models**, and a stated obligation is unwitnessed. Its
+    /// `nodes` are the *open* states, stored like models because
     /// they are what a reader of the cache wants and what `:expect` reads.
     Open,
 }
@@ -122,8 +119,7 @@ impl Solutions {
     ///
     /// `base` is the KB the file will hold — the delta of every node is taken
     /// against it, so the two have to be saved together or the deltas name
-    /// nothing. It took the walk's answer until M1e2 S1e2.1c.5 deleted the
-    /// walk; a caller now hands it the states a route reached, read through
+    /// nothing. A caller hands it the states a route reached, read through
     /// `ein_infer::region::Nodes`.
     pub fn of(
         base: &Kb,

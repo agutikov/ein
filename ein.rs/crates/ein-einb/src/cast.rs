@@ -1,5 +1,5 @@
 //! The zero-copy casts — **the only `unsafe` in the repository**
-//! (T1a.8.1.4, [design/toolchain-and-layout.md § 2](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#2-dependency-policy)).
+//! ([design/toolchain-and-layout.md § 2](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#2-dependency-policy)).
 //!
 //! A `.einb` section is an array of fixed-width little-endian records, and
 //! reading one element at a time through [`crate::wire::Reader`] costs a bounds
@@ -50,9 +50,9 @@ unsafe impl Pod for u64 {}
 /// One fact row as the file holds it — `(rel, args_at, arity)`.
 ///
 /// Deliberately **not** [`ein_core::facts`]'s `Row`. That one carries two
-/// inline arguments because the matcher's dependency chain wanted them
-/// (T1a.6.2.6), and `INLINE_ARGS` is a measurement that may move; a file
-/// written before it moved would then be a file of a different shape. The
+/// inline arguments because the matcher's dependency chain wants them, and
+/// `INLINE_ARGS` is a tuning that may move; a file written before it moved
+/// would then be a file of a different shape. The
 /// on-disk row keeps every argument in the arena, so the format is not
 /// hostage to an in-memory tuning decision.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

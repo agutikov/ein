@@ -14,20 +14,17 @@ pub const MAGIC: [u8; 8] = *b"EINB\0\0\0\0";
 
 /// Bumped on any layout change. A reader **refuses** any other major.
 ///
-/// `2` since 2026-11-13, two things removed: `META`'s `created_unix` field,
-/// the second a file was written in, which nothing read and which made two
-/// saves of one program differ; and the `INTS` section (kind 3), the integer
-/// table, written empty since M1f S1f.5.4 retired the int kind and kept until
-/// then only so that no version moved (M1f Q-M1f.10). A 1.x file is refused
-/// with the version line, and is a cache to save again.
+/// `2`: `META` holds no time, which would make two saves of one program
+/// differ (Q-M1f.110), and there is no integer table (Q-M1f.10). A file of
+/// another major is refused with the version line, and is a cache to save
+/// again.
 pub const FORMAT_MAJOR: u16 = 2;
 
 /// Bumped when a section kind is added. A reader of the same major **ignores**
 /// section kinds it does not know, which is what makes a minor bump additive.
 ///
-/// `0` at 2.0, whose layout is 1.2's less those two: every other section 1.2
-/// had, [`Kind::Closure`] (1.1, M1e2 S1e2.2.11) and [`Kind::Universal`] (1.2,
-/// M1e2 S1e2.2.21) among them.
+/// `0`: every section kind below, [`Kind::Closure`] and [`Kind::Universal`]
+/// among them, is 2.0's.
 pub const FORMAT_MINOR: u16 = 0;
 
 pub const HEADER_LEN: usize = 64;
@@ -45,26 +42,25 @@ pub const ALIGN: usize = 8;
 pub enum Kind {
     Meta = 1,
     Symbols = 2,
-    // 3 was `INTS`, the integer table, written empty from M1f S1f.5.4, which
-    // retired the int kind, to format 1.2; gone at 2.0 and never reused, so a
-    // section of kind 3 is an unknown one and skipped.
+    // 3 is no kind: it numbered an integer table, which Ein has no use for
+    // (Q-M1f.10), and is never reused, so a section of kind 3 is an unknown
+    // one and skipped.
     Facts = 4,
     Present = 5,
     Prov = 6,
     Program = 7,
     /// Never written — see [`crate`] § What is not a section.
     Indexes = 8,
-    // 9 was `NOGOODS`, the walk's learned clauses, written only from a
-    // non-empty store; no route has filled one since the walk went, before
-    // format 2.0, so no 2.x writer wrote the section. Never reused: a section
-    // of kind 9 is an unknown one and skipped.
+    // 9 is no kind: it numbered learned clauses, which no route keeps, and
+    // no 2.x writer writes it. Never reused: a section of kind 9 is an
+    // unknown one and skipped.
     Solutions = 10,
     /// Each derived fact's closure and smallest-closure arrival
-    /// ([`ein_core::Kb::closures`]), M1e2 S1e2.2.11; written when the KB has
+    /// ([`ein_core::Kb::closures`]); written when the KB has
     /// any, which a saturated one does.
     Closure = 11,
     /// The facts each derivation record's universals read
-    /// ([`ein_core::Prov::universal`]), M1e2 S1e2.2.21; written when any
+    /// ([`ein_core::Prov::universal`]); written when any
     /// record has some.
     Universal = 12,
 }
@@ -93,7 +89,7 @@ impl Kind {
 #[derive(Clone, Copy, Debug)]
 pub struct Entry {
     pub kind: u32,
-    /// Reserved for per-section compression (design/10 §2). No writer sets it
+    /// Reserved for per-section compression. No writer sets it
     /// and a reader refuses a non-zero value rather than guessing, so the
     /// field cannot become a silent divergence while it is unused.
     pub flags: u32,
@@ -131,7 +127,8 @@ impl Header {
             return Err(EinbError::NotEinb);
         }
         let (major, minor, flags, n_sections) = (r.u16()?, r.u16()?, r.u32()?, r.u32()?);
-        // The digest covers everything *after* the header (design/10 §2), so
+        // The digest covers everything *after* the header
+        // (binary-format.md § 2.1), so
         // the header is the one place a flipped bit has no hash over it. Every
         // field but these two either changes what the file claims to be
         // (`magic`, `major`, `flags`, `n_sections`) or is legitimately allowed
@@ -181,7 +178,7 @@ impl Entry {
 
 /// The magic sniff, for a caller deciding what it was handed.
 ///
-/// The CLI dispatches on this rather than on the extension (T1a.8.1.7): a
+/// The CLI dispatches on this rather than on the extension: a
 /// `.ein` and a `.einb` are told apart by their first bytes, so a renamed file
 /// is still read as what it is.
 pub fn is_einb(bytes: &[u8]) -> bool {
