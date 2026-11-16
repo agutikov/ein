@@ -12,8 +12,8 @@ Part 1 (everything measured, nothing spent) is done, and the gate and the nightl
 `4a07010f`. The user was shown the bundle, the price list and the four questions at the phase's one stop and
 ruled all of them on 2026-11-16. Part 2 is under way: the surface, the fix of Q-M1f.307 and the first search
 improvement are merged into `master`; three agents were still running when the pause was asked, each in its own
-worktree, and nothing new is started after them. **Nothing merged since `4a07010f` has been through the gate, the
-nightly or the runner's container.** Nothing is pushed.
+worktree, and nothing new is started after them. **Nothing merged since `4a07010f` had been through the gate, the
+nightly or the runner's container** when this was written; § Owed says where that stands. Nothing is pushed.
 
 ## The stages
 
@@ -29,7 +29,7 @@ nightly or the runner's container.** Nothing is pushed.
 | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | a debt root was not told of | done: Q-M1f.307 (A), W26 fixed | `3e59b90a` |
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | at most one, spent | done for denials (licence L8); the pair of a death re-priced, still *go*, **not built** | `f8751257` |
 | [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | what the blind enumerator takes for an object | done: Q-M1f.306, W96 fixed, the `relation names` row | `bc3eb522` |
-| [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | T1 to T3 committed on its branch; **T4 uncommitted in its worktree**, stopped by a usage limit | — |
+| [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | done: the order built for six of eight questions, E-29 closed | `2e7cde48` |
 | [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | the rung a loaded rule chooses | tasks 1 to 3 done; **task 4 not started**, ruled (b) | — |
 | [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | exactly one, spent | not started | — |
 | [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | what the walk left | not started | — |
@@ -53,11 +53,8 @@ Each agent works in a git worktree under `.claude/worktrees/` on a branch `workt
 `master`, and is merged with `git merge --no-ff` (never squashed: a register row names its fixing commit by hash).
 [§ What happened to them](#what-happened-to-them) below is filled in as each one ends.
 
-| branch | work | base |
-|---|---|---|
-| `worktree-agent-ac394c3d42ce474da` | S1f.10.5, the order: **stopped mid-T4, worktree kept** | `f8751257` |
+None is running now: all six are merged into `master` and their worktrees and branches removed.
 
-The five merged branches' worktrees and branches are removed (2026-11-16); their commits are on `master`.
 S1f.10.3's untracked price-list runs, which its record's tables were read from, were kept as `build/s1f.10.3/`.
 
 ### What happened to them
@@ -78,15 +75,14 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
   program. E-54: nothing built. It filed H9-4 and H9-5. The goldens and the tests the merged branches share were
   re-run on the merged tree and pass; the gate was not run.
 
-- **`worktree-agent-ac394c3d42ce474da`, S1f.10.5: stopped, not merged.** The agent was cut off by its model's
-  usage limit in the middle of T4 (the order built), on 2026-11-16. Its branch holds three commits: I-SENDW
-  banked with its generator (`e664a561`), the inventory verified (`edccbea1`), and the orders as values with
-  `structure::NodeCoupling`, the coupling read off the whole node alone with no pair layer, and every order
-  measured with no route changed (`44a16ff3`). **Its worktree holds T4 uncommitted** (23 files: `order.rs`,
-  `tree.rs`, `explore.rs`, the read-out's `route` row, goldens, the stage record), which by its own record makes
-  I-SENDW's `--single` *Solution — R is one state* in 18 030 saturations and I-SEND's 18 030 where it was 17 747.
-  None of it is verified. **Keep that worktree**: it is the only copy. It edits
-  `docs/kernel/inference/structure.md`, which `master` has renamed to `hypothesis_space.md`.
+- **`worktree-agent-ac394c3d42ce474da`, S1f.10.5, merged as `2e7cde48`.** Its first agent was cut off by a usage
+  limit in T4; a second finished it from the worktree. The tree branches on the owed instance closest to closing a
+  coupling read off the whole node alone (`structure::NodeCoupling`, one saturation, no pair layer), then the one
+  with the fewest alternatives left. By the price list's rule it ships for six of the eight questions the tree
+  answers; the minimal line, whole and under `--single`, keeps the written order (*no*: `send_more_money_written`
+  stopped both ways, and the `zebra2-minus-15` pair). `send_more_money_written.ein --single` is decided, one
+  state in 18 030 saturations, where it was stopped after 131 134; `send_more_money.ein` 18 030 where it was
+  17 747. E-29 closed. Its measurement files are kept as `build/s1f.10.5/`. Its worktree and branch are removed.
 
 ## Owed before anything else is built
 
@@ -104,8 +100,6 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
 
 ## Then, in this order
 
-0. **S1f.10.5, finished from its worktree**: T4 checked, committed and merged, then T5's invariance tests and the
-   record. Either the same agent resumed, or a new one told to start from the worktree's uncommitted state.
 1. **S1f.10.15 task 4**, Q-M1f.308 (b). S1f.10.9's branch is merged, so it can start: under (b) `features/09`'s read-out
    needs the count E-7's naming adds. The entry says no tracked program's answer shows the change, so the task
    adds a witness.
