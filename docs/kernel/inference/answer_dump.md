@@ -57,8 +57,12 @@ out/
   [`read_out.md` § 2](read_out.md#2-describe-a-bare-ein-solve---count-and-ein-oracle)),
   as every `site` and `stale` row of the warning.
 - **`owing/`** holds the frontier of an empty R whose nodes all owe, each with
-  what it owes. **`nogoods.json`** is `[]` where N is empty or was not
-  computed (a line mode does not compute it). Each member is `{set, core,
+  what it owes; where describe's route did not compute the frontier (the tree
+  and the classes), the nodes it met, each owing with every extension dead,
+  which `answer.txt` says. **`nogoods.json`** is `[]` where N is empty or was
+  not computed by a line mode; where describe's route did not compute it (the
+  tree and the classes), it holds the members the run met, the candidates
+  dead alone, and the summary's `region.nogoods` is `null`. Each member is `{set, core,
   core_status, refuted_by}`; `refuted_by` (M1e2 S1e2.3.10, P1e2.3's N7)
   names the rules of the last step of the core's derivation: for each fact of the contradiction the core was taken over, the first justification the store records (the primary, the alternatives, the smallest-closure arrival) whose premises the core derives, `(given)` for a fact the core holds itself. Until S1e2.3.10 it named the first
   contradiction's primaries, a rule no derivation from the core uses on

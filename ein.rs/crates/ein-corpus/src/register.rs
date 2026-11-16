@@ -186,7 +186,7 @@ pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
 pub const SUMMARY_EMPTY: [&str; 2] = ["dead", "owing"];
 
 /// The routes that compute a [`Region`], as `ein solve` names them.
-pub const ROUTES: [&str; 3] = ["route 1", "route 2", "state route"];
+pub const ROUTES: [&str; 4] = ["route 1", "route 2", "state route", "tree and classes"];
 
 /// Why a stopped [`Region`] stopped (schema /10): past `--region-limit` on a
 /// program the static check flags, or at `--region-budget`.

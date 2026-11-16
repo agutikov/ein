@@ -840,3 +840,124 @@ fn the_least_question_is_read_off_the_claims_shapes() {
         );
     }
 }
+
+/// **A program's region claim is decided as the oracle decides it, the state
+/// route asked where the tree and the classes leave it** — what `ein test`
+/// does with a `(solve … :expect (region …))`: it asks the describing
+/// question, whose default route on a program where the tree branches does
+/// not compute an empty R's owing frontier; where that leaves the claim not
+/// checked, it asks the describing question again by the state route. On
+/// every corpus file and register witness whose cube the oracle enumerates
+/// and that states a region claim: the default's word, where it decides, is
+/// the oracle's; where it does not, the program's R is empty and its frontier
+/// not computed, and the state route's word is the oracle's. At least one
+/// program needs the state route.
+#[test]
+fn a_region_claim_the_tree_leaves_is_decided_by_the_state_route() {
+    let files = corpus_and_register();
+    let describe = Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    };
+    let results: Vec<(Vec<String>, usize, usize)> = ein_corpus::pool::map(
+        "claim_routes::region_claims",
+        &files,
+        |p| {
+            (
+                p.strip_prefix(repo_root())
+                    .unwrap_or(p)
+                    .display()
+                    .to_string(),
+                String::new(),
+            )
+        },
+        |path| {
+            let rel = path
+                .strip_prefix(repo_root())
+                .unwrap_or(path)
+                .display()
+                .to_string();
+            let Ok(src) = std::fs::read_to_string(path) else {
+                return (Vec::new(), 0, 0);
+            };
+            let dir = path.parent();
+            let claim = |route: explore::DescribeRoute| -> Option<(Outcome, bool)> {
+                let (mut kb, mut terms, ast) = loaded(&src, dir)?;
+                let mut opts = explore::Options::new(describe);
+                opts.jobs = jobs();
+                opts.refute = true;
+                opts.describe_route = route;
+                let out = read_out::run(&mut kb, &mut terms, &ast, &opts).ok()?;
+                let skipped = out.described().is_some_and(|d| d.frontier_skipped);
+                out.claim.map(|c| (c.outcome, skipped))
+            };
+            // The oracle's word on the program's own claim.
+            let oracle_word = || -> Option<Outcome> {
+                let (mut kb, mut terms, ast) = loaded(&src, dir)?;
+                let o = region::Options {
+                    limit: region::DEFAULT_LIMIT,
+                    keep_states: false,
+                    jobs: jobs(),
+                    deadline: None,
+                    cores: region::Cores::READ_OUT,
+                };
+                let Ok(Cube::Region(r)) =
+                    region::compute(&mut kb, &mut terms, &ast, &o, &mut |_| {})
+                else {
+                    return None;
+                };
+                let cube = explore::of_cube(describe, *r);
+                let mut opts = explore::Options::new(describe);
+                opts.refute = true;
+                read_out::of_answer(&mut kb, &mut terms, &ast, cube, &opts)
+                    .ok()?
+                    .claim
+                    .map(|c| c.outcome)
+            };
+            if !src.contains(":expect (region") {
+                return (Vec::new(), 0, 0);
+            }
+            let Some(want) = oracle_word() else {
+                return (Vec::new(), 0, 0);
+            };
+            let Some((first, skipped)) = claim(explore::DescribeRoute::Tree) else {
+                return (Vec::new(), 0, 0);
+            };
+            let mut bad = Vec::new();
+            if first != Outcome::NotChecked {
+                if first != want {
+                    bad.push(format!(
+                        "{rel}: the default says {first:?}, the oracle {want:?}"
+                    ));
+                }
+                return (bad, 1, 0);
+            }
+            if !skipped {
+                bad.push(format!(
+                    "{rel}: the default left the region claim unchecked with its frontier computed"
+                ));
+                return (bad, 1, 0);
+            }
+            match claim(explore::DescribeRoute::States) {
+                Some((second, _)) if second == want => {}
+                other => bad.push(format!(
+                    "{rel}: the state route says {other:?}, the oracle {want:?}"
+                )),
+            }
+            (bad, 1, 1)
+        },
+    );
+    let mut bad: Vec<String> = Vec::new();
+    let (mut claims, mut fell_back) = (0, 0);
+    for (b, c, f) in results {
+        bad.extend(b);
+        claims += c;
+        fell_back += f;
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    assert!(claims >= 20, "only {claims} region claims read");
+    assert!(
+        fell_back >= 1,
+        "no region claim needed the state route: the fall-back is not exercised"
+    );
+}

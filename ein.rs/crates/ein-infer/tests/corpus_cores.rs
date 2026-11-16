@@ -240,12 +240,16 @@ fn check(path: &Path) -> Option<Checked> {
         bad.extend(claims(&rel, &mut nodes, &cube)?);
     }
     read += cube.len();
-    // N.
+    // N, by describe's state route, which computes it where the tree and
+    // the classes do not.
     let (mut kb, mut terms, ast) = loaded(path)?;
-    let opts = explore::Options::new(Mode {
-        which: Which::All,
-        ask: Ask::Describe,
-    });
+    let opts = explore::Options {
+        describe_route: explore::DescribeRoute::States,
+        ..explore::Options::new(Mode {
+            which: Which::All,
+            ask: Ask::Describe,
+        })
+    };
     let a = explore::run(&mut kb, &mut terms, &ast, &opts).ok()?;
     if a.root_dead {
         return None;

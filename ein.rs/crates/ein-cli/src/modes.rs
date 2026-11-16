@@ -195,6 +195,11 @@ pub fn run(m: &ArgMatches) -> i32 {
     }
     // Root alone (M1f S1f.6.36): no node past root is built.
     opts.no_search = m.get_flag("no-search");
+    // Describe's route on a monotone program: the tree and the classes by
+    // default, the state route when asked. No part of R depends on it.
+    if m.get_one::<String>("describe-route").map(String::as_str) == Some("states") {
+        opts.describe_route = explore::DescribeRoute::States;
+    }
     opts.limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
     opts.jobs = crate::solve::resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1));
     let max_time = m.get_one::<f64>("max-time").copied();
@@ -1240,6 +1245,7 @@ pub(crate) fn route_words(answer: &explore::Answer) -> &'static str {
         explore::Route::States => "the state route, each state at most once",
         explore::Route::Tree => "the obligation tree, over states",
         explore::Route::Root => "none, root alone (--no-search)",
+        explore::Route::TreeClasses => "the tree and the classes",
     }
 }
 

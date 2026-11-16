@@ -23,8 +23,10 @@
 //!   instances.
 //! - **Both finished, describe** (and so `--count`): the two descriptions are equal
 //!   field for field but what the order may move: the work (the stop falls
-//!   elsewhere in a dead node, so its facts move; its saturations do not, the
-//!   state route's order being the states'); every core with its status, its
+//!   elsewhere in a dead node, so its facts move; on the state route its
+//!   saturations do not, its order being the states', and on the tree and the
+//!   classes they may, the tree's coupled order reading its share of the
+//!   run's facts); every core with its status, its
 //!   rules and its sources (an explanation, which follows the order a fact's
 //!   record keeps its derivations in); the order of the instances a node owes
 //!   (the obligation pass reads the KB in the order its facts arrived), each
@@ -60,7 +62,7 @@ use std::path::{Path, PathBuf};
 
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
-use ein_infer::explore::{self, Answer, Ask, Mode, Which};
+use ein_infer::explore::{self, Answer, Ask, Mode, Route, Which};
 use ein_infer::region::Cores;
 use ein_infer::saturator;
 use ein_ir::{Ast, load, parse};
@@ -303,13 +305,16 @@ fn held(path: &Path) -> Tally {
                         "{at}: the two descriptions differ beyond the order"
                     ));
                 }
-                if a.saturations != b.saturations {
+                // The state route's order is the states': its saturations do
+                // not move. The tree and the classes walk the obligation tree,
+                // whose coupled order reads its share of the run's facts.
+                if a.route == Route::States && a.saturations != b.saturations {
                     t.failures.push(format!(
                         "{at}: {} saturations under the agenda, {} in the written order",
                         a.saturations, b.saturations
                     ));
                 }
-                t.work_moved += usize::from(a.facts != b.facts);
+                t.work_moved += usize::from((a.saturations, a.facts) != (b.saturations, b.facts));
                 if mode.ask == Ask::Describe
                     && let (Some(da), Some(db)) = (a.described.as_ref(), b.described.as_ref())
                 {

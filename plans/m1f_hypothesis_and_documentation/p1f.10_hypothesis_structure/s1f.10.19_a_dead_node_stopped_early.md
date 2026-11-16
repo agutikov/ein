@@ -1146,3 +1146,41 @@ corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/READM
   narration, so the nightly's `stdlib_mutants` census (`tests/mutation_survivors.txt`) was not re-run here.
 - `cost_ms`: not re-taken.
 - A stratum-ordered boundary, which would make a flagged program's answer independent of the order (K-62): F21's.
+
+## Record (2026-11-16): the merge with master
+
+Master at `e546ad49` (S1f.10.17 merged: describe's second route, the tree and the classes,
+`ein-infer/src/tree_classes.rs`) merged into this branch with `git merge --no-ff`, after the stop's and the agenda's
+commits, as the main session asked.
+
+- **Conflicts, resolved**: `read_out.md`'s `route` row master's and its `work` row this branch's;
+  `open_questions.md`'s Q-M1f.313, master's ruling paragraphs and index row, with this branch's *Built* paragraph
+  and a pointer to it; `corpus_shapes.md5` and `read_out_examples.md` taken from master and **re-banked on the
+  merged tree** (`EIN_BLESS=1 EIN_CORPUS_SLOW=1` for the shape golden, `utils/read_out_examples.py`), with
+  `trace_*.md`, the transcripts and the anchor list re-banked alike (they did not move again).
+- **The stop and the agenda reach the new route**: `explore::describe_tree_classes` opens its space with
+  `Space::stopping_dead_nodes`, so a dead node the tree and the classes compute on a monotone program stops at its
+  first contradiction; its nodes, as every saturation, take the agenda; the cores of N's members it holds, taken
+  after the walk by `Space::cores_after`, are over each member's fixpoint.
+- **The filter**: the merged golden against master's, 684 keys differ: 680 are on this stage's two inventories
+  (343 on the stop's, 435 on the agenda's, 98 on both), and the 4 others are keys master's own merge moved, each
+  this branch's change applied to the new route: `region-lattice` of `send_more_money.ein`,
+  `send_more_money_written.ein`, `zebra2-minus-15.ein` and `zebra2-minus-15-obligations.ein`, describe's visited
+  nodes at the sweep's budget of 2¹⁴ facts, which the new route reaches further into when its dead nodes cost less.
+  None is on none (`python3 build/t4/merge_filter.py build/t4/merge_vs_master.diff build/t4/shapes.diff
+  build/t4/agenda_shapes.diff build/t4/master_s17.diff`, the diffs under the worktree's `build/`).
+- **`finding_r.md`'s two-routes table re-taken** on the merged binary at the default budget: `zebra2.ein` 263 ·
+  11 576 by the state route and 120 · 5 409 by the tree and the classes (8 786 on master); `send_more_money.ein`
+  stopped after 336 101 · 1 417 678, and decided in 18 129 · 161 086 (18 127 · 222 055); `zebra2-minus-15.ein`
+  stopped after 7 261 · 427 984, and in the classes after 11 222 · 1 048 489, `R`'s 32 states exact, 18 classes.
+- **`agenda.rs` amended for the new route**, the one change to a definition written before its cells were read: on
+  the merged tree describe on the two SENDs takes the tree and the classes, whose coupled order reads its share of
+  the run's facts, and took 18 129 saturations under the agenda against 18 128 in the written order, the same
+  answer. A describe's saturations are held equal on the state route alone, as the tree's questions' never were.
+  Then, under `EIN_CORPUS_SLOW=1`: 612 monotone programs, 3 060 cells, no failure, the work moved on 66 cells, N's
+  cores on 3 of the 1 343 members the describes now take (the new route computes no `N`), 774 claim readings
+  alike; 73 s at 16 workers.
+- **Verified on the merged tree**: the four crates whole, and `EIN_CORPUS_SLOW=1` for `explore`, `known_dead`,
+  `order`, `corpus_cores`, `id_order_invariance`, `answer_round_trip`, `first_contradiction`, `agenda`, `region` and
+  `tree_classes`, with `fmt`, `clippy`, `rustdoc`, the determinism lint and the link audit. `cost_ms` is the main
+  session's, on an idle machine.

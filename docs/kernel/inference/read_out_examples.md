@@ -499,11 +499,11 @@ solve · examples/lattice/07_two_pairs_two_tables.ein
   components        8, each a single commitment
   sub-cubes         8, each of dimension 0
   merged            none — every state is reached by one commitment, so k_c = k_s
-  N                 64 minimal dead sets
+  N                 not computed by the tree and the classes; --describe-route states computes N
   lattice           monotone (the static check) — R is convex: no hole
   universe          16 candidates, 0 dead alone
-  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              177 saturations · 448 facts beyond root · 6 layers
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  work              149 saturations · 556 facts beyond root
 
   (region
     ;; state 1 of 8 — 4 candidates · minimal and maximal · from {(sits Ann S1), (sits Bob S2), (sits Cat S3), (sits Dan S4)}
@@ -642,11 +642,11 @@ solve · examples/lattice/synth/merged_states.ein
   components        2, with 8 + 8 commitments
   sub-cubes         2, each of dimension 3
   merged            8 states reached by more than one commitment, with 8 minimal
-  N                 1 minimal dead set
+  N                 not computed by the tree and the classes; --describe-route states computes N
   lattice           monotone (the static check) — R is convex: no hole
   universe          5 candidates, 0 dead alone
-  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              18 saturations · 44 facts beyond root · 6 layers
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive
+  work              18 saturations · 44 facts beyond root
 
   (region
     ;; state 1 of 8 — 2 candidates · minimal · 2 commitments, 1 minimal
@@ -1183,12 +1183,12 @@ solve · examples/zebra2.ein
   components        1
   sub-cubes         63, 4 of dimension 17, 59 of dimension 16
   merged            1 state reached by more than one commitment, with 63 minimal
-  N                 366 minimal dead sets
+  N                 not computed by the tree and the classes — ≥ 21 minimal dead sets, the candidates dead alone; --describe-route states computes N
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
-  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L8 what a state denies is dead above it
-  work              263 saturations · 11 576 facts beyond root · 12 layers
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              120 saturations · 5 409 facts beyond root
 
   ;; R as one (region …) is 111 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
   ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1275,12 +1275,12 @@ solve · examples/zebra2.ein
   components        1
   sub-cubes         63, 4 of dimension 17, 59 of dimension 16
   merged            1 state reached by more than one commitment, with 63 minimal
-  N                 366 minimal dead sets
+  N                 not computed by the tree and the classes — ≥ 21 minimal dead sets, the candidates dead alone; --describe-route states computes N
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
-  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L8 what a state denies is dead above it
-  work              263 saturations · 11 576 facts beyond root · 12 layers
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              120 saturations · 5 409 facts beyond root
 
   (region
     ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1547,7 +1547,7 @@ solve · examples/saturation/square-bwd/floors.ein
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: note: examples/saturation/square-bwd/floors.ein: partial — the state route stopped before the states of 9 candidates at --region-budget 1048576
+stderr: note: examples/saturation/square-bwd/floors.ein: partial — the state route stopped before the states of 9 candidates at --region-budget 1048576: their 16 853 extensions project 185 383 facts on top of the 994 197 spent. Established: R, the whole cube; not established: how many states R has. --region-budget 1 179 580 or more takes the next layer
 
 exit 0
 ```

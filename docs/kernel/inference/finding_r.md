@@ -87,8 +87,9 @@ for every C ⊆ H:                  2ⁿ nodes, n = |H|
 R = { C : ¬dead(C) ∧ owes(C) = ∅ }
 ```
 
-It skips nothing (`L7 the cube`) and assumes nothing about the program, so it is right for every
-program, monotone or not. It also reads off what a description of `R` needs:
+It skips nothing (`L7 the cube`), so on a monotone program it is `R` by definition. On a program the static
+check flags it is the region of the engine's own construction of a node, and no more (§ 3). It also reads off what
+a description of `R` needs:
 
 - `N`, the minimal dead sets;
 - the two lines, minimal and maximal;
@@ -107,7 +108,20 @@ oracle does (route 2). It takes the cube in layer order where its question can b
 cube ends.
 
 The one licence a flagged program keeps is **L0**: a fork only adds, so when root is dead every node
-is. So `ein solve` is right on every program; what the licences below buy is speed, on monotone ones.
+is. So `ein solve` agrees with the oracle on every program, and what the licences below buy is speed, on monotone
+ones.
+
+**On a flagged program the engine claims nothing of its answer**: not soundness, not correctness, not completeness.
+Saturation there can depend on the path a node is built by,
+
+```text
+sat(root + C₁ + C₂)  ≠  sat(sat(root + C₁) + C₂)        possible on a non-monotone program
+```
+
+and on the agenda's order, so *the set of nodes* is not one object. The engine builds every node one way, a fork of
+root's fixpoint with all of `C` written at once (`st(C)` above), and the oracle and every mode compute the region
+of that construction. They agree with each other, which the gate holds; that the region is the program's meaning is
+not claimed ([`monotonicity.md`](monotonicity.md) § 7).
 
 ## 4. A monotone program: three properties and the licences
 
@@ -189,8 +203,11 @@ set its contradiction rests on. A denial is the other source: a state's own rule
 
 Each question does the least work it needs ([`read_out.md`](read_out.md) §§ 2–3 has what each one prints).
 
-**Describe** (`ein solve FILE`), and `--count` by the same route: **the state route**
-(`states.rs`).
+**Describe** (`ein solve FILE`), and `--count` by the same route, has **two routes** on a monotone program, and
+`ein solve --describe-route tree|states` chooses between them; no part of `R` depends on which
+([`configuration.md` § 3.3](../configuration.md#33-what-an-option-can-do-to-the-answer)).
+
+**The state route** (`states.rs`), every alive state once:
 
 ```text
 visit the alive states by size, from cl(∅):
@@ -199,9 +216,48 @@ visit the alive states by size, from cl(∅):
         elif S ∪ {b} is a known state's   read it, no saturation               (L3)
         else                              compute st(S ∪ {b})
 k_c(T) = 2^|T| − Σ_{S ⊊ T, S an alive state} k_c(S)                            (L3)
+N      = the minimal transversals of { H ∖ M : M a maximal alive state }         (L1)
 ```
 
-`N`, the merged states and the two lines are read off the states it met.
+`N`, the merged states, the two lines and an empty `R`'s owing frontier, its maximal alive states, are read off the
+states it met.
+
+**The tree and the classes** (`tree_classes.rs`), the default where root owes an instance a licence takes:
+
+```text
+R's states  = the leaves of tree(cl(∅)) exhausted, and every alive state above them   (L5, L9, L2, L3)
+dead alone  = { b : cl(∅) ∪ {b} is dead }
+for each state s of R, its class  class(s) = { C ⊆ s : cl(C) = s }:
+    M(s) = the maximal closed proper subsets of s        dualise and advance inside 2^s, cl the oracle
+    generators(s) = the minimal transversals of { s ∖ m : m ∈ M(s) }
+    |class(s)| = the subsets of s that meet every s ∖ m, m ∈ M(s)
+k_c = Σ_s |class(s)|
+the minimal line = the minimal sets among every state's generators     (∅ where root is in R)
+the maximal line = the states of R every extension of which is dead     (L4)
+```
+
+Dualise and advance inside `s` asks each minimal transversal `T` of the complements known: where `cl(T) = s` it is a
+generator, and otherwise `cl(T)` is climbed inside `s` to a new maximal closed proper subset and the transversals are
+taken again; when every transversal generates `s`, `M(s)` is every maximal closed proper subset (a missing one would
+hold a transversal that does not generate). Its seed is the closed subsets of `s` the run met, and where every one of
+them was extended by every candidate it is complete and nothing is asked. **It does not compute `N`**, the border of
+*alive*, nor an empty `R`'s owing frontier, the maximal alive sets: where root owes, that border is larger than the
+alive states the state route reads it off for nothing (`zebra2.ein` has 366 minimal dead sets, the `N` row of `ein solve
+examples/zebra2.ein --describe-route states`, whose whole walk is 263 saturations). The read-out says so, with the
+members met: the candidates dead alone, and the owing states met with every extension dead.
+
+Where root is in `R`, owes no instance a licence takes, or there is no candidate, the tree has nothing to branch on:
+its walk is the state route's, and describe takes the state route. Where a route's next step projects past
+`--region-budget`, it stops and its `note:` on stderr says what it projected, what it established, and the options
+([`read_out.md` § 10](read_out.md#10-stderr)).
+
+| program | describe, the state route | describe, the tree and the classes |
+|---|---|---|
+| `examples/zebra2.ein` | 263 saturations · 11 576 facts, `N` 366 | 120 · 5 409, `N` not computed |
+| `examples/beyond_arith/send_more_money.ein` | stopped after 336 101 · 1 417 678, no state of `R` met | **one state, 18 129 · 161 086** |
+| `examples/zebra2-minus-15.ein` | stopped after 7 261 · 427 984, ≥ 32 states | stopped in the classes after 11 222 · 1 048 489, `R`'s 32 states exact, 18 classes |
+
+Each figure is the `work` row of `ein solve FILE` and `ein solve FILE --describe-route states` at the default budget.
 
 **`--single`, `-n N`, `--minimal`, `--maximal`: the obligation tree** (`tree.rs`).
 
@@ -258,7 +314,8 @@ is the cube.
 
 | claim | test |
 |---|---|
-| every mode of `ein solve` gives the oracle's `R` on every monotone and flagged cube within the limit | `ein-infer/tests/explore.rs` |
+| every mode of `ein solve` gives the oracle's `R` on every monotone and flagged cube within the limit, describe and `--count` by both routes | `ein-infer/tests/explore.rs` |
+| describe's two routes give one `R`, every field both compute, on every corpus program; each is the oracle's | `ein-infer/tests/tree_classes.rs`, `ein-cli/tests/lever_invariance.rs` |
 | each claim a program states is decided alike by the question `ein test` asks, by describe and by the oracle | `ein-infer/tests/claim_routes.rs` |
 | no lever, option or flag changes `R` | `ein-cli/tests/lever_invariance.rs` |
 | a denial kills exactly where a computed node would, on every monotone cube; the run with and without the memory's denials gives one answer | `ein-infer/tests/known_dead.rs` |
@@ -273,5 +330,5 @@ is the cube.
 - [`monotonicity.md`](monotonicity.md): what makes a program flagged, and how each kind is solved.
 - [`read_out.md`](read_out.md): the `route` and `work` rows.
 - [`hypothesis_space.md`](hypothesis_space.md): `H` and its structure, which the tree's order reads.
-- `ein.rs/crates/ein-infer/src/tree.rs`, `states.rs`, `known_dead.rs`, `order.rs`: the routes and their arguments,
-  each in its module header.
+- `ein.rs/crates/ein-infer/src/tree.rs`, `states.rs`, `tree_classes.rs`, `known_dead.rs`, `order.rs`: the routes and
+  their arguments, each in its module header.

@@ -23,6 +23,14 @@
 //! `--orders-report [--out DIR]` prints their tables, each against the
 //! tree's order of before by the rule below, read two ways.
 //!
+//! `--describe-routes [--out DIR] [FILE…]` measures describe's two routes
+//! against each other instead ([`shared/describe_routes.rs`](shared/describe_routes.rs)):
+//! describe and `--count` under `--describe-route tree`, the default, and
+//! `states`, what each part of the tree and the classes cost, each route's
+//! forecasts against what its steps spent, the two descriptions compared
+//! where both finish and against the cube within its limit, and every
+//! program the default makes dearer by more than a tenth named.
+//!
 //! Every corpus file and register witness that loads and **searches**, or
 //! the `FILE`s given (`--all` keeps those that do not search too). For each
 //! the structure is read once ([`ein_infer::structure::theory_coupled`], and
@@ -75,6 +83,10 @@ mod searching;
 // The orders of the obligation tree, measured: `--orders`.
 #[path = "shared/orders.rs"]
 mod orders;
+
+// Describe's two routes against each other: `--describe-routes`.
+#[path = "shared/describe_routes.rs"]
+mod describe_routes;
 
 use prices::{Cell, PARTS, Read, WAYS};
 
@@ -1212,6 +1224,14 @@ fn corpus_md(programs: &[Program], verdicts: &BTreeMap<(usize, usize), Verdict>)
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.iter().any(|a| a == "--describe-routes") {
+        describe_routes::run(
+            args.into_iter()
+                .filter(|a| a != "--describe-routes")
+                .collect(),
+        );
+        return;
+    }
     if let Some(mode) = args
         .iter()
         .find(|a| *a == "--orders" || *a == "--orders-report")

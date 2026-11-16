@@ -46,8 +46,9 @@ const EXPECTED: [(&str, usize); 12] = [
     // and `-K` the same day (hidden, refused with why). M1f T1f.5.14.6 added
     // `--require-why`, as it did to the six other commands that load a program,
     // and T1f.5.14.7 turned it into `--no-require-why`, the default flipped.
-    // M1f S1f.6.36 added `--no-search`, root alone, R not searched.
-    ("COMMAND ein solve\n", 35),
+    // M1f S1f.6.36 added `--no-search`, root alone, R not searched; and
+    // `--describe-route`, describe's two routes, one R.
+    ("COMMAND ein solve\n", 36),
     // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
     // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
     // `--json-summary`, `--models`, `-p` and `-P`; and `--no-require-why`.
@@ -116,9 +117,9 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        72 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        73 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "72 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "73 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s ten and `ein kb save`'s two"
     );
 }
