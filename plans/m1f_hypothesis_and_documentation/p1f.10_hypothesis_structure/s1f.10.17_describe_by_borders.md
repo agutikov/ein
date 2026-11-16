@@ -622,9 +622,36 @@ whose describe the sweep's budget stops (the note), `states` of 4 (the sweep's b
 answer, any mode's line, `corpus_exits.txt`, the traces, `README.md` and the guide (their transcripts are
 `--single`'s).
 
+**Tests that read `N` off a describe** (`8d1d9001`): `pair_layer.rs`, `coupling.rs` and `corpus_cores.rs` ask
+`--describe-route states`, so they read the programs they read before rather than skipping the 26 whose `N` the
+default does not compute; `known_dead.rs` holds a describe's work with and without the denials where its order is
+fixed, the state route, and on the tree and the classes holds `R`'s states found whole both ways to be one set (its
+floor taken over the cells both runs finish).
+
+### Verification
+
+On the final tree (`8d1d9001` and this record), the worktree, the gate profile:
+
+- `cargo test --profile gate -p ein-infer -p ein-cli -p ein-render -p ein-corpus`, whole: 135 binaries, 1 082
+  tests, green (on `20f5202a`; the four test files changed after it were run again whole, below).
+- `EIN_CORPUS_SLOW=1`, each green: `explore` (102 s), `order` (176 s), `corpus_cores`, `known_dead` (133 s),
+  `pair_layer`, `coupling`, `-p ein-render --test id_order_invariance` (68 s), `-p ein-cli --test
+  answer_round_trip` (90 s), `tree_classes` (60 s; 150 s on four P-core threads under load, above).
+- `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `RUSTDOCFLAGS="-D warnings"
+  cargo doc --workspace --no-deps`, `utils/check_hashmap_iteration.py`, `utils/doc_audit.py --links --check` over the
+  listed pages (582, 0 findings): clean.
+- **`EIN_CORPUS_SLOW=1 -p ein-cli --test corpus_cli` is red, and is the nightly's**: its 4× band on `cost_ms` finds
+  `zebra2.ein` and `zebra2-obligations.ein` swept in 3.6 s and 3.3 s against 19 083 and 19 067 ms recorded. Their
+  six describes (among them `solve --trace`, which took the cores of `N`'s 366 members) are the tree and the classes
+  now and take no `N`; both stay slow (over a second). `cost_ms` is re-taken on an idle machine only, and this one was not (another run at 380 % of
+  a core, load average 8 to 20), so it is left: **the batch's nightly needs `utils/bench_env.sh --cores PT python3
+  utils/corpus_cost.py` re-taken for those entries first** (and `send_more_money.ein`'s, whose describe moved too and
+  which that sweep found inside the band).
+
 ### What is not done
 
-- The machine was not idle: no wall here is a measurement, and `cost_ms` and the slow set were not re-taken.
+- The machine was not idle: no wall here is a measurement, and `cost_ms` and the slow set were not re-taken, which
+  leaves the nightly's `corpus_cli` red until they are (above).
 - `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the main session's, on the batch.
 
 **Findings outside the stage's scope**: none; K-30 stays the last.
