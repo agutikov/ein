@@ -130,8 +130,8 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     a.get_one::<i64>("region-budget").map(|&b| b as u64),
                     &common::load_options(a),
                 ),
-                Some(("structure", a)) => render::cmd_structure(
-                    &render::StructureArgs {
+                Some((name, a)) if name == ein_render::structure::COMMAND => render::cmd_h_space(
+                    &render::HSpaceArgs {
                         file: &file(a),
                         view: a
                             .get_one::<String>("view")

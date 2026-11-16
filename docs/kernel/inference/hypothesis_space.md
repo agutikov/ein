@@ -1,6 +1,8 @@
-# The structure of the hypothesis set
+# The hypothesis space and its structure
 
-What a program's hypothesis set H looks like from inside: which candidates
+A program's **hypothesis space** is its hypothesis set H, the candidates a
+commitment is made of, together with the structure of that set. This page
+defines the structure: what H looks like from inside: which candidates
 rule each other out, which of that the rules alone decide, which candidates
 answer one question, where exactly one of them must hold, and which questions
 bear on each other. The engine reads all of it from the program's own lattice.
@@ -8,7 +10,7 @@ bear on each other. The engine reads all of it from the program's own lattice.
 arguments or a declaration of it.
 
 One module computes it, [`ein_infer::structure`](../../../ein.rs/crates/ein-infer/src/structure.rs),
-and one command shows it, `ein render structure FILE`
+and one command shows it, `ein render h-space FILE`
 ([§ How to see it](#how-to-see-it)). **`ein solve` computes none of it**, and
 no route reads it: the structure is a set of statements about nodes, it moves
 no answer, and it is not free ([§ What it costs](#what-it-costs)).
@@ -244,7 +246,7 @@ the theory from the puzzle the way a reader would.
 |---|---|
 | **a clue written as a rule** | the small KB keeps every rule, so what such a rule says is the theory's. `theory.rules_naming_objects` lists the rules whose text names one of the candidates' objects |
 | **a clue that names none of the candidates' objects** | kept, as a declaration is: a gate between two wires no candidate holds |
-| **the blind enumerator's universe** | H holds facts of every open relation over every name, so a type's name and a relation's are candidates' objects, and the statements that type an object go with the clues. A cover there can be all of candidates nobody would propose: on `examples/branching/06_lookahead_on.ein` every member of every group is dead alone at root, so its groups are true and say nothing of the search (`ein-cli/tests/structure_view.rs`) |
+| **the blind enumerator's universe** | H holds facts of every open relation over every name, so a type's name and a relation's are candidates' objects, and the statements that type an object go with the clues. A cover there can be all of candidates nobody would propose: on `examples/branching/06_lookahead_on.ein` every member of every group is dead alone at root, so its groups are true and say nothing of the search (`ein-cli/tests/h_space_view.rs`) |
 | **a table a module states over the candidates' objects** | dropped with the clues. Nothing in a loaded fact says which file wrote it |
 
 And one more can show in the structure itself: a flagged program whose small
@@ -272,7 +274,7 @@ In the read-out's units, saturations and facts beyond root:
 | the coupling | one saturation, the whole node. The edges one application back are read off the same node |
 | a support, where asked | its pair's node saturated a second time, and a search |
 
-`ein render structure` prints what one program's cost was, in its `work` row
+`ein render h-space` prints what one program's cost was, in its `work` row
 and under `cost` in the document. On the declared control the two layers and
 the whole node are in [the read-out below](#the-read-out), and a describe of
 the same program is `ein solve examples/zebra2.ein`, whose own `work` row
@@ -332,8 +334,8 @@ grep -n 'pub const \(CLIQUE_STEPS\|NODE_APPLICATIONS\|ROUNDS\|WAYS\|DESCRIPTIONS
 ## How to see it
 
 ```sh
-ein render structure FILE [--view VIEW] [--dump DIR] [--supports]
-                          [--region-budget FACTS] [-j JOBS] [--no-require-why]
+ein render h-space FILE [--view VIEW] [--dump DIR] [--supports]
+                        [--region-budget FACTS] [-j JOBS] [--no-require-why]
 ```
 
 `FILE` is a `.ein` or a `.einb`, read as every command reads a program. A
@@ -343,7 +345,7 @@ structure exits 0**, whole or not.
 | option | what it does |
 |---|---|
 | `--view` | what stdout holds. `summary`, the default, the read-out; `exclusion`, `cover`, `coupling` or `one-step`, one graph as DOT; `json`, the document |
-| `--dump DIR` | also writes `structure.json` and the four graphs to `DIR`. stdout and stderr are the same with it. The directory is made before the work: a path that cannot be made is exit 1 |
+| `--dump DIR` | also writes `h-space.json` and the four graphs to `DIR`. stdout and stderr are the same with it. The directory is made before the work: a path that cannot be made is exit 1 |
 | `--supports` | also reads the support of every pair root excludes. The groups, the grids and the components are the same with it |
 | `--region-budget` | each pair layer's budget |
 | `-j`, `--jobs` | threads for each step's nodes. The same structure, byte for byte |
@@ -355,9 +357,9 @@ Graphviz to lay out.
 
 ### The read-out
 
-<!-- generated: ein render structure examples/zebra2.ein -->
+<!-- generated: ein render h-space examples/zebra2.ein -->
 ```text
-structure    examples/zebra2.ein
+h-space      examples/zebra2.ein
 H            56 candidates · 21 dead alone · 0 at root · built by the rung `hrules`
 pairs        1 540 · 408 saturated · 327 excluded at root · 66 interacting · 234 implications · 9 equivalence classes
 theory       128 pairs excluded by the theory alone · of root's 327, 45 the theory's and 282 the puzzle's · the small KB drops 18 of 66 stated facts and kills 0 candidates alone
@@ -377,7 +379,7 @@ whole        yes: nothing was stopped or cut at --region-budget 1048576
 <!-- /generated -->
 
 The block is the binary's output, and
-`ein-cli/tests/structure_view.rs` fails when it is not: edit nothing in it by
+`ein-cli/tests/h_space_view.rs` fails when it is not: edit nothing in it by
 hand.
 
 How to read two of its rows. **`theory`**: the theory excludes its pairs over
@@ -415,13 +417,13 @@ step may carry it past the budget, so the layer can end with every pair read
 and that reading refused. An unlicensed instance then has no payers read: at
 root it is no edge of the coupling, and in the small KB it is about no group.
 The structure says `whole: false` there, with the sentence that names the
-reading. `ein-cli/tests/structure_view.rs` holds this on `examples/zebra.ein`,
+reading. `ein-cli/tests/h_space_view.rs` holds this on `examples/zebra.ein`,
 one fact under what root's layer spends.
 
 **Asking for supports can make a whole structure not whole.** A support's
 search has caps of its own, and one it stops at is cut: a real frontier of the
 death, of which a smaller one may exist, so it may name a statement the death
-does not need. `ein render structure examples/zebra2.ein --supports` reads all
+does not need. `ein render h-space examples/zebra2.ein --supports` reads all
 327 supports and says 7 of them were cut, under `whole  NO`, where the same
 program without the option is whole. What the option moves there is what it
 adds: each excluded pair gains its support, and the ties and the edges gain the
@@ -459,9 +461,9 @@ ones past its bound of lines that it does not lay out.
 pins one engine's or one version's. What is held is the DOT: its bytes in any
 id space, and that `dot` draws it.
 
-### `structure.json`
+### `h-space.json`
 
-Schema `ein-structure/1`. One document, every object. A candidate is its text
+Schema `ein-h-space/1`. One document, every object. A candidate is its text
 wherever it is named; a group, a question, a component, a grid, an instance
 and a debt is its place in its own list, which follows the universe's order.
 **The document holds no clock and no job count**: it is a function of the
@@ -471,7 +473,7 @@ program and of what was asked.
 
 | key | what it holds |
 |---|---|
-| `schema`, `program` | `ein-structure/1`; the program as the command was given it |
+| `schema`, `program` | `ein-h-space/1`; the program as the command was given it |
 | `asked` | `region_budget` and `supports` |
 | `n`, `rung`, `monotone`, `root_dead` | how many candidates; which rung built H; the static verdict; whether root's own fixpoint derives `(false)` |
 | `whole`, `unread` | whether nothing was stopped, cut or left unread; the sentences where something was |
@@ -640,6 +642,6 @@ beside its one grid, a bijection.
 |---|---|
 | each object, on its controls and over the corpus | `ein-infer/tests/pair_layer.rs`, `theory_share.rs`, `cover.rs`, `exactly_one.rs`, `coupling.rs` |
 | the structure, the document and the graphs are the same in any id space and under every import form | `ein-infer/tests/structure_invariance.rs` |
-| the document is the owner's reading; the door, the dump, a stopped structure, a refused reading, a flagged program, a program with no candidate; the read-out above | `ein-cli/tests/structure_view.rs` |
+| the document is the owner's reading; the door, the dump, a stopped structure, a refused reading, a flagged program, a program with no candidate; the read-out above | `ein-cli/tests/h_space_view.rs` |
 | Graphviz draws every graph, and every corpus structure is whole at the default budget | `ein-render/tests/dot_wellformed.rs` |
 | the census and the view spell one object one way | both call `ein_render::structure`'s lists |

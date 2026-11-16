@@ -1,7 +1,7 @@
 # S1f.10.12 — The structure shown, and its surface
 
 **Phase:** [P1f.10](README.md), track S (the structure)
-**Status:** T1, the bundle, ran on 2026-11-16 ([its record](#record-2026-11-16-the-bundle)). T2, the stop, is the main session's: the surface was ruled (a), a view of `ein render`, on 2026-11-16 ([Q-M1f.309](../open_questions.md#q-m1f309--how-ein-shows-a-programs-structure)). **T3, the view, and T4, the page, ran on 2026-11-16** in a worktree, on that ruling ([their record](#record-2026-11-16-the-surface-and-the-page)): `ein render structure FILE` and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md). **Not run there, and owed before the batch is done**: `./run_tests.sh`, `utils/ci_container.sh`, which a DOT writer's change makes part of done, and the wall of the two nightly steps that grew, which was not measured.
+**Status:** T1, the bundle, ran on 2026-11-16 ([its record](#record-2026-11-16-the-bundle)). T2, the stop, is the main session's: the surface was ruled (a), a view of `ein render`, on 2026-11-16 ([Q-M1f.309](../open_questions.md#q-m1f309--how-ein-shows-a-programs-structure)). **T3, the view, and T4, the page, ran on 2026-11-16** in a worktree, on that ruling ([their record](#record-2026-11-16-the-surface-and-the-page)): `ein render structure FILE` and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md). **Not run there, and owed before the batch is done**: `./run_tests.sh`, `utils/ci_container.sh`, which a DOT writer's change makes part of done, and the wall of the two nightly steps that grew, which was not measured.
 **Depends on:** for its bundle, [S1f.10.1](s1f.10.1_exclusion_census.md), [S1f.10.2](s1f.10.2_groups.md),
 [S1f.10.10](s1f.10.10_the_theorys_share.md), [S1f.10.4](s1f.10.4_bounded_groups.md),
 [S1f.10.11](s1f.10.11_coupling.md); for its stop, also [S1f.10.13](s1f.10.13_the_price_list.md) and tasks 1 to
@@ -357,7 +357,7 @@ and both outputs were scratch and are not in the tree; the commands are the cens
 
 ### `structure.json`
 
-Schema `ein-structure/1`. Field by field it is [`docs/kernel/inference/structure.md` § `structure.json`](../../../docs/kernel/inference/structure.md#structurejson).
+Schema `ein-structure/1`. Field by field it is [`docs/kernel/inference/structure.md` § `structure.json`](../../../docs/kernel/inference/hypothesis_space.md#h-spacejson).
 In outline:
 
 | key | holds |
@@ -455,7 +455,7 @@ the engine's work that test puts 652 graphs, 744 in the nightly, through `dot`.
 
 ### The page
 
-[`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md): each object as built, the
+[`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md): each object as built, the
 domain, what it costs, how to see it with `structure.json` field by field, and what each reading does not tell.
 
 - **Its read-out is the binary's**: the block is held byte for byte by `the_pages_read_out_is_the_binarys`, so

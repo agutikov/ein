@@ -14,8 +14,8 @@
 //! the debts, licensed or not. Each is a
 //! statement about nodes of
 //! the program's lattice, so two things that are not the program must not
-//! move it. **And what `ein render structure` writes of it is held with
-//! it**: the document, `structure.json`, and the four graphs' DOT, spelled by
+//! move it. **And what `ein render h-space` writes of it is held with
+//! it**: the document, `h-space.json`, and the four graphs' DOT, spelled by
 //! `ein_render::structure` from the same reading, by the one call the view
 //! makes ([`ein_infer::structure::whole`]):
 //!
@@ -126,7 +126,7 @@ struct Read {
     cover: Cover,
     exact: ExactlyOne,
     coupling: Coupling,
-    /// `structure.json`, as `ein render structure` writes it of this
+    /// The document, `h-space.json`, as `ein render h-space` writes it of this
     /// reading.
     document: String,
     /// Its four graphs, as DOT.
@@ -311,7 +311,7 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                 )
             )
         }),
-        ("the view's structure.json", r.document.clone()),
+        ("the view's h-space.json", r.document.clone()),
         ("the view's graphs", r.graphs.join("\n")),
     ]
 }
@@ -339,7 +339,7 @@ fn document_as_sets(document: &str, strip: &dyn Fn(&str) -> String) -> serde_jso
         }
     }
     walk(
-        serde_json::from_str(document).expect("structure.json is JSON"),
+        serde_json::from_str(document).expect("h-space.json is JSON"),
         strip,
     )
 }
@@ -869,7 +869,7 @@ fn held_under_imports(rel: &str, text: &str, path: &Path, written: &Result<Read,
                     out.documents += 1;
                     let one = document_as_sets(&a.document, &strip);
                     let other = document_as_sets(&b.document, &strip);
-                    if let Some(d) = document_difference(&one, &other, "structure.json") {
+                    if let Some(d) = document_difference(&one, &other, "h-space.json") {
                         out.failures.push(format!(
                             "{rel}: the document of the program as written and of its form \
                              {mode} differ, at {d}"
@@ -1249,13 +1249,13 @@ fn a_structure_that_moves_is_caught() {
     moved.coupling = r.coupling.clone();
     moved.document = marked.clone();
     let d = difference(&said, &as_it_is(&moved)).expect("a difference");
-    assert!(d.starts_with("the view's structure.json"), "{d}");
+    assert!(d.starts_with("the view's h-space.json"), "{d}");
     // As sets it is the same with itself, and says where it is not.
     let whole = document_as_sets(&r.document, &plain);
-    assert_eq!(document_difference(&whole, &whole, "structure.json"), None);
-    let d = document_difference(&whole, &document_as_sets(&marked, &plain), "structure.json")
+    assert_eq!(document_difference(&whole, &whole, "h-space.json"), None);
+    let d = document_difference(&whole, &document_as_sets(&marked, &plain), "h-space.json")
         .expect("a difference");
-    assert!(d.starts_with("structure.json.candidates[0].at_root"), "{d}");
+    assert!(d.starts_with("h-space.json.candidates[0].at_root"), "{d}");
     // A name that keeps its prefix is a difference, and none once the
     // prefix is taken off: the comparison passes for the strip and not for
     // want of looking.
@@ -1264,7 +1264,7 @@ fn a_structure_that_moves_is_caught() {
         document_difference(
             &whole,
             &document_as_sets(&respelled, &plain),
-            "structure.json"
+            "h-space.json"
         )
         .is_some()
     );
@@ -1274,7 +1274,7 @@ fn a_structure_that_moves_is_caught() {
         document_difference(
             &document_as_sets(&r.document, &strip),
             &document_as_sets(&respelled, &strip),
-            "structure.json"
+            "h-space.json"
         ),
         None
     );

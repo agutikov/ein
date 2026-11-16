@@ -128,22 +128,22 @@ fn every_door_prints_dot_that_dot_draws() {
     assert_eq!(r.code, 0, "--dump-lattice: {}", r.err);
     assert!(lattice.join("nodes.json").is_file());
     assert!(lattice.join("nodes.md").is_file());
-    // The structure's door prints one undirected graph a view; what each
-    // holds is `structure_view.rs`'s.
+    // The hypothesis space's door prints one undirected graph a view; what each
+    // holds is `h_space_view.rs`'s.
     for view in ["exclusion", "cover", "coupling", "one-step"] {
         let r = ein(&[
             "render",
-            "structure",
+            "h-space",
             "examples/lattice/02_genuine_3set_death.ein",
             "--view",
             view,
         ]);
-        assert_eq!(r.code, 0, "render structure --view {view}: {}", r.err);
+        assert_eq!(r.code, 0, "render h-space --view {view}: {}", r.err);
         assert!(
             r.out.starts_with("graph "),
-            "render structure --view {view} printed no graph"
+            "render h-space --view {view} printed no graph"
         );
-        dot_accepts(&format!("render structure --view {view}"), &r.out);
+        dot_accepts(&format!("render h-space --view {view}"), &r.out);
     }
 }
 
@@ -166,7 +166,7 @@ fn every_view_refuses_what_the_loader_refuses() {
         &["render", "rules", file],
         &["render", "rule", "--name", "r", file],
         &["render", "constraints", file],
-        &["render", "structure", file],
+        &["render", "h-space", file],
     ] {
         let r = ein(view);
         assert_eq!(r.code, 1, "{view:?}: {}", r.err);

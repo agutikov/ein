@@ -498,7 +498,7 @@ fn strokes(dot: &str) -> usize {
     dot.matches(" -- ").count()
 }
 
-/// **The graphs of `ein render structure` past [`DOT_LAYOUT_BOUND`]**, each
+/// **The graphs of `ein render h-space` past [`DOT_LAYOUT_BOUND`]**, each
 /// by its program and its view: not put to Graphviz, as a view of a program
 /// is not. The list is exact, a graph and not a directory: one past the
 /// bound that is not named fails the sweep, and so does a name whose graph
@@ -631,7 +631,7 @@ fn sweep_structure(path: &std::path::Path) -> StructureSweep {
     out
 }
 
-/// **Graphviz accepts every graph `ein render structure` writes**, of every
+/// **Graphviz accepts every graph `ein render h-space` writes**, of every
 /// corpus program that searches: the exclusion graph, the cover, the
 /// questions' hypergraph and its edges read one application back, each one
 /// graph, each put to `dot -Tsvg` with nothing to say of it.

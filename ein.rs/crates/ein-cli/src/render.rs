@@ -224,8 +224,8 @@ fn loaded_and_saturated(
     Some(kb)
 }
 
-/// What `ein render structure` was asked.
-pub struct StructureArgs<'a> {
+/// What `ein render h-space` was asked.
+pub struct HSpaceArgs<'a> {
     pub file: &'a str,
     /// One of the views the parser lists: `summary`, a graph's name, `json`.
     pub view: &'a str,
@@ -238,8 +238,9 @@ pub struct StructureArgs<'a> {
     pub jobs: usize,
 }
 
-/// `ein render structure FILE` — the structure of the program's hypothesis
-/// set: every object [`ein_infer::structure`] reads of it, by one call
+/// `ein render h-space FILE` — the program's hypothesis space, its
+/// candidates and the structure of the set: every object
+/// [`ein_infer::structure`] reads of it, by one call
 /// ([`ein_infer::structure::whole`]), spelled by [`ein_render::structure`].
 ///
 /// stdout holds the view asked: the read-out, one graph as DOT, or the
@@ -255,7 +256,7 @@ pub struct StructureArgs<'a> {
 /// graph's title counts them. Every structure exits 0, whole or not; a
 /// program the loader refuses is refused as every command refuses it, exit
 /// 1, and so is one the engine refuses to read.
-pub fn cmd_structure(a: &StructureArgs<'_>, load: &ein_ir::LoadOptions) -> i32 {
+pub fn cmd_h_space(a: &HSpaceArgs<'_>, load: &ein_ir::LoadOptions) -> i32 {
     use ein_infer::structure::{self, Options, WholeOptions};
     use ein_render::structure as shown;
 

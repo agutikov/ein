@@ -1,11 +1,11 @@
-//! The structure of a program's hypothesis set, written out: what `ein
-//! render structure FILE` prints and writes.
+//! The hypothesis space of a program, written out: its candidates and the
+//! structure of the set, what `ein render h-space FILE` prints and writes.
 //!
 //! **Nothing here computes a structure.** Every object is
 //! [`ein_infer::structure`]'s, read once by [`ein_infer::structure::whole`],
-//! and this module only spells it: one JSON document, `structure.json`
-//! ([`json`], schema [`SCHEMA`]), four graphs as DOT ([`graphs`]), and a
-//! short read-out ([`summary`]). No group, grid, question or edge is defined
+//! and this module only spells it: one JSON document, `h-space.json`
+//! ([`json`], [`DOCUMENT`], schema [`SCHEMA`]), four graphs as DOT
+//! ([`graphs`]), and a short read-out ([`summary`]). No group, grid, question or edge is defined
 //! here; a name such as a question's ([`question_name`]) or a grid's
 //! relations is a label read off the candidates' texts for the reader, and
 //! the owner reads none.
@@ -21,7 +21,7 @@
 //! rendered-text order. So two runs write the same bytes: in any id space,
 //! which `ein-infer/tests/structure_invariance.rs` holds on every corpus
 //! program that searches, and at any `--jobs`, which
-//! `ein-cli/tests/structure_view.rs` holds on one program and the owner's
+//! `ein-cli/tests/h_space_view.rs` holds on one program and the owner's
 //! own tests of each layer on more.
 //!
 //! **A structure that is not whole says so.** [`unread`] lists, as
@@ -44,12 +44,25 @@ use crate::dot_util::esc;
 use crate::dump::Json;
 use crate::read_out::{group, plural};
 
-/// The schema of `structure.json`.
-pub const SCHEMA: &str = "ein-structure/1";
+/// The command's name, written once: [`COMMAND`], [`SCHEMA`] and
+/// [`DOCUMENT`] are spelled from it.
+macro_rules! command {
+    () => {
+        "h-space"
+    };
+}
 
-/// The files `--dump DIR` writes: the document, then each of [`GRAPHS`] as
-/// `<name>.dot` with `-` for `_`.
-pub const DOCUMENT: &str = "structure.json";
+/// **The view's name under `ein render`**: `ein render h-space FILE`, the
+/// hypothesis space. The parser, the dispatch, the read-out's first row, the
+/// document's file and its schema all take the name from here.
+pub const COMMAND: &str = command!();
+
+/// The schema of the document.
+pub const SCHEMA: &str = concat!("ein-", command!(), "/1");
+
+/// The files `--dump DIR` writes: the document, `h-space.json`, then each
+/// of [`GRAPHS`] as `<name>.dot` with `-` for `_`.
+pub const DOCUMENT: &str = concat!(command!(), ".json");
 
 /// The graphs, by the name `--view` takes: the exclusion graph, the cover,
 /// the questions' hypergraph, and the hypergraph of the edges read one
@@ -1622,7 +1635,8 @@ fn declared(w: &Whole, terms: &Terms) -> Json {
     Json::obj(vec![("mechanisms", mechanisms), ("relations", rows)])
 }
 
-/// **`structure.json`**: the whole structure of one program, one document.
+/// **The document, `h-space.json`** ([`DOCUMENT`]): the whole structure of
+/// one program.
 ///
 /// `graphs` are [`graphs`]' of the same reading: the document says what
 /// each holds, so that a reader knows a graph's size before laying it out.
@@ -1730,7 +1744,7 @@ pub fn json(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph]) -> 
     ])
 }
 
-/// [`json`] as the text of `structure.json`: indented by two, in the
+/// [`json`] as the text of [`DOCUMENT`]: indented by two, in the
 /// document's own key order, a newline at its end.
 pub fn document(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph]) -> String {
     crate::dump::json::dumps_indent(&json(w, terms, inputs, graphs)) + "\n"
@@ -1738,7 +1752,7 @@ pub fn document(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph])
 
 // ── The read-out ──────────────────────────────────────────────────────
 
-/// **The read-out**: what `ein render structure FILE` prints where no
+/// **The read-out**: what `ein render h-space FILE` prints where no
 /// `--view` asks for a graph or the document. One row an object, each a
 /// count the document lists in full, then what the structure cost, what
 /// each graph holds, and every sentence of [`says`] and of [`unread`].
@@ -1751,7 +1765,7 @@ pub fn summary(w: &Whole, inputs: &Inputs<'_>, graphs: &[Graph]) -> String {
     let mut row = |label: &str, what: String| {
         let _ = writeln!(out, "{label:<13}{what}");
     };
-    row("structure", inputs.program.to_string());
+    row(COMMAND, inputs.program.to_string());
     row(
         "H",
         format!(

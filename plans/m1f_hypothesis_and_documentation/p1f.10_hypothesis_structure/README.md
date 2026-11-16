@@ -40,7 +40,7 @@ artefact raw and rendered, a sortable survey, the price list, every default and 
 **its second task is the phase's one stop, pending**, and no surface is designed before the ruling.
 [Its third and fourth tasks](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-surface-and-the-page) ran on
 2026-11-16 on the ruling of Q-M1f.309, (a): `ein render structure FILE` shows the structure through the one owner,
-and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md) defines it; the gate, the
+and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md) defines it; the gate, the
 runner's container and the wall of the two nightly steps that grew are owed, and one finding,
 [K-17](findings.md), is open.
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
