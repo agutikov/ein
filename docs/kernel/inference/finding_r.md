@@ -99,6 +99,7 @@ run used.
 | **L4** a node of R is maximal when every one-up extension is dead | `s ∈ R ∧ ∀b ∉ s: dead(s ∪ {b}) ⇒ no member of R ⊋ s` | the climb, and the last step of `--single` (§ 6) |
 | **L5** an owed instance's alternatives are exhaustive | at an owing state `C` owing a licensed instance `I` with alternatives `A(I)`: `R ∩ ↑C = ⋃_{a ∈ A(I)} R ∩ ↑cl(C ∪ {a})` | branching on one instance's alternatives instead of on every extension |
 | **L8** what a state denies is dead above it | `(not b) ∈ st(S) ⇒ dead(S ∪ {b})` | a saturation for each candidate a state's own rules have already denied |
+| **L9** a fact nothing proposes and nothing writes is in no state | a witness `w` of `I` with `w ∉ H`, `w ∉ st(∅)`, of a relation no plan writes and the kernel does not mirror, is in no `st(C)`; so where every other witness of `I` is a candidate or denied at root, L5's equation holds with `A(I) = H ∩ witnesses(I)` | branching on every extension at a state owing an instance L5 alone does not license |
 
 **Each licence's premise is checked, not assumed.**
 
@@ -108,6 +109,10 @@ run used.
   written in `tree.rs`'s header.
 - **L8**'s argument is in `known_dead.rs`: `st(S ∪ {b}) ⊇ st(S)` holds `(not b)`, and its
   commitment holds `b`.
+- **L9**'s argument is in `unheld.rs`. The relations no plan writes are read off root's plans, and
+  every node a route computes with the table, the whole node the tree's order reads included, refuses
+  the run if it holds a fact of one of them. Only the tree takes L9; the structure's readers keep
+  L5's table.
 - A route that meets a state contradicting what it knows (an alive set it holds dead, a member of `R`
   with an owing extension) refuses the run. A refusal is an engine defect, never an answer.
 
@@ -170,7 +175,7 @@ k_c(T) = 2^|T| − Σ_{S ⊊ T, S an alive state} k_c(S)                        
 ```text
 tree(C):   if C is known dead or dead(C)              → nothing below C
            elif owes(C) = ∅                            → a leaf: C is a state of R
-           elif C owes a licensed instance I           → children cl(C ∪ {a}), a ∈ A(I)   (L5)
+           elif C owes a licensed instance I           → children cl(C ∪ {a}), a ∈ A(I)   (L5, L9)
            else                                        → children cl(C ∪ {b}), b ∉ C
 ```
 
