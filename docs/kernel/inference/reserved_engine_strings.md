@@ -275,8 +275,24 @@ The kernel trigger `(__symmetric__ R)` closes R's extension under arg-swap
 (self-loops `a=b` and already-present mirrors skipped), as a `Firing` with rule
 `__symmetric__` threading the source edge as its premise. Single source:
 `SYMMETRIC = "__symmetric__"` + the mirror machinery
-(`_next_mirror_firing` / `_enqueue_mirror_sources`) in
+(`next_mirror_firing` / `enqueue_mirror_sources` / `symmetric_rels`) in
 [`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs).
+
+**The mark is read in the saturation it comes to hold in.** Written as a fact,
+derived by a rule at root, or derived in a node's saturation once a commitment
+brings a rule to it: the saturation in which `(__symmetric__ R)` comes to hold
+offers every fact of R already stored to the mirror, as it does for a relation
+marked from its first step, and every fact of R stored after the mark as it
+arrives. So the fixpoint is closed under the swap however the mark came to
+hold, a second saturation of it writes nothing, and one symmetry stated as a
+fact or by a rule has one root and one R. Each mirror's derivation records the
+mark as its activator, as a rule's firing records the fact that activated its
+plan, so a dead node's core follows the mark where the node derived it and
+names the commitment that brought it, and never follows a mark root holds
+(`ein-infer/tests/corpus_cores.rs`; `ein-infer/tests/stdlib_semantics.rs`'s
+`the_native_mirror_reads_a_mark_a_rule_derives` and
+`a_derived_mark_answers_what_its_control_answers`;
+[W98](../../../corpus/wrong_answers.toml)).
 
 **A performance optimization, NOT a capability.** It computes the *identical*
 closure as the stdlib `symmetric` rule (`std.algebra`) — pinned by

@@ -1,0 +1,37 @@
+;;; A symmetry a commitment brings a rule to derive, not mirrored by the
+;;; node's saturation — **W98**, register row `W98/derived-at-node`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(near a b)`, scoped out of the hypotheses; a relation `close`
+;;; the blind enumerator proposes about; a rule that marks `near` symmetric
+;;; once anything is close; and a rule that calls `(near b a)` a
+;;; contradiction. The control, `symmetric-rule-node.ein`, closes `near`
+;;; under the swap by a rule of its own, as `std.algebra`'s `symmetric` does,
+;;; where this program marks it for the kernel's native mirror.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; H is `(close a)` and `(close b)`. A state that holds either marks `near`
+;;; symmetric, so it holds `(near b a)`, and `one-way` makes it a
+;;; contradiction. Root holds no `close`, no mark and no `(near b a)`: it is
+;;; alive and owes nothing. So R is {∅}, the control's answer.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; A node resumes root's saturation, whose mirror was seeded at root with
+;;; nothing marked. The mark a commitment brought `close-symmetric` to derive
+;;; never offered `near`'s facts to the mirror, so no node held `(near b a)`
+;;; and none was dead: R was the whole cube, four states. The answer is the
+;;; one above now.
+
+(relation near Thing Thing :why "{?1} is near {?2}")
+(relation close Thing :why "{?1} is close")
+(near a b)
+(rule close-symmetric () :match (close ?x) :assert (__symmetric__ near)
+  :why "{?x} is close, so near holds both ways round")
+(rule one-way () :match (near b a) :assert (false)
+  :why "near holds one way only, from a to b")
+(solve :no-hypothesis (near))
+(query :goal (close ?x))

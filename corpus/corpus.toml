@@ -3062,6 +3062,30 @@ runs   = ["solve", "saturate"]
 note   = "M1f W97 (`W97/connex-import`), filed by S1f.10.15's T1f.10.15.4 (2026-11-16) on Q-M1f.308 (b): Q-M1f.308's re-plan probe, `std.algebra` imported for `connex` over `lt`, two `lt` facts stated and A and C not compared. The import's obligation rules, which nothing activates, take the ladder's second rung, which proposes nothing, so no commitment extends `lt` and `connex`'s `absent` is read closed-world: it loads, root dead, R empty. Right: the blind enumerator proposes `lt`, and *forbid* refuses `connex`, exit 1, which it does since the same task's fix: a program that loaded, refused at load."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W98 (`W98/derived-at-root`), filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The mark is derived after the saturator seeded its native mirror and offers `near`'s facts to none, so root's first saturation is no fixpoint: no `(near b a)`, which the blind enumerator then proposes, and R two states where it is {∅}, the control's. Fixed by the same stage: the saturation that derives the mark mirrors `near`, and the witness answers its control's R."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/symmetric-written-root.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W98's control for `W98/derived-at-root`, filed by S1f.10.9: the mark written as a fact, `(__symmetric__ near)`. Root's fixpoint holds `(near b a)` by the native mirror, no candidate, R {∅}, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W98 (`W98/derived-at-node`), filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`: the mark derived under a commitment, by a rule that reads `close`, beside a rule that calls `(near b a)` a contradiction. A node resumes root's saturation, whose mirror was seeded with nothing marked, and the mark offers `near`'s facts to none: no node holds `(near b a)`, and R is four states where it is {∅}, the control's. Fixed by the same stage: the node's saturation that derives the mark mirrors `near`, and the witness answers its control's R."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W98's control for `W98/derived-at-node`, filed by S1f.10.9: `near` closed under the swap by a rule of the program's own once anything is close, the closure the native mirror computes for a marked relation. Each candidate is dead alone, R {∅}, the witness's right answer."
+
+[[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]

@@ -670,7 +670,9 @@ impl Saturator {
             // The parent already seeded the mirror from the whole extent, so
             // re-seeding would re-walk it; what the mirror has not seen is the
             // delta, and a delta fact reaches the KB by a direct write rather
-            // than by a firing, so nothing else would offer it.
+            // than by a firing, so nothing else would offer it. A relation
+            // the delta or a later firing marks has its whole extent offered
+            // when the marks are read again (`symmetric_rels`).
             mirror_seeded: snapshot.mirror_seeded,
             record_alternatives: cfg.record_alternative_justifications,
             reading_universals: false,
@@ -1683,20 +1685,38 @@ impl Saturator {
     // ── The `__symmetric__` native mirror ──────────────────────────
 
     /// Relations marked `(__symmetric__ R)`; cached, refreshed when the marker
-    /// count changes (a rule may derive one).
+    /// count changes: a rule may derive one, and a fork's delta may hold one.
+    ///
+    /// **A relation marked after the mirror was seeded has its whole extent
+    /// offered here**, as the seed offers a marked relation's: its facts stored
+    /// before the mark reached the KB were offered to no mirror, and the ones
+    /// stored after are offered as they arrive. So a symmetry a rule derives
+    /// closes its relation in the saturation that derives it, as one written
+    /// as a fact does, and one program stated either way has one fixpoint
+    /// (`ein-infer/tests/stdlib_semantics.rs`'s
+    /// `the_native_mirror_reads_a_mark_a_rule_derives`).
     fn symmetric_rels(&mut self, s: &Session<'_>) -> &[Symbol] {
         let n = s.kb.n_facts_of(self.sym_sym);
         if n != self.sym_n {
-            self.sym_rels =
+            let mut rels: Vec<Symbol> =
                 s.kb.facts_of(self.sym_sym)
                     .filter_map(|f| s.terms.facts.args(f).first().and_then(|v| v.as_sym()))
                     .collect();
             // Sorted by name and held sorted throughout: a hash-ordered set
             // here leaks into firing order (M1a hazard H1). So the mirror
             // sequence is a function of the input alone.
-            self.sym_rels
-                .sort_by(|a, b| s.terms.sym(*a).cmp(s.terms.sym(*b)));
-            self.sym_rels.dedup();
+            rels.sort_by(|a, b| s.terms.sym(*a).cmp(s.terms.sym(*b)));
+            rels.dedup();
+            if self.mirror_seeded {
+                // In name order, each extent in the store's order, as the
+                // seed pushes them.
+                for &rel in &rels {
+                    if !self.sym_rels.contains(&rel) {
+                        self.mirror_queue.extend(s.kb.facts_of(rel));
+                    }
+                }
+            }
+            self.sym_rels = rels;
             self.sym_n = n;
         }
         &self.sym_rels
@@ -1715,7 +1735,9 @@ impl Saturator {
     }
 
     /// True iff some marked edge `(R a b)` with `a ≠ b` lacks its mirror.
-    /// Non-mutating, so `is_stalled` can consult it.
+    /// It derives nothing, so `is_stalled` can consult it; the one thing it
+    /// may change is the mirror's queue, where a relation marked since the
+    /// last refresh has its extent offered ([`Self::symmetric_rels`]).
     fn has_pending_mirror(&mut self, s: &Session<'_>) -> bool {
         let rels = self.symmetric_rels(s).to_vec();
         for rel in rels {
@@ -1742,8 +1764,10 @@ impl Saturator {
     /// feeds the delta so rules re-enqueue against it.
     fn next_mirror_firing(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
         if !self.mirror_seeded {
-            self.mirror_seeded = true;
+            // Refreshed before the seed is marked, so that the refresh offers
+            // nothing the seed is about to offer.
             let rels = self.symmetric_rels(s).to_vec();
+            self.mirror_seeded = true;
             for rel in rels {
                 let extent: Vec<FactId> = s.kb.facts_of(rel).collect();
                 self.mirror_queue.extend(extent);
@@ -1767,6 +1791,21 @@ impl Saturator {
                 .terms
                 .probe_fact(rel, &[b, a])
                 .filter(|&m| s.kb.contains(m));
+            // The mark the mirror rests on, recorded as the derivation's
+            // activator, as a rule's firing records the fact that activated
+            // its plan: a core follows it where a node derived or committed
+            // it (`ein_core::walks::node_activator`), so a dead node whose
+            // commitment brought a rule to derive the mark names the
+            // commitment, and one root states names nothing more.
+            let mark = s
+                .terms
+                .probe_fact(self.sym_sym, &[Value::sym(rel)])
+                .filter(|&m| s.kb.contains(m));
+            let mirrored = |src: FactId| {
+                let mut prov = Prov::from_rule(self.sym_sym, Box::new([src]), None);
+                prov.activator = mark;
+                prov
+            };
             if let Some(mirror) = existing {
                 // S1.21.7 — the mirror already exists (typically because the
                 // stdlib `symmetric` rule, or the mirror of the mirror, got
@@ -1776,14 +1815,12 @@ impl Saturator {
                 // `(R b a)` justify each other — which the explanation search
                 // handles by taking a least fixpoint from the sources up.
                 if self.record_alternatives && s.kb.accepts_justification(s.terms, mirror, &[src]) {
-                    let prov = Prov::from_rule(self.sym_sym, Box::new([src]), None);
-                    let id = s.terms.provs.push(prov);
+                    let id = s.terms.provs.push(mirrored(src));
                     s.kb.record_justification(s.terms, mirror, id);
                 }
                 continue;
             }
-            let prov = Prov::from_rule(self.sym_sym, Box::new([src]), None);
-            let id = s.terms.provs.push(prov);
+            let id = s.terms.provs.push(mirrored(src));
             let stored =
                 s.kb.add_and_index_fact(s.terms, rel, &[b, a], Some(id))
                     .map_err(|e| SaturateError::Fire(FireError::Overflow(e)))?

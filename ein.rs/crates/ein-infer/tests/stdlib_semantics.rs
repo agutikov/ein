@@ -610,6 +610,129 @@ fn the_native_mirror_computes_the_same_closure_as_the_stdlib_rule() {
     );
 }
 
+/// How many facts a second saturation of `src`'s fixpoint writes: a fresh
+/// saturator over the KB the first one left, as every later preparation of a
+/// root is.
+fn second_saturation_writes(src: &str) -> usize {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let src = &ein_corpus::listed(src);
+    let forms = parse(&mut ast, src, Some("<symmetric>")).expect("parses");
+    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
+    let mut events = Events::off();
+    let mut s = Session {
+        kb: &mut kb,
+        terms: &mut terms,
+        ast: &ast,
+        events: &mut events,
+        memo: SharedMemo::default(),
+    };
+    let mut first = Saturator::new(&mut s).expect("compiles");
+    first
+        .saturate(&mut s, Some(20_000), &mut |_| {})
+        .expect("saturates");
+    let n = s.kb.n_facts();
+    let mut second = Saturator::new(&mut s).expect("compiles");
+    second
+        .saturate(&mut s, Some(20_000), &mut |_| {})
+        .expect("saturates");
+    s.kb.n_facts() - n
+}
+
+/// **A mark a rule derives is the mark** (`corpus/wrong_answers.toml`'s
+/// `W98/derived-at-root`). The saturator seeds its mirror at its first step,
+/// and a rule derives `(__symmetric__ R)` after it: with an empty `:match`,
+/// or once a fact of R it reads is stored. Either way the saturation that
+/// derives the mark closes R as the written mark does, and it is a fixpoint:
+/// a second saturation of the same KB writes nothing. Until the fix a derived
+/// mark offered R's stored facts to no mirror, and only a later saturation,
+/// whose seed read the mark, closed R.
+#[test]
+fn the_native_mirror_reads_a_mark_a_rule_derives() {
+    let edges =
+        "(relation knows T T :why \"{?1} knows {?2}\")\n(knows A B)\n(knows C D)\n(knows E E)\n";
+    let written = format!("(__symmetric__ knows)\n{edges}");
+    let closure = knows_extension(&written);
+    assert_eq!(second_saturation_writes(&written), 0, "the written mark");
+    for (how, premise) in [
+        ("an empty :match", "()"),
+        ("a :match over the relation", "(knows C D)"),
+    ] {
+        let src = format!(
+            "(rule mark () :match {premise} :assert (__symmetric__ knows) \
+             :why \"knows holds both ways round\")\n{edges}"
+        );
+        assert_eq!(
+            knows_extension(&src),
+            closure,
+            "{how}: the derived mark closes knows as the written one does"
+        );
+        assert_eq!(
+            second_saturation_writes(&src),
+            0,
+            "{how}: the saturation that derives the mark is a fixpoint"
+        );
+    }
+}
+
+/// One program's H and R by the cube, `ein oracle`'s library: the candidates
+/// in their order, and R's members as sets of them.
+fn cube(rel: &str) -> (Vec<String>, std::collections::BTreeSet<Vec<String>>) {
+    use ein_infer::region::{self, Outcome};
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
+    let out = region::compute(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &region::Options::default(),
+        &mut |_| {},
+    )
+    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    let Outcome::Region(r) = out else {
+        panic!("{rel}: the cube is within the oracle's limit");
+    };
+    let n = r.n();
+    let h: Vec<String> = r.candidates.iter().map(|c| c.text.clone()).collect();
+    let members = (0..1u64 << n)
+        .filter(|&m| r.in_r(m))
+        .map(|m| {
+            (0..n)
+                .filter(|i| m >> i & 1 == 1)
+                .map(|i| h[i].clone())
+                .collect()
+        })
+        .collect();
+    (h, members)
+}
+
+/// **One symmetry stated two ways is one symmetry, at root and at a node**
+/// (`corpus/wrong_answers.toml`'s W98). The mark a rule derives at root
+/// answers what the mark written as a fact answers; the mark a commitment
+/// brings a rule to derive, in a node's saturation, which resumes root's,
+/// answers what the same closure written as the program's own rule answers.
+/// Each pair has one H and one R, by the cube.
+#[test]
+fn a_derived_mark_answers_what_its_control_answers() {
+    for (witness, control) in [
+        (
+            "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein",
+            "examples/ein-bugs/wrong-answers/symmetric-written-root.ein",
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein",
+            "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein",
+        ),
+    ] {
+        assert_eq!(
+            cube(witness),
+            cube(control),
+            "{witness}: its control's H and R"
+        );
+    }
+}
+
 // ── symmetric relations under search ───────────────────────────────
 
 /// `ein solve FILE --maximal`, exhausted: the maximal line's states, each

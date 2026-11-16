@@ -1,0 +1,32 @@
+;;; A symmetry a rule derives, not mirrored by the saturation that derives it
+;;; — **W98**, register row `W98/derived-at-root` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; One fact `(near a b)`, and a rule with an empty `:match` that concludes
+;;; `(__symmetric__ near)`: the kernel's mark that `near` holds both ways
+;;; round, derived and never written. The control,
+;;; `symmetric-written-root.ein`, writes the mark as a fact and differs in
+;;; nothing else.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `near` is marked symmetric, so root's fixpoint holds `(near b a)` beside
+;;; `(near a b)`, however the mark came to hold. Root is alive and owes
+;;; nothing, and every fact of the program's one relation is in it: the blind
+;;; enumerator has nothing to propose, and R is {∅}, the control's answer.
+;;;
+;;; ── What the engine answered ───────────────────────────────────────────
+;;;
+;;; Root's first saturation was no fixpoint: the mirror was seeded before the
+;;; rule fired, and the mark it derived never offered `near`'s facts to it,
+;;; so `ein saturate --dump` printed `(near a b)` and the mark and no `(near b
+;;; a)`. The blind enumerator then proposed `(near b a)`, and R was two
+;;; states, ∅ and `{(near b a)}`, each holding both facts once a later
+;;; saturation mirrored `near`. The answer is the one above now.
+
+(relation near Thing Thing :why "{?1} is near {?2}")
+(near a b)
+(rule near-symmetric () :match () :assert (__symmetric__ near)
+  :why "near holds both ways round")
+(query :goal (near ?x ?y))
