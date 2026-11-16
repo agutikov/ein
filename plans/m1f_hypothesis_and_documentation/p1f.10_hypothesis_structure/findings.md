@@ -126,6 +126,53 @@ columns, 2026-11-15):
 that sends a program to the blind enumerator makes Q-M1f.306's (a) to (c) bear on programs they do not bear on
 today. The census is re-taken by the same command after such a ruling.
 
+### H9-4 — A `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it
+
+Met by S1f.10.9's task 4, 2026-11-16, at `3e59b90a`, the gate build, when the register's `__symmetric__` witness
+of W96 was put in the corpus. The saturator closes a symmetric relation under arg-swap natively, and it reads
+which relations are symmetric where it is built: a `(__symmetric__ R)` fact that a rule derives during the run
+is not read by that run. Two programs, each `(relation near Thing Thing :why …)`, `(near a b)`, `(query :goal
+(near ?x ?y))`, and the symmetry stated one way:
+
+| the symmetry | `ein saturate FILE --dump`, root's facts of `near` |
+|---|---|
+| the fact `(__symmetric__ near)` | `(near a b)`, `(near b a :rule __symmetric__)` |
+| `(rule near-symmetric () :match () :assert (__symmetric__ near) :why …)` | `(near a b)` alone, beside `(__symmetric__ near :rule near-symmetric)` |
+
+So root's fixpoint, as `ein saturate` prints it, is not closed under the symmetry it holds. A second saturation
+of the same KB, whose saturator is built with the derived fact present, writes `(near b a)`; a node, which
+resumes root's saturation, holds it too (`ein solve` on the second program answers the query `a b` and `b a` at
+∅). **One symmetry stated two ways gives two roots.** Read against `solution_semantics.md` § 1.3, *root is
+`sat(program)`, saturated to quiescence*, this is a wrong answer of `ein saturate`'s; no register row is filed
+here, the finding being outside the stage's ruling.
+
+**What it broke on the way**, with the first form of the witness (`(near a b)` alone, the rule, an open
+`total`), each a sweep over the corpus that no program had tripped, since no corpus program derived a
+`(__symmetric__ R)` by a rule:
+
+- `ein-infer/tests/detector.rs`, `a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`:
+  *scratch departs from the fork* on all eight nodes of the witness, ∅ among them, where the test holds that it
+  does on one corpus node, `lattice/11_fifo_gap_static.ein`'s.
+- `ein-infer/tests/claim_round_trip.rs`: `ein_infer::claim::check`, as the test calls it (`jobs: 4`, a budget
+  of 2¹⁶), panics, *Kb::branch on an unsealed KB — call Kb::seal_top first* (`ein-core/src/kb.rs`), from
+  `region::fan_out` → `node_in_region` → `fixpoint_firing`'s `root.branch()`. `claim.rs`'s `fixpoints` calls
+  `region::prepare` on the root the description already saturated and hands it to `fan_out` with no
+  `root.sealed()`, where `region::compute_prepared` and `explore.rs` seal root after their `prepare`; the
+  second saturation writes the mirrored fact, and root's top layer is open. A probe of four programs, written
+  for it and deleted after the run, panicked on each of the three that derive the symmetry by a rule (an empty
+  `:match` and `:match (near a b)`; a claim that held and one that did not) and *Held* on the one that writes
+  the fact. The binary did not panic on the same spliced program: `ein solve FILE`, `ein solve --jobs 4 FILE`
+  and `ein test FILE` each printed *(solve :expect) holds*. Why its path differs was not examined.
+
+**The witness was rewritten so as not to rest on this**:
+`examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein` writes `near` both ways round, `(near a
+b) (near b a)`, so the mirror has nothing to add, root's first saturation is a fixpoint, and both sweeps hold
+on it. E-1's defect, the dunder among the objects, is the same on either form. A corpus program that derives a
+symmetry by a rule over a relation not already closed under it fails both sweeps today.
+
+**Today:** open, not fixed, no register row, no owner. It bears on any ruling that sends a stdlib module to
+deriving `__symmetric__` by a closing rule, as `std.math.arith` derives its `__closed__`.
+
 ## From S1f.10.6
 
 Met by [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md#record-2026-11-15-tasks-1-to-3)'s tasks 1 to 3,

@@ -1,0 +1,33 @@
+;;; A kernel dunder among the blind enumerator's objects — **W96**, register
+;;; row `W96/closed-by-rule` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A table of ten digits that its own rule closes, `(__closed__ digit)`
+;;; derived and never written as a fact, beside a relation the program
+;;; declares and does not close, `total`. No file writes a fact headed by
+;;; `__closed__`, and none writes the word in an argument position.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The program states no `(solve …)`, so its hypotheses are the facts of its
+;;; open declared relation over its names: `(total 0)` to `(total 9)`, ten
+;;; candidates. `__closed__` is the kernel's word for *this relation is
+;;; closed*, not a thing the puzzle is about, and no program means it as an
+;;; object. Nothing restricts the ten, so R is the whole cube, 1 024 states.
+;;; It is what `dunder-object-closed-by-fact.ein` answers, the same program
+;;; with its closure written as a fact.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; Eleven candidates, `(total __closed__)` the eleventh, and R 2 048 states:
+;;; the head of a fact only a rule derives is in the KB's names index and in
+;;; no registry, so the blind enumerator takes it for an object.
+
+(relation digit Digit :why "{?1} is a digit")
+(digit 0) (digit 1) (digit 2) (digit 3) (digit 4)
+(digit 5) (digit 6) (digit 7) (digit 8) (digit 9)
+(rule digits-closed () :match () :assert (__closed__ digit)
+  :why "the digits are all written: none is ever guessed")
+(relation total Number :why "the total is {?1}")
+(query :goal (total ?x))

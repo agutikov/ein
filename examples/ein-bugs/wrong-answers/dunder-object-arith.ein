@@ -1,0 +1,26 @@
+;;; A kernel dunder among the blind enumerator's objects, on the shipped
+;;; stdlib — **W96**, register row `W96/arith-closing-rule`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; `std.math.arith` imported whole, beside a relation the program declares
+;;; and does not close, `total`. The module closes its own relations by its
+;;; closing rule and writes no `(__closed__ R)` fact; the program writes no
+;;; name at all.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The program states no `(solve …)`, so its hypotheses are the facts of its
+;;; open declared relation over its names, and it has none: `__closed__` is
+;;; the kernel's word and no object. No candidate, and R is {∅}, one state.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; One candidate, `(total __closed__)`, and R two states: the head of the
+;;; facts the module's closing rule derives is in the KB's names index and in
+;;; no registry, so the blind enumerator takes it for an object.
+
+(import std.math.arith)
+(relation total Number :why "the total is {?1}")
+(query :goal (total ?x))

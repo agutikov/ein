@@ -1,0 +1,35 @@
+;;; A kernel dunder a program writes as a value, among the blind enumerator's
+;;; objects — **W96**, register row `W96/as-value`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; A rule with two relation parameters, `lift`, handed `__closed__` as its
+;;; second: `(lift complete __closed__)`, as `std.algebra` writes `(imply1
+;;; functional __closed__)`. With `(complete thing)` it derives `(__closed__
+;;; thing)`. The dunder is written in an argument position of a fact, which
+;;; is legal and stays so, and no file writes a fact headed by it. Beside it,
+;;; a relation the program declares and does not close, `total`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The hypotheses are the facts of `total` over the things the puzzle is
+;;; about, and it is about one, `a`. `__closed__` is the kernel's word,
+;;; written here to say which relation the rule concludes: no object, however
+;;; it is written. One candidate, `(total a)`, and R two states.
+;;;
+;;; ── What the engine answers ────────────────────────────────────────────
+;;;
+;;; Two candidates, `(total __closed__)` and `(total a)`, and R four states:
+;;; a constant in an argument position of a fact is a name of the program,
+;;; and the blind enumerator takes every such name no registry holds for an
+;;; object.
+
+(relation thing Thing :why "{?1} is a thing")
+(thing a)
+(rule lift (?P ?Q) :match (?P ?r) :assert (?Q ?r)
+  :why "{?r} is {?P}, so it is {?Q}")
+(lift complete __closed__)
+(complete thing)
+(relation total Number :why "the total is {?1}")
+(query :goal (total ?x))
