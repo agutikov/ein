@@ -386,7 +386,96 @@ fn render_command() -> Command {
                 )
                 .arg(no_require_why()),
         )
+        // The structure of the hypothesis set: `ein_infer::structure` reads
+        // it and `ein_render::structure` spells it (Q-M1f.309). `ein solve`
+        // computes none of it.
+        .subcommand(
+            Command::new("structure")
+                .about(
+                    "the structure of the program's hypothesis set, read from its own \
+                     lattice with nobody declaring it: which candidates exclude each other, \
+                     which of those pairs the theory makes alone, the groups (pick at most \
+                     one), the owed groups and grids (exactly one), and what couples the \
+                     questions (docs/kernel/inference/structure.md). Prints a read-out, or \
+                     the --view asked. It reads nodes and changes no answer",
+                )
+                .arg(Arg::new("file").required(true))
+                .arg(
+                    Arg::new("view")
+                        .long("view")
+                        .value_name("VIEW")
+                        .value_parser(PossibleValuesParser::new(STRUCTURE_VIEWS))
+                        .default_value("summary")
+                        .help(
+                            "what stdout holds: 'summary' (default) a row an object, what it \
+                             cost and whatever was stopped, cut or left unread; a graph as \
+                             DOT, 'exclusion' the pairs that exclude, the theory's and the \
+                             puzzle's in two strokes, 'cover' the groups and grids, \
+                             'coupling' the questions' hypergraph, 'one-step' its edges read \
+                             one application back; or 'json', the whole of structure.json",
+                        ),
+                )
+                .arg(
+                    Arg::new("dump")
+                        .long("dump")
+                        .value_name("DIR")
+                        .value_parser(artefact_path)
+                        .help(
+                            "also write the structure to DIR: structure.json and the four \
+                             graphs, exclusion.dot, cover.dot, coupling.dot and \
+                             coupling_one_step.dot. stdout is the same with it",
+                        ),
+                )
+                .arg(
+                    Arg::new("supports")
+                        .long("supports")
+                        .action(ArgAction::SetTrue)
+                        .help(
+                            "also read the support of every pair root excludes, the stated \
+                             facts its death rests on: they label the puzzle's pairs and \
+                             name what each tie rests on. One more saturation and a search \
+                             per pair",
+                        ),
+                )
+                .arg(
+                    Arg::new("region-budget")
+                        .long("region-budget")
+                        .value_name("FACTS")
+                        .value_parser(region_budget_spec)
+                        .help(format!(
+                            "the budget of root's pair layer and of the small KB's, each: \
+                             facts beyond its root, as `ein solve --region-budget`'s (default \
+                             2^{}). A layer that reaches it is listed as far as it was read, \
+                             and the read-out and the document say what was not",
+                            ein_infer::downset::DEFAULT_BUDGET.trailing_zeros()
+                        )),
+                )
+                .arg(
+                    Arg::new("jobs")
+                        .short('j')
+                        .long("jobs")
+                        .value_name("JOBS")
+                        .value_parser(jobs_spec)
+                        .default_value("1")
+                        .help(
+                            "threads for each step's nodes, or 'auto' (default: 1). The same \
+                             structure, byte for byte",
+                        ),
+                )
+                .arg(no_require_why()),
+        )
 }
+
+/// `ein render structure --view`'s words: the read-out, each of
+/// [`ein_render::structure::GRAPHS`], and the document.
+const STRUCTURE_VIEWS: [&str; 6] = [
+    "summary",
+    "exclusion",
+    "cover",
+    "coupling",
+    "one-step",
+    "json",
+];
 
 /// `ein solve` — the one command for R, `solve_interface.md` § 2.1. Since M1e2
 /// S1e2.1a.5's switch it describes R by default, and `--minimal`, `--maximal`,

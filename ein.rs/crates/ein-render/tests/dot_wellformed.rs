@@ -484,3 +484,262 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
          (`-- --nocapture` lists every skipped view)"
     );
 }
+
+// ── The structure's graphs ────────────────────────────────────────────
+
+/// What *a program searches* means: the determinism sweeps' one definition.
+#[allow(dead_code)]
+#[path = "corpus_ops/searches.rs"]
+mod searching;
+
+/// The lines of one of the structure's graphs: its ` -- ` strokes. They are
+/// undirected graphs, so [`edges`] counts none of them.
+fn strokes(dot: &str) -> usize {
+    dot.matches(" -- ").count()
+}
+
+/// **The graphs of `ein render structure` past [`DOT_LAYOUT_BOUND`]**, each
+/// by its program and its view: not put to Graphviz, as a view of a program
+/// is not. The list is exact, a graph and not a directory: one past the
+/// bound that is not named fails the sweep, and so does a name whose graph
+/// is no longer past it. The under-determined zebra's exclusion graph is the
+/// pairs of its 96 candidates, and its edges read one application back are
+/// mostly of two questions; the two programs whose `R` passes 2^64
+/// commitments tie every candidate to every other. A per-commit run reads no
+/// `slow` entry, and holds the list to the others.
+const STRUCTURE_SKIPPING: [(&str, &str); 8] = [
+    (
+        "examples/ein-bugs/wrong-answers/count-past-2-128.ein",
+        "coupling",
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/count-past-2-128.ein",
+        "one-step",
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/count-past-2-64.ein",
+        "coupling",
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/count-past-2-64.ein",
+        "one-step",
+    ),
+    ("examples/zebra2-minus-15-obligations.ein", "exclusion"),
+    ("examples/zebra2-minus-15-obligations.ein", "one-step"),
+    ("examples/zebra2-minus-15.ein", "exclusion"),
+    ("examples/zebra2-minus-15.ein", "one-step"),
+];
+
+/// What the sweep found of one program's structure.
+#[derive(Default)]
+struct StructureSweep {
+    /// The program searches, and its structure was read.
+    read: bool,
+    bad: Vec<String>,
+    /// Graphs put to Graphviz.
+    checked: usize,
+    /// Graphs past [`DOT_LAYOUT_BOUND`]: the view and its lines.
+    skipped: Vec<(&'static str, usize)>,
+    /// What was stopped, cut or left unread, a sentence each: empty where
+    /// the structure is whole.
+    unread: Vec<String>,
+    /// What reading it cost: root's layer's saturations, the small KB's and
+    /// the whole node's; then root's layer's facts beyond root and the small
+    /// KB's beyond its own root.
+    work: [u64; 5],
+}
+
+/// The four graphs of one program that searches, put to Graphviz.
+fn sweep_structure(path: &std::path::Path) -> StructureSweep {
+    let mut out = StructureSweep::default();
+    let rel = path.strip_prefix(repo_root()).unwrap_or(path);
+    let name = rel.display().to_string();
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return out;
+    };
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
+        return out;
+    };
+    let Ok(mut kb) = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()) else {
+        return out;
+    };
+    if !searching::searches(&ast, &mut terms.clone(), &mut kb.clone()) {
+        return out;
+    }
+    let asked = ein_infer::structure::WholeOptions::default();
+    let whole = match ein_infer::structure::whole(&mut kb, &mut terms, &ast, &asked) {
+        Ok(w) => w,
+        Err(e) => {
+            out.bad
+                .push(format!("{name}\n  the structure was refused: {e}"));
+            return out;
+        }
+    };
+    out.read = true;
+    out.unread = ein_render::structure::unread(&whole);
+    let (root, small) = (&whole.theory.root, whole.theory.small.as_ref().ok());
+    let node = whole.parts.as_ref().and_then(|p| p.coupling.node);
+    out.work = [
+        root.work.saturations,
+        small.map_or(0, |s| s.work.saturations),
+        node.map_or(0, |n| n.saturations),
+        root.work.facts,
+        small.map_or(0, |s| s.work.facts),
+    ];
+    // The exclusion graph draws a pair of the theory's own list, or a pair
+    // root excludes that is alive in the small KB. A pair root excludes that
+    // is dead in the small KB by a member the theory kills alone is in
+    // neither, and would be drawn by no stroke: there is none where the
+    // small KB derives no more than the program, which is held here and not
+    // argued.
+    let theory: std::collections::BTreeSet<(u32, u32)> =
+        whole.theory.excluded().iter().copied().collect();
+    let undrawn = root
+        .excluded
+        .iter()
+        .zip(whole.theory.of_the_theory())
+        .filter(|(pair, of_theory)| *of_theory && !theory.contains(pair))
+        .count();
+    if undrawn > 0 {
+        out.bad.push(format!(
+            "{name} [exclusion]\n  {undrawn} pairs root excludes are in neither stroke: dead in \
+             the small KB by a member it kills alone"
+        ));
+    }
+    for graph in ein_render::structure::graphs(&whole, &name) {
+        let lines = strokes(&graph.dot);
+        if lines != graph.lines {
+            out.bad.push(format!(
+                "{name} [{}]\n  the graph says {} lines and draws {lines}",
+                graph.name, graph.lines
+            ));
+        }
+        if lines > DOT_LAYOUT_BOUND {
+            out.skipped.push((graph.name, lines));
+            continue;
+        }
+        out.checked += 1;
+        match graphviz(&graph.dot) {
+            Verdict::Accepted => {}
+            Verdict::Rejected(why) | Verdict::Crashed(why) => {
+                out.bad.push(format!("{name} [{}]\n  {why}", graph.name));
+            }
+        }
+    }
+    out
+}
+
+/// **Graphviz accepts every graph `ein render structure` writes**, of every
+/// corpus program that searches: the exclusion graph, the cover, the
+/// questions' hypergraph and its edges read one application back, each one
+/// graph, each put to `dot -Tsvg` with nothing to say of it.
+///
+/// Per commit, the programs that search outside `tests/` but for the
+/// corpus's `slow` entries; under `EIN_CORPUS_SLOW=1`, the nightly's, every
+/// one that searches. A program that does not search has no candidate, and
+/// its four graphs are a title each, which the view's own test draws. A
+/// graph past [`DOT_LAYOUT_BOUND`] is skipped as a view is, and named
+/// ([`STRUCTURE_SKIPPING`]). Nothing here holds a picture: the SVG is
+/// discarded, a layout being Graphviz's to choose, and the DOT is what the
+/// determinism sweeps hold (`ein-infer/tests/structure_invariance.rs`). And
+/// every structure read is held whole at the default budget: one with a
+/// layer stopped, a cover cut or a reading refused fails here by name.
+#[test]
+fn graphviz_accepts_the_structure_graphs_of_every_program_that_searches() {
+    require_graphviz();
+    let slow = slow_too();
+    let root = repo_root();
+    let slow_entries: std::collections::BTreeSet<String> = ein_corpus::corpus()
+        .entry
+        .iter()
+        .filter(|e| e.slow)
+        .map(|e| e.path.clone())
+        .collect();
+    let rel = |f: &std::path::Path| f.strip_prefix(&root).unwrap_or(f).display().to_string();
+    let files: Vec<std::path::PathBuf> = corpus_files()
+        .into_iter()
+        .filter(|f| {
+            slow || !(under_tests(f.strip_prefix(&root).unwrap_or(f))
+                || slow_entries.contains(&rel(f)))
+        })
+        .collect();
+    let found = ein_corpus::pool::map(
+        "dot_wellformed",
+        &files,
+        |f| (rel(f), "structure".to_string()),
+        |f| sweep_structure(f),
+    );
+    let (mut bad, mut read, mut checked) = (Vec::new(), 0usize, 0usize);
+    let mut skipped: Vec<(String, &'static str, usize)> = Vec::new();
+    let mut not_whole: Vec<String> = Vec::new();
+    let mut work = [0u64; 5];
+    for (file, sweep) in files.iter().zip(found) {
+        bad.extend(sweep.bad);
+        read += usize::from(sweep.read);
+        checked += sweep.checked;
+        for (total, of) in work.iter_mut().zip(sweep.work) {
+            *total += of;
+        }
+        skipped.extend(sweep.skipped.into_iter().map(|(v, n)| (rel(file), v, n)));
+        if !sweep.unread.is_empty() {
+            not_whole.push(format!("{}\n  {}", rel(file), sweep.unread.join("\n  ")));
+        }
+    }
+    // The graphs drawn are of whole structures: at the default budget no
+    // program read here has a layer stopped, a cover cut or a reading
+    // refused. One that does is named, with what it left unread.
+    assert!(
+        not_whole.is_empty(),
+        "{} of the {read} structures read are not whole at the default budget:\n\n{}",
+        not_whole.len(),
+        not_whole.join("\n\n")
+    );
+    assert!(
+        bad.is_empty(),
+        "{} of the structure's graphs are not valid DOT:\n\n{}",
+        bad.len(),
+        bad.join("\n\n")
+    );
+    eprintln!(
+        "graphviz, the structure's graphs{}: {read} programs that search, {checked} graphs \
+         accepted, {} skipped past {DOT_LAYOUT_BOUND} lines",
+        if slow {
+            " [every corpus program]"
+        } else {
+            " [outside tests/, the slow entries aside]"
+        },
+        skipped.len()
+    );
+    for (program, view, lines) in &skipped {
+        eprintln!("  skipped: {program} [{view}] ({lines} lines)");
+    }
+    // What reading them cost, in the read-out's units: the sweep's own
+    // work, which a run prints so that no page has to remember it.
+    eprintln!(
+        "  the {read} structures: root's layers {} saturations and {} facts beyond root, the \
+         small KBs' {} saturations and {} facts beyond their own roots, {} whole nodes",
+        work[0], work[3], work[1], work[4], work[2]
+    );
+    assert!(read >= 100, "only {read} programs' structures were read");
+    assert_eq!(
+        checked + skipped.len(),
+        4 * read,
+        "four graphs a program that searches"
+    );
+    let mut want: Vec<(&str, &str)> = STRUCTURE_SKIPPING
+        .iter()
+        .copied()
+        .filter(|(p, _)| slow || !slow_entries.contains(*p))
+        .collect();
+    want.sort_unstable();
+    let mut got: Vec<(&str, &str)> = skipped.iter().map(|(p, v, _)| (p.as_str(), *v)).collect();
+    got.sort_unstable();
+    assert_eq!(
+        got, want,
+        "the structure's graphs past {DOT_LAYOUT_BOUND} lines, which are skipped and not put \
+         to Graphviz, are not the ones `STRUCTURE_SKIPPING` names (`-- --nocapture` lists \
+         every skipped graph)"
+    );
+}

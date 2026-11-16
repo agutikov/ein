@@ -224,6 +224,106 @@ fn loaded_and_saturated(
     Some(kb)
 }
 
+/// What `ein render structure` was asked.
+pub struct StructureArgs<'a> {
+    pub file: &'a str,
+    /// One of the views the parser lists: `summary`, a graph's name, `json`.
+    pub view: &'a str,
+    /// `--dump DIR`.
+    pub dump: Option<&'a str>,
+    /// `--supports`.
+    pub supports: bool,
+    /// `--region-budget`, each layer's; the routes' default where absent.
+    pub budget: Option<u64>,
+    pub jobs: usize,
+}
+
+/// `ein render structure FILE` — the structure of the program's hypothesis
+/// set: every object [`ein_infer::structure`] reads of it, by one call
+/// ([`ein_infer::structure::whole`]), spelled by [`ein_render::structure`].
+///
+/// stdout holds the view asked: the read-out, one graph as DOT, or the
+/// document. `--dump DIR` writes the document and the four graphs beside,
+/// and moves nothing on stdout or stderr: the directory is made before the
+/// work, so a path that cannot be made is exit 1 before anything is read,
+/// and a write that fails after it reports itself and leaves the exit code,
+/// as `ein oracle --dump`'s does.
+///
+/// **A structure that is not whole is said three times**: each thing a
+/// budget or a bound stopped, cut or left unread is a `note:` on stderr, a
+/// row of the read-out, and a sentence of the document's `unread`, and each
+/// graph's title counts them. Every structure exits 0, whole or not; a
+/// program the loader refuses is refused as every command refuses it, exit
+/// 1, and so is one the engine refuses to read.
+pub fn cmd_structure(a: &StructureArgs<'_>, load: &ein_ir::LoadOptions) -> i32 {
+    use ein_infer::structure::{self, Options, WholeOptions};
+    use ein_render::structure as shown;
+
+    if let Some(dir) = a.dump
+        && let Err(e) = std::fs::create_dir_all(dir)
+    {
+        crate::solve::artefact_failed("dump", dir, e);
+        return 1;
+    }
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Some(mut kb) = load_program(&mut ast, &mut terms, Path::new(a.file), load) else {
+        return 1;
+    };
+    let budget = a.budget.unwrap_or(ein_infer::downset::DEFAULT_BUDGET);
+    let asked = WholeOptions {
+        layer: Options {
+            budget,
+            jobs: a.jobs,
+            deadline: None,
+        },
+        supports: a.supports,
+    };
+    let whole = match structure::whole(&mut kb, &mut terms, &ast, &asked) {
+        Ok(w) => w,
+        Err(e) => {
+            eprintln!("{e}");
+            return 1;
+        }
+    };
+    let inputs = shown::Inputs {
+        program: a.file,
+        budget,
+        supports: a.supports,
+    };
+    let graphs = shown::graphs(&whole, a.file);
+    for sentence in shown::unread(&whole) {
+        eprintln!("note: {}: {sentence}", a.file);
+    }
+    match a.view {
+        "json" => print!("{}", shown::document(&whole, &terms, &inputs, &graphs)),
+        "summary" => print!("{}", shown::summary(&whole, &inputs, &graphs)),
+        name => match graphs.iter().find(|g| g.name == name) {
+            Some(g) => print!("{}", g.dot),
+            // The parser lists the views, so no other word reaches here.
+            None => return 2,
+        },
+    }
+    if let Some(dir) = a.dump {
+        let dir = Path::new(dir);
+        let mut files = vec![(
+            shown::DOCUMENT.to_string(),
+            shown::document(&whole, &terms, &inputs, &graphs),
+        )];
+        files.extend(
+            graphs
+                .iter()
+                .map(|g| (shown::graph_file(g.name), g.dot.clone())),
+        );
+        for (name, text) in files {
+            if let Err(e) = std::fs::write(dir.join(&name), text) {
+                crate::solve::artefact_failed("dump", &dir.join(&name).to_string_lossy(), e);
+            }
+        }
+    }
+    0
+}
+
 /// `ein render region` — an `ein oracle --dump` directory drawn: the cube by
 /// [`ein_render::region_dot`], with a region run joined to it by
 /// [`ein_render::region_doc::Overlay`] when `--visited` (the run's

@@ -463,7 +463,7 @@ pub fn commitments(n: u64) -> String {
     }
 }
 
-fn plural(n: u64, one: &str, many: &str) -> String {
+pub(crate) fn plural(n: u64, one: &str, many: &str) -> String {
     format!("{} {}", group(n), if n == 1 { one } else { many })
 }
 
