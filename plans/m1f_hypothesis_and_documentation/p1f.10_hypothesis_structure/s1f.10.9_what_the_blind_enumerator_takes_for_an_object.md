@@ -9,7 +9,10 @@ question, which was put at the phase's one stop ([S1f.10.12](s1f.10.12_the_struc
 2026-11-16, and task 4 ran the same day** ([§ Record](#record-2026-11-16-task-4)): (b) for E-1, *"dunder never
 an object, wide reading"*, so the blind enumerator's objects leave the kernel's two dunders out and the
 register's W96, four rows, is filed and fixed; (a) for E-7, left and named by a `relation names` row; (d) for
-E-54, left. **Done.** H9-1, H9-4 and H9-5 stay open in [`findings.md`](findings.md#from-s1f109).
+E-54, left. **Done.** H9-1, H9-4 and H9-5 stay open in [`findings.md`](findings.md#from-s1f109). **At the phase's
+close** ([§ Record](#record-2026-11-16-h9-1-and-h9-4-as-ruled-at-the-close)), on the user's *"File and fix them in
+this phase"*: H9-4 filed and fixed as the register's W98; H9-1 stopped for the user, two rulings deciding it
+opposite ways.
 **Depends on:** nothing in the phase. [S1f.10.1](s1f.10.1_exclusion_census.md)'s census reads the same
 candidate sets, and the bundle marks the candidates this stage counts.
 **Source:** row 56 of [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner) of the
@@ -956,3 +959,222 @@ machine's `EIN_CORPUS_SLOW=1 cargo test … --test corpus_cli` is what holds it.
 - `ein test`'s JSON report and the lines it prints beside a claim do not carry the new naming.
 - The untracked artefacts of tasks 1 to 3 under the main tree's `build/s1f.10.9/` were read and not rewritten:
   their read-outs are of the engine before the fix.
+
+---
+
+## Record (2026-11-16): H9-1 and H9-4, as ruled at the close
+
+**The ruling.** The user at P1f.10's close, 2026-11-16, shown H9-1 and H9-4 with *reads as a wrong answer: file
+it as an `open` register row* proposed for each: *"File and fix them in this phase"*
+([close.md § The user's answers](close.md#the-users-answers-at-the-close-2026-11-16)). The work as set: decide
+from what the language already rules what each right answer is, file each wrong answer `open` with its witness,
+fix it and flip it; and stop where the pages do not decide a right answer, or where an existing program's
+answer would move.
+
+**What came of it.** H9-4 is decided by the pages, filed as the register's **W98**, two rows, and fixed; no
+other corpus program's answer moved. **H9-1 is stopped for the user**: two rulings on the pages decide it
+opposite ways, and the reading the finding calls a wrong answer restates a `fixed` register row's right answer.
+No row is filed for it and nothing of it is changed.
+
+**The commits**, on the branch `worktree-agent-a6306e4b8175b1a3c`, from `cb0fbde8`:
+
+| commit | what |
+|---|---|
+| `30d12edc` | W98 filed `open`, two rows, their witnesses, controls and corpus entries; the five corpus sweeps the witnesses break name them in a list `W98_OPEN` each |
+| `72121213` | the fix in `saturator.rs`, the mark read where it comes to hold and recorded as each mirror's activator; the rows flipped; the five lists deleted; two tests; the three pages; 31 golden lines of the two witnesses |
+| `5a7d200d` | W98's `[case.fixed]` names `72121213` |
+| this one | this record, the stage's status, H9-1 and H9-4 in [`findings.md`](findings.md#from-s1f109) |
+
+### H9-4: the right answer, and why the pages decide it
+
+A `(__symmetric__ R)` a rule derives marks R as the same fact written does, so each witness's right answer is
+its control's. Three things on the pages say so, and none says otherwise:
+
+- [`reserved_engine_strings.md` § `__symmetric__`](../../../docs/kernel/inference/reserved_engine_strings.md#__symmetric__--engine-effect):
+  the native mirror is *a performance optimization, NOT a capability*, computing *the identical closure as the
+  stdlib `symmetric` rule*. That rule is activated by `(symmetric R)` however the fact came to hold, a rule's
+  conclusion among them, so the identical closure reads a derived mark too.
+- [`solution_semantics.md` § 1.3](../../../docs/kernel/inference/solution_semantics.md#13-root): root is the
+  program's facts saturated to quiescence. A root whose first saturation leaves a mirror underived is not.
+- A program may conclude a dunder's fact (`reserved_engine_strings.md`'s table: *use it … as the relation of …
+  a conclusion*), and the user's ruling on Q-M1f.306 held one closure stated two ways to one answer.
+
+### Why the finding's witness broke the sweeps
+
+`Saturator::next_mirror_firing` seeded the mirror once, at the saturation's first step, from the relations
+marked then, and on `symmetric-derived-root.ein` the rule derives the mark after it. `symmetric_rels` re-read
+the marked relations when the count of marks changed, so `near` facts stored *after* the mark were offered to
+the mirror; `(near a b)`, stored before, never was. Root's first saturation was no fixpoint, and every reader
+that saturates the same root again wrote `(near b a)` into it. H9-4 named two sweeps; with the witness in the
+corpus five failed, each for that reason:
+
+- **`detector.rs`'s fork-against-scratch sweep.** A node's fork resumes root's saturation, whose mirror never
+  saw `(near a b)`; scratch saturates root's fixpoint and the commitment with a fresh saturator, whose seed reads
+  the mark. On the node witness, `symmetric-derived-node.ein`, root holds no mark, and the departure is a
+  split's: a split from `{(close b)}`'s fixpoint, which holds the mark, mirrors `near` where the fork did not
+  (*split {(close a), (close b)} from {(close b)}*).
+- **`claim_round_trip.rs`'s panic.** `claim::print` and `claim::check` describe R through `claim.rs`'s
+  `lattice`, whose route prepares root and seals it, and then read each state through `fixpoints`, which
+  prepares the same root again and fans out from it without sealing. That holds wherever a second preparation
+  writes nothing. Here it wrote `(near b a)` into root's open top layer, and `Kb::branch`'s assertion, *Kb::branch
+  on an unsealed KB*, stopped the run. **Why the binary did not**: `ein solve` and `ein test` check a claim with
+  `check_described`, against the description the run already computed, on a root its describe had prepared
+  twice and sealed, so the third preparation wrote nothing. `claim.rs` is not changed: its premise, that a
+  saturated root is a fixpoint, is the one H9-4 broke, and the assertion that stopped the run is what fails when
+  the premise stops holding.
+- **`read_out.rs`**: the read-out listed ∅ with `(near b a)`, the oracle's ∅ being the first saturation's,
+  without it. **`summary_properties.rs`**: the root block of a run that saturates root again differed from
+  `--monotone`'s. **`answer_dump.rs`**: a state file states the mark, so the program it is saturates past the
+  state it records: `(near b a)` at root, `(false)` under a commitment.
+
+The open commit left the witnesses out of the five sweeps by name, each list's doc saying why, and the fixing
+commit deleted the five lists; each sweep holds both witnesses since.
+
+### The register: W98
+
+Two rows of one case, filed `open` in `30d12edc` with today's answer and the right one as data, flipped in
+`72121213`. `[case.wrong]` is `ein solve` on the gate build of `cb0fbde8`; `ein oracle` agreed on each.
+
+| row | witness, under `examples/ein-bugs/wrong-answers/` | before | after, the control's |
+|---|---|---|---|
+| `W98/derived-at-root` | `symmetric-derived-root.ein`: `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`, the finding's own | H `(near b a)`; R two states, ∅ and `{(near b a)}`, each listed holding both facts | no candidate, R {∅} |
+| its `[case.control]` | `symmetric-written-root.ein`: the mark written | no candidate, R {∅} | the same |
+| `W98/derived-at-node` | `symmetric-derived-node.ein`: `close-symmetric` marks `near` once anything is close, `one-way` calls `(near b a)` a contradiction, `near` scoped out | H `(close a)`, `(close b)`; R the cube, four states | the same H, each dead alone; R {∅} |
+| its `[case.control]` | `symmetric-rule-node.ein`: `near` closed by the program's own rule `close-mirror` | R {∅} | the same |
+
+`ein saturate --dump` on the first witness printed `(near a b)` and `(__symmetric__ near :rule near-symmetric)`
+and no `(near b a)`; it prints `(near b a :rule __symmetric__)` after them since, as the control does.
+
+### The fix
+
+[`saturator.rs`](../../../ein.rs/crates/ein-infer/src/saturator.rs), the mirror's functions:
+
+- `symmetric_rels`, where it reads the marked relations again, offers the whole extent of every relation marked
+  since its last read to the mirror's queue, in name order and each extent in the store's order, as the seed
+  offers a marked relation's. It does so once the mirror is seeded; before, the seed reads every marked
+  relation's extent itself.
+- `next_mirror_firing` reads the marks before it marks the seed taken, so that the read offers nothing the seed
+  is about to offer.
+- **Each mirror's derivation records the mark as its activator** (`Prov::activator`), as a rule's firing records
+  the fact that activated its plan. A core follows an activator only where a node derived or committed it
+  (`ein_core::walks::node_activator`, Q-M1e2.12 (c)), so a mark root holds, written or derived, moves no core.
+  The first form of the fix left it out, and `corpus_cores.rs`'s
+  `every_core_names_its_commitment_and_derives_its_contradiction` failed on the node witness: its three nodes,
+  dead since the fix, reported the core `(near a b)`, which names none of their commitments. With it each names
+  its `close` fact. The activator was folded into the fix commit before the branch was handed back, so no commit
+  of the branch fails that test; the corpus diff and the goldens below are the fix commit's.
+
+So the saturation in which the mark comes to hold, root's or a node's resumed one, closes R: a mark derived at
+root, one a commitment brings a rule to derive in a node, and one a fork's delta holds. `has_pending_mirror`,
+which `is_stalled` asks, read the marked relations' extents directly and said *not stalled* on the root witness
+where `step` reported the fixpoint; the two agree since.
+
+**The corpus diff.** `ein solve FILE -H --json-summary OUT` on every one of the 888 corpus programs of
+`72121213`, the gate build of `cb0fbde8` against the gate build of `72121213`, stdout, stderr's first line, the
+exit code and the summary compared: **the two W98 witnesses differ, by their rows, and nothing else does**; their
+controls do not (`build/h9/sweep.py`, untracked, in the worktree; 2026-11-16). No corpus program derived a
+`(__symmetric__ R)` by a rule over a relation not already closed under it, as H9-4 said.
+
+**The goldens.** `ein-render/tests/golden/corpus_shapes.md5`, re-banked per commit in `72121213`: 31 lines,
+all the two witnesses'. `symmetric-derived-root.ein`, 19: `saturate`, `hyp`, `explain`, `explain-noalts`,
+`dot[kb-since]`, `read-out[…]` and `cores[…]` for describe, maximal, minimal, single and n2, `region-trace`,
+`states`, `region-lattice`, `oracle`. `symmetric-derived-node.ein`, 12: the same but `saturate`, `hyp`, the two
+`explain`s, `dot[kb-since]` and the minimal line's two, whose ∅ did not move. The controls' lines did not move,
+and `corpus_exits.txt` did not move. The check:
+
+```sh
+git diff -U0 30d12edc 72121213 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5 \
+  | grep '^[-+][0-9a-f]' | grep -v 'symmetric-derived-' | wc -l      # 0
+```
+
+**Tests**, in `ein-infer/tests/stdlib_semantics.rs`, beside the test that holds the native mirror to the stdlib
+rule's closure: `the_native_mirror_reads_a_mark_a_rule_derives`, a mark derived by a rule with an empty
+`:match` and by one that reads a fact of the relation against the written mark, the closure equal and a second
+saturation of each fixpoint writing nothing; and `a_derived_mark_answers_what_its_control_answers`, each W98
+witness against its control by the cube, one H and one R. Both fail with the saturator as it was (run on the
+fix's tree with `saturator.rs` restored to `30d12edc`'s, then put back).
+
+**Pages**: `reserved_engine_strings.md`'s `__symmetric__` section, *the mark is read in the saturation it comes
+to hold in*, and is each mirror's activator; `06_reserved_names.md`'s `__symmetric__` row; `solution_semantics.md` § 1.2's dunder bullet, one
+root beside one H and one R for a symmetry. `AGENTS.md` states nothing of the mirror and is unchanged, its
+pointer to the register's owners restored.
+
+### H9-1: stopped, three readings
+
+**The words.** `candidate_objects` leaves out seven kernel words by name, `not false and or absent eq neq`.
+Four are never a name (`not`, `and`, `or`, `neq`: refused at the parse), so the ones a program can write as a
+value are `eq`, `absent` and `false`. [`defined_behaviour.md` § 4.22](../../../docs/kernel/defined_behaviour.md#422-a-value-is-a-name-or-a-fact-a-state-could-hold--m1f-s1f77-s1f76-s1f710-s1f73),
+the user's value rule, keeps all three names: *`(h absent)`, `(h false)` and `(mk eq)` are facts*. So **no
+reading refuses them at load**: a refusal would undo § 4.22 and refuse `std.math.digits`, whose `cl` rows write
+`eq`. `relation` and `written`, the finding's other two, are relations of every program (`Program::categorise`),
+and a relation's name written as a value is no object by the rule § 1.2's last bullet states and Q-M1f.306 (a)
+left; no reading below moves them.
+
+**Why the pages do not decide it.**
+
+- [Q-M1e2.9](../../m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program) (a),
+  ruled 2026-11-04, *meant literally*: every constant in an argument position is a name of the program, and
+  [`solution_semantics.md` § 1.2](../../../docs/kernel/inference/solution_semantics.md#12-names) says every name
+  is in the candidate list, a list that left one out an engine bug (W4, W15). Read so, `eq` in `(order eq)` is
+  an object, and H9-1 is a wrong answer. The close's line was this reading.
+- [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations), ruled 2026-11-07:
+  `eq` is *the relation of equality*, in every place a relation can be written. Read with § 1.2's relation
+  rule, a value `eq` is a relation's name and no object, as `colour` in `(order colour)` is none where `colour`
+  is declared. **The register holds this reading as right**: `W52/relvar-eq-premise`, `fixed`, binds a relation
+  parameter by `(r eq)`, and its `right`, H `(hit a b)` and `(hit b a)` and R four states, has no candidate over
+  `eq`.
+- § 1.2's own bullet, *the kernel's words … whether or not a program writes one as a value*, was written by
+  this stage's task 4 as what the engine does, with no ruling behind it; and the user's dunder ruling, *"dunder
+  never an object, wide reading"*, is by name, for the two dunders, on the reason that no program means a dunder
+  as an object, which does not hold of `eq`: `std.math.digits` means it as an order, `lt`, `eq`, `gt`.
+
+**The readings, each with what it moves.** The corpus column is the sweep of the 884 corpus programs used for
+H9-4, `ein solve FILE -H --json-summary`, the gate build of `cb0fbde8` against a build with the reading, for (c)
+both builds with H9-4's fix, which moves no corpus program (`build/h9/sweep_h91.txt` and `sweep_h91r3.txt`,
+untracked; 2026-11-16); the witnesses by `ein solve -H`.
+
+| | reading | the finding's witness: `(order lt) (order eq) (order gt)`, `order` scoped out, beside an open `pick` | `(word yes) (word absent) (word false)` the same way | the corpus |
+|---|---|---|---|---|
+| **(a)** | a kernel word a program writes in an argument position is an object: `eq`, `absent`, `false` | H 2 → 3, R 4 → 8 states, `(pick eq)` in H | H 1 → 3, R 2 → 8 | **two `fixed` rows move**: `W52/relvar-eq-premise`, H 2 → 7 and R 4 → 128 states, its `right` restated; `W52/relvar-eq-assert`, H over `eq` too, R still empty. And 244 programs that bring `std.math.digits` (`examples/arith/`, `beyond_arith/`, `binary_arithmetic/`, `word_problems/`, `stdlib/math/`, `tests/stdlib/math/`): `root.hypgen.pre_candidate.closed_relation` rises and the shape golden's `hyp` line moves, no H, R, read-out or exit code |
+| **(b)** | never an object, however written (the engine today) | none | none | none: § 1.2's bullet becomes a ruling, and H9-1 closes as no wrong answer |
+| **(c)** | `eq` is a relation (Q-M1e2.26), so its name as a value is no object, as a declared relation's is not; `absent` and `false`, neither a relation whose facts a state could hold (`absent` heads no fact, and `(false)` says that a state is impossible), are objects where a program writes them as values | none | H 1 → 3, R 2 → 8 | **none** |
+
+The finding names `eq`, and so does the close's line; the user's *"File and fix them"* was given on that line,
+which did not show that (a) restates W52's right answer. Which reading is right is the user's, and no row is
+filed: under (a) the rows would be the finding's witness and W52's two restated; under (c) two new rows, the
+`absent` and `false` witnesses; under (b) none. Each reading's code is in `candidate_objects` alone: (a) keeps a
+kernel word that `invariant::program_names` lists (`build/h9/h91_reading1.patch`, untracked), (c) the same with
+`eq` aside. Nothing of it is committed. The witnesses are in the worktree's untracked `build/h9/`
+(`eq_as_value.ein`, `eq_as_value_written.ein`, `words_as_values.ein`), and the finding has the first two verbatim.
+
+### Verification
+
+Run in the worktree on the tree of `5a7d200d`, whose `ein.rs/`, `corpus/`, `examples/`, `docs/` and `stdlib/` are
+this commit's, which changes files under `plans/` only; the link audit was run again with this record in place.
+On AC, with other agents' suites on the machine.
+
+| command | result |
+|---|---|
+| `cargo test --manifest-path ein.rs/Cargo.toml --profile gate --no-fail-fast -p ein-infer -p ein-render -p ein-corpus -p ein-core -p ein-ir` | green, 928 tests; `stdlib_semantics`, `detector`, `claim_round_trip`, `read_out`, `corpus_cores`, `register_region`, `explore`, `id_order_invariance`, `dot_wellformed`, `jobs_invariance` among them |
+| `cargo test … --profile gate --no-fail-fast -p ein-cli -- --skip no_config_flag_moves_a_line_of_any_mode` | green, 407 tests; `wrong_answers`, `answer_dump`, `summary_properties`, `corpus_cli`, `import_invariance`, `lever_invariance`'s other tests among them. The one skipped is by instruction: slow on one cell today, another agent's |
+| `EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance`, unblessed | green |
+| `EIN_CORPUS_SLOW=1 cargo test … -p ein-infer --test explore`; `… --test detector` | green |
+| `EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test import_invariance` | green |
+| `cargo fmt --all --check` | clean |
+| `cargo clippy --workspace --all-targets -- -D warnings` | clean |
+| `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | clean |
+| `python3 utils/check_hashmap_iteration.py` | *determinism lint ok — 337 file(s), 70 annotated* |
+| `python3 utils/stdlib_manifest.py` | *stdlib ok — 24 modules match MANIFEST.sha256* |
+| `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md` | *── links ── 582 pages, 0 finding(s)*, with this record in place |
+
+On `30d12edc`, the rows open: `ein-infer`, `ein-render` and `ein-cli` whole (the same skip) and `ein-corpus`, each
+test that failed on a witness run again once its list was in place, green; fmt, and clippy over `ein-infer`'s and
+`ein-cli`'s targets, clean.
+
+### Not done
+
+- H9-1: no row and no change; stopped for the user with the three readings above.
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: by instruction.
+- `state.md` and `close.md`: by instruction.
+- The shape golden's `hyp` and `hyp+closed` lines of the four W98 programs are banked as every program's are;
+  the removal of both ops, which runs beside this, takes them out with the rest.

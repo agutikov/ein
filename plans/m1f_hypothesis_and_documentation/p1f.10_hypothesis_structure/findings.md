@@ -4,7 +4,8 @@
 
 What a stage of this phase finds outside its own scope: kept in the phase and shown to the user at its stop,
 not fixed by the stage that found it. A wrong answer among them is a row of
-[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml) before anything fixes it; none below is one.
+[`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml) before anything fixes it; H9-4 is one, W98, filed
+and fixed at the phase's close, and none other below is.
 
 Track H's stages keep theirs under a heading each, below the table: H9-n, H6-n, H15-n.
 
@@ -105,7 +106,13 @@ is not, and § 1.2 has an exception it does not state. **Not filed as a register
 the user's, and it is the same question as Q-M1f.306's option (b) seen from the other side, whether a kernel
 name a program writes as a value is an object. Not counted over the corpus.
 
-**Today:** open, to be shown with Q-M1f.306. No owner.
+**Today:** open, **stopped for the user** (2026-11-16). The close's ruling, *"File and fix them in this phase"*,
+was carried out for H9-4 and stopped here: two rulings on the page decide H9-1 opposite ways, Q-M1e2.9 (a)
+(every constant in an argument position a name, every name a candidate) and Q-M1e2.26 (`eq` the relation of
+equality wherever written, so its name as a value is a relation's, no object), and the reading that files a row
+restates a `fixed` row's right answer, `W52/relvar-eq-premise`'s, 4 states to 128. Three readings, each with what
+it moves, are in [S1f.10.9's record](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-h9-1-and-h9-4-as-ruled-at-the-close); no row is filed
+and nothing is changed.
 
 ### H9-2 — A written dunder fact registers the dunder as an auto-vivified relation of the program
 
@@ -207,8 +214,13 @@ b) (near b a)`, so the mirror has nothing to add, root's first saturation is a f
 on it. E-1's defect, the dunder among the objects, is the same on either form. A corpus program that derives a
 symmetry by a rule over a relation not already closed under it fails both sweeps today.
 
-**Today:** open, not fixed, no register row, no owner. It bears on any ruling that sends a stdlib module to
-deriving `__symmetric__` by a closing rule, as `std.math.arith` derives its `__closed__`.
+**Today:** **closed** 2026-11-16 by `72121213`, on the user's ruling at the phase's close, *"File and fix them in
+this phase"*: the register's **W98**, two rows, filed `open` in `30d12edc` (the finding's own witness,
+`symmetric-derived-root.ein`, and the same mechanism under a commitment, `symmetric-derived-node.ein`) and flipped
+by the fix. The saturation in which `(__symmetric__ R)` comes to hold offers every fact of R already stored to
+the mirror, so a derived mark closes R as a written one does, at root and in a node; no other corpus program's
+answer moved. Why the first form of the witness broke the two sweeps, and three more it broke once it was in the
+corpus, is in [S1f.10.9's record](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-h9-1-and-h9-4-as-ruled-at-the-close).
 
 ### H9-5 — The shape golden's `hyp+closed` op digests a pass no command calls
 
