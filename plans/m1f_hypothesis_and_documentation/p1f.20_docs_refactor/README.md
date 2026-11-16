@@ -30,7 +30,7 @@ every stage file where they differ. **The user's rulings at S1f.20.2's review (2
 
 ## The user's rulings at S1f.20.2's review (2026-11-17)
 
-Shown the disposition table ([`docs/ein/README.md`](../../../docs/ein/README.md)), the decisions' layout
+Shown the disposition table ([`docs/ein/README.md`](disposition.md)), the decisions' layout
 ([`s1f.20.8_layout_proposal.md`](s1f.20.8_layout_proposal.md)), S1f.20.8's and S1f.20.9's defaults and
 [Q-M1f.314](../open_questions.md#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line), the user
 answered, verbatim:

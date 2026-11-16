@@ -78,7 +78,7 @@ the user's rulings of 2026-11-15. Nothing moves until the user has read them.
 
 ## Record (2026-11-16)
 
-**What was written.** [`docs/ein/README.md`](../../../docs/ein/README.md): the three perspectives (provisional),
+**What was written.** [`docs/ein/README.md`](disposition.md): the three perspectives (provisional),
 § The tree redrawn against the tree of 2026-11-16, § Where each page went, and § For the review. Nothing moved;
 no page was rewritten or deleted.
 
