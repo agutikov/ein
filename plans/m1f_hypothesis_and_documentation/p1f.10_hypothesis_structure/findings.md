@@ -366,7 +366,8 @@ commitment extends, reads `D` from H's own relations and so does see it. `scope:
 Met by [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-15-tasks-1-to-3)'s tasks 1 to
 3, 2026-11-15, on the release binary of `c6251db3`. The programs are under the untracked `build/s1f.10.15/`
 and verbatim in the stage's record; `build/s1f.10.15/run.sh`, which the record carries, runs them. None is
-fixed, and no register row is filed: the stage was told to file none.
+fixed, and no register row is filed: the stage was told to file none. Task 4, on the ruling of Q-M1f.308, settled
+H15-1 to H15-4 and narrowed H15-5, each so marked below, and met H15-6.
 
 ### H15-1 — Under (b), Q-M1f.306 bears on one more corpus program, and under (c) on two
 
@@ -388,6 +389,12 @@ gains a candidate.
 
 **Today:** not a wrong answer and nothing to fix. A ruling of (b) or (c) re-takes S1f.10.9's census by its
 own command, as H9-3 says.
+
+**2026-11-16, Q-M1f.308 ruled (b) and built ([S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)): settled as measured.** `features/09` is on the
+third rung, H 82 candidates, all dead alone with a dead root, R empty as before; its read-out prints the `relation
+names` row S1f.10.9 built for E-7, *adjacent-via-bwd, adjacent-via-fwd … 44 candidates of colour-loc, pet-loc name
+one as an object*, the 44 this finding counted. `stdlib/bool/inputs.ein` keeps its rung, as (b) has it. S1f.10.9's
+census was not re-taken whole: of H9-3's twelve, (b) moved only `features/09`, and the read-out names its marks.
 
 ### H15-2 — Under (b), a program that loads today is refused: *forbid*'s premise depends on the rung
 
@@ -426,6 +433,13 @@ to another H. What it shows is that an import decides today whether a program's 
 **Today:** open, to be shown with Q-M1f.308. No owner. Under (b), task 4's list of moved answers has to hold
 programs that stop loading, of which the corpus has none.
 
+**2026-11-16, closed by [S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)**, on the ruling of Q-M1f.308, (b): the probe is the register's
+`W97/connex-import`, `examples/ein-bugs/wrong-answers/rung-connex-import.ein` (the dead-root form, the re-plan's
+own), filed `open` with a refusal as its right answer and fixed by the switch: *forbid* refuses `connex`, exit 1,
+naming `(solve :no-hypothesis (lt))`, and `ein-infer/tests/refutation_under_absent.rs`'s exact set holds the line.
+A program that loaded until then; the commit and the record name it as a change of behaviour. No other corpus
+program stopped loading. `connex_lt_alive.ein`, the alive form, is refused the same way and is not banked.
+
 ### H15-3 — The corpus was written for the third rung: one header and 35 lists say so
 
 `examples/features/09_adjacent_via_same_house.ein` imports `std.algebra` for `symmetric`, `transitive` and
@@ -447,6 +461,12 @@ written for a list beside an hrule.
 **Today:** not a wrong answer. Under Q-M1f.308 (b) the header and the lists are true again as written; under
 (a) the header and the corpus note are stale and task 4 restates them.
 
+**2026-11-16, settled by (b), as built by [S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4).** The 35 lists filter again: on 32 programs the
+summary's `root.hypgen.pre_candidate` now counts the relations they take out, and nothing else of theirs moved.
+`features/09`'s header describes its hypothesis space again, and nothing was restated. Its corpus note's *with
+the guard back it answers Ambiguity k=4* is the walk's verdict word, not R's count (on the third rung the guard
+put back gives 9 states, 4 of them maximal); it is left as written.
+
 ### H15-4 — The ladder is stated in five places, and three of them read as option (c)
 
 Two say what the engine does.
@@ -464,6 +484,13 @@ that owes nothing to the blind enumerator, which is Q-M1f.308's option (c) and w
 
 **Today:** a documentation finding, no answer concerned. Whatever Q-M1f.308 rules, the sentence is restated
 in all five; task 4 names `06_reserved_names.md` and the two module headers.
+
+**2026-11-16, closed by [S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)**: the ladder as (b) has it is stated in all five, `06_reserved_names.md`
+§ Hypothesis / query control (its prose and its O and B rows), `solution_semantics.md` § 1.4, `AGENTS.md`'s
+sentence, `hypgen.rs`'s and `oblgen.rs`'s headers, and in three more places the stage's `grep` found:
+[`events.md`](../../../docs/kernel/inference/events.md)'s `rung` section, which said the line is emitted for a
+program that declares an obligation rule, `oblgen::Mode::Blind`'s doc and `structure::Stated`'s
+`declared`. The switch is one function, `hypgen::rung`, which `generate_with` and `eligible_relations` read.
 
 ### H15-5 — From the second rung, the only way to the blind enumerator is an obligation nothing owes
 
@@ -485,3 +512,26 @@ is the cube `rung_census` computes over that list in process.
 
 **Today:** not a wrong answer. It bears on Q-M1f.308 (a): kept as it is, the ladder has a declared way down
 to root alone and none across to the third rung.
+
+**2026-11-16, narrowed by (b), as built by [S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4).** An import no longer takes a program off the
+third rung, so the case this finding was written for, a module imported for another of its names, needs no way
+across. What is left is a program that **activates** an obligation and wants its own open relations guessed
+about: it is on the second rung, and the only way to the third is still an obligation nothing owes that declines
+it, as `tests/stdlib/bijection/06_blind_enumeration.ein` does; K-11 is that case. Open, no owner.
+
+### H15-6 — `register_region`'s bless writes a region block into a row's quoted text
+
+Met by [S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4), 2026-11-16,
+filing W97. Where a register row states no `[case.region]`, `EIN_BLESS=1 cargo test -p ein-infer --test
+register_region` writes the block before the first occurrence of the text `[case.right]` in the row
+(`register_region.rs`'s `bless`, a `str::find` over the row's text), strings included. `W97/unactivated`'s note
+as first written ended *`[case.control]` and `[case.right].derived` carry the counts*: the block went into the
+middle of the note, the register stopped parsing, and every test that reads it failed at its TOML
+(`id_order_invariance`'s `the_register_s_id_order_rows_answer_what_they_record` named the line). The note was
+reworded and the block placed by hand; the tracked register never held the broken text. The search for an
+existing `[case.region]` asks for the header and its newline and is not reached the same way; the search for
+`[case.right]` asks for the text alone. Finding the table's header line, a line that is exactly `[case.right]`,
+would not be reached either.
+
+**Today:** not a wrong answer: a defect of a re-banking tool, met only by a note that names a table in
+backticks. Open, no owner.

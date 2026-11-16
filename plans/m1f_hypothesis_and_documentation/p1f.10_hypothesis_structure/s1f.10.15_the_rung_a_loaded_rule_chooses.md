@@ -1,12 +1,13 @@
 # S1f.10.15 — The rung a loaded rule chooses
 
 **Phase:** [P1f.10](README.md), track H (what H is)
-**Status:** planned 2026-11-15, at the re-plan. **Tasks 1 to 3 ran on 2026-11-15**
+**Status:** **done 2026-11-16.** Planned 2026-11-15, at the re-plan. **Tasks 1 to 3 ran on 2026-11-15**
 ([§ Record](#record-2026-11-15-tasks-1-to-3)): the witnesses rebuilt and banked, the census taken, the
-question written as [Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses).
-**Stopped at the question**, which is put at the phase's one stop
-([S1f.10.12](s1f.10.12_the_structure_shown.md)); task 4 waits for the ruling, and nothing changes before the
-user replies.
+question written as [Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses),
+stopped at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_shown.md)). The user ruled **(b)** on
+2026-11-16 (*"308 (b) ok"*), and **task 4 ran that day** ([§ Record](#record-2026-11-16-task-4)): the inventory
+first, the register's W97 filed `open`, the switch, the rows flipped, the ladder restated. **An exception to *no
+answer changes***: W97's three witnesses, one of them a program that loaded and is refused at load.
 **Depends on:** nothing in the phase.
 **Owns:** E-51 of the calculator's [`findings.md`](../p1f.6_calculator/findings.md), given to this phase on
 2026-11-14 and until the re-plan in no stage file.
@@ -641,3 +642,318 @@ print("raw %d emitted %d skipped %s" % (h["raw"], h["emitted"], skips or "none")
 - `./run_tests.sh` was not run, by instruction. Run: `cargo fmt --all --check`, `cargo clippy --workspace
   --all-targets -- -D warnings` (both as `run_tests.sh` runs them), `python3 utils/check_hashmap_iteration.py`
   and `python3 utils/doc_audit.py --links --check`.
+
+## Task 4's inventory (2026-11-16), taken before the ladder changed
+
+**What moves under (b), every corpus program, listed before the switch is committed.** Two release binaries, on AC:
+`build/s15t4/base/ein`, `cargo build --release -p ein-cli` at `a79eea49` (`master`), and `build/s15t4/b/ein`, the
+same tree with the switch applied (the second rung where an obligation is activated at root, read by the function
+`mechanisms.rs` reads; the diff is kept as `build/s15t4/fix_v1.diff`), built and then taken off the tree again. Both
+were run over every `corpus/corpus.toml` entry, 874, from the repo root, by `inventory.py` below: `ein solve FILE -H
+--json-summary s.json --events e.jsonl` (stdout, stderr, exit, the summary, the event stream hashed), and `ein test
+FILE` on the 358 entries that declare a `test` run, compared again with the run's seconds masked. The shape golden
+was re-banked on the same change, `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test
+id_order_invariance`, every line, and diffed against `master`'s; `python3 utils/read_out_examples.py --check --bin
+build/s15t4/b/ein` was run against the page.
+
+**41 programs change rung, 1 changes H, none changes R**, which is what
+[Q-M1f.308](../open_questions.md#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) said of (b):
+
+| programs | rung | H | R | read-out (`ein solve` stdout) | summary | narration |
+|---|---|---|---|---|---|---|
+| `examples/features/09_adjacent_via_same_house.ein` | second (`obligations`, nothing owed) → blind | 0 → **82**, all dead alone | empty, root dead, both | **three rows**: `universe` *no candidate …* → *82 candidates, 82 dead alone*; `outside pet-loc — no candidate: no obligation owes it …` goes; `relation names adjacent-via-bwd, adjacent-via-fwd — relations only a rule concludes, and 44 candidates of colour-loc, pet-loc name one as an object …` comes | `region` (the universe), `root.hypgen` | the `rung` event goes; the 82 `hyp` lines and the nodes they open come |
+| 32: `examples/ein-bugs/wrong-answers/converse-lemma-subtype.ein`, `examples/features/10_expect.ein`, `tests/region/06_false.ein`, `tests/stdlib/algebra/01_copiers.ein`, `tests/stdlib/algebra/02_compose.ein`, `tests/stdlib/algebra/03_boolean.ein`, `tests/stdlib/algebra/04_extensive.ein`, `tests/stdlib/algebra/05_tag_lemmas.ein`, `tests/stdlib/algebra/06_equational.ein`, `tests/stdlib/algebra/07_schroder.ein`, `tests/stdlib/algebra/08_checks_satisfied.ein`, `tests/stdlib/algebra/09_irreflexive_violated.ein`, `tests/stdlib/algebra/10_antisymmetric_violated.ein`, `tests/stdlib/algebra/11_asymmetric_violated.ein`, `tests/stdlib/algebra/12_connex_violated.ein`, `tests/stdlib/algebra/13_empty_violated.ein`, `tests/stdlib/algebra/14_functional_violated.ein`, `tests/stdlib/algebra/15_injective_violated.ein`, `tests/stdlib/algebra/18_totality_open_world.ein`, `tests/stdlib/algebra/19_total_violated.ein`, `tests/stdlib/algebra/20_surjective_violated.ein`, `tests/stdlib/algebra/21_transitive.ein`, `tests/stdlib/algebra/22_symmetric_negative.ein`, `tests/stdlib/algebra/27_converse_welltyped_either_way.ein`, `tests/stdlib/bijection/04_typecheck_arg0_violated.ein`, `tests/stdlib/bijection/05_typecheck_arg1_violated.ein`, `tests/stdlib/closure/01_infer_closure.ein`, `tests/stdlib/closure/02_closed_and_satisfied.ein`, `tests/stdlib/slots/05_no_room.ein`, `tests/stdlib/slots/06_no_fill.ein`, `tests/stdlib/typing/01_reflexive.ein`, `tests/stdlib/typing/03_type_hierarchy_welltyped.ein` | second → blind | 0, both | the same | the same, byte for byte | `root.hypgen.pre_candidate` alone: the blind enumerator runs and counts the relations its lists take out (`no_hypothesis_relation`) | the `rung` event goes, and the event numbers after it shift by one; at `--events-level verbose`, which the golden's `hyp` ops read, the `hypskip` lines come |
+| 8: `stdlib/{algebra,bijection,closure,slots,typing}.ein`, `tests/stdlib/algebra/16_converse_illtyped_dom.ein`, `17_converse_illtyped_ran.ein`, `tests/stdlib/typing/02_type_hierarchy_converse.ein` | second → blind | 0, both | the same | the same | the same | the `rung` event goes |
+
+Nothing else moved: no other program's stdout, stderr, exit code, summary or event stream; no `ein test` read-out of
+the 358 (no `:expect` moves, and no exit code: `corpus_exits.txt` does not move); and
+[`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) is the binary's page as it is
+(`--check` exits 0; `tests/stdlib/algebra/09_irreflexive_violated.ein`, its X7 and X18, is among the 40 whose
+read-out does not move).
+
+**The goldens that move**, and nothing else:
+
+- **`ein-render/tests/golden/corpus_shapes.md5`: 94 lines.** `hyp` and `hyp+closed` on each of the 41 programs, 82
+  lines, the generator's narration (the `rung` event and its counters); and 12 more on `features/09`:
+  `read-out[describe]`, `read-out[maximal]`, `read-out[minimal]`, `read-out[single]`, `read-out[n2]`,
+  `region-trace`, `cores[describe]`, `cores[maximal]`, `cores[minimal]`, `cores[single]`, `cores[n2]` and
+  `oracle`. Not `naf`, which reads `hypgen::eligible_relations`, on any program; not `states` or `region-lattice`
+  on `features/09`, whose R is empty under both. Re-banked with the change: `build/s15t4/corpus_shapes_b.md5`.
+- `corpus_exits.txt`, `read_out_examples.md`, every `:expect`, the register's existing rows: **none**.
+- The witnesses task 4 files (below) are new programs: their lines are added by the rows commit and move in the
+  fixing commit, and are not on this list.
+
+`inventory.py`, as run (`python3 build/s15t4/inventory.py build/s15t4/base/ein build/s15t4/b/ein build/s15t4/inv
+--jobs 8 > build/s15t4/inventory.tsv`; `build/` is not tracked):
+
+```python
+#!/usr/bin/env python3
+"""S1f.10.15 T4's inventory: every corpus program under two binaries.
+
+    python3 build/s15t4/inventory.py BASE_BIN NEW_BIN OUT_DIR [--jobs N]
+
+For every `corpus/corpus.toml` entry, run from the repo root:
+
+    ein solve FILE -H --json-summary s.json --events e.jsonl     (stdout, stderr, exit)
+    ein test FILE                                                 (where the entry declares `test`)
+
+under both binaries, and print one tab-separated line per program on which
+anything differs: which of stdout / exit / stderr / summary / events / test
+moved, and the summary's H, R and rung on each side. The events stream's
+`run` line is compared less its `argv` and `file`, which name the scratch
+paths. Nothing else is normalised.
+"""
+import hashlib, json, os, subprocess, sys, tomllib
+from concurrent.futures import ThreadPoolExecutor
+
+base, new, out = sys.argv[1], sys.argv[2], sys.argv[3]
+jobs = int(sys.argv[sys.argv.index("--jobs") + 1]) if "--jobs" in sys.argv else 12
+repo = os.getcwd()
+entries = tomllib.load(open("corpus/corpus.toml", "rb"))["entry"]
+
+
+def run(binary, tag, e):
+    name = e["path"].replace("/", ".")
+    d = os.path.join(out, tag, name)
+    os.makedirs(d, exist_ok=True)
+    s, ev = os.path.join(d, "s.json"), os.path.join(d, "e.jsonl")
+    for f in (s, ev):
+        if os.path.exists(f):
+            os.remove(f)
+    p = subprocess.run([binary, "solve", e["path"], "-H", "--json-summary", s, "--events", ev],
+                       capture_output=True, text=True, timeout=900)
+    summary = json.load(open(s)) if os.path.exists(s) else None
+    # The stream is hashed line by line and deleted: on the zebra family it
+    # runs to gigabytes. The `rung` lines are kept, which `brief` reads.
+    h, rungs = hashlib.sha256(), []
+    if os.path.exists(ev):
+        with open(ev, "rb") as fh:
+            for line in fh:
+                if line.startswith(b'{"e": "run"'):
+                    o = json.loads(line)
+                    o.pop("argv", None)
+                    o.pop("file", None)
+                    line = json.dumps(o).encode()
+                elif line.startswith(b'{"e": "rung"'):
+                    rungs.append(json.loads(line))
+                h.update(line)
+        os.remove(ev)
+    events = (h.hexdigest(), rungs)
+    test = None
+    if "test" in e.get("runs", []):
+        t = subprocess.run([binary, "test", e["path"]], capture_output=True, text=True, timeout=900)
+        test = (t.returncode, t.stdout, t.stderr)
+    return dict(stdout=p.stdout, stderr=p.stderr, exit=p.returncode, summary=summary,
+                events=events, test=test)
+
+
+def brief(r):
+    sm = r["summary"]
+    if sm is None:
+        return "no summary, exit %d: %s" % (r["exit"], (r["stderr"].splitlines() or [""])[0][:90])
+    g = sm["region"]
+    rung = [o.get("mode") for o in r["events"][1]]
+    h = sm["root"]["hypgen"]
+    return "H %s k_s %s k_c %s rung-events %s" % (h.get("emitted"), g.get("k_s"), g.get("k_c"),
+                                                   ",".join(rung[:1]) + ("x%d" % len(rung) if rung else "none"))
+
+
+def one(e):
+    a, b = run(base, "base", e), run(new, "new", e)
+    moved = [k for k in ("stdout", "exit", "stderr", "summary", "events", "test") if a[k] != b[k]]
+    if not moved:
+        return None
+    region = []
+    if a["summary"] and b["summary"]:
+        for k in ("region", "verdict", "queries", "claim"):
+            if a["summary"].get(k) != b["summary"].get(k):
+                region.append(k)
+        if a["summary"]["root"]["hypgen"] != b["summary"]["root"]["hypgen"]:
+            region.append("root.hypgen")
+    return "\t".join([e["path"], ",".join(moved), "summary:" + (",".join(region) or "-"),
+                      "base: " + brief(a), "new: " + brief(b)])
+
+
+with ThreadPoolExecutor(jobs) as pool:
+    for line in pool.map(one, entries):
+        if line:
+            print(line, flush=True)
+print("# %d entries compared" % len(entries))
+```
+
+## Record (2026-11-16): task 4
+
+**On the user's ruling of 2026-11-16 on Q-M1f.308, *"308 (b) ok"*: the ladder's second rung is taken where an
+obligation is activated at root.** Five commits on the stage's branch, in this order:
+
+1. `c03e7e33`, **the inventory** ([§ Task 4's inventory](#task-4s-inventory-2026-11-16-taken-before-the-ladder-changed)),
+   docs only, before anything moved.
+2. `743c6d71`, **W97 filed `open`**: three rows, six programs under `examples/ein-bugs/wrong-answers/` with corpus
+   entries, the goldens' additions (12 cells of `corpus_exits.txt`, 246 lines of `corpus_shapes.md5`), and
+   `AGENTS.md`'s pointer naming this stage as the owner of an open row. No engine source.
+3. `e939fec4`, **the fix**: the switch, the rows flipped with the null id, the goldens re-banked, the ladder
+   restated, the tests below.
+4. `82b9b4a4`, the `[case.fixed]` hash.
+5. This record, with the phase's README, `open_questions.md`, the two `findings.md`.
+
+### What was built
+
+- **The switch is one function**, `hypgen::rung` (`hypgen::Rung`: `NoSearch`, `Hrules`, `Obligations`, `Blind`),
+  read by `hypgen::generate_with`, the ladder, and by `hypgen::eligible_relations`, the advisory that
+  `shape::naf_map`, `naf_deps` and `structure` read: the two places H15-4's first half named, which wrote
+  `!program.obligations.is_empty()` twice. In order: `(solve :no-search)`; an hrule the program declares; **an
+  obligation activated at root**; the blind enumerator. The probe, `generate_blind`, still takes the blind
+  enumerator whatever the program declares.
+- **The reading is `mechanisms.rs`'s, shared, no third copy**: `mechanisms::obligation_plans`, the plans root's
+  activators compile (one per obligation rule and activator root holds, a rule without parameters always), is
+  what `mechanisms::read` builds `Mechanisms::obligations` from, what `hypgen::rung` tests for emptiness, what
+  `eligible_relations` reads the owed relations off, and what `forbid::Proposers::of` names an obligation's remedy
+  from (it called `obligations::plans_for` itself, the same reading; no behaviour moved there).
+- **A discharged root under an activated obligation still proposes nothing**: the second rung's code is as it
+  was; only the test that sends a call to it changed. `rung-discharged.ein` holds it (H 0, R {∅}).
+- **A debt only a commitment can bring, with nothing activated at root**, is the blind enumerator's by the letter
+  of the ruling: the rung that would read it as a later debt is not taken, and the blind enumerator proposes the
+  debt's relation with every other open one, a superset. `W26/oblig-derived-activator`'s witness activates
+  `total-owed` at root and keeps its rung; no corpus program of that shape moved (the inventory).
+- **The ladder restated** where it is written: `hypgen.rs`'s and `oblgen.rs`'s headers (the table's middle row
+  is *an obligation activated at the state*, and the paragraph under it says why neither what is owed nor what
+  is loaded chooses the rung), `06_reserved_names.md` § Hypothesis / query control (the prose, the O and B rows,
+  and *read as declared … by this check and by the ladder alike*), `solution_semantics.md` § 1.4, `AGENTS.md`'s
+  sentence in place; and what the stage's `grep -rn 'blind' docs/kernel ein.rs/crates/ein-infer/src | grep -i
+  'obligation\|ladder\|rung'` found besides: `events.md`'s `rung` section (*only for a program that declares an
+  obligation rule* is now *only where an obligation is activated*, and the count of files that emit none went),
+  `oblgen::Mode::Blind`'s doc, `oblgen::RungReport`'s (its count of files went), `structure::Stated::declared`'s,
+  and `Mechanisms::obligations`' and `mechanisms.rs`'s header (the ladder reads O as the check does). The other
+  hits (`hypothesis_space.md`'s rung list, `implementation.md`'s module rows, `01_grammar.md`'s list keywords,
+  `relation_names.rs`, `types_as_objects.rs`) say nothing a loaded rule decides and were left. `rung_census.rs`'s
+  header says the ladder was (a) when it was written. No page under `docs/kernel/` and no code cites a plan path,
+  stage id, finding id or date in what this stage wrote.
+- **Held**: `ein-cli/tests/import_invariance.rs` gains
+  `a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`: `rung-symmetric-import.ein`, which
+  imports `std.algebra` for `symmetric`, and `rung-symmetric-written.ein`, the rule written out, take the rung
+  `blind` (`ein render h-space`'s `H` row), one H (`ein show hyps`, four facts) and one R (the summary's states,
+  k_s 8); and `rung-unactivated.ein` against `rung-unactivated-no-import.ein` the same, eleven facts and 2 048
+  states. `ein-infer/tests/refutation_under_absent.rs`'s exact refused set gains the probe's line.
+
+### The inventory against what moved
+
+What the inventory listed moved, and nothing else:
+
+- **`corpus_shapes.md5`**: 143 lines changed in the fixing commit, re-banked per commit and with
+  `EIN_CORPUS_SLOW=1`. The filter, over `e939fec4`:
+
+  ```sh
+  git diff -U0 e939fec4~1 e939fec4 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5 | grep '^[-+][0-9a-f]' \
+    | awk '{print $3}' | sort -u > moved
+  # the inventory's 94 keys (build/s15t4/shapes_b.diff, the same diff taken on fix_v1.diff):
+  comm -23 moved inventory | grep -v 'wrong-answers/rung-'   # prints nothing
+  comm -13 moved inventory                                    # prints nothing
+  ```
+
+  Every line outside the W97 witnesses is, digest for digest, the inventory's re-bank
+  (`build/s15t4/corpus_shapes_b.md5`). The 49 others are the three witnesses whose answer moved:
+  `rung-connex-import.ein` 17 (every op but `load`, `saturate`, `plan`, `match`, the `explain` pair, the `ir[…]` and
+  `dot[…]` views; `naf` among them, its refusal now read), `rung-symmetric-import.ein` and `rung-unactivated.ein`
+  16 each (the same, `naf` not among them). The controls and the twin did not move.
+- **`corpus_exits.txt`**: one line, `rung-connex-import.ein :: solve`, 0 to 1. No existing program's.
+- **Two counts pinned in tests**, both by the refused probe and no existing program: `refutation_under_absent.rs`'s
+  exact refused set gains its line, and `detector.rs`'s count of flagged corpus programs goes from 48 to 49, its
+  `connex` being an `absent` site over `lt` once a commitment can extend `lt` (a refused program keeps its static
+  half, as the others the count holds do).
+- **The register**: the three W97 rows flipped; no other row.
+- `read_out_examples.md`, every `:expect`, every other exit code: none, as listed.
+
+### The rows
+
+| row | witness | today (filed `open`) | right, and since the fix |
+|---|---|---|---|
+| `W97/unactivated` | `rung-unactivated.ein`: `std.algebra` for `total-owed`, never written, beside `at` and `near`, one colour, two houses (Q-M1f.308's witness 2 over fewer names) | H 0, R {∅} | H 11, R 2 048 states, the control's (`rung-unactivated-no-import.ein`); the row's run asks the maximal line. Its twin, `rung-discharged.ein`, the obligation stated and paid: H 0, R {∅}, both ways |
+| `W97/symmetric-import` | `rung-symmetric-import.ein`: `std.algebra` for `symmetric` beside an open `likes` (the fourth witness) | H 0, R {∅}, `outside near` | H 4, 16 commitments, 8 states, the control's (`rung-symmetric-written.ein`), and no `outside` row |
+| `W97/connex-import` | `rung-connex-import.ein`: `std.algebra` for `connex` over `lt`, A and C not compared (the re-plan's probe) | loads: H 0, root dead, R empty, `outside lt` | **refused at load**, exit 1 |
+
+All three within `ein oracle`'s limit; witnesses 1 and 3 are not wrong under (b), and witness 1's twin is the
+first row's `[[case.twin]]`. `features09_guard_back.ein` (82 candidates) is past the limit and was not banked.
+
+### The refusal
+
+**A change of behaviour on a program that loads today.** `rung-connex-import.ein` loaded under the old switch: its
+import's obligation rules, which nothing activates, took the second rung, nothing proposed `lt`, and *forbid*,
+which reads what a commitment can still extend off H, had nothing to refuse. Under (b) the blind enumerator
+proposes `(lt A C)`, `(lt B A)`, `(lt C A)` and `(lt C B)`, and every question about a commitment refuses it:
+
+```
+rule 'connex' [activator lt instance Node]: concludes (false) from (absent …) over lt, a relation a commitment can still extend — … close the relation, (solve :no-hypothesis (lt)), if no commitment is meant to extend it; …
+```
+
+`ein saturate` still saturates. Banked where the corpus keeps programs *forbid* refuses, with the refusal as
+data: the register's `W97/connex-import` (`[case.now].refused`, the line in full), `refutation_under_absent.rs`'s
+exact set (the line to its dash), and the exit golden. Not under `examples/broken/load/`, which holds the loader's
+own refusals with an `.expected` beside each; *forbid*'s are `examples/ein-bugs/` witnesses. No corpus program
+stopped loading: its two programs that activate `connex` name `lt` in a `:no-hypothesis` list.
+
+### K-11
+
+**Unchanged by (b).** Its probe's obligation rule is loaded **and activated**, every object's type being stated,
+and root owes it nothing: the second rung, H empty, R `{∅}`, as before. Only (c) would have moved it. It is
+H15-5's remaining case.
+
+### Defaults taken
+
+Each is the reading that moves the fewest answers, and none moved one beyond the inventory.
+
+1. **Activated means a plan root's activators compile**, `obligations::plans_for`'s reading, which `mechanisms.rs`
+   had: an obligation rule without parameters is activated at every state, so a program that writes one (the
+   blind-enumeration trick of `tests/stdlib/bijection/06_blind_enumeration.ein`, the stage's `s15-off` copies)
+   is on the second rung and declines it as before.
+2. **The rung is read at the state the generator is called at**, which is root wherever H is built
+   (`region::prepare_with`, `shape`'s `hyp` op, the tests' `generate` calls). No route calls the ladder at a node.
+3. **`eligible_relations` follows the switch**: on a program whose loaded obligation rules nothing activates, it
+   names the blind enumerator's relations where it named none. The `naf` digest it feeds moved on no corpus
+   program (only on the refused probe, whose refusal it now reads).
+4. **`forbid::Proposers::of` reads the shared function**, for no answer: it read the same plans.
+5. **The probe banked is the re-plan's own, the dead-root form**; `connex_lt_alive.ein` is refused the same way
+   and is not banked.
+6. **Witness 1's twin is the first row's `[[case.twin]]`**, a corpus program, so that a discharged root under an
+   activated obligation, which (c) would have moved, is held by the shape golden.
+7. **`W97/unactivated`'s run is `solve --maximal`**, one state, its R being 2 048 states, as W96's first row did.
+
+### Not done
+
+- `features/09`'s header and corpus note were not restated (H15-3: true again as written; the note's *k=4* is the
+  walk's word).
+- S1f.10.9's object census was not re-taken whole; the read-out names `features/09`'s 44 marked candidates.
+- `examples/README.md`'s catalog line for `ein-bugs/wrong-answers/` does not name the `rung-*` family (it does
+  not name W96's either).
+- `oblgen.rs` was edited in its module header and two doc comments above line 200 only, since S1f.10.14 edits it
+  below; `oblgen::alternatives_of`'s doc (*a program that states no obligation*) reads `obligations.is_empty()`
+  and is indifferent to the rung, and was left.
+- Verification is below; `./run_tests.sh`, the nightly and `utils/ci_container.sh` were not run, by instruction.
+
+### Verification
+
+On the final tree, `82b9b4a4` with this record's pages, 2026-11-16, in the worktree, `TMPDIR` under `build/`:
+
+- `cargo test --manifest-path ein.rs/Cargo.toml --profile gate --no-fail-fast -p ein-infer -p ein-corpus -p
+  ein-cli -p ein-render`: every test binary of the four crates, 132 results, all `ok`; nothing left in `TMPDIR`.
+- `EIN_CORPUS_SLOW=1`, once: `id_order_invariance` (4 passed), `import_invariance` (2 passed: every program in
+  every import form, the slow entries among them, and the new test) and `explore` (7 passed).
+- `cargo fmt --all --check`; `cargo clippy --workspace --all-targets -- -D warnings`; `RUSTDOCFLAGS="-D
+  warnings" cargo doc --workspace --no-deps`; `python3 utils/check_hashmap_iteration.py`; `python3
+  utils/stdlib_manifest.py`; `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md
+  corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md`: clean.
+- On the fix, before this record: `python3 utils/read_out_examples.py --check` against the release build with the
+  switch, clean; `EIN_BLESS=1 … --test register_region` on the flipped rows changed none of their region
+  blocks, written by hand from the fixed binary's runs.
+- **Not run**, by instruction: `./run_tests.sh`, the nightly, `utils/ci_container.sh`. `corpus_cli` ran in its
+  default selection only; no `cost_ms` was re-banked.
+
+### Taken over from a first agent
+
+A first agent started this task and stopped when its session ended, leaving an uncommitted diff to `hypgen.rs` and
+`mechanisms.rs` (kept as `build/p1f10/stopped/af583060cb240b5c5.diff` in the main checkout). It was judged and
+**kept**: `hypgen::Rung` and `hypgen::rung`, `generate_with` and `eligible_relations` switching on it, and
+`mechanisms::obligation_plans` with `mechanisms::read` built on it. **Changed**: a public item's doc linked the
+crate-private `rung` (a rustdoc error under `-D warnings`), now named in backticks; `rung`'s doc says a rule
+without parameters is activated everywhere; `obligation_plans`' doc names *forbid* as a reader. Everything else
+(the inventory, the rows, `forbid.rs`, the headers and pages, the tests) is this agent's. The diff was taken onto
+`master`'s head, `a79eea49`, and applied only once the inventory and the rows were committed.

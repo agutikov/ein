@@ -14,15 +14,21 @@
 //! | the program declares | hypotheses come from |
 //! |---|---|
 //! | any `(hrule …)` | the user's hrules — an override, exactly as before |
-//! | an obligation rule, no hrule | **this module** |
+//! | an obligation activated at the state, no hrule | **this module** |
 //! | neither | the blind combinatorial enumerator |
 //!
-//! The middle row is about what the program **declares**, not about what this
-//! state happens to owe: a discharged state under rung 2 proposes nothing and
-//! is therefore complete, which is what *complete means discharged* has to
-//! mean. Falling back to the blind enumerator whenever nothing was owed would
-//! put exhaustion back in charge of completeness and make the rung
-//! unreachable at exactly the states it exists to judge.
+//! The middle row is about what the program **states**, an obligation and its
+//! activator, not about what this state happens to owe: a discharged state
+//! under rung 2 proposes nothing and is therefore complete, which is what
+//! *complete means discharged* has to mean. Falling back to the blind
+//! enumerator whenever nothing was owed would put exhaustion back in charge of
+//! completeness and make the rung unreachable at exactly the states it exists
+//! to judge. Nor is it about what the program **loads**: an obligation rule
+//! is activated where the state holds its activator, and always where it has
+//! no parameters (`mechanisms::obligation_plans`, the one reading of
+//! an obligation). Every import brings its module whole, obligation rules
+//! among it, so a rule nothing activates takes no program off the blind
+//! enumerator.
 //!
 //! ### The candidate set
 //!
@@ -135,7 +141,7 @@ use crate::saturator::Session;
 /// Which rung of the ladder a generation call took.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub enum Mode {
-    /// No obligation rule is loaded — the blind enumerator, as before.
+    /// No obligation is activated at the state — the blind enumerator.
     #[default]
     Blind,
     /// A `(hrule …)` overrides the ladder. Never narrated — rung 1 emits the
@@ -169,10 +175,8 @@ impl Mode {
 
 /// What one generation call did with the obligations it found.
 ///
-/// Zero everywhere for a program that declares none, which is 114 of the 156
-/// `.ein` files under `examples/`, `tests/` and `stdlib/` that load — the
-/// ladder's first question is `obligations.is_empty()` and it is answered
-/// before anything here runs.
+/// Zero everywhere for a program that activates no obligation at the state:
+/// the ladder asks that before anything here runs.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub struct RungReport {
     pub mode: Mode,

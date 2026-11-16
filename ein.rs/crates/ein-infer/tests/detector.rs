@@ -191,7 +191,12 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
     // day (T1f.5.9.1): its `r` is an `activator` site root compiled no plan
     // of, `mk` deriving the activator only where a `p`, which a commitment can
     // change, holds. 48 since T1f.5.9.4 refused it at load the same day.
-    assert_eq!(flagged, 48, "the flagged corpus programs");
+    // 49 with W97's `rung-connex-import`, which *forbid* refuses since the
+    // ladder's second rung is taken where an obligation is activated at root
+    // and not where one is loaded: the blind enumerator proposes `lt`, so
+    // `connex`'s `absent` over it is a site, and the program keeps its static
+    // half as the refused programs above do.
+    assert_eq!(flagged, 49, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [

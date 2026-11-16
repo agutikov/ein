@@ -49,10 +49,12 @@
 //!
 //! An obligation is read as a plan root's activators compile, whether or not
 //! root owes it, as an hrule is read as active whether or not its `:match`
-//! has a row. Under an hrule the two lists filter nothing (E-52), so their
-//! dead note replaces a redundancy note about them. The lines carry no
-//! prefix: `ein-cli` prints a conflict as a load error and a note as `note:`,
-//! on every command, before the command reads anything else.
+//! has a row; the generation ladder reads it so too, its second rung taken
+//! where one is (`obligation_plans`). Under an hrule the two lists filter
+//! nothing (E-52), so their dead note replaces a redundancy note about them.
+//! The lines carry no prefix: `ein-cli` prints a conflict as a load error and
+//! a note as `note:`, on every command, before the command reads anything
+//! else.
 //!
 //! **`(solve :no-search)`** (M1f
 //! [S1f.6.36](../../../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.36_no_search.md)),
@@ -99,6 +101,8 @@ pub struct Mechanisms {
     /// Every obligation rule the program declares, in load order.
     pub obligation_rules: Vec<Symbol>,
     /// The obligation plans this state's activators compile, in report order.
+    /// Non-empty, with no hrule, is what takes the ladder's second rung; an
+    /// obligation rule in `obligation_rules` with no plan here takes none.
     pub obligations: Vec<Plan>,
     /// `:hypothesis-relations`, as the generator reads it: `None` where the
     /// program writes none.
@@ -144,20 +148,15 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
             .collect()
     };
     let obligation_rules: Vec<Symbol> = program.obligations.iter().map(|(n, _)| n).collect();
-    let obligations = if obligation_rules.is_empty() {
-        Vec::new()
-    } else {
-        let memo = s.memo.clone();
-        crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?
-            .iter()
-            .map(|p| Plan {
-                rule: p.rule,
-                activator: p.activator_args.clone(),
-                activator_fact: p.activator,
-                relation: crate::obligations::open_argument(p, s.terms),
-            })
-            .collect()
-    };
+    let obligations = obligation_plans(s)?
+        .iter()
+        .map(|p| Plan {
+            rule: p.rule,
+            activator: p.activator_args.clone(),
+            activator_fact: p.activator,
+            relation: crate::obligations::open_argument(p, s.terms),
+        })
+        .collect();
     let (listed, excluded, closed) = crate::hypgen::scoping(s);
     Ok(Mechanisms {
         hrules,
@@ -169,6 +168,28 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
         closed,
         no_search: crate::hypgen::declares_no_search(&program, s.ast),
     })
+}
+
+/// **The obligations activated at `s`'s state**: one plan per obligation rule
+/// and activator the state holds, a rule without parameters always, in report
+/// order ([`crate::obligations`]); none where the program loads no
+/// obligation rule. An obligation rule nothing activates is loaded and has no
+/// plan here.
+///
+/// The one reading of O: [`read`]'s [`Mechanisms::obligations`]; the
+/// generation ladder's second rung, which is taken where this is not empty at
+/// the state H is built at, root ([`crate::hypgen`]'s `rung`); and *forbid*'s
+/// remedy, which names the obligations that owe a relation
+/// ([`crate::forbid::Proposers`]). The plans are compiled into the session's
+/// memo, as every reader of obligation plans compiles them.
+pub(crate) fn obligation_plans(
+    s: &mut Session<'_>,
+) -> Result<Vec<std::sync::Arc<crate::plan::Plan>>, CompileError> {
+    if s.kb.program().obligations.is_empty() {
+        return Ok(Vec::new());
+    }
+    let memo = s.memo.clone();
+    crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)
 }
 
 // ── The check ──────────────────────────────────────────────────────

@@ -1071,7 +1071,8 @@ pub struct Stated<'a> {
     pub read_absent: FxHashSet<Symbol>,
     /// **The program's own rung built `H`**: its hrules, or what would
     /// discharge its obligations. Not the blind enumerator, which a program
-    /// with neither, or with an obligation the ladder declines, falls to.
+    /// with neither an hrule nor an obligation activated at root, or with an
+    /// obligation the ladder declines, falls to.
     pub declared: bool,
     /// The relations read by the rung of the ladder that built `H`: the
     /// program's hrules' premises where it declares one, the triggers and

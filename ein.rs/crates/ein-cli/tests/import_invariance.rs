@@ -34,6 +34,13 @@
 //! other program's work is the same in all three forms, the `slow` entries
 //! among them where `EIN_CORPUS_SLOW=1` adds them.
 //!
+//! **And what an import loads chooses no rung.** Every import brings its
+//! module whole, obligation rules among it, and the ladder's second rung is
+//! taken where an obligation is activated at root, not where one is loaded:
+//! a program that imports a module for one rule and the same program with
+//! that rule written out take the same rung, the same H and the same R
+//! ([`a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out`]).
+//!
 //! The forms are written into a scratch directory beside links to the
 //! program's directory's modules, since a module is found from the program
 //! file's directory. `EIN_CORPUS_SLOW=1` adds the slow entries, as
@@ -296,4 +303,87 @@ fn every_corpus_program_answers_alike_under_every_import_form() {
     assert!(total >= 250, "{total} programs that import");
     assert_eq!(compared, 2 * total);
     assert!(trees >= 40, "{trees} forms whose tree's work was compared");
+}
+
+/// The rung that built H, as `ein render h-space FILE` names it on its `H`
+/// row, and H as `ein show hyps FILE` lists it, one fact a line.
+fn hypotheses(path: &Path) -> (String, Vec<String>) {
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .arg(path)
+            .output()
+            .expect("the `ein` binary runs");
+        assert!(
+            out.status.success(),
+            "ein {args:?} {}: exit {:?}\n{}",
+            path.display(),
+            out.status.code(),
+            String::from_utf8_lossy(&out.stderr)
+        );
+        String::from_utf8(out.stdout).expect("utf-8")
+    };
+    let space = run(&["render", "h-space"]);
+    let rung = space
+        .lines()
+        .find(|l| l.starts_with("H "))
+        .and_then(|l| l.split("built by the rung `").nth(1))
+        .and_then(|r| r.split('`').next())
+        .unwrap_or_else(|| panic!("{}: no rung on the H row:\n{space}", path.display()))
+        .to_string();
+    let mut h: Vec<String> = run(&["show", "hyps"]).lines().map(str::to_string).collect();
+    h.sort();
+    (rung, h)
+}
+
+/// **A module imported for one rule takes the rung of that rule written
+/// out.** `std.algebra` imported for `symmetric` loads the module's two
+/// obligation rules, which nothing activates; with the import deleted and
+/// `symmetric` written in its place, no obligation rule is loaded. Both are
+/// on the blind enumerator's rung, with one H and one R. And the same of a
+/// module imported for a name the program never writes, against the program
+/// with the import deleted. These are the register's `W97` witnesses and
+/// their controls, which until the rung was read off an activated obligation
+/// took the second rung and answered `{∅}`.
+#[test]
+fn a_module_imported_for_one_rule_takes_the_rung_of_the_rule_written_out() {
+    const PAIRS: &[(&str, &str, usize, u64)] = &[
+        (
+            "examples/ein-bugs/wrong-answers/rung-symmetric-import.ein",
+            "examples/ein-bugs/wrong-answers/rung-symmetric-written.ein",
+            4,
+            8,
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/rung-unactivated.ein",
+            "examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein",
+            11,
+            2048,
+        ),
+    ];
+    let root = repo_root();
+    for &(imported, written, n, k_s) in PAIRS {
+        let (a, b) = (root.join(imported), root.join(written));
+        let (rung_a, h_a) = hypotheses(&a);
+        let (rung_b, h_b) = hypotheses(&b);
+        assert_eq!(
+            (rung_a.as_str(), rung_b.as_str()),
+            ("blind", "blind"),
+            "{imported} and {written}: the rung"
+        );
+        assert_eq!(h_a, h_b, "{imported} and {written}: H");
+        assert_eq!(h_a.len(), n, "{imported}: H is {h_a:?}");
+        let r = |p: &Path| {
+            let v = summary(p.parent().expect("a directory"), p.to_str().expect("utf-8"))
+                .unwrap_or_else(|code| panic!("{}: exit {code}, no summary", p.display()));
+            assert_eq!(
+                v["region"]["k_s"].as_u64(),
+                Some(k_s),
+                "{}: k_s",
+                p.display()
+            );
+            signature(&v, &[])
+        };
+        assert_eq!(r(&a), r(&b), "{imported} and {written}: R");
+    }
 }

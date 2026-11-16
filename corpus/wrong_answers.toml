@@ -1217,6 +1217,32 @@
 # carried the null id in the flipping commit, `4ee131e3`, and the stage's next
 # commit wrote the hash. No open row is owned by a stage of M1f's phase 10.
 #
+# **W97 was filed on 2026-11-16 by S1f.10.15** (T1f.10.15.4), from E-51 of
+# P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.308, *"308
+# (b) ok"*: the ladder's second rung is taken where an obligation is activated
+# at root, and a program that loads an obligation rule and activates none is
+# on the third, the blind enumerator. Every import brings its module whole, so
+# a program that imports `std.algebra` for any name loads its two obligation
+# rules. Three rows, one per witness: `std.algebra` imported for `total-owed`
+# and never activated, beside two open relations (R {∅} where its control,
+# the import deleted, answers 2 048 states); imported for `symmetric` beside
+# an open `likes` (R {∅} where it is 8 states); and Q-M1f.308's re-plan probe,
+# imported for `connex` over `lt`, which loads, root dead, where *forbid*
+# refuses it once the blind enumerator proposes `lt`: a program that loads
+# today, refused. Filed `open`, owned by S1f.10.15, in a commit of their own,
+# `743c6d71`, and **fixed the same day** by the stage's next: the ladder's
+# switch is one function, read by the generator and by the eligibility
+# advisory, and its second rung is taken where root's activators compile an
+# obligation plan, the reading the mechanisms check has. Each witness answers
+# its `right`, the first two their controls' R, and the third is refused at
+# load. A discharged root under an activated obligation still proposes
+# nothing (the first row's twin). No other corpus program's R, read-out or
+# exit code moved, but `features/09_adjacent_via_same_house.ein`'s H, 0 to 82
+# candidates all dead with a dead root, and three rows of its read-out. Each
+# `[case.fixed]` carried the null id in the flipping commit, `e939fec4`, and
+# the stage's next commit wrote the hash. No open row is owned by a stage of
+# M1f's phase 10.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -17734,3 +17760,188 @@ exhausted = true
 k         = 2
 relations = ["total"]
 models    = [[], ["(total a)"]]
+
+# ══ W97 — the ladder's second rung is taken by an obligation rule the program loads and nothing activates, so the blind enumerator does not run: H holds none of its candidates, and an absent over a relation it would propose is read closed-world ══
+[[case]]
+id       = "W97/unactivated"
+case     = "W97"
+title    = "the ladder's second rung is taken by an obligation rule the program loads and nothing activates, so the blind enumerator does not run: H holds none of its candidates, and an absent over a relation it would propose is read closed-world"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.15"
+question = ["P1f.6 findings.md E-51", "Q-M1f.308"]
+witness  = "examples/ein-bugs/wrong-answers/rung-unactivated.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.15 (T1f.10.15.4, 2026-11-16) from E-51 of P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.308, *\"308 (b) ok\"*: the second rung is taken where an obligation is activated at root. Q-M1f.308's witness 2 over one colour and two houses, so that H is within the oracle's limit: `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`. The control, rung-unactivated-no-import.ein, deletes the import; the twin, rung-discharged.ein, states the obligation, `(total-owed at is-a)`, which root pays, and the ruling leaves it on the second rung with no candidate. The row's run asks the maximal line, one state, since R is 2 048 states right: the control's run and the right answer's derivation carry the counts. Fixed by the same task (2026-11-16): eleven candidates and 2 048 states, the control's"
+
+[case.fixed]
+commit = "e939fec4"
+by     = "S1f.10.15 (T1f.10.15.4), Q-M1f.308 (b): the ladder's switch is one function, `hypgen::rung`, which `hypgen::generate_with` and `hypgen::eligible_relations` both read; its second rung is taken where `mechanisms::obligation_plans`, the one reading of an obligation (a plan root's activators compile), is not empty, as the mechanisms check and *forbid*'s remedy read it, and no longer wherever an obligation rule is loaded. A discharged root under an activated obligation still proposes nothing"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the release build, at a79eea49 (2026-11-16): no candidate, and R {∅}, root alive and owing nothing; `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/rung-unactivated-no-import.ein"
+run       = "solve"
+by        = "region"
+why       = "the import deleted, which the program never used, at a79eea49: the blind enumerator builds H, `at` and `near` over the program's three names, eleven candidates, and R is the whole cube, 2 048 states; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2048
+exhausted = true
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/rung-discharged.ein"
+run       = "solve"
+by        = "region"
+why       = "the obligation stated, `(total-owed at is-a)`, and paid at root, at a79eea49: no candidate and R {∅}. The ruling leaves it so: a discharged state under an activated obligation proposes nothing and is complete"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2048
+k_c      = 2048
+minimal  = [[]]
+maximal  = [["(at H1 H2)", "(at H1 Red)", "(at H2 H1)", "(at H2 Red)", "(at Red H2)", "(near H1 H2)", "(near H1 Red)", "(near H2 H1)", "(near H2 Red)", "(near Red H1)", "(near Red H2)"]]
+
+[case.right]
+reading   = "Q-M1f.308 (b), the user's ruling of 2026-11-16, *\"308 (b) ok\"*: the ladder's second rung is taken where an obligation is activated at root, so a program that loads an obligation rule and activates none is on the third, the blind enumerator"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["at", "near"]
+models    = [["(at H1 H2)", "(at H1 Red)", "(at H2 H1)", "(at H2 Red)", "(at Red H1)", "(at Red H2)", "(near H1 H2)", "(near H1 Red)", "(near H2 H1)", "(near H2 Red)", "(near Red H1)", "(near Red H2)"]]
+derived   = "No hrule and no obligation activated, so the blind enumerator builds H: `at` and `near` over Red, H1 and H2, less the stated `(at Red H1)` and the self-edges, eleven candidates, untyped as the blind enumerator is. Nothing refutes or requires any of them, so R is the whole cube, 2 048 states, the control's. Its maximal line is the one state that holds all eleven, which is what the row's run lists"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["at", "near"]
+models    = [["(at H1 H2)", "(at H1 Red)", "(at H2 H1)", "(at H2 Red)", "(at Red H1)", "(at Red H2)", "(near H1 H2)", "(near H1 Red)", "(near H2 H1)", "(near H2 Red)", "(near Red H1)", "(near Red H2)"]]
+
+[[case]]
+id       = "W97/symmetric-import"
+case     = "W97"
+title    = "the ladder's second rung is taken by an obligation rule the program loads and nothing activates, so the blind enumerator does not run: H holds none of its candidates, and an absent over a relation it would propose is read closed-world"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.15"
+question = ["P1f.6 findings.md E-51", "Q-M1f.308"]
+witness  = "examples/ein-bugs/wrong-answers/rung-symmetric-import.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.15 (T1f.10.15.4, 2026-11-16) beside `W97/unactivated`: Q-M1f.308's fourth witness, `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The program names no obligation; the import loads two. The read-out names `near` as outside the universe and says nothing of `likes`, which no rule concludes and no query asks about. The control, rung-symmetric-written.ein, deletes the import and writes `std.algebra`'s `symmetric` in its place, word for word. Fixed by the same task (2026-11-16): four candidates and 8 states, the control's, and no relation named outside the universe"
+
+[case.fixed]
+commit = "e939fec4"
+by     = "S1f.10.15 (T1f.10.15.4), Q-M1f.308 (b): the ladder's switch is one function, `hypgen::rung`, which `hypgen::generate_with` and `hypgen::eligible_relations` both read; its second rung is taken where `mechanisms::obligation_plans`, the one reading of an obligation (a plan root's activators compile), is not empty, as the mechanisms check and *forbid*'s remedy read it, and no longer wherever an obligation rule is loaded. A discharged root under an activated obligation still proposes nothing"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the release build, at a79eea49 (2026-11-16): no candidate, R {∅}, and `outside near — no candidate: no obligation owes it`; `ein oracle` the same"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/rung-symmetric-written.ein"
+run       = "solve"
+by        = "region"
+why       = "the import deleted and the one rule it used written out, at a79eea49: four candidates, `(likes A B)`, `(likes B A)`, `(near A B)` and `(near B A)`, and R 16 commitments and 8 states; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 8
+k_c      = 16
+minimal  = [[]]
+maximal  = [["(likes A B)", "(likes B A)", "(near A B)", "(near B A)"]]
+
+[case.right]
+reading   = "Q-M1f.308 (b), the user's ruling of 2026-11-16, *\"308 (b) ok\"*: the ladder's second rung is taken where an obligation is activated at root"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+closes    = ["likes", "near"]
+models    = [
+  [],
+  ["(likes A B)"],
+  ["(likes A B)", "(likes B A)"],
+  ["(likes A B)", "(likes B A)", "(near A B)", "(near B A)"],
+  ["(likes A B)", "(near A B)", "(near B A)"],
+  ["(likes B A)"],
+  ["(likes B A)", "(near A B)", "(near B A)"],
+  ["(near A B)", "(near B A)"],
+]
+derived   = "No hrule and no obligation activated, so the blind enumerator builds H over A and B: `(likes A B)`, `(likes B A)`, `(near A B)` and `(near B A)`. Nothing refutes any of them, and `symmetric` makes each `near` fact bring the other, so the 16 commitments reach 8 states, the control's, each of the four states that hold `near` reached by three"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 8
+relations = ["likes", "near"]
+models    = [
+  [],
+  ["(likes A B)"],
+  ["(likes A B)", "(likes B A)"],
+  ["(likes A B)", "(likes B A)", "(near A B)", "(near B A)"],
+  ["(likes A B)", "(near A B)", "(near B A)"],
+  ["(likes B A)"],
+  ["(likes B A)", "(near A B)", "(near B A)"],
+  ["(near A B)", "(near B A)"],
+]
+
+[[case]]
+id       = "W97/connex-import"
+case     = "W97"
+title    = "the ladder's second rung is taken by an obligation rule the program loads and nothing activates, so the blind enumerator does not run: H holds none of its candidates, and an absent over a relation it would propose is read closed-world"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.15"
+question = ["P1f.6 findings.md E-51", "Q-M1f.308", "P1f.10 findings.md H15-2"]
+witness  = "examples/ein-bugs/wrong-answers/rung-connex-import.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.15 (T1f.10.15.4, 2026-11-16) beside `W97/unactivated`: Q-M1f.308's re-plan probe, rebuilt from its description, `std.algebra` imported for `connex` over `lt`, three nodes, `(lt A B)` and `(lt B C)` stated and A and C not compared, so `connex` concludes `(false)` at root. The program names no obligation; the import loads two. A program that loads today and is refused under the ruling: *forbid*'s premise, which relations a commitment can still extend, is read off H, and the rung decides H. Fixed by the same task (2026-11-16): refused, exit 1, naming `connex` and its remedy; `ein saturate` still saturates"
+
+[case.fixed]
+commit = "e939fec4"
+by     = "S1f.10.15 (T1f.10.15.4), Q-M1f.308 (b): the ladder's switch is one function, `hypgen::rung`, which `hypgen::generate_with` and `hypgen::eligible_relations` both read; its second rung is taken where `mechanisms::obligation_plans`, the one reading of an obligation (a plan root's activators compile), is not empty, as the mechanisms check and *forbid*'s remedy read it, and no longer wherever an obligation rule is loaded. A discharged root under an activated obligation still proposes nothing"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the release build, at a79eea49 (2026-11-16): no candidate, root dead by `connex`, R empty, exit 0, and `outside lt — no candidate: no obligation owes it`"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(instance A Node)", "(instance C Node)"]
+
+[case.right]
+reading   = "Q-M1f.308 (b), the user's ruling of 2026-11-16, *\"308 (b) ok\"*, and *forbid* (Q-M1e2.5, the user's ruling of 2026-11-02): with no obligation activated the blind enumerator builds H and proposes `lt`, and a `(false)` resting on an `absent` over a relation a commitment can still extend is refused"
+refused   = true
+derived   = "a refusal: every question about a commitment (ein solve in every mode, ein test, ein oracle, ein render lattice) exits 1, one line, rule `connex` [activator lt instance Node] over lt, a relation a commitment can still extend, naming its remedy, (solve :no-hypothesis (lt)); ein saturate still saturates"
+
+[case.now]
+run     = "solve"
+line    = "all"
+refused = "rule 'connex' [activator lt instance Node]: concludes (false) from (absent …) over lt, a relation a commitment can still extend — so it calls a state that has not yet decided lt a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (lt)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"

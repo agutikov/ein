@@ -1,12 +1,15 @@
 //! The rung a loaded obligation rule chooses, over the corpus — the census
 //! behind Q-M1f.308.
 //!
-//! The generation ladder ([`ein_infer::hypgen`]) takes its second rung
-//! wherever the program **loads** an obligation rule, and a second rung that
-//! owes nothing at root proposes nothing, so H is empty and the blind
-//! enumerator is not asked. This census reads, for every program, which of
-//! three things is true at root's fixpoint and what H and R would be were
-//! the rung chosen by each:
+//! The generation ladder ([`ein_infer::hypgen`]) took its second rung
+//! wherever the program **loaded** an obligation rule, and a second rung that
+//! owes nothing at root proposes nothing, so H was empty and the blind
+//! enumerator was not asked. Since the question was ruled (b) the rung is
+//! chosen by an obligation **activated** at root, so on today's engine the
+//! `today:` columns are (b)'s, and the table's column (a) is the rule it
+//! replaced. This census reads, for every program, which of three things is
+//! true at root's fixpoint and what H and R would be were the rung chosen by
+//! each:
 //!
 //! | `class` | at root's fixpoint | (a) a rule loaded | (b) an obligation activated | (c) a debt owed |
 //! |---|---|---|---|---|
