@@ -1239,9 +1239,9 @@
 # nothing (the first row's twin). No other corpus program's R, read-out or
 # exit code moved, but `features/09_adjacent_via_same_house.ein`'s H, 0 to 82
 # candidates all dead with a dead root, and three rows of its read-out. Each
-# `[case.fixed]` carried the null id in the flipping commit, and the stage's
-# next commit wrote the hash. No open row is owned by a stage of M1f's phase
-# 10.
+# `[case.fixed]` carried the null id in the flipping commit, `e939fec4`, and
+# the stage's next commit wrote the hash. No open row is owned by a stage of
+# M1f's phase 10.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -17776,7 +17776,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.15 (T1f.10.15.4, 2026-11-16) from E-51 of P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.308, *\"308 (b) ok\"*: the second rung is taken where an obligation is activated at root. Q-M1f.308's witness 2 over one colour and two houses, so that H is within the oracle's limit: `std.algebra` imported for `total-owed`, which the program never writes, beside `at` and `near`. The control, rung-unactivated-no-import.ein, deletes the import; the twin, rung-discharged.ein, states the obligation, `(total-owed at is-a)`, which root pays, and the ruling leaves it on the second rung with no candidate. The row's run asks the maximal line, one state, since R is 2 048 states right: the control's run and the right answer's derivation carry the counts. Fixed by the same task (2026-11-16): eleven candidates and 2 048 states, the control's"
 
 [case.fixed]
-commit = "0000000"
+commit = "e939fec4"
 by     = "S1f.10.15 (T1f.10.15.4), Q-M1f.308 (b): the ladder's switch is one function, `hypgen::rung`, which `hypgen::generate_with` and `hypgen::eligible_relations` both read; its second rung is taken where `mechanisms::obligation_plans`, the one reading of an obligation (a plan root's activators compile), is not empty, as the mechanisms check and *forbid*'s remedy read it, and no longer wherever an obligation rule is loaded. A discharged root under an activated obligation still proposes nothing"
 date   = "2026-11-16"
 
@@ -17845,7 +17845,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.15 (T1f.10.15.4, 2026-11-16) beside `W97/unactivated`: Q-M1f.308's fourth witness, `std.algebra` imported for `symmetric` over `near`, beside `likes`, a relation of the program's own that nothing closes. The program names no obligation; the import loads two. The read-out names `near` as outside the universe and says nothing of `likes`, which no rule concludes and no query asks about. The control, rung-symmetric-written.ein, deletes the import and writes `std.algebra`'s `symmetric` in its place, word for word. Fixed by the same task (2026-11-16): four candidates and 8 states, the control's, and no relation named outside the universe"
 
 [case.fixed]
-commit = "0000000"
+commit = "e939fec4"
 by     = "S1f.10.15 (T1f.10.15.4), Q-M1f.308 (b): the ladder's switch is one function, `hypgen::rung`, which `hypgen::generate_with` and `hypgen::eligible_relations` both read; its second rung is taken where `mechanisms::obligation_plans`, the one reading of an obligation (a plan root's activators compile), is not empty, as the mechanisms check and *forbid*'s remedy read it, and no longer wherever an obligation rule is loaded. A discharged root under an activated obligation still proposes nothing"
 date   = "2026-11-16"
 
@@ -17923,7 +17923,7 @@ look_at  = ["root", "answer", "summary"]
 note     = "Filed by S1f.10.15 (T1f.10.15.4, 2026-11-16) beside `W97/unactivated`: Q-M1f.308's re-plan probe, rebuilt from its description, `std.algebra` imported for `connex` over `lt`, three nodes, `(lt A B)` and `(lt B C)` stated and A and C not compared, so `connex` concludes `(false)` at root. The program names no obligation; the import loads two. A program that loads today and is refused under the ruling: *forbid*'s premise, which relations a commitment can still extend, is read off H, and the rung decides H. Fixed by the same task (2026-11-16): refused, exit 1, naming `connex` and its remedy; `ein saturate` still saturates"
 
 [case.fixed]
-commit = "0000000"
+commit = "e939fec4"
 by     = "S1f.10.15 (T1f.10.15.4), Q-M1f.308 (b): the ladder's switch is one function, `hypgen::rung`, which `hypgen::generate_with` and `hypgen::eligible_relations` both read; its second rung is taken where `mechanisms::obligation_plans`, the one reading of an obligation (a plan root's activators compile), is not empty, as the mechanisms check and *forbid*'s remedy read it, and no longer wherever an obligation rule is loaded. A discharged root under an activated obligation still proposes nothing"
 date   = "2026-11-16"
 
