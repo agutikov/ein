@@ -1,25 +1,19 @@
 # examples/word_problems/
 
-Elementary-school word problems as Ein programs (M1f P1f.6,
-[S1f.6.20](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md)). The
-calculator, [`std.math.decimal-arith`](../../stdlib/math/decimal-arith.ein), is a library among other relations here and not the subject: a
-problem states what its sentences say as facts, a theory of what the words mean turns them into requests to the
-calculator, and the theory reads the answers back as facts about the people. The engine knows no arithmetic and
-no word.
+Elementary-school word problems as Ein programs. The calculator,
+[`std.math.decimal-arith`](../../stdlib/math/decimal-arith.ein), is a library among other relations here and not the
+subject: a problem states what its sentences say as facts, a theory of what the words mean turns them into requests
+to the calculator, and the theory reads the answers back as facts about the people. The engine knows no arithmetic
+and no word. [`word-problems.md`](../../docs/ein/user/guide/word-problems.md) is the guide to them.
 
-These are **examples, not a stdlib module** (the user's reply 34, *"examples for now"*). The four theory modules
-live in this directory and the problems import them by file name. The facts of each problem were written by
-hand; reading them off the English is [M2](../../plans/m2_nl_to_ir/README.md)'s.
+These are **examples, not a stdlib module**
+([Q-M1f.334](../../docs/decisions/corpus/Q-M1f.334-the-word-theory-is-examples-not-a-module.md)). The four theory
+modules live in this directory and the problems import them by file name. The facts of each problem are written by
+hand, sentence by sentence, each with its `:source`; reading them off the English is not something Ein does.
 
-They were banked on 2026-11-12, on the user's instruction (*"bank word problems into examples/word_problems with
-recommended variants"*), from the prototype that
-[`word-problems.md`](../../docs/ein/user/guide/word-problems.md) reports, and
-rebuilt on 2026-11-13 by
-[S1f.6.28](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md) on
-the user's replies of 2026-11-12: **a reading is always chosen** (reply 31), and ***what is not listed is zero***
-is an assumption a problem may adopt (reply 32). The other forms here, the gap, the assumption, the order of
-events and the backwards plan, are the ones picked to bank the problems, and in the user's words **not only and
-not final** ([§ The banked forms](#the-banked-forms-not-only-and-not-final)).
+Each form the theory takes is one way among several, not the only one and not the final one
+([§ The forms the theory takes](#the-forms-the-theory-takes)): **a reading is always chosen**, and ***what is not
+listed is zero*** is an assumption a problem may adopt.
 
 ## Running one
 
@@ -36,7 +30,7 @@ nested fact it is, `(amount Bob apples t1)` for *how many apples Bob has at t1*.
 ## The problems
 
 Every answer below is the file's own `:expect`, which `ein test examples/word_problems/` holds and the corpus
-sweep banks per commit.
+sweep banks.
 
 | file | the problem | the answer | search |
 |---|---|---|---|
@@ -55,7 +49,7 @@ sweep banks per commit.
 | [`boxes13.ein`](boxes13.ein) | Bob has 5 apples, Alice has 8. A box holds 3. How many boxes do they need? | **two states and two answers**: 4 boxes and 1 apple unpacked, if *need* is read as whole-only; 5 boxes, the last part full, if as pack-all | 2 candidates, a reading each; root owes one |
 | [`unused.ein`](unused.ein) | Bob has 5 apples. Alice has 7 apples. Carol has 9 apples and a box that holds 3. Bob gave 2 apples to Alice. How many apples does Bob have? | 3; Alice's 7, Carol's 9 and the box are never wanted | none |
 | [`bystander.ein`](bystander.ein) | Bob has 5 apples. Carol has 9 apples. Bob gave 2 apples to Alice. How many apples does Carol have? | 9, unchanged | none |
-| [`before.ein`](before.ein) | Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before? | **a witness, with today's answer: none**, and the question's quantity named as not stated. **The right answer is 7.** The theory reads *gave* in one direction of time and has no rule from an earlier moment to a later one; M1h's P1h.1 owns it, and its claim moves to 7 when that lands | none |
+| [`before.ein`](before.ein) | Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before? | no answer, and the question's quantity named as not stated, where a pupil answers 7: the theory reads *gave* in one direction of time and has no rule from a later moment back to an earlier one ([what the theory does not read](../../docs/ein/user/guide/word-problems.md#what-the-theory-does-not-read)) | none |
 
 *search: none* is the read-out's `universe` row, *no candidate: R is {∅} or empty, decided by root alone*. Every
 problem here is search-free but the two that ask what is *needed*: a reading of *need* is always chosen, so their
@@ -118,32 +112,21 @@ Each module has one entry rule, as `std.math.decimal-arith` has `decimal-arith`:
 :symbols (gaps))`, `(import readings :symbols (readings))`, `(import listed_is_all :symbols (listed-is-all))`. A
 problem that imports `readings` also writes `(solve :hrules (read-need))`, which a module cannot write for it.
 
-## The banked forms, not only and not final
+## The forms the theory takes
 
-Each thing the investigation tried in several forms is banked in one. The user, 2026-11-12, on how a missing
-quantity is detected (reply 28): *"I want already written word problems banked as is, so pick recommended, and
-note that is is not only and not final."* So each form below is **the one picked to bank the problems, not the
-only one and not the final one**: the subject is
-[M1h's](../../plans/m1h_beyond_word_problems/README.md), which takes each up again. The section numbers are
-[`word-problems.md`](../../docs/ein/user/guide/word-problems.md)'s, which has
-every other form with its run.
+Each thing the theory does could be written in several forms, and each is written in one, the simplest that answers
+its problems: not the only one and not the final one.
 
-| the choice | banked | the reply | the other forms, on the page |
-|---|---|---|---|
-| **the gap**, a missing quantity (§ 3) | (b) of 28, a derived fact by `absent`, in a module of its own: `gaps.ein`, `gap.ein` | 28: *"pick recommended … not only and not final"* | (a), an obligation, which names the gap and answers nothing; (c), the unknown as a candidate from a stated list |
-| **the assumption** (§ 3.5) | (a) of 29, a marked fact, `assumed`, with `rests-on` beside the answer: written by hand (`gap_assume.ein`, `kinds_assume.ein`) or derived by `listed_is_all.ein` (`kinds_listed.ein`) | 29: *"for this stage (a) is OK, return back to investigations of this in M1h"* | the assumption as a hypothesis, alone, with (a) and with (b); the last leaves a stale fact (F21) |
-| **the order of events** (§ 1) | named moments, `t0`, `t1`, and an event naming the moment before it and after it | 26: *"pick the simplest that works - leave what is implemented already"* | events as nested facts; a chain of numbered sentences |
-| **the plan** (§ 2.1) | backwards from the question, then forwards from the stated numbers | 27 (a) | (the only one built) |
-| **a word with two readings** (§ 4) | the readings as hypotheses, a reading **always owed**: `readings.ein`, `boxes12.ein`, `boxes13.ein` | 31: *"reading always chosen, it can't be not chosen"*; round 2: *"yes"* | owed only where something is left over (flagged by the static check); never owed, with the state of no reading in R (banked until 2026-11-13); both answers derived; a named gap and no answer |
-| **two kinds** (§ 6.2) | *Alice has 3 pears* does not say she has no apples: a gap (`kinds.ein`), unless the problem adopts *what is not listed is zero* (`kinds_listed.ein`) | 32: *"what is not listed is zero - good idea, it could be a reusable universal assumption"* | (none built) |
-| the model's boundary (§ 5) | a fact with a `:source`, a premise of the rules that depend on it | 33, and round 2: *"OK"*; M1h's slicing takes it up | (the query's `:goal-text` is in `boxes12.ein` as well) |
-| more readings of a word (§ 8) | none added: *together* over everyone and *gave all* are not here | 35: *"Take only needed right now"* | — |
-
-Against the page's files: `readings.ein` is its `readings_always` with the obligation's `:why` written for the
-read-out's `owed` row; `boxes12.ein` and `boxes13.ein` are its `boxes12_always` and `boxes13_always` with a region
-claim and, in `boxes12.ein`, the model's query; `listed_is_all.ein`, `kinds_listed.ein` and `before.ein` were
-written by S1f.6.28 and are not on the page.
+| the choice | the form taken | decision |
+|---|---|---|
+| **the plan** | backwards from the question, then forwards from the stated numbers | [Q-M1f.329](../../docs/decisions/corpus/Q-M1f.329-the-word-theory-works-backwards-from.md) |
+| **the gap**, a missing quantity | a derived fact by `absent`, in a module of its own: `gaps.ein`, `gap.ein` | [Q-M1f.330](../../docs/decisions/corpus/Q-M1f.330-a-missing-quantity-is-a-fact-derived-by-absent.md) |
+| **the assumption** | a marked fact, `assumed`, with `rests-on` beside the answer: written by hand (`gap_assume.ein`, `kinds_assume.ein`) or derived by `listed_is_all.ein` (`kinds_listed.ein`) | [Q-M1f.331](../../docs/decisions/corpus/Q-M1f.331-an-assumption-is-a-marked-fact-and-the-answer.md) |
+| **the order of events** | named moments, `t0`, `t1`, and an event naming the moment before it and after it | |
+| **a word with two readings** | the readings as hypotheses, a reading **always owed**: `readings.ein`, `boxes12.ein`, `boxes13.ein` | [Q-M1f.332](../../docs/decisions/corpus/Q-M1f.332-a-word-with-two-readings-always-has-one-chosen.md) |
+| **two kinds** | *Alice has 3 pears* does not say she has no apples: a gap (`kinds.ein`), unless the problem adopts *what is not listed is zero* (`kinds_listed.ein`) | [Q-M1f.333](../../docs/decisions/corpus/Q-M1f.333-what-is-not-listed-is-zero-only-where-a-problem.md) |
+| the model's boundary | a fact with a `:source`, a premise of the rules that depend on it | |
+| more readings of a word | none beyond what the problems need: *together* over everyone and *gave all* are not here | [Q-M1f.335](../../docs/decisions/corpus/Q-M1f.335-the-word-theory-holds-only-the-readings.md) |
 
 What the program says of **why it divided and did not subtract** is in the trace of each state, as far as the
-rules go, and no further: a theory of solutions is M1h's P1h.4 and M2's
-([S1f.6.28's record](../../plans/m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.28_word_problems_second_pass.md#t1f6283--why-divided-and-not-subtracted-written-down-done)).
+rules go, and no further: the theory has no theory of solutions.

@@ -1,69 +1,51 @@
-# Per-rule demos — S1.3.2 T1.3.2.10
+# Per-rule saturation demos
 
-A demo is the smallest IR file that exercises **one** of the seven
-M1-core rules. Each demo's directory name is the rule name; each
-file is a named scenario (same rule, different ontology / facts).
+A demo is the smallest program that exercises **one** saturation rule. Each demo's directory name is the rule
+name; each file is a named scenario (the same rule over a different ontology and different facts).
 
 Every demo file has the same shape:
 
-1. **Header comment** — NL prose for the ontology (background
-   assumptions), the facts (what the puzzle states explicitly), the
-   question, and the expected one-step derivation.
-2. **`(rules …)`** — the single rule the demo exercises, inline: a
-   problem's own rules are in its own file (Q16).
-3. **`(ontology …)`** — minimum schema + activator facts.
-4. **`(facts …)`** or **`(reasoning …)`** — the premises that
-   trigger the rule.
-5. **`(query :goal …)`** — the derived fact the engine
-   should produce when it fires the named rule.
+1. **A header comment**: natural-language prose for the ontology (background assumptions), the facts (what the
+   puzzle states explicitly), the question, and the expected one-step derivation.
+2. **The rule**, written in the file: a problem's own rules are in its own file.
+3. **The relations and the activator facts** the rule needs.
+4. **The facts** that trigger the rule.
+5. **`(query :goal …)`**: the derived fact the engine should produce when it fires the named rule.
 
-Running the engine on any demo produces ≥ 1 firing whose `:rule`
-field matches the demo's directory name. What enforces this for every demo is
-[`ein-infer/tests/search_semantics.rs`](../../ein.rs/crates/ein-infer/tests/search_semantics.rs),
-plus the `saturation` group of the
-[corpus sweep](../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
+Running the engine on any demo produces at least one firing whose `:rule` matches the demo's directory name.
+What enforces this for every demo is
+[`ein-infer/tests/search_semantics.rs`](../../ein.rs/crates/ein-infer/tests/search_semantics.rs), with the
+`saturation` group of the [corpus sweep](../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
 
 ## Index
 
-Each demo carries its own NL header (ontology / facts / question /
-expected derivation) and a `(query …)` block whose `:goal` is the
-fact the named rule produces.
+| Rule | Parameters | Demos |
+|---|---|---|
+| `symmetric` | `?rel` | [couple](symmetric/couple.ein) · [neighbours](symmetric/neighbours.ein) · [friends](symmetric/friends.ein) |
+| `transitive` | `?rel` | [colocation-chain](transitive/colocation-chain.ein) · [taxonomy](transitive/taxonomy.ein) · [mealtimes](transitive/mealtimes.ein) |
+| `implies` | `?p ?q` | [right-then-next](implies/right-then-next.ein) · [parent-to-ancestor](implies/parent-to-ancestor.ein) · [org-chart](implies/org-chart.ein) |
+| `square-fwd` | `?R` | [houses](square-fwd/houses.ein) · [meetings](square-fwd/meetings.ein) · [floors](square-fwd/floors.ein) |
+| `square-bwd` | `?R` | [houses](square-bwd/houses.ein) · [meetings](square-bwd/meetings.ein) · [floors](square-bwd/floors.ein) |
+| `square-unique` | `?R ?T` | [corner-house](square-unique/corner-house.ein) · [cul-de-sac](square-unique/cul-de-sac.ein) · [terminus](square-unique/terminus.ein) |
+| `type-exclusivity` | `?R` | [colors](type-exclusivity/colors.ein) · [nationalities](type-exclusivity/nationalities.ein) · [pets](type-exclusivity/pets.ein) |
+| `hypothesis-contradiction` | none | [coloc-disproved](hypothesis-contradiction/coloc-disproved.ein) · [right-of-disproved](hypothesis-contradiction/right-of-disproved.ein) · [next-to-disproved](hypothesis-contradiction/next-to-disproved.ein) |
 
-| Rule                       | Type        | Band       | Priority | Demos                                                                                                                                                          |
-|----------------------------|-------------|------------|---------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `symmetric`                | T2          | propagate  | 100      | [couple](symmetric/couple.ein) · [neighbours](symmetric/neighbours.ein) · [friends](symmetric/friends.ein)                                                     |
-| `transitive`               | T2          | derive     | 200      | [colocation-chain](transitive/colocation-chain.ein) · [taxonomy](transitive/taxonomy.ein) · [mealtimes](transitive/mealtimes.ein)                              |
-| `implies`                  | T2          | propagate  | 100      | [right-then-next](implies/right-then-next.ein) · [parent-to-ancestor](implies/parent-to-ancestor.ein) · [org-chart](implies/org-chart.ein)                     |
-| `square-fwd`               | T2          | derive     | 200      | [houses](square-fwd/houses.ein) · [meetings](square-fwd/meetings.ein) · [floors](square-fwd/floors.ein)                                                        |
-| `square-bwd`               | T2          | derive     | 200      | [houses](square-bwd/houses.ein) · [meetings](square-bwd/meetings.ein) · [floors](square-bwd/floors.ein)                                                        |
-| `square-unique`            | T2 (2-param)| derive     | 200      | [corner-house](square-unique/corner-house.ein) · [cul-de-sac](square-unique/cul-de-sac.ein) · [terminus](square-unique/terminus.ein)                            |
-| `type-exclusivity`         | non-generic | eliminate  | 300      | [colors](type-exclusivity/colors.ein) · [nationalities](type-exclusivity/nationalities.ein) · [pets](type-exclusivity/pets.ein)                                |
-| `hypothesis-contradiction` | non-generic | hypothesis | 900      | [coloc-disproved](hypothesis-contradiction/coloc-disproved.ein) · [right-of-disproved](hypothesis-contradiction/right-of-disproved.ein) · [next-to-disproved](hypothesis-contradiction/next-to-disproved.ein) |
+A rule with parameters is [relation-polymorphic](../../docs/ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic):
+it is applied once for each activator, a fact such as `(symmetric co-located)` that binds them. A rule with none is
+[first-order](../../docs/ein/reasoning/static-ir/rules-as-statements.md#first-order) and names its relations.
 
 ## How to read a demo
 
-Each demo is self-contained — the NL header explains what to read
-in the IR body. The engine's actual firing count is recorded in the
-test output; for most demos it's exactly 1, but `symmetric` demos
-(which also re-match on their own conclusion) and `type-exclusivity`
-demos (which fire over ordered pairs of distinct same-type
-instances) legitimately produce more than one firing.
+Each demo is self-contained: the header explains what to read in the program. For most demos the rule fires
+exactly once, but the `symmetric` demos (which also re-match on their own conclusion) and the
+`type-exclusivity` demos (which fire over ordered pairs of distinct instances of one type) fire more than once.
 
-## Demos that exercise Q40 (nested-fact patterns)
+## Nested-fact patterns
 
-The three `hypothesis-contradiction/*.ein` demos carry **synthetic
-`(hypothesis …)` + `(contradiction-under …)` facts whose first
-argument is itself a fact** — a relational node, per the kernel ein
-model's "named vs relational" duality
-([`docs/ein/user/syntax-and-semantics/ontology.md` §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)).
-
-R9's `Fact.args` widening (committed `0a783bc`) makes this load;
-S1.3.1's matcher (committed `d9778b0`) makes the rule unify against
-the nested fact at runtime.
-
-In production, P1.5's fork / contradict machinery emits these
-synthetic facts when a branch hits a contradiction. The demos load
-them directly to exercise the rule independently.
+The three `hypothesis-contradiction/*.ein` demos carry **`(hypothesis …)` and `(contradiction-under …)` facts
+whose argument is itself a fact**, a relational node
+([`ontology.md` § Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)), and the rule
+matches the nested fact. The engine writes no such facts of its own; the demos state them to exercise the rule.
 
 ## Running a single demo
 
@@ -71,24 +53,15 @@ them directly to exercise the rule independently.
 ein saturate examples/saturation/symmetric/couple.ein --dump
 ```
 
-## Rendering to DOT/SVG
+## Drawing a demo
 
 ```sh
-utils/render_examples.sh                  # → build/dot/
-utils/render_examples.sh /tmp/out         # → /tmp/out/
+ein render rules examples/saturation/symmetric/couple.ein > couple.rules.dot
+ein render kb    examples/saturation/symmetric/couple.ein > couple.kb.dot
 ```
-
-The script recursively discovers every `.ein` under `examples/`
-(top-level files + nested demos, minus `examples/broken/`) and
-produces six per-form variants (`rule-{a,c}_trace-{a,b,c}`) plus
-one unified KB view per demo. Outputs land at
-`<out>/zebra/demos/<rule>/<scenario>/`.
 
 ## See also
 
-- S1.3.2 plan — the rule catalogue.
-- The shipping puzzle is [`examples/zebra.ein`](../zebra.ein), kept at top
-  level to minimise reference churn (cf. the spec's envisioned
-  `examples/zebra/zebra.ein` location).
-- [`ein-infer/tests/search_semantics.rs`](../../ein.rs/crates/ein-infer/tests/search_semantics.rs)
-  — what exercises every demo here.
+- The shipping puzzle is [`examples/zebra.ein`](../zebra.ein), at the top level of `examples/`.
+- [`ein-infer/tests/search_semantics.rs`](../../ein.rs/crates/ein-infer/tests/search_semantics.rs): what
+  exercises every demo here.
