@@ -45,6 +45,11 @@ on; what they found outside their scope is in [`findings.md`](findings.md).
 user's ruling of that day on Q-M1f.307, (A) by the static reading: the obligations rung proposes at root what a
 debt a commitment can bring would, `W26/oblig-derived-activator` is fixed, and Q-M1e.11 is ruled; **it is the
 phase's one exception so far to *no answer changes***, the witness's answer alone, by its register row.
+[S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-task-4)'s task 4 ran on
+2026-11-16, on the user's rulings of that day on Q-M1f.306, (b) for E-1 and *"dunder never an object, wide
+reading"*, (a) for E-7 and (d) for E-54: the blind enumerator takes no kernel dunder for an object, the
+register's W96 is filed and fixed, and a relation's name bound as an object is named by the read-out; **it is
+the phase's second exception to *no answer changes***, the four witnesses' answers alone, by their rows.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.

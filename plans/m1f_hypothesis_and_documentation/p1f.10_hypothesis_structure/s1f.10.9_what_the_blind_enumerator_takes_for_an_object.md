@@ -4,9 +4,12 @@
 **Status:** planned 2026-11-12; at the re-plan of 2026-11-15, E-54 added and its stop made the phase's one
 stop. **Tasks 1 to 3 ran on 2026-11-15** ([§ Record](#record-2026-11-15-tasks-1-to-3)): the witnesses rebuilt
 and banked, the census taken, the question written as
-[Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object). **Stopped at the
-question**, which is put at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_shown.md)); task 4 waits
-for the ruling, and nothing changes before the user replies.
+[Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object). Stopped at the
+question, which was put at the phase's one stop ([S1f.10.12](s1f.10.12_the_structure_shown.md)). **Ruled
+2026-11-16, and task 4 ran the same day** ([§ Record](#record-2026-11-16-task-4)): (b) for E-1, *"dunder never
+an object, wide reading"*, so the blind enumerator's objects leave the kernel's two dunders out and the
+register's W96, four rows, is filed and fixed; (a) for E-7, left and named by a `relation names` row; (d) for
+E-54, left. **Done.** H9-1, H9-4 and H9-5 stay open in [`findings.md`](findings.md#from-s1f109).
 **Depends on:** nothing in the phase. [S1f.10.1](s1f.10.1_exclusion_census.md)'s census reads the same
 candidate sets, and the bundle marks the candidates this stage counts.
 **Source:** row 56 of [section J](../p1f.6_calculator/questions.md#j-findings-that-need-an-owner) of the
@@ -653,3 +656,303 @@ default as this file names it; **not acted on before the user replies**.
 - `./run_tests.sh` was not run, by instruction. Run: `cargo fmt --all --check`, `cargo clippy --workspace
   --all-targets -- -D warnings` (both as `run_tests.sh` runs them, clean), and `python3 utils/doc_audit.py
   --links --check`.
+
+---
+
+## Record (2026-11-16): task 4
+
+**The rulings.** The user, 2026-11-16, shown the phase's four questions with their defaults at the stop: *"all
+defaults ok"*. For [Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object)
+that is **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, left, and the read-out names such
+candidates; **(d) for E-54**, left. The entry had left one thing to the user that no default covered, whether
+*never* covers a dunder a program writes as a value. It was asked back, and the user ruled it the same day:
+*"dunder never an object, wide reading"*. The task was started on the narrow reading and nothing of it was
+committed; what is built is the wide one.
+
+**The commits**, on the branch `worktree-agent-a5f864753ca542a7f`, from `3e59b90a`:
+
+| commit | what |
+|---|---|
+| `200df470` | W96 filed `open`, four rows, each with its witness and corpus entry; finding H9-4 |
+| `4ee131e3` | the fix, the rows flipped, `dunder_objects.rs`, the docs of what an object is, 271 golden lines; H9-5 |
+| `f475ed2e` | W96's `[case.fixed]` names `4ee131e3` |
+| `05bebca9` | E-7's naming: `relation_names.rs`, the `relation names` row, the summary's key, their pages and tests |
+| this one | the record, the phase's status, Q-M1f.306's *Built*, the calculator's three rows closed, and `AGENTS.md`'s standing rule on the two dunders, which gains *never an object* in place |
+
+### What an object is, and where it is decided
+
+One place: [`hypgen::candidate_objects`](../../../ein.rs/crates/ein-infer/src/hypgen.rs), the list the blind
+enumerator fills every slot from. It was the KB's names index at the state, which holds the head of every fact,
+united with [`invariant::program_names`](../../../ein.rs/crates/ein-infer/src/invariant.rs); less a signature's
+type roles, seven kernel words, and what the registry calls a relation or a rule. **It now also leaves out
+`terms.kernel.closed` and `terms.kernel.symmetric`, by name**: three lines, an array of the two and one clause
+of the filter. So a dunder is no object
+
+- where the names index holds it as the head of a fact a rule derives and no registry holds it, the three
+  witnesses the narrow reading would have moved; and
+- where a program writes it in an argument position, `(lift complete __closed__)`, the fourth.
+
+**`invariant::program_names` is not changed.** It and the enumerator's objects were one list with two readers:
+`candidate_objects` unions it in, and `Universe::of` takes it whole as the alive-set invariant's baseline. The
+exclusion is made in `candidate_objects`, after the union, so the invariant's list still holds a dunder
+wherever a program writes one as a value, a rule that concludes a fact naming it breaches nothing, and nothing
+is refused at load: Q-M1f.7 (b), *used as a relation or a value*, stands. `predicates::domain`, the third
+reader of that list (what an unbound `eq`/`neq` variable ranges over), is unchanged too.
+`ein-infer/tests/dunder_objects.rs`'s last test holds both halves on the fourth witness: the name is on the
+list, and the object is not in the pool. `alive_invariant.rs`'s seed check, which holds every name of the
+program to be an object but the kernel's words, lists the two dunders among those words; no corpus program
+needed it.
+
+**The invariances that hold it**, `ein-infer/tests/dunder_objects.rs`, each by the cube (`region::compute`,
+`ein oracle`'s library) and held to a bare describe's counts:
+
+| test | what is equal |
+|---|---|
+| `a_closure_by_a_rule_answers_what_the_closure_by_a_fact_answers` | four pairs, the rule form against the fact form: the rung, H in its order, R commitment for commitment, the states. The register's witness and its control read from their files; a closure by a rule with an empty `:match`; one by a rule that reads the table; a symmetry by a rule. No H names a dunder |
+| `a_dunder_written_as_a_value_is_no_object` | the fourth witness against itself with `(__closed__ thing)` also written, which registers the dunder and changes nothing else: one H, `(total a)`, and one R, two states |
+| `the_shipped_closing_rule_leaves_no_dunder_to_propose` | `(import std.math.arith)` beside an open `total` against the same with `total` closed: no candidate, R {∅} |
+| `the_programs_names_hold_a_dunder_where_it_is_written_as_a_value` | on every form: whether `program_names` holds a dunder, and whether `candidate_objects` does |
+
+and one unit test in `hypgen.rs`, `candidate_objects_never_hold_a_kernel_dunder`. The answer does not depend on
+the import form, the id order or a lever: `import_invariance.rs`, `id_order_invariance.rs` and
+`lever_invariance.rs` ran green over the corpus with the five new programs in it, and `explore.rs` holds every
+mode to the oracle.
+
+### The register: W96
+
+Four rows of one case, filed `open` in `200df470` with today's answer and the right one as data, flipped in
+`4ee131e3`. `[case.wrong]` is `ein solve` on the gate build of `3e59b90a`; `ein oracle` agreed on each.
+
+| row | witness, under `examples/ein-bugs/wrong-answers/` | H, R before | H, R after |
+|---|---|---|---|
+| `W96/closed-by-rule` | `dunder-object-closed-by-rule.ein`: ten digits closed by a rule, `total` open | 11, 2 048 states | 10, 1 024, its control's |
+| its `[case.control]` | `dunder-object-closed-by-fact.ein`: the closure written as a fact | 10, 1 024 | the same |
+| `W96/arith-closing-rule` | `dunder-object-arith.ein`: `(import std.math.arith)`, `total` open | 1, 2 | none, 1: R {∅} |
+| `W96/symmetric-by-rule` | `dunder-object-symmetric-by-rule.ein`: `(__symmetric__ near)` derived | 3, 8 | 2, 4 |
+| `W96/as-value` | `dunder-object-as-value.ein`: `(lift complete __closed__)` | 2, 4 | 1, 2 |
+
+The first row's run is `solve --maximal`, one state, since a `now` lists its states and 2 048 are too many to
+write down; the counts are in its `[case.wrong]`, `[case.control]` and `[case.region]`. The other three ask all
+of R. None states an `:expect`.
+
+**The symmetric witness is not the entry's.** The entry's has `(near a b)` alone. With it in the corpus two
+sweeps failed for a reason that is not E-1's: the saturation that derives a `(__symmetric__ R)` by a rule does
+not mirror R, so root is not a fixpoint ([H9-4](findings.md#h9-4--a-__symmetric__-r-a-rule-derives-is-not-mirrored-by-the-saturation-that-derives-it)).
+The witness writes `near` both ways round, which leaves the mirror nothing to add; its H and R are the entry's,
+3 and 8 before, 2 and 4 after.
+
+### The corpus diff
+
+**Method.** `ein solve FILE -H --json-summary OUT` on every one of the 872 corpus programs, the gate build of
+`3e59b90a` against the gate build of the fix, both on the checkout's stdlib (`EIN_STDLIB`): stdout, the first
+line of stderr, the exit code and the summary compared, its timing fields aside. The script and what it printed
+are untracked, under the session's scratch directory.
+
+**No existing program's H, R, read-out, stderr or exit code moved.** 26 programs differ: the four witnesses, in
+their answers, and 22 in one field of the summary and nothing else.
+
+- **`root.hypgen.pre_candidate.closed_relation` drops on 22 programs.** The counter counts one skip per focal
+  object and closed relation. On these programs the dunder was an object that proposed nothing, every relation
+  it was tried on being closed, so it was walked and counted and never reached H. `tests/imports/lower.ein` 20 →
+  16; `stdlib/bool/props.ein` and the seven programs under `tests/stdlib/bool/props/` 1 026 → 972;
+  `stdlib/math/arith.ein` 2 → the key absent. The 22: `examples/binary_logic/{full_adder,simulation}.ein`;
+  `stdlib/math/{arith,positional}.ein`; `stdlib/bool/{circuit,gates,props}.ein`;
+  `tests/stdlib/bool/circuit/{01_propagate,02_one_value}.ein`, `gates/01_a_relation_a_function.ein`, `props/01`
+  to `07`; `tests/imports/{lower,upper,upper_without_entry,01_nested_import_whole,02_nested_import_left_behind}.ein`.
+  **No test and no page pins a value of the counter** (`grep -rn closed_relation docs/kernel ein.rs/crates
+  utils`): `answer_dump.md` and `events.md` define the key, `hypgen_coverage.rs` names it. `closed.rs`'s header
+  gave two corpus totals of it with no command behind them, and they are taken out.
+- **Under the probe `EIN_LEFTOVER=1`**, which asks the blind enumerator alone at each listed state and is in no
+  golden, the same sweep finds six more: `leftover.states` drops on
+  `examples/binary_logic/{knights,not_equivalent,satisfiable}.ein`, `stdlib/bool/inputs.ein` and
+  `tests/stdlib/bool/inputs/{01_in_drives,02_required}.ein` (`knights` 867 → 809 a state). They are six of the
+  eight programs of [H9-3](findings.md#h9-3--e-1-and-e-7-are-absent-from-the-corpuss-answers-by-the-rung-twelve-programs-take),
+  whose H the obligations rung builds: the count is of what the blind enumerator would still propose, and it
+  proposed about the dunder.
+
+**The goldens**, `ein-render/tests/golden/corpus_shapes.md5`, 271 lines of 189 programs, re-banked per commit
+and under `EIN_CORPUS_SLOW=1` in `4ee131e3`, on the main session's decision of 2026-11-16 (the stop in this
+task's brief, *an existing program's golden moves*, was reached and reported before anything was re-banked):
+
+| lines | programs | why |
+|---|---|---|
+| 64 | the four witnesses, 16 each: `hyp`, `hyp+closed`, `read-out[…]` and `cores[…]` for describe, maximal, minimal, single and n2, `oracle`, `region-lattice`, `region-trace`, `states` | their answers moved, by the rows. The control's lines did not |
+| 22, `hyp` | the 22 programs above | the enumerator's narration at root: fewer skip lines, the dunder not walked |
+| 185, `hyp+closed` | 96 under `examples/ein-bugs/wrong-answers/`, 14 `ein-bugs/`, 12 `features/`, 9 `branching/`, 5 `syntax/`, 18 `saturation/`, 2 `binary_logic/`, 1 `broken/compile/`; 3 `stdlib/bool/`, 2 `stdlib/math/`; 7 `tests/stdlib/bool/props/`, 5 `tests/imports/`, 4 `tests/stdlib/elim/`, 2 `tests/stdlib/macro/`, 2 `tests/stdlib/bool/circuit/`, 1 each of `tests/text/`, `tests/stdlib/bool/gates/`, `tests/stdlib/bijection/` | the op runs `closed::emit_closed`, **a pass no command calls**, before the enumerator. The pass writes `(__closed__ R)` facts itself, no registry holds the dunder, and under the op the enumerator proposed facts about it wherever the pass closed something |
+
+That the re-bank moved no other line of an existing program, the check, run on the diff of `4ee131e3`:
+
+```sh
+git diff -U0 200df470 4ee131e3 -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5 \
+  | grep '^[-+][0-9a-f]' | grep -v 'dunder-object-' | grep -v -E '::hyp(\+closed)?$' | wc -l      # 0
+```
+
+So no `cores[…]` line of the 22 holds the counter: the summary is in no digested rendering of theirs.
+`ein-cli/tests/golden/corpus_exits.txt` gained the five programs' ten cells in `200df470` and did not move in
+`4ee131e3`.
+
+**`hyp+closed` digests a pass no command calls.** It is how the corpus held E-1 in its goldens while no
+program's H held a dunder, and why the census of task 2, which read H as the commands build it, counted none.
+The op and the pass are as they were; whether they stay is
+[S1f.10.16](s1f.10.16_what_the_walk_left.md)'s, and it is filed as
+[H9-5](findings.md#h9-5--the-shape-goldens-hypclosed-op-digests-a-pass-no-command-calls).
+
+**The census, re-taken on the final build**:
+
+```sh
+cargo run --profile gate --manifest-path ein.rs/Cargo.toml -p ein-infer --example object_census
+```
+
+2026-11-16, at `05bebca9`, the oracle's default limit of 16. 872 corpus files, 223 that do not load, 649 read.
+
+| the rung that built H | programs | with a candidate | with a marked candidate |
+|---|---:|---:|---:|
+| blind | 466 | 110 | 3 |
+| declined, so blind | 9 | 9 | 0 |
+| an hrule | 88 | 83 | 0 |
+| the obligations | 62 | 20 | 5 |
+| `(solve :no-search)` | 21 | 0 | 0 |
+| stuck | 3 | 0 | 0 |
+
+Where the blind enumerator built H: 475 programs, 119 with a candidate, 2 213 candidates. That is task 2's 470,
+115 and 2 190 and the five new files, four of them with a candidate, 10 + 10 + 2 + 1.
+
+| the candidate names | task 2, 2026-11-15 | now |
+|---|---|---|
+| **a kernel name** (`K1`, `K2`), in H where the blind enumerator built it | 0 programs | 0 programs |
+| the same, in what the blind enumerator alone would propose where another rung built H | `K1` on 8 programs, 458 candidates | **0**: 86 485 candidates on those 130 programs where it was 86 943, 458 fewer |
+| **a relation's name** (`R1`), in H | 1 program, 16 candidates | 1 program, 16: `features/01`, the count the read-out's row prints |
+| the same, alone | 4 programs, 200 | 4 programs, 200 |
+| **a name only a module writes** (`IN`) | 2 programs, 4 candidates, R differs on both | the same |
+
+So the example's marks agree with the engine: it finds no dunder among any candidate the blind enumerator
+proposes, as H or alone, and its `R1` on the blind rung is the row's count.
+
+### E-7: left, and named
+
+The candidates stay and no answer moves. What was built is the naming, as
+[`types_as_objects`](../../../ein.rs/crates/ein-infer/src/types_as_objects.rs) names a type bound as an object:
+
+- [`ein_infer::relation_names`](../../../ein.rs/crates/ein-infer/src/relation_names.rs). Where the blind
+  enumerator built H (the rung took `Blind`, or `Declined` and fell through), every argument of a candidate that
+  is **the head of a fact root's fixpoint holds, or a relation a rule's `:assert` names as written**: the names,
+  the relations of the candidates that name one, and how many candidates do. An argument of a candidate is an
+  object, so no registry holds a relation of that name: no file declares it and none writes a fact of it.
+- **The read-out**: a `relation names` row under `universe`, after `types`, on every question, `ein oracle`
+  too: *explicitly-dislikes — a relation only a rule concludes, and 16 candidates of is-a, likes name it as an
+  object: no file declares it or writes a fact of it*.
+- **`--json-summary`**: `root.hypgen.relation_names_as_objects`, `{objects, relations, candidates}`, **written
+  only where it is not empty**, as `later_debts` is, so every other program's summary is byte for byte what it
+  was. `ein oracle --dump`: the same key in `region.json`, written the same way, and `**Relation names as
+  objects**` in `region.md`.
+
+**It prints on one corpus program**, `examples/features/01_not_and_absent.ein`, 16 of its 35 candidates, as the
+entry said. Its seven lines of `corpus_shapes.md5` are re-banked in `05bebca9`, per commit and under
+`EIN_CORPUS_SLOW=1`: `read-out[describe]`, `read-out[maximal]`, `read-out[minimal]`, `read-out[single]`,
+`read-out[n2]`, `oracle` and `region-trace`; `git diff -U0` on the file names no other program.
+`read_out_examples.md`, written by `utils/read_out_examples.py`, gains the row in X15, that program's own
+example, and three sentences of caption; X1 to X14 and X16 to X20 are unchanged, so no example's read-out moved
+by the E-1 fix either. `read_out.md`'s `universe` table, `answer_dump.md`'s three keys, `region_dump.md` and
+`solution_semantics.md` § 1.4 state it; `read_out_reference.rs`, `answer_dump.rs`, whose key census reads
+`features/01` for the key no other program writes, and `region_dump.rs` hold the pages.
+`ein-cli/tests/relation_names_row.rs` holds the row on the eight questions (describe, `--maximal`, `--minimal`,
+`--single`, `-n 1`, `--count`, `--monotone`, `--no-search`), the summary's key, `ein oracle` and its dump, on a
+program written for it and on its copy that declares the relation, which prints no row and writes no key.
+
+### E-54: left
+
+Nothing built: the universe is the program's names wherever they were written. **What the read-out says of it
+today is nothing.** The `universe` row counts H's candidates and `-H` lists them by relation, a module's
+relation under the name the main file spells, else its full name (`lib.shape`); no row and no key says that a
+name or a relation is one only an import brings. The witness prints *universe 4 candidates, 0 dead alone*
+under both import forms. The two corpus programs whose R is over a module's names,
+`import-directives-as.ein` and `-twice.ein`, keep their four states, which their `fixed` rows hold as right.
+
+### What stays open
+
+- **[H9-1](findings.md#h9-1--a-reserved-word-a-program-writes-as-a-value-is-a-name-of-the-program-and-never-an-object)
+  is not in this ruling and is not touched.** A reserved word a program writes as a value, `eq` in `(order
+  eq)`, is a name of the program and never an object, and read against *every name is in the candidate list* it
+  is a wrong answer with no row. It is the reverse of what was ruled here: the ruling takes a kernel name out of
+  the objects, H9-1 asks whether one should be in. `solution_semantics.md` § 1.2 now states the exclusion as
+  what the engine does, beside the dunders', and makes no claim that it is ruled.
+- **[H9-4](findings.md#h9-4--a-__symmetric__-r-a-rule-derives-is-not-mirrored-by-the-saturation-that-derives-it)**,
+  found by this task: a `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it.
+  Not fixed, no row.
+- **[H9-5](findings.md#h9-5--the-shape-goldens-hypclosed-op-digests-a-pass-no-command-calls)**, found by this
+  task: the `hyp+closed` op.
+- [H9-2](findings.md#h9-2--a-written-dunder-fact-registers-the-dunder-as-an-auto-vivified-relation-of-the-program)
+  stands as it was: a written dunder fact still registers the dunder as a relation of the program. The fix is
+  in the enumerator, so that difference is in place for the registry's other readers; the enumerator no longer
+  reads it for a dunder.
+
+### Tests and verification
+
+Run in the worktree, on AC, with two other agents' suites running on the machine. Each was run on the tree
+whose `ein.rs/`, `corpus/`, `examples/`, `docs/`, `stdlib/`, `tests/` and `utils/` are `05bebca9`'s, after the
+last formatting edit; this commit changes files under `plans/` and one bullet of `AGENTS.md`, after which the
+link audit and the four tests that read `AGENTS.md` or the gate's lists (`embedding`, `cli_semantics`,
+`gate_steps`, `nightly_steps`) were run again, green.
+
+| command | result |
+|---|---|
+| `cargo test --manifest-path ein.rs/Cargo.toml --profile gate --no-fail-fast -p ein-infer -p ein-corpus` | green; `dunder_objects`, `register_region`, `alive_invariant`, `claim_round_trip`, `detector`, `explore`, `hypgen_coverage` among them |
+| `cargo test … --profile gate --no-fail-fast -p ein-cli`, the whole crate | green; `wrong_answers`, `import_invariance`, `lever_invariance`, `read_out_reference`, `corpus_cli`, `config_reference`, `answer_dump`, `region_dump`, `relation_names_row` among them |
+| `cargo test … --profile gate --no-fail-fast -p ein-render`, the whole crate | green; `id_order_invariance` unblessed, `dot_wellformed`, `jobs_invariance` among them |
+| `EIN_CORPUS_SLOW=1 cargo test … --profile gate -p ein-render --test id_order_invariance`, unblessed | green |
+| `cargo fmt --all --check` | clean |
+| `cargo clippy --workspace --all-targets -- -D warnings` | clean |
+| `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | clean |
+| `python3 utils/check_hashmap_iteration.py` | *determinism lint ok — 316 file(s), 62 annotated* |
+| `python3 utils/stdlib_manifest.py` | *stdlib ok — 24 modules match MANIFEST.sha256* |
+| `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md` | *── links ── 574 pages, 0 finding(s)*, run with this record in place |
+
+The same suites were also green on each earlier commit's tree but one: on `200df470`, the rows open,
+`ein-infer`, `ein-corpus`, the six `ein-cli` tests of the brief and the shape golden both ways; on `4ee131e3`,
+the same set.
+
+**`corpus_cli` under `EIN_BLESS=1` fails one test of seven on this machine today, and it is the clock.**
+`EIN_BLESS=1` implies the slow entries, and `the_slow_flag_still_describes_the_sweep` then holds each to four
+times its recorded cost: `examples/beyond_arith/send_more_money.ein`, recorded 8 404 ms, swept in 49 303 ms, and
+`examples/saturation/square-bwd/houses.ein`, 1 584 against 7 204, the test's own message asking *machine load?*.
+The load average was 28 with the other agents' suites running. Neither program's answer moved, and alone the
+gate build of `3e59b90a` and this one take 24.7 s and 28.8 s on the first and 2.8 s and 2.7 s on the second, so
+the change is not what slowed them. The same test binary unblessed, which does not read the slow entries, passed
+on every tree, and `corpus_exits.txt` did not move under the bless. **So the slow entries' cost is not re-held by this task**: a quiet
+machine's `EIN_CORPUS_SLOW=1 cargo test … --test corpus_cli` is what holds it.
+
+### Defaults taken
+
+1. **The first row's run is the maximal line**, one state, and its counts are in three other blocks: a `now`
+   lists its states, and no row of the register lists two thousand.
+2. **The `__symmetric__` witness writes `near` both ways round**, so that it does not rest on H9-4. Its H and
+   R are the entry's.
+3. **The dunders are left out in `candidate_objects`, not by a change to the names index or the registry**: the
+   smallest change that makes the ruling true of the blind enumerator, and the one that leaves every other
+   reader of those two as it was.
+4. **E-7's count is of the candidates that name a relation a rule concludes**, by two clauses: a head root's
+   fixpoint holds, and a relation a rule's `:assert` names as written. The second names a relation no rule has
+   fired for at root where the program writes its name as a value. Not counted: a relation a rule only *reads*
+   (`:match`), which nothing concludes, and a relation a rule writes through a parameter that root holds no fact
+   of. `object_census`'s `R1 ∪ R2` also counts a relation only a `:match` names; on the corpus the two agree,
+   16 on one program.
+5. **The row is a row of its own, `relation names`, after `types`**, and not a number inside the `universe`
+   row: the ruling's precedent names the objects and their relations, and a program with none prints the
+   `universe` row it printed.
+6. **The JSON keys are written only where not empty**, in the summary and in `region.json`: an always-present
+   key would have moved every program's summary.
+7. **`ein test`'s report does not carry it**, as it does not carry `later_debts`: the ruling names the
+   `universe` row and `root.hypgen`.
+8. **The example is X15**, `features/01`'s own, and no new example: the row has one corpus program.
+9. **`alive_invariant.rs`'s list of the kernel's words gains the two dunders**, though no corpus program needs
+   it, since the list says which names of a program are never objects and that is now true of them.
+10. **`closed.rs`'s two corpus totals are removed, not re-taken**: no command was behind them.
+
+### Not done
+
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: by instruction.
+- H9-1, H9-4 and H9-5 are filed and not fixed; none has a register row.
+- The `hyp+closed` op and `emit_closed` are not changed or deleted.
+- `ein test`'s JSON report and the lines it prints beside a claim do not carry the new naming.
+- The untracked artefacts of tasks 1 to 3 under the main tree's `build/s1f.10.9/` were read and not rewritten:
+  their read-outs are of the engine before the fix.

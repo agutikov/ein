@@ -309,7 +309,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.302](#q-m1f302--what-stdmathrats-unreduced-answer-fixes-and-rat-norm-under-b) | what `std.math.rat`'s unreduced answer fixes, and `rat-norm` under (b) | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator in normal form, D with no high zero, nothing reduced; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.303](#q-m1f303--rat-simplify-asks-stdmathgcd-the-numerator-first) | `rat-simplify` asks `std.math.gcd` the numerator first | **defaulted 2026-11-15 (S1f.6.33), the user's to revise**: (a), the numerator first, as before; [S1f.6.33](p1f.6_calculator/s1f.6.33_lowest_terms_on_request.md#record-2026-11-15) |
 | [Q-M1f.304](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) | `route_invariance` past the default budget, past any shard's five minutes | **ruled 2026-11-15: (d)**, no test runs past the default budget (the user: *"(d)"*); defaulted (a) the same day by T7; built at P1f.6's close; [S1f.6.39](p1f.6_calculator/s1f.6.39_the_gate_made_fast.md#record-2026-11-15-t7-the-cuts-as-ruled) |
-| [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, left, and the read-out names such candidates; **(d) for E-54**, left. Whether (b) covers a dunder a program writes as a value is asked back, and that one witness is not moved before the reply. Built by S1f.10.9's task 4 |
+| [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, left, and the read-out names such candidates; **(d) for E-54**, left. Whether (b) covers a dunder a program writes as a value was asked back and **ruled the same day**: *"dunder never an object, wide reading"*. **Built 2026-11-16** by S1f.10.9's task 4: the register's W96, four rows, filed and fixed; a `relation names` row for E-7 |
 | [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(A)**, H holds what a node's debt would propose, by the static reading, which the census selected. **Built 2026-11-16** by [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-16-task-4)'s task 4: W26 fixed, the witness alone moved; Q-M1e.11 is answered by it |
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **put 2026-11-15, still waits for the user.** It has no default: the stage's recommendation, (b), restates a ruling of M1d's. The user's *"all defaults ok"* of 2026-11-16 is not read as taking it; asked back that day, and nothing is acted on |
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth |
@@ -6128,6 +6128,36 @@ replies**: no candidate is removed, no register row filed, no read-out row added
 [T1f.10.9.4](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#tasks).
 
 **Ruled 2026-11-16.** The user, shown the phase's four questions with their defaults at the stop: *"all defaults ok"*. So: **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, the candidates stay and the read-out names them; **(d) for E-54**, the universe is the program's names wherever they were written. One thing the entry left to the user is not covered by a default and is asked back: whether *never* covers a dunder a program writes as a value (the fourth E-1 witness, 4 states to 2). Until the reply that witness is not moved: (b) is built for a dunder that is an object only because no file wrote a fact of it.
+
+**The sub-question, ruled 2026-11-16.** The user, asked whether *never* covers a dunder a program writes as a
+value: *"dunder never an object, wide reading"*. So it does: a kernel dunder is no object of the blind
+enumerator where a rule derives the fact it heads, and none where a program writes it in an argument position.
+Writing it so stays legal (Q-M1f.7 (b)), and it stays a name of the program as the alive-set invariant lists
+them (Q-M1e2.9 (a)); it is the enumerator's objects that leave it out. Closed.
+
+**Built 2026-11-16** by
+[S1f.10.9](p1f.10_hypothesis_structure/s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-task-4)'s
+task 4.
+
+- **E-1, (b), wide.** `hypgen::candidate_objects` leaves `__closed__` and `__symmetric__` out by name;
+  `invariant::program_names` is unchanged. Filed as the register's **W96**, four rows, `open` in `200df470` and
+  fixed in `4ee131e3`: ten digits closed by a rule, 2 048 states → 1 024, its closed-by-fact control's;
+  `(import std.math.arith)`, 2 → 1; `__symmetric__` derived by a rule, 8 → 4; `__closed__` written as a value,
+  4 → 2. One closure stated two ways has one H and one R, held as an invariance by
+  `ein-infer/tests/dunder_objects.rs`.
+- **What the census did not count.** No corpus program's H held a dunder, and none of their H, R, read-outs or
+  exit codes moved. But on 22 programs the dunder was an object that was walked and proposed nothing, and the
+  summary's `root.hypgen.pre_candidate.closed_relation` and the shape golden's `hyp` line dropped; and the
+  golden's `hyp+closed` op, which runs a pass no command calls, moved on 185. The lines were re-banked on the
+  main session's decision, each group named in the fixing commit; the record has the lists and the check that
+  no other line moved.
+- **E-7, (a).** The candidates stay. The read-out prints a `relation names` row under `universe` and the
+  summary carries `root.hypgen.relation_names_as_objects`, written only where there is one: on one corpus
+  program, `examples/features/01_not_and_absent.ein`, 16 of its 35 candidates.
+- **E-54, (d).** Nothing built.
+- **Found on the way, open, in the phase's `findings.md`**: H9-4, a `(__symmetric__ R)` a rule derives is not
+  mirrored by the saturation that derives it; H9-5, the `hyp+closed` op. H9-1, the reverse of E-1 for a
+  reserved word written as a value, is not in the ruling and stays open.
 
 ### Q-M1f.307 — A debt root was not told of: what H holds
 

@@ -315,8 +315,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `:priority` is gone: the agenda is FIFO in written order.
 - **`:why` is required** on every relation, rule, hrule and macro;
   `--no-require-why` loads a program without.
-- `__closed__` and `__symmetric__` are reserved and never bound; names the
-  loader makes up start with `#` (`ein_core::text::INTERNAL_NAMES`).
+- `__closed__` and `__symmetric__` are reserved and never bound, and never
+  an object the blind enumerator proposes about, whether a rule derives the
+  fact one heads or a program writes one as a value, which stays legal
+  (`ein-infer/tests/dunder_objects.rs`); names the loader makes up start
+  with `#` (`ein_core::text::INTERNAL_NAMES`).
 - **`written` is the loader's**: it states `(written T)` for every fact
   nested in a fact a file writes, and for each one a rule's conclusion nests
   that holds no variable, derived from the fact it was read in. A rule reads
