@@ -102,7 +102,7 @@ Cross-references:
   relation's name.
 - `rel.properties` → `tuple[Fact, ...]` — rule-application facts
   targeting this relation (T2 activators from
-  [`../01-ein-graph/02_rules.md` §2.2](../01-ein-graph/02_rules.md)).
+  [rules as statements § Relation-polymorphic](../../../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic)).
 - `rel.rules` → `tuple[Rule, ...]` — rules naming this relation, OR
   whose name appears as a property-fact head on this relation.
 - `rel.rule` → `Rule | None` — if this relation's *name* matches a
@@ -443,7 +443,7 @@ Two entities are equal iff their identity tuples are equal — `loc` and
 provenance never affect equality. **Facts are
 also totally *ordered*** wherever the engine has to sort them, by a rule that
 is stated rather than inherited:
-[`defined_behaviour.md` §2.1](../../defined_behaviour.md). For
+[values and their order § Values are totally ordered](../../../ein/reasoning/static-ir/values-and-order.md#values-are-totally-ordered). For
 nested-fact args, equality cascades pointwise: outer Facts are
 equal iff their nested Fact args are equal (which they are iff
 *their* `(relation_name, args)` match, recursively).

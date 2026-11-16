@@ -82,7 +82,7 @@ The data model encodes this in fact identity (by `(rel, args)`
 tuple) and in name-identity for named objects — the `NameRef`
 index keyed by the atom (by-name instance identity was removed with
 the type/instance entity-view, S1.7.23); see
-[`../02-data-model/01_entities.md` §1.4](../02-data-model/01_entities.md).
+[names and atoms § Identity, stated once](../../../ein/reasoning/static-ir/names-and-atoms.md#identity-stated-once).
 
 ## 3. Two flavours of node
 
@@ -179,7 +179,7 @@ Worked example — the *Jack drinks coffee* fragment (full doc:
    carries over to those instances.
 
 The full inheritance flow is the subject of
-[`02_rules.md` §2](02_rules.md) — relation polymorphism (T2 rules)
+[rules as statements § Three kinds](../../../ein/reasoning/static-ir/rules-as-statements.md#three-kinds-by-what-a-pattern-ranges-over) — relation polymorphism (T2 rules)
 mechanises this propagation.
 
 **is-subtype vs is-instance.** Both look like is-a, but they carry

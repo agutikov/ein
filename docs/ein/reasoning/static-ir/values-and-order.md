@@ -114,6 +114,10 @@ three shapes:
 
 Names are ASCII, so a name never needs more than the first two escapes; a text, which may hold any Unicode, can.
 
+The quoted form is total over every value, so it serves as an order too, the texts compared character by
+character: the facts of a contradiction's core, drawn as the edges into `⊥` in a refutation's drawing, which a
+trace embeds, are listed in the order of their quoted forms, whatever order they were found in.
+
 ## What holds it
 
 | claim | test |
@@ -130,3 +134,4 @@ Names are ASCII, so a name never needs more than the first two escapes; a text, 
 | every state an answer's files hold reads back as that state | `ein-cli/tests/answer_round_trip.rs` |
 | no keyword pair reaches a value's label in a drawing | the renderer's unit test `no_keyword_pair_reaches_a_values_label` in `ein-render/src/dot_util.rs`; `ein-ir/tests/grammar_pages.rs`: `every_row_of_the_grammars_table_is_refused_at_the_parse` |
 | the quoted form of every value shape, and its escape for every code point | `ein-core/tests/format_tables.rs`: `repr_of_every_reachable_value_shape`, `repr_escape_table_code_point_by_code_point` |
+| a refutation's edges into `⊥` are in the order of the facts' quoted forms, whatever order they were collected in | `ein-render/tests/presentation_semantics.rs`: `the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered` |

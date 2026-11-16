@@ -194,7 +194,7 @@ The distinction is **presentation only** — the engine treats every fact
 alike, and fact identity is `(relation_name, args)` regardless. There is no
 way to override it, and no need for one: write the annotation that is true —
 a numbered condition gets `:source`, a property tag gets nothing. See
-[`../02-data-model/01_entities.md` §4](../02-data-model/01_entities.md)
+[names and atoms § Identity, stated once](../../../ein/reasoning/static-ir/names-and-atoms.md#identity-stated-once)
 and [`plans/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
 deduction by common sense](../../../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md)
 for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.
@@ -350,7 +350,7 @@ domain/range check, `std.typing`'s hierarchy wiring, zebra2's
 `disjunctive-prune`. The kernel never resolves a signature atom to
 anything: `Relation.signature` holds *opaque atoms*, and since S1.7.23
 there are no `Type` entities to resolve them **to**
-([`../02-data-model/01_entities.md` §1.1](../02-data-model/01_entities.md)).
+([names and atoms § The kinds of named thing](../../../ein/reasoning/static-ir/names-and-atoms.md#the-kinds-of-named-thing)).
 
 **As structure — kernel, three signals.** The engine reads the
 signature's shape only, and only in these places:

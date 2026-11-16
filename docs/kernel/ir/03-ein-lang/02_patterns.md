@@ -180,7 +180,7 @@ containing it loads, compiles and never fires. Measured, M1e S1e.2.2: exit 0,
 `solutions (k) 1`. Nothing refuses it, because the loader is deliberately
 **open-world tolerant** — an undeclared head auto-vivifies a
 `Relation(declared=false)`
-([`../02-data-model/02_store.md` §3](../02-data-model/02_store.md)). What
+([relations and facts § Reading a program into a store](../../../ein/reasoning/static-ir/relations-and-facts.md#reading-a-program-into-a-store)). What
 catches a typo'd head is the *symptom*: a rule that never fires. Ask
 [`--events`](../../inference/events.md) for the `fire` stream, the way
 [`utils/stdlib_census.py`](../../../../utils/stdlib_census.py) does for the
@@ -205,7 +205,7 @@ people out because the two spellings look interchangeable and are not:
 Equality has no *semantics* in M1 beyond that: a stored `(= a b)` licenses no
 substitution and joins no congruence closure. The engine carries an
 `EqClasses` union-find and does not drive it —
-[`../02-data-model/02_store.md` §8](../02-data-model/02_store.md) records the
+[relations and facts § Equality](../../../ein/reasoning/static-ir/relations-and-facts.md#equality) records the
 seam as deliberate, for a future e-graph promotion (F4 Q30). What `=` *does*
 have is a rendering: an arity-2 equality fact draws as a `doublecircle`
 equality-class node with an edge to each side
@@ -284,7 +284,7 @@ S1f.5.5's swap refused it at the parse ([Q-M1e2.28](../../../decisions/language/
 > **The aggregate registry was designed and never built.** An earlier draft of
 > this page listed `unique-remaining`, `no-remaining-option` and
 > `forbidden-by-exclusion` as *"the M1 starter set"*, and
-> [`../01-ein-graph/02_rules.md` §2.3](../01-ein-graph/02_rules.md) sketches
+> [rules as statements § Structural](../../../ein/reasoning/static-ir/rules-as-statements.md#structural) sketches
 > four more (`elimination-by-exhaustion`, `arc-consistency-propagate`,
 > `global-cardinality`, `forced-by-unique-position`) plus `in-domain`. **None
 > of the eight exists** — not in the crates, not in `stdlib/`, not in any
