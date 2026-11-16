@@ -125,3 +125,78 @@ where T3 shows it matters and otherwise leaves it as it is, named here so the om
 
 **`most-constrained`**, the scoring mode that has returned `0.0` since it was named, is not this stage's any
 more: no command reaches it, and [S1f.10.16](s1f.10.16_what_the_walk_left.md) deletes it or says who reads it.
+
+## Record (2026-11-16)
+
+### T1: the inventory, verified before any route changed
+
+Against the code at `e664a561`, the tree as [S1f.10.3](s1f.10.3_the_restricted_join.md#record-2026-11-16) left it.
+The eight rows of [the plan's table](#the-inventory-every-order-point-the-routes-have), and five it did not have.
+
+| # | where | as the code has it | the plan's row |
+|---|---|---|---|
+| 1 | `tree.rs`, `branch_rest` | Among the instances of L5's table the state owes, the licensed ones; the least `(open, i)`, `open` the alternatives `a` for which `KnownDead::knows_extension(state, a)` is false and `i` the instance's place in the table. **Chosen once a state**, at its first step (`St::branch`), and never again: an instance chosen when nothing was known stays chosen. **Since S1f.10.3 `knows_extension` answers for a denial too**, so an alternative the state's own fixpoint denies, or a state under it does, is not counted | holds; *not already known dead* now reads the denials |
+| 2 | `oblgen::alternatives`, the table's order | `obligations::tally`'s report order: the obligation plans in the order the rules are written, each plan's matches in the matcher's order. For `(total-owed val is-a)` that is the order of the `(is-a X T)` facts. Read by #1 as its tie-break and by nothing else | holds |
+| 3 | `tree.rs`, `tree_q` | a `BTreeSet` of `(closure size, closure)`, its first taken: the smallest **closure**, then the closure's candidates. Not the commitment's size: a state whose closure is larger than its commitment waits with the states of its closure's size | holds, *size* being the closure's |
+| 4 | `tree.rs`, `step` | the branch's alternatives not in the state and not tried, ascending index; 1, 2, 4, … at a time up to 1 024, the state staying first in the queue until none is left | holds |
+| 5 | `tree.rs`, `climb` | every candidate outside the state, ascending, each extended once | holds |
+| 6 | `states.rs`, `compute_resumable` | states by closure size, a layer a size, every extension of each | holds; not this stage's |
+| 7 | `region.rs`, the universe | the candidates in rendered-text order, so an index is a place in that order | holds |
+| 8 | the saturation agenda | FIFO in written order | holds; not a search order |
+| 9 | `tree.rs`, `alive_above` | a state of `R`'s untried extensions, ascending, 1, 2, 4, … until one is alive: `--single`'s last step | not in the plan's table |
+| 10 | `tree.rs`, `shrink` | a leaf's commitment, one candidate dropped at a time in ascending order, one pass | not in the table |
+| 11 | `tree.rs`, `next_top` and `maximal` | the seeds by `(closure size, closure)`; above a seed the minimal transversals in `transversal::minimal_transversals`' order, the first alive one climbed | not in the table |
+| 12 | `tree.rs`, `find`'s second phase | the states of `R` by `(closure size, closure)`, each by its untried extensions ascending, 1, 2, 4, … | not in the table |
+| 13 | `known_dead.rs` | the entries under a candidate in the order learned, a death answering before a denial: it decides which denial is counted as spent and no answer | not in the table |
+
+Rows 9 to 13 are over states of `R`, sets a question already holds, or a count; none chooses among owing states,
+and the stage leaves them as they are. **Rows 1 and 2 together and row 3 are the order of the tree.**
+
+**E-29, on the two programs' dumps** (`ein solve FILE --single --dump-lattice DIR`, the release binary at
+`e664a561`, 2026-11-16; `jq '.nodes | group_by(.commitment | length) | map(…)'` over `nodes.json`). Visited nodes
+by the size of the commitment, with the letters committed:
+
+| size | I-SEND, declared D E Y N R O S M | visited | dead | owing | I-SENDW, declared S E N D M O R Y | visited | dead | owing |
+|---:|---|---:|---:|---:|---|---:|---:|---:|
+| 0 | | 1 | 0 | 1 | | 1 | 0 | 1 |
+| 1 | D | 10 | 0 | 10 | S | 10 | 1 | 9 |
+| 2 | D E | 100 | 10 | 90 | S E | 90 | 9 | 81 |
+| 3 | D E **Y** | 900 | 828 | 72 | S E N | 810 | 162 | 648 |
+| 4 | D E Y N | 720 | 216 | 504 | S E N D | 6 480 | 1 944 | 4 536 |
+| 5 | D E Y N **R** | 5 040 | 4 750 | 290 | S E N D M | 45 360 | 21 168 | 24 192 |
+| 6 | D E Y N R **O** | 2 900 | 2 717 | 183 | S E N D M O | 78 383, **stopped** | 39 191 | 39 192 |
+| 7 | D E Y N R O S | 1 830 | 1 208 | 622 | | | | |
+| 8 | all eight | 6 220 | 6 219 | 0, and 1 in `R` | | | | |
+| 9 | the leaf's extensions (#9) | 26 | 26 | 0 | | | | |
+| | | **17 747** | | | | **131 134**, not decided | | |
+
+So the plan's reading holds to the node. On I-SEND a column closes at sizes 3, 5 and 6 (in bold: the letter
+that completes one) and the owing states fall from 90 to 72, 504 to 290 and 290 to 183; on I-SENDW the only
+deaths through size 6 are a letter's second digit, a digit's second letter and a leading zero, since no column
+has its letters until `R`, the seventh, and the owing states grow by a factor of seven to nine a layer until the
+budget stops the run. On a fresh state every letter has ten alternatives not known dead, so #1 ties and #2, the
+declared order, decides at every state of both runs; #3 then takes each layer whole.
+
+**What decides the cost, then**: which instance (#1 with #2). #3 decides how soon a question that can stop early
+reaches a leaf, and on a tree a `--single` exhausts it visits the same nodes in another order. Both are measured,
+separately ([T3](#t3-measured)).
+
+**The goldens an order can move, by kind**, before any is touched; the programs are named, from T3's measurement,
+[below](#what-moves-named-before-the-route-changed), before the route changes. An order changes only a run that
+takes the tree and branches on an instance (`route … the obligation tree`), so every row below is a program
+whose `--single`, `-n`, `--minimal` or `--maximal` names L5:
+
+| golden | which part | re-banked by |
+|---|---|---|
+| [`docs/kernel/inference/read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) | every example under a mode whose route is the tree: the `route` row, which gains the order's words on every one of them, and the `work` row and the state's `from {…}` where the order moves the nodes | `python3 utils/read_out_examples.py` |
+| `ein-render/tests/golden/corpus_shapes.md5` | for each such program its `read-out[…]`, `region-trace`, `region-lattice` and `cores[…]` lines of the modes, and no `states` line and no describe's line | `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-render --test id_order_invariance` |
+| `ein-render/tests/golden/trace_*.md` | a trace of a mode that takes the tree | `EIN_BLESS=1 cargo test … -p ein-render --test golden_trace` |
+| `README.md` and `docs/guide/04_solving_the_whole_puzzle.md`, the marked transcript | `ein solve examples/zebra2.ein --single`: the `route` row, and the `work` row and `from {…}` if they move | `EIN_BLESS=1 cargo test … -p ein-cli --test guide_transcripts` |
+| `docs/api/rust.md`'s output block and `ein-cli/tests/embedding.rs` | `saturations:` of the same run, if it moves | the test's text edited, the page's block pasted from it |
+| `ein-cli/tests/region_modes.rs` | a block that quotes a mode's `route` row | the expected block edited |
+| `corpus/corpus.toml`, I-SENDW's entry and `cost_ms`; `ein-corpus`'s slow set | the entry's recorded answer, its runs and its flag | by hand, and `utils/corpus_cost.py` |
+| `ein-cli/tests/golden/corpus_exits.txt` | I-SENDW's cells, when its runs change | `EIN_BLESS=1 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli` |
+
+**Not goldens, and stale after the step**: `examples/beyond_arith/send_more_money.ein`'s header, *in 17 747
+saturations* and its paragraph on the declared order, with the generator's anchor on it; `corpus.toml`'s notes on
+the two SENDs; `tests/README.md`'s mention of the program.
