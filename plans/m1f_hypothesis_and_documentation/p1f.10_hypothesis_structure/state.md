@@ -23,9 +23,9 @@ nightly or the runner's container.** Nothing is pushed.
 | [S1f.10.10](s1f.10.10_the_theorys_share.md) | S | the theory's share | done | `fa040a33` |
 | [S1f.10.2](s1f.10.2_groups.md) | S | groups, the cover | done, the second run | `ad5a4fc5` |
 | [S1f.10.4](s1f.10.4_bounded_groups.md) | S | exactly one: owed groups, grids | done | `b14c6da3` |
-| [S1f.10.11](s1f.10.11_coupling.md) | S | coupling, the hypergraph of questions | done; K-17 open, its fix on a running branch | `9f80ea3e` |
+| [S1f.10.11](s1f.10.11_coupling.md) | S | coupling, the hypergraph of questions | done; K-17 fixed | `9f80ea3e`, `025c7b38` |
 | [S1f.10.13](s1f.10.13_the_price_list.md) | R | the price list | done | `85fb476b` |
-| [S1f.10.12](s1f.10.12_the_structure_shown.md) | S | the structure shown | bundle, stop, surface and page done; **the rename and `ein show hyps` on a running branch** | `42cf4e73`, `d8b31e22`, `7886425b` |
+| [S1f.10.12](s1f.10.12_the_structure_shown.md) | S | the structure shown | done: bundle, stop, `ein render h-space`, `ein show hyps`, the page | `42cf4e73`, `d8b31e22`, `7886425b`, `025c7b38` |
 | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | a debt root was not told of | done: Q-M1f.307 (A), W26 fixed | `3e59b90a` |
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | at most one, spent | done for denials (licence L8); the pair of a death re-priced, still *go*, **not built** | `f8751257` |
 | [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | what the blind enumerator takes for an object | tasks 1 to 3 done; **task 4 on a running branch** | — |
@@ -56,15 +56,23 @@ Each agent works in a git worktree under `.claude/worktrees/` on a branch `workt
 | branch | work | base |
 |---|---|---|
 | `worktree-agent-a5f864753ca542a7f` | S1f.10.9 task 4: W96 filed open (four rows), the wide E-1 fix, E-7's read-out naming | `3e59b90a` |
-| `worktree-agent-a3b0431c091872649` | the rename to `ein render h-space`; `ein show hyps`; K-17 fixed in the owner | `2050a886` |
 | `worktree-agent-ac394c3d42ce474da` | S1f.10.5, the order | `f8751257` |
 
 Three merged branches' worktrees are still on disk and can be removed with their branches:
-`worktree-agent-a601d26e3778f9c83` (S1f.10.6), `-a09b7d8b049cf055e` (the surface), `-a68ac81f0382b6c04` (S1f.10.3).
+`worktree-agent-a601d26e3778f9c83` (S1f.10.6), `-a09b7d8b049cf055e` (the surface), `-a68ac81f0382b6c04` (S1f.10.3),
+`-a3b0431c091872649` (the rename).
 
 ### What happened to them
 
-*(filled in as each ends)*
+- **`worktree-agent-a3b0431c091872649`, merged as `025c7b38`.** `ein render structure` is `ein render h-space`, with
+  no alias; its document is `h-space.json`, its page
+  [`hypothesis_space.md`](../../../docs/kernel/inference/hypothesis_space.md). `ein show` is a new top-level command
+  with one subcommand, `ein show hyps FILE`: H as Ein facts, one a line, uncut, for root's saturation and the
+  generator. K-17 is fixed in the owner (`Space::cached`, `Coupling::payers_read`). It filed K-19, open: the
+  support check's node read is dropped the same way past the budget, and only the census example asks for it.
+  Its tests were re-run on the merged tree and pass; the gate was not run.
+
+*(the other two are filled in as each ends)*
 
 ## Owed before anything else is built
 
@@ -121,6 +129,8 @@ All are in [`findings.md`](findings.md); these read as wrong answers or stale st
 - **K-13**, its second half: `std.algebra`'s `functional` and `injective` conclude `(false)` and store no
   negation, so I-SEND gets nothing from L8.
 - **K-21**: a describe its budget stops saturates ⊤ though its own memory says ⊤ is dead.
+- **K-19**: a support's check is dropped without a word where root's layer has spent its budget (the census
+  example alone asks for it).
 - K-5, K-9: the classes of program the small-KB rule does not fit. K-20: stale counts in a test's comment.
 
 ## How to resume
