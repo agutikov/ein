@@ -1,9 +1,9 @@
-//! **`ein render structure`**: the structure of a program's hypothesis set,
-//! as a command.
+//! **`ein render h-space`**: a program's hypothesis space, its candidates
+//! and the structure of the set, as a command.
 //!
 //! The view computes nothing of its own. [`ein_infer::structure::whole`]
 //! reads every object once and `ein_render::structure` spells it: the
-//! document, `structure.json`, four graphs as DOT, and a read-out. So what is
+//! document, `h-space.json`, four graphs as DOT, and a read-out. So what is
 //! held here is the door and the spelling:
 //!
 //! 1. **the document is the owner's reading**, on every instance: each
@@ -22,9 +22,16 @@
 //!    Graphviz draws every graph; a `.einb` gives the `.ein`'s structure; a
 //!    job count moves no byte;
 //! 4. **honesty**: a budget that stops a layer exits 0 and says what was not
-//!    read, in the document, the read-out and on stderr; a flagged program's
+//!    read, in the document, the read-out and on stderr; a layer that read
+//!    its singles has its witnesses' holders read whatever it spent, and one
+//!    that did not says so; a flagged program's
 //!    document says what its statements are about; a program with no
 //!    candidate, or a dead root, says so; a refused program is refused.
+//!
+//! And **`H` listed plain is the document's `H`**: on the six instances
+//! `ein show hyps` prints the document's `candidates`, line for line, which
+//! are the candidates `ein solve -H` lists, and every line is a fact a file
+//! could hold.
 //!
 //! What the document holds under a permuted id space and under the three
 //! import forms is `ein-infer/tests/structure_invariance.rs`'s, over every
@@ -40,6 +47,9 @@ use ein_infer::structure::{self, Mark, Question, Whole, WholeOptions};
 use ein_ir::{Ast, load, parse};
 use ein_render::structure as shown;
 use serde_json::{Value, json};
+
+/// The view's name under `ein render`.
+const CMD: &str = shown::COMMAND;
 
 struct Run {
     code: i32,
@@ -94,7 +104,7 @@ fn read(rel: &str) -> (Whole, String) {
 }
 
 fn document_of(rel: &str, more: &[&str]) -> Value {
-    let mut args = vec!["render", "structure", rel, "--view", "json"];
+    let mut args = vec!["render", CMD, rel, "--view", "json"];
     args.extend(more);
     let r = ein(&args);
     assert_eq!(r.code, 0, "{rel}: {}", r.err);
@@ -341,6 +351,72 @@ fn held_to_the_owner(rel: &str, w: &Whole, d: &Value) {
     );
 }
 
+/// **The three listings of `H` are one, on `rel`**: what `ein show hyps`
+/// prints is the document's `candidates`, line for line in the universe's
+/// order, and the candidates `ein solve -H` lists, which lists them by
+/// relation and whole only as `--dump-answer`'s `forms/hyp-stats.txt`, of a
+/// run that searches nothing. **And every line is a fact a file could
+/// hold**: the program with the lines written after it loads, and holds each
+/// line as the one printer writes that fact, which is how a state file's
+/// facts are written.
+fn the_three_listings_of_h_are_one(rel: &str, d: &Value) {
+    let shown = ein(&["show", "hyps", rel]);
+    assert_eq!(shown.code, 0, "{rel}: {}", shown.err);
+    let lines: Vec<&str> = shown.out.lines().collect();
+    let of_document: Vec<&str> = d["candidates"]
+        .as_array()
+        .expect("H listed")
+        .iter()
+        .map(|c| c["candidate"].as_str().expect("a text"))
+        .collect();
+    assert!(!lines.is_empty(), "{rel} proposes nothing any more");
+    assert_eq!(lines, of_document, "{rel}: show hyps and the document");
+    assert_eq!(
+        shown.out.len(),
+        lines.iter().map(|l| l.len() + 1).sum::<usize>(),
+        "{rel}: stdout holds something beside the lines"
+    );
+
+    let tmp = Scratch::new(&format!("ein-show-hyps-{}", rel.replace(['/', '.'], "-")));
+    let dir = tmp.path().join("answer");
+    let solved = ein(&[
+        "solve",
+        rel,
+        "-H",
+        "--no-search",
+        "--dump-answer",
+        &dir.to_string_lossy(),
+    ]);
+    assert_eq!(solved.code, 0, "{rel}: {}", solved.err);
+    let form = std::fs::read_to_string(dir.join("forms/hyp-stats.txt")).expect("-H's form");
+    let mut listed: Vec<&str> = form
+        .lines()
+        .filter_map(|l| l.strip_prefix("    "))
+        .map(|l| l.split("   dead alone").next().unwrap_or(l).trim_end())
+        .collect();
+    let mut sorted = lines.clone();
+    listed.sort_unstable();
+    sorted.sort_unstable();
+    assert_eq!(listed, sorted, "{rel}: show hyps and solve -H");
+
+    let path = repo_root().join(rel);
+    let text = std::fs::read_to_string(&path).expect("the program");
+    let state = format!("{text}\n{}", shown.out);
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, &state, path.to_str())
+        .unwrap_or_else(|e| panic!("{rel}: the lines do not parse after the program: {e}"));
+    let kb = load(&mut ast, &mut terms, &forms, path.parent())
+        .unwrap_or_else(|e| panic!("{rel}: the program with H written after it: {e}"));
+    let held: std::collections::BTreeSet<String> = kb.facts().map(|f| terms.fact_text(f)).collect();
+    for line in &lines {
+        assert!(
+            held.contains(*line),
+            "{rel}: {line} is no fact the file holds"
+        );
+    }
+}
+
 /// How many of `d`'s grids are bijections, and how many it has.
 fn bijections(d: &Value) -> (usize, usize) {
     let grids = d["exactly_one"]["grids"].as_array().expect("grids");
@@ -361,7 +437,7 @@ fn len(v: &Value) -> usize {
 /// path whatever the program.
 const READ_ONCE: &str = "examples/zebra2-minus-15.ein";
 
-/// **The view's `structure.json` is the owner's reading, on every
+/// **The view's document is the owner's reading, on every
 /// instance.** Each object in the document is the owner's, list for list,
 /// and the binary prints the library's document of an in-process reading,
 /// byte for byte ([`READ_ONCE`] aside, whose document is the library's
@@ -375,7 +451,7 @@ fn the_document_is_the_owners_reading_on_every_instance() {
                 scope.spawn(move || {
                     let (whole, document) = read(rel);
                     if *rel != READ_ONCE {
-                        let r = ein(&["render", "structure", rel, "--view", "json"]);
+                        let r = ein(&["render", CMD, rel, "--view", "json"]);
                         assert_eq!(r.code, 0, "{rel}: {}", r.err);
                         assert!(
                             r.out == document,
@@ -384,6 +460,7 @@ fn the_document_is_the_owners_reading_on_every_instance() {
                     }
                     let d: Value = serde_json::from_str(&document).expect("JSON");
                     held_to_the_owner(rel, &whole, &d);
+                    the_three_listings_of_h_are_one(rel, &d);
                     (d, whole)
                 })
             })
@@ -532,7 +609,7 @@ fn the_declared_control_shows_its_five_bijections_found_and_stated() {
     found.sort_unstable();
     assert_eq!(found, [0, 1, 2, 3, 4], "five relations, five grids");
     // And the read-out counts them.
-    let r = ein(&["render", "structure", "examples/zebra2.ein"]);
+    let r = ein(&["render", CMD, "examples/zebra2.ein"]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(
         r.out.contains("\ngrids        5 grids · 5 bijections"),
@@ -570,17 +647,11 @@ fn dot_accepts(what: &str, text: &str) {
 /// the same with the option and without, and Graphviz draws each graph.
 #[test]
 fn the_dump_is_every_view_and_moves_no_stdout() {
-    let tmp = Scratch::new("ein-structure-view-dump");
+    let tmp = Scratch::new("ein-h-space-view-dump");
     let dir = tmp.path().join("deep").join("z");
     let file = "examples/beyond_arith/send_more_money.ein";
-    let plain = ein(&["render", "structure", file]);
-    let with = ein(&[
-        "render",
-        "structure",
-        file,
-        "--dump",
-        &dir.to_string_lossy(),
-    ]);
+    let plain = ein(&["render", CMD, file]);
+    let with = ein(&["render", CMD, file, "--dump", &dir.to_string_lossy()]);
     assert_eq!((plain.code, with.code), (0, 0), "{}", with.err);
     assert_eq!(plain.out, with.out, "--dump moved stdout");
     assert_eq!(plain.err, with.err, "--dump moved stderr");
@@ -601,19 +672,19 @@ fn the_dump_is_every_view_and_moves_no_stdout() {
             "coupling_one_step.dot",
             "cover.dot",
             "exclusion.dot",
-            "structure.json"
+            "h-space.json"
         ]
     );
     let held = |name: &str| std::fs::read_to_string(dir.join(name)).expect("a file");
-    let document: Value = serde_json::from_str(&held("structure.json")).expect("JSON");
+    let document: Value = serde_json::from_str(&held(shown::DOCUMENT)).expect("JSON");
     for (view, name) in [
-        ("json", "structure.json".to_string()),
+        ("json", shown::DOCUMENT.to_string()),
         ("exclusion", shown::graph_file("exclusion")),
         ("cover", shown::graph_file("cover")),
         ("coupling", shown::graph_file("coupling")),
         ("one-step", shown::graph_file("one-step")),
     ] {
-        let r = ein(&["render", "structure", file, "--view", view]);
+        let r = ein(&["render", CMD, file, "--view", view]);
         assert_eq!(r.code, 0, "--view {view}: {}", r.err);
         assert!(r.out == held(&name), "--view {view} is not {name}");
         if view == "json" {
@@ -638,17 +709,11 @@ fn the_dump_is_every_view_and_moves_no_stdout() {
     let blocked = tmp.path().join("a-file");
     std::fs::write(&blocked, "").expect("a file");
     let under = blocked.join("d");
-    let r = ein(&[
-        "render",
-        "structure",
-        file,
-        "--dump",
-        &under.to_string_lossy(),
-    ]);
+    let r = ein(&["render", CMD, file, "--dump", &under.to_string_lossy()]);
     assert_eq!(r.code, 1, "{}", r.err);
     assert!(r.err.starts_with("error: --dump "), "{}", r.err);
     assert!(r.out.is_empty(), "it ran: {}", r.out);
-    let r = ein(&["render", "structure", file, "--dump", ""]);
+    let r = ein(&["render", CMD, file, "--dump", ""]);
     assert_eq!(r.code, 2, "an empty path is a usage error: {}", r.err);
 }
 
@@ -685,13 +750,7 @@ fn a_question_is_named_by_its_place_as_well() {
         ambiguous += usize::from(by_name.len() < ids.len());
     }
     assert!(ambiguous > 0, "no edge holds two questions of one name");
-    let r = ein(&[
-        "render",
-        "structure",
-        "examples/zebra.ein",
-        "--view",
-        "coupling",
-    ]);
+    let r = ein(&["render", CMD, "examples/zebra.ein", "--view", "coupling"]);
     assert_eq!(r.code, 0, "{}", r.err);
     for q in 0..questions.len() {
         assert!(r.out.contains(&format!("  q{q} [label=\"q{q} ")), "q{q}");
@@ -706,7 +765,7 @@ fn a_question_is_named_by_its_place_as_well() {
 fn a_stopped_structure_says_what_was_not_read() {
     let file = "examples/zebra2.ein";
     let budget = ["--region-budget", "2000"];
-    let mut args = vec!["render", "structure", file];
+    let mut args = vec!["render", CMD, file];
     args.extend(budget);
     let r = ein(&args);
     assert_eq!(r.code, 0, "a stopped structure is an answer: {}", r.err);
@@ -755,39 +814,36 @@ fn a_stopped_structure_says_what_was_not_read() {
         len(&d["pairs"]["excluded"]) < len(&whole["pairs"]["excluded"]),
         "a stopped layer lists what it read"
     );
-    let mut args = vec!["render", "structure", file, "--view", "exclusion"];
+    let mut args = vec!["render", CMD, file, "--view", "exclusion"];
     args.extend(budget);
     let graph = ein(&args);
     assert_eq!(graph.code, 0, "{}", graph.err);
     assert!(graph.out.contains("NOT WHOLE"), "{}", graph.out);
     dot_accepts("a stopped exclusion graph", &graph.out);
     // A budget of nothing is a usage error, as `ein solve`'s.
-    let r = ein(&["render", "structure", file, "--region-budget", "0"]);
+    let r = ein(&["render", CMD, file, "--region-budget", "0"]);
     assert_eq!(r.code, 2, "{}", r.err);
 }
 
-/// **A layer read whole can still leave something unread, and the view says
-/// which.** Which candidates' own nodes hold each witness of an owed
-/// instance is read through root's singles after root's layer, and the owner
-/// refuses that reading once the layer has spent its budget. A layer's last
-/// step may carry it past the budget, so one fact under what root's layer
-/// spends the layer reads every pair, the holders are refused, and every
-/// debt of an instance L5 does not license drops out of the coupling, whose
-/// own `complete` stays true. The view does not take that for whole: the
-/// document says `whole: false`, the one sentence names the reading that was
-/// refused and does not say the layer stopped, and the debts it lists are the
-/// licensed ones.
+/// **A layer that read its singles has its holders read, whatever it
+/// spent.** Which candidates' own nodes hold each witness of an owed
+/// instance is read after a layer, off its singles, which the layer left in
+/// the cache: nothing is computed, so no budget is asked. A layer's last
+/// step may carry it past its budget, so one fact under what root's layer
+/// spends the layer reads every pair, having spent more than it was given;
+/// the holders are read all the same, every debt of an instance L5 does not
+/// license is an edge, and the structure is whole, the document the one of
+/// the default budget but for what was asked. The same of the small KB's
+/// layer one fact under its own spend: every unlicensed instance is about
+/// the group it is about at the default budget.
 ///
-/// The budget is read off the program's own whole document, so the test
-/// follows the layer's spend wherever the engine moves it. Should the owner
-/// stop refusing that reading, `singles_read` is true here and this fails by
-/// name, which is how it should be noticed.
+/// Each budget is read off the program's own whole document, so the test
+/// follows the layers' spend wherever the engine moves it.
 #[test]
-fn a_whole_layer_with_its_holders_refused_is_not_called_whole() {
+fn a_layer_read_whole_has_its_holders_read() {
     let file = "examples/zebra.ein";
     let whole = document_of(file, &[]);
     assert_eq!(whole["whole"], true);
-    let spent = whole["pairs"]["work"]["facts"].as_u64().expect("facts");
     let debts = |d: &Value| d["coupling"]["debts"].as_array().expect("debts").clone();
     let unlicensed = debts(&whole)
         .iter()
@@ -795,57 +851,141 @@ fn a_whole_layer_with_its_holders_refused_is_not_called_whole() {
         .count();
     assert!(unlicensed > 0, "{file} has no unlicensed debt any more");
 
-    // At what the layer spends, everything is read.
-    let at = document_of(file, &["--region-budget", &spent.to_string()]);
-    assert_eq!(at["whole"], true, "{}", at["unread"]);
-    assert_eq!(debts(&at).len(), debts(&whole).len());
-
-    // One fact under it.
+    // One fact under what root's layer spends.
+    let spent = whole["pairs"]["work"]["facts"].as_u64().expect("facts");
     let budget = (spent - 1).to_string();
-    let r = ein(&["render", "structure", file, "--region-budget", &budget]);
+    let r = ein(&["render", CMD, file, "--region-budget", &budget]);
     assert_eq!(r.code, 0, "{}", r.err);
     let d = document_of(file, &["--region-budget", &budget]);
     assert_eq!(d["pairs"]["complete"], true, "root's layer read every pair");
     assert_eq!(d["pairs"]["stopped"], Value::Null);
     assert_eq!(d["pairs"]["pairs"]["left"], 0);
-    assert_eq!(d["pairs"]["excluded"], whole["pairs"]["excluded"]);
-    assert_eq!(d["exactly_one"]["singles_read"], false);
     assert_eq!(
-        d["coupling"]["complete"], true,
-        "the owner's coupling calls itself complete here"
+        d["pairs"]["work"]["facts"], spent,
+        "and spent more than it was given"
     );
-    assert_eq!(d["whole"], false, "and the view does not");
+    assert_eq!(d["exactly_one"]["singles_read"], true);
+    assert_eq!(d["exactly_one"]["theory_read"], true);
+    assert_eq!(d["coupling"]["payers_read"], true);
+    assert_eq!(d["coupling"]["complete"], true);
+    assert_eq!(d["whole"], true, "{}", d["unread"]);
+    assert_eq!(debts(&d), debts(&whole), "every debt is an edge");
+    for key in [
+        "candidates",
+        "pairs",
+        "theory",
+        "cover",
+        "exactly_one",
+        "coupling",
+    ] {
+        assert!(d[key] == whole[key], "{key} moved one fact under the spend");
+    }
+    assert!(r.out.contains("\nwhole        yes"), "{}", r.out);
+    assert!(!r.err.contains("note:"), "{}", r.err);
+
+    // One fact under what the small KB's layer spends. Root's layer, which
+    // spends more, stops there; the small KB's reads every pair, and what
+    // the theory alone brings of each witness is read.
+    let small_spent = whole["theory"]["small_kb_layer"]["work"]["facts"]
+        .as_u64()
+        .expect("facts");
+    assert!(small_spent < spent, "the small KB's layer costs root's now");
+    let d = document_of(file, &["--region-budget", &(small_spent - 1).to_string()]);
+    let small = &d["theory"]["small_kb_layer"];
+    assert_eq!(
+        small["complete"], true,
+        "the small KB's layer read every pair"
+    );
+    assert_eq!(small["pairs"]["left"], 0);
+    assert_eq!(small["work"]["facts"], small_spent);
+    assert_eq!(d["exactly_one"]["theory_read"], true);
+    assert_eq!(d["exactly_one"]["singles_read"], true);
+    let about = |d: &Value| -> Vec<(Value, Value)> {
+        d["exactly_one"]["instances"]
+            .as_array()
+            .expect("instances")
+            .iter()
+            .filter(|i| i["licensed"] == false)
+            .map(|i| {
+                (
+                    i["about_group"].clone(),
+                    i["pay_by_the_theory_alone"].clone(),
+                )
+            })
+            .collect()
+    };
+    assert_eq!(about(&d).len(), unlicensed);
+    assert!(about(&d).iter().all(|(g, p)| !g.is_null() && !p.is_null()));
+    assert_eq!(about(&d), about(&whole));
+    assert_eq!(d["pairs"]["complete"], false, "root's layer stopped");
+    assert_eq!(d["whole"], false);
+    let unread = d["unread"].as_array().expect("unread");
+    assert!(
+        unread
+            .iter()
+            .filter_map(Value::as_str)
+            .all(|s| !s.starts_with("which candidates' own nodes")),
+        "{unread:?}"
+    );
+}
+
+/// **Where a layer stopped before its last single the holders are not read,
+/// and nothing calls the structure whole.** At a budget of one fact root's
+/// layer and the small KB's each stop among their singles. No witness has a
+/// holder listed, an instance L5 does not license has no payers and is no
+/// edge, and the owner's coupling says so itself: `payers_read` is false and
+/// `complete` with it. The view says it in a sentence a layer, each a note
+/// and a row, beside the sentence that says the layer stopped.
+#[test]
+fn holders_a_stopped_layer_left_unread_are_said() {
+    let file = "examples/zebra.ein";
+    let budget = ["--region-budget", "1"];
+    let d = document_of(file, &budget);
+    assert!(d["pairs"]["singles_left"].as_u64().is_some_and(|n| n > 0));
+    assert_eq!(d["exactly_one"]["singles_read"], false);
+    assert_eq!(d["exactly_one"]["theory_read"], false);
+    assert_eq!(d["coupling"]["payers_read"], false);
+    assert_eq!(d["coupling"]["complete"], false);
+    assert_eq!(d["whole"], false);
+    assert!(
+        d["coupling"]["unlicensed_instances"]
+            .as_u64()
+            .is_some_and(|n| n > 0)
+    );
+    let debts = d["coupling"]["debts"].as_array().expect("debts");
+    assert!(debts.iter().all(|x| x["licensed"] == true), "{debts:?}");
     let unread: Vec<&str> = d["unread"]
         .as_array()
         .expect("unread")
         .iter()
         .filter_map(Value::as_str)
         .collect();
-    let [sentence] = unread[..] else {
-        panic!("one thing is unread: {unread:?}");
-    };
-    assert!(sentence.contains("was not read at root"), "{sentence}");
+    let mut args = vec!["render", CMD, file];
+    args.extend(budget);
+    let r = ein(&args);
+    assert_eq!(r.code, 0, "{}", r.err);
+    for (place, layer) in [
+        ("at root", "root's layer"),
+        ("in the small KB", "its layer"),
+    ] {
+        let said = format!("was not read {place}: {layer} stopped before its last single");
+        let [sentence] = unread
+            .iter()
+            .filter(|s| s.contains(&said))
+            .collect::<Vec<_>>()[..]
+        else {
+            panic!("no one sentence says: {said}: {unread:?}");
+        };
+        assert!(r.err.contains(*sentence), "no note: {}", r.err);
+        assert!(r.out.contains(*sentence), "no row: {}", r.out);
+    }
     assert!(
-        !sentence.contains("stopped"),
-        "the layer did not stop, and the sentence says it did: {sentence}"
+        unread
+            .iter()
+            .any(|s| s.starts_with("root's pair layer stopped")),
+        "{unread:?}"
     );
-    assert!(sentence.contains("the licensed ones alone"), "{sentence}");
-    assert!(r.err.contains(sentence), "no note: {}", r.err);
-    assert!(r.out.contains(sentence), "no row: {}", r.out);
-    assert!(
-        r.out.contains("\nwhole        NO: 1 thing was"),
-        "{}",
-        r.out
-    );
-    // The debts listed are the licensed ones: none here that L5 does not
-    // license, where the whole structure has them.
-    let left = debts(&d);
-    assert!(left.iter().all(|x| x["licensed"] == true), "{left:?}");
-    assert_eq!(left.len(), debts(&whole).len() - unlicensed);
-    assert!(
-        len(&d["coupling"]["edges"]) < len(&whole["coupling"]["edges"]),
-        "the debts' own edges are gone with them"
-    );
+    assert!(r.out.contains("\nwhole        NO: "), "{}", r.out);
 }
 
 /// **A flagged program gets what the owner gives a flagged program, and the
@@ -867,7 +1007,7 @@ fn a_flagged_programs_document_says_what_it_is_about() {
         "the static check flags the program"
     );
     assert_eq!(d["whole"], true, "flagged is no cut: {}", d["unread"]);
-    let r = ein(&["render", "structure", file]);
+    let r = ein(&["render", CMD, file]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(
         r.out
@@ -894,11 +1034,11 @@ fn a_program_that_does_not_search_says_so() {
     );
     assert_eq!(len(&d["candidates"]), 0);
     assert_eq!(len(&d["coupling"]["questions"]), 0);
-    let r = ein(&["render", "structure", file]);
+    let r = ein(&["render", CMD, file]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(r.out.contains("\nsays         H is empty"), "{}", r.out);
     for view in shown::GRAPHS {
-        let g = ein(&["render", "structure", file, "--view", view]);
+        let g = ein(&["render", CMD, file, "--view", view]);
         assert_eq!(g.code, 0, "{}", g.err);
         assert_eq!(g.out.matches(" -- ").count(), 0);
         dot_accepts(&format!("{file} --view {view}"), &g.out);
@@ -973,14 +1113,7 @@ fn supports_name_the_statements_a_puzzles_pair_rests_on() {
         with["coupling"]["components"]
     );
     // The graph's labels are places in `theory.stated`, each a dropped fact.
-    let g = ein(&[
-        "render",
-        "structure",
-        file,
-        "--view",
-        "exclusion",
-        "--supports",
-    ]);
+    let g = ein(&["render", CMD, file, "--view", "exclusion", "--supports"]);
     assert_eq!(g.code, 0, "{}", g.err);
     dot_accepts("a labelled exclusion graph", &g.out);
     let mut labelled = 0;
@@ -1009,20 +1142,20 @@ fn supports_name_the_statements_a_puzzles_pair_rests_on() {
 #[test]
 fn jobs_and_the_container_move_no_byte() {
     let file = "examples/beyond_arith/send_more_money.ein";
-    let one = ein(&["render", "structure", file, "--view", "json"]);
-    let four = ein(&["render", "structure", file, "--view", "json", "--jobs", "4"]);
+    let one = ein(&["render", CMD, file, "--view", "json"]);
+    let four = ein(&["render", CMD, file, "--view", "json", "--jobs", "4"]);
     assert_eq!((one.code, four.code), (0, 0), "{}", four.err);
     assert!(one.out == four.out, "--jobs 4 moved the document");
 
     if !cfg!(feature = "einb") {
         return;
     }
-    let tmp = Scratch::new("ein-structure-view-einb");
+    let tmp = Scratch::new("ein-h-space-view-einb");
     let einb = tmp.path().join("send.einb");
     let einb = einb.to_string_lossy().into_owned();
     let saved = ein(&["kb", "save", file, &einb]);
     assert_eq!(saved.code, 0, "{}", saved.err);
-    let held = ein(&["render", "structure", &einb, "--view", "json"]);
+    let held = ein(&["render", CMD, &einb, "--view", "json"]);
     assert_eq!(held.code, 0, "{}", held.err);
     assert!(
         held.out.replace(&einb, file) == one.out,
@@ -1031,27 +1164,27 @@ fn jobs_and_the_container_move_no_byte() {
 }
 
 fn page() -> String {
-    std::fs::read_to_string(repo_root().join("docs/kernel/inference/structure.md"))
-        .expect("docs/kernel/inference/structure.md")
+    std::fs::read_to_string(repo_root().join("docs/kernel/inference/hypothesis_space.md"))
+        .expect("docs/kernel/inference/hypothesis_space.md")
 }
 
 /// **The page's read-out is the binary's**: the block
-/// `docs/kernel/inference/structure.md` shows of the declared control is
-/// what `ein render structure examples/zebra2.ein` prints, so every number
+/// `docs/kernel/inference/hypothesis_space.md` shows of the declared control
+/// is what `ein render h-space examples/zebra2.ein` prints, so every number
 /// in it is taken again by this test. A read-out that moves fails here with
 /// the block to paste.
 #[test]
 fn the_pages_read_out_is_the_binarys() {
-    const BEGIN: &str = "<!-- generated: ein render structure examples/zebra2.ein -->\n```text\n";
+    const BEGIN: &str = "<!-- generated: ein render h-space examples/zebra2.ein -->\n```text\n";
     const END: &str = "\n```\n<!-- /generated -->";
     let text = page();
     let start = text.find(BEGIN).expect("the page's generated block") + BEGIN.len();
     let end = start + text[start..].find(END).expect("the block's end");
-    let r = ein(&["render", "structure", "examples/zebra2.ein"]);
+    let r = ein(&["render", CMD, "examples/zebra2.ein"]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(
         text[start..end] == *r.out.trim_end_matches('\n'),
-        "docs/kernel/inference/structure.md's read-out is not the binary's. Paste:\n\n{}",
+        "docs/kernel/inference/hypothesis_space.md's read-out is not the binary's. Paste:\n\n{}",
         r.out
     );
 }
@@ -1074,7 +1207,7 @@ fn keys(v: &Value, out: &mut std::collections::BTreeSet<String>) {
 /// kinds, the declared control, one relation with its unlicensed half, a
 /// program read with its supports, the blind enumerator's, a flagged one and
 /// a stopped one: every key any of them holds, at any depth, is in the
-/// page's account of `structure.json`, in backticks.
+/// page's account of `h-space.json`, in backticks.
 ///
 /// One direction only. A key the writer has for a case none of these
 /// reaches, a group an instance is inside, a component with a member in more
@@ -1104,8 +1237,8 @@ fn the_page_names_every_key_a_document_holds() {
         .collect();
     assert!(
         missing.is_empty(),
-        "docs/kernel/inference/structure.md does not name these keys of structure.json: \
-         {missing:?}"
+        "docs/kernel/inference/hypothesis_space.md does not name these keys of \
+         h-space.json: {missing:?}"
     );
 }
 
@@ -1113,27 +1246,21 @@ fn the_page_names_every_key_a_document_holds() {
 /// every other command gives it, and nothing on stdout; and a file that is
 /// not there likewise.
 #[test]
-fn a_refused_program_has_no_structure() {
+fn a_refused_program_has_no_h_space() {
     let file = "examples/broken/load/derivation_cycle.ein";
     let refusal = ein(&["saturate", file]);
     assert_eq!(refusal.code, 1, "{file} loads now");
     let line = refusal.err.lines().next().expect("a line").to_string();
     for view in ["summary", "json", "coupling"] {
-        let r = ein(&["render", "structure", file, "--view", view]);
+        let r = ein(&["render", CMD, file, "--view", view]);
         assert_eq!(r.code, 1, "--view {view}: {}", r.err);
         assert_eq!(r.err.lines().next(), Some(line.as_str()));
         assert!(r.out.is_empty(), "{}", r.out);
     }
-    let r = ein(&["render", "structure", "examples/no-such-file.ein"]);
+    let r = ein(&["render", CMD, "examples/no-such-file.ein"]);
     assert_eq!(r.code, 1, "{}", r.err);
     assert!(r.out.is_empty());
-    let r = ein(&[
-        "render",
-        "structure",
-        "examples/zebra2.ein",
-        "--view",
-        "table",
-    ]);
+    let r = ein(&["render", CMD, "examples/zebra2.ein", "--view", "table"]);
     assert_eq!(r.code, 2, "an unknown view is a usage error: {}", r.err);
     assert!(Path::new(&repo_root().join(file)).is_file());
 }

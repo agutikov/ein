@@ -392,6 +392,11 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 | `-f` | the relations, and the count of facts | every fact of the candidates' relations, given ones too | the candidates' relations' facts |
 | `--diff-models FILE` | the listed states against the file's, and what they are compared over | per state, what differs | the listed states |
 
+`-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is `ein show hyps
+FILE`**: one candidate a line and nothing else on stdout, at the cost of root's saturation and the generator's pass, no
+route run ([`hypothesis_space.md` § How to see it](hypothesis_space.md#how-to-see-it)). The candidates are the same:
+`ein-cli/tests/h_space_view.rs` holds the two listings to each other.
+
 ---
 
 ## 9. `-s`, `-t`, and `ein oracle`'s line

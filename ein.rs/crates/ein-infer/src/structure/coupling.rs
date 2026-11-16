@@ -406,8 +406,17 @@ pub struct Coupling {
     /// **The debts that are edges**, in the order of L5's table, each
     /// saying whether L5 licenses it. Empty where no table was read; and an
     /// unlicensed instance has no payers read, and so is none, where its
-    /// witnesses or root's singles were not.
+    /// rule names no witness, or where root's singles were not read, which
+    /// [`Self::payers_read`] says.
     pub debts: Vec<Debt>,
+    /// **The payers of every instance L5 does not license were read**: each
+    /// such instance's witnesses' holders, off root's singles
+    /// ([`super::Owed::singles_read`]). `false` where the table holds an
+    /// unlicensed instance with witnesses and root's layer stopped before
+    /// its last single: no such instance is then among [`Self::debts`] or
+    /// an edge, [`Self::components`] may be finer than `R`'s parts, and
+    /// [`Self::debts_across`] lists the licensed debts alone.
+    pub payers_read: bool,
     /// The instances of L5's table it does not license, edges or not.
     pub unlicensed: u32,
     /// The candidates committed in the whole node: those alive alone at
@@ -432,10 +441,11 @@ impl Coupling {
         &self.candidates[b as usize].text
     }
 
-    /// The reading asked was read whole: root's pairs, and the node where
-    /// the reading asks one, with nothing cut.
+    /// The reading asked was read whole: root's pairs, the payers of every
+    /// instance L5 does not license, and the node where the reading asks
+    /// one, with nothing cut.
     pub fn complete(&self) -> bool {
-        self.pairs_read && self.node_stopped.is_none() && self.cut.is_none()
+        self.pairs_read && self.payers_read && self.node_stopped.is_none() && self.cut.is_none()
     }
 
     /// What the coupling's statements are about, where that is not the
@@ -1357,6 +1367,14 @@ impl Coupling {
         let committed: Vec<u32> = (0..n as u32).filter(|&b| alive(b)).collect();
         let mut debts: Vec<Debt> = Vec::new();
         let mut unlicensed = 0u32;
+        // An unlicensed instance's payers are its witnesses' holders, which
+        // are read where root's singles were.
+        let payers_read = theory.owed.singles_read
+            || !theory
+                .owed
+                .table()
+                .iter()
+                .any(|i| i.alternatives.is_err() && i.witnesses.is_ok());
         for i in theory.owed.table() {
             let licensed = i.alternatives.is_ok();
             unlicensed += u32::from(!licensed);
@@ -1567,6 +1585,7 @@ impl Coupling {
             components,
             conflict_components,
             debts,
+            payers_read,
             unlicensed,
             committed: if node_read { committed } else { Vec::new() },
             node,

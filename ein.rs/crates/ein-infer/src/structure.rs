@@ -7,6 +7,17 @@
 //! [`crate::explore`]'s node cache (`Space::eval`). So each is true of the
 //! lattice `R` is a region of, and none is a second semantics.
 //!
+//! ### `H`, listed
+//!
+//! [`hypotheses`] is the hypothesis set itself: the candidates root's
+//! generator proposes at root's fixpoint, on whichever rung the program is
+//! on, in the universe's canonical order, rendered-text order. It is the set
+//! every route searches over, and what it costs is what building `H` costs:
+//! root's saturation and the generator's pass, no node. **Every object below
+//! is over these candidates, taken by the same function**: a pair layer, the
+//! theory's share and [`whole`] open their space over root prepared by it,
+//! so a listing of `H` and a structure's candidates cannot disagree.
+//!
 //! ### The pair layer
 //!
 //! [`PairLayer`] is what the nodes of one candidate and of two decide at
@@ -338,7 +349,10 @@
 //! alternatives, not whether root owes, and `R` is discharged either way.
 //! A licensed instance's payers are its alternatives. An unlicensed one's
 //! are **the payers read**, the candidates whose own node holds one of its
-//! witnesses, and the edge says which it is ([`Debt::licensed`]).
+//! witnesses, and the edge says which it is ([`Debt::licensed`]). They are
+//! read off root's singles, which a layer that read its singles has; where
+//! it stopped before them no unlicensed instance is an edge, and the
+//! coupling says so ([`Coupling::payers_read`]) and is not complete.
 //!
 //! **The components** ([`Coupling::components`]) are of the candidates
 //! alive alone: two are together where they share a question or an edge
@@ -581,10 +595,62 @@ pub fn pair_layer_with(
     with_space_watched(root, terms, ast, opts, None, events, pair_layer_in)
 }
 
+/// **Root prepared, and with it `H`**: `root`, a freshly loaded program,
+/// saturated once, and the universe its generator builds at that fixpoint in
+/// canonical order, by the preparation every route starts from
+/// ([`region::prepare_with`]). The one place this module takes `H` from:
+/// [`hypotheses`] returns its candidates, and every space a structure is
+/// read in is opened over it.
+fn root_prepared(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+) -> Result<region::Prepared, SolveError> {
+    region::prepare_with(root, terms, ast, events)
+}
+
+/// **The hypothesis set `H` of a program, as root builds it.**
+#[derive(Clone, Debug)]
+pub struct Hypotheses {
+    /// The universe: every candidate the generator proposes at root's
+    /// fixpoint, once, in rendered-text order. The order a [`PairLayer`]'s
+    /// candidates are in, and every other object's.
+    pub candidates: Vec<Candidate>,
+    /// The rung of the ladder that built it.
+    pub rung: crate::oblgen::Mode,
+    /// Root's own fixpoint derives `(false)`. `H` is built all the same.
+    pub root_dead: bool,
+}
+
+/// [`Hypotheses`] of `root`, a **freshly loaded, unsaturated** program
+/// nothing else will use. Root is saturated once, the generator is run at
+/// its fixpoint, and **no node is read**: no single, no pair, no small KB.
+/// A program the engine refuses to read is refused here as it is by a route.
+pub fn hypotheses(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Hypotheses, SolveError> {
+    hypotheses_with(root, terms, ast, &mut Events::off())
+}
+
+/// [`hypotheses`], root's saturation and the generator's pass narrated into
+/// `events` as a route narrates them: for a reader that counts the work.
+pub fn hypotheses_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+) -> Result<Hypotheses, SolveError> {
+    let prepared = root_prepared(root, terms, ast, events)?;
+    Ok(Hypotheses {
+        rung: prepared.root.hypgen.rung.mode,
+        root_dead: prepared.root_dead,
+        candidates: prepared.candidates,
+    })
+}
+
 /// `read` over the prepared space of `root`, a freshly loaded program: the
 /// routes' node cache, at the layer's budget, keeping no node's record. Over
-/// the universe root's generator builds, or over the one the caller names
-/// ([`region::prepare_over`]).
+/// the universe root's generator builds ([`root_prepared`]), or over the one
+/// the caller names ([`region::prepare_over`]).
 fn with_space<R>(
     root: &mut Kb,
     terms: &mut Terms,
@@ -607,7 +673,7 @@ fn with_space_watched<R>(
     read: impl FnOnce(&mut Space<'_>) -> Result<R, SolveError>,
 ) -> Result<R, SolveError> {
     let prepared = match universe {
-        None => region::prepare(root, terms, ast)?,
+        None => root_prepared(root, terms, ast, &mut Events::off())?,
         Some(named) => region::prepare_over(root, terms, ast, named)?,
     };
     let space = explore::Options {
@@ -1577,12 +1643,9 @@ fn theory_in(
             Reading::Universe => universe_alone(sp),
         };
         let read = RootRead::of(sp);
-        // Which singles hold each fact that can witness an instance: the
-        // cache has the singles where the layer read them.
-        let held_at_root = match &owing {
-            Some((_, rows)) if l.singles_left == 0 => holders(sp, rows)?,
-            _ => None,
-        };
+        // Which singles hold each fact that can witness an instance: off
+        // the cache, which has the singles where the layer read them.
+        let held_at_root = owing.as_ref().and_then(|(_, rows)| holders(sp, rows));
         let sets: Vec<Box<[u32]>> = l.excluded.iter().map(|&(a, b)| Box::from([a, b])).collect();
         let supports = if want && !sets.is_empty() {
             sp.supports(&sets, &stated_set)?
@@ -1741,10 +1804,7 @@ fn theory_in(
         |sp| {
             let licensed = sp.is_monotone();
             let l = layer(sp, licensed, true)?;
-            let held = match &owing {
-                Some((_, rows)) if l.singles_left == 0 => holders(sp, rows)?,
-                _ => None,
-            };
+            let held = owing.as_ref().and_then(|(_, rows)| holders(sp, rows));
             Ok((l, held))
         },
     );
@@ -1951,14 +2011,16 @@ fn theory_in(
 
 /// For each instance's witnesses, the candidates alive alone whose own
 /// node holds each, ascending: `rows` are L5's table's instances in its
-/// order, each with the facts that can witness it. The singles are read
-/// through the cache, which has them once a layer has read its singles; a
-/// fact nothing has interned is held by no node. `None` where a single is
-/// not to be had.
-fn holders(
-    sp: &mut Space<'_>,
-    rows: &[crate::oblgen::Witnesses],
-) -> Result<Option<Held>, SolveError> {
+/// order, each with the facts that can witness it. A fact nothing has
+/// interned is held by no node.
+///
+/// **The singles are read off the cache and nothing is computed**
+/// ([`Space::cached`]), so the reading asks no budget: a layer that read its
+/// singles has its holders read, whatever it spent, its last step having
+/// carried it past its budget or a later one having stopped it among its
+/// pairs. `None` where a single was never computed, a layer stopped before
+/// or among its singles, and there alone.
+fn holders(sp: &Space<'_>, rows: &[crate::oblgen::Witnesses]) -> Option<Held> {
     let n = sp.n() as u32;
     let empty = |rows: &[crate::oblgen::Witnesses]| -> Held {
         rows.iter()
@@ -1967,16 +2029,13 @@ fn holders(
     };
     if sp.root_is_dead() || n == 0 {
         // Under a dead root no candidate is alive alone.
-        return Ok(Some(empty(rows)));
+        return Some(empty(rows));
     }
     let sets: Vec<Box<[u32]>> = (0..n).map(|b| Box::from([b])).collect();
-    let singles = match sp.eval(&sets)? {
-        Ok(seen) => seen,
-        Err(_) => return Ok(None),
-    };
+    let singles = sp.cached(&sets)?;
     let states = sp.states();
     let terms = sp.terms();
-    Ok(Some(
+    Some(
         rows.iter()
             .map(|r| {
                 let Ok(witnesses) = &r.rows else {
@@ -1997,7 +2056,7 @@ fn holders(
                     .collect()
             })
             .collect(),
-    ))
+    )
 }
 
 /// Per instance, per witness: the candidates whose own node holds it.
@@ -2783,9 +2842,13 @@ pub struct Owed {
     pub root_owes: u32,
     /// The table's instances, in its order.
     pub instances: Result<Vec<OwedInstance>, NoTable>,
-    /// Root's singles were read: [`Witness::held_at_root`] says something.
+    /// Root's singles were read, every one: [`Witness::held_at_root`] says
+    /// something. `false` where root's layer stopped before its last single,
+    /// and where there is no table.
     pub singles_read: bool,
-    /// The small KB's singles were read: [`Witness::held_in_theory`] does.
+    /// The small KB's singles were read, every one:
+    /// [`Witness::held_in_theory`] does. `false` where its layer stopped
+    /// before its last single or it has none, and where there is no table.
     pub theory_read: bool,
 }
 

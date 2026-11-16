@@ -1,7 +1,7 @@
 # S1f.10.12 — The structure shown, and its surface
 
 **Phase:** [P1f.10](README.md), track S (the structure)
-**Status:** T1, the bundle, ran on 2026-11-16 ([its record](#record-2026-11-16-the-bundle)). T2, the stop, is the main session's: the surface was ruled (a), a view of `ein render`, on 2026-11-16 ([Q-M1f.309](../open_questions.md#q-m1f309--how-ein-shows-a-programs-structure)). **T3, the view, and T4, the page, ran on 2026-11-16** in a worktree, on that ruling ([their record](#record-2026-11-16-the-surface-and-the-page)): `ein render structure FILE` and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md). **Not run there, and owed before the batch is done**: `./run_tests.sh`, `utils/ci_container.sh`, which a DOT writer's change makes part of done, and the wall of the two nightly steps that grew, which was not measured.
+**Status:** T1, the bundle, ran on 2026-11-16 ([its record](#record-2026-11-16-the-bundle)). T2, the stop, is the main session's: the surface was ruled (a), a view of `ein render`, on 2026-11-16 ([Q-M1f.309](../open_questions.md#q-m1f309--how-ein-shows-a-programs-structure)). **T3, the view, and T4, the page, ran on 2026-11-16** in a worktree, on that ruling ([their record](#record-2026-11-16-the-surface-and-the-page)): `ein render structure FILE` and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md). **Not run there, and owed before the batch is done**: `./run_tests.sh`, `utils/ci_container.sh`, which a DOT writer's change makes part of done, and the wall of the two nightly steps that grew, which was not measured. **Renamed and extended on 2026-11-16** on the user's instruction of that day ([the record](#record-2026-11-16-the-view-renamed-h-dumped-plain-k-17)): the view is `ein render h-space FILE`, `ein show hyps FILE` lists H as Ein facts, and K-17 is fixed.
 **Depends on:** for its bundle, [S1f.10.1](s1f.10.1_exclusion_census.md), [S1f.10.2](s1f.10.2_groups.md),
 [S1f.10.10](s1f.10.10_the_theorys_share.md), [S1f.10.4](s1f.10.4_bounded_groups.md),
 [S1f.10.11](s1f.10.11_coupling.md); for its stop, also [S1f.10.13](s1f.10.13_the_price_list.md) and tasks 1 to
@@ -357,7 +357,7 @@ and both outputs were scratch and are not in the tree; the commands are the cens
 
 ### `structure.json`
 
-Schema `ein-structure/1`. Field by field it is [`docs/kernel/inference/structure.md` § `structure.json`](../../../docs/kernel/inference/structure.md#structurejson).
+Schema `ein-structure/1`. Field by field it is [`docs/kernel/inference/structure.md` § `structure.json`](../../../docs/kernel/inference/hypothesis_space.md#h-spacejson).
 In outline:
 
 | key | holds |
@@ -455,7 +455,7 @@ the engine's work that test puts 652 graphs, 744 in the nightly, through `dot`.
 
 ### The page
 
-[`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md): each object as built, the
+[`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md): each object as built, the
 domain, what it costs, how to see it with `structure.json` field by field, and what each reading does not tell.
 
 - **Its read-out is the binary's**: the block is held byte for byte by `the_pages_read_out_is_the_binarys`, so
@@ -565,3 +565,175 @@ Found after the commit, `6acaa3d7`, and so stated here in a second one. **Every 
     `a_whole_layer_with_its_holders_refused_is_not_called_whole` reads off the program and does not hard-code.
 - The phase README's sentence before this stage's still calls the stop pending: it is the main session's, and was
   left as written.
+
+## Record (2026-11-16): the view renamed, H dumped plain, K-17
+
+A follow-up to [the surface](#record-2026-11-16-the-surface-and-the-page), on the user's instruction of the same
+day, in a worktree on a branch of its own over `2050a886`, three commits and this record. The worktree was at
+`dbedc535`; the branch was fast-forwarded to `2050a886` before any change. No answer, route or line of
+`ein solve` moved. rustc 1.97.1.
+
+**The user, 2026-11-16, verbatim:**
+
+> does `ein render structure` shows any structure? if only hypothesis then rename it to something
+> hypothesis-relate, like `ein render h-structure` or `ein render h-space`; also can we get plain dump of
+> hypothesis? we should be able to
+
+and, relayed by the main session while the second change was being built, of where the dump goes:
+
+> ein render writes dot, by listing hypothesis I meant listing them as ein facts, so add one more top level
+> command `show` and one sub-command `show hyps` that lists them
+
+### 1. The rename
+
+The view shows the structure of the hypothesis set H and nothing else, so the user's condition holds.
+
+- **The subcommand is `ein render h-space FILE`**, with the options and the output it had but for the name.
+  `ein render structure` is refused as any unknown subcommand is, exit 2: no alias.
+- What follows the name: the document under `--dump` is `h-space.json`, its schema `ein-h-space/1`; the
+  read-out's first row is labelled `h-space`; `--help` says *hypothesis space*; the test file is
+  `ein-cli/tests/h_space_view.rs`; the page is
+  [`docs/kernel/inference/hypothesis_space.md`](../../../docs/kernel/inference/hypothesis_space.md), titled *The
+  hypothesis space and its structure*, and every link to it follows, this file's and the phase README's by path
+  alone, their prose as written. The four graph files keep their names.
+- **The name is written once**: `ein_render::structure`'s `command!()`, from which `COMMAND`, `SCHEMA` and
+  `DOCUMENT` are spelled; the parser, the dispatch and the read-out's first row take `COMMAND`. A second rename
+  is that literal, the page's file and text, and the goldens below.
+- Not renamed: the modules `ein_infer::structure` and `ein_render::structure`, the census example, the bundle
+  and its script, and the wording of every earlier record, the one above among them.
+
+### 2. `ein show hyps FILE`
+
+```sh
+ein show hyps FILE [--no-require-why]
+```
+
+- **A new top-level command, `ein show`**, a group as `ein render` is, with one subcommand. `ein show` alone is a
+  usage error that names its subcommands, exit 2, as `ein render` alone is. `ein render` draws; `ein show` lists.
+- **stdout is H and nothing else**: one candidate a line, as the fact is written, every candidate, uncut, in the
+  universe's canonical order. On `examples/zebra2.ein`:
+
+  ```text
+  (color-loc Green House-4)
+  (color-loc Green House-5)
+  (color-loc Ivory House-3)
+  ```
+
+  and on stderr ``note: examples/zebra2.ein: H, built by the rung `hrules`: 56 candidates``.
+- **A line is a fact a `.ein` file could hold**: it is `Terms::fact_text`, the printer a state file's facts are
+  written by, and spelled as the program's own file spells the fact.
+- An empty H prints nothing and exits 0, and the note says why in the words of the read-out's `universe` row for a
+  run that searches nothing, *no candidate* and *no candidate: the program states :no-search*. A dead root's H is
+  listed. A program the loader refuses, or the engine refuses to read, exits 1 with the line `ein saturate` or
+  `ein solve` gives it. A `.ein` and a `.einb` alike.
+- **It costs root's saturation and the generator's pass, and no node**: no pair layer, no small KB, no whole
+  node. `listing_h_is_one_saturation_and_no_node` narrates the owner's entry on the six instances and counts one
+  saturation and no node in the stream; the same count over a pair layer of the conflict of three finds its seven
+  nodes.
+- **`ein render h-space` gained nothing**: no view and no file under `--dump`. A `--view candidates` and a
+  `candidates.txt` were the first design and were not built.
+
+**Where H's one function lives.** `ein_infer::structure::hypotheses` (and `hypotheses_with`, narrated) returns a
+`Hypotheses`: the candidates, the rung, whether root is dead. It is `root_prepared`, which is
+`region::prepare_with`, the preparation every route starts from; and every space a structure is read in
+(`with_space_watched`) is opened over root prepared by that same function. So `whole`'s candidates, the
+document's `candidates` and the listing are one list by construction, and a test holds it besides.
+
+**How it is held to `-H` and to the document.**
+
+| test | holds |
+|---|---|
+| `ein-cli/tests/h_space_view.rs`, in `the_document_is_the_owners_reading_on_every_instance` | on the six instances the lines are the document's `candidates`, line for line, and the candidates of `ein solve FILE -H --no-search --dump-answer DIR`'s `forms/hyp-stats.txt`, which lists them by relation; and the program with the lines written after it loads and holds each line as the printer writes that fact |
+| `ein-infer/tests/structure_invariance.rs`, in the sweep it already ran | in every reading, as loaded, in a permuted id space and under each import form, the lines are the document's `candidates`, the owner's candidates and the universe a run that searches nothing is handed, place for place; the listing is the same bytes under a permuted id space and the same set of lines, prefixes off, under every import form; `a_structure_that_moves_is_caught` shows each comparison failing |
+| `ein-cli/tests/show_hyps.rs`, new, 6 tests | nothing else on stdout and one note; an empty H with the read-out's own words; a dead root; a refused program, by the loader and by *forbid*; the usage errors, the options it does not take, a `.einb`; the page's listing |
+
+The sweep reads 175 programs per commit, 47 of them importing, in 94 forms; its line is
+`cargo test --manifest-path ein.rs/Cargo.toml --profile gate -p ein-infer --test structure_invariance -- --nocapture`
+(2026-11-16). What it added to that test's work is a root saturation and root's node for each reading, three a
+program at most; no wall was measured.
+
+### 3. K-17
+
+[K-17](findings.md) is fixed in the owner, and `explore.rs`' `afford` is as it was.
+
+- **The holders are read off the cache and ask no budget.** `Space::cached`, new and `pub(crate)`, returns nodes
+  only where each was computed, computes nothing and charges nothing; `structure.rs`' `holders` reads the singles
+  through it. A layer that read its singles has its witnesses' holders read whatever it spent, at root and in the
+  small KB.
+- **Where they cannot be read, the coupling says so.** They stay unread where a layer stopped before its last
+  single, and there alone. `Coupling::payers_read`, new, is false wherever the table holds an unlicensed instance
+  with witnesses and root's singles were not all read, and `Coupling::complete()` is false with it. The document
+  carries `coupling.payers_read`.
+- **At the two witnesses**, `examples/zebra.ein` one fact under what root's layer spends and one under what the
+  small KB's does, each taken off the program's own document: the layer reads every pair, the holders are read,
+  every debt of an unlicensed instance is an edge, `complete()` is true and the document is the default budget's
+  but for what was asked; in the small KB every unlicensed instance is about the group it is about at the default
+  budget. At a budget of one fact both layers stop among their singles and `singles_read`, `theory_read`,
+  `payers_read` and `complete` are false. `ein-infer/tests/coupling.rs` holds both at the owner and
+  `ein-cli/tests/h_space_view.rs` at the view.
+- **The view's special case is not dead, and is smaller.** Its two sentences now say a layer *stopped before its
+  last single*, which is the one case left, and stand beside the sentence that says the layer stopped. The view's
+  `whole` and the owner's `complete()` agree there. `a_whole_layer_with_its_holders_refused_is_not_called_whole`
+  is replaced by `a_layer_read_whole_has_its_holders_read` and `holders_a_stopped_layer_left_unread_are_said`.
+
+### Goldens moved
+
+- `ein-cli/tests/golden/help_shape.txt`: by the rename, the view's nine lines under its new name and at its new
+  place in the order, its about and its `--dump` and `--view` help reworded; by `ein show`, six lines added.
+- `docs/kernel/configuration.md`, held by `config_reference.rs`: the view's rows renamed; then 91 options across
+  eighteen parsers where there were 90 across sixteen, a row for `ein show hyps`, 89 without the default features,
+  a class of § 3.3 with *does it change the answer: no*, § 3.4's list, and `LOADING` thirteen commands.
+- The page's read-out block, its marker and first row; and a second held block, the listing.
+- `examples/README.md`'s anchor list, twice ([K-18](findings.md)).
+- `ein-render/tests/golden/corpus_shapes.md5` did not move.
+
+### Defaults taken
+
+Each the user's or the main session's to revise.
+
+1. **The name `h-space`**: the main session's choice between the user's two examples, `h-structure` and
+   `h-space`, since the command shows the hypothesis space, its candidates and its structure. Kept one literal so
+   that another choice is cheap.
+2. **No alias** for `ein render structure`: the command was one day old and unreleased.
+3. **`hyps`' note**: ``H, built by the rung `R`: N candidates``. The read-out's `universe` words are written a
+   second time in `ein_render::structure::hypotheses_note` and held to the read-out by a test, since
+   `read_out.rs`' `universe` rows were another agent's to edit while this ran.
+4. **No `-o FILE`**: no command that prints text takes one.
+5. **The exit of a refused program is 1**, `ein solve`'s and `ein render`'s, for the loader's refusals and the
+   engine's alike.
+6. **`-H` is compared as a set**: it lists by relation, and the universe's order is the rendered text's.
+7. **`Coupling::payers_read` is about the holders alone**: an unlicensed instance whose rule names no witness has
+   no payers to read, and lacks none.
+8. **K-18's list was re-banked here**, the rename moving one of its two missing entries anyway.
+
+### Findings
+
+[K-18](findings.md): `world_anchors` was red on `master` since the surface's merge; re-banked.
+[K-19](findings.md): the support check's own read of the cache is refused as K-17's was, and the check is dropped
+without a word; open, not fixed.
+
+### Verification
+
+On the final tree, each read from its own result line: `cargo test --manifest-path ein.rs/Cargo.toml --profile
+gate` for `-p ein-render`, every target; `-p ein-cli` `h_space_view`, `show_hyps`, `render_doors`,
+`config_reference`, `help_surface`, `gate_steps`, `nightly_steps`, `lever_invariance`, `embedding`,
+`world_anchors`, `read_out_reference`; `-p ein-infer` `--lib` and `structure_invariance`, `cover`, `coupling`,
+`exactly_one`, `pair_layer`, `theory_share`, `explore`, `region`, `claim_routes`, `price_list`. And
+`cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`,
+`RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`, `utils/check_hashmap_iteration.py`, and
+`utils/doc_audit.py --links --check` with the gate's list. `explore`, `region`, `claim_routes` and
+`lever_invariance` were not edited.
+
+### Not done, and not verified
+
+- `./run_tests.sh`, `./run_tests.sh --nightly`, `utils/ci_container.sh`: not run, by instruction. The DOT
+  writers did not change.
+- **No wall was measured**, of the command or of the tests that grew.
+- The slow entries' half of `structure_invariance` and of `dot_wellformed` (`EIN_CORPUS_SLOW=1`), and so the
+  page's corpus totals, which no change here should move: not re-taken.
+- `ein show hyps` on a `.einb` is one program; under `--no-require-why` it is `config_reference`'s one program.
+- K-17's fix below the two witnesses and the budget of one fact: no other program and no other budget was probed.
+- `utils/structure_bundle.py` and the census example write what they wrote, but for `coupling.json`'s `complete`,
+  which is now false where the payers were not read; no corpus program is in that state at the default budget.
+- The status line at this file's head and the phase README's earlier sentences still name
+  `ein render structure`: earlier records, left as written.

@@ -1,4 +1,5 @@
-//! The argument surface — `ein`, `render`, `solve`, `test`, and `saturate`'s own.
+//! The argument surface — `ein`, `render`, `show`, `solve`, `oracle`, `test`,
+//! and `saturate`'s own.
 //!
 //! One module so the whole surface can be *introspected* rather than scraped:
 //! `--help` layout is `clap`'s business and is not pinned byte for byte, and
@@ -217,6 +218,31 @@ fn event_args(cmd: Command) -> Command {
     )
 }
 
+/// `ein show` — what a program holds, listed as Ein text: stdout is forms a
+/// `.ein` file could hold and nothing else. A group, as `ein render` is, so
+/// that another thing to show is one more subcommand; `hyps` is the one
+/// there is.
+fn show_command() -> Command {
+    Command::new("show")
+        .about("list what a program holds, as Ein text (render draws, show lists)")
+        .subcommand_required(true)
+        .arg_required_else_help(false)
+        .subcommand(
+            Command::new("hyps")
+                .about(
+                    "the hypotheses: the program's hypothesis set H as Ein facts, one \
+                     candidate per line as the fact is written, every candidate, in the \
+                     universe's order, and nothing else on stdout; a note on stderr says \
+                     which rung built H and how many it holds. It is the set every route \
+                     searches over, and listing it costs root's saturation and the \
+                     generator, no search. It asks about H, not about R, and changes no \
+                     answer (docs/kernel/inference/hypothesis_space.md)",
+                )
+                .arg(Arg::new("file").required(true))
+                .arg(no_require_why()),
+        )
+}
+
 /// `ein render` — DOT only, no SVG.
 fn render_command() -> Command {
     Command::new("render")
@@ -386,45 +412,49 @@ fn render_command() -> Command {
                 )
                 .arg(no_require_why()),
         )
-        // The structure of the hypothesis set: `ein_infer::structure` reads
-        // it and `ein_render::structure` spells it (Q-M1f.309). `ein solve`
-        // computes none of it.
+        // The hypothesis space: `ein_infer::structure` reads it and
+        // `ein_render::structure` spells it, the command's name among what it
+        // spells. `ein solve` computes none of it.
         .subcommand(
-            Command::new("structure")
+            Command::new(ein_render::structure::COMMAND)
                 .about(
-                    "the structure of the program's hypothesis set, read from its own \
+                    "the hypothesis space of the program: the candidates of its hypothesis \
+                     set H and the structure of that set, read from the program's own \
                      lattice with nobody declaring it: which candidates exclude each other, \
                      which of those pairs the theory makes alone, the groups (pick at most \
                      one), the owed groups and grids (exactly one), and what couples the \
-                     questions (docs/kernel/inference/structure.md). Prints a read-out, or \
-                     the --view asked. It reads nodes and changes no answer",
+                     questions (docs/kernel/inference/hypothesis_space.md). Prints a \
+                     read-out, or the --view asked. It reads nodes and changes no answer",
                 )
                 .arg(Arg::new("file").required(true))
                 .arg(
                     Arg::new("view")
                         .long("view")
                         .value_name("VIEW")
-                        .value_parser(PossibleValuesParser::new(STRUCTURE_VIEWS))
+                        .value_parser(PossibleValuesParser::new(H_SPACE_VIEWS))
                         .default_value("summary")
-                        .help(
+                        .help(format!(
                             "what stdout holds: 'summary' (default) a row an object, what it \
                              cost and whatever was stopped, cut or left unread; a graph as \
                              DOT, 'exclusion' the pairs that exclude, the theory's and the \
                              puzzle's in two strokes, 'cover' the groups and grids, \
                              'coupling' the questions' hypergraph, 'one-step' its edges read \
-                             one application back; or 'json', the whole of structure.json",
-                        ),
+                             one application back; or 'json', the whole document, which \
+                             --dump writes as {}",
+                            ein_render::structure::DOCUMENT
+                        )),
                 )
                 .arg(
                     Arg::new("dump")
                         .long("dump")
                         .value_name("DIR")
                         .value_parser(artefact_path)
-                        .help(
-                            "also write the structure to DIR: structure.json and the four \
+                        .help(format!(
+                            "also write the hypothesis space to DIR: {} and the four \
                              graphs, exclusion.dot, cover.dot, coupling.dot and \
                              coupling_one_step.dot. stdout is the same with it",
-                        ),
+                            ein_render::structure::DOCUMENT
+                        )),
                 )
                 .arg(
                     Arg::new("supports")
@@ -466,9 +496,9 @@ fn render_command() -> Command {
         )
 }
 
-/// `ein render structure --view`'s words: the read-out, each of
+/// `ein render h-space --view`'s words: the read-out, each of
 /// [`ein_render::structure::GRAPHS`], and the document.
-const STRUCTURE_VIEWS: [&str; 6] = [
+const H_SPACE_VIEWS: [&str; 6] = [
     "summary",
     "exclusion",
     "cover",
@@ -1216,6 +1246,7 @@ pub fn command() -> Command {
                 .help("engine version, event protocol, features, stdlib hash"),
         )
         .subcommand(render_command())
+        .subcommand(show_command())
         .subcommand(solve_command())
         .subcommand(oracle_command())
         .subcommand(test_command())
