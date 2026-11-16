@@ -1011,7 +1011,7 @@ fn validate_queries(
             }
         }
         // Since M1e2 T1e2.1a.5.3 a query's `:expect` lists its projection
-        // classes (`region_language.md` § 5): each `(model …)` is one class,
+        // classes (`query.md`): each `(model …)` is one class,
         // the goal's atoms under its rows. So a listed fact must be one a goal
         // atom matches — anything else is a claim about the state, which is
         // the region claim's — and a class is listed once.
@@ -1737,7 +1737,7 @@ fn ingest_rules(
             // a queue that orders derivation, and it is read once per quiescent
             // KB after the fixpoint instead. An `hrule` asserting `open` is the
             // same object and goes the same way — `:choose` was never the home
-            // for obligations (`obligation_forms.md` § F).
+            // for obligations (`obligations.md`).
             kb.program_mut().add_obligation(rule);
         } else if head == "hrule" {
             kb.program_mut().add_hrule(rule);

@@ -408,7 +408,7 @@ it has is a program saying which of *its* relations it means to close:
   to the positives on purpose: *stored negatives are not closed*, so the
   device is "this relation is decided", not "everything is decided".
 - **`(__closed__ R)` — the generator may not speculate an `R`-fact**
-  ([`domain_contract.md` §3](domain_contract.md), M1d
+  ([`obligations.md` §What is refused](../../ein/user/syntax-and-semantics/obligations.md#what-is-refused), M1d
   S1d.2.2). The same closure said to the *search* rather than to a claim,
   and `std.closure`'s `infer-closure` derives it from `functional ∧ total`.
 

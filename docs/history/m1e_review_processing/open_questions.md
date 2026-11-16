@@ -859,7 +859,7 @@ about the **structure of the hypothesis set**, not about a traversal:
 
 - The candidate set **grew underneath a branch** that was entered because its
   alternatives were jointly exhaustive.
-  [`domain_contract.md`](../m1d_satisfiability/domain_contract.md)
+  [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
   C4 states the contract exactly — *a branch is jointly exhaustive only while
   the candidate set cannot grow underneath it* — and says nothing about what
   to do when it does.

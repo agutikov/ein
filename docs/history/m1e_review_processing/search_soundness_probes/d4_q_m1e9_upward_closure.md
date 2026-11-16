@@ -152,7 +152,7 @@ Three things follow, and only the third is new work.
 1. **The probe states a requirement as a refutation.** It says *a world with
    `p` and without `q` is false* and never says *`q` is required* — which is
    what M1d built `(open ?R)` for, form **G** of
-   [`obligation_forms.md`](../../m1d_satisfiability/obligation_forms.md)'s
+   [`obligations.md`](../../../ein/user/syntax-and-semantics/obligations.md)'s
    menu. So the probe is a **mis-encoded obligation**, and the engine's
    complaint about it is not wrong. What is wrong is the **word**: a program
    whose requirement is unstateable this way is ill-formed, and

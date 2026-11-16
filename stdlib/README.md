@@ -1688,7 +1688,7 @@ optimisation of the first. A saturation rule reaches the agenda and emits
 agenda, so its evidence is the `owe` its post-fixpoint pass emits. Both the
 gate and the census read both kinds. Counting only `fire` would have put the
 four duals below permanently in the zero set, which is why
-[S1d.2.3](../docs/history/m1d_satisfiability/README.md#s1d23--the-form)
+[S1d.2.3](../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
 deferred shipping them until the pass existed.
 
 Adding a rule here therefore means adding a program there, and the gate says so

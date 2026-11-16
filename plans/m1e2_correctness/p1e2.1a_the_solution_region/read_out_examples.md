@@ -43,7 +43,7 @@ is quoted.
 
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
-[`region_examples.md`](region_examples.md)'s E1. Two people, two drinks and two
+[`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)'s E1. Two people, two drinks and two
 pets; the clues put Alice with the tea and the cat, and Bob is open. Every row
 of the default read-out is here. ∅ is in R because the program states no
 obligation, so the minimal line is the trivial {∅}. The maximal state is
@@ -121,7 +121,7 @@ exit 0
 
 ## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
-[`solution_semantics.md` § 2.5](../../../docs/kernel/inference/solution_semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s
+[`solution-semantics.md` § 2.5](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s
 worked example: three candidates, every pair alive, the triple dead, no
 obligation. Seven runs, one per mode, so the same R can be read through each
 question.
@@ -359,12 +359,12 @@ exit 0
 
 ## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
 
-[`region_examples.md`](region_examples.md)'s E5. Two people, two seats,
+[`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)'s E5. Two people, two seats,
 restrictions only. The walk's claim, the corpus's only `(or …)`, listed **R's
 maximal line**: two of R's seven states. Over all of R the goal `(seat ?who
 ?slot)` would see every seat fact, so each state would be its own class and
 `∅` the undetermined one. The switch migrated the query to `:over maximal`, as
-[`region_language.md` § 7](region_language.md#7-the-migration-named) says,
+[`query.md` § Claims](../../../docs/ein/user/syntax-and-semantics/query.md#claims) says,
 so its answer is exactly the walk's claim, word for word, and it holds.
 
 `ein solve examples/features/11_expect_ambiguity.ein`
@@ -1592,7 +1592,7 @@ exit 0
 ## X12 — `tests/region/03_merged_or.ein`: a program that states its region
 
 S1e2.1a.4's fixture for `(merged …)` with `(or …)`: the colocation chain,
-[`region_examples.md`](region_examples.md)'s E2. Its `(solve … :expect (region …))`
+[`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)'s E2. Its `(solve … :expect (region …))`
 is checked against the R the run described, and the `(region …)` printed above
 the query is that claim's own text: one form, both directions.
 

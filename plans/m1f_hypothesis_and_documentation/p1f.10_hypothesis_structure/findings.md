@@ -106,7 +106,7 @@ program never reaches is alive and owes nothing. The same on the shipped stdlib:
 
 **How it reads against the rulings.** `eq` in `(order eq)` is a constant in an argument position of a fact, so
 it is a name of the program by Q-M1e2.9 (a), and `invariant::program_names` lists it.
-[`solution_semantics.md` § 1.2](../../../docs/kernel/inference/solution_semantics.md) says *every name is in
+[`solution-semantics.md` § 1.2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names) says *every name is in
 the candidate list* and *a list that left one out was an engine bug* (W4, W15). Read so, this is a wrong
 answer of that family. Read the other way, a reserved word is never an object, as a type a signature declares
 is not, and § 1.2 has an exception it does not state. **Not filed as a register row**: which reading holds is
@@ -334,7 +334,7 @@ propose a fact outside H: three by the cube at the oracle's default limit, the s
 88 programs on the hrule rung the cube read 61, and **no corpus answer is known to be concerned**.
 
 **How it reads against the rulings.**
-[`solution_semantics.md` § 1.4](../../../docs/kernel/inference/solution_semantics.md) defines a candidate as
+[`solution-semantics.md` § 1.4](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe) defines a candidate as
 *a fact the generator proposes at root*, so R is right by the definition. The same section holds that *H must
 contain every fact a model needs* (ruling (h)), and that where it does not *either the program is wrong … or
 the engine is*: which of the two an hrule conditioned on a guess is, is the user's. **Not filed as a register
@@ -520,7 +520,7 @@ since S1f.6.34 corrected it: *a loaded obligation rule that owes nothing at root
 blind enumerator does not run*. And `oblgen.rs`'s header: *the middle row is about what the program declares,
 not about what this state happens to owe*.
 
-Three do not. [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 1.4 and
+Three do not. [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe) § 1.4 and
 `AGENTS.md` say *the program's own `(hrule …)` if it declares one, else the facts that would discharge what
 root owes, else the blind combinatorial enumerator*, and `hypgen.rs`'s header *obligation-driven while the
 state owes something it may branch on, otherwise blind combinatorial*. Read as written, they send a program

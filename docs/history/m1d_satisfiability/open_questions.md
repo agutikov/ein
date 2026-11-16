@@ -18,8 +18,8 @@ about a word the engine already says.
 | Q | title | status |
 |---|---|---|
 | [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open, and **halved 2026-08-26** — the *word* is settled by [T1d.10.5.2b](README.md#s1d105--what-exhausted-means) (a refutation under a cap no longer says it is one; 26 cells moved, no exit code did), leaving the *stopping* half. Plus a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine answered **yes** by accident — **fixed 2026-08-26** ([T1d.10.5.0](README.md#s1d105--what-exhausted-means): a cap of zero is a truncation), which leaves the question about the *word* and not about a cap. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
-| [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](README.md#s1d23--the-form) records it |
-| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](domain_contract.md); open for the general lower-bound form nobody has asked for |
+| [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r) records it |
+| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) shipped the ladder and **no counter moved** ([the record §2](hypotheses_from_obligations.md)) |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | **closed 2026-08-26 — both**: the count now carries its exhaustion qualifier and **(b) the determining key** ships behind `ein solve --models key` ([the verdict](the_verdict.md)). The half that was broken was the *enumeration* |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word (the census §5) |
@@ -153,8 +153,8 @@ instead of the constant.
 
 **Decided 2026-08-24 — (c), a rule shape**, with one reserved verdict atom
 (`open`) that rules assert and the engine tallies per quiescent KB: form G on
-[`obligation_forms.md`](obligation_forms.md), recorded in
-[S1d.2.3](README.md#s1d23--the-form). The candidate set is
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md), recorded in
+[S1d.2.3](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r). The candidate set is
 neither stored nor narrowed in place — recomputed from the obligation's own
 guard when wanted — which dissolves the (a)/(b) cost trade below rather than
 picking a side of it. The text that follows stands as the record of the
@@ -188,7 +188,7 @@ P1a.6 — so "recompute it" is not automatically cheap.
 ## Q-M1d.3 — What closes a domain?
 
 **Answered for obligations 2026-08-25** —
-[`domain_contract.md`](domain_contract.md), S1d.2.2's
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over), S1d.2.2's
 deliverable, in four clauses. C is the obligation's own guard, the
 `?isa`-parameterised scan standing beside the witness step inside the rule's
 `absent`, which `(open ?R)` names the relation of rather than restating; so
@@ -253,7 +253,7 @@ hard-codes `is-a` would put a type system in the kernel, which
 **Decided in principle 2026-08-24**, by the user: *"the obligations mechanism
 also has to supersed the hrule and :hrules, so if no :hrules in query — then
 hypothesis must be generated from obligations"* — the generator ladder in
-[`obligation_forms.md` § Superseding](obligation_forms.md).
+[`obligations.md` § Superseding](../../ein/user/syntax-and-semantics/obligations.md).
 [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) executes
 it, and the re-baseline discipline below is how.
 

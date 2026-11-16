@@ -7,7 +7,7 @@
 //! `ein solve` describes R by ([`crate::explore`]). Each state's facts are its
 //! fixpoint's, root's included, read by the oracle's own node.
 //!
-//! The rules (`region_examples.md` § 1, accepted 2026-10-16):
+//! The rules (`query.md`, accepted 2026-10-16):
 //!
 //! - every relation the claim names positively is closed, across the whole
 //!   claim, and a listed `(not …)` is checked for presence;

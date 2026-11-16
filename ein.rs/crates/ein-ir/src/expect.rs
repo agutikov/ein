@@ -90,7 +90,7 @@ impl Expectation {
 }
 
 /// A query's `:over` — which states of R its classes are over (M1e2
-/// T1e2.1a.5.3, `region_language.md` § 5). All of R by default.
+/// T1e2.1a.5.3, `query.md`). All of R by default.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum Over {
     #[default]

@@ -43,7 +43,7 @@ existing wrong solutions and initial problems."*
 
 Every wrong answer in [P1e2.2](../p1e2.2_wrong_answers/README.md) was found by
 someone **reading** it: a hand derivation in
-[`solution_semantics.md` § 2](../../../docs/kernel/inference/solution_semantics.md),
+[`solution-semantics.md` § 2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r),
 a probe written for a question, a twin fixture one fact apart. None of them was
 found by looking at what the engine answered. Today that is hard to do. A
 model is a block of facts on stdout, a refutation is a fenced `dot` block that

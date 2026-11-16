@@ -1149,7 +1149,7 @@ impl Kb {
     /// Both registries that a fact can activate, and only those. A saturation
     /// rule and an obligation rule find their activators the same way — by
     /// name, in this index — because M1d
-    /// [S1d.2.3](../../../../docs/history/m1d_satisfiability/README.md#s1d23--the-form)
+    /// [S1d.2.3](../../../../docs/ein/user/syntax-and-semantics/obligations.md#the-form-open-r)
     /// split them into two registries over **one name-space**: which pass
     /// walks a rule is not a fact about its activator. `hrules` are absent
     /// and stay absent — a generic hrule takes its activators from the query's

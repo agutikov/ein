@@ -109,7 +109,7 @@ That sentence is the coordinator's and is the stage's to confirm or correct.
 ## What it may find
 
 - **That H holds candidates about Skolem terms,** or none, in a way that changes R: read against
-  [`solution_semantics.md` § 1.4](../../../docs/kernel/inference/solution_semantics.md), and a register row
+  [`solution-semantics.md` § 1.4](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe), and a register row
   if it is wrong.
 - **That equality is needed at once.** *Every person has exactly one father* needs the witness to be equal
   to something, and Ein's `eq` is identity of values: `(father-of Ann)` is never equal to `Bob`. A theory of

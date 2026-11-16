@@ -316,7 +316,7 @@ fn the_closed_and_owing_corner_is_a_conflict() {
 
 /// **`zebra2-minus-15` owes 46 at root** — the hand census, reproduced.
 ///
-/// `obligation_forms.md` §5 counted this by hand on 2026-08-24, before the
+/// `obligations.md` counted this by hand on 2026-08-24, before the
 /// form had a name: five `(bijective R)` declarations imply 5 × 5 × 2 = **50**
 /// obligations, the two arrows already true at root discharge 2 × 2 = 4 of
 /// them, and 23 forward + 23 backward = **46** remain. The engine reproducing

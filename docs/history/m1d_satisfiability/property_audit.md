@@ -40,7 +40,7 @@ lower bounds are missing; the truer statement is that they are all *there*
 and every one of them is about a candidate set of size 0 or 1. Where a
 requirement has two or more candidates left, no rule in the stdlib records
 anything — not because an author forgot, but because the language has no way
-to say it, which is what [S1d.2.3](README.md#s1d23--the-form)'s `(open ?R)` is for.
+to say it, which is what [S1d.2.3](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r)'s `(open ?R)` is for.
 
 The four static-witness rules are worth their own sentence, because they are
 [`ideas.md`](ideas.md)'s named anti-pattern alive in the tree: *"existence
@@ -164,7 +164,7 @@ rule, which is the claim `ein-infer/tests/stdlib_coverage.rs` gates.
 
 ## 3. The endpoints, verified — and three holes
 
-[`obligation_forms.md` §8](obligation_forms.md#8-what-each-form-does-to-the-stdlib)
+[`obligations.md` §The stdlib's four](../../ein/user/syntax-and-semantics/obligations.md#the-stdlibs-four)
 claimed the map: per family, candidates = 0 ⇒ `(false)`, = 1 ⇒ forced.
 **Confirmed for three families of four, with the corrections below.**
 
@@ -178,7 +178,7 @@ claimed the map: per family, candidates = 0 ⇒ `(false)`, = 1 ⇒ forced.
 So §8's table is right about the *mechanisms* and wrong about the *families*:
 the two endpoints of the bijective pair live in **different modules**, joined
 by one activator fan-out. That is the audit's first input to
-[S1d.2.4](README.md#s1d24--obligations-in-the-saturator) — the duals belong beside
+[S1d.2.4](../../ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read) — the duals belong beside
 the 0-endpoints in `std.algebra`, and the fan-out that reaches them is
 `std.bijection`'s.
 
@@ -243,7 +243,7 @@ writing them there.
 ## 4. The disturbance list
 
 The duals do not land in a band: they run after the fixpoint, in a pass of
-their own ([S1d.2.3](README.md#s1d23--the-form) item 1). So the question is what
+their own ([S1d.2.3](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r) item 1). So the question is what
 could reach the saturation loop from outside it.
 
 ### 4.1 What is order-sensitive, and therefore what the bit-identity check protects
@@ -364,7 +364,7 @@ are activated (`bijective-setup` reaches it), so the difference is the
 puzzle: the forward direction reaches unreachability inside dead forks, the
 backward one never does. That asymmetry is the first concrete prediction the
 audit hands forward, and
-[T1d.2.4.5](README.md#s1d24--obligations-in-the-saturator)'s `owes = 46` — 23
+[T1d.2.4.5](../../ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)'s `owes = 46` — 23
 forward + 23 backward — is where it gets checked from the other side.
 
 The seven entries where `total` is loaded and silent, and the six for
@@ -382,5 +382,5 @@ unfinished are the ones written to sit unfinished.
 | §3 F1 (positional markers unchecked) | the duals are written to `std.algebra`'s formulation and `std.slots`'s, never `std.elim`'s |
 | §3 F2 (`connex` naive) | [S1d.2.2](README.md#s1d22--the-domain-contract) T1's refutation contract names it as the one `≥` refutation that is not extension-safe |
 | §3 the split families | the duals live beside the 0-endpoints in `std.algebra`; `std.bijection`'s fan-out reaches them |
-| **§4.2 (activator facts are stored facts)** | **[S1d.2.4](README.md#s1d24--obligations-in-the-saturator)'s bit-identity acceptance is restated** as "saturation firings unchanged, fact store +2 per declaration, predicted and diffed, goldens re-blessed once on 13 entries" |
+| **§4.2 (activator facts are stored facts)** | **[S1d.2.4](../../ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)'s bit-identity acceptance is restated** as "saturation firings unchanged, fact store +2 per declaration, predicted and diffed, goldens re-blessed once on 13 entries" |
 | §5 | S1d.2.6's census has its candidate list three stages early |

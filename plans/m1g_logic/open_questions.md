@@ -113,7 +113,7 @@ Ein never makes a name at run time. First-order proof needs something fresh in t
 existential, and the arbitrary individual of a universal's introduction. A **Skolem term**, a nested fact
 over the names in scope such as `(father-of Ann)`, is a value today (probe 5). The question is whether that is
 enough for everything M1g wants, and S1g.4.4 is where it is found out; names made by the engine would be a
-change to what a program's names *are* ([`solution_semantics.md` § 1.2](../../docs/kernel/inference/solution_semantics.md)),
+change to what a program's names *are* ([`solution-semantics.md` § 1.2](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names)),
 and the M1 alive-set invariant says no rule asserts a name the program lacks.
 
 ## Q-M1g.9 — The bound of an exhaustive check, and its tier

@@ -25,7 +25,7 @@ oracle. **The rest of the phase was re-ordered the same day**
 ([§ Stages](#stages)), because the switch needs two pieces of work the plan
 had after it.
 S1e2.1a.4's grammar is ruled, its real examples
-([`region_examples.md`](region_examples.md)) accepted, and the build done:
+([`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)) accepted, and the build done:
 `(solve …)` with the lattice keywords moved off `(query …)`, and the region
 claim checked by `ein test` against R. The query's new `:expect` lands with the
 switch. S1e2.1a.10 is done: the census
@@ -171,7 +171,7 @@ Taken 2026-10-15 against `caef67a`.
 
 | want | what exists | the gap |
 |---|---|---|
-| R, defined | [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 2: a solution is a saturated, consistent state that owes nothing **or** is maximal (Q-M1e.6) | no region, no minimal line, no holes; `alive₀` is defined after the forced-positive cascade, so the universe depends on config |
+| R, defined | [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r) § 2: a solution is a saturated, consistent state that owes nothing **or** is maximal (Q-M1e.6) | no region, no minimal line, no holes; `alive₀` is defined after the forced-positive cascade, so the universe depends on config |
 | R, computed | nothing. The engine's walk is the only computation, and it is what is being checked | an **oracle**: every node of the lattice classified by saturation alone |
 | R, drawn | `ein render lattice` (survivors + pruned siblings), `--dump-lattice` (one page per entering), the bundle's `pages/lattice/` | the **whole lattice**, every node's status and the reason for it, R's lines and holes, with the engine's walk overlaid |
 | R, stated by a program | `:expect (model …)`, `(or (model …) …)`, `(false)`: one model set | no way to say *which line*, or to state a region |

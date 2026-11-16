@@ -62,7 +62,7 @@ Beside it, three more columns the stage adds:
    `00_ebnf.md`'s generated grammar and not written from memory.
 2. **The semantics the table assumes,** in three sentences with their sources: a state is the least fixpoint
    of the rules over the commitment
-   ([`solution_semantics.md` § 1.5](../../../docs/kernel/inference/solution_semantics.md)); the answer is
+   ([`solution-semantics.md` § 1.5](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#15-commitment-node-state)); the answer is
    the alive and discharged commitments; `absent` is read at the boundary. For a monotone program with no
    obligation, the coordinator expects *a state is the least Herbrand model of root plus the commitment*,
    and R's members are the consistent ones: **to be checked against the definitions, and against the oracle

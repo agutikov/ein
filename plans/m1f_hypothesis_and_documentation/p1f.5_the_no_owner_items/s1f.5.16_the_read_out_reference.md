@@ -84,7 +84,7 @@ rows are what a first read found.
 | § 8.1's block names neither `schema` nor `source` | both are top-level keys of every summary | the same |
 
 One kernel page also says something the read-out has disproved.
-[`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model) says *"No surface
+[`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model) says *"No surface
 computes projection classes yet"*, and every query block has printed them since M1e2 S1e2.1a.5.
 
 None of these is a wrong answer. Each is prose that fell behind the printer, which is what happens to a page
@@ -113,7 +113,7 @@ first argument of `row`, `sub_row` and `row_text` (2026-11-08):
 
 Q-M1e.7's ruling: *"the recorded object is the solution state. `model` is a projection of it, computed at the
 read-out: the positive part minus the positive initial KB"*, and `ein solve` and `--json-summary` print it
-*"under that name"*. [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model)
+*"under that name"*. [`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)
 states the definition. Here is what prints today (`ein solve examples/branching/05_mini_zebra.ein`, with and
 without `-P`, 2026-11-08):
 
@@ -500,8 +500,8 @@ another number than its field**:
   without digit groups. The `bit` row's *2^n = x saturations* and `paths`' *would cost up to x saturations* are their
   own numbers, each said by its row.
 - *model*: a listing's `(model …)` is a state's facts over the candidates' relations (`ein_infer::read_out::Listed`'s
-  `model`, the summary's `region.states[].facts`); `-P` prints [`solution_semantics.md` §
-  3](../../../docs/kernel/inference/solution_semantics.md#3-model)'s model, under the head *final-state facts (beyond the
+  `model`, the summary's `region.states[].facts`); `-P` prints [`solution-semantics.md` §
+  3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)'s model, under the head *final-state facts (beyond the
   program as loaded, (not …) omitted …)*; and `-t`'s `read-out` row, *each listed state's model*, means the listing's.
   Two objects, one word: [Q1](#q1--q-m1e7s-read-out-half), below.
 - *states*: `states (k_s)` counts R's; a mode's count row the states listed; `over`'s *n states* the states its classes
@@ -536,7 +536,7 @@ another number than its field**:
 | § 8.6 `ein oracle`: *every hole row* | at most four, as describe (§ 6.3 says so) | the prose fell behind |
 | § 8.6 `ein oracle`: *today's `the cube` line* | `the cube   n dead nodes with an alive superset · m discharged nodes with an owing superset`, then whether the static verdict held; *contradicted* exits 1 | unspecified; the page states it |
 | no mention of `-t` | five rows | the page has them |
-| [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model): *No surface computes projection classes yet* | every query block prints them since M1e2 S1e2.1a.5 | a kernel sentence the read-out disproved; T4 corrects it |
+| [`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model): *No surface computes projection classes yet* | every query block prints them since M1e2 S1e2.1a.5 | a kernel sentence the read-out disproved; T4 corrects it |
 
 **Findings: a line that says something false or ambiguous.** None misstates an answer, so none is a register row;
 each is P1e2.3's class (*a surface that misreports*), shown and not fixed here, as the method says:

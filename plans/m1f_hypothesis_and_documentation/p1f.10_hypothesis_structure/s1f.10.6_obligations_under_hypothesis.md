@@ -66,7 +66,7 @@ alternatives.
    keeps an empty R where a model exists. The default is not acted on before the user replies.
 4. **T1f.10.6.4 — as ruled.** The fix, with the row flipped in the fixing commit and the control's
    expectation unchanged; under (A), the read-out's `universe` row says what was added and
-   [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 1.2 is restated; under
+   [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names) § 1.2 is restated; under
    (C), a `defined_behaviour.md` § 4 section and a `broken/load/` fixture; under (D), the row's status and the
    read-out's line with `read_out.md`. Q-M1e.11 recorded as ruled, in the user's words.
    [`events.md`](../../../docs/ein/ein.rs/events.md)'s pointer to this stage restated to say what the
@@ -914,7 +914,7 @@ A tenth program, the witness under two hrules that propose a relation where its 
 
 ### The docs
 
-- [`solution_semantics.md` § 1.4](../../../docs/kernel/inference/solution_semantics.md#14-candidate-and-universe)
+- [`solution-semantics.md` § 1.4](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)
   says what H is on the obligations rung, with the three steps, the declines a later plan is held to, where
   the reading is over and under, and that it is not *the program with the activator stated*. (The stage file's
   task 4 says § 1.2, which is *Names*; the universe is § 1.4, as task 3's record noted.)

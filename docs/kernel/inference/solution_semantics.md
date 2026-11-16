@@ -621,7 +621,7 @@ measured the scope rule over the corpus is
 openness_census.md.
 
 Normative detail on what an obligation quantifies over:
-[`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md)
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
 (C1–C4) and
 [why an obligation's alternatives are jointly exhaustive](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive).
 
@@ -660,7 +660,7 @@ blind enumerator binds a type as an object (§ 1.4).
 | the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle. **One tool, consistent with the oracle**: every question about R is a mode of `ein solve` that does the least work it needs, the cube is `ein oracle`, and there is no `ein walk` (the user, 2026-10-16). The interface was approved the same day ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)). **Its modes are built** ([`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs), held to the oracle by `ein-infer/tests/explore.rs`): `ein solve --minimal`, `--maximal`, `--single`, `--region-budget`, and `ein oracle`; since S1e2.1a.5 a bare `ein solve` describes R | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
 | (i) | **the verdict words judge a stated expectation.** `Ambiguity` is relevant where exactly one solution is expected, `Contradiction` where some is. Without an expectation, `solve` explores and describes R | S1e2.1a.5 |
 | (g) | **`exhausted` means the reported region is all of R.** A run a budget stopped (`-m`, `-E`, `-T`) reports what it found as a lower bound, and every node in it is checked | S1e2.1a.5, S1e2.1a.9 |
-| (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, and since the grammar's ruling of 2026-10-16 states the expected region as its `:expect (region …)`; `(query :goal … :expect …)` asks about the goal's projection classes. `(solve …)` exists since T1e2.1a.4.2 | S1e2.1a.4 ([`region_language.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_language.md), [`region_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)) |
+| (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, and since the grammar's ruling of 2026-10-16 states the expected region as its `:expect (region …)`; `(query :goal … :expect …)` asks about the goal's projection classes. `(solve …)` exists since T1e2.1a.4.2 | S1e2.1a.4 ([`query.md`](../../ein/user/syntax-and-semantics/query.md), [`query.md`](../../ein/user/syntax-and-semantics/query.md#claims)) |
 | (e) | **the region's printed form**: every state of R, and each state with several generating commitments with its minimal ones, as `(region (model …) …)` with `(merged <to> <from>)` | S1e2.1a.4, S1e2.1a.5 |
 
 **Empty R has two kinds**, and the read-out keeps them apart:
@@ -974,7 +974,7 @@ leave those out.
   lever's row read against it.
 - [`satisfiability.md`](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive): why
   an obligation's alternatives are jointly exhaustive.
-- [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md):
+- [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over):
   C1–C4, what an obligation quantifies over.
 - [`features.md`](features.md): the measured feature × config matrix.
 - [`glossary.md`](../../ein/user/reference/glossary.md#the-answer): one-line entries for

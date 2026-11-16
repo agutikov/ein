@@ -38,7 +38,7 @@ It is a boundary. Three readings were tested and all three fail, for three
 [Q-M1d.2](open_questions.md#q-m1d2--where-does-a-requirement-live) asked
 where a *requirement* lives and answered **(c) a rule shape asserting a
 reserved verdict atom** — form G,
-[`(open ?R)`](README.md#s1d23--the-form). That worked because a requirement *is* a
+[`(open ?R)`](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r). That worked because a requirement *is* a
 sentence about one world: `(open ?R)` says **this KB's `R`-extent is
 incomplete**. The precedent is a warning as much as a template — it looked
 impossible right up until the atom made it local — so the analogous question
@@ -62,7 +62,7 @@ The contrast with `(open ?R)` is exact and is what makes this a test rather
 than an assertion. Incompleteness of `R` *in this KB* is decidable by one pass
 over this KB — the obligation rule's own `?isa`-parameterised scan, standing
 beside the witness step inside its `absent`
-([`domain_contract.md`](domain_contract.md) C1–C2). Closure
+([`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over) C1–C2). Closure
 of the **model set** is not a property of any KB at all. It is a property of
 the lattice of KBs, and no single node of that lattice carries it.
 

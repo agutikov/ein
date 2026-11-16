@@ -70,14 +70,14 @@ no middle**: everything the stdlib expresses is either an upper bound enforced b
 refutation or a completion once alternatives run out.
 
 ### S1d.2.2 — The domain contract
-[`domain_contract.md`](domain_contract.md), C1–C4. **12 of 49** searching entries
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over), C1–C4. **12 of 49** searching entries
 propose `is-a` arrows, which is exactly where C4 declines: *a branch is jointly
 exhaustive only while the candidate set cannot grow underneath it*, so an
 obligation whose guard scans a relation the rung itself proposes is declined and
 the call falls back to the blind generator.
 
 ### S1d.2.3 — The form
-[`obligation_forms.md`](obligation_forms.md) is the full menu, A through G, and
+[`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md) is the full menu, A through G, and
 **form G won**: a rule shape asserting a reserved atom. Not a kernel primitive
 (form A), not a first-class object (form E), not a stdlib convention. **Nine**
 new load refusals. The user settled two sub-questions:
@@ -428,8 +428,8 @@ the corpus owes, `utils/openness_census.py`),
 ladder cost).
 
 **Arguments and specifications** —
-[`property_audit.md`](property_audit.md), [`domain_contract.md`](domain_contract.md)
-(C1–C4), [`obligation_forms.md`](obligation_forms.md) (the menu A–G and why G),
+[`property_audit.md`](property_audit.md), [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)
+(C1–C4), [`obligations.md`](../../ein/user/syntax-and-semantics/obligations.md) (the menu A–G and why G),
 [`representations.md`](representations.md) (five forms priced),
 [`the_verdict.md`](the_verdict.md), [`the_boundary.md`](the_boundary.md),
 [`the_vocabulary.md`](the_vocabulary.md), [`completeness.md`](completeness.md).

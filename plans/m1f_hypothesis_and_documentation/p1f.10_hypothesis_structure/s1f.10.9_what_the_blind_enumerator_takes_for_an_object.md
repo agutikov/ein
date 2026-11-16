@@ -994,7 +994,7 @@ its control's. Three things on the pages say so, and none says otherwise:
   the native mirror is *a performance optimization, NOT a capability*, computing *the identical closure as the
   stdlib `symmetric` rule*. That rule is activated by `(symmetric R)` however the fact came to hold, a rule's
   conclusion among them, so the identical closure reads a derived mark too.
-- [`solution_semantics.md` § 1.3](../../../docs/kernel/inference/solution_semantics.md#13-root): root is the
+- [`solution-semantics.md` § 1.3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#13-root): root is the
   program's facts saturated to quiescence. A root whose first saturation leaves a mirror underived is not.
 - A program may conclude a dunder's fact (`reserved_engine_strings.md`'s table: *use it … as the relation of …
   a conclusion*), and the user's ruling on Q-M1f.306 held one closure stated two ways to one answer.
@@ -1114,7 +1114,7 @@ left; no reading below moves them.
 
 - [Q-M1e2.9](../../m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program) (a),
   ruled 2026-11-04, *meant literally*: every constant in an argument position is a name of the program, and
-  [`solution_semantics.md` § 1.2](../../../docs/kernel/inference/solution_semantics.md#12-names) says every name
+  [`solution-semantics.md` § 1.2](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names) says every name
   is in the candidate list, a list that left one out an engine bug (W4, W15). Read so, `eq` in `(order eq)` is
   an object, and H9-1 is a wrong answer. The close's line was this reading.
 - [Q-M1e2.26](../../m1e2_correctness/open_questions.md#q-m1e226--are-eq-and-neq-relations), ruled 2026-11-07:

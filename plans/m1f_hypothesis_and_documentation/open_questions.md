@@ -864,7 +864,7 @@ holds. `program_read` holds each view's drawing of a container to the `.ein`'s o
 
 **Raised** 2026-11-09 by [S1f.5.16](p1f.5_the_no_owner_items/s1f.5.16_the_read_out_reference.md)'s T1f.5.16.1, as its Q1: M1e's
 [Q-M1e.7](../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
-ruled that a state's model, [`solution_semantics.md` § 3](../../docs/kernel/inference/solution_semantics.md#3-model)'s
+ruled that a state's model, [`solution-semantics.md` § 3](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)'s
 *positive part minus the positive initial KB*, is printed by `ein solve` and `--json-summary` *"under that name"*, and
 gave that half to this stage. Today a listing's `(model …)` is the region language's claim form, a state's facts over the
 candidates' relations (`region.states[].facts` in the summary); § 3's model is what `-P` prints, under *final-state

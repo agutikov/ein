@@ -27,8 +27,8 @@ The ladder, as [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) specified
 The candidate set of one obligation instance is read by running that
 obligation's own `absent` guard **with the witness step skipped**
 (`Matcher::scan_without`), so the branch is the guard rather than a
-restatement of it — the [domain contract](domain_contract.md)'s C1, made
-structural by [S1d.2.3](README.md#s1d23--the-form)'s `(open ?R)`.
+restatement of it — the [domain contract](../../ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)'s C1, made
+structural by [S1d.2.3](../../ein/user/syntax-and-semantics/obligations.md#the-form-open-r)'s `(open ?R)`.
 
 **The deviation: the rung proposes the union of every accepted obligation's
 candidates, where the plan said "one chosen obligation's".** Not a

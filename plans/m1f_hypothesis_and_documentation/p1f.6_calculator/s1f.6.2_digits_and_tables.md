@@ -11,7 +11,7 @@ and E-10 ([§ T1 record](#t1-record-2026-11-11) onward). Planned 2026-11-08; re-
 
 The theory's gates, as **plain facts** (the user, 2026-11-11: *"yes plain facts"*), in a module of their own,
 `stdlib/digits.ein`, imported as `std.digits`. It is the stdlib's first library of facts, the *ontology* half of
-[`solution_semantics.md` § 1.1](../../../docs/kernel/inference/solution_semantics.md#11-context-and-problem), and
+[`solution-semantics.md` § 1.1](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#11-context-and-problem), and
 both arithmetic modules import it: `std.arith` (S1f.6.3 to S1f.6.6) and `std.num9`
 ([S1f.6.13](s1f.6.13_num9.md)).
 

@@ -11,7 +11,7 @@
 
 Ein has three kinds of rule, told apart by what they conclude. Each matches
 a sentence form, and each has its own role in the region R
-([`solution_semantics.md` § 4](../../docs/kernel/inference/solution_semantics.md#4-restrictions-and-obligations--the-two-lines)):
+([`solution-semantics.md` § 4](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#4-restrictions-and-obligations-the-two-lines)):
 
 | rule kind | concludes | sentence form | Zebra, in words | what it does to R |
 |---|---|---|---|---|

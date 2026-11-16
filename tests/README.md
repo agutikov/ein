@@ -32,7 +32,7 @@ Each program states its expected region on `(solve … :expect …)`, and `ein
 test` checks it against R as `ein solve` describes it. That is route 1, or the
 cube on a flagged program, and never the walk. The claims were rendered from
 each program's computed R, the way
-[`region_examples.md`](../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)'s
+[`query.md`](../docs/ein/user/syntax-and-semantics/query.md#claims)'s
 were.
 
 | file | the form |
@@ -119,7 +119,7 @@ alone.
 
 ### The obligation pairs, and the check that is not an `:expect`
 
-M1d [S1d.2.4](../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
+M1d [S1d.2.4](../docs/ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)
 added four rules that assert the verdict atom `open` — `total-owed`,
 `surjective-owed`, `slot-owed-room`, `slot-owed-fill` — and eight programs,
 one firing and one satisfied per rule. They are written the way everything

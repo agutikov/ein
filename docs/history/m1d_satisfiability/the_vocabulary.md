@@ -122,7 +122,7 @@ and it is not a new mechanism. They enter **zero commitments**: saturation
 reaches a state the generator calls complete and the tally calls discharged,
 and the verdict is read off it. The engine's `complete(kb)` plus S1d.2.6's
 discharge test *is* (c)'s useful half, shipped at
-[S1d.2.4](README.md#s1d24--obligations-in-the-saturator)–[S1d.2.6](README.md#s1d26--verdicts-counters-corpus).
+[S1d.2.4](../../ein/user/syntax-and-semantics/obligations.md#when-an-obligation-is-read)–[S1d.2.6](README.md#s1d26--verdicts-counters-corpus).
 The one claim that needs a search is the one claim about a *set*.
 
 ---

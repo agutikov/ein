@@ -157,7 +157,7 @@ under a budget, and (h) makes the universe the candidate list, which rules out
 universe no ruling said. The user's answer: R is over the universe as scoped,
 and the read-out must state that `knows` and `r3` are outside it. Written where
 the definition lives,
-[`solution_semantics.md` § 1.4](../../docs/kernel/inference/solution_semantics.md#14-candidate-and-universe).
+[`solution-semantics.md` § 1.4](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe).
 W6's two rows are confirmed, and S1e2.2.8 builds the sentence.
 
 **Built 2026-11-04** by [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md)
@@ -678,7 +678,7 @@ question into phase p1e2.1b"*. Sub-question (d) moved with it.
   hypothesised) are cases where that list is too small. The oracle checks the
   walk against the list. Does R's definition also say what the list must
   contain? There is also a conflict with the config principle.
-  [`solution_semantics.md` § 1](../../docs/kernel/inference/solution_semantics.md)
+  [`solution-semantics.md` § 1](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#1-the-vocabulary)
   defines `alive₀` *after the forced-positive cascade*, and the cascade is a
   config switch (`:enable-forced-positive`). So today the universe itself
   depends on config.
@@ -1241,7 +1241,7 @@ and option 2 is [P1e2.1c](p1e2.1c_the_region_search/README.md).
 
 Put to the user on 2026-11-04, after S1e2.2.4 seeded the blind enumerator's
 objects with every constant a rule's `:assert` names (Q-M1e.21 (b)).
-[`solution_semantics.md` § 1.2](../../docs/kernel/inference/solution_semantics.md)
+[`solution-semantics.md` § 1.2](../../docs/ein/reasoning/kb-evolution/solution-semantics.md#12-names)
 says *a name is a constant the program mentions, in a fact or in a rule*, and
 the engine's candidates were narrower: the arguments of the KB's top-level
 facts, plus the `:assert` constants. A read-only probe at `16a05caf`
@@ -1302,7 +1302,7 @@ W14: the obligations rung builds H by running each obligation guard's domain
 scan over root's KB, so a domain value only a commitment derives is in no
 candidate, and R is empty or owing where a model exists. Q-M1e2.7's ruling (h)
 makes that an engine bug, and the stage's default fix is
-[`domain_contract.md`](../../docs/history/m1d_satisfiability/domain_contract.md)'s
+[`obligations.md`](../../docs/ein/user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over)'s
 C4 as it is written, *where the guard's relation can grow, the rung declines
 and falls through to the blind generator*, with *can grow* read as D, the
 relations a commitment can change ([`monotone.rs`](../../ein.rs/crates/ein-infer/src/monotone.rs)).

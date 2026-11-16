@@ -603,7 +603,7 @@ print("raw %d emitted %d skipped %s" % (h["raw"], h["emitted"], skips or "none")
    are indifferent to it where no plan is compiled; `scope::outside` reads the rung the pass took and
    follows.
 2. **The ladder's sentence is in more pages than task 4 lists.** Beside `06_reserved_names.md` and the two
-   module headers it is in [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+   module headers it is in [`solution-semantics.md`](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)
    § 1.4 and in `AGENTS.md`, and there, as in `hypgen.rs`'s header, it reads *else the facts that would
    discharge what root owes, else the blind enumerator*, which is option (c)'s wording and not the engine's
    ([H15-4](findings.md#h15-4--the-ladder-is-stated-in-five-places-and-three-of-them-read-as-option-c)).

@@ -18,8 +18,8 @@ in `ein solve` has moved.** T1e2.1a.5.2 builds what this page says.
 - the approved interface ([`cli.md`](../../../docs/ein/user/reference/cli.md#21-ein-solve)), whose
   § 2.1 left *"how it is laid out"* and *"exit codes other than `--single`'s"*
   to this page;
-- the region language as built ([`region_language.md`](region_language.md),
-  [`region_examples.md`](region_examples.md)), whose query `:expect` lands at
+- the region language as built ([`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md),
+  [`query.md`](../../../docs/ein/user/syntax-and-semantics/query.md#claims)), whose query `:expect` lands at
   this stage's switch.
 
 **The examples are real.** [`read_out_examples.md`](read_out_examples.md)
@@ -481,7 +481,7 @@ A select-list on the query is a new form, and not built here (§ 12).
 Since S1e2.1a.4 `ein test` checks a `(solve … :expect …)`, and `ein solve` does
 not until the switch. After it, `ein solve` checks every claim the program
 states against what the run computed. Both a flag and a claim are checked,
-and neither wins ([`region_language.md` § 6](region_language.md#6-a-flag-beside-a-form)).
+and neither wins ([`query.md` § Who checks a claim](../../../docs/ein/user/syntax-and-semantics/query.md#who-checks-a-claim)).
 The preview prints the first row below (X12). The other two are sketches of
 the reasons T1e2.1a.5.2 writes, since the query's new `:expect` does not
 parse yet:
@@ -637,7 +637,7 @@ oracle`'s read-out named a flag it refuses:
 
 - **`-p` and `-P` print each listed state's facts beyond the program as
   loaded**, every one or the positive ones. `-P`'s set is the state's model as
-  [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model)
+  [`solution-semantics.md` § 3](../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)
   defines it, and that model holds root's own derivations. *Facts beyond
   root* is the `work` row's set, which leaves them out. 148 corpus programs
   list ∅ under `ein solve FILE -p`, and on 77 of them ∅'s block holds facts,

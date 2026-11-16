@@ -861,7 +861,7 @@ struct Coverage {
     exact: bool,
 }
 
-/// A query's `:expect` against its classes (`region_language.md` § 5): the
+/// A query's `:expect` against its classes (`query.md`): the
 /// classes it lists, as a set, are the query's. Checked when the classes are
 /// over the set the query asks about and complete; otherwise not checked,
 /// with why. With `refute` ([`explore::Options::refute`], M1f S1f.6.27),

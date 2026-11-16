@@ -373,7 +373,7 @@ R's lower bound is where the debts are paid.
 
 There is one definition for every program: a program that states no obligation simply has ∅ in R when its root is
 consistent. What an obligation quantifies over is its domain contract,
-[C1–C4](../../../history/m1d_satisfiability/domain_contract.md); why an owed instance's alternatives are jointly
+[C1–C4](../../user/syntax-and-semantics/obligations.md#what-an-obligation-quantifies-over); why an owed instance's alternatives are jointly
 exhaustive, which the obligation tree rests on, is [Satisfiability](satisfiability.md).
 
 ---
