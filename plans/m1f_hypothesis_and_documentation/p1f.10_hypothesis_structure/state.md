@@ -28,7 +28,7 @@ nightly or the runner's container.** Nothing is pushed.
 | [S1f.10.12](s1f.10.12_the_structure_shown.md) | S | the structure shown | done: bundle, stop, `ein render h-space`, `ein show hyps`, the page | `42cf4e73`, `d8b31e22`, `7886425b`, `025c7b38` |
 | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | a debt root was not told of | done: Q-M1f.307 (A), W26 fixed | `3e59b90a` |
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | at most one, spent | done for denials (licence L8); the pair of a death re-priced, still *go*, **not built** | `f8751257` |
-| [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | what the blind enumerator takes for an object | tasks 1 to 3 done; **task 4 on a running branch** | — |
+| [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | what the blind enumerator takes for an object | done: Q-M1f.306, W96 fixed, the `relation names` row | `bc3eb522` |
 | [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | **on a running branch** | — |
 | [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | the rung a loaded rule chooses | tasks 1 to 3 done; **task 4 not started**, ruled (b) | — |
 | [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | exactly one, spent | not started | — |
@@ -55,12 +55,11 @@ Each agent works in a git worktree under `.claude/worktrees/` on a branch `workt
 
 | branch | work | base |
 |---|---|---|
-| `worktree-agent-a5f864753ca542a7f` | S1f.10.9 task 4: W96 filed open (four rows), the wide E-1 fix, E-7's read-out naming | `3e59b90a` |
 | `worktree-agent-ac394c3d42ce474da` | S1f.10.5, the order | `f8751257` |
 
 Three merged branches' worktrees are still on disk and can be removed with their branches:
 `worktree-agent-a601d26e3778f9c83` (S1f.10.6), `-a09b7d8b049cf055e` (the surface), `-a68ac81f0382b6c04` (S1f.10.3),
-`-a3b0431c091872649` (the rename).
+`-a3b0431c091872649` (the rename), `-a5f864753ca542a7f` (S1f.10.9).
 
 ### What happened to them
 
@@ -72,7 +71,15 @@ Three merged branches' worktrees are still on disk and can be removed with their
   support check's node read is dropped the same way past the budget, and only the census example asks for it.
   Its tests were re-run on the merged tree and pass; the gate was not run.
 
-*(the other two are filled in as each ends)*
+- **`worktree-agent-a5f864753ca542a7f`, merged as `bc3eb522`.** S1f.10.9's task 4, Q-M1f.306 as ruled. The blind
+  enumerator takes no kernel dunder for an object (wide: one a program writes as a value among them); the
+  register's W96, four rows, filed and fixed; no existing program's H, R, read-out or exit code moved. The
+  generator's narration moved and was re-banked on the main session's decision: `hyp` on 22 programs, `hyp+closed`
+  on 185, each named in the fixing commit `4ee131e3`. E-7: a `relation names` row under `universe`, on one corpus
+  program. E-54: nothing built. It filed H9-4 and H9-5. The goldens and the tests the merged branches share were
+  re-run on the merged tree and pass; the gate was not run.
+
+*(S1f.10.5's is filled in when it ends)*
 
 ## Owed before anything else is built
 
@@ -90,14 +97,14 @@ Three merged branches' worktrees are still on disk and can be removed with their
 
 ## Then, in this order
 
-1. **S1f.10.15 task 4**, Q-M1f.308 (b). After S1f.10.9's branch is merged: under (b) `features/09`'s read-out
+1. **S1f.10.15 task 4**, Q-M1f.308 (b). S1f.10.9's branch is merged, so it can start: under (b) `features/09`'s read-out
    needs the count E-7's naming adds. The entry says no tracked program's answer shows the change, so the task
    adds a witness.
 2. **S1f.10.14**, exactly one, spent. After S1f.10.5 is merged (both edit `tree.rs`). S1f.10.3 left it this: a
    wiped-out owed group is now visible to the tree before any saturation. S1f.10.13 left it the *alive and owing*
    shares, and that no visited state of `zebra.ein` owes only unlicensed instances.
-3. **S1f.10.16**, what the walk left. After the track-H branches are merged (it edits `hypgen.rs`). It also
-   inherits the `hyp+closed` digest, which runs a pass no command calls.
+3. **S1f.10.16**, what the walk left. After S1f.10.15's task 4 (both edit `hypgen.rs`). It also inherits the
+   `hyp+closed` digest, which runs a pass no command calls (H9-5).
 4. **The phase's close**: every default taken in part 2 shown to the user, the findings below, this page folded
    in.
 
