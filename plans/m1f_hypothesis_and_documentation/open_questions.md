@@ -316,6 +316,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
 | [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, a describe that visits each predicate's borders instead of every alive state, an option the main session put that day; the user: *"YES! … lets pick this variant"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md) |
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **put 2026-11-16 by S1f.10.16's T2, not ruled, to be shown at the phase's close**: default (b), `hyp` re-pointed at H's pass and `hyp+closed` removed; not acted on, both ops as they were; [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers) |
+| [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **put 2026-11-16 by S1f.10.19's T3, not ruled, to be shown at the phase's close**: default (b), a fail-first agenda (`pairs`) in the routes' nodes on a monotone program, the oracle's node FIFO; not acted on, the agenda FIFO as ruled; [S1f.10.19](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#t3-q-m1f313) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -6665,3 +6666,87 @@ kill cache (`write_negated`), `complete` and `open_hypotheses` have no other rea
 **The default named: (b).** The golden then pins what a command produces and nothing only the golden runs,
 which is the rule S1f.10.16 settled every other piece by. **Not acted on**: both ops, and every piece they
 call, are as they were.
+
+### Q-M1f.313 — May the agenda inside a route's node fire first what leads to `(false)`?
+
+**Raised** 2026-11-16 by [S1f.10.19](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#t3-q-m1f313)'s
+T3, on the user's *"Maybe we can also optimize saturation in general by firing first rules that emit owed
+relations"* and *"Yes, both"* of that day, to the main session's answer: stop a dead node at its first contradiction
+on the routes, and fire first what leads to `(false)`. **Put, not ruled, to be shown at the phase's close.** The stop
+under FIFO needs no ruling: it cuts the same derivation shorter, and S1f.10.19's T4 builds it after S1f.10.17. The
+order is put here and **not acted on**: the agenda is FIFO as ruled, and a fail-first agenda exists only as a
+measurement's switch, `ein_infer::saturator::fail_first`, which no route, option, `(config …)` field or `EIN_*`
+name reaches.
+
+**What it reopens.** [Q-M1f.6](#q-m1f6--the-derived-agenda-holds-the-cores-the-fifo-boundary-does-not), re-ruled
+(a) on 2026-11-08: *"plain FIFO, core is an explanation, F22 makes it canonical"*, so the agenda and the boundary
+are FIFO in written order, no band orders either, and Q-M1f.4 (b)'s derived agenda was withdrawn with it. A
+fail-first agenda is such a band, derived from the rules' conclusions: the rules whose conclusion a contradiction can
+be made of first, the rest after, FIFO within each half, and the boundary walking its parked candidates in the same
+order. The user's reasoning at that ruling, that an order of the rules is in effect an optimisation and needs only
+the saturation results to agree, bears on it; so does what moved then, cores and narration.
+
+**The two agendas measured**, read off the compiled plans by `monotone::writes_of`: **`pairs`**, a conclusion that is
+`(false)`, a stored negation, or a fact of a relation whose negation some plan concludes or the KB holds (either side
+of a pair, the stage's reading); **`negations`**, `(false)` or a stored negation alone.
+
+**The numbers** (S1f.10.19's T2, `ein-infer/examples/early_stop.rs`, 2026-11-16: 200 programs that search, 171
+monotone, every question at the default budget, every distinct node a route visits saturated again under each order;
+[the table](p1f.10_hypothesis_structure/s1f.10.19_a_dead_node_stopped_early.md#t2-the-table)). On the monotone
+programs, the cells' firings with the stop under FIFO, then under each agenda:
+
+| question | FIFO, the stop | `pairs` | `negations` | facts: FIFO, the stop | `pairs` | `negations` |
+|---|---:|---:|---:|---:|---:|---:|
+| describe, `--count` | 12 294 482 | 12 284 015 (−0.1 %) | 12 200 271 (−0.8 %) | 9 993 816 | 9 983 351 | 9 971 043 |
+| `--single` | 194 729 | 169 570 (−12.9 %) | 169 010 (−13.2 %) | 380 624 | 355 465 | 355 391 |
+| `-n 1` | 155 717 | 133 038 (−14.6 %) | 132 866 (−14.7 %) | 340 827 | 318 148 | 318 140 |
+| `--minimal` | 5 291 083 | 5 225 817 (−1.2 %) | 5 088 188 (−3.8 %) | 3 774 714 | 3 709 448 | 3 690 506 |
+| `--maximal` | 287 853 | 262 449 (−8.8 %) | 256 254 (−11.0 %) | 447 012 | 421 590 | 421 086 |
+
+Today, with no stop, the same cells are 17 245 101, 392 264, 283 525, 13 308 267 and 892 608 firings: the stop
+under FIFO is most of the saving, and the agenda adds the rest, most of it on the two SEND programs
+(`send_more_money.ein --single` 65 442 → 52 882 firings under either). By S1f.10.13's rule, each agenda with the
+stop is ***go* against FIFO with the stop on all six questions, with no program higher by a tenth**. `pairs` is higher
+than FIFO on no cell; `negations` is higher on `zebra2.ein` and `zebra2-obligations.ein`, by under one percent.
+
+**What it would change.**
+
+- **R: nothing measured.** Under both agendas the fixpoint of every one of the 1 872 755 distinct nodes the routes
+  visit (251 733 dead, 1 621 022 alive, the 29 flagged programs' cube nodes among them) is FIFO's, and so is its
+  count of firings to quiescence: the agenda changes when a fact is derived, not what. Argued, not met: on a program
+  whose negative cycle has a rule in each half, the boundary would admit another candidate first, and a fixpoint can
+  move, which is F21's D2 ground and why Q-M1f.6's ruling kept the boundary FIFO; the corpus's cycle
+  (`features/07_unstratifiable.ein`) has both its rules in one half.
+- **Work**: the table above, in the routes' units; root's saturation and the oracle's are not measured under an
+  agenda.
+- **Cores, a core being an explanation that may vary with rule order (Q-M1f.6).** With the stop, of the 121 105 dead
+  nodes of the monotone programs: FIFO's stopped core differs from the fixpoint's on 6 268, whatever the agenda;
+  `pairs`' stopped core differs from FIFO's stopped core on **none**, `negations`' on 3 012. To quiescence, `pairs`
+  moves no core, `negations` 538. On the flagged programs neither agenda moves a core.
+- **What a dead node reports when the stop is built**: the node as far as its first contradiction, under the order.
+  Against FIFO's stop, `pairs` moves the facts of 89 990 dead nodes, the closure of 2 and the debts of 1;
+  `negations` the facts of 92 848, the closure of 2 761, the denials of 2 879 and the debts of 2 709.
+- **Narration**: every node's `--events` lines are in the agenda's order, an alive node's too.
+
+**The options.**
+
+- **(a) FIFO as ruled.** The routes' dead nodes stop at their first contradiction under FIFO (S1f.10.19's T4); the
+  agenda stays the written order everywhere. Nothing of Q-M1f.6 moves.
+- **(b) A fail-first agenda in the routes' nodes, on a monotone program.** Every node a route computes, alive or
+  dead (a route cannot know which before it saturates it), with the stop on the dead; root's saturation, the
+  oracle's node, a flagged program's cube, the whole node and `region::Nodes`' readers (a state's trace, a member of
+  N's refutation, the detector's re-fixpoints) stay FIFO. The oracle keeps the definition; R, N and every count are
+  held to it with and without, as the stop is. Q-M1f.6's ruling then stands for the definition and gives way inside
+  the routes.
+- **(c) A fail-first agenda everywhere**: root, every route, the oracle, every reader. Q-M1f.6 reversed for the
+  agenda; the boundary's order with it. The oracle's cores move as the routes' do (`negations`: 538 at quiescence on
+  the corpus; `pairs`: none), and every narration.
+
+Under (b) and (c) the reading is a second choice: `pairs` (no core moves on the corpus, no cell higher than FIFO) or
+`negations` (more saved under `--minimal` and `--maximal`, cores move).
+
+**The default named: (b), with `pairs`.** By the stage's rule it is *go* against FIFO with the stop on every question,
+it loses on no cell, it moved no fixpoint and no core of the corpus, and the oracle keeps the definition, so the
+ruling's ground, that an order is speed and a core an explanation, holds of it. (a) is the ruling's own consequence
+if the written order is part of the definition the user wants every node to keep. **Not acted on**: no route takes
+the switch, and S1f.10.19's T4 builds the stop under FIFO alone unless this is ruled otherwise first.
