@@ -542,7 +542,7 @@ P1f.6#38 | decision | stdlib/math/gcd |  | as Q-M1f.336; (a), not in `std.arith`
 P1f.6#39 | not-carried |  |  | -> Q-M1f.221
 P1f.6#40 | not-carried |  |  | moved to a plan: P1f.10, closed, whose rulings are Q-M1f.305 to .313
 P1f.6#41 | not-carried |  |  | -> Q-M1f.189
-P1f.6#42 | decision | stdlib/math | pending | as Q-M1f.337; yes: a small cryptarithm theory, `std.math.crypt`, with no stage yet
+P1f.6#42 | decision | stdlib/math | pending | as Q-M1f.337; yes: a small cryptarithm theory, `std.math.crypt`, not built: handed to F27 (plans/followups/f27_cryptarithm_theory.md)
 P1f.6#43 | not-carried |  |  | -> Q-M1f.186, Q-M1f.187, Q-M1f.188
 P1f.6#44 | not-carried |  |  | -> Q-M1f.185
 P1f.6#45 | not-carried |  |  | -> Q-M1f.153, Q-M1f.161
