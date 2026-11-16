@@ -118,6 +118,10 @@ the process also, like external resources"*, neither project nor process; **the 
   `utils/` script, beside the 64 `process` ones. A decision file names only project artefacts in *Held by*.
 - **`AGENTS.md` leaves the release-voice check's scope**: it is process, and may point at plans.
 
+**The phase's end, the same day.** The user: *"when everything complete in the phase don't close it, I will
+review new docs"*. Every stage runs to its end; then the coordinator stops for the user's review of the new
+trees, with no close page, no *closed* status and no deletion of this phase's folder until the user has read them.
+
 ## The user's rulings (2026-11-15)
 
 The user, 2026-11-15, verbatim:
