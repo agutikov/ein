@@ -6604,7 +6604,7 @@ concludes, with a `CLOSED […]` line.
 **Who reads them.** `id_order_invariance` digests both against the golden and holds them under a permuted id
 space; nothing else reads the golden lines. `hypgen_coverage.rs` reads the `hyp` text, not the line, for its
 eight counters. **No command runs either computation**: H is `hypgen::generate_config_free`'s list at root
-(`region::prepare_with`), the same ladder with neither the lookahead nor the kill cache, sorted by rendered text;
+(`region::prepare_with`), the same ladder with neither the lookahead nor the kill cache, sorted by raw text;
 no command calls `emit_closed`.
 
 **How far they are from H.** Measured by a scratch probe on `060576ec` over the 659 programs (kept as

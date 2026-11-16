@@ -1,7 +1,12 @@
 # S1f.10.16 — What the walk left in the generator
 
 **Phase:** [P1f.10](README.md)
-**Status:** planned 2026-11-15, at the re-plan. Not started.
+**Status:** planned 2026-11-15, at the re-plan. **Ran to its end, 2026-11-16** ([§ Record](#record-2026-11-16)):
+`generate_one_branch` and `one_branch` with their selector `oblgen::Choice`, `score_hypothesis` with
+`most-constrained`, and the lookahead's unread kill list are deleted; the lookahead, its kill cache, the walk's
+`generate` and `emit_closed` are kept, read by the shape golden's `hyp` and `hyp+closed` ops alone, and whether
+those ops stay is put to the user as Q-M1f.312, not acted on; the retired config names stay refused at load and
+in the `.einb` layout; the stale headers and pages are restated. No golden moved.
 **Depends on:** nothing. It runs with whichever batch of code commits it fits.
 **Takes over:** the old [S1f.10.5](s1f.10.5_ordering.md)'s *`most-constrained`, implemented or deleted*, and
 the old [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md)'s call on `generate_one_branch`.
@@ -138,7 +143,8 @@ text is `hyp`'s with a `CLOSED []` line.
 **What the two ops digest, against what a route uses.** `generate` and H's pass are one body, `generate_with`,
 and share everything but `GenOptions`: the switch (`rung`), the hrule and obligations rungs, `candidate_objects`,
 the relation plan and the filters `negated_fact`, `fact_already_exists` and `seen_in_call`. H's pass runs neither
-the lookahead nor its kill cache, and sorts and dedups its list by rendered text before any route reads it. The
+the lookahead nor its kill cache, and sorts and dedups its list by raw text (`region::order_key`, the
+generator's order the tie-break) before any route reads it. The
 *probe*, on all 659 programs: **H is exactly `generate`'s emitted candidates with its lookahead-killed ones**; and
 `hyp`'s event stream is the narration of H's pass line for line once the `compile` events, the ordinals, the
 lookahead's verdict and the kill cache's repeat verdict are set aside (identical outright on 91). So **the `hyp`
@@ -217,3 +223,124 @@ store, whose doc describes the walk's fan-out as the shipping engine (K-29).
 The pages edited, in prose: `docs/kernel/inference/implementation.md`, `events.md`, `reserved_engine_strings.md`,
 `inference/README.md`'s reconcile note, `docs/kernel/configuration.md` § 2.4 and § the `EIN_*` names, and
 `ir/03-ein-lang/06_reserved_names.md`. A golden that moves and is not on this list is a stop.
+
+### What was deleted
+
+Over `ein.rs/`, 426 lines out and 188 in, doc comments included, 390 of the 426 in `ein-infer`
+(`git diff -U0 8feb21ad -- ein.rs`, counted on the code commit):
+
+- `hypgen::generate_one_branch` (`pub`), the private `generate_rungs`, and the `one_branch` argument of
+  `generate_with` and `oblgen::generate`; with it `oblgen::generate`'s selection of one instance and its guard
+  on the later debts' candidates. `generate` calls `generate_with` directly.
+- `oblgen::Choice` (`pub`: `RuleOrder`, `FailFirst`, `Off`, `as_str`), the `choice` argument of
+  `oblgen::generate` and `narrate`, `GenOptions::choice`, the `FailFirst` sort and the `Off` decline. The
+  `rung` line's `reason` is `oblgen::ORDER`, `pub const ORDER: &str = "rule-order"`, the one value it ever
+  carried. `obligation_rung.rs`'s test is `the_order_and_the_modes_keep_their_names`, holding `ORDER` where it
+  held the three `as_str`; `oblgen.rs`'s own test still asserts the narrated `"reason": "rule-order"`.
+- `hypgen::score_hypothesis` and `hypgen::ScoreError` with its `Display` (both `pub`, both re-exported from
+  `lib.rs`, the re-exports gone), and their three unit tests with the `scored` helper. `most-constrained` is no
+  mode of anything in the engine.
+- `HypGenStats::lookahead_killed` (`pub` field) and its push in `apply_filters`; `hypgen::open_hypotheses_counted`
+  (`pub`), folded into `open_hypotheses`, its one caller.
+
+Kept, each with its reader written where it lives: `Lookahead` and its kill cache (`lookahead.rs` § Who runs
+it), `hypgen::generate`, `complete`, `open_hypotheses` (`generate`'s doc), `closed::emit_closed` (`closed.rs`'s
+header), all for the shape golden's two ops (`shape::hyp_shape`'s doc); the retired fields of `SolverConfig` and
+`FIELDS` for the loader's refusal and the `.einb` layout (`config.rs`' `RETIRED` and the fields' docs).
+
+### T3: the headers
+
+Restated to what the engine does, with no stage id, plan path, finding id or date added in what was written
+(a sentence kept beside a restated one keeps its own, `S1.9.E16` and the like; the restated sentences that
+dropped one dropped it):
+
+- **`oblgen.rs` § What it proposes, and why it is the union**: the rung builds H, one set built at root, so it
+  proposes the union in report order; the branch on one instance is the obligation tree's, which reads L5's
+  table, `alternatives`, scanned by the same projection.
+- **`hypgen.rs` § What must not change, the candidate order**: a route reads it only as the tie-break of H's sort
+  by raw text (`region::order_key`); it is observable as the order of the `hyp` events and which repeat
+  `seen_in_call` counts.
+- **`oblgen.rs`'s note on `apriori::order_candidates`** went with `Choice`; `ORDER`'s doc says what the order is
+  and where it reaches. `Branch`'s doc no longer names `Choice` or a depth-first traversal.
+- T1's others: `shape::hyp_shape`'s doc (what it runs is the walk's generator, how its stream stands to H's
+  pass, and that it is the reason the lookahead stays); `region.rs` § The universe (config-free, sorted by raw
+  text, a candidate the lookahead would drop a node like any other); `lookahead.rs` § Its sign, now § Who runs
+  it; `lib.rs`'s header; `hypgen::generate`'s, `generate_config_free`'s and `generate_with`'s docs;
+  `eligible_relations`' note and `closed.rs`'s header and test doc on `emit_closed`; `ein-core/src/config.rs`'
+  `RETIRED` doc and the retired fields' docs (each *retired*, what reads it, kept for the `.einb` layout; the
+  citation of the test that does not exist gone); `config_reference.rs`' header, whose claim 5 names
+  `the_retired_flags_are_refused_with_why`; the headers of the examples `hypgen_calls.rs` and `hypgen_cost.rs`
+  (the calls they time are the walk's, run today by the `hyp` ops alone).
+
+### T4: the pages
+
+- **`configuration.md`**: § 2.4's paragraph says what reads each retired field (the lookahead's two by
+  `hypgen::generate`, which the `hyp` ops run; the other thirteen by nothing) and that removing a field is a
+  `.einb` layout change; § the `EIN_*` names says the rung has one order, named `rule-order`. Its tables, its
+  generated block and its counts are as they were, and `config_reference.rs` holds them: the names touched are
+  the fifteen retired ones, whose behaviour, a load refusal with the reason, is what
+  `the_retired_flags_are_refused_with_why` holds and § 2.4 states.
+- **`implementation.md`**: the `hypgen.rs` row (no `score_hypothesis`; `generate`'s readers; the
+  `lookahead_killed` sentence gone), the `oblgen.rs` row (no `Choice`), the `lookahead.rs` and `closed.rs` rows
+  (who runs each).
+- **`events.md`**: the `rung` line's `reason` is `rule-order`, the one order, described as what it is.
+- **`reserved_engine_strings.md`**: the `hypgen scoring` row of § Protocol enums is gone, with a sentence
+  saying where the modes went and that the flag is refused; `emit_closed`'s caller is the `hyp+closed` op.
+- **`inference/README.md`**: the reconcile note says `score_hypothesis` is deleted, and where H's content sort is.
+- **`06_reserved_names.md`**: `emit_closed` runs for the `hyp+closed` op.
+- **`docs/api/rust.md`**: unchanged. No `pub` item it shows went (`embedding.rs`' region shows none of them).
+
+### Defaults taken
+
+Each the user's to revise.
+
+1. **`oblgen::Choice` was taken as item 1's**, though the plan does not name it: its doc and the comment at the
+   selection say it was kept for the depth-first move `one_branch` made, and no call passes `FailFirst` or
+   `Off`. Deleted whole rather than left with one variant; the narrated `rule-order` is kept as a constant, so the
+   events protocol does not move.
+2. **`HypGenStats::lookahead_killed` and `open_hypotheses_counted` were taken as item 3's**: the lookahead's
+   output and its one stated reader, both unread.
+3. **The retired fields stay on `SolverConfig` and in `FIELDS`**, the fewest surfaces: removing them is a
+   `.einb` `FORMAT_MAJOR` bump that refuses every saved cache. What a program that sets one gets is unchanged.
+4. **`is_solution_node` and `consistent` were not acted on**, though reached through `generate` as item 3 is:
+   not one of the five items, filed as K-30. Nor `Kb`'s no-good store, K-29.
+5. **Q-M1f.312's default is (b)**, re-point `hyp` at H's pass and remove `hyp+closed`, not (a): the rule the
+   stage settled every other piece by. Not acted on.
+6. **The records under `docs/history/` and the walk's record pages** (`features.md`, the O8 paragraph of
+   `architecture_and_algorithms.md`, the body of `inference/README.md`'s § Determinism) keep their mentions of
+   the deleted names: they describe what was, by their banners.
+7. **The probe was not banked** as a test: it measured the ops for the question and is kept under `build/`; an
+   invariance between `hyp` and H's pass would be a new per-commit check, which is the question's to decide.
+
+### Verification
+
+In the worktree, on the gate profile, on `55dec562`, the code commit; nothing under `ein.rs/` or `docs/` changed
+after it, and this record is the only later edit:
+
+- `cargo test --profile gate -p ein-infer -p ein-cli -p ein-render -p ein-corpus`, whole crates: 1 072 tests,
+  green. A first run on the tree before the last comment edit, with `-p ein-core` added, was green too (1 165).
+- `EIN_CORPUS_SLOW=1`, once each: `-p ein-render --test id_order_invariance` and `-p ein-infer --test explore`,
+  green.
+- **The shape golden did not move**: `git diff 060576ec -- ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5
+  | grep -c '^[-+][0-9a-f]'` is 0, per commit and after the slow run, and no other golden is in
+  `git diff --name-only 060576ec`. So `lever_invariance`, `explore`, `claim_routes`, `read_out_reference` and
+  `config_reference` held every answer and read-out where they were.
+- `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`,
+  `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps`: clean. `python3 utils/check_hashmap_iteration.py`:
+  ok. `python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md corpus/README.md tests/README.md
+  examples/README.md stdlib/README.md utils/README.md c/README.md`: 0 findings, after this record too. The tests'
+  scratch directory was left empty.
+- Not run, as the stage was told: `./run_tests.sh`, the nightly, `utils/ci_container.sh`. No wall here is a
+  measurement.
+
+### What is not done
+
+- **The two ops**: not removed or re-pointed; Q-M1f.312 is put, not ruled. Until it is, the lookahead, its kill
+  cache, the walk's `generate` with `complete` and `open_hypotheses`, and `emit_closed` stay.
+- **K-29 and K-30** are filed, not acted on: `Kb`'s no-good store, and `is_solution_node` with `consistent`.
+- **The retired fields** stay in `FIELDS` and on `SolverConfig`; their removal is a `.einb` format change no
+  stage has been asked for.
+- `./run_tests.sh`, the nightly and the runner's container: the main session's, on the batch.
+
+**Findings outside the stage's scope**: [K-29 and K-30](findings.md#from-the-stages-of-tracks-s-and-r); K-30 is
+now the last.
