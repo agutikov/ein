@@ -200,8 +200,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// sixteen programs that bring `std.math.num9`, and `gaps`, `listed_is_all` and
 /// `readings`, hold the calculator whole and meet `z` first in
 /// `std.math.decimal-arith.operand-zero`; `elim/03` and `04` hold `std.elim` whole and meet
-/// `0` and `1` in its `domain-elimination`.
-const SEEDED: [(&str, &[&str]); 126] = [
+/// `0` and `1` in its `domain-elimination`. `beliefs/01` and `02` write a belief's or a
+/// claim's content only as another fact's argument, so its names are no top-level argument.
+const SEEDED: [(&str, &[&str]); 128] = [
     (
         "examples/arith/int.ein",
         &[
@@ -215,6 +216,20 @@ const SEEDED: [(&str, &[&str]); 126] = [
             "`neg`, asserted by rule `std.math.int.int-div-pn`",
             "`pos`, asserted by rule `std.math.int.int-div-pp`",
         ],
+    ),
+    (
+        "examples/beliefs/01_common_belief.ein",
+        &[
+            "`Dan`, in (believes Ann (likes Dan Soup))",
+            "`Eve`, in (believes Ann (likes Eve Fish))",
+            "`Fish`, in (believes Ann (likes Eve Fish))",
+            "`Soup`, in (believes Ann (likes Dan Soup))",
+            "`Tea`, in (believes Ann (likes Dan Tea))",
+        ],
+    ),
+    (
+        "examples/beliefs/02_packing.ein",
+        &["`Tea`, in (claims Bob (likes Dan Tea))"],
     ),
     (
         "examples/beyond_arith/equation_refuted.ein",
