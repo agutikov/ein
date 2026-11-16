@@ -968,6 +968,11 @@ pub struct Alternatives {
     pub instances: Vec<Instance>,
     /// Each instance's place in [`Self::instances`].
     pub index: rustc_hash::FxHashMap<InstanceKey, u32>,
+    /// The relations of the witnesses L9 left out, where the table is a
+    /// route's and holds L9's alternatives ([`Self::with_l9`]); empty in the
+    /// table as read. A node that holds a fact of one beyond root's that is
+    /// no candidate breaks L9's premise ([`crate::unheld`]).
+    pub unheld_relations: Box<[Symbol]>,
 }
 
 /// One instance root owes.
@@ -980,6 +985,24 @@ pub struct Instance {
     /// Witnesses left out because root's fixpoint stores their negative: no
     /// alive fixpoint holds one.
     pub excluded: u32,
+    /// **L9**: where L5 does not license the instance only because some of
+    /// its witnesses are no candidate and not denied, every such witness is
+    /// of a relation no node can hold a fact of beyond root's, and some
+    /// witness is a candidate ([`crate::unheld`]), what L9 licenses. `None`
+    /// where L5 licenses the instance, or refuses it for any other reason.
+    pub unheld: Option<Unheld>,
+}
+
+/// What L9 licenses of one instance ([`Instance::unheld`]).
+#[derive(Clone, Debug)]
+pub struct Unheld {
+    /// The candidates among its witnesses, bit indices ascending: its
+    /// alternatives under L9.
+    pub alternatives: Box<[u32]>,
+    /// How many of its witnesses no node can hold.
+    pub witnesses: u32,
+    /// Their relation, the instance's witness relation.
+    pub relation: Symbol,
 }
 
 impl Alternatives {
@@ -989,6 +1012,34 @@ impl Alternatives {
             .iter()
             .filter(|i| i.alternatives.is_ok())
             .count()
+    }
+
+    /// **The table a route branches on with L9**: each instance L9 licenses
+    /// takes its alternatives, the rest stay as read, and
+    /// [`Self::unheld_relations`] names the relations its witnesses left out,
+    /// for the node function's check. The same table where L9 licenses
+    /// nothing.
+    pub fn with_l9(&self) -> Alternatives {
+        let mut out = self.clone();
+        let mut relations: Vec<Symbol> = Vec::new();
+        for inst in &mut out.instances {
+            if let (Err(_), Some(u)) = (&inst.alternatives, &inst.unheld) {
+                inst.alternatives = Ok(u.alternatives.clone());
+                if !relations.contains(&u.relation) {
+                    relations.push(u.relation);
+                }
+            }
+        }
+        out.unheld_relations = relations.into_boxed_slice();
+        out
+    }
+
+    /// Instance `i` is branched on by L9's licence: the table is a route's
+    /// ([`Self::with_l9`]) and L5 did not license it.
+    pub fn by_l9(&self, i: u32) -> bool {
+        self.instances
+            .get(i as usize)
+            .is_some_and(|x| x.unheld.is_some() && x.alternatives.is_ok())
     }
 }
 
@@ -1010,6 +1061,13 @@ impl Alternatives {
 ///   paid some other way;
 /// - a fact that can witness it is neither a candidate nor excluded at root.
 ///
+/// **And what L9 licenses of an instance L5 refuses for the last reason
+/// alone** ([`Instance::unheld`]): where every such witness is of a relation
+/// no node can hold a fact of beyond root's ([`crate::unheld::Unwritten`])
+/// and some witness is a candidate, its alternatives are the candidates
+/// among its witnesses. L5's verdict and its reason are as they were; a
+/// route takes L9's through [`Alternatives::with_l9`].
+///
 /// Every scan is root's own matcher, run once; nothing is interned and no
 /// event is narrated. The guard's sub-plan is scanned with the witness step
 /// skipped, as the obligations rung does ([`generate`]), which is the reuse
@@ -1028,6 +1086,7 @@ pub(crate) fn alternatives(
     }
     let plans = crate::obligations::plans_for(kb, terms, ast, memo)?;
     let terms: &ein_core::Terms = terms;
+    let unwritten = crate::unheld::Unwritten::of(kb, terms, memo);
     let mut matcher = Matcher::new();
     let mut guards = Matcher::new();
     for plan in plans {
@@ -1040,12 +1099,22 @@ pub(crate) fn alternatives(
         };
         for (disjunct, regs, bindings) in owed_by(kb, terms, ast, &plan, &mut matcher, &mut guards)
         {
-            let (alternatives, excluded) = match &premise {
-                Err(why) => (Err(why.clone()), 0),
+            let (alternatives, excluded, unheld) = match &premise {
+                Err(why) => (Err(why.clone()), 0, None),
                 Ok(p) => {
-                    match witnesses(kb, terms, ast, &mut guards, p, disjunct, &regs, candidates) {
-                        Ok((alts, excluded)) => (Ok(alts), excluded),
-                        Err(why) => (Err(why), 0),
+                    match witnesses(
+                        kb,
+                        terms,
+                        ast,
+                        &mut guards,
+                        p,
+                        disjunct,
+                        &regs,
+                        candidates,
+                        &unwritten,
+                    ) {
+                        Ok(read) => read.verdicts(),
+                        Err(why) => (Err(why), 0, None),
                     }
                 }
             };
@@ -1055,6 +1124,7 @@ pub(crate) fn alternatives(
                 key,
                 alternatives,
                 excluded,
+                unheld,
             });
         }
     }
@@ -1254,8 +1324,44 @@ fn premise_reads(p: &Proj, terms: &ein_core::Terms) -> Vec<crate::monotone::Rel>
     reads
 }
 
+/// One instance's witnesses at root, read ([`witnesses`]).
+struct Read {
+    /// The candidates among them, bit indices ascending.
+    alts: Box<[u32]>,
+    /// How many root denies.
+    excluded: u32,
+    /// L5's reason for the first that is neither, where one is.
+    refused: Option<String>,
+    /// How many of those no node can hold ([`crate::unheld`]), and their
+    /// relation; `None` where one of them a node can hold, or the scan
+    /// stopped before the last.
+    unheld: Option<(u32, Symbol)>,
+}
+
+impl Read {
+    /// L5's alternatives, the denied count, and what L9 licenses.
+    fn verdicts(self) -> (Result<Box<[u32]>, String>, u32, Option<Unheld>) {
+        match self.refused {
+            None => (Ok(self.alts), self.excluded, None),
+            Some(why) => {
+                let unheld = self.unheld.map(|(witnesses, relation)| Unheld {
+                    alternatives: self.alts,
+                    witnesses,
+                    relation,
+                });
+                (Err(why), 0, unheld)
+            }
+        }
+    }
+}
+
 /// One instance's witnesses at root: its alternatives (candidate bits,
-/// ascending) and how many root excludes, or why the premise fails.
+/// ascending), how many root excludes, and what L9 makes of the others; or
+/// why no witness is known.
+///
+/// L5's reason is the first witness's that is neither a candidate nor
+/// denied, as it was when the scan stopped there; the scan reads on past it
+/// only while every such witness is one L9 can leave out.
 #[allow(clippy::too_many_arguments)]
 fn witnesses(
     kb: &ein_core::Kb,
@@ -1266,7 +1372,8 @@ fn witnesses(
     disjunct: usize,
     regs: &[Value],
     candidates: &rustc_hash::FxHashMap<FactId, u32>,
-) -> Result<(Box<[u32]>, u32), String> {
+    unwritten: &crate::unheld::Unwritten,
+) -> Result<Read, String> {
     let (gi, at) = p.witness[disjunct];
     let guard = &p.plan.guards(p.plan.disjuncts[disjunct].guards)[gi];
     let Step::Rel(step) = p.plan.steps(guard.sub)[at] else {
@@ -1280,29 +1387,58 @@ fn witnesses(
     let rel = terms.sym(step.rel).to_string();
     let mut alts: Vec<u32> = Vec::new();
     let mut excluded = 0u32;
+    let mut refused: Option<String> = None;
+    // L9 takes a witness of an unwritten relation; one it does not take ends
+    // the scan, L5's reason being the first refusal's.
+    let l9 = unwritten.is_unwritten(step.rel);
+    let mut unheld = 0u32;
     for row in &rows {
         let Some(args) = witness_args(&p.plan, step.slots, row) else {
+            if refused.is_some() {
+                // L5 stopped before this row; L9 cannot read it.
+                return Ok(Read {
+                    alts: Box::default(),
+                    excluded,
+                    refused,
+                    unheld: None,
+                });
+            }
             return Err(format!("a `{rel}` witness has a slot nothing binds"));
         };
-        let Some(fact) = terms.probe_fact(step.rel, &args) else {
-            return Err(format!(
-                "a `{rel}` fact can witness it that no candidate proposes"
-            ));
-        };
-        if let Some(&b) = candidates.get(&fact) {
+        let fact = terms.probe_fact(step.rel, &args);
+        if let Some(&b) = fact.and_then(|f| candidates.get(&f)) {
             alts.push(b);
-        } else if kb.is_negated(fact) {
-            excluded += 1;
-        } else {
-            return Err(format!(
-                "`{}` can witness it and is not a candidate",
-                crate::events::sexpr(terms, fact)
-            ));
+            continue;
         }
+        if fact.is_some_and(|f| kb.is_negated(f)) {
+            excluded += 1;
+            continue;
+        }
+        if refused.is_none() {
+            refused = Some(match fact {
+                None => format!("a `{rel}` fact can witness it that no candidate proposes"),
+                Some(f) => format!(
+                    "`{}` can witness it and is not a candidate",
+                    crate::events::sexpr(terms, f)
+                ),
+            });
+        }
+        if !l9 {
+            break;
+        }
+        unheld += 1;
     }
     alts.sort_unstable();
     alts.dedup();
-    Ok((alts.into_boxed_slice(), excluded))
+    // An instance with no candidate among its witnesses is not L9's (the
+    // module's § L9 in [`crate::unheld`]).
+    let unheld = (refused.is_some() && l9 && !alts.is_empty()).then_some((unheld, step.rel));
+    Ok(Read {
+        alts: alts.into_boxed_slice(),
+        excluded,
+        refused,
+        unheld,
+    })
 }
 
 #[cfg(test)]

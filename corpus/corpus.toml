@@ -646,6 +646,18 @@ runs   = ["solve", "saturate", "render rules", "render constraints", "render lat
 note   = "lattice/09's owing hole one activator further from root: opening the kitchen derives `(serves K1)`, whose plan derives `(total-owed meal is-a)`, so a commitment compiles two plans root never had. `serves` is an activator site and `total-owed` is none, its activator relation written only by `serves`'s plan, so the status's attribution, which read the obligation's own activator site, named no site: *exercised, by* and an empty list. Since M1e2 S1e2.2.17 it follows the owed instance's activator to the plan that derived it, and names `serves`."
 
 [[entry]]
+path   = "examples/lattice/13_witness_of_two.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render lattice", "solve --single", "oracle --dump {out}/region"]
+note   = "a debt one candidate pays alone and two others pay together: Ann's one witness, `(fed Ann Soup)`, is in the closure of `(orders Ann)` and of no other single candidate, and `{(cooks Bob), (shops Cat)}` derives it by a rule that reads both. The program that breaks the claim that a witness a candidate implies may stand for that candidate: that member of R holds none of the candidates whose closure holds the witness. L5 does not license the debt, every mode takes the state route, and R is five states, the oracle's (`ein-infer/tests/region.rs`)."
+
+[[entry]]
+path   = "examples/lattice/14_seats_nothing_proposes.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render lattice", "solve --single", "solve --maximal", "oracle --dump {out}/region"]
+note   = "06_friends_tables_everyone_sits made small enough for the oracle, 12 candidates: everyone owes a seat, the duo fits only the big table, and the two small-table seats that can pay Cat's and Dan's debts are proposed by nothing and written by no rule. L9 licenses those two debts, their alternatives the big table's two seats; the oracle holds the licence at all 4 096 nodes (`ein-infer/tests/unheld.rs`). R is four seatings."
+
+[[entry]]
 path   = "examples/lattice/synth/local_not_global.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]

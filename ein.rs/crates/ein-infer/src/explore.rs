@@ -292,6 +292,12 @@ pub enum Licence {
     /// its saturation, and L1 closes that set upward
     /// ([`crate::known_dead`]). Named when an answer rested on a denial.
     Denied,
+    /// L9: a fact nothing proposes and nothing writes is in no state — an
+    /// owed instance whose witnesses are candidates, denied at root, or of a
+    /// relation no node can hold a fact of beyond root's has the candidates
+    /// for its alternatives, and L5 branches on them ([`crate::unheld`]).
+    /// Named when a branch took such an instance.
+    Unheld,
 }
 
 impl Licence {
@@ -305,6 +311,7 @@ impl Licence {
             Licence::Exhaustive => "L5 an owed instance's alternatives are exhaustive",
             Licence::TheCube => "L7 the cube",
             Licence::Denied => "L8 what a state denies is dead above it",
+            Licence::Unheld => "L9 a fact nothing proposes and nothing writes is in no state",
         }
     }
 }
@@ -1163,6 +1170,12 @@ impl<'a> Space<'a> {
             &self.axes,
             &inputs,
         )?;
+        // L9's premise on every node the table relies on it at: one that
+        // holds a fact nothing proposes and nothing writes refuses the run
+        // ([`crate::unheld`]).
+        if let Some(fact) = outs.iter().find_map(|o| o.unheld.as_deref()) {
+            return Err(crate::unheld::refusal(fact));
+        }
         let mut step = crate::events::Stepped::default();
         for (s, mut o) in fresh.into_iter().zip(outs) {
             step.visited += 1;
@@ -1380,9 +1393,35 @@ impl<'a> Space<'a> {
         let Some(table) = self.table()? else {
             return Ok(None);
         };
+        Ok(Some(self.hand_on(table)))
+    }
+
+    /// **The table a route branches on**: [`Self::alternatives`]' with what
+    /// L9 licenses ([`crate::oblgen::Alternatives::with_l9`]), handed to the
+    /// node function so every node also reports a fact that breaks L9's
+    /// premise. L5's alone under [`crate::unheld::without`].
+    pub(crate) fn route_alternatives(
+        &mut self,
+    ) -> Result<Option<std::sync::Arc<crate::oblgen::Alternatives>>, SolveError> {
+        let Some(table) = self.table()? else {
+            return Ok(None);
+        };
+        let table = if crate::unheld::is_without() {
+            table
+        } else {
+            table.with_l9()
+        };
+        Ok(Some(self.hand_on(table)))
+    }
+
+    /// `table`, handed to the node function.
+    fn hand_on(
+        &mut self,
+        table: crate::oblgen::Alternatives,
+    ) -> std::sync::Arc<crate::oblgen::Alternatives> {
         let table = std::sync::Arc::new(table);
         self.axes = self.axes.clone().owing_of(table.clone());
-        Ok(Some(table))
+        table
     }
 
     /// L5's table, read and handed to nothing.

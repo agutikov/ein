@@ -1398,6 +1398,17 @@
 0    examples/lattice/12_activator_chain_hole.ein :: render rules
 0    examples/lattice/12_activator_chain_hole.ein :: saturate
 0    examples/lattice/12_activator_chain_hole.ein :: solve
+0    examples/lattice/13_witness_of_two.ein :: oracle --dump {out}/region
+0    examples/lattice/13_witness_of_two.ein :: render lattice
+0    examples/lattice/13_witness_of_two.ein :: saturate
+0    examples/lattice/13_witness_of_two.ein :: solve
+0    examples/lattice/13_witness_of_two.ein :: solve --single
+0    examples/lattice/14_seats_nothing_proposes.ein :: oracle --dump {out}/region
+0    examples/lattice/14_seats_nothing_proposes.ein :: render lattice
+0    examples/lattice/14_seats_nothing_proposes.ein :: saturate
+0    examples/lattice/14_seats_nothing_proposes.ein :: solve
+0    examples/lattice/14_seats_nothing_proposes.ein :: solve --maximal
+0    examples/lattice/14_seats_nothing_proposes.ein :: solve --single
 0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/local_not_global.ein :: render lattice
 0    examples/lattice/synth/local_not_global.ein :: saturate

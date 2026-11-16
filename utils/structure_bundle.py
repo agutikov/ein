@@ -22,6 +22,10 @@ untracked `build/`:
   `prices/<question>.nodes.jsonl`: the example `price_list`'s;
 - `build/s1f.10.9/`, `build/s1f.10.6/` and `build/s1f.10.15/`: track H's
   censuses and witnesses (`object_census`, `owed_census`, `rung_census`);
+- `build/structure/s14/must.json`: S1f.10.14's T3, what a program would
+  have to state where *exactly one* is not derived, and every question of
+  `ein solve` before and after on the copy that states it, read off the
+  read-outs by `build/structure/s14/must.py` from `probes.sh`'s runs;
 - the phase's own Markdown under `plans/…/p1f.10_hypothesis_structure/` and
   `open_questions.md`, rendered with links back to the files.
 
@@ -129,6 +133,9 @@ PRICES_COMMANDS = """\
 cargo build --manifest-path ein.rs/Cargo.toml --release -p ein-infer --example price_list
 utils/bench_env.sh --require-ac ein.rs/target/release/examples/price_list \\
     > build/structure/prices/verdicts.md 2> build/structure/prices/prices.env"""
+MUST_COMMANDS = """\
+bash build/structure/s14/probes.sh
+python3 build/structure/s14/must.py > build/structure/s14/must.json"""
 TRACK_H = [
     ("S1f.10.9", "s1f.10.9", "object_census", "Q-M1f.306",
      "cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example object_census "
@@ -2126,6 +2133,84 @@ def section_track_h(pg: Page, P: Program) -> None:
                  ["column", "value"], [[K(k), T(row.get(k, ""))] for k in head], fold=True)
 
 
+def must_rows(entry: Doc) -> list[list[C]]:
+    """One program's questions, before and after the lines that state the *must*."""
+    def side(c: Doc) -> C:
+        stop = " <strong>stopped</strong>" if c["stopped"] else ""
+        return H(f'{c["saturations"]:,} · {c["facts"]:,}{stop}'.replace(",", " "),
+                 [c["saturations"], c["facts"], c["stopped"]])
+    return [[K(c["question"]), side(c["before"]), side(c["after"]), T(c["before"]["answer"]),
+             T(c["after"]["answer"])] for c in entry["cells"]]
+
+
+def ticks(text: str) -> str:
+    """`text` escaped, a span in backticks set as code, as the stage's Markdown writes it."""
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", esc(text))
+
+
+def must_entry(b: Bundle, path: str) -> Doc | None:
+    return next((e for e in b.must["programs"] if e["path"] == path), None)
+
+
+def section_must(pg: Page, P: Program) -> None:
+    """S1f.10.14's T3 of this program, where it is one of the programs the stage concerns."""
+    e = must_entry(P.b, P.path)
+    if e is None:
+        return
+    src = P.b.out / "s14/must.json"
+    pg.h(2, "must", "What it would have to state")
+    pg.p(f"S1f.10.14's T3, advice to the program's author and nothing the engine does: "
+         f"{e['groups']} groups nothing owes here, <em>{esc(e['kind'])}</em>. What the program would have to state "
+         f"for <em>exactly one</em> of them: {ticks(e['states'])}. On the copy that states it, "
+         f"<strong>{ticks(e['r'])}</strong>. The lines, appended or edited in place "
+         f"(<code>{esc(e['copy'])}</code>):")
+    pg.add(f"<pre>{esc(chr(10).join(e['lines']))}</pre>")
+    pg.table("must_questions", "Every question, before and after",
+             "Each question of <code>ein solve</code> asked of the program and of the copy, saturations · facts "
+             "beyond root, and what the read-out answered. A cell the budget stopped is marked.",
+             [(src, P.path)], ["question", "before", "after", "the answer before", "the answer after"],
+             must_rows(e), level=3)
+
+
+def must_page(b: Bundle, built: set[str]) -> None:
+    """The whole of S1f.10.14's T3, one table a program and a summary over them."""
+    out = b.root / "must.html"
+    pg = Page(b, b.root)
+    src = b.out / "s14/must.json"
+    m = b.must
+    rows = []
+    for e in m["programs"]:
+        link = (f'<a href="{esc(rel(b.root / "p" / e["path"][:-4] / "index.html", b.root))}#must">'
+                f'<code>{esc(e["path"])}</code></a>' if e["path"] in built else f'<code>{esc(e["path"])}</code>')
+        cells = {c["question"]: c for c in e["cells"]}
+        rows.append([H(link, e["path"]), T(e["tag"]), N(e["groups"]), T(e["kind"]), H(ticks(e["states"]), e["states"]),
+                     H(ticks(e["r"]), e["r"])] + [
+            H(f'{cells[q]["before"]["saturations"]:,} → {cells[q]["after"]["saturations"]:,}'.replace(",", " ")
+              + (" <strong>stopped</strong>" if cells[q]["before"]["stopped"] or cells[q]["after"]["stopped"] else ""),
+              [cells[q]["before"]["saturations"], cells[q]["after"]["saturations"]])
+            for q in m["questions"]])
+    pg.table("must", "Every program, every question", "Per program S1f.10.4 named where <em>exactly one</em> is not "
+             "derived: how many groups nothing owes and why, what the program would have to state, whether the copy "
+             "that states it has the same R, and each question's saturations before → after. Each program's page has "
+             "its lines and the answers.", [(src, "programs")],
+             ["program", "tag", "groups nothing owes", "why", "what it would have to state", "R"] + m["questions"],
+             rows, level=2)
+    for e in m["programs"]:
+        pg.table(f'must_{slug(e["path"])}', e["path"], f"<code>{esc(e['path'])}</code>: {ticks(e['r'])}.",
+                 [(src, e["path"])], ["question", "before", "after", "the answer before", "the answer after"],
+                 must_rows(e), level=3)
+    stage = PHASE / "s1f.10.14_exactly_one_spent.md"
+    body = (f"<h1>Where <em>exactly one</em> is missing: what a program would have to state</h1>"
+            f"<p>S1f.10.14's T3, advice to a program's author: for each program S1f.10.4 named, the lines that would "
+            f"state the <em>must</em> and every question asked before and after, by <code>ein solve</code> on both. "
+            f"Nothing here is synthesised by the engine. The record: "
+            f'<a href="{esc(rel(stage, b.root))}">S1f.10.14</a>. Taken {esc(m["taken"])} by '
+            f"<code>{esc(m['binary'])}</code>, with</p><pre>{esc(MUST_COMMANDS)}</pre>"
+            + b.provenance(b.root) + pg.toc_html() + "\n".join(pg.parts))
+    b.write_page(out, "Exactly one, missing", [("the structure, shown", b.out / "index.html"),
+                                               ("exactly one, missing", None)], body)
+
+
 def section_files(pg: Page, P: Program) -> None:
     pg.h(2, "files", "Every file")
     rows = []
@@ -2186,6 +2271,7 @@ def program_page(b: Bundle, P: Program, prev: str | None, nxt: str | None) -> No
     section_declared(pg, P)
     section_cost(pg, P)
     section_track_h(pg, P)
+    section_must(pg, P)
     section_files(pg, P)
     engine_pages(b, P)
 
@@ -2683,6 +2769,8 @@ def index_page(b: Bundle, census: list[Doc], built: list[str], n_defaults: int, 
         f'and <a href="bundle/prices_all.html">every table of it over every program</a>.</li>'
         f'<li><a href="bundle/defaults.html"><strong>Every default part 1 took</strong></a>: {n_defaults} sections, '
         f"verbatim, under their stages.</li>"
+        f'<li><a href="bundle/must.html"><strong>Where <em>exactly one</em> is missing</strong></a>: S1f.10.14\'s T3, '
+        f"what each program S1f.10.4 named would have to state, and its questions before and after.</li>"
         f'<li><a href="bundle/findings.html"><strong>The findings</strong></a>: <code>findings.md</code> whole.</li>'
         f'<li><a href="bundle/questions.html"><strong>The four questions\' material</strong></a>: the surface '
         f"(a slot), and Q-M1f.306, .307 and .308 with their witnesses.</li></ul>",
@@ -2808,6 +2896,11 @@ def build(out: Path, ein: str, jobs: int, only: list[str]) -> int:
         raise Fail(f"{ein} --version: exit {version.returncode}: {version.stderr.strip()}")
     b.version = version.stdout.strip()
     shared = {"verdicts": load_json(need(out / "prices/verdicts.json"))}
+    b.must = load_json(need(out / "s14/must.json"))
+    for e in b.must["programs"]:
+        for c in e["cells"]:
+            for side in ("before", "after"):
+                need(REPO / c[side]["file"])
     for _, d, _, _, _ in TRACK_H:
         shared["h9" if d == "s1f.10.9" else d] = load_tsv(need(REPO / "build" / d / "census/rows.tsv"))
         shared[d] = shared["h9" if d == "s1f.10.9" else d]
@@ -2866,6 +2959,7 @@ def build(out: Path, ein: str, jobs: int, only: list[str]) -> int:
     whole_page(b, b.root / "findings.html", "The findings", "the findings", [(need(PHASE / "findings.md"), "")],
                "<p>What the phase found outside its stages: K-1 to K-13 of tracks S and R, and track H's H9-n, H6-n "
                "and H15-n.</p>")
+    must_page(b, set(paths))
     n_defaults = defaults_page(b)
     questions_page(b)
     index_page(b, census, paths, n_defaults, totals)

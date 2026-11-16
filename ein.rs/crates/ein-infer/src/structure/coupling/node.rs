@@ -203,20 +203,33 @@ pub(crate) fn node_coupling_in(
             .map(|(b, c)| (c.fact, b as u32))
             .collect();
         let narrated = sp.narrated();
+        // The relations L9's premise is read over, where a route's table
+        // relies on it: the whole node is a node the route computes.
+        let unheld: &[ein_core::Symbol] = table.map_or(&[], |t| &t.unheld_relations);
         let (root_kb, _, _) = sp.parts();
         let read = sp.supported_within(
             &committed,
             NODE_APPLICATIONS,
             max_facts - n as u64,
             |kb: &Kb, terms: &mut Terms, firings| {
+                let breach =
+                    crate::unheld::breach(kb, root_kb, terms, unheld, |f| facts.contains_key(&f));
                 let core = if narrated {
                     crate::region::core_of_fixpoint(kb, terms)
                 } else {
                     None
                 };
-                (Graph::of(root_kb, kb, terms, firings, &facts, None), core)
+                (
+                    Graph::of(root_kb, kb, terms, firings, &facts, None),
+                    core,
+                    breach,
+                )
             },
         )?;
+        if let Ok((_, _, Some(fact))) = &read {
+            return Err(crate::unheld::refusal(fact));
+        }
+        let read = read.map(|(g, core, _)| (g, core));
         match read {
             Err(derived) => {
                 out.node_stopped = Some(if derived > max_facts - n as u64 {
