@@ -29,7 +29,7 @@ nightly or the runner's container.** Nothing is pushed.
 | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | H | a debt root was not told of | done: Q-M1f.307 (A), W26 fixed | `3e59b90a` |
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | R | at most one, spent | done for denials (licence L8); the pair of a death re-priced, still *go*, **not built** | `f8751257` |
 | [S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md) | H | what the blind enumerator takes for an object | done: Q-M1f.306, W96 fixed, the `relation names` row | `bc3eb522` |
-| [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | **on a running branch** | — |
+| [S1f.10.5](s1f.10.5_ordering.md) | R | the order on the obligation tree | T1 to T3 committed on its branch; **T4 uncommitted in its worktree**, stopped by a usage limit | — |
 | [S1f.10.15](s1f.10.15_the_rung_a_loaded_rule_chooses.md) | H | the rung a loaded rule chooses | tasks 1 to 3 done; **task 4 not started**, ruled (b) | — |
 | [S1f.10.14](s1f.10.14_exactly_one_spent.md) | R | exactly one, spent | not started | — |
 | [S1f.10.16](s1f.10.16_what_the_walk_left.md) | — | what the walk left | not started | — |
@@ -55,7 +55,7 @@ Each agent works in a git worktree under `.claude/worktrees/` on a branch `workt
 
 | branch | work | base |
 |---|---|---|
-| `worktree-agent-ac394c3d42ce474da` | S1f.10.5, the order | `f8751257` |
+| `worktree-agent-ac394c3d42ce474da` | S1f.10.5, the order: **stopped mid-T4, worktree kept** | `f8751257` |
 
 The five merged branches' worktrees and branches are removed (2026-11-16); their commits are on `master`.
 S1f.10.3's untracked price-list runs, which its record's tables were read from, were kept as `build/s1f.10.3/`.
@@ -78,7 +78,15 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
   program. E-54: nothing built. It filed H9-4 and H9-5. The goldens and the tests the merged branches share were
   re-run on the merged tree and pass; the gate was not run.
 
-*(S1f.10.5's is filled in when it ends)*
+- **`worktree-agent-ac394c3d42ce474da`, S1f.10.5: stopped, not merged.** The agent was cut off by its model's
+  usage limit in the middle of T4 (the order built), on 2026-11-16. Its branch holds three commits: I-SENDW
+  banked with its generator (`e664a561`), the inventory verified (`edccbea1`), and the orders as values with
+  `structure::NodeCoupling`, the coupling read off the whole node alone with no pair layer, and every order
+  measured with no route changed (`44a16ff3`). **Its worktree holds T4 uncommitted** (23 files: `order.rs`,
+  `tree.rs`, `explore.rs`, the read-out's `route` row, goldens, the stage record), which by its own record makes
+  I-SENDW's `--single` *Solution — R is one state* in 18 030 saturations and I-SEND's 18 030 where it was 17 747.
+  None of it is verified. **Keep that worktree**: it is the only copy. It edits
+  `docs/kernel/inference/structure.md`, which `master` has renamed to `hypothesis_space.md`.
 
 ## Owed before anything else is built
 
@@ -96,6 +104,8 @@ S1f.10.3's untracked price-list runs, which its record's tables were read from, 
 
 ## Then, in this order
 
+0. **S1f.10.5, finished from its worktree**: T4 checked, committed and merged, then T5's invariance tests and the
+   record. Either the same agent resumed, or a new one told to start from the worktree's uncommitted state.
 1. **S1f.10.15 task 4**, Q-M1f.308 (b). S1f.10.9's branch is merged, so it can start: under (b) `features/09`'s read-out
    needs the count E-7's naming adds. The entry says no tracked program's answer shows the change, so the task
    adds a witness.
