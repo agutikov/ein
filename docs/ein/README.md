@@ -160,8 +160,8 @@ One row per source page. **Disposition**: *rewritten into* (the destination stat
 naming several destinations splits the page), *evidence* (a re-takable command and what it gives on today's
 engine, under `ein.rs/benchmarks/`), *deleted* (it lives in git), or *moved* (the one decided row,
 `m1d/ideas.md`). Destinations are under `docs/ein/` unless they start `docs/` or `plans/`. **in** is the
-page's inbound reference count from S1f.20.1's checker, every `.md`, Rust doc comment, `.ein` header and
-`corpus.toml` line together (`…` until that checker lands on master; § The inbound counts).
+page's inbound reference count from S1f.20.1's checker, every `.md`, Rust comment, `.ein` comment and
+`corpus.toml` reference together (the command is in § The inbound counts).
 
 **A test-held or generated page moves with its test or generator** and is not rewritten from a plan: its prose
 loses the release-voice lines, its held part moves byte for byte. Those are `api/rust.md` (its `rust` block and
@@ -180,167 +180,169 @@ notes (`release.yml`): those strings move in the commit that moves the page.
 
 | source | destination | disposition | in | reason |
 |---|---|---|---:|---|
-| `README.md` | `README.md` (this page, rewritten at the close) | rewritten into | … | reading order, audiences and § Keeping this true (the six checks) become the tree's index; § Which pages to trust (three states, banners) has no successor, since no page keeps a banner |
-| `architecture.md` | `ein.rs/architecture.md`; the closure/worlds seam's agnostic half → `reasoning/kb-evolution/absent-and-naf.md` | rewritten into | … | the structural map; § Milestone boundaries is history and goes |
-| `configuration.md` | `user/reference/config.md` | rewritten into | … | test-held (`config_reference.rs` diffs `FIELDS`, `test_cli.rs` names the schema); the defaults block moves as generated; the banner's chronology goes |
-| `defined_behaviour.md` | `user/reference/diagnostics.md` (§§ 1, 4), `user/reference/cli.md` (§ 5), `reasoning/static-ir/values-and-order.md` (§§ 2, 3) | rewritten into | … | the split S1f.20.4 names: diagnostics for the user, orderings for a reimplementer; § 6 (*not defined, and filed*) is work, not docs (§ No obvious destination) |
-| `glossary.md` | `user/reference/glossary.md` | rewritten into | … | |
-| `standard_of_proof.md` | `docs/decisions/` (Q-M1e.1, Q-M1e.2) and `README.md` § Keeping this true | rewritten into | … | it is two ratified decisions; **least sure, and the user's to decide** (§ For the review) |
-| `inference/README.md` | `reasoning/kb-evolution/{firing,saturation,absent-and-naf}.md`, `ein.rs/architecture.md` (as-built layout) | rewritten into | … | design principles, the alive-set invariant, NAF, d=0 completion; its six sections on gone machinery (the tree solver, unconditional facts, the walk) go |
-| `inference/absent_semantics.md` | `reasoning/kb-evolution/absent-and-naf.md` | rewritten into | … | normative, pinned by `naf_semantics.rs`; cites `dual_rail.ein`, which lives only in M1e2's folder |
-| `inference/algorithm_layer_n.md` | — | deleted | … | superseded with a banner; the walk it designs has had no code since M1e2 S1e2.1c.5; `finding_r.md` and `solution_semantics.md` state the current search |
-| `inference/answer_dump.md` | `user/reference/answer-dump.md` | rewritten into | … | test-held (`answer_dump.rs`); named in `--dump-answer`'s help |
-| `inference/architecture_and_algorithms.md` | `reasoning/kb-evolution/firing.md` (§§ 1–5), `reasoning/kb-evolution/cores.md` (the ATMS half), `ein.rs/algorithms.md` (§§ 6–7) | rewritten into | … | split by the question: the paradigms and operations hold of any implementation, where Ein sits and its levers are ein.rs's |
-| `inference/domain_elim_vs_hypothesis.md` | — | deleted | … | measured through three entries removed 2026-06-16, harness removed; `examples/domain_elim/` holds the behaviour |
-| `inference/events.md` | `ein.rs/events.md` | rewritten into | … | the `ein-events/1` protocol; test-held (`events_reference.rs`, `cli_semantics.rs`); named in `--events`' help; the walk's retired kinds go |
-| `inference/features.md` | — | deleted | … | every row measures the walk; `feature_matrix.py` re-takes only against a binary at or before `7ec8a480`; *does it change R* is `configuration.md`'s |
-| `inference/finding_r.md` | `reasoning/kb-evolution/finding-r.md` | rewritten into | … | the oracle and the routes as formulas: the map's `search.md` |
-| `inference/hypothesis_space.md` | `reasoning/kb-evolution/hypothesis-space.md` | rewritten into | … | test-held (`show_hyps.rs`, `h_space_view.rs`); named in two help texts; the `h-space.json` section may go to `user/reference/` |
-| `inference/implementation.md` | `ein.rs/architecture.md` | rewritten into | … | the module map |
-| `inference/lattice_diagrams.md` | — | deleted | … | superseded with a banner: the walk's 2026-05 design, older than its companion |
-| `inference/lattice_dump.md` | `ein.rs/lattice-dump.md` | rewritten into | … | its first section, the region run's `nodes.json`, is current; the walk's tree sections go; named in `--dump-lattice`'s help |
-| `inference/monotonicity.md` | `reasoning/kb-evolution/monotonicity.md` | rewritten into | … | cites five probes that live only in M1e2's folder (§ Findings) |
-| `inference/parity_baselines.md` | — | deleted | … | superseded with a banner; frozen wall clock of solvers removed in M1; the `branching` group holds the verdicts |
-| `inference/read_out.md` | `user/reference/read-out.md` | rewritten into | … | test-held; moves with `read_out_reference.rs`, not rewritten from a plan |
-| `inference/read_out_examples.md` | `user/reference/read-out-examples.md` | rewritten into | … | generated by `utils/read_out_examples.py`, whose own prose links M1e2's plan pages (the generator changes, not the page) |
-| `inference/region_dump.md` | `user/reference/region-dump.md` | rewritten into | … | test-held (`region_dump.rs`); its path is written into every oracle dump |
-| `inference/reserved_engine_strings.md` | `ein.rs/reserved-engine-strings.md` | rewritten into | … | engine-internal vocabulary, by its own first line |
-| `inference/solution_semantics.md` | `reasoning/kb-evolution/solution-semantics.md`, `user/syntax-and-semantics/solutions-and-models.md` | rewritten into | … | the definition is reasoning's, what R means to its reader the user's (the map's *linked, not duplicated*); § 6, where the walk differed from R, goes |
-| `inference/zebra_walkthrough.md` | `user/guide/06_zebra_walkthrough.md` | rewritten into | … | near verbatim; `guide_programs.rs` then reads its `lisp` blocks too |
-| `ir/01-ein-graph/01_kb.md` | `user/syntax-and-semantics/{objects,relations,facts}.md`, `reasoning/kb-evolution/cores.md` (§ 5) | rewritten into | … | the four representations start here |
-| `ir/01-ein-graph/02_rules.md` | `user/syntax-and-semantics/{rules,constraints}.md`, `reasoning/static-ir/rules-as-statements.md` | rewritten into | … | the anatomy for the user; T1–T3 and DPO for reasoning; § 8 (where it lives in code) for `ein.rs/architecture.md` |
-| `ir/01-ein-graph/03_ein_model.md` | `user/syntax-and-semantics/ontology.md` | rewritten into | … | § 7's seams were resolved (2026-05-20): their answers are decisions, not prose |
-| `ir/01-ein-graph/04_jack_drinks_coffee.md` | `user/guide/05_jack_drinks_coffee.md` | rewritten into | … | already in four representations: the format S1f.20.3 takes |
-| `ir/01-ein-graph/05_four_level_kb.md` | `reasoning/static-ir/rules-as-statements.md` | rewritten into | … | |
-| `ir/01-ein-graph/README.md` | `user/syntax-and-semantics/README.md` | rewritten into | … | an index |
-| `ir/02-data-model/01_entities.md` | `reasoning/static-ir/names-and-atoms.md`; record shapes → `ein.rs/design/data-model.md` | rewritten into | … | |
-| `ir/02-data-model/02_store.md` | `reasoning/static-ir/relations-and-facts.md`; record shapes → `ein.rs/design/data-model.md` | rewritten into | … | |
-| `ir/02-data-model/03_implementation.md` | `ein.rs/architecture.md` | rewritten into | … | |
-| `ir/02-data-model/README.md` | `reasoning/README.md` | rewritten into | … | an index |
-| `ir/03-ein-lang/00_ebnf.md` | `user/reference/grammar.md` | rewritten into | … | generated: `grammar_pages.rs` writes its two blocks (`EIN_BLESS=1`); only the prose around them is edited |
-| `ir/03-ein-lang/01_grammar.md` | `user/reference/syntax.md`, `user/syntax-and-semantics/{macros,query,hypotheses}.md` | rewritten into | … | the reference for the lexer and forms; the meaning of each form to its concept page |
-| `ir/03-ein-lang/02_patterns.md` | `user/reference/syntax.md`, `user/syntax-and-semantics/rules.md` | rewritten into | … | |
-| `ir/03-ein-lang/03_examples.md` | `user/guide/examples.md` | rewritten into | … | worked fragments; *"this was `docs/ir.md` § 5"* goes |
-| `ir/03-ein-lang/04_dot_rendering.md` | `user/reference/rendering.md` | rewritten into | … | named in `ein render`'s help; § Reverse parse (*designed, never built*) is not docs (§ No obvious destination) |
-| `ir/03-ein-lang/05_inspirations.md` | `overview/inspirations.md` | rewritten into | … | S1f.20.7 |
-| `ir/03-ein-lang/06_reserved_names.md` | `user/reference/reserved-names.md` | rewritten into | … | |
-| `ir/03-ein-lang/07_stdlib_api.md` | `user/reference/stdlib.md`, `user/syntax-and-semantics/properties-and-operators.md` (std.algebra) | rewritten into | … | has no section for `std.slots` or the four `std.bool.*` modules (§ Findings) |
-| `ir/03-ein-lang/08_self_describing.md` | `reasoning/rule-evolution/rules-as-data.md` | rewritten into | … | the operational half; the design-only half is M12's work, not docs |
-| `ir/03-ein-lang/09_natural_language.md` | `user/syntax-and-semantics/natural-language.md` | rewritten into | … | test-held (`natural_language_page.rs`) |
-| `ir/03-ein-lang/README.md` | `user/reference/README.md` | rewritten into | … | an index |
+| `README.md` | `README.md` (this page, rewritten at the close) | rewritten into | 23 | reading order, audiences and § Keeping this true (the six checks) become the tree's index; § Which pages to trust (three states, banners) has no successor, since no page keeps a banner |
+| `architecture.md` | `ein.rs/architecture.md`; the closure/worlds seam's agnostic half → `reasoning/kb-evolution/absent-and-naf.md` | rewritten into | 11 | the structural map; § Milestone boundaries is history and goes |
+| `configuration.md` | `user/reference/config.md` | rewritten into | 96 | test-held (`config_reference.rs` diffs `FIELDS`, `test_cli.rs` names the schema); the defaults block moves as generated; the banner's chronology goes |
+| `defined_behaviour.md` | `user/reference/diagnostics.md` (§§ 1, 4), `user/reference/cli.md` (§ 5), `reasoning/static-ir/values-and-order.md` (§§ 2, 3) | rewritten into | 219 | the split S1f.20.4 names: diagnostics for the user, orderings for a reimplementer; § 6 (*not defined, and filed*) is work, not docs (§ No obvious destination) |
+| `glossary.md` | `user/reference/glossary.md` | rewritten into | 24 | |
+| `standard_of_proof.md` | `docs/decisions/` (Q-M1e.1, Q-M1e.2) and `README.md` § Keeping this true | rewritten into | 46 | it is two ratified decisions; **least sure, and the user's to decide** (§ For the review) |
+| `inference/README.md` | `reasoning/kb-evolution/{firing,saturation,absent-and-naf}.md`, `ein.rs/architecture.md` (as-built layout) | rewritten into | 37 | design principles, the alive-set invariant, NAF, d=0 completion; its six sections on gone machinery (the tree solver, unconditional facts, the walk) go |
+| `inference/absent_semantics.md` | `reasoning/kb-evolution/absent-and-naf.md` | rewritten into | 64 | normative, pinned by `naf_semantics.rs`; cites `dual_rail.ein`, which lives only in M1e2's folder |
+| `inference/algorithm_layer_n.md` | — | deleted | 12 | superseded with a banner; the walk it designs has had no code since M1e2 S1e2.1c.5; `finding_r.md` and `solution_semantics.md` state the current search |
+| `inference/answer_dump.md` | `user/reference/answer-dump.md` | rewritten into | 40 | test-held (`answer_dump.rs`); named in `--dump-answer`'s help |
+| `inference/architecture_and_algorithms.md` | `reasoning/kb-evolution/firing.md` (§§ 1–5), `reasoning/kb-evolution/cores.md` (the ATMS half), `ein.rs/algorithms.md` (§§ 6–7) | rewritten into | 33 | split by the question: the paradigms and operations hold of any implementation, where Ein sits and its levers are ein.rs's |
+| `inference/domain_elim_vs_hypothesis.md` | — | deleted | 6 | measured through three entries removed 2026-06-16, harness removed; `examples/domain_elim/` holds the behaviour |
+| `inference/events.md` | `ein.rs/events.md` | rewritten into | 59 | the `ein-events/1` protocol; test-held (`events_reference.rs`, `cli_semantics.rs`); named in `--events`' help; the walk's retired kinds go |
+| `inference/features.md` | — | deleted | 20 | every row measures the walk; `feature_matrix.py` re-takes only against a binary at or before `7ec8a480`; *does it change R* is `configuration.md`'s |
+| `inference/finding_r.md` | `reasoning/kb-evolution/finding-r.md` | rewritten into | 14 | the oracle and the routes as formulas: the map's `search.md` |
+| `inference/hypothesis_space.md` | `reasoning/kb-evolution/hypothesis-space.md` | rewritten into | 21 | test-held (`show_hyps.rs`, `h_space_view.rs`); named in two help texts; the `h-space.json` section may go to `user/reference/` |
+| `inference/implementation.md` | `ein.rs/architecture.md` | rewritten into | 30 | the module map |
+| `inference/lattice_diagrams.md` | — | deleted | 4 | superseded with a banner: the walk's 2026-05 design, older than its companion |
+| `inference/lattice_dump.md` | `ein.rs/lattice-dump.md` | rewritten into | 18 | its first section, the region run's `nodes.json`, is current; the walk's tree sections go; named in `--dump-lattice`'s help |
+| `inference/monotonicity.md` | `reasoning/kb-evolution/monotonicity.md` | rewritten into | 96 | cites five probes that live only in M1e2's folder (§ Findings) |
+| `inference/parity_baselines.md` | — | deleted | 2 | superseded with a banner; frozen wall clock of solvers removed in M1; the `branching` group holds the verdicts |
+| `inference/read_out.md` | `user/reference/read-out.md` | rewritten into | 73 | test-held; moves with `read_out_reference.rs`, not rewritten from a plan |
+| `inference/read_out_examples.md` | `user/reference/read-out-examples.md` | rewritten into | 131 | generated by `utils/read_out_examples.py`, whose own prose links M1e2's plan pages (the generator changes, not the page) |
+| `inference/region_dump.md` | `user/reference/region-dump.md` | rewritten into | 44 | test-held (`region_dump.rs`); its path is written into every oracle dump |
+| `inference/reserved_engine_strings.md` | `ein.rs/reserved-engine-strings.md` | rewritten into | 25 | engine-internal vocabulary, by its own first line |
+| `inference/solution_semantics.md` | `reasoning/kb-evolution/solution-semantics.md`, `user/syntax-and-semantics/solutions-and-models.md` | rewritten into | 158 | the definition is reasoning's, what R means to its reader the user's (the map's *linked, not duplicated*); § 6, where the walk differed from R, goes |
+| `inference/zebra_walkthrough.md` | `user/guide/06_zebra_walkthrough.md` | rewritten into | 22 | near verbatim; `guide_programs.rs` then reads its `lisp` blocks too |
+| `ir/01-ein-graph/01_kb.md` | `user/syntax-and-semantics/{objects,relations,facts}.md`, `reasoning/kb-evolution/cores.md` (§ 5) | rewritten into | 33 | the four representations start here |
+| `ir/01-ein-graph/02_rules.md` | `user/syntax-and-semantics/{rules,constraints}.md`, `reasoning/static-ir/rules-as-statements.md` | rewritten into | 30 | the anatomy for the user; T1–T3 and DPO for reasoning; § 8 (where it lives in code) for `ein.rs/architecture.md` |
+| `ir/01-ein-graph/03_ein_model.md` | `user/syntax-and-semantics/ontology.md` | rewritten into | 28 | § 7's seams were resolved (2026-05-20): their answers are decisions, not prose |
+| `ir/01-ein-graph/04_jack_drinks_coffee.md` | `user/guide/05_jack_drinks_coffee.md` | rewritten into | 5 | already in four representations: the format S1f.20.3 takes |
+| `ir/01-ein-graph/05_four_level_kb.md` | `reasoning/static-ir/rules-as-statements.md` | rewritten into | 7 | |
+| `ir/01-ein-graph/README.md` | `user/syntax-and-semantics/README.md` | rewritten into | 1 | an index |
+| `ir/02-data-model/01_entities.md` | `reasoning/static-ir/names-and-atoms.md`; record shapes → `ein.rs/design/data-model.md` | rewritten into | 20 | |
+| `ir/02-data-model/02_store.md` | `reasoning/static-ir/relations-and-facts.md`; record shapes → `ein.rs/design/data-model.md` | rewritten into | 21 | |
+| `ir/02-data-model/03_implementation.md` | `ein.rs/architecture.md` | rewritten into | 8 | |
+| `ir/02-data-model/README.md` | `reasoning/README.md` | rewritten into | 0 | an index |
+| `ir/03-ein-lang/00_ebnf.md` | `user/reference/grammar.md` | rewritten into | 49 | generated: `grammar_pages.rs` writes its two blocks (`EIN_BLESS=1`); only the prose around them is edited |
+| `ir/03-ein-lang/01_grammar.md` | `user/reference/syntax.md`, `user/syntax-and-semantics/{macros,query,hypotheses}.md` | rewritten into | 94 | the reference for the lexer and forms; the meaning of each form to its concept page |
+| `ir/03-ein-lang/02_patterns.md` | `user/reference/syntax.md`, `user/syntax-and-semantics/rules.md` | rewritten into | 22 | |
+| `ir/03-ein-lang/03_examples.md` | `user/guide/examples.md` | rewritten into | 3 | worked fragments; *"this was `docs/ir.md` § 5"* goes |
+| `ir/03-ein-lang/04_dot_rendering.md` | `user/reference/rendering.md` | rewritten into | 32 | named in `ein render`'s help; § Reverse parse (*designed, never built*) is not docs (§ No obvious destination) |
+| `ir/03-ein-lang/05_inspirations.md` | `overview/inspirations.md` | rewritten into | 2 | S1f.20.7 |
+| `ir/03-ein-lang/06_reserved_names.md` | `user/reference/reserved-names.md` | rewritten into | 40 | |
+| `ir/03-ein-lang/07_stdlib_api.md` | `user/reference/stdlib.md`, `user/syntax-and-semantics/properties-and-operators.md` (std.algebra) | rewritten into | 9 | has no section for `std.slots` or the four `std.bool.*` modules (§ Findings) |
+| `ir/03-ein-lang/08_self_describing.md` | `reasoning/rule-evolution/rules-as-data.md` | rewritten into | 13 | the operational half; the design-only half is M12's work, not docs |
+| `ir/03-ein-lang/09_natural_language.md` | `user/syntax-and-semantics/natural-language.md` | rewritten into | 21 | test-held (`natural_language_page.rs`) |
+| `ir/03-ein-lang/README.md` | `user/reference/README.md` | rewritten into | 2 | an index |
 
 **The diagrams** (`inference/diagrams/`, 28 files, not pages; each group goes with its page):
 
 | source | destination | disposition | in | reason |
 |---|---|---|---:|---|
-| `algorithm_layer_n.{dot,svg}` | — | deleted | … | with `algorithm_layer_n.md` |
-| `lattice_3hyps_{contradiction,dedup,no_dedup}.{dot,svg}`, `lattice_4hyps_dedup.{dot,svg}` | — | deleted | … | with `lattice_diagrams.md` |
-| `monotonicity_*.{dot,svg}` (7 pairs) | `reasoning/kb-evolution/diagrams/` | rewritten into | … | with `monotonicity.md`, which shows the command that redraws them |
-| `region_02_genuine_3set_death.{dot,svg}` | `reasoning/kb-evolution/diagrams/` | rewritten into | … | with `solution_semantics.md` |
-| `region_02_genuine_3set_death_no_lookahead.{dot,svg}` | — | deleted | … | the walk's `-e -L` run drawn; goes with § 6 |
+| `algorithm_layer_n.{dot,svg}` | — | deleted | 3 | with `algorithm_layer_n.md` |
+| `lattice_3hyps_{contradiction,dedup,no_dedup}.{dot,svg}`, `lattice_4hyps_dedup.{dot,svg}` | — | deleted | 8 | with `lattice_diagrams.md` |
+| `monotonicity_*.{dot,svg}` (7 pairs) | `reasoning/kb-evolution/diagrams/` | rewritten into | 7 | with `monotonicity.md`, which shows the command that redraws them |
+| `region_02_genuine_3set_death.{dot,svg}` | `reasoning/kb-evolution/diagrams/` | rewritten into | 2 | with `solution_semantics.md` |
+| `region_02_genuine_3set_death_no_lookahead.{dot,svg}` | — | deleted | 2 | the walk's `-e -L` run drawn; goes with § 6 |
 
 ### `docs/api/`, `docs/guide/`, `docs/install.md` (8 pages)
 
 | source | destination | disposition | in | reason |
 |---|---|---|---:|---|
-| `docs/api/README.md` | `ein.rs/README.md` | rewritten into | … | an index |
-| `docs/api/rust.md` | `ein.rs/api.md` | rewritten into | … | the marked region moves intact with `embedding.rs`'s diff test, in one commit (S1f.20.5) |
-| `docs/guide/README.md` | `user/guide/README.md` | rewritten into | … | near verbatim; `guide_programs.rs` and `guide_transcripts.rs` name the directory and each page |
-| `docs/guide/01_objects_and_relations.md` | `user/guide/01_objects_and_relations.md` | rewritten into | … | near verbatim |
-| `docs/guide/02_first_rules.md` | `user/guide/02_first_rules.md` | rewritten into | … | near verbatim |
-| `docs/guide/03_rule_families.md` | `user/guide/03_rule_families.md` | rewritten into | … | near verbatim |
-| `docs/guide/04_solving_the_whole_puzzle.md` | `user/guide/04_solving_the_whole_puzzle.md` | rewritten into | … | near verbatim |
-| `docs/install.md` | `user/install.md` | rewritten into | … | *"Written at M1a S1a.9.3"* goes; `release.yml` writes its URL into every release's notes |
+| `docs/api/README.md` | `ein.rs/README.md` | rewritten into | 4 | an index |
+| `docs/api/rust.md` | `ein.rs/api.md` | rewritten into | 33 | the marked region moves intact with `embedding.rs`'s diff test, in one commit (S1f.20.5) |
+| `docs/guide/README.md` | `user/guide/README.md` | rewritten into | 4 | near verbatim; `guide_programs.rs` and `guide_transcripts.rs` name the directory and each page |
+| `docs/guide/01_objects_and_relations.md` | `user/guide/01_objects_and_relations.md` | rewritten into | 1 | near verbatim |
+| `docs/guide/02_first_rules.md` | `user/guide/02_first_rules.md` | rewritten into | 3 | near verbatim |
+| `docs/guide/03_rule_families.md` | `user/guide/03_rule_families.md` | rewritten into | 2 | near verbatim |
+| `docs/guide/04_solving_the_whole_puzzle.md` | `user/guide/04_solving_the_whole_puzzle.md` | rewritten into | 5 | near verbatim |
+| `docs/install.md` | `user/install.md` | rewritten into | 14 | *"Written at M1a S1a.9.3"* goes; `release.yml` writes its URL into every release's notes |
 
 ### `docs/history/` (77 files: 73 pages, a log and three probe files; sources relative to `docs/history/`)
 
-**The specification-bearing pages** are the M1a design contracts (the crates cite `m1a_rust/design/` 85 times),
-the sections of the milestone READMEs that code cites as its reason (`m1a_rust/README.md` 96 times,
-`m1d_satisfiability/README.md` 25, `m1c_external_validation/README.md` 17), `shared_state.md` § 4, and M1d's
-normative pages; each count by `grep -rhoE 'history/<path>' ein.rs/crates | wc -l` on 2026-11-16. None of them is
-*deleted*: each is rewritten into the page that states its behaviour today, and only what describes gone code is
-dropped. `m1e_review_processing/README.md` (30 by the same grep) is deleted: each citation names why a fix
-exists, and the fixed behaviour is stated in `defined_behaviour.md` and `configuration.md` already.
+**The specification-bearing pages** are the M1a design contracts (85 Rust references into `m1a_rust/design/`),
+the sections of the milestone READMEs that code cites as its reason (`m1a_rust/README.md` 96,
+`m1c_external_validation/README.md` 17, `m1d_satisfiability/README.md` 15), `shared_state.md` § 4, and M1d's
+normative pages; each count the inbound checker's `rs` column (§ The inbound counts; `utils/history_census.py`,
+which counts comment links by its own rule, gives 273 into `docs/history/` in all, 84 of them into
+`m1a_rust/design/`). None of them is *deleted*: each is rewritten into the page that states its behaviour today,
+and only what describes gone code is dropped. `m1e_review_processing/README.md` (29 Rust references) is deleted:
+each names why a fix exists, and the fixed behaviour is stated in `defined_behaviour.md` and
+`configuration.md` already.
 
 | source | destination | disposition | in | reason |
 |---|---|---|---:|---|
-| `README.md` | — | deleted | … | the directory goes (S1f.20.9) |
-| `m1a_rust/README.md` | `ein.rs/design/*` (the sections code cites: P1a.1, P1a.2, S1a.2.3, S1a.6.3, S1a.6.5, S1a.6.6, S1a.6.8, S1a.6.9, S1a.6.12, P1a.7, S1a.7.1, S1a.7.2, S1a.7.5, P1a.8, P1a.10) | rewritten into | … | the record goes; the stage sections code cites as its reason are the only written intent for the resumed saturator, the per-entering snapshot and the `--jobs` contract |
-| `m1a_rust/design/README.md` | `ein.rs/design/README.md` | rewritten into | … | |
-| `m1a_rust/design/02_determinism_and_order.md` | `ein.rs/design/determinism-and-order.md` | rewritten into | … | 20 Rust citations; § 6a (the no-good store under `--jobs`) went with the walk |
-| `m1a_rust/design/03_data_model.md` | `ein.rs/design/data-model.md` | rewritten into | … | 12 Rust citations |
-| `m1a_rust/design/04_ir_frontend.md` | `ein.rs/design/ir-frontend.md` | rewritten into | … | § 1's decision (*hand-written, not generated*) was reversed by the grmtools parser; the lexer, parser and import sections are rewritten from `ein.l`/`ein.y` and imports by full name |
-| `m1a_rust/design/05_matcher.md` | `ein.rs/design/matcher.md` | rewritten into | … | 10 Rust citations |
-| `m1a_rust/design/06_saturation.md` | `ein.rs/design/saturation.md`; § 1 → `reasoning/kb-evolution/saturation.md` | rewritten into | … | 7 Rust citations |
-| `m1a_rust/design/07_search_layer.md` | `ein.rs/design/search.md` (§§ 2, 6, 7) | rewritten into | … | the commitment lattice, apriori, no-goods and verdicts went with the walk; the generator (`hypgen.rs`, `oblgen.rs` cite § 2), canonical states and cores remain |
-| `m1a_rust/design/08_parallelism.md` | `ein.rs/design/parallelism.md` (§§ 1, 6) | rewritten into | … | level 1 was the walk's enterings and levels 2–3 were never built; the contract and § 6 (what must be `Sync`, 5 citations) are current |
-| `m1a_rust/design/10_binary_format.md` | `ein.rs/design/binary-format.md` | rewritten into | … | 13 Rust citations |
-| `m1a_rust/design/11_shared_assets.md` | `ein.rs/design/shared-assets.md` | rewritten into | … | |
-| `m1a_rust/design/12_toolchain_and_layout.md` | `ein.rs/design/toolchain-and-layout.md` | rewritten into | … | the crate list grew to eight; `release.yml` cites its § 4 |
-| `m1a_rust/measurements/baseline.md` | — | deleted | … | the P1a.5 build measured; its 7 Rust citations become statements in the design pages (S1f.20.6) |
-| `m1a_rust/measurements/corpus_cost.md` | `ein.rs/benchmarks/corpus-cost.md` | evidence | … | `utils/corpus_cost.py` runs on today's engine, and `slow = true` is its measured claim (`manifest.rs`, `corpus_cli.rs`) |
-| `m1a_rust/measurements/feature_cost.md` | — | deleted | … | its instrument `e2e_baseline.py` is one of the walk's; AGENTS.md's snmalloc figure rests on it (§ Findings) |
-| `m1a_rust/measurements/fork_delta_trace.md` | — | deleted | … | Q-M1a.18's evidence; the decision becomes its file |
-| `m1a_rust/measurements/scaling.md` | — | deleted | … | measured with `ein solve -e -t`, the walk's flags; `cmdline.rs`'s citation becomes a statement |
-| `m1a_rust/measurements/shared_state.md` | `ein.rs/design/parallelism.md` (§ 4, what it chooses) | rewritten into | … | 8 Rust citations to its choice of lock; its counts (an instrument build) go |
-| `m1a_rust/open_questions.md` | `docs/decisions/` (S1f.20.8) | deleted | … | a ledger: its decisions become files first |
-| `m1c_external_validation/README.md` | `user/syntax-and-semantics/query.md` (S1c.1.2, `:expect`), `user/reference/cli.md` (S1c.1.3, `ein test`) | rewritten into | … | 17 Rust citations to the claim's meaning and to `ein test` |
-| `m1c_external_validation/open_questions.md` | `docs/decisions/` | deleted | … | a ledger |
-| `m1c_external_validation/stdlib_census.md` | `ein.rs/benchmarks/stdlib-census.md` | evidence | … | `utils/stdlib_census.py` runs today; re-taken, not copied |
-| `m1d_satisfiability/README.md` | `user/syntax-and-semantics/obligations.md` (S1d.2.3, S1d.2.4), `reasoning/kb-evolution/{hypothesis-generation,satisfiability}.md` (S1d.2.5, P1d.3, P1d.4) | rewritten into | … | 25 Rust citations, 7 of them to S1d.2.3, the form; § Eight measurements with no owner all measured the walk, and one was closed by M1e2 |
-| `m1d_satisfiability/closure_census.md` | — | deleted | … | `closure_census.py` is one of the walk's instruments |
-| `m1d_satisfiability/completeness.md` | `reasoning/kb-evolution/satisfiability.md` | rewritten into | … | `solution_semantics.md` cites it for why an obligation's alternatives are jointly exhaustive; the tree traversal it argues for is gone |
-| `m1d_satisfiability/domain_contract.md` | `user/syntax-and-semantics/obligations.md` | rewritten into | … | C1–C4, normative by `solution_semantics.md` |
-| `m1d_satisfiability/hypotheses_from_obligations.md` | `reasoning/kb-evolution/hypothesis-generation.md` | rewritten into | … | the ladder ships (`oblgen.rs`); its measurements used `EIN_OBLIGATION_CHOICE`, deleted with the walk |
-| `m1d_satisfiability/ideas.md` | `plans/ideas/` | moved | … | decided by the phase: the user's own note, authoritative on intent |
-| `m1d_satisfiability/lattice_exhaustive_run.log` | — | deleted | … | one run of the walk |
-| `m1d_satisfiability/layer_census.md` | — | deleted | … | the walk's layers, by one of its instruments |
-| `m1d_satisfiability/model_set_census.md` | — | deleted | … | read the walk's `verdict.solutions` |
-| `m1d_satisfiability/obligation_forms.md` | `user/syntax-and-semantics/obligations.md` | rewritten into | … | form G, `(open ?R)`, as built; the menu of forms not taken goes |
-| `m1d_satisfiability/open_questions.md` | `docs/decisions/` | deleted | … | a ledger |
-| `m1d_satisfiability/openness_census.md` | — | deleted | … | one of the walk's instruments; `solution_semantics.md` restates the scope rule without it |
-| `m1d_satisfiability/property_audit.md` | — | deleted | … | a 2026-08-25 audit of 73 rules; what each rule enforces today is `07_stdlib_api.md`'s (least sure) |
-| `m1d_satisfiability/representations.md` | — | deleted | … | the pricing behind Q-M1d.5; the decision becomes its file |
-| `m1d_satisfiability/the_boundary.md` | `reasoning/kb-evolution/satisfiability.md` | rewritten into | … | the second-order boundary, an argument of no implementation |
-| `m1d_satisfiability/the_verdict.md` | — | deleted | … | Q-M1d.5's answer, a decision; the verdict it qualified is gone and `read_out.md` states `--models key` |
-| `m1d_satisfiability/the_vocabulary.md` | — | deleted | … | *no keyword*: a decision, and its file |
-| `m1e_review_processing/README.md` | — | deleted | … | the record; its 30 Rust citations name why a fix exists, and the fixed behaviour is stated in `defined_behaviour.md` and `configuration.md` already |
-| `m1e_review_processing/open_questions.md` | `docs/decisions/` | deleted | … | a ledger (Q-M1e.1 and .2 are `standard_of_proof.md`) |
-| `m1e_review_processing/review/open-questions.md` | `docs/decisions/` | deleted | … | the review's Q1–Q10, answered in M1e's P1e.1; their ids collide with the global `Q1`–`Q10` (§ For the review) |
-| `m1e_review_processing/review/summary.md` | — | deleted | … | the review's reports, verbatim; every finding was dispositioned |
-| `m1e_review_processing/review/architecture/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/code-doc-consistency/high.md` | — | deleted | … | same |
-| `m1e_review_processing/review/code-doc-consistency/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/code-doc-consistency/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/correctness/high.md` | — | deleted | … | same; 2 Rust citations become statements |
-| `m1e_review_processing/review/correctness/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/correctness/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/documentation/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/documentation/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/error-handling/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/error-handling/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/maintainability/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/maintainability/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/semantics/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/semantics/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/state-model/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/state-model/low.md` | — | deleted | … | same |
-| `m1e_review_processing/review/tests/medium.md` | — | deleted | … | same |
-| `m1e_review_processing/review/tests/low.md` | — | deleted | … | same |
-| `m1e_review_processing/search_soundness_probes/README.md` | — | deleted | … | S1e.1.1's record; its rulings are Q-M1e decisions |
-| `m1e_review_processing/search_soundness_probes/d1_q4_which_route_reaches_the_site.md` | — | deleted | … | a decision record; the fixtures are banked in `examples/ein-bugs/` |
-| `m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md` | — | deleted | … | moved to P1f.10 as a stage, now closed |
-| `m1e_review_processing/search_soundness_probes/d3_q_m1e8_file_or_take.md` | — | deleted | … | Q-M1e.8's record |
-| `m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md` | — | deleted | … | Q-M1e.9's record; the refusal is `defined_behaviour.md` § 4.7, the witness `examples/ein-bugs/naf-upward-closure.ein` |
-| `m1e_review_processing/search_soundness_probes/d5_does_t1_ratify_q_m1e2.md` | — | deleted | … | the ratification; its content is `standard_of_proof.md` |
-| `m1e_review_processing/search_soundness_probes/d6_the_new_q5_fixture.md` | — | deleted | … | a stage file's earlier copy |
-| `m1e_review_processing/search_soundness_probes/d7_the_diff_instrument.md` | — | deleted | … | a decision record |
-| `m1e_review_processing/search_soundness_probes/d8_branching06_untyped_models.md` | — | deleted | … | a decision record |
-| `m1e_review_processing/search_soundness_probes/d9_kernel_page_overclaims.md` | — | deleted | … | done 2026-08-28; the page it fixed carries the fix |
-| `m1e_review_processing/search_soundness_probes/golden_audit.md` | — | deleted | … | the walk's goldens |
-| `m1e_review_processing/search_soundness_probes/probes/naf_upward_closure.ein` | — | deleted | … | banked as `examples/ein-bugs/naf-upward-closure.ein` with a corpus entry |
-| `m1e_review_processing/search_soundness_probes/probes/run_naf_upward_closure.sh` | — | deleted | … | drives the walk's flags |
-| `m1e_review_processing/search_soundness_probes/probes/run_record_sites.sh` | — | deleted | … | drives `examples/ein-bugs/` fixtures the corpus already runs |
+| `README.md` | — | deleted | 8 | the directory goes (S1f.20.9) |
+| `m1a_rust/README.md` | `ein.rs/design/*` (the sections code cites: P1a.1, P1a.2, S1a.2.3, S1a.6.3, S1a.6.5, S1a.6.6, S1a.6.8, S1a.6.9, S1a.6.12, P1a.7, S1a.7.1, S1a.7.2, S1a.7.5, P1a.8, P1a.10) | rewritten into | 422 | the record goes; the stage sections code cites as its reason are the only written intent for the resumed saturator, the per-entering snapshot and the `--jobs` contract |
+| `m1a_rust/design/README.md` | `ein.rs/design/README.md` | rewritten into | 3 | |
+| `m1a_rust/design/02_determinism_and_order.md` | `ein.rs/design/determinism-and-order.md` | rewritten into | 57 | 20 Rust references; § 6a (the no-good store under `--jobs`) went with the walk |
+| `m1a_rust/design/03_data_model.md` | `ein.rs/design/data-model.md` | rewritten into | 36 | 12 Rust references |
+| `m1a_rust/design/04_ir_frontend.md` | `ein.rs/design/ir-frontend.md` | rewritten into | 9 | § 1's decision (*hand-written, not generated*) was reversed by the grmtools parser; the lexer, parser and import sections are rewritten from `ein.l`/`ein.y` and imports by full name |
+| `m1a_rust/design/05_matcher.md` | `ein.rs/design/matcher.md` | rewritten into | 27 | 10 Rust references |
+| `m1a_rust/design/06_saturation.md` | `ein.rs/design/saturation.md`; § 1 → `reasoning/kb-evolution/saturation.md` | rewritten into | 28 | 7 Rust references |
+| `m1a_rust/design/07_search_layer.md` | `ein.rs/design/search.md` (§§ 2, 6, 7) | rewritten into | 17 | the commitment lattice, apriori, no-goods and verdicts went with the walk; the generator (`hypgen.rs`, `oblgen.rs` cite § 2), canonical states and cores remain |
+| `m1a_rust/design/08_parallelism.md` | `ein.rs/design/parallelism.md` (§§ 1, 6) | rewritten into | 35 | level 1 was the walk's enterings and levels 2–3 were never built; the contract and § 6 (what must be `Sync`, cited from `ein-core`) are current |
+| `m1a_rust/design/10_binary_format.md` | `ein.rs/design/binary-format.md` | rewritten into | 22 | 13 Rust references |
+| `m1a_rust/design/11_shared_assets.md` | `ein.rs/design/shared-assets.md` | rewritten into | 11 | |
+| `m1a_rust/design/12_toolchain_and_layout.md` | `ein.rs/design/toolchain-and-layout.md` | rewritten into | 23 | the crate list grew to eight; `release.yml` cites its § 4 |
+| `m1a_rust/measurements/baseline.md` | — | deleted | 46 | the P1a.5 build measured; its 7 Rust references become statements in the design pages (S1f.20.6) |
+| `m1a_rust/measurements/corpus_cost.md` | `ein.rs/benchmarks/corpus-cost.md` | evidence | 18 | `utils/corpus_cost.py` runs on today's engine, and `slow = true` is its measured claim (`manifest.rs`, `corpus_cli.rs`) |
+| `m1a_rust/measurements/feature_cost.md` | — | deleted | 8 | its instrument `e2e_baseline.py` is one of the walk's; AGENTS.md's snmalloc figure rests on it (§ Findings) |
+| `m1a_rust/measurements/fork_delta_trace.md` | — | deleted | 5 | Q-M1a.18's evidence; the decision becomes its file |
+| `m1a_rust/measurements/scaling.md` | — | deleted | 19 | measured with `ein solve -e -t`, the walk's flags; `cmdline.rs`'s citation becomes a statement |
+| `m1a_rust/measurements/shared_state.md` | `ein.rs/design/parallelism.md` (§ 4, what it chooses) | rewritten into | 15 | 8 Rust references to its choice of lock; its counts (an instrument build) go |
+| `m1a_rust/open_questions.md` | `docs/decisions/` (S1f.20.8) | deleted | 59 | a ledger: its decisions become files first |
+| `m1c_external_validation/README.md` | `user/syntax-and-semantics/query.md` (S1c.1.2, `:expect`), `user/reference/cli.md` (S1c.1.3, `ein test`) | rewritten into | 92 | 17 Rust references to the claim's meaning and to `ein test` |
+| `m1c_external_validation/open_questions.md` | `docs/decisions/` | deleted | 28 | a ledger |
+| `m1c_external_validation/stdlib_census.md` | `ein.rs/benchmarks/stdlib-census.md` | evidence | 18 | `utils/stdlib_census.py` runs today; re-taken, not copied |
+| `m1d_satisfiability/README.md` | `user/syntax-and-semantics/obligations.md` (S1d.2.3, S1d.2.4), `reasoning/kb-evolution/{hypothesis-generation,satisfiability}.md` (S1d.2.5, P1d.3, P1d.4) | rewritten into | 243 | 15 Rust references, most of them to S1d.2.3, the form; § Eight measurements with no owner all measured the walk, and one was closed by M1e2 |
+| `m1d_satisfiability/closure_census.md` | — | deleted | 15 | `closure_census.py` is one of the walk's instruments |
+| `m1d_satisfiability/completeness.md` | `reasoning/kb-evolution/satisfiability.md` | rewritten into | 10 | `solution_semantics.md` cites it for why an obligation's alternatives are jointly exhaustive; the tree traversal it argues for is gone |
+| `m1d_satisfiability/domain_contract.md` | `user/syntax-and-semantics/obligations.md` | rewritten into | 18 | C1–C4, normative by `solution_semantics.md` |
+| `m1d_satisfiability/hypotheses_from_obligations.md` | `reasoning/kb-evolution/hypothesis-generation.md` | rewritten into | 16 | the ladder ships (`oblgen.rs`); its measurements used `EIN_OBLIGATION_CHOICE`, deleted with the walk |
+| `m1d_satisfiability/ideas.md` | `plans/ideas/` | moved | 25 | decided by the phase: the user's own note, authoritative on intent |
+| `m1d_satisfiability/lattice_exhaustive_run.log` | — | deleted | 1 | one run of the walk |
+| `m1d_satisfiability/layer_census.md` | — | deleted | 20 | the walk's layers, by one of its instruments |
+| `m1d_satisfiability/model_set_census.md` | — | deleted | 15 | read the walk's `verdict.solutions` |
+| `m1d_satisfiability/obligation_forms.md` | `user/syntax-and-semantics/obligations.md` | rewritten into | 8 | form G, `(open ?R)`, as built; the menu of forms not taken goes |
+| `m1d_satisfiability/open_questions.md` | `docs/decisions/` | deleted | 61 | a ledger |
+| `m1d_satisfiability/openness_census.md` | — | deleted | 10 | one of the walk's instruments; `solution_semantics.md` restates the scope rule without it |
+| `m1d_satisfiability/property_audit.md` | — | deleted | 4 | a 2026-08-25 audit of 73 rules; what each rule enforces today is `07_stdlib_api.md`'s (least sure) |
+| `m1d_satisfiability/representations.md` | — | deleted | 12 | the pricing behind Q-M1d.5; the decision becomes its file |
+| `m1d_satisfiability/the_boundary.md` | `reasoning/kb-evolution/satisfiability.md` | rewritten into | 9 | the second-order boundary, an argument of no implementation |
+| `m1d_satisfiability/the_verdict.md` | — | deleted | 7 | Q-M1d.5's answer, a decision; the verdict it qualified is gone and `read_out.md` states `--models key` |
+| `m1d_satisfiability/the_vocabulary.md` | — | deleted | 7 | *no keyword*: a decision, and its file |
+| `m1e_review_processing/README.md` | — | deleted | 204 | the record; its 29 Rust references name why a fix exists, and the fixed behaviour is stated in `defined_behaviour.md` and `configuration.md` already |
+| `m1e_review_processing/open_questions.md` | `docs/decisions/` | deleted | 246 | a ledger (Q-M1e.1 and .2 are `standard_of_proof.md`) |
+| `m1e_review_processing/review/open-questions.md` | `docs/decisions/` | deleted | 5 | the review's Q1–Q10, answered in M1e's P1e.1; their ids collide with the global `Q1`–`Q10` (§ For the review) |
+| `m1e_review_processing/review/summary.md` | — | deleted | 5 | the review's reports, verbatim; every finding was dispositioned |
+| `m1e_review_processing/review/architecture/medium.md` | — | deleted | 1 | same |
+| `m1e_review_processing/review/code-doc-consistency/high.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/code-doc-consistency/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/code-doc-consistency/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/correctness/high.md` | — | deleted | 2 | same; 2 Rust references become statements |
+| `m1e_review_processing/review/correctness/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/correctness/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/documentation/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/documentation/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/error-handling/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/error-handling/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/maintainability/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/maintainability/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/semantics/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/semantics/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/state-model/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/state-model/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/tests/medium.md` | — | deleted | 0 | same |
+| `m1e_review_processing/review/tests/low.md` | — | deleted | 0 | same |
+| `m1e_review_processing/search_soundness_probes/README.md` | — | deleted | 24 | S1e.1.1's record; its rulings are Q-M1e decisions |
+| `m1e_review_processing/search_soundness_probes/d1_q4_which_route_reaches_the_site.md` | — | deleted | 14 | a decision record; the fixtures are banked in `examples/ein-bugs/` |
+| `m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md` | — | deleted | 10 | moved to P1f.10 as a stage, now closed |
+| `m1e_review_processing/search_soundness_probes/d3_q_m1e8_file_or_take.md` | — | deleted | 13 | Q-M1e.8's record |
+| `m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md` | — | deleted | 16 | Q-M1e.9's record; the refusal is `defined_behaviour.md` § 4.7, the witness `examples/ein-bugs/naf-upward-closure.ein` |
+| `m1e_review_processing/search_soundness_probes/d5_does_t1_ratify_q_m1e2.md` | — | deleted | 11 | the ratification; its content is `standard_of_proof.md` |
+| `m1e_review_processing/search_soundness_probes/d6_the_new_q5_fixture.md` | — | deleted | 7 | a stage file's earlier copy |
+| `m1e_review_processing/search_soundness_probes/d7_the_diff_instrument.md` | — | deleted | 4 | a decision record |
+| `m1e_review_processing/search_soundness_probes/d8_branching06_untyped_models.md` | — | deleted | 9 | a decision record |
+| `m1e_review_processing/search_soundness_probes/d9_kernel_page_overclaims.md` | — | deleted | 10 | done 2026-08-28; the page it fixed carries the fix |
+| `m1e_review_processing/search_soundness_probes/golden_audit.md` | — | deleted | 7 | the walk's goldens |
+| `m1e_review_processing/search_soundness_probes/probes/naf_upward_closure.ein` | — | deleted | 2 | banked as `examples/ein-bugs/naf-upward-closure.ein` with a corpus entry |
+| `m1e_review_processing/search_soundness_probes/probes/run_naf_upward_closure.sh` | — | deleted | 0 | drives the walk's flags |
+| `m1e_review_processing/search_soundness_probes/probes/run_record_sites.sh` | — | deleted | 6 | drives `examples/ein-bugs/` fixtures the corpus already runs |
 
 ### The user-facing reference under `plans/`, and the pages of finished plan folders that the code or a current page cites as a statement
 
@@ -356,33 +358,33 @@ are records since S1f.5.16 and get no row, but code still cites the first (`desc
 
 | source | destination | disposition | in | reason |
 |---|---|---|---:|---|
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md` | `user/reference/cli.md` (§§ 1, 2, 4), `reasoning/kb-evolution/finding-r.md` (§§ 3.1–3.3), `ein.rs/design/search.md` (§ 3.4) | rewritten into | … | the contract every mode is held to, and each mode's route (`tree.rs` cites § 3.2 as its specification); §§ 0, 6, 7 are rulings, and decisions |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md` | `user/syntax-and-semantics/query.md` | rewritten into | … | § 1, the claim rules, is what `claim.rs` implements; `01_grammar.md` and `read_out_examples.py` cite it |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/region_language.md` | `user/syntax-and-semantics/query.md` | rewritten into | … | §§ 3–5, `(solve …)`, the region claim and *a query asks one question* (`expect.rs` cites § 5); the rest is the ruling |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/definitions.md` | — | deleted | … | the table `solution_semantics.md` was written from, which carries it |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md` | `ein.rs/benchmarks/region.md` | evidence | … | `utils/region_census.py` runs on today's `ein oracle --dump` (least sure: it was the evidence for a ruling) |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/route1_reach.md` | `ein.rs/benchmarks/region.md` | evidence | … | `--example route1_reach`, in AGENTS.md's command block |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md` | — | deleted | … | the walk |
-| `plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_census.md` | — | deleted | … | the walk |
-| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md` | `reasoning/kb-evolution/monotonicity.md` (detection), `ein.rs/design/search.md` | rewritten into | … | `detector.rs` and `explore.rs` cite it as the detector's design |
-| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md` | `reasoning/kb-evolution/monotonicity.md` | rewritten into | … | § 5, the grain, is `monotone.rs`'s cited definition; its numbers go to `non-monotone.md` |
-| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md` | `ein.rs/benchmarks/non-monotone.md` | evidence | … | `--example node_census`; `monotonicity.md` cites its numbers (least sure) |
-| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md` | `ein.rs/benchmarks/non-monotone.md` | evidence | … | `--example hole_census` (least sure) |
-| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md` | `ein.rs/benchmarks/non-monotone.md` | evidence | … | `--example taint_census` (least sure) |
-| `plans/m1e2_correctness/p1e2.1c_the_region_search/alive_set_reach.md` | `ein.rs/design/search.md` | rewritten into | … | `states.rs` cites § 3 (states beside commitments), `downset.rs` and `explore.rs` § 9 |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md` | `user/reference/stdlib.md` | rewritten into | … | the calculator as built (digits are names, the tables, requests and results); the proposal and prototype go (the user's question) |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md` | `user/reference/stdlib.md` | rewritten into | … | `std.math.binary*` and `convert` as built; `examples/binary_arithmetic/` cites it |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md` | `user/reference/stdlib.md` | rewritten into | … | `std.bool.*`, which `07_stdlib_api.md` lacks; `examples/binary_logic/` cites it |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/malformed_numbers.md` | `user/reference/stdlib.md` | rewritten into | … | the flags and *a malformed value is its representation's* |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md` | `user/guide/word-problems.md` | rewritten into | … | the results, beside `examples/word_problems/` (the user's question) |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/beyond_arithmetic.md` | `user/guide/word-problems.md` | rewritten into | … | the results, beside `examples/beyond_arith/` (the user's question) |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/import_clashes.md` | — | deleted | … | its proposals were ruled; imports by full name are `syntax.md`'s and the rulings decisions |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md` | — | deleted | … | closed or owned at the phase's close; `examples/` READMEs that cite it state the behaviour instead |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md` | — | deleted | … | a close record |
-| `plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/close.md` | — | deleted | … | a close record; its results are `hypothesis_space.md` |
-| `plans/followups/f9_e_catalog.md` | — | deleted | … | closed; nine measured rejections of the walk's search-layer optimisations |
-| `plans/followups/f18_world_aware_negatives.md` | — | deleted | … | closed without being done; the *forbid* refusal is `defined_behaviour.md` § 4.7 |
-| `plans/m1j_nlp_smt_poc/README.md` | — | deleted | … | done; `nl2smt/README.md` is the page |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md` | `user/reference/cli.md` (§§ 1, 2, 4), `reasoning/kb-evolution/finding-r.md` (§§ 3.1–3.3), `ein.rs/design/search.md` (§ 3.4) | rewritten into | 85 | the contract every mode is held to, and each mode's route (`tree.rs` cites § 3.2 as its specification); §§ 0, 6, 7 are rulings, and decisions |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md` | `user/syntax-and-semantics/query.md` | rewritten into | 16 | § 1, the claim rules, is what `claim.rs` implements; `01_grammar.md` and `read_out_examples.py` cite it |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/region_language.md` | `user/syntax-and-semantics/query.md` | rewritten into | 6 | §§ 3–5, `(solve …)`, the region claim and *a query asks one question* (`expect.rs` cites § 5); the rest is the ruling |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/definitions.md` | — | deleted | 10 | the table `solution_semantics.md` was written from, which carries it |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md` | `ein.rs/benchmarks/region.md` | evidence | 24 | `utils/region_census.py` runs on today's `ein oracle --dump` (least sure: it was the evidence for a ruling) |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/route1_reach.md` | `ein.rs/benchmarks/region.md` | evidence | 26 | `--example route1_reach`, in AGENTS.md's command block |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md` | — | deleted | 26 | the walk |
+| `plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_census.md` | — | deleted | 4 | the walk |
+| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md` | `reasoning/kb-evolution/monotonicity.md` (detection), `ein.rs/design/search.md` | rewritten into | 14 | `detector.rs` and `explore.rs` cite it as the detector's design |
+| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md` | `reasoning/kb-evolution/monotonicity.md` | rewritten into | 32 | § 5, the grain, is `monotone.rs`'s cited definition; its numbers go to `non-monotone.md` |
+| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md` | `ein.rs/benchmarks/non-monotone.md` | evidence | 66 | `--example node_census`; `monotonicity.md` cites its numbers (least sure) |
+| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md` | `ein.rs/benchmarks/non-monotone.md` | evidence | 22 | `--example hole_census` (least sure) |
+| `plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md` | `ein.rs/benchmarks/non-monotone.md` | evidence | 25 | `--example taint_census` (least sure) |
+| `plans/m1e2_correctness/p1e2.1c_the_region_search/alive_set_reach.md` | `ein.rs/design/search.md` | rewritten into | 15 | `states.rs` cites § 3 (states beside commitments), `downset.rs` and `explore.rs` § 9 |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/design.md` | `user/reference/stdlib.md` | rewritten into | 62 | the calculator as built (digits are names, the tables, requests and results); the proposal and prototype go (the user's question) |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_arithmetic.md` | `user/reference/stdlib.md` | rewritten into | 18 | `std.math.binary*` and `convert` as built; `examples/binary_arithmetic/` cites it |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/binary_logic.md` | `user/reference/stdlib.md` | rewritten into | 16 | `std.bool.*`, which `07_stdlib_api.md` lacks; `examples/binary_logic/` cites it |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/malformed_numbers.md` | `user/reference/stdlib.md` | rewritten into | 11 | the flags and *a malformed value is its representation's* |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/word_problems.md` | `user/guide/word-problems.md` | rewritten into | 34 | the results, beside `examples/word_problems/` (the user's question) |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/beyond_arithmetic.md` | `user/guide/word-problems.md` | rewritten into | 24 | the results, beside `examples/beyond_arith/` (the user's question) |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/import_clashes.md` | — | deleted | 33 | its proposals were ruled; imports by full name are `syntax.md`'s and the rulings decisions |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/findings.md` | — | deleted | 200 | closed or owned at the phase's close; `examples/` READMEs that cite it state the behaviour instead |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/close.md` | — | deleted | 54 | a close record |
+| `plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/close.md` | — | deleted | 7 | a close record; its results are `hypothesis_space.md` |
+| `plans/followups/f9_e_catalog.md` | — | deleted | 31 | closed; nine measured rejections of the walk's search-layer optimisations |
+| `plans/followups/f18_world_aware_negatives.md` | — | deleted | 14 | closed without being done; the *forbid* refusal is `defined_behaviour.md` § 4.7 |
+| `plans/m1j_nlp_smt_poc/README.md` | — | deleted | 7 | done; `nl2smt/README.md` is the page |
 
 ### The question ledgers
 
@@ -392,16 +394,16 @@ the folder is finished; at its milestone's close, if not. The five ledgers under
 
 | source | destination | disposition | in | reason |
 |---|---|---|---:|---|
-| `plans/m1e2_correctness/open_questions.md` | `docs/decisions/` | deleted | … | M1e2 closed; the most-cited ledger outside `plans/` (Q-M1e2.7, the region) |
-| `plans/m1f_hypothesis_and_documentation/open_questions.md` | `docs/decisions/` | deleted | … | at M1f's close, with its folder; its answered rows become files now |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md` | `docs/decisions/` | deleted | … | numbered locally: a decision takes the next free Q-M1f id (S1f.20.8's default 3) |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md` | `docs/decisions/` | deleted | … | same |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md` | `docs/decisions/` | deleted | … | the user's replies, the answers to the two files above |
-| `plans/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | … | the global `Q<n>` ledger stays, holding its open rows; an answered row becomes a decision |
-| `plans/m1g_logic/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | … | M1g is open: the ledger stays until it closes |
-| `plans/m1h_beyond_word_problems/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | … | open milestone |
-| `plans/m2_nl_to_ir/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | … | open milestone |
-| `plans/m10_external_benchmarks/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | … | open milestone |
+| `plans/m1e2_correctness/open_questions.md` | `docs/decisions/` | deleted | 302 | M1e2 closed; the most-cited ledger outside `plans/` (Q-M1e2.7, the region) |
+| `plans/m1f_hypothesis_and_documentation/open_questions.md` | `docs/decisions/` | deleted | 926 | at M1f's close, with its folder; its answered rows become files now |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions.md` | `docs/decisions/` | deleted | 163 | numbered locally: a decision takes the next free Q-M1f id (S1f.20.8's default 3) |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/questions_round2.md` | `docs/decisions/` | deleted | 89 | same |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/replies_2026-11-12.md` | `docs/decisions/` | deleted | 13 | the user's replies, the answers to the two files above |
+| `plans/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | 47 | the global `Q<n>` ledger stays, holding its open rows; an answered row becomes a decision |
+| `plans/m1g_logic/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | 69 | M1g is open: the ledger stays until it closes |
+| `plans/m1h_beyond_word_problems/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | 142 | open milestone |
+| `plans/m2_nl_to_ir/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | 69 | open milestone |
+| `plans/m10_external_benchmarks/open_questions.md` | `docs/decisions/` (answered rows) | rewritten into | 6 | open milestone |
 
 Not ledgers, and without a row: M1e2's `s1e2.3.4_the_inherited_questions_and_the_record.md` and
 `s1e2.4.1_the_question_explained{,.ru}.md` (stage files whose questions are rows of M1e2's ledger), and M1h's
@@ -410,19 +412,21 @@ Not ledgers, and without a row: M1e2's `s1e2.3.4_the_inherited_questions_and_the
 ### Plan folders: finished and staying
 
 **Finished** (S1f.20.9's default 1: a README that says *closed* or *done*); each is *deleted* by S1f.20.9 once its
-decisions are files and nothing outside `plans/` links it. The evidence is the line that says so:
+decisions are files and nothing outside `plans/` links it. Beside the line that says so, the references into the
+folder from outside `plans/`, which must be restated or re-aimed first (the checker's `all` less its `plans`,
+summed over the folder's files; `md` is a `.md` outside both trees, `hist` one under `docs/history/`):
 
-| folder | files | evidence | what must leave it first |
+| folder | files | the line that says so | what must leave it first |
 |---|---:|---|---|
-| `plans/m1e2_correctness/` | 241 | README: *"**Closed 2026-11-08** on the user's go-ahead"* | its fourteen pages of the section above; the ledger's decisions; the probes current pages cite (§ Findings) |
-| `plans/m1j_nlp_smt_poc/` | 1 | README: *"**done 2026-11-13**"* | `nl2smt/README.md`'s three links |
-| `plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/` | 105 | README: *"**Closed on 2026-11-11**"* | stage citations (`s1f.5.14_nl_required.md` the most cited); S1f.5.15's strata are `analysis-of-rules.md`'s first content; the parser probe goes with it |
-| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/` | 50 | README: *"**Closed 2026-11-15**"* | its nine pages and three ledgers of the sections above |
-| `plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/` | 13 | README: *"**closed 2026-11-11**"* | four `docs/kernel` links to its analysis (F24 holds the open part) |
-| `plans/m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/` | 1 | README: *"split and moved to M1g on 2026-11-13"*: a redirect stub, kept only because P1f.6's replies link it | goes with P1f.6 |
-| `plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/` | 24 | README: *"**Closed 2026-11-16**"* | `close.md`'s two links |
-| `plans/followups/f9_e_catalog.md` | 1 | *"**Status: closed 2026-08-17.**"* | 11 links (`docs/kernel`, `rs`, `utils`) |
-| `plans/followups/f18_world_aware_negatives.md` | 1 | *"**Closed without being done, 2026-11-04.**"* | two `docs/kernel` links |
+| `plans/m1e2_correctness/` | 241 | README: *"**Closed 2026-11-08** on the user's go-ahead"* | 384 references (md 218, hist 54, rs 100, ein 11, toml 1); its fourteen pages of the section above; the ledger's decisions; the probes current pages cite (§ Findings) |
+| `plans/m1j_nlp_smt_poc/` | 1 | README: *"**done 2026-11-13**"* | 2 references (md 2), `nl2smt/README.md`'s |
+| `plans/m1f_hypothesis_and_documentation/p1f.5_the_no_owner_items/` | 105 | README: *"**Closed on 2026-11-11**"* | 78 references (md 73, rs 5), most to stage files (`s1f.5.14_nl_required.md` the most cited); S1f.5.15's strata are `analysis-of-rules.md`'s first content; the parser probe goes with it |
+| `plans/m1f_hypothesis_and_documentation/p1f.6_calculator/` | 50 | README: *"**Closed 2026-11-15**"* | 119 references (md 94, rs 25); its nine pages and three ledgers of the sections above |
+| `plans/m1f_hypothesis_and_documentation/p1f.7_findings_outside_scope/` | 13 | README: *"**closed 2026-11-11**"* | 26 references (md 25, rs 1), to its analysis and stages (F24 holds the open part) |
+| `plans/m1f_hypothesis_and_documentation/p1f.8_school_algebra_and_geometry/` | 1 | README: *"split and moved to M1g on 2026-11-13"*: a redirect stub, kept only because P1f.6's replies link it | none; goes with P1f.6 |
+| `plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/` | 24 | README: *"**Closed 2026-11-16**"* | 49 references (md 6, hist 42, rs 1): the 42 from `docs/history/` go with it |
+| `plans/followups/f9_e_catalog.md` | 1 | *"**Status: closed 2026-08-17.**"* | 20 references (md 10, hist 9, rs 1) |
+| `plans/followups/f18_world_aware_negatives.md` | 1 | *"**Closed without being done, 2026-11-04.**"* | 7 references (md 2, hist 5) |
 
 **Staying**, work not finished: `plans/README.md`, `plans/ideas.md`, `plans/ideas/`, `plans/open_questions.md`;
 `plans/m1f_hypothesis_and_documentation/` (its README, ledger and `p1f.20_docs_refactor/`, until M1f's closing
@@ -556,6 +560,19 @@ This table applies them as written.
 
 ## The inbound counts
 
-**Pending.** The **in** column comes from S1f.20.1's checker (`utils/doc_audit.py`, widened to Rust doc comments,
-`.ein` headers and `corpus.toml`, with a per-target inbound-count mode), which is being built on `master`. Until it
-lands every count is `…`; the command that fills them is written here when it does.
+The **in** column is S1f.20.1's checker, on this branch's merge of `master` at `def265b3` (2026-11-16):
+
+```sh
+python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/ --target docs/api/ --target docs/guide/ \
+    --target docs/install.md --target docs/history/ --target plans/
+```
+
+Each row takes the target's `all`, the references that resolve to it from every tracked `.md`, Rust comment,
+`.ein` comment and `corpus.toml`, a page's links to itself not counted; a row that covers several files (a
+diagram group) sums them, and a file the command does not list has none. `all` counts the references from
+`plans/` and `docs/history/` too, since the link check reads both until S1f.20.9 deletes them, so a move rewrites
+every one; the command's `plans` and `hist` columns give how many of them those two trees hold. The plan-folder
+table's figures are the same command's, summed over each folder's files with `plans` taken off.
+
+A reference written with an elided path, `plans/…/p1f.6_calculator/binary_logic.md` in an `.ein` header, resolves
+to nothing and is in no count: the link check cannot see it break, and the release-voice check is what finds it.

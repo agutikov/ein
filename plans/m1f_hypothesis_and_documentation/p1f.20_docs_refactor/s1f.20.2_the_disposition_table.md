@@ -2,8 +2,8 @@
 
 **Phase:** [P1f.20](README.md) (`docs/ein/`: the tree a released system would have)
 **Estimate:** 2 days.
-**Status:** **T1 and T2 written 2026-11-16, stopped for the user's review** ([§ Record](#record-2026-11-16));
-the inbound-count column waits for S1f.20.1's checker. It was `T1f.5.20.2` until 2026-11-08.
+**Status:** **T1 and T2 written 2026-11-16, stopped for the user's review** ([§ Record](#record-2026-11-16)),
+the inbound column filled from S1f.20.1's checker. It was `T1f.5.20.2` until 2026-11-08.
 **Depends on:** [S1f.20.1](s1f.20.1_the_two_checks.md), whose link check counts each page's inbound links.
 
 ## What it is
@@ -96,14 +96,14 @@ would delete the only written intent for that code, which the acceptance forbids
 folder cited from outside `plans/` (stage files, ledgers and READMEs aside) has a row: 14 of M1e2's, 9 of P1f.6's,
 P1f.10's close, F9, F18 and M1j's README.
 
-**The specification-bearing history pages**, none of them *deleted*: the M1a design contracts (85 citations from
-the crates), the sections of `m1a_rust/README.md` (96), `m1d_satisfiability/README.md` (25) and
-`m1c_external_validation/README.md` (17) that the code cites, `shared_state.md` § 4, and M1d's `completeness.md`,
-`domain_contract.md`, `obligation_forms.md`, `the_boundary.md` and `hypotheses_from_obligations.md`. Each count by
-`grep -rhoE 'history/<path>' ein.rs/crates | wc -l`.
+**The specification-bearing history pages**, none of them *deleted*: the M1a design contracts (85 Rust
+references), the sections of `m1a_rust/README.md` (96), `m1c_external_validation/README.md` (17) and
+`m1d_satisfiability/README.md` (15) that the code cites, `shared_state.md` § 4, and M1d's `completeness.md`,
+`domain_contract.md`, `obligation_forms.md`, `the_boundary.md` and `hypotheses_from_obligations.md`. Each count is
+the inbound checker's `rs` column.
 
-**How the rows were judged.** Each page's opening, banner and section list; who cites it, by a scratch scan that
-resolves every path in a tracked text file (not banked: S1f.20.1's checker is the instrument the column takes);
+**How the rows were judged.** Each page's opening, banner and section list; who cites it, first by a scratch scan
+that resolves every path in a tracked text file, then by S1f.20.1's checker, which the column takes;
 for a measurement, whether its instrument runs on today's engine (`utils/README.md` lists the walk's seven, which
 re-take only against a binary at or before `7ec8a480`); for a page a test or the binary reads, the test, generator
 or help text that moves with it.
@@ -112,6 +112,14 @@ or help text that moves with it.
 nine rows I was least sure of, five questions to decide personally, six sources with no obvious destination, and
 six findings outside this stage's scope, each with its witness.
 
-**Waiting**: the **in** column, until S1f.20.1's inbound-count mode is on `master`; then this branch merges
-`master`, runs it, fills the column, writes the command into the page, and banks the page's release-voice count
-as scaffolding.
+**The inbound counts.** This branch merged `master` at `def265b3` (S1f.20.1 done) and filled the column from
+`python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/ --target docs/api/ --target docs/guide/
+--target docs/install.md --target docs/history/ --target plans/`, each row the target's `all` (a diagram group
+the sum of its files'); the page's § The inbound counts holds the command and the rule. The plan-folder table's
+figures are the same command's, less the references from `plans/`. The most-referenced sources are ledgers and
+records (M1f's ledger 926, `m1a_rust/README.md` 422, M1e2's ledger 302); of the pages that move,
+`defined_behaviour.md` (219), `solution_semantics.md` (158) and `read_out_examples.md` (131).
+
+**The release-voice baseline.** `docs/ein/README.md` is in the check's scope and, as scaffolding, names plans,
+stages and dates on purpose: its count is banked in `utils/release_voice_baseline.txt` (`--bless`; the one line
+the bless adds), to be brought to 0 when the phase closes and the page is rewritten as the tree's index.

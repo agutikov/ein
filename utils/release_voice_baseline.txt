@@ -11,6 +11,7 @@
     2  corpus/fuzz_findings/binding-key-layout-swapped.ein
     3  corpus/fuzz_findings/binding-key-layout.ein
     3  corpus/fuzz_findings/fork-delta-order.ein
+  141  docs/ein/README.md
    24  ein.rs/crates/ein-cli/src/cmdline.rs
    21  ein.rs/crates/ein-cli/src/common.rs
     3  ein.rs/crates/ein-cli/src/kb.rs
