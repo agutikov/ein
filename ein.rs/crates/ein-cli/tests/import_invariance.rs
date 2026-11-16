@@ -22,6 +22,18 @@
 //! this is the guard that keeps them so. A program S refuses is held to be
 //! refused in W and A too.
 //!
+//! **And the work of a search, where a form leaves the universe's order as
+//! it is.** Where the program as written answers `--single` by the
+//! obligation tree, each form is asked `--single` too, and the verdict, the
+//! saturations and the facts beyond root are compared. The tree orders its
+//! branches by the structure and, among equals, by rendered text, and it
+//! takes a branch's alternatives in the universe's order, which is rendered
+//! text too; a form respells a name, and where that moves one candidate
+//! past another the same answer is found by other work. The programs on
+//! which it does are named ([`RESPELLED_PAST`]), each with why, and every
+//! other program's work is the same in all three forms, the `slow` entries
+//! among them where `EIN_CORPUS_SLOW=1` adds them.
+//!
 //! The forms are written into a scratch directory beside links to the
 //! program's directory's modules, since a module is found from the program
 //! file's directory. `EIN_CORPUS_SLOW=1` adds the slow entries, as
@@ -43,10 +55,32 @@ fn include_slow() -> bool {
 /// The JSON summary of `ein solve FILE`, run in `dir`, or the exit code of a
 /// run that wrote none.
 fn summary(dir: &Path, file: &str) -> Result<serde_json::Value, i32> {
+    summary_of(dir, file, &[])
+}
+
+/// What `ein solve FILE --single` says of its search, run in `dir`: the
+/// route, the verdict and the work. `None` where the run wrote no summary.
+fn single(dir: &Path, file: &str) -> Option<(String, String)> {
+    let v = summary_of(dir, file, &["--single"]).ok()?;
+    let route = v["region"]["route"].as_str().unwrap_or("").to_string();
+    Some((
+        route,
+        format!(
+            "{} · {} saturations · {} facts",
+            v["verdict"]["word"], v["work"]["saturations"], v["work"]["facts"]
+        ),
+    ))
+}
+
+/// [`summary`], with `flags` after the file.
+fn summary_of(dir: &Path, file: &str, flags: &[&str]) -> Result<serde_json::Value, i32> {
     let scratch = Scratch::new("ein-invariance-json");
     let json = scratch.path().join("s.json");
     let out = Command::new(env!("CARGO_BIN_EXE_ein"))
-        .args(["solve", file, "--json-summary"])
+        .arg("solve")
+        .arg(file)
+        .args(flags)
+        .arg("--json-summary")
         .arg(&json)
         .current_dir(dir)
         .output()
@@ -108,14 +142,30 @@ fn signature(v: &serde_json::Value, prefixes: &[String]) -> String {
     )
 }
 
-/// One program: `Ok(compared forms)` or the first difference.
-fn check(path: &Path) -> Result<usize, String> {
+/// **The programs whose tree does other work in another import form**, and
+/// why. A branch's alternatives are taken in the universe's order, rendered
+/// text, and the forms spell the names of an imported module otherwise.
+///
+/// - `binary_logic/synthesis.ein`: the hole's sixteen alternatives are the
+///   functions of `std.bool.gates`, of which the file lists `Xor`, `And` and
+///   `Or` short. As written those three sort before the thirteen spelled in
+///   full, the two that fit are among them, and `--single` has its two
+///   states after 4 saturations; with every name in full, or under an
+///   alias, the sixteen are in one alphabet and it takes 16.
+const RESPELLED_PAST: &[&str] = &["examples/binary_logic/synthesis.ein"];
+
+/// One program: `Ok((compared forms, forms whose tree's work was compared,
+/// forms whose tree's work is another))` or the first difference in an
+/// answer.
+fn check(path: &Path) -> Result<(usize, usize, usize), String> {
     let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
     let dir = path.parent().expect("a directory");
     let file = path.file_name().expect("a name").to_str().expect("utf-8");
     let mut prefixes = module_prefixes(dir);
     let s = summary(dir, file);
-    let mut compared = 0;
+    // The tree's work, where the program as written is answered by one.
+    let tree = single(dir, file).filter(|(route, _)| route == "tree");
+    let (mut compared, mut trees, mut moved) = (0, 0, 0);
     for mode in ['W', 'A'] {
         let Some((written, extra)) = form(path, &text, mode) else {
             // Its imports refused: S is refused too, and there is no form.
@@ -156,9 +206,30 @@ fn check(path: &Path) -> Result<usize, String> {
                 ));
             }
         }
+        if let Some((_, as_written)) = &tree {
+            match single(scratch.path(), file) {
+                Some((route, in_form)) if route == "tree" && in_form == *as_written => trees += 1,
+                // The same verdict by other work: counted, and held to the
+                // list by the caller.
+                Some((route, in_form))
+                    if route == "tree"
+                        && in_form.split(" · ").next() == as_written.split(" · ").next() =>
+                {
+                    trees += 1;
+                    moved += 1;
+                }
+                other => {
+                    return Err(format!(
+                        "{}: `--single` is {as_written} as written and {:?} in form {mode}",
+                        path.display(),
+                        other
+                    ));
+                }
+            }
+        }
         compared += 1;
     }
-    Ok(compared)
+    Ok((compared, trees, moved))
 }
 
 /// The corpus programs that import, in manifest order.
@@ -200,15 +271,29 @@ fn every_corpus_program_answers_alike_under_every_import_form() {
         |p| check(p),
     );
     let mut failures = Vec::new();
-    let mut compared = 0usize;
-    for r in results {
+    let (mut compared, mut trees) = (0usize, 0usize);
+    let mut respelled: Vec<String> = Vec::new();
+    for (p, r) in todo.iter().zip(results) {
         match r {
-            Ok(n) => compared += n,
+            Ok((n, t, moved)) => {
+                compared += n;
+                trees += t;
+                if moved > 0 {
+                    respelled.push(p.strip_prefix(&root).unwrap_or(p).display().to_string());
+                }
+            }
             Err(e) => failures.push(e),
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
-    // Not vacuous: the corpus's importing programs, every one in two forms.
+    // The tree's work is the same in every form, but on the programs named.
+    assert_eq!(
+        respelled, RESPELLED_PAST,
+        "the programs whose `--single` does other work in another import form"
+    );
+    // Not vacuous: the corpus's importing programs, every one in two forms,
+    // and trees among them.
     assert!(total >= 250, "{total} programs that import");
     assert_eq!(compared, 2 * total);
+    assert!(trees >= 40, "{trees} forms whose tree's work was compared");
 }

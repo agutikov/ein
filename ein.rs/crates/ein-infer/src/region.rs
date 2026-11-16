@@ -1404,7 +1404,24 @@ impl<'a> Nodes<'a> {
         max_firings: usize,
         read: impl FnOnce(&Kb, &mut Terms, &[Supported]) -> R,
     ) -> Result<Option<R>, SolveError> {
+        Ok(self
+            .with_fixpoint_supported_within(facts, max_firings, u64::MAX, read)?
+            .ok())
+    }
+
+    /// [`Self::with_fixpoint_supported`], the node saturated only while its
+    /// applications have derived at most `max_derived` facts: `Ok(Err(n))`
+    /// where it was stopped, by either bound, after deriving `n`, and
+    /// nothing is read.
+    pub(crate) fn with_fixpoint_supported_within<R>(
+        &mut self,
+        facts: &[FactId],
+        max_firings: usize,
+        max_derived: u64,
+        read: impl FnOnce(&Kb, &mut Terms, &[Supported]) -> R,
+    ) -> Result<Result<R, u64>, SolveError> {
         self.terms.provs.open_fork();
+        let mut derived = 0u64;
         let mut firings = Vec::new();
         let mut fork = self.root.branch();
         for &h in facts {
@@ -1432,14 +1449,20 @@ impl<'a> Nodes<'a> {
                 if firings.len() == max_firings {
                     return Ok(false);
                 }
+                if !firing.redundant {
+                    derived += firing.derived.len() as u64;
+                    if derived > max_derived {
+                        return Ok(false);
+                    }
+                }
                 let universal = sat.take_universal();
                 firings.push(Supported { firing, universal });
             }
             Ok(true)
         })();
         let out = match ran {
-            Ok(true) => Ok(Some(read(&fork, self.terms, &firings))),
-            Ok(false) => Ok(None),
+            Ok(true) => Ok(Ok(read(&fork, self.terms, &firings))),
+            Ok(false) => Ok(Err(derived)),
             Err(e) => Err(e.into()),
         };
         drop(fork);

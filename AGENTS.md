@@ -418,6 +418,8 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `utils/stdlib_manifest.py --write`);
   three `examples/arith/` programs (`utils/gen_arith_examples.py`); the four
   zebra2 variants (`examples/gen_zebra2_variants.py`);
+  `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
+  with its letters declared in another order (`examples/gen_send_written.py`);
   `read_out_examples.md` (`utils/read_out_examples.py`); `configuration.md`'s
   defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
   `--check` or a test in the gate.

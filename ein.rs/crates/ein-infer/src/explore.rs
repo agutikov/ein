@@ -309,6 +309,69 @@ impl Licence {
     }
 }
 
+/// **The order an obligation tree took** ([`Answer::order`]): what decided
+/// which owed instance its states branched on. The order is the route's own
+/// ([`crate::order`]); this is what one run of it came to.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct TreeOrder {
+    /// Some state's choice was left tied by the count of alternatives not
+    /// known dead, so that something after the count decided it.
+    pub tied: bool,
+    /// **The couplings read**: how many edges of the whole node tie two
+    /// owed instances or more, and how many nodes the run had saturated
+    /// when it read them. `None` where the run read none: no choice was
+    /// tied, the run ended before it could pay for the node, or the node
+    /// ties no two instances.
+    pub couplings: Option<(usize, u64)>,
+    /// The tree was started again from root when the couplings were read.
+    pub started_again: bool,
+    /// Attempts at the whole node the run stopped, the node needing more
+    /// than the share of the run's facts an order may spend on it.
+    pub unaffordable: u32,
+    /// Among instances equal in every other key the first the obligation
+    /// pass reports was taken, which is the last key under `-n N` and on the
+    /// minimal line; otherwise the first by rendered text.
+    pub written: bool,
+}
+
+impl TreeOrder {
+    /// **The order in words**, as the read-out's `route` row has it after
+    /// the route's name: the keys that decided this run's branches, in
+    /// turn, and where the couplings were read, how many and when.
+    pub fn words(&self) -> String {
+        let last = if self.written {
+            "the first written"
+        } else {
+            "the first by text"
+        };
+        match self.couplings {
+            Some((edges, at)) => format!(
+                "branching on the owed instance closest to closing a coupling, then the one \
+                 with the fewest alternatives left, then {last}: {edges} coupling{} read off \
+                 the whole node at saturation {at}{}",
+                if edges == 1 { "" } else { "s" },
+                if self.started_again {
+                    ", the tree started again"
+                } else {
+                    ""
+                },
+            ),
+            None if !self.tied => {
+                "branching on the owed instance with the fewest alternatives left".to_string()
+            }
+            None => format!(
+                "branching on the owed instance with the fewest alternatives left, {last} among \
+                 equals{}",
+                if self.unaffordable > 0 {
+                    "; no coupling read, the whole node costing more than a twentieth of the run"
+                } else {
+                    ""
+                },
+            ),
+        }
+    }
+}
+
 /// One state the run prints.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct State {
@@ -440,6 +503,9 @@ pub struct Answer {
     /// about. No surface prints it; the `route` row names L8 where it is not
     /// zero.
     pub denials: u64,
+    /// The order the obligation tree took, where the tree answered
+    /// ([`Route::Tree`]); `None` on every other route.
+    pub order: Option<TreeOrder>,
     pub wall: Duration,
     /// On a program the static check flags, what the detector found: the
     /// status, the stale facts of every node the run computed and, once the
@@ -681,6 +747,8 @@ pub(crate) struct Found {
     pub(crate) route: Option<Route>,
     /// [`Answer::denials`].
     pub(crate) denials: u64,
+    /// [`Answer::order`].
+    pub(crate) order: Option<TreeOrder>,
 }
 
 /// The prepared program, the node function, and the work done.
@@ -808,6 +876,61 @@ impl<'a> Space<'a> {
         (self.saturations, self.spent)
     }
 
+    /// Count facts a route derived beside the node cache and kept no node
+    /// of: the run's `work` then holds them and its budget has spent them.
+    pub(crate) fn charge(&mut self, facts: u64) {
+        self.spent += facts;
+    }
+
+    /// **Count the whole node**, the node of every candidate together,
+    /// which a route saturated beside the cache for its derivations
+    /// ([`Self::supported_within`]) and found dead with `facts` facts beyond
+    /// root: one saturation of the run's `work`, spent of its budget, and a
+    /// node visited like any other for whatever watches the run. Its facts
+    /// are those of the node saturated to quiescence, where the cache's
+    /// nodes stop at their first contradiction.
+    pub(crate) fn charge_whole_node(&mut self, facts: u64) {
+        self.saturations += 1;
+        self.spent += facts;
+        let narrated = self.events.on() || self.events.watching();
+        if narrated {
+            let mut commitment: Vec<String> =
+                self.candidates.iter().map(|c| c.text.clone()).collect();
+            commitment.sort();
+            if self.events.watching() {
+                self.events.watch_node(&crate::events::Visited {
+                    commitment: &commitment,
+                    kind: "dead",
+                    owes: 0,
+                    owed: &[],
+                    core: &[],
+                    core_status: None,
+                    refuted_by: &[],
+                    closure: &[],
+                    facts,
+                });
+            }
+            if self.events.on() {
+                self.events.emit("enter", |l| {
+                    l.num("layer", commitment.len() as i64);
+                    l.owned_strs("commitment", commitment);
+                    l.str("kind", "dead");
+                    l.num("owes", 0);
+                    l.json("core", "null");
+                    l.json("core_status", "null");
+                });
+            }
+        }
+        self.events.watch_step(&crate::events::Stepped {
+            layer: None,
+            visited: 1,
+            dead: 1,
+            owing: 0,
+            r: 0,
+            facts,
+        });
+    }
+
     /// How many new fixpoints the budget still affords, by [`Self::afford`]'s
     /// own projection: a step of at most this many nodes is taken.
     pub(crate) fn affordable(&self) -> u64 {
@@ -905,6 +1028,28 @@ impl<'a> Space<'a> {
         reader.with_fixpoint_supported(&facts, max_firings, read)
     }
 
+    /// [`Self::supported`] within a bound on the facts the node's
+    /// applications derive
+    /// ([`region::Nodes::with_fixpoint_supported_within`]): `Ok(Err(n))`
+    /// where the node was stopped after deriving `n`.
+    pub(crate) fn supported_within<R>(
+        &mut self,
+        set: &[u32],
+        max_firings: usize,
+        max_derived: u64,
+        read: impl FnOnce(&Kb, &mut Terms, &[region::Supported]) -> R,
+    ) -> Result<Result<R, u64>, SolveError> {
+        let facts: Vec<FactId> = set.iter().map(|&b| self.facts[b as usize]).collect();
+        let mut reader = region::Nodes::of_parts(
+            self.root,
+            self.snapshot.clone(),
+            self.memo.clone(),
+            self.terms,
+            self.ast,
+        );
+        reader.with_fixpoint_supported_within(&facts, max_firings, max_derived, read)
+    }
+
     fn answer(self, mode: Mode, route: Route, found: Found) -> Answer {
         let route = found.route.unwrap_or(route);
         let (n, nodes, stale) = (self.n(), self.saturations, self.stale);
@@ -939,6 +1084,7 @@ impl<'a> Space<'a> {
             saturations: self.saturations,
             facts: self.spent,
             denials: found.denials,
+            order: found.order,
             wall: Duration::ZERO,
             warning,
             root: self.root_stats,
@@ -1677,6 +1823,7 @@ fn describe_route_1(
         saturations,
         facts,
         denials: 0,
+        order: None,
         wall: Duration::ZERO,
         warning,
         root: root_stats,
@@ -1852,6 +1999,7 @@ fn describe_states(
         saturations: s.saturations(),
         facts: s.facts(),
         denials: s.denied,
+        order: None,
         wall: Duration::ZERO,
         warning: None,
         root: root_stats,
@@ -2163,6 +2311,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         saturations: 1u64 << n,
         facts,
         denials: 0,
+        order: None,
         wall: Duration::ZERO,
         warning: r.warning,
         candidates: r.candidates,

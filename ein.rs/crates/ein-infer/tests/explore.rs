@@ -666,6 +666,186 @@ fn every_mode_is_the_oracle() {
     eprintln!("{counted:?}");
 }
 
+/// The orders of the obligation tree the oracle holds beside the routes'
+/// own: the written order, with the denials counted and without, and its
+/// reverse; two seeded permutations of the choice, one alone under the
+/// routes' queue and one started again as it goes; both queues; and the structure read at its first choice, at its second,
+/// third, fourth and fifth node, whole or within a share of the run's
+/// facts, each of those starting the tree again where a choice made before
+/// falls otherwise. The learned orders and the other permutations are
+/// held, with these, on the whole corpus by `order.rs`.
+fn tree_orders() -> Vec<(&'static str, ein_infer::order::Order)> {
+    use ein_infer::order::{Choice, Order, Queue, Structure};
+    let an = |choice, queue, structure, restarts| Order {
+        choice,
+        queue,
+        structure,
+        restarts,
+    };
+    let node = |after, one_step| Structure::Node {
+        after,
+        one_step,
+        share: 0,
+    };
+    vec![
+        ("written", Order::WRITTEN),
+        (
+            "written, deaths counted alone",
+            an(
+                Choice::Written { denials: false },
+                Queue::Deepest,
+                Structure::None,
+                false,
+            ),
+        ),
+        (
+            "reversed",
+            an(Choice::Reversed, Queue::BySize, Structure::None, false),
+        ),
+        (
+            "shuffled 2, deepest, restarts",
+            an(Choice::Shuffled(2), Queue::Deepest, Structure::None, true),
+        ),
+        (
+            "shuffled 4, the choice alone",
+            an(Choice::Shuffled(4), Queue::BySize, Structure::None, false),
+        ),
+        (
+            "node at once",
+            an(Choice::OpenCoupled, Queue::BySize, node(0, false), false),
+        ),
+        (
+            "node first, at 3",
+            an(Choice::CoupledOpen, Queue::BySize, node(3, false), false),
+        ),
+        (
+            "one step, at 5, deepest",
+            an(Choice::OpenCoupled, Queue::Deepest, node(5, true), false),
+        ),
+        (
+            "by the couplings, read at 2 within a third",
+            an(
+                Choice::Coupled { written: false },
+                Queue::BySize,
+                Structure::Node {
+                    after: 2,
+                    one_step: false,
+                    share: 3,
+                },
+                false,
+            ),
+        ),
+        (
+            "by the couplings, written among equals, read at 4 at any size, deepest",
+            an(
+                Choice::Coupled { written: true },
+                Queue::Deepest,
+                node(4, false),
+                false,
+            ),
+        ),
+    ]
+}
+
+/// **Every order of the tree is the oracle.** An order decides which owed
+/// instance a state branches on and which owing state is branched next,
+/// and so the work; the tree's leaves cover `R` under every one of them
+/// (L5 holds of whichever licensed instance is branched on). So C1 and C2
+/// hold, unbudgeted and at the budget of C3, for every mode but describe,
+/// under every order of [`tree_orders`], on every monotone program the
+/// oracle enumerates some mode of which the tree answers: no order lists a
+/// state that is not in the part asked, says it exhausted a part it did not
+/// list, or reaches another verdict.
+#[test]
+fn every_order_of_the_tree_is_the_oracle() {
+    let oracle = region::Options {
+        jobs: jobs(),
+        ..region::Options::default()
+    };
+    let orders = tree_orders();
+    let paths = corpus_and_register();
+    let found = ein_corpus::pool::map(
+        "explore::every_order_of_the_tree_is_the_oracle",
+        &paths,
+        |p| (rel_of(p), String::new()),
+        |path| {
+            let mut failures: Vec<String> = Vec::new();
+            let (mut cells, mut trees, mut stopped) = (0usize, 0usize, 0usize);
+            let rel = rel_of(path);
+            let Some((mut kb, mut terms, ast)) = loaded(path) else {
+                return (failures, cells, trees, stopped);
+            };
+            let out = region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {});
+            let Ok(Outcome::Region(r)) = out else {
+                return (failures, cells, trees, stopped);
+            };
+            if !r.monotonicity.is_monotone() {
+                return (failures, cells, trees, stopped);
+            }
+            let k_s = part(&r, Which::All).classes.len();
+            let modes: Vec<Mode> = cells_of_the_modes(k_s);
+            // Only where some mode takes the tree: elsewhere an order has
+            // nothing to choose.
+            let takes_the_tree = modes.iter().any(|&mode| {
+                let mut opts = explore::Options::new(mode);
+                opts.budget = u64::MAX;
+                ask(path, &opts).0.route == explore::Route::Tree
+            });
+            if !takes_the_tree {
+                return (failures, cells, trees, stopped);
+            }
+            for (name, order) in &orders {
+                for &mode in &modes {
+                    let mut opts = explore::Options::new(mode);
+                    opts.jobs = jobs();
+                    opts.budget = u64::MAX;
+                    let (a, _) = ein_infer::order::with(order.clone(), || ask(path, &opts));
+                    cells += 1;
+                    trees += usize::from(a.route == explore::Route::Tree);
+                    let tag = format!("{rel} under {name}");
+                    failures.extend(against(&tag, &r, &a, false));
+                    failures.extend(empty_rule(&tag, &r, mode, &a));
+                    opts.budget = 8;
+                    let (b, _) = ein_infer::order::with(order.clone(), || ask(path, &opts));
+                    stopped += usize::from(b.stopped.is_some());
+                    failures.extend(against(&tag, &r, &b, true));
+                    failures.extend(empty_rule(&tag, &r, mode, &b));
+                }
+            }
+            (failures, cells, trees, stopped)
+        },
+    );
+    let mut failures: Vec<String> = Vec::new();
+    let (mut cells, mut trees, mut stopped) = (0usize, 0usize, 0usize);
+    for (f, c, t, s) in found {
+        failures.extend(f);
+        cells += c;
+        trees += t;
+        stopped += s;
+    }
+    eprintln!(
+        "{} orders: {cells} cells, {trees} answered by a tree, {stopped} stopped at the budget",
+        orders.len()
+    );
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // Not vacuous: trees are asked under every order, and the budget stops
+    // some.
+    assert!(
+        trees >= 100 * orders.len() && stopped >= 10 * orders.len(),
+        "{trees} trees, {stopped} stopped, {} orders",
+        orders.len()
+    );
+}
+
+/// The cells of [`cells`] a mode's route answers: every one but describe
+/// and `--count`, which take the state route.
+fn cells_of_the_modes(k: usize) -> Vec<Mode> {
+    cells(k)
+        .into_iter()
+        .filter(|m| !(m.which == Which::All && matches!(m.ask, Ask::Describe | Ask::Count)))
+        .collect()
+}
+
 /// **The ∅ rule** — M1f S1f.5.6, the user's ruling of 2026-11-07 on S-16,
 /// *"b, use the ∅ rule in both"*: the minimal line is the members of `R` with
 /// no smaller member, and ∅ is below every commitment, so where ∅ is in `R`

@@ -8,16 +8,16 @@
 ;;;
 ;;; The claim is that answer, and `ein test` holds it: a claim of one class
 ;;; is asked `--single`'s question, which finds the state and shows that R
-;;; holds no other, in 17 747 saturations. Describing R, which a bare `ein
+;;; holds no other, in 18 030 saturations. Describing R, which a bare `ein
 ;;; solve` does, visits every partial assignment that is still alive and
 ;;; stops at the budget after 336 101, so the claim is a note there, not
 ;;; checked (M1f S1f.6.27, E-30).
 ;;;
 ;;; The letters are declared by column, units first: D E Y, then N R, O,
-;;; S M. The search branches on the letters in the order they are declared,
-;;; so a column is checked as soon as its letters are guessed. Declared as
-;;; the puzzle is written, S E N D M O R Y, the same program has no answer in
-;;; ten minutes (E-29; the choice by the state is P1f.10's).
+;;; S M, and the search does not read that order: it reads off the program
+;;; which letters each column's check needs and branches on the letter that
+;;; closes one. `send_more_money_written.ein` is this file with the letters
+;;; declared as the puzzle is written, and `--single` does the same on both.
 ;;;
 ;;; I + BB = ILL beside it, `cryptarithm.ein`, is the same rules on 30
 ;;; candidates. M1f P1f.6: `plans/…/p1f.6_calculator/beyond_arithmetic.md`
