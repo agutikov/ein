@@ -18,18 +18,18 @@
 ;;;   {b}     {a, b, q}              {a, b, p, q} — p stale
 ;;;
 ;;; From scratch the node re-derives root inside itself, and there r2 and r1
-;;; wait at one boundary at priority 200, r2 written first, so r2 is admitted
-;;; before q exists. The fork never meets the race: it was settled at root,
+;;; wait at one boundary, r2 written first, so the agenda (Q-M1f.313) admits
+;;; r2 before q exists. The fork never meets the race: it was settled at root,
 ;;; before `b`. So a *Monotone* verdict is relative to root's fixpoint, and a
-;;; reading of a node that builds it from scratch (F21's D2 (B)) meets the FIFO
-;;; gap on programs the check calls monotone as well, until admission follows
-;;; the strata. Every route that ships builds by fork, and every answer here
+;;; reading of a node that builds it from scratch meets the FIFO gap on
+;;; programs the check calls monotone as well, while admission does not follow
+;;; the strata. Every route builds by fork (Q-M1e2.2), and every answer here
 ;;; is the fork's.
 ;;;
 ;;;   cargo run --release -p ein-infer --example node_census -- --paths examples/lattice/11_fifo_gap_static.ein
 ;;;   cargo run --release -p ein-infer --example node_census -- --cumulative examples/lattice/11_fifo_gap_static.ein
 ;;;
-;;; (utils/censuses/node-census.md § 12).
+;;; The node census prints both constructions of every node of the cube.
 
 (relation thing T :why "{?1} is a thing")
 (relation a T :why "a holds of {?1}")

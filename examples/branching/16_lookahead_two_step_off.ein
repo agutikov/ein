@@ -1,15 +1,15 @@
-;;; M1e Q5 — the lookahead lever, isolated: DISABLED half.
+;;; Refutations of depth one and two, side by side: the second of a pair.
 ;;;
-;;; The DISABLED half of an on/off pair. 15_lookahead_two_step_on.ein and
-;;; 16_lookahead_two_step_off.ein are byte-identical except for the single
-;;; `(config …)` line — diff the two files to see it.
+;;; 15_lookahead_two_step_on.ein and 16_lookahead_two_step_off.ein are the
+;;; same program, byte for byte outside their comments, and the witnesses of
+;;; register rows W1/branching-15 and W1/branching-16: a maximal alive
+;;; commitment that an answer fails to list.
 ;;;
-;;; `06`/`07` are the same lever on the zebra puzzle, and cannot settle what
-;;; it means: 42 varying slots, models that bind a *type* as an object, and
-;;; neither side exhausting at the depth cap, so their k=22 against k=0 is two
-;;; lower bounds rather than two answers. This pair is the same question with
-;;; three hypotheses, both sides exhausting, and a solution set derivable in a
-;;; paragraph.
+;;; A refutation that takes two firings is as final as one that takes one:
+;;; every route saturates each node to its fixpoint, so the depth of a death
+;;; moves nothing in R. With three hypotheses, every run exhausting, and a
+;;; solution set derivable in a paragraph, the pair shows it on a program
+;;; small enough to check by hand.
 ;;;
 ;;; ── The program ────────────────────────────────────────────────────────────
 ;;;
@@ -28,27 +28,27 @@
 ;;;   {(p A)}          — both its children, {A,B} and {A,C}, are dead.
 ;;;   {(p B), (p C)}   — its only child, {A,B,C}, is dead.
 ;;;
-;;; **k = 2.** Neither configuration reports it.
+;;; **k = 2**: two maximal states.
 ;;;
-;;; ── What the two halves report, and why ───────────────────────────────────
+;;; ── What `ein solve` reports ───────────────────────────────────────────────
 ;;;
-;;; The ON half reports `Solution`, k=1, the model {(p B),(p C)}.
-;;; `{(p B),(p C)}` is recognised because the one remaining candidate `(p A)`
-;;; dies against it in one firing, which the pre-branch lookahead can see. But
-;;; `{(p A)}` is **not** recognised: its remaining candidate `(p C)` needs two
-;;; firings, the lookahead simulates one, so the generator still proposes it
-;;; and `complete` is false.
+;;; R is five states: ∅ (root, which owes nothing), the three singletons and
+;;; {(p B), (p C)}. Its maximal line is {(p A)} and {(p B), (p C)}, the k = 2
+;;; derived by hand: `{(p A)}`'s children die in one firing and in two, and
+;;; both deaths count. `ein solve --maximal` lists the two.
 ;;;
-;;; This file (lookahead OFF) reports `Contradiction`, k=0: with no lookahead,
-;;; `complete` is true only when every remaining candidate is already asserted
-;;; or already negated in the KB, and a size-2 death writes no negative (the
-;;; singleton writeback needs |c| = 1), so nothing is recognised at all.
+;;; `{(p A), (p C)}`'s node derives `(clash)` by `pair-slow-1` and `(false)`
+;;; from it by `pair-slow-2` in one saturation, and a node is dead when its
+;;; fixpoint holds `(false)`, however many firings that took. `ein oracle`,
+;;; which saturates all eight nodes of the cube, lists the same five states.
 ;;;
-;;; **Both halves under-report**, which is the finding this pair exists to
-;;; make visible: `complete` is a sound but incomplete approximation of
-;;; maximality with the lookahead on, and a strictly weaker one with it off.
-;;; Neither is the definition, so neither side of the lever is "the right one"
-;;; — the answer is k=2 and the lever chooses between two wrong numbers.
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
+;;;
 ;;;
 ;;; ── The `:expect` ───────────────────────────────────────────────────────────
 ;;;
@@ -58,9 +58,9 @@
 ;;;
 ;;;
 
-;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
-;; when the user retired the flag: no route reads it, and a program that sets
-;; it is refused at load.
+;; Neither file sets a `(config …)`: every flag has its default, and no
+;; flag changes R, so the one program has one answer, the `:expect`
+;; below.
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation cand T   :why "{?1} may be given p")

@@ -1,17 +1,17 @@
-;;; three_components — a program written for its region, by utils/region_synth.py
-;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
-;;;   python3 utils/region_synth.py --example three_components --out <this file>
+;;; three_components — a program written for its region by the region
+;;; synthesizer from the spec below, and then frozen: this file is
+;;; maintained as it is, not regenerated.
 ;;;
-;;; ── 2026-11-04 — frozen, and refused (M1e2 S1e2.2.5) ──────────────────
+;;; ── Frozen, and refused ───────────────────────────────────────────────
 ;;; `dead-3` and `dead-7` conclude (false) from an (absent (h …)) over h, which the
-;;; hrule proposes: the shape *forbid* rules out (2026-11-02), so every
+;;; hrule proposes: the shape *forbid* rules out (Q-M1e2.5), so every
 ;;; question about a commitment exits 1 naming them, and this file is the
-;;; register's W3/three-components witness. It is no longer regenerated: since
-;;; this stage region_synth.py writes a dead node with a non-dead superset
-;;; as owing, so the command above now writes the same region with its
-;;; dead holes owing, and the target below describes this file as written.
+;;; register's W3/three-components witness. Regenerated, it would differ: the
+;;; synthesizer writes a dead node with a non-dead superset as owing, so
+;;; it writes the same region with its dead holes owing, and the target
+;;; below describes this file as written.
 ;;;
-;;; The user's shape of 2026-10-15: R in three separate components — one
+;;; The user's shape: R in three separate components — one
 ;;; monotone (a 2-dimensional sub-cube over C), one with a one-node hole (as
 ;;; ein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each
 ;;; component is picked by one of C, F, G, which exclude each other; a node
@@ -27,7 +27,7 @@
 ;;;
 ;;; 10 dead rule(s), 1 obligation rule(s), from the target's prime implicants.
 ;;;
-;;; region-spec: {"name":"three_components","about":"The user's shape of 2026-10-15: R in three separate components — one\nmonotone (a 2-dimensional sub-cube over C), one with a one-node hole (as\nein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each\ncomponent is picked by one of C, F, G, which exclude each other; a node\nholding none of them owes one.","candidates":"ABCDEFG","R":[["C","CDE"],["F","ABF"],["G","ABDG"]],"holes":[["AF","AF"],["AG","ABG"]],"owing":[["","ABDE"]]}
+;;; region-spec: {"name":"three_components","about":"The user's shape: R in three separate components — one\nmonotone (a 2-dimensional sub-cube over C), one with a one-node hole (as\nein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each\ncomponent is picked by one of C, F, G, which exclude each other; a node\nholding none of them owes one.","candidates":"ABCDEFG","R":[["C","CDE"],["F","ABF"],["G","ABDG"]],"holes":[["AF","AF"],["AG","ABG"]],"owing":[["","ABDE"]]}
 ;;; region-status: ooooRxxxooooRxxxooooRxxxooooRxxxRxRRxxxxxxxxxxxxxxxxxxxxxxxxxxxxRxRxxxxxRRRRxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 (relation h T :why "h holds of {?1}")
