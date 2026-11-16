@@ -228,6 +228,14 @@ impl KnownDead {
             .any(|e| e.state.is_subset(state))
     }
 
+    /// [`Self::knows_extension`], counting only what a saturation found
+    /// dead: what an order that does not read the denials counts.
+    pub(crate) fn knows_extension_by_death(&self, state: &Bits, b: u32) -> bool {
+        self.under[b as usize]
+            .iter()
+            .any(|e| !e.denial && e.state.is_subset(state))
+    }
+
     /// `state ∪ {b}` holds a set known dead, so it is dead and is not
     /// saturated (L1, over a death or over L8's set). A death answers before
     /// a denial does, and a denial that answers is spent

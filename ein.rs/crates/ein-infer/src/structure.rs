@@ -413,6 +413,9 @@ pub use coupling::{
     Debt, Edge, EdgeKind, NODE_APPLICATIONS, NodeStop, NodeTies, NodeWork, PairTies, Parts,
     Question, ROUNDS, Tie, TieKind, WAYS, Whole, WholeOptions, coupling, theory_coupled, whole,
 };
+// The coupling a route reads while it runs: the whole node alone.
+pub(crate) use coupling::node_coupling_in;
+pub use coupling::{NodeCoupling, node_coupling};
 
 /// The largest step, as the routes'.
 const BATCH: u64 = 1024;

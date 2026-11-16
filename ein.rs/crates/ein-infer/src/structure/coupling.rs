@@ -18,6 +18,10 @@ use crate::mechanisms::Mechanisms;
 use crate::region::{Candidate, Supported};
 use crate::saturator::Session;
 
+mod node;
+pub(crate) use node::node_coupling_in;
+pub use node::{NodeCoupling, node_coupling};
+
 /// **The bound on the whole node's saturation**, in rule applications,
 /// redundant ones among them. A constant of the module and no lever. A node
 /// that takes more is not read ([`NodeStop::Applications`]).
@@ -697,6 +701,12 @@ impl Clash {
         Clash(rows)
     }
 
+    /// No pair is known to clash: what a reading without the pair layer
+    /// and the cover has.
+    fn none(n: usize) -> Clash {
+        Clash(vec![Bits::new(n); n])
+    }
+
     /// Some two of `own` clash.
     fn within(&self, own: &[u32]) -> bool {
         own.iter()
@@ -798,7 +808,7 @@ impl Graph {
         terms: &Terms,
         firings: &[Supported],
         committed: &FxHashMap<FactId, u32>,
-        puzzle: &Puzzle<'_>,
+        puzzle: Option<&Puzzle<'_>>,
     ) -> Graph {
         let mut index: FxHashMap<FactId, u32> = FxHashMap::default();
         let mut own: Vec<Option<u32>> = Vec::new();
@@ -821,7 +831,9 @@ impl Graph {
                 match index.get(&p) {
                     Some(&k) => premises.push(k),
                     None => {
-                        reasons = union(&reasons, &puzzle.reasons(root, terms, p, &mut memo));
+                        if let Some(puzzle) = puzzle {
+                            reasons = union(&reasons, &puzzle.reasons(root, terms, p, &mut memo));
+                        }
                     }
                 }
             }
@@ -1427,7 +1439,7 @@ impl Coupling {
                     .collect();
                 let (root_kb, _, _) = sp.parts();
                 let read = sp.supported(&committed, NODE_APPLICATIONS, |kb, terms, firings| {
-                    Graph::of(root_kb, kb, terms, firings, &facts, &puzzle)
+                    Graph::of(root_kb, kb, terms, firings, &facts, Some(&puzzle))
                 })?;
                 match read {
                     None => node_stopped = Some(NodeStop::Applications),

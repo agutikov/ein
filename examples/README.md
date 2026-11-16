@@ -143,8 +143,10 @@ ein-infer/tests/exactly_one.rs
 ein-infer/tests/explain_semantics.rs
 ein-infer/tests/known_dead.rs
 ein-infer/tests/naf_semantics.rs
+ein-infer/tests/node_coupling.rs
 ein-infer/tests/obligation_reports.rs
 ein-infer/tests/obligation_rung.rs
+ein-infer/tests/order.rs
 ein-infer/tests/pair_layer.rs
 ein-infer/tests/price_list.rs
 ein-infer/tests/region.rs

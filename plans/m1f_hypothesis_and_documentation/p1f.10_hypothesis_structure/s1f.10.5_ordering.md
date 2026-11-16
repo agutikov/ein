@@ -200,3 +200,439 @@ whose `--single`, `-n`, `--minimal` or `--maximal` names L5:
 **Not goldens, and stale after the step**: `examples/beyond_arith/send_more_money.ein`'s header, *in 17 747
 saturations* and its paragraph on the declared order, with the generator's anchor on it; `corpus.toml`'s notes on
 the two SENDs; `tests/README.md`'s mention of the program.
+
+### T2: the strategies, as functions
+
+Each is a value of [`ein_infer::order::Order`](../../../ein.rs/crates/ein-infer/src/order.rs): a **choice**, which
+licensed instance an owing state branches on; a **queue**, which owing state is branched next; and the
+**structure** the choice reads. The tree takes one for the calling thread while a closure runs
+(`order::with`), as `known_dead::from_deaths_alone` is taken; no `(config …)` field, no option and no `EIN_*`
+name reaches it. Every key is a function of the state, the run's memory and the structure, and the last key is
+always total, so no choice falls to a hash map's order or an interner's id.
+
+| key | as built | what it reads | what that costs |
+|---|---|---|---|
+| **the count**, *fewest alternatives not known dead* | `Choice::Written`, `Text` and the first key of the others before a structure is read | the state and `known_dead`: an alternative a saturation found dead under the state, or one the state denies (L8). With `denials: false` only the deaths | nothing |
+| **the last key** | the first the obligation pass reports (`Written`), the last (`Reversed`), the first by the instances' alternatives as rendered text (`Text`), a seeded permutation (`Shuffled`) | the table's order, which is the order the program states its facts in; or the universe's, which is rendered text | nothing |
+| **closest to closing a coupling** | `Coupled::unpaid`: over the edges that hold a question of the instance, the fewest questions the state has not paid, the instance's own among them; a question is paid where the state holds one of its members | the edges of the structure, restricted to the questions some licensed instance can pay | the structure's, below |
+| **learned weight** | `Choice::Learned`: the count over one more than the deaths the instance was blamed for; a death under a branch is blamed on the instance branched on (`Blame::Branch`) or on it and every licensed instance the dying state had paid (`Blame::Path`) | the run's own deaths | nothing. A blame by the death's core, which is what *dom/wdeg* weighs a constraint by, needs a core at every death, a search no route takes unless a surface prints it (K-7); it was not run |
+
+**The structure a coupled choice reads, by what it costs.**
+
+| source | as built | costs | the order measured with it |
+|---|---|---|---|
+| (a) nothing | `Structure::None` | nothing | `today`, `deaths-count`, `reversed`, `text`, the learned ones |
+| (b) **the whole node alone** | `Structure::Node`: [`structure::NodeCoupling`](../../../ein.rs/crates/ein-infer/src/structure/coupling/node.rs), **an entry added to the owner by this stage**, `pub(crate) node_coupling_in` over an open `Space` | **one saturation**, its facts those of every candidate committed and saturated to quiescence; charged to the run and counted in its `work` | `node@k`, `node-first@k`, `one-step@k`, `open-first/k`, `coupled/k`, `written+coupled/k` |
+| (c) the owed groups, from L5's table | inside (b): its questions **are** the alternative sets of the instances L5 licenses, read off the table the tree already holds, and every other candidate alone | nothing beyond the table | the same |
+| (d) the full structure | `Structure::Given`: [`structure::coupling`](../../../ein.rs/crates/ein-infer/src/structure/coupling.rs)'s edges, read before the run by the harness | root's pair layer, the small KB's and the node: added to every cell | `full` |
+
+**The whole node alone** is the price list's *not built*. What it is, in the owner's words
+(`structure/coupling/node.rs`): the node [S1f.10.11](s1f.10.11_coupling.md#record-2026-11-15)'s reading
+takes, with **every** candidate of `H` committed, since which are alive alone is a layer's to say; the labels
+settled as the full reading settles them; **the questions the debts' and not the cover's groups**; and no pair
+layer to drop the ways no alive state has. Its blind spots, stated in the module: a conflict of exactly two
+candidates is no edge (with no cover *different letters, different digits* cannot be told from a pair the
+puzzle's statements make, so pairs are counted, join the components and make no edge); a way no alive state has
+is read, so an edge may be coarser than the full reading's; a candidate dead alone is committed; a group nothing
+owes is no question.
+
+**Held to the full coupling** by `ein-infer/tests/node_coupling.rs` (`cargo test --manifest-path
+ein.rs/Cargo.toml --profile gate -p ein-infer --test node_coupling -- --nocapture`, 2026-11-16):
+
+- I-SEND: 8 questions, the letters; **the edges are `{D, E}`, `{D, E, Y}`, `{D, E, N, R}`, `{D, E, N, O, R}` and
+  `{D, E, M, N, O, R, S}`**, the full reading's five; one application back `{D, E}` and `{D, E, Y}`; 640 pairs;
+  one saturation, 166 facts, 2 932 applications (the full reading's node is 162 facts, of the 78 candidates alive
+  alone).
+- **I-SEND and I-SENDW are one reading, field for field.**
+- I-L02: no obligation, three questions, one edge of the three.
+- On the 136 corpus programs that search and that both read whole: 486 edges from the node alone, **479 inside
+  one edge of the full reading, 7 inside one of its components and no edge, none across two components**; and of
+  the full reading's 57 edges of three questions or more that its node gave, every one meets some edge read here
+  in each of its questions. The seven: `branching/15_lookahead_two_step_on.ein`, `16_lookahead_two_step_off.ein`,
+  `ein-bugs/fork-delta-order.ein`, `ein-bugs/wrong-answers/forall-core-false.ein`, `oblig-derived-domain.ein`,
+  `oblig-fresh-name.ein` and `tests/region/10_denied_extensions.ein`, one edge each, a way the full reading
+  drops by the pair layer.
+- The reading is the same under a permuted id space, place for place, and under every import form, as sets of
+  texts, on every corpus program that searches (`structure_invariance.rs`, which gained it).
+
+**When a structure is read** is part of a strategy, since the node is not free: `node@k` reads it at the first
+choice the count leaves tied once the run has saturated `k` nodes, and starts the tree again from root, every
+choice made afresh; `…/k` reads it under the same condition **within one `k`-th of the facts the run has
+derived**, the node stopped where it needs more, what it derived counted, and tried again at four times the
+work. **Starting again** keeps every node computed, every set known dead and every leaf found: a state the new
+tree reaches again is read from memory.
+
+### T3: measured
+
+No route changed: the tree's order was `Order::WRITTEN` throughout, the strategies taken through `order::with`.
+The harness is `price_list --orders` ([`examples/shared/orders.rs`](../../../ein.rs/crates/ein-infer/examples/shared/orders.rs)),
+the price list's example extended, a file an order and a line a program:
+
+```sh
+cargo build --manifest-path ein.rs/Cargo.toml --release -p ein-infer --example price_list
+utils/bench_env.sh --require-ac --core 0 ein.rs/target/release/examples/price_list --orders \
+    --out build/s5/m4 --only today,deaths-count,reversed,text     # and eight more groups, a P-core each
+ein.rs/target/release/examples/price_list --orders-report --out build/s5/m4 > build/s5/m4/report.md
+```
+
+2026-11-16, the release example, on AC, nine processes each pinned to one core, the machine shared with two
+other stages (load average 10 to 36): **saturations and facts are the numbers and no wall is stated.** 190
+programs that search, the 188 of the price list, S1f.10.3's fixture and I-SENDW; four questions; 33 orders. 36
+programs are answered by a tree under `--single` today. Artefacts under the worktree's untracked
+`build/s5/m4/`: `orders/<order>.jsonl`, `report.md` with every table and every loser, `env/` with the
+fingerprints.
+
+**Every answer is one.** Over every order and every cell no budget stopped either way: **0** cells with another
+verdict, another `exhausted`, another maximal line or another count of the minimal line than `today`.
+
+**The rule**, as [S1f.10.13](s1f.10.13_the_price_list.md#the-rule-for-go-written-before-the-table-is-taken) wrote
+it: *go* where the total is lower with the structure's cost in it and no program's cell is higher by more than
+one tenth, in saturations and in facts. Read as [S1f.10.3](s1f.10.3_the_restricted_join.md#defaults-taken)'s
+default 2 has it: a cell a budget stops under both orders spent that budget either way, so the total is over
+the cells **not stopped both ways**, a cell an order stops where `today` finishes sinks it, and a cell it
+finishes where `today` stops counts with what `today` spent there. A cell is *saturations · facts*; *lower* and
+*higher* count the cells finished both ways.
+
+**`--single`.**
+
+| order | not stopped both ways | `today` on those cells | finished both ways | lower | higher | by more than a tenth | stopped where `today` finishes | finishes where `today` stops | by the rule |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `today` | 19 581 · 261 430 | 19 581 · 261 430 | 19 581 · 261 430 | 0 | 0 | 0 | 0 | 0 | — |
+| `deaths-count` | 19 557 · 259 676 | 19 581 · 261 430 | 19 557 · 259 676 | 4 | 0 | 0 | 0 | 0 | **go** |
+| `reversed` | 174 435 · 1 103 694 | 19 581 · 261 430 | 3 911 · 55 136 | 7 | 8 | 8 | 1 | 0 | no |
+| `text` | 106 006 · 1 086 416 | 19 581 · 261 430 | 1 828 · 37 845 | 4 | 1 | 0 | 1 | 0 | no |
+| `node@0` | 37 349 · 503 471 | 150 715 · 1 309 989 | 19 601 · 280 381 | 2 | 24 | 20 | 0 | 1 | no |
+| `node@10` | 37 330 · 502 350 | 150 715 · 1 309 989 | 19 582 · 279 260 | 2 | 7 | 4 | 0 | 1 | no |
+| `node@32` | 37 329 · 502 169 | 150 715 · 1 309 989 | 19 581 · 279 079 | 2 | 6 | 3 | 0 | 1 | no |
+| `node@100` | 37 325 · 501 645 | 150 715 · 1 309 989 | 19 577 · 278 555 | 4 | 3 | 1 | 0 | 1 | no |
+| `node-first@0` | 37 317 · 500 927 | 150 715 · 1 309 989 | 19 569 · 277 837 | 4 | 22 | 20 | 0 | 1 | no |
+| `node-first@10` | 37 316 · 500 288 | 150 715 · 1 309 989 | 19 568 · 277 198 | 4 | 5 | 4 | 0 | 1 | no |
+| `node-first@32` | 37 351 · 502 627 | 150 715 · 1 309 989 | 19 603 · 279 537 | 2 | 6 | 5 | 0 | 1 | no |
+| `open-first/20` | 86 564 · 1 010 581 | 150 715 · 1 309 989 | 44 196 · 524 213 | 4 | 2 | 1 | 0 | 1 | no |
+| `coupled/20` | 37 888 · 481 451 | 150 715 · 1 309 989 | 19 858 · 259 648 | 4 | 2 | 0 | 0 | 1 | **go** |
+| `coupled/10` | 37 888 · 481 517 | 150 715 · 1 309 989 | 19 858 · 259 705 | 4 | 2 | 0 | 0 | 1 | **go** |
+| `coupled/40` | 39 326 · 486 347 | 150 715 · 1 309 989 | 20 577 · 262 096 | 4 | 2 | 0 | 0 | 1 | **go** |
+| `written+coupled/20` | 39 015 · 490 957 | 150 715 · 1 309 989 | 19 582 · 261 596 | 0 | 1 | 0 | 0 | 1 | **go** |
+| `written+coupled/10` | 38 205 · 485 874 | 150 715 · 1 309 989 | 19 582 · 261 633 | 0 | 4 | 0 | 0 | 1 | **go** |
+| `written+coupled/40` | 40 665 · 501 362 | 150 715 · 1 309 989 | 19 582 · 261 596 | 0 | 1 | 0 | 0 | 1 | **go** |
+| `coupled/20/deepest` | 38 586 · 499 174 | 150 715 · 1 309 989 | 20 094 · 267 011 | 13 | 7 | 4 | 0 | 1 | no |
+| `written+coupled/20/deepest` | 37 219 · 467 716 | 150 715 · 1 309 989 | 19 003 · 238 388 | 12 | 5 | 4 | 0 | 1 | no |
+| `one-step@32` | 90 181 · 1 104 278 | 19 581 · 261 430 | 1 839 · 55 693 | 2 | 5 | 3 | 1 | 0 | no |
+| `full` | 115 915 · 2 298 820 | 150 715 · 1 309 989 | 91 842 · 2 061 797 | 0 | 160 | 160 | 0 | 1 | no |
+| `learned-branch` | 105 982 · 1 084 940 | 19 581 · 261 430 | 1 804 · 36 369 | 4 | 1 | 0 | 1 | 0 | no |
+| `learned-path` | 105 992 · 1 085 210 | 19 581 · 261 430 | 1 814 · 36 639 | 4 | 1 | 0 | 1 | 0 | no |
+| `learned-branch/restarts` | 121 189 · 1 067 046 | 19 581 · 261 430 | 1 724 · 18 471 | 7 | 1 | 1 | 1 | 0 | no |
+| `today/deepest` | 19 002 · 238 146 | 19 581 · 261 430 | 19 002 · 238 146 | 12 | 4 | 4 | 0 | 0 | no |
+| `text/deepest` | 87 531 · 1 081 974 | 19 581 · 261 430 | 1 602 · 33 413 | 14 | 5 | 4 | 1 | 0 | no |
+| `node@0/deepest` | 37 123 · 499 039 | 150 715 · 1 309 989 | 19 375 · 275 949 | 9 | 19 | 18 | 0 | 1 | no |
+| `node@32/deepest` | 37 700 · 503 756 | 150 715 · 1 309 989 | 19 652 · 277 426 | 13 | 7 | 6 | 0 | 1 | no |
+| `learned-branch/deepest` | 128 562 · 1 623 375 | 150 715 · 1 309 989 | 65 083 · 828 395 | 16 | 7 | 6 | 0 | 1 | no |
+| `learned-path/deepest` | 87 531 · 1 081 974 | 19 581 · 261 430 | 1 602 · 33 413 | 14 | 5 | 4 | 1 | 0 | no |
+| `learned-branch/deepest/restarts` | 87 569 · 1 075 399 | 19 581 · 261 430 | 1 501 · 26 825 | 16 | 6 | 5 | 1 | 0 | no |
+| `learned-path/deepest/restarts` | 87 531 · 1 081 974 | 19 581 · 261 430 | 1 602 · 33 413 | 14 | 5 | 4 | 1 | 0 | no |
+
+**`-n 1`.**
+
+| order | not stopped both ways | `today` on those cells | finished both ways | lower | higher | by more than a tenth | stopped where `today` finishes | finishes where `today` stops | by the rule |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `today` | 17 208 · 224 356 | 17 208 · 224 356 | 17 208 · 224 356 | 0 | 0 | 0 | 0 | 0 | — |
+| `deaths-count` | 17 186 · 222 964 | 17 208 · 224 356 | 17 186 · 222 964 | 2 | 2 | 2 | 0 | 0 | no |
+| `reversed` | 173 013 · 1 088 588 | 17 208 · 224 356 | 2 489 · 40 030 | 6 | 11 | 8 | 1 | 0 | no |
+| `text` | 105 512 · 1 078 969 | 17 208 · 224 356 | 1 334 · 30 398 | 2 | 2 | 2 | 1 | 0 | no |
+| `node@0` | 32 843 · 431 672 | 148 342 · 1 272 915 | 17 101 · 240 758 | 3 | 23 | 22 | 0 | 1 | no |
+| `node@10` | 32 824 · 430 551 | 148 342 · 1 272 915 | 17 082 · 239 637 | 3 | 6 | 6 | 0 | 1 | no |
+| `node@32` | 32 821 · 429 926 | 148 342 · 1 272 915 | 17 079 · 239 012 | 3 | 5 | 5 | 0 | 1 | no |
+| `node@100` | 32 819 · 429 846 | 148 342 · 1 272 915 | 17 077 · 238 932 | 3 | 3 | 3 | 0 | 1 | no |
+| `node-first@0` | 32 807 · 429 548 | 148 342 · 1 272 915 | 17 065 · 238 634 | 3 | 23 | 22 | 0 | 1 | no |
+| `node-first@10` | 32 806 · 428 909 | 148 342 · 1 272 915 | 17 064 · 237 995 | 3 | 6 | 6 | 0 | 1 | no |
+| `node-first@32` | 32 821 · 429 926 | 148 342 · 1 272 915 | 17 079 · 239 012 | 3 | 5 | 5 | 0 | 1 | no |
+| `open-first/20` | 82 058 · 938 782 | 148 342 · 1 272 915 | 41 696 · 484 590 | 2 | 3 | 3 | 0 | 1 | no |
+| `coupled/20` | 33 382 · 409 652 | 148 342 · 1 272 915 | 17 358 · 220 025 | 2 | 3 | 2 | 0 | 1 | no |
+| `coupled/10` | 33 382 · 409 718 | 148 342 · 1 272 915 | 17 358 · 220 082 | 2 | 4 | 2 | 0 | 1 | no |
+| `coupled/40` | 34 820 · 414 548 | 148 342 · 1 272 915 | 18 077 · 222 473 | 2 | 3 | 2 | 0 | 1 | no |
+| `written+coupled/20` | 34 751 · 423 553 | 148 342 · 1 272 915 | 17 209 · 224 522 | 0 | 1 | 0 | 0 | 1 | **go** |
+| `written+coupled/10` | 33 941 · 418 470 | 148 342 · 1 272 915 | 17 209 · 224 559 | 0 | 4 | 0 | 0 | 1 | **go** |
+| `written+coupled/40` | 36 401 · 433 958 | 148 342 · 1 272 915 | 17 209 · 224 522 | 0 | 1 | 0 | 0 | 1 | **go** |
+| `coupled/20/deepest` | 27 864 · 364 548 | 148 342 · 1 272 915 | 14 487 · 197 851 | 19 | 4 | 3 | 0 | 1 | no |
+| `written+coupled/20/deepest` | 23 116 · 289 294 | 148 342 · 1 272 915 | 13 297 · 165 999 | 20 | 3 | 3 | 0 | 1 | no |
+| `one-step@32` | 89 679 · 1 096 683 | 17 208 · 224 356 | 1 337 · 48 098 | 2 | 5 | 5 | 1 | 0 | no |
+| `full` | 111 395 · 2 226 479 | 148 342 · 1 272 915 | 89 328 · 2 021 632 | 0 | 160 | 160 | 0 | 1 | no |
+| `learned-branch` | 105 506 · 1 079 087 | 17 208 · 224 356 | 1 328 · 30 516 | 2 | 2 | 2 | 1 | 0 | no |
+| `learned-path` | 105 504 · 1 078 469 | 17 208 · 224 356 | 1 326 · 29 898 | 2 | 2 | 2 | 1 | 0 | no |
+| `learned-branch/restarts` | 120 700 · 1 060 077 | 17 208 · 224 356 | 1 235 · 11 502 | 4 | 4 | 3 | 1 | 0 | no |
+| `today/deepest` | 13 296 · 165 757 | 17 208 · 224 356 | 13 296 · 165 757 | 20 | 3 | 3 | 0 | 0 | no |
+| `text/deepest` | 87 039 · 1 078 280 | 17 208 · 224 356 | 1 110 · 29 719 | 19 | 3 | 3 | 1 | 0 | no |
+| `node@0/deepest` | 26 401 · 364 413 | 148 342 · 1 272 915 | 13 768 · 206 789 | 8 | 20 | 19 | 0 | 1 | no |
+| `node@32/deepest` | 26 978 · 369 130 | 148 342 · 1 272 915 | 14 045 · 208 266 | 18 | 5 | 4 | 0 | 1 | no |
+| `learned-branch/deepest` | 104 816 · 1 327 070 | 148 342 · 1 272 915 | 52 964 · 678 399 | 21 | 5 | 5 | 0 | 1 | no |
+| `learned-path/deepest` | 87 039 · 1 078 280 | 17 208 · 224 356 | 1 110 · 29 719 | 19 | 3 | 3 | 1 | 0 | no |
+| `learned-branch/deepest/restarts` | 60 644 · 736 408 | 148 342 · 1 272 915 | 30 684 · 373 596 | 21 | 5 | 5 | 0 | 1 | no |
+| `learned-path/deepest/restarts` | 87 039 · 1 078 280 | 17 208 · 224 356 | 1 110 · 29 719 | 19 | 3 | 3 | 1 | 0 | no |
+
+**`--minimal`.**
+
+| order | not stopped both ways | `today` on those cells | finished both ways | lower | higher | by more than a tenth | stopped where `today` finishes | finishes where `today` stops | by the rule |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `today` | 4 601 · 170 994 | 4 601 · 170 994 | 4 601 · 170 994 | 0 | 0 | 0 | 0 | 0 | — |
+| `deaths-count` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `reversed` | 6 476 · 182 892 | 4 601 · 170 994 | 6 476 · 182 892 | 3 | 5 | 5 | 0 | 0 | no |
+| `text` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `node@0` | 4 622 · 189 632 | 4 601 · 170 994 | 4 622 · 189 632 | 0 | 21 | 16 | 0 | 0 | no |
+| `node@10` | 4 604 · 188 904 | 4 601 · 170 994 | 4 604 · 188 904 | 2 | 5 | 2 | 0 | 0 | no |
+| `node@32` | 4 602 · 188 330 | 4 601 · 170 994 | 4 602 · 188 330 | 2 | 3 | 1 | 0 | 0 | no |
+| `node@100` | 4 600 · 188 250 | 4 601 · 170 994 | 4 600 · 188 250 | 2 | 1 | 1 | 0 | 0 | no |
+| `node-first@0` | 4 622 · 189 632 | 4 601 · 170 994 | 4 622 · 189 632 | 0 | 21 | 16 | 0 | 0 | no |
+| `node-first@10` | 4 604 · 188 904 | 4 601 · 170 994 | 4 604 · 188 904 | 2 | 5 | 2 | 0 | 0 | no |
+| `node-first@32` | 4 602 · 188 330 | 4 601 · 170 994 | 4 602 · 188 330 | 2 | 3 | 1 | 0 | 0 | no |
+| `open-first/20` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `coupled/20` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `coupled/10` | 4 599 · 170 742 | 4 601 · 170 994 | 4 599 · 170 742 | 2 | 2 | 0 | 0 | 0 | **go** |
+| `coupled/40` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `written+coupled/20` | 4 601 · 170 994 | 4 601 · 170 994 | 4 601 · 170 994 | 0 | 0 | 0 | 0 | 0 | no |
+| `written+coupled/10` | 4 601 · 171 152 | 4 601 · 170 994 | 4 601 · 171 152 | 0 | 4 | 0 | 0 | 0 | no |
+| `written+coupled/40` | 4 601 · 170 994 | 4 601 · 170 994 | 4 601 · 170 994 | 0 | 0 | 0 | 0 | 0 | no |
+| `coupled/20/deepest` | 4 932 · 173 701 | 4 601 · 170 994 | 4 932 · 173 701 | 2 | 8 | 4 | 0 | 0 | no |
+| `written+coupled/20/deepest` | 4 927 · 174 394 | 4 601 · 170 994 | 4 927 · 174 394 | 0 | 7 | 4 | 0 | 0 | no |
+| `one-step@32` | 4 602 · 188 330 | 4 601 · 170 994 | 4 602 · 188 330 | 2 | 3 | 1 | 0 | 0 | no |
+| `full` | 52 133 · 822 371 | 4 601 · 170 994 | 52 133 · 822 371 | 0 | 157 | 157 | 0 | 0 | no |
+| `learned-branch` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `learned-path` | 4 599 · 170 630 | 4 601 · 170 994 | 4 599 · 170 630 | 2 | 0 | 0 | 0 | 0 | **go** |
+| `learned-branch/restarts` | 4 543 · 170 287 | 4 601 · 170 994 | 4 543 · 170 287 | 4 | 1 | 0 | 0 | 0 | **go** |
+| `today/deepest` | 4 927 · 172 579 | 4 601 · 170 994 | 4 927 · 172 579 | 0 | 5 | 4 | 0 | 0 | no |
+| `text/deepest` | 4 932 · 172 264 | 4 601 · 170 994 | 4 932 · 172 264 | 2 | 6 | 4 | 0 | 0 | no |
+| `node@0/deepest` | 4 955 · 191 266 | 4 601 · 170 994 | 4 955 · 191 266 | 0 | 23 | 20 | 0 | 0 | no |
+| `node@32/deepest` | 4 935 · 189 964 | 4 601 · 170 994 | 4 935 · 189 964 | 2 | 7 | 6 | 0 | 0 | no |
+| `learned-branch/deepest` | 4 936 · 173 074 | 4 601 · 170 994 | 4 936 · 173 074 | 2 | 8 | 5 | 0 | 0 | no |
+| `learned-path/deepest` | 4 932 · 172 264 | 4 601 · 170 994 | 4 932 · 172 264 | 2 | 6 | 4 | 0 | 0 | no |
+| `learned-branch/deepest/restarts` | 4 897 · 172 842 | 4 601 · 170 994 | 4 897 · 172 842 | 3 | 7 | 6 | 0 | 0 | no |
+| `learned-path/deepest/restarts` | 4 910 · 172 175 | 4 601 · 170 994 | 4 910 · 172 175 | 2 | 6 | 4 | 0 | 0 | no |
+
+**`--maximal`.**
+
+| order | not stopped both ways | `today` on those cells | finished both ways | lower | higher | by more than a tenth | stopped where `today` finishes | finishes where `today` stops | by the rule |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `today` | 23 016 · 352 388 | 23 016 · 352 388 | 23 016 · 352 388 | 0 | 0 | 0 | 0 | 0 | — |
+| `deaths-count` | 22 996 · 350 772 | 23 016 · 352 388 | 22 996 · 350 772 | 4 | 0 | 0 | 0 | 0 | **go** |
+| `reversed` | 177 854 · 1 198 815 | 23 016 · 352 388 | 7 330 · 150 257 | 8 | 9 | 7 | 1 | 0 | no |
+| `text` | 109 443 · 1 178 673 | 23 016 · 352 388 | 5 265 · 130 102 | 3 | 3 | 0 | 1 | 0 | no |
+| `node@0` | 40 782 · 595 712 | 154 150 · 1 400 947 | 23 034 · 372 622 | 2 | 20 | 14 | 0 | 1 | no |
+| `node@10` | 40 767 · 594 607 | 154 150 · 1 400 947 | 23 019 · 371 517 | 3 | 7 | 3 | 0 | 1 | no |
+| `node@32` | 40 766 · 594 426 | 154 150 · 1 400 947 | 23 018 · 371 336 | 3 | 6 | 2 | 0 | 1 | no |
+| `node@100` | 40 764 · 594 346 | 154 150 · 1 400 947 | 23 016 · 371 256 | 3 | 5 | 1 | 0 | 1 | no |
+| `node-first@0` | 40 774 · 594 896 | 154 150 · 1 400 947 | 23 026 · 371 806 | 2 | 20 | 14 | 0 | 1 | no |
+| `node-first@10` | 40 777 · 594 273 | 154 150 · 1 400 947 | 23 029 · 371 183 | 3 | 7 | 3 | 0 | 1 | no |
+| `node-first@32` | 40 812 · 596 612 | 154 150 · 1 400 947 | 23 064 · 373 522 | 3 | 6 | 4 | 0 | 1 | no |
+| `open-first/20` | 90 001 · 1 102 974 | 154 150 · 1 400 947 | 47 633 · 616 606 | 3 | 4 | 1 | 0 | 1 | no |
+| `coupled/20` | 41 325 · 573 844 | 154 150 · 1 400 947 | 23 295 · 352 041 | 3 | 4 | 0 | 0 | 1 | **go** |
+| `coupled/10` | 41 409 · 579 788 | 154 150 · 1 400 947 | 23 379 · 357 976 | 3 | 4 | 2 | 0 | 1 | no |
+| `coupled/40` | 42 847 · 584 618 | 154 150 · 1 400 947 | 24 098 · 360 367 | 3 | 4 | 2 | 0 | 1 | no |
+| `written+coupled/20` | 42 457 · 582 229 | 154 150 · 1 400 947 | 23 017 · 352 742 | 0 | 3 | 0 | 0 | 1 | **go** |
+| `written+coupled/10` | 41 731 · 581 952 | 154 150 · 1 400 947 | 23 101 · 357 585 | 0 | 4 | 2 | 0 | 1 | no |
+| `written+coupled/40` | 44 107 · 592 446 | 154 150 · 1 400 947 | 23 017 · 352 554 | 0 | 1 | 0 | 0 | 1 | **go** |
+| `coupled/20/deepest` | 42 629 · 602 044 | 154 150 · 1 400 947 | 24 115 · 369 479 | 7 | 10 | 7 | 0 | 1 | no |
+| `written+coupled/20/deepest` | 41 628 · 592 002 | 154 150 · 1 400 947 | 23 388 · 362 237 | 4 | 9 | 6 | 0 | 1 | no |
+| `one-step@32` | 93 628 · 1 197 547 | 23 016 · 352 388 | 5 286 · 148 962 | 3 | 5 | 4 | 1 | 0 | no |
+| `full` | 119 352 · 2 391 077 | 154 150 · 1 400 947 | 95 279 · 2 154 054 | 0 | 160 | 160 | 0 | 1 | no |
+| `learned-branch` | 109 429 · 1 177 477 | 23 016 · 352 388 | 5 251 · 128 906 | 5 | 1 | 0 | 1 | 0 | no |
+| `learned-path` | 109 473 · 1 184 153 | 23 016 · 352 388 | 5 295 · 135 582 | 3 | 3 | 2 | 1 | 0 | no |
+| `learned-branch/restarts` | 125 124 · 1 198 443 | 23 016 · 352 388 | 5 659 · 149 868 | 5 | 4 | 4 | 1 | 0 | no |
+| `today/deepest` | 23 307 · 354 132 | 23 016 · 352 388 | 23 307 · 354 132 | 4 | 6 | 4 | 0 | 0 | no |
+| `text/deepest` | 91 474 · 1 180 140 | 23 016 · 352 388 | 5 545 · 131 579 | 7 | 8 | 5 | 1 | 0 | no |
+| `node@0/deepest` | 41 106 · 597 993 | 154 150 · 1 400 947 | 23 336 · 374 501 | 6 | 22 | 17 | 0 | 1 | no |
+| `node@32/deepest` | 41 690 · 603 187 | 154 150 · 1 400 947 | 23 620 · 376 455 | 7 | 10 | 6 | 0 | 1 | no |
+| `learned-branch/deepest` | 132 671 · 1 743 670 | 154 150 · 1 400 947 | 69 167 · 948 233 | 11 | 10 | 10 | 0 | 1 | no |
+| `learned-path/deepest` | 91 478 · 1 180 480 | 23 016 · 352 388 | 5 549 · 131 919 | 7 | 8 | 5 | 1 | 0 | no |
+| `learned-branch/deepest/restarts` | 92 082 · 1 212 035 | 23 016 · 352 388 | 5 991 · 163 494 | 10 | 10 | 8 | 1 | 0 | no |
+| `learned-path/deepest/restarts` | 91 502 · 1 182 636 | 23 016 · 352 388 | 5 573 · 134 075 | 7 | 8 | 7 | 1 | 0 | no |
+
+**What sank each *no*, and what is left.**
+
+- **`text`, the canonical order with no structure, does not decide either SEND**: 104 178 saturations and
+  stopped, on both. Alphabetically the letters are D E M N O R S Y, and no column has its letters before the
+  sixth. So today's order on I-SEND was the declared order standing in for the structure, which is E-29, and a
+  canonical last key alone makes the corpus's one cryptarithm of eight letters undecided.
+- **The whole node read at once**, `node@0` and `node-first@0`: decides both SENDs at 17 748 · 223 090, one
+  node and 166 facts over today's I-SEND, and is sunk by **the node on a small cell**: 20 programs higher by
+  more than a tenth under `--single`, 22 under `-n 1`, each by the one saturation or by the node's facts
+  (`zebra.ein` 9 · 1 900 → 10 · 2 293).
+- **Read after `k` saturations**, `node@10`, `@32`, `@100`: the saturation is then within the tenth, and what
+  is left is **the node's facts**, which no count of saturations bounds:
+  `beyond_arith/equation_two_unknowns.ein`, 524 · 24 571 → 525 · 42 191, whose whole node is 17 620 facts, every
+  pair of digits through the calculator; `cryptarithm.ein` 119 · 691 → 120 · 785;
+  `lattice/07_two_pairs_two_tables.ein` 44 · 137 → 45 · 154.
+- **Read within a share of the facts derived, every choice then made afresh**, `open-first/20`: no small cell
+  pays, and **I-SEND is 42 368**. The count *not known dead* is read off the run's memory, and after a first
+  tree that memory holds the deaths of whichever instances that tree tried: an instance already tried at a
+  state has alternatives known dead there and an untried one has none, so the count sends the second tree back
+  down the first one's order. The same key at a fresh root (`node@0`) has no such memory, which is why it
+  measured well.
+- **`coupled/k`**: the coupling first and the count second once the edges are read, and **each state that had
+  chosen choosing again by the counts it had when it first chose**, so the edges move a choice and the memory
+  does not; the tree starts again only where one falls otherwise. I-SEND and I-SENDW are both 18 030 · 221 803:
+  the 17 747 of the tree by column, the node, and 282 nodes of the first tree, under text, before the node was
+  within a twentieth.
+- **`written+coupled/k`**, the same with the first reported among equals: a cell that never reads the node is
+  today's to the node, I-SEND is today's and the node, 17 748, and **I-SENDW is 19 433**, 1 685 nodes of a first
+  tree by S, E, N before the node was read.
+- **The edges one application back**, `one-step@32`: both SENDs stopped. `{D, E}` and `{D, E, Y}` order three
+  letters and leave five to text.
+- **The full structure**, `full`: decides both SENDs at 24 073, the same order as the node alone and 6 325
+  saturations of layers before it; 160 programs higher by more than a tenth, by the layers, whatever the order
+  does. A count *live by root's excluded pairs*, the plan's first strategy, reads the same layers and was not
+  run as an order of its own: what it could choose is not what sinks it.
+- **The largest state first**, every `…/deepest`: `-n 1` over the cells finished both ways falls from 17 208 to
+  13 296 under today's choice and 20 cells are lower, I-Z2M `--single` is 10 where it is 40; and three to seven
+  cells are higher by more than a tenth under every question: `zebra.ein -n 1` 5 · 328 → 7 · 1 114,
+  `ein-bugs/wrong-answers/oblig-fresh-name-two.ein --minimal` 39 → 150,
+  `lattice/06_friends_tables_everyone_sits.ein --maximal` 213 → 273. *No* for every question, by the rule;
+  the gain under `-n 1` is real and is not taken.
+
+**The instances** (`report.md` § The instances), `--single` and `-n 1`; a cell *saturations · facts*.
+
+| `--single` | I-Z1 | I-Z2 | I-Z2M | I-B06 | I-L02 | I-SEND | I-SENDW |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `today` | 9 · 1 900 | 9 · 892 | 40 · 2 688 | 8 · 34 | 2 · 1 | 17 747 · 222 924 | 131 134 · 1 048 559, stopped |
+| `deaths-count` | 9 · 1 900 | 7 · 666 | 30 · 2 037 | 8 · 34 | 2 · 1 | 17 747 · 222 924 | 131 134 · 1 048 559, stopped |
+| `text` | 9 · 1 900 | 7 · 666 | 39 · 2 568 | 8 · 34 | 2 · 1 | 104 178 · 1 048 571, stopped | 104 178 · 1 048 571, stopped |
+| `node@0` | 10 · 2 293 | 8 · 848 | 40 · 2 790 | 8 · 34 | 2 · 1 | 17 748 · 223 090 | 17 748 · 223 090 |
+| `node-first@0` | 10 · 2 293 | 8 · 848 | 24 · 1 518 | 8 · 34 | 2 · 1 | 17 748 · 223 090 | 17 748 · 223 090 |
+| `open-first/20` | 9 · 1 900 | 7 · 666 | 39 · 2 568 | 8 · 34 | 2 · 1 | 42 368 · 486 368 | 42 368 · 486 368 |
+| **`coupled/20`** | 9 · 1 900 | 7 · 666 | 39 · 2 568 | 8 · 34 | 2 · 1 | **18 030 · 221 803** | **18 030 · 221 803** |
+| `written+coupled/20` | 9 · 1 900 | 9 · 892 | 40 · 2 688 | 8 · 34 | 2 · 1 | 17 748 · 223 090 | 19 433 · 229 361 |
+| `one-step@32` | 9 · 1 900 | 7 · 666 | 43 · 2 642 | 8 · 34 | 2 · 1 | 88 342 · 1 048 585, stopped | 88 342 · 1 048 585, stopped |
+| `full` | 2 175 · 250 144 | 2 070 · 101 319 | 9 243 · 570 206 | 8 900 · 24 984 | 17 · 23 | 24 073 · 237 023 | 24 073 · 237 023 |
+| `learned-branch` | 9 · 1 900 | 7 · 666 | 27 · 1 830 | 8 · 34 | 2 · 1 | 104 178 · 1 048 571, stopped | 104 178 · 1 048 571, stopped |
+| `learned-branch/deepest` | 9 · 1 900 | 7 · 666 | 8 · 572 | 8 · 34 | 2 · 1 | 63 479 · 794 980 | 63 479 · 794 980 |
+| `learned-branch/deepest/restarts` | 9 · 1 900 | 7 · 666 | 8 · 572 | 8 · 34 | 2 · 1 | 86 068 · 1 048 574, stopped | 86 068 · 1 048 574, stopped |
+| `today/deepest` | 9 · 1 900 | 9 · 892 | 10 · 690 | 8 · 34 | 2 · 1 | 17 747 · 222 924 | 76 619 · 1 048 564, stopped |
+| `coupled/20/deepest` | 9 · 1 900 | 7 · 666 | 8 · 572 | 8 · 34 | 2 · 1 | 18 492 · 232 163 | 18 492 · 232 163 |
+
+| `-n 1` | I-Z1 | I-Z2 | I-Z2M | I-SEND | I-SENDW |
+|---|---:|---:|---:|---:|---:|
+| `today` | 5 · 328 | 5 · 164 | 35 · 2 122 | 15 854 · 192 556 | 131 134 · 1 048 559, stopped |
+| `deaths-count` | 5 · 328 | 5 · 302 | 24 · 1 288 | 15 854 · 192 556 | 131 134 · 1 048 559, stopped |
+| `text` | 5 · 328 | 5 · 302 | 25 · 1 283 | 104 178 · 1 048 571, stopped | 104 178 · 1 048 571, stopped |
+| `coupled/20` | 5 · 328 | 5 · 302 | 25 · 1 283 | 16 024 · 189 627 | 16 024 · 189 627 |
+| **`written+coupled/20`** | 5 · 328 | 5 · 164 | 35 · 2 122 | **15 855 · 192 722** | **17 542 · 199 031** |
+| `learned-branch/deepest` | 7 · 1 114 | 7 · 666 | 7 · 476 | 51 852 · 648 671 | 51 852 · 648 671 |
+| `learned-branch/deepest/restarts` | 7 · 1 114 | 7 · 666 | 7 · 476 | 29 960 · 362 812 | 29 960 · 362 812 |
+| `today/deepest` | 7 · 1 114 | 7 · 528 | 9 · 594 | 12 662 · 157 921 | 76 619 · 1 048 564, stopped |
+| `coupled/20/deepest` | 7 · 1 114 | 7 · 666 | 7 · 476 | 13 377 · 166 697 | 13 377 · 166 697 |
+
+Under `--minimal` both SENDs are stopped under every order, the line's sweep of every owing state being what
+costs, and under `--maximal` they are `--single`'s: 18 030 · 221 803 under `coupled/20` where I-SEND is
+17 754 · 223 050 today. I-B06 and I-L02 take no tree and do not move under any order.
+
+**The structure against the learned control.** Stated plainly, since it is a result about track S's use for an
+order:
+
+- **A weight learned from the run's deaths does not do what the structure does.** Of the seven learned
+  orders, under `--single` **one** decides the SENDs, `learned-branch/deepest`, in 63 479 · 794 980 on each:
+  **3.5 times** the 18 030 of the order from the structure, and 3.6 times today's I-SEND, a loss of 258 % on
+  the one program it had to keep. The six others are stopped on both. Why, as read off the orders' definitions
+  and not traced node by node: by size a weight learned in one layer reaches no choice of that layer; by the
+  path every death blames the whole path, which weighs the instances in the order they were already taken; and
+  started again as it goes, the weights are those of the deepest instances, which are the ones whose
+  alternatives die.
+- Under `-n 1` two learned orders reach SEND's state, in 51 852 and in 29 960, against 16 024 and 15 855.
+- **Under `--minimal` a learned order is *go*** by the rule, as `text` is and for the same reason: with no
+  structure they are the count and text, and over the cells that finish that is two nodes fewer than today.
+  It is no result about learning.
+- **So the order built is the structure's**, the cheapest *go* that decides I-SENDW, and the control says what
+  the structure is worth here: on the corpus's one program whose constraints join three instances or more
+  through derived facts, a factor of 3.5 over the best order that reads none, and the difference between
+  decided and not for every other order that reads none. On the zebras, where every coupling of two is already
+  a denial the count reads, the structure and the control and today are within two nodes of each other.
+
+**What the choice reading the denials did** (addition 4 of the stage's brief). `deaths-count` is today's order
+with the count reading what a saturation found dead and not what a state denies, the choice as it was before
+S1f.10.3 over the memory as it is now:
+
+| | `--single` | `-n 1` | `--minimal` | `--maximal` |
+|---|---|---|---|---|
+| I-Z2 and `zebra2-obligations.ein` | 9 · 892 with, **7 · 666** without | **5 · 164** with, 5 · 302 without | 267 · 23 231, 266 · 23 049 | 9 · 892, 7 · 666 |
+| I-Z2M and its `-obligations` twin | 40 · 2 688 with, **30 · 2 037** without | 35 · 2 122, **24 · 1 288** | stopped both ways | 104 · 10 850, 96 · 10 268 |
+| every other program | the same | the same | the same | the same |
+
+So **letting the choice read the memory hurt** on I-Z2M under every question it finishes, by eight to eleven
+nodes a cell, and on I-Z2 under three, by one or two, 24 saturations of the corpus's 19 581 under `--single`;
+and it helped one cell, `zebra2.ein -n 1`, by 138 facts in the same five nodes. The 40 against a simulated 29 is this: with the order held to the deaths the
+real run is 30. Why a count that knows more chooses worse there was not looked into past the table; it is four
+programs, one puzzle. The order built keeps the count reading the memory: the instance the state has all but
+decided is the classical choice, the rule sinks `deaths-count` under `-n 1` by that one cell, and under the
+built order's last key I-Z2 is 7 either way.
+
+**Against the ceiling.** [S1f.10.13](s1f.10.13_the_price_list.md#the-two-shares) put `--single` at 19 620
+saturations against a floor of 437 for finding the leaves, I-SEND 17 747 against 9. **An order does not move
+that**: with the structure's order I-SEND is 18 030, and the same tree by column was 17 747. What stands
+between is not which letter is taken next: 9 350 of those deaths hold a letter's two digits or a digit's two
+letters, which every state of every tree meets again, and 6 184 are a column's, one for each wrong digit of its
+last letter. Both are a nogood's to remove, the pair of a death or its core
+([S1f.10.3](s1f.10.3_the_restricted_join.md#the-pair-of-a-death-the-layer-by-need-and-a-deaths-core-on-top-of-the-denials)),
+and a `functional` that stores what it excludes (K-13). **What the order buys is that the cost no longer hangs
+on the declaration**: over the corpus with I-SENDW in it `--single` is 37 888 where it was 150 715 and stopped
+on one program, and over the 189 programs that finish both ways it is 19 858 where it was 19 581, the 277 more
+being I-SEND's first tree, the price of not reading the order it was declared in.
+
+### The order to be built, by the rule, per question
+
+| question | *go*, of the orders that decide I-SENDW | taken | why |
+|---|---|---|---|
+| `--single` | `coupled/10`, `/20`, `/40`; `written+coupled/10`, `/20`, `/40` | **`coupled/20`** | the canonical one: I-SEND and I-SENDW the same work. Of the shares, a twentieth is the least total; a fortieth reads the node later and pays a longer first tree, 20 577 over the cells finished both ways against 19 858 |
+| `-n 1` | `written+coupled/10`, `/20`, `/40` | **`written+coupled/20`** | **every order with a canonical last key is sunk by one cell**, `zebra2.ein -n 1` and its `-obligations` twin, 5 · 164 → 5 · 302: the same five saturations on other nodes, 138 facts more, which is what that cell was before S1f.10.3. The written last key keeps every cell that reads no node as it is |
+| `--minimal` | none decides it: both SENDs are stopped under every order. *Go*: `text`, `open-first/20`, `coupled/10`, `/20`, `/40`, the learned by size | **`coupled/20`** | over the cells that finish it is `text`, two nodes fewer than today on the zebra2 pair and no cell higher; on the SENDs the tree ends and its state is listed before the sweep is stopped, where under `text` the tree itself is stopped and nothing is listed |
+| `--maximal` | `coupled/20`, `written+coupled/20`, `/40` | **`coupled/20`** | canonical. **By one share of three**: `coupled/10` and `/40` are *no*, each by the I-Z2M pair, 104 · 10 850 → 150 · 14 474, which is 108 · 11 512 at a twentieth. That cell moves by a third with the moment the node is read; the rule's verdict here rests on it |
+
+So **the order is one function of the question**: the coupling, then the count, then the last key, the node
+read within a twentieth of the run's facts after twenty saturations; and the last key is rendered text, but
+under `-n N` over all of `R`, where it is the reported order. The four cells measured are `--single`, `-n 1`
+and the two lines whole; the cells between, a line under `-n N` or `--single`, take the canonical key
+([§ Defaults taken](#defaults-taken)).
+
+### What moves, named before the route changed
+
+From `build/s5/m4/orders/`, each question's order against `today` (`jq` over the two files, the cells whose
+saturations, facts or listed commitments differ). **Every cell not listed is today's to the node and the
+fact**, but for the `route` row's words.
+
+| question | programs whose work moves | programs whose listed states are others |
+|---|---|---|
+| `--single` | `beyond_arith/cryptarithm.ein` 119 · 691 → 119 · 722; `send_more_money.ein` 17 747 · 222 924 → 18 030 · 221 803; `send_more_money_written.ein` stopped → 18 030 · 221 803; `zebra2.ein` and `zebra2-obligations.ein` 9 · 892 → 7 · 666; `zebra2-minus-15.ein` and `zebra2-minus-15-obligations.ein` 40 · 2 688 → 39 · 2 568 | `send_more_money_written.ein` (none listed → its state); `zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` (the same state, `from` another commitment); `zebra2-minus-15.ein` and its twin (two others of R's 32); `ein-bugs/wrong-answers/owed-seats-renamed.ein` (two others) |
+| `-n 1` and `-n N` | `send_more_money.ein` 15 854 · 192 556 → 15 855 · 192 722; `send_more_money_written.ein` stopped → 17 542 · 199 031 | `send_more_money_written.ein` |
+| `--minimal` | `send_more_money.ein` and `_written`, stopped both ways, 205 166 and 131 134 → 205 840 saturations; `zebra2.ein` and its twin 267 · 23 231 → 266 · 23 049; the `zebra2-minus-15` pair, stopped both ways | `send_more_money_written.ein` (its state, before the stop); the `zebra2-minus-15` pair (a stopped listing) |
+| `--maximal` | `cryptarithm.ein` 128 · 763 → 128 · 794; `send_more_money.ein` 17 754 · 223 050 → 18 030 · 221 803; `send_more_money_written.ein` stopped → 18 030 · 221 803; `lattice/05_owed_seats_bounded.ein` 9 · 20 → 8 · 17; `zebra2.ein` and its twin 9 · 892 → 7 · 666; the `zebra2-minus-15` pair 104 · 10 850 → 108 · 11 512 | `send_more_money_written.ein` |
+
+**The goldens that will move**, by the list of [T1](#t1-the-inventory-verified-before-any-route-changed), with
+the programs now named. One not on this list that moves is a stop.
+
+- **The `route` row of every mode's read-out that takes the tree gains the order's words**: every program one
+  of whose modes names L5, 36 of the 190 under `--single`. So in `corpus_shapes.md5`, for each such program, its
+  `read-out[single]`, `read-out[n2]`, `read-out[minimal]` and `read-out[maximal]` lines where that mode takes
+  the tree, and `region-trace` where the trace quotes the row; in
+  [`read_out_examples.md`](../../../docs/kernel/inference/read_out_examples.md) every example whose route is the
+  tree; in `README.md` and `docs/guide/04_solving_the_whole_puzzle.md` the transcript's `route` row.
+- **Where the work or the states move as well**, the ten programs of the table: the `work` row and the listed
+  state's `from {…}` on the same lines, and those programs' `cores[…]` and `region-lattice` lines where the
+  nodes visited move. `zebra2.ein --single` is in the transcript (9 → 7 saturations, the state `from` another
+  commitment), in `docs/api/rust.md`'s output block and in `ein-cli/tests/embedding.rs` (`saturations: 9` → `7`).
+- `ein-render/tests/golden/trace_*.md`: none, unless one is of a mode that takes the tree; the two S1f.10.3
+  re-banked are a blind program's, which takes none.
+- `ein-cli/tests/region_modes.rs`: a block that quotes a tree's `route` row, if there is one.
+- `corpus/corpus.toml`: I-SENDW's entry, its runs, its note and its `cost_ms`; the slow set, if it leaves it;
+  `corpus_exits.txt`, its cells; `send_more_money.ein`'s header and note, which state 17 747, and the
+  generator's anchor on that header, with the variant regenerated.
+
+### Defaults taken
+
+Each the user's to revise. The first three are how the measurement was read, written before the order is
+built.
+
+1. **The rule is read over the cells no budget stops both ways**, as
+   [S1f.10.3](s1f.10.3_the_restricted_join.md#defaults-taken)'s default 2 has it: a cell stopped under both
+   orders spent its budget either way. A cell an order finishes where `today` stops counts with what `today`
+   spent; so I-SENDW, stopped today, is in every total, and the totals over the programs that finish both ways
+   are given beside.
+2. **A cell between the four measured takes the canonical last key**: a line under `-n N` or `--single`. Only
+   `-n N` over all of `R` keeps the reported order among equals.
+3. **I-SENDW's `--check` is a cargo test's**, `cli_semantics.rs`, as the zebra2 variants' is; no static step
+   was added to the gate's six.

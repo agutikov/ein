@@ -11,7 +11,10 @@
 //! the ties of the pair layer, the edges with what each covers, the debts
 //! it is the edge of and the statements it names, the edges one application
 //! back, the components over every edge and over the conflicts' alone, and
-//! the debts, licensed or not. Each is a
+//! the debts, licensed or not; and **the coupling read from the whole node
+//! alone** (`structure::node_coupling`), which is what the obligation tree
+//! reads to order its branches: the questions root owes, its edges, the
+//! edges one application back, the pairs and the components. Each is a
 //! statement about nodes of
 //! the program's lattice, so two things that are not the program must not
 //! move it. **And what `ein render structure` writes of it is held with
@@ -68,8 +71,8 @@ use std::path::{Path, PathBuf};
 use ein_core::Terms;
 use ein_corpus::repo_root;
 use ein_infer::structure::{
-    self, Cliques, Coupling, Cover, ExactlyOne, Owing, PairLayer, Question, Theory, WholeOptions,
-    WitnessIs,
+    self, Cliques, Coupling, Cover, ExactlyOne, NodeCoupling, Owing, PairLayer, Question, Theory,
+    WholeOptions, WitnessIs,
 };
 use ein_ir::{Ast, load, parse};
 use ein_render::structure as shown;
@@ -126,6 +129,9 @@ struct Read {
     cover: Cover,
     exact: ExactlyOne,
     coupling: Coupling,
+    /// The coupling read from the whole node alone, of the program loaded
+    /// again into a copy of the same terms.
+    node: Result<NodeCoupling, String>,
     /// `structure.json`, as `ein render structure` writes it of this
     /// reading.
     document: String,
@@ -138,6 +144,17 @@ struct Read {
 /// from `base`, loaded into `terms`. `None` where it does not load;
 /// `Err` where the engine refuses it, by *forbid* or otherwise.
 fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result<Read, String>> {
+    // The node alone reads a program nothing else has used: the same text
+    // into a copy of the same terms, so under a permutation its ids are the
+    // permuted ones too.
+    let node = {
+        let mut terms = terms.clone();
+        let mut ast = Ast::new();
+        let forms = parse(&mut ast, text, name.to_str()).ok()?;
+        let mut kb = load(&mut ast, &mut terms, &forms, Some(base)).ok()?;
+        structure::node_coupling(&mut kb, &mut terms, &ast, &structure::Options::default())
+            .map_err(|e| e.to_string())
+    };
     let mut ast = Ast::new();
     let forms = parse(&mut ast, text, name.to_str()).ok()?;
     let mut kb = load(&mut ast, &mut terms, &forms, Some(base)).ok()?;
@@ -160,6 +177,7 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
                     cover: p.cover,
                     exact: p.exactly_one,
                     coupling: p.coupling,
+                    node,
                     document,
                     graphs,
                     terms,
@@ -311,6 +329,23 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                 )
             )
         }),
+        (
+            "the coupling from the node alone",
+            match &r.node {
+                Ok(c) => {
+                    let texts: Vec<&str> = c.candidates.iter().map(|c| c.text.as_str()).collect();
+                    format!(
+                        "{:?}",
+                        (
+                            (texts, &c.questions, c.owed, &c.question_of),
+                            (&c.edges, &c.one_step, &c.pairs, &c.components),
+                            (c.dead, c.node, c.node_stopped, c.cut)
+                        )
+                    )
+                }
+                Err(e) => e.clone(),
+            },
+        ),
         ("the view's structure.json", r.document.clone()),
         ("the view's graphs", r.graphs.join("\n")),
     ]
@@ -625,7 +660,44 @@ fn as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> Vec<(&'static str, Strin
         ("the owed groups", format!("{owed_groups:?}")),
         ("the grids", format!("{:?}", (grids, not_grids))),
         ("the coupling", coupling_as_sets(r, &strip)),
+        ("the coupling from the node alone", node_as_sets(r, &strip)),
     ]
+}
+
+/// The coupling read from the node alone as sets of texts: a question is
+/// its members, with whether an instance owes it; an edge its questions; a
+/// pair and a component the candidates each holds. The node's cost follows
+/// the program and not the spelling.
+fn node_as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> String {
+    let c = match &r.node {
+        Ok(c) => c,
+        Err(e) => return strip(e),
+    };
+    let name = |b: u32| strip(c.text(b));
+    let one = |v: &[u32]| -> BTreeSet<String> { v.iter().map(|&b| name(b)).collect() };
+    type Sets = BTreeSet<BTreeSet<String>>;
+    let questions: BTreeSet<(bool, BTreeSet<String>)> = c
+        .questions
+        .iter()
+        .enumerate()
+        .map(|(q, members)| (q < c.owed, one(members)))
+        .collect();
+    let edges_of = |edges: &[Vec<u32>]| -> BTreeSet<Sets> {
+        edges
+            .iter()
+            .map(|e| e.iter().map(|&q| one(&c.questions[q as usize])).collect())
+            .collect()
+    };
+    let pairs: Sets = c.pairs.iter().map(|&(a, b)| one(&[a, b])).collect();
+    let components: Sets = c.components.iter().map(|k| one(k)).collect();
+    format!(
+        "{:?}",
+        (
+            (questions, edges_of(&c.edges), edges_of(&c.one_step)),
+            (pairs, components),
+            (c.dead, c.node, c.node_stopped, c.cut)
+        )
+    )
 }
 
 /// The coupling as sets of texts: a question is its members, an edge its
@@ -1130,6 +1202,7 @@ fn a_form_that_reorders_the_universe_moves_no_set() {
                 cover: r.cover.clone(),
                 exact: r.exact.clone(),
                 coupling: r.coupling.clone(),
+                node: r.node.clone(),
                 document: r.document.clone(),
                 graphs: r.graphs.clone(),
                 terms: Terms::new(),
@@ -1173,6 +1246,7 @@ fn a_structure_that_moves_is_caught() {
         cover: r.cover.clone(),
         exact: r.exact.clone(),
         coupling: r.coupling.clone(),
+        node: r.node.clone(),
         document: r.document.clone(),
         graphs: r.graphs.clone(),
         terms: Terms::new(),

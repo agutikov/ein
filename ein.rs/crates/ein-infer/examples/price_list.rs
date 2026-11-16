@@ -16,6 +16,12 @@
 //! is left of them: the nodes a denial would still remove were the set asked
 //! about first closed under the closures the run holds.
 //!
+//! `--orders [--out DIR] [--only NAME,…] [FILE…]` measures the orders of the
+//! obligation tree instead ([`shared/orders.rs`](shared/orders.rs)): each
+//! order asked the four questions the tree answers on every program, a file
+//! an order under `orders/`; `--orders-report [--out DIR]` prints their
+//! tables, each against the tree's order of before by the rule below.
+//!
 //! Every corpus file and register witness that loads and **searches**, or
 //! the `FILE`s given (`--all` keeps those that do not search too). For each
 //! the structure is read once ([`ein_infer::structure::theory_coupled`], and
@@ -64,6 +70,10 @@ mod prices;
 #[allow(dead_code)]
 #[path = "../../ein-render/tests/corpus_ops/searches.rs"]
 mod searching;
+
+// The orders of the obligation tree, measured: `--orders`.
+#[path = "shared/orders.rs"]
+mod orders;
 
 use prices::{Cell, PARTS, Read, WAYS};
 
@@ -1201,6 +1211,19 @@ fn corpus_md(programs: &[Program], verdicts: &BTreeMap<(usize, usize), Verdict>)
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    if let Some(mode) = args
+        .iter()
+        .find(|a| *a == "--orders" || *a == "--orders-report")
+        .cloned()
+    {
+        let rest: Vec<String> = args.into_iter().filter(|a| *a != mode).collect();
+        if mode == "--orders" {
+            orders::run(rest);
+        } else {
+            orders::report(rest);
+        }
+        return;
+    }
     let alone = args.iter().any(|a| a == "--deaths-alone");
     let rest: Vec<String> = args.into_iter().filter(|a| a != "--deaths-alone").collect();
     if alone {

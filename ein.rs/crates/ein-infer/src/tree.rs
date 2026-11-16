@@ -114,9 +114,12 @@ use std::sync::Arc;
 use rustc_hash::FxHashMap;
 
 use crate::error::SolveError;
-use crate::explore::{Ask, Found, Licence, Mode, Route, Seen, Space, State, Step, Verdict, Which};
+use crate::explore::{
+    Ask, Found, Licence, Mode, Route, Seen, Space, State, Step, TreeOrder, Verdict, Which,
+};
 use crate::known_dead::KnownDead;
 use crate::oblgen::Alternatives;
+use crate::order::{Blame, Choice, Order, Queue, Structure};
 use crate::transversal::Bits;
 
 /// The largest step a route takes on one state's extensions, as
@@ -146,6 +149,10 @@ struct St {
     /// What an owing state branches on, once chosen: an instance of L5's
     /// table (`Some(i)`), or every extension (`None`).
     branch: Option<Option<u32>>,
+    /// The licensed instances the state owed when it chose, each with its
+    /// alternatives not known dead then, `(count, instance)`: what a
+    /// structure read later chooses among again.
+    counted: Box<[(u32, u32)]>,
     /// Its next step's size: 1, 2, 4, … up to [`BATCH`].
     step: usize,
 }
@@ -165,6 +172,98 @@ enum Phase {
     Owing,
     /// States of `R`, each by every extension.
     Up,
+}
+
+/// **The edges a coupled choice reads**, over the instances of L5's table.
+struct Coupled {
+    /// Per question, its members.
+    members: Vec<Bits>,
+    /// The edges, each the questions of it that some licensed instance can
+    /// pay, two or more.
+    edges: Vec<Vec<u32>>,
+    /// Per instance of L5's table, the edges that hold one of its questions,
+    /// as places in [`Self::edges`].
+    of_instance: Vec<Vec<u32>>,
+}
+
+impl Coupled {
+    /// From `questions`, each its members ascending, and `edges` over them.
+    /// An instance's questions are those that hold every alternative of it.
+    /// `None` where no edge holds two questions an instance can pay.
+    fn of(
+        n: usize,
+        table: &Alternatives,
+        questions: &[Vec<u32>],
+        edges: &[Vec<u32>],
+    ) -> Option<Coupled> {
+        let members: Vec<Bits> = questions.iter().map(|m| Bits::of(n, m)).collect();
+        let mut payable = vec![false; questions.len()];
+        let mut asks: Vec<Vec<u32>> = vec![Vec::new(); table.instances.len()];
+        for (i, inst) in table.instances.iter().enumerate() {
+            let Ok(alts) = &inst.alternatives else {
+                continue;
+            };
+            if alts.is_empty() {
+                continue;
+            }
+            let alts = Bits::of(n, alts);
+            for (q, m) in members.iter().enumerate() {
+                if alts.is_subset(m) {
+                    payable[q] = true;
+                    asks[i].push(q as u32);
+                }
+            }
+        }
+        let kept: BTreeSet<Vec<u32>> = edges
+            .iter()
+            .map(|e| {
+                e.iter()
+                    .copied()
+                    .filter(|&q| payable[q as usize])
+                    .collect::<Vec<u32>>()
+            })
+            .filter(|e| e.len() >= 2)
+            .collect();
+        if kept.is_empty() {
+            return None;
+        }
+        let edges: Vec<Vec<u32>> = kept.into_iter().collect();
+        let of_instance = asks
+            .iter()
+            .map(|qs| {
+                (0..edges.len() as u32)
+                    .filter(|&e| {
+                        qs.iter()
+                            .any(|q| edges[e as usize].binary_search(q).is_ok())
+                    })
+                    .collect()
+            })
+            .collect();
+        Some(Coupled {
+            members,
+            edges,
+            of_instance,
+        })
+    }
+
+    /// **How far instance `i` is from closing an edge at `state`**: the
+    /// fewest questions still unpaid, `i`'s own among them, over the edges
+    /// that hold a question of `i`; a question is paid where the state holds
+    /// one of its members. `u32::MAX` for an instance in no edge. One means
+    /// that paying `i` leaves an edge nothing to wait for: whatever the
+    /// edge's conflict or derivation needs, the state then has.
+    fn unpaid(&self, i: u32, state: &Bits) -> u32 {
+        self.of_instance[i as usize]
+            .iter()
+            .map(|&e| {
+                self.edges[e as usize]
+                    .iter()
+                    .filter(|&&q| !self.members[q as usize].intersects(state))
+                    .count() as u32
+            })
+            .min()
+            .unwrap_or(u32::MAX)
+    }
 }
 
 /// The states a route met, and the work it has queued.
@@ -193,6 +292,43 @@ pub(crate) struct Search {
     /// Some state met denies a candidate: an extension is then closed under
     /// what the run knows before it is saturated ([`Self::denied_through`]).
     any_denied: bool,
+    /// The order the tree takes ([`crate::order`]).
+    order: Order,
+    /// Each instance of L5's table's place by its alternatives' rendered
+    /// text: the canonical order among instances.
+    rank: Vec<u32>,
+    /// Per instance, the deaths it was blamed for ([`Choice::Learned`]).
+    weight: Vec<u64>,
+    /// The edges a coupled choice reads: `None` until they are read,
+    /// `Some(None)` where there are none.
+    coupled: Option<Option<Coupled>>,
+    /// The tree was started again from root ([`Self::restart`]).
+    restarted: bool,
+    /// The run's saturations at which a learned order next starts again.
+    next_restart: u64,
+    /// The run's saturations and facts from which the structure is next
+    /// tried, after an attempt the run could not pay for.
+    next_read: (u64, u64),
+    /// What the order came to on this run ([`crate::explore::TreeOrder`]).
+    took: TreeOrder,
+}
+
+/// What an owing state's choice came to.
+enum Chosen {
+    /// An instance of L5's table, or every extension.
+    Branch(Option<u32>),
+    /// The tree was started again from root before it was made.
+    Restarted,
+}
+
+/// A fixed pseudo-random key of `x` under `seed` (SplitMix64's finaliser).
+fn mix(seed: u64, x: u64) -> u64 {
+    let mut z = seed
+        .wrapping_add(x.wrapping_mul(0x9E37_79B9_7F4A_7C15))
+        .wrapping_add(0x9E37_79B9_7F4A_7C15);
+    z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+    z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+    z ^ (z >> 31)
 }
 
 /// A state's step, or why it refused: a node contradicted a licence.
@@ -223,6 +359,26 @@ impl Search {
         root: &Seen,
     ) -> Result<Search, SolveError> {
         let n = sp.n();
+        let order = crate::order::current();
+        // The instances by their alternatives, which are candidates in
+        // rendered-text order; an unlicensed one is never chosen.
+        let instances = table.as_ref().map_or(0, |t| t.instances.len());
+        let mut by_text: Vec<u32> = (0..instances as u32).collect();
+        if let Some(t) = table.as_ref() {
+            by_text.sort_by(|&a, &b| {
+                let alts = |i: u32| t.instances[i as usize].alternatives.as_ref().ok();
+                alts(a).cmp(&alts(b)).then(a.cmp(&b))
+            });
+        }
+        let mut rank = vec![0u32; instances];
+        for (at, &i) in by_text.iter().enumerate() {
+            rank[i as usize] = at as u32;
+        }
+        let coupled = match (&order.structure, table.as_ref()) {
+            (Structure::Node { .. }, Some(_)) => None,
+            (Structure::Given(g), Some(t)) => Some(Coupled::of(n, t, &g.questions, &g.edges)),
+            _ => Some(None),
+        };
         let mut s = Search {
             n,
             st: Vec::new(),
@@ -237,6 +393,14 @@ impl Search {
             r_met: Vec::new(),
             l5: false,
             any_denied: false,
+            order,
+            rank,
+            weight: vec![0; instances],
+            coupled,
+            restarted: false,
+            next_restart: 32,
+            next_read: (0, 0),
+            took: TreeOrder::default(),
         };
         s.register(Box::default(), &[], root)?;
         Ok(s)
@@ -322,6 +486,7 @@ impl Search {
             down: Vec::new(),
             denied,
             branch: None,
+            counted: Box::default(),
             step: 1,
         };
         let k = key(&st);
@@ -491,33 +656,297 @@ impl Search {
             .collect()
     }
 
-    /// What the tree branches `s` on, choosing it the first time: the licensed
-    /// instance it owes with the fewest alternatives not known dead (L5), or
-    /// every extension. What is left of it, ascending.
-    fn branch_rest(&mut self, s: u32) -> Vec<u32> {
-        if self.st[s as usize].branch.is_none() {
-            let choice = self.table.as_ref().and_then(|t| {
-                let st = &self.st[s as usize];
-                st.owed
+    /// **Start the tree again from root**, keeping what the run knows: every
+    /// state met, every set known dead and every leaf found. Each owing
+    /// state forgets what it branched on and which extensions it took, and
+    /// the tree's queue is root alone; a state the new tree reaches again is
+    /// read from memory with no saturation, and re-enters the queue as its
+    /// parent is branched. The new tree is a whole tree, so its leaves cover
+    /// `R` as the first one's would have (L5), and a leaf found before is a
+    /// state of `R` whichever tree found it.
+    fn restart(&mut self) {
+        let n = self.n;
+        for st in &mut self.st {
+            if !st.in_r() {
+                st.branch = None;
+                st.step = 1;
+                st.tried = Bits::empty(n);
+            }
+        }
+        self.tree_q.clear();
+        let root = &self.st[self.root() as usize];
+        if !root.in_r() {
+            self.tree_q.insert(key(root));
+        }
+        self.restarted = true;
+    }
+
+    /// **Choose again, by the edges just read, for every state that has
+    /// chosen**, and start the tree again where one chooses otherwise. A
+    /// state counts its alternatives once, when it first branches, and the
+    /// counts are kept ([`St::counted`]); with the edges read, its branch is
+    /// the instance closest to closing an edge, then the one that had the
+    /// fewest alternatives then. So what the run has learned since moves no
+    /// choice, only the edges do: a count read off the run's memory after
+    /// the fact would favour whichever instance the run happened to try
+    /// first, since those are the alternatives it has seen die. Where the
+    /// edges move no choice nothing is started again. Otherwise the tree
+    /// starts from root as [`Self::restart`] has it, each state that had
+    /// chosen keeping the choice made again. Whether it was started again.
+    fn choose_again(&mut self, written: bool) -> bool {
+        let Some(Some(c)) = &self.coupled else {
+            return false;
+        };
+        let mut moved = false;
+        let again: Vec<Option<u32>> = self
+            .st
+            .iter()
+            .map(|st| {
+                let Some(Some(was)) = st.branch else {
+                    return None;
+                };
+                let now = st
+                    .counted
                     .iter()
-                    .filter_map(|&i| {
-                        let alts = t.instances.get(i as usize)?.alternatives.as_ref().ok()?;
-                        let open = alts
-                            .iter()
-                            .filter(|&&a| !self.dead.knows_extension(&st.bits, a))
-                            .count();
-                        Some((open, i))
+                    .copied()
+                    .min_by_key(|&(open, i)| {
+                        let last = if written { i } else { self.rank[i as usize] };
+                        (c.unpaid(i, &st.bits), open, last)
                     })
-                    .min()
-                    .map(|(_, i)| i)
-            });
+                    .map_or(was, |(_, i)| i);
+                moved |= now != was;
+                Some(now)
+            })
+            .collect();
+        if !moved {
+            return false;
+        }
+        let n = self.n;
+        for (st, now) in self.st.iter_mut().zip(again) {
+            if st.in_r() {
+                continue;
+            }
+            if let Some(now) = now {
+                st.branch = Some(Some(now));
+            }
+            st.step = 1;
+            st.tried = Bits::empty(n);
+        }
+        self.tree_q.clear();
+        let root = &self.st[self.root() as usize];
+        if !root.in_r() {
+            self.tree_q.insert(key(root));
+        }
+        self.restarted = true;
+        true
+    }
+
+    /// **Read the edges a coupled choice asks for** off the whole node
+    /// ([`crate::structure::NodeCoupling`]): one saturation, charged to the
+    /// run with the facts it derived. Under a share the node is read within
+    /// that share of the facts the run has derived so far; one that needs
+    /// more is stopped there, what it derived is charged, and the next
+    /// attempt waits until the run has done four times the work. Whether
+    /// the tree was started again: it is where the edges read make some
+    /// state that had chosen choose otherwise ([`Self::choose_again`]).
+    fn read_structure(&mut self, sp: &mut Space<'_>) -> Result<bool, SolveError> {
+        let Structure::Node {
+            one_step, share, ..
+        } = self.order.structure
+        else {
+            self.coupled = Some(None);
+            return Ok(false);
+        };
+        let Some(table) = self.table.clone() else {
+            self.coupled = Some(None);
+            return Ok(false);
+        };
+        let (saturations, facts) = sp.work();
+        // No share bounds the node: any size.
+        let within = facts.checked_div(share).unwrap_or(u64::MAX);
+        if within == 0 || sp.affordable() == 0 {
+            // Nothing the run can pay for yet, or no node left in the
+            // budget: the choice stays as it is.
+            return Ok(false);
+        }
+        let c = crate::structure::node_coupling_in(sp, Some(&table), within)?;
+        let derived = c.node.map_or(0, |w| w.facts);
+        if c.node_stopped == Some(crate::structure::NodeStop::Budget) {
+            // No node was computed: what the attempt derived is counted, and
+            // it is tried again when the run has done four times the work.
+            sp.charge(derived);
+            self.took.unaffordable += 1;
+            self.next_read = (saturations, facts.saturating_mul(4));
+            return Ok(false);
+        }
+        if c.node_stopped.is_some() {
+            // Not read, and no larger share would read it.
+            sp.charge(derived);
+            self.coupled = Some(None);
+            return Ok(false);
+        }
+        if c.dead {
+            sp.charge_whole_node(derived);
+        } else {
+            // An alive whole node is ⊤'s, which the cache computes and
+            // counts as it does any node; where the budget has no room for
+            // it the reading stands uncounted as a node.
+            let top: Box<[u32]> = (0..self.n as u32).collect();
+            if sp.eval(std::slice::from_ref(&top))?.is_err() {
+                sp.charge(derived);
+            }
+        }
+        let edges = if one_step { &c.one_step } else { &c.edges };
+        self.coupled = Some(Coupled::of(self.n, &table, &c.questions, edges));
+        let Some(Some(read)) = &self.coupled else {
+            // No edge to read: nothing a choice made before would change.
+            return Ok(false);
+        };
+        self.took.couplings = Some((read.edges.len(), sp.work().0));
+        let again = match self.order.choice {
+            Choice::Coupled { written } => self.choose_again(written),
+            _ => {
+                let chosen = self.st.iter().any(|st| st.branch.is_some());
+                if chosen {
+                    self.restart();
+                }
+                chosen
+            }
+        };
+        self.took.started_again = again;
+        Ok(again)
+    }
+
+    /// What owing state `s` branches on, by the order (the module's § Which
+    /// instance): one of the licensed instances it owes, or every extension
+    /// where it owes none.
+    fn choose(&mut self, sp: &mut Space<'_>, s: u32) -> Result<Chosen, SolveError> {
+        let Some(t) = self.table.clone() else {
+            return Ok(Chosen::Branch(None));
+        };
+        let by_death = self.order.choice == (Choice::Written { denials: false });
+        let owed: Vec<(u32, u32)> = {
+            let st = &self.st[s as usize];
+            st.owed
+                .iter()
+                .filter_map(|&i| {
+                    let alts = t.instances.get(i as usize)?.alternatives.as_ref().ok()?;
+                    let open = alts
+                        .iter()
+                        .filter(|&&a| {
+                            if by_death {
+                                !self.dead.knows_extension_by_death(&st.bits, a)
+                            } else {
+                                !self.dead.knows_extension(&st.bits, a)
+                            }
+                        })
+                        .count() as u32;
+                    Some((open, i))
+                })
+                .collect()
+        };
+        if owed.is_empty() {
+            return Ok(Chosen::Branch(None));
+        }
+        let least = owed.iter().map(|x| x.0).min().expect("some");
+        let tied = owed.iter().filter(|x| x.0 == least).count() >= 2;
+        self.took.tied |= tied;
+        let choice = match self.order.choice {
+            Choice::Written { .. } => owed.iter().copied().min(),
+            Choice::Reversed => owed
+                .iter()
+                .copied()
+                .min_by_key(|&(open, i)| (open, std::cmp::Reverse(i))),
+            Choice::Text => owed
+                .iter()
+                .copied()
+                .min_by_key(|&(open, i)| (open, self.rank[i as usize])),
+            Choice::Shuffled(seed) => owed.iter().copied().min_by_key(|&(_, i)| {
+                let rank = self.rank[i as usize];
+                (mix(seed, u64::from(rank)), rank)
+            }),
+            Choice::Learned(_) => owed.iter().copied().min_by(|&(a, i), &(b, j)| {
+                // a / (1 + w_i) against b / (1 + w_j), in integers.
+                let (wi, wj) = (
+                    u128::from(self.weight[i as usize]) + 1,
+                    u128::from(self.weight[j as usize]) + 1,
+                );
+                (u128::from(a) * wj)
+                    .cmp(&(u128::from(b) * wi))
+                    .then(self.rank[i as usize].cmp(&self.rank[j as usize]))
+            }),
+            Choice::OpenCoupled | Choice::CoupledOpen | Choice::Coupled { .. } => {
+                // Which key goes first once the edges are read, and what
+                // breaks the last tie.
+                let (coupled_first, written) = match self.order.choice {
+                    Choice::OpenCoupled => (false, false),
+                    Choice::CoupledOpen => (true, false),
+                    Choice::Coupled { written } => (true, written),
+                    _ => unreachable!("a coupled choice"),
+                };
+                if self.coupled.is_none() {
+                    // The structure is read where the count leaves the
+                    // choice tied, once the run is `after` nodes in and has
+                    // done the work an earlier attempt asked for.
+                    let wanted = if self.order.choice == Choice::CoupledOpen {
+                        owed.len() >= 2
+                    } else {
+                        tied
+                    };
+                    let after = match self.order.structure {
+                        Structure::Node { after, .. } => after,
+                        _ => 0,
+                    };
+                    let (saturations, facts) = sp.work();
+                    let due =
+                        saturations >= after.max(self.next_read.0) && facts >= self.next_read.1;
+                    if wanted && due {
+                        // The counts as they stand, for the choice made
+                        // again should the tree start over.
+                        if self.read_structure(sp)? {
+                            return Ok(Chosen::Restarted);
+                        }
+                    }
+                }
+                let st = &self.st[s as usize];
+                let last = |i: u32| if written { i } else { self.rank[i as usize] };
+                match &self.coupled {
+                    Some(Some(c)) => owed.iter().copied().min_by_key(|&(open, i)| {
+                        let unpaid = c.unpaid(i, &st.bits);
+                        if coupled_first {
+                            (unpaid, open, last(i))
+                        } else {
+                            (open, unpaid, last(i))
+                        }
+                    }),
+                    // No edge read: the count, then the last key.
+                    _ => owed
+                        .iter()
+                        .copied()
+                        .min_by_key(|&(open, i)| (open, last(i))),
+                }
+            }
+        };
+        self.st[s as usize].counted = owed.into_boxed_slice();
+        Ok(Chosen::Branch(choice.map(|(_, i)| i)))
+    }
+
+    /// What the tree branches `s` on, choosing it the first time
+    /// ([`Self::choose`]): what is left of it, ascending. `None` where the
+    /// tree was started again before the choice was made.
+    fn branch_rest(&mut self, sp: &mut Space<'_>, s: u32) -> Result<Option<Vec<u32>>, SolveError> {
+        if self.st[s as usize].branch.is_none() {
+            let choice = match self.choose(sp, s)? {
+                Chosen::Branch(c) => c,
+                Chosen::Restarted => return Ok(None),
+            };
             if choice.is_some() {
                 self.l5 = true;
             }
             self.st[s as usize].branch = Some(choice);
         }
         let st = &self.st[s as usize];
-        match st.branch.expect("chosen") {
+        Ok(Some(match st.branch.expect("chosen") {
             Some(i) => {
                 let t = self.table.as_ref().expect("a table");
                 let alts = t.instances[i as usize]
@@ -530,6 +959,44 @@ impl Search {
                     .collect()
             }
             None => self.untried(s),
+        }))
+    }
+
+    /// The tree's next owing state, by the order's queue.
+    fn next_in_tree(&self) -> Option<(usize, Box<[u32]>)> {
+        match self.order.queue {
+            Queue::BySize => self.tree_q.iter().next().cloned(),
+            Queue::Deepest => {
+                let (size, _) = self.tree_q.iter().next_back()?;
+                self.tree_q.range((*size, Box::default())..).next().cloned()
+            }
+        }
+    }
+
+    /// Count the deaths of a branch against the instances a learned order
+    /// blames for them.
+    fn blame(&mut self, s: u32, deaths: u64) {
+        let Choice::Learned(blame) = self.order.choice else {
+            return;
+        };
+        let Some(Some(i)) = self.st[s as usize].branch else {
+            return;
+        };
+        self.weight[i as usize] += deaths;
+        if blame == Blame::Path {
+            let Some(t) = self.table.clone() else {
+                return;
+            };
+            let st = &self.st[s as usize];
+            for (j, inst) in t.instances.iter().enumerate() {
+                let paid = inst
+                    .alternatives
+                    .as_ref()
+                    .is_ok_and(|alts| alts.iter().any(|&a| st.bits.contains(a)));
+                if paid {
+                    self.weight[j] += deaths;
+                }
+            }
         }
     }
 
@@ -538,17 +1005,29 @@ impl Search {
     /// `Ok(Ok(false))` when the phase has nothing left.
     fn step(&mut self, sp: &mut Space<'_>, phase: Phase) -> Step<bool> {
         loop {
-            let q = match phase {
-                Phase::Tree => &self.tree_q,
-                Phase::Owing => &self.owing_q,
-                Phase::Up => &self.up_q,
+            if phase == Phase::Tree
+                && self.order.restarts
+                && sp.work().0 >= self.next_restart
+                && !self.tree_q.is_empty()
+            {
+                self.next_restart = self.next_restart.saturating_mul(2);
+                self.restart();
+            }
+            let next = match phase {
+                Phase::Tree => self.next_in_tree(),
+                Phase::Owing => self.owing_q.iter().next().cloned(),
+                Phase::Up => self.up_q.iter().next().cloned(),
             };
-            let Some(k) = q.iter().next().cloned() else {
+            let Some(k) = next else {
                 return Ok(Ok(false));
             };
             let s = self.by_closure[&k.1];
             let rest = match phase {
-                Phase::Tree => self.branch_rest(s),
+                Phase::Tree => match self.branch_rest(sp, s)? {
+                    Some(rest) => rest,
+                    // The tree was started again: its queue is another.
+                    None => continue,
+                },
                 Phase::Owing | Phase::Up => self.untried(s),
             };
             if rest.is_empty() {
@@ -570,8 +1049,22 @@ impl Search {
                 take
             };
             let before = self.st.len() as u32;
-            if let Err(stop) = self.extend(sp, s, &rest[..take])? {
-                return Ok(Err(stop));
+            let out = match self.extend(sp, s, &rest[..take])? {
+                Ok(out) => out,
+                Err(stop) => return Ok(Err(stop)),
+            };
+            if phase == Phase::Tree {
+                self.blame(s, out.iter().filter(|t| t.is_none()).count() as u64);
+                if self.restarted {
+                    // A tree started again reaches states it has met: each
+                    // owing one is branched under the new tree too.
+                    for &t in out.iter().flatten() {
+                        let st = &self.st[t as usize];
+                        if !st.in_r() {
+                            self.tree_q.insert(key(st));
+                        }
+                    }
+                }
             }
             if phase != Phase::Up {
                 // The states of R first met by branching an owing state are
@@ -805,6 +1298,7 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
     f.route = Some(s.route());
     f.licences = s.licences(&f.licences);
     f.denials = s.dead.denials_spent();
+    f.order = s.l5.then_some(s.took);
     Ok(f)
 }
 
