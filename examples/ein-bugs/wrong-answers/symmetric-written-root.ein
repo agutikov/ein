@@ -1,0 +1,13 @@
+;;; The control of `symmetric-derived-root.ein` — **W98**, register row
+;;; `W98/derived-at-root`'s control (`corpus/wrong_answers.toml`).
+;;;
+;;; The same program with the mark written as a fact, `(__symmetric__ near)`,
+;;; and not derived by a rule. Nothing else differs. Root's fixpoint holds
+;;; `(near a b)` and `(near b a)`, the second by the native mirror; the blind
+;;; enumerator has nothing to propose, and R is {∅}, which is the witness's
+;;; right answer. One symmetry stated two ways is one symmetry.
+
+(relation near Thing Thing :why "{?1} is near {?2}")
+(near a b)
+(__symmetric__ near)
+(query :goal (near ?x ?y))

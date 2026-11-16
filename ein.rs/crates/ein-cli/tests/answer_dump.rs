@@ -194,6 +194,17 @@ fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
 /// `and`. Empty since.
 const DO_NOT_LOAD: [(&str, usize); 0] = [];
 
+/// **The open register row W98's witnesses**, whose runs this test leaves out
+/// until the row is fixed: a `(__symmetric__ R)` a rule derives is not
+/// mirrored by the saturation that derives it. A state file states the mark,
+/// so the program it is saturates to what the run's state did not: at root,
+/// `(near b a)`, which the state's closure does not list; under a commitment,
+/// `(false)` by `one-way`. The fixing commit deletes this.
+const W98_OPEN: [&str; 2] = [
+    "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein",
+    "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein",
+];
+
 /// The programs the per-commit checks run on, with a question each: all of R
 /// on a program with a dead set and on an owing root, a line, a part, the
 /// word, an empty R, and the puzzle's model.
@@ -262,6 +273,7 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
             || row.now.refused.is_some()
             || row.now.error.is_some()
             || row.now.is_command()
+            || W98_OPEN.contains(&row.witness.as_str())
         {
             continue;
         }

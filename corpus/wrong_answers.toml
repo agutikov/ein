@@ -1243,6 +1243,19 @@
 # the stage's next commit wrote the hash. No open row is owned by a stage of
 # M1f's phase 10.
 #
+# **W98 was filed on 2026-11-16 by S1f.10.9**, from H9-4 of P1f.10's
+# `findings.md`, on the user's ruling at the phase's close, *"File and fix
+# them in this phase"*: a `(__symmetric__ R)` a rule derives is not mirrored
+# by the saturation that derives it. The saturator seeds its native mirror
+# once, from the relations marked when the seed is taken, and a mark derived
+# after it offers the facts of R already stored to no mirror. Two rows, one
+# per witness: the mark derived at root, which leaves root's first
+# saturation short of its fixpoint (two states where the mark written as a
+# fact answers {∅}), and the mark a commitment brings a rule to derive,
+# which no node mirrors (four states where the same closure written as a
+# rule answers {∅}). Filed `open`, owned by S1f.10.9, in a commit of their
+# own.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -17949,3 +17962,116 @@ derived   = "a refusal: every question about a commitment (ein solve in every mo
 run     = "solve"
 line    = "all"
 refused = "rule 'connex' [activator lt instance Node]: concludes (false) from (absent …) over lt, a relation a commitment can still extend — so it calls a state that has not yet decided lt a contradiction, and a commitment would lift it (dead is not upward-closed under absent; forbidden since M1e2 S1e2.2.5). Write what it means: close the relation, (solve :no-hypothesis (lt)), if no commitment is meant to extend it; state a requirement as a decision or an obligation, a yes/no attribute that must be decided (functional + total-owed) or (open ?R) with hrules that propose it; or conclude from a stored negative, (not …), as std.algebra's total does"
+
+# ══ W98 — a `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it, so the state that holds the mark is not closed under the symmetry it states ══
+[[case]]
+id       = "W98/derived-at-root"
+case     = "W98"
+title    = "a `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it, so the state that holds the mark is not closed under the symmetry it states"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.9"
+question = ["P1f.10 findings.md H9-4"]
+witness  = "examples/ein-bugs/wrong-answers/symmetric-derived-root.ein"
+status   = "open"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.9 (2026-11-16) from H9-4 of P1f.10's `findings.md`, on the user's ruling at the phase's close, *\"File and fix them in this phase\"*: the finding's own witness, `(near a b)` and a rule with an empty `:match` that concludes `(__symmetric__ near)`. The control, symmetric-written-root.ein, writes the mark as a fact and differs in nothing else. Put in the corpus as it stands, the witness departs from scratch in `detector.rs`'s sweep and panics `claim_round_trip.rs`'s library check, each because root's first saturation is no fixpoint; both name it until the fix"
+open_because = "the saturator seeds its native mirror once, at its first step, from the relations marked then, and the rule derives the mark after it: the mark offers `near`'s stored facts to no mirror, so root's first saturation leaves `(near b a)` underived. The blind enumerator proposes it, and R is two states, ∅ and `{(near b a)}`, each listed holding both facts once a later saturation of the same KB, whose seed reads the mark, mirrors `near`. S1f.10.9's next commit fixes it"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate build, at cb0fbde8 (2026-11-16): H is `(near b a)`, one candidate, and R two states, ∅ and `{(near b a)}`, each listed with `(near a b)` and `(near b a)`; `ein oracle` the same. `ein saturate --dump` prints root's fixpoint as `(near a b)` and `(__symmetric__ near :rule near-symmetric)`, with no `(near b a)`"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/symmetric-written-root.ein"
+run       = "solve"
+by        = "region"
+why       = "the mark written as a fact, `(__symmetric__ near)`, where the witness derives it by a rule, at cb0fbde8: root's fixpoint holds `(near b a)` by the native mirror, no candidate, and R {∅}"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(near b a)"]]
+
+[case.right]
+reading   = "`reserved_engine_strings.md` § `__symmetric__`: a marked relation's extension is closed under arg-swap, the closure the stdlib `symmetric` rule computes, which reads a mark a rule derives as one written; and `solution_semantics.md` § 1.3: root is the program's facts saturated to quiescence"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["near"]
+models    = [["(near a b)", "(near b a)"]]
+derived   = "`near` is marked symmetric, so root's fixpoint holds `(near b a)` beside `(near a b)`, however the mark came to hold. Root is alive and owes nothing, and every fact of the program's one relation is in it: the blind enumerator has nothing to propose, and R is {∅}, the control's answer"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["near"]
+models    = [["(near a b)", "(near b a)"], ["(near a b)", "(near b a)"]]
+
+[[case]]
+id       = "W98/derived-at-node"
+case     = "W98"
+title    = "a `(__symmetric__ R)` a rule derives is not mirrored by the saturation that derives it, so the state that holds the mark is not closed under the symmetry it states"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.9"
+question = ["P1f.10 findings.md H9-4"]
+witness  = "examples/ein-bugs/wrong-answers/symmetric-derived-node.ein"
+status   = "open"
+look_at  = ["answer", "summary"]
+note     = "Filed by S1f.10.9 (2026-11-16) beside `W98/derived-at-root`: the same mechanism in a node's saturation, which resumes root's. `(near a b)`, scoped out; `close`, which the blind enumerator proposes about; a rule that marks `near` symmetric once anything is close; and one that calls `(near b a)` a contradiction. The control, symmetric-rule-node.ein, closes `near` under the swap by a rule of its own, the closure the native mirror computes for a marked relation, and differs in nothing else. Root holds no mark, so neither `detector.rs` nor `claim_round_trip.rs` meets it"
+open_because = "a node resumes root's saturation, whose mirror was seeded at root with nothing marked; the mark a commitment brings `close-symmetric` to derive offers `near`'s stored facts to no mirror, so no node holds `(near b a)` and `one-way` kills none: R is the whole cube, four states. S1f.10.9's next commit fixes it"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate build, at cb0fbde8 (2026-11-16): H is `(close a)` and `(close b)`, and R the whole cube, four states; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/symmetric-rule-node.ein"
+run       = "solve"
+by        = "region"
+why       = "`near` closed under the swap by the program's own rule `close-mirror`, where the witness marks it, at cb0fbde8: H is `(close a)` and `(close b)`, each dead alone, and R {∅}"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(close a)", "(close b)"]]
+
+[case.right]
+reading   = "`reserved_engine_strings.md` § `__symmetric__`: a marked relation's extension is closed under arg-swap, the closure the stdlib `symmetric` rule computes, in whichever saturation the mark comes to hold"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["close"]
+models    = [[]]
+derived   = "H is `(close a)` and `(close b)`. A state that holds either marks `near` symmetric, so it holds `(near b a)`, and `one-way` makes it a contradiction; root holds no `close` and is alive and owes nothing. R is {∅}, the control's answer"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 4
+relations = ["close"]
+models    = [[], ["(close a)"], ["(close b)"], ["(close a)", "(close b)"]]
