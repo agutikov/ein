@@ -70,7 +70,7 @@ jobs:
       # The two `slow = true` entries the per-commit sweep skips. `cost_ms`
       # in corpus/corpus.toml is what says they are slow, measured, and both
       # directions of that claim are checked here
-      # (docs/history/m1a_rust/measurements/corpus_cost.md).
+      # (utils/censuses/corpus-cost.md).
       - run: cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
       # The determinism sweep at nightly's depth, not the per-commit one.

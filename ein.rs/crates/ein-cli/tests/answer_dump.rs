@@ -4,7 +4,7 @@
 //! The flag writes the answer as files: the read-out, the summary, one
 //! loadable program per state the run reached, the owing frontier of an empty
 //! R, the minimal dead sets, and `index.json` naming each. Its page is
-//! [`docs/kernel/inference/answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md),
+//! [`docs/ein/user/reference/answer-dump.md`](../../../../docs/ein/user/reference/answer-dump.md),
 //! and these are the claims on it that a test can hold:
 //!
 //! - `answer.json` **is** `--json-summary`, and `answer.txt` stdout, byte for

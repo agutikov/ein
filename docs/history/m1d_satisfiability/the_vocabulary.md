@@ -8,7 +8,7 @@ A claim too slow to check at the runner's depth stays out of the corpus, and
 deep exhaustive search is [P1d.10](README.md#p1d10--exhaustive-search)'s.
 **What shipped instead** is one line on stderr, one word in `corpus.toml`, and
 two sentences rewritten in other people's documents.
-**Inputs:** [`closure_census.md`](closure_census.md) (the denominator),
+**Inputs:** `closure_census.md` (the denominator),
 [`the_boundary.md`](the_boundary.md) (where the claim may live).
 
 ---
@@ -26,7 +26,7 @@ column the reconnaissance made possible:
 
 Zero in the third column for (a) and (b) is not a forecast. Today the corpus
 states **one** closure claim, it holds, and it exhausts
-([census §1–2](closure_census.md)); a weaker form has nothing to weaken and a
+(census §1–2); a weaker form has nothing to weaken and a
 certificate has nothing to attribute. F9's rule is the one that applies: *a
 mechanism inert on the corpus is recorded as inert, with the number.*
 
@@ -86,7 +86,7 @@ two of each other, all of them **twelve orders of magnitude** past the truth.
 **And the 23 are the same 23**, which is what makes the comparison a
 cross-check rather than a coincidence: five attribute relations over five
 objects is 25 slots, the clues fix two, and
-[`model_set_census.md` §2](model_set_census.md) reports
+`model_set_census.md` §2 reports
 exactly `vars 23, fixed 2` for this file. The coupling it measured is why the
 product is hopeless: those 23 are **one** component, K₂₃ minus five edges, so
 multiplying candidate-set sizes assumes an independence that is absent on every
@@ -95,7 +95,7 @@ edge but five.
 ### It is unavailable where a model set exists
 
 Worse than loose, and the number nobody had asked for. Of the **12 corpus
-entries with a model set** ([census §3](closure_census.md)), how many state an
+entries with a model set** (census §3), how many state an
 obligation at all?
 
 | | entries |
@@ -140,7 +140,7 @@ stays 1 under both `solve` and `test`, and it stays distinguishable from both
 pass and fail in the report.
 
 **The stream did move, and it is the one thing this stage shipped in the
-engine.** [S1d.4.1](closure_census.md) found that `ein solve` printed the
+engine.** S1d.4.1 found that `ein solve` printed the
 `:expect` verdict on stdout and exited 1 with an **empty stderr** — the exact
 shape `corpus_cli::every_refusal_carries_a_diagnostic` exists to forbid, and
 the reason `NOT CHECKED` had no manifest cell. The question it posed —
@@ -180,7 +180,7 @@ remember; it is the failure mode of adding one.
 
 Its current cost is **zero entries**, measured: 59 of 59 claims hold and all 59
 exhaust. Its *forward* cost is the ten entries whose claim would come back
-unchecked if written ([census §4](closure_census.md)) — of which the sharp one
+unchecked if written (census §4) — of which the sharp one
 is `saturation/type-exclusivity/pets.ein`, `Contradiction k = 0` at `-m 5` and
 **35 models** at `-m 10`. None of the ten carries a claim, and under this policy
 none of them gets one until the search that would check it is affordable.

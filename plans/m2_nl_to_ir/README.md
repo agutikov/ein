@@ -303,9 +303,9 @@ and whether the fixed point is syntactic or semantic
   [M10](../m10_external_benchmarks/README.md) — the hand-written encodings
   P2.8 starts from, and the benchmark direction that is *not* this one
   (formal-language shaped, not M2-gated).
-- [`docs/api/rust.md`](../../docs/api/rust.md) — what a Rust loop links;
+- [`docs/ein/ein.rs/api.md`](../../docs/ein/ein.rs/api.md) — what a Rust loop links;
   [`docs/install.md`](../../docs/install.md), `--json-summary`
-  (`ein-summary/1`) and [`--events`](../../docs/kernel/inference/events.md)
+  (`ein-summary/1`) and [`--events`](../../docs/ein/ein.rs/events.md)
   (`ein-events/1`) — what a Python one drives; Q25 chooses.
 - [M1f S1f.6.20](../m1f_hypothesis_and_documentation/p1f.6_calculator/s1f.6.20_word_problems.md) — word problems as hand-written Ein programs over the calculator theory: the first
   instances of § The reasoning as a program, and candidates for the benchmark once it has run.

@@ -3,9 +3,9 @@
 //! Each field maps 1:1 to a `:kebab-flag`, and the field *list with its
 //! declaration order* is observable twice over: `--dump-config` prints it in
 //! declaration order, and an unknown flag is rejected with the valid names
-//! **sorted** ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3c).
+//! **sorted** ([design/determinism-and-order.md § 4.3](../../../../docs/ein/ein.rs/design/determinism-and-order.md#43-output-bytes)).
 //! [`FIELDS`] is that list, and the loader
-//! ([S1a.2.3](../../../../docs/history/m1a_rust/README.md#s1a23--the-loader-from_ir))
+//! ([design/ir-frontend.md § 9.1](../../../../docs/ein/ein.rs/design/ir-frontend.md#91-passes-and-accumulated-errors))
 //! parses through it.
 //!
 //! It lives here rather than beside the engine because the KB holds one and
@@ -20,7 +20,7 @@
 //!
 //! Every flag, with its default, what it changes, whether it changes the
 //! answer and what depending on it commits you to:
-//! [`docs/kernel/config.md`](../../../../docs/ein/user/reference/config.md),
+//! [`docs/ein/user/reference/config.md`](../../../../docs/ein/user/reference/config.md),
 //! whose defaults block is `--dump-config`'s own output and whose flag list is
 //! diffed against [`FIELDS`] by `ein-cli/tests/config_reference.rs`.
 

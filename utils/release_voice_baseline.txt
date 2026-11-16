@@ -12,33 +12,32 @@
     3  corpus/fuzz_findings/fork-delta-order.ein
   142  docs/ein/README.md
    24  ein.rs/crates/ein-cli/src/cmdline.rs
-   21  ein.rs/crates/ein-cli/src/common.rs
+   20  ein.rs/crates/ein-cli/src/common.rs
     3  ein.rs/crates/ein-cli/src/kb.rs
     3  ein.rs/crates/ein-cli/src/lib.rs
     4  ein.rs/crates/ein-cli/src/main.rs
    14  ein.rs/crates/ein-cli/src/modes.rs
     5  ein.rs/crates/ein-cli/src/oracle.rs
-   11  ein.rs/crates/ein-cli/src/render.rs
+   10  ein.rs/crates/ein-cli/src/render.rs
     2  ein.rs/crates/ein-cli/src/saturate.rs
-   10  ein.rs/crates/ein-cli/src/solve.rs
+    9  ein.rs/crates/ein-cli/src/solve.rs
    14  ein.rs/crates/ein-cli/src/summary.rs
    28  ein.rs/crates/ein-cli/src/test.rs
-    3  ein.rs/crates/ein-cli/src/version.rs
+    2  ein.rs/crates/ein-cli/src/version.rs
     2  ein.rs/crates/ein-cli/tests/acceptance_cli.rs
    19  ein.rs/crates/ein-cli/tests/answer_dump.rs
    45  ein.rs/crates/ein-cli/tests/answer_round_trip.rs
    27  ein.rs/crates/ein-cli/tests/arith_search_free.rs
     3  ein.rs/crates/ein-cli/tests/artefact_contract.rs
-  108  ein.rs/crates/ein-cli/tests/cli_semantics.rs
+  107  ein.rs/crates/ein-cli/tests/cli_semantics.rs
     4  ein.rs/crates/ein-cli/tests/closed_stdout.rs
     7  ein.rs/crates/ein-cli/tests/conclusion_shapes.rs
    21  ein.rs/crates/ein-cli/tests/config_reference.rs
-   20  ein.rs/crates/ein-cli/tests/corpus_cli.rs
+   17  ein.rs/crates/ein-cli/tests/corpus_cli.rs
     4  ein.rs/crates/ein-cli/tests/declared_counts.rs
     9  ein.rs/crates/ein-cli/tests/einb_cli.rs
-    6  ein.rs/crates/ein-cli/tests/embedding.rs
     9  ein.rs/crates/ein-cli/tests/events_reference.rs
-   10  ein.rs/crates/ein-cli/tests/expect_cli.rs
+    9  ein.rs/crates/ein-cli/tests/expect_cli.rs
     4  ein.rs/crates/ein-cli/tests/forms_cut.rs
     8  ein.rs/crates/ein-cli/tests/gate_steps.rs
     5  ein.rs/crates/ein-cli/tests/goal_premises.rs
@@ -76,36 +75,34 @@
     3  ein.rs/crates/ein-cli/tests/solve_lists.rs
     1  ein.rs/crates/ein-cli/tests/steps/mod.rs
     7  ein.rs/crates/ein-cli/tests/summary_properties.rs
-   42  ein.rs/crates/ein-cli/tests/test_cli.rs
+   41  ein.rs/crates/ein-cli/tests/test_cli.rs
     3  ein.rs/crates/ein-cli/tests/unicode_only_in_a_string.rs
     7  ein.rs/crates/ein-cli/tests/value_rule.rs
     1  ein.rs/crates/ein-cli/tests/version.rs
     2  ein.rs/crates/ein-cli/tests/world_anchors.rs
     2  ein.rs/crates/ein-cli/tests/written_facts.rs
    20  ein.rs/crates/ein-cli/tests/wrong_answers.rs
-    1  ein.rs/crates/ein-core/src/bitset.rs
-   23  ein.rs/crates/ein-core/src/config.rs
-   19  ein.rs/crates/ein-core/src/counters.rs
+   22  ein.rs/crates/ein-core/src/config.rs
+   10  ein.rs/crates/ein-core/src/counters.rs
     4  ein.rs/crates/ein-core/src/entities.rs
     3  ein.rs/crates/ein-core/src/facts.rs
-   10  ein.rs/crates/ein-core/src/intern.rs
-   39  ein.rs/crates/ein-core/src/kb.rs
-    3  ein.rs/crates/ein-core/src/lib.rs
+    9  ein.rs/crates/ein-core/src/intern.rs
+   30  ein.rs/crates/ein-core/src/kb.rs
    14  ein.rs/crates/ein-core/src/program.rs
-   14  ein.rs/crates/ein-core/src/prov.rs
-    3  ein.rs/crates/ein-core/src/repr.rs
-    2  ein.rs/crates/ein-core/src/shape.rs
-   38  ein.rs/crates/ein-core/src/terms.rs
+   12  ein.rs/crates/ein-core/src/prov.rs
+    2  ein.rs/crates/ein-core/src/repr.rs
+    1  ein.rs/crates/ein-core/src/shape.rs
+   32  ein.rs/crates/ein-core/src/terms.rs
    15  ein.rs/crates/ein-core/src/text.rs
    11  ein.rs/crates/ein-core/src/value.rs
     3  ein.rs/crates/ein-core/src/walks.rs
-   10  ein.rs/crates/ein-core/src/why.rs
-    2  ein.rs/crates/ein-core/tests/fork_cost.rs
+    9  ein.rs/crates/ein-core/src/why.rs
+    1  ein.rs/crates/ein-core/tests/fork_cost.rs
     1  ein.rs/crates/ein-core/tests/format_tables.rs
     9  ein.rs/crates/ein-core/tests/values_semantics.rs
     2  ein.rs/crates/ein-einb/src/cast.rs
     8  ein.rs/crates/ein-einb/src/header.rs
-   22  ein.rs/crates/ein-einb/src/lib.rs
+   21  ein.rs/crates/ein-einb/src/lib.rs
     1  ein.rs/crates/ein-einb/src/meta.rs
     8  ein.rs/crates/ein-einb/src/sections.rs
     7  ein.rs/crates/ein-einb/src/solutions.rs
@@ -115,11 +112,11 @@
     7  ein.rs/crates/ein-einb/tests/roundtrip.rs
     2  ein.rs/crates/ein-infer/examples/compile_cost.rs
     3  ein.rs/crates/ein-infer/examples/conclusion_census.rs
-    5  ein.rs/crates/ein-infer/examples/detector_draft.rs
+    4  ein.rs/crates/ein-infer/examples/detector_draft.rs
     2  ein.rs/crates/ein-infer/examples/early_stop.rs
     2  ein.rs/crates/ein-infer/examples/expect_under_r.rs
     6  ein.rs/crates/ein-infer/examples/flags_reach.rs
-    3  ein.rs/crates/ein-infer/examples/frontend_cost.rs
+    1  ein.rs/crates/ein-infer/examples/frontend_cost.rs
     2  ein.rs/crates/ein-infer/examples/hole_census.rs
     2  ein.rs/crates/ein-infer/examples/mechanism_census.rs
     2  ein.rs/crates/ein-infer/examples/no_edge.rs
@@ -134,28 +131,28 @@
     5  ein.rs/crates/ein-infer/examples/site_census.rs
     2  ein.rs/crates/ein-infer/examples/state_reach.rs
     5  ein.rs/crates/ein-infer/examples/taint_census.rs
-    2  ein.rs/crates/ein-infer/src/build.rs
-    3  ein.rs/crates/ein-infer/src/canon.rs
+    1  ein.rs/crates/ein-infer/src/build.rs
+    2  ein.rs/crates/ein-infer/src/canon.rs
     7  ein.rs/crates/ein-infer/src/claim.rs
-   87  ein.rs/crates/ein-infer/src/compile.rs
+   85  ein.rs/crates/ein-infer/src/compile.rs
     6  ein.rs/crates/ein-infer/src/contradiction.rs
     1  ein.rs/crates/ein-infer/src/count.rs
    10  ein.rs/crates/ein-infer/src/described.rs
    17  ein.rs/crates/ein-infer/src/detector.rs
     9  ein.rs/crates/ein-infer/src/downset.rs
-    8  ein.rs/crates/ein-infer/src/engine.rs
+    7  ein.rs/crates/ein-infer/src/engine.rs
     7  ein.rs/crates/ein-infer/src/error.rs
-    4  ein.rs/crates/ein-infer/src/events.rs
+    3  ein.rs/crates/ein-infer/src/events.rs
     7  ein.rs/crates/ein-infer/src/expect.rs
    42  ein.rs/crates/ein-infer/src/explain.rs
-   42  ein.rs/crates/ein-infer/src/explore.rs
+   40  ein.rs/crates/ein-infer/src/explore.rs
    22  ein.rs/crates/ein-infer/src/firing.rs
    15  ein.rs/crates/ein-infer/src/forbid.rs
     6  ein.rs/crates/ein-infer/src/hrule.rs
-   32  ein.rs/crates/ein-infer/src/hypgen.rs
+   31  ein.rs/crates/ein-infer/src/hypgen.rs
    24  ein.rs/crates/ein-infer/src/invariant.rs
-    3  ein.rs/crates/ein-infer/src/lib.rs
-   16  ein.rs/crates/ein-infer/src/match_.rs
+    1  ein.rs/crates/ein-infer/src/lib.rs
+   15  ein.rs/crates/ein-infer/src/match_.rs
     6  ein.rs/crates/ein-infer/src/mechanisms.rs
    17  ein.rs/crates/ein-infer/src/monotone.rs
    13  ein.rs/crates/ein-infer/src/naf_deps.rs
@@ -165,14 +162,14 @@
    10  ein.rs/crates/ein-infer/src/predicates.rs
    19  ein.rs/crates/ein-infer/src/read_out.rs
    42  ein.rs/crates/ein-infer/src/region.rs
-   24  ein.rs/crates/ein-infer/src/saturator.rs
+   17  ein.rs/crates/ein-infer/src/saturator.rs
     6  ein.rs/crates/ein-infer/src/scope.rs
-   10  ein.rs/crates/ein-infer/src/shape.rs
-    9  ein.rs/crates/ein-infer/src/states.rs
+    9  ein.rs/crates/ein-infer/src/shape.rs
+    8  ein.rs/crates/ein-infer/src/states.rs
     3  ein.rs/crates/ein-infer/src/transversal.rs
     2  ein.rs/crates/ein-infer/src/tree.rs
     5  ein.rs/crates/ein-infer/src/types_as_objects.rs
-    5  ein.rs/crates/ein-infer/src/verdict.rs
+    4  ein.rs/crates/ein-infer/src/verdict.rs
     6  ein.rs/crates/ein-infer/tests/acceptance.rs
     1  ein.rs/crates/ein-infer/tests/algebra_semantics.rs
    57  ein.rs/crates/ein-infer/tests/alive_invariant.rs
@@ -193,9 +190,9 @@
    22  ein.rs/crates/ein-infer/tests/explore.rs
     5  ein.rs/crates/ein-infer/tests/gcd_theory.rs
    14  ein.rs/crates/ein-infer/tests/int_theory.rs
-   11  ein.rs/crates/ein-infer/tests/interning.rs
+    9  ein.rs/crates/ein-infer/tests/interning.rs
     1  ein.rs/crates/ein-infer/tests/match_alloc.rs
-   16  ein.rs/crates/ein-infer/tests/naf_semantics.rs
+   15  ein.rs/crates/ein-infer/tests/naf_semantics.rs
     3  ein.rs/crates/ein-infer/tests/num9_theory.rs
    22  ein.rs/crates/ein-infer/tests/obligation_reports.rs
    16  ein.rs/crates/ein-infer/tests/obligation_rung.rs
@@ -206,10 +203,10 @@
    14  ein.rs/crates/ein-infer/tests/register_region.rs
    51  ein.rs/crates/ein-infer/tests/rule_semantics.rs
    18  ein.rs/crates/ein-infer/tests/search_semantics.rs
-    6  ein.rs/crates/ein-infer/tests/shareable.rs
+    1  ein.rs/crates/ein-infer/tests/shareable.rs
    19  ein.rs/crates/ein-infer/tests/stdlib_coverage.rs
     7  ein.rs/crates/ein-infer/tests/stdlib_semantics.rs
-    4  ein.rs/crates/ein-infer/tests/worker_view.rs
+    3  ein.rs/crates/ein-infer/tests/worker_view.rs
     1  ein.rs/crates/ein-ir/build.rs
     3  ein.rs/crates/ein-ir/examples/generated_parser.rs
     1  ein.rs/crates/ein-ir/examples/load_rss.rs
@@ -217,12 +214,12 @@
     9  ein.rs/crates/ein-ir/src/claim.rs
     6  ein.rs/crates/ein-ir/src/dump.rs
    15  ein.rs/crates/ein-ir/src/expect.rs
-  182  ein.rs/crates/ein-ir/src/from_ir.rs
+  180  ein.rs/crates/ein-ir/src/from_ir.rs
    23  ein.rs/crates/ein-ir/src/grammar.rs
     9  ein.rs/crates/ein-ir/src/grammar/build_ast.rs
    11  ein.rs/crates/ein-ir/src/imports.rs
-    5  ein.rs/crates/ein-ir/src/lib.rs
-   14  ein.rs/crates/ein-ir/src/macros.rs
+    3  ein.rs/crates/ein-ir/src/lib.rs
+   12  ein.rs/crates/ein-ir/src/macros.rs
    10  ein.rs/crates/ein-ir/src/read.rs
     8  ein.rs/crates/ein-ir/src/stdlib.rs
     8  ein.rs/crates/ein-ir/tests/digit_tables.rs
@@ -235,7 +232,7 @@
    23  ein.rs/crates/ein-ir/tests/grammar_pages.rs
     3  ein.rs/crates/ein-ir/tests/imports_full_names.rs
    32  ein.rs/crates/ein-ir/tests/imports_semantics.rs
-   32  ein.rs/crates/ein-ir/tests/ir_semantics.rs
+   31  ein.rs/crates/ein-ir/tests/ir_semantics.rs
    13  ein.rs/crates/ein-ir/tests/kb_semantics.rs
    21  ein.rs/crates/ein-ir/tests/load_semantics.rs
     3  ein.rs/crates/ein-ir/tests/template_wellformedness.rs
@@ -251,14 +248,14 @@
     3  ein.rs/crates/ein-render/src/grid.rs
     3  ein.rs/crates/ein-render/src/ir_dot.rs
     1  ein.rs/crates/ein-render/src/kb_dot.rs
-    5  ein.rs/crates/ein-render/src/lib.rs
+    3  ein.rs/crates/ein-render/src/lib.rs
    25  ein.rs/crates/ein-render/src/models.rs
    40  ein.rs/crates/ein-render/src/read_out.rs
     7  ein.rs/crates/ein-render/src/region_doc.rs
     4  ein.rs/crates/ein-render/src/region_dot.rs
     3  ein.rs/crates/ein-render/src/rules.rs
     2  ein.rs/crates/ein-render/src/sentence.rs
-    6  ein.rs/crates/ein-render/src/shape.rs
+    5  ein.rs/crates/ein-render/src/shape.rs
     1  ein.rs/crates/ein-render/src/slice.rs
     8  ein.rs/crates/ein-render/src/trace/ast.rs
     2  ein.rs/crates/ein-render/src/trace/linearize.rs
@@ -266,14 +263,14 @@
     7  ein.rs/crates/ein-render/src/trace/region.rs
     1  ein.rs/crates/ein-render/src/trace/relevance.rs
     3  ein.rs/crates/ein-render/src/trace/render.rs
-   21  ein.rs/crates/ein-render/tests/corpus_ops/mod.rs
+   20  ein.rs/crates/ein-render/tests/corpus_ops/mod.rs
     1  ein.rs/crates/ein-render/tests/derivation_dot.rs
    19  ein.rs/crates/ein-render/tests/dot_wellformed.rs
     4  ein.rs/crates/ein-render/tests/golden_dot.rs
     5  ein.rs/crates/ein-render/tests/golden_trace.rs
    12  ein.rs/crates/ein-render/tests/id_order_invariance.rs
-    7  ein.rs/crates/ein-render/tests/idea08_acceptance.rs
-   10  ein.rs/crates/ein-render/tests/jobs_invariance.rs
+    6  ein.rs/crates/ein-render/tests/idea08_acceptance.rs
+    8  ein.rs/crates/ein-render/tests/jobs_invariance.rs
     2  ein.rs/crates/ein-render/tests/key_declines.rs
     8  ein.rs/crates/ein-render/tests/line_modes_past_the_limit.rs
    10  ein.rs/crates/ein-render/tests/presentation_semantics.rs
@@ -747,8 +744,6 @@
     2  examples/lattice/07_two_pairs_two_tables.ein
     1  examples/lattice/08_absent_witness_hole.ein
     2  examples/lattice/09_activator_hole.ein
-    1  examples/lattice/10_fifo_gap.ein
-    1  examples/lattice/11_fifo_gap_static.ein
     2  examples/lattice/12_activator_chain_hole.ein
     3  examples/lattice/synth/local_not_global.ein
     3  examples/lattice/synth/maximal_not_top.ein

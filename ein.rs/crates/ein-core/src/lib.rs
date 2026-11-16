@@ -1,17 +1,17 @@
 //! `ein-core` — the data model.
 //!
 //! No I/O and no engine: interning, `Value` / `FactId` as integers, row
-//! storage, the layered COW KB ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md)),
+//! storage, the layered COW KB ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)),
 //! and the `repr` / `numfmt` value renderers
-//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
+//! ([design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer)).
 //! Everything depends on this crate; it depends on nothing.
 //!
 //! The data model lands at
-//! [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core); the two
+//! [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md); the two
 //! renderers land early, at
-//! [S1a.1.2](../../../../docs/history/m1a_rust/README.md#s1a12--ast-arena-value-renderers-dumper),
+//! [design/determinism-and-order.md § 7](../../../../docs/ein/ein.rs/design/determinism-and-order.md#7-the-value-renderer),
 //! because they are trivial to write and expensive to discover missing at
-//! [P1a.5](../../../../docs/history/m1a_rust/README.md#p1a5--presentation-and-cli).
+//! [architecture.md § 3.4](../../../../docs/ein/ein.rs/architecture.md#34-ein-einb-ein-render-ein-cli).
 
 #![forbid(unsafe_code)]
 

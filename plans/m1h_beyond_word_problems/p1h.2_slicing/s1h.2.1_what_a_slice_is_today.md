@@ -96,7 +96,7 @@ several classes), one program of `tests/stdlib/` from each of two refutation pai
 
 - **That `--events` does not carry enough** to rebuild a justification under a commitment, where a node
   resumes root's saturation and narrates only its own part
-  ([`events.md`](../../../docs/kernel/inference/events.md) on narration). Then the script reads the
+  ([`events.md`](../../../docs/ein/ein.rs/events.md) on narration). Then the script reads the
   `--dump-answer` state file's provenance as well, and the page says which run artefact holds what.
 - **That a rule's module is not recoverable from a run,** only from the source files. Then the script reads
   the sources for it, and the gap is a row of `findings.md`: S1h.2.5 and

@@ -820,7 +820,7 @@ For a rule author, three consequences:
   by its relations and the rules on its edges. It is a diagnostic, not
   a refusal, and it says what the graph licenses, never a fact about the
   run: the answer stands, and may depend on the boundary's order and
-  need not be unique ([`inference/implementation.md`](../../inference/implementation.md)'s
+  need not be unique ([`ein.rs/architecture.md`](../../../ein/ein.rs/architecture.md)'s
   `strata.rs`).
 
 A **nested** `(absent …)` — what `forall` desugars to,

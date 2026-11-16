@@ -5,7 +5,7 @@
 //! so the compiler substitutes the parameters and bakes concrete relation
 //! names into the program, with the slots lowered to [`Slot`]s and the
 //! variables numbered
-//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2).
+//! ([design/matcher.md § 2.1](../../../../docs/ein/ein.rs/design/matcher.md#21-the-compile-unit-and-its-activator)).
 //!
 //! The compiler is small and its **edge cases are semantics**. S1.22.0 turned
 //! four silent `return []` paths into errors precisely because dropping a
@@ -161,7 +161,7 @@ pub fn plan_key(terms: &Terms, rule: &Rule, activator: Option<FactId>) -> PlanKe
 }
 
 /// The **process-wide** `(rule, activator) → PlanId` memo
-/// ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) § Win A).
+/// ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)).
 ///
 /// A plan is a pure function of its key, so compiling it twice is waste: an
 /// exhaustive `zebra2` makes 253 440 `compile_for` calls of which all but 19
@@ -171,13 +171,13 @@ pub fn plan_key(terms: &Terms, rule: &Rule, activator: Option<FactId>) -> PlanKe
 /// the saturator's full enqueue pass walks — so each engine keeps its own ordered
 /// `Vec<PlanId>` (S1a.3.3) and this holds only the plans.
 ///
-/// Append-only, which is what will let [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
+/// Append-only, which is what will let [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md)
 /// put it behind a shared lock without any invalidation story.
 #[derive(Default, Debug)]
 pub struct PlanMemo {
     /// `Arc` because a plan outlives the borrow of the memo that produced it:
     /// the saturator holds one while it mutates the engine around it, and
-    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) will
+    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) will
     /// share the same plans across threads without copying them.
     plans: Vec<Arc<Plan>>,
     by_key: FxHashMap<PlanKey, PlanId>,
@@ -228,7 +228,7 @@ impl PlanMemo {
     /// activator's arguments again for an answer already in hand. Until M1e2
     /// S1e2.2.16 `plan_key` rendered and re-interned every non-symbol
     /// argument, a `Vec<String>` per compile
-    /// ([baseline.md §7](../../../../docs/history/m1a_rust/measurements/baseline.md)
+    /// ([design/matcher.md § 7](../../../../docs/ein/ein.rs/design/matcher.md#7-the-compile-cache)
     /// item 4 names `plan_key` among the top allocators).
     pub fn intern_keyed(
         &mut self,

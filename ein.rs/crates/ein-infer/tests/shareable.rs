@@ -1,6 +1,6 @@
 //! T1a.7.1.4 — **the `KbCore` / `Program` audit, as assertions.**
 //!
-//! [S1a.7.1](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)
+//! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 //! asks for a confirmation that nothing a worker holds is secretly
 //! single-threaded — a lazily-computed cache behind a `Cell`, an `Rc` that
 //! crept in, a `RefCell` in a registry. The compiler already knows the answer
@@ -8,12 +8,12 @@
 //! asking it, in a file that fails when the answer changes.
 //!
 //! `ein_core::terms` has asked it of the intern tables since
-//! [S1a.2.1](../../../../docs/history/m1a_rust/README.md#s1a21--interner-value-factid-the-fact-store),
+//! [design/data-model.md § 2](../../../../docs/ein/ein.rs/design/data-model.md#2-symbols-and-the-interner),
 //! for exactly this reason. This is the same assertion widened to everything
-//! [design/08 §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)
+//! [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 //! puts on a worker — **and to the one thing that fails it**, which is the
 //! audit's only finding to date and is recorded rather than fixed, because
-//! fixing it is [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)'s
+//! fixing it is [design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)'s
 //! ordered commit and not this stage's.
 
 use std::marker::PhantomData;
@@ -90,7 +90,7 @@ fn every_structure_a_worker_touches_is_send_and_sync() {
 }
 
 /// **The finding, and its fix.** `events::Buffer` was `Rc<RefCell<Vec<u8>>>`
-/// when [T1a.7.1.4](../../../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)
+/// when [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
 /// asked this question, so `Events` was the one thing on a worker's list that
 /// could not cross a thread — which design/08 §3's "no shared queue" hid,
 /// because a sink is not a queue.
@@ -98,7 +98,7 @@ fn every_structure_a_worker_touches_is_send_and_sync() {
 /// The fix was not a lock. It is the shape the counters already have: a
 /// per-worker buffer replayed at the **ordered commit**, so the stream a reader
 /// sees is the sequential one
-/// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)).
+/// ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)).
 /// `Events::worker` is that buffer and `Events::replay` is the merge, and the
 /// **ordinal is assigned at replay**: what a worker records is what happened,
 /// and where it belongs in the run is the committing thread's to say.

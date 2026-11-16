@@ -2,7 +2,7 @@
 //! work it needs — M1e2
 //! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
 //! T1e2.1a.9.4, the design the user approved on 2026-10-16
-//! ([`cli.md`](../../../../docs/ein/user/reference/cli.md)).
+//! ([design/search.md § 4](../../../../docs/ein/ein.rs/design/search.md#4-the-routes)).
 //!
 //! A question is a [`Mode`]: **which** part of `R` (all of it, the minimal
 //! line, the maximal line) and **what is asked** (describe it, find `N` of
@@ -2716,7 +2716,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
 /// `ein solve FILE --monotone`'s answer, a question about the **program**
 /// rather than about `R` — M1e2 S1e2.1b.5, the form the user approved on
 /// 2026-11-03 ((a1) of
-/// [`detector_proposal.md`](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)
+/// [design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs)
 /// § 2.2). Its work is root's fixpoint and the static check, and nothing
 /// else: no node is built, so it has no `R` to disagree with `ein solve`
 /// about, and its verdict and sites are the ones every surface prints, from

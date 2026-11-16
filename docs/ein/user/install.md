@@ -137,9 +137,9 @@ Ein has no binding for another language
 package. To drive Ein from Python, or from any language, run the binary and read its output:
 `ein solve … --json-summary out.json` for the answer's blocks and counts
 ([the read-out](reference/read-out.md)), `--events e.jsonl` for the step-by-step narration
-([the protocol](../../kernel/inference/events.md)), `--dump-answer DIR` for the answer as files
+([the protocol](../ein.rs/events.md)), `--dump-answer DIR` for the answer as files
 ([the answer dump](reference/answer-dump.md)). To embed Ein in a Rust program, link the crates
-([the Rust API](../../api/rust.md)).
+([the Rust API](../ein.rs/api.md)).
 
 ## See also
 

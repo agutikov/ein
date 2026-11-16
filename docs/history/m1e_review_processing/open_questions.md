@@ -1555,12 +1555,12 @@ title — *three* kernel primitives — over-counts by one on the repair side.
 degrade catastrophically?* Nothing in the tree asks. What exists is adjacent
 and is not the same question:
 
-- [`corpus_cost.md`](../m1a_rust/measurements/corpus_cost.md)
+- [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md)
   prices the corpus as it is, and `slow = true` is a measured claim about
   **these** files.
-- [`scaling.md`](../m1a_rust/measurements/scaling.md) measures
+- `scaling.md` measures
   `--jobs` on four workloads.
-- [`layer_census.md`](../m1d_satisfiability/layer_census.md)
+- `layer_census.md`
   measures what a layer costs and what a clause removes, again on the corpus.
 
 All three measure the corpus. **A pathology pass measures what is *not* in the
@@ -1591,12 +1591,12 @@ Routing it here, with what the stage measured.
 
 | artifact | what it is | who can ask for it |
 |---|---|---|
-| the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice_dump.md`](../../kernel/inference/lattice_dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
+| the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice-dump.md`](../../ein/ein.rs/lattice-dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
 | `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
 
 Both are `pub`, both are exercised by the gate — `golden_dump.rs` for the first, `dot_wellformed.rs` over the whole corpus for
 the second — and neither is documented anywhere a caller would look:
-[`docs/api/rust.md`](../../api/rust.md)'s worked example stops at
+[`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md)'s worked example stops at
 solve-and-render. So the failure is not that the code rotted; it is that the
 **surface** never grew a door, and two pages spent a milestone describing
 rooms behind it.
@@ -1615,11 +1615,11 @@ Three options, and the third is the cheapest and is not obviously wrong:
   `--help` golden, and the standing question of whether a private debugging
   artifact belongs on the shipped surface at all.
 - **(b) a documented library call** — a section in
-  [`docs/api/rust.md`](../../api/rust.md). Its worked example is a marked
+  [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md). Its worked example is a marked
   region of `ein-cli/tests/embedding.rs` that a test diffs, so this is a real
   test to write and it would keep working, which is the page's whole method.
 - **(c) leave both unreachable and say so.** Done, as of S1e.2.2 —
-  [`lattice_dump.md` § Reachability](../../kernel/inference/lattice_dump.md)
+  [`lattice-dump.md` § Reachability](../../ein/ein.rs/lattice-dump.md)
   and `04_dot_rendering.md` § How to ask for this view both state plainly what
   can and cannot ask. Under that reading the *documentation* defect is closed
   and only the capability question is open, which is what this entry now is.
@@ -1628,7 +1628,7 @@ What tips it is a question this milestone has not asked: **who wants the
 per-hypothesis dump?** It was built for debugging rule sets, `utils/` no longer
 drives it, and [M20](../../../plans/m20_gui/README.md) is the plausible consumer of the KB
 view. If the answer is *the GUI*, (a) is premature and the feed is
-[`--events`](../../kernel/inference/events.md); if the answer is *a
+[`--events`](../../ein/ein.rs/events.md); if the answer is *a
 puzzle author chasing a rule that will not fire*, (a) is the answer and the
 flag is small.
 

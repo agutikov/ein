@@ -15,7 +15,7 @@
 //!
 //! The third door was the walk's `LatticeDumper` tree until M1e2 S1e2.1a.5's
 //! switch; it is a region run's visited nodes since (`ein-lattice/2`,
-//! [`lattice_dump.md`](../../../../docs/kernel/inference/lattice_dump.md)), and
+//! [`lattice-dump.md`](../../../../docs/ein/ein.rs/lattice-dump.md)), and
 //! `ein render lattice` draws them.
 //!
 //! The renderers' own standard is `ein-render/tests/dot_wellformed.rs`: what

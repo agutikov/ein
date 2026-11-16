@@ -12,7 +12,7 @@
 //! A checker that reports success on a broken expectation is the worst outcome
 //! this phase has available to it, so the fixtures that must *fail* are checked
 //! for failing — with the right code and the right message — and not merely
-//! run. The [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)
+//! run. The [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)
 //! precedent: the fuzzer's own three controls each failed once first.
 
 use std::path::PathBuf;

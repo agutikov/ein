@@ -1,5 +1,5 @@
 //! What a **load** costs, phase by phase, and what it allocates —
-//! [S1a.6.5](../../../../docs/history/m1a_rust/README.md#s1a65--frontend-and-load-path)'s
+//! [design/ir-frontend.md § 2](../../../../docs/ein/ein.rs/design/ir-frontend.md#2-the-load-path)'s
 //! confirmation and the allocation report its acceptance asks for.
 //!
 //! ```sh
@@ -29,7 +29,7 @@
 //! `parse_bytes` pair prices the diamond. `zebra2` imports `std.algebra` and
 //! `std.bijection`, and `std.bijection` imports `std.algebra` again — so the
 //! bytes parsed per load exceed the bytes on disk, and by how much is the
-//! number [T1a.6.5.3](../../../../docs/history/m1a_rust/README.md#s1a65--frontend-and-load-path)
+//! number [design/ir-frontend.md § 8.2](../../../../docs/ein/ein.rs/design/ir-frontend.md#82-one-read-per-module)
 //! is about.
 //!
 //! The allocator here wraps **`System`**, as `alloc_cost` does: an allocation

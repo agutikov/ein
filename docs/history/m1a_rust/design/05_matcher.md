@@ -309,7 +309,7 @@ is reverted, exactly as P1.8a's D3 cross-fork carry was.
 >   store stopped being anything;
 > - **25.16 M candidates, and 99.1 % of them come from a full extent scan**
 >   of a 368-fact extent, at ~2 slot unifications each
->   ([baseline.md § 13](../measurements/baseline.md#t1a622-and-t1a626--the-candidate-loop-and-the-two-tasks-that-swapped-places)).
+>   (baseline.md § 13).
 >   The alpha-memory is *not* doing the work this section assumes it is:
 >   `index_fact` keys only non-nested arguments, so a `(not (R …))` premise —
 >   most of what the corpus scans — never narrows at all. Keying inside a

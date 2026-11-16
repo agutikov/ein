@@ -104,7 +104,7 @@ question in that form.
 
 **Deferred to [F21](../followups/f21_non_monotone_programs_decided.md),
 2026-11-02**, unruled. S1e2.1b.2's evidence is in
-([`node_census.md`](p1e2.1b_non_monotone_programs/node_census.md)): fork
+([`node-census.md`](../../utils/censuses/node-census.md)): fork
 and scratch differ on 4 of 256 flagged nodes and on none of 268 213 monotone
 ones, and § 9 there computes W8's two rows under every option. The user then
 re-planned P1e2.1b to detect, document and warn, verbatim: *"Currently my
@@ -234,7 +234,7 @@ refusal and settles F1–F5
 ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)).
 
 **Note, 2026-11-02 — P1e2.1b's taint census**
-([`taint_census.md`](p1e2.1b_non_monotone_programs/taint_census.md),
+([`taint-census.md`](../../utils/censuses/taint-census.md),
 `cargo run --release -p ein-infer --example taint_census`). On the 18 flagged
 cubes within the limit, 122 dead nodes: 100 rest on no `absent` over D, and
 none of those has an alive superset; every dead hole rests on one.
@@ -768,7 +768,7 @@ and the W11 sentence in
 | **(a)** | `k` = \|R\|, not \|max R\| | **ruled**, and its unit too (second answer): `k` is replaced by **k_s** (states) and **k_c** (commitments), both reported | S1e2.1a.5, S1e2.1a.9 |
 | **(b)** | `ein solve` studies the region first. Asking for one line is secondary. `hrules` move out of `(query …)`. Solve once, then queries ask about the region and about single solutions | **ruled**. The plan's answer to *"does it make sense?"* is below | S1e2.1a.4; [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) for the search |
 | **(c)** | three forms: `(solve :hrules …)`; `(solution (or (model …) …))`, the full expected region; `(query :goal … :expect …)`, the goal's projection, deduplicated | **ruled** as the direction. The grammar is S1e2.1a.4's page diff | S1e2.1a.4 |
-| **(d)** | moved | P1e2.1b; **deferred to F21's D4, 2026-11-02** | [S1e2.1b.3](p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md) (evidence: [`hole_census.md`](p1e2.1b_non_monotone_programs/hole_census.md)); [F21](../followups/f21_non_monotone_programs_decided.md) |
+| **(d)** | moved | P1e2.1b; **deferred to F21's D4, 2026-11-02** | [S1e2.1b.3](p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md) (evidence: [`hole-census.md`](../../utils/censuses/hole-census.md)); [F21](../followups/f21_non_monotone_programs_decided.md) |
 | **(e)** | asks for a way to expose saturation equivalence alongside commitments | **ruled**: k_s and k_c (second answer); `(region …)` with `(merged (to from) …)` (third answer) | S1e2.1a.1's record; S1e2.1a.4, S1e2.1a.5 |
 | **(f)** | asked: *is the obligations-only maximal line the whole candidate set?* | **ruled for P1e2.1a's scope** (second answer): yes, for a monotone program, and it is trivial. The non-monotone counterexample below is S1e2.1b.6's | S1e2.1a.3's page |
 | **(g)** | `exhausted` means complete information about R; a limited run gives partial information; *"region is a certificate of the lattice, right?"* | **ruled for P1e2.1a's scope** (second answer): exhausted = the full region; a limit makes it partial | S1e2.1a.5, S1e2.1a.9 |
@@ -1171,9 +1171,9 @@ which is that page's § 10 *by default* column as proposed.
 [S1e2.1a.3](p1e2.1a_the_solution_region/s1e2.1a.3_the_definition.md) put the
 corpus beside the rulings: `utils/region_census.py --all --levers`, 159
 regions computed, written up in
-[`region_census.md`](p1e2.1a_the_solution_region/region_census.md). **No
+[`region-census.md`](../../utils/censuses/region-census.md). **No
 measured fact contradicts a ruling**
-([§ 11 there](p1e2.1a_the_solution_region/region_census.md#11-what-each-ruling-meets-in-the-census)).
+([§ 11 there](../../utils/censuses/region-census.md#11-what-each-ruling-meets-in-the-census)).
 The numbers each ruling meets:
 
 - **general**: holes only on programs the static check flags, 5 of 13;

@@ -29,7 +29,7 @@ fn int_arg(s: &str) -> Result<i64, String> {
 /// `available_parallelism` counts logical CPUs, and on a hybrid CPU that
 /// includes SMT siblings and E-cores. P1a.7's measurements say more threads
 /// than physical P-cores is not faster
-/// ([scaling.md](../../../../docs/history/m1a_rust/measurements/scaling.md)), so
+/// ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)), so
 /// `auto` is a convenience and `--jobs N` is what a measurement uses.
 fn jobs_spec(s: &str) -> Result<i64, String> {
     if s.eq_ignore_ascii_case("auto") {
@@ -202,7 +202,7 @@ fn event_args(cmd: Command) -> Command {
                  (one JSON object per line). Off by default and \
                  additive: stdout, stderr and the exit code are \
                  unchanged. Schema: \
-                 docs/kernel/inference/events.md.",
+                 docs/ein/ein.rs/events.md.",
             ),
     )
     .arg(
@@ -862,7 +862,7 @@ fn solve_command() -> Command {
                 .help(
                     "write every node this run visited, in visit order, to DIR: \
                      nodes.json (ein-lattice/2) and nodes.md \
-                     (docs/kernel/inference/lattice_dump.md). DIR is made before \
+                     (docs/ein/ein.rs/lattice-dump.md). DIR is made before \
                      the run; past that, stdout, stderr and the exit code are \
                      unchanged.",
                 ),

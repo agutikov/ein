@@ -21,7 +21,7 @@ constrained-reasoning research.
   (§ 2 has one section per refusal);
   [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md),
   the answer as a region R;
-  [`inference/read-out.md`](docs/ein/user/reference/read-out.md), every row
+  [`read-out.md`](docs/ein/user/reference/read-out.md), every row
   `ein solve` prints and what it counts;
   [`docs/ein/reasoning/kb-evolution/hypothesis-space.md`](docs/ein/reasoning/kb-evolution/hypothesis-space.md),
   the hypothesis space and its structure, each object defined, and
@@ -33,8 +33,8 @@ constrained-reasoning research.
   and `00_ebnf.md`, the language;
   [`ir/03-ein-lang/09_natural_language.md`](docs/kernel/ir/03-ein-lang/09_natural_language.md),
   `:why` texts and how a fact reads as English; and
-  `inference/implementation.md` with `ir/02-data-model/03_implementation.md`,
-  the module maps. What is true of the language and the answer today is
+  [`docs/ein/ein.rs/architecture.md`](docs/ein/ein.rs/architecture.md), the
+  module map, with the design contracts under `docs/ein/ein.rs/design/`. What is true of the language and the answer today is
   [§ Standing rules](#standing-rules) below; how each rule came to be is in
   the stage records under `plans/` and in `git log`, not here.
   **This tree is the only statement of intent that is
@@ -61,8 +61,10 @@ constrained-reasoning research.
   Keeping this true](docs/kernel/README.md) is the pass that keeps the
   current pages honest — six checks, five of them `utils/doc_audit.py` and
   the sixth a shell, and the sixth is the one that found the most.
-- **`docs/api/`** — **how to drive Ein as a library**: [`rust.md`](docs/api/rust.md),
-  the **crates** — `ein-ir` to load, `ein-infer` to solve, `ein-render` to
+- **`docs/ein/ein.rs/`** — **the engine as built**: the crate and module map,
+  the design contracts the crates cite (`design/`), the `--events` protocol and
+  the other engine read-outs, and **how to drive Ein as a library**,
+  [`api.md`](docs/ein/ein.rs/api.md): the **crates** — `ein-ir` to load, `ein-infer` to solve, `ein-render` to
   explain, `ein-einb` to cache. **Its worked example is a test.** The page's
   `rust` block is the marked region of
   [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and
@@ -73,7 +75,7 @@ constrained-reasoning research.
   to check a binary's stdlib against the checkout's manifest, and
   `$EIN_STDLIB`. **`pip install` is not a channel.**
 - **`docs/guide/`** — **the newcomer tutorial** ("Learn Ein by solving the
-  Zebra puzzle"). User-facing; references `docs/kernel/` + `docs/api/`, never
+  Zebra puzzle"). User-facing; references `docs/kernel/` + `docs/ein/`, never
   explains internals; complements `inference/zebra_walkthrough.md`.
 - **`docs/history/`** — **shipped milestones, kept as record**
   ([`docs/history/README.md`](docs/history/README.md)): a document goes there,
@@ -192,7 +194,7 @@ constrained-reasoning research.
   `stdlib/` or `tests/` with no entry fails a completeness check. What runs it
   is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the table of
   readers; the `--events` protocol is
-  [`docs/kernel/inference/events.md`](docs/kernel/inference/events.md).
+  [`docs/ein/ein.rs/events.md`](docs/ein/ein.rs/events.md).
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py` re-takes it;
@@ -431,7 +433,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `examples/beyond_arith/send_more_money_written.ein`, `send_more_money.ein`
   with its letters declared in another order (`examples/gen_send_written.py`);
   `read-out-examples.md` (`utils/read_out_examples.py`); `config.md`'s
-  defaults block and `docs/api/rust.md`'s `rust` block. All of those have a
+  defaults block and `docs/ein/ein.rs/api.md`'s `rust` block. All of those have a
   `--check` or a test in the gate.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
@@ -543,13 +545,13 @@ python3 utils/history_census.py                              # the history censu
 ```
 
 The read-out's vocabulary is
-[`docs/kernel/inference/read-out.md`](docs/ein/user/reference/read-out.md),
+[`docs/ein/user/reference/read-out.md`](docs/ein/user/reference/read-out.md),
 every row `ein solve` prints and what it counts, and its golden page, written
 by the binary, is
 [`read-out-examples.md`](docs/ein/user/reference/read-out-examples.md), both
 held to the printer by `ein-cli/tests/read_out_reference.rs`. **The `EIN_*`
 names in the block above are the ones an agent needs, not the set**:
-[`docs/kernel/config.md`](docs/ein/user/reference/config.md) is the census
+[`docs/ein/user/reference/config.md`](docs/ein/user/reference/config.md) is the census
 of every `EIN_*` name, `(config …)` field and CLI option, with a *does it
 change the answer* column on every flag row, pinned by
 `ein-cli/tests/config_reference.rs`. The walk — `-e`, `-m`,
@@ -663,7 +665,7 @@ rather than to the corpus on purpose: a rule that fires only inside
 `examples/zebra.ein` has no test. `utils/stdlib_census.py` is the same census
 with the *numbers*, and is not the gate.
 
-The `ein` binary links `snmalloc` by default (worth 8–16 % of a solve), so
+The `ein` binary links `snmalloc` by default, so
 the build needs **`cmake` and a C++ compiler**;
 `cargo build --release -p ein-cli --no-default-features` builds against the
 system allocator and needs neither.

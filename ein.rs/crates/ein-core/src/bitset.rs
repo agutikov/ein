@@ -2,12 +2,12 @@
 //!
 //! Three of the KB's indexes are membership tests over `FactId` — belief,
 //! the negated-inner set, and (from
-//! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer)) the alive
+//! [design/data-model.md § 6.3](../../../../docs/ein/ein.rs/design/data-model.md#63-bit-sets)) the alive
 //! set. An id is a dense `u32`, so a bitset answers in one shift and one mask
-//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §6).
+//! ([design/data-model.md § 6](../../../../docs/ein/ein.rs/design/data-model.md#6-the-indexes)).
 //!
 //! Hand-rolled rather than `bitvec`, per
-//! [design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §2:
+//! [design/toolchain-and-layout.md § 2](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#2-dependency-policy):
 //! the whole surface is four operations.
 
 /// Equality is over *contents*: a set that has grown and one that has not

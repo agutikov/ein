@@ -4,7 +4,7 @@
 //! The page enumerates three surfaces — the 17 `(config …)` flags, the CLI
 //! options, and the `EIN_*` environment — and a reference page is the most
 //! drift-prone shape there is: a list of names and defaults that nothing runs.
-//! [`docs/api/rust.md`](../../../../docs/api/rust.md) is the precedent that
+//! [`docs/ein/ein.rs/api.md`](../../../../docs/ein/ein.rs/api.md) is the precedent that
 //! works, and this file is the same trade with a different generator.
 //!
 //! Six claims, one test each, and each is a claim the page makes in prose:

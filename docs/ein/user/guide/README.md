@@ -10,7 +10,7 @@ facts first, then rules, then the whole puzzle solved end to end.
 >   [syntax and semantics](../syntax-and-semantics/README.md);
 > - what the answer is and every row `ein solve` prints: [solutions and models](../syntax-and-semantics/solutions-and-models.md)
 >   and [the read-out](../reference/read-out.md);
-> - driving Ein from your own program: [the Rust API](../../../api/rust.md).
+> - driving Ein from your own program: [the Rust API](../../ein.rs/api.md).
 
 ## Chapters
 

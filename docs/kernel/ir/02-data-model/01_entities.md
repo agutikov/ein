@@ -335,7 +335,7 @@ itself such a record:
   re-derivable is still a clue: a given stays given.
 - a rule-kind primary with an **empty** `premises_raw` is a synthetic
   engine writeback (`<forced-positive>` and friends, see
-  [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md))
+  [`../../../ein/ein.rs/reserved-engine-strings.md`](../../../ein/ein.rs/reserved-engine-strings.md))
   whose contract is that provenance walks *ground out* on it.
 
 Two firings that consumed the same premises from the same activator are
@@ -426,7 +426,7 @@ fork sound.
 No entity carries a pointer to the KB that owns it: every accessor takes the
 KB explicitly, so a shared `Relation` asked on a fork answers for the fork, and
 there is nothing to attach, detach, or exclude from equality. See
-[`03_implementation.md` §2](03_implementation.md).
+[`../../../ein/ein.rs/architecture.md` §2](../../../ein/ein.rs/architecture.md).
 
 ## 6. Identity rules — summary
 

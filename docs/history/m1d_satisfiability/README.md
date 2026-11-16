@@ -114,7 +114,7 @@ Two things it recorded up front, and both mattered later:
 of the 121 entries that reach a fixpoint report exactly what they did before —
 because the read-out is **scoped**: a state is judged by discharge when it has
 been told what it owes and by exhaustion when it has not.
-[`openness_census.md`](openness_census.md) is the evidence, and its third column
+`openness_census.md` is the evidence, and its third column
 is the one that did not exist: **`declared`**, how many obligation rules a
 program *states*, because `owes = 0` is equally true of a debt paid and a debt
 never stated.
@@ -149,7 +149,7 @@ rather than mis-compiled, so the trip-wire is a user hitting the refusal.
 *The compact answer.* Three stages.
 
 ### S1d.3.1 — What the models differ in
-[`model_set_census.md`](model_set_census.md), and the first census whose subject
+`model_set_census.md`, and the first census whose subject
 is the **answer**. It turns `--json-summary`'s solutions into decision variables
 and asks whether the set *factors*, at four granularities.
 
@@ -203,7 +203,7 @@ The same stage split two numbers that had always agreed: `verdict.k` counts
 keyword** — the outcome its own Risks section argued for.
 
 ### S1d.4.1 — What closure costs
-[`closure_census.md`](closure_census.md), whose transport is
+`closure_census.md`, whose transport is
 `ein test --json-report` — a read-out the same stage added, because `:expect` had
 **no machine-readable surface at all**. The reason it insisted the census be
 *parsed*: the reconnaissance grepped `:expect (or`, found two users, and one of
@@ -241,7 +241,7 @@ result, not a refusal of the input.*
 2026-08-27 as it stood**, three shipped and three dropped rather than deferred.
 
 ### S1d.10.1 — Why it does not finish
-[`layer_census.md`](layer_census.md), and the `layer` event's sixteen counters —
+`layer_census.md`, and the `layer` event's sixteen counters —
 of which `dropped_nogood`, what the learned clauses removed from the next layer's
 join, is the one nothing reported before.
 
@@ -419,11 +419,11 @@ supply, which is a followup and not a stage.
 
 ## The documents beside this one
 
-**Evidence, and re-takable** — [`openness_census.md`](openness_census.md) (what
+**Evidence, and re-takable** — `openness_census.md` (what
 the corpus owes, `utils/openness_census.py`),
-[`model_set_census.md`](model_set_census.md) (`utils/model_set_census.py`),
-[`closure_census.md`](closure_census.md) (`utils/closure_census.py`),
-[`layer_census.md`](layer_census.md) (`utils/layer_census.py`), and
+`model_set_census.md` (`utils/model_set_census.py`),
+`closure_census.md` (`utils/closure_census.py`),
+`layer_census.md` (`utils/layer_census.py`), and
 [`hypotheses_from_obligations.md`](hypotheses_from_obligations.md) (what the
 ladder cost).
 
@@ -434,7 +434,7 @@ ladder cost).
 [`the_verdict.md`](the_verdict.md), [`the_boundary.md`](the_boundary.md),
 [`the_vocabulary.md`](the_vocabulary.md), [`completeness.md`](completeness.md).
 
-**And one raw artefact** — [`lattice_exhaustive_run.log`](lattice_exhaustive_run.log),
+**And one raw artefact** — `lattice_exhaustive_run.log`,
 the stdout of the milestone's opening measurement: `ein solve` exhausting the
 lattice on `examples/zebra2-minus-15-obligations.ein`. Twenty-two layers
 narrated one line apiece, the verdict, all 32 models with their goal bindings

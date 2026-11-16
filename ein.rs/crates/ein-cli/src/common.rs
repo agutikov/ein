@@ -387,7 +387,7 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
 /// :assert — bindings: {…}"`, quotes and all, the message quoted the way
 /// [`repr_str`](ein_core::repr::repr_str) quotes a string. The message was
 /// printed alone until 2026-08-20, when
-/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)'s
+/// [design/toolchain-and-layout.md § 5](../../../../docs/ein/ein.rs/design/toolchain-and-layout.md#5-the-tests)'s
 /// fuzzer produced the first input that reaches it.
 /// `examples/ein-bugs/unbound-assert-var.ein` was the fixture until M1f
 /// S1f.5.10, which refuses its program at load (F13); the one input left, a

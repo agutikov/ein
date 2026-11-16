@@ -178,7 +178,7 @@ the type boxes and their `is-a` edges, and `--no-instances` the instance ovals a
 commitment: **R green, owing amber, dead red**. `--view solution`, the default, draws the nodes of R and the nodes one
 fact above them that are not in it; `--view full` every node the run visited. `--region-budget` is the run's budget,
 as `ein solve`'s, and a run that reaches it is drawn as far as it went. What a node holds is
-[`lattice_dump.md`](../../../kernel/inference/lattice_dump.md), which `ein solve --dump-lattice DIR` writes.
+[`lattice-dump.md`](../../ein.rs/lattice-dump.md), which `ein solve --dump-lattice DIR` writes.
 
 ## The region — `ein render region`
 

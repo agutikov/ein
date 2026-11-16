@@ -31,7 +31,7 @@ use ein_corpus::{Scratch, golden, golden_path};
 const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein\n", 0),
     // Among them P1a.7's `--jobs`
-    // ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
+    // ([design/parallelism.md § 2](../../../../docs/ein/ein.rs/design/parallelism.md#2-what-runs-in-parallel)),
     // M1d S1d.3.3's `--models`, M1d P1d.10's `--layer-progress` and M1e2's
     // `--dump-answer` (S1e2.1.2), `--dump-lattice` (S1e2.1.3),
     // `--diff-models` (S1e2.1.4), and S1e2.1a.1's `--dump-region`,

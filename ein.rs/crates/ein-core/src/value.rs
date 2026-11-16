@@ -2,7 +2,7 @@
 //!
 //! A fact argument is a name or a nested fact, and unifying two of them
 //! starts by asking which. Here the discriminant is two bits
-//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3):
+//! ([design/data-model.md § 3](../../../../docs/ein/ein.rs/design/data-model.md#3-values-and-fact-ids)):
 //!
 //! ```text
 //! [tag:2][payload:30]
@@ -97,7 +97,7 @@ impl Value {
 
     /// The inverse of [`Value::bits`], for the one caller that has a stored
     /// word and no other way to say what it meant: `.einb`'s remap
-    /// ([design/10 §3](../../../../docs/history/m1a_rust/design/10_binary_format.md)),
+    /// ([design/binary-format.md](../../../../docs/ein/ein.rs/design/binary-format.md)),
     /// which reads the tag to decide *which* table the payload moves through
     /// and re-packs the result. Not a general constructor — a value assembled
     /// from a number nobody interned names an id that may not exist, which is
@@ -159,7 +159,7 @@ impl Value {
     ///
     /// Correct wherever any total order would do — a `state_key`'s sorted
     /// vector, a no-good clause's canonical form
-    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §6)
+    /// ([design/determinism-and-order.md § 5](../../../../docs/ein/ein.rs/design/determinism-and-order.md#5-where-order-does-not-matter))
     /// — and wrong everywhere a name is what the reader sees.
     pub fn cmp_identity(self, other: Value) -> Ordering {
         self.0.cmp(&other.0)

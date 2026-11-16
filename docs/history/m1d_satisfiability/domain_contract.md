@@ -108,7 +108,7 @@ all of which the engine already consults before proposing anything.
 
 Every corpus entry under `solve -m 1 -e --events`, layer-1 enterings counted
 and grouped by the relation each commitment names. **49 of the 180 entries
-search** — the same 49 the [layer census](layer_census.md)
+search** — the same 49 the layer census
 found — of which **13 are hrule-driven** and 36 run the blind generator.
 
 **Twelve entries propose `is-a` arrows**, and they are the entries where C4's

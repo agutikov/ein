@@ -22,7 +22,7 @@ library right?*
 
 | file | what it is |
 |---|---|
-| [`stdlib_census.md`](stdlib_census.md) | the milestone's evidence: what 73 rules promise, what the corpus activates, and the same census re-taken twice. §11 is the corpus-wide re-take, §12 the suite on its own. Re-takable with `utils/stdlib_census.py` — the **2026-08-23 "before" column is not**, because the tree it measured is gone |
+| [`../../../utils/censuses/stdlib-census.md`](../../../utils/censuses/stdlib-census.md) | the milestone's evidence: what 73 rules promise, what the corpus activates, and the same census re-taken twice. §11 is the corpus-wide re-take, §12 the suite on its own. Re-takable with `utils/stdlib_census.py` — the **2026-08-23 "before" column is not**, because the tree it measured is gone |
 | [`open_questions.md`](open_questions.md) | Q-M1c.1–7: two closed by building the thing, three moved to [M10](../../../plans/m10_external_benchmarks/README.md) with P1c.2, **two still open on purpose** |
 
 ---
@@ -82,7 +82,7 @@ needed to establish the answer, not to keep it.**
 > The 45 programs of [`tests/stdlib/`](../../../tests/README.md) are what the
 > sentence describes working: **59 corpus claims, 59 held, every one under a
 > search that exhausted**, in 0.04 s with no solver installed
-> ([the closure census](../../../docs/history/m1d_satisfiability/closure_census.md)).
+> (the closure census).
 > That is the pipeline, and it runs every commit.
 >
 > So: **the external tools establish an answer, `:expect` keeps it, and `ein
@@ -100,8 +100,8 @@ exist: **38 of 73 stdlib rules never fired**, and now **0** — held by
 
 | | measured | where |
 |---|---|---|
-| the gap, before | **38 of 73 rules never fire** in 128 entries × 400 runs, 33 never even loaded; 23 more activated by one entry, `examples/zebra.ein` being that entry for 20; two modules at zero | [census §1–5](stdlib_census.md) |
-| the gap, after | **0 of 73**, over 180 entries and 557 runs — and **0 of 73** over `tests/stdlib/` alone, with no `examples/` entry contributing | [census §11](stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty), [§12](stdlib_census.md#12-the-suite-on-its-own--s1c15) |
+| the gap, before | **38 of 73 rules never fire** in 128 entries × 400 runs, 33 never even loaded; 23 more activated by one entry, `examples/zebra.ein` being that entry for 20; two modules at zero | [census §1–5](../../../utils/censuses/stdlib-census.md) |
+| the gap, after | **0 of 73**, over 180 entries and 557 runs — and **0 of 73** over `tests/stdlib/` alone, with no `examples/` entry contributing | [census §11](../../../utils/censuses/stdlib-census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty), [§12](../../../utils/censuses/stdlib-census.md#12-the-suite-on-its-own--s1c15) |
 | the form | `:expect (model …)` / `(or (model …) …)` / `(false)` — **one keyword, 0 new grammar productions, 0 goldens moved** | [S1c.1.2](#s1c12--how-a-program-states-what-it-expects) |
 | the runner | `ein test <file\|dir>…`, the fourth subcommand; exhausts by default, never solves a query with no `:expect` | [S1c.1.3](#s1c13--ein-test) |
 | the corpus | **45 programs** in `tests/stdlib/`, 2 628 lines of which 1 499 are header; the whole suite in **0.03 s** | [S1c.1.4](#s1c14--the-stdlib-corpus) |
@@ -137,7 +137,7 @@ duration is not.
 
 | parked | the argument |
 |---|---|
-| **Route — `:fires R` / `:does-not-fire R`** | "the right fact by the wrong rule" has no home in a vocabulary of facts, and the census decided it is not needed: the pairs that raise the question (`converse` ≡ `imply2-reverse`, `imply2-fwd` ≡ `includes`) are **alpha-identical bodies under two names**, so one test covers both. `domain-elimination` / `range-elimination`, the case that motivated the residue, have different bodies and an `:expect` naming the relation tells their results apart ([census §8](stdlib_census.md#8-four-declarations-are-two-rules)). S1c.1.4 then priced the alternative by measurement: **separation-by-activation** costs five header paragraphs and no language surface, and it is what turned 44 caught mutants into 50 |
+| **Route — `:fires R` / `:does-not-fire R`** | "the right fact by the wrong rule" has no home in a vocabulary of facts, and the census decided it is not needed: the pairs that raise the question (`converse` ≡ `imply2-reverse`, `imply2-fwd` ≡ `includes`) are **alpha-identical bodies under two names**, so one test covers both. `domain-elimination` / `range-elimination`, the case that motivated the residue, have different bodies and an `:expect` naming the relation tells their results apart ([census §8](../../../utils/censuses/stdlib-census.md#8-four-declarations-are-two-rules)). S1c.1.4 then priced the alternative by measurement: **separation-by-activation** costs five header paragraphs and no language surface, and it is what turned 44 caught mutants into 50 |
 | **"Relation `r` is empty"** | unsayable, because the only way to name a relation is to list a fact in it. Reachable in exactly one place — rule 1 makes the goal's relations mandatory — and no fixture needs it yet ([Q-M1c.6](open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty)) |
 | **An expectation naming a relation only saturation creates** | the loader's anti-typo check refuses it, which is right for a typo and wrong for a derived relation. It is the seven fan-out rules' whole output, so they are pinned at one remove — through the rules they activate — which cannot catch a *surplus* activator ([Q-M1c.7](open_questions.md#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates)) |
 | **A test framework** | `ein test` runs what a program states about itself. No setup, teardown, fixture, tag, skip or parameterisation, and the corpus already knows how to enumerate files. If a rule needs a framework to be tested, the interesting finding is about the rule |
@@ -168,7 +168,7 @@ tested — it is merely not contradicted.
 
 ### S1c.1.1 — What the stdlib promises, and what is exercised
 
-**Shipped 2026-08-23.** The record is [`stdlib_census.md`](stdlib_census.md);
+**Shipped 2026-08-23.** The record is [`../../../utils/censuses/stdlib-census.md`](../../../utils/censuses/stdlib-census.md);
 the instrument is [`utils/stdlib_census.py`](../../../utils/stdlib_census.py),
 the nineteenth script in `utils/` and the first check aimed at the *standard
 library* rather than the engine.
@@ -291,7 +291,7 @@ parsers → **48 across 9**.
 **Shipped 2026-08-24.** **45 programs under
 [`tests/stdlib/`](../../../tests/README.md)**, one per rule or tight family,
 and the acceptance number is measured rather than read: the zero-firing set
-goes **38 → 0** ([census §11](stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
+goes **38 → 0** ([census §11](../../../utils/censuses/stdlib-census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
 
 | finding | number |
 |---|---|
@@ -364,7 +364,7 @@ fixture was a two-cycle where the `(neq ?a ?c)` guard refuses every match —
 the right test of the guard, silent about the assertion, which was resting on
 six puzzles whose hierarchies are acyclic. `algebra/21_transitive.ein` has a
 three-chain now, and the suite's own number is **73 of 73**
-([census §12](stdlib_census.md#12-the-suite-on-its-own--s1c15)).
+([census §12](../../../utils/censuses/stdlib-census.md#12-the-suite-on-its-own--s1c15)).
 
 A second assertion fails on any program under `tests/` that states no
 `:expect` — the failure mode a refactor produces, and one `ein test` reports

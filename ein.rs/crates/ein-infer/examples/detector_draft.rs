@@ -1,7 +1,7 @@
 //! The detector, drafted — M1e2
 //! [S1e2.1b.5](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)'s
 //! T1e2.1b.5.1: the rows its proposal,
-//! [`detector_proposal.md`](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md),
+//! [design/search.md § 7](../../../../docs/ein/ein.rs/design/search.md#7-monotone-and-flagged-programs),
 //! shows on real programs, computed here rather than written by hand.
 //!
 //! Per program:

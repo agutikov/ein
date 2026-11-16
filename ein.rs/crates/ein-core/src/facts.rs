@@ -2,7 +2,7 @@
 //!
 //! A fact's identity is its relation name and its argument tuple — names and
 //! nested facts — and nothing else. Here a proposition is a `u32`
-//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §4):
+//! ([design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)):
 //!
 //! | question | answer |
 //! |---|---|
@@ -27,7 +27,7 @@ use std::hash::Hasher;
 /// `Ord` is derived and is **assignment order** — first-interned first. That
 /// is a legitimate sort key only where any total order is equivalent (a
 /// `state_key`'s sorted vector, a no-good clause's canonical form —
-/// [design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §6),
+/// [design/determinism-and-order.md § 5](../../../../docs/ein/ein.rs/design/determinism-and-order.md#5-where-order-does-not-matter)),
 /// never where a reader sees the result.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct FactId(pub u32);
@@ -38,8 +38,7 @@ pub struct FactId(pub u32);
 /// 20 bytes, and reading a fact's arguments is **one** load rather than two
 /// dependent ones — which is what T1a.6.2.6 turned out to be about. The store
 /// is 18 KB for an exhaustive `zebra` and lives in L1 entirely, so this was
-/// never a cache-footprint question ([baseline.md
-/// §13](../../../../docs/history/m1a_rust/measurements/baseline.md)); it is a
+/// never a cache-footprint question ([design/data-model.md § 4](../../../../docs/ein/ein.rs/design/data-model.md#4-facts-as-interned-rows)); it is a
 /// question about the *dependency chain* on the matcher's hot path, where
 /// every candidate resolves two argument lists — the premise's and, for a
 /// nested pattern, the fact inside it — before it can be rejected.
@@ -96,7 +95,7 @@ impl FactStore {
     ///
     /// Computes the key without materialising a row, which is what lets the
     /// hypothesis generator reject a candidate before creating anything
-    /// ([design/07](../../../../docs/history/m1a_rust/design/07_search_layer.md) §2).
+    /// ([design/search.md § 1](../../../../docs/ein/ein.rs/design/search.md#1-hypothesis-generation)).
     pub fn probe(&self, rel: Symbol, args: &[Value]) -> Option<FactId> {
         crate::counters::bump(|c| c.fact_probe += 1);
         if self.table.is_empty() {

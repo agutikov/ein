@@ -140,7 +140,7 @@ Memory, zebra2 post-saturation (381 facts, mean arity ≈ 2.2):
 > 1 and 2 — and `FactStore::row` + `args_of` let the matcher read the row once
 > and take the relation and the arguments from it. Worth **−8.5 %** on
 > `solve zebra2 -e` and −4.7 % on `solve zebra -e`;
-> [baseline.md § 13](../measurements/baseline.md#t1a622-and-t1a626--the-candidate-loop-and-the-two-tasks-that-swapped-places)
+> baseline.md § 13
 > has the three-step measurement, including the two intermediate forms that
 > each lost one of the two puzzles.
 
@@ -204,7 +204,7 @@ pub struct Kb {
 > vectors behind an `Arc`, so the ~450-fact extent the matcher scans is *one*
 > copy read by all 24 live KBs on the search stack, and flattening hands each
 > fork a private copy to fill a cache with. Reverted;
-> [baseline.md § 13](../measurements/baseline.md#t1a625--the-flatten-threshold-was-never-built-and-building-it-costs-76)
+> baseline.md § 13
 > has the isolation control. The consequence is a *positive* one for
 > [P1a.7](../README.md#p1a7--parallelism): sharing the base index across
 > workers is worth more than shortening the chain.
@@ -215,7 +215,7 @@ pub struct Kb {
 > asks 644 166 times on an exhaustive `zebra2`, and which a flat store
 > answers with one length. An exhaustive search reaches **35 layers**, and the
 > count is **9.5 % of the run**
-> ([baseline.md §7](../measurements/baseline.md#7-the-top-five-costs)
+> (baseline.md §7
 > item 2). The fork is O(1) as designed — a delta is 3.6 KB mean over 101
 > enterings, which is the number P1a.7 wanted — and the bill landed on the
 > other side of the trade.

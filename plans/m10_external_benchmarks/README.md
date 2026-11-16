@@ -73,7 +73,7 @@ sharpening it added is the reason to run the benchmarks at all:
 > than removing it: **the graph engine has to stand on its own numbers.**
 
 There are no such numbers today. The engine's entire performance record
-([baseline.md](../../docs/history/m1a_rust/measurements/baseline.md)) is Ein against
+(baseline.md) is Ein against
 Ein: ein.rs against its own previous commit. A ratio against its own past
 says nothing about how the algorithm compares to a CDCL solver on the same
 puzzle.

@@ -29,11 +29,11 @@ grain ruled *relation, as shipped*), [S1e2.1b.6](s1e2.1b.6_monotone_and_non_mono
 ([`monotonicity.md`](../../../docs/ein/reasoning/kb-evolution/monotonicity.md), one
 fixture per cause, the guard split held to the oracle) and
 [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), at its evidence
-([`node_census.md`](node_census.md)), with Q-M1e2.2 deferred to F21.
+([`../../../utils/censuses/node-census.md`](../../../utils/censuses/node-census.md)), with Q-M1e2.2 deferred to F21.
 [S1e2.1b.3](s1e2.1b.3_holes.md) is done at its evidence
-([`hole_census.md`](hole_census.md)), with Q-M1e2.7 (d) deferred to F21's D4.
+([`../../../utils/censuses/hole-census.md`](../../../utils/censuses/hole-census.md)), with Q-M1e2.7 (d) deferred to F21's D4.
 [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) is done at its
-evidence ([`taint_census.md`](taint_census.md)), handed to S1e2.2.5 and F21's
+evidence ([`../../../utils/censuses/taint-census.md`](../../../utils/censuses/taint-census.md)), handed to S1e2.2.5 and F21's
 D6. [S1e2.1b.5](s1e2.1b.5_the_detector.md)'s first task was drafted on
 2026-11-02, [`detector_proposal.md`](detector_proposal.md), the check's CLI
 form and the warnings on real programs, and **approved by the user on
@@ -141,7 +141,7 @@ L ──state──▶ KB ──(dead, owes)──▶ {0,1}²
      append-only: a path through C reaches a state ⊇ `state(C)`. The converse
      needs cumulativity. A monotone program has it, by fork. A stratified
      program evaluated stratum by stratum has it, measured under an emulation
-     by S1e2.1b.7's cumulativity census ([`node_census.md` § 12](node_census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)).
+     by S1e2.1b.7's cumulativity census ([`../../../utils/censuses/node-census.md` § 12](../../../utils/censuses/node-census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)).
      The property is broken by
      an odd-depth `absent` over D, and by the boundary's **FIFO admission** of
      equal-priority `absent` rules, which breaks cumulativity: r2 `a ∧ b ∧
@@ -200,7 +200,7 @@ scratch and fixpoint"*. Fork from root is C1 = ∅. Every shipped route builds
 a node from root with all of C at once, which is why it was the only case
 seen. A parent path reaches a different state on `lattice/08`, the probe
 `via_hole` and `d3-unsat-core`, with nothing derived at root on `lattice/08`
-([`node_census.md` § 6.1](node_census.md#61-the--y-abort-on-d3-unsat-core)).
+([`../../../utils/censuses/node-census.md` § 6.1](../../../utils/censuses/node-census.md#61-the--y-abort-on-d3-unsat-core)).
 So under today's fork a node's state on a flagged program can depend on the
 path, and the question under Q-M1e2.2 is *is a node's state a function of C
 alone?*, which given cumulativity is *is the state monotone?*
@@ -262,7 +262,7 @@ reports both the sites and the violations the cube observed.
 - **The state** stops being monotone, or path-independent, only through an
   `absent`. One way is an odd-depth `absent` in a saturation rule over D
   (`SiteKind::Absent`): every corpus node where fork, scratch and a parent
-  path differ traces to one ([`node_census.md`](node_census.md) § 2 and
+  path differ traces to one ([`../../../utils/censuses/node-census.md`](../../../utils/censuses/node-census.md) § 2 and
   § 6.1), and an activator can hide one from a check of root's plans
   (`region.rs`'s `ACTIVATOR_REFUTES` compiles `(absent (?R ?x))` at a node).
   The other is the FIFO gap above, between equal-priority `absent` rules of a
@@ -277,12 +277,12 @@ reports both the sites and the violations the cube observed.
 | ID | title | est. | status | ends with |
 |---|---|---:|---|---|
 | [S1e2.1b.1](s1e2.1b.1_the_site_census.md) | The site census | 2 d | **done** 2026-11-02 | [`site_census.md`](site_census.md): every site, every flagged cube's violations attributed, the fact-grain prototype held to the cube; the grain ruled *relation, as shipped* |
-| [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) | A node's state, fork or scratch | 2.5 d | **done at its evidence** 2026-11-02 | [`node_census.md`](node_census.md): both routes node for node, staleness, stratification, invariance, cost, W8 computed under each option; the general path form recorded; **Q-M1e2.2 deferred to F21** (D1–D3) |
+| [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) | A node's state, fork or scratch | 2.5 d | **done at its evidence** 2026-11-02 | [`../../../utils/censuses/node-census.md`](../../../utils/censuses/node-census.md): both routes node for node, staleness, stratification, invariance, cost, W8 computed under each option; the general path form recorded; **Q-M1e2.2 deferred to F21** (D1–D3) |
 | [S1e2.1b.3](s1e2.1b.3_holes.md) | Holes | 1.5 d | **done at its evidence** 2026-11-02 | `hole_census.md`: every hole by cause and kind, each attributed to a site (the gap S1e2.1b.6 found closed), the read-out today, and each reporting option drafted on real programs with its consequences. The decision is F21's D4 |
 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | **done at its evidence** 2026-11-02 | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
 | [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | **done** 2026-11-03: T1e2.1b.5.1 drafted 2026-11-02 ([`detector_proposal.md`](detector_proposal.md)) and approved 2026-11-03; T1e2.1b.5.2–.6 built | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
 | [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | `docs/kernel/inference/monotonicity.md` at `50739fdb`, *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
-| [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | **done** 2026-11-02 | `docs/kernel/inference/monotonicity.md` at `50739fdb` § 7.9 (the taxonomy, thirteen causes), § 8.1 (each option's consequences per program, open, naming F21) and § 8.2 ((E)'s rewrites, eleven probes); [`node_census.md`](node_census.md) § 11–12 (the path and cumulativity censuses); `examples/lattice/10_fifo_gap.ein` and `11_fifo_gap_static.ein`; § 7.8 with no row left unverified; `monotone.rs`'s module docs in § 7's words |
+| [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | **done** 2026-11-02 | `docs/kernel/inference/monotonicity.md` at `50739fdb` § 7.9 (the taxonomy, thirteen causes), § 8.1 (each option's consequences per program, open, naming F21) and § 8.2 ((E)'s rewrites, eleven probes); [`../../../utils/censuses/node-census.md`](../../../utils/censuses/node-census.md) § 11–12 (the path and cumulativity censuses); `examples/lattice/10_fifo_gap.ein` and `11_fifo_gap_static.ein`; § 7.8 with no row left unverified; `monotone.rs`'s module docs in § 7's words |
 
 **Work order:** .1, .6, .2, .3, .4 and .7, the evidence written down; then
 .5, last, done 2026-11-03: its warnings cite .7's taxonomy, and its tests make
@@ -336,12 +336,12 @@ four questions: the form, the cube's half, the spot check, the wording.
 |---|---|---|
 | [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice) (d), holes | [S1e2.1b.3](s1e2.1b.3_holes.md) | F21's D4 |
 | [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in), W8 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), done | F21's D1–D3 |
-| [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), done: [`taint_census.md`](taint_census.md) and `region.rs::an_untainted_death_is_dead_in_every_superset` | the language: ruled *forbid*, built by S1e2.2.5. What a route may learn: F21's D6 |
-| `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), done: both readings of *extendable* per dead node, which agree on every one ([`taint_census.md` § 3](taint_census.md#3-the-readings-of-tainted-side-by-side)) | under *forbid* it becomes the refusal's text, S1e2.2.5's T1e2.2.5.3 |
+| [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), done: [`../../../utils/censuses/taint-census.md`](../../../utils/censuses/taint-census.md) and `region.rs::an_untainted_death_is_dead_in_every_superset` | the language: ruled *forbid*, built by S1e2.2.5. What a route may learn: F21's D6 |
+| `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), done: both readings of *extendable* per dead node, which agree on every one ([`../../../utils/censuses/taint-census.md` § 3](../../../utils/censuses/taint-census.md#3-the-readings-of-tainted-side-by-side)) | under *forbid* it becomes the refusal's text, S1e2.2.5's T1e2.2.5.3 |
 | S1e2.1a.1's `non_monotone` stub | [S1e2.1b.5](s1e2.1b.5_the_detector.md): the stub's words become warnings that say what is assumed | refuse, qualify or search differently: F21's D5 |
-| [S1e2.1a.3's census](../p1e2.1a_the_solution_region/region_census.md#5-holes-upward-closure-the-duality): five programs with a hole, of which `lattice/04_obligation_trigger_hole.ein` still has no register row | [S1e2.1b.3](s1e2.1b.3_holes.md), done: no row filed ([`hole_census.md` § 10](hole_census.md#10-the-consequences-per-option)) | the row follows from F21's D4: its (d4). Fork and scratch agree on `lattice/04`, so D2 does not move it |
-| the same census's [§ 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle): `-y` aborted `corpus/fuzz_findings/d3-unsat-core.ein` before the switch | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) ([`node_census.md` § 6.1](node_census.md#61-the--y-abort-on-d3-unsat-core)) | path dependence: F21's D3. The lever `-y`: [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md) |
-| the census's [§ 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube): 13 programs flagged, a violation observed on 5 | [S1e2.1b.1](s1e2.1b.1_the_site_census.md), done | the grain: ruled, relation |
+| [S1e2.1a.3's census](../../../utils/censuses/region-census.md#5-holes-upward-closure-the-duality): five programs with a hole, of which `lattice/04_obligation_trigger_hole.ein` still has no register row | [S1e2.1b.3](s1e2.1b.3_holes.md), done: no row filed ([`../../../utils/censuses/hole-census.md` § 10](../../../utils/censuses/hole-census.md#10-the-consequences-per-option)) | the row follows from F21's D4: its (d4). Fork and scratch agree on `lattice/04`, so D2 does not move it |
+| the same census's [§ 9](../../../utils/censuses/region-census.md#9-the-config-principle): `-y` aborted `corpus/fuzz_findings/d3-unsat-core.ein` before the switch | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) ([`../../../utils/censuses/node-census.md` § 6.1](../../../utils/censuses/node-census.md#61-the--y-abort-on-d3-unsat-core)) | path dependence: F21's D3. The lever `-y`: [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md) |
+| the census's [§ 8](../../../utils/censuses/region-census.md#8-monotonicity-the-static-check-against-the-cube): 13 programs flagged, a violation observed on 5 | [S1e2.1b.1](s1e2.1b.1_the_site_census.md), done | the grain: ruled, relation |
 
 ## Where it stops
 

@@ -420,7 +420,7 @@ it is what the puzzle did not say and the solution established. `ein solve
 -P` prints it. Distinct from a listing's `(model …)`, the region language's
 claim form, which holds a state's facts over the candidates' relations,
 root's included: the word names two objects, and
-[`inference/read-out.md` § 6](../ein/user/reference/read-out.md#6-the-listing) says which
+[`read-out.md` § 6](../ein/user/reference/read-out.md#6-the-listing) says which
 surface prints which (M1f S1f.5.16, Q-M1f.18). A query sees a model's
 **projection**; models with one projection form a **projection class**.
 
@@ -577,7 +577,7 @@ A language whose source code is itself a value in the language —
 Lisp's `(list 1 2 3)` is both syntax and a list literal. ein-lang is
 homoiconic: rules, facts, and traces all share one S-expression
 grammar, so the engine can read its own traces. See
-[`ir/03-ein-lang/05_inspirations.md`](ir/03-ein-lang/05_inspirations.md).
+[`../ein/overview/inspirations.md`](../ein/overview/inspirations.md).
 
 ### DPO (double-pushout)
 A categorical formulation of graph rewriting where a rule is a span

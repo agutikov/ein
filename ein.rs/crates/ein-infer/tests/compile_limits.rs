@@ -3,7 +3,7 @@
 //!
 //! ein.rs resolves every variable to a register in a fixed-size file, because
 //! that is what makes the matcher's inner loop allocation-free
-//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §3) — so the
+//! ([design/matcher.md § 2.3](../../../../docs/ein/ein.rs/design/matcher.md#23-register-spaces-and-the-variable-limit)) — so the
 //! count has to stop somewhere, and where it stops is observable: a rule may
 //! not bind more than 256 variables.
 //!

@@ -367,7 +367,7 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
   paragraph on the empty conjunction.
 - [`03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md) § 7.1 and its table: two of `()`'s three
   places have engine semantics; `()` as a value, Q28's question, is a parse error.
-- [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md),
+- [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md),
   [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 2.2 and
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md): no run reaches a value `#empty` since W34;
   `defined_behaviour.md` § 4.13: the rule whose `:match` was empty fires since.

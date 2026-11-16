@@ -1,12 +1,12 @@
 # The corpus, priced — what a sweep costs on the engine that ships
 
-**Produced by:** [S1a.9.0](../README.md#s1a90--the-slow-corpus-re-priced), 2026-08-22
+**Produced by:** [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced), 2026-08-22
 **Build:** `master` @ `b5661d8`, `cargo build --release -p ein-cli` — the
 shipping default, `snmalloc` linked
 **Machine:** Intel i9-14900HX, Linux 7.1.8, `powersave` governor, turbo on,
 pinned to **cpu4** (a P-core sibling) by
-[`utils/bench_env.sh`](../../../../utils/bench_env.sh)
-**Instrument:** [`utils/corpus_cost.py`](../../../../utils/corpus_cost.py) — cold
+[`utils/bench_env.sh`](../bench_env.sh)
+**Instrument:** [`utils/corpus_cost.py`](../corpus_cost.py) — cold
 processes, mean ± sd over *n* runs after a warm-up (discarded unless the cell
 turns out to cost more than 2 s), `{out}` and `--json-summary` exactly as the
 sweep issues them
@@ -125,7 +125,7 @@ nevertheless asked for `solve` **and** `solve -e`, so the engine enumerated a
 wide empty space to the cap and spent 265 ms establishing nothing, on a file
 whose meaningful run — `saturate --dump`, which lists the ten `is-a*` edges the
 header predicts — costs 3.7 ms. Six of the ten are per-rule saturation demos
-in exactly that position ([`examples/saturation/README.md`](../../../../examples/saturation/README.md):
+in exactly that position ([`examples/saturation/README.md`](../../examples/saturation/README.md):
 *"the smallest IR file that exercises **one** of the seven M1-core rules"*).
 Those seven entries lose `solve` and `solve -e`; the note on each says so.
 
@@ -135,7 +135,7 @@ consult it. The same file under `-T` or `-E` refuses to answer at all —
 `** aborted: max-time (0.05s) exceeded **`, exit 2, and `Answer::Aborted`
 through the library, which `verdict.rs` glosses as *"unexplored, not proven
 unsatisfiable"*. Three budgets, two vocabularies, one situation. That is
-[Q-M1d.6](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
+[Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
 written into M1d with the `-m` sweep as its reproducer, and **this stage
 changed no verdict word**: doing so would move checked-in fixtures across the
 corpus and it is a semantic decision, not a release chore.
@@ -178,7 +178,7 @@ entries whose notes dropped a run.
 | `zebra2-minus-15 :: solve -e` | killed at the **300 s** ceiling ⁴ |
 | `zebra2-minus-15 :: render lattice` | **27.82 s** ± 29 ms (n=3) |
 
-⁴ [P1d.10](../../../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) has the
+⁴ [P1d.10](../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) has the
 same cell **killed at 30 minutes**; the ceiling here is the sweep's, not the
 run's.
 
@@ -245,7 +245,7 @@ same one it applies to `solve`: keep it where the *fixture* is about the
 search. **The corpus keeps exactly one entry that pays for an unbounded
 lattice, and it is the one whose subject that is** — `features/04_open`, the
 demo of an open domain, which
-[Q-M1d.3](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
+[Q-M1d.3](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
 already cites for exactly that. The `square-unique` demos are about one rule
 firing once, and `saturate` shows it in 3.5 ms.
 
@@ -273,8 +273,8 @@ The three numbers next to each other are the milestone's shape in one line:
 | `04_open :: solve` — the same puzzle at `-m 5` | **no answer**, 14.3 GB |
 
 The depth cap is the only thing between the second row and the third.
-[M1d](../../../../docs/history/m1d_satisfiability/README.md) owns that sentence —
-[Q-M1d.3](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
+[M1d](../../docs/history/m1d_satisfiability/README.md) owns that sentence —
+[Q-M1d.3](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
 already names this fixture as the corpus entry whose whole point is that an
 open domain makes the search unbounded, and now it names the price too.
 
@@ -300,7 +300,7 @@ exit code.
 
 **`branching/07_lookahead_off.ein` is not slow any more**, and finding that out
 cost one command. M1a
-[T1a.7.2.0](../README.md#s1a72--level-1-parallel-enterings)
+[T1a.7.2.0](../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
 coalesces root's layer stack at the search's layer barrier; that entry's 162
 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, so
 it is **2.8×** cheaper as a whole entry and its `slow` flag stopped being true.
@@ -327,7 +327,7 @@ Three things are worth taking from it beyond the number.
 - **`features/01`'s 1.17× is not this stage's**, and it is the reason to
   re-take *all* the flagged entries rather than the one that changed. Almost
   all of that 600 ms is
-  [T1a.7.1.7](../README.md#s1a71--making-the-shared-state-sync)'s
+  [T1a.7.1.7](../../docs/history/m1a_rust/README.md#s1a71--making-the-shared-state-sync)'s
   per-worker provenance region, which landed a day earlier and took that file's
   `solve -e` from 1.97 s to 1.68 s without anyone re-taking its cost. A number
   that only gets re-taken when someone suspects it is a number that goes stale

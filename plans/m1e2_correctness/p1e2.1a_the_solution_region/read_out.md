@@ -621,7 +621,7 @@ which set that is:
 
 | surface | after the switch |
 |---|---|
-| events (`--events`) | `verdict` becomes **`region`**: the summary's `region` block without `states`. `enter` is one per node visited and `layer` one per route-1 layer, with route 1's counters. `nogood`, `writeback` and `traversal` go with the walk. [`events.md`](../../../docs/kernel/inference/events.md) is rewritten in T1e2.1a.5.2 |
+| events (`--events`) | `verdict` becomes **`region`**: the summary's `region` block without `states`. `enter` is one per node visited and `layer` one per route-1 layer, with route 1's counters. `nogood`, `writeback` and `traversal` go with the walk. [`events.md`](../../../docs/ein/ein.rs/events.md) is rewritten in T1e2.1a.5.2 |
 | `-s` | the wall clock per phase, and route 1's per-layer table (visited, dead, owing, in R, facts). The walk's counters go |
 | `-p`, `-P` | each listed state's facts beyond root, all of them or the positive ones: its **model**, by the definition. `(model …)` above names only the candidates' relations |
 | `-f` | each listed state's candidates, its closure |

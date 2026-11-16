@@ -1,8 +1,8 @@
 # The hole census — 2026-11-02
 
-**S1e2.1b.3's measurement** ([the stage](s1e2.1b.3_holes.md)), the evidence
-for [F21](../../followups/f21_non_monotone_programs_decided.md)'s D4, which is
-[Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)'s
+**S1e2.1b.3's measurement** ([the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)), the evidence
+for [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D4, which is
+[Q-M1e2.7](../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)'s
 sub-question (d): *what is reported when R has holes?* It lists every hole of
 every flagged cube the oracle reaches, by kind and by cause, each with the
 site that made it, and R's shape around its holes. It decides nothing.
@@ -25,20 +25,20 @@ number on this page is from those commands unless it names another.
 **What it selects.** `site_census`'s selection, `corpus_files()` plus the
 register's witnesses: 271 files, 217 of which load and 208 load and saturate.
 Of those, the static check flags 26: **18** within `--region-limit 16`, which
-is [`node_census.md`](node_census.md)'s selection, and 8 past it. S1e2.4.1's
+is [`node_census.md`](node-census.md)'s selection, and 8 past it. S1e2.4.1's
 14 probes get their own run, as in the other two censuses, because no test may
 point into `plans/`. So do the two programs in
-[`examples/shared/written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs):
+[`examples/shared/written.rs`](../../ein.rs/crates/ein-infer/examples/shared/written.rs):
 `ACTIVATOR_REFUTES`, which `ein-infer/tests/region.rs` now reads from there,
 and `ACTIVATOR_UNDER_ABSENT`, written for this census (§ 2).
 
-**What it reads.** [`hole_census`](../../../ein.rs/crates/ein-infer/examples/hole_census.rs)
+**What it reads.** [`hole_census`](../../ein.rs/crates/ein-infer/examples/hole_census.rs)
 runs `region::compute` and reads `Topology` over the status array:
 `holes`, `minimal_holes`, `repairs`, `local_max` and `local_min`,
 `components`, `subcubes`, the two lines and the duality. A hole's **kind** is
 the bit that puts it out of R, `dead` before `owing`. Its **cause** and
 **site** come from
-[`examples/shared/attribution.rs`](../../../ein.rs/crates/ein-infer/examples/shared/attribution.rs),
+[`examples/shared/attribution.rs`](../../ein.rs/crates/ein-infer/examples/shared/attribution.rs),
 which reads the oracle's own node: a dead node by `refuted_by` and its
 `absent` premises, an owing one by the instances its fixpoint owes and the
 largest node of R below it does not (`region::Nodes`, the node function every
@@ -65,7 +65,7 @@ census's own (§ 5, § 6). No route reads any of it.
 
 ## 2. By cause and kind
 
-The six causes of [the stage](s1e2.1b.3_holes.md#context), each as
+The six causes of [the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md#context), each as
 `attribution.rs` recognises it:
 
 | cause | kind | holes: corpus (programs) | probes | written | `06` at 19 | the rule that names the site |
@@ -83,7 +83,7 @@ The six causes of [the stage](s1e2.1b.3_holes.md#context), each as
   `via_hole` by S1e2.4.1, `ACTIVATOR_REFUTES` by S1e2.1b.6. The corpus's
   activator sites are `lattice/09`'s, which compiles an obligation, and
   `features/01`'s, past the limit and never exercised
-  ([site census § 2](site_census.md#2-the-sites)).
+  ([site census § 2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)).
 - **`ACTIVATOR_UNDER_ABSENT` is new**, written for this census. `act` writes
   the activator `(watch r)` while `(q ?x)` is absent, which compiles `watch`
   for `r`, and `(r A)` then refutes. Its dead hole `{(p A), (r A)}` has
@@ -91,7 +91,7 @@ The six causes of [the stage](s1e2.1b.3_holes.md#context), each as
   plan was compiled from, so the `absent` the death rests on is in no
   premise. The site rule names the activator site from `refuted_by`, not from
   the premises. What this means for learning from a refutation is
-  [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md)'s.
+  [S1e2.1b.4](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s.
 - **Under *forbid***, once S1e2.2.5's refusal ships: the first row is refused;
   the second if its F2 takes `via`; the third if its F3 reads the plans a
   node compiles. The three owing rows are not refutations and stay.
@@ -196,7 +196,7 @@ hole the one-fact test sees the hole and not the node of R beyond it.
 dead hole (`naf-upward-closure`, `naf-nowb`, `three_components`, `trigger_hole`,
 `via_hole`, both written programs) and on `06` and `maximal_not_top`; it holds
 on `lattice/04`, `08`, `09`, `local_not_global`, `07_cube` and the three
-owing probes. That is [`monotonicity.md` § 6](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)'s
+owing probes. That is [`monotonicity.md` § 6](../../docs/ein/reasoning/kb-evolution/monotonicity.md#6-the-two-kinds-compared)'s
 row, measured over more programs.
 
 **Repair edges.** One per hole and missing fact, from the hole to a node of R.
@@ -239,17 +239,17 @@ node), on 16 threads, and its two bits are held to the oracle's fork.
 | `written.rs` | 2 | 12 | 0 | yes |
 | `06` at 19 | 1 | 524 288 | 0 | yes, 23 s |
 
-This is [`node_census.md` § 2.1](node_census.md#21-the-corpus)'s finding,
+This is [`node_census.md` § 2.1](node-census.md#21-the-corpus)'s finding,
 extended to the probes, the written programs and `06`: **on every program
 with a hole, the holes are the same by fork and from scratch.** A hole here
 needs no path dependence, as `monotonicity.md` § 7.5 argues for owing holes.
 The dead holes agree too: on none of these programs does a site's rule fire
-at root ([site census § 2](site_census.md#2-the-sites)), and a fact root
+at root ([site census § 2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)), and a fact root
 derived under an `absent` is what makes the two routes differ.
 
 ## 7. Past the limit: `06_friends_tables` at 19
 
-[`06_friends_tables.ein`](../../../examples/lattice/06_friends_tables.ein),
+[`06_friends_tables.ein`](../../examples/lattice/06_friends_tables.ein),
 the conditional obligation, *a group that sits owes its members' seats*. It is
 the one flagged program in the 17–19 band, and a bare `ein solve` stops at the
 budget with *holes not known: the cube was not enumerated*. At
@@ -274,7 +274,7 @@ read-out says about them is its D4.
 ## 8. The attribution gap, closed
 
 S1e2.1b.6's re-take of the site census printed *a violation no site is named
-for: 2* ([`monotonicity.md` § 4](../../../docs/ein/reasoning/kb-evolution/monotonicity.md#4-what-the-cube-shows)).
+for: 2* ([`monotonicity.md` § 4](../../docs/ein/reasoning/kb-evolution/monotonicity.md#4-what-the-cube-shows)).
 `site_census` named a site for a dead node by its `absent` premises, and for
 an owing node by the trigger sites of what it owes. The owing holes of
 `lattice/08` and `lattice/09` fit neither rule: `lattice/08` owes because an
@@ -282,7 +282,7 @@ an owing node by the trigger sites of what it owes. The owing holes of
 compiled.
 
 Since T1e2.1b.3.2 `site_census` reads the rule this census reads,
-[`examples/shared/attribution.rs`](../../../ein.rs/crates/ein-infer/examples/shared/attribution.rs),
+[`examples/shared/attribution.rs`](../../ein.rs/crates/ein-infer/examples/shared/attribution.rs),
 and prints each item's cause beside its sites. The rule grew three clauses
 over S1e2.1b.1's:
 
@@ -327,7 +327,7 @@ example code: no route reads it, and no answer moves.
 
 ## 9. Each option, drafted on real programs
 
-The four options of [the stage](s1e2.1b.3_holes.md#the-options-for-f21s-d4),
+The four options of [the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md#the-options-for-f21s-d4),
 for F21's D4. **None is asked here.** Each is drafted as the rows it would
 print in place of today's `lattice` block, by the census itself from the cube
 it computed:
@@ -636,7 +636,7 @@ What each option would move, counted on the corpus. The goldens are
 entry include five read-outs (`read-out[describe]`, `[maximal]`, `[minimal]`,
 `[single]`, `[n2]`) and the `region-trace`, which repeats the `lattice` block;
 `ein-cli/tests/golden/corpus_exits.txt`; the read-out's golden page,
-[`read_out_examples.md`](../p1e2.1a_the_solution_region/read_out_examples.md),
+[`read_out_examples.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md),
 whose X8 is `naf-upward-closure` and X9 is `06_friends_tables` past the limit;
 and `ein-summary/2`'s `region.holes`, which lists every minimal hole with
 `set`, `dead`, `core` and `owes`. Counted 2026-11-02 at `c92d204e`, from the
@@ -648,7 +648,7 @@ two golden files and `site_census --json`'s rows.
 | **read-out lines** | the `describe` read-out of a program with a hole: the `lattice` row's text, and one row per minimal hole plus one of repair edges, where today has up to four | the same read-out: a `pieces` row and one per piece | the `lattice` row, wherever the stub prints it today: every flagged program, every mode | all of them: a load error on stderr and nothing on stdout |
 | **`corpus_shapes.md5`** | `read-out[describe]` and `region-trace` of the **9** corpus entries with a hole: **18** lines | the same **18** | `read-out[*]` and `region-trace` of all **25** flagged corpus entries: **150** lines | every rendering of the 25 that runs a lattice: **175** lines (5 read-outs, `region-trace`, `region-lattice` each), or all **875** if every subcommand refuses (S1e2.2.5's F3 asks the same of *forbid*) |
 | **`corpus_exits.txt`** | 0 | 0 | 0 | the cells of the 25 that run `solve`, `oracle` or `test`: **33** of their 104 (24, 7 and 2), all 0 → 1 or 2; all 104 if every subcommand refuses |
-| **`read_out_examples.md`** | X8 | X8 | X8, X9 | X8, X9 |
+| **`read-out-examples.md`** | X8 | X8 | X8, X9 | X8, X9 |
 | **`ein-summary/2`** | `holes.minimal[*]` gains `cause`, `sites` and `repairs`: additive | a `pieces` block: additive | none, unless the qualifier is a field | no summary |
 | **the register** | nothing | nothing | nothing | the 9 rows whose witness is flagged are re-stated with a refusal as `right`: `W1/alive-empty-interlayer`, `W1/` and `W11/d3-unsat-core`, W3's four (already a refusal under *forbid*), `W8/features-07`, `W8/stale-naf-fork` |
 | **new notions** | none: the oracle has every field | *convex piece*, which is not a partition (§ 5): a choice of which piece keeps a shared state, or overlapping pieces on the page | none | *R can have a hole*, decided statically: the static check's flag, sufficient and not necessary |

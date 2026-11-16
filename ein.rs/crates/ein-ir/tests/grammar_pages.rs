@@ -9,7 +9,7 @@
 //!   `YaccGrammar`), so the page cannot state a token or a production the
 //!   parser does not have. The test fails when the page differs, and
 //!   `EIN_BLESS=1` rewrites the two marked regions, as
-//!   `ein-cli/tests/embedding.rs` does for `docs/api/rust.md`.
+//!   `ein-cli/tests/embedding.rs` does for `docs/ein/ein.rs/api.md`.
 //! - **The grammar's table** ([`TABLE`]). One row for each shape the grammar
 //!   refuses where the loader, the compiler or the firing refused it until the
 //!   swap (T1f.5.5.4), with the parse error it is refused with, banked in

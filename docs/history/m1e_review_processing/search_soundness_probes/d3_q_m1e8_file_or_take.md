@@ -196,6 +196,6 @@ stage's contract is the check below, which is why A is no longer the fallback.
 Predicted before it moves, per the milestone's rule. On the corpus:
 `lattice/02`'s `-L` lever cell (verdict and `k`), and any entry where a
 surviving commitment currently ends the search without being recorded. The
-[layer census](../../m1d_satisfiability/layer_census.md)'s
+layer census's
 25 entries whose enterings are exactly `Σₖ C(alive, k)` are where to look
 first. `corpus_shapes.md5` does **not** move — the KB shape is unchanged.

@@ -94,7 +94,7 @@ are under `stdlib/bool/x/` since M1f S1f.6.17.
 **Why they exist.** Every other check in this repository is *relative*: the
 goldens compare ein.rs to its own past. The stdlib was where that gap was
 widest —
-[the census](../docs/history/m1c_external_validation/stdlib_census.md)
+[the census](../utils/censuses/stdlib-census.md)
 measured **38 of 73 rules never firing** on 2026-08-23 over 400 corpus runs,
 33 of them never even loaded, and 20 more held up by `examples/zebra.ein`
 alone.
@@ -926,7 +926,7 @@ The first is deliberately scoped to this directory and not to the corpus. The
 corpus-wide version is weaker in exactly the way that matters: a rule that
 happened to fire somewhere inside `examples/zebra.ein` would pass it with **no
 test written**, which is the state
-[the census](../docs/history/m1c_external_validation/stdlib_census.md)
+[the census](../utils/censuses/stdlib-census.md)
 found 20 rules in. Scoping it also found the one rule this suite did not run —
 `transitive`, whose fixture was a two-cycle where the `(neq ?a ?c)` guard
 refuses every match. `algebra/21_transitive.ein` grew a three-chain, and the
@@ -993,7 +993,7 @@ the failure mode of adding one, not a convention to remember.
 
 Its cost today is **zero entries** — 59 corpus claims, 59 held, all 59 under a
 search that exhausted, and 58 of them entering no commitment at all
-([`closure_census.md`](../docs/history/m1d_satisfiability/closure_census.md)).
+(`closure_census.md`).
 Its forward cost was the **ten** corpus entries whose claim *would* have come
 back unchecked under the walk — `saturation/type-exclusivity/pets.ein` most
 sharply, which the walk called `Contradiction k = 0` at `-m 5` and which has

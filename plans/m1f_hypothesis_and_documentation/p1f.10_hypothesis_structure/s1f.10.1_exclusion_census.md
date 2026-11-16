@@ -104,7 +104,7 @@ pool. The gate is `./run_tests.sh`, once on the last commit of the batch this st
   without `.ein`; `--facts`, `--jobs`, `--out`; `--routes` for T3's third column.
 - **The tests**: [`ein-infer/tests/pair_layer.rs`](../../../ein.rs/crates/ein-infer/tests/pair_layer.rs), seven,
   T2's among them; and one in the module, the licences against the nodes they skip. A row of
-  [`implementation.md`](../../../docs/kernel/inference/implementation.md)'s module map.
+  [`architecture.md`](../../../docs/ein/ein.rs/architecture.md)'s module map.
 
 ### What the definition had to settle
 

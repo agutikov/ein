@@ -4,7 +4,7 @@
 //! is not an allocation: a bind writes a register in a fixed-size file rather
 //! than building a fresh environment per bound variable per candidate fact at
 //! every level of the join
-//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1). A
+//! ([design/matcher.md § 1](../../../../docs/ein/ein.rs/design/matcher.md#1-the-costs-it-is-shaped-against)). A
 //! counting allocator is how that is checked rather than asserted: run the same
 //! plan over a KB twice the size, and the allocation count must not move.
 

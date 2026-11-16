@@ -1,9 +1,9 @@
 # The taint census — 2026-11-02
 
-**S1e2.1b.4's measurement** ([the stage](s1e2.1b.4_refutation_resting_on_absent.md)),
-the evidence for [F21](../../followups/f21_non_monotone_programs_decided.md)'s
+**S1e2.1b.4's measurement** ([the stage](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)),
+the evidence for [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s
 D6, *may a route learn from a refutation that rests on an `absent`?*, and for
-[S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s F1–F3. It
+[S1e2.2.5](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s F1–F3. It
 reads every dead node of every flagged cube the oracle reaches, and what its
 death rests on. It decides nothing: *forbid* stands as S1e2.4.1 ruled it, and
 until D6 is decided no route learns on a flagged program.
@@ -25,13 +25,13 @@ those commands unless it names another.
 and saturate) and the programs the static check flags: **26**, 18 with a cube
 within the limit (256 nodes) and 8 past it. The register's W3 and W8
 witnesses are among the 18. S1e2.4.1's probes and the two programs in
-[`examples/shared/written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)
+[`examples/shared/written.rs`](../../ein.rs/crates/ein-infer/examples/shared/written.rs)
 get their own runs.
 
-**What it reads.** [`taint_census`](../../../ein.rs/crates/ein-infer/examples/taint_census.rs)
+**What it reads.** [`taint_census`](../../ein.rs/crates/ein-infer/examples/taint_census.rs)
 computes the cube with `region::compute` and reads each dead node's fixpoint
 through `region::Nodes`, the node function every route shares. The **taint**
-is [`examples/shared/taint.rs`](../../../ein.rs/crates/ein-infer/examples/shared/taint.rs)'s
+is [`examples/shared/taint.rs`](../../ein.rs/crates/ein-infer/examples/shared/taint.rs)'s
 walk, wider than the oracle's own `region::Node::absent_premises`, which
 follows the first contradiction's witness, the positive side of a pair:
 
@@ -82,14 +82,14 @@ Every flagged cube within the limit with a dead node. The other 10 have none.
 
 | program | n | dead | untainted | tainted | … with an alive superset | dead holes | skippable by (b) | its premises |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | 12 | 0 | 12 | 0 | 0 | 0 | `(absent (not (r1 o3 o2)))` and its mirror, direct: `fire-1` derives the positive side of the pair under it. 16 contradictions over the 12 nodes |
-| [`ein-bugs/alive-empty-interlayer.ein`](../../../examples/ein-bugs/alive-empty-interlayer.ein) | 3 | 4 | 4 | 0 | 0 | 0 | 3 | none: `kill` refutes `(p Z)` on positive premises; the site `totality` never fires |
-| [`ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein) | 2 | 1 | 0 | 1 | 1 | 1 | 0 | `(absent (q A))`, direct (`bad`) |
-| [`ein-bugs/wrong-answers/naf-nowb.ein`](../../../examples/ein-bugs/wrong-answers/naf-nowb.ein) | 2 | 1 | 0 | 1 | 1 | 1 | 0 | the same |
-| [`ein-bugs/wrong-answers/stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) | 1 | 1 | 0 | 1 | 0 | 0 | 0 | `(absent (q one))`, **via** `(p one)`, which **root** derived (`derive-p`) |
-| [`ein-bugs/wrong-answers/stale-naf-fork-warn.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein) | 1 | 1 | 0 | 1 | 0 | 0 | 0 | the same |
-| [`lattice/synth/three_components.ein`](../../../examples/lattice/synth/three_components.ein) | 7 | 99 | 96 | 3 | 3 | 3 | **88** | the 3 holes: `(absent (h B))` or `(absent (h D))`, direct (`dead-3`, `dead-7`); the other 96 rest on none |
-| [`lattice/synth/trigger_hole.ein`](../../../examples/lattice/synth/trigger_hole.ein) | 5 | 3 | 0 | 3 | 3 | 3 | 0 | `(absent (h B))`, `(absent (h E))`, direct (`dead-1`, `dead-2`) |
+| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | 12 | 0 | 12 | 0 | 0 | 0 | `(absent (not (r1 o3 o2)))` and its mirror, direct: `fire-1` derives the positive side of the pair under it. 16 contradictions over the 12 nodes |
+| [`ein-bugs/alive-empty-interlayer.ein`](../../examples/ein-bugs/alive-empty-interlayer.ein) | 3 | 4 | 4 | 0 | 0 | 0 | 3 | none: `kill` refutes `(p Z)` on positive premises; the site `totality` never fires |
+| [`ein-bugs/naf-upward-closure.ein`](../../examples/ein-bugs/naf-upward-closure.ein) | 2 | 1 | 0 | 1 | 1 | 1 | 0 | `(absent (q A))`, direct (`bad`) |
+| [`ein-bugs/wrong-answers/naf-nowb.ein`](../../examples/ein-bugs/wrong-answers/naf-nowb.ein) | 2 | 1 | 0 | 1 | 1 | 1 | 0 | the same |
+| [`ein-bugs/wrong-answers/stale-naf-fork.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) | 1 | 1 | 0 | 1 | 0 | 0 | 0 | `(absent (q one))`, **via** `(p one)`, which **root** derived (`derive-p`) |
+| [`ein-bugs/wrong-answers/stale-naf-fork-warn.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein) | 1 | 1 | 0 | 1 | 0 | 0 | 0 | the same |
+| [`lattice/synth/three_components.ein`](../../examples/lattice/synth/three_components.ein) | 7 | 99 | 96 | 3 | 3 | 3 | **88** | the 3 holes: `(absent (h B))` or `(absent (h D))`, direct (`dead-3`, `dead-7`); the other 96 rest on none |
+| [`lattice/synth/trigger_hole.ein`](../../examples/lattice/synth/trigger_hole.ein) | 5 | 3 | 0 | 3 | 3 | 3 | 0 | `(absent (h B))`, `(absent (h E))`, direct (`dead-1`, `dead-2`) |
 
 **Every death with an alive superset is tainted**, on the corpus, the probes
 and the written programs, under the full walk. Every untainted death is dead
@@ -110,7 +110,7 @@ conservative on them, as the static check is on its eight.
 | **eligible** instead of D | the full walk, S1e.2.3's reading of *extendable* | 0: it agrees with *in D* on every dead node of every run |
 
 **The one counterexample is `ACTIVATOR_UNDER_ABSENT`**, written by S1e2.1b.3
-([hole census § 2](hole_census.md#2-by-cause-and-kind)):
+([hole census § 2](hole-census.md#2-by-cause-and-kind)):
 
 ```lisp
 (rule act () :match (and (p ?x) (absent (q ?x))) :assert (watch r))
@@ -152,14 +152,14 @@ set), and `lattice/06`'s one site is a trigger. None is measured.
 
 ## 5. W8's `p-and-q-clash`, fork and scratch
 
-[`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein):
+[`stale-naf-fork.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein):
 `derive-p` derives `(p one)` at root under `(absent (q one))`, and
 `p-and-q-clash` refutes `(p one)` beside `(q one)`.
 
 | | `{(q one)}` | its taint |
 |---|---|---|
 | **fork** (A), today's node | dead, refuted by `p-and-q-clash` | `(absent (q one))`, **via** `(p one)`, **on a root fact**: tainted. No superset (n = 1) |
-| **scratch** (B) | in R: `derive-p` never fires once `(q one)` is given ([`node_census.md` § 2.1](node_census.md#21-the-corpus)), so there is no refutation to taint | — |
+| **scratch** (B) | in R: `derive-p` never fires once `(q one)` is given ([`node_census.md` § 2.1](node-census.md#21-the-corpus)), so there is no refutation to taint | — |
 | (C) over (A) | the third outcome: dead, its death resting on a stale fact | as fork |
 
 So under fork the refutation is tainted, and (b) would not learn from it;
@@ -170,7 +170,7 @@ the walk counts it anyway, which is conservative.
 
 ## 6. The check, as a test
 
-[`ein-infer/tests/region.rs`](../../../ein.rs/crates/ein-infer/tests/region.rs)`::an_untainted_death_is_dead_in_every_superset`,
+[`ein-infer/tests/region.rs`](../../ein.rs/crates/ein-infer/tests/region.rs)`::an_untainted_death_is_dead_in_every_superset`,
 banked by T1e2.1b.4.2, holds (b)'s soundness condition per commit:
 
 ```sh
@@ -247,14 +247,14 @@ fact.
 
 ## 8. Handed on
 
-- [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here):
+- [Q-M1e2.5](../../plans/m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here):
   a dated note, the census and the test, and that learning before the refusal
   ships is F21's D6.
-- [S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md#the-evidence-from-s1e21b4-2026-11-02):
+- [S1e2.2.5](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md#the-evidence-from-s1e21b4-2026-11-02):
   F1 per dead node (§ 3), the `via` deaths for F2 (§ 2, § 5), and the
   compiled refutation for F3 (§ 7), each with its numbers, and that
   `ACTIVATOR_UNDER_ABSENT` escapes both of F3's placements.
-- [F21](../../followups/f21_non_monotone_programs_decided.md)'s D6: the census
+- [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D6: the census
   and the test, linked, with the agent's recommendation, (b) with the
   activator walk; and a fifth item under *what forbid does not cover*.
 - `docs/kernel/inference/monotonicity.md` at `50739fdb`: § 3's

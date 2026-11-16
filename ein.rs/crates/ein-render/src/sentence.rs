@@ -22,7 +22,7 @@
 //! statement, and one whose justification has no text has no reason; where
 //! both are missing the fact reads as its s-expression, as every surface wrote
 //! it before. The engine adds the provenance's own words (`rule r`, `source
-//! "…"`, `hypothesis N`), which `reserved_engine_strings.md` owns, and nothing
+//! "…"`, `hypothesis N`), which `reserved-engine-strings.md` owns, and nothing
 //! of the domain's.
 
 use ein_core::{FactId, Kb, Program, ProvKind, Symbol, Terms, Value, render_why};

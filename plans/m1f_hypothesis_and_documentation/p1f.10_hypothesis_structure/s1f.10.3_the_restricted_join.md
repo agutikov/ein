@@ -40,7 +40,7 @@ one-liner.
 | `N`, `dead alone`, `k_s`, `k_c`, the lines, the shape | nothing: they are read off the states | held by the acceptance |
 | `--dump-lattice`, `ein render lattice` | a dead node not saturated is not *visited*; the pair nodes are | the dump says by which pair a set was known dead, where it lists what L1 pruned today |
 | a dead node's core, where a surface prints one | a node not saturated has no derivation | inventory which surfaces print a core of a node the routes would now skip; where one does, the pair's own node is the explanation, and is what is printed |
-| `--events` | fewer `saturate` narrations | [`events.md`](../../../docs/kernel/inference/events.md) restated in the same commit if a line's meaning moves |
+| `--events` | fewer `saturate` narrations | [`events.md`](../../../docs/ein/ein.rs/events.md) restated in the same commit if a line's meaning moves |
 | the goldens | `read_out_examples.md`, the shape digests, corpus entries' `cost_ms` and the slow set | each named in this file before it moves |
 
 ## Tasks
@@ -413,9 +413,9 @@ The table at the head of this file, row by row.
 | the `route` row, `region.licences` | `L8 what a state denies is dead above it`, named where an answer rested on a denial, as L5 is named where a branch used it |
 | `N`, `dead alone`, `k_s`, `k_c`, the lines, the shape | unchanged on every program, by the with-and-without test and the oracle's. A denied extension is a dead node the state route met, so a partial run's `N … met` and `dead alone` count it as they counted the saturated one |
 | a dead node's core | no surface prints the core of a node that is now not saturated but `N`'s: `--dump-answer`'s `nogoods.json` and `--trace`'s *N*. Those take a member's core **after the walk**, through the node function against the walk's snapshot, as they already did for every member the walk read off the states; more members take that path, and the cores are the same (the test compares them) |
-| `--dump-lattice`, `--events` | a node not saturated is not visited: it is in neither, and `visited` is still the `work` row's saturations. The dump lists nothing a licence pruned, today or before; [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md) says so |
+| `--dump-lattice`, `--events` | a node not saturated is not visited: it is in neither, and `visited` is still the `work` row's saturations. The dump lists nothing a licence pruned, today or before; [`lattice-dump.md`](../../../docs/ein/ein.rs/lattice-dump.md) says so |
 | `ein render region … --visited` | the one surface that says *why* a node was not visited. It infers *above a dead node* from the dead nodes the run visited; it now infers *above a state's denial* the same way, from the cube's `excluded`, and checks it against the cube |
-| `--events`' lines | no line's meaning moved: `enter` is a node visited and `layer`'s `dead` the dead nodes visited. [`events.md`](../../../docs/kernel/inference/events.md) is as it was |
+| `--events`' lines | no line's meaning moved: `enter` is a node visited and `layer`'s `dead` the dead nodes visited. [`events.md`](../../../docs/ein/ein.rs/events.md) is as it was |
 
 ### The goldens that moved
 

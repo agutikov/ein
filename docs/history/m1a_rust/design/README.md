@@ -103,7 +103,7 @@ utils/bench_env.sh cargo run --release --features counters -p ein-infer \
 ```
 
 The tables they produce live in
-[p1a.6_performance/baseline.md](../measurements/baseline.md); the raw
+p1a.6_performance/baseline.md; the raw
 artefacts go to `ein.rs/bench-out/` (git-ignored, machine-specific — the same
 split `utils/feature_matrix_results.json` uses).
 

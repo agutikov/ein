@@ -97,7 +97,7 @@ figure is re-taken by [S1h.2.1](s1h.2.1_what_a_slice_is_today.md).
 - **A justification a fact.** Every derived fact records the rule and the premises that gave it:
   `ein saturate FILE --dump` writes a fact's `:rule`; `--events`' `fire` line carries `rule`, `bindings`,
   `premises` and `derived`, and an `alt` line a further justification of a fact already held
-  ([`events.md`](../../../docs/kernel/inference/events.md)).
+  ([`events.md`](../../../docs/ein/ein.rs/events.md)).
 - **`--trace -l`,** *prune each derivation to the goal-relevant slice*
   (`ein-render/src/trace/relevance.rs`): a walk back along provenance from the facts of the query's
   relations and the `:hrules` targets, which keeps the firings on a path to one. It cuts the **trace**, not

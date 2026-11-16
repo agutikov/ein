@@ -46,6 +46,6 @@ and [`plans/followups/`](../../plans/followups/README.md) at P1.22, and the
 rest is in git history.
 
 Distinct from [`docs/kernel/`](../kernel/README.md), which is the *current*
-specification and is checked by the gate; from [`docs/api/`](../api/README.md),
+specification and is checked by the gate; from [`docs/api/`](../ein/ein.rs/README.md),
 which is how to drive the engine today; and from `plans/`, which is what has
 not been built yet.

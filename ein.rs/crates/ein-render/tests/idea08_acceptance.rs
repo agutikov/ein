@@ -6,7 +6,7 @@
 //! because of how nearly it was lost.
 //!
 //! **The near-miss.** `--trace` renders one node's firings, and until
-//! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+//! [design/saturation.md § 4](../../../../docs/ein/ein.rs/design/saturation.md#4-a-node-resumes-roots-saturation)
 //! every fork re-derived root's whole closure into them — so the trace was
 //! getting root's proof *by accident*. Take the re-derivation away and the
 //! solution node's trace covered 12 distinct rules instead of 24, with

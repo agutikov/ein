@@ -312,7 +312,7 @@ a program to answer about.
   nothing near, says so in its block, and lists every unmatched model as missing or spurious.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary` (`ein-summary/2`), `--json-report`
   (`ein-test-report/5`), `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
-  ([`docs/kernel/inference/lattice_dump.md`](../../../kernel/inference/lattice_dump.md)), `--dump-answer`
+  ([`docs/kernel/inference/lattice-dump.md`](../../ein.rs/lattice-dump.md)), `--dump-answer`
   ([`answer-dump.md`](answer-dump.md)), and `ein oracle`'s `--dump` with `--states`
   ([`region-dump.md`](region-dump.md)). The directories are made before the run. **Additive** in the strict sense:
   stdout, stderr and the exit code are identical with them and without, and a write that fails after the run
@@ -331,7 +331,7 @@ render kb`, `ein render lattice`, `ein render h-space`, `ein render program`, `r
 show hyps` and `ein kb save` — and on none that loads nothing (`ein render region`). The views that draw a program
 as written read it through the loader first, and refuse what it refuses
 ([Q-M1f.71](../../../decisions/cli/Q-M1f.71-a-view-refuses-a-program-the-loader-refuses.md)), so they take it too. A
-program that embeds Ein sets the same option through the library ([`docs/api/rust.md`](../../../api/rust.md)).
+program that embeds Ein sets the same option through the library ([`docs/api/api.md`](../../ein.rs/api.md)).
 
 | option | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|

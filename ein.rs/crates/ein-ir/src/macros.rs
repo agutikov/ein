@@ -21,7 +21,7 @@ const MAX_EXPANSION_DEPTH: u32 = 50;
 
 /// A malformed invocation — arity mismatch or runaway recursion. The message
 /// is `MacroError`'s; the loader's `({head} {name}): ` prefix is added where
-/// the loader adds it ([P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)).
+/// the loader adds it ([design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MacroError(pub String);
 
@@ -329,7 +329,7 @@ pub fn expand_rule_clauses(
 /// `total`, `hypothesis`, …) whose absence just means the rule does not fire.
 ///
 /// Returns the message lines; wiring them into the loader's error list is
-/// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)'s.
+/// [design/data-model.md](../../../../docs/ein/ein.rs/design/data-model.md)'s.
 pub fn unimported_macro_errors(
     ast: &Ast,
     rules: &[(String, NodeId)],

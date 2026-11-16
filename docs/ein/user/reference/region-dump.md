@@ -146,7 +146,7 @@ only an `absent` breaks; and the **status**'s, which an obligation's trigger or 
   computed) and the `paths` (the spot check, at most three parents of each printed state), then the minimal holes
   ([`read-out.md` § 5.1](read-out.md#51-under-lattice-and-monotone-the-warning));
 - `ein solve FILE --monotone`, the static half alone, root's fixpoint and no node;
-- a `monotonicity` event ([`events.md`](../../../kernel/inference/events.md)), with the static half;
+- a `monotonicity` event ([`events.md`](../../ein.rs/events.md)), with the static half;
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone or not: each site's `concludes` and
   `at_stake`, then `assumes`, `cycles`, `order`, `status`, `state` (every stale node, uncut) and `paths`. On a monotone
   program `assumes`, `status`, `state` and `paths` are `null` and the two lists empty, because `ein-summary/2` has one
@@ -244,7 +244,7 @@ above) rather than proposed.
 ## Cross-references
 
 - [`answer-dump.md`](answer-dump.md): a run's answer, as files.
-- [`lattice_dump.md`](../../../kernel/inference/lattice_dump.md): every node a run visited.
+- [`lattice-dump.md`](../../ein.rs/lattice-dump.md): every node a run visited.
 - [`rendering.md`](rendering.md): this directory drawn, with a region run on it, `ein render region`.
 - [`solutions-and-models.md`](../syntax-and-semantics/solutions-and-models.md): what R is.
 - [`monotonicity.md`](../../reasoning/kb-evolution/monotonicity.md): what the static check's two verdicts mean for R,

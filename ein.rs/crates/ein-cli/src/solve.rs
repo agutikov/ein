@@ -205,7 +205,7 @@ pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
 
 /// `--jobs N`, or `--jobs auto` — which the parser gives us as `0`.
 ///
-/// **The default is 1 and stays 1** ([S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
+/// **The default is 1 and stays 1** ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)
 /// T1a.7.5.1): a benchmark, a golden run and the corpus sweep must never
 /// silently become a different computation, even one that is provably the
 /// same. `auto` is what a user opts into, and it is the *machine's* number:

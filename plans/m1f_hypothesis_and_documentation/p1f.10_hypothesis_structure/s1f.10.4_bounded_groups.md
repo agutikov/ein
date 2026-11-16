@@ -166,7 +166,7 @@ of the exclusions the theory makes alone, over all of H
   six; the sweep of [`cover.rs`](../../../ein.rs/crates/ein-infer/tests/cover.rs) and both sweeps of
   [`structure_invariance.rs`](../../../ein.rs/crates/ein-infer/tests/structure_invariance.rs), extended in
   place; one in the module ([§ The tests](#the-tests)).
-- Docs: `structure.rs`'s row in [`implementation.md`](../../../docs/kernel/inference/implementation.md), the
+- Docs: `structure.rs`'s row in [`architecture.md`](../../../docs/ein/ein.rs/architecture.md), the
   example's in [`utils/README.md`](../../../utils/README.md), and two rows of [`findings.md`](findings.md),
   K-10 and K-11.
 

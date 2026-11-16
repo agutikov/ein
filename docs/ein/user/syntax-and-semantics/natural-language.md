@@ -215,7 +215,7 @@ standard library's, which is a program. The engine fills them and never edits th
 engine's**: the read-out's labels ([the read-out reference](../reference/read-out.md)), the trace's headings and its
 *Derives* and *Premises*, the provenance words a state file writes (`source`, `rule`, `hypothesis`) and its
 separators (`: `, ` — `), and the verdict and protocol words the engine reserves
-([the engine's reserved strings](../../../kernel/inference/reserved_engine_strings.md)). The engine owns no domain
+([the engine's reserved strings](../../ein.rs/reserved-engine-strings.md)). The engine owns no domain
 word: it has no sentence for a relation that has none, and a kernel relation, `not`, `relation` or `written`, reads
 as its s-expression. A word the engine adds to an output is the engine's, listed on one of those two pages, and never
 part of a vocabulary for the domain.

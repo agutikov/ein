@@ -104,7 +104,7 @@ So a naive parallel layer changes `enterings_dead_pre` /
 > 8 158 205 enterings, and serialising it costs **0.24 %** of
 > `branching/07 -e`'s Phase-2 firings and nothing at all on the other three
 > workloads of the measurement set, which never write back
-> ([scaling.md §3a](../measurements/scaling.md#3a-where-the-writebacks-are-inside-layer-1--and-the-split-that-is-not-there)).
+> (scaling.md §3a).
 >
 > The route that looked most promising and is *not* available: run layer 1's
 > head sequentially and fan out its tail. `W` grows until candidate 55 of 56 on
@@ -199,7 +199,7 @@ said, and the difference matters twice over: the parallel path needs a
 *debug assertion* that no root write reaches a layer above the first, and
 the workloads with a search big enough to want cores put **98.2–99.9 % of
 their enterings past layer 1**
-([scaling.md §2](../measurements/scaling.md#2-the-layer-profile--where-the-enterings-and-the-firings-are)).
+(scaling.md §2).
 
 ### What case 3 costs — measured before it was built
 
@@ -435,7 +435,7 @@ Three readings, and the third was not expected:
 > `promote_forced_positives`' re-saturation off the deep stack — work the
 > deferral experiment could not separate from the deferral. Entering counts
 > identical in every setting on all 49; the gate green with no re-bless
-> ([scaling.md §6](../measurements/scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
+> (scaling.md §6).
 
 ### Order
 
@@ -454,7 +454,7 @@ finish and integrates at the barrier.
 ## 3. Level 2 — the enqueue pass — **not built**
 
 > **Declined 2026-08-23** ([S1a.7.4](../README.md#s1a74--level-2-the-parallel-enqueue-pass),
-> [scaling.md §9](../measurements/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+> scaling.md §9).
 > The analysis below is sound and the mechanism would work; what fails is the
 > *premise*. The pass holds **10.6–31.2 %** of a solve, so the share is there —
 > but the fan-out it describes has **1.4 to 3.1 tasks** on the phase's
@@ -486,7 +486,7 @@ a threshold changes nothing observable, so it can be tuned freely.
 ## 4. Level 3 — the boundary round — **not built**
 
 > **Declined 2026-08-23** ([S1a.7.3](../README.md#s1a73--level-3-the-parallel-boundary-round),
-> [scaling.md §9](../measurements/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
+> scaling.md §9).
 > The premise below — that the round is the bulk of an exhaustive solve — is
 > the part that did not survive: `admit_from_boundary` is **0.0 %** of three of the four
 > workloads in P1a.7's measurement set, which never park a single candidate at

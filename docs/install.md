@@ -55,7 +55,7 @@ C++ toolchain targeting musl, which the release runner does not have, so that
 artefact is `--no-default-features`: the system allocator, no `.einb`
 container, no `--jobs` fan-out. It costs a measured **+25 % on `solve
 zebra2.ein -e`** and **+36 % on `solve zebra.ein -e`**
-([`feature_cost.md` §2](history/m1a_rust/measurements/feature_cost.md#2---no-default-features--what-a-packager-is-buying)).
+(`feature_cost.md` §2).
 Take the glibc binary unless glibc is the problem.
 
 ## `cargo install`
@@ -77,7 +77,7 @@ This builds with default features, which needs **`cmake` and a C++ compiler**
 cargo install --path ein/ein.rs/crates/ein-cli --locked --no-default-features
 ```
 
-— and read [`feature_cost.md`](history/m1a_rust/measurements/feature_cost.md)
+— and read `feature_cost.md`
 first, because that build also drops `ein kb` and `--jobs`.
 
 `cargo install` puts `ein` on `$PATH`. That is right for using ein as a tool
@@ -185,7 +185,7 @@ command.
 `$EIN_STDLIB` is one of **eight** environment variables the shipped binary
 reads, and the only one a normal install needs. The whole set, with the three
 classes of name that are *not* that —
-[`docs/kernel/config.md` § The environment](ein/user/reference/config.md#4-the-environment).
+[`docs/ein/user/reference/config.md` § The environment](ein/user/reference/config.md#4-the-environment).
 
 ## There is no Python package
 
@@ -200,7 +200,7 @@ says when one is added: a consumer the binary cannot serve.
 To drive ein from Python today, run the binary and read its output: `ein solve
 … --json-summary out.json` for the verdict and counters, `--events e.jsonl`
 for the step-by-step narration
-([the protocol](kernel/inference/events.md)). To embed it in a Rust program,
+([the protocol](ein/ein.rs/events.md)). To embed it in a Rust program,
 link the crates.
 
 ## If you are developing ein

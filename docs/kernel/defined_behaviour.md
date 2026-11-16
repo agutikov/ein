@@ -1702,7 +1702,7 @@ ignored before `main`, and `ein-cli/src/main.rs`'s `restore_sigpipe` restores
 the default as `main`'s first statement, one audited `libc::signal` call on
 Unix, the second `unsafe` site beside `ein-einb`'s `cast.rs`. A program that
 embeds the engine links the library, not `main.rs`, and keeps its own
-disposition ([`docs/api/rust.md`](../api/rust.md)). Windows has no `SIGPIPE`
+disposition ([`docs/ein/ein.rs/api.md`](../ein/ein.rs/api.md)). Windows has no `SIGPIPE`
 ([Q-M1f.101](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f101--a-closed-stdout-on-windows)).
 
 What pins it: `ein-cli/tests/closed_stdout.rs`, sixty-eight runs, every
@@ -2888,9 +2888,9 @@ on every commit. The two items are kept as the record of what was filed:
   [Q-M1a.6](../decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md) and
   [Q-M1a.13](../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md)
   — the decisions this page restates.
-- [`inference/reserved_engine_strings.md`](inference/reserved_engine_strings.md)
+- [`../ein/ein.rs/reserved-engine-strings.md`](../ein/ein.rs/reserved-engine-strings.md)
   — the other kind of thing that is defined only because the engine does it.
-- [`inference/implementation.md`](inference/implementation.md) — where each
+- [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md) — where each
   behaviour above is implemented.
 - [`standard_of_proof.md`](standard_of_proof.md) — its opposite number: this
   page states what the engine **does**, that one states what it takes to know

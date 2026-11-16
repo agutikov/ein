@@ -133,7 +133,7 @@ limit, 9 sites fire at root, on `features/01`, `/04`, `/05`, `/12` and the three
 `square-unique` demos.
 
 **The `-y` abort** on `corpus/fuzz_findings/d3-unsat-core.ein` (2026-10-16,
-before the switch, [region census § 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle))
+before the switch, [region census § 9](../../../utils/censuses/region-census.md#9-the-config-principle))
 comes from that program's one site: `fire-1`, which reads `(not r1)` at depth
 1, concludes `(r1 …)` and does not fire at root. Its cube is conservative.
 S1e2.1b.2 owns the abort.
@@ -160,7 +160,7 @@ S1e2.1b.2 owns the abort.
 **Exercised: 6.** These are W3's four witnesses (two of them written as
 probes, two by `region_synth.py`), `lattice/04`, and `tests/region/07_cube`,
 which is `lattice/04`'s program banked as an `ein test` fixture.
-**Conservative: 8.** These are [region census § 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube)'s
+**Conservative: 8.** These are [region census § 8](../../../utils/censuses/region-census.md#8-monotonicity-the-static-check-against-the-cube)'s
 eight, unchanged. Every one is flagged over a relation the program means to
 decide (`q`, `cand`, `signed`, `p`, `r1`). Each site there is a real
 non-monotone read, and the corpus program never makes it bite.
@@ -201,7 +201,7 @@ It grew a clause for each cause the fixtures banked after this page found
 uncovered (`lattice/08`, `lattice/09`), and one for a refutation a node
 compiles. Its re-take at `4562bf70` names a site for all 23 items of the 18
 flagged cubes within the limit
-([hole census § 8](hole_census.md#8-the-attribution-gap-closed)).
+([hole census § 8](../../../utils/censuses/hole-census.md#8-the-attribution-gap-closed)).
 
 ## 4. Past the limit
 
@@ -422,8 +422,8 @@ old commit is `git ls-tree -r --name-only COMMIT examples stdlib tests` (the
 | count | taken | its selection | then | today | every difference |
 |---|---|---|---|---|---|
 | S1e2.1a.1's `census_for_inspection` ([§ Outcome](../p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md#outcome-2026-10-15)) | 2026-10-15, `e24ae3ea` | `corpus_files()`, `region::compute` succeeds | 183 · 150 at n ≤ 16 · 17 flagged · a hole on 3 | 200 · 165 · 21 · 6 | **26 files added since.** 9 are `examples/broken/load/` fixtures and do not load. The other 17 add 17 programs, 15 of them at n ≤ 16 (all but the two `lattice/06_friends_tables*` at n = 19), 4 flagged (`lattice/06_friends_tables`, `synth/three_components`, `synth/trigger_hole`, `tests/region/07_cube`) and 3 holes (the last three) |
-| `region_census.py --all` ([§ 1](../p1e2.1a_the_solution_region/region_census.md#1-reach), [§ 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube)) | 2026-10-16, `9248236d` | corpus + register, through the CLI | 159 regions at n ≤ 16 · 13 flagged · a violation on 5 | 169 · 14 · 6 | **18 files added since**: the 9 load fixtures and `tests/region/01`–`09`, which add 9 regions, 1 of them flagged and violated (`07_cube`). **The tenth region is the route, not a file.** [`ein-bugs/query-goal-free-head.ein`](../../../examples/ein-bugs/query-goal-free-head.ein) loads and saturates in process (n = 0). `ein solve` refuses its `:goal` at compile, so `region_census.py`, which runs the binary, got no `region.json` and counted it among the 55 that "do not load". This was re-run with the `3fde4ef1` binary on the 195 programs on 2026-11-02: it is the only one with no region. Today's binary still refuses it |
-| `route1_reach` ([§ 1](../p1e2.1a_the_solution_region/route1_reach.md#1-the-three-routes-over-the-corpus)) | 2026-10-16, `3fde4ef1` | corpus + register, load and compile | 195 · 13 flagged at n ≤ 16 · 8 past it | 204 · 14 · 8 | the 9 `tests/region/` files: +9 programs and +1 flagged within the limit (`07_cube`). The same 8 past it. Its page says the one program it has beyond the region census is one *"the census's selection does not hold"*. It is `query-goal-free-head`, which the census selected and the CLI refused, as the row above says |
+| `region_census.py --all` ([§ 1](../../../utils/censuses/region-census.md#1-reach), [§ 8](../../../utils/censuses/region-census.md#8-monotonicity-the-static-check-against-the-cube)) | 2026-10-16, `9248236d` | corpus + register, through the CLI | 159 regions at n ≤ 16 · 13 flagged · a violation on 5 | 169 · 14 · 6 | **18 files added since**: the 9 load fixtures and `tests/region/01`–`09`, which add 9 regions, 1 of them flagged and violated (`07_cube`). **The tenth region is the route, not a file.** [`ein-bugs/query-goal-free-head.ein`](../../../examples/ein-bugs/query-goal-free-head.ein) loads and saturates in process (n = 0). `ein solve` refuses its `:goal` at compile, so `region_census.py`, which runs the binary, got no `region.json` and counted it among the 55 that "do not load". This was re-run with the `3fde4ef1` binary on the 195 programs on 2026-11-02: it is the only one with no region. Today's binary still refuses it |
+| `route1_reach` ([§ 1](../../../utils/censuses/route1-reach.md#1-the-three-routes-over-the-corpus)) | 2026-10-16, `3fde4ef1` | corpus + register, load and compile | 195 · 13 flagged at n ≤ 16 · 8 past it | 204 · 14 · 8 | the 9 `tests/region/` files: +9 programs and +1 flagged within the limit (`07_cube`). The same 8 past it. Its page says the one program it has beyond the region census is one *"the census's selection does not hold"*. It is `query-goal-free-head`, which the census selected and the CLI refused, as the row above says |
 | `refutation_census` ([S1e2.4.1 § 1](../p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted)) | 2026-11-02, `6e7dfc49` | corpus + register | 267 files · 204 load and saturate · 22 flagged | 267 · 204 · 22 | none: no file added since |
 
 Every difference is a file added since, apart from one route difference. No

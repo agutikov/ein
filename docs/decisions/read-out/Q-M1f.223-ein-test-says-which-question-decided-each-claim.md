@@ -14,4 +14,4 @@ a reader of a verdict needs to know which run it was read off.
 
 **Held by.** `ein-cli/tests/test_cli.rs`: `a_claim_is_asked_the_least_question_and_the_surfaces_say_which`,
 `an_undecided_claim_falls_back_to_the_description`, `the_pages_name_the_reports_schema`. The event stream's run:
-[events.md](../../kernel/inference/events.md).
+[events.md](../../ein/ein.rs/events.md).

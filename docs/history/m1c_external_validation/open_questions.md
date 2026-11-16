@@ -150,7 +150,7 @@ the residue:
   legal expectation meaning *the empty model*, which is why `()` was never the
   answer; the pair is `(false)` and `(model)`.
 - **Route stays out**, and
-  [`stdlib_census.md` §8](stdlib_census.md#8-four-declarations-are-two-rules)
+  [`../../../utils/censuses/stdlib-census.md` §8](../../../utils/censuses/stdlib-census.md#8-four-declarations-are-two-rules)
   is why: the pairs that raise the question — `converse` ≡ `imply2-reverse`,
   `imply2-fwd` ≡ `includes` — are alpha-identical bodies under two names, so
   one test covers both and there is nothing a `:fires` would distinguish.
@@ -205,7 +205,7 @@ The stdlib's fan-out rules are exactly that case, and there are seven of them:
 `(typecheck-arg-0 R isa A)` — in relations that exist *only after saturation*.
 So the one thing each of those rules promises is the one thing an expectation
 cannot state, and
-[`stdlib_census.md` §6](stdlib_census.md#6-what-would-activate-a-rule-that-nothing-activates--t1c113)'s
+[`../../../utils/censuses/stdlib-census.md` §6](../../../utils/censuses/stdlib-census.md#6-what-would-activate-a-rule-that-nothing-activates--t1c113)'s
 prediction that the fan-outs would be the cheapest bucket — *"a claim about
 facts, and so exactly what an `:expect` can say with nothing else in the
 file"* — is false as the loader stands.

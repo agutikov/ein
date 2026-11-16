@@ -9,7 +9,7 @@ Ein reports for that fact.
 New to Ein? Start with the [guide](README.md) and return here from chapter 4.
 
 `ein solve examples/zebra2.ein --trace out.md` writes Ein's own derivation of the answer, every step with its premises
-and its `:why`. Driving the same solve from a program is [the Rust API](../../../api/rust.md), whose worked example
+and its `:why`. Driving the same solve from a program is [the Rust API](../../ein.rs/api.md), whose worked example
 solves this puzzle.
 
 > **The other encoding.** [`zebra.ein`](../../../../examples/zebra.ein) solves the same puzzle over one generic

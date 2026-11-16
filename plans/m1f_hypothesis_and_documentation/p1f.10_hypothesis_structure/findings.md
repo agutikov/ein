@@ -533,7 +533,7 @@ in all five; task 4 names `06_reserved_names.md` and the two module headers.
 **2026-11-16, closed by [S1f.10.15's task 4](s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)**: the ladder as (b) has it is stated in all five, `06_reserved_names.md`
 § Hypothesis / query control (its prose and its O and B rows), `solution_semantics.md` § 1.4, `AGENTS.md`'s
 sentence, `hypgen.rs`'s and `oblgen.rs`'s headers, and in three more places the stage's `grep` found:
-[`events.md`](../../../docs/kernel/inference/events.md)'s `rung` section, which said the line is emitted for a
+[`events.md`](../../../docs/ein/ein.rs/events.md)'s `rung` section, which said the line is emitted for a
 program that declares an obligation rule, `oblgen::Mode::Blind`'s doc and `structure::Stated`'s
 `declared`. The switch is one function, `hypgen::rung`, which `generate_with` and `eligible_relations` read.
 

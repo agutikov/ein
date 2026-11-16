@@ -25,8 +25,8 @@
 //!
 //! A model set varies in *facts*; a key is a claim about *variables*, so
 //! something has to turn one into the other. Two rules, and they are the
-//! census's ([`model_set_census.md`
-//! §1](../../../../docs/history/m1d_satisfiability/model_set_census.md)):
+//! census's (`model_set_census.md`
+//! §1):
 //!
 //! 1. **Every varying positive atom is a Boolean variable.** A fact is in a
 //!    model or it is not; no declaration needed.

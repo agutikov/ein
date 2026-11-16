@@ -167,7 +167,7 @@ corpus entries. The decision is not made here; four things it needs are:
 The **recommendation is unchanged**: no counter movement, plus `--unordered`
 as the opt-in escape. What changed is that its price is now a number rather
 than a hope — see
-[scaling.md §3](measurements/scaling.md#3-the-audit).
+scaling.md §3.
 
 ### Decided 2026-08-22 — no, and validation is not what buys that
 
@@ -494,7 +494,7 @@ way and it was, at the head of
 [S1a.6.12](README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot). `guard_eval`
 and `guard_eval_monotone` are the `Saturator`'s pair summed over every fork of a
 solve, which is the aggregation no per-saturation field could do
-([baseline.md §17](measurements/baseline.md#17-the-boundary-measured-before-the-stage-that-aims-at-it)):
+(baseline.md §17):
 
 | solve | guard evaluations | of which monotone |
 |---|---:|---:|
@@ -519,7 +519,7 @@ if the days are there; it is last in the stage and expected not to run.
 
 **Closed 2026-08-20. It did not run, and the ceiling is now measured on both
 sides of its product** rather than on one
-([baseline.md §18](measurements/baseline.md#18-s1a612--the-boundary-and-the-premise-that-had-nothing-left-to-bind)):
+(baseline.md §18):
 
 | cell | monotone share of guard evaluations | `Matcher::holds` share of the run | ceiling |
 |---|---:|---:|---:|
@@ -599,7 +599,7 @@ produced. Kept because the reasoning is the record.*
 
 **Found 2026-08-18 at [S1a.6.9](README.md#s1a69--the-fork-entry-delta-the-resumed-saturator),
 by measurement.** The numbers are in
-[baseline.md §9](measurements/baseline.md#9-the-fork-entry-re-derivation).
+baseline.md §9.
 
 Every entering builds a fresh `Saturator` over the forked root, so its
 first enqueue pass is a FULL pass and the root's whole deductive closure
@@ -615,9 +615,9 @@ Resuming the saturator from the root's state (`engine`, `seen`, `fired`,
 **Built and measured 2026-08-18** (T1a.6.9.2/3): `Saturator::resume`, behind
 `--features fork-delta` and dormant without `EIN_FORK_DELTA=1`, so one binary
 produces both arms and the shipping path never takes it. Full numbers in
-[baseline.md §11](measurements/baseline.md#11-the-resumed-fork-saturator-measured);
+baseline.md §11;
 the rendered before/after this question was to be decided against is
-[fork_delta_trace.md](measurements/fork_delta_trace.md).
+fork_delta_trace.md.
 
 **It works, and it is worth what §9 said.** Fork firings 38 136 → 9 834 on
 `zebra2 -e` and 113 746 → 26 656 on `zebra -e`; fork compiles → 0; identical
@@ -717,8 +717,8 @@ its last target? **(a)** says no and takes the invisible half through
 **Decided: (c), and the contract relaxes with it.** Not (b): the flag is not
 the shipping configuration, it is the fresh-saturator arm
 `utils/fork_delta_verify.py` compares against. The evidence is
-[baseline.md §11](measurements/baseline.md#11-the-resumed-fork-saturator-measured)
-and [fork_delta_trace.md](measurements/fork_delta_trace.md);
+baseline.md §11
+and fork_delta_trace.md;
 [S1a.6.10](README.md#s1a610--answers-not-narration) is the mechanism it
 specified.
 

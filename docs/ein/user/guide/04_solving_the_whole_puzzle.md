@@ -142,7 +142,7 @@ with inline graphs.
 - **What the answer is, and every row it prints**:
   [solutions and models](../syntax-and-semantics/solutions-and-models.md)
   and [the read-out](../reference/read-out.md).
-- **Drive Ein from your own program**: [the Rust API](../../../api/rust.md)
+- **Drive Ein from your own program**: [the Rust API](../../ein.rs/api.md)
   (load a `.ein`, call `solve`, read the answer and trace). From a language
   that is not Rust, run the binary and read `--json-summary` / `--events`;
   there is no binding for another language

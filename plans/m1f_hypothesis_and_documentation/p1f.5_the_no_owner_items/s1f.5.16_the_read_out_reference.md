@@ -194,7 +194,7 @@ its test cannot see.
 - the `--dump-answer` directory, and the summary's `work` and `root` blocks:
   [`answer-dump.md`](../../../docs/ein/user/reference/answer-dump.md);
 - the `monotonicity` block and the warning's theory: `region_dump.md`;
-- the `--events` stream: [`events.md`](../../../docs/kernel/inference/events.md);
+- the `--events` stream: [`events.md`](../../../docs/ein/ein.rs/events.md);
 - how each mode is computed, what it costs, and which command answers which question:
   [`solve_interface.md`](../../m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md) § 3 and § 4, until
   P1f.20 re-homes it;
@@ -256,7 +256,7 @@ The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_an
 The precedent is [`config.md`](../../../docs/ein/user/reference/config.md) with
 [`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs). Its judgement table is
 hand-written and diffed against `ein_core::config::FLAGS`, *"what makes the prose columns safe to hand-write"*,
-and its defaults block is the binary's own output. A second precedent is [`docs/api/rust.md`](../../../docs/api/rust.md)
+and its defaults block is the binary's own output. A second precedent is [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md)
 with [`embedding.rs`](../../../ein.rs/crates/ein-cli/tests/embedding.rs), the marker-guarded region. The test
 has four parts:
 

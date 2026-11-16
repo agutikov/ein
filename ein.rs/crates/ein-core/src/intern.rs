@@ -3,7 +3,7 @@
 //! Relation names, object names, rule names, variable names, keyword names,
 //! and every `String` / `Var` literal that reaches a fact argument
 //! intern here
-//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §2). Each
+//! ([design/data-model.md § 2](../../../../docs/ein/ein.rs/design/data-model.md#2-symbols-and-the-interner)). Each
 //! becomes a 4-byte [`Symbol`] however often it occurs, and every identity
 //! comparison becomes an integer compare.
 //!
@@ -13,7 +13,7 @@
 //!   its numeric order is first-seen order, and using it as a sort key would
 //!   make the output depend on the order the *loader* happened to walk the
 //!   file. Observable sorts go through [`Interner::rank`]
-//!   ([design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md) §1).
+//!   ([design/parallelism.md § 1](../../../../docs/ein/ein.rs/design/parallelism.md#1-the-contract)).
 //! - **Interning is not belief.** This table says a name exists; whether a
 //!   proposition built out of it holds is a per-KB bit
 //!   ([`crate::facts`]).
@@ -93,11 +93,11 @@ pub enum Overflow {
     /// worker, so nobody may grow them — [`crate::Terms::share`].
     ///
     /// This is the whole of what a worker cannot do, and it is why
-    /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) needs
+    /// [design/parallelism.md](../../../../docs/ein/ein.rs/design/parallelism.md) needs
     /// no lock on the interner or the fact store: the tables are read by `&`
     /// and grown only where nothing else holds them. An entering that hits it
     /// hands itself back and is re-run on the committing thread — which
-    /// [shared_state.md §2a](../../../../docs/history/m1a_rust/measurements/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
+    /// [design/parallelism.md § 3](../../../../docs/ein/ein.rs/design/parallelism.md#3-what-must-be-sync-and-how)
     /// measured at **zero** enterings on four of six workloads and 7 of 111 on
     /// the worst, all of them in the head of a layer.
     Shared,
@@ -145,7 +145,7 @@ pub struct Symbol(pub u32);
 /// Text arena + span table + lookup, with a lazily-built lexicographic rank.
 ///
 /// One per process. `.einb`
-/// ([design/10](../../../../docs/history/m1a_rust/design/10_binary_format.md) §3) is
+/// ([design/binary-format.md § 3](../../../../docs/ein/ein.rs/design/binary-format.md#3-ids-across-the-boundary)) is
 /// the only thing that crosses interner boundaries, and it remaps on open.
 #[derive(Clone, Default, Debug)]
 pub struct Interner {
@@ -219,7 +219,7 @@ impl Interner {
     /// This is what an observable sort by name uses: the order of Unicode code
     /// points, which Rust's `Ord for str` gets by comparing UTF-8 bytes — the
     /// two agree for all inputs
-    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §1),
+    /// ([design/determinism-and-order.md § 1](../../../../docs/ein/ein.rs/design/determinism-and-order.md#1-the-contract)),
     /// so ranking once turns every later name-sort into a `u32` sort.
     ///
     /// Cheap to maintain because the symbol table is effectively frozen after

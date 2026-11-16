@@ -20,7 +20,7 @@ goes to, are [`diagnostics.md`](diagnostics.md)'s and [`cli.md`](cli.md)'s. The 
 [`config.md`](config.md)'s. The `--dump-answer` directory and the summary's `work` and `root` blocks are
 [`answer-dump.md`](answer-dump.md)'s; the `monotonicity` block and the warning's theory are
 [`region-dump.md` § Monotonicity](region-dump.md#monotonicity--the-static-check)'s; the `--events` stream is
-[`events.md`](../../../kernel/inference/events.md)'s. How each question is computed is
+[`events.md`](../../ein.rs/events.md)'s. How each question is computed is
 [`finding-r.md`](../../reasoning/kb-evolution/finding-r.md)'s. `--trace`'s file, `ein test`'s text and report, and the
 event stream repeat rows this page defines, and § 12 says which.
 
@@ -603,6 +603,6 @@ They define nothing; each repeats rows defined above.
 - [`solutions-and-models.md`](../syntax-and-semantics/solutions-and-models.md): R, its two counts, its lines, a model.
 - [`answer-dump.md`](answer-dump.md): the answer directory, and the `work` and `root` blocks.
 - [`region-dump.md`](region-dump.md): the cube's dump and the `monotonicity` block.
-- [`events.md`](../../../kernel/inference/events.md): the event stream.
+- [`events.md`](../../ein.rs/events.md): the event stream.
 - [`config.md`](config.md): every option.
 - [`cli.md`](cli.md): every command.

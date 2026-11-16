@@ -7,7 +7,7 @@ being an ordinary relation and an ordinary name
 `symmetric` being a property a rule gives meaning to
 ([Q6](../../../decisions/answer/Q6-symmetry-is-the-programs-not-the-engines.md)). The names the engine makes up for
 its own records, which no program writes, are
-[`reserved_engine_strings.md`](../../../kernel/inference/reserved_engine_strings.md).
+[`reserved-engine-strings.md`](../../ein.rs/reserved-engine-strings.md).
 
 ## Quick reference — intent → word
 

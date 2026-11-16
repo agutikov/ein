@@ -17,8 +17,8 @@
 > [`algorithm_layer_n.md`](algorithm_layer_n.md)'s banner, and **not rewritten
 > to match today's engine**. What the search does now:
 > [`firing.md` § The main steps](../../ein/reasoning/kb-evolution/firing.md#the-main-steps) and
-> [`implementation.md`](implementation.md); what it *writes*,
-> [`lattice_dump.md`](lattice_dump.md), which is current and golden-pinned.
+> [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md); what it *writes*,
+> [`../../ein/ein.rs/lattice-dump.md`](../../ein/ein.rs/lattice-dump.md), which is current and golden-pinned.
 >
 > The **fixture table** at the foot of this page is live — those four
 > `examples/lattice/` files are corpus entries — but the invocation beside it
@@ -325,7 +325,7 @@ rendering tooling, same colour vocabulary.
   > (`lattice_dump.md` § `kb_index/`). Measured on `01_subset_pruned.ein`,
   > M1e S1e.2.2. What to run instead, and how to reach the per-hypothesis
   > tree at all, is
-  > [`lattice_dump.md` § Reachability](lattice_dump.md#reachability--what-can-ask-for-this-dump).
+  > [`../../ein/ein.rs/lattice-dump.md` § Reachability](../../ein/ein.rs/lattice-dump.md#drawing-it).
 
   | Fixture | Phenomenon | Stage |
   |---------|------------|-------|

@@ -613,7 +613,7 @@ def lattice_pages(p: Pages) -> list[dict]:
     ldir = p.dir / "lattice"
     raw = p.raw / "lattice"
     index = ldir / "index.md"
-    defined = [("lattice_dump.md § Under a region mode", "docs/kernel/inference/lattice_dump.md")]
+    defined = [("lattice-dump.md § Under a region mode", "docs/ein/ein.rs/lattice-dump.md")]
     d = load_json(raw / "nodes.json") or {}
     nodes, steps = d.get("nodes") or [], d.get("steps") or []
     lines = header("Every node visited", "the nodes this run's route visited, in visit order, each with its "
@@ -1066,7 +1066,7 @@ def event_kinds_doc() -> dict[str, tuple[str, str]]:
     kind (what the tree traversal omits), and their second column is not
     *emitted at*."""
     out = {}
-    text = read(REPO / "docs/kernel/inference/events.md")
+    text = read(REPO / "docs/ein/ein.rs/events.md")
     section, in_table = "", False
     for line in text.splitlines():
         if line.startswith("### "):
@@ -1108,12 +1108,12 @@ def events_pages(p: Pages) -> list[dict]:
             page = edir / (f"{_safe(kind)}.md" if pages_n == 1 else f"{_safe(kind)}-{pi + 1:03d}.md")
             first = first or page
             sec, at = docs.get(kind, ("", ""))
-            schema = doc("docs/kernel/inference/events.md", page) + (f"#{sec}" if sec else "")
-            at = rebase(at, "docs/kernel/inference/events.md", page)
+            schema = doc("docs/ein/ein.rs/events.md", page) + (f"#{sec}" if sec else "")
+            at = rebase(at, "docs/ein/ein.rs/events.md", page)
             lines = header(f"Events — `{kind}`" + (f" ({pi + 1}/{pages_n})" if pages_n > 1 else ""),
                            f"every `{kind}` line of the event stream" + (f" — emitted at: {at}" if at else ""),
                            "`--events FILE --events-level verbose`",
-                           [("events.md" + (f" § {sec}" if sec else " (no schema row)"), "docs/kernel/inference/events.md")],
+                           [("events.md" + (f" § {sec}" if sec else " (no schema row)"), "docs/ein/ein.rs/events.md")],
                            [raw], page, f"rows {pi * ROWS_PER_PAGE + 1}–{pi * ROWS_PER_PAGE + len(chunk)} of {len(es)} · "
                            f"[schema row]({schema}) · [all kinds]({rel(index, page)})"
                            + (f"  \n> **{len(all_es)} `{kind}` lines; these pages show the first {half} and the last "
@@ -1122,9 +1122,9 @@ def events_pages(p: Pages) -> list[dict]:
                                    else e.get(k, "") for k in keys] for e in chunk])
             p.add(f"Events: {kind}" + (f" {pi + 1}" if pages_n > 1 else ""), page, lines)
         rows.append([f"[`{kind}`]({rel(first, index)})", len(all_es) if not capped else f"{len(all_es)} (first and last {half} rendered)", pages_n,
-                     rebase(docs.get(kind, ("", "—"))[1], "docs/kernel/inference/events.md", index)])
+                     rebase(docs.get(kind, ("", "—"))[1], "docs/ein/ein.rs/events.md", index)])
     lines = header("The event stream", "the engine's *record* of the run — every step, by kind",
-                   "`--events FILE --events-level verbose`", [("events.md § Region runs", "docs/kernel/inference/events.md")],
+                   "`--events FILE --events-level verbose`", [("events.md § Region runs", "docs/ein/ein.rs/events.md")],
                    [raw], index, f"**{len(events)} events**, {len(by_kind)} kinds")
     if not events:
         lines += ["_Not written._" if not raw.exists() else "_Empty._"]

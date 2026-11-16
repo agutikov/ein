@@ -2,7 +2,7 @@
 
 Encoded puzzles and focused fixtures, in [ein-lang](../docs/kernel/ir/03-ein-lang/).
 Run any with `ein solve <file>` (or `ein saturate <file>` for the
-saturation demos); see [`docs/api/rust.md`](../docs/api/rust.md) to drive them
+saturation demos); see [`docs/ein/ein.rs/api.md`](../docs/ein/ein.rs/api.md) to drive them
 from another Rust program.
 
 > The step-by-step **human Zebra walkthrough** (the M1 target trace) used to
@@ -76,7 +76,7 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 | `solve --exhaustive` | Solution, k=1, exhausted — **46.9 ms** | Solution, k=1, exhausted — **31.1 ms** |
 
 *(End-to-end, release build, one pinned P-core —
-[scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md), taken
+scaling.md §1, taken
 2026-08-20. **Re-taken 2026-09-01** on the same box with
 `utils/bench_env.sh` and `ein solve <file> -e -t`, median of five: **44.1 ms**
 and **28.2 ms**, verdict, `k` and `exhausted` unchanged. Both rows are the
@@ -168,7 +168,7 @@ ein-render/tests/presentation_semantics.rs
 ```
 <!-- /generated -->
 
-3. **Outside the crates**, which no test can re-derive: `docs/api/rust.md`
+3. **Outside the crates**, which no test can re-derive: `docs/ein/ein.rs/api.md`
    (through `embedding.rs`'s marked region), the `utils/` scripts that name a
    zebra path (`grep -l 'examples/zebra' utils/*`), and `corpus/corpus.toml`.
 4. **Goldens.** `ein-ir/tests/golden/zebra.golden` and `zebra2.golden`, and

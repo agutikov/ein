@@ -31,7 +31,7 @@
 > *about* stops being recoverable.
 >
 > For what the engine does now: [`architecture_and_algorithms.md`](architecture_and_algorithms.md)
-> (as-built, O1–O9) · [`implementation.md`](implementation.md) (the module map)
+> (as-built, O1–O9) · [`../../ein/ein.rs/architecture.md`](../../ein/ein.rs/architecture.md) (the module map)
 > · [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
 
 Companion to [`diagrams/algorithm_layer_n.dot`](diagrams/algorithm_layer_n.dot).
