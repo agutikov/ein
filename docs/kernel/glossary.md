@@ -118,7 +118,7 @@ Frontier terminals take no alternatives: a given stays given. A
 the `(absent …)` queries that had to *fail* at the boundary for the
 firing to be admitted; recorded to make negative dependence visible,
 not yet interpreted by any walk. See
-[`ir/02-data-model/01_entities.md` §3](ir/02-data-model/01_entities.md).
+[relations and facts § Provenance](../ein/reasoning/static-ir/relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations).
 
 ### Derivation DAG
 The transitive closure of `rule`-kind provenance — from a derived
@@ -129,7 +129,7 @@ follows every recorded one, giving an AND/OR graph whose
 per-justification premise groups are in `and_nodes` (`is_or_graph`;
 `to_dot()` then draws a diamond per justification). Cycles are broken
 at re-visit — the revisited fact is a node but is not re-expanded. See
-[`ir/02-data-model/02_store.md` §7](ir/02-data-model/02_store.md).
+[relations and facts § Provenance](../ein/reasoning/static-ir/relations-and-facts.md#provenance-a-fact-is-an-or-of-derivations).
 
 ### Unsat core
 The frontier of given facts across a set of conflicting facts, per
@@ -293,7 +293,7 @@ over the **ATMS label** search in
 A hypothesis branch — a `KnowledgeBase` that shares the loaded entities
 with its parent by reference, but isolates the branch's own derivations.
 See
-[`ir/02-data-model/02_store.md` §5](ir/02-data-model/02_store.md).
+[relations and facts § A fork](../ein/reasoning/static-ir/relations-and-facts.md#a-fork).
 
 ### World
 One `KnowledgeBase` instance under saturation: the root, or a fork
@@ -454,25 +454,25 @@ report then says it is partial. See
 ### T1 rule (first-order)
 A rule whose LHS quantifies only over object variables; relation
 names are literal. Cheap to match (one indexed lookup per relation).
-See [`ir/01-ein-graph/02_rules.md` §2.1](ir/01-ein-graph/02_rules.md).
+See [rules as statements § First-order](../ein/reasoning/static-ir/rules-as-statements.md#first-order).
 
 ### T2 rule (relation-polymorphic / higher-order)
 A rule with at least one relation variable in its LHS or RHS. Fires
 only when activated by a **property fact** (a fact whose head is the
 rule's name). Most of M1's rule library is T2. See
-[`ir/01-ein-graph/02_rules.md` §2.2](ir/01-ein-graph/02_rules.md).
+[rules as statements § Relation-polymorphic](../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic).
 
 ### T3 rule (structural / aggregate)
 A rule whose LHS uses an aggregate predicate (count, uniqueness,
 position) — a property of the whole graph, not a local subgraph
 match. Bridges graph rewriting and CSP arc-consistency. See
-[`ir/01-ein-graph/02_rules.md` §2.3](ir/01-ein-graph/02_rules.md).
+[rules as statements § Structural](../ein/reasoning/static-ir/rules-as-statements.md#structural).
 
 ### Property fact
 A fact whose head matches a rule's name; its arguments supply the
 rule's parameter bindings. Example: `(symmetric co-located)` is a
 property fact that activates the `symmetric` rule on the `co-located`
-relation. See [`ir/01-ein-graph/02_rules.md` §2.2](ir/01-ein-graph/02_rules.md).
+relation. See [rules as statements § Relation-polymorphic](../ein/reasoning/static-ir/rules-as-statements.md#relation-polymorphic).
 
 ### Kernel meta-primitive
 A shape-pinned reserved word in the IR grammar: `instance`, `not`,
@@ -650,7 +650,7 @@ forms are just facts and any type projection is a user-space rule.
 ### Open-world
 The KB loader tolerates references to undeclared types and relations
 — they auto-vivify with a `declared=False` flag rather than fail. See
-[`ir/02-data-model/01_entities.md` §1.3](ir/02-data-model/01_entities.md).
+[names and atoms § A relation is an object](../ein/reasoning/static-ir/names-and-atoms.md#a-relation-is-an-object).
 
 ### Three task classes
 Solve / find-gaps / find-contradictions — the three modes a

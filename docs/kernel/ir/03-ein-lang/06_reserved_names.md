@@ -478,7 +478,7 @@ every row of the table stands beside it
   and both are just declared relations. Types *of relations* are legal for
   the same reason (`(is-a co-located EquivalenceRelation)` parses and
   stores; only a rule gives it meaning — relations are objects, see
-  [`../02-data-model/01_entities.md` §1.1](../02-data-model/01_entities.md)).
+  [names and atoms § A relation is an object](../../../ein/reasoning/static-ir/names-and-atoms.md#a-relation-is-an-object)).
 - **`symmetric`** (and `transitive` / `functional` / …) — plain user
   *property tags*, no kernel search-special-casing since
   S1.7.24;
