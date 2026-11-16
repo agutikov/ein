@@ -2222,6 +2222,79 @@ fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
     }
 }
 
+/// **A witness a candidate implies does not stand for that candidate.** The
+/// claim that it may: let an instance `I` that root owes have witnesses none
+/// of which is a candidate, each in the closure of some candidate, every
+/// other read of its guard static (L5's premise); let `A(I)` be the
+/// candidates whose closure holds a witness; then every member of `R` above
+/// a state owing `I` holds a member of `A(I)`. `13_witness_of_two.ein` is
+/// the program that breaks it: Ann's one witness, `(fed Ann Soup)`, is in
+/// the closure of `(orders Ann)` and of no other single candidate, and
+/// `{(cooks Bob), (shops Cat)}` derives it by a rule that reads both, a
+/// member of `R` that holds none of `A(I)`. So a premise that licensed it
+/// would have to exclude a witness derived at a node by no single
+/// candidate, and L5's does not; L5 does not license the instance, which is
+/// why the modes' answer is the oracle's.
+#[test]
+fn a_witness_two_candidates_derive_together_stands_for_neither() {
+    let rel = "examples/lattice/13_witness_of_two.ein";
+    let (r, _) = region_of(rel);
+    assert!(r.monotonicity.is_monotone(), "{rel}: monotone");
+    assert_eq!(r.n(), 3);
+    let bit = |text: &str| -> u64 {
+        let b = r
+            .candidates
+            .iter()
+            .position(|c| c.text == text)
+            .unwrap_or_else(|| panic!("{rel}: no candidate {text}"));
+        1 << b
+    };
+    let (orders, cooks, shops) = (bit("(orders Ann)"), bit("(cooks Bob)"), bit("(shops Cat)"));
+    // Root owes the debt, so every member of R is above a state that owes it.
+    assert!(!r.in_r(0), "{rel}: root owes");
+    // L5's premise holds of the guard's other reads, and the instance is
+    // not licensed: its witness is no candidate, and root neither holds nor
+    // denies it.
+    let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
+    let table = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
+        .expect("prepares")
+        .expect("a monotone program with an obligation");
+    assert_eq!(table.instances.len(), 1);
+    let why = table.instances[0]
+        .alternatives
+        .as_ref()
+        .expect_err("not licensed");
+    assert!(
+        why.contains("a `fed` fact can witness it that no candidate proposes"),
+        "{rel}: {why}"
+    );
+    // A(I): the single candidates whose closure holds the witness.
+    let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect("loads");
+    let mut nodes = region::Nodes::new(&mut kb, &mut terms, &ast, &r.candidates).expect("nodes");
+    let mut implied = 0u64;
+    for (b, c) in r.candidates.iter().enumerate() {
+        let holds = nodes
+            .with_fixpoint(&[c.fact], |kb, terms| {
+                kb.facts()
+                    .any(|f| ein_infer::events::sexpr(terms, f) == "(fed Ann Soup)")
+            })
+            .expect("a node");
+        if holds {
+            implied |= 1 << b;
+        }
+    }
+    assert_eq!(implied, orders, "{rel}: A(I) is (orders Ann) alone");
+    // R is five states, and one of them holds none of A(I).
+    let members: Vec<u64> = (0..1u64 << r.n()).filter(|&m| r.in_r(m)).collect();
+    assert_eq!(members.len(), 5, "{rel}: {:?}", names(&r, &members));
+    let missed: Vec<u64> = members
+        .iter()
+        .copied()
+        .filter(|&m| r.nodes[m as usize].closure & implied == 0)
+        .collect();
+    assert_eq!(missed, vec![cooks | shops], "{rel}: {:?}", names(&r, &missed));
+}
+
 /// **A dead node's core follows the activator its refutation rests on, where
 /// a node derived or committed it** — M1e2 S1e2.2.19, W19, on the user's
 /// ruling of 2026-11-04 on Q-M1e2.12, (c).
