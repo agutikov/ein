@@ -121,6 +121,18 @@ restates a `fixed` row's right answer, `W52/relvar-eq-premise`'s, 4 states to 12
 it moves, are in [S1f.10.9's record](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-h9-1-and-h9-4-as-ruled-at-the-close); no row is filed
 and nothing is changed.
 
+**Ruled 2026-11-16, closed: not a wrong answer.** The user, asked which reading holds: *"while any inner fact can
+be unpacked - all of them must be the same valid facts as others - so apply all the same rules to them"*. The main
+session's reading of it, the user's to correct: a word means the same thing wherever it is written, so a kernel
+word (`not false and or absent eq neq`) written as a value is the same word it is at the top level, which is no
+name of an object there, and so it is no object of the blind enumerator either: reading (b), today's behaviour,
+which `solution_semantics.md` § 1.2 already states (*"whether or not a program writes one as a value"*), and which
+the user's wide ruling on the dunders (E-1) already holds of `__closed__` and `__symmetric__`. No row filed, nothing
+moved. The same answer's wider principle, that a nested fact is held to every rule a fact is held to, is recorded
+for the design of contexts in M1g's [P1g.12](../../m1g_logic/p1g.12_contexts/README.md); the loader already holds
+a nested fact to its relation's declared arity (`build/scratch/arity.ein`, refused at load as the top-level form
+is) and to the value rule.
+
 ### H9-2 — A written dunder fact registers the dunder as an auto-vivified relation of the program
 
 The loader makes a registry entry for the head of every fact a file writes that no `(relation …)` declares

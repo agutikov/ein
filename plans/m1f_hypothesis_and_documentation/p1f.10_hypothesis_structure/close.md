@@ -173,6 +173,10 @@ Asked as four questions, each with its options; the user chose:
    K-12 to P1f.20; K-13's stdlib half a stdlib change of its own, later; K-21 with describe's next work; and K-19,
    K-29, K-30 and H15-6 fixed now, before the close.
 4. **Part 2's defaults: *"Accept all"*.** Each stands until revised.
+5. **H9-1, asked back when its stage found two rulings deciding it opposite ways:** *"while any inner fact can be
+   unpacked - all of them must be the same valid facts as others - so apply all the same rules to them"*. Read as
+   (b): a kernel word written as a value is no object, as it is no name at the top level; not a wrong answer, closed
+   with nothing moved. H9-4 was filed (W98) and fixed.
 
 So the close waits for three pieces of work and the last gate: the ops removed with the walk's last code (with K-29
 and K-30); H9-1 and H9-4 filed and fixed; K-19 and H15-6 fixed. The container gate on `bb3579d1` found one more:

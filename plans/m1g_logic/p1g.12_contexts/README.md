@@ -42,6 +42,14 @@ The user, 2026-11-16, after two example programs showed facts as other facts' ar
   values. Nothing derives the consequences of Ann's beliefs *inside* her beliefs unless a rule over `believes`
   facts does.
 
+## A principle the user has stated (2026-11-16)
+
+Answering a question on reserved words written as values (P1f.10's finding H9-1), the user, verbatim: *"while any
+inner fact can be unpacked - all of them must be the same valid facts as others - so apply all the same rules to
+them"*. So **an inner fact is held to every rule a fact is held to**, whatever a context turns out to be: its
+relation's declared arity (the loader checks it today), the value rule (today), what a reserved word means, and,
+once a context has rules of its own, whatever those rules check. Each way below has to keep it.
+
 ## The three ways the user names
 
 | | way | what the user said of it |
