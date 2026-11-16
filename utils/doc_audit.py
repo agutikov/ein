@@ -26,7 +26,8 @@ wherever it is written — so it takes any number of directories and files, or
 target that does not exist or an anchor no heading of the target has, naming
 the referrer and its line:
 
-- **`.md`**: every markdown link, relative to the page;
+- **`.md`**: every markdown link, relative to the page, a reference-style
+  definition (`[label]: target`) too;
 - **`.rs`**: every markdown link in a `//`, `///` or `//!` comment line,
   relative to the source file — the `](../../../docs/…)` form a crate cites a
   page by, which `cargo doc` does not resolve. `ein.rs/vendor/` is not read:
@@ -106,6 +107,10 @@ CORPUS_TOML = REPO / "corpus" / "corpus.toml"
 
 TICK = re.compile(r"`([^`\n]+)`")
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+#: A reference-style link's definition, `[label]: target`, at a line's start
+#: (up to three spaces in). A target in backticks is code, not a link, and a
+#: footnote's `[^n]:` is not a link either.
+REF_DEF = re.compile(r"(?m)^[ \t]{0,3}\[([^\]^\n][^\]\n]*)\]:[ \t]*<?([^\s>`][^\s>]*)>?")
 #: ``[`page.md`](page.md) §3d.vii`` and ``… § 3a + § 3d.iv`` — a section
 #: reference in prose, immediately after a link to the page it is about, and
 #: before the next link, whose own label may carry one for a different page.
@@ -385,7 +390,9 @@ def check_links(
         # the tree it was checked as part of. Its links into the repo are held
         # to the rule below like any other.
         own = next((r for r in roots if page.is_relative_to(r) and not r.is_relative_to(REPO)), None)
-        for m in LINK.finditer(text):
+        found = [(m, False) for m in LINK.finditer(text)]
+        found += [(m, True) for m in REF_DEF.finditer(text)]
+        for m, is_def in sorted(found, key=lambda pair: pair[0].start()):
             target = m.group(2)
             if target.startswith(("http://", "https://", "mailto:")):
                 continue
@@ -433,7 +440,7 @@ def check_links(
             # label if it has one and otherwise in the text right after it.
             # Both are cut at the first `|` so a table row's next cell — and
             # the next row's link — cannot claim it.
-            if dest.suffix == ".md" and dest != page:
+            if dest.suffix == ".md" and dest != page and not is_def:
                 have = section_numbers_of(dest)
                 if not have:
                     continue
