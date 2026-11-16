@@ -75,6 +75,29 @@ Not candidates, though they will be met: the read-out's wording for an unsatisfi
 it is right, and S1g.2.2 teaches it); a schema's unbound variable refused at load (§ 4.13; rightly); W39 on
 `or` (F22's); cores made canonical (F22's); non-monotone programs decided (F21's). Each stays with its owner.
 
+## Nested facts as contexts (the user, 2026-11-16)
+
+The user, after two programs showed a fact as another fact's argument
+([`examples/beliefs/`](../../../examples/beliefs/)), verbatim:
+
+> Ok, so p1g.6 - add there ideas about nested facts - there is an option to create a sub-kb/sub-program with
+> nested facts, sub-context, that contains only sub-facts of every context (knows Ann ...) (knows Bob ...) and
+> what it could be inside? same rules or different? they are available from outer context, what about outer
+> facts inside inner context? recursion...; I don't like them be a simple objects, but also don't like to put
+> into the same KB, maybe we can make isolated sections of KB, or it can be done via rules only - model of the
+> world where somebody can believe something but those beleives do not affect "real" facts. It looks like this
+> topic deserves at least separate phase in m1g and m1h
+
+So the ideas are a phase of their own: [P1g.12](../p1g.12_contexts/README.md), *Contexts: facts inside facts, and
+worlds the real one does not hold*, with the three ways the user names (nested facts as values, as today; isolated
+sections of the KB; rules only), the user's questions (what is inside a context, which rules apply there, what
+crosses in and out, recursion) and the ones they imply; and its twin in M1h,
+[P1h.5](../../m1h_beyond_word_problems/p1h.5_contexts_in_a_text/README.md), contexts in a text. What this phase
+keeps of it is the engine's side: S1g.6.1 (a saturation that does not stop, which a rule packing a fact into
+itself reaches), S1g.6.2 (nested facts at scale), S1g.6.3 (how a view draws a nested fact, and would draw a
+context), S1g.6.4 (a hypothesis about a nested fact) and S1g.6.5 (rules as data) each read P1g.12's ruling when it
+has one.
+
 ## The stages
 
 | ID | title | candidates | needed by | status |
