@@ -109,9 +109,11 @@ S1f.10.16 are merged, with the container gate beside it.
 ## Then, in this order
 
 1. **S1f.10.17, describe by borders**, on the user's ruling of Q-M1f.311, (e): planned and running.
-2. **The container gate and the container nightly**, once, on the batch's last commit, as § Owed says, and the
+2. **S1f.10.18 and S1f.10.19**, on the user's *"Yes, both"* of 2026-11-16: measured now, each in a worktree with
+   no route changed; built where *go* after S1f.10.17 is merged.
+3. **The container gate and the container nightly**, once, on the batch's last commit, as § Owed says, and the
    walls of the nightly steps that grew on a quiet machine.
-3. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
+4. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
    findings below, this page folded in.
 
 **Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/kernel/inference/finding_r.md),
