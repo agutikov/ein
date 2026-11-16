@@ -6,8 +6,11 @@
 //! run from what the route's watch saw ([`ein_infer::events::Watch`]): each
 //! node's commitment, its kind (`dead`, `owing`, `in-r`), what it owes, its
 //! core and refuting rules when dead, its closure, and how many facts its
-//! fixpoint holds beyond root's; and each step, a route-1 layer or a mode's
-//! batch. The firings of each node's saturation are `--events`', which
+//! fixpoint holds beyond root's (a dead node a monotone program's route
+//! stopped at its first contradiction: what it owes, its closure and its
+//! facts as far as there, its core over its fixpoint,
+//! `ein_infer::region`'s § What a node is); and each step, a route-1 layer or
+//! a mode's batch. The firings of each node's saturation are `--events`', which
 //! narrates every node visited, so the directory does not hold a second copy.
 //!
 //! The walk's tree (`enterings/`, `proof_summary.json`) was its

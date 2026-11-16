@@ -38,13 +38,19 @@
 //! `EIN_*` name reaches it. Not taken, a candidate's rank is its tiebreaker,
 //! as it was.
 //!
-//! [`stopping_at_first_contradiction`] is the same stage's other switch: a
-//! saturation built under it returns from [`Saturator::saturate`] at the
-//! first point its KB holds a contradiction, before any firing where the
-//! facts written before it already do and otherwise after the firing whose
-//! conclusions make one. It is how the stage reads what a dead node would
-//! report stopped there; nothing else takes it, and not taken, `saturate`
-//! runs to the fixpoint as it did.
+//! ### A saturation stopped at its first contradiction
+//!
+//! `Saturator::stop_at_first_contradiction` makes [`Saturator::saturate`]
+//! return at the first point its KB holds a contradiction, before any firing
+//! where the facts written before it already do and otherwise after the
+//! firing whose conclusions make one, every conclusion of that firing
+//! written; the KB is then not marked saturated. It is how a route's node on
+//! a monotone program is saturated (`crate::region`'s § What a node is), and
+//! it is no agenda: which candidate fires first is FIFO's as ever.
+//! [`stopping_at_first_contradiction`] is the same stop as a switch on the
+//! calling thread, read when a saturation is built, for a measurement over
+//! [`crate::region::Nodes`]' readers, which no route stops. Not taken,
+//! `saturate` runs to the fixpoint.
 
 use std::cell::Cell;
 use std::cmp::Reverse;
@@ -112,7 +118,8 @@ pub fn is_fail_first() -> Option<FailFirst> {
 
 /// Run `f` with every saturation built on this thread stopping
 /// [`Saturator::saturate`] at its first contradiction (the module's § A
-/// fail-first agenda). Restored when `f` returns or unwinds.
+/// saturation stopped at its first contradiction). Restored when `f` returns
+/// or unwinds.
 pub fn stopping_at_first_contradiction<T>(f: impl FnOnce() -> T) -> T {
     struct Restore(bool);
     impl Drop for Restore {
@@ -366,7 +373,7 @@ pub struct Saturator {
     /// for every plan the engine holds ([`Saturator::refresh_first`]).
     first: Vec<bool>,
     /// [`stopping_at_first_contradiction`] as it stood when this saturation
-    /// was built.
+    /// was built, or `Saturator::stop_at_first_contradiction` since.
     stop_first: bool,
 
     // ── Observables ────────────────────────────────────────────────
@@ -707,9 +714,10 @@ impl Saturator {
     /// Run to the fixpoint, handing each firing to `f`.
     ///
     /// `max_steps` is the runaway-debugging budget; `None` runs to the
-    /// fixpoint. Under [`stopping_at_first_contradiction`] it returns at the
-    /// KB's first contradiction instead, short of the fixpoint, which it then
-    /// does not mark.
+    /// fixpoint. After `Self::stop_at_first_contradiction`, or built under
+    /// [`stopping_at_first_contradiction`], it returns at the KB's first
+    /// contradiction instead, short of the fixpoint, which it then does not
+    /// mark.
     pub fn saturate(
         &mut self,
         s: &mut Session<'_>,
@@ -749,6 +757,24 @@ impl Saturator {
                 }
             }
         }
+    }
+
+    /// From here on [`Self::saturate`] returns at the KB's first
+    /// contradiction, as a saturation built under
+    /// [`stopping_at_first_contradiction`] does: how a route's node on a
+    /// monotone program is saturated (`crate::region`'s § What a node is).
+    /// Which candidate fires first is the agenda's, which this does not touch.
+    pub(crate) fn stop_at_first_contradiction(&mut self) {
+        self.stop_first = true;
+    }
+
+    /// From here on [`Self::saturate`] runs to the fixpoint, a saturation
+    /// stopped at its first contradiction going on from where it stopped,
+    /// firing for firing what it would have fired had it not stopped: how a
+    /// route's stopped node gives its core over its fixpoint
+    /// (`crate::region`'s § What a node is).
+    pub(crate) fn run_to_quiescence(&mut self) {
+        self.stop_first = false;
     }
 
     /// How many `(binding_key, guards)` pairs the dedup has seen.

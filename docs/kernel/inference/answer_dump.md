@@ -87,7 +87,10 @@ out/
   another core, status or rules (2026-11-09). No member is written without
   its core, and each is the eager one, which
   `ein-cli/tests/answer_round_trip.rs` holds over every corpus program it
-  dumps.
+  dumps. On a monotone program a route stops a dead node at its first
+  contradiction ([`finding_r.md` § 1](finding_r.md#1-a-node)); a member's
+  core is still taken over its fixpoint, the saturation going on from the
+  stop, as `ein oracle --dump` takes it.
 - **`forms/`** (M1e2
   [S1e2.3.3](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
   the user's ruling (a) of 2026-11-03) holds each form the run was asked
@@ -278,7 +281,7 @@ twelve `stats` counters went with it at the switch.
 | counter | what it counts |
 |---|---|
 | `saturations` | node fixpoints computed, root's included: one per node route 1 visits, one per node of the cube under route 2, one per extension the state route saturates (M1e2 S1e2.1c.2), plus one per listed state a mode re-reads. The read-out's `work` row is this number |
-| `facts` | facts those saturations derived beyond root's own fixpoint, summed over nodes — what `--region-budget` is spent against |
+| `facts` | facts those saturations derived beyond root's own fixpoint, summed over nodes — what `--region-budget` is spent against. On a monotone program a dead node's are those to its first contradiction, where its saturation stops ([`finding_r.md` § 1](finding_r.md#1-a-node)); every other node's, and the whole node the tree's order reads, are its fixpoint's |
 | `layers` | route 1's layers visited, root's layer 0 included. Under the state route, its layers: root's, then one per state size it extended. `null` under route 2, which visits the cube in mask order and has no layers |
 
 The `root` block is **root's fixpoint and how H was built, as every route

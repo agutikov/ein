@@ -221,6 +221,15 @@ jobs:
       # threads with four workers.
       - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test order
         env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
+      # A route's dead node stopped at its first contradiction answers what
+      # it answered run to quiescence: every question on every corpus program
+      # that searches, asked with the stop and without, the `slow` entries
+      # too. The per-commit tier reads the programs that are not slow and the
+      # two zebra puzzles. Whole it was 332 s on four P-core threads with four
+      # workers, its shards 166, 125, 35 and 32 s, on AC, the machine not idle
+      # (2026-11-16).
+      - run: TMPDIR="${GATE_TMP}" cargo test -p ein-infer --profile gate --test first_contradiction
+        env: { EIN_CORPUS_SLOW: "1", EIN_TEST_SHARD: "${{ matrix.shard }}" }
       - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       - run: python3 utils/check_test_scratch.py "${GATE_TMP}"

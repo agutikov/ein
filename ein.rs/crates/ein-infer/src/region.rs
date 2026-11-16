@@ -16,15 +16,17 @@
 //! (so the cube does not depend on interner ids), and an edge adds or removes
 //! one fact. Each node carries two independent bits, [`DEAD`] and [`OWING`],
 //! and the owing bit is read on dead nodes too — the minimal discharging sets
-//! `E` cannot be computed without it, and `owes.root` reports 0 on a dead root
-//! whatever it owes. Everything in [`Topology`] is computed over that status
-//! array, never by re-saturating, and never by assuming `R` has no holes.
+//! `E` cannot be computed without it. What root owes is reported whether root
+//! is dead or not ([`RootStats::owes`]). Everything in [`Topology`] is
+//! computed over that status array, never by re-saturating, and never by
+//! assuming `R` has no holes.
 //!
 //! ### What a node is
 //!
 //! **The fork route**: root's fixpoint, the commitment's facts written with
-//! hypothesis provenance, the saturation resumed and run to quiescence —
-//! never stopped at the first contradiction, so a dead node's debts are its
+//! hypothesis provenance, the saturation resumed and run to quiescence. That
+//! is the definition, and the oracle's node: it is never stopped at the first
+//! contradiction, so a dead node's debts, closure, denials and core are its
 //! fixpoint's. That is the engine's own notion of a commitment, minus every
 //! search-time write: no lookahead, no forced positive, no kill cache, no
 //! writeback, no learned clause. Where adding a fact can take a conclusion
@@ -33,6 +35,36 @@
 //! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
 //! D2. [`crate::monotone`] says whether a program can, and on one that can,
 //! [`crate::detector`] says what the read-out warns of.
+//!
+//! **A route's dead node on a monotone program stops at its first
+//! contradiction** (`Axes::stopping_at_first_contradiction`): the
+//! saturation returns after the firing whose conclusions make the fork's
+//! first contradiction, every conclusion of that firing written, or before
+//! any firing where the commitment written already makes one. Nothing else
+//! about the node moves:
+//!
+//! - **its dead bit is its fixpoint's**: the KB only grows, so a contradiction
+//!   once made is in the fixpoint, and a node whose saturation makes none
+//!   runs to quiescence, so an alive node is the oracle's whole;
+//! - **no route reads more of a dead node than that bit**: what it knows dead
+//!   is the set (L1), and a dead node's closure, denials and debts are read
+//!   by no route ([`crate::known_dead`]), so `R`, `N` and every count are the
+//!   oracle's (`ein-infer/tests/first_contradiction.rs` holds them alike
+//!   with and without the stop, on every corpus program that searches).
+//!
+//! What a stopped node **reports** of itself is the node as far as that
+//! contradiction: its facts beyond root (the run's `work`, and its budget),
+//! its debts, closure and denials, and its narration. The whole cost of a
+//! dead node is then the derivation of its contradiction. **Its core**, where
+//! a surface prints one, is the node's over its fixpoint, as the oracle's
+//! is: the saturation goes on from where it stopped, silently, firing what
+//! it would have fired, and the core is taken there, so no core depends on
+//! the stop. Not stopped: root's node, a flagged program's (the detector
+//! reads every node's fixpoint there), the oracle's, route 1's, a space a
+//! reader of the structure opens (the theory's check reads a dead node's
+//! facts), the whole node the tree's order reads (it reads every
+//! application), and every reader of [`Nodes`]. [`to_quiescence`] runs every
+//! route the calling thread opens without the stop.
 //!
 //! ### The universe
 //!
@@ -66,6 +98,34 @@ use crate::hypgen::HypGenStats;
 use crate::monotone::Monotonicity;
 use crate::plan::Plan;
 use crate::saturator::{Saturator, Session, Snapshot};
+
+thread_local! {
+    static TO_QUIESCENCE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Run `f` with every route opened on this thread saturating its dead nodes
+/// to quiescence, as the oracle does: the stop at a node's first
+/// contradiction (the module's § What a node is) not taken. It is read when a
+/// route builds its axes, so the nodes it hands to workers follow it. No
+/// lever reaches it: no `(config …)` field, option of `ein` or `EIN_*` name.
+/// It is for the test that holds every answer alike with and without the
+/// stop, and for a measurement of what the stop saves. Restored when `f`
+/// returns or unwinds.
+pub fn to_quiescence<T>(f: impl FnOnce() -> T) -> T {
+    struct Restore(bool);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            TO_QUIESCENCE.with(|s| s.set(self.0));
+        }
+    }
+    let _restore = Restore(TO_QUIESCENCE.with(|s| s.replace(true)));
+    f()
+}
+
+/// Whether [`to_quiescence`] is running on this thread.
+pub fn is_to_quiescence() -> bool {
+    TO_QUIESCENCE.with(std::cell::Cell::get)
+}
 
 /// The status bit of a node that derives `(false)`.
 pub const DEAD: u8 = 1;
@@ -226,7 +286,8 @@ impl Default for Options {
 ///
 /// Every core taken after the walk is the one the walk takes eagerly: the
 /// node is root's fork with the same facts, resumed from the same snapshot
-/// with the same plans, so its derivations and its search are the same
+/// with the same plans and stopped where the walk's is (the module's § What a
+/// node is), so its derivations and its search are the same
 /// (`ein-cli/tests/answer_round_trip.rs` holds it over the corpus). No answer
 /// depends on either field.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1017,6 +1078,9 @@ pub(crate) struct Axes {
     /// Take a dead node's unsat core ([`Axes::taking_cores`]); root's is
     /// taken either way.
     cores: bool,
+    /// Saturate a dead node only as far as its first contradiction, root's
+    /// excepted ([`Axes::stopping_at_first_contradiction`]).
+    stop: bool,
 }
 
 impl Axes {
@@ -1036,7 +1100,21 @@ impl Axes {
             stale: None,
             instances: None,
             cores: true,
+            stop: false,
         }
+    }
+
+    /// The same axes, a route's on a monotone program: every node but root's
+    /// saturated only as far as its first contradiction, where it is dead
+    /// (the module's § What a node is), unless [`to_quiescence`] is running
+    /// on this thread. A dead node then reports its facts, debts, closure,
+    /// denials and narration as far as that contradiction, and its core,
+    /// where one is taken, over its fixpoint; its dead bit, and every alive
+    /// node, are what they are without the stop. The axes [`cores_after`]
+    /// reads with keep it, so a node taken after the walk is the walk's.
+    pub(crate) fn stopping_at_first_contradiction(mut self) -> Axes {
+        self.stop = !is_to_quiescence();
+        self
     }
 
     /// The same axes, taking a dead node's unsat core only when `cores`, and
@@ -1203,8 +1281,9 @@ pub(crate) fn fan_out(
 /// The unsat cores of `sets`, each a node the walk visited without taking
 /// one or did not visit, taken **after the walk** — M1f S1f.5.12 ([`Cores`]).
 /// Each is the node function's own fork of root, resumed from the walk's
-/// `snapshot` with the walk's plans (`memo`), with a core taken and nothing
-/// narrated, so each is the core an eager walk takes; fanned out as the walk
+/// `snapshot` with the walk's plans (`memo`) and stopped where the walk's
+/// node is, with a core taken and nothing narrated, so each is the core an
+/// eager walk takes; fanned out as the walk
 /// is, so `jobs` moves nothing. A set whose fixpoint is alive has none.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn cores_after(
@@ -1287,8 +1366,9 @@ pub(crate) struct Supported {
 /// The node function, for a reader that needs a state itself and not its two
 /// bits: the read-out's `(model …)`s and its query classes (M1e2
 /// T1e2.1a.5.2). Root is prepared once; each fixpoint is a fork of it,
-/// written and saturated exactly as `fan_out` does for every route, and its
-/// provenance is reclaimed when the reader returns.
+/// written and saturated as `fan_out` does for the oracle, to quiescence
+/// whether or not it is dead, and its provenance is reclaimed when the
+/// reader returns.
 pub struct Nodes<'a> {
     root: &'a Kb,
     snapshot: Snapshot,
@@ -1668,7 +1748,7 @@ fn rules_of(terms: &Terms, steps: &[ein_core::ProvId]) -> Vec<String> {
 }
 
 /// Root's fork with `facts` written, saturated to quiescence — the half of
-/// [`node_in_region`] every route shares.
+/// [`node_in_region`] every reader of a state shares, the oracle's node.
 fn fixpoint(
     root: &Kb,
     snapshot: &Snapshot,
@@ -1702,6 +1782,25 @@ fn fixpoint_firing(
     events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<Kb, SolveError> {
+    saturated(root, snapshot, terms, ast, memo, facts, false, events, sink).map(|(fork, _)| fork)
+}
+
+/// Root's fork with `facts` written and the saturation resumed, with the
+/// saturator, which can go on: to quiescence, or where `stop`, to the
+/// fork's first contradiction (the module's § What a node is), a route's
+/// node on a monotone program and nothing else.
+#[allow(clippy::too_many_arguments)]
+fn saturated(
+    root: &Kb,
+    snapshot: &Snapshot,
+    terms: &mut Terms,
+    ast: &Ast,
+    memo: &SharedMemo,
+    facts: &[FactId],
+    stop: bool,
+    events: &mut Events,
+    sink: &mut dyn FnMut(&crate::firing::Firing),
+) -> Result<(Kb, Saturator), SolveError> {
     let mut fork = root.branch();
     for &h in facts {
         let (rel, args) = terms.facts.get(h);
@@ -1710,7 +1809,7 @@ fn fixpoint_firing(
         fork.add_and_index_fact(terms, rel, &args, Some(prov))
             .expect("room for a hypothesis");
     }
-    {
+    let sat = {
         let mut s = Session {
             kb: &mut fork,
             terms,
@@ -1720,12 +1819,17 @@ fn fixpoint_firing(
         };
         let delta = snapshot.new_facts_of(s.kb);
         let mut sat = Saturator::resume(&mut s, snapshot, delta)?;
+        if stop {
+            sat.stop_at_first_contradiction();
+        }
         sat.saturate(&mut s, None, sink)?;
-    }
-    Ok(fork)
+        sat
+    };
+    Ok((fork, sat))
 }
 
-/// Fork root, write `facts`, saturate to quiescence, read both bits.
+/// Fork root, write `facts`, saturate to quiescence (a dead node only as far
+/// as its first contradiction, where the axes stop it), read both bits.
 ///
 /// The provenance the fork pushes lives in a region of the arena that is
 /// reclaimed before this returns, so `2ⁿ` nodes do not grow it; everything
@@ -1755,32 +1859,25 @@ fn node_in_region(
     axes: &Axes,
 ) -> Result<NodeOut, SolveError> {
     let mut ev = Events::worker_for(axes.narration);
-    let fork = fixpoint_firing(
+    // A route's dead node on a monotone program, root's excepted, as far as
+    // its first contradiction (the module's § What a node is).
+    let stop = axes.stop && !facts.is_empty();
+    let (mut fork, mut sat) = saturated(
         root,
         snapshot,
         terms,
         ast,
         memo,
         facts,
+        stop,
         &mut ev,
         &mut |_| {},
     )?;
 
     let contradictions = crate::contradiction::detect(&fork, terms);
+    let dead = !contradictions.is_empty();
     let mut node = Node::default();
     if let Some(first) = contradictions.first() {
-        if axes.cores || facts.is_empty() {
-            let e = crate::explain::contradiction_frontier(
-                &fork,
-                terms,
-                &contradictions,
-                &crate::explain::ExplanationBudget::default(),
-            );
-            node.core = sorted_text(terms, &e.frontier);
-            node.core_status = Some(crate::explain::CoreStatus::of(&e));
-            node.sources = sources_of(&fork, terms, &e.frontier);
-            node.refuted_by = rules_of(terms, &e.steps);
-        }
         let first_steps: Vec<ein_core::ProvId> = [first.positive, Some(first.negative)]
             .into_iter()
             .flatten()
@@ -1855,8 +1952,37 @@ fn node_in_region(
             axes.is_candidate.contains(&f)
         })
     });
+    // The core, where one is taken, is the node's over its fixpoint, as the
+    // oracle's is: a node stopped at its first contradiction goes on from
+    // there, silently, firing what it would have fired, once everything it
+    // reports above is read (the module's § What a node is).
+    if dead && (axes.cores || facts.is_empty()) {
+        if stop {
+            sat.run_to_quiescence();
+            let mut silent = Events::off();
+            let mut s = Session {
+                kb: &mut fork,
+                terms,
+                ast,
+                events: &mut silent,
+                memo: memo.clone(),
+            };
+            sat.saturate(&mut s, None, &mut |_| {})?;
+        }
+        let contradictions = crate::contradiction::detect(&fork, terms);
+        let e = crate::explain::contradiction_frontier(
+            &fork,
+            terms,
+            &contradictions,
+            &crate::explain::ExplanationBudget::default(),
+        );
+        node.core = sorted_text(terms, &e.frontier);
+        node.core_status = Some(crate::explain::CoreStatus::of(&e));
+        node.sources = sources_of(&fork, terms, &e.frontier);
+        node.refuted_by = rules_of(terms, &e.steps);
+    }
     Ok(NodeOut {
-        dead: !contradictions.is_empty(),
+        dead,
         owes: node.owes,
         node,
         delta: if axes.keep_states {

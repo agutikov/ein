@@ -16,8 +16,11 @@
 //! - **One node function.** Every commitment any mode looks at is
 //!   [`crate::region`]'s own node: root's snapshot, the commitment written in,
 //!   saturation alone, nothing written into root or the node by the search.
-//!   A mode and the oracle can visit different nodes; they cannot read one
-//!   differently.
+//!   A mode and the oracle can visit different nodes; they cannot classify
+//!   one differently. On a monotone program a mode's dead node stops at its
+//!   first contradiction, where the oracle's runs on (`region`'s § What a
+//!   node is): its dead bit is the same, and that bit is all a route reads of
+//!   it.
 //! - **A skip needs a licence** ([`Licence`]), a theorem the static check
 //!   proves for the program's class. A program the check flags gets none but
 //!   the cube, so its modes are exact up to `--region-limit` and partial past
@@ -614,6 +617,7 @@ pub fn run_with(
             // The modes' routes over states (`crate::tree`, S1e2.1c.4); a dead
             // root is the whole answer, in one saturation (L0, L1).
             let mut sp = Space::open(root, terms, ast, prepared, opts, events);
+            sp.stopping_dead_nodes();
             let out = if sp.root_dead {
                 sp.dead_root(opts.mode)?
             } else {
@@ -861,6 +865,18 @@ impl<'a> Space<'a> {
         self.facts.len()
     }
 
+    /// **A question's route on a monotone program stops each dead node it
+    /// computes at its first contradiction** (`region`'s § What a node is):
+    /// it reads nothing of a dead node but its dead bit. A space a reader of
+    /// the structure opens is not stopped, since the theory's check reads a
+    /// dead node's facts; nor is a flagged program's, whose detector reads
+    /// every node's fixpoint.
+    pub(crate) fn stopping_dead_nodes(&mut self) {
+        if self.monotonicity.is_monotone() {
+            self.axes = self.axes.clone().stopping_at_first_contradiction();
+        }
+    }
+
     /// The universe, in rendered-text order: candidate `b` is bit `b` of
     /// every set [`Self::eval`] takes.
     pub(crate) fn candidates(&self) -> &[Candidate] {
@@ -894,8 +910,10 @@ impl<'a> Space<'a> {
     /// ([`Self::supported_within`]) and found dead with `facts` facts beyond
     /// root: one saturation of the run's `work`, spent of its budget, and a
     /// node visited like any other for whatever watches the run. Its facts
-    /// are those of the node saturated to quiescence, where the cache's
-    /// nodes stop at their first contradiction.
+    /// are those of the node saturated to quiescence, since its reader reads
+    /// every application, where a dead node the cache computes on a monotone
+    /// program stops at its first contradiction (`region`'s § What a node
+    /// is).
     ///
     /// `core` is the node's core where the run is narrated
     /// ([`Self::narrated`]), and a surface that lists the nodes a run visited

@@ -81,7 +81,7 @@ solve · examples/zebra2.ein --single
   universe          56 candidates
     outside         is-a*, next-to — no candidate: no hrule proposes them. R holds of them only what the program states and saturation derives
   route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first by text among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
-  work              7 saturations · 666 facts beyond root
+  work              7 saturations · 278 facts beyond root
 
   ;; state 1 of 1 — 18 candidates · from {(color-loc Green House-5), (drink-loc Juice House-4)}
   (model (color-loc Blue House-2) (color-loc Green House-5)

@@ -350,9 +350,12 @@ pub(crate) fn compute_resumable(
         out.cost.root = t_root.elapsed();
         return Ok((out, None));
     }
+    // A dead extension stops at its first contradiction (`region`'s § What a
+    // node is): no step of the walk reads more of it than its dead bit.
     let axes = Axes::new(root, &out.candidates, hypothesised, false)
         .narrating(events.narration())
-        .taking_cores(opts.cores.visited);
+        .taking_cores(opts.cores.visited)
+        .stopping_at_first_contradiction();
     let facts: Vec<FactId> = out.candidates.iter().map(|c| c.fact).collect();
     let root = root.sealed();
     out.cost.root = t_root.elapsed();

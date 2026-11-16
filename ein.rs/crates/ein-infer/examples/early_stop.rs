@@ -1,7 +1,10 @@
 //! What a dead node stopped at its first contradiction would save, under
 //! FIFO and under a fail-first agenda — M1f S1f.10.19's T2, beside
-//! [`price_list`](price_list.rs). It measures; no route reads any of it,
-//! and every route runs as it does.
+//! [`price_list`](price_list.rs). It measures; no route reads any of it.
+//! Since the routes stop a dead node on a monotone program at its first
+//! contradiction (`ein_infer::region`'s § What a node is), each is asked here
+//! under `ein_infer::region::to_quiescence`, every node to quiescence, as
+//! they were when it was written: the stop is what it measures.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example early_stop -- \
@@ -170,8 +173,12 @@ fn ask(path: &Path, key: &str, mode: Mode, universe: &Universe) -> Result<Asked,
         n: universe.texts.len(),
         kept: kept.clone(),
     }));
-    let a = explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
-        .map_err(|e| e.to_string())?;
+    // The routes as they were before they stopped a dead node: every node to
+    // quiescence, what the measurement is against.
+    let a = ein_infer::region::to_quiescence(|| {
+        explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
+    })
+    .map_err(|e| e.to_string())?;
     drop(events);
     let universe_same = a.candidates.len() == universe.texts.len()
         && a.candidates
