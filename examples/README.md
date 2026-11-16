@@ -2,7 +2,7 @@
 
 Encoded puzzles and focused fixtures, in [ein-lang](../docs/kernel/ir/03-ein-lang/).
 Run any with `ein solve <file>` (or `ein saturate <file>` for the
-saturation demos); see [`docs/api/rust.md`](../docs/api/rust.md) to drive them
+saturation demos); see [`docs/ein/ein.rs/api.md`](../docs/ein/ein.rs/api.md) to drive them
 from another Rust program.
 
 > The step-by-step **human Zebra walkthrough** (the M1 target trace) used to
@@ -168,7 +168,7 @@ ein-render/tests/presentation_semantics.rs
 ```
 <!-- /generated -->
 
-3. **Outside the crates**, which no test can re-derive: `docs/api/rust.md`
+3. **Outside the crates**, which no test can re-derive: `docs/ein/ein.rs/api.md`
    (through `embedding.rs`'s marked region), the `utils/` scripts that name a
    zebra path (`grep -l 'examples/zebra' utils/*`), and `corpus/corpus.toml`.
 4. **Goldens.** `ein-ir/tests/golden/zebra.golden` and `zebra2.golden`, and

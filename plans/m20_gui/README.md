@@ -101,7 +101,7 @@ Linux/Windows/macOS testing is a real line item, not a formality.
 
 ### Consequence for the engine
 
-**The surface it calls now has a page**: [`docs/api/rust.md`](../../docs/api/rust.md)
+**The surface it calls now has a page**: [`docs/ein/ein.rs/api.md`](../../docs/ein/ein.rs/api.md)
 (M1a [S1a.9.4](../../docs/history/m1a_rust/README.md#s1a94--documentation)) — the five
 steps, which crate owns each, and a worked example that is a test the gate
 runs. It is written for exactly this consumer, and M20 is the first of its

@@ -1596,7 +1596,7 @@ Routing it here, with what the stage measured.
 
 Both are `pub`, both are exercised by the gate — `golden_dump.rs` for the first, `dot_wellformed.rs` over the whole corpus for
 the second — and neither is documented anywhere a caller would look:
-[`docs/api/rust.md`](../../api/rust.md)'s worked example stops at
+[`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md)'s worked example stops at
 solve-and-render. So the failure is not that the code rotted; it is that the
 **surface** never grew a door, and two pages spent a milestone describing
 rooms behind it.
@@ -1615,7 +1615,7 @@ Three options, and the third is the cheapest and is not obviously wrong:
   `--help` golden, and the standing question of whether a private debugging
   artifact belongs on the shipped surface at all.
 - **(b) a documented library call** — a section in
-  [`docs/api/rust.md`](../../api/rust.md). Its worked example is a marked
+  [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md). Its worked example is a marked
   region of `ein-cli/tests/embedding.rs` that a test diffs, so this is a real
   test to write and it would keep working, which is the page's whole method.
 - **(c) leave both unreachable and say so.** Done, as of S1e.2.2 —

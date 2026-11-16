@@ -863,7 +863,7 @@ EIN_BLESS=1 cargo test --manifest-path ein.rs/Cargo.toml -p ein-cli --test confi
 ```
 
 Edit the engine, run that, commit. **Never edit the generated block by hand** —
-it is `docs/api/rust.md`'s rule for the same reason.
+it is `docs/ein/ein.rs/api.md`'s rule for the same reason.
 
 The prose columns are not generated and cannot be: *what it changes* is read
 off a call site and *does it change the answer* is a judgement with evidence.

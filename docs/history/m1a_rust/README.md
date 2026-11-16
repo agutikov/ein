@@ -669,7 +669,7 @@ time. The stage says so rather than letting a badge say otherwise.
 
 #### S1a.9.4 — Documentation
 **Shipped 2026-08-23, and closed the milestone.** `docs/api/` got its subject:
-[`rust.md`](../../api/rust.md) is the crates — the surface the GUI binds
+[`api.md`](../../ein/ein.rs/api.md) is the crates — the surface the GUI binds
 against and nothing documented — and its worked example is **the marked region
 of `ein-cli/tests/embedding.rs`**, compared text-to-text by a test in that
 file. That mechanism is the stage's whole argument: verification with a date
@@ -808,7 +808,7 @@ Also in git history and not in this record: `design/09` (server mode, deleted
   implements, and since S1a.10.6 the only statement of intent that is not also
   the implementation; [`defined_behaviour.md`](../../kernel/defined_behaviour.md)
   states the behaviours whose only statement was the code
-- [`docs/api/rust.md`](../../api/rust.md) — the embedding surface S1a.9.4
+- [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md) — the embedding surface S1a.9.4
   wrote, whose worked example is a test
 - [`corpus/`](../../../corpus/README.md) — the corpus, a sweep since S1a.10.3
 - [F11 — deductive-layer perf](../../../plans/followups/f11_deductive_layer_perf.md)

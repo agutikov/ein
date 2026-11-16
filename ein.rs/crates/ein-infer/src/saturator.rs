@@ -870,7 +870,7 @@ impl Saturator {
     /// behaviour, and it is not free.
     ///
     /// So an embedder probing quiescence mid-drive is perturbing the drive.
-    /// [`docs/api/rust.md`] says so where a reader of the crate boundary will
+    /// [`docs/ein/ein.rs/api.md`] says so where a reader of the crate boundary will
     /// meet it, because a hazard whose only statement is a comment inside the
     /// crate is a hazard for everyone outside it (M1e `CO-M6`).
     ///
@@ -879,7 +879,7 @@ impl Saturator {
     /// `closure_step` to re-seed. Re-seeding was harmless — `seen` dedups it —
     /// and it was work done twice for a question that asked nothing.
     ///
-    /// [`docs/api/rust.md`]: `docs/api/rust.md`
+    /// [`docs/ein/ein.rs/api.md`]: `docs/ein/ein.rs/api.md`
     pub fn is_stalled(&mut self, s: &mut Session<'_>) -> Result<bool, SaturateError> {
         // The FULL pass subsumes whatever the delta would have seeded, so
         // taking it loses nothing and leaves no stale seed behind.

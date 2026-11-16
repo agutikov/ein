@@ -256,7 +256,7 @@ The summary is *"the same facts as stdout"*, from the same `ReadOut` (`region_an
 The precedent is [`configuration.md`](../../../docs/kernel/configuration.md) with
 [`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs). Its judgement table is
 hand-written and diffed against `ein_core::config::FLAGS`, *"what makes the prose columns safe to hand-write"*,
-and its defaults block is the binary's own output. A second precedent is [`docs/api/rust.md`](../../../docs/api/rust.md)
+and its defaults block is the binary's own output. A second precedent is [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md)
 with [`embedding.rs`](../../../ein.rs/crates/ein-cli/tests/embedding.rs), the marker-guarded region. The test
 has four parts:
 

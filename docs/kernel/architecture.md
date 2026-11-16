@@ -427,7 +427,7 @@ The per-module detail behind these is
 - [`inference/implementation.md`](inference/implementation.md) — the engine's module map.
 - [`defined_behaviour.md`](defined_behaviour.md) — the thirteen diagnostics,
   orderings and error strings the engine defines, stated as normative.
-- [`../api/rust.md`](../api/rust.md) — this pipeline as a library API: the
+- [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md) — this pipeline as a library API: the
   crates, with a worked example the gate runs.
 - [`glossary.md`](glossary.md) — kernel vocabulary.
 - [`plans/README.md`](../../plans/README.md) — the milestone roadmap.

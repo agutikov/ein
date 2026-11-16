@@ -252,7 +252,7 @@ on its 101s; the precondition and the control pass; with the stage's tree, all f
   codes' table.
 - [`configuration.md`](../../../docs/kernel/configuration.md) § 3.1, beside *every answer exits 0*: a closed stdout ends a
   run by `SIGPIPE`, which no option changes.
-- The `unsafe` policy, on every live page that states it: [`docs/api/rust.md`](../../../docs/api/rust.md) (every library
+- The `unsafe` policy, on every live page that states it: [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md) (every library
   `forbid` but `ein-einb`, the binary's one call, what an embedder keeps), the repository's
   [`README.md`](../../../README.md) layout table, and AGENTS.md's `ein-einb` line. design/12 is a record and is not
   edited.

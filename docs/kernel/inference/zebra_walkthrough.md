@@ -15,7 +15,7 @@ hands off to.
 To reproduce this solve, run
 `ein solve examples/zebra2.ein --trace out.md`. Driving it
 **programmatically** — load, solve, read the answer and a rendered trace — is
-[`docs/api/rust.md`](../../api/rust.md), whose worked example is a test the
+[`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md), whose worked example is a test the
 gate runs and produces exactly the answer this trace derives.
 
 > **The other encoding.** [`zebra.ein`](../../../examples/zebra.ein) solves

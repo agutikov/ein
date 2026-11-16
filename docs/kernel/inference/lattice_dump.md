@@ -338,7 +338,7 @@ M1e2 S1e2.1.3:
 | | |
 |---|---|
 | **From the CLI?** | **No, since M1e2 S1e2.1a.5**: `--dump-lattice DIR` writes a region run's `ein-lattice/2`. From M1e2 S1e2.1.3 to the switch it wrote this tree, and before S1e2.1.3 it was **no** as well. `--dump-states DIR` builds a `MonotonicDumper` (`00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, no `enterings/` or `proof_summary.json`), and `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) never chose a `LatticeDumper`. It does now, refused beside the flags that choose another dumper |
-| **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is `golden_dump.rs`'s `run_dump`. It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
+| **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is `golden_dump.rs`'s `run_dump`. It is not in [`docs/ein/ein.rs/api.md`](../../ein/ein.rs/api.md), whose worked example stops at solve-and-render |
 | **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `corpus_shapes.md5` digests the rest of the tree for every corpus entry |
 
 **All three answers are no since M1e2 S1e2.1c.5 (2026-11-03)**, which deleted

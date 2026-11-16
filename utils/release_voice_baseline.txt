@@ -36,7 +36,6 @@
    20  ein.rs/crates/ein-cli/tests/corpus_cli.rs
     4  ein.rs/crates/ein-cli/tests/declared_counts.rs
     9  ein.rs/crates/ein-cli/tests/einb_cli.rs
-    6  ein.rs/crates/ein-cli/tests/embedding.rs
     9  ein.rs/crates/ein-cli/tests/events_reference.rs
    10  ein.rs/crates/ein-cli/tests/expect_cli.rs
     4  ein.rs/crates/ein-cli/tests/forms_cut.rs

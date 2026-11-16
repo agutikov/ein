@@ -117,7 +117,7 @@ the function changes and the field does not.
   the thirteen behaviours; the six outcomes and six invariants join them.
 - [`docs/kernel/inference/events.md`](../../../docs/kernel/inference/events.md) —
   `ein-events/1`; [`ein-cli/src/summary.rs`](../../../ein.rs/crates/ein-cli/src/summary.rs) —
-  `ein-summary/1`; [`docs/api/rust.md`](../../../docs/api/rust.md) — the crate
+  `ein-summary/1`; [`docs/ein/ein.rs/api.md`](../../../docs/ein/ein.rs/api.md) — the crate
   surface a Rust loop would link.
 - [M1d Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
   [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —

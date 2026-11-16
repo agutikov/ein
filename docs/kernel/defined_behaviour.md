@@ -1702,7 +1702,7 @@ ignored before `main`, and `ein-cli/src/main.rs`'s `restore_sigpipe` restores
 the default as `main`'s first statement, one audited `libc::signal` call on
 Unix, the second `unsafe` site beside `ein-einb`'s `cast.rs`. A program that
 embeds the engine links the library, not `main.rs`, and keeps its own
-disposition ([`docs/api/rust.md`](../api/rust.md)). Windows has no `SIGPIPE`
+disposition ([`docs/ein/ein.rs/api.md`](../ein/ein.rs/api.md)). Windows has no `SIGPIPE`
 ([Q-M1f.101](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f101--a-closed-stdout-on-windows)).
 
 What pins it: `ein-cli/tests/closed_stdout.rs`, sixty-eight runs, every
