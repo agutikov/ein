@@ -24,6 +24,10 @@
 //! `ein-cli/tests/h_space_view.rs` holds on one program and the owner's
 //! own tests of each layer on more.
 //!
+//! **`H` itself, as Ein facts**, is [`hypotheses_text`], what `ein show
+//! hyps FILE` prints: the candidates the document's `candidates` lists, by
+//! the function the owner opens every structure over, and no node read.
+//!
 //! **A structure that is not whole says so.** [`unread`] lists, as
 //! sentences, everything a budget or a bound stopped or cut and everything
 //! left unread for it; the document carries them under `unread` with
@@ -36,8 +40,8 @@ use std::fmt::Write as _;
 use ein_core::{FactId, Symbol, Terms};
 use ein_infer::explore::Stopped;
 use ein_infer::structure::{
-    self, CLIQUE_STEPS, Coupling, Cover, Cut, Edge, EdgeKind, ExactlyOne, Mark, NodeStop, NotAGrid,
-    Origin, Owing, PairLayer, Question, Theory, Whole, WitnessIs,
+    self, CLIQUE_STEPS, Coupling, Cover, Cut, Edge, EdgeKind, ExactlyOne, Hypotheses, Mark,
+    NodeStop, NotAGrid, Origin, Owing, PairLayer, Question, Theory, Whole, WitnessIs,
 };
 
 use crate::dot_util::esc;
@@ -75,6 +79,38 @@ pub fn graph_file(name: &str) -> String {
         "one-step" => "coupling_one_step.dot".to_string(),
         other => format!("{other}.dot"),
     }
+}
+
+// ── H, listed ─────────────────────────────────────────────────────────
+
+/// **`H` as Ein facts**, what `ein show hyps FILE` prints: one candidate a
+/// line, every candidate, in the universe's canonical order, and nothing
+/// else. Each line is the fact as the one printer writes it
+/// ([`Terms::fact_text`], which writes a state file's facts too), so it is
+/// a fact a `.ein` file could hold, spelled as the program's file spells it.
+/// Empty where `H` is.
+pub fn hypotheses_text(h: &Hypotheses, terms: &Terms) -> String {
+    let mut out = String::new();
+    for c in &h.candidates {
+        out.push_str(&terms.fact_text(c.fact));
+        out.push('\n');
+    }
+    out
+}
+
+/// **What `ein show hyps` says of `H` beside it**, one sentence: the rung of
+/// the ladder that built it, and how many candidates it holds, or, where it
+/// holds none, why, in the words of the read-out's `universe` row for a run
+/// that searches nothing.
+pub fn hypotheses_note(h: &Hypotheses) -> String {
+    let universe = match (h.candidates.len() as u64, h.rung) {
+        (0, ein_infer::oblgen::Mode::NoSearch) => {
+            "no candidate: the program states :no-search".to_string()
+        }
+        (0, _) => "no candidate".to_string(),
+        (n, _) => plural(n, "candidate", "candidates"),
+    };
+    format!("H, built by the rung `{}`: {universe}", h.rung.as_str())
 }
 
 // ── The JSON's small parts ────────────────────────────────────────────

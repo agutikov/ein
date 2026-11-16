@@ -219,9 +219,10 @@ constrained-reasoning research.
   structure's document and graphs) and
   `ein-cli`. They stack linearly up to `ein-infer` and fork there —
   `ein-einb` and `ein-render` are siblings above it, and `ein-cli` depends on
-  both. `ein-cli` fronts **five** subcommands — `ein
-  {oracle,render,saturate,solve,test}` — plus `ein kb` under the `einb`
-  feature.
+  both. `ein-cli` fronts **six** subcommands — `ein
+  {oracle,render,saturate,show,solve,test}` — plus `ein kb` under the `einb`
+  feature. **`ein render` draws and `ein show` lists**: `render` writes DOT,
+  `show` writes Ein text a `.ein` file could hold and nothing else on stdout.
 
   **`.einb` is a private cache format, never an interchange one.** `ein kb save
   <file.ein> <out.einb>` writes one and every command that takes a `.ein` path
@@ -494,7 +495,8 @@ ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle
 ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
-ein render h-space FILE [--view …] [--dump DIR] [--supports]   # the hypothesis space, H and its structure: a read-out, a graph as DOT, or h-space.json; `ein solve` computes none of it
+ein show hyps FILE                                           # H as Ein facts, one candidate per line, uncut, nothing else on stdout: root's saturation and the generator, no search
+ein render h-space FILE [--view …] [--dump DIR] [--supports]   # the structure of H: a read-out, a graph as DOT, or h-space.json; `ein solve` computes none of it
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)

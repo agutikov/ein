@@ -131,6 +131,7 @@ ein-cli/tests/h_space_view.rs
 ein-cli/tests/models_grid.rs
 ein-cli/tests/region_dump.rs
 ein-cli/tests/render_doors.rs
+ein-cli/tests/show_hyps.rs
 ein-corpus/benches/engine.rs
 ein-einb/tests/corruption.rs
 ein-einb/tests/invalidation.rs

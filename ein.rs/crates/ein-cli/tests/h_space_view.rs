@@ -26,6 +26,11 @@
 //!    document says what its statements are about; a program with no
 //!    candidate, or a dead root, says so; a refused program is refused.
 //!
+//! And **`H` listed plain is the document's `H`**: on the six instances
+//! `ein show hyps` prints the document's `candidates`, line for line, which
+//! are the candidates `ein solve -H` lists, and every line is a fact a file
+//! could hold.
+//!
 //! What the document holds under a permuted id space and under the three
 //! import forms is `ein-infer/tests/structure_invariance.rs`'s, over every
 //! corpus program that searches.
@@ -344,6 +349,72 @@ fn held_to_the_owner(rel: &str, w: &Whole, d: &Value) {
     );
 }
 
+/// **The three listings of `H` are one, on `rel`**: what `ein show hyps`
+/// prints is the document's `candidates`, line for line in the universe's
+/// order, and the candidates `ein solve -H` lists, which lists them by
+/// relation and whole only as `--dump-answer`'s `forms/hyp-stats.txt`, of a
+/// run that searches nothing. **And every line is a fact a file could
+/// hold**: the program with the lines written after it loads, and holds each
+/// line as the one printer writes that fact, which is how a state file's
+/// facts are written.
+fn the_three_listings_of_h_are_one(rel: &str, d: &Value) {
+    let shown = ein(&["show", "hyps", rel]);
+    assert_eq!(shown.code, 0, "{rel}: {}", shown.err);
+    let lines: Vec<&str> = shown.out.lines().collect();
+    let of_document: Vec<&str> = d["candidates"]
+        .as_array()
+        .expect("H listed")
+        .iter()
+        .map(|c| c["candidate"].as_str().expect("a text"))
+        .collect();
+    assert!(!lines.is_empty(), "{rel} proposes nothing any more");
+    assert_eq!(lines, of_document, "{rel}: show hyps and the document");
+    assert_eq!(
+        shown.out.len(),
+        lines.iter().map(|l| l.len() + 1).sum::<usize>(),
+        "{rel}: stdout holds something beside the lines"
+    );
+
+    let tmp = Scratch::new(&format!("ein-show-hyps-{}", rel.replace(['/', '.'], "-")));
+    let dir = tmp.path().join("answer");
+    let solved = ein(&[
+        "solve",
+        rel,
+        "-H",
+        "--no-search",
+        "--dump-answer",
+        &dir.to_string_lossy(),
+    ]);
+    assert_eq!(solved.code, 0, "{rel}: {}", solved.err);
+    let form = std::fs::read_to_string(dir.join("forms/hyp-stats.txt")).expect("-H's form");
+    let mut listed: Vec<&str> = form
+        .lines()
+        .filter_map(|l| l.strip_prefix("    "))
+        .map(|l| l.split("   dead alone").next().unwrap_or(l).trim_end())
+        .collect();
+    let mut sorted = lines.clone();
+    listed.sort_unstable();
+    sorted.sort_unstable();
+    assert_eq!(listed, sorted, "{rel}: show hyps and solve -H");
+
+    let path = repo_root().join(rel);
+    let text = std::fs::read_to_string(&path).expect("the program");
+    let state = format!("{text}\n{}", shown.out);
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, &state, path.to_str())
+        .unwrap_or_else(|e| panic!("{rel}: the lines do not parse after the program: {e}"));
+    let kb = load(&mut ast, &mut terms, &forms, path.parent())
+        .unwrap_or_else(|e| panic!("{rel}: the program with H written after it: {e}"));
+    let held: std::collections::BTreeSet<String> = kb.facts().map(|f| terms.fact_text(f)).collect();
+    for line in &lines {
+        assert!(
+            held.contains(*line),
+            "{rel}: {line} is no fact the file holds"
+        );
+    }
+}
+
 /// How many of `d`'s grids are bijections, and how many it has.
 fn bijections(d: &Value) -> (usize, usize) {
     let grids = d["exactly_one"]["grids"].as_array().expect("grids");
@@ -387,6 +458,7 @@ fn the_document_is_the_owners_reading_on_every_instance() {
                     }
                     let d: Value = serde_json::from_str(&document).expect("JSON");
                     held_to_the_owner(rel, &whole, &d);
+                    the_three_listings_of_h_are_one(rel, &d);
                     (d, whole)
                 })
             })

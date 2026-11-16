@@ -1,4 +1,5 @@
-//! The argument surface — `ein`, `render`, `solve`, `test`, and `saturate`'s own.
+//! The argument surface — `ein`, `render`, `show`, `solve`, `oracle`, `test`,
+//! and `saturate`'s own.
 //!
 //! One module so the whole surface can be *introspected* rather than scraped:
 //! `--help` layout is `clap`'s business and is not pinned byte for byte, and
@@ -215,6 +216,31 @@ fn event_args(cmd: Command) -> Command {
                  pre-candidate hypothesis skips — ~6x the volume.",
             ),
     )
+}
+
+/// `ein show` — what a program holds, listed as Ein text: stdout is forms a
+/// `.ein` file could hold and nothing else. A group, as `ein render` is, so
+/// that another thing to show is one more subcommand; `hyps` is the one
+/// there is.
+fn show_command() -> Command {
+    Command::new("show")
+        .about("list what a program holds, as Ein text (render draws, show lists)")
+        .subcommand_required(true)
+        .arg_required_else_help(false)
+        .subcommand(
+            Command::new("hyps")
+                .about(
+                    "the hypotheses: the program's hypothesis set H as Ein facts, one \
+                     candidate per line as the fact is written, every candidate, in the \
+                     universe's order, and nothing else on stdout; a note on stderr says \
+                     which rung built H and how many it holds. It is the set every route \
+                     searches over, and listing it costs root's saturation and the \
+                     generator, no search. It asks about H, not about R, and changes no \
+                     answer (docs/kernel/inference/hypothesis_space.md)",
+                )
+                .arg(Arg::new("file").required(true))
+                .arg(no_require_why()),
+        )
 }
 
 /// `ein render` — DOT only, no SVG.
@@ -1220,6 +1246,7 @@ pub fn command() -> Command {
                 .help("engine version, event protocol, features, stdlib hash"),
         )
         .subcommand(render_command())
+        .subcommand(show_command())
         .subcommand(solve_command())
         .subcommand(oracle_command())
         .subcommand(test_command())

@@ -7,6 +7,17 @@
 //! [`crate::explore`]'s node cache (`Space::eval`). So each is true of the
 //! lattice `R` is a region of, and none is a second semantics.
 //!
+//! ### `H`, listed
+//!
+//! [`hypotheses`] is the hypothesis set itself: the candidates root's
+//! generator proposes at root's fixpoint, on whichever rung the program is
+//! on, in the universe's canonical order, rendered-text order. It is the set
+//! every route searches over, and what it costs is what building `H` costs:
+//! root's saturation and the generator's pass, no node. **Every object below
+//! is over these candidates, taken by the same function**: a pair layer, the
+//! theory's share and [`whole`] open their space over root prepared by it,
+//! so a listing of `H` and a structure's candidates cannot disagree.
+//!
 //! ### The pair layer
 //!
 //! [`PairLayer`] is what the nodes of one candidate and of two decide at
@@ -581,10 +592,62 @@ pub fn pair_layer_with(
     with_space_watched(root, terms, ast, opts, None, events, pair_layer_in)
 }
 
+/// **Root prepared, and with it `H`**: `root`, a freshly loaded program,
+/// saturated once, and the universe its generator builds at that fixpoint in
+/// canonical order, by the preparation every route starts from
+/// ([`region::prepare_with`]). The one place this module takes `H` from:
+/// [`hypotheses`] returns its candidates, and every space a structure is
+/// read in is opened over it.
+fn root_prepared(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+) -> Result<region::Prepared, SolveError> {
+    region::prepare_with(root, terms, ast, events)
+}
+
+/// **The hypothesis set `H` of a program, as root builds it.**
+#[derive(Clone, Debug)]
+pub struct Hypotheses {
+    /// The universe: every candidate the generator proposes at root's
+    /// fixpoint, once, in rendered-text order. The order a [`PairLayer`]'s
+    /// candidates are in, and every other object's.
+    pub candidates: Vec<Candidate>,
+    /// The rung of the ladder that built it.
+    pub rung: crate::oblgen::Mode,
+    /// Root's own fixpoint derives `(false)`. `H` is built all the same.
+    pub root_dead: bool,
+}
+
+/// [`Hypotheses`] of `root`, a **freshly loaded, unsaturated** program
+/// nothing else will use. Root is saturated once, the generator is run at
+/// its fixpoint, and **no node is read**: no single, no pair, no small KB.
+/// A program the engine refuses to read is refused here as it is by a route.
+pub fn hypotheses(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Hypotheses, SolveError> {
+    hypotheses_with(root, terms, ast, &mut Events::off())
+}
+
+/// [`hypotheses`], root's saturation and the generator's pass narrated into
+/// `events` as a route narrates them: for a reader that counts the work.
+pub fn hypotheses_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+) -> Result<Hypotheses, SolveError> {
+    let prepared = root_prepared(root, terms, ast, events)?;
+    Ok(Hypotheses {
+        rung: prepared.root.hypgen.rung.mode,
+        root_dead: prepared.root_dead,
+        candidates: prepared.candidates,
+    })
+}
+
 /// `read` over the prepared space of `root`, a freshly loaded program: the
 /// routes' node cache, at the layer's budget, keeping no node's record. Over
-/// the universe root's generator builds, or over the one the caller names
-/// ([`region::prepare_over`]).
+/// the universe root's generator builds ([`root_prepared`]), or over the one
+/// the caller names ([`region::prepare_over`]).
 fn with_space<R>(
     root: &mut Kb,
     terms: &mut Terms,
@@ -607,7 +670,7 @@ fn with_space_watched<R>(
     read: impl FnOnce(&mut Space<'_>) -> Result<R, SolveError>,
 ) -> Result<R, SolveError> {
     let prepared = match universe {
-        None => region::prepare(root, terms, ast)?,
+        None => root_prepared(root, terms, ast, &mut Events::off())?,
         Some(named) => region::prepare_over(root, terms, ast, named)?,
     };
     let space = explore::Options {

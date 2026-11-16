@@ -624,13 +624,13 @@ const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?1} is q\")\
                       (solve :expect (region (model (p a) (q a))))\n";
 
 /// The commands that load a program: every one takes `--no-require-why`.
-/// Twelve: eleven since M1f S1f.5.21, which has the four views that draw a
+/// Thirteen: eleven since M1f S1f.5.21, which has the four views that draw a
 /// program as written read it through the loader first (Q-M1f.71), seven
-/// until then, and `ein render h-space`, which reads the loaded program's
-/// lattice. `render rule` names the rule it draws, `--name r1`, which comes
-/// after the command's own words here and is no part of its name in the
-/// golden.
-const LOADING: [&[&str]; 12] = [
+/// until then, `ein render h-space`, which reads the loaded program's
+/// lattice, and `ein show hyps`, which lists its hypothesis set. `render
+/// rule` names the rule it draws, `--name r1`, which comes after the
+/// command's own words here and is no part of its name in the golden.
+const LOADING: [&[&str]; 13] = [
     &["solve"],
     &["oracle"],
     &["test"],
@@ -642,6 +642,7 @@ const LOADING: [&[&str]; 12] = [
     &["render", "constraints"],
     &["render", "program"],
     &["render", "h-space"],
+    &["show", "hyps"],
     &["kb", "save"],
 ];
 
@@ -654,8 +655,9 @@ const LOADING: [&[&str]; 12] = [
 /// after other stages finished swith to default true"*), the option becoming
 /// `--no-require-why` (Q-M1f.62). Held from the outside, on every command that
 /// loads a program: the page has its row; the golden gives the option to those
-/// twelve commands and no other (seven until M1f S1f.5.21, eleven until `ein
-/// render h-space`); by default a program missing three `:why`s is
+/// thirteen commands and no other (seven until M1f S1f.5.21, eleven until
+/// `ein render h-space`, twelve until `ein show hyps`); by default a program
+/// missing three `:why`s is
 /// refused with one line for each, at the exit code that command gives every
 /// load error, and with the option it runs; a container saved with the option
 /// is refused where its `.ein` is; and two corpus programs, one of them

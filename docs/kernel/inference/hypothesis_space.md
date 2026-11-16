@@ -10,7 +10,8 @@ bear on each other. The engine reads all of it from the program's own lattice.
 arguments or a declaration of it.
 
 One module computes it, [`ein_infer::structure`](../../../ein.rs/crates/ein-infer/src/structure.rs),
-and one command shows it, `ein render h-space FILE`
+and two commands show it: `ein show hyps FILE` lists H itself, as Ein facts,
+and `ein render h-space FILE` shows the structure of H
 ([§ How to see it](#how-to-see-it)). **`ein solve` computes none of it**, and
 no route reads it: the structure is a set of statements about nodes, it moves
 no answer, and it is not free ([§ What it costs](#what-it-costs)).
@@ -268,6 +269,7 @@ In the read-out's units, saturations and facts beyond root:
 
 | object | what it costs |
 |---|---|
+| H, listed | root's saturation and the generator's pass at its fixpoint. No node: no single, no pair, no small KB |
 | root's pair layer | root's node, a saturation a candidate, and one for each pair the two licences leave |
 | the small KB's pair layer | the same over the same candidates, in the small KB, facts counted beyond its own root |
 | the cover, *exactly one*, the grids | no saturation: a clique enumeration, and two passes of root's matcher |
@@ -332,6 +334,58 @@ grep -n 'pub const \(CLIQUE_STEPS\|NODE_APPLICATIONS\|ROUNDS\|WAYS\|DESCRIPTIONS
 ---
 
 ## How to see it
+
+Two commands: one lists H, one shows its structure. **`ein render` draws and
+`ein show` lists**: what `ein show` prints is Ein text a `.ein` file could
+hold.
+
+### H, listed
+
+```sh
+ein show hyps FILE [--no-require-why]
+```
+
+**stdout is H and nothing else**: one candidate a line, as the fact is
+written, every candidate, uncut, in the universe's order. So it pipes, and a
+line is a fact a `.ein` file could hold: it is printed by the printer that
+writes a state file's facts (`--dump-answer`'s `models/`), and spelled as the
+program's own file spells the fact, a short name where the file lists it and
+the full name where it does not.
+
+<!-- generated: ein show hyps examples/zebra2.ein | head -3 -->
+```text
+(color-loc Green House-4)
+(color-loc Green House-5)
+(color-loc Ivory House-3)
+```
+<!-- /generated -->
+
+The block is the binary's output, and `ein-cli/tests/show_hyps.rs` fails when
+it is not.
+
+- **It is H as root's generator builds it**, on whichever rung the program is
+  on: the set every route searches over. `ein solve FILE -H` lists the same
+  candidates after a read-out, by relation, within stdout's 100 lines; the
+  document below lists them under `candidates` with what the structure says of
+  each. All three are one function's
+  (`ein_infer::structure::hypotheses`, root prepared as every route prepares
+  it), and `ein-cli/tests/h_space_view.rs` holds the three to each other.
+- **It costs what building H costs**: root's saturation and the generator's
+  pass. No node is read, so no pair layer, no small KB and no whole node:
+  `ein-infer/tests/structure_invariance.rs` counts one saturation and no node.
+- **stderr holds one `note:`**, which rung built H and how many candidates it
+  holds: ``note: FILE: H, built by the rung `hrules`: …``. An empty H prints
+  nothing on stdout and exits 0, and the note says why in the words of the
+  read-out's `universe` row: *no candidate*, and *the program states
+  :no-search* where it does.
+- **Exit codes**: 0 for every H, empty or not, a dead root's among them. A
+  program the loader refuses, or the engine refuses to read, exits 1 with the
+  line every command gives it.
+- It takes no option but `--no-require-why`
+  ([`configuration.md` § 3.4](../configuration.md#34-the-option-that-decides-loading)):
+  nothing moves H. `FILE` is a `.ein` or a `.einb`.
+
+### The structure
 
 ```sh
 ein render h-space FILE [--view VIEW] [--dump DIR] [--supports]
@@ -482,7 +536,9 @@ program and of what was asked.
 | `cost` | `root_layer` (`saturations`, `facts_beyond_root`); `small_kb_layer` (`saturations`, `facts_beyond_its_own_root`); `supports`; `cover` (`clique_calls`, `root_clique_calls`, `bound`); `exactly_one`; `whole_node` (`saturations`, `facts_beyond_root`, `applications`, `steps`, `contradictions`, `rounds`, `merged`); and `saturations`, their sum |
 | `graphs` | for each graph: `graph`, `file`, `nodes`, `lines` |
 
-**`candidates`: H listed.** One object a candidate, in the universe's order.
+**`candidates`: H listed.** One object a candidate, in the universe's order,
+with what each object says of it. The candidates alone, one fact a line and no
+node read, are `ein show hyps FILE` ([§ H, listed](#h-listed)).
 
 | key | what it holds |
 |---|---|
@@ -644,4 +700,7 @@ beside its one grid, a bijection.
 | the structure, the document and the graphs are the same in any id space and under every import form | `ein-infer/tests/structure_invariance.rs` |
 | the document is the owner's reading; the door, the dump, a stopped structure, a refused reading, a flagged program, a program with no candidate; the read-out above | `ein-cli/tests/h_space_view.rs` |
 | Graphviz draws every graph, and every corpus structure is whole at the default budget | `ein-render/tests/dot_wellformed.rs` |
+| `ein show hyps` lists the document's candidates and `ein solve -H`'s, and each line is a fact a file could hold | `ein-cli/tests/h_space_view.rs`, on the six instances |
+| the listing's door: nothing else on stdout, the note, an empty H, a dead root, a refused program, a `.einb`; the listing above | `ein-cli/tests/show_hyps.rs` |
+| the listing is the document's candidates, the owner's and the universe a route is handed, in any id space and under every import form; it costs one saturation and no node | `ein-infer/tests/structure_invariance.rs` |
 | the census and the view spell one object one way | both call `ein_render::structure`'s lists |

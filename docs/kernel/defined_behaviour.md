@@ -2472,8 +2472,9 @@ reloads to its facts and states its `written` facts again
 
 ## 5. The CLI surface
 
-Everything a script or a habit can depend on is fixed: the five subcommands
-(`oracle` since M1e2 S1e2.1a.9) and the `render` sub-subcommands, the
+Everything a script or a habit can depend on is fixed: the six subcommands
+(`oracle` since M1e2 S1e2.1a.9; `show`, whose one sub-subcommand `hyps` lists
+the hypothesis set as Ein facts) and the `render` sub-subcommands, the
 delegated dispatch (`ein saturate --help` prints `saturate`'s own help;
 `saturate` appears in `ein --help` though the top parser never parses it),
 every option's long name, short key,
@@ -2485,7 +2486,7 @@ which stream each byte goes to.
 [S1c.1.3](../history/m1c_external_validation/README.md#s1c13--ein-test),
 and its exit codes **deliberately differ** from the other three's:
 
-| code | `solve` / `oracle` / `render` / `saturate` | `test` |
+| code | `solve` / `oracle` / `render` / `show` / `saturate` | `test` |
 |---|---|---|
 | 0 | success | every expectation held, and at least one was checked |
 | 1 | a load error — or *forbid*'s refusal (§ 4.7), a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked (under `--no-search`, false only) |
@@ -2507,7 +2508,7 @@ leaves NOT CHECKED, having been asked not to search, moves no exit code
 ([Q-M1f.258](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f258--which-commands-and-options-take---no-search)).
 
 **A closed stdout is no code either.** Since M1f S1f.5.25 a write to a pipe
-whose reader has gone ends any of the five subcommands by `SIGPIPE`, with
+whose reader has gone ends any of the six subcommands by `SIGPIPE`, with
 nothing on stderr, which a shell reports as 141 (§ 4.19); until then it
 panicked, exit 101, where the write came after the reader's exit.
 
