@@ -529,6 +529,7 @@ python3 utils/region_synth.py --example three_components     # M1e2: a program w
 python3 utils/read_out_examples.py                           # M1f S1f.5.16: the read-out reference's examples page, written from the binary
 python3 utils/doc_audit.py --inbound --tracked --target docs/kernel/   # per target file, the references a move rewrites, by referrer kind
 python3 utils/check_release_voice.py --list [PATH …]         # every line the release-voice check counts; --bless re-banks its baseline
+python3 utils/history_census.py                              # the history census: per tree, lines carrying an id, a plans/ or docs/history/ reference, a date
 ```
 
 The read-out's vocabulary is
