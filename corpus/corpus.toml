@@ -36,6 +36,12 @@ schema = "ein-corpus/2"
 # ── positive ────────────────────────────────────────────────
 
 [[entry]]
+path   = "examples/beliefs/01_common_belief.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render kb"]
+note   = "A fact as another fact's argument: `(believes Ann (likes Dan Soup))` states a belief, its content a value no state holds until a rule says when it is true. The rule here: what every person believes is true, one rule per shape of content (`likes`, `(not (likes …))`), \"every person\" a `forall` over `person`, which `(__closed__ person)` closes so the program is monotone and *forbid* does not refuse the negative one; `(solve :no-search)`, root alone. Two claims, computed by hand: `(likes Dan Soup)` and `(not (likes Dan Fish))`, and nothing Ann alone or two of three believe. Its KB drawn beside it, `01_common_belief.kb.dot` and `.svg` (`ein render kb`)."
+
+[[entry]]
 path   = "examples/branching/01_saturate_only.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]

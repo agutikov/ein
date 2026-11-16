@@ -68,6 +68,10 @@
 0    examples/arith/sub.ein :: solve
 0    examples/arith/sub.ein :: solve --trace {out}/trace.md
 0    examples/arith/sub.ein :: test
+0    examples/beliefs/01_common_belief.ein :: render kb
+0    examples/beliefs/01_common_belief.ein :: saturate
+0    examples/beliefs/01_common_belief.ein :: solve
+0    examples/beliefs/01_common_belief.ein :: test
 0    examples/beyond_arith/casting_out_nines.ein :: saturate
 0    examples/beyond_arith/casting_out_nines.ein :: solve
 0    examples/beyond_arith/casting_out_nines.ein :: test
