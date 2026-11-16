@@ -57,9 +57,8 @@ Each agent works in a git worktree under `.claude/worktrees/` on a branch `workt
 |---|---|---|
 | `worktree-agent-ac394c3d42ce474da` | S1f.10.5, the order | `f8751257` |
 
-Three merged branches' worktrees are still on disk and can be removed with their branches:
-`worktree-agent-a601d26e3778f9c83` (S1f.10.6), `-a09b7d8b049cf055e` (the surface), `-a68ac81f0382b6c04` (S1f.10.3),
-`-a3b0431c091872649` (the rename), `-a5f864753ca542a7f` (S1f.10.9).
+The five merged branches' worktrees and branches are removed (2026-11-16); their commits are on `master`.
+S1f.10.3's untracked price-list runs, which its record's tables were read from, were kept as `build/s1f.10.3/`.
 
 ### What happened to them
 
