@@ -67,7 +67,7 @@ forced-positive cascade, so the two lists could differ, and `walk.json`'s
 ruling of 2026-11-03 on Q-M1e2.3, (a) *scoped*): each relation the program can
 conclude or ask about, does not scope out itself, and of which the rung that
 built the list proposes no fact
-([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+([`solution_semantics.md` § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 `region.md` says it under its candidate count, as the read-out's `outside`
 row does, and `region.json` lists it as `outside`.
 
@@ -75,7 +75,7 @@ row does, and `region.json` lists it as `outside`.
 user's ruling of 2026-11-03 on Q-M1e.12, (a)): where the blind enumerator
 built the list, the names on the right of an `is-a` that a candidate names,
 the candidates' relations and how many there are
-([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+([`solution_semantics.md` § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 `region.md` says it as `**Types as objects**`, under its candidate count, as
 the read-out's `types` row does, and `region.json` carries it as
 `types_as_objects`.

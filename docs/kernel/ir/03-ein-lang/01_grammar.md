@@ -1331,7 +1331,7 @@ so that two names never print as one.
 where the import stands: background, or given where it carries a `:source`.
 Its constants are names of the program, so they are among the objects the
 blind enumerator proposes facts about
-([`solution_semantics.md` § 1.2](../../inference/solution_semantics.md#12-names));
+([`solution_semantics.md` § 1.2](../../../ein/reasoning/kb-evolution/solution-semantics.md#12-names));
 a program that wants no guesses about a library's relation closes it. A fact
 of a module arrives once, the module being one copy. The same fact stated
 with two `:source`s keeps its first statement and loses the second in

@@ -186,7 +186,7 @@ cover row is `examples/ein-bugs/naf-upward-closure.ein`, whose `bad` rule reads
 | `admit` | `Saturator::admit_from_boundary` — the one candidate a round admits | `tiebreaker`, `round`, `rule`. **No `watched`** — nothing failed, so there is no failing guard to read a watch set off |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |
 | `alt` | `Kb::record_justification` returns true | `fact`, `rule`, `premises` |
-| `owe` | the **post-fixpoint obligation pass**, once per node as its saturation leaves it (its fixpoint, or a stopped dead node's KB: [`finding_r.md` § 1](finding_r.md#1-a-node)), one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
+| `owe` | the **post-fixpoint obligation pass**, once per node as its saturation leaves it (its fixpoint, or a stopped dead node's KB: [`finding-r.md` § 1](../../ein/reasoning/kb-evolution/finding-r.md#1-a-node)), one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
 
 **Three of `compile`'s six numbers are not what they are named**, and they are
 kept rather than corrected because the event is a comparison surface — a
@@ -223,7 +223,7 @@ reader of this stream should know:
   a dead node narrates its `owe` lines as any node does: over its fixpoint,
   or, a dead node a monotone program's route stops at its first contradiction,
   over the node as far as there
-  ([`finding_r.md` § 1](finding_r.md#1-a-node)). Root's lines come first, then
+  ([`finding-r.md` § 1](../../ein/reasoning/kb-evolution/finding-r.md#1-a-node)). Root's lines come first, then
   one group per node visited, each before that node's `enter` line.
 - **Nothing it reports is stored.** An `open` conclusion is a tally on the
   search-lattice node, never a fact: contradiction survives an extension and
@@ -319,7 +319,7 @@ is how the zebra family settles it.
 the call read a debt the state does not owe and a commitment can bring: an
 activator of an obligation rule that the state does not hold and a rule's
 `:assert` concludes
-([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)).
+([`solution_semantics.md` § 1.4](../../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)).
 `later_debts` counts those activators, and `later_candidates` the facts the
 rung proposed for them before the filter pipeline, each a `hyp` line after
 the last one of a debt the state owes. `owed`, `branches`, `declined` and
@@ -517,7 +517,7 @@ says which:
    on a monotone program's route narrates its saturation up to the firing that
    makes its first contradiction, where the route stops it, and its debts
    there; the `enter` line's core is taken over its fixpoint
-   ([`finding_r.md` § 1](finding_r.md#1-a-node)). A worker
+   ([`finding-r.md` § 1](../../ein/reasoning/kb-evolution/finding-r.md#1-a-node)). A worker
    narrates into its own buffer and the run replays it in order, so the
    stream at `-j 4` is the stream at `-j 1` line for line;
 4. **route 1**: one `layer` line at the end of each layer, with its own

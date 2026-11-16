@@ -81,15 +81,6 @@ docs/kernel/inference/
 │                                     summary field (M1f S1f.5.16)
 ├── read_out_examples.md           ← every row in a real run, written by
 │                                     `utils/read_out_examples.py`
-├── hypothesis_space.md            ← the hypothesis space and its structure:
-│                                     the pairs that exclude, the theory's
-│                                     share, groups, owed groups and grids,
-│                                     the coupling; `ein render h-space`
-│                                     and `h-space.json`
-├── finding_r.md                   ← how R is found: the oracle's cube, the
-│                                     licences, the memory of what is known
-│                                     dead, each question's route, and how
-│                                     `--single` proves one state
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,
@@ -988,7 +979,7 @@ no fork fact ever merges back. Pinned by
 [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs).
 Both writers were the walk's and went with it at M1e2 S1e2.1c.5
 (2026-11-03); no route writes root
-([`solution_semantics.md` § 1.3](solution_semantics.md#13-root)).
+([`solution_semantics.md` § 1.3](../../ein/reasoning/kb-evolution/solution-semantics.md#13-root)).
 
 **Resurrection path, if ever needed.** On a ruleset with **no** `absent`
 guards — checkable as every compiled plan's

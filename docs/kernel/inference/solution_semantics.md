@@ -304,7 +304,7 @@ the first contradiction: that is the definition, and the oracle computes it
 whole. **What the routes compute** on a monotone program is the state of an
 alive node whole, and of a dead node, root's excepted, the fork only as far as
 the firing that makes its first contradiction
-([`finding_r.md` § 1](finding_r.md#1-a-node)): it is dead exactly when the
+([`finding-r.md` § 1](../../ein/reasoning/kb-evolution/finding-r.md#1-a-node)): it is dead exactly when the
 state is, since the KB only grows, and that bit is all a route reads of a
 dead node, so R and everything read off it are the oracle's. What such a
 node reports of itself, its facts beyond root, debts and closure, is the
@@ -513,19 +513,19 @@ sub-cubes [∅ … pair] of dimension 2. N = {{a,b,c}}, E = {∅}, and the duali
 gives both lines. The conflict is genuinely three-way, which is what the
 fixture is named for.
 
-![lattice/02's region, with a bare ein solve on it](diagrams/region_02_genuine_3set_death.svg)
+![lattice/02's region, with a bare ein solve on it](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.svg)
 
 Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
-([`.dot`](diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
+([`.dot`](../../ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
 on the cube (M1e2 S1e2.1a.7, 2026-11-01). Re-made with:
 
 ```sh
 ein oracle examples/lattice/02_genuine_3set_death.ein --dump cube/
 ein solve  examples/lattice/02_genuine_3set_death.ein --dump-lattice run/lattice --dump-answer run/answer
 ein render region cube/ --visited run/lattice --answer run/answer \
-    > docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot
-dot -Tsvg docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot \
-    -o docs/kernel/inference/diagrams/region_02_genuine_3set_death.svg
+    > docs/ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot
+dot -Tsvg docs/ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.dot \
+    -o docs/ein/reasoning/kb-evolution/diagrams/region_02_genuine_3set_death.svg
 ```
 
 Fill is the node's status in the cube, shape is what the run did there, and
@@ -961,7 +961,7 @@ leave those out.
 
 ## Cross-references
 
-- [`finding_r.md`](finding_r.md): how R is found, the oracle's cube and the routes' licences, as
+- [`finding-r.md`](../../ein/reasoning/kb-evolution/finding-r.md): how R is found, the oracle's cube and the routes' licences, as
   formulas.
 - [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
 - [`monotonicity.md`](monotonicity.md): the monotone and the non-monotone

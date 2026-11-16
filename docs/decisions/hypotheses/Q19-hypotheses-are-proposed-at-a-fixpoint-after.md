@@ -12,4 +12,4 @@ guessing.
 **Held by.** `ein_infer::hypgen::generate_config_free`, which proposes H from root's saturated session;
 `ein-infer/tests/explore.rs`: `every_mode_is_the_oracle`, which holds every route to the oracle, whose node is
 root's fixpoint with the commitment written in and saturated;
-[`solution_semantics.md`](../../kernel/inference/solution_semantics.md) § 1.3 to § 1.5.
+[Solution semantics](../../ein/reasoning/kb-evolution/solution-semantics.md) § 1.3 to § 1.5.

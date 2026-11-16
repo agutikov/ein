@@ -32,7 +32,7 @@ writes two files:
   root's; then `steps`, each a route-1 layer or a mode's batch, with the index
   of the first node it covers. **A dead node on a monotone program is listed
   as far as its first contradiction**, where the route's saturation of it
-  stops ([`finding_r.md` § 1](finding_r.md#1-a-node)): what it owes, its
+  stops ([`finding-r.md` § 1](../../ein/reasoning/kb-evolution/finding-r.md#1-a-node)): what it owes, its
   closure and its facts are the node's there, and its core is taken over
   its fixpoint, the saturation going on from the stop. The whole node the
   tree's order reads, the node of every candidate, is listed to quiescence,

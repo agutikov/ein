@@ -219,7 +219,7 @@ fn the_door() {
 }
 
 /// **The page's listing is the binary's**: the block
-/// `docs/kernel/inference/hypothesis_space.md` shows under *H, listed* is
+/// `docs/ein/reasoning/kb-evolution/hypothesis-space.md` shows under *H, listed* is
 /// the first three lines `ein show hyps examples/zebra2.ein` prints. A
 /// listing that moves fails here with the lines to paste.
 #[test]
@@ -228,8 +228,8 @@ fn the_pages_listing_is_the_binarys() {
         "<!-- generated: ein show hyps examples/zebra2.ein | head -3 -->\n```text\n";
     const END: &str = "\n```\n<!-- /generated -->";
     let text =
-        std::fs::read_to_string(repo_root().join("docs/kernel/inference/hypothesis_space.md"))
-            .expect("docs/kernel/inference/hypothesis_space.md");
+        std::fs::read_to_string(repo_root().join("docs/ein/reasoning/kb-evolution/hypothesis-space.md"))
+            .expect("docs/ein/reasoning/kb-evolution/hypothesis-space.md");
     let start = text.find(BEGIN).expect("the page's generated block") + BEGIN.len();
     let end = start + text[start..].find(END).expect("the block's end");
     let r = ein(&["show", "hyps", "examples/zebra2.ein"]);
@@ -237,7 +237,7 @@ fn the_pages_listing_is_the_binarys() {
     let head: Vec<&str> = r.out.lines().take(3).collect();
     assert!(
         text[start..end] == head.join("\n"),
-        "docs/kernel/inference/hypothesis_space.md's listing is not the binary's. Paste:\n\n{}",
+        "docs/ein/reasoning/kb-evolution/hypothesis-space.md's listing is not the binary's. Paste:\n\n{}",
         head.join("\n")
     );
 }

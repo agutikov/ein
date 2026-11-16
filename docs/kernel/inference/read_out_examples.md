@@ -119,7 +119,7 @@ exit 0
 
 ## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
-[`solution_semantics.md` § 2.5](solution_semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
+[`solution-semantics.md` § 2.5](../../ein/reasoning/kb-evolution/solution-semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s worked
 example: three candidates, every pair alive, the triple dead, no obligation. One run per question, so the same R can be
 read through each.
 
