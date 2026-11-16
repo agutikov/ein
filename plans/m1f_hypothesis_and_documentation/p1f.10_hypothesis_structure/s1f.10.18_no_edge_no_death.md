@@ -12,6 +12,19 @@ pair the coupling does not keep ([`16_pair_through_closure.ein`](../../../exampl
 (the rule for *go*). **Built after [S1f.10.17](s1f.10.17_describe_by_borders.md) is merged**, since both change which
 nodes the routes saturate; its measurement does not wait.
 
+**T3 is not built: a written *no* for this way, decided by the main session on 2026-11-16.** The claim as stated is
+false ([`15_union_label_dead.ein`](../../../examples/lattice/15_union_label_dead.ein),
+[`16_pair_through_closure.ein`](../../../examples/lattice/16_pair_through_closure.ein)). The narrowed claim holds by
+argument on premises nothing enforces today: the node read whole, no label a union, no `__symmetric__`, the
+candidate alive alone known, and a pair met through a closure read (P\*). Its conclusion cannot be checked where it
+is used, since a node wrongly called alive is one whose supersets are dead too. Read on every program it is *no* on
+every question. Read when the tree's order reads the node it is *go* on the work, but that is an upper bound no
+route can take: every route reads an alive extension's closure and debts, which *alive* alone does not give.
+**The next way**, in the record's *What T3 would need*: a route that defers an alive extension's saturation, or
+reads its closure and debts without one, with the premises enforced at the read and P\* kept by
+`NodeCoupling`. The border route of [S1f.10.17](s1f.10.17_describe_by_borders.md) asks only *dead or alive* of the
+sets near a border, and is where such a licence would first have a use.
+
 ## The idea, as the user took it up
 
 The main session, 2026-11-16, answering *"It really make sense that we don't need to saturate owed states if no rule

@@ -109,8 +109,9 @@ S1f.10.16 are merged, with the container gate beside it.
 ## Then, in this order
 
 1. **S1f.10.17, describe by borders**, on the user's ruling of Q-M1f.311, (e): planned and running.
-2. **S1f.10.18 and S1f.10.19**, on the user's *"Yes, both"* of 2026-11-16: measured now, each in a worktree with
-   no route changed; built where *go* after S1f.10.17 is merged.
+2. **S1f.10.18**: T1 and T2 merged as `f9cc1153`; the claim as stated is false (two programs banked), the narrowed
+   one unenforced, T3 not built, a written *no* with its next way. **S1f.10.19**: measuring, in a worktree; its
+   early stop built where *go* after S1f.10.17 is merged, its fail-first order put as Q-M1f.313.
 3. **The container gate and the container nightly**, once, on the batch's last commit, as § Owed says, and the
    walls of the nightly steps that grew on a quiet machine.
 4. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
@@ -159,6 +160,8 @@ All are in [`findings.md`](findings.md); these read as wrong answers or stale st
   quoted note's included.
 - **K-29**: `ein_core::Kb`'s learned no-good store is the deleted walk's, and its doc calls it part of the engine.
 - **K-30**: `hypgen::is_solution_node` and `consistent` are the walk's definition of an answer, read by one test.
+- **K-41**: the whole node does not read a native mirror's derivation of a fact committed in it, so a member of
+  N can lie in no edge of the coupling (a probe, not a wrong answer).
 - K-5, K-9: the classes of program the small-KB rule does not fit. K-20: stale counts in a test's comment.
 
 ## How to resume
