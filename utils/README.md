@@ -1,9 +1,9 @@
 # `utils/` — the scripts that are not the engine
 
-**Forty-two scripts** (`ls utils/*.py utils/*.sh | wc -l`, 2026-11-16), **all
-but eight driving `ein.rs`** — bar
+**Forty-three scripts** (`ls utils/*.py utils/*.sh | wc -l`, 2026-11-16), **all
+but nine driving `ein.rs`** — bar
 [`doc_audit.py`](doc_audit.py), whose subject is `docs/kernel/` and the references of every tracked file, and which reads
-the crates as text, [`check_release_voice.py`](check_release_voice.py) and [`history_census.py`](history_census.py), which read the tree as text, [`gen_arith_tables.py`](gen_arith_tables.py),
+the crates as text, [`check_release_voice.py`](check_release_voice.py), [`history_census.py`](history_census.py) and [`decision_census.py`](decision_census.py), which read the tree as text, [`gen_arith_tables.py`](gen_arith_tables.py),
 [`gen_num9.py`](gen_num9.py), [`gen_gates.py`](gen_gates.py) and [`gen_arith_examples.py`](gen_arith_examples.py), which write three stdlib modules or their tables,
 the stdlib's Boolean property tests, three example programs and, on demand, an arithmetic program of a stated size, and [`rule_census.py`](rule_census.py), which reads the corpus's rules as text
 and runs the engine for one comparison alone. Nothing here is built, shipped or imported by the engine;

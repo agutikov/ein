@@ -21,7 +21,7 @@ The script is [`utils/decision_census.py`](../../../utils/decision_census.py); i
 
 ## 1. What the census found
 
-**592 ids in 15 ledgers: 424 decisions, 78 open, 90 not carried.** A *decision* has an answer that stands, a
+**593 ids in 15 ledgers: 425 decisions, 78 open, 90 not carried.** A *decision* has an answer that stands, a
 ruling or a default nobody revised, read to the last word of its chain; *open* has neither; *not carried* is
 superseded, moot, moved to another id or to a plan, or a copy of a question another ledger carries.
 
@@ -33,7 +33,7 @@ superseded, moot, moved to another id or to a plan, or a copy of a question anot
 | `docs/history/m1e_review_processing/open_questions.md` | 13 | 5 | 4 | 22 |
 | `docs/history/m1e_review_processing/review/open-questions.md` (the review's Q1–Q10) | 4 | 0 | 6 | 10 |
 | `plans/m1e2_correctness/open_questions.md` | 23 | 1 | 4 | 28 |
-| `plans/m1f_hypothesis_and_documentation/open_questions.md` | 298 | 0 | 14 | 312 |
+| `plans/m1f_hypothesis_and_documentation/open_questions.md` | 299 | 0 | 14 | 313 |
 | `plans/m1g_logic/open_questions.md` | 1 | 15 | 0 | 16 |
 | `plans/m1h_beyond_word_problems/open_questions.md` | 2 | 19 | 0 | 21 |
 | `plans/m10_external_benchmarks/open_questions.md` | 0 | 3 | 0 | 3 |
@@ -42,12 +42,12 @@ superseded, moot, moved to another id or to a plan, or a copy of a question anot
 | `plans/followups/` (F1, F2, F3, F4) | 0 | 15 | 1 | 16 |
 | P1f.6's `questions.md` 1–73 and round 2's layout item | 43 | 1 | 30 | 74 |
 | stage files that number their own questions (six files) | 5 | 0 | 14 | 19 |
-| **all** | **424** | **78** | **90** | **592** |
+| **all** | **425** | **78** | **90** | **593** |
 
-By family: the records under `docs/history/` 33 / 10 / 23; the milestone ledgers under `plans/` 324 / 50 / 18;
+By family: the records under `docs/history/` 33 / 10 / 23; the milestone ledgers under `plans/` 325 / 50 / 18;
 the global pool 19 / 2 / 7; the followups 0 / 15 / 1; the phase and stage ledgers 48 / 1 / 41.
 
-**Classed by hand: 225 of 592**, banked in `decision_census.txt`; the other 367 are read off their state's first
+**Classed by hand: 225 of 593**, banked in `decision_census.txt`; the other 368 are read off their state's first
 words (*ruled*, *defaulted*, *accepted*, *open*, *moved*, …). By hand are every local number, every parked idea,
 M2's ledger (whose last column names the stage that will decide, not a state), the global pool's sections (which
 carry *Working answer* and no status word), and every row whose state names a chain past its first word
@@ -60,13 +60,13 @@ no id at all (§ 5.8).
 
 ## 2. The layout: default 1, one file a decision
 
-**360 decision files in 20 folders**, and 64 more if the process-only decisions are carried (§ 5.1). The default's
+**361 decision files in 20 folders**, and 64 more if the process-only decisions are carried (§ 5.1). The default's
 seven subjects are kept and five are added, each split from one of them where it was large enough to stand alone:
 `imports/` from the language, `read-out/` and `diagnostics/` from the CLI, `hypotheses/` from the answer, and
 `engine/` for what `ein.rs` decides inside. The stdlib is split by module, as the default says.
 
 ```text
-docs/decisions/                 360   README.md: the folders, one line each, and how a decision is cited
+docs/decisions/                 361   README.md: the folders, one line each, and how a decision is cited
   language/                      70   grammar, names, values, keywords, rules, macros, what the loader refuses
   imports/                       24   modules and imports: full and short names, what an import brings
   diagnostics/                   13   the line a refusal prints: its place, its wording, its note
@@ -85,7 +85,7 @@ docs/decisions/                 360   README.md: the folders, one line each, and
       num9/                       6   `std.math.num9`
     bool/                         6   `std.bool.*`
   corpus/                        37   the corpus, the register, fixtures, examples, the stdlib's test programs
-  gate/                          31   the gate and the nightly: what runs, on what budget, under which profile
+  gate/                          32   the gate and the nightly: what runs, on what budget, under which profile
   docs/                           4   what a page may claim, and how a claim is warranted
   (process/                      64   plans and scheduling only: proposed not carried, § 5.1)
 ```
@@ -112,7 +112,7 @@ two decisions may share a slug. `python3 utils/decision_census.py --slug "TITLE"
 | Q-M1f.231 | Every name a module declares has a full name, and a file lists the short names it writes | `imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md` |
 | Q-M1f.179 | Integer division names its convention | `stdlib/math/int/Q-M1f.179-integer-division-names-its-convention.md` |
 | Q-M1e2.27 | In Ein's JSON, `[]` is the empty set and `null` no object | `read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-no-object.md` |
-| Q-M1f.339 (was S1f.5.4's Q4) | Every name is a JSON string | `read-out/Q-M1f.339-every-name-is-a-json-string.md` |
+| Q-M1f.340 (was S1f.5.4's Q4) | Every name is a JSON string | `read-out/Q-M1f.340-every-name-is-a-json-string.md` |
 
 ## 4. Four decision files, as T3 would write them
 
@@ -179,11 +179,11 @@ of every length and sign; `tests/stdlib/math/int/09_div_euclid.ein` to `14_div_f
 names: [Q-M1f.200](Q-M1f.200-the-results-of-integer-division.md).
 ```
 
-`docs/decisions/read-out/Q-M1f.339-every-name-is-a-json-string.md` (a local number, S1f.5.4's Q4, given its id
+`docs/decisions/read-out/Q-M1f.340-every-name-is-a-json-string.md` (a local number, S1f.5.4's Q4, given its id
 by default 3):
 
 ```markdown
-# Q-M1f.339 — Every name is a JSON string
+# Q-M1f.340 — Every name is a JSON string
 
 Where Ein's JSON writes a name, it writes a JSON string, whatever its characters: a goal binding of `007` is
 `"007"`, and of `7` is `"7"`.
@@ -198,7 +198,7 @@ Written as JSON numbers, `007` and `7`, two names, would read back as one.
 
 ### 5.1 The process-only decisions: 64
 
-**64 of the 424 decisions (15 %) are about the plans and not the system**: which phase takes a finding, whether a
+**64 of the 425 decisions (15 %) are about the plans and not the system**: which phase takes a finding, whether a
 phase is made, where a rework goes, what a close does with an inventory, which corpus programs a stage edited,
 which of a stage's moves are rows of the wrong-answer register, what a re-plan took. They split as **16** about the
 register's bookkeeping (Q-M1f.5, .13, .16, .24, .28, .35, .36, .44, .76, .83, .89, .90, .98, .134, .144, .216),
@@ -246,7 +246,8 @@ citation states the gap in plain words and cites nothing; the gap's question sta
 ### 5.5 Local numbers: 52 decisions take a milestone id (31 if § 5.1 is ruled as proposed)
 
 By default 3, a decision known only by a phase's or a stage's own number takes the next free id of the milestone
-that asked it; a gap (Q-M1f.49 was never used) is not reused. The 31 that are not process-only come first, so the
+that asked it, after the ledger's last id (Q-M1f.314, the release-voice check's readings, defaulted by S1f.20.1);
+a gap (Q-M1f.49 was never used) is not reused. The 31 that are not process-only come first, so the
 21 process-only ones take the last numbers and leave none missing if they are not carried:
 
 | local number | proposed id | folder |
@@ -255,26 +256,26 @@ that asked it; a gap (Q-M1f.49 was never used) is not reused. The 31 that are no
 | `Q7@M1e-review` (`-n 0`) | Q-M1e.24 | `cli/` |
 | `Q8@M1e-review` (both Zebra encodings pinned to the grid) | Q-M1e.25 | `corpus/` |
 | `Q10@M1e-review` (the release matrix) | Q-M1e.26 | `gate/` |
-| `P1f.6#3` (the loader's arity check) | Q-M1f.314 | `language/` |
-| `P1f.6#4` (detection rules) | Q-M1f.315 | `stdlib/math/` |
-| `P1f.6#5` (a name no `let` states) | Q-M1f.316 | `stdlib/math/decimal/` |
-| `P1f.6#6` (a request no rule completes) | Q-M1f.317 | `stdlib/math/` |
-| `P1f.6#7` (no module reserves its names) | Q-M1f.318 | `imports/` |
-| `P1f.6#9` (`num9` stays silent) | Q-M1f.319 | `stdlib/math/num9/` |
-| `P1f.6#13` (binary a theory of its own) | Q-M1f.320 | `stdlib/math/binary/` |
-| `P1f.6#15` (one `z`) | Q-M1f.321 | `stdlib/math/` |
-| `P1f.6#17` (`std.math.convert`) | Q-M1f.322 | `stdlib/math/` |
-| `P1f.6#18` (one division) | Q-M1f.323 | `stdlib/math/decimal/` |
-| `P1f.6#19`, `#20`, `#21`, `#23` (`std.bool`) | Q-M1f.324 to .327 | `stdlib/bool/` |
-| `P1f.6#27`, `#28`, `#29`, `#31`, `#32`, `#34`, `#35` (the word problems) | Q-M1f.328 to .334 | `corpus/` |
-| `P1f.6#38` (`std.math.gcd`) | Q-M1f.335 | `stdlib/math/gcd/` |
-| `P1f.6#42` (`std.math.crypt`, pending) | Q-M1f.336 | `stdlib/math/` |
-| `P1f.6#layout` (`std.math.*`, `std.bool.*`) | Q-M1f.337 | `stdlib/` |
+| `P1f.6#3` (the loader's arity check) | Q-M1f.315 | `language/` |
+| `P1f.6#4` (detection rules) | Q-M1f.316 | `stdlib/math/` |
+| `P1f.6#5` (a name no `let` states) | Q-M1f.317 | `stdlib/math/decimal/` |
+| `P1f.6#6` (a request no rule completes) | Q-M1f.318 | `stdlib/math/` |
+| `P1f.6#7` (no module reserves its names) | Q-M1f.319 | `imports/` |
+| `P1f.6#9` (`num9` stays silent) | Q-M1f.320 | `stdlib/math/num9/` |
+| `P1f.6#13` (binary a theory of its own) | Q-M1f.321 | `stdlib/math/binary/` |
+| `P1f.6#15` (one `z`) | Q-M1f.322 | `stdlib/math/` |
+| `P1f.6#17` (`std.math.convert`) | Q-M1f.323 | `stdlib/math/` |
+| `P1f.6#18` (one division) | Q-M1f.324 | `stdlib/math/decimal/` |
+| `P1f.6#19`, `#20`, `#21`, `#23` (`std.bool`) | Q-M1f.325 to .328 | `stdlib/bool/` |
+| `P1f.6#27`, `#28`, `#29`, `#31`, `#32`, `#34`, `#35` (the word problems) | Q-M1f.329 to .335 | `corpus/` |
+| `P1f.6#38` (`std.math.gcd`) | Q-M1f.336 | `stdlib/math/gcd/` |
+| `P1f.6#42` (`std.math.crypt`, pending) | Q-M1f.337 | `stdlib/math/` |
+| `P1f.6#layout` (`std.math.*`, `std.bool.*`) | Q-M1f.338 | `stdlib/` |
 | `S1e2.3.4#Q6` (both witnesses pinned) | Q-M1e2.29 | `corpus/` |
-| `S1f.5.4#Q1` (the loader's names start with `#`) | Q-M1f.338 | `language/` |
-| `S1f.5.4#Q4` (every name a JSON string) | Q-M1f.339 | `read-out/` |
+| `S1f.5.4#Q1` (the loader's names start with `#`) | Q-M1f.339 | `language/` |
+| `S1f.5.4#Q4` (every name a JSON string) | Q-M1f.340 | `read-out/` |
 
-The 21 process-only ones would be Q-M1f.340 to .360 (P1f.6's 22, 56 to 73; S1f.5.4's Q2 and Q3). The other 50
+The 21 process-only ones would be Q-M1f.341 to .361 (P1f.6's 22, 56 to 73; S1f.5.4's Q2 and Q3). The other 50
 local numbers are not carried: **30** are the same question as a ledger id (P1f.6's 1 and 2 are Q-M1f.179, its 45
 is Q-M1f.153 and .161, 22 of P1f.6's in all; S1f.5.5's Q1 and Q2 are Q-M1f.1 and .2; the review's Q2, Q3 and Q6
 are Q-M1e2.11, Q-M1e.16 and Q-M1e.11), **9** are a stage file's copy of another local number (`malformed_numbers.md`'s
@@ -343,8 +344,8 @@ Each has a default, which T3 takes unless the user rules otherwise.
    carries the decision; no redirect files.*
 5. **The open questions** (§ 5.4). *Default: the 10 in `docs/history/` move to `plans/open_questions.md`, ids kept,
    before S1f.20.9; the 9 cited outside `plans/` are cited no more, the gap stated in plain words where it is.*
-6. **The local numbers** (§ 5.5). *Default: the map as listed, Q-M1e.23 to .26, Q-M1e2.29, Q-M1f.314 to .339 (and
-   .340 to .360 only if the process-only ones are carried).*
+6. **The local numbers** (§ 5.5). *Default: the map as listed, Q-M1e.23 to .26, Q-M1e2.29, Q-M1f.315 to .340 (and
+   .341 to .361 only if the process-only ones are carried).*
 7. **The ids used twice** (§ 5.6). *Default: the carried global decisions keep `Qn`; the colliding open ones in
    `plans/` take their ledger's prefix when next touched (M2's Q23 to Q25 become Q-M2.5 to .7).*
 8. **Decisions with no id** (§ 5.8). *Default: the standing rules `AGENTS.md` states without an id (the answer's

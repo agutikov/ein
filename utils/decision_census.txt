@@ -410,6 +410,7 @@ Q-M1f.310 |  | process |  | accepts, as a set, the defaults P1f.10's stage files
 Q-M1f.311 |  | answer |  |
 Q-M1f.312 | decision | gate |  |
 Q-M1f.313 | decision | engine |  | supersedes Q-M1f.6's plain FIFO
+Q-M1f.314 |  | gate |  | a default S1f.20.1 took, to be shown at S1f.20.2's review: a decision until the user revises it
 
 # ---------------------------------------------------------------- M1g, M1h, M10
 Q-M1g.1 |  | stdlib | pending | the logic is M1g's, not built

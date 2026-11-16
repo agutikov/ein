@@ -89,28 +89,30 @@ is classed by hand in [`utils/decision_census.txt`](../../../utils/decision_cens
 
 ```sh
 python3 utils/decision_census.py --counts    # re-takes the table below
-python3 utils/decision_census.py --check     # 592 ids; 0 gaps
+python3 utils/decision_census.py --check     # 593 ids; 0 gaps
 ```
 
 | ledger family | decision | open | not carried | all |
 |---|---:|---:|---:|---:|
 | `docs/history/` (M1a, M1c, M1d, M1e and the review's Q1–Q10) | 33 | 10 | 23 | 66 |
-| the milestone ledgers under `plans/` (M1e2, M1f, M1g, M1h, M10, M2) | 324 | 50 | 18 | 392 |
+| the milestone ledgers under `plans/` (M1e2, M1f, M1g, M1h, M10, M2) | 325 | 50 | 18 | 393 |
 | `plans/open_questions.md` (the global pool, M1's Q4–Q42) | 19 | 2 | 7 | 28 |
 | the Q rows of `plans/followups/` | 0 | 15 | 1 | 16 |
 | P1f.6's local numbers and the stage files' | 48 | 1 | 41 | 90 |
-| **all** | **424** | **78** | **90** | **592** |
+| **all** | **425** | **78** | **90** | **593** |
 
-Per ledger: M1f's 312 ids are 298 decisions, 0 open, 14 not carried; M1e2's 28 are 23, 1, 4; the per-ledger table
-is the proposal's [§ 1](s1f.20.8_layout_proposal.md#1-what-the-census-found). **225 of the 592 are classed by
-hand**, 367 read off their state. Of the 424 decisions, **64 are about the plans only**, **4 are decided and not
+Per ledger: M1f's 313 ids are 299 decisions, 0 open, 14 not carried; M1e2's 28 are 23, 1, 4; the per-ledger table
+is the proposal's [§ 1](s1f.20.8_layout_proposal.md#1-what-the-census-found). **225 of the 593 are classed by
+hand**, 368 read off their state. Of the 425 decisions, **64 are about the plans only**, **4 are decided and not
 built**, and **16 are flagged to check** against today's engine. **52 local numbers are decisions** and take the
-next free id of their milestone by default 3, Q-M1e.23 to .26, Q-M1e2.29 and Q-M1f.314 to .360, the 21 process-only
+next free id of their milestone by default 3, Q-M1e.23 to .26, Q-M1e2.29 and Q-M1f.315 to .361, the 21 process-only
 ones last ([§ 5.5](s1f.20.8_layout_proposal.md#55-local-numbers-52-decisions-take-a-milestone-id-31-if--51-is-ruled-as-proposed)).
-Renumbered: nothing; the map is a proposal.
+Renumbered: nothing; the map is a proposal. The map starts after the ledger's last id, which `--local-ids` reads
+off the ledger rather than holding: Q-M1f.314, the release-voice check's readings that S1f.20.1 defaulted for
+S1f.20.2's review, is in the census as a decision (a default stands until the user revises it), under `gate/`.
 
 **T2, the layout.** [`s1f.20.8_layout_proposal.md`](s1f.20.8_layout_proposal.md), written to be shown at
-S1f.20.2's stop as it is: the tree under default 1 with each folder's count (360 files in 20 folders, the largest
+S1f.20.2's stop as it is: the tree under default 1 with each folder's count (361 files in 20 folders, the largest
 `language/` at 70), the slug rule with six real examples (`--slug` applies it), four decision files rendered in
 full, what the census found on the way (ids used twice, rows that say *stands* and are superseded, decisions with no
 id, open questions cited by code), and ten questions for the user, each with a default.
