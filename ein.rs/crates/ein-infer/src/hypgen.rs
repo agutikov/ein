@@ -786,6 +786,24 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// never puzzle objects; without the guard the enumerator would propose
 /// `(R x not)` garbage.
 ///
+/// **A kernel dunder is never an object.** `__closed__` and `__symmetric__`
+/// are the kernel's words for a relation's closure and its symmetry, not
+/// things a puzzle is about, and they are left out by name, as the primitives
+/// are. Without the guard a dunder was an object wherever no file wrote a
+/// fact headed by it: the names index holds the head of every fact, the
+/// registry the head of a fact a file writes, so a closure a rule derives put
+/// `__closed__` among the objects where the same closure written as a fact
+/// did not, and one program stated two ways had two answers. A dunder a
+/// program writes in an argument position, as `(imply1 functional __closed__)`
+/// does, is a name of the program all the same
+/// ([`crate::invariant::program_names`] lists it, and the alive-set invariant
+/// reads that list); it is this set, the enumerator's, that leaves it out.
+/// `ein-infer/tests/dunder_objects.rs` holds both.
+///
+/// A relation's name is an object only where the registry does not hold it:
+/// the head of a fact that only a rule concludes. Such a candidate stays, and
+/// [`crate::relation_names`] names it for the read-out.
+///
 /// Soundness does not depend on this set being tight, only tractability:
 /// type-wrong candidates that survive die downstream against the puzzle's own
 /// contradiction rules.
@@ -801,6 +819,9 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     }
     let k = &terms.kernel;
     let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
+    // The kernel's two dunders: its own words, never an object, whether a
+    // rule derives a fact headed by one or a program writes one as a value.
+    let dunders = [k.closed, k.symmetric];
     let mut names = kb.names();
     // The seed: a name of the program the names index lacks joins it, once
     // (`alive_invariant.rs` lists the corpus's).
@@ -823,6 +844,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     names.retain(|&n| {
         !type_nodes.contains(n.0)
             && !reserved.contains(&n)
+            && !dunders.contains(&n)
             && kb.category(terms, n) == NameCategory::Object
     });
     // By name, which the rank table turns into a `u32` sort. `Kb::names` is
@@ -1301,6 +1323,32 @@ mod tests {
             .map(|&s| terms.sym(s))
             .collect();
         assert_eq!(names, ["A", "B"], "sorted by name, T and `not` excluded");
+    }
+
+    /// **A kernel dunder is never an object**, however the program comes to
+    /// hold it: `__closed__` written as a rule's relation parameter and
+    /// `__symmetric__` as an ordinary argument, each a name of the program.
+    /// Neither is proposed about; `a`, beside them, is.
+    #[test]
+    fn candidate_objects_never_hold_a_kernel_dunder() {
+        let (ast, terms, kb) = kb_of(
+            "(relation thing T :why \"{?1} is a thing\")\n(thing a)\n\
+             (rule lift (?P ?Q) :match (?P ?r) :assert (?Q ?r) :why \"{?r} is {?P}, so it is {?Q}\")\n\
+             (lift complete __closed__)\n(complete thing)\n(marker __symmetric__)",
+        );
+        let written: Vec<&str> = crate::invariant::program_names(&kb, &terms, &ast)
+            .iter()
+            .map(|n| terms.sym(n.name))
+            .collect();
+        assert!(
+            written.contains(&"__closed__") && written.contains(&"__symmetric__"),
+            "both are names of the program: {written:?}"
+        );
+        let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
+            .iter()
+            .map(|&s| terms.sym(s))
+            .collect();
+        assert_eq!(names, ["a"], "neither dunder is an object");
     }
 
     /// **The seed** (M1e2 S1e2.2.4, Q-M1e.21 (b)): a constant only a rule's

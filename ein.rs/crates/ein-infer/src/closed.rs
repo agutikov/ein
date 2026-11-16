@@ -23,8 +23,10 @@
 //! as open. Its one caller is [`crate::shape::hyp_shape_with`], for the
 //! corpus's `hyp` op in `corpus_ops`, which asks the walk's generator in both
 //! regimes; S1e2.1c.5 kept the pass for it. It moves a lot when it does run:
-//! over the corpus it takes `closed_relation` from 6 pre-candidate skips to
-//! 278 and `raw` from 4 479 candidates to 3 022.
+//! every relation it closes is one the enumerator skips where it proposed
+//! facts of it. The facts it writes are headed by the dunder and no registry
+//! holds it, and the dunder is no object all the same
+//! ([`crate::hypgen::candidate_objects`]).
 
 use ein_core::{Symbol, Value};
 use rustc_hash::FxHashSet;

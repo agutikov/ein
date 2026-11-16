@@ -60,6 +60,11 @@ change a route: every route on a monotone program asks one memory of what is kno
 state's own fixpoint denies (licence L8), so `zebra2.ein --single` is 9 saturations where it was 45, its describe
 263 where it was 374 and `zebra2-minus-15.ein --maximal` 104 where it was 2 346, with R the oracle's in every mode;
 the pair of a death is still *go* for describe, `--count` and `--minimal` on top of it and is not built.
+[S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-task-4)'s task 4 ran on
+2026-11-16, on the user's rulings of that day on Q-M1f.306, (b) for E-1 and *"dunder never an object, wide
+reading"*, (a) for E-7 and (d) for E-54: the blind enumerator takes no kernel dunder for an object, the
+register's W96 is filed and fixed, and a relation's name bound as an object is named by the read-out; **it is
+the phase's second exception to *no answer changes***, the four witnesses' answers alone, by their rows.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.

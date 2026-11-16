@@ -676,6 +676,16 @@
 0    examples/ein-bugs/wrong-answers/dump-selection.ein :: saturate
 0    examples/ein-bugs/wrong-answers/dump-selection.ein :: saturate --dump
 0    examples/ein-bugs/wrong-answers/dump-selection.ein :: solve
+0    examples/ein-bugs/wrong-answers/dunder-object-arith.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dunder-object-arith.ein :: solve
+0    examples/ein-bugs/wrong-answers/dunder-object-as-value.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dunder-object-as-value.ein :: solve
+0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein :: solve
+0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein :: solve
+0    examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein :: saturate
+0    examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: saturate
 0    examples/ein-bugs/wrong-answers/einb-dump-answer.ein :: solve
 0    examples/ein-bugs/wrong-answers/einb-every-command.ein :: render constraints

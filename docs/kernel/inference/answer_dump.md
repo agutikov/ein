@@ -327,6 +327,9 @@ state file is, its head saying what root owes and *R: not searched*) and
 | `root.hypgen.types_as_objects.objects` | the names the untyped rung bound as objects (M1e2 S1e2.2.10, the user's ruling of 2026-11-03 on Q-M1e.12, (a) *the fixture, with the warning*): where the blind enumerator built H, each name that is the second argument of an `(is-a x y)` fact at root's fixpoint and an argument of a candidate, sorted, `[]` when none. The read-out's `types` row under `universe` says the same in words ([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)) |
 | `root.hypgen.types_as_objects.relations` | the relations of the candidates that name one, sorted, `[]` when none |
 | `root.hypgen.types_as_objects.candidates` | how many candidates of H name one, `0` when none |
+| `root.hypgen.relation_names_as_objects.objects` | the relations' names the blind enumerator bound as objects, **the three keys written only where it bound one**, so they are absent from every other summary: where the blind enumerator built H, each argument of a candidate that is the head of a fact root's fixpoint holds or a relation a rule's `:assert` names, sorted. Such a name is in no registry, so no file declares the relation or writes a fact of it. The read-out's `relation names` row under `universe` says the same in words ([`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)) |
+| `root.hypgen.relation_names_as_objects.relations` | the relations of the candidates that name one, sorted |
+| `root.hypgen.relation_names_as_objects.candidates` | how many candidates of H name one |
 
 ## What it costs
 
