@@ -1101,7 +1101,7 @@ pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
 /// `closes` is `corpus/wrong_answers.toml`'s rule — naming a relation closes
 /// it — and is what lets a file say *one model with no `q`*. Without it a
 /// model is compared as its positive facts minus the program's given ones
-/// ([`solution_semantics.md` § 3](../../../../docs/kernel/inference/solution_semantics.md)).
+/// ([the model](../../../../docs/ein/reasoning/kb-evolution/solution-semantics.md#3-model)).
 ///
 /// **A model's facts are Ein, compared by value** — M1f S1f.5.5, T1f.5.5.6
 /// (S-15, the user's ruling of 2026-11-07). The text between two `model`

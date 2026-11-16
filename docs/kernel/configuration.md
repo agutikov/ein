@@ -43,7 +43,7 @@
 > **The config principle**, the user's ruling of 2026-10-15: *no config option
 > affects the problem's search lattice; config may only affect search speed.*
 > The answer is the region R of
-> [`solution_semantics.md` § 2](inference/solution_semantics.md#2-the-answer--the-region-r),
+> [`solution_semantics.md` § 2](../ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r),
 > and it is the same under every knob on this page. A **budget** may stop a
 > run early, and the read-out then says the answer is partial. A knob
 > that changes R, or changes a reported answer that does not say it is
@@ -160,7 +160,7 @@ config (resolved)
 ### 2.3 Reading the judgement columns
 
 **Two questions about the answer.** The answer is the region R that
-[`solution_semantics.md` § 2](inference/solution_semantics.md#2-the-answer--the-region-r)
+[`solution_semantics.md` § 2](../ein/reasoning/kb-evolution/solution-semantics.md#2-the-answer-the-region-r)
 defines, and since the switch every `ein solve` run reports it, or a question
 about it.
 

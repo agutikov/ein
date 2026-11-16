@@ -84,7 +84,7 @@ false as stated (two programs banked) and is not built.
 - Two `--minimal` cells that the budget stops both ways visit more nodes for the same facts under L8.
 
 How R is found, with every licence, is written as formulas in
-[`finding_r.md`](../../../docs/kernel/inference/finding_r.md).
+[`finding_r.md`](../../../docs/ein/reasoning/kb-evolution/finding-r.md).
 
 ### Track H — what H is
 

@@ -546,7 +546,7 @@ strength:
 
 **R2 is the one the engine's soundness rests on**, because the universe H is
 taken once, at root's fixpoint
-([`solution_semantics.md` § 1.4](inference/solution_semantics.md#14-candidate-and-universe)),
+([`solution_semantics.md` § 1.4](../ein/reasoning/kb-evolution/solution-semantics.md#14-candidate-and-universe)),
 and every route reads subsets of it. A name that arrived later would extend
 the blind enumerator's candidate-object pool into a region no route revisits.
 **R0 is what makes R2 hold for a rule's constant**: the pool is
@@ -576,7 +576,7 @@ roles, the kernel's words (`not`, `false`, `and`, `or`, `absent`, `eq`,
 `neq`), every name the registry calls a relation or a rule, and **the
 kernel's two dunders, `__closed__` and `__symmetric__`, which are never an
 object**, neither as the head of a fact a rule derives nor written as a
-value ([`solution_semantics.md` § 1.2](inference/solution_semantics.md#12-names)).
+value ([`solution_semantics.md` § 1.2](../ein/reasoning/kb-evolution/solution-semantics.md#12-names)).
 The invariant's own list does not narrow with it:
 `invariant::program_names` holds a dunder wherever a program writes one in an
 argument position, [`Universe::of`](../../ein.rs/crates/ein-infer/src/invariant.rs)

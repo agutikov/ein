@@ -120,7 +120,7 @@ S1f.10.16 are merged, with the container gate beside it.
 4. **The phase's close**: every default taken in part 2 shown to the user, Q-M1f.311 and Q-M1f.312 put to them, the
    findings below, this page folded in.
 
-**Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/kernel/inference/finding_r.md),
+**Also written on 2026-11-16, at the user's request**: [`finding_r.md`](../../../docs/ein/reasoning/kb-evolution/finding-r.md),
 how the oracle and the routes find `R`, as formulas: the licences L0 to L9, what a refuted candidate does, and how
 `--single` proves one state.
 

@@ -240,7 +240,7 @@ code it named, two standing):
   **None of the three has a writer any more**: the singleton writeback and
   the forced-positive promotion were the walk's and went with it, the kill
   cache went with the walk's generator pass, and no route writes root
-  ([`inference/solution_semantics.md` § 1.3](inference/solution_semantics.md#13-root)).
+  ([`solution-semantics.md` § 1.3](../ein/reasoning/kb-evolution/solution-semantics.md#13-root)).
   `<lookahead-dies-immediately>` stays a name the grammar refuses.
 - **L4 — `complete()` re-entered the worlds layer and could mutate the
   model under test** — **gone, by deletion.** `complete(kb)` was "hypgen

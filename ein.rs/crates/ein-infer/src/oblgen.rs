@@ -982,7 +982,7 @@ impl Alternatives {
 
 /// **L5's premise, checked at load** — M1e2
 /// [S1e2.1c.4](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md),
-/// [`solve_interface.md` § 3.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#31-the-licences).
+/// [L5 and its argument](../../../../docs/ein/reasoning/kb-evolution/finding-r.md#4-a-monotone-program-three-properties-and-the-licences).
 ///
 /// `kb` is root's fixpoint, on a program the static check calls monotone, and
 /// `candidates` maps each candidate of `H` to its bit. For every obligation
