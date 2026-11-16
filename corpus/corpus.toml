@@ -5055,6 +5055,12 @@ runs   = ["test", "saturate"]
 note   = "M1e2 S1e2.1a.5 — `:over maximal`: two people, two seats, seven classes over all of R and the two seatings over the maximal line, which is what the claim states."
 
 [[entry]]
+path   = "tests/region/10_denied_extensions.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "what a state denies is not saturated: three guests, three chairs, two rules that store what a seating excludes, and every guest owed a chair. R is the six seatings. `ein-infer/tests/known_dead.rs` pins how many extensions each question knew dead by a denial and the saturations that left it, against the same question asked from deaths alone."
+
+[[entry]]
 path   = "examples/syntax/arg-kinds.ein"
 group  = "positive"
 runs   = ["render rules", "saturate"]

@@ -41,6 +41,11 @@ artefact raw and rendered, a sortable survey, the price list, every default and 
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
+[S1f.10.3](s1f.10.3_the_restricted_join.md#record-2026-11-16) ran on 2026-11-16, the first stage of track R to
+change a route: every route on a monotone program asks one memory of what is known dead, which now holds what a
+state's own fixpoint denies (licence L8), so `zebra2.ein --single` is 9 saturations where it was 45, its describe
+263 where it was 374 and `zebra2-minus-15.ein --maximal` 104 where it was 2 346, with R the oracle's in every mode;
+the pair of a death is still *go* for describe, `--count` and `--minimal` on top of it and is not built.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.

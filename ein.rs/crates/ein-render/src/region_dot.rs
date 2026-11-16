@@ -444,6 +444,13 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
         if let Some(Unvisited::AboveDead(d)) = mark.unvisited {
             tip.push(format!("  not visited: above the dead {}", doc.name(d)));
         }
+        if let Some(Unvisited::Denied(state, set)) = mark.unvisited {
+            tip.push(format!(
+                "  not visited: {} denies {}",
+                doc.name(state),
+                doc.facts(set ^ state).join(", ")
+            ));
+        }
         if missing {
             tip.push(format!(
                 "MISSING: a node of {}, and no state the run reported is its state",
@@ -1223,7 +1230,7 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
         let _ = writeln!(
             out,
             "- **visited** {} of {} nodes; {} not visited above a dead node the run \
-             visited (licence L1), {} of them alive in the cube{}",
+             visited (licence L1), {} of them alive in the cube{}{}",
             ov.marks.iter().filter(|m| m.visited.is_some()).count(),
             1u64 << n,
             ov.above_dead,
@@ -1234,6 +1241,17 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
                 format!(
                     ": **unsound** {}",
                     capped(unsound, "run cell says **✗ unsound**")
+                )
+            },
+            // Said only where a state the run visited denies a fact, so a
+            // run that met no denial prints the line it did.
+            if ov.above_denied == 0 {
+                String::new()
+            } else {
+                format!(
+                    "; {} more not visited above a set a state the run visited denies \
+                     (licence L8)",
+                    ov.above_denied
                 )
             }
         );
@@ -1365,6 +1383,13 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
             }
             if let Some(Unvisited::AboveDead(d)) = mark.unvisited {
                 w.push(format!("above the dead `{}`", doc.name(d)));
+            }
+            if let Some(Unvisited::Denied(state, set)) = mark.unvisited {
+                w.push(format!(
+                    "`{}` denies `{}`",
+                    doc.name(state),
+                    doc.facts(set ^ state).join(", ")
+                ));
             }
             if let Some(d) = &mark.disagrees {
                 w.push(format!("**≠ {d}**"));

@@ -346,8 +346,12 @@ the run did with it:
   `in-r`) is in the tooltip;
 - or, when its visits are known, why it did not visit it: *above a dead node*
   (a node it visited is dead and below this one — licence L1, *dead is
-  upward-closed*), *the run stopped first* (`-n`, `--single`, a budget), or
-  *not needed* by the question asked.
+  upward-closed*), *above a state's denial* (an alive node it visited denies
+  one of this node's facts and lies below it — licence L8, *what a state
+  denies is dead above it*; the tooltip and the table name the state and the
+  fact, read off the cube's `excluded`, on a monotone program), *the run
+  stopped first* (`-n`, `--single`, a budget), or *not needed* by the
+  question asked.
 
 **What is compared follows S1e2.1a.3's ruling (a): the answer is R.** A run
 answers the part of R its question asked — all of it for a bare `ein solve`,
@@ -375,7 +379,10 @@ make is checked: an unvisited node above a dead one the run visited is
 **unsound** when the cube says it is alive, and the dead node carries a `✗
 alive` edge to it — W3's mechanism, which a region run does not have, since a
 program the static check flags takes the cube (route 2) and visits every
-node.
+node. The exclusions licence L8 would make are checked the same way: a node
+drawn *above a state's denial* that the cube says is alive is marked `≠ the
+cube`, and the table's `visited` line counts the nodes so explained where
+there are any.
 
 ### Views
 

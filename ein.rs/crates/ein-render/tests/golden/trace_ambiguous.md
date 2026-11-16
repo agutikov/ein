@@ -14,8 +14,8 @@
   N                 51 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          51 candidates, 47 dead alone
-  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
-  work              56 saturations · 664 facts beyond root · 3 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L8 what a state denies is dead above it
+  work              52 saturations · 608 facts beyond root · 3 layers
 ```
 
 ## Root — 7 steps

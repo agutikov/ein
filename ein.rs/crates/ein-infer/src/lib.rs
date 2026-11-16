@@ -42,6 +42,7 @@ pub mod forbid;
 pub mod hrule;
 pub mod hypgen;
 pub mod invariant;
+pub mod known_dead;
 pub mod lookahead;
 pub mod match_;
 pub mod mechanisms;

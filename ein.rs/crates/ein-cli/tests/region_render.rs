@@ -491,6 +491,47 @@ fn w3_the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
     );
 }
 
+/// **A node a run did not saturate because a state denies one of its facts
+/// says so.** On `tests/region/10_denied_extensions.ein`, three guests and
+/// three chairs whose rules store what a seating excludes, a bare `ein solve`
+/// saturates the 34 alive nodes and no dead one: every dead node holds two
+/// seatings that exclude each other, and the state of the first denies the
+/// second (licence L8, then L1). The drawing reads the reason off the cube's
+/// own `excluded`, names the state and the fact it denies, and finds no node
+/// so explained that the cube calls alive.
+#[test]
+fn a_node_above_a_states_denial_is_drawn_as_one() {
+    let root = scratch("denied");
+    let file = "tests/region/10_denied_extensions.ein";
+    let cube = root.join("region");
+    dumped(file, &[], &cube);
+    let run = root.join("run");
+    ran(file, &[], &run);
+    let table = render_with(&cube, Some(&run), "table");
+    assert!(
+        table.contains(
+            "- **visited** 34 of 512 nodes; 0 not visited above a dead node the run visited \
+             (licence L1), 0 of them alive in the cube; 478 more not visited above a set a \
+             state the run visited denies (licence L8)"
+        ),
+        "{table}"
+    );
+    assert!(
+        table.contains("`{(seats Ann C1)}` denies `(seats Ann C2)`"),
+        "the state and the fact it denies:\n{table}"
+    );
+    assert!(
+        table.contains("- **≠ the cube** none"),
+        "nothing the cube refutes:\n{table}"
+    );
+    let dot = render_with(&cube, Some(&run), "full");
+    assert!(
+        dot.contains("not visited: {(seats Ann C1)} denies (seats Ann C2)"),
+        "{dot}"
+    );
+    assert!(!dot.contains("\\n≠ the cube"), "{dot}");
+}
+
 /// **W2, drawn.** The walk's forced-positive cascade promoted `(q one)` into
 /// root before any entering, moved the search's root onto the dead `{(q
 /// one)}`, and left `∅` — all of R — missing. A region run never writes root:

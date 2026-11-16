@@ -1814,6 +1814,8 @@
 0    tests/region/08_query_classes.ein :: test
 0    tests/region/09_query_over_maximal.ein :: saturate
 0    tests/region/09_query_over_maximal.ein :: test
+0    tests/region/10_denied_extensions.ein :: saturate
+0    tests/region/10_denied_extensions.ein :: test
 0    tests/stdlib/algebra/01_copiers.ein :: render constraints
 1    tests/stdlib/algebra/01_copiers.ein :: render rules
 0    tests/stdlib/algebra/01_copiers.ein :: saturate

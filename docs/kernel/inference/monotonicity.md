@@ -392,7 +392,14 @@ Three of these strategies, and none of the non-monotone ones:
   [`ein_infer::tree`](../../../ein.rs/crates/ein-infer/src/tree.rs)
   (S1e2.1c.4): the obligation tree (L5), the climb and dualise-and-advance
   for the maximal line, and a shrink and the duality against the maximal
-  owing states for the minimal line. Each is held to the oracle
+  owing states for the minimal line. Before any of them saturates a set it
+  asks one memory of what is known dead
+  ([`ein_infer::known_dead`](../../../ein.rs/crates/ein-infer/src/known_dead.rs)):
+  the sets a saturation found dead, and for every alive state met the sets
+  its own fixpoint denies. A state that stores `(not b)` has a dead extension
+  by `b`, since that node holds `b`, which it was given, and `(not b)`, which
+  a monotone state hands up; no saturation is spent on it (L8), and L1 closes
+  it upward as it closes a death. Each is held to the oracle
   (`region.rs::the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`,
   `explore.rs::every_mode_is_the_oracle`), and where the state route and
   route 1 both finish they print one read-out

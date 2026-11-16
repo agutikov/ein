@@ -18,7 +18,14 @@
 //! `S ∪ {b}`, and reads it without a saturation when `S ∪ {b}` is already a
 //! known state's closure. A dead set prunes every superset (**L1**): an
 //! extension `S′ ∪ {b}` is dead without a visit when a dead `S ∪ {b}` with
-//! `S ⊆ S′` is known. An alive extension of a state of `R` is in `R` (**L2**),
+//! `S ⊆ S′` is known. **What is known dead is one memory**,
+//! [`crate::known_dead`], which the state route asks too: a set a saturation
+//! found dead, and the set `S ∪ {b}` of every state `S` met whose own
+//! fixpoint denies `b`, a stored `(not b)`, which is dead with no saturation
+//! (**L8**, argued there). Every step asks it before it saturates: an
+//! extension, a transversal of the dualisation, a subset a shrink tries; and
+//! a state met alive on a set it holds refuses the run. An alive extension of
+//! a state of `R` is in `R` (**L2**),
 //! and the routes check it on every node they compute: a state of `R` with an
 //! owing extension refuses the run, as the state route's does.
 //!
@@ -59,7 +66,11 @@
 //!
 //! **Which instance.** An owing state branches on the licensed instance it
 //! owes with the fewest alternatives not already known dead, the first in
-//! report order on a tie. A state that owes no licensed instance branches on
+//! report order on a tie. *Known dead* is the memory's word, so an
+//! alternative the state denies is not counted: a tree that reads denials
+//! can branch on another instance than one that learns from deaths alone,
+//! and reach the same part of `R` through other nodes. A state that owes no
+//! licensed instance branches on
 //! every extension, which is the state route's step and needs no licence: a
 //! member of `R` above an owing `C` is a proper superset of it. The order is
 //! the route's own and no lever reaches it (C4).
@@ -104,6 +115,7 @@ use rustc_hash::FxHashMap;
 
 use crate::error::SolveError;
 use crate::explore::{Ask, Found, Licence, Mode, Route, Seen, Space, State, Step, Verdict, Which};
+use crate::known_dead::KnownDead;
 use crate::oblgen::Alternatives;
 use crate::transversal::Bits;
 
@@ -127,6 +139,10 @@ struct St {
     tried: Bits,
     /// The alive states one candidate up, among those decided.
     up: Vec<u32>,
+    /// The states it was reached from by one candidate, among those met.
+    down: Vec<u32>,
+    /// The candidates its own fixpoint denies.
+    denied: Bits,
     /// What an owing state branches on, once chosen: an instance of L5's
     /// table (`Some(i)`), or every extension (`None`).
     branch: Option<Option<u32>>,
@@ -157,8 +173,10 @@ pub(crate) struct Search {
     st: Vec<St>,
     by_closure: FxHashMap<Box<[u32]>, u32>,
     by_class: FxHashMap<u32, u32>,
-    /// Per candidate `b`, the sets `S` whose `S ∪ {b}` is dead (L1).
-    dead_under: Vec<Vec<Bits>>,
+    /// The sets known dead: what a saturation found dead and what a state
+    /// met denies (L1, L8), the one memory every step asks before it
+    /// saturates.
+    dead: KnownDead,
     table: Option<Arc<Alternatives>>,
     /// Owing states the tree has not finished branching, by size, closure.
     tree_q: BTreeSet<(usize, Box<[u32]>)>,
@@ -172,6 +190,9 @@ pub(crate) struct Search {
     r_met: Vec<u32>,
     /// Some branch took an instance's alternatives (L5).
     pub(crate) l5: bool,
+    /// Some state met denies a candidate: an extension is then closed under
+    /// what the run knows before it is saturated ([`Self::denied_through`]).
+    any_denied: bool,
 }
 
 /// A state's step, or why it refused: a node contradicted a licence.
@@ -207,7 +228,7 @@ impl Search {
             st: Vec::new(),
             by_closure: FxHashMap::default(),
             by_class: FxHashMap::default(),
-            dead_under: vec![Vec::new(); n],
+            dead: KnownDead::new(n),
             table,
             tree_q: BTreeSet::new(),
             owing_q: BTreeSet::new(),
@@ -215,6 +236,7 @@ impl Search {
             leaves: VecDeque::new(),
             r_met: Vec::new(),
             l5: false,
+            any_denied: false,
         };
         s.register(Box::default(), &[], root)?;
         Ok(s)
@@ -269,6 +291,24 @@ impl Search {
             return Err(refuse("one fixpoint on two closures (L3)"));
         }
         self.check_owed(seen, &bits)?;
+        if self.dead.inside_of_alive(&bits) {
+            return Err(refuse(
+                "an alive state holds a set known dead (L1: dead is upward-closed; L8: what a \
+                 state denies is dead above it)",
+            ));
+        }
+        // What the state's own fixpoint denies is dead above it (L8).
+        for &b in seen.denied.iter() {
+            if bits.contains(b) {
+                return Err(refuse(
+                    "an alive fixpoint holds a candidate it denies (a fact beside its negation \
+                     is a contradiction)",
+                ));
+            }
+            self.dead.denies(&bits, b);
+        }
+        self.any_denied |= !seen.denied.is_empty();
+        let denied = Bits::of(self.n, &seen.denied);
         let t = self.st.len() as u32;
         let st = St {
             closure: seen.closure.clone(),
@@ -279,6 +319,8 @@ impl Search {
             class: seen.class,
             tried: Bits::empty(self.n),
             up: Vec::new(),
+            down: Vec::new(),
+            denied,
             branch: None,
             step: 1,
         };
@@ -296,20 +338,19 @@ impl Search {
         Ok(t)
     }
 
-    /// A known dead set below `x`: `S ∪ {b} ⊆ x` with `S ∪ {b}` dead (L1).
-    fn pruned(&self, x: &Bits) -> bool {
-        x.iter()
-            .any(|b| self.dead_under[b as usize].iter().any(|s| s.is_subset(x)))
+    /// A known dead set below `x`: `S ∪ {b} ⊆ x` with `S ∪ {b}` dead by a
+    /// saturation or by `S`'s denial of `b` (L1, L8).
+    fn pruned(&mut self, x: &Bits) -> bool {
+        self.dead.inside(x)
     }
 
     fn record_dead(&mut self, set: &[u32]) {
-        if let Some((&b, rest)) = set.split_last() {
-            self.dead_under[b as usize].push(Bits::of(self.n, rest));
-        }
+        self.dead.died_set(self.n, set);
     }
 
-    /// One commitment, by L1, L3 or a saturation: `None` when it is dead, its
-    /// state otherwise. `path` is what the state remembers if it is new.
+    /// One commitment, by L1 and L8, by L3 or by a saturation: `None` when it
+    /// is dead, its state otherwise. `path` is what the state remembers if it
+    /// is new.
     fn eval_set(
         &mut self,
         sp: &mut Space<'_>,
@@ -334,7 +375,8 @@ impl Search {
     }
 
     /// Extend state `s` by each of `bs` (ascending, outside it), in one step:
-    /// each extension pruned (L1), read off a known state (L3), or saturated.
+    /// each extension known dead (L1, L8), read off a known state (L3), or
+    /// saturated.
     /// Its outcome per candidate: the state reached, or `None` when dead.
     fn extend(&mut self, sp: &mut Space<'_>, s: u32, bs: &[u32]) -> Step<Vec<Option<u32>>> {
         enum How {
@@ -347,16 +389,20 @@ impl Search {
         {
             let st = &self.st[s as usize];
             for &b in bs {
-                let pruned = self.dead_under[b as usize]
-                    .iter()
-                    .any(|d| d.is_subset(&st.bits));
-                if pruned {
+                if self.dead.extension(&st.bits, b) {
                     how.push(How::Dead);
                     continue;
                 }
                 let x = with(&st.closure, b);
                 if let Some(&t) = self.by_closure.get(&x) {
                     how.push(How::Known(t));
+                    continue;
+                }
+                if self.any_denied
+                    && self.denied_through(sp, s, b)
+                    && self.dead.denied_through(&st.bits, b)
+                {
+                    how.push(How::Dead);
                     continue;
                 }
                 how.push(How::Fresh(fresh.len()));
@@ -376,7 +422,7 @@ impl Search {
                 How::Fresh(i) => {
                     if seen[i].dead {
                         let bits = self.st[s as usize].bits.clone();
-                        self.dead_under[b as usize].push(bits);
+                        self.dead.died(bits, b);
                         None
                     } else {
                         let path = with(&self.st[s as usize].path, b);
@@ -393,11 +439,48 @@ impl Search {
                 }
                 if !from.up.contains(&t) {
                     self.st[s as usize].up.push(t);
+                    if t != s {
+                        self.st[t as usize].down.push(s);
+                    }
                 }
             }
             out.push(t);
         }
         Ok(Ok(out))
+    }
+
+    /// Whether `S ∪ {b}`, `S` the state `s`, holds a denial once it is closed
+    /// under what the run knows. Its node holds the fixpoint of every
+    /// commitment inside it, so it holds every state `U = cl(P ∪ {b})` the run
+    /// has met for a state `P` that `S` was reached from; it is dead when two
+    /// of the states it holds, `S` and such a `U` or two such `U`, meet in a
+    /// candidate one holds and the other denies (L8, through L3). The states
+    /// below `S` are those the run happened to reach it from, so this finds
+    /// what it can and never more than is true.
+    fn denied_through(&self, sp: &Space<'_>, s: u32, b: u32) -> bool {
+        let st = &self.st[s as usize];
+        let mut held: Option<Bits> = None;
+        let mut denied: Option<Bits> = None;
+        for &p in &st.down {
+            let set = with(&self.st[p as usize].closure, b);
+            // The extension's state: the set is a state's closure, or a node
+            // the run computed alive.
+            let u = self.by_closure.get(&set).or_else(|| {
+                sp.known(&set)
+                    .filter(|x| !x.dead)
+                    .and_then(|x| self.by_closure.get(&x.closure))
+            });
+            let Some(&u) = u else {
+                continue;
+            };
+            let u = &self.st[u as usize];
+            if st.denied.intersects(&u.bits) || u.denied.intersects(&st.bits) {
+                return true;
+            }
+            held = Some(held.map_or_else(|| u.bits.clone(), |h| h.or(&u.bits)));
+            denied = Some(denied.map_or_else(|| u.denied.clone(), |d| d.or(&u.denied)));
+        }
+        matches!((held, denied), (Some(h), Some(d)) if d.intersects(&h))
     }
 
     /// The candidates outside `s` not yet decided for it, ascending.
@@ -421,11 +504,7 @@ impl Search {
                         let alts = t.instances.get(i as usize)?.alternatives.as_ref().ok()?;
                         let open = alts
                             .iter()
-                            .filter(|&&a| {
-                                !self.dead_under[a as usize]
-                                    .iter()
-                                    .any(|d| d.is_subset(&st.bits))
-                            })
+                            .filter(|&&a| !self.dead.knows_extension(&st.bits, a))
                             .count();
                         Some((open, i))
                     })
@@ -555,9 +634,7 @@ impl Search {
         }
         // Every candidate outside the top died on a set under it.
         for b in self.untried(cur) {
-            let pruned = self.dead_under[b as usize]
-                .iter()
-                .any(|d| d.is_subset(&self.st[cur as usize].bits));
+            let pruned = self.dead.extension(&self.st[cur as usize].bits, b);
             if !pruned {
                 return Err(refuse("a climb's top has an extension not known dead (L1)"));
             }
@@ -691,6 +768,9 @@ impl Search {
         if self.l5 {
             v.push(Licence::Exhaustive);
         }
+        if self.dead.denials_spent() > 0 {
+            v.push(Licence::Denied);
+        }
         v.sort();
         v
     }
@@ -724,6 +804,7 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
     };
     f.route = Some(s.route());
     f.licences = s.licences(&f.licences);
+    f.denials = s.dead.denials_spent();
     Ok(f)
 }
 
