@@ -227,9 +227,10 @@ fn the_pages_listing_is_the_binarys() {
     const BEGIN: &str =
         "<!-- generated: ein show hyps examples/zebra2.ein | head -3 -->\n```text\n";
     const END: &str = "\n```\n<!-- /generated -->";
-    let text =
-        std::fs::read_to_string(repo_root().join("docs/ein/reasoning/kb-evolution/hypothesis-space.md"))
-            .expect("docs/ein/reasoning/kb-evolution/hypothesis-space.md");
+    let text = std::fs::read_to_string(
+        repo_root().join("docs/ein/reasoning/kb-evolution/hypothesis-space.md"),
+    )
+    .expect("docs/ein/reasoning/kb-evolution/hypothesis-space.md");
     let start = text.find(BEGIN).expect("the page's generated block") + BEGIN.len();
     let end = start + text[start..].find(END).expect("the block's end");
     let r = ein(&["show", "hyps", "examples/zebra2.ein"]);
