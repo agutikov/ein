@@ -570,6 +570,20 @@ would have interned as a name, refused the same two ways
 ([§ 4.6](#46-a-relation-named-by-a-number--m1e2-s1e224)); since S1f.5.5's swap
 a run of digits is a name of the program. No corpus program has either.
 
+**R0's pool is not the list of names.** Four kinds of name are no object of
+the blind enumerator, each left out by name: a relation signature's type
+roles, the kernel's words (`not`, `false`, `and`, `or`, `absent`, `eq`,
+`neq`), every name the registry calls a relation or a rule, and **the
+kernel's two dunders, `__closed__` and `__symmetric__`, which are never an
+object**, neither as the head of a fact a rule derives nor written as a
+value ([`solution_semantics.md` § 1.2](inference/solution_semantics.md#12-names)).
+The invariant's own list does not narrow with it:
+`invariant::program_names` holds a dunder wherever a program writes one in an
+argument position, [`Universe::of`](../../ein.rs/crates/ein-infer/src/invariant.rs)
+takes the list whole, and a rule that concludes a fact naming such a dunder
+breaches nothing. `ein-infer/tests/dunder_objects.rs` holds both halves: the
+name is on the list, and the object is not in the pool.
+
 **The baseline.** *Everything the loaded program reaches*, not the interner's
 length. `Ann` in `examples/ein-bugs/mixed-type-hypothesis.ein` is interned at
 **load** by `from_ir::intern_program_names`, so the interner never grows

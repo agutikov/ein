@@ -15,10 +15,11 @@
 ;;; relation holds both ways round* and no object. Nothing restricts the two,
 ;;; so R is the whole cube, four states.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; Three candidates, `(total __symmetric__)` among them, and R eight states,
-;;; as `dunder-object-closed-by-rule.ein` does for `__closed__`.
+;;; as `dunder-object-closed-by-rule.ein` did for `__closed__`. The answer is
+;;; the one above now.
 
 (relation near Thing Thing :why "{?1} is near {?2}")
 (near a b) (near b a)

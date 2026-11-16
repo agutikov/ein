@@ -285,7 +285,7 @@ paragraph, no register count, no measurement (the user, 2026-11-13).
   `grep '^status' corpus/wrong_answers.toml | sort | uniq -c`. Every open row
   is owned by a followup ([F21](plans/followups/f21_non_monotone_programs_decided.md),
   [F22](plans/followups/f22_exact_core_past_the_cap.md),
-  [F24](plans/followups/f24_written_provenance.md)) or by M1f's S1f.10.9.
+  [F24](plans/followups/f24_written_provenance.md)).
 - **After M1f**: [M1g](plans/m1g_logic/README.md), logic in Ein (school
   algebra and geometry are its P1g.10 and P1g.11);
   [M1h](plans/m1h_beyond_word_problems/README.md);

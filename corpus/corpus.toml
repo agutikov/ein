@@ -2956,7 +2956,7 @@ note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026
 path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W96 (`W96/closed-by-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling on Q-M1f.306, (b): ten digits closed by a rule, `(__closed__ digit)` derived and never written, beside an open `total`. The blind enumerator takes `__closed__` for an object, the head of a fact only a rule derives being in the names index and in no registry: eleven candidates, `(total __closed__)` among them, and R 2 048 states where it is 1 024, the control's."
+note   = "M1f W96 (`W96/closed-by-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling on Q-M1f.306, (b): ten digits closed by a rule, `(__closed__ digit)` derived and never written, beside an open `total`. The blind enumerator takes `__closed__` for an object, the head of a fact only a rule derives being in the names index and in no registry: eleven candidates, `(total __closed__)` among them, and R 2 048 states where it is 1 024, the control's. Fixed by the same task: the enumerator's objects leave the kernel's two dunders out by name, and the witness answers its control's R."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein"
@@ -2968,19 +2968,19 @@ note   = "M1f W96's control, filed by S1f.10.9's T1f.10.9.4: `dunder-object-clos
 path   = "examples/ein-bugs/wrong-answers/dunder-object-arith.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W96 (`W96/arith-closing-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b): `(import std.math.arith)`, whose closing rule derives its closures and which writes no `(__closed__ R)` fact, beside an open `total`. One candidate, `(total __closed__)`, and R two states where the program has no name to propose about and R is {∅}."
+note   = "M1f W96 (`W96/arith-closing-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b): `(import std.math.arith)`, whose closing rule derives its closures and which writes no `(__closed__ R)` fact, beside an open `total`. One candidate, `(total __closed__)`, and R two states where the program has no name to propose about and R is {∅}, which it answers since the same task's fix."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W96 (`W96/symmetric-by-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b): the other dunder, `(__symmetric__ near)` derived by a rule and never written, beside an open `total`. Three candidates, `(total __symmetric__)` among them, and R eight states where it is four."
+note   = "M1f W96 (`W96/symmetric-by-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b): the other dunder, `(__symmetric__ near)` derived by a rule and never written, beside an open `total`. Three candidates, `(total __symmetric__)` among them, and R eight states where it is four, which it answers since the same task's fix."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1f W96 (`W96/as-value`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b), wide: `__closed__` written as a value, a rule's relation parameter in `(lift complete __closed__)`, beside an open `total`. Two candidates, `(total __closed__)` and `(total a)`, and R four states where it is two."
+note   = "M1f W96 (`W96/as-value`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b), wide: `__closed__` written as a value, a rule's relation parameter in `(lift complete __closed__)`, beside an open `total`. Two candidates, `(total __closed__)` and `(total a)`, and R four states where it is two, which it answers since the same task's fix."
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"

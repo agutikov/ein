@@ -131,13 +131,31 @@ today. The census is re-taken by the same command after such a ruling.
 Met by S1f.10.9's task 4, 2026-11-16, at `3e59b90a`, the gate build, when the register's `__symmetric__` witness
 of W96 was put in the corpus. The saturator closes a symmetric relation under arg-swap natively, and it reads
 which relations are symmetric where it is built: a `(__symmetric__ R)` fact that a rule derives during the run
-is not read by that run. Two programs, each `(relation near Thing Thing :why …)`, `(near a b)`, `(query :goal
-(near ?x ?y))`, and the symmetry stated one way:
+is not read by that run. Two programs, the symmetry stated one way in each. `sym_rule.ein`, the witness:
 
-| the symmetry | `ein saturate FILE --dump`, root's facts of `near` |
+```
+(relation near Thing Thing :why "{?1} is near {?2}")
+(near a b)
+(rule near-symmetric () :match () :assert (__symmetric__ near) :why "near holds both ways round")
+(query :goal (near ?x ?y))
+```
+
+`sym_fact.ein`, its control:
+
+```
+(relation near Thing Thing :why "{?1} is near {?2}")
+(near a b)
+(__symmetric__ near)
+(query :goal (near ?x ?y))
+```
+
+The command, on each: `ein saturate FILE --dump | grep -E '^  \((near|__sym)'`, the facts of root's fixpoint
+headed `near` or `__symmetric__`.
+
+| the program | what it prints |
 |---|---|
-| the fact `(__symmetric__ near)` | `(near a b)`, `(near b a :rule __symmetric__)` |
-| `(rule near-symmetric () :match () :assert (__symmetric__ near) :why …)` | `(near a b)` alone, beside `(__symmetric__ near :rule near-symmetric)` |
+| `sym_fact.ein` | `(__symmetric__ near)`, `(near a b)`, `(near b a :rule __symmetric__)` |
+| `sym_rule.ein` | `(near a b)`, `(__symmetric__ near :rule near-symmetric)`, and no `(near b a)` |
 
 So root's fixpoint, as `ein saturate` prints it, is not closed under the symmetry it holds. A second saturation
 of the same KB, whose saturator is built with the derived fact present, writes `(near b a)`; a node, which
@@ -172,6 +190,26 @@ symmetry by a rule over a relation not already closed under it fails both sweeps
 
 **Today:** open, not fixed, no register row, no owner. It bears on any ruling that sends a stdlib module to
 deriving `__symmetric__` by a closing rule, as `std.math.arith` derives its `__closed__`.
+
+### H9-5 — The shape golden's `hyp+closed` op digests a pass no command calls
+
+Met by S1f.10.9's task 4, 2026-11-16, when the fix of W96 moved 185 of its lines.
+`ein-render/tests/golden/corpus_shapes.md5` holds two lines of the enumerator's narration for a corpus program:
+`hyp`, the generator at root as every command runs it, and `hyp+closed`, the same after
+`ein_infer::closed::emit_closed` has written a `(__closed__ R)` fact for every declared relation no rule can
+conclude. `closed.rs`'s own header says where the pass is called from: *it is no command*, its one caller being
+`shape::hyp_shape_with` for this op, kept when the walk was deleted. So the line pins the behaviour of a code
+path no `ein` run reaches, on every corpus program, and a change to the enumerator re-banks it for programs
+whose answers, read-outs and summaries do not move.
+
+It is also how the corpus held E-1 in its goldens while no corpus program's H held a dunder: the pass writes
+its facts after the program is sealed, so the registry never holds `__closed__`, the names index holds it as a
+head, and under the op the blind enumerator proposed facts about the dunder on every program where the pass
+closed something and a relation stayed open (`examples/branching/03_five_hyps_one_alive.ein`: 271 lines before
+the fix, 228 after). The census of S1f.10.9's task 2 read H as the commands build it and did not read this op.
+
+**Today:** open, nothing changed: the op and the pass are as they were, and the fix re-banked the op's lines.
+Whether the op and `emit_closed` stay is [S1f.10.16](s1f.10.16_what_the_walk_left.md)'s, *what the walk left*.
 
 ## From S1f.10.6
 

@@ -90,6 +90,34 @@ rule's `:assert` names until M1e2 S1e2.2.4 ([W4](../../../corpus/wrong_answers.t
 and one only a `:match` or a nested fact names until M1e2 S1e2.2.14
 ([W15](../../../corpus/wrong_answers.toml)).
 
+**What the blind enumerator takes for an object** is narrower than *a name*,
+by four exclusions, each by name and none a type system. Its objects are the
+names of the KB's names index at root's fixpoint, which holds the head of
+every fact beside its top-level arguments, and every name of the program;
+less
+
+- the names a relation's signature declares, its type roles;
+- the kernel's words `not`, `false`, `and`, `or`, `absent`, `eq` and `neq`,
+  whether or not a program writes one as a value;
+- **the kernel's two dunders, `__closed__` and `__symmetric__`: a dunder is
+  never an object.** Not where a rule derives the fact it heads, and not
+  where a program writes it in an argument position, as `(imply1 functional
+  __closed__)` hands it to a rule. Writing it so stays legal, and it is then
+  a name of the program as `invariant::program_names` lists them, which is
+  the list the alive-set invariant reads
+  ([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally));
+  it is the enumerator's objects that leave it out. So a closure or a
+  symmetry a rule derives is the one a fact states, and a program that
+  states it either way has one H and one R
+  (`ein-infer/tests/dunder_objects.rs`;
+  [W96](../../../corpus/wrong_answers.toml));
+- every name the registry calls a relation or a rule. The registry holds a
+  relation a `(relation …)` declares and the head of every fact **a file
+  writes**. It does not hold the head of a fact that only a rule concludes,
+  so **a relation only a rule concludes is an object**, and a candidate can
+  name it. That candidate stays, and the read-out names it (§ 1.4);
+  declaring the relation takes its name out.
+
 ### 1.3 Root
 
 **Root** is `sat(program)`: the program's facts, saturated to quiescence by

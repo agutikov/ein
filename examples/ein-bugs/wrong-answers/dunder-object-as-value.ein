@@ -18,12 +18,13 @@
 ;;; written here to say which relation the rule concludes: no object, however
 ;;; it is written. One candidate, `(total a)`, and R two states.
 ;;;
-;;; ── What the engine answers ────────────────────────────────────────────
+;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
 ;;; Two candidates, `(total __closed__)` and `(total a)`, and R four states:
 ;;; a constant in an argument position of a fact is a name of the program,
-;;; and the blind enumerator takes every such name no registry holds for an
-;;; object.
+;;; and the blind enumerator took every such name no registry holds for an
+;;; object. The dunder is still a name of the program; the enumerator leaves
+;;; the kernel's two dunders out by name now, and the answer is the one above.
 
 (relation thing Thing :why "{?1} is a thing")
 (thing a)

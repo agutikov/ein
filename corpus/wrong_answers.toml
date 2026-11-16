@@ -1207,7 +1207,15 @@
 # `std.math.arith` imported beside an open `total` (two states where R is
 # {∅}), `__symmetric__` derived by a rule (eight states where R is four), and
 # `__closed__` written as a rule's relation parameter, a value (four states
-# where R is two). Filed `open`, owned by S1f.10.9, in a commit of their own.
+# where R is two). Filed `open`, owned by S1f.10.9, in a commit of their own,
+# `200df470`, and **fixed the same day** by the stage's next: the blind
+# enumerator's objects leave the two dunders out by name, however the program
+# comes to hold one, and each witness answers its `right`, the first its
+# control's R. The list of the program's names, which the alive-set invariant
+# reads, is unchanged, and a dunder stays legal to write as a value. No other
+# corpus program's H, R, read-out or exit code moved. Each `[case.fixed]`
+# carries the null id in the flipping commit, and the stage's next commit
+# writes the hash. No open row is owned by a stage of M1f's phase 10.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -17509,10 +17517,14 @@ settings = "default"
 owner    = "S1f.10.9"
 question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
 witness  = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
-note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.306, *\"all defaults ok\"*: (b), a kernel dunder is never an object, wide. Ten digits closed by a rule beside an open `total`: the prototype calculator's shape, on which E-1 was found. The control, dunder-object-closed-by-fact.ein, writes the closure as a fact, and differs in nothing else. The row's run asks the maximal line, one state, since R is 2 048 states today and 1 024 right: `[case.wrong]`, `[case.control]` and `[case.region]` carry the counts"
-open_because = "`candidate_objects` takes every name of the KB's names index that no registry holds, and the index holds the head of every fact: `__closed__` heads the fact the rule `digits-closed` derives, no file writes a fact of it, so the registry lacks it and it is an object. The maximal line's one state holds `(total __closed__)`. S1f.10.9's next commit fixes it"
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.306, *\"all defaults ok\"*: (b), a kernel dunder is never an object, wide. Ten digits closed by a rule beside an open `total`: the prototype calculator's shape, on which E-1 was found. The control, dunder-object-closed-by-fact.ein, writes the closure as a fact, and differs in nothing else. The row's run asks the maximal line, one state, since R is 2 048 states today and 1 024 right: `[case.wrong]` and `[case.control]` carry the counts, and `[case.region]` the witness's R. Fixed by the same task (2026-11-16): ten candidates and 1 024 states, the control's"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -17534,10 +17546,10 @@ exhausted = true
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2048
-k_c      = 2048
+k_s      = 1024
+k_c      = 1024
 minimal  = [[]]
-maximal  = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)", "(total __closed__)"]]
+maximal  = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)"]]
 
 [case.right]
 reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*: neither where only a rule derives a fact headed by it, nor where a program writes it as a value"
@@ -17554,7 +17566,7 @@ line      = "maximal"
 exhausted = true
 k         = 1
 relations = ["total"]
-models    = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)", "(total __closed__)"]]
+models    = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)"]]
 
 [[case]]
 id       = "W96/arith-closing-rule"
@@ -17565,10 +17577,14 @@ settings = "default"
 owner    = "S1f.10.9"
 question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
 witness  = "examples/ein-bugs/wrong-answers/dunder-object-arith.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
-note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the shipped stdlib: `std.math.arith` imported whole beside an open `total`. The module's closing rule derives its closures and it writes no `(__closed__ R)` fact, so the dunder is the program's one object. `std.math.decimal-arith`, which brings `std.math.digits` and its written closures, proposes no dunder and is no witness"
-open_because = "As `W96/closed-by-rule`: `__closed__` heads the facts `std.math.arith`'s closing rule derives, no file writes a fact of it, and the blind enumerator takes it for an object: H is `(total __closed__)` and R two states. S1f.10.9's next commit fixes it"
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the shipped stdlib: `std.math.arith` imported whole beside an open `total`. The module's closing rule derives its closures and it writes no `(__closed__ R)` fact, so the dunder is the program's one object. `std.math.decimal-arith`, which brings `std.math.digits` and its written closures, proposes no dunder and is no witness. Fixed by the same task (2026-11-16): no candidate, R {∅}"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -17583,10 +17599,10 @@ models    = [[], ["(total __closed__)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 2
-k_c      = 2
+k_s      = 1
+k_c      = 1
 minimal  = [[]]
-maximal  = [["(total __closed__)"]]
+maximal  = [[]]
 
 [case.right]
 reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*"
@@ -17601,9 +17617,8 @@ derived   = "The program writes no name, and the module's names are all in argum
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 2
-relations = ["total"]
-models    = [[], ["(total __closed__)"]]
+k         = 1
+models    = [[]]
 
 [[case]]
 id       = "W96/symmetric-by-rule"
@@ -17614,10 +17629,14 @@ settings = "default"
 owner    = "S1f.10.9"
 question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
 witness  = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
-note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, for the kernel's other dunder: `(__symmetric__ near)` derived by a rule and never written, `near` scoped out, beside an open `total`. `near` is written both ways round, so that the row does not rest on H9-4 of P1f.10's `findings.md`: the saturation that derives a `(__symmetric__ R)` does not mirror R"
-open_because = "As `W96/closed-by-rule`, for `__symmetric__`: it heads the fact the rule `near-symmetric` derives, no file writes a fact of it, and the blind enumerator takes it for an object: H holds `(total __symmetric__)` and R eight states. S1f.10.9's next commit fixes it"
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, for the kernel's other dunder: `(__symmetric__ near)` derived by a rule and never written, `near` scoped out, beside an open `total`. `near` is written both ways round, so that the row does not rest on H9-4 of P1f.10's `findings.md`: the saturation that derives a `(__symmetric__ R)` does not mirror R. Fixed by the same task (2026-11-16): two candidates and four states"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -17641,10 +17660,10 @@ models    = [
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 8
-k_c      = 8
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [["(total __symmetric__)", "(total a)", "(total b)"]]
+maximal  = [["(total a)", "(total b)"]]
 
 [case.right]
 reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*"
@@ -17659,18 +17678,9 @@ derived   = "The program's names are `a` and `b`, and `total` is its one open re
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 8
+k         = 4
 relations = ["total"]
-models    = [
-  [],
-  ["(total __symmetric__)"],
-  ["(total __symmetric__)", "(total a)"],
-  ["(total __symmetric__)", "(total a)", "(total b)"],
-  ["(total __symmetric__)", "(total b)"],
-  ["(total a)"],
-  ["(total a)", "(total b)"],
-  ["(total b)"],
-]
+models    = [[], ["(total a)"], ["(total a)", "(total b)"], ["(total b)"]]
 
 [[case]]
 id       = "W96/as-value"
@@ -17681,10 +17691,14 @@ settings = "default"
 owner    = "S1f.10.9"
 question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
 witness  = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
-note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the user's ruling of that day, *\"dunder never an object, wide reading\"*: a dunder a program writes in an argument position, `(lift complete __closed__)`, as `std.algebra`'s `(imply1 functional __closed__)` does. Writing it so is legal (Q-M1f.7 (b)) and stays legal; it is a name of the program as `invariant::program_names` lists them, which the alive-set invariant reads and which does not change"
-open_because = "`__closed__` is a constant in an argument position of the written fact `(lift complete __closed__)`, so `invariant::program_names` lists it, `candidate_objects` unions that list in, and no registry holds the dunder, no file writing a fact of it: it is an object, H holds `(total __closed__)` and R four states. S1f.10.9's next commit fixes it"
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the user's ruling of that day, *\"dunder never an object, wide reading\"*: a dunder a program writes in an argument position, `(lift complete __closed__)`, as `std.algebra`'s `(imply1 functional __closed__)` does. Writing it so is legal (Q-M1f.7 (b)) and stays legal; it is a name of the program as `invariant::program_names` lists them, which the alive-set invariant reads and which does not change. Fixed by the same task (2026-11-16): one candidate and two states"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
 
 [case.wrong]
 run       = "solve"
@@ -17699,10 +17713,10 @@ models    = [[], ["(total __closed__)"], ["(total __closed__)", "(total a)"], ["
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 4
-k_c      = 4
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [["(total __closed__)", "(total a)"]]
+maximal  = [["(total a)"]]
 
 [case.right]
 reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*: a dunder a program writes as a value is none either"
@@ -17717,6 +17731,6 @@ derived   = "The puzzle is about one thing, `a`; `thing` and `complete` are rela
 run       = "solve"
 line      = "all"
 exhausted = true
-k         = 4
+k         = 2
 relations = ["total"]
-models    = [[], ["(total __closed__)"], ["(total __closed__)", "(total a)"], ["(total a)"]]
+models    = [[], ["(total a)"]]

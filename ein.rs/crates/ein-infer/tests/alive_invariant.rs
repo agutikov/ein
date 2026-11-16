@@ -1054,9 +1054,21 @@ fn every_name_of_the_program_is_a_candidate_object() {
         // writes them as: `candidate_objects` leaves them out by name (M1f
         // S1f.6.16; E-74 of P1f.6's findings.md). `std.math.positional` alone
         // writes `eq`, the comparison's start, in a rule's conclusion and in
-        // no fact, where every program until it wrote it in a fact too.
+        // no fact, where every program until it wrote it in a fact too. The
+        // kernel's two dunders are left out the same way: a name of the
+        // program where one is written as a value, and no object.
         let k = &terms.kernel;
-        let kernel = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
+        let kernel = [
+            k.not,
+            k.r#false,
+            k.and,
+            k.or,
+            k.absent,
+            k.eq,
+            k.neq,
+            k.closed,
+            k.symmetric,
+        ];
         for c in invariant::seeded(&kb, &terms, &ast) {
             if kernel.contains(&c.name) {
                 continue;
