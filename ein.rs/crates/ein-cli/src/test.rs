@@ -802,7 +802,8 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         println!("{}", status(Came::Error.label(), path));
         println!("    {why}");
     };
-    let mut first = match ask(path, m, least, deadline, (ast, terms, kb)) {
+    let tree = explore::DescribeRoute::Tree;
+    let mut first = match ask(path, m, least, deadline, (ast, terms, kb), tree) {
         Ok(run) => run,
         Err(why) => return failed(tally, why),
     };
@@ -833,7 +834,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
             return failed(tally, "the program did not load a second time".to_string());
         };
-        second = match ask(path, m, describing, deadline, (ast, terms, kb)) {
+        second = match ask(path, m, describing, deadline, (ast, terms, kb), tree) {
             Ok(run) => Some(run),
             Err(why) => return failed(tally, why),
         };
@@ -909,9 +910,41 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     };
     let mut worst = Came::Held;
     let mut lines: Vec<String> = Vec::new();
+    // A solve claim over an empty R of the owing kind needs its owing
+    // frontier, which the tree and the classes do not compute: where the
+    // describing question left the claim unchecked for that, it is asked
+    // again by the state route, of the program loaded again.
+    let frontier_skipped = first.r.described().is_some_and(|d| d.frontier_skipped);
+    let mut by_states = None;
+    if solve_claim.is_some()
+        && frontier_skipped
+        && first
+            .r
+            .claim
+            .as_ref()
+            .is_some_and(|c| c.outcome == Outcome::NotChecked)
+    {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
+            return failed(tally, "the program did not load a second time".to_string());
+        };
+        by_states = match ask(
+            path,
+            m,
+            describing,
+            deadline,
+            (ast, terms, kb),
+            explore::DescribeRoute::States,
+        ) {
+            Ok(run) => Some(run),
+            Err(why) => return failed(tally, why),
+        };
+    }
+    let solve_run = by_states.as_ref().unwrap_or(&first);
     if let (Some(i), Some(claim)) = (solve_row, solve_claim.as_ref()) {
         // A solve claim is asked the describing question alone.
-        let (r, beside) = (&first.r, Beside::of(&first.r));
+        let (r, beside) = (&solve_run.r, Beside::of(&solve_run.r));
         let report = r.claim.clone().unwrap_or_else(|| Report {
             outcome: Outcome::NotChecked,
             lines: vec!["the claim was not read".to_string()],
@@ -926,6 +959,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             explore::Route::States => "state route",
             explore::Route::Tree => "obligation tree",
             explore::Route::Root => "root alone",
+            explore::Route::TreeClasses => "tree and classes",
         };
         rows[i].outcome = came.key();
         rows[i].region = Some(RegionRan {
@@ -933,7 +967,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             monotone: r.answer.monotonicity.is_monotone(),
             k_s,
             k_c,
-            ms: first.ms,
+            ms: solve_run.ms,
             warning: r.answer.warning.as_deref().map(|w| {
                 (
                     w.status.word(),
@@ -943,7 +977,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             }),
         });
         rows[i].scope = Some(beside.scope.clone());
-        rows[i].route = Some(first.flags());
+        rows[i].route = Some(solve_run.flags());
         let shape = match claim {
             ein_ir::claim::Claim::False => "(false)",
             ein_ir::claim::Claim::Region(x) if x.models.is_empty() && x.owing.is_empty() => {
@@ -1053,6 +1087,8 @@ struct Asked {
     r: ReadOut,
     ms: f64,
     mode: Mode,
+    /// Describe's route, where it was asked for the state route.
+    route: explore::DescribeRoute,
     config: ein_core::SolverConfig,
     file: String,
 }
@@ -1063,6 +1099,8 @@ impl Asked {
     fn flags(&self) -> String {
         if self.r.answer.route == explore::Route::Root {
             "--no-search".to_string()
+        } else if self.route == explore::DescribeRoute::States {
+            format!("{} --describe-route states", self.mode.flags())
         } else {
             self.mode.flags()
         }
@@ -1078,8 +1116,10 @@ fn ask(
     mode: Mode,
     deadline: Option<Instant>,
     (ast, mut terms, mut kb): (Ast, Terms, ein_core::Kb),
+    route: explore::DescribeRoute,
 ) -> Result<Asked, String> {
     let mut opts = explore::Options::new(mode);
+    opts.describe_route = route;
     if let Some(&b) = m.get_one::<i64>("region-budget") {
         opts.budget = b as u64;
     }
@@ -1126,6 +1166,7 @@ fn ask(
         r,
         ms,
         mode,
+        route,
         config,
         file,
     })

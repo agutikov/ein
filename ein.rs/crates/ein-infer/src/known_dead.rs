@@ -298,6 +298,12 @@ impl KnownDead {
             .any(|b| self.under[b as usize].iter().any(|e| e.state.is_subset(x)))
     }
 
+    /// Nothing is known dead: no saturation found a set dead and no state
+    /// met denies a candidate.
+    pub(crate) fn is_empty(&self) -> bool {
+        self.under.iter().all(Vec::is_empty)
+    }
+
     /// How many sets an answer took for dead on a denial: the distinct sets
     /// `S ∪ {b}`, `S` a state that denies `b`, that a route was told are dead,
     /// themselves or inside a larger set, where no death said so. A set two

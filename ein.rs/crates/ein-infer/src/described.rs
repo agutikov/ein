@@ -151,6 +151,9 @@ pub struct Described {
     pub stopped_before: Option<(usize, u64)>,
     /// On a state-route run its budget stopped: how it is partial.
     pub states_partial: Option<StatesPartial>,
+    /// On a run of the tree and the classes its budget stopped: how it is
+    /// partial.
+    pub tree_partial: Option<TreePartial>,
     pub root: Root,
     /// Some node is alive.
     pub any_alive: bool,
@@ -172,9 +175,10 @@ pub struct Described {
     pub dead: Vec<Dead>,
     /// `N` was not taken: the description is exhausted, and the run was asked
     /// by a surface that prints neither `N` nor its count
-    /// ([`crate::explore::Options::nogoods`], M1f S1f.6.27). [`Self::nogoods`]
-    /// and [`Self::dead`] then hold the members the walk met, which no
-    /// surface of such a run reads; one that did would say *not taken*.
+    /// ([`crate::explore::Options::nogoods`], M1f S1f.6.27), or the route
+    /// does not compute it ([`Route::TreeClasses`]). [`Self::nogoods`] and
+    /// [`Self::dead`] then hold the members the walk met; a surface that
+    /// prints them says which they are.
     pub nogoods_skipped: bool,
     /// Candidates dead alone, which no state can hold.
     pub dead_alone: u64,
@@ -189,6 +193,11 @@ pub struct Described {
     /// When `R` is empty and some node is alive: every alive owing node with
     /// no alive node one fact up, in visit order.
     pub frontier: Vec<Owing>,
+    /// The owing frontier of an empty `R` was not computed: the route finds
+    /// `R` and not the maximal alive sets ([`crate::tree_classes`]), and
+    /// [`Self::frontier`] holds the members it met, each an owing state it
+    /// extended by every candidate with none alive.
+    pub frontier_skipped: bool,
     pub work: Work,
 }
 
@@ -196,6 +205,99 @@ impl Described {
     /// `k_s`, or its lower bound.
     pub fn k_s(&self) -> u64 {
         self.states.len() as u64
+    }
+
+    /// **The fields of `R` or around it in which `self` and `other` differ,
+    /// where both computed them**: what two routes, or a route and the cube,
+    /// are held to. The run's own fields (the route, the work, how a stopped
+    /// run is partial, whether a node met owes) are not compared, nor what
+    /// only the cube computes (`E`, the holes). `N` is compared where both
+    /// computed it, and where one did not, its members met must be members of
+    /// the other's; an empty `R`'s owing frontier the same way. A sub-cube's
+    /// dimension is compared as a multiset, the cube listing them in its own
+    /// order.
+    pub fn differences(&self, other: &Described) -> Vec<&'static str> {
+        let (a, b) = (self, other);
+        let mut d: Vec<&'static str> = Vec::new();
+        let texts = |x: &Described| -> Vec<String> {
+            x.candidates.iter().map(|c| c.text.clone()).collect()
+        };
+        if texts(a) != texts(b) {
+            d.push("candidates");
+        }
+        if a.monotonicity.is_monotone() != b.monotonicity.is_monotone() {
+            d.push("monotonicity");
+        }
+        if a.exhausted != b.exhausted {
+            d.push("exhausted");
+        }
+        if a.root != b.root || a.any_alive != b.any_alive {
+            d.push("root");
+        }
+        if a.states != b.states {
+            d.push("states");
+        }
+        if a.k_c != b.k_c {
+            d.push("k_c");
+        }
+        if a.minimal_commitments != b.minimal_commitments {
+            d.push("minimal_commitments");
+        }
+        let sets =
+            |x: &Described| -> Vec<Box<[u32]>> { x.dead.iter().map(|y| y.set.clone()).collect() };
+        match (a.nogoods_skipped, b.nogoods_skipped) {
+            (false, false) => {
+                if a.nogoods != b.nogoods || sets(a) != sets(b) {
+                    d.push("N");
+                }
+                let cored = |x: &Described| x.dead.iter().all(|y| y.core_status.is_some());
+                if cored(a)
+                    && cored(b)
+                    && !a
+                        .dead
+                        .iter()
+                        .map(|x| (&x.core, &x.core_status, &x.refuted_by))
+                        .eq(b
+                            .dead
+                            .iter()
+                            .map(|x| (&x.core, &x.core_status, &x.refuted_by)))
+                {
+                    d.push("N's cores");
+                }
+            }
+            (true, false) if !sets(a).iter().all(|x| sets(b).contains(x)) => d.push("N"),
+            (false, true) if !sets(b).iter().all(|x| sets(a).contains(x)) => d.push("N"),
+            _ => {}
+        }
+        if a.dead_alone != b.dead_alone || a.dead_alone_set != b.dead_alone_set {
+            d.push("dead_alone");
+        }
+        if a.dead_met != b.dead_met {
+            d.push("dead_met");
+        }
+        let shape = |x: &Described| {
+            x.shape.as_ref().map(|s| {
+                let mut cubes = s.subcubes.clone();
+                if let Some(v) = cubes.as_mut() {
+                    v.sort_unstable();
+                }
+                (s.components.clone(), cubes)
+            })
+        };
+        if shape(a) != shape(b) {
+            d.push("shape");
+        }
+        match (a.frontier_skipped, b.frontier_skipped) {
+            (false, false) if a.frontier != b.frontier => d.push("frontier"),
+            (true, false) if !a.frontier.iter().all(|x| b.frontier.contains(x)) => {
+                d.push("frontier")
+            }
+            (false, true) if !b.frontier.iter().all(|x| a.frontier.contains(x)) => {
+                d.push("frontier")
+            }
+            _ => {}
+        }
+        d
     }
 
     pub fn n(&self) -> usize {
@@ -429,6 +531,7 @@ pub fn of_downset(d: &DownSet) -> Described {
             _ => None,
         },
         states_partial: None,
+        tree_partial: None,
         root: root_of(points.first(), d.root_dead),
         any_alive,
         k_c,
@@ -456,6 +559,7 @@ pub fn of_downset(d: &DownSet) -> Described {
         states,
         shape,
         frontier,
+        frontier_skipped: false,
         nogoods_skipped: false,
         work,
     }
@@ -651,6 +755,7 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
             _ => None,
         },
         states_partial: partial,
+        tree_partial: None,
         root: Root {
             alive: !s.root.dead,
             owes: s.root.owes,
@@ -675,11 +780,294 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
         states,
         shape,
         frontier,
+        frontier_skipped: false,
         nogoods_skipped: d.nogoods_skipped,
         work: Work {
             saturations: s.saturations(),
             facts: s.facts(),
             layers: Some(s.layers.len()),
+        },
+    }
+}
+
+/// How a run of the tree and the classes its budget stopped is partial: the
+/// part it was finding, and what it had found.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TreePartial {
+    /// The part the run was finding when its budget stopped it. Past
+    /// [`crate::tree_classes::Part::States`], [`Described::states`] is every
+    /// state of `R`.
+    pub stopped_in: crate::tree_classes::Part,
+    /// The states of `R` whose class was found: the first this many of
+    /// [`Described::states`].
+    pub classes: u64,
+}
+
+/// The run of the tree and the classes, described
+/// ([`crate::tree_classes`]): each field what the state route reads off
+/// every alive state, read off `R`'s states and their classes. **`N` and an
+/// empty `R`'s owing frontier are not computed**: [`Described::nogoods_skipped`]
+/// and [`Described::frontier_skipped`] say so, and the two fields hold the
+/// members the run met, the candidates dead alone (each a minimal dead set,
+/// root being alive) and the owing states it extended by every candidate with
+/// none alive. Where ⊤ is in `R` nothing is dead, and `N` is empty and
+/// known, as the state route reads it; and where every state the run met was
+/// extended by every candidate, the run met every alive state, and both are
+/// read off them as the state route reads them, with no node.
+pub(crate) fn of_tree_classes(
+    b: &crate::tree_classes::TreeClasses,
+    sp: &crate::explore::Space<'_>,
+) -> Described {
+    use crate::count::Count;
+    use crate::transversal::Bits;
+    let s = &b.search;
+    let n = sp.n();
+    let exhausted = b.exhausted();
+    let root_node = sp.root_node().cloned().unwrap_or_default();
+    let root = Root {
+        alive: true,
+        owes: root_node.owes,
+        owed: root_node.owed.clone(),
+        core: root_node.core.clone(),
+        core_status: root_node.core_status,
+        refuted_by: root_node.refuted_by.clone(),
+        sources: root_node.sources.clone(),
+    };
+    let root_in_r = root.in_r();
+    let class = |i: usize| b.classes.get(i);
+    // The minimal line, on a run that found every class: ∅ where root's state
+    // is in R; otherwise the minimal sets among every state's generators.
+    let mut minimal: Vec<(Box<[u32]>, usize)> = Vec::new();
+    if exhausted && root_in_r {
+        if let Some(i) = b.r.iter().position(|&t| t == s.root()) {
+            minimal.push((Box::default(), i));
+        }
+    } else if exhausted {
+        let mut all: Vec<(Box<[u32]>, usize)> = (0..b.r.len())
+            .flat_map(|i| {
+                class(i)
+                    .map(|c| c.generators.clone())
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(move |g| (g, i))
+            })
+            .collect();
+        all.sort_by(|x, y| (x.0.len(), &x.0).cmp(&(y.0.len(), &y.0)));
+        let mut kept: Vec<Bits> = Vec::new();
+        for (g, i) in all {
+            let gb = Bits::of(n, &g);
+            if !kept.iter().any(|k| k.is_subset(&gb)) {
+                kept.push(gb);
+                minimal.push((g, i));
+            }
+        }
+    }
+    // determinism-ok: `minimal` is a vector, by size and then candidates.
+    let on_minimal: FxHashSet<usize> = minimal.iter().map(|(_, i)| *i).collect();
+    let mut k_c = Count::zero();
+    let states: Vec<State> =
+        b.r.iter()
+            .enumerate()
+            .map(|(i, &t)| {
+                let st = &s.st[t as usize];
+                // A state whose class was not found: the commitment that reached
+                // it is one of its commitments, and none is certified minimal.
+                let (commitments, generators) = match class(i) {
+                    Some(c) => {
+                        k_c.add(&c.count);
+                        (c.count.reported(), c.generators.clone())
+                    }
+                    None => {
+                        k_c.add(&Count::of(1));
+                        (1, Vec::new())
+                    }
+                };
+                State {
+                    rep: generators
+                        .first()
+                        .cloned()
+                        .unwrap_or_else(|| st.path.clone()),
+                    closure: st.closure.clone(),
+                    commitments,
+                    generators,
+                    minimal: on_minimal.contains(&i),
+                    // Extended by every candidate, and every extension dead (L4).
+                    maximal: s.untried(t).is_empty() && st.up.is_empty(),
+                }
+            })
+            .collect();
+    let k_c = k_c.reported();
+    // The shape: components over the one-up edges inside R, in the order of
+    // their least minimal commitment, and the sub-cubes between the lines.
+    let shape = exhausted.then(|| {
+        let at: FxHashMap<u32, usize> = b.r.iter().enumerate().map(|(i, &t)| (t, i)).collect();
+        let mut parent: Vec<usize> = (0..b.r.len()).collect();
+        fn find(p: &mut [usize], x: usize) -> usize {
+            let mut root = x;
+            while p[root] != root {
+                root = p[root];
+            }
+            let mut y = x;
+            while p[y] != root {
+                let next = p[y];
+                p[y] = root;
+                y = next;
+            }
+            root
+        }
+        for (i, &t) in b.r.iter().enumerate() {
+            for u in &s.st[t as usize].up {
+                if let Some(&j) = at.get(u) {
+                    let (a, c) = (find(&mut parent, i), find(&mut parent, j));
+                    if a != c {
+                        parent[a.max(c)] = a.min(c);
+                    }
+                }
+            }
+        }
+        let mut size: FxHashMap<usize, Count> = FxHashMap::default();
+        for i in 0..b.r.len() {
+            let c = find(&mut parent, i);
+            size.entry(c)
+                .or_default()
+                .add(&class(i).map_or(Count::of(1), |x| x.count.clone()));
+        }
+        let mut components: Vec<u64> = Vec::new();
+        let mut seen: Vec<usize> = Vec::new();
+        for (_, i) in &minimal {
+            let c = find(&mut parent, *i);
+            if !seen.contains(&c) {
+                seen.push(c);
+                components.push(size[&c].reported());
+            }
+        }
+        let mut maximal: Vec<&State> = states.iter().filter(|x| x.maximal).collect();
+        maximal.sort_by(|x, y| (x.closure.len(), &x.closure).cmp(&(y.closure.len(), &y.closure)));
+        let mut subcubes: Vec<usize> = Vec::new();
+        for (a, _) in &minimal {
+            let ab = Bits::of(n, a);
+            for m in &maximal {
+                if ab.is_subset(&Bits::of(n, &m.closure)) {
+                    subcubes.push(m.closure.len() - a.len());
+                }
+            }
+        }
+        Shape {
+            components,
+            subcubes: Some(subcubes),
+            discharging: None,
+            holes: None,
+        }
+    });
+    let top_alive = s.st.iter().any(|st| st.closure.len() == n);
+    // Every state met extended by every candidate: the run met every alive
+    // state, and the maximal alive ones are those with no alive extension.
+    let every_extended = exhausted && (0..s.st.len() as u32).all(|u| s.untried(u).is_empty());
+    let maximal_alive: Vec<u32> = {
+        let mut v: Vec<u32> = (0..s.st.len() as u32)
+            .filter(|&u| s.untried(u).is_empty() && s.st[u as usize].up.is_empty())
+            .collect();
+        v.sort_by(|&x, &y| {
+            let (a, c) = (&s.st[x as usize].closure, &s.st[y as usize].closure);
+            (a.len(), a).cmp(&(c.len(), c))
+        });
+        v
+    };
+    // N: empty where ⊤ is alive, the state route's duality where every
+    // alive state was met, and otherwise not computed, with the candidates
+    // dead alone as the members met.
+    let nogoods_known = exhausted && (top_alive || every_extended);
+    let sets: Vec<Box<[u32]>> = if exhausted && top_alive {
+        Vec::new()
+    } else if nogoods_known {
+        let full = Bits::full(n);
+        let edges: Vec<Bits> = maximal_alive
+            .iter()
+            .map(|&u| full.minus(&s.st[u as usize].bits))
+            .collect();
+        crate::transversal::minimal_transversals(n, &edges)
+            .iter()
+            .map(Bits::to_set)
+            .collect()
+    } else {
+        b.dead_alone
+            .iter()
+            .flatten()
+            .map(|&x| vec![x].into_boxed_slice())
+            .collect()
+    };
+    let dead: Vec<Dead> = sets
+        .iter()
+        .map(|set| Dead {
+            set: set.clone(),
+            core: Vec::new(),
+            core_status: None,
+            refuted_by: Vec::new(),
+        })
+        .collect();
+    let dead_alone_set: Vec<u32> = b.dead_alone.clone().unwrap_or_else(|| {
+        // Those root's extensions the run decided dead.
+        let rb = &s.st[s.root() as usize].bits;
+        (0..n as u32)
+            .filter(|&x| !rb.contains(x) && s.dead.knows_extension(rb, x))
+            .collect()
+    });
+    // An empty R's owing frontier: the maximal alive states, every one owing;
+    // all of them where every state met was extended, and otherwise the ones
+    // met.
+    let empty_owing = exhausted && b.r.is_empty();
+    let frontier: Vec<Owing> = if empty_owing {
+        maximal_alive
+            .iter()
+            .map(|&u| {
+                let st = &s.st[u as usize];
+                Owing {
+                    set: st.closure.clone(),
+                    owes: st.owes,
+                    owed: sp.owed_of(st.class).to_vec(),
+                }
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    let (saturations, facts) = sp.work();
+    Described {
+        candidates: sp.candidates().to_vec(),
+        monotonicity: sp.monotonicity().clone(),
+        route: Route::TreeClasses,
+        exhausted,
+        complete_up_to: None,
+        stopped_before: None,
+        states_partial: None,
+        tree_partial: b.stopped.as_ref().map(|(part, _)| TreePartial {
+            stopped_in: *part,
+            classes: b.classes.len() as u64,
+        }),
+        root,
+        any_alive: true,
+        states,
+        k_c,
+        // determinism-ok: `minimal` is a vector, by size and then candidates.
+        minimal_commitments: minimal.into_iter().map(|(g, _)| g).collect(),
+        nogoods: dead.len() as u64,
+        dead,
+        nogoods_skipped: !nogoods_known,
+        dead_alone: dead_alone_set.len() as u64,
+        dead_alone_set,
+        owing_met: s.st.iter().any(|st| !st.in_r()),
+        dead_met: if exhausted {
+            !top_alive
+        } else {
+            !s.dead.is_empty()
+        },
+        shape,
+        frontier,
+        frontier_skipped: empty_owing && !every_extended,
+        work: Work {
+            saturations,
+            facts,
+            layers: None,
         },
     }
 }
@@ -794,6 +1182,7 @@ pub fn of_cube(r: &Region) -> Described {
         complete_up_to: None,
         stopped_before: None,
         states_partial: None,
+        tree_partial: None,
         root: Root {
             alive: !r.root_dead && alive(0),
             owes: root.owes,
@@ -835,6 +1224,7 @@ pub fn of_cube(r: &Region) -> Described {
             holes: Some((t.holes.len() as u64, holes)),
         }),
         frontier,
+        frontier_skipped: false,
         nogoods_skipped: false,
         work: Work {
             saturations: cube,

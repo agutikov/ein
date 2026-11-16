@@ -225,9 +225,12 @@ fn against(rel: &str, r: &Region, a: &Answer, budgeted: bool) -> Vec<String> {
         {
             bad.push(format!("{tag}: the lines differ"));
         }
+        // N where the route computed it: the tree and the classes do not
+        // where the tree branches, and say so.
+        let n_skipped = a.described.as_ref().is_some_and(|d| d.nogoods_skipped);
         if shape.empty_in_r != r.in_r(0)
             || shape.components != t.components.len()
-            || shape.nogoods != t.nogoods.len()
+            || (!n_skipped && shape.nogoods != t.nogoods.len())
         {
             bad.push(format!("{tag}: ∅, the components or N differ"));
         }
@@ -336,7 +339,11 @@ fn described_against(tag: &str, r: &Region, d: &Described) -> Vec<String> {
             ));
         }
         let dead: BTreeSet<u64> = d.dead.iter().map(|x| mask(&x.set)).collect();
-        if d.nogoods != t.nogoods.len() as u64 || dead != t.nogoods.iter().copied().collect() {
+        let oracle_n: BTreeSet<u64> = t.nogoods.iter().copied().collect();
+        // Not computed, N's members met are members of the oracle's.
+        if d.nogoods_skipped && !dead.is_subset(&oracle_n) {
+            bad.push(format!("{tag}: a member of N met is no minimal dead set"));
+        } else if !d.nogoods_skipped && (d.nogoods != t.nogoods.len() as u64 || dead != oracle_n) {
             bad.push(format!(
                 "{tag}: N = {} ({} sets) where the oracle has {}",
                 d.nogoods,
@@ -378,7 +385,10 @@ fn described_against(tag: &str, r: &Region, d: &Described) -> Vec<String> {
         } else {
             BTreeSet::new()
         };
-        if frontier != want {
+        // Not computed, the frontier's members met are the oracle's.
+        if (d.frontier_skipped && !frontier.is_subset(&want))
+            || (!d.frontier_skipped && frontier != want)
+        {
             bad.push(format!(
                 "{tag}: the owing frontier differs from the oracle's"
             ));
@@ -566,7 +576,10 @@ fn every_mode_is_the_oracle() {
                     } else if !monotone {
                         a.route == explore::Route::Cube && a.warning.is_some()
                     } else if describe {
-                        a.route == explore::Route::States
+                        matches!(
+                            a.route,
+                            explore::Route::States | explore::Route::TreeClasses
+                        )
                     } else if a.root_dead {
                         a.route == explore::Route::DownSet
                     } else {
@@ -581,7 +594,7 @@ fn every_mode_is_the_oracle() {
                         ));
                     }
                     let l5 = a.licences.contains(&explore::Licence::Exhaustive);
-                    if l5 != (a.route == explore::Route::Tree) {
+                    if l5 != matches!(a.route, explore::Route::Tree | explore::Route::TreeClasses) {
                         failures.push(format!(
                             "{rel} {mode:?}: route {:?} with licences {:?}",
                             a.route, a.licences
@@ -592,6 +605,20 @@ fn every_mode_is_the_oracle() {
                         .or_default() += 1;
                     failures.extend(against(&rel, &r, &a, false));
                     failures.extend(empty_rule(&rel, &r, mode, &a));
+                    // Describe's other route, asked by name: the state route
+                    // is held to the oracle as the default is.
+                    if describe && monotone && !a.root_dead {
+                        let mut states = opts;
+                        states.describe_route = explore::DescribeRoute::States;
+                        let (b, _) = ask(path, &states);
+                        if b.route != explore::Route::States {
+                            failures.push(format!(
+                                "{rel} {mode:?} --describe-route states: route {:?}",
+                                b.route
+                            ));
+                        }
+                        failures.extend(against(&rel, &r, &b, false));
+                    }
                     if mode.which == Which::Minimal && r.in_r(0) {
                         *counted
                             .entry(if monotone {
@@ -1418,10 +1445,13 @@ fn a_description_asked_without_n_is_the_description_less_n() {
                         a.described.as_ref().expect("described"),
                         b.described.as_ref().expect("described"),
                     );
-                    if da.nogoods_skipped {
+                    // The tree and the classes compute no N where the tree
+                    // branches, asked for or not, and say so.
+                    let tree = a.route == explore::Route::TreeClasses;
+                    if da.nogoods_skipped && !tree {
                         failures.push(format!("{rel} {ask:?}: N skipped where it was asked for"));
                     }
-                    if db.nogoods_skipped {
+                    if db.nogoods_skipped && !tree {
                         skipped += 1;
                         sets += da.nogoods;
                         if !(db.exhausted && b.route == explore::Route::States) {

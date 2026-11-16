@@ -436,7 +436,16 @@ fn a_query_over_an_empty_r_says_which_empty() {
     assert_eq!(rows(&run, "over"), vec![owing("3 instances")]);
     assert_eq!(rows(&run, ":expect"), vec!["holds"]);
     assert_eq!(run.summary["queries"][0]["expect"]["outcome"], "held");
-    assert_eq!(rows(&run, "(solve :expect)"), vec!["holds"]);
+    // The solve claim is about the owing frontier, which the default route,
+    // the tree and the classes, does not compute: not checked, and the state
+    // route holds it.
+    assert_eq!(rows(&run, "(solve :expect)"), vec!["NOT CHECKED"]);
+    let states = solve(&[
+        "examples/binary_logic/unsatisfiable.ein",
+        "--describe-route",
+        "states",
+    ]);
+    assert_eq!(rows(&states, "(solve :expect)"), vec!["holds"]);
 }
 
 /// **`--count` prints describe's rows and reads no state**, on every corpus

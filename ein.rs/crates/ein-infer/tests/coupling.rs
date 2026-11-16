@@ -161,8 +161,11 @@ const MIXES: usize = 1 << 22;
 fn held(path: &Path) -> Option<Held> {
     let rel = rel_of(path);
     let (mut kb, mut terms, ast) = loaded(path)?;
+    // N is read off describe by the state route, which computes it where
+    // the tree and the classes, describe's default, do not.
     let opts = explore::Options {
         cores: Cores::READ_OUT,
+        describe_route: explore::DescribeRoute::States,
         ..explore::Options::new(Mode {
             which: Which::All,
             ask: Ask::Describe,

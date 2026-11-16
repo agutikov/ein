@@ -147,9 +147,11 @@ fn lattice(
     let prepared = prepare(root, terms, ast)?;
     let monotone = prepared.monotonicity.is_monotone();
     let n = prepared.candidates.len();
-    // Describe's route, as `ein solve` takes it (`explore`'s § Describe's
-    // route): the state route on a monotone program, route 1 on a flagged one
-    // whose root is dead (`explore::Licence::ForkOnlyAdds`), the cube else.
+    // The state route on a monotone program, which computes every field a
+    // claim reads, an empty R's owing frontier among them (`explore`'s
+    // § Describe's route: the tree and the classes, describe's default, do
+    // not compute that); route 1 on a flagged one whose root is dead
+    // (`explore::Licence::ForkOnlyAdds`), the cube else.
     // A claim states no core, so the run takes none but root's (M1e2
     // S1e2.2.21, *minimum work per question*).
     let route_opts = downset::Options {
@@ -318,6 +320,7 @@ fn of_described(d: Described) -> Lattice {
             Route::States => "state route",
             Route::Tree => "obligation tree",
             Route::Root => "root alone",
+            Route::TreeClasses => "tree and classes",
         },
         monotone: d.monotonicity.is_monotone(),
         any_alive: d.any_alive,

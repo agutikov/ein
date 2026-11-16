@@ -746,6 +746,7 @@ fn route_words(answer: &explore::Answer) -> &'static str {
         explore::Route::States => "the state route, each state at most once",
         explore::Route::Tree => "the obligation tree, over states",
         explore::Route::Root => "none, root alone (--no-search)",
+        explore::Route::TreeClasses => "the tree and the classes",
     }
 }
 

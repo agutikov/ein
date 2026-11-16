@@ -1136,3 +1136,114 @@ fn no_search_reports_root_as_the_full_run_reaches_it_and_states_no_r() {
     let compared = compared.into_inner();
     assert!(compared >= 400, "only {compared} programs compared");
 }
+
+/// The keys of a summary's `region` block that are `R`'s or around it, and
+/// that both of describe's routes compute: every one but the route's own
+/// (`route`, `licences`, `stopped`, `complete_up_to`), and `N` and an empty
+/// `R`'s owing frontier, which the state route alone computes where root
+/// owes an instance a licence takes and which are compared where both wrote
+/// them.
+const R_KEYS: [&str; 14] = [
+    "k_s",
+    "k_c",
+    "exhausted",
+    "root",
+    "root_owes",
+    "root_owed",
+    "empty",
+    "minimal",
+    "maximal",
+    "components",
+    "subcubes",
+    "merged",
+    "universe",
+    "states",
+];
+
+/// **`--describe-route` moves no part of R**: describe and `--count` take
+/// the tree and the classes by default and the state route when asked, and
+/// the option chooses a route and never R. On every corpus program and
+/// register witness (the `slow` entries apart, whose state route the budget
+/// stops), describe and `--count` under `--describe-route tree` and `states`
+/// through the binary: where both runs exhausted R, every key of the
+/// summary's `region` block that is R's ([`R_KEYS`]) is the same, `nogoods`
+/// and `frontier` are the same wherever both wrote one, and every claim's
+/// outcome is the same but one over an empty R's owing frontier that the
+/// tree and the classes did not compute, which they leave not checked. Stdout differs in the `route`, `work` and `N` rows,
+/// the owing listing, and a stopped run's rows and note alone, which this
+/// does not read.
+#[test]
+fn the_describe_route_moves_no_part_of_r() {
+    let files = programs();
+    let compared = AtomicUsize::new(0);
+    let bad: Vec<String> = par_map(
+        "lever_invariance::describe_route",
+        &files,
+        |p| (rel(p), "--describe-route".to_string()),
+        |path| {
+            let at = rel(path);
+            let mut bad = Vec::new();
+            for count in [false, true] {
+                let ask: &[&str] = if count { &["--count"] } else { &[] };
+                let with = |route: &'static str| {
+                    let mut flags: Vec<&str> = ask.to_vec();
+                    flags.extend(["--describe-route", route]);
+                    run_json(path, &flags)
+                };
+                let (tc, _, terr, tree) = with("tree");
+                let (sc, _, serr, states) = with("states");
+                if tree.is_null() || states.is_null() {
+                    if tc != sc || terr != serr {
+                        bad.push(format!(
+                            "{at}: no summary, and the two routes exit {tc} and {sc}"
+                        ));
+                    }
+                    continue;
+                }
+                let (t, s) = (&tree["region"], &states["region"]);
+                if t.is_null() || s.is_null() {
+                    if t != s {
+                        bad.push(format!("{at}: one route states a region and one does not"));
+                    }
+                    continue;
+                }
+                if t["exhausted"] != J::Bool(true) || s["exhausted"] != J::Bool(true) {
+                    continue;
+                }
+                compared.fetch_add(1, Ordering::Relaxed);
+                for key in R_KEYS {
+                    if t[key] != s[key] {
+                        bad.push(format!(
+                            "{at}{}: region.{key} is {} by the tree and {} by the state route",
+                            if count { " --count" } else { "" },
+                            t[key],
+                            s[key]
+                        ));
+                    }
+                }
+                for key in ["nogoods", "frontier"] {
+                    if !t[key].is_null() && !s[key].is_null() && t[key] != s[key] {
+                        bad.push(format!("{at}: region.{key} differs where both computed it"));
+                    }
+                }
+                // A claim over an empty R's owing frontier is not checked
+                // where the tree and the classes did not compute it.
+                let frontier_skipped = t["frontier"].is_null() && !s["frontier"].is_null();
+                for (x, y) in outcomes(&tree).iter().zip(outcomes(&states)) {
+                    if *x != y && !(frontier_skipped && *x == "not-checked") {
+                        bad.push(format!(
+                            "{at}: a claim is {x} by the tree and {y} by the state route"
+                        ));
+                    }
+                }
+            }
+            bad
+        },
+    )
+    .into_iter()
+    .flatten()
+    .collect();
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    let compared = compared.into_inner();
+    assert!(compared >= 800, "only {compared} runs compared");
+}

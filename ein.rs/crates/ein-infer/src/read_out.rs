@@ -445,7 +445,14 @@ pub fn of_answer(
                         Over::Maximal => s.maximal,
                     };
                     let idx: Vec<usize> = (0..states.len()).filter(|&i| on(&states[i])).collect();
-                    (idx, true, d.exhausted)
+                    // A run of the tree and the classes stopped past R's
+                    // states has every state of R, each maximal one known as
+                    // such; the minimal ones need every class.
+                    let states_whole = d
+                        .tree_partial
+                        .is_some_and(|p| p.stopped_in > crate::tree_classes::Part::States)
+                        && !matches!(g.over, Over::Minimal);
+                    (idx, true, d.exhausted || states_whole)
                 }
                 None => {
                     // `--single` that decided one state or none has listed the
@@ -1054,6 +1061,16 @@ fn check_claim(
         } else {
             "the claim is about all of R, and this run is partial".to_string()
         }));
+    }
+    // An empty R of the owing kind is claimed by its owing frontier, which the
+    // tree and the classes do not compute (`(false)` is decided by root).
+    if d.frontier_skipped && d.states.is_empty() && matches!(claim, ein_ir::claim::Claim::Region(_))
+    {
+        return Ok(not_checked(
+            "the claim is about R, which is empty, and its owing frontier, which the tree and \
+             the classes do not compute: --describe-route states computes it"
+                .to_string(),
+        ));
     }
     crate::claim::check_described(
         root,

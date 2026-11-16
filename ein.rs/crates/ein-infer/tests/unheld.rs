@@ -375,26 +375,6 @@ fn ask(path: &Path, mode: Mode, with_l9: bool) -> Result<Answer, String> {
     if with_l9 { go() } else { unheld::without(go) }
 }
 
-/// What a describing answer says, its work included: every field but the
-/// wall clock.
-fn said(a: &Answer) -> String {
-    format!(
-        "{:?} {:?} {:?} {:?} {} {:?} {:?} {:?} {:?} {} {} {:?}",
-        a.states,
-        a.minimal,
-        a.counts,
-        a.shape,
-        a.exhausted,
-        a.verdict,
-        a.stopped,
-        a.route,
-        a.licences,
-        a.saturations,
-        a.facts,
-        a.described
-    )
-}
-
 fn closures(a: &Answer) -> BTreeSet<Vec<u32>> {
     a.states.iter().map(|s| s.closure.to_vec()).collect()
 }
@@ -403,8 +383,10 @@ fn closures(a: &Answer) -> BTreeSet<Vec<u32>> {
 /// program and register witness with an instance L9 licenses: one verdict,
 /// one `exhausted`, a part of `R` listed whole the same states and minimal
 /// commitments, a listing stopped as asked as many states, each in `R` as
-/// describe lists it; describe and `--count` field for field, the work
-/// included, since their route reads no table. And the work: with L9 the
+/// describe lists it; describe and `--count` every field of R both compute
+/// (`Described::differences`), the tree and the classes taking them where L9
+/// lets the tree branch and the state route without it. And the work: with
+/// L9 the
 /// tree's questions saturate fewer nodes and derive fewer facts over these
 /// programs, the price list's first clause, each cell printed.
 #[test]
@@ -449,8 +431,15 @@ fn every_question_answers_alike_with_l9_and_without() {
             let describing =
                 mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
             if describing {
-                if said(&a) != said(&b) {
-                    failures.push(format!("{at}: describe's route moved without its table"));
+                // Describe takes the tree and the classes where the tree
+                // branches, which L9 decides here, and the state route
+                // without it: two routes, one R.
+                let diff = match (a.described.as_deref(), b.described.as_deref()) {
+                    (Some(x), Some(y)) => x.differences(y),
+                    _ => vec!["the description"],
+                };
+                if !diff.is_empty() {
+                    failures.push(format!("{at}: {diff:?} moved without L9's table"));
                 }
                 if mode.ask == Ask::Describe {
                     r = a

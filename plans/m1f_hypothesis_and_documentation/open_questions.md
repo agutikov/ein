@@ -314,7 +314,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **ruled 2026-11-16**: the user, asked back since the question had a recommendation and no default: *"308 (b) ok"*. **(b)**, the second rung where an obligation is activated at root. **Built 2026-11-16** by [S1f.10.15](p1f.10_hypothesis_structure/s1f.10.15_the_rung_a_loaded_rule_chooses.md#record-2026-11-16-task-4)'s task 4: the register's W97, three rows, filed and fixed, the re-plan's probe refused at load; 41 corpus programs change rung, `features/09` changes H, no R moves |
 | [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
-| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, then, on S1f.10.17's measured *no* for the whole border route, *"2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one or another, verbose warning about budget"*. Built by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md) |
+| [Q-M1f.311](#q-m1f311--a-describe-the-budget-would-stop-answer-what-the-tree-can-reach-instead) | a describe the budget would stop: answer what the tree can reach instead? | **ruled 2026-11-16: (e)**, then, on S1f.10.17's measured *no* for the whole border route, *"2 modes: state route (existing) and tree plus classes, second by default, cmdline option to force one or another, verbose warning about budget"*. **Built** by [S1f.10.17](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md)'s T3: `--describe-route tree|states`, the tree and the classes by default |
 | [Q-M1f.312](#q-m1f312--what-the-shape-goldens-hyp-and-hypclosed-ops-digest) | what the shape golden's `hyp` and `hyp+closed` ops digest: the walk's generator, which no command runs, or H's own pass | **put 2026-11-16 by S1f.10.16's T2, not ruled, to be shown at the phase's close**: default (b), `hyp` re-pointed at H's pass and `hyp+closed` removed; not acted on, both ops as they were; [S1f.10.16](p1f.10_hypothesis_structure/s1f.10.16_what_the_walk_left.md#t1-the-readers) |
 | [Q-M1f.313](#q-m1f313--may-the-agenda-inside-a-routes-node-fire-first-what-leads-to-false) | may the agenda inside a route's node fire first what leads to `(false)`? Reopens Q-M1f.6's FIFO | **ruled 2026-11-16: (c)**, fail-first everywhere, the `pairs` half; the user: *"… non-monotone programs still out of scope … don't claim about solution soundness, correctness or completeness or anything"*. Supersedes Q-M1f.6's plain FIFO. Built by S1f.10.19 |
 
@@ -6619,6 +6619,19 @@ exactly, `send_more_money.ein --count` in 18 127 saturations where the state rou
 or another, verbose warning about budget so user knows about forecast and options."* So describe and `--count` take
 **the tree and the classes by default**, and **the state route on request**, by a command-line option; where a
 route's forecast passes the budget, the run says so, with the forecast and the options. Built by S1f.10.17's T3.
+
+**Built 2026-11-16** ([S1f.10.17 § T3 as ruled](p1f.10_hypothesis_structure/s1f.10.17_describe_by_borders.md#t3-as-ruled-the-two-routes-built)).
+`ein solve --describe-route tree|states`, `tree` the default: describe and `--count` take the tree and the classes
+where root owes an instance L5 or L9 licenses, read off root's fixpoint, and the state route elsewhere, where the
+tree's walk would be the state route's, or when asked. The tree and the classes compute neither `N` nor an empty R's
+owing frontier, and the read-out says so with the members met and the option; `ein test` asks the state route for a
+region claim over the frontier. A stopped describe's `note:` carries the forecast, what was established, what not,
+and the options. Every field both routes compute is the same on every corpus program, each route is the oracle's
+within its limit, and the option moves no part of R (`ein-infer/tests/tree_classes.rs`, `explore.rs`,
+`claim_routes.rs`, `ein-cli/tests/lever_invariance.rs`). Over the 173 monotone programs that search: 605 068 · 8 828 073
+saturations · facts against 1 234 652 · 10 286 374, 37 programs on the tree, six higher by more than a tenth (the two
+`zebra2-minus-15` files, stopped either way, and four small ones); `send_more_money.ein` described, one state, in
+18 127 saturations where the state route stops after 336 101.
 
 ### Q-M1f.312 — What the shape golden's `hyp` and `hyp+closed` ops digest
 

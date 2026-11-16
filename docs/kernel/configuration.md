@@ -29,7 +29,8 @@
 > `--require-why` until T1f.5.14.7 (2026-11-10) turned the requirement on by
 > default, `--no-require-why` since. **Since M1f S1f.6.36 (2026-11-14)** `ein
 > solve` and `ein test` take `--no-search`, which declines to discover R (§ 3.3),
-> so `ein solve` has 35.
+> so `ein solve` had 35. `ein solve` takes `--describe-route`, which chooses
+> describe's route and never R (§ 3.3), so it has 36.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -63,7 +64,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **2** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fifteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **91** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **92** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **2** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -368,12 +369,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**91** options across eighteen parsers, in the default build (`einb`,
+**92** options across eighteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 35 |
+| `ein solve` | 36 |
 | `ein oracle` | 11 |
 | `ein test` | 10 |
 | `ein saturate` | 6 |
@@ -390,7 +391,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein show` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 89 and no `ein kb` at all. `ein show hyps`
+`--no-default-features` build has 90 and no `ein kb` at all. `ein show hyps`
 takes one, `--no-require-why`, and nothing that could move what it lists
 (§ 3.3). `ein render h-space` takes six, `--view`,
 `--dump`, `--supports`, `--region-budget`, `-j`/`--jobs` and
@@ -450,10 +451,11 @@ as any — a `(config …)` head that sets the flag, and `--dump-config` to see 
 
 ### 3.3 What an option can do to the answer
 
-Eight classes. Only the first touches the answer, and then only by asking a
+Nine classes. Only the first touches the answer, and then only by asking a
 different question or stopping early; the second declines to ask about R at all;
-the third asks about the hypothesis set and not about R; the eighth decides
-whether there is a program to answer about.
+the third chooses how describe finds R and never R; the fourth asks about the
+hypothesis set and not about R; the ninth decides whether there is a program to
+answer about.
 
 - **The question and its budget** — `--minimal`, `--maximal`, `--single`,
   `-n`/`--solutions`, `--count`, `--monotone`, `--region-budget`,
@@ -496,6 +498,31 @@ whether there is a program to answer about.
   answers ([Q-M1f.258](../../plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f258--which-commands-and-options-take---no-search)).
   The program's own `(solve :no-search)` is no option: it states the lattice,
   root alone, and so R ([`01_grammar.md` § Solve](ir/03-ein-lang/01_grammar.md#solve)).
+- **Describe's route** — `--describe-route tree|states`, on `ein solve`, for
+  describe and `--count` on a program the static check calls monotone; `ein
+  oracle`, the modes and a flagged program take no other route for it, and
+  beside a mode, `--monotone` or `--no-search` it is a usage error, exit 2.
+  **Does it change the answer: no — R is the same; the state route alone
+  computes `N` and an empty R's owing frontier where the tree branches.**
+  `tree`, the default, takes the tree and the classes
+  ([`ein_infer::tree_classes`](../../ein.rs/crates/ein-infer/src/tree_classes.rs)):
+  R's states by the obligation tree and each state's class by dualise and
+  advance inside it, where root owes an instance L5 or L9 licenses, read off
+  root's fixpoint before any node; elsewhere the tree has nothing to branch on,
+  its walk is the state route's, and the state route is taken. `states` takes
+  the state route, every alive state once. **The fields only the state route
+  computes**, where the tree branches: `N`, which the read-out's `N` row says is
+  not computed, with the candidates dead alone as the members met, and the
+  summary writes as `null`; and an empty R's owing frontier, which the listing
+  says is not computed, with the owing nodes met, the summary writes as `null`,
+  and a region claim over which is not checked (`ein test` asks the state route
+  then). Every other field, R's states, `k_c`, the lines, the shape, the
+  candidates dead alone, is the same by both
+  (`ein-infer/tests/tree_classes.rs`, every corpus program and the oracle;
+  `lever_invariance.rs`' `the_describe_route_moves_no_part_of_r`, through the
+  binary). The work differs, and so does where a budget stops each, which the
+  `exhausted` row and the stderr `note:` say, with the forecast and the other
+  route ([`inference/read_out.md`](inference/read_out.md)).
 - **The hypothesis space** — `ein render h-space`'s `--view`, `--dump`,
   `--supports`, `--region-budget` and `-j`/`--jobs`
   ([`inference/hypothesis_space.md`](inference/hypothesis_space.md)). **Does it change the
