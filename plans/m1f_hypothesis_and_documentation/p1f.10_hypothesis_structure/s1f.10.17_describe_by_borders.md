@@ -1,7 +1,7 @@
 # S1f.10.17 — Describe by borders
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-16, on the user's ruling of Q-M1f.311 that day. **Stopped after T2, 2026-11-16: *no* for describe on the corpus**, as the plan says to stop and show it; T3 to T5 not done. [§ Record](#record-2026-11-16).
+**Status:** planned 2026-11-16, on the user's ruling of Q-M1f.311 that day. Stopped after T2, *no* for describe on the corpus; **resumed the same day on the user's ruling on the measurement**: T3 as ruled, running. [§ Record](#record-2026-11-16).
 **Depends on:** [S1f.10.3](s1f.10.3_the_restricted_join.md) (the memory `known_dead`, L8),
 [S1f.10.5](s1f.10.5_ordering.md) (the tree's order), [S1f.10.14](s1f.10.14_exactly_one_spent.md) (L9; Q-M1f.311's
 numbers), [S1f.10.13](s1f.10.13_the_price_list.md) (the rule for *go*).
@@ -395,3 +395,61 @@ Each the user's to revise.
 - `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the main session's.
 
 **Findings outside the stage's scope**: none; K-30 stays the last.
+
+### T3 as ruled: the inventory again, for the default route, before it changes
+
+On the user's ruling ([§ The ruling on the measurement](#the-ruling-on-the-measurement-2026-11-16)), with `master`
+merged at `1f61ec37`. Describe and `--count` on a monotone program whose root is alive get two routes, **the state
+route** as it is and **the tree and the classes**, the default; an option of `ein solve` forces either. T2's global
+border, `N` by dualise and advance over `H`, is removed with what only it read (`borders::global`, `Global`, `Met`,
+`known_dead`, the `global_*` counters).
+
+**Where the default route is the state route.** The tree and the classes differ from the state route only where the
+tree has something to branch on: root owes an instance L5 or L9 licenses. Where `∅ ∈ R` the tree is root alone and
+its climb is every alive state; where root owes and no instance is licensed the tree branches on every extension;
+where there is no candidate root is all of it. In each the walk visits the state route's states and extensions, in another order (T2: equal work on
+every such program the corpus has that both finish, 143 cells of each question), and reads every field the state
+route reads.
+So **the default takes the state route there, read off the program before any node** (`oblgen::alternatives` at
+root's fixpoint, no saturation), and the `route` row names it; the tree and the classes are taken where root owes a
+licensed instance. A dead root keeps the state route's one saturation.
+
+**What the tree and the classes compute, against the inventory of T1** (every other field of that table is
+unchanged):
+
+| field | the tree and the classes | words |
+|---|---|---|
+| `nogoods`, `dead` | **not computed**, unless ⊤ is in `R` (then nothing is dead, `N` is empty, as the state route reads it); the members met are the candidates dead alone, each a minimal dead set since root is alive | the `N` row: *not computed by the tree and the classes; `--describe-route states` computes it*; summary `region.nogoods` as for `N` not taken |
+| `frontier`, where `R` is empty | **not computed**: the maximal alive sets are the global border; the members met are the owing states extended by every candidate with none alive | the listing says the frontier is not computed and lists the members met; a region claim over it is not checked by this route |
+| a partial run | stopped in `R`'s states, in the singles or in the classes, with how many classes were found | each row a stopped run qualifies, and the stderr note with the forecast and the options |
+| everything else | as the state route's: `R`'s states, each class (generators, `rep`, commitments), `k_c`, both lines, the shape, the candidates dead alone, `dead_met`, root | — |
+
+**`ein test`.** A claim needs `N` nowhere (`claim.rs` reads `R`'s states, their classes and an empty `R`'s
+frontier). A region claim over an empty `R` of the owing kind needs the frontier, so where the default route leaves
+it uncomputed the claim is not checked by that run and `ein test` asks the describing question again by the state
+route, as it asks a second question where the first leaves a claim undecided.
+
+**The goldens that will move**, named before the route changes; one that moves and is not here is a stop:
+
+1. `ein.rs/crates/ein-render/tests/golden/corpus_shapes.md5`: for each corpus program on which root owes an
+   instance L5 or L9 licenses, `read-out[describe]` (the `route` and `work` rows, the `N` row, an empty `R`'s
+   listing, and where the sweep's budget 2^14 stops either route, the rows a stopped run qualifies and its stderr
+   note), `cores[describe]` (the summary's `route`, `licences`, `stopped`, `work`, `nogoods`, `frontier`;
+   `nogoods.json`; `nodes.json`, the nodes visited), `region-lattice` (the nodes visited, the route's words) and
+   `region-trace` (its route, work and `N`); `states` only where the sweep's describe stops otherwise. **And on
+   every program whose describe the sweep's budget stops, by either route, `read-out[describe]`'s stderr note**,
+   which now carries the forecast and the options. No mode's line, no oracle line, no frontend op.
+2. `docs/kernel/inference/read_out_examples.md`, regenerated: each example whose describe or `--count` takes the
+   tree and the classes, and each example of a stopped describe (the note).
+3. `ein.rs/crates/ein-render/tests/golden/trace_*.md`: a trace whose program takes the tree and the classes.
+4. `ein.rs/crates/ein-cli/tests/golden/help_shape.txt`: `ein solve`'s new option.
+5. `ein.rs/crates/ein-cli/tests/region_modes.rs`, `model_set_report.rs`, `test_cli.rs` and `cli_semantics.rs`
+   literals that print a describe's `route`, `work` or `N` row, or a stopped describe's note, of a program that
+   takes the tree and the classes or stops.
+6. `ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt`: a cell whose claim a stopped describe left unchecked and
+   the default route decides; an exit code moves only if such a claim is refuted.
+7. `corpus/corpus.toml`'s `cost_ms` and the slow set, where describe's cost moves; re-taken only on an idle
+   machine.
+8. The pages: `read_out.md` (the `route`, `N`, `exhausted` rows, the partial forms, the stderr note),
+   `finding_r.md` § 6, `configuration.md`, `implementation.md`, `answer_dump.md` where a key's words change,
+   `AGENTS.md`'s command block.
