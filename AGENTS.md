@@ -552,7 +552,7 @@ seven static checks (`--tests-only` skips them and the bench smoke), then
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,
 naming the file that writes it. **`cargo test --profile gate --workspace`
-alone is not the gate**: it checks none of the six. A local gate that is a subset of the
+alone is not the gate**: it checks none of the seven. A local gate that is a subset of the
 remote one is a local gate that lies — keep the two lists the same;
 `ein-cli/tests/gate_steps.rs` diffs them.
 
