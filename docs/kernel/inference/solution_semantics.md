@@ -623,7 +623,7 @@ measured the scope rule over the corpus is
 Normative detail on what an obligation quantifies over:
 [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md)
 (C1–C4) and
-[`completeness.md`](../../history/m1d_satisfiability/completeness.md).
+[why an obligation's alternatives are jointly exhaustive](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive).
 
 ---
 
@@ -972,7 +972,7 @@ leave those out.
   the corollaries a non-monotone program has to be read beside.
 - [`configuration.md`](../configuration.md): the config principle, and every
   lever's row read against it.
-- [`completeness.md`](../../history/m1d_satisfiability/completeness.md): why
+- [`satisfiability.md`](../../ein/reasoning/kb-evolution/satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive): why
   an obligation's alternatives are jointly exhaustive.
 - [`domain_contract.md`](../../history/m1d_satisfiability/domain_contract.md):
   C1–C4, what an obligation quantifies over.

@@ -2558,7 +2558,7 @@ all three of its forms are assertions about **facts**, and an `open` conclusion
 is by construction never a fact. Twelve corpus entries changed word and **zero**
 changed exit code.
 
-**M1d [S1d.3.3](../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
+**The [report of a set of models](../ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims)
 added the 49th option and one rendering rule.** `solve --models {list,key}`
 chooses the projection of a model **set** that goes to stdout — the blocks, or
 the smallest set of slots that tells the models apart and the table of
@@ -2621,7 +2621,7 @@ route proves, or where a bound stops it and the run says so. The word is
 settled too: a refutation said under a depth cap is not a refutation, and
 it no longer says it is.
 
-**M1d [S1d.4.1](../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)
+**The [claims about a set of states](../ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states)
 added the 50th option and no behaviour at all.** `ein test --json-report
 FILE.json` writes **one row per `(query …)` of the whole selection** — the
 claim's shape (`model` / `or` / `false`), how many models it lists, the

@@ -1,9 +1,8 @@
-//! A model **set** as a determining key — M1d
-//! [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)'s
-//! answer to *print or describe*.
+//! A model **set** as a
+//! [determining key](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims),
+//! the answer to *print or describe*.
 //!
-//! [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)
-//! priced five ways to say *"there are 32 models"* on four columns — produce ·
+//! Five ways to say *"there are 32 models"* were priced on four columns — produce ·
 //! size · exact · read — and the one that won is **(b)**: the smallest set of
 //! slots that tells every model apart, plus the table of the combinations that
 //! occur. On `examples/zebra2-minus-15.ein` that is 4 columns of 23 and 32
@@ -55,8 +54,8 @@ use ein_core::{FactId, Kb, Symbol, Terms, Value};
 /// How `ein solve` prints a model **set** — the `--models` flag.
 ///
 /// `List` is what the engine has always printed: one block per model. `Key`
-/// is [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)'s
-/// (b). Neither changes what is *recorded*, and every verdict but `Ambiguity`
+/// is the [determining key](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#6-a-set-of-models-and-what-its-count-claims).
+/// Neither changes what is *recorded*, and every verdict but `Ambiguity`
 /// ignores the choice, because a single model is its own smallest description.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub enum ModelsForm {

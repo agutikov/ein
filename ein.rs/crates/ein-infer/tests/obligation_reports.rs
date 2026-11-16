@@ -14,7 +14,7 @@
 //!
 //! Growing `:expect` a word for an open verdict is deliberately **not** taken:
 //! it is a verdict-vocabulary change, this stage moves no verdict word, and
-//! [S1d.2.6] routes it to [P1d.4]. It becomes the right answer the moment a
+//! [S1d.2.6] routes it to [the claims about a set of states]. It becomes the right answer the moment a
 //! puzzle author outside this suite needs to state the claim; until then a
 //! Rust test is the honest channel and costs no grammar.
 //!
@@ -29,7 +29,7 @@
 //! `zebra2-minus-15`'s R to read root's tally would cost the slow tier's run.
 //!
 //! [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
-//! [P1d.4]: `docs/history/m1d_satisfiability/README.md#p1d4--closing-the-model-set`
+//! [the claims about a set of states]: ../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#3-claims-about-the-set-of-states
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};

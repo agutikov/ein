@@ -190,9 +190,9 @@ pub const CLOSED: &str = ein_core::terms::CLOSED;
 /// question *about* a state that the ladder cannot be asked, because the rung
 /// that is active there stops as soon as its own candidates run out: *how many
 /// facts would the blind enumerator still propose at a state the rung called
-/// complete?* That number is the state's leftover-open count — M1d
-/// [S1d.3.1](../../../../docs/history/m1d_satisfiability/README.md#s1d31--what-the-models-differ-in)
-/// — and it is what separates "one model" from "2ⁿ models" when the reading
+/// complete?* That number is the state's
+/// [leftover-open count](../../../../docs/ein/reasoning/kb-evolution/satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it),
+/// and it is what separates "one model" from "2ⁿ models" when the reading
 /// is open-world.
 ///
 /// Config-free since M1e2
