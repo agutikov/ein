@@ -1,5 +1,7 @@
 # P1f.10 — The structure of the hypothesis set
 
+**Where the phase stands: [`state.md`](state.md)**, written at the pause of 2026-11-16: the stages, the rulings,
+the branches, what is owed and the order to resume in.
 **Status:** re-planned 2026-11-15, on the user's instruction of that day, against the engine as it stands.
 [S1f.10.1](s1f.10.1_exclusion_census.md#record-2026-11-15) ran that day, and
 [S1f.10.2](s1f.10.2_groups.md#record-2026-11-15-stopped-at-the-control) stopped at its control: on I-Z2 no declared row or
@@ -40,9 +42,12 @@ artefact raw and rendered, a sortable survey, the price list, every default and 
 **its second task is the phase's one stop, pending**, and no surface is designed before the ruling.
 [Its third and fourth tasks](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-surface-and-the-page) ran on
 2026-11-16 on the ruling of Q-M1f.309, (a): `ein render structure FILE` shows the structure through the one owner,
-and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/structure.md) defines it; the gate, the
+and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md) defines it; the gate, the
 runner's container and the wall of the two nightly steps that grew are owed, and one finding,
 [K-17](findings.md), is open.
+[On the user's instruction of 2026-11-16](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-view-renamed-h-dumped-plain-k-17)
+the view is renamed `ein render h-space FILE`, a new command `ein show hyps FILE` lists H as Ein facts at the cost
+of root's saturation and the generator, and K-17 is fixed and closed.
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).
@@ -55,6 +60,11 @@ change a route: every route on a monotone program asks one memory of what is kno
 state's own fixpoint denies (licence L8), so `zebra2.ein --single` is 9 saturations where it was 45, its describe
 263 where it was 374 and `zebra2-minus-15.ein --maximal` 104 where it was 2 346, with R the oracle's in every mode;
 the pair of a death is still *go* for describe, `--count` and `--minimal` on top of it and is not built.
+[S1f.10.9](s1f.10.9_what_the_blind_enumerator_takes_for_an_object.md#record-2026-11-16-task-4)'s task 4 ran on
+2026-11-16, on the user's rulings of that day on Q-M1f.306, (b) for E-1 and *"dunder never an object, wide
+reading"*, (a) for E-7 and (d) for E-54: the blind enumerator takes no kernel dunder for an object, the
+register's W96 is filed and fixed, and a relation's name bound as an object is named by the read-out; **it is
+the phase's second exception to *no answer changes***, the four witnesses' answers alone, by their rows.
 The plan this replaces was written on 2026-08-28 against the walk, which M1e2 deleted on 2026-11-03;
 [§ What the re-plan changed](#what-the-re-plan-changed) maps the old stages to these.
 **Depends on:** nothing unfinished.

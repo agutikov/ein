@@ -1197,6 +1197,26 @@
 # 10 any more: the open rows are the followups' (`grep '^status'
 # corpus/wrong_answers.toml | sort | uniq -c`).
 #
+# **W96 was filed on 2026-11-16 by S1f.10.9** (T1f.10.9.4), from E-1 of
+# P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.306, *"all
+# defaults ok"*: (b), a kernel dunder is never an object; and on the same
+# day's ruling on whether *never* covers a dunder a program writes as a
+# value, *"dunder never an object, wide reading"*. Four rows, one per
+# witness: ten digits closed by a rule beside an open `total` (2 048 states
+# where its control, the closure written as a fact, answers 1 024),
+# `std.math.arith` imported beside an open `total` (two states where R is
+# {∅}), `__symmetric__` derived by a rule (eight states where R is four), and
+# `__closed__` written as a rule's relation parameter, a value (four states
+# where R is two). Filed `open`, owned by S1f.10.9, in a commit of their own,
+# `200df470`, and **fixed the same day** by the stage's next: the blind
+# enumerator's objects leave the two dunders out by name, however the program
+# comes to hold one, and each witness answers its `right`, the first its
+# control's R. The list of the program's names, which the alive-set invariant
+# reads, is unchanged, and a dunder stays legal to write as a value. No other
+# corpus program's H, R, read-out or exit code moved. Each `[case.fixed]`
+# carried the null id in the flipping commit, `4ee131e3`, and the stage's next
+# commit wrote the hash. No open row is owned by a stage of M1f's phase 10.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -17486,3 +17506,231 @@ derived   = "H `{(p a), (q a), (r a)}`, and R every one of the eight subsets"
 run     = "solve"
 line    = "all"
 refused = "kb load error: examples/ein-bugs/wrong-answers/hrule-and-in-and.ein:15:42: hrule 'h': its :assert writes (and (and (p a) (q a)) (r a)), 3 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion"
+
+# ══ W96 — a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it ══
+[[case]]
+id       = "W96/closed-by-rule"
+case     = "W96"
+title    = "a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.9"
+question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
+witness  = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling of that day on Q-M1f.306, *\"all defaults ok\"*: (b), a kernel dunder is never an object, wide. Ten digits closed by a rule beside an open `total`: the prototype calculator's shape, on which E-1 was found. The control, dunder-object-closed-by-fact.ein, writes the closure as a fact, and differs in nothing else. The row's run asks the maximal line, one state, since R is 2 048 states today and 1 024 right: `[case.wrong]` and `[case.control]` carry the counts, and `[case.region]` the witness's R. Fixed by the same task (2026-11-16): ten candidates and 1 024 states, the control's"
+
+[case.fixed]
+commit = "4ee131e3"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate build, at 3e59b90a (2026-11-16): H is `(total 0)` to `(total 9)` and `(total __closed__)`, eleven candidates, and R the whole cube, 2 048 states; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2048
+exhausted = true
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein"
+run       = "solve"
+by        = "region"
+why       = "the closure written as a fact, `(__closed__ digit)`, where the witness derives it by a rule, at 3e59b90a: H is `(total 0)` to `(total 9)`, ten candidates, and R the whole cube, 1 024 states"
+verdict   = "Ambiguity"
+k         = 1024
+exhausted = true
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1024
+k_c      = 1024
+minimal  = [[]]
+maximal  = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)"]]
+
+[case.right]
+reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*: neither where only a rule derives a fact headed by it, nor where a program writes it as a value"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["total"]
+models    = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)"]]
+derived   = "The program's names are its ten digits, and `total` is its one open declared relation: ten candidates, nothing restricts them, and R is the whole cube, 1 024 states, the control's. Its maximal line is the one state that holds all ten, which is what the row's run lists"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["total"]
+models    = [["(total 0)", "(total 1)", "(total 2)", "(total 3)", "(total 4)", "(total 5)", "(total 6)", "(total 7)", "(total 8)", "(total 9)"]]
+
+[[case]]
+id       = "W96/arith-closing-rule"
+case     = "W96"
+title    = "a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.9"
+question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
+witness  = "examples/ein-bugs/wrong-answers/dunder-object-arith.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the shipped stdlib: `std.math.arith` imported whole beside an open `total`. The module's closing rule derives its closures and it writes no `(__closed__ R)` fact, so the dunder is the program's one object. `std.math.decimal-arith`, which brings `std.math.digits` and its written closures, proposes no dunder and is no witness. Fixed by the same task (2026-11-16): no candidate, R {∅}"
+
+[case.fixed]
+commit = "4ee131e3"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate build, at 3e59b90a (2026-11-16), the stdlib the checkout's: H is `(total __closed__)`, one candidate, and R two states, ∅ and the one that holds it; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["total"]
+models    = [[], ["(total __closed__)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["total"]
+models    = [[]]
+derived   = "The program writes no name, and the module's names are all in argument positions of relations it closes or of rules: nothing is left to propose about `total` but the kernel's word, which is no object. No candidate, and R is {∅}"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+models    = [[]]
+
+[[case]]
+id       = "W96/symmetric-by-rule"
+case     = "W96"
+title    = "a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.9"
+question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
+witness  = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, for the kernel's other dunder: `(__symmetric__ near)` derived by a rule and never written, `near` scoped out, beside an open `total`. `near` is written both ways round, so that the row does not rest on H9-4 of P1f.10's `findings.md`: the saturation that derives a `(__symmetric__ R)` does not mirror R. Fixed by the same task (2026-11-16): two candidates and four states"
+
+[case.fixed]
+commit = "4ee131e3"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate build, at 3e59b90a (2026-11-16): H is `(total __symmetric__)`, `(total a)` and `(total b)`, three candidates, and R the whole cube, eight states; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 8
+exhausted = true
+closes    = ["total"]
+models    = [
+  [],
+  ["(total __symmetric__)"],
+  ["(total __symmetric__)", "(total a)"],
+  ["(total __symmetric__)", "(total a)", "(total b)"],
+  ["(total __symmetric__)", "(total b)"],
+  ["(total a)"],
+  ["(total a)", "(total b)"],
+  ["(total b)"],
+]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(total a)", "(total b)"]]
+
+[case.right]
+reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["total"]
+models    = [[], ["(total a)"], ["(total a)", "(total b)"], ["(total b)"]]
+derived   = "The program's names are `a` and `b`, and `total` is its one open relation that is not scoped out: two candidates, nothing restricts them, and R is the whole cube, four states"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 4
+relations = ["total"]
+models    = [[], ["(total a)"], ["(total a)", "(total b)"], ["(total b)"]]
+
+[[case]]
+id       = "W96/as-value"
+case     = "W96"
+title    = "a kernel dunder is among the blind enumerator's objects, where only a rule derives a fact of it or a program writes it as a value, so H holds a candidate that names it and R the states that hold it"
+class    = "model set"
+settings = "default"
+owner    = "S1f.10.9"
+question = ["P1f.6 findings.md E-1", "Q-M1f.306"]
+witness  = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein"
+status   = "fixed"
+look_at  = ["root", "answer", "summary"]
+note     = "Filed by S1f.10.9 (T1f.10.9.4, 2026-11-16) beside `W96/closed-by-rule`, on the user's ruling of that day, *\"dunder never an object, wide reading\"*: a dunder a program writes in an argument position, `(lift complete __closed__)`, as `std.algebra`'s `(imply1 functional __closed__)` does. Writing it so is legal (Q-M1f.7 (b)) and stays legal; it is a name of the program as `invariant::program_names` lists them, which the alive-set invariant reads and which does not change. Fixed by the same task (2026-11-16): one candidate and two states"
+
+[case.fixed]
+commit = "4ee131e3"
+by     = "S1f.10.9 (T1f.10.9.4), Q-M1f.306 (b), wide: `hypgen::candidate_objects` leaves the kernel's two dunders, `__closed__` and `__symmetric__`, out of the blind enumerator's objects by name, as it leaves the primitives out, whether the names index holds one as the head of a fact a rule derives or the program writes one in an argument position. `invariant::program_names`, which the alive-set invariant reads, is unchanged"
+date   = "2026-11-16"
+
+[case.wrong]
+run       = "solve"
+by        = "region"
+why       = "`ein solve` on the witness, the gate build, at 3e59b90a (2026-11-16): H is `(total __closed__)` and `(total a)`, two candidates, and R the whole cube, four states; `ein oracle` the same"
+verdict   = "Ambiguity"
+k         = 4
+exhausted = true
+closes    = ["total"]
+models    = [[], ["(total __closed__)"], ["(total __closed__)", "(total a)"], ["(total a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(total a)"]]
+
+[case.right]
+reading   = "Q-M1f.306 (b), the user's rulings of 2026-11-16: a kernel dunder is never an object, *\"dunder never an object, wide reading\"*: a dunder a program writes as a value is none either"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["total"]
+models    = [[], ["(total a)"]]
+derived   = "The puzzle is about one thing, `a`; `thing` and `complete` are relations, and `__closed__` the kernel's word. `total` is the one open relation, `thing` being closed by the rule: one candidate, `(total a)`, and R two states"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 2
+relations = ["total"]
+models    = [[], ["(total a)"]]

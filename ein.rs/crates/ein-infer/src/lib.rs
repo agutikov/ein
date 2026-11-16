@@ -56,6 +56,7 @@ pub mod plan;
 pub mod predicates;
 pub mod read_out;
 pub mod region;
+pub mod relation_names;
 pub mod saturator;
 pub mod scope;
 pub mod shape;

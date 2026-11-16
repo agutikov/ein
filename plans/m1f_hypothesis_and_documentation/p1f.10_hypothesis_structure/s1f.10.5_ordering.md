@@ -667,7 +667,7 @@ route's name and before the licences (`explore::TreeOrder::words`):
   where the couplings were read.
 
 [`read_out.md` § 3.1](../../../docs/kernel/inference/read_out.md#31-what-order-the-obligation-tree-took) defines
-the words, `structure.md` § The coupling a route reads the reading, and `tree.rs`'s § Which instance is
+the words, `hypothesis_space.md` (until the rename, `structure.md`) § The coupling a route reads the reading, and `tree.rs`'s § Which instance is
 restated. No JSON field was added: `region.route` is `tree` as it was, and `explore::Answer::order` holds the
 order for a library's reader.
 

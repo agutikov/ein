@@ -2961,6 +2961,36 @@ runs   = ["solve", "saturate"]
 note   = "M1f W95 (`W95/hrule-and-in-and`), filed by S1f.6.37's T1f.6.37.1 (2026-11-14) from E-63 and E-65: an hrule concluding `(and (and (p a) (q a)) (r a))`, which proposed `(and (p a) (q a))`, one candidate over the relation `and`; read flat since S1f.6.37's T1f.6.37.3, it proposes `(p a)` alone, `hrule-and.ein`'s defect, until the same stage refuses both at load (Q-M1f.271's default (a))."
 
 [[entry]]
+path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-rule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W96 (`W96/closed-by-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) from E-1 of P1f.6's `findings.md`, on the user's ruling on Q-M1f.306, (b): ten digits closed by a rule, `(__closed__ digit)` derived and never written, beside an open `total`. The blind enumerator takes `__closed__` for an object, the head of a fact only a rule derives being in the names index and in no registry: eleven candidates, `(total __closed__)` among them, and R 2 048 states where it is 1 024, the control's. Fixed by the same task: the enumerator's objects leave the kernel's two dunders out by name, and the witness answers its control's R."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/dunder-object-closed-by-fact.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W96's control, filed by S1f.10.9's T1f.10.9.4: `dunder-object-closed-by-rule.ein` with the closure written as a fact, which registers `__closed__` as a relation of the program, so it is no object: ten candidates, R 1 024 states, the witness's right answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/dunder-object-arith.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W96 (`W96/arith-closing-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b): `(import std.math.arith)`, whose closing rule derives its closures and which writes no `(__closed__ R)` fact, beside an open `total`. One candidate, `(total __closed__)`, and R two states where the program has no name to propose about and R is {∅}, which it answers since the same task's fix."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/dunder-object-symmetric-by-rule.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W96 (`W96/symmetric-by-rule`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b): the other dunder, `(__symmetric__ near)` derived by a rule and never written, beside an open `total`. Three candidates, `(total __symmetric__)` among them, and R eight states where it is four, which it answers since the same task's fix."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/dunder-object-as-value.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1f W96 (`W96/as-value`), filed by S1f.10.9's T1f.10.9.4 (2026-11-16) on Q-M1f.306 (b), wide: `__closed__` written as a value, a rule's relation parameter in `(lift complete __closed__)`, beside an open `total`. Two candidates, `(total __closed__)` and `(total a)`, and R four states where it is two, which it answers since the same task's fix."
+
+[[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]

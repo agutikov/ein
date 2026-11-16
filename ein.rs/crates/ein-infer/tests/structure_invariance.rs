@@ -17,18 +17,22 @@
 //! edges one application back, the pairs and the components. Each is a
 //! statement about nodes of
 //! the program's lattice, so two things that are not the program must not
-//! move it. **And what `ein render structure` writes of it is held with
-//! it**: the document, `structure.json`, and the four graphs' DOT, spelled by
+//! move it. **And what `ein render h-space` writes of it is held with
+//! it**: the document, `h-space.json`, and the four graphs' DOT, spelled by
 //! `ein_render::structure` from the same reading, by the one call the view
-//! makes ([`ein_infer::structure::whole`]):
+//! makes ([`ein_infer::structure::whole`]). **And `H` listed plain is held
+//! with both**: what `ein show hyps` prints, the candidates one a line by
+//! [`ein_infer::structure::hypotheses`], is in every reading the document's
+//! `candidates`, the owner's and the universe a route is handed (which
+//! `ein solve -H` lists), and moves as they do:
 //!
 //! 1. **the id order.** A program is read twice: once as loaded, and once
 //!    into a `Terms` whose names and facts are the first run's own, interned
 //!    again in a shuffled order (`id_permutation`, the determinism sweeps'
 //!    own instrument). The universe is in rendered-text order in both, so
 //!    every list is compared **as it is**, place for place, the work and the
-//!    enumeration's steps among it, and the document and the graphs byte for
-//!    byte;
+//!    enumeration's steps among it, and the document, the graphs and the
+//!    listing of `H` byte for byte;
 //! 2. **the import form.** A program that imports is read as written, with
 //!    every selective import whole, and with every one `:as` an alias
 //!    (`import_forms`, the answer's own instrument). A candidate's text
@@ -42,7 +46,9 @@
 //!    document names a group, a question and an instance by its place, which
 //!    follows the universe's order, so it is compared where a form leaves
 //!    that order as it was: every string with its prefixes taken off, and
-//!    every list of strings as a set.
+//!    every list of strings as a set. The listing of `H` is the same set of
+//!    lines with the prefixes off, each form's spelled as its own file
+//!    spells a candidate, which is how its own document spells it.
 //!
 //! Over every corpus file and register witness that **searches**, whose
 //! describe saturates more than root (`corpus_ops`' `searches`, the same
@@ -132,12 +138,80 @@ struct Read {
     /// The coupling read from the whole node alone, of the program loaded
     /// again into a copy of the same terms.
     node: Result<NodeCoupling, String>,
-    /// `structure.json`, as `ein render structure` writes it of this
+    /// The document, `h-space.json`, as `ein render h-space` writes it of this
     /// reading.
     document: String,
     /// Its four graphs, as DOT.
     graphs: Vec<String>,
+    /// `H` listed plain, as `ein show hyps` prints it of this program: by
+    /// the owner's [`structure::hypotheses`], of the program loaded once
+    /// more, which reads no node.
+    listing: String,
+    /// Where the listing, the document's `candidates`, the owner's and the
+    /// universe a route is handed are not one list, which. `None` where they
+    /// are.
+    disagree: Option<String>,
     terms: Terms,
+}
+
+/// **The three listings of `H` are one**: `listing`'s lines, the document's
+/// `candidates`, and `searched`, the universe a route is handed, which
+/// `ein solve -H` lists, each held to the owner's own candidates, place for
+/// place. Where they are not, which.
+fn listings_disagree(
+    listing: &str,
+    document: &str,
+    searched: &[String],
+    owner: &[&str],
+) -> Option<String> {
+    let lines: Vec<&str> = listing.lines().collect();
+    if listing.len() != lines.iter().map(|l| l.len() + 1).sum::<usize>() {
+        return Some("the listing of H is not one candidate a line".to_string());
+    }
+    let d: serde_json::Value = serde_json::from_str(document).expect("the document is JSON");
+    let of_document: Vec<&str> = d["candidates"]
+        .as_array()
+        .expect("candidates")
+        .iter()
+        .map(|c| c["candidate"].as_str().expect("a text"))
+        .collect();
+    let searched: Vec<&str> = searched.iter().map(String::as_str).collect();
+    for (what, other) in [
+        ("the listing of H", &lines),
+        ("the document's candidates", &of_document),
+        ("the universe a route is handed", &searched),
+    ] {
+        if other[..] != owner[..] {
+            let at = other.iter().zip(owner).position(|(a, b)| a != b);
+            return Some(format!(
+                "{what} and the owner's candidates differ: {} and {} of them, first at {at:?}",
+                other.len(),
+                owner.len()
+            ));
+        }
+    }
+    None
+}
+
+/// `H` of the loaded program `kb`, twice more, each over a copy: listed
+/// plain by the owner, and as a run that searches nothing is handed it.
+/// The message where either is refused.
+fn listed(kb: &ein_core::Kb, terms: &Terms, ast: &Ast) -> Result<(String, Vec<String>), String> {
+    let (mut root, mut own) = (kb.clone(), terms.clone());
+    let h = structure::hypotheses(&mut root, &mut own, ast).map_err(|e| e.to_string())?;
+    let listing = shown::hypotheses_text(&h, &own);
+    let (mut root, mut own) = (kb.clone(), terms.clone());
+    let asked = ein_infer::explore::Options {
+        no_search: true,
+        ..ein_infer::explore::Options::new(ein_infer::explore::Mode {
+            which: ein_infer::explore::Which::All,
+            ask: ein_infer::explore::Ask::Describe,
+        })
+    };
+    let answer =
+        ein_infer::explore::run(&mut root, &mut own, ast, &asked).map_err(|e| e.to_string())?;
+    let searched = answer.candidates.into_iter().map(|c| c.text).collect();
+    Ok((listing, searched))
 }
 
 /// The structure of the program `text`, named `name`, its modules found
@@ -158,11 +232,20 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
     let mut ast = Ast::new();
     let forms = parse(&mut ast, text, name.to_str()).ok()?;
     let mut kb = load(&mut ast, &mut terms, &forms, Some(base)).ok()?;
+    let listed = listed(&kb, &terms, &ast);
     let asked = WholeOptions::default();
     let read = structure::whole(&mut kb, &mut terms, &ast, &asked);
     Some(match read {
-        Err(e) => Err(e.to_string()),
+        // A program the owner refuses to read has no listing either.
+        Err(e) => match listed {
+            Err(_) => Err(e.to_string()),
+            Ok(_) => Err(format!("H is listed and the structure refused: {e}")),
+        },
         Ok(w) => {
+            let (listing, searched) = match listed {
+                Ok(l) => l,
+                Err(e) => return Some(Err(format!("a structure is read and H not listed: {e}"))),
+            };
             let inputs = shown::Inputs {
                 program: PROGRAM,
                 budget: asked.layer.budget,
@@ -171,6 +254,14 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
             let graphs = shown::graphs(&w, PROGRAM);
             let document = shown::document(&w, &terms, &inputs, &graphs);
             let graphs = graphs.into_iter().map(|g| g.dot).collect();
+            let owner: Vec<&str> = w
+                .theory
+                .root
+                .candidates
+                .iter()
+                .map(|c| c.text.as_str())
+                .collect();
+            let disagree = listings_disagree(&listing, &document, &searched, &owner);
             match w.parts {
                 Some(p) => Ok(Read {
                     theory: w.theory,
@@ -180,6 +271,8 @@ fn read(text: &str, name: &Path, base: &Path, mut terms: Terms) -> Option<Result
                     node,
                     document,
                     graphs,
+                    listing,
+                    disagree,
                     terms,
                 }),
                 None => Err(format!("the small KB has no layer: {:?}", w.theory.small)),
@@ -325,7 +418,7 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                     (&c.questions, &c.question_of, &c.ties, &c.reasons),
                     (&c.edges, &c.one_step, &c.debts, c.unlicensed),
                     (&c.components, &c.conflict_components, &c.committed),
-                    (c.pairs_read, c.node, c.node_stopped, c.cut)
+                    (c.pairs_read, c.payers_read, c.node, c.node_stopped, c.cut)
                 )
             )
         }),
@@ -346,8 +439,9 @@ fn as_it_is(r: &Read) -> Vec<(&'static str, String)> {
                 Err(e) => e.clone(),
             },
         ),
-        ("the view's structure.json", r.document.clone()),
+        ("the view's h-space.json", r.document.clone()),
         ("the view's graphs", r.graphs.join("\n")),
+        ("the listing of H", r.listing.clone()),
     ]
 }
 
@@ -374,7 +468,7 @@ fn document_as_sets(document: &str, strip: &dyn Fn(&str) -> String) -> serde_jso
         }
     }
     walk(
-        serde_json::from_str(document).expect("structure.json is JSON"),
+        serde_json::from_str(document).expect("h-space.json is JSON"),
         strip,
     )
 }
@@ -661,6 +755,18 @@ fn as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> Vec<(&'static str, Strin
         ("the grids", format!("{:?}", (grids, not_grids))),
         ("the coupling", coupling_as_sets(r, &strip)),
         ("the coupling from the node alone", node_as_sets(r, &strip)),
+        (
+            "the listing of H",
+            // Every line, and as many: no two are one text with the prefixes
+            // off.
+            format!(
+                "{:?}",
+                (
+                    r.listing.lines().count(),
+                    r.listing.lines().map(strip).collect::<BTreeSet<_>>()
+                )
+            ),
+        ),
     ]
 }
 
@@ -780,6 +886,7 @@ fn coupling_as_sets(r: &Read, strip: &dyn Fn(&str) -> String) -> String {
             (
                 one(&c.committed),
                 c.pairs_read,
+                c.payers_read,
                 c.node,
                 c.node_stopped,
                 c.cut
@@ -872,6 +979,11 @@ fn held_under_ids(
         (Ok(a), Ok(b)) => {
             out.compared = true;
             counts(&mut out, a);
+            for (r, which) in [(a, "as loaded"), (b, "in a permuted id space")] {
+                if let Some(d) = &r.disagree {
+                    out.failures.push(format!("{rel}, {which}: {d}"));
+                }
+            }
             if let Some(d) = difference(&as_it_is(a), &as_it_is(b)) {
                 out.failures
                     .push(format!("{rel}: moved under a permuted id space, in {d}"));
@@ -928,6 +1040,10 @@ fn held_under_imports(rel: &str, text: &str, path: &Path, written: &Result<Read,
             (Ok(a), Ok(b)) => {
                 out.compared = true;
                 out.forms += 1;
+                // Each form's listing is spelled as its own document is.
+                if let Some(d) = &b.disagree {
+                    out.failures.push(format!("{rel}, form {mode}: {d}"));
+                }
                 let order = |r: &Read, name: &dyn Fn(&str) -> String| -> Vec<String> {
                     let candidates = r.theory.root.candidates.iter();
                     candidates.map(|c| name(&c.text)).collect()
@@ -941,7 +1057,7 @@ fn held_under_imports(rel: &str, text: &str, path: &Path, written: &Result<Read,
                     out.documents += 1;
                     let one = document_as_sets(&a.document, &strip);
                     let other = document_as_sets(&b.document, &strip);
-                    if let Some(d) = document_difference(&one, &other, "structure.json") {
+                    if let Some(d) = document_difference(&one, &other, "h-space.json") {
                         out.failures.push(format!(
                             "{rel}: the document of the program as written and of its form \
                              {mode} differ, at {d}"
@@ -1205,6 +1321,8 @@ fn a_form_that_reorders_the_universe_moves_no_set() {
                 node: r.node.clone(),
                 document: r.document.clone(),
                 graphs: r.graphs.clone(),
+                listing: r.listing.clone(),
+                disagree: None,
                 terms: Terms::new(),
             };
             cut.cover.groups.truncate(2);
@@ -1249,6 +1367,8 @@ fn a_structure_that_moves_is_caught() {
         node: r.node.clone(),
         document: r.document.clone(),
         graphs: r.graphs.clone(),
+        listing: r.listing.clone(),
+        disagree: None,
         terms: Terms::new(),
     };
     moved.cover.member_of.swap(0, 1);
@@ -1323,13 +1443,13 @@ fn a_structure_that_moves_is_caught() {
     moved.coupling = r.coupling.clone();
     moved.document = marked.clone();
     let d = difference(&said, &as_it_is(&moved)).expect("a difference");
-    assert!(d.starts_with("the view's structure.json"), "{d}");
+    assert!(d.starts_with("the view's h-space.json"), "{d}");
     // As sets it is the same with itself, and says where it is not.
     let whole = document_as_sets(&r.document, &plain);
-    assert_eq!(document_difference(&whole, &whole, "structure.json"), None);
-    let d = document_difference(&whole, &document_as_sets(&marked, &plain), "structure.json")
+    assert_eq!(document_difference(&whole, &whole, "h-space.json"), None);
+    let d = document_difference(&whole, &document_as_sets(&marked, &plain), "h-space.json")
         .expect("a difference");
-    assert!(d.starts_with("structure.json.candidates[0].at_root"), "{d}");
+    assert!(d.starts_with("h-space.json.candidates[0].at_root"), "{d}");
     // A name that keeps its prefix is a difference, and none once the
     // prefix is taken off: the comparison passes for the strip and not for
     // want of looking.
@@ -1338,7 +1458,7 @@ fn a_structure_that_moves_is_caught() {
         document_difference(
             &whole,
             &document_as_sets(&respelled, &plain),
-            "structure.json"
+            "h-space.json"
         )
         .is_some()
     );
@@ -1348,7 +1468,7 @@ fn a_structure_that_moves_is_caught() {
         document_difference(
             &document_as_sets(&r.document, &strip),
             &document_as_sets(&respelled, &strip),
-            "structure.json"
+            "h-space.json"
         ),
         None
     );
@@ -1357,4 +1477,129 @@ fn a_structure_that_moves_is_caught() {
     moved.graphs[0].push_str("// moved\n");
     let d = difference(&said, &as_it_is(&moved)).expect("a difference");
     assert!(d.starts_with("the view's graphs"), "{d}");
+
+    // The listing of H: a line lost is a difference both ways, a line
+    // respelled one as sets until its prefix is taken off, and the three
+    // listings are held to the owner's, each by name.
+    moved.graphs = r.graphs.clone();
+    assert_eq!(r.disagree, None, "the three listings of H are one");
+    assert_eq!(r.listing.lines().count(), r.theory.root.n());
+    let (first, rest) = r.listing.split_once('\n').expect("a candidate");
+    moved.listing = rest.to_string();
+    let d = difference(&said, &as_it_is(&moved)).expect("a difference");
+    assert!(d.starts_with("the listing of H"), "{d}");
+    let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
+    assert!(d.starts_with("the listing of H"), "{d}");
+    moved.listing = r.listing.replace("color-loc", "m.color-loc");
+    let d = difference(&as_sets(&r, &plain), &as_sets(&moved, &plain)).expect("a difference");
+    assert!(d.starts_with("the listing of H"), "{d}");
+    assert_eq!(
+        difference(&as_sets(&r, &strip), &as_sets(&moved, &strip)),
+        None
+    );
+    let owner: Vec<&str> = r
+        .theory
+        .root
+        .candidates
+        .iter()
+        .map(|c| c.text.as_str())
+        .collect();
+    let searched: Vec<String> = owner.iter().map(|c| c.to_string()).collect();
+    let held = |listing: &str, document: &str, searched: &[String]| {
+        listings_disagree(listing, document, searched, &owner)
+    };
+    assert_eq!(held(&r.listing, &r.document, &searched), None);
+    let d = held(rest, &r.document, &searched).expect("a line lost");
+    assert!(d.starts_with("the listing of H and"), "{d}");
+    let d = held(&format!("{rest}{first}\n"), &r.document, &searched).expect("another order");
+    assert!(d.starts_with("the listing of H and"), "{d}");
+    let d = held(&r.listing, &respelled, &searched).expect("a document respelled");
+    assert!(d.starts_with("the document's candidates"), "{d}");
+    let d = held(&r.listing, &r.document, &searched[1..]).expect("a universe short of one");
+    assert!(d.starts_with("the universe a route is handed"), "{d}");
+    let d = held(r.listing.trim_end(), &r.document, &searched).expect("no last newline");
+    assert!(d.contains("one candidate a line"), "{d}");
+}
+
+/// The six instances of the structure's stages: the one-relation zebra, the
+/// declared control, its under-determined twin, the blind enumerator's, the
+/// conflict of three and the cryptarithm.
+const SIX: [&str; 6] = [
+    "examples/zebra.ein",
+    "examples/zebra2.ein",
+    "examples/zebra2-minus-15.ein",
+    "examples/branching/06_lookahead_on.ein",
+    "examples/lattice/02_genuine_3set_death.ein",
+    "examples/beyond_arith/send_more_money.ein",
+];
+
+/// The saturations and the nodes a narrated stream holds: a saturation
+/// reaches its first quiescence once, at round 0, and a node read is an
+/// `enter`.
+fn work_narrated(stream: &str) -> (usize, usize) {
+    let of = |kind: &str| -> Vec<serde_json::Value> {
+        stream
+            .lines()
+            .filter_map(|l| serde_json::from_str::<serde_json::Value>(l).ok())
+            .filter(|l| l["e"] == kind)
+            .collect()
+    };
+    (
+        of("quiesce").iter().filter(|l| l["round"] == 0).count(),
+        of("enter").len(),
+    )
+}
+
+/// **Listing `H` costs what building `H` costs: one saturation, root's, and
+/// no node.** The owner's entry is narrated as a route narrates root, and
+/// the stream holds one saturation and no node read: no single, no pair, no
+/// small KB, no whole node. The same count over a pair layer finds its
+/// nodes, so it is not the instrument that sees none.
+#[test]
+fn listing_h_is_one_saturation_and_no_node() {
+    use ein_infer::events::{Buffer, Events, Level};
+    let loaded = |rel: &str| {
+        let path = repo_root().join(rel);
+        let text = std::fs::read_to_string(&path).expect("the program");
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &text, path.to_str()).expect("it parses");
+        let kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
+        (ast, terms, kb)
+    };
+    for rel in SIX {
+        let (ast, mut terms, mut kb) = loaded(rel);
+        let buffer = Buffer::new();
+        let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
+        let h = structure::hypotheses_with(&mut kb, &mut terms, &ast, &mut events)
+            .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        drop(events);
+        assert!(!h.candidates.is_empty(), "{rel} proposes nothing any more");
+        assert_eq!(
+            work_narrated(&buffer.to_string_lossy()),
+            (1, 0),
+            "{rel}: (saturations, nodes) of a listing of H"
+        );
+    }
+    // The instrument, over a reading that has nodes: root's node, three
+    // singles and three pairs, each a saturation.
+    let (ast, mut terms, mut kb) = loaded("examples/lattice/02_genuine_3set_death.ein");
+    let buffer = Buffer::new();
+    let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
+    let layer = structure::pair_layer_with(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &structure::Options::default(),
+        &mut events,
+    )
+    .expect("a layer");
+    drop(events);
+    let (saturations, nodes) = work_narrated(&buffer.to_string_lossy());
+    assert_eq!(nodes as u64, layer.work.saturations, "every node is seen");
+    assert_eq!(nodes, 7, "root's node, three singles, three pairs");
+    assert!(
+        saturations >= nodes,
+        "{saturations} saturations, {nodes} nodes"
+    );
 }

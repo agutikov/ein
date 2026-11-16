@@ -90,8 +90,8 @@ S1e2.1b.6 added [`inference/monotonicity.md`](inference/monotonicity.md), 45
 since M1f S1f.5.16 added [`inference/read_out.md`](inference/read_out.md) and
 [`inference/read_out_examples.md`](inference/read_out_examples.md), 46 since
 M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
-(2026-11-10), and 47 with [`inference/structure.md`](inference/structure.md),
-the structure of the hypothesis set
+(2026-11-10), and 47 with [`inference/hypothesis_space.md`](inference/hypothesis_space.md),
+the hypothesis space and its structure
 (`git ls-files 'docs/kernel/*.md' | wc -l`), current:
 
 - **current** — every claim holds of the engine that ships. No banner; this is

@@ -1952,6 +1952,10 @@ A flagged program past `--region-limit` whose nodes hold thousands of stale fact
 then one `…` row counts the rest and names what writes them, so the warning stays bounded on its own and takes none of
 the listings' 100 lines.
 
+Under `universe`, the `relation names` row: the rule `see-stored-neg` concludes `explicitly-dislikes` facts, no file
+declares the relation or writes a fact of it, so its name is an object of the blind enumerator and a candidate can name
+it. The candidates stay in H, and the row counts them.
+
 `ein solve examples/features/01_not_and_absent.ein`
 
 ```text
@@ -1981,6 +1985,7 @@ solve · examples/features/01_not_and_absent.ein
     paths           not checked — the read-out prints no state of two commitments or more; its 64 655 members met would cost up to 386 524 saturations
   universe          35 candidates, dead alone not known: the run stopped before it visited each alone
     types           Person — on the right of an is-a, and 13 candidates of is-a, likes name it as an object: the blind enumerator is untyped, and no signature names it
+    relation names  explicitly-dislikes — a relation only a rule concludes, and 16 candidates of is-a, likes name it as an object: no file declares it or writes a fact of it
   route             2, the cube — no licence: the static check flags the program
   work              64 655 saturations · 294 793 facts beyond root
 

@@ -4,16 +4,17 @@
 //! [`ein_infer::hypgen::candidate_objects`] is every name the KB's names
 //! index holds, a fact's head among them, and every name of the program
 //! ([`ein_infer::invariant::program_names`]), less the names a signature
-//! declares, the reserved primitives and what the registry calls a relation
-//! or a rule. A head is in the registry when a `(relation …)` declares it or a
-//! **file writes a fact of it**; a head only a rule derives is in neither, so
-//! it is an object. This census reads every candidate of H at root's fixpoint
-//! and marks the ones that name:
+//! declares, the reserved primitives, the kernel's two dunders and what the
+//! registry calls a relation or a rule. A head is in the registry when a
+//! `(relation …)` declares it or a **file writes a fact of it**; a head only a
+//! rule derives is in neither, so it is an object, unless it is a dunder.
+//! This census reads every candidate of H at root's fixpoint and marks the
+//! ones that name:
 //!
 //! | set | the candidate names |
 //! |---|---|
-//! | `K1` | a kernel name (`__closed__`, `__symmetric__`, any other reserved name) the program never writes in an argument position |
-//! | `K2` | a kernel name the program also writes in an argument position, as `(imply1 functional __closed__)` does |
+//! | `K1` | a kernel name (`__closed__`, `__symmetric__`, any other reserved name) the program never writes in an argument position. The blind enumerator proposes none: a dunder is no object, and the count is the check of that |
+//! | `K2` | a kernel name the program also writes in an argument position, as `(imply1 functional __closed__)` does. None from the blind enumerator either |
 //! | `R1` | a relation's name the program never writes in an argument position: the head of a fact only a rule derives |
 //! | `R2` | a relation's name (a fact's head at root, or a rule's) that the program also writes in an argument position |
 //! | `IN` | a name the main file does not write outside a `(query …)`: one only an imported module writes |

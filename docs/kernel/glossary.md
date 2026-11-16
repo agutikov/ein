@@ -342,7 +342,11 @@ rule can bring a commitment to owe
 ([`solution_semantics.md` § 1.4](inference/solution_semantics.md#14-candidate-and-universe)),
 else the blind enumerator. Scoping (`:hypothesis-relations`, `:no-hypothesis`,
 `(__closed__ R)`) decides eligibility, so a fact of an excluded relation is
-not a hypothesis at all.
+not a hypothesis at all. The blind enumerator proposes about its **objects**:
+the program's names, less a signature's type roles, the kernel's words, every
+relation and rule the registry holds, and the kernel's two dunders,
+`__closed__` and `__symmetric__`, which are never an object
+([`solution_semantics.md` § 1.2](inference/solution_semantics.md#12-names)).
 
 ### Universe (H)
 The candidate list, n = |H|: **the space every definition quantifies over**.

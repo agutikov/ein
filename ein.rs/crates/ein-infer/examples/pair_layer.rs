@@ -230,7 +230,7 @@ fn loaded(path: &Path) -> Option<(ein_core::Kb, Terms, Ast)> {
 
 /// One of the owner's values as `ein-render` spells it, for this file's
 /// writer: the lists of each object are `ein_render::structure`'s, the same
-/// `ein render structure` writes, and `serde_json` sorts their keys.
+/// `ein render h-space` writes, and `serde_json` sorts their keys.
 fn v(j: Json) -> Value {
     match j {
         Json::Null => Value::Null,
@@ -1722,7 +1722,7 @@ fn exactly_one_row(rel: &str, dir: &Path, c: &Cover, x: &ExactlyOne, terms: &Ter
     let open = |g: u32| c.open(g).count();
     let table = x.owed.table();
 
-    // The lists, raw: the owner's values as `ein render structure` writes
+    // The lists, raw: the owner's values as `ein render h-space` writes
     // them.
     let mut raw = v(shown::exactly_one_lists(c, x, terms));
     raw["program"] = json!(rel);

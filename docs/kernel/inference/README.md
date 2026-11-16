@@ -80,11 +80,11 @@ docs/kernel/inference/
 │                                     summary field (M1f S1f.5.16)
 ├── read_out_examples.md           ← every row in a real run, written by
 │                                     `utils/read_out_examples.py`
-├── structure.md                   ← the structure of the hypothesis set:
+├── hypothesis_space.md            ← the hypothesis space and its structure:
 │                                     the pairs that exclude, the theory's
 │                                     share, groups, owed groups and grids,
-│                                     the coupling; `ein render structure`
-│                                     and `structure.json`
+│                                     the coupling; `ein render h-space`
+│                                     and `h-space.json`
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,

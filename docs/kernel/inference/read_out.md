@@ -194,8 +194,8 @@ function of the question, and no option, `(config …)` field or `EIN_*` name re
 
 **A coupling** is a set of owed instances that some conflict or some derivation needs a member of each of: the
 letters of one column of a sum, with the letters its carry comes from. It is read off **the whole node**, root
-with every candidate committed, saturated once ([`structure.md` § The coupling a route
-reads](structure.md#the-coupling-a-route-reads-the-whole-node-alone)). **That saturation is the run's**: it is one
+with every candidate committed, saturated once ([`hypothesis_space.md` § The coupling a route
+reads](hypothesis_space.md#the-coupling-a-route-reads-the-whole-node-alone)). **That saturation is the run's**: it is one
 of the `work` row's saturations, with its facts, and one of the nodes a `--dump-lattice` lists, the node of every
 candidate. So the couplings are read only **when a choice is left tied, the run has saturated twenty nodes, and
 the node costs at most a twentieth of the facts the run has derived**: a question a few nodes answer reads none,
@@ -313,6 +313,7 @@ Every question prints these, since every question is over the same H.
 | `later debt` | per debt root does not owe and a commitment can bring, where H holds a candidate for it that no debt of root's proposes | the activator, the rules whose `:assert` concludes it, how many such candidates would pay the debt, and the candidates, at most four named and the rest counted; `--dump-answer`'s `answer.txt` names them all. What H is on the obligations rung is [`solution_semantics.md` § 1.4](solution_semantics.md#14-candidate-and-universe)'s | around R | `root.hypgen.later_debts[k].activator`, `root.hypgen.later_debts[k].added` | [X20](read_out_examples.md#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) |
 | `outside` | when H leaves out a relation the program can conclude or ask about | the relations, why no rung proposes their facts, and what every state of R holds of them | around R | `root.hypgen.outside[].relation` | [X1](read_out_examples.md#x1--branching05_mini_zebraein-everything-at-once) |
 | `types` | when the blind enumerator binds a type as an object | the objects, how many candidates of which relations name them, and why | around R | `root.hypgen.types_as_objects.objects`, `root.hypgen.types_as_objects.candidates` | [X13](read_out_examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) |
+| `relation names` | when the blind enumerator binds a relation's name as an object: a candidate names the head of a fact root's fixpoint holds, or a relation a rule's `:assert` names, that no file declares or writes a fact of | the names, how many candidates of which relations name them, and why they are objects. The candidates stay in H; declaring the relation takes its name out ([`solution_semantics.md` § 1.2](solution_semantics.md#12-names)) | around R | `root.hypgen.relation_names_as_objects.objects`, `root.hypgen.relation_names_as_objects.candidates` | [X15](read_out_examples.md#x15--features01_not_and_absentein-the-warning-past-four-rows) |
 <!-- /rows -->
 
 ---
@@ -427,6 +428,11 @@ of the 100 lines; a form's head is never cut, and its last line, when it cut, na
 | `-P` | the same, `(not …)` omitted | the positive ones | [§ 3's model](solution_semantics.md#3-model) |
 | `-f` | the relations, and the count of facts | every fact of the candidates' relations, given ones too | the candidates' relations' facts |
 | `--diff-models FILE` | the listed states against the file's, and what they are compared over | per state, what differs | the listed states |
+
+`-H` lists H after a read-out, by relation, within the 100 lines. **H alone, whole and as Ein facts, is `ein show hyps
+FILE`**: one candidate a line and nothing else on stdout, at the cost of root's saturation and the generator's pass, no
+route run ([`hypothesis_space.md` § How to see it](hypothesis_space.md#how-to-see-it)). The candidates are the same:
+`ein-cli/tests/h_space_view.rs` holds the two listings to each other.
 
 ---
 

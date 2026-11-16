@@ -1,11 +1,11 @@
-//! The structure of a program's hypothesis set, written out: what `ein
-//! render structure FILE` prints and writes.
+//! The hypothesis space of a program, written out: its candidates and the
+//! structure of the set, what `ein render h-space FILE` prints and writes.
 //!
 //! **Nothing here computes a structure.** Every object is
 //! [`ein_infer::structure`]'s, read once by [`ein_infer::structure::whole`],
-//! and this module only spells it: one JSON document, `structure.json`
-//! ([`json`], schema [`SCHEMA`]), four graphs as DOT ([`graphs`]), and a
-//! short read-out ([`summary`]). No group, grid, question or edge is defined
+//! and this module only spells it: one JSON document, `h-space.json`
+//! ([`json`], [`DOCUMENT`], schema [`SCHEMA`]), four graphs as DOT
+//! ([`graphs`]), and a short read-out ([`summary`]). No group, grid, question or edge is defined
 //! here; a name such as a question's ([`question_name`]) or a grid's
 //! relations is a label read off the candidates' texts for the reader, and
 //! the owner reads none.
@@ -21,8 +21,12 @@
 //! rendered-text order. So two runs write the same bytes: in any id space,
 //! which `ein-infer/tests/structure_invariance.rs` holds on every corpus
 //! program that searches, and at any `--jobs`, which
-//! `ein-cli/tests/structure_view.rs` holds on one program and the owner's
+//! `ein-cli/tests/h_space_view.rs` holds on one program and the owner's
 //! own tests of each layer on more.
+//!
+//! **`H` itself, as Ein facts**, is [`hypotheses_text`], what `ein show
+//! hyps FILE` prints: the candidates the document's `candidates` lists, by
+//! the function the owner opens every structure over, and no node read.
 //!
 //! **A structure that is not whole says so.** [`unread`] lists, as
 //! sentences, everything a budget or a bound stopped or cut and everything
@@ -36,20 +40,33 @@ use std::fmt::Write as _;
 use ein_core::{FactId, Symbol, Terms};
 use ein_infer::explore::Stopped;
 use ein_infer::structure::{
-    self, CLIQUE_STEPS, Coupling, Cover, Cut, Edge, EdgeKind, ExactlyOne, Mark, NodeStop, NotAGrid,
-    Origin, Owing, PairLayer, Question, Theory, Whole, WitnessIs,
+    self, CLIQUE_STEPS, Coupling, Cover, Cut, Edge, EdgeKind, ExactlyOne, Hypotheses, Mark,
+    NodeStop, NotAGrid, Origin, Owing, PairLayer, Question, Theory, Whole, WitnessIs,
 };
 
 use crate::dot_util::esc;
 use crate::dump::Json;
 use crate::read_out::{group, plural};
 
-/// The schema of `structure.json`.
-pub const SCHEMA: &str = "ein-structure/1";
+/// The command's name, written once: [`COMMAND`], [`SCHEMA`] and
+/// [`DOCUMENT`] are spelled from it.
+macro_rules! command {
+    () => {
+        "h-space"
+    };
+}
 
-/// The files `--dump DIR` writes: the document, then each of [`GRAPHS`] as
-/// `<name>.dot` with `-` for `_`.
-pub const DOCUMENT: &str = "structure.json";
+/// **The view's name under `ein render`**: `ein render h-space FILE`, the
+/// hypothesis space. The parser, the dispatch, the read-out's first row, the
+/// document's file and its schema all take the name from here.
+pub const COMMAND: &str = command!();
+
+/// The schema of the document.
+pub const SCHEMA: &str = concat!("ein-", command!(), "/1");
+
+/// The files `--dump DIR` writes: the document, `h-space.json`, then each
+/// of [`GRAPHS`] as `<name>.dot` with `-` for `_`.
+pub const DOCUMENT: &str = concat!(command!(), ".json");
 
 /// The graphs, by the name `--view` takes: the exclusion graph, the cover,
 /// the questions' hypergraph, and the hypergraph of the edges read one
@@ -62,6 +79,38 @@ pub fn graph_file(name: &str) -> String {
         "one-step" => "coupling_one_step.dot".to_string(),
         other => format!("{other}.dot"),
     }
+}
+
+// ── H, listed ─────────────────────────────────────────────────────────
+
+/// **`H` as Ein facts**, what `ein show hyps FILE` prints: one candidate a
+/// line, every candidate, in the universe's canonical order, and nothing
+/// else. Each line is the fact as the one printer writes it
+/// ([`Terms::fact_text`], which writes a state file's facts too), so it is
+/// a fact a `.ein` file could hold, spelled as the program's file spells it.
+/// Empty where `H` is.
+pub fn hypotheses_text(h: &Hypotheses, terms: &Terms) -> String {
+    let mut out = String::new();
+    for c in &h.candidates {
+        out.push_str(&terms.fact_text(c.fact));
+        out.push('\n');
+    }
+    out
+}
+
+/// **What `ein show hyps` says of `H` beside it**, one sentence: the rung of
+/// the ladder that built it, and how many candidates it holds, or, where it
+/// holds none, why, in the words of the read-out's `universe` row for a run
+/// that searches nothing.
+pub fn hypotheses_note(h: &Hypotheses) -> String {
+    let universe = match (h.candidates.len() as u64, h.rung) {
+        (0, ein_infer::oblgen::Mode::NoSearch) => {
+            "no candidate: the program states :no-search".to_string()
+        }
+        (0, _) => "no candidate".to_string(),
+        (n, _) => plural(n, "candidate", "candidates"),
+    };
+    format!("H, built by the rung `{}`: {universe}", h.rung.as_str())
 }
 
 // ── The JSON's small parts ────────────────────────────────────────────
@@ -1243,31 +1292,28 @@ pub fn unread(w: &Whole) -> Vec<String> {
     if let Some(c) = p.cover.root_cliques.as_ref().and_then(|r| r.cut.as_ref()) {
         out.push(cut_words("the cliques of root's own exclusion graph", c));
     }
-    // Which candidates' own nodes hold each witness is read through a
-    // layer's singles, after the layer, and is refused once the layer has
-    // spent its budget. That is so of a layer that stopped, and of one that
-    // read every pair and whose last step carried it past the budget: the
-    // layer is then whole and this reading is not, so neither sentence says
-    // the layer stopped.
+    // Which candidates' own nodes hold each witness is read off a layer's
+    // singles, which the layer's own reading left in the cache: it is unread
+    // where the layer stopped before its last single, and there alone. The
+    // layer's own sentence, above, says it stopped; these say what follows.
     let owed = &p.exactly_one.owed;
     if owed.instances.is_ok() {
         if !owed.singles_read {
             out.push(
                 "which candidates' own nodes hold each witness of an instance root owes was \
-                 not read at root: root's layer had spent its budget, whether or not it read \
-                 every pair, and this reading is refused past it. No witness is listed as held \
-                 at root, and an instance L5 does not license has no payers read, so the debts \
-                 listed are the licensed ones alone and the components may be finer than R's"
+                 not read at root: root's layer stopped before its last single, and the \
+                 holders are read off the singles. No witness is listed as held at root, and \
+                 an instance L5 does not license has no payers read, so the debts listed are \
+                 the licensed ones alone and the components may be finer than R's"
                     .to_string(),
             );
         }
         if !owed.theory_read {
             out.push(
                 "which candidates' own nodes hold each witness of an instance root owes was \
-                 not read in the small KB: its layer had spent its budget, whether or not it \
-                 read every pair, and this reading is refused past it. No witness is listed as \
-                 held by the theory, and no instance L5 does not license is said to be about a \
-                 group"
+                 not read in the small KB: its layer stopped before its last single, and the \
+                 holders are read off the singles. No witness is listed as held by the \
+                 theory, and no instance L5 does not license is said to be about a group"
                     .to_string(),
             );
         }
@@ -1622,7 +1668,8 @@ fn declared(w: &Whole, terms: &Terms) -> Json {
     Json::obj(vec![("mechanisms", mechanisms), ("relations", rows)])
 }
 
-/// **`structure.json`**: the whole structure of one program, one document.
+/// **The document, `h-space.json`** ([`DOCUMENT`]): the whole structure of
+/// one program.
 ///
 /// `graphs` are [`graphs`]' of the same reading: the document says what
 /// each holds, so that a reader knows a graph's size before laying it out.
@@ -1637,6 +1684,7 @@ pub fn json(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph]) -> 
             coupling_lists(c, &p.cover),
             vec![
                 ("pairs_read", Json::Bool(c.pairs_read)),
+                ("payers_read", Json::Bool(c.payers_read)),
                 ("node_stopped", opt_text(c.node_stopped.map(|s| s.as_str()))),
                 (
                     "cut",
@@ -1730,7 +1778,7 @@ pub fn json(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph]) -> 
     ])
 }
 
-/// [`json`] as the text of `structure.json`: indented by two, in the
+/// [`json`] as the text of [`DOCUMENT`]: indented by two, in the
 /// document's own key order, a newline at its end.
 pub fn document(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph]) -> String {
     crate::dump::json::dumps_indent(&json(w, terms, inputs, graphs)) + "\n"
@@ -1738,7 +1786,7 @@ pub fn document(w: &Whole, terms: &Terms, inputs: &Inputs<'_>, graphs: &[Graph])
 
 // ── The read-out ──────────────────────────────────────────────────────
 
-/// **The read-out**: what `ein render structure FILE` prints where no
+/// **The read-out**: what `ein render h-space FILE` prints where no
 /// `--view` asks for a graph or the document. One row an object, each a
 /// count the document lists in full, then what the structure cost, what
 /// each graph holds, and every sentence of [`says`] and of [`unread`].
@@ -1751,7 +1799,7 @@ pub fn summary(w: &Whole, inputs: &Inputs<'_>, graphs: &[Graph]) -> String {
     let mut row = |label: &str, what: String| {
         let _ = writeln!(out, "{label:<13}{what}");
     };
-    row("structure", inputs.program.to_string());
+    row(COMMAND, inputs.program.to_string());
     row(
         "H",
         format!(
