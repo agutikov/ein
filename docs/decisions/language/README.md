@@ -1,0 +1,75 @@
+# The language
+
+What Ein is written in and what a program may say: names and values, forms and keywords, rules and macros, and the
+shapes the parser and the loader refuse.
+
+- [Q1](Q1-the-knowledge-base-is-a-typed-labelled.md) — The knowledge base is a typed labelled hypergraph with provenance
+- [Q3](Q3-ein-is-an-s-expression-language.md) — Ein is an S-expression language
+- [Q4](Q4-a-rule-is-a-pattern-a-conclusion-and-a-reason.md) — A rule is a pattern, a conclusion and a reason, written in Ein
+- [Q17](Q17-spatial-structure-is-facts-and-rules-with-no.md) — Spatial structure is facts and rules, with no position arithmetic
+- [Q23](Q23-a-premise-types-a-variable-and-no-entity-has.md) — A premise types a variable, and no entity has a type slot
+- [Q27](Q27-a-relations-properties-are-facts-beside.md) — A relation's properties are facts beside its declaration
+- [Q31](Q31-a-why-template-refers-to-a-variable-as-var.md) — A `:why` template refers to a variable as `{?var}`
+- [Q40](Q40-a-fact-may-hold-a-fact-as-an-argument.md) — A fact may hold a fact as an argument
+- [Q-M1c.1](Q-M1c.1-a-query-states-the-answer-it-expects-with-expect.md) — A query states the answer it expects with `:expect`
+- [Q-M1c.2](Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md) — An expectation is ground, and naming a relation closes it
+- [Q-M1d.7](Q-M1d.7-a-rule-is-a-sentence-about-the-state-it-fires.md) — A rule is a sentence about the state it fires in
+- [Q-M1e.18](Q-M1e.18-eq-neq-and-absent-are-read-only-at-their-own.md) — `eq`, `neq` and `absent` are read only at their own arity
+- [Q-M1e2.5](Q-M1e2.5-a-refutation-may-not-rest-on-an-absent.md) — A refutation may not rest on an `absent` a commitment can still fill
+- [Q-M1e2.9](Q-M1e2.9-a-programs-names-are-the-constants-its-facts.md) — A program's names are the constants its facts and rules write
+- [Q-M1e2.17](Q-M1e2.17-a-reserved-word-is-a-keyword-only-as-a-whole.md) — A reserved word is a keyword only as a whole token
+- [Q-M1e2.18](Q-M1e2.18-a-keyword-pair-is-no-guards-argument-and-a-fact.md) — A keyword pair is no guard's argument, and a fact names no relation
+- [Q-M1e2.22](Q-M1e2.22-a-bare-is-reserved-and-refused.md) — A bare `_` is reserved and refused
+- [Q-M1e2.23](Q-M1e2.23-a-string-is-natural-language-text-never-a-value.md) — A string is natural-language text, never a value
+- [Q-M1e2.24](Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md) — Ein has no numbers and no ranges
+- [Q-M1e2.26](Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md) — `eq` and `neq` are the relations of equality and non-equality
+- [Q-M1e2.28](Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md) — Each form takes a closed list of keywords
+- [Q-M1f.1](Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md) — A rule that could derive an activator binding a relation parameter to a fact is refused at load
+- [Q-M1f.7](Q-M1f.7-the-dunders-are-never-bound-and-the-writeback.md) — The dunders are never bound, and the writeback names never written
+- [Q-M1f.11](Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md) — A template may not refer to a variable whose name holds `}`
+- [Q-M1f.30](Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md) — A guard argument holds no variable inside a fact
+- [Q-M1f.31](Q-M1f.31-not-eq-x-y-is-neq-x-y-in-every-place.md) — `(not (eq x y))` is `(neq x y)` in every place
+- [Q-M1f.33](Q-M1f.33-a-written-fact-of-eq-is-a-conclusion-with-no.md) — A written fact of `eq` is a conclusion with no premise
+- [Q-M1f.34](Q-M1f.34-a-guard-that-binds-its-variable-binds-it-where.md) — A guard that binds its variable binds it where it is written
+- [Q-M1f.41](Q-M1f.41-a-position-holds-a-fact-unless-the-program.md) — A position holds a fact unless the program passes it to a relation parameter
+- [Q-M1f.42](Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md) — A conclusion whose relation is a parameter writes into every rule the program names
+- [Q-M1f.46](Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md) — A relation parameter that can hold `eq` heads only a form of two arguments
+- [Q-M1f.47](Q-M1f.47-a-written-fact-of-eq-at-another-arity-than-two.md) — A written fact of `eq` at another arity than two is refused at load
+- [Q-M1f.65](Q-M1f.65-a-comment-may-hold-any-character.md) — A comment may hold any character
+- [Q-M1f.66](Q-M1f.66-open-is-written-only-as-a-rules-verdict.md) — `open` is written only as a rule's verdict
+- [Q-M1f.67](Q-M1f.67-a-macros-body-is-checked-where-it-is-called.md) — A macro's body is checked where it is called, and an unused macro loads
+- [Q-M1f.74](Q-M1f.74-a-nested-or-a-macros-expansion-writes-is-refused.md) — A nested `(or …)` a macro's expansion writes is refused as a written one is
+- [Q-M1f.80](Q-M1f.80-a-malformed-primitive-a-macros-expansion-writes.md) — A malformed primitive a macro's expansion writes is refused at load
+- [Q-M1f.81](Q-M1f.81-a-malformed-primitive-is-a-form-the-grammar.md) — A malformed primitive is a form the grammar would refuse where it stands
+- [Q-M1f.86](Q-M1f.86-a-macros-body-never-writes-open.md) — A macro's body never writes `open`
+- [Q-M1f.96](Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md) — A byte-order mark is refused as any character that is not ASCII
+- [Q-M1f.113](Q-M1f.113-a-value-is-a-name-or-a-fact-a-state-could-hold.md) — A value is a name, or a fact a state could hold
+- [Q-M1f.114](Q-M1f.114-a-relation-a-solve-list-names-is-one-the-program.md) — A relation a `(solve …)` list names is one the program writes elsewhere
+- [Q-M1f.115](Q-M1f.115-an-hrules-list-names-declared-hrules.md) — An `:hrules` list names declared hrules, and an activator has its hrule's count of arguments
+- [Q-M1f.116](Q-M1f.116-an-activators-argument-at-a-parameter-that-names.md) — An activator's argument at a parameter that names no relation is not checked
+- [Q-M1f.117](Q-M1f.117-a-macro-call-in-a-goal-is-expanded-and-the-goal.md) — A macro call in a goal is expanded, and the goal is printed as written
+- [Q-M1f.118](Q-M1f.118-a-claim-is-not-expanded-so-a-claim-headed.md) — A claim is not expanded, so a claim headed by a macro's call is refused
+- [Q-M1f.119](Q-M1f.119-a-goal-and-a-claim-ask-only-about-relations.md) — A goal and a claim ask only about relations of the program
+- [Q-M1f.120](Q-M1f.120-a-rule-may-read-a-relation-nothing-makes.md) — A rule may read a relation nothing makes
+- [Q-M1f.122](Q-M1f.122-absent-heads-a-premise-and-a-claims-class-atom.md) — `absent` heads a premise and a claim's class atom, and nothing else
+- [Q-M1f.123](Q-M1f.123-false-with-no-argument-is-a-value.md) — `(false)` with no argument is a value
+- [Q-M1f.124](Q-M1f.124-eq-a-b-is-written-only-as-a-form-of-its-own.md) — `(eq a b)` is written only as a form of its own, never inside another
+- [Q-M1f.125](Q-M1f.125-a-connective-as-a-patterns-argument-is-refused.md) — A connective as a pattern's argument is refused by the loader, after expansion
+- [Q-M1f.126](Q-M1f.126-a-relation-parameter-bound-to-absent-false-or-eq.md) — A relation parameter bound to `absent`, `false` or `eq` is refused where the form it heads would be
+- [Q-M1f.127](Q-M1f.127-a-conclusion-not-x-is-refused-where-the-program.md) — A conclusion `(not ?x)` is refused where the program shows that `?x` can hold a name
+- [Q-M1f.128](Q-M1f.128-a-firing-that-meets-the-negation-of-a-name.md) — A firing that meets the negation of a name concludes nothing for it
+- [Q-M1f.130](Q-M1f.130-a-macros-call-in-a-conclusion-is-expanded.md) — A macro's call in a conclusion is expanded
+- [Q-M1f.131](Q-M1f.131-no-relation-is-declared-under-a-macros-name.md) — No relation is declared under a macro's name
+- [Q-M1f.132](Q-M1f.132-a-std-macro-macro-the-program-does-not-import.md) — A `std.macro` macro the program does not import heads no fact
+- [Q-M1f.133](Q-M1f.133-a-macros-call-inside-a-claims-fact-or-a-using-is.md) — A macro's call inside a claim's fact or a `:using` is refused
+- [Q-M1f.201](Q-M1f.201-a-bare-relation-r-declares-no-argument.md) — A bare `(relation R)` declares no argument
+- [Q-M1f.202](Q-M1f.202-a-relation-written-as-a-variable-is-held-to-no.md) — A relation written as a variable is held to no declared count
+- [Q-M1f.203](Q-M1f.203-a-kernel-marker-and-an-activator-are-held-to-no.md) — A kernel marker and an activator are held to no declared count
+- [Q-M1f.204](Q-M1f.204-the-declared-count-is-held-in-a-using-a-claim.md) — The declared count is held in a `:using`, a claim and a called macro's body
+- [Q-M1f.271](Q-M1f.271-an-hrules-conclusion-is-one-fact.md) — An hrule's conclusion is one fact
+- [Q-M1f.272](Q-M1f.272-a-representation-module-reads-what-a-file-writes.md) — A representation module reads what a file writes through `written`
+- [Q-M1f.275](Q-M1f.275-written-states-every-fact-a-file-nests.md) — `written` states every fact a file nests, and a conclusion's ground ones
+- [Q-M1f.279](Q-M1f.279-a-written-fact-is-derived-by-the-loaders-step.md) — A `written` fact is derived by the loader's step `#written`
+- [Q-M1f.280](Q-M1f.280-a-program-does-not-write-written.md) — A program does not write `written`
+- [Q-M1f.315](Q-M1f.315-a-form-of-a-declared-relation-has-as-many.md) — A form of a declared relation has as many arguments as its declaration has types
+- [Q-M1f.339](Q-M1f.339-every-name-the-loader-makes-up-starts-with.md) — Every name the loader makes up starts with `#`
