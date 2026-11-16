@@ -43,6 +43,9 @@ artefact raw and rendered, a sortable survey, the price list, every default and 
 and [`docs/kernel/inference/structure.md`](../../../docs/kernel/inference/hypothesis_space.md) defines it; the gate, the
 runner's container and the wall of the two nightly steps that grew are owed, and one finding,
 [K-17](findings.md), is open.
+[On the user's instruction of 2026-11-16](s1f.10.12_the_structure_shown.md#record-2026-11-16-the-view-renamed-h-dumped-plain-k-17)
+the view is renamed `ein render h-space FILE`, a new command `ein show hyps FILE` lists H as Ein facts at the cost
+of root's saturation and the generator, and K-17 is fixed and closed.
 Of track H, tasks 1 to 3 of S1f.10.9, S1f.10.6 and S1f.10.15 ran on 2026-11-15, each stopped at its question
 ([Q-M1f.306](../open_questions.md#q-m1f306--what-the-blind-enumerator-takes-for-an-object), .307, .308), none acted
 on; what they found outside their scope is in [`findings.md`](findings.md).

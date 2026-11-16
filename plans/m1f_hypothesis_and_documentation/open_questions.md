@@ -312,7 +312,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.306](#q-m1f306--what-the-blind-enumerator-takes-for-an-object) | what the blind enumerator takes for an object: a kernel dunder (E-1), a relation's name (E-7), what an import brings (E-54) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(b) for E-1**, a kernel dunder is never an object; **(a) for E-7**, left, and the read-out names such candidates; **(d) for E-54**, left. The sub-question asked back was ruled the same day: *"dunder never an object, wide reading"*, so (b) covers a dunder a program writes as a value too. Built by S1f.10.9's task 4 |
 | [Q-M1f.307](#q-m1f307--a-debt-root-was-not-told-of-what-h-holds) | a debt root was not told of: what H holds where a node derives an obligation's activator (W26, Q-M1e.11) | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(A)**, H holds what a node's debt would propose, by the static reading, which the census selected. **Built 2026-11-16** by [S1f.10.6](p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md#record-2026-11-16-task-4)'s task 4: W26 fixed, the witness alone moved; Q-M1e.11 is answered by it |
 | [Q-M1f.308](#q-m1f308--the-rung-a-loaded-obligation-rule-chooses) | the rung a loaded obligation rule chooses: the second rung by a rule loaded, by an obligation activated at root, or by a debt owed at root (E-51) | **ruled 2026-11-16**: the user, asked back since the question had a recommendation and no default: *"308 (b) ok"*. **(b)**, the second rung where an obligation is activated at root. Built by S1f.10.15's task 4 |
-| [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth |
+| [Q-M1f.309](#q-m1f309--how-ein-shows-a-programs-structure) | how `ein` shows a program's structure: a view of `ein render`, rows of the read-out, both, or no surface | **ruled 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. **(a)**, a view of `ein render`, `ein render structure FILE`; `ein solve` is untouched. Built by S1f.10.12's third task, and the page that defines the structure by its fourth. **Renamed 2026-11-16** on the user's instruction: `ein render h-space FILE`, and `ein show hyps FILE` lists H as Ein facts |
 | [Q-M1f.310](#q-m1f310--p1f10-part-1-the-defaults-taken) | P1f.10, part 1: what the stages of tracks S and R decided without a ruling, each where its record is | **accepted 2026-11-16**: the user, 2026-11-16, shown the four questions with their defaults: *"all defaults ok"*. Each stands until revised |
 
 **The questions those two phases already own are M1e's and keep their ids.**
@@ -6425,6 +6425,21 @@ it is [T1f.10.12.3](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md
 defines the structure, T1f.10.12.4, follows it.
 
 **Ruled 2026-11-16.** The user, shown the phase's four questions with their defaults at the stop: *"all defaults ok"*. So: **(a)**, `ein render structure FILE`.
+
+**Renamed 2026-11-16.** The user, of the view as built: *"does `ein render structure` shows any structure? if only
+hypothesis then rename it to something hypothesis-relate, like `ein render h-structure` or `ein render h-space`;
+also can we get plain dump of hypothesis? we should be able to"*. The view shows the structure of the hypothesis
+set H alone, so it is renamed: **`ein render h-space FILE`**, the main session's choice between the user's two
+examples and a default the user may change, with no alias; its document is `h-space.json`, schema
+`ein-h-space/1`, and its page
+[`docs/kernel/inference/hypothesis_space.md`](../../docs/kernel/inference/hypothesis_space.md). And of the dump,
+the same day: *"ein render writes dot, by listing hypothesis I meant listing them as ein facts, so add one more
+top level command `show` and one sub-command `show hyps` that lists them"*. So: **`ein show hyps FILE`**, a new
+top-level command with one subcommand, prints H as Ein facts, one candidate a line and nothing else on stdout,
+at the cost of root's saturation and the generator's pass, held to `ein solve -H`'s candidates and to the
+document's; the view gained no listing of its own. (a) stands: the structure is a view of `ein render`, and
+`ein solve` computes none of it. Built by
+[S1f.10.12's follow-up](p1f.10_hypothesis_structure/s1f.10.12_the_structure_shown.md#record-2026-11-16-the-view-renamed-h-dumped-plain-k-17).
 
 ### Q-M1f.310 — P1f.10, part 1: the defaults taken
 
