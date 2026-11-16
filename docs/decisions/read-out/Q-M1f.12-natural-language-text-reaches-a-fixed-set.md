@@ -19,4 +19,4 @@ schema or a golden elsewhere is a new surface, asked for on its own.
 `the_trace_prints_the_rules_why_and_the_premises_source`, `the_dump_quotes_the_source_and_the_goal_text`,
 `a_state_file_writes_every_text_and_reads_back_to_it`, `the_program_view_draws_the_goal_text`,
 `a_container_holds_the_texts`. The texts and where each renders:
-[09_natural_language.md](../../kernel/ir/03-ein-lang/09_natural_language.md).
+[natural-language.md](../../ein/user/syntax-and-semantics/natural-language.md).

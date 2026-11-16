@@ -133,7 +133,7 @@ executes it against the KB's indexes
 ## 5. Fork — `kb.fork()`
 
 A `fork` is a hypothesis branch (per
-[`../01-ein-graph/01_kb.md` §6](../01-ein-graph/01_kb.md)). The
+[`../01-ein-graph/facts.md` §Facts in a state](../../../ein/user/syntax-and-semantics/facts.md#facts-in-a-state)). The
 contract:
 
 ```text
@@ -358,7 +358,7 @@ entity-view, so a membership fact is an ordinary fact and goes in through
 `add_fact` like any other — §6.)
 
 The engine doesn't *remove* facts (the graph is monotonic — see
-[`../01-ein-graph/02_rules.md` §1](../01-ein-graph/02_rules.md));
+[`../01-ein-graph/rules.md` §In Ein](../../../ein/user/syntax-and-semantics/rules.md#in-ein));
 retraction happens via *forking* (the speculative branch is
 discarded) rather than mutation.
 

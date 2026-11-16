@@ -15,7 +15,7 @@ nodes or existing facts. The closest thing to deletion is a
 **negative fact** (`(not X)`), which is itself a fact node asserting
 that some proposition does not hold. Removal of an entire reasoning
 branch is the *fork* mechanism (see
-[`01_kb.md` §6](01_kb.md), not a rule action).
+[`facts.md` §Facts in a state](../../../ein/user/syntax-and-semantics/facts.md#facts-in-a-state), not a rule action).
 
 ---
 
@@ -582,7 +582,7 @@ The saturation loop's design is in P1.3 S1.3.3.
 
 When saturation stalls and the puzzle isn't yet solved, the engine
 **branches**: pick an undetermined slot, hypothesise each candidate
-in turn (a fork — see [`01_kb.md` §6](01_kb.md)), saturate each
+in turn (a fork — see [`facts.md` §Facts in a state](../../../ein/user/syntax-and-semantics/facts.md#facts-in-a-state)), saturate each
 branch, retract on contradiction, commit on uniqueness. This is the
 **hypothesis loop**, designed in P1.5.
 

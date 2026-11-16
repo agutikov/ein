@@ -1,6 +1,6 @@
 //! **Every `{?ref}` a corpus or stdlib `:why` writes names something its form
 //! can fill** — M1f S1f.5.14's T1f.5.14.5, the first of the stage's two
-//! checks ([`09_natural_language.md` § 7](../../../../docs/kernel/ir/03-ein-lang/09_natural_language.md#7-what-holds-this-page)).
+//! checks ([`natural-language.md` § 7](../../../../docs/ein/user/syntax-and-semantics/natural-language.md#7-what-is-checked)).
 //!
 //! [`ein_core::render_why`] leaves a reference nothing binds as written, so a
 //! typo reaches a user's output as `{?huse}`; the effect is held where a

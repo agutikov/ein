@@ -365,7 +365,7 @@ every command's stderr, its exit and stdout unmoved. No corpus program writes `(
   refused with a note; `:assert ()` asserts nothing; and the dead root's core `[]`.
 - [`syntax.md`](../../../docs/ein/user/reference/syntax.md#3-patterns): the primitives' table's `and` / `or` row, and a
   paragraph on the empty conjunction.
-- [`03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md) § 7.1 and its table: two of `()`'s three
+- [`ontology.md`](../../../docs/ein/user/syntax-and-semantics/ontology.md#two-forms-that-look-alike) § 7.1 and its table: two of `()`'s three
   places have engine semantics; `()` as a value, Q28's question, is a parse error.
 - [`reserved-engine-strings.md`](../../../docs/ein/ein.rs/reserved-engine-strings.md),
   [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) § 2.2 and

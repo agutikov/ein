@@ -198,7 +198,7 @@ Three principal views, composable into 2- or 3-pane layouts.
 - **Compact vs detailed (Levi-bipartite) view**: toggle between
   the abstract entity view (instances + arrows) and the underlying
   Levi-bipartite graph (relation nodes as first-class vertices).
-  See [ein model §3](../../docs/kernel/ir/01-ein-graph/03_ein_model.md#3-two-flavours-of-node).
+  See [ein model §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words).
 - **Auto-layout**: keep the Graphviz engines (`dot` / `fdp` / `sfdp` /
   `osage`) that `utils/render_knowledge_graph.sh` uses today — Rust
   shells out and hands coordinates to the frontend — and add **fCoSE**,
@@ -347,7 +347,7 @@ Stack-specific:
   for the crate layout, [P1a.8](../../docs/history/m1a_rust/README.md#p1a8--binary-kb-container)
   for `.einb` saved sessions.
 - [`docs/kernel/`](../../docs/kernel/README.md) — the semantics the views
-  render; [ein model §3](../../docs/kernel/ir/01-ein-graph/03_ein_model.md#3-two-flavours-of-node)
+  render; [ein model §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)
   for compact vs Levi-bipartite.
 - [`utils/render_knowledge_graph_cy.py`](../../utils/render_knowledge_graph_cy.py)
   — the existing browser-Cytoscape renderer; closest existing point to

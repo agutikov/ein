@@ -34,7 +34,7 @@ digraph { rankdir=LR; node [shape=box];
 ```
 
 (The precise model — names vs. nodes, "atoms" vs. "objects" — is
-[`ir/01-ein-graph/03_ein_model.md`](../kernel/ir/01-ein-graph/03_ein_model.md);
+[`ontology.md`](../ein/user/syntax-and-semantics/ontology.md);
 the [glossary](../ein/user/reference/glossary.md) defines *Levi-bipartite*.)
 
 ## Relations — how things connect
@@ -89,7 +89,7 @@ knowledge:
 
   — which is the readable shorthand for how Ein stores it *canonically*: a
   **node** joining the relation and its two arguments (the **Levi** view;
-  see [`03_ein_model.md`](../kernel/ir/01-ein-graph/03_ein_model.md)):
+  see [`ontology.md`](../ein/user/syntax-and-semantics/ontology.md)):
 
   ```dot
   digraph {

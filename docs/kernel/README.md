@@ -89,7 +89,7 @@ added [`region-dump.md`](../ein/user/reference/region-dump.md), 43 since
 S1e2.1b.6 added [`inference/monotonicity.md`](../ein/reasoning/kb-evolution/monotonicity.md), 45
 since M1f S1f.5.16 added [`read-out.md`](../ein/user/reference/read-out.md) and
 [`read-out-examples.md`](../ein/user/reference/read-out-examples.md), 46 since
-M1f S1f.5.14 added [`ir/03-ein-lang/09_natural_language.md`](ir/03-ein-lang/09_natural_language.md)
+M1f S1f.5.14 added [`natural-language.md`](../ein/user/syntax-and-semantics/natural-language.md)
 (2026-11-10), 47 with [`hypothesis-space.md`](../ein/reasoning/kb-evolution/hypothesis-space.md),
 the hypothesis space and its structure, and 48 with
 [`finding-r.md`](../ein/reasoning/kb-evolution/finding-r.md), how the oracle and the routes find `R`
@@ -208,7 +208,7 @@ explicit audience banner.
 | audience | pages |
 |----------|-------|
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
-| **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](ir/03-ein-lang/09_natural_language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`read-out.md`](../ein/user/reference/read-out.md) (what `ein solve` prints, row by row, and what each number counts) |
+| **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`, [`09_natural_language`](../ein/user/syntax-and-semantics/natural-language.md): what a program says in English and where the engine prints it); `ir/02-data-model/{01_entities,02_store}` (the abstract model); [`read-out.md`](../ein/user/reference/read-out.md) (what `ein solve` prints, row by row, and what each number counts) |
 | **dev**  | [`../ein/ein.rs/architecture.md`](../ein/ein.rs/architecture.md); `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
 | **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../ein/ein.rs/api.md`](../ein/ein.rs/api.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary`, whose answer blocks [`read-out.md` § 11](../ein/user/reference/read-out.md#11---json-summary-the-answer-blocks) defines field by field, and [`--events`](../ein/ein.rs/events.md). |
 | **both** | this README, [`glossary.md`](../ein/user/reference/glossary.md), the per-subtree READMEs, and [`config.md`](../ein/user/reference/config.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* and *does it change R* on every flag row |

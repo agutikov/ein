@@ -152,7 +152,7 @@ T1f.5.28.3 onward, the fixes, by kind; the files are listed in the coordinator's
   `089511fe`'s page). [`read-out.md`](../../../docs/ein/user/reference/read-out.md#9--s--t-and-ein-oracles-line) § 9 says every count prints in digit
   groups, and § 4's partial-description paragraph says why no `ein` run prints route 1's stop, pinned by
   `read_out_reference.rs`' `the_clock_and_the_cube_group_their_counts` (it fails on `089511fe`'s printer: *2048
-  saturations*) and `route_1_never_stops_on_an_ein_run`. [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+  saturations*) and `route_1_never_stops_on_an_ein_run`. [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md)
   says how `--trace` writes a text's line break. The guard split's re-take is in
   `docs/kernel/inference/monotonicity.md` at `50739fdb`, its section 6.4.
 - **The printers.** `ein-cli`'s `modes.rs` and `oracle.rs` group their counts; `ein-render`'s trace writes each text,

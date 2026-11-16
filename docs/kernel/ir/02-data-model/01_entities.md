@@ -16,7 +16,7 @@ authoritative for field shapes, and the pseudo-code notation is
 ## 1. The three entity classes
 
 Each kind of graph node from
-[`../01-ein-graph/01_kb.md` §1](../01-ein-graph/01_kb.md) that the
+[`../01-ein-graph/objects.md` §In Ein](../../../ein/user/syntax-and-semantics/objects.md#in-ein) that the
 engine reasons over has a corresponding immutable record. Identity
 follows the table:
 
@@ -40,7 +40,7 @@ follows the table:
 Metadata fields (`loc`, `provenance`, `raw`) are
 **excluded** from identity — two facts with the same `(rel, args)`
 but different provenance are *the same fact* for dedup
-purposes (see [`../01-ein-graph/01_kb.md` §4](../01-ein-graph/01_kb.md)).
+purposes (see [`../01-ein-graph/facts.md` §A fact is stated once, and may be derived many times](../../../ein/user/syntax-and-semantics/facts.md#a-fact-is-stated-once-and-may-be-derived-many-times)).
 
 ### 1.1 `Relation`
 
@@ -157,7 +157,7 @@ Fact(
 Arguments admit two shapes (three until M1f S1f.5.4 retired the `int`: a
 run of digits is a name since S1f.5.5's swap), matching the kernel ein model's
 **named** vs **relational** node duality
-([`../01-ein-graph/03_ein_model.md` §3](../01-ein-graph/03_ein_model.md)):
+([`../01-ein-graph/ontology.md` §Five words](../../../ein/user/syntax-and-semantics/ontology.md#five-words)):
 
 - `str` — a named node (an object name or a Relation name); `7` and `07` are
   two.

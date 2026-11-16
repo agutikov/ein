@@ -4,7 +4,7 @@
 ;;; `(hypothesis …)` and `(contradiction-under …)` facts carry a
 ;;; NESTED FACT as their first argument — a relational node, per the
 ;;; kernel ein model's named-vs-relational duality
-;;; (`docs/kernel/ir/01-ein-graph/03_ein_model.md` §3). R9 widened
+;;; (`docs/ein/user/syntax-and-semantics/ontology.md` §3). R9 widened
 ;;; `Fact.args` to accept this; the matcher unifies against the
 ;;; nested fact at runtime.
 ;;;

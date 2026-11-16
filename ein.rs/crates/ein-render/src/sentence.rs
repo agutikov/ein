@@ -1,5 +1,5 @@
 //! A fact in English — M1f S1f.5.14's T1f.5.14.2, fact-level rendering from
-//! provenance ([`docs/kernel/ir/03-ein-lang/09_natural_language.md`](../../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)).
+//! provenance ([`docs/ein/user/syntax-and-semantics/natural-language.md`](../../../../docs/ein/user/syntax-and-semantics/natural-language.md)).
 //!
 //! **Two texts a fact can have, from two places.** Its *statement* is what the
 //! fact says, its relation's `:why` with the fact's arguments in its

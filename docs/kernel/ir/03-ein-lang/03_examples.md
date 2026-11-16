@@ -18,7 +18,7 @@ documentation split.
 ```
 
 The shortest meaningful IR — one fact whose `:source` annotation makes it a
-**given** rather than background ([`01_kb.md` §3](../01-ein-graph/01_kb.md)).
+**given** rather than background ([`facts.md` §Where a fact came from](../../../ein/user/syntax-and-semantics/facts.md#where-a-fact-came-from)).
 
 ## A larger Zebra fragment
 

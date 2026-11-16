@@ -2,7 +2,7 @@
 
 A small worked example illustrating the **type-as-common-relation-
 holder** observation from
-[`03_ein_model.md` §5](03_ein_model.md): an instance inherits the
+[`ontology.md` §Types are names, and nothing is built in](../../../ein/user/syntax-and-semantics/ontology.md#types-are-names-and-nothing-is-built-in): an instance inherits the
 relations of its type. Stated four ways — natural language, ein-
 lang, compact graph (DOT), and detailed Levi-bipartite graph (DOT).
 
@@ -281,7 +281,7 @@ graph nodes*, and every fact has an explicit `instance-of-rel`
 edge pointing at its declaration. The compact view from §3 hides
 those edges; the Levi-bipartite view makes them inspectable.
 
-In the §2 vocabulary of [`03_ein_model.md`](03_ein_model.md): `Jack`,
+In the §2 vocabulary of [`ontology.md`](../../../ein/user/syntax-and-semantics/ontology.md): `Jack`,
 `Coffee`, `Human`, `Drink` are **atoms** naming object/type nodes,
 each octagon is a **relational** node (a fact), and each hexagon is a
 relation declaration — the atom is the name, the node is the thing.
@@ -340,7 +340,7 @@ cartesian closure.
 
 ## See also
 
-- [`03_ein_model.md`](03_ein_model.md) — the reflexive algebra this
+- [`ontology.md`](../../../ein/user/syntax-and-semantics/ontology.md) — the reflexive algebra this
   example exercises.
 - [`02_rules.md`](02_rules.md) — T2 rules (relation polymorphism)
   which the `inherit-rel` rule above is an instance of.

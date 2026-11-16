@@ -31,7 +31,7 @@ constrained-reasoning research.
   answer* column;
   [`syntax.md`](docs/ein/user/reference/syntax.md)
   and `grammar.md`, the language;
-  [`ir/03-ein-lang/09_natural_language.md`](docs/kernel/ir/03-ein-lang/09_natural_language.md),
+  [`natural-language.md`](docs/ein/user/syntax-and-semantics/natural-language.md),
   `:why` texts and how a fact reads as English; and
   [`docs/ein/ein.rs/architecture.md`](docs/ein/ein.rs/architecture.md), the
   module map, with the design contracts under `docs/ein/ein.rs/design/`. What is true of the language and the answer today is

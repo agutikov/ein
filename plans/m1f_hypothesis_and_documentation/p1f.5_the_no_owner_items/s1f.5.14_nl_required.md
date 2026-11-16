@@ -231,7 +231,7 @@ Each item of § Acceptance, against the tree at the flip, `4b231abd`:
   render from a text, the fallbacks and the register each is in (puzzle, stdlib, kernel, undeclared); one number per
   entry and one for the corpus, with the entries that render every fact. Re-taken before the migration and after it
   (§ T1's and § T7's records).
-- **One page — met.** [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+- **One page — met.** [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md#4-the-four-registers)
   (`5e4ecb93`): the four registers (§ 4), the four provenance kinds and what renders each (§ 3), the fallback ladder
   (§ 3), and the boundary between the domain's words and the engine's (§ 6), beside `reserved_engine_strings.md`,
   which points at it. Linked from `01_grammar.md`'s `:why` paragraph and from `docs/kernel/README.md`; pinned by
@@ -492,7 +492,7 @@ ruling it is this stage's T1f.5.14.7, not a separate stage.*
 
 **Rung (d), through the loader flag**, as the user ruled on 2026-11-08; § T4's recommendation stays above as the record
 of what the user overrode and of the risk T7 answers. The page is
-[`docs/kernel/ir/03-ein-lang/09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md),
+[`docs/kernel/ir/03-ein-lang/natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md),
 *current*, 46 kernel pages since (`git ls-files 'docs/kernel/*.md' | wc -l`, 2026-11-10): the four texts and where
 each is printed (§ 1), the mandate and what an honest `:why` says per form (§ 2), a fact in English, the four
 provenance kinds and the fallback ladder, with a state file's lines (§ 3), the four registers and the census's numbers

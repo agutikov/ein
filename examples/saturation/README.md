@@ -55,7 +55,7 @@ The three `hypothesis-contradiction/*.ein` demos carry **synthetic
 `(hypothesis …)` + `(contradiction-under …)` facts whose first
 argument is itself a fact** — a relational node, per the kernel ein
 model's "named vs relational" duality
-([`docs/kernel/ir/01-ein-graph/03_ein_model.md` §3](../../docs/kernel/ir/01-ein-graph/03_ein_model.md)).
+([`docs/ein/user/syntax-and-semantics/ontology.md` §Five words](../../docs/ein/user/syntax-and-semantics/ontology.md#five-words)).
 
 R9's `Fact.args` widening (committed `0a783bc`) makes this load;
 S1.3.1's matcher (committed `d9778b0`) makes the rule unify against

@@ -160,7 +160,7 @@ the user (question g of the [README](README.md#the-questions-for-the-user)).
 
 **How the nested values read.** F-3 of [`findings.md`](findings.md): a `:why` prints `(seg A C)` as written, not
 *the segment AC*. A two-column proof whose statements read *(ang A B C) equals (ang A C B)* is not yet a school
-proof. The stage establishes what [`09_natural_language.md`](../../../docs/kernel/ir/03-ein-lang/09_natural_language.md)
+proof. The stage establishes what [`natural-language.md`](../../../docs/ein/user/syntax-and-semantics/natural-language.md)
 says of a nested value inside a template, and files the row as a request or as a wrong answer accordingly.
 
 ## Sketch

@@ -242,7 +242,7 @@ reading, which the user may correct:
   chain of thought a model would otherwise write beside its answer.
 - **Self-explained** has a meaning in Ein since M1f S1f.5.14: every relation and rule carries a `:why`, and a
   derived fact reads as English from its justification
-  ([`09_natural_language.md`](../../docs/kernel/ir/03-ein-lang/09_natural_language.md)). So a program is a
+  ([`natural-language.md`](../../docs/ein/user/syntax-and-semantics/natural-language.md)). So a program is a
   chain of thought whose every step the kernel has checked, and whose trace is the explanation.
 - **A tree of thoughts** has a counterpart the kernel already computes, the hypothesis lattice: a branch is a
   commitment, a dead branch has a core that says why, and the answer is the region R. Whether a model's
