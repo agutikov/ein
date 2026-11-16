@@ -1310,6 +1310,10 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     }
 }
 
+/// The border route's words ([`ein_infer::borders`]): what describe found and
+/// how, before its licences.
+const BORDERS_ROUTE: &str = "the borders: R's states by the obligation tree, each state's class and N by dualise and advance";
+
 /// `--no-search`'s `route` row.
 const ROOT_ROUTE: &str = "none — --no-search: root's node, and no node past it";
 
@@ -1934,6 +1938,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             "2, the cube — no licence: the static check flags the program".to_string()
         }
         (Route::Root, _) => ROOT_ROUTE.to_string(),
+        (Route::Borders, _) => format!("{BORDERS_ROUTE} — {}", licences(&a.licences)),
     };
     out.row(Row::Route, route);
     out.row(
@@ -2169,6 +2174,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
                 Route::States => "the state route, each state at most once",
                 Route::Tree => "the obligation tree, over states",
                 Route::Root => ROOT_ROUTE,
+                Route::Borders => BORDERS_ROUTE,
             },
             licences(&a.licences)
         ),

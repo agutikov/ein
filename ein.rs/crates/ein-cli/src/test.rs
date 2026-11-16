@@ -926,6 +926,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             explore::Route::States => "state route",
             explore::Route::Tree => "obligation tree",
             explore::Route::Root => "root alone",
+            explore::Route::Borders => "borders",
         };
         rows[i].outcome = came.key();
         rows[i].region = Some(RegionRan {

@@ -684,6 +684,235 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
     }
 }
 
+/// The border route's run, described ([`crate::borders`]): read off the
+/// borders it found, each field what the state route reads off every alive
+/// state. `nogoods` is whether `N` was asked; where it was not, `N` is said
+/// not taken exactly where the state route says so, ⊤ being in `R` or not.
+pub(crate) fn of_borders(
+    b: &crate::borders::Borders,
+    sp: &crate::explore::Space<'_>,
+    nogoods: bool,
+) -> Described {
+    use crate::count::Count;
+    use crate::transversal::Bits;
+    let s = &b.search;
+    let n = sp.n();
+    let exhausted = b.exhausted();
+    let root_node = sp.root_node().cloned().unwrap_or_default();
+    let root = Root {
+        alive: true,
+        owes: root_node.owes,
+        owed: root_node.owed.clone(),
+        core: root_node.core.clone(),
+        core_status: root_node.core_status,
+        refuted_by: root_node.refuted_by.clone(),
+        sources: root_node.sources.clone(),
+    };
+    let root_in_r = root.in_r();
+    // Each state of R found, with its class where it was found.
+    let class = |i: usize| b.classes.get(i).and_then(Option::as_ref);
+    // The minimal line: ∅ where root's state is in R; otherwise the minimal
+    // sets among every state's generators.
+    let mut minimal: Vec<(Box<[u32]>, usize)> = Vec::new();
+    if root_in_r {
+        if let Some(i) = b.r.iter().position(|&t| t == s.root()) {
+            minimal.push((Box::default(), i));
+        }
+    } else {
+        let mut all: Vec<(Box<[u32]>, usize)> = (0..b.r.len())
+            .flat_map(|i| {
+                class(i)
+                    .map(|c| c.generators.clone())
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(move |g| (g, i))
+            })
+            .collect();
+        all.sort_by(|x, y| (x.0.len(), &x.0).cmp(&(y.0.len(), &y.0)));
+        let mut kept: Vec<Bits> = Vec::new();
+        for (g, i) in all {
+            let gb = Bits::of(n, &g);
+            if !kept.iter().any(|k| k.is_subset(&gb)) {
+                kept.push(gb);
+                minimal.push((g, i));
+            }
+        }
+    }
+    // determinism-ok: `minimal` is a vector, by size and then candidates.
+    let on_minimal: FxHashSet<usize> = minimal.iter().map(|(_, i)| *i).collect();
+    let mut k_c = Count::zero();
+    let states: Vec<State> =
+        b.r.iter()
+            .enumerate()
+            .map(|(i, &t)| {
+                let st = &s.st[t as usize];
+                let (commitments, generators) = match class(i) {
+                    Some(c) => {
+                        k_c.add(&c.count);
+                        (c.count.reported(), c.generators.clone())
+                    }
+                    None => {
+                        k_c.add(&Count::of(1));
+                        (1, vec![st.path.clone()])
+                    }
+                };
+                State {
+                    rep: generators
+                        .first()
+                        .cloned()
+                        .unwrap_or_else(|| st.path.clone()),
+                    closure: st.closure.clone(),
+                    commitments,
+                    generators,
+                    minimal: exhausted && on_minimal.contains(&i),
+                    // Extended by every candidate, and every extension dead (L4).
+                    maximal: s.untried(t).is_empty() && st.up.is_empty(),
+                }
+            })
+            .collect();
+    let k_c = k_c.reported();
+    // The shape: components over the one-up edges inside R, in the order of
+    // their least minimal commitment, and the sub-cubes between the lines.
+    let shape = exhausted.then(|| {
+        let at: FxHashMap<u32, usize> = b.r.iter().enumerate().map(|(i, &t)| (t, i)).collect();
+        let mut parent: Vec<usize> = (0..b.r.len()).collect();
+        fn find(p: &mut [usize], x: usize) -> usize {
+            let mut root = x;
+            while p[root] != root {
+                root = p[root];
+            }
+            let mut y = x;
+            while p[y] != root {
+                let next = p[y];
+                p[y] = root;
+                y = next;
+            }
+            root
+        }
+        for (i, &t) in b.r.iter().enumerate() {
+            for u in &s.st[t as usize].up {
+                if let Some(&j) = at.get(u) {
+                    let (a, c) = (find(&mut parent, i), find(&mut parent, j));
+                    if a != c {
+                        parent[a.max(c)] = a.min(c);
+                    }
+                }
+            }
+        }
+        let mut size: FxHashMap<usize, Count> = FxHashMap::default();
+        for (i, _) in b.r.iter().enumerate() {
+            let c = find(&mut parent, i);
+            size.entry(c)
+                .or_default()
+                .add(&class(i).map_or(Count::of(1), |x| x.count.clone()));
+        }
+        let mut components: Vec<u64> = Vec::new();
+        let mut seen: Vec<usize> = Vec::new();
+        for (_, i) in &minimal {
+            let c = find(&mut parent, *i);
+            if !seen.contains(&c) {
+                seen.push(c);
+                components.push(size[&c].reported());
+            }
+        }
+        let mut maximal: Vec<&State> = states.iter().filter(|x| x.maximal).collect();
+        maximal.sort_by(|x, y| (x.closure.len(), &x.closure).cmp(&(y.closure.len(), &y.closure)));
+        let mut subcubes: Vec<usize> = Vec::new();
+        for (a, _) in &minimal {
+            let ab = Bits::of(n, a);
+            for m in &maximal {
+                if ab.is_subset(&Bits::of(n, &m.closure)) {
+                    subcubes.push(m.closure.len() - a.len());
+                }
+            }
+        }
+        Shape {
+            components,
+            subcubes: Some(subcubes),
+            discharging: None,
+            holes: None,
+        }
+    });
+    let top_alive = s.st.iter().any(|st| st.closure.len() == n);
+    // N where it was found; otherwise the candidates dead alone the run
+    // found, each a minimal dead set, root being alive.
+    let global = b.global.as_ref();
+    let nogoods_skipped = exhausted && !nogoods && !top_alive;
+    let sets: Vec<Box<[u32]>> = match global {
+        Some(g) if !nogoods_skipped => g.nogoods.clone(),
+        _ if exhausted && top_alive => Vec::new(),
+        _ => b
+            .dead_alone
+            .iter()
+            .flatten()
+            .map(|&x| vec![x].into_boxed_slice())
+            .collect(),
+    };
+    let dead: Vec<Dead> = sets
+        .iter()
+        .map(|set| Dead {
+            set: set.clone(),
+            core: Vec::new(),
+            core_status: None,
+            refuted_by: Vec::new(),
+        })
+        .collect();
+    let dead_alone_set: Vec<u32> = b.dead_alone.clone().unwrap_or_default();
+    let frontier: Vec<Owing> = match global {
+        Some(g) if exhausted && b.r.is_empty() => g
+            .maximal_alive
+            .iter()
+            .map(|&u| {
+                let st = &s.st[u as usize];
+                Owing {
+                    set: st.closure.clone(),
+                    owes: st.owes,
+                    owed: sp.owed_of(st.class).to_vec(),
+                }
+            })
+            .collect(),
+        _ => Vec::new(),
+    };
+    let (saturations, facts) = sp.work();
+    Described {
+        candidates: sp.candidates().to_vec(),
+        monotonicity: sp.monotonicity().clone(),
+        route: Route::Borders,
+        exhausted,
+        complete_up_to: None,
+        stopped_before: None,
+        states_partial: None,
+        root,
+        any_alive: true,
+        states,
+        k_c,
+        minimal_commitments: if exhausted {
+            // determinism-ok: `minimal` is a vector, by size and then candidates.
+            minimal.into_iter().map(|(g, _)| g).collect()
+        } else {
+            Vec::new()
+        },
+        nogoods: dead.len() as u64,
+        dead,
+        nogoods_skipped,
+        dead_alone: dead_alone_set.len() as u64,
+        dead_alone_set,
+        owing_met: s.st.iter().any(|st| !st.in_r()),
+        dead_met: if exhausted {
+            !top_alive
+        } else {
+            !s.dead.is_empty()
+        },
+        shape,
+        frontier,
+        work: Work {
+            saturations,
+            facts,
+            layers: None,
+        },
+    }
+}
+
 fn super_with(set: &[u32], b: u32) -> Box<[u32]> {
     let mut v = set.to_vec();
     let at = v.partition_point(|&x| x < b);

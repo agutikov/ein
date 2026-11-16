@@ -411,6 +411,7 @@ fn route(r: Route) -> &'static str {
         Route::States => "states",
         Route::Tree => "tree",
         Route::Root => "root",
+        Route::Borders => "borders",
     }
 }
 

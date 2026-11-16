@@ -154,23 +154,25 @@ use crate::transversal::Bits;
 const BATCH: usize = 1024;
 
 /// One state a route met.
-struct St {
-    closure: Box<[u32]>,
-    bits: Bits,
+pub(crate) struct St {
+    pub(crate) closure: Box<[u32]>,
+    pub(crate) bits: Bits,
     /// The commitment that first reached it: the candidates the route added
     /// from root. Its closure is [`Self::closure`] (L3).
-    path: Box<[u32]>,
-    owes: u32,
+    pub(crate) path: Box<[u32]>,
+    /// [`Self::path`], as a set.
+    pub(crate) path_bits: Bits,
+    pub(crate) owes: u32,
     /// The instances of L5's table it owes.
     owed: Box<[u32]>,
     /// [`Seen::class`]: its fixpoint.
-    class: u32,
+    pub(crate) class: u32,
     /// The candidates whose extension of it is decided.
-    tried: Bits,
+    pub(crate) tried: Bits,
     /// The alive states one candidate up, among those decided.
-    up: Vec<u32>,
+    pub(crate) up: Vec<u32>,
     /// The states it was reached from by one candidate, among those met.
-    down: Vec<u32>,
+    pub(crate) down: Vec<u32>,
     /// The candidates its own fixpoint denies.
     denied: Bits,
     /// What an owing state branches on, once chosen: an instance of L5's
@@ -185,7 +187,7 @@ struct St {
 }
 
 impl St {
-    fn in_r(&self) -> bool {
+    pub(crate) fn in_r(&self) -> bool {
         self.owes == 0
     }
 }
@@ -295,14 +297,14 @@ impl Coupled {
 
 /// The states a route met, and the work it has queued.
 pub(crate) struct Search {
-    n: usize,
-    st: Vec<St>,
-    by_closure: FxHashMap<Box<[u32]>, u32>,
+    pub(crate) n: usize,
+    pub(crate) st: Vec<St>,
+    pub(crate) by_closure: FxHashMap<Box<[u32]>, u32>,
     by_class: FxHashMap<u32, u32>,
     /// The sets known dead: what a saturation found dead and what a state
     /// met denies (L1, L8), the one memory every step asks before it
     /// saturates.
-    dead: KnownDead,
+    pub(crate) dead: KnownDead,
     table: Option<Arc<Alternatives>>,
     /// Owing states the tree has not finished branching, by size, closure.
     tree_q: BTreeSet<(usize, Box<[u32]>)>,
@@ -313,7 +315,7 @@ pub(crate) struct Search {
     /// States of `R` a tree step met, not yet handed out.
     leaves: VecDeque<u32>,
     /// Every state of `R` met, in the order met.
-    r_met: Vec<u32>,
+    pub(crate) r_met: Vec<u32>,
     /// Some branch took an instance's alternatives (L5).
     pub(crate) l5: bool,
     /// Some branch took an instance L9 licenses ([`crate::unheld`]).
@@ -437,7 +439,7 @@ impl Search {
         Ok(s)
     }
 
-    fn root(&self) -> u32 {
+    pub(crate) fn root(&self) -> u32 {
         0
     }
 
@@ -508,6 +510,7 @@ impl Search {
         let st = St {
             closure: seen.closure.clone(),
             bits,
+            path_bits: Bits::of(self.n, &path),
             path,
             owes: seen.owes,
             owed: seen.owed.clone(),
@@ -536,18 +539,18 @@ impl Search {
 
     /// A known dead set below `x`: `S ∪ {b} ⊆ x` with `S ∪ {b}` dead by a
     /// saturation or by `S`'s denial of `b` (L1, L8).
-    fn pruned(&mut self, x: &Bits) -> bool {
+    pub(crate) fn pruned(&mut self, x: &Bits) -> bool {
         self.dead.inside(x)
     }
 
-    fn record_dead(&mut self, set: &[u32]) {
+    pub(crate) fn record_dead(&mut self, set: &[u32]) {
         self.dead.died_set(self.n, set);
     }
 
     /// One commitment, by L1 and L8, by L3 or by a saturation: `None` when it
     /// is dead, its state otherwise. `path` is what the state remembers if it
     /// is new.
-    fn eval_set(
+    pub(crate) fn eval_set(
         &mut self,
         sp: &mut Space<'_>,
         set: Box<[u32]>,
@@ -574,7 +577,12 @@ impl Search {
     /// each extension known dead (L1, L8), read off a known state (L3), or
     /// saturated.
     /// Its outcome per candidate: the state reached, or `None` when dead.
-    fn extend(&mut self, sp: &mut Space<'_>, s: u32, bs: &[u32]) -> Step<Vec<Option<u32>>> {
+    pub(crate) fn extend(
+        &mut self,
+        sp: &mut Space<'_>,
+        s: u32,
+        bs: &[u32],
+    ) -> Step<Vec<Option<u32>>> {
         enum How {
             Dead,
             Known(u32),
@@ -680,7 +688,7 @@ impl Search {
     }
 
     /// The candidates outside `s` not yet decided for it, ascending.
-    fn untried(&self, s: u32) -> Vec<u32> {
+    pub(crate) fn untried(&self, s: u32) -> Vec<u32> {
         let st = &self.st[s as usize];
         (0..self.n as u32)
             .filter(|&b| !st.bits.contains(b) && !st.tried.contains(b))
@@ -1146,7 +1154,7 @@ impl Search {
     /// `R` is in `R` (L2), and a candidate whose extension died below stays
     /// dead above (L1), so one ascending pass ends at a state whose every
     /// extension is dead — maximal, by L4.
-    fn climb(&mut self, sp: &mut Space<'_>, s: u32) -> Step<u32> {
+    pub(crate) fn climb(&mut self, sp: &mut Space<'_>, s: u32) -> Step<u32> {
         let mut cur = s;
         for b in 0..self.n as u32 {
             if self.st[cur as usize].bits.contains(b) {
@@ -1288,11 +1296,23 @@ impl Search {
         }
     }
 
-    fn route(&self) -> Route {
+    pub(crate) fn route(&self) -> Route {
         if self.l5 { Route::Tree } else { Route::States }
     }
 
-    fn licences(&self, base: &[Licence]) -> Vec<Licence> {
+    /// The order the tree took, where it branched on an instance's
+    /// alternatives (L5); `None` where it did not.
+    pub(crate) fn order_took(&self) -> Option<TreeOrder> {
+        self.l5.then_some(TreeOrder {
+            written: matches!(
+                self.order.choice,
+                Choice::Written { .. } | Choice::Coupled { written: true }
+            ),
+            ..self.took
+        })
+    }
+
+    pub(crate) fn licences(&self, base: &[Licence]) -> Vec<Licence> {
         let mut v = base.to_vec();
         if self.l5 {
             v.push(Licence::Exhaustive);
@@ -1339,18 +1359,12 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
     f.route = Some(s.route());
     f.licences = s.licences(&f.licences);
     f.denials = s.dead.denials_spent();
-    f.order = s.l5.then_some(TreeOrder {
-        written: matches!(
-            s.order.choice,
-            Choice::Written { .. } | Choice::Coupled { written: true }
-        ),
-        ..s.took
-    });
+    f.order = s.order_took();
     Ok(f)
 }
 
 /// `-n N` over all of `R`: the tree's leaves, then the states above them.
-fn find(sp: &mut Space<'_>, s: &mut Search, want: u64) -> Result<Found, SolveError> {
+pub(crate) fn find(sp: &mut Space<'_>, s: &mut Search, want: u64) -> Result<Found, SolveError> {
     let mut f = Found {
         licences: vec![
             Licence::DeadUpward,

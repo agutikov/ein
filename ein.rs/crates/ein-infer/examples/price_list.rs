@@ -23,6 +23,13 @@
 //! `--orders-report [--out DIR]` prints their tables, each against the
 //! tree's order of before by the rule below, read two ways.
 //!
+//! `--borders [--out DIR] [FILE…]` measures describe and `--count` by the
+//! border route against the state route instead
+//! ([`shared/borders.rs`](shared/borders.rs)): each question by both routes,
+//! what each border cost and how large it is, the two descriptions compared
+//! where both finish and against the cube within its limit, and the verdicts
+//! by the rule below.
+//!
 //! Every corpus file and register witness that loads and **searches**, or
 //! the `FILE`s given (`--all` keeps those that do not search too). For each
 //! the structure is read once ([`ein_infer::structure::theory_coupled`], and
@@ -75,6 +82,10 @@ mod searching;
 // The orders of the obligation tree, measured: `--orders`.
 #[path = "shared/orders.rs"]
 mod orders;
+
+// The border route against the state route: `--borders`.
+#[path = "shared/borders.rs"]
+mod borders;
 
 use prices::{Cell, PARTS, Read, WAYS};
 
@@ -1212,6 +1223,10 @@ fn corpus_md(programs: &[Program], verdicts: &BTreeMap<(usize, usize), Verdict>)
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.iter().any(|a| a == "--borders") {
+        borders::run(args.into_iter().filter(|a| a != "--borders").collect());
+        return;
+    }
     if let Some(mode) = args
         .iter()
         .find(|a| *a == "--orders" || *a == "--orders-report")

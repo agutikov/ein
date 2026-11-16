@@ -257,6 +257,11 @@ pub enum Route {
     /// No route: `--no-search` read root's node alone, and searched no
     /// further (M1f S1f.6.36, [`Options::no_search`]).
     Root,
+    /// The border route ([`crate::borders`]): describe on a monotone program
+    /// by the borders of the predicates the description reads, `R`'s states
+    /// by the obligation tree and each state's class and `N` by dualise and
+    /// advance.
+    Borders,
 }
 
 /// A theorem a mode used to skip work —
@@ -522,6 +527,9 @@ pub struct Answer {
     /// What root's saturation and the universe's generator pass counted, as
     /// every route starts from them: `--json-summary`'s `root` block.
     pub root: RootStats,
+    /// On the border route, what each border cost and how large it is; `None`
+    /// on every other route. No surface prints it.
+    pub borders: Option<Box<BorderWork>>,
 }
 
 impl Answer {
@@ -791,6 +799,10 @@ pub(crate) struct Space<'a> {
     plans: Vec<std::sync::Arc<crate::plan::Plan>>,
     /// What root's saturation and the universe's pass counted.
     root_stats: RootStats,
+    /// Per state, numbered as [`Seen::class`], the instances an alive owing
+    /// node of it owes, rendered through their rule's `:why`: what a
+    /// description that lists an owing state prints ([`crate::borders`]).
+    owed_text: FxHashMap<u32, Vec<String>>,
 }
 
 /// `Ok(Err(stop))`: the step was not taken.
@@ -854,6 +866,7 @@ impl<'a> Space<'a> {
             records: (flagged && within).then(FxHashMap::default),
             plans,
             root_stats,
+            owed_text: FxHashMap::default(),
         }
     }
 
@@ -865,6 +878,11 @@ impl<'a> Space<'a> {
     /// every set [`Self::eval`] takes.
     pub(crate) fn candidates(&self) -> &[Candidate] {
         &self.candidates
+    }
+
+    /// The static check's verdict.
+    pub(crate) fn monotonicity(&self) -> &Monotonicity {
+        &self.monotonicity
     }
 
     /// The static check calls the program monotone, so L1 to L3 hold of it.
@@ -1123,6 +1141,7 @@ impl<'a> Space<'a> {
             wall: Duration::ZERO,
             warning,
             root: self.root_stats,
+            borders: None,
         }
     }
 
@@ -1223,6 +1242,10 @@ impl<'a> Space<'a> {
             self.spent += o.state.len() as u64;
             let next = self.classes.len() as u32;
             let class = *self.classes.entry(o.state).or_insert(next);
+            if !o.dead && o.owes > 0 && !self.owed_text.contains_key(&class) {
+                self.owed_text
+                    .insert(class, std::mem::take(&mut o.node.owed));
+            }
             self.seen.insert(
                 s.clone(),
                 Seen {
@@ -1243,6 +1266,43 @@ impl<'a> Space<'a> {
             self.events.watch_step(&step);
         }
         Ok(Ok(sets.iter().map(|s| self.seen[s].clone()).collect()))
+    }
+
+    /// What an alive owing state owes, rendered through each instance's
+    /// rule's `:why`, as its node reported it: `class` is [`Seen::class`].
+    /// Empty for a state this run did not compute owing.
+    pub(crate) fn owed_of(&self, class: u32) -> &[String] {
+        self.owed_text.get(&class).map_or(&[], Vec::as_slice)
+    }
+
+    /// Root's node, once a step has computed it.
+    pub(crate) fn root_node(&self) -> Option<&region::Node> {
+        self.root_node.as_ref()
+    }
+
+    /// The unsat cores of `sets`, each taken **after the walk** through the
+    /// node function, as the state route takes those of the members of `N` it
+    /// did not saturate ([`region::cores_after`]): the core an eager walk
+    /// takes. Nothing is remembered and nothing is charged: a core is no
+    /// node of the run's.
+    pub(crate) fn cores_after(
+        &mut self,
+        sets: &[Box<[u32]>],
+    ) -> Result<Vec<region::Node>, SolveError> {
+        let inputs: Vec<Vec<FactId>> = sets
+            .iter()
+            .map(|s| s.iter().map(|&b| self.facts[b as usize]).collect())
+            .collect();
+        region::cores_after(
+            self.pool.as_ref(),
+            self.root,
+            &self.snapshot,
+            self.terms,
+            self.ast,
+            &self.memo,
+            &self.axes,
+            &inputs,
+        )
     }
 
     /// The node of `set`, where this run has computed it: read, never
@@ -1894,13 +1954,17 @@ fn describe_route_1(
         wall: Duration::ZERO,
         warning,
         root: root_stats,
+        borders: None,
     })
 }
 
-/// Describe all of `R` by `route` — the state route or route 1 — whatever
-/// the rule would pick: for the tests that hold two routes to one read-out.
-/// `ein solve` never calls it; describe's route is the rule's (the module's
-/// § Describe's route). A flagged program is refused unless its root is dead.
+/// Describe all of `R` by `route` — the state route, route 1, or the border
+/// route ([`crate::borders`]) — whatever the rule would pick: for the tests
+/// that hold two routes to one read-out, and for the price list that
+/// measures one against another. `ein solve` never calls it; describe's
+/// route is the rule's (the module's § Describe's route). A flagged program
+/// is refused unless its root is dead, and the border route refuses a dead
+/// root too.
 pub fn describe_by(
     root: &mut Kb,
     terms: &mut Terms,
@@ -1913,6 +1977,9 @@ pub fn describe_by(
     let mut answer = match route {
         Route::States if prepared.monotonicity.is_monotone() => {
             describe_states(root, terms, ast, prepared, t0, opts, &mut Events::off())?
+        }
+        Route::Borders if prepared.monotonicity.is_monotone() && !prepared.root_dead => {
+            describe_borders(root, terms, ast, prepared, opts, &mut Events::off())?
         }
         Route::DownSet if prepared.monotonicity.is_monotone() || prepared.root_dead => {
             describe_route_1(root, terms, ast, prepared, t0, opts, &mut Events::off())?
@@ -2070,7 +2137,178 @@ fn describe_states(
         wall: Duration::ZERO,
         warning: None,
         root: root_stats,
+        borders: None,
     })
+}
+
+/// Describe all of `R` on a monotone program whose root is alive by the
+/// border route ([`crate::borders`]): `R`'s states by the obligation tree,
+/// each state's class and `N` by dualise and advance, the description read
+/// off the borders. Where a node contradicts the static verdict, the run
+/// refuses, as the state route's does.
+fn describe_borders(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    prepared: Prepared,
+    opts: &Options,
+    events: &mut Events,
+) -> Result<Answer, SolveError> {
+    let mut sp = Space::open(root, terms, ast, prepared, opts, events);
+    let b = crate::borders::describe(&mut sp, opts.mode, opts.nogoods)?;
+    let mut described = described::of_borders(&b, &sp, opts.nogoods);
+    // N's cores, after the walk, as the state route takes those of the
+    // members it did not saturate: the core an eager walk takes.
+    if opts.cores.nogoods {
+        let sets: Vec<Box<[u32]>> = described
+            .dead
+            .iter()
+            .filter(|x| x.core_status.is_none() && !x.set.is_empty())
+            .map(|x| x.set.clone())
+            .collect();
+        let taken = sp.cores_after(&sets)?;
+        let mut taken = taken.into_iter();
+        for x in described
+            .dead
+            .iter_mut()
+            .filter(|x| x.core_status.is_none() && !x.set.is_empty())
+        {
+            let node = taken.next().expect("one core a set");
+            x.core = node.core;
+            x.core_status = node.core_status;
+            x.refuted_by = node.refuted_by;
+        }
+    }
+    let s = &b.search;
+    let mut licences = b.found.licences.clone();
+    licences.push(Licence::LocalLines);
+    let mut licences = s.licences(&licences);
+    licences.dedup();
+    let states: Vec<State> = described
+        .states
+        .iter()
+        .map(|x| State {
+            set: x.rep.clone(),
+            closure: x.closure.clone(),
+        })
+        .collect();
+    let exhausted = described.exhausted;
+    let shape = exhausted.then(|| {
+        let mut maximal: Vec<Box<[u32]>> = described
+            .states
+            .iter()
+            .filter(|x| x.maximal)
+            .map(|x| x.closure.clone())
+            .collect();
+        maximal.sort_by(|x, y| (x.len(), x).cmp(&(y.len(), y)));
+        Shape {
+            empty_in_r: described.root.in_r(),
+            minimal: described.minimal_commitments.clone(),
+            maximal,
+            components: described.shape.as_ref().map_or(0, |x| x.components.len()),
+            subcubes: described
+                .shape
+                .as_ref()
+                .and_then(|x| x.subcubes.as_ref())
+                .map(Vec::len),
+            nogoods: if described.nogoods_skipped {
+                0
+            } else {
+                described.nogoods as usize
+            },
+            holes: None,
+            merged: described
+                .states
+                .iter()
+                .filter(|x| x.commitments > 1)
+                .count(),
+        }
+    });
+    let found = Found {
+        states,
+        minimal: Vec::new(),
+        exhausted,
+        verdict: None,
+        stopped: b.stopped.as_ref().map(|(_, stop)| stop.clone()),
+        licences,
+        members: described.k_c,
+        route: Some(Route::Borders),
+        denials: s.dead.denials_spent(),
+        order: s.order_took(),
+    };
+    let counts = Counts {
+        k_c: described.k_c,
+        k_s: described.k_s(),
+    };
+    let mut answer = sp.answer(opts.mode, Route::Borders, found);
+    answer.shape = shape;
+    answer.counts = Some(counts);
+    answer.borders = Some(Box::new(BorderWork::of(&b)));
+    answer.described = Some(Box::new(described));
+    Ok(answer)
+}
+
+/// What each border cost a border-route run, and how large it is: what the
+/// price list reads ([`Answer::borders`]). No surface prints it.
+#[derive(Clone, Debug, Default)]
+pub struct BorderWork {
+    /// Per border, `(saturations, facts beyond root)`: `R`'s states, the
+    /// classes, the singles, `N` with the maximal alive sets.
+    pub work: [(u64, u64); 4],
+    /// The border the run stopped in, where the budget stopped it.
+    pub stopped_in: Option<crate::borders::Border>,
+    /// `R`'s states found.
+    pub states: u64,
+    /// Per state, its maximal closed proper subsets, summed.
+    pub below: u64,
+    /// Per state, its minimal generators, summed.
+    pub generators: u64,
+    /// The classes found with no node asked.
+    pub classes_read: u64,
+    /// `N`, where it was found.
+    pub nogoods: Option<u64>,
+    /// The maximal alive sets, where they were found.
+    pub maximal_alive: Option<u64>,
+    /// `N` was read off the states met with no node asked.
+    pub global_read: bool,
+    /// Transversals the memory decided dead with no saturation.
+    pub known: u64,
+    /// Rounds of the global dualisation.
+    pub rounds: u64,
+    /// The classes found.
+    pub classes: u64,
+    /// Where the run stopped in the global border: the maximal alive sets
+    /// and the members of `N` it had found, the transversals of the round
+    /// it stopped in, and the rounds begun.
+    pub global_met: Option<(u64, u64, u64, u64)>,
+}
+
+impl BorderWork {
+    fn of(b: &crate::borders::Borders) -> BorderWork {
+        // determinism-ok: `b.classes` is a vector, a class per state of `R`.
+        let classes = b.classes.iter().flatten();
+        BorderWork {
+            work: b.work,
+            stopped_in: b.stopped.as_ref().map(|(border, _)| *border),
+            states: b.r.len() as u64,
+            below: classes.clone().map(|c| c.edges.len() as u64).sum(),
+            generators: classes.clone().map(|c| c.generators.len() as u64).sum(),
+            classes_read: classes.filter(|c| c.read).count() as u64,
+            nogoods: b.global.as_ref().map(|g| g.nogoods.len() as u64),
+            maximal_alive: b.global.as_ref().map(|g| g.maximal_alive.len() as u64),
+            global_read: b.global.as_ref().is_some_and(|g| g.read),
+            known: b.global.as_ref().map_or(0, |g| g.known),
+            rounds: b.global.as_ref().map_or(0, |g| g.rounds),
+            // determinism-ok: a count over a vector.
+            classes: b.classes.iter().flatten().count() as u64,
+            global_met: matches!(b.stopped, Some((crate::borders::Border::Global, _))).then_some((
+                b.met.maximal_alive,
+                b.met.dead,
+                b.met.transversals,
+                b.met.rounds,
+            )),
+        }
+    }
 }
 
 /// A flagged program: no licence but the cube.
@@ -2386,6 +2624,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         monotonicity: r.monotonicity,
         root_dead: r.root_dead,
         root: r.root,
+        borders: None,
     }
 }
 
