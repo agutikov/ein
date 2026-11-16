@@ -2,8 +2,10 @@
 
 **Phase:** [P1f.20](README.md) (`docs/ein/`: the tree a released system would have)
 **Estimate:** 2 days.
-**Status:** **T1 and T2 written 2026-11-16, stopped for the user's review** ([§ Record](#record-2026-11-16)),
-the inbound column filled from S1f.20.1's checker. It was `T1f.5.20.2` until 2026-11-08.
+**Status:** **done 2026-11-17**: T1 and T2 written 2026-11-16 ([§ Record](#record-2026-11-16)), the inbound column
+filled from S1f.20.1's checker, and **reviewed by the user on 2026-11-17**, whose rulings are
+[P1f.20 § The user's rulings at S1f.20.2's review](README.md#the-users-rulings-at-s1f202s-review-2026-11-17); the
+table takes them where they move a row. It was `T1f.5.20.2` until 2026-11-08.
 **Depends on:** [S1f.20.1](s1f.20.1_the_two_checks.md), whose link check counts each page's inbound links.
 
 ## What it is

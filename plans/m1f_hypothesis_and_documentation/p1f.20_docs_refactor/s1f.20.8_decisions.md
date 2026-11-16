@@ -2,7 +2,10 @@
 
 **Phase:** [P1f.20](README.md) (`docs/ein/`: the tree a released system would have)
 **Status:** planned 2026-11-15 on the user's rulings of that day
-([P1f.20 § The user's rulings](README.md#the-users-rulings-2026-11-15)). **T1 and T2 done 2026-11-16**
+([P1f.20 § The user's rulings](README.md#the-users-rulings-2026-11-15)). **The layout and the defaults ruled
+2026-11-17** ([P1f.20 § The user's rulings at S1f.20.2's review](README.md#the-users-rulings-at-s1f202s-review-2026-11-17),
+items 5 to 11: process decisions not carried; an open question the project cites is written as a decision; the
+map fixed at Q-M1e.23–.26, Q-M1e2.29, Q-M1f.315–.340), T3 and T4 next. **T1 and T2 done 2026-11-16**
 ([§ Record](#record-2026-11-16-t1-and-t2)): the census is banked and the layout is
 [proposed for the user](s1f.20.8_layout_proposal.md). T3 and T4 wait for the user's review at S1f.20.2's stop.
 **Depends on:** [S1f.20.2](s1f.20.2_the_disposition_table.md), whose review it joins: the decisions' layout

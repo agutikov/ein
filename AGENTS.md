@@ -43,8 +43,8 @@ constrained-reasoning research.
   sentence on a page is such a claim**, and since M1e
   [Q-M1e.4](docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
   a reader can tell which are: an exact number carries the **command** that
-  re-takes it, the **date** it was taken, or the **test** that pins it, and a
-  number that can carry none is not written down.
+  re-takes it or the **test** that pins it, and a number that can carry
+  neither is not written down (a date is no warrant).
   What it takes to call a claim *settled* is
   [`standard_of_proof.md`](docs/kernel/standard_of_proof.md): a behaviour is
   refuted only by a banked probe, an absence by naming the thing that checks

@@ -185,7 +185,7 @@ notes (`release.yml`): those strings move in the commit that moves the page.
 | `configuration.md` | `user/reference/config.md` | rewritten into | 96 | test-held (`config_reference.rs` diffs `FIELDS`, `test_cli.rs` names the schema); the defaults block moves as generated; the banner's chronology goes |
 | `defined_behaviour.md` | `user/reference/diagnostics.md` (§§ 1, 4), `user/reference/cli.md` (§ 5), `reasoning/static-ir/values-and-order.md` (§§ 2, 3) | rewritten into | 219 | the split S1f.20.4 names: diagnostics for the user, orderings for a reimplementer; § 6 (*not defined, and filed*) is work, not docs (§ No obvious destination) |
 | `glossary.md` | `user/reference/glossary.md` | rewritten into | 24 | |
-| `standard_of_proof.md` | `docs/decisions/` (Q-M1e.1, Q-M1e.2) and `README.md` § Keeping this true | rewritten into | 46 | it is two ratified decisions; **least sure, and the user's to decide** (§ For the review) |
+| `standard_of_proof.md` | `standard-of-proof.md` (Q-M1e.1 and Q-M1e.2 stay decisions, which the page states) | rewritten into | 46 | a page, the user's ruling at the review (item 1) |
 | `inference/README.md` | `reasoning/kb-evolution/{firing,saturation,absent-and-naf}.md`, `ein.rs/architecture.md` (as-built layout) | rewritten into | 37 | design principles, the alive-set invariant, NAF, d=0 completion; its six sections on gone machinery (the tree solver, unconditional facts, the walk) go |
 | `inference/absent_semantics.md` | `reasoning/kb-evolution/absent-and-naf.md` | rewritten into | 64 | normative, pinned by `naf_semantics.rs`; cites `dual_rail.ein`, which lives only in M1e2's folder |
 | `inference/algorithm_layer_n.md` | — | deleted | 12 | superseded with a banner; the walk it designs has had no code since M1e2 S1e2.1c.5; `finding_r.md` and `solution_semantics.md` state the current search |
@@ -511,6 +511,10 @@ This table applies them as written.
    guide's directory, so moving them there puts them under that test, which is good if they pass and work if not.
 
 ### Questions for the user to decide personally
+
+**Answered on 2026-11-17**: [P1f.20 § The user's rulings at S1f.20.2's review](../../plans/m1f_hypothesis_and_documentation/p1f.20_docs_refactor/README.md#the-users-rulings-at-s1f202s-review-2026-11-17)
+(1 a page, `standard-of-proof.md`; 2 the censuses kept; 3 rewritten; 4 the walk's instruments deleted; 5 is
+the walk's instruments too).
 
 1. **`standard_of_proof.md`**: two decision files (default), or a page of `docs/ein/`?
 2. **Measurements**: keep the re-takable censuses as `ein.rs/benchmarks/` evidence, re-taken on today's engine

@@ -36,6 +36,15 @@ are gone after finished"*. So:
 
 ## The defaults, each the user's to revise at S1f.20.2's review
 
+**Ruled 2026-11-17** ([P1f.20 § The user's rulings at S1f.20.2's review](README.md#the-users-rulings-at-s1f202s-review-2026-11-17)):
+all six as written, and three more for this stage. **The dependency runs one way**: nothing in the project
+reads, links or names `plans/`. **The register splits**: an `open` row and its witness move to `plans/`, with
+whatever re-runs them, and the register's filing rules with them; a `fixed` row stays as a regression test,
+stripped of ids and dates, and no project test holds an open row (default 4 as the rulings read it; the
+coordinator's reading, the user's to correct). **The walk's seven instruments** in `utils/` are deleted, with
+what only they read. An open question the project cites is written as a decision by S1f.20.8, so none is cited
+here.
+
 1. **What *finished* is**: a milestone or phase whose README says *closed*, a followup that says *done*;
    anything else stays.
 2. **Measurements stay only as current state**: a re-takable command and what it gives on today's engine, on a

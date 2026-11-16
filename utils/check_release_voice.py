@@ -7,7 +7,7 @@ into `plans/`, the date a ruling was made or a measurement taken — reads only
 while the plan it points at exists, and plans are deleted when finished. This
 check finds those lines where the released tree keeps its prose:
 
-- every `.md` under `docs/ein/`;
+- every `.md` under `docs/ein/` and `docs/decisions/`;
 - every doc comment (`///`, `//!`) of a shipped crate: `ein-core`, `ein-ir`,
   `ein-infer`, `ein-einb`, `ein-render`, `ein-cli`, their tests, examples and
   benches included;
@@ -98,7 +98,7 @@ def tracked() -> list[str]:
 
 
 def in_scope(rel: str) -> bool:
-    if rel.startswith("docs/ein/") and rel.endswith(".md"):
+    if rel.startswith(("docs/ein/", "docs/decisions/")) and rel.endswith(".md"):
         return True
     if rel.endswith(".rs") and any(rel.startswith(f"ein.rs/crates/{c}/") for c in SHIPPED):
         return True

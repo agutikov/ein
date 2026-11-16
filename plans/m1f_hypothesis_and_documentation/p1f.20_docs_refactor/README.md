@@ -23,9 +23,81 @@ after [P1f.5](../p1f.5_the_no_owner_items/README.md), which edits kernel pages t
 **Source:** the user's note of 2026-08-28, restated in [§ The instruction](#the-instruction), and the user's
 rulings of 2026-11-15 ([§ The user's rulings](#the-users-rulings-2026-11-15)), which add the history sweep,
 [S1f.20.8](s1f.20.8_decisions.md) and [S1f.20.9](s1f.20.9_the_history_sweep.md), and override this page and
-every stage file where they differ.
+every stage file where they differ. **The user's rulings at S1f.20.2's review (2026-11-17)**
+([§ below](#the-users-rulings-at-s1f202s-review-2026-11-17)) override them in turn where they differ.
 
 ---
+
+## The user's rulings at S1f.20.2's review (2026-11-17)
+
+Shown the disposition table ([`docs/ein/README.md`](../../../docs/ein/README.md)), the decisions' layout
+([`s1f.20.8_layout_proposal.md`](s1f.20.8_layout_proposal.md)), S1f.20.8's and S1f.20.9's defaults and
+[Q-M1f.314](../open_questions.md#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line), the user
+answered, verbatim:
+
+> The tree
+> 1. standard_of_proof.md: page under docs/ein/
+> 2. Measurements: keeps the censuses
+> 3. P1f.6's results pages: rewrites them into stdlib.md and a guide page.
+> 4. The deleted search's seven measurement scripts in utils/ - delete
+>
+> Decisions
+>
+> 5. Layout: one file per decision in 20 subject folders, <id>-<slug>.md.
+> 6. Process-only decisions belong to plans. These are decisions about development process. Development process
+>    is outside of the project: process{plans/, ..., project{code, docs/}}; So wrong answers are also tracked in
+>    plans, because they are temporary wrong, when fixed they became tests, decisions, whatever else.
+> 7. Local numbers: give them new ids: Q-M1e.23–.26, Q-M1e2.29, Q-M1f.315–.340.
+> 8. Rulings with no id: take the next free id of the milestone that ruled them.
+> 9. Q-M1e.4's "date" warrant goes: a number in prose carries a command or a test, here and in AGENTS.md.
+> 10. Open questions: the 10 in docs/history/ ledgers move to plans/open_questions.md if they are open, otherwise
+>     into decisions; All open questions live in plans. No open question is referred from code/comments or docs.
+>     If something refers the open question then it is not open - it may be postponed with justification,
+>     waiting for something, or just postponed because of minority.
+> 11. The rest, defaults as in § 6 of the proposal page: decided but unbuilt questions stay with their plans;
+>     std.math.crypt (P1f.6's #42) goes to a followup; superseded ids that are still cited get rewritten to the
+>     id that carries the decision, with no redirect files; colliding open ids take their ledger's prefix when
+>     next touched; the 16 answers flagged "verify" are checked against today's engine before their files are
+>     written.
+>
+> Other defaults
+>
+> 12. S1f.20.9's six defaults as written. "Finished" means the README says closed or done. That deletes M1e2,
+>     M1j, P1f.5/.6/.7/.8/.10, F9 and F18. Superseded-with-banner pages are deleted or rewritten. The register
+>     stays as test data, stripped of ids and dates. Commit messages are untouched.
+> 13. Q-M1f.314: the release-voice check reads every doc comment and every .ein comment, and every ISO date
+>     fails a line. A falling count is reported, not failed. F/E/W/K ids are not read yet.
+
+And, the same day, on item 6:
+
+> plans is a folder inside the project root, but conceptually it is external to the project because the project
+> is in some state and plans see different states, evolution
+
+What they change:
+
+- **The dependency runs one way.** `plans/` may read the project, which it sees in many states; nothing in the
+  project (code, tests, comments, docs, decisions) reads, links or names `plans/`. The release-voice check is
+  this rule's gate for prose; a test or script of the project that reads `plans/` breaks it too.
+- **Process decisions are not carried** into `docs/decisions/` (item 6): the 64 the census classes `process`, and
+  Q-M1f.36's register reading with them, which the proposal had carried. They stay with their plans and leave
+  with them; a process rule still in force (the register's filing rules) is restated in `plans/`, where the
+  process lives.
+- **The wrong-answer register splits** (items 6 and 12, read together with the second ruling; the coordinator's
+  reading, the user's to correct): an `open` row is a wrong answer, a work item, so it and its witness move to
+  `plans/`, with whatever re-runs them; a `fixed` row is a regression test and stays in the project as test data,
+  stripped of ids and dates. No project test holds an open row any more, since that would read `plans/`.
+  S1f.20.9 does it.
+- **An open question cited by the project is not open** (item 10): each of the 9 open ids cited outside `plans/`
+  is written as a decision of what holds today (postponed, with why, or what it waits for, in the release voice),
+  and an id that is truly open is cited by nothing outside `plans/`. The 10 open rows of `docs/history/`'s
+  ledgers are read the same way: a decision, or a row of `plans/open_questions.md`, ids kept.
+- **`standard_of_proof.md` is a page**, `docs/ein/standard-of-proof.md` (item 1); Q-M1e.1 and Q-M1e.2 stay
+  decisions, which the page states.
+- **The walk's seven instruments** in `utils/` are deleted at S1f.20.9 (item 4), with what only they read.
+- **Q-M1e.4's date warrant goes** (item 9), in `AGENTS.md` now.
+- **Ids** (items 7, 8): the map is fixed at Q-M1e.23 to .26, Q-M1e2.29 and Q-M1f.315 to .340; a ruling with no id
+  takes the next free id of its milestone after those, Q-M1f.341 on for M1f's.
+- Everything else as the defaults were written; Q-M1f.314 is ruled as defaulted.
 
 ## The user's rulings (2026-11-15)
 
