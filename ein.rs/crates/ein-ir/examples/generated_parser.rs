@@ -1,5 +1,4 @@
-//! The parser, from the command line (M1f S1f.5.5, T1f.5.5.3; since the swap,
-//! T1f.5.5.4, the only parser).
+//! The parser, from the command line.
 //!
 //! ```sh
 //! # each file's report: `parses, n forms`, or every error recovery reached
@@ -10,15 +9,14 @@
 //! # any report differed between its two parses
 //! cargo run --release -p ein-ir --example generated_parser -- mutants N [SEED [DIR]]
 //! # with DIR, each mutant recovery cut at the budget is written there; with
-//! # `--without-priority` anywhere, the sources' `:priority` clauses are taken
-//! # out first, as S1f.5.15 will (the grammar has none: the user, 2026-11-08)
+//! # `--without-priority` anywhere, any `:priority` clause a source holds is
+//! # taken out first (the grammar has no `:priority`)
 //! ```
 //!
-//! `mutants` is how `lrpar`'s `RECOVERY_STEP_BUDGET` was chosen: run once with
+//! `mutants` is how `lrpar`'s `RECOVERY_STEP_BUDGET` is chosen: run once with
 //! the vendored constant raised far past any mutant's need, so that the step
-//! counts are what recovery takes rather than what it was allowed, then once
-//! at the chosen budget for the times (`plans/…/s1f.5.5_the_grammar.md`
-//! § T3 record).
+//! counts are what recovery takes rather than what it is allowed, then once at
+//! the chosen budget for the times.
 
 use std::time::Instant;
 

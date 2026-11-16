@@ -1,30 +1,18 @@
 //! The builder `ein.y`'s actions call: one call per action, each making the
-//! node the hand-written parser made for the same text, so that the loader
-//! read the generated parser's tree unchanged; since the swap (T1f.5.5.4) it
-//! is the only builder.
+//! node the loader reads.
 //!
-//! S1f.5.5 step 2's builder (T1f.5.5.2), made real at T1f.5.5.3. Its
-//! conventions are the hand-written parser's (`parse.rs`, deleted at the
-//! swap): a declarator,
-//! `and`, `or`, `not` and `neq` are built with a synthetic head and no `Loc`;
-//! any other list takes its head's `Loc`; a top-level fact has none; `()` is
-//! headed `#empty` and a parameter list `#params` (`ein_core::text`'s
-//! `EMPTY_HEAD` and `PARAMS_HEAD`, no name a program can spell since
-//! T1f.5.5.8).
+//! Its conventions: a declarator, `and`, `or`, `not` and `neq` are built with
+//! a synthetic head and no `Loc`; any other list takes its head's `Loc`; a
+//! top-level fact has none; `()` is headed `#empty` and a parameter list
+//! `#params` (`ein_core::text`'s `EMPTY_HEAD` and `PARAMS_HEAD`, no name a
+//! program can spell).
 //!
-//! Two leaves differ, by the rulings this grammar carries: a run of digits is
-//! a name, `Atom("01")` and not `Int(1)` (Q-M1e2.24, S1f.5.4's ruling), so the
-//! generated parser builds no `Int` at all, since `:priority`, whose value was
-//! the one place digits stayed one, is not in the grammar (the user,
-//! 2026-11-08: S1f.5.15 deletes it before the swap), and since M1f S1f.5.4's
-//! T1f.5.4.3 the tree has no `Int` node to build; and a fact's `:using`
-//! lists its premises under the synthetic head `#list`, where the hand-written
-//! parser took the list's first element as its head, which the loader then
-//! dropped (the paper grammar's default 2). A macro's `:why`, which the
-//! hand-written parser refuses, is a key pair after its body.
+//! A run of digits is a name, `Atom("01")` (Q-M1e2.24): the tree has no
+//! integer node. A fact's `:using` lists its premises under the synthetic head
+//! `#list`. A macro's `:why` is a key pair after its body.
 //!
-//! A position is a `Loc` as the hand-written lexer counts one: lines split at
-//! `\n` alone, columns in characters, both 1-based ([`Lines`]).
+//! A position is a `Loc`: lines split at `\n` alone, columns in characters,
+//! both 1-based ([`Lines`]).
 
 use std::cell::RefCell;
 
@@ -37,9 +25,9 @@ pub(super) type Id = NodeId;
 type Tok = Result<DefaultLexeme<u32>, DefaultLexeme<u32>>;
 type Lx<'a, 'i> = &'a dyn NonStreamingLexer<'i, DefaultLexerTypes<u32>>;
 
-/// Where each line of a source starts, so that a byte offset becomes the
-/// hand-written lexer's line and column in O(log n): `lrlex`'s own
-/// `line_col` walks the line from its start on every call.
+/// Where each line of a source starts, so that a byte offset becomes a
+/// [`Loc`]'s line and column in O(log n): `lrlex`'s own `line_col` walks the
+/// line from its start on every call.
 pub(super) struct Lines {
     /// The byte offset of each line's first character.
     starts: Vec<usize>,
@@ -160,9 +148,9 @@ pub(super) fn var(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
     b.ast.push(Node::Var(s), at)
 }
 
-/// A string, stored unescaped. The lexer let through only the escapes
-/// S1f.5.2 names: `\n \t \r \" \\` and `\u{…}` naming a Unicode scalar
-/// value. A token recovery inserted has no text, and is the empty string.
+/// A string, stored unescaped. The lexer lets through only the escapes a
+/// string reads: `\n \t \r \" \\` and `\u{…}` naming a Unicode scalar value.
+/// A token recovery inserted has no text, and is the empty string.
 pub(super) fn text(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
     let l = lexeme(t);
     let at = loc(p, l);
@@ -175,9 +163,8 @@ pub(super) fn text(p: &RefCell<B>, lx: Lx, t: Tok) -> Id {
 
 /// A string's body with its escapes read: the body of a `TEXT` token, whose
 /// rule in `ein.l` admits no other escape and no `\u{…}` that names no
-/// character. Until S1f.5.2's T1f.5.2.5 (W38) `TEXT` admitted one to six hex
-/// digits of any value, and one past 10FFFF or a surrogate read as U+FFFD
-/// here, in silence; the token is `BADESCAPE` since, refused at the parse.
+/// character: one past 10FFFF or a surrogate is a `BADESCAPE` token, refused
+/// at the parse, and never read here as U+FFFD in silence (W38).
 fn unescape(body: &str) -> String {
     let mut out = String::with_capacity(body.len());
     let mut it = body.chars();
@@ -209,7 +196,7 @@ fn unescape(body: &str) -> String {
 /// The escapes a string's body writes that `TEXT` does not read, each with
 /// its byte offset in the body: `\` and the character after it, or, after
 /// `\u`, the braces and the hex digits inside them (`\u{110000}`, `\u{}`).
-/// What a `BADESCAPE` token's note names (T1f.5.2.5).
+/// What a `BADESCAPE` token's note names.
 pub(super) fn bad_escapes(body: &str) -> Vec<(usize, String)> {
     let mut out = Vec::new();
     let mut it = body.char_indices().peekable();
@@ -304,8 +291,8 @@ pub(super) fn premises(p: &RefCell<B>, facts: Vec<Id>) -> Id {
 mod tests {
     use super::Lines;
 
-    /// The hand-written lexer's count: `\n` alone ends a line, a column is a
-    /// character, and both start at 1.
+    /// A `Loc`'s count: `\n` alone ends a line, a column is a character,
+    /// and both start at 1.
     #[test]
     fn a_position_is_counted_as_the_hand_written_lexer_counts_it() {
         let ascii = Lines::new("(a b)\n  (c)\r\n(d)");
