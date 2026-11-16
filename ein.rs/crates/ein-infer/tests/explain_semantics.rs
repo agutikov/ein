@@ -878,7 +878,7 @@ fn hypotheses(f: &mut Fixture) -> (Vec<FactId>, HypGenStats) {
             events: &mut events,
             memo: SharedMemo::default(),
         };
-        ein_infer::hypgen::generate(&mut s, &mut stats, &mut |fid| {
+        ein_infer::hypgen::generate_config_free(&mut s, &mut stats, &mut |fid| {
             out.push(fid);
             ControlFlow::Continue(())
         })
@@ -890,8 +890,8 @@ fn hypotheses(f: &mut Fixture) -> (Vec<FactId>, HypGenStats) {
 /// **a-derived-closure-marker-silences-hypgen.**
 ///
 /// The hand-off is by *fact*, not by provenance: hypgen looks up
-/// `(__closed__ R)` and does not care whether a human authored it,
-/// `emit_closed` wrote it, or `infer-closure` derived it during saturation.
+/// `(__closed__ R)` and does not care whether a human authored it or
+/// `infer-closure` derived it during saturation.
 /// That is what makes `std.closure` an ordinary rule rather than an engine
 /// mode — and it is only checkable end to end, because the same program
 /// *without* the import produces the candidates this one suppresses.
@@ -940,7 +940,7 @@ fn a_derived_closure_marker_silences_hypgen() {
     assert!(
         stats.pre_candidate[Skip::ClosedRelation as usize] > 0,
         "r was skipped for some other reason than being closed: {:?}",
-        stats.report_lines()
+        stats.pre_candidate
     );
 }
 
@@ -1190,8 +1190,6 @@ fn fork_and_direct_saturation_agree() {
     let mut parent = ein_ir::load_file(&mut ast, &mut terms, &path).expect("zebra2 loads");
     let mut forked = parent.fork();
 
-    emit_closed_on(&ast, &mut terms, &mut direct);
-    emit_closed_on(&ast, &mut terms, &mut forked);
     let a = saturate_kb(&ast, &mut terms, &mut direct);
     let b = saturate_kb(&ast, &mut terms, &mut forked);
 
@@ -1352,18 +1350,6 @@ fn a_why_reference_name_may_carry_hyphens_and_underscores() {
 }
 
 // ── Shared helpers ─────────────────────────────────────────────────
-
-fn emit_closed_on(ast: &Ast, terms: &mut Terms, kb: &mut Kb) {
-    let mut events = Events::off();
-    let mut s = Session {
-        kb,
-        terms,
-        ast,
-        events: &mut events,
-        memo: SharedMemo::default(),
-    };
-    ein_infer::emit_closed(&mut s).expect("the closure pass compiles");
-}
 
 fn counts_by_relation(kb: &Kb, terms: &Terms) -> BTreeMap<String, usize> {
     let mut out: BTreeMap<String, usize> = BTreeMap::new();

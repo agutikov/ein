@@ -580,9 +580,8 @@ fn or_is_commutative_when_its_disjuncts_share_bindings() {
 /// core, the positive queue is *always* empty when a guard is about to decide
 /// something. A saturator that answered from the queue alone would report
 /// quiescence one round early and lose the firing entirely, and every caller
-/// that drives `step` to a fixpoint (the fork loop, the lookahead, the
-/// contradiction detector) would see a world one admission short of the real
-/// one. So the question has to reach the boundary, and after the boundary has
+/// that drives `step` to a fixpoint (the fork loop, the contradiction
+/// detector) would see a world one admission short of the real one. So the question has to reach the boundary, and after the boundary has
 /// been exhausted the same question has to answer the other way.
 #[test]
 fn the_boundary_decides_whether_a_saturator_is_stalled() {

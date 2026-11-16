@@ -32,13 +32,12 @@
 //! ## What it cannot say, and where that is said
 //!
 //! *These runs agreed*, not *all runs agree* — and the distance between the
-//! two is where a scheduling-dependent bug lives. The **mechanism** is written
-//! beside `ein_core::Nogoods` and as
+//! two is where a scheduling-dependent bug lives. The walk had one store its
+//! workers shared, its learned clauses, and the **mechanism** that kept a
+//! worker from observing a clause arriving is
 //! [design/02 §6a](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
-//! (M1e S1e.1.2, the review's Q1): the shared clause store is never read
-//! during an entering and never written during a fan-out, so a worker cannot
-//! observe one arriving — and the store is **frozen** for that window so the
-//! premise fails loudly rather than being read off the call graph.
+//! (M1e S1e.1.2, the review's Q1); the store went with the walk, and a route's
+//! node is a fork of root that no other node reads.
 //!
 //! ## What it runs, and against what (M1f S1f.6.39)
 //!

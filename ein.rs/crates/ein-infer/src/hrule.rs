@@ -5,7 +5,7 @@
 //! trying rather than leaving it all to the blind combinatorial enumerator.
 //!
 //! Because hrules live in their own registry, `compile_all` never walks them —
-//! **the saturator and the one-step lookahead never see an hrule**.
+//! **the saturator never sees an hrule**.
 //! [`crate::hypgen`] is the sole consumer: each `:match` over the KB yields a
 //! binding, and [`crate::firing::build_fact`] over the `:assert` template
 //! becomes a candidate routed through the ordinary filter pipeline.
@@ -108,19 +108,17 @@ impl Hrules {
     /// needs it mutably, so one hrule's walk finishes before its first
     /// candidate is emitted.
     ///
-    /// No shipped caller writes the KB between two candidates: every command
-    /// takes H config-free (`hypgen::generate_config_free`), with the
-    /// lookahead's kill cache off, since M1e2 S1e2.3.1. The config-reading
-    /// `hypgen::generate`, which the shape digest's `hyp` op and the tests
-    /// call, can have it on, and it then writes `(not h)` between one
-    /// candidate and the next. So where an hrule's `:match` reads `not`
-    /// (`reads_negation`: a stored negation, `(absent (not …))`, the
-    /// stdlib's `unknown`), **every** hrule is matched before any candidate is
-    /// emitted, and no write the pipeline makes is visible to the
-    /// enumeration: an hrule that reads `not` reads the state it was asked
-    /// about, with the cache on and off (M1f S1f.7.2, W85). Where none reads
-    /// it the two orders agree, and each hrule is matched as it is reached, so
-    /// a caller that stops early matches no hrule it does not reach.
+    /// No caller writes the KB between two candidates: the one pass,
+    /// `hypgen::generate_config_free`, writes nothing. The walk's generator
+    /// wrote `(not h)` between one candidate and the next, through its kill
+    /// cache, and so where an hrule's `:match` reads `not` (`reads_negation`:
+    /// a stored negation, `(absent (not …))`, the stdlib's `unknown`),
+    /// **every** hrule is matched before any candidate is emitted, and no
+    /// write a caller makes is visible to the enumeration: an hrule that reads
+    /// `not` reads the state it was asked about (M1f S1f.7.2, W85). Where none
+    /// reads it the two orders agree, and each hrule is matched as it is
+    /// reached, so a caller that stops early matches no hrule it does not
+    /// reach.
     ///
     /// Until S1f.7.2 a `debug_assert!` held that no hrule read `not`, so a
     /// debug build stopped, exit 101, on a program a release build answered,

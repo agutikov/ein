@@ -404,8 +404,9 @@ impl Universe {
         }
         // The kernel's own vocabulary: a stored `(not X)` and a stored
         // `(false)` are facts whose head is reserved and therefore never in
-        // the registry, and `__closed__` is written by `emit_closed` after the
-        // program is sealed. None of them is a name a *program* introduced.
+        // the registry, and a `(__closed__ R)` a rule derives (`std.closure`'s)
+        // has a head no registry holds. None of them is a name a *program*
+        // introduced.
         for name in ein_core::terms::STRUCTURAL
             .iter()
             .chain(ein_core::terms::PREDICATES.iter())

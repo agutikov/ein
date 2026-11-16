@@ -2,13 +2,12 @@
 //! S1f.7.2 (W85, Q-M1f.129).
 //!
 //! Until S1f.7.2 `Hrules::candidates` held a `debug_assert!` that no hrule's
-//! `:match` read `not`, *which hypgen's kill cache writes mid-enumeration*, so
-//! a build with debug assertions stopped, exit 101, on a program a release
-//! build answered, and answered as `ein oracle` does. No command enumerates
-//! with the kill cache on since M1e2 S1e2.3.1, so the assertion guarded a
-//! write that no shipped path makes; where an hrule reads `not`, every hrule
-//! is now matched before any candidate is emitted, so the answer is the same
-//! with the cache on, as the shape digest's `hyp` op has it.
+//! `:match` read `not`, *which the walk's kill cache wrote mid-enumeration*,
+//! so a build with debug assertions stopped, exit 101, on a program a release
+//! build answered, and answered as `ein oracle` does. No command enumerated
+//! with the kill cache on since M1e2 S1e2.3.1, and the cache is gone, so the
+//! assertion guarded a write that no path makes; where an hrule reads `not`,
+//! every hrule is matched before any candidate is emitted.
 //!
 //! `cargo test` builds with debug assertions, so this file is the debug
 //! build's run of the three shapes: a stored negation read under `(absent

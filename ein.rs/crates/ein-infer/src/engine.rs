@@ -144,9 +144,9 @@ impl Engine {
         // per rule, cloned) and a `Vec<Option<FactId>>` per rule, on every
         // call. Neither is needed: `rules` borrows the program and `compile_for`
         // touches `self`, `terms` and `events`, so the two borrows never meet,
-        // and one buffer serves every rule. The engine a `Lookahead` throws
-        // away after one pass makes this walk ~120 pairs of pure setup, ~40
-        // times per solve ([S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)).
+        // and one buffer serves every rule. The walk's lookahead threw its
+        // engine away after one pass, which made this walk ~120 pairs of pure
+        // setup, ~40 times per solve ([S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)).
         let mut acts: Vec<Option<FactId>> = Vec::new();
         for rule in kb.program().rules.values() {
             activators_into(kb, terms, rule, &mut acts);

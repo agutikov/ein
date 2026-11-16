@@ -31,8 +31,8 @@ pub use searches::{SWEEP_BUDGET, SWEEP_LIMIT, searches};
 ///
 /// The list is every rendering built to be *comparable*: the frontend dumps,
 /// the loaded KB's shape, root saturation's verbose event stream, the plan,
-/// the match, hypothesis generation, the NAF map, the explain shapes, every
-/// DOT view, and — since M1e2 S1e2.1a.5's switch — what `ein solve` prints:
+/// the match, the NAF map, the explain shapes, every DOT view, and — since
+/// M1e2 S1e2.1a.5's switch — what `ein solve` prints:
 /// the read-out under each question, the region trace, and `ein render
 /// lattice`'s drawing of the nodes a description visits; and since M1e2
 /// S1e2.2.12 every core a run reports, under each question ([`core_ops`]),
@@ -40,7 +40,9 @@ pub use searches::{SWEEP_BUDGET, SWEEP_LIMIT, searches};
 /// of the read-out prints. The walk's surfaces
 /// (its solve table, trace, `--dump-states` tree, lattice proof and commit
 /// shape) left with its CLI path, and its three DOT views went with the walk
-/// at M1e2 S1e2.1c.5. An id leak that reaches an output reaches
+/// at M1e2 S1e2.1c.5. Its generator's own pass, the `hyp` and `hyp+closed`
+/// digests, went with that pass: H is held by the read-out's `universe` rows
+/// and every answer. An id leak that reaches an output reaches
 /// one of these, and one that reaches nothing here reaches nothing a user can
 /// see.
 pub fn ops() -> Vec<Op> {
@@ -49,8 +51,6 @@ pub fn ops() -> Vec<Op> {
         Op::Saturate,
         Op::Plan,
         Op::Match,
-        Op::Hyp(false),
-        Op::Hyp(true),
         Op::Naf,
         Op::Explain(true),
         Op::Explain(false),
@@ -137,7 +137,6 @@ pub enum Op {
     Saturate,
     Plan,
     Match,
-    Hyp(bool),
     Naf,
     Explain(bool),
     Dot(&'static str),
@@ -171,7 +170,6 @@ impl std::fmt::Display for Op {
             Op::Saturate => write!(f, "saturate"),
             Op::Plan => write!(f, "plan"),
             Op::Match => write!(f, "match"),
-            Op::Hyp(c) => write!(f, "hyp{}", if *c { "+closed" } else { "" }),
             Op::Naf => write!(f, "naf"),
             Op::Explain(a) => write!(f, "explain{}", if *a { "" } else { "-noalts" }),
             Op::Dot(v) => write!(f, "dot[{v}]"),
@@ -353,7 +351,6 @@ fn run_loaded(
                 match op {
                     Op::Plan => ein_infer::plan_shape(ast, terms, &kb).map_err(|e| e.to_string()),
                     Op::Match => ein_infer::match_shape(ast, terms, &kb).map_err(|e| e.to_string()),
-                    Op::Hyp(closed) => ein_infer::hyp_shape_with(ast, terms, &mut kb, closed),
                     Op::Naf => ein_infer::naf_map(ast, terms, &mut kb).map_err(|e| e.to_string()),
                     Op::Saturate => {
                         ein_infer::saturate_events(ast, terms, &mut kb).map_err(|e| e.to_string())

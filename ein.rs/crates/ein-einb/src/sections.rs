@@ -725,60 +725,6 @@ pub fn load_program(
     Ok((kb, forms))
 }
 
-// ── NOGOODS ────────────────────────────────────────────────────────
-
-/// The learned clauses, sorted.
-///
-/// `Nogoods` is a hash set and its iteration order is not reproducible, so the
-/// clauses are sorted before they are written — by length then by id, a total
-/// order over data that already sorts its own elements
-/// ([design/02 §6](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)).
-/// Two runs that learn the same clauses therefore write the same bytes.
-pub fn write_nogoods(kb: &Kb) -> Vec<u8> {
-    // determinism-ok: collected and then sorted, which is what makes the bytes
-    // independent of the set's iteration order.
-    let mut clauses: Vec<Vec<u32>> = kb
-        .nogoods()
-        .read()
-        .expect("no writer panicked")
-        .iter()
-        .map(|c| c.iter().map(|f| f.0).collect())
-        .collect();
-    if clauses.is_empty() {
-        return Vec::new();
-    }
-    clauses.sort_by(|a, b| a.len().cmp(&b.len()).then_with(|| a.cmp(b)));
-    let mut w = Writer::new();
-    w.u32(clauses.len() as u32);
-    for c in &clauses {
-        w.u32(c.len() as u32);
-        for f in c {
-            w.u32(*f);
-        }
-    }
-    w.align(crate::header::ALIGN);
-    w.into_vec()
-}
-
-pub fn read_nogoods(body: &[u8], kb: &Kb, maps: &Maps) -> Result<()> {
-    let mut r = Reader::new(body);
-    let n = r.count(4)?;
-    let mut store = kb.nogoods().write().expect("no reader panicked");
-    for _ in 0..n {
-        let len = r.count(4)?;
-        let mut clause = Vec::with_capacity(len);
-        for _ in 0..len {
-            clause.push(maps.fact(r.u32()?)?);
-        }
-        // The stored order is the sort's; a clause's own canonical form is
-        // sorted by id, which is what `emit_nogood` writes and what
-        // subsumption compares.
-        clause.sort();
-        store.insert(clause.into_boxed_slice());
-    }
-    Ok(())
-}
-
 // ── UNIVERSAL ──────────────────────────────────────────────────────
 
 /// The facts each derivation record's universals read

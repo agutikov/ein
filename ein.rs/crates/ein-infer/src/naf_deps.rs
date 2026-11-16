@@ -40,10 +40,10 @@
 //! (rule bad () :match (and (p ?x) (absent (q ?x))) :assert (false))
 //! ```
 //!
-//! makes `{(p A)}` dead and `{(p A), (q A)}` alive, and three shipped
-//! mechanisms read the refuted premise `X ⊆ Y ∧ dead(X) ⇒ dead(Y)` — the
+//! makes `{(p A)}` dead and `{(p A), (q A)}` alive, and three mechanisms the
+//! walk shipped read the refuted premise `X ⊆ Y ∧ dead(X) ⇒ dead(Y)` — the
 //! lookahead kill cache, the singleton writeback, and the width-1 no-good
-//! clause. Five of six shipped configurations answer the twenty-line probe
+//! clause. Five of its six configurations answered the twenty-line probe
 //! **wrongly**, all of them reporting `exhausted = true`.
 //!
 //! The condition is a conjunction of two things this module already sees, plus

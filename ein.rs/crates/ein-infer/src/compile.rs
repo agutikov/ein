@@ -252,8 +252,8 @@ impl PlanMemo {
 /// The memo, shared by every [`Engine`](crate::engine::Engine) of one run.
 ///
 /// One handle lives on the [`Session`](crate::saturator::Session), so a fork's
-/// saturator, a `lookahead` probe and a `closed` marking all compile into the
-/// same table — which is the whole of design/06 § Win A. A `Mutex` rather than
+/// saturator and every other engine of the run compile into the same table —
+/// which is the whole of design/06 § Win A. A `Mutex` rather than
 /// a `RefCell` because `Terms` is asserted `Send + Sync` from the start for
 /// exactly this reason: P1a.7 shares the plans across threads, and retrofitting
 /// that onto an `Rc` would touch every call site. The lock is taken **only on
@@ -1758,7 +1758,7 @@ impl<'a> Compiler<'a> {
 /// The positive relation a plan's `:assert` concludes, or `None`.
 ///
 /// A plan whose assert template is `(R …)` with head not `not` proves `R` is
-/// rule-derivable — the building block behind `closed.producible_relations`.
+/// rule-derivable.
 pub fn asserted_relation(plan: &Plan, terms: &Terms) -> Option<Symbol> {
     match plan.assert_template()? {
         Slot::Nested { rel, .. } if rel != terms.kernel.not => Some(rel),

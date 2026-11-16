@@ -55,10 +55,7 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// refusal (the user's ruling of 2026-11-04). Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which writes and reads every entry of [`FIELDS`] in order, so
-/// removing one is a change of its layout. Of the code, only the walk's
-/// generator (`hypgen::generate`) reads any of them, the lookahead and
-/// kill-cache fields, at their defaults; no command runs it, and the shape
-/// golden's `hyp` and `hyp+closed` ops do. Nothing reads the other thirteen.
+/// removing one is a change of its layout. No engine code reads any of them.
 pub const RETIRED: &[(&str, &str, &str)] = &[
     (
         "hypgen-scoring",
@@ -175,14 +172,13 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
-    /// The walk's one-step rule simulator, `Lookahead::dies_immediately`.
-    /// **Retired**: a program that sets it is refused at load. The walk's
-    /// generator, `hypgen::generate`, reads it at its default; no command runs
-    /// that generator, and the shape golden's `hyp` ops do.
+    /// The walk's one-step rule simulator, deleted with the walk's generator
+    /// pass. **Retired**: a program that sets it is refused at load, and no
+    /// code reads it. Kept at its default for the `.einb` layout.
     pub enable_pre_branch_lookahead: bool,
-    /// Cache a lookahead kill as a `(not h)` fact, so later enumerations skip
-    /// `h` through the O(1) negated index instead of re-running the match.
-    /// **Retired**, and read where the lookahead is.
+    /// The walk's cache of a lookahead kill as a `(not h)` fact, deleted with
+    /// the lookahead. **Retired**, read by nothing, and kept as the field
+    /// above is.
     pub enable_lookahead_kill_cache: bool,
     /// **Retired**, as are the two weights below, and read by nothing: the
     /// walk's scoring of a candidate, which ordered its lattice, went with it.

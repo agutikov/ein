@@ -43,7 +43,7 @@ pub use entities::{
 };
 pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};
-pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, NogoodFreeze, Nogoods, SlotKey};
+pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, SlotKey};
 pub use numparse::{parse_float, parse_int};
 pub use program::Program;
 pub use prov::{NafArg, NafRef, Prov, ProvArena, ProvId, ProvKind, Region};

@@ -1,20 +1,16 @@
 //! The search layer's semantics — T1a.10.2.2.
 //!
 //! Everything above the saturator and below the CLI: contradiction detection
-//! ([`ein_infer::contradiction`]), the one-step lookahead
-//! ([`ein_infer::lookahead`]), the minimal-explanation search
+//! ([`ein_infer::contradiction`]), the minimal-explanation search
 //! ([`ein_infer::explain`]), guided hypothesis generation
-//! ([`ein_infer::hypgen`]), state identity ([`ein_infer::canon`]) and what a
-//! solution node *is*.
+//! ([`ein_infer::hypgen`]) and state identity ([`ein_infer::canon`]).
 //!
 //! | subject |
 //! |---|
 //! | the two contradiction shapes and the incremental check |
 //! | `examples/saturation/`'s 24 per-rule demos |
-//! | the lookahead's kill conditions |
 //! | the OR-aware smallest frontier (S1.21.7) |
 //! | `:hypothesis-relations` / `:no-hypothesis` |
-//! | `consistent ∧ complete` |
 //! | canonical model identity (P1.21 R1) |
 //! | the blind enumerator's solve |
 //!
@@ -22,7 +18,10 @@
 //! S1e2.1c.5): the walk's lattice arithmetic (`apriori`) and its commitment
 //! primitive (`commitment`, with fail-fast). The routes' node function and
 //! licences are `region.rs`'s and `explore.rs`'s tests. The two identity
-//! tests and the blind enumerator's ask `--maximal`.
+//! tests and the blind enumerator's ask `--maximal`. Two more went with the
+//! walk's own generator pass: its one-step lookahead's kill conditions, and
+//! its definition of a solution node, `consistent ∧ complete`; the answer is
+//! `R`.
 //!
 //! Internals — the alternative-justification table, what a generator was
 //! asked for — are not asserted; where one protects an observable, the
@@ -41,7 +40,7 @@ use ein_infer::explain::{
     ExplanationBudget, minimal_contradiction_frontier, smallest_contradiction_frontier,
 };
 use ein_infer::hypgen::{HypGenStats, Skip};
-use ein_infer::{Events, Firing, Lookahead, Matcher, Saturator, Session, SharedMemo};
+use ein_infer::{Events, Firing, Saturator, Session, SharedMemo};
 use ein_ir::{Ast, load_file, parse};
 use rustc_hash::FxHashSet;
 
@@ -511,93 +510,6 @@ fn each_demo_carries_a_query_goal() {
     }
 }
 
-// ── The one-step lookahead ─────────────────────────────────────────
-
-/// Saturate `src`, then ask the lookahead about `(rel arg…)`.
-fn dies(src: &str, rel: &str, args: &[&str]) -> bool {
-    let (ast, mut terms, mut kb) = kb_of(src);
-    saturate(&ast, &mut terms, &mut kb);
-    let h = fact(&mut terms, rel, args);
-    in_session(&ast, &mut terms, &mut kb, |s| {
-        let l = Lookahead::new(s).expect("compiles");
-        l.dies_immediately(s, &mut Matcher::new(), h)
-    })
-}
-
-/// A rule that derives `(not h)` straight from `h` kills the candidate `h`,
-/// even though neither `h` nor its negation is in the KB.
-///
-/// This is the branch where **both** sides of the pair are hypothetical, and
-/// it is the one the ordinary detector cannot express: `contradicts` asks the
-/// KB, and the KB holds neither fact. The probe has to notice that the
-/// conclusion it just built *is* the negation of the thing it posited — the
-/// `g == h` test — which is asserted here by first checking the KB knows
-/// nothing about `(r A B)` at all.
-#[test]
-fn a_rule_that_negates_the_candidate_itself_kills_it() {
-    let src = "(rule deny (?R)\n  :match (?R ?a ?b) :assert (not (?R ?a ?b))\n\
-               \x20 :why \"{?R} holds of {?a} and {?b}, so it does not\")\n(relation r T T :why \"r holds of {?1} and {?2}\")\n(deny r)\n";
-    let (ast, mut terms, mut kb) = kb_of(src);
-    saturate(&ast, &mut terms, &mut kb);
-    let h = fact(&mut terms, "r", &["A", "B"]);
-    assert!(!kb.contains(h), "the KB does not hold the candidate");
-    assert!(!kb.is_negated(h), "…nor its negation");
-    assert!(dies(src, "r", &["A", "B"]));
-}
-
-/// A derived `(not g)` kills the candidate whenever `g` is believed — stated
-/// or itself derived — and kills nothing when `g` is absent.
-///
-/// The mirror of the detector's S1.22.1b fix. Before it, the source-annotated
-/// `(r A)` was exempt because it sat in a different knowledge layer from the
-/// derived negative, so a candidate survived a step it could not survive; the
-/// filter and the detector disagreeing that way is how a branch reaches the
-/// search only to die on the next line. The absent-`g` case is the guard in
-/// the other direction: this filter may only ever **under**-approximate death,
-/// because a hypothesis wrongly reported dead is silently lost.
-#[test]
-fn a_derived_negative_kills_against_a_positive_of_any_origin() {
-    let src = "(rule deny ()\n  :match (cand ?x) :assert (not (r ?x))\n\
-               \x20 :why \"cand holds of {?x}, so r does not\")\n\
-               (rule make-r ()\n  :match (seed ?x) :assert (r ?x)\n\
-               \x20 :why \"seed holds of {?x}, so r holds of {?x}\")\n\
-               (relation cand T :why \"cand holds of {?1}\")\n(relation r T :why \"r holds of {?1}\")\n(relation seed T :why \"seed holds of {?1}\")\n\
-               (r A :source \"given\")\n(seed C :source \"(1)\")\n";
-
-    // The two positives really do have different origins.
-    let (ast, mut terms, mut kb) = kb_of(src);
-    saturate(&ast, &mut terms, &mut kb);
-    let stated = fact(&mut terms, "r", &["A"]);
-    let derived = fact(&mut terms, "r", &["C"]);
-    assert_eq!(primary_kind(&kb, &terms, stated), Some(ProvKind::Source));
-    assert_eq!(primary_kind(&kb, &terms, derived), Some(ProvKind::Rule));
-
-    assert!(dies(src, "cand", &["A"]), "stated positive");
-    assert!(dies(src, "cand", &["C"]), "derived positive");
-    assert!(
-        !dies(src, "cand", &["E"]),
-        "no (r E) to clash with — a live hypothesis must survive"
-    );
-}
-
-/// With no rules there are no plans, so nothing can die in one step and every
-/// candidate is reported alive.
-///
-/// The default has to be *alive*: the filter runs before the fork, so a
-/// vacuous "no plan disproved it, therefore dead" would delete the entire
-/// search space of any rule-free puzzle without a single contradiction being
-/// found.
-#[test]
-fn a_kb_with_no_rules_never_kills() {
-    let src = "(relation co-located T T :why \"{?1} is co-located with {?2}\")\n";
-    let (_ast, _terms, kb) = kb_of(src);
-    assert!(
-        kb.program().rules.is_empty(),
-        "the fixture declares no rules"
-    );
-    assert!(!dies(src, "co-located", &["A", "B"]));
-}
-
 // ── The smallest frontier ──────────────────────────────────────────
 
 /// One fact with two derivations, plus one clash — the R3 report's E3 fixture.
@@ -815,13 +727,13 @@ fn turning_alternative_recording_off_restores_the_primary_only_frontier() {
 const TWO_REL: &str = "(relation co-located T T :why \"{?1} is co-located with {?2}\")\n(relation likes T T :why \"{?1} likes {?2}\")\n\
                        (is-a Thing T)\n(is-a A Thing) (is-a B Thing)\n";
 
-/// The candidates one `generate` call emits, plus its stats.
+/// The candidates H's pass emits (`generate_config_free`), plus its stats.
 fn candidates(src: &str) -> (BTreeSet<String>, Vec<String>, HypGenStats) {
     let (ast, mut terms, mut kb) = kb_of(src);
     let mut stats = HypGenStats::new();
     let mut out = Vec::new();
     in_session(&ast, &mut terms, &mut kb, |s| {
-        ein_infer::generate(s, &mut stats, &mut |f| {
+        ein_infer::hypgen::generate_config_free(s, &mut stats, &mut |f| {
             out.push(f);
             ControlFlow::Continue(())
         })
@@ -904,54 +816,6 @@ fn no_hypothesis_overrides_the_whitelist() {
         0,
         "the whitelist admitted it first"
     );
-}
-
-// ── What a solution node is ────────────────────────────────────────
-
-/// A KB is a solution node iff it is **both** consistent and complete.
-///
-/// The two halves fail independently and each on its own looks like an answer:
-/// a consistent KB with candidates left is a partial dead-end, which is what
-/// S1.7.3 found being certified as a solution, and a complete KB holding
-/// `(false)` is a refuted branch that nothing can extend. `is_solution_node`
-/// is the *definition* of an answer in P1.7a — the goal pattern does not
-/// decide the verdict — so an implementation that dropped either conjunct
-/// would report a `k` the search never justified.
-#[test]
-fn solution_node_needs_both_halves() {
-    // Two objects and a binary relation — the enumerator has candidates.
-    let (ast, mut terms, mut kb) =
-        kb_of("(relation r T T :why \"r holds of {?1} and {?2}\")\n(is-a a T) (is-a b T)\n");
-    let (consistent, complete, node) = in_session(&ast, &mut terms, &mut kb, |s| {
-        (
-            ein_infer::consistent(s.kb, s.terms),
-            ein_infer::complete(s).expect("generates"),
-            ein_infer::is_solution_node(s).expect("generates"),
-        )
-    });
-    assert!(consistent && !complete && !node, "consistent, not complete");
-
-    // No declared relation to hypothesise over — the enumerator yields nothing.
-    let (ast, mut terms, mut kb) = kb_of("(is-a a T) (is-a b T)\n");
-    let (consistent, complete, node) = in_session(&ast, &mut terms, &mut kb, |s| {
-        (
-            ein_infer::consistent(s.kb, s.terms),
-            ein_infer::complete(s).expect("generates"),
-            ein_infer::is_solution_node(s).expect("generates"),
-        )
-    });
-    assert!(consistent && complete && node, "both halves");
-
-    // …and the same KB with a `(false)` in it.
-    let (ast, mut terms, mut kb) = kb_of("(is-a a T) (is-a b T)\n(false :source \"(1)\")\n");
-    let (consistent, complete, node) = in_session(&ast, &mut terms, &mut kb, |s| {
-        (
-            ein_infer::consistent(s.kb, s.terms),
-            ein_infer::complete(s).expect("generates"),
-            ein_infer::is_solution_node(s).expect("generates"),
-        )
-    });
-    assert!(complete && !consistent && !node, "complete, not consistent");
 }
 
 // ── Canonical state identity ───────────────────────────────────────

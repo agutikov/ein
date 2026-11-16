@@ -55,7 +55,10 @@ pub enum Kind {
     Program = 7,
     /// Never written — see [`crate`] § What is not a section.
     Indexes = 8,
-    Nogoods = 9,
+    // 9 was `NOGOODS`, the walk's learned clauses, written only from a
+    // non-empty store; no route has filled one since the walk went, before
+    // format 2.0, so no 2.x writer wrote the section. Never reused: a section
+    // of kind 9 is an unknown one and skipped.
     Solutions = 10,
     /// Each derived fact's closure and smallest-closure arrival
     /// ([`ein_core::Kb::closures`]), M1e2 S1e2.2.11; written when the KB has
@@ -79,7 +82,6 @@ impl Kind {
             6 => Kind::Prov,
             7 => Kind::Program,
             8 => Kind::Indexes,
-            9 => Kind::Nogoods,
             10 => Kind::Solutions,
             11 => Kind::Closure,
             12 => Kind::Universal,
