@@ -730,12 +730,16 @@ fn shard(k: usize) {
             None => {}
         }
     }
-    // A shard of the nightly's holds its share of the programs; the kinds of
-    // state are each held by the whole run, per commit.
+    // A shard of the nightly's holds its share of the programs and some
+    // state; more states than programs, and the kinds of state, are each held
+    // by the whole run, per commit. A nightly shard's eighth is a dozen or two
+    // programs as the corpus deals them, and a dealing of many whose R is
+    // empty or one state holds fewer states than programs with nothing wrong.
     let whole = ein_corpus::shard::current().is_none();
     assert!(
         programs > ein_corpus::shard::share(20)
-            && states > programs
+            && states > 0
+            && (!whole || states > programs)
             && (!whole || (eager > 0 && held.dead > 0 && held.not_dead > 0)),
         "shard {k}: {programs} programs, {states} states, {eager} members of N held to their \
          eager cores, {} dead nodes and {} others held to their deadness",
