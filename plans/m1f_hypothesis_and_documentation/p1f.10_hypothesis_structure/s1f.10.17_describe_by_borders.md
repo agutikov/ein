@@ -1,7 +1,7 @@
 # S1f.10.17 — Describe by borders
 
 **Phase:** [P1f.10](README.md), track R (the search)
-**Status:** planned 2026-11-16, on the user's ruling of Q-M1f.311 that day. Running: [§ Record](#record-2026-11-16).
+**Status:** planned 2026-11-16, on the user's ruling of Q-M1f.311 that day. **Stopped after T2, 2026-11-16: *no* for describe on the corpus**, as the plan says to stop and show it; T3 to T5 not done. [§ Record](#record-2026-11-16).
 **Depends on:** [S1f.10.3](s1f.10.3_the_restricted_join.md) (the memory `known_dead`, L8),
 [S1f.10.5](s1f.10.5_ordering.md) (the tree's order), [S1f.10.14](s1f.10.14_exactly_one_spent.md) (L9; Q-M1f.311's
 numbers), [S1f.10.13](s1f.10.13_the_price_list.md) (the rule for *go*).
@@ -204,3 +204,179 @@ answering, for **describe** and for **`--count`** apart (`--count` takes no `N`)
 - **beside the rule, not in it**: what each cell established (`R` exact or not, `N` exact or not), and the walls
   (the border route's transversal searches cost time and no saturation, as a core did in S1f.10.13), each said
   where it bears.
+
+### T2: the borders measured — *no* for describe on the corpus, so the stage stops here
+
+**The verdict in one paragraph.** By the rule above, **describe is *no* on the corpus**: over the 171 monotone
+programs that search with an alive root, the border route's total is lower in saturations (817 794 against
+1 234 630, all of it the two SEND cells) and **higher in facts beyond root** (11 058 806 against 10 286 321), and
+20 programs are higher by more than a tenth, the four zebra puzzles among them. **`--count` is *go* on the corpus
+with 8 losers**: 626 673 saturations and 9 154 455 facts against 1 234 630 and 10 286 321, `send_more_money.ein`
+and its twin **decided in 18 127 saturations** where the state route stops after 336 101. The plan says a *no* for
+describe on the corpus is the user's to see before anything else is decided, so **nothing is built**: no question of
+`ein solve` takes the border route, no golden moved, and T3, T4 and T5 are not done. Every field of the two
+descriptions is identical on every program both routes finish, and on every program within the oracle's limit the
+border route's is the cube's.
+
+#### What was built to measure, and what takes it
+
+The borders past the state route's reach cannot be simulated from its nodes (on SEND and `zebra2-minus-15.ein` it
+never finishes), so **T2 runs the route's own code, unwired** ([§ Defaults taken](#defaults-taken)):
+
+- [`ein-infer/src/borders.rs`](../../../ein.rs/crates/ein-infer/src/borders.rs), the border route: `R`'s states by
+  `tree::find` with no `N` (the tree, then every state of `R` extended), root's one-up extensions for the candidates
+  dead alone, each state's class by dualise and advance inside `2^s`, and `N` with the maximal alive sets by dualise
+  and advance over `H`; each transversal closed under what the run knows first (`known_closure`: the closure of
+  every state met whose first commitment it holds), so the memory of what is known dead (L1, L8) decides it where it
+  can. The module header has the arguments.
+- `described::of_borders`, the description read off the borders; `explore::describe_borders`, its answer;
+  `Route::Borders` with its words in the read-out, the summary, `--dump-lattice` and `ein test`;
+  `Answer::borders` (what each border cost and how large it is, which no surface prints); three helpers of the node
+  cache (`owed_of`, `root_node`, `cores_after`), `KnownDead::is_empty`, and the tree's search opened to the crate
+  (`St::path_bits`, `Search::order_took`).
+- **Taken by no question**: `explore::describe_by(…, Route::Borders)` and the example below alone call it; `run`
+  is as it was. [`ein-infer/tests/borders.rs`](../../../ein.rs/crates/ein-infer/tests/borders.rs), two tests per
+  commit on seven programs (4.5 s): the border route's description is the state route's, `N` taken and not, and
+  the cube's where the oracle reaches; each fails when a description is mutated (tried on the final tree with three
+  mutations of the maximal line and of a class's generators, and reverted).
+- [`price_list --borders`](../../../ein.rs/crates/ein-infer/examples/price_list.rs), in
+  [`examples/shared/borders.rs`](../../../ein.rs/crates/ein-infer/examples/shared/borders.rs): per program, describe
+  and `--count` by both routes at the default budget with the options `ein solve` gives them (describe takes `N`,
+  `--count` does not, no core), the work of each border and their sizes, the two descriptions compared where both
+  finish and the border route's against the cube within `--region-limit`, the global borders' sizes off the state
+  route's walk and off the cube, and the verdicts by the rule.
+
+#### The command
+
+```sh
+cargo build --manifest-path ein.rs/Cargo.toml --release -p ein-infer --example price_list
+EIN_TEST_JOBS=8 utils/bench_env.sh --cores P:8 ein.rs/target/release/examples/price_list --borders \
+    --out build/s1f.10.17 > build/s1f.10.17/borders.out 2> build/s1f.10.17/borders.env
+```
+
+2026-11-16 from 12:37, the worktree over `7981400e` with this stage's code, the release example, eight P-cores, on
+AC, load average 5.8 at the start (other work on the machine), the default budget of 2^20 facts. Its files, under
+the untracked `build/s1f.10.17/borders/`: `borders.jsonl` (a line a program), `verdicts.json`, `borders.md`.
+**Taken twice**: the counts of the two runs are one digest, the walls and two counters added between them left
+out (`jq -c -S 'del(.describe.states.wall, .describe.borders.wall, .count.states.wall, .count.borders.wall) |
+del(.describe.borders.borders.classes, .describe.borders.borders.global_met, .count.borders.borders.classes,
+.count.borders.borders.global_met)' borders.jsonl | md5sum`: `cfc332bd993163f901427201458f6d12` both). The walls
+were taken eight programs at a time on a loaded machine and are no measurement.
+
+#### What holds the two readings to each other
+
+| | |
+|---|---|
+| corpus programs and register witnesses that search | 200: 29 flagged (the state route refuses them; the cube is theirs), 171 compared, none with a dead root |
+| both routes finish, describe and `--count` | 161 programs: **every field of `R` or around it identical**, 322 descriptions compared (`differ`) |
+| the border route against the cube | the 140 within `--region-limit`: **identical** |
+| the borders' sizes, off the border route, the state route's walk and the cube | `R`'s states, the maximal closed proper subsets, the generators, `N` and the maximal alive sets agree on all 161; the walk and the cube agree on the maximal owing states too, on all 140 |
+| the same work both ways | 143 of the 161: every program with `∅ ∈ R`, where the border route's walk is the state route's and both borders are read off it with no node asked, and 23 where root owes and the border route's nodes and readings come to the state route's |
+
+#### The totals, by the rule
+
+| question | the state route | the border route | lower | higher by more than a tenth | verdict |
+|---|---:|---:|---:|---:|---|
+| describe | 1 234 630 · 10 286 321 | 817 794 · **11 058 806** | 2 | 20 | **no**: higher in facts on the corpus |
+| … the 161 cells no budget stopped | 34 462 · 383 473 | 39 031 · 573 186 | 0 | 18 | no |
+| `--count` | 1 234 630 · 10 286 321 | 626 673 · 9 154 455 | 16 | 8 | **go on the corpus, no on 8 programs** |
+| … the 161 cells no budget stopped | 34 462 · 383 473 | 33 048 · 321 879 | 14 | 6 | no |
+
+Saturations · facts beyond root. **Describe's losers**: `zebra.ein` (314 · 55 346 → 486 · 159 912), `zebra2.ein` and
+`zebra2-obligations.ein` (263 · 22 503 → 368 · 53 443), the two `zebra2-minus-15` (7 261 · 545 818 → 11 192 ·
+1 048 538, both stopped), `beyond_arith/cryptarithm.ein` (417 → 1 371), `equation_by_search.ein` (251 → 827),
+`equation_two_unknowns.ein` (1 466 → 3 606), `lattice/05`, `06`, `07` and `14`, six of `binary_logic/`, and
+`tests/stdlib/bool/inputs/01` and `02`. **`--count`'s**: the two `zebra2-minus-15` (as describe's),
+`lattice/07_two_pairs_two_tables.ein` (177 · 448 → 149 · 556, in facts), four of `binary_logic/` (`equivalent`
+30 · 215 → 38 · 281, `not_equivalent` 30 · 197 → 27 · 248 in facts, `truth_table` 30 · 179 → 39 · 450,
+`unsatisfiable` 28 · 156 → 37 · 232) and `tests/stdlib/bool/inputs/01_in_drives.ein` (11 · 38 → 13 · 62). Where
+describe's facts go: the two `zebra2-minus-15` cells spend the whole budget, 502 720 facts each beyond the state
+route, which stops at half of it on its layer's projection; the six `saturation/square-*` demos, where `∅ ∈ R` and
+both routes stop, about 54 300 each; the finished programs where root owes, 189 713; against SEND's two cells, 374 366
+fewer each.
+
+#### The six programs, border by border
+
+Saturations · facts beyond root; the border route's work split by border (root's node, one saturation, apart).
+
+| program | describe, the state route | describe, the border route | `R`'s states | singles | classes | `N` | `--count`, the border route |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `beyond_arith/send_more_money.ein` | 336 101 · 1 422 943, **stopped**, no state met | 110 696 · 1 048 577, **stopped in `N`** | 18 029 · 221 803 | 70 · 72 | 27 · 180 | 92 569 · 826 522 | **18 127 · 222 055, decided** |
+| `…_written.ein` | the same | the same | the same | the same | the same | the same | the same |
+| `zebra2-minus-15.ein` | 7 261 · 545 818, **stopped**, ≥ 32 states | 11 192 · 1 048 538, **stopped in the classes** | 107 · 11 512 | 94 · 2 230 | 10 990 · 1 034 796 | — | the same, stopped |
+| `zebra2-minus-15-obligations.ein` | the same | the same | the same | the same | the same | — | the same |
+| `zebra2.ein` | 263 · 22 503 | 368 · 53 443 | 6 · 666 | 54 · 4 816 | 59 · 3 304 | 248 · 44 657 | 120 · 8 786 |
+| `zebra.ein` | 314 · 55 346 | 486 · 159 912 | 8 · 1 900 | 54 · 9 144 | 57 · 6 384 | 366 · 142 484 | 120 · 17 428 |
+
+**The borders' sizes** on the same programs:
+
+| program | states of `R` | `m_j`, summed | generators, summed | `N` | maximal alive | maximal owing | alive states | `N` decided by the memory |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| SEND, either | 1 | 8 | 1 | ≥ 1 131 | ≥ 5 912 | not found | ≥ 330 329 owing met by the state route | — |
+| `zebra2-minus-15`, either | 32 | ≥ 259 | ≥ 7 171 | not reached | not reached | not found | not found | — |
+| `zebra2.ein` | 1 | 3 | 63 | 366 | 8 | 7 | 20 | 192 |
+| `zebra.ein` | 1 | 3 | 63 | 458 | 9 | 8 | 27 | 196 |
+
+On SEND the global dualisation had found 5 912 maximal alive sets and 1 131 members of `N` when the budget stopped
+it, 28 538 transversals in the round it was in, its third; on `zebra2-minus-15.ein` 18 of the 32 classes were
+found, with 7 171 minimal generators between them, each asked by a saturation, when the budget stopped it there.
+
+#### What the numbers say about the bet
+
+- **The global border is larger than what it replaces wherever root owes.** Over the 161 programs the walk
+  finishes, the alive states are 29 343 (1 434 of them owing), `N` 4 082, the maximal alive sets 997 and the
+  maximal owing sets 904, and on 49 programs `|N|` and the maximal alive sets together outnumber the alive states.
+  `zebra2.ein`: 20 alive states, `N` 366 and 8 maximal alive sets; 192 of the 366 decided by the memory, the rest
+  each a node, and each maximal alive set a climb. The state route reads `N` off the alive states it has met for
+  nothing; the border route pays for every member the memory cannot decide.
+- **A state reached by many minimal commitments costs one node a commitment.** The class's dualisation must ask
+  every minimal transversal it has not decided, and a generator is decided only by its node: `zebra2-minus-15`'s
+  classes take a saturation per generator. The state route counts the same class off the states below it.
+- **Where `R` is small and the alive owing states are many, it pays, and `N` sinks it again.** SEND's `R` is one
+  state of eight candidates, its class 27 saturations, the singles 70. With `N` not
+  taken, `--count` is 18 127 saturations, the tree's. With `N` taken, the global border is at least 5 912 maximal
+  alive sets, more than the budget lets it finish.
+- **`∅ ∈ R` gains nothing and loses nothing**: there every alive state is in `R`, the tree is the state route's
+  walk, and every border is read off it with no node asked (143 cells of each question the same to the saturation).
+
+#### Beside the rule: what a stopped run established
+
+- **SEND, describe**: the border route stops in `N` with `R` exact, one state, `k_c` = 1, both lines, the shape and
+  the candidates dead alone; the state route stops having met no state of `R`. **`--count`** decides it.
+- **`zebra2-minus-15.ein`**: the border route has `R`'s 32 states exact and 18 classes; the state route has 32
+  states as a lower bound. Neither has `k_c` or the lines.
+- **`saturation/square-*`**: both stop with `∅ ∈ R`; the state route saturates ⊤ once and decides `R` as the whole
+  cube, which the border route as measured does not do (it would, built, as the state route does).
+
+#### Defaults taken
+
+Each the user's to revise.
+
+1. **T2 ran the route's own code, unwired**, and it is committed: the borders of the programs that decide the bet
+   cannot be simulated from the state route's nodes, since it does not finish there. No question takes it
+   (`explore::run` is as it was), no golden moved, and `tests/borders.rs` keeps it from rotting. If the user drops
+   the variant, the module, the route's variant and the example's mode go with it.
+2. **The rule's programs**: the monotone corpus programs and register witnesses that search, with an alive root
+   (171), as the price list read *the corpus*.
+3. **The minimal line read off the classes' generators**, not by `--minimal`'s duality against the maximal owing
+   states: the classes are needed anyway, and the maximal owing states were measured as a border, not searched.
+4. **The singles before the classes**: describe and `--count` both need the candidates dead alone, and their
+   closures are what the classes' and the global border's transversals are closed under.
+5. **A transversal is closed under the closures of the states met** before it is asked (`known_closure`), for a
+   generator of a class and for a member of `N`: L3 and the monotone state, read off memory. With the singles before them it
+   took `zebra2.ein`'s class from 108 saturations to 59, and saved nothing on `zebra2-minus-15.ein`'s.
+6. **The global seed is the maximal alive states met**, and a climb is the maximal line's (`Search::climb`,
+   ascending).
+7. **A stopped border run spends the budget node by node**, as every tree step is afforded; the state route stops
+   before a layer whose projection passes it. Read as the rule reads it, a stopped cell with what it spent.
+
+#### What is not done
+
+- **T3, T4, T5**: not built, on the plan's stop. Q-M1f.311's *Built* paragraph is not written: nothing is built.
+- **A choice between the routes for `--count`** is not proposed as a rule: its losers are the `zebra2-minus-15` pair
+  (the classes) and six small programs where the singles and the classes cost more than the alive states (2 to 9
+  saturations, or facts alone); the user may want `--count` alone first.
+- `cost_ms`, the slow set and every golden: untouched, nothing moved.
+- `./run_tests.sh`, the nightly and `utils/ci_container.sh`: the main session's.
+
+**Findings outside the stage's scope**: none; K-30 stays the last.
